@@ -1,6 +1,7 @@
-import { Component, ComponentPropertyDefinition } from '../../types/common';
+import React from 'react';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { IconHelper } from '../util/IconHelper';
-import { TableComponent } from './Table/Table';
+
 import TableStyle from './Table/TableStyle';
 import {
 	propertiesDefinition as tablePropertiesDefinintion,
@@ -8,11 +9,23 @@ import {
 } from './Table/tableProperties';
 import { styleDefaults as tableStyleDefaults } from './Table/tableStyleProperties';
 
+const LazyTableComponent = React.lazy(
+	() => import(/* webpackChunkName: "Table" */ './Table/Table'),
+);
+
+function LoadLazyTableComponent(props: Readonly<ComponentProps>) {
+	return (
+		<React.Suspense fallback={<>...</>}>
+			<LazyTableComponent {...props} />
+		</React.Suspense>
+	);
+}
+
 export const Table: Component = {
 	name: 'Table',
 	displayName: 'Table',
 	description: 'Table component',
-	component: TableComponent,
+	component: LoadLazyTableComponent,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: tablePropertiesDefinintion,
 	styleProperties: tableStylePropertiesDefinition,
@@ -172,6 +185,121 @@ export const Table: Component = {
 			name: 'pageSelectionLabel',
 			displayName: 'Page Selection Label',
 			description: 'Page Selection Label',
+			icon: 'fa-solid fa-box',
+		},
+	],
+};
+
+import TableColumnStyle from './TableColumn/TableColumnStyle';
+import {
+	propertiesDefinition as tableColumnPropertiesDefinintion,
+	stylePropertiesDefinition as tableColumnStylePropertiesDefinition,
+} from './TableColumn/tableCloumnProperties';
+import { styleDefaults as tableColumnStyleDefaults } from './TableColumn/tableColumnStyleProperties';
+
+const LazyTableColumnComponent = React.lazy(
+	() => import(/* webpackChunkName: "TableColumn" */ './TableColumn/TableColumn'),
+);
+
+function LoadLazyTableColumnComponent(props: Readonly<ComponentProps>) {
+	return (
+		<React.Suspense fallback={<>...</>}>
+			<LazyTableColumnComponent {...props} />
+		</React.Suspense>
+	);
+}
+
+export const TableColumn: Component = {
+	name: 'TableColumn',
+	displayName: 'Table Column',
+	description: 'Table Column component',
+	component: LoadLazyTableColumnComponent,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: tableColumnPropertiesDefinintion,
+	styleComponent: TableColumnStyle,
+	styleDefaults: tableColumnStyleDefaults,
+	allowedChildrenType: new Map<string, number>([['', 1]]),
+	parentType: 'TableColumns',
+	stylePseudoStates: ['hover'],
+	styleProperties: tableColumnStylePropertiesDefinition,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="2"
+						y="5"
+						width="9"
+						height="14"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="1.00195"
+						y="1.84766"
+						width="21.9967"
+						height="3.38411"
+						rx="1"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.00195"
+						y="10.3076"
+						width="21.9967"
+						height="3.38411"
+						rx="0.4"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.00195"
+						y="18.769"
+						width="21.9967"
+						height="3.38411"
+						rx="1"
+						fill="currentColor"
+					/>
+					<rect
+						x="4.38672"
+						y="3.53955"
+						width="16.9205"
+						height="3.38411"
+						transform="rotate(90 4.38672 3.53955)"
+						fill="currentColor"
+					/>
+					<rect
+						x="13.8594"
+						y="3.53955"
+						width="18.6126"
+						height="3.38411"
+						transform="rotate(90 13.8594 3.53955)"
+						fill="currentColor"
+					/>
+					<rect
+						x="23"
+						y="3.53955"
+						width="16.9205"
+						height="3.38411"
+						transform="rotate(90 23 3.53955)"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'leftIcon',
+			displayName: 'left Icon',
+			description: 'left icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'right Icon',
+			description: 'right icon',
 			icon: 'fa-solid fa-box',
 		},
 	],

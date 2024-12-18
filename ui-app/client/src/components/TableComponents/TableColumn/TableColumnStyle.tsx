@@ -1,15 +1,30 @@
-import React from 'react';
-import { StyleResolution } from '../../../types/common';
+import React, { useEffect, useState } from 'react';
+import { StylePropertyDefinition, StyleResolution } from '../../../types/common';
 import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './tableColumnStyleProperties';
+import { styleDefaults } from './tableColumnStyleProperties';
+import { usedComponents } from '../../../App/usedComponents';
+import { styleProperties } from '../TableColumnHeader/tableColumnHeaderStyleProperties';
+import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compTableColumn';
+const NAME = 'TableColumn';
 export default function TableColumnStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`${PREFIX} { display: table-cell; vertical-align: middle; text-align:center;}
@@ -65,5 +80,12 @@ export default function TableColumnStyle({
 		)}; }
 		` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return <style id="TableColumnCss">{css}</style>;
+	return (
+		<>
+			{styleProperties.length ? (
+				<link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} />
+			) : undefined}
+			<style id="TableColumnCss">{css}</style>
+		</>
+	);
 }

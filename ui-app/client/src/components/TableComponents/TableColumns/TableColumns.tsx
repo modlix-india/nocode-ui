@@ -1,26 +1,28 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { deepEqual, duplicate, ExpressionEvaluator } from '@fincity/kirun-js';
+import { useEffect, useMemo, useState } from 'react';
+import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
 import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
-import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import {
+	Component,
 	ComponentDefinition,
 	ComponentPropertyDefinition,
 	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+	RenderContext,
 } from '../../../types/common';
+import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
+import Children from '../../Children';
+import { HelperComponent } from '../../HelperComponents/HelperComponent';
+import { getExtractionMap } from '../../util/getRenderData';
 import { updateLocationForChild } from '../../util/updateLoactionForChild';
-import { Component } from '../../../types/common';
+import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableColumnsProperties';
 import TableColumnsStyle from './TableColumnsStyle';
-import useDefinition from '../../util/useDefinition';
-import Children from '../../Children';
-import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
-import { deepEqual, ExpressionEvaluator } from '@fincity/kirun-js';
-import { getExtractionMap } from '../../util/getRenderData';
-import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
-import { duplicate } from '@fincity/kirun-js';
-import { runEvent } from '../../util/runEvent';
-import { styleDefaults } from './tableColumnsStyleProperties';
 import { difference } from '../../../util/setOperations';
 import { IconHelper } from '../../util/IconHelper';
+import { runEvent } from '../../util/runEvent';
+import { styleDefaults } from './tableColumnsStyleProperties';
 function fieldToName(field: string): string {
 	return field
 		.replace('_', ' ')
@@ -51,174 +53,12 @@ function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			pageExtractor,
 		);
 
-	const dynamicColumns = Object.values(pageDefinition.componentDefinition).filter(
-		cd => cd?.type === 'TableDynamicColumn',
+	const { headerDef, columnDef } = useMemo(
+		() => generateTableColumnDefinitions(pageDefinition, children, context),
+		[pageDefinition],
 	);
 
-	if (dynamicColumns.length > 0) {
-		let includeColumnsArray = [];
-		let excludeColumnsArray = [];
-		let columnsOrderArray = [];
-
-		for (let i = 0; i < dynamicColumns.length; i++) {
-			const key = dynamicColumns[i].key;
-			const visibility = dynamicColumns[i]?.properties?.visibility?.value;
-			const includeColumns = dynamicColumns[i]?.properties?.includeColumns;
-			if (visibility == false) {
-				continue;
-			}
-			if (includeColumns)
-				includeColumnsArray = Object.values(includeColumns).map(col => col.property.value);
-
-			const excludeColumns = dynamicColumns[i]?.properties?.excludeColumns;
-			if (excludeColumns)
-				excludeColumnsArray = Object.values(excludeColumns).map(col => col.property.value);
-
-			const dontShowOtherColumns = dynamicColumns[i]?.properties?.dontShowOtherColumns;
-
-			const columnsOrder = dynamicColumns[i]?.properties?.columnsOrder;
-			if (columnsOrder)
-				columnsOrderArray = Object.values(columnsOrder).map(col => col.property.value);
-
-			let columns = Array.from<string>(
-				(context.table.data ?? []).reduce((a: Set<string>, c: any) => {
-					if (!c) return a;
-					for (const eachKey of Object.keys(c)) a.add(eachKey);
-					return a;
-				}, new Set<string>()),
-			);
-
-			const includedColumns = new Set<string>(includeColumnsArray);
-			const excludedColumns = new Set<string>(excludeColumnsArray);
-
-			if (dontShowOtherColumns && includeColumnsArray.length) {
-				columns = columns.filter(c => includedColumns.has(c));
-			} else if (excludeColumnsArray.length) {
-				columns = columns.filter(c => !excludedColumns.has(c));
-			}
-
-			if (includeColumnsArray.length) {
-				columns = [
-					...columns,
-					...Array.from(difference(includedColumns, new Set(columns))),
-				];
-			}
-
-			let columnNamesIndex = columns.reduce(
-				(a: { [key: string]: string }, c: string) => {
-					a[c] = fieldToName(c);
-					return a;
-				},
-				{} as { [key: string]: string },
-			);
-
-			columns = columns.sort((a: string, b: string) =>
-				columnNamesIndex[a].localeCompare(columnNamesIndex[b]),
-			);
-
-			const index = columnsOrderArray.reduce(
-				(a: { [key: string]: number }, c: string, i: number) => {
-					a[c] = i + 1;
-					return a;
-				},
-				{} as { [key: string]: number },
-			);
-
-			columns = columns.sort(
-				(a: string, b: string) =>
-					(index[a] ??
-						(includedColumns.has(a)
-							? Number.MAX_SAFE_INTEGER - 200
-							: Number.MAX_SAFE_INTEGER)) -
-					(index[b] ??
-						(includedColumns.has(b)
-							? Number.MAX_SAFE_INTEGER - 200
-							: Number.MAX_SAFE_INTEGER)),
-			);
-
-			for (let i = 0; i < columns.length; i++) {
-				const eachField = columns[i];
-
-				const childRendererKey = `${key}${eachField}_renderer`;
-				const eachRenderer: ComponentDefinition = {
-					key: childRendererKey,
-					type: 'Text',
-					name: eachField + 'Text',
-					properties: {
-						text: {
-							location: { type: 'EXPRESSION', expression: `Parent.${eachField}` },
-						},
-					},
-				};
-
-				const eachChild: ComponentDefinition = {
-					key: `${key}${eachField}`,
-					type: 'TableColumn',
-					name: eachField,
-					displayOrder: i,
-					properties: {
-						label: {
-							value: columnNamesIndex[eachField],
-						},
-					},
-					children: { [eachRenderer.key]: true },
-				};
-
-				pageDefinition.componentDefinition[eachRenderer.key] = eachRenderer;
-				pageDefinition.componentDefinition[eachChild.key] = eachChild;
-				children![eachChild.key] = true;
-			}
-		}
-		const displayOrderMap = new Map();
-
-		for (const key of Object.keys(pageDefinition.componentDefinition)) {
-			const component = pageDefinition.componentDefinition[key];
-			if (
-				component &&
-				(component.name === 'TableDynamicColumn' || component.name === 'TableColumn')
-			) {
-				const displayOrder = component.displayOrder ?? 0;
-				displayOrderMap.set(key, displayOrder);
-			}
-
-			const sortedEntries = Array.from(displayOrderMap.entries()).sort((a, b) => a[1] - b[1]);
-
-			const newarr = sortedEntries.flatMap(([key]) => {
-				const columnType = pageDefinition.componentDefinition[key]?.type;
-
-				if (columnType === 'TableColumn') {
-					return [key];
-				} else if (columnType === 'TableDynamicColumn') {
-					const childrenKeys = Object.keys(
-						pageDefinition.componentDefinition || {},
-					).filter(
-						childKey =>
-							childKey.startsWith(key) &&
-							children?.hasOwnProperty(childKey) &&
-							childKey !== key,
-					);
-					return childrenKeys;
-				}
-				return [];
-			});
-
-			newarr.forEach((key, index) => {
-				pageDefinition.componentDefinition[key].displayOrder = index + 1;
-			});
-		}
-	}
-
-	const newPageDef = useMemo(() => {
-		//for headers generation
-		const np = duplicate(pageDefinition);
-		Object.keys(children ?? {})
-			.map(k => np?.componentDefinition[k])
-			.filter(e => e?.type === 'TableColumn')
-			.forEach(cd => (cd.type = 'TableColumnHeader'));
-		return np;
-	}, [pageDefinition]);
-
-	const colPageDef = useMemo(() => {
+	const emptyRowPageDef = useMemo(() => {
 		if (!showEmptyRows) return pageDefinition;
 		const np = duplicate(pageDefinition);
 
@@ -322,8 +162,137 @@ function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	const showCheckBox = multiSelect && selectionType !== 'NONE' && selectionBindingPath;
 
-	const rows = value.map((e: any, index) => {
-		if (index < from || index >= to) return undefined;
+	const rows = generateRows({
+		value,
+		from,
+		to,
+		showCheckBox,
+		isSelected,
+		select,
+		multiSelect,
+		selectionType,
+		uniqueKey,
+		data,
+		stylePropertiesWithPseudoStates,
+		setHoverRow,
+		hoverRow,
+		styleHoverProperties,
+		styleNormalProperties,
+		columnDef,
+		children,
+		context,
+		locationHistory,
+		definition,
+		pageExtractor,
+	});
+
+	let headers = undefined;
+	if (showHeaders) {
+		let checkBoxTop = undefined;
+		if (showCheckBox) {
+			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
+		}
+		headers = (
+			<div
+				className="_row"
+				style={(hover ? styleHoverProperties : styleNormalProperties).header}
+			>
+				{checkBoxTop}
+				<Children
+					pageDefinition={headerDef}
+					renderableChildren={children}
+					context={context}
+					locationHistory={locationHistory}
+				/>
+			</div>
+		);
+	}
+
+	const emptyRows = [];
+	if (emptyCount) {
+		for (let i = 0; i < emptyCount; i++) {
+			emptyRows.push(
+				<div key={`emptyRow_${i}`} className="_row" style={styleNormalProperties.row}>
+					<Children
+						pageDefinition={emptyRowPageDef}
+						renderableChildren={children}
+						context={context}
+						locationHistory={locationHistory}
+					/>
+				</div>,
+			);
+		}
+	}
+
+	return (
+		<div
+			className="comp compTableColumns"
+			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
+			onMouseLeave={
+				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+			}
+			style={(hover ? styleHoverProperties : styleNormalProperties).comp}
+			role="table"
+		>
+			<HelperComponent context={props.context} definition={definition} />
+			{headers}
+			{rows}
+			{emptyRows}
+		</div>
+	);
+}
+
+function generateRows(properties: {
+	value: never[];
+	from: any;
+	to: any;
+	showCheckBox: any;
+	isSelected: (index: number) => boolean;
+	select: (index: number) => void;
+	multiSelect: any;
+	selectionType: any;
+	uniqueKey: any;
+	data: any;
+	stylePropertiesWithPseudoStates: any;
+	setHoverRow: any;
+	hoverRow: number;
+	styleHoverProperties: any;
+	styleNormalProperties: any;
+	columnDef: any;
+	children: { [key: string]: boolean } | undefined;
+	context: RenderContext;
+	locationHistory: LocationHistory[];
+	definition: ComponentDefinition;
+	pageExtractor: PageStoreExtractor;
+}) {
+	const {
+		value,
+		from,
+		to,
+		showCheckBox,
+		isSelected,
+		select,
+		multiSelect,
+		selectionType,
+		uniqueKey,
+		data,
+		stylePropertiesWithPseudoStates,
+		setHoverRow,
+		hoverRow,
+		styleHoverProperties,
+		styleNormalProperties,
+		columnDef,
+		children,
+		context,
+		locationHistory,
+		definition,
+		pageExtractor,
+	} = properties;
+
+	const rows = [];
+
+	for (let index = 0; index < value.length; index++) {
+		if (index < from || index >= to) continue;
 		const checkBox = showCheckBox ? (
 			<div className="comp compTableColumn">
 				<CommonCheckbox
@@ -345,12 +314,10 @@ function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			key = ev.evaluate(getExtractionMap(data?.[index]));
 		}
 
-		return (
+		rows.push(
 			<div
 				key={key}
-				className={`_row _dataRow ${onClick ? '_pointer' : ''} ${
-					isSelected(index) ? '_selected' : ''
-				}`}
+				className={`_row _dataRow ${onClick ? '_pointer' : ''} ${isSelected(index) ? '_selected' : ''}`}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHoverRow(index) : undefined
 				}
@@ -359,10 +326,12 @@ function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				}
 				onClick={onClick}
 				style={(hoverRow === index ? styleHoverProperties : styleNormalProperties).row}
+				tabIndex={onClick ? 0 : undefined}
+				role="row"
 			>
 				{checkBox}
 				<Children
-					pageDefinition={pageDefinition}
+					pageDefinition={columnDef}
 					renderableChildren={children}
 					context={context}
 					locationHistory={[
@@ -377,68 +346,183 @@ function TableColumnsComponent(props: Readonly<ComponentProps>) {
 						),
 					]}
 				/>
-			</div>
-		);
-	});
-
-	Object.entries(children ?? {})
-		.map(e => e[0])
-		.map(k => `${k} - ${pageDefinition.componentDefinition[k].displayOrder}`)
-		.forEach(console.log);
-
-	let headers = undefined;
-	if (showHeaders) {
-		let checkBoxTop = undefined;
-		if (showCheckBox) {
-			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
-		}
-		headers = (
-			<div
-				className="_row"
-				style={(hover ? styleHoverProperties : styleNormalProperties).header}
-			>
-				{checkBoxTop}
-				<Children
-					pageDefinition={newPageDef}
-					renderableChildren={children}
-					context={context}
-					locationHistory={locationHistory}
-				/>
-			</div>
+			</div>,
 		);
 	}
 
-	const emptyRows = [];
-	if (emptyCount) {
-		for (let i = 0; i < emptyCount; i++) {
-			emptyRows.push(
-				<div key={`emptyRow_${i}`} className="_row" style={styleNormalProperties.row}>
-					<Children
-						pageDefinition={colPageDef}
-						renderableChildren={children}
-						context={context}
-						locationHistory={locationHistory}
-					/>
-				</div>,
-			);
-		}
-	}
+	return rows;
+}
 
-	return (
-		<div
-			className="comp compTableColumns"
-			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
-			onMouseLeave={
-				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-			}
-			style={(hover ? styleHoverProperties : styleNormalProperties).comp}
-		>
-			<HelperComponent context={props.context} definition={definition} />
-			{headers}
-			{rows}
-			{emptyRows}
-		</div>
+function generateTableColumnDefinitions(
+	pageDefinition: PageDefinition,
+	children: { [key: string]: boolean } | undefined,
+	context: RenderContext,
+) {
+	const dynamicColumns = Object.values(pageDefinition.componentDefinition).filter(
+		cd => cd?.type === 'TableDynamicColumn',
 	);
+
+	const cp = duplicate(pageDefinition);
+	if (dynamicColumns.length > 0) {
+		generateDynamicColumns(dynamicColumns, context, cp, children);
+		const displayOrderMap = new Map();
+
+		for (const key of Object.keys(cp.componentDefinition)) {
+			const component = cp.componentDefinition[key];
+			if (
+				component &&
+				(component.name === 'TableDynamicColumn' || component.name === 'TableColumn')
+			) {
+				const displayOrder = component.displayOrder ?? 0;
+				displayOrderMap.set(key, displayOrder);
+			}
+
+			const sortedEntries = Array.from(displayOrderMap.entries()).sort((a, b) => a[1] - b[1]);
+
+			const newarr = sortedEntries.flatMap(([key]) => {
+				const columnType = cp.componentDefinition[key]?.type;
+
+				if (columnType === 'TableColumn') {
+					return [key];
+				} else if (columnType === 'TableDynamicColumn') {
+					const childrenKeys = Object.keys(cp.componentDefinition || {}).filter(
+						childKey =>
+							childKey.startsWith(key) &&
+							children?.hasOwnProperty(childKey) &&
+							childKey !== key,
+					);
+					return childrenKeys;
+				}
+				return [];
+			});
+
+			newarr.forEach((key, index) => {
+				cp.componentDefinition[key].displayOrder = index + 1;
+			});
+		}
+	}
+
+	const hp = duplicate(cp);
+	Object.keys(children ?? {})
+		.map(k => hp?.componentDefinition[k])
+		.filter(e => e?.type === 'TableColumn')
+		.forEach(cd => (cd.type = 'TableColumnHeader'));
+
+	return { headerDef: hp, columnDef: cp };
+}
+
+function generateDynamicColumns(
+	dynamicColumns: ComponentDefinition[],
+	context: RenderContext,
+	cp: any,
+	children: { [key: string]: boolean } | undefined,
+) {
+	let includeColumnsArray = [];
+	let excludeColumnsArray = [];
+	let columnsOrderArray = [];
+
+	for (let dynamicColumn of dynamicColumns) {
+		const key = dynamicColumn.key;
+		const includeColumns = dynamicColumn?.properties?.includeColumns;
+		if (includeColumns)
+			includeColumnsArray = Object.values(includeColumns).map(col => col.property.value);
+
+		const excludeColumns = dynamicColumn?.properties?.excludeColumns;
+		if (excludeColumns)
+			excludeColumnsArray = Object.values(excludeColumns).map(col => col.property.value);
+
+		const dontShowOtherColumns = dynamicColumn?.properties?.dontShowOtherColumns;
+
+		const columnsOrder = dynamicColumn?.properties?.columnsOrder;
+		if (columnsOrder)
+			columnsOrderArray = Object.values(columnsOrder).map(col => col.property.value);
+
+		let columns = Array.from<string>(
+			(context.table.data ?? []).reduce((a: Set<string>, c: any) => {
+				if (!c) return a;
+				for (const eachKey of Object.keys(c)) a.add(eachKey);
+				return a;
+			}, new Set<string>()),
+		);
+
+		const includedColumns = new Set<string>(includeColumnsArray);
+		const excludedColumns = new Set<string>(excludeColumnsArray);
+
+		if (dontShowOtherColumns && includeColumnsArray.length) {
+			columns = columns.filter(c => includedColumns.has(c));
+		} else if (excludeColumnsArray.length) {
+			columns = columns.filter(c => !excludedColumns.has(c));
+		}
+
+		if (includeColumnsArray.length) {
+			columns = [...columns, ...Array.from(difference(includedColumns, new Set(columns)))];
+		}
+
+		let columnNamesIndex = columns.reduce(
+			(a: { [key: string]: string }, c: string) => {
+				a[c] = fieldToName(c);
+				return a;
+			},
+			{} as { [key: string]: string },
+		);
+
+		columns = columns.sort((a: string, b: string) =>
+			columnNamesIndex[a].localeCompare(columnNamesIndex[b]),
+		);
+
+		const index = columnsOrderArray.reduce(
+			(a: { [key: string]: number }, c: string, i: number) => {
+				a[c] = i + 1;
+				return a;
+			},
+			{} as { [key: string]: number },
+		);
+
+		columns = columns.sort(
+			(a: string, b: string) =>
+				(index[a] ??
+					(includedColumns.has(a)
+						? Number.MAX_SAFE_INTEGER - 200
+						: Number.MAX_SAFE_INTEGER)) -
+				(index[b] ??
+					(includedColumns.has(b)
+						? Number.MAX_SAFE_INTEGER - 200
+						: Number.MAX_SAFE_INTEGER)),
+		);
+
+		for (let i = 0; i < columns.length; i++) {
+			const eachField = columns[i];
+
+			const childRendererKey = `${key}${eachField}_renderer`;
+			const eachRenderer: ComponentDefinition = {
+				key: childRendererKey,
+				type: 'Text',
+				name: eachField + 'Text',
+				properties: {
+					text: {
+						location: { type: 'EXPRESSION', expression: `Parent.${eachField}` },
+					},
+				},
+			};
+
+			const eachChild: ComponentDefinition = {
+				key: `${key}${eachField}`,
+				type: 'TableColumn',
+				name: eachField,
+				displayOrder: i,
+				properties: {
+					label: {
+						value: columnNamesIndex[eachField],
+					},
+				},
+				children: { [eachRenderer.key]: true },
+			};
+
+			cp.componentDefinition[eachRenderer.key] = eachRenderer;
+			cp.componentDefinition[eachChild.key] = eachChild;
+			children![eachChild.key] = true;
+		}
+	}
 }
 
 const component: Component = {

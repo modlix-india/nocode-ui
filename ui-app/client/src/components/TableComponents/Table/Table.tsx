@@ -20,6 +20,7 @@ import { runEvent } from '../../util/runEvent';
 import useDefinition from '../../util/useDefinition';
 import { flattenUUID } from '../../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
+import { usedComponents } from '../../../App/usedComponents';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -86,7 +87,7 @@ function spinCalculate(
 	};
 }
 
-export function TableComponent(props: Readonly<ComponentProps>) {
+export default function TableComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition: {
 			children,
@@ -138,7 +139,6 @@ export function TableComponent(props: Readonly<ComponentProps>) {
 			gridModeActiveImage,
 		} = {},
 		stylePropertiesWithPseudoStates,
-		key,
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -146,6 +146,17 @@ export function TableComponent(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
+
+	useEffect(() => {
+		usedComponents.using('TableColumn');
+		usedComponents.using('TableColumnHeader');
+		usedComponents.using('TableColumns');
+		usedComponents.using('TableDynamicColumn');
+		usedComponents.using('TableDynamicColumns');
+		usedComponents.using('TableEmptyGrid');
+		usedComponents.using('TableGrid');
+		usedComponents.using('TablePreviewGrid');
+	}, []);
 
 	const [hovers, setHovers] = React.useState<Set<string>>(() => new Set());
 	const computedStyles = useMemo(
