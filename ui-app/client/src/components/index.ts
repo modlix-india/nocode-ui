@@ -30,9 +30,8 @@ import {
 	TableDynamicColumns,
 	TableEmptyGrid,
 	TableGrid,
+	TablePreviewGrid,
 } from './TableComponents';
-
-import TablePreviewGrid from './TableComponents/TablePreviewGrid/TablePreviewGrid';
 
 import Tabs from './Tabs/Tabs';
 import Tags from './Tags/Tags';
