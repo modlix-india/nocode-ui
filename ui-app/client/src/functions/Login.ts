@@ -19,7 +19,7 @@ const SIGNATURE = new FunctionSignature('Login')
 	.setParameters(
 		new Map([
 			Parameter.ofEntry('userName', Schema.ofString('userName')),
-			Parameter.ofEntry('password', Schema.ofString('password')),
+			Parameter.ofEntry('password', Schema.ofString('password').setDefaultValue(null)),
 			Parameter.ofEntry('userId', Schema.ofAny('userId').setDefaultValue(null)),
 			Parameter.ofEntry('otp', Schema.ofString('otp').setDefaultValue(null)),
 			Parameter.ofEntry('pin', Schema.ofString('pin').setDefaultValue(null)),
