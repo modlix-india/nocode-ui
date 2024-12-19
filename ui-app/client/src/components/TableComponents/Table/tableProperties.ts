@@ -60,7 +60,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Show Seperators in Pagination',
 		description: 'Show Seperators in  Pagination',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: false,
+		defaultValue: true,
 	},
 	{
 		name: 'showArrows',
@@ -68,7 +68,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Show Arrows for Pagination',
 		description: 'Show Arrows for Pagination',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: false,
+		defaultValue: true,
 	},
 	{
 		name: 'perPageNumbers',
