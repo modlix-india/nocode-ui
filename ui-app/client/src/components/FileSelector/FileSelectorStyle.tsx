@@ -43,7 +43,7 @@ export default function FileSelector({
 		width: 100vw;
 		height: 100vh;
 		position: fixed;
-        z-index: 6;
+        z-index: 100;
 		left: 0px;
 		top: 0px;
 	}

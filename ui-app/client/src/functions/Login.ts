@@ -21,8 +21,8 @@ const SIGNATURE = new FunctionSignature('Login')
 			Parameter.ofEntry('userName', Schema.ofString('userName')),
 			Parameter.ofEntry('password', Schema.ofString('password').setDefaultValue(null)),
 			Parameter.ofEntry('userId', Schema.ofAny('userId').setDefaultValue(null)),
-			Parameter.ofEntry('otp', Schema.ofString('otp').setDefaultValue(null)),
-			Parameter.ofEntry('pin', Schema.ofString('pin').setDefaultValue(null)),
+			Parameter.ofEntry('otp', Schema.ofString('otp').setDefaultValue('')),
+			Parameter.ofEntry('pin', Schema.ofString('pin').setDefaultValue('')),
 			Parameter.ofEntry(
 				'identifierType',
 				Schema.ofString('identifierType').setDefaultValue(''),
@@ -56,10 +56,12 @@ export class Login extends AbstractFunction {
 		const rememberMe: string = context.getArguments()?.get('rememberMe');
 		const cookie: boolean = context.getArguments()?.get('cookie');
 
-		const data: any = { userName, password, otp, pin, rememberMe, cookie };
+		const data: any = { userName, password, rememberMe, cookie };
 		if (identifierType) data.indentifierType = identifierType;
 
 		if (userId) data.userId = userId;
+		if (otp) data.otp = otp;
+		if (pin) data.pin = pin;
 
 		const headers: any = {};
 		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();

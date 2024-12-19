@@ -57,6 +57,9 @@ interface CodeEditorProps {
 	onSelectedComponentChanged: (key: string) => void;
 }
 
+let UI_FUN_REPO: UIFunctionRepository;
+let UI_SCHEMA_REPO: UISchemaRepository;
+
 export default function CodeEditor({
 	showCodeEditor,
 	onSetShowCodeEditor,
@@ -84,11 +87,15 @@ export default function CodeEditor({
 	const [editPage, setEditPage] = useState<PageDefinition>();
 	const [primedToClose, setPrimedToClose] = useState(false);
 	const [changed, setChanged] = useState(Date.now());
+
+	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
+	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
+
 	const [remoteFunctionRepository, setRemoteFunctionRepository] = useState<Repository<Function>>(
-		new HybridRepository(UIFunctionRepository, new PageDefintionFunctionsRepository(editPage)),
+		new HybridRepository(UI_FUN_REPO, new PageDefintionFunctionsRepository(editPage)),
 	);
 	const [remoteSchemaRepository, setRemoteSchemaRepository] =
-		useState<Repository<Schema>>(UISchemaRepository);
+		useState<Repository<Schema>>(UI_SCHEMA_REPO);
 
 	const eventFunctions = editPage?.eventFunctions ?? {};
 
@@ -111,7 +118,7 @@ export default function CodeEditor({
 				if (!v || !v.appCode || !v.clientCode) return;
 				setRemoteFunctionRepository(
 					new HybridRepository<Function>(
-						UIFunctionRepository,
+						UI_FUN_REPO,
 						new PageDefintionFunctionsRepository(v),
 						RemoteRepository.getRemoteFunctionRepository(
 							v.appCode,
@@ -129,7 +136,7 @@ export default function CodeEditor({
 				);
 				setRemoteSchemaRepository(
 					new HybridRepository<Schema>(
-						UISchemaRepository,
+						UI_SCHEMA_REPO,
 						RemoteRepository.getRemoteSchemaRepository(
 							v.appCode,
 							v.clientCode,
