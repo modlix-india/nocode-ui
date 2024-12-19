@@ -670,3 +670,105 @@ export const TableEmptyGrid: Component = {
 		},
 	],
 };
+
+import TableGridStyle from './TableGrid/TableGridStyle';
+
+import {
+	propertiesDefinition as tableGridPropertiesDefinintion,
+	stylePropertiesDefinition as tableGridStylePropertiesDefinition,
+} from './TableGrid/tableGridProperties';
+
+import { styleDefaults as tableGridStyleDefaults } from './TableGrid/tableGridStyleProperties';
+
+const LazyTableGridComponent = React.lazy(
+	() => import(/* webpackChunkName: "TableGrid" */ './TableGrid/TableGrid'),
+);
+
+function LoadLazyTableGridComponent(props: Readonly<ComponentProps>) {
+	return (
+		<React.Suspense fallback={<>...</>}>
+			<LazyTableGridComponent {...props} />
+		</React.Suspense>
+	);
+}
+
+export const TableGrid: Component = {
+	name: 'TableGrid',
+	displayName: 'Table Grid',
+	description: 'Table Grid component',
+	component: LoadLazyTableGridComponent,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: tableGridPropertiesDefinintion,
+	styleProperties: tableGridStylePropertiesDefinition,
+	styleComponent: TableGridStyle,
+	styleDefaults: tableGridStyleDefaults,
+	allowedChildrenType: new Map<string, number>([['', 1]]),
+	parentType: 'Table',
+	stylePseudoStates: ['hover'],
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect x="1" y="9.7998" width="5.5" height="4.4" rx="0.2" fill="currentColor" />
+					<path
+						d="M1 17.5H6.5V23H1.8C1.35817 23 1 22.6418 1 22.2V17.5Z"
+						fill="currentColor"
+					/>
+					<rect
+						x="9.80078"
+						y="9.7998"
+						width="4.4"
+						height="4.4"
+						rx="0.2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="9.80078"
+						y="17.5"
+						width="4.4"
+						height="5.5"
+						rx="0.2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="17.5"
+						y="9.7998"
+						width="5.5"
+						height="4.4"
+						rx="0.2"
+						fill="currentColor"
+					/>
+					<path
+						d="M17.5 17.5H23V22.2C23 22.6418 22.6418 23 22.2 23H17.5V17.5Z"
+						fill="currentColor"
+					/>
+					<path d="M1 6.5H6.5V1H1.8C1.35817 1 1 1.35817 1 1.8V6.5Z" fill="currentColor" />
+					<rect
+						width="4.4"
+						height="5.5"
+						rx="0.2"
+						transform="matrix(1 0 0 -1 9.80078 6.5)"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M17.5 6.5H23V1.8C23 1.35817 22.6418 1 22.2 1H17.5V6.5Z"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'eachGrid',
+			displayName: 'Each Grid',
+			description: 'Each Grid',
+			icon: 'fa-solid fa-box',
+		},
+	],
+};

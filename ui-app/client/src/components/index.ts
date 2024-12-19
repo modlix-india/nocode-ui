@@ -29,9 +29,9 @@ import {
 	TableDynamicColumn,
 	TableDynamicColumns,
 	TableEmptyGrid,
+	TableGrid,
 } from './TableComponents';
 
-import TableGrid from './TableComponents/TableGrid/TableGrid';
 import TablePreviewGrid from './TableComponents/TablePreviewGrid/TablePreviewGrid';
 
 import Tabs from './Tabs/Tabs';
