@@ -21,12 +21,19 @@ import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
 import Stepper from './Stepper/Stepper';
 import SubPage from './SubPage/SubPage';
-import { Table, TableColumn, TableColumnHeader } from './TableComponents';
-import TableColumns from './TableComponents/TableColumns/TableColumns';
-import TableDynamicColumns from './TableComponents/TableDynamicColumns/TableDynamicColumns';
-import TableEmptyGrid from './TableComponents/TableEmptyGrid/TableEmptyGrid';
+import {
+	Table,
+	TableColumn,
+	TableColumnHeader,
+	TableColumns,
+	TableDynamicColumn,
+	TableDynamicColumns,
+	TableEmptyGrid,
+} from './TableComponents';
+
 import TableGrid from './TableComponents/TableGrid/TableGrid';
 import TablePreviewGrid from './TableComponents/TablePreviewGrid/TablePreviewGrid';
+
 import Tabs from './Tabs/Tabs';
 import Tags from './Tags/Tags';
 import Text from './Text/Text';
@@ -41,7 +48,6 @@ import SectionGrid from './SectionGrid/SectionGrid';
 import PhoneNumber from './PhoneNumber/PhoneNumber';
 import SmallCarousel from './SmallCarousel/SmallCarousel';
 import Otp from './Otp/Otp';
-import TableDynamicColumn from './TableComponents/TableDynamicColumn/TableDynamicColumn';
 import Calendar from './Calendar/Calendar';
 import RangeSlider from './RangeSlider/RangeSlider';
 import Timer from './Timer/Timer';

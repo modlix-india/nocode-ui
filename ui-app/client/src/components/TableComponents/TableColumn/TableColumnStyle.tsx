@@ -5,7 +5,7 @@ import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
+import { lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
 import { styleDefaults } from './tableColumnStyleProperties';
 
 const PREFIX = '.comp.compTableColumn';
@@ -79,12 +79,5 @@ export default function TableColumnStyle({
 		)}; }
 		` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return (
-		<>
-			{styleProperties.length ? (
-				<link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} />
-			) : undefined}
-			<style id="TableColumnCss">{css}</style>
-		</>
-	);
+	return <style id="TableColumnCss">{css}</style>;
 }
