@@ -1,14 +1,28 @@
-import React from 'react';
-import { StyleResolution } from '../../../types/common';
-import { processStyleDefinition, StyleResolutionDefinition } from '../../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './tablePreviewGridStyleProperties';
+import { useEffect, useState } from 'react';
+import { usedComponents } from '../../../App/usedComponents';
+import { StylePropertyDefinition } from '../../../types/common';
+import { processStyleDefinition } from '../../../util/styleProcessor';
+import { lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
+import { styleDefaults } from './tablePreviewGridStyleProperties';
 
 const PREFIX = '.comp.compTablePreviewGrid';
+const NAME = 'TablePreviewGrid';
 export default function TablePreviewGridStyle({
 	theme,
 }: Readonly<{
 	theme: Map<string, Map<string, string>>;
 }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const css =
 		`
 		${PREFIX} ._anchorGrid,

@@ -6,7 +6,8 @@ export function lazyStylePropertyLoadFunction(
 	setStyleProperties: (styleProperties: Array<StylePropertyDefinition>) => void,
 	styleDefaults: Map<string, string>,
 ) {
-	return () =>
+	return () => {
+		if (styleDefaults.size > 0) return;
 		axios.get(lazyStylePropURL(name)).then((res: any) => {
 			if (!Array.isArray(res.data)) {
 				console.error('Unable to load style properties for component : ', name);
@@ -21,6 +22,7 @@ export function lazyStylePropertyLoadFunction(
 					styleDefaults.set(name, defaultValue),
 				);
 		});
+	};
 }
 
 export function lazyStylePropURL(name: string) {

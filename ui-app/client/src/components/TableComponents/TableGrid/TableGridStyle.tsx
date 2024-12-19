@@ -1,11 +1,26 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
+import { usedComponents } from '../../../App/usedComponents';
+import { StylePropertyDefinition } from '../../../types/common';
 import { processStyleDefinition } from '../../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './tableGridStyleProperties';
+import { lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
+import { styleDefaults } from './tableGridStyleProperties';
 
 const PREFIX = '.comp.compTableGrid';
+const NAME = 'TableGrid';
 export default function TableGridStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const css =
 		`
 	${PREFIX}{

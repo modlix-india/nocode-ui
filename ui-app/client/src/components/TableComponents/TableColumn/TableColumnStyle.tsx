@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { usedComponents } from '../../../App/usedComponents';
 import { StylePropertyDefinition, StyleResolution } from '../../../types/common';
 import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
+import { lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
 import { styleDefaults } from './tableColumnStyleProperties';
-import { usedComponents } from '../../../App/usedComponents';
-import { styleProperties } from '../TableColumnHeader/tableColumnHeaderStyleProperties';
-import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compTableColumn';
 const NAME = 'TableColumn';
@@ -80,12 +79,5 @@ export default function TableColumnStyle({
 		)}; }
 		` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return (
-		<>
-			{styleProperties.length ? (
-				<link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} />
-			) : undefined}
-			<style id="TableColumnCss">{css}</style>
-		</>
-	);
+	return <style id="TableColumnCss">{css}</style>;
 }
