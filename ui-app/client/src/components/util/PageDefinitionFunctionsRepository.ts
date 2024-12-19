@@ -2,7 +2,7 @@ import { Function, FunctionDefinition, KIRuntime, Repository } from '@fincity/ki
 import { PageDefinition } from '../../types/common';
 
 export default class PageDefintionFunctionsRepository implements Repository<Function> {
-	private pageDefinition: PageDefinition | undefined;
+	private readonly pageDefinition: PageDefinition | undefined;
 
 	constructor(pageDefinition?: PageDefinition) {
 		this.pageDefinition = pageDefinition;

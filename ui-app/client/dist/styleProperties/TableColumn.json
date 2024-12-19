@@ -1,0 +1,463 @@
+[
+	{
+		"gn": "Column Padding",
+		"dn": "Design 1 Column Padding",
+		"n": "design1ColumnPadding",
+		"dv": "5px",
+		"de": "Design 1 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 2 Column Padding",
+		"n": "design2ColumnPadding",
+		"dv": "5px",
+		"de": "Design 2 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 3 Column Padding",
+		"n": "design3ColumnPadding",
+		"dv": "5px",
+		"de": "Design 3 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 4 Column Padding",
+		"n": "design4ColumnPadding",
+		"dv": "5px",
+		"de": "Design 4 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 5 Column Padding",
+		"n": "design5ColumnPadding",
+		"dv": "5px",
+		"de": "Design 5 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 6 Column Padding",
+		"n": "design6ColumnPadding",
+		"dv": "0px",
+		"de": "Design 6 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 7 Column Padding",
+		"n": "design7ColumnPadding",
+		"dv": "5px",
+		"de": "Design 7 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 8 Column Padding",
+		"n": "design8ColumnPadding",
+		"dv": "0px",
+		"de": "Design 8 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 9 Column Padding",
+		"n": "design9ColumnPadding",
+		"dv": "5px",
+		"de": "Design 9 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+	{
+		"gn": "Column Padding",
+		"dn": "Design 10 Column Padding",
+		"n": "design10ColumnPadding",
+		"dv": "0px",
+		"de": "Design 10 Column Padding",
+		"cp": "padding",
+		"np": true
+	},
+
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 1 Column Border Bottom",
+		"n": "design1ColumnBorderBottom",
+		"de": "Design 1 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design1 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 2 Column Border Bottom",
+		"n": "design2ColumnBorderBottom",
+		"de": "Design 2 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design2 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 3 Column Border Bottom",
+		"n": "design3ColumnBorderBottom",
+		"dv": "1px solid #E5E7EB",
+		"de": "Design 3 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design3 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 4 Column Border Bottom",
+		"n": "design4ColumnBorderBottom",
+		"dv": "1px solid #3333330D",
+		"de": "Design 4 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design4 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 5 Column Border Bottom",
+		"n": "design5ColumnBorderBottom",
+		"de": "Design 5 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design5 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 6 Column Border Bottom",
+		"n": "design6ColumnBorderBottom",
+		"dv": "1px solid #3333330D",
+		"de": "Design 6 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design6 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 7 Column Border Bottom",
+		"n": "design7ColumnBorderBottom",
+		"dv": "1px solid #DBDBDB",
+		"de": "Design 7 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design7 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 8 Column Border Bottom",
+		"n": "design8ColumnBorderBottom",
+		"dv": "1px solid #DBDBDB",
+		"de": "Design 8 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design8 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 9 Column Border Bottom",
+		"n": "design9ColumnBorderBottom",
+		"de": "Design 9 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design9 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Bottom",
+		"dn": "Design 10 Column Border Bottom",
+		"n": "design10ColumnBorderBottom",
+		"de": "Design 10 Column Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"np": true
+	},
+
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 1 Column Border Top",
+		"n": "design1ColumnBorderTop",
+		"de": "Design 1 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design1 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 2 Column Border Top",
+		"n": "design2ColumnBorderTop",
+		"de": "Design 2 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design2 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 3 Column Border Top",
+		"n": "design3ColumnBorderTop",
+		"de": "Design 3 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design3 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 4 Column Border Top",
+		"n": "design4ColumnBorderTop",
+		"de": "Design 4 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design4 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 5 Column Border Top",
+		"n": "design5ColumnBorderTop",
+		"de": "Design 5 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design5 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 6 Column Border Top",
+		"n": "design6ColumnBorderTop",
+		"de": "Design 6 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design6 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 7 Column Border Top",
+		"n": "design7ColumnBorderTop",
+		"de": "Design 7 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design7 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 8 Column Border Top",
+		"n": "design8ColumnBorderTop",
+		"de": "Design 8 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design8 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 9 Column Border Top",
+		"n": "design9ColumnBorderTop",
+		"de": "Design 9 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design9 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 10 Column Border Top",
+		"n": "design10ColumnBorderTop",
+		"de": "Design 10 Column Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"np": true
+	},
+
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 1 Column Border Right",
+		"n": "design1ColumnBorderRight",
+		"de": "Design 1 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design1 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 2 Column Border Right",
+		"n": "design2ColumnBorderRight",
+		"de": "Design 2 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design2 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 3 Column Border Right",
+		"n": "design3ColumnBorderRight",
+		"de": "Design 3 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design3 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 4 Column Border Right",
+		"n": "design4ColumnBorderRight",
+		"de": "Design 4 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design4 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 5 Column Border Right",
+		"n": "design5ColumnBorderRight",
+		"de": "Design 5 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design5 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 6 Column Border Right",
+		"n": "design6ColumnBorderRight",
+		"de": "Design 6 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design6 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 7 Column Border Right",
+		"n": "design7ColumnBorderRight",
+		"dv": "1px solid #DBDBDB",
+		"de": "Design 7 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design7 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 8 Column Border Right",
+		"n": "design8ColumnBorderRight",
+		"dv": "1px solid #DBDBDB",
+		"de": "Design 8 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design8 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 9 Column Border Right",
+		"n": "design9ColumnBorderRight",
+		"de": "Design 9 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design9 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Right",
+		"dn": "Design 10 Column Border Right",
+		"n": "design10ColumnBorderRight",
+		"de": "Design 10 Column Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"np": true
+	},
+
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 1 Column Border Left",
+		"n": "design1ColumnBorderLeft",
+		"de": "Design 1 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design1 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 2 Column Border Left",
+		"n": "design2ColumnBorderLeft",
+		"de": "Design 2 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design2 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 3 Column Border Left",
+		"n": "design3ColumnBorderLeft",
+		"de": "Design 3 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design3 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 4 Column Border Left",
+		"n": "design4ColumnBorderLeft",
+		"de": "Design 4 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design4 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 5 Column Border Left",
+		"n": "design5ColumnBorderLeft",
+		"de": "Design 5 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design5 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 6 Column Border Left",
+		"n": "design6ColumnBorderLeft",
+		"de": "Design 6 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design6 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 7 Column Border Left",
+		"n": "design7ColumnBorderLeft",
+		"de": "Design 7 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design7 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 8 Column Border Left",
+		"n": "design8ColumnBorderLeft",
+		"de": "Design 8 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design8 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 9 Column Border Left",
+		"n": "design9ColumnBorderLeft",
+		"de": "Design 9 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design9 .comp.compTableColumn",
+		"np": true
+	},
+	{
+		"gn": "Column Border Top",
+		"dn": "Design 10 Column Border Left",
+		"n": "design10ColumnBorderLeft",
+		"de": "Design 10 Column Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"np": true
+	}
+]

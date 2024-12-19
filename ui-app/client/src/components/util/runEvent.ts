@@ -4,7 +4,6 @@ import {
 	HybridRepository,
 	KIRuntime,
 	LinkedList,
-	ParameterReferenceType,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
 import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
@@ -12,19 +11,18 @@ import { GLOBAL_CONTEXT_NAME } from '../../constants';
 import { ParentExtractorForRunEvent } from '../../context/ParentExtractor';
 import {
 	PageStoreExtractor,
-	getDataFromLocation,
 	getDataFromPath,
 	localStoreExtractor,
 	setData,
 	storeExtractor,
 	themeExtractor,
 } from '../../context/StoreContext';
+import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory, PageDefinition } from '../../types/common';
 import PageDefintionFunctionsRepository from './PageDefinitionFunctionsRepository';
 import UUID, { flattenUUID } from './uuid';
-import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 
 function addValidationTriggers(
 	flatId: string,
@@ -40,6 +38,9 @@ function addValidationTriggers(
 	return suffixes;
 }
 
+let UI_FUN_REPO: UIFunctionRepository;
+let UI_SCHEMA_REPO: UISchemaRepository;
+
 export const runEvent = async (
 	functionDefinition: any,
 	key: string = UUID(),
@@ -48,6 +49,10 @@ export const runEvent = async (
 	pageDefinition?: PageDefinition,
 	args?: Map<string, any>,
 ) => {
+	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
+
+	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
+
 	window.lastInteracted = Date.now();
 	const isRunningPath = `Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`;
 	try {
@@ -111,7 +116,7 @@ export const runEvent = async (
 		const runtime = new KIRuntime(def, isDesignMode || isDebugMode);
 		const fep = new FunctionExecutionParameters(
 			new HybridRepository(
-				UIFunctionRepository,
+				UI_FUN_REPO,
 				new PageDefintionFunctionsRepository(pageDefinition),
 				RemoteRepository.getRemoteFunctionRepository(
 					undefined,
@@ -127,7 +132,7 @@ export const runEvent = async (
 				),
 			),
 			new HybridRepository(
-				UISchemaRepository,
+				UI_SCHEMA_REPO,
 				RemoteRepository.getRemoteSchemaRepository(
 					undefined,
 					undefined,
@@ -150,11 +155,11 @@ export const runEvent = async (
 		setData(isRunningPath, true);
 		const x = await runtime.execute(fep);
 		setData(isRunningPath, false);
-		return new Promise(resolve => resolve(x));
+		return Promise.resolve(x);
 	} catch (error: any) {
 		setData(isRunningPath, false);
 		addMessage(MESSAGE_TYPE.ERROR, error, true, page);
 		console.error(error);
-		return new Promise(resolve => resolve(error));
+		return Promise.resolve(error);
 	}
 };
