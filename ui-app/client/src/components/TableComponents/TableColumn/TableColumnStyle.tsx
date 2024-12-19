@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { usedComponents } from '../../../App/usedComponents';
 import { StylePropertyDefinition, StyleResolution } from '../../../types/common';
 import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { styleDefaults } from './tableColumnStyleProperties';
-import { usedComponents } from '../../../App/usedComponents';
-import { styleProperties } from '../TableColumnHeader/tableColumnHeaderStyleProperties';
 import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
+import { styleDefaults } from './tableColumnStyleProperties';
 
 const PREFIX = '.comp.compTableColumn';
 const NAME = 'TableColumn';

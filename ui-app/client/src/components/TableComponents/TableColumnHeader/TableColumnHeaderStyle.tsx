@@ -1,15 +1,29 @@
-import React from 'react';
-import { StyleResolution } from '../../../types/common';
+import React, { useEffect, useState } from 'react';
+import { StylePropertyDefinition, StyleResolution } from '../../../types/common';
 import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './tableColumnHeaderStyleProperties';
+import { styleDefaults } from './tableColumnHeaderStyleProperties';
+import { usedComponents } from '../../../App/usedComponents';
+import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compTableHeaderColumn';
+const NAME = 'TableColumnHeader';
 export default function TableColumnStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`${PREFIX} { display: table-cell; vertical-align: middle; text-align:center}
@@ -22,7 +36,6 @@ export default function TableColumnStyle({
 			padding-right: 10px;
 		}
 
-		
 		.comp.compTable._design1 ${PREFIX} { padding: ${processStyleValueWithFunction(
 			values.get('design1HeaderPadding'),
 			values,
@@ -75,5 +88,12 @@ export default function TableColumnStyle({
 
 		` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return <style id="TableHeaderColumnCss">{css}</style>;
+	return (
+		<>
+			{styleProperties.length ? (
+				<link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} />
+			) : undefined}
+			<style id="TableHeaderColumnCss">{css}</style>
+		</>
+	);
 }

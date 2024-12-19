@@ -1,15 +1,12 @@
-import React from 'react';
 import { PageStoreExtractor } from '../../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../../types/common';
+import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnHeaderProperties';
-import TableColumnHeaderStyle from './TableColumnHeaderStyle';
-import { styleDefaults } from './tableColumnHeaderStyleProperties';
-import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 
-function TableColumnHeaderComponent(props: Readonly<ComponentProps>) {
+export default function TableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition: { children },
 		locationHistory = [],
@@ -61,27 +58,3 @@ function TableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
-
-const component: Component = {
-	name: 'TableColumnHeader',
-	displayName: 'Table Header',
-	description: 'Table Header component',
-	component: TableColumnHeaderComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
-	styleProperties: stylePropertiesDefinition,
-	properties: propertiesDefinition,
-	styleComponent: TableColumnHeaderStyle,
-	styleDefaults: styleDefaults,
-	isHidden: true,
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: 'fa-solid fa-diagram-next',
-		},
-	],
-};
-
-export default component;

@@ -304,3 +304,44 @@ export const TableColumn: Component = {
 		},
 	],
 };
+
+import TableColumnHeaderStyle from './TableColumnHeader/TableColumnHeaderStyle';
+import {
+	propertiesDefinition as tableColumnHeaderPropertiesDefinintion,
+	stylePropertiesDefinition as tableColumnHeaderStylePropertiesDefinition,
+} from './TableColumnHeader/tableCloumnHeaderProperties';
+import { styleDefaults as tableColumnHeaderStyleDefaults } from './TableColumnHeader/tableColumnHeaderStyleProperties';
+
+const LazyTableColumnHeaderComponent = React.lazy(
+	() => import(/* webpackChunkName: "TableColumn" */ './TableColumnHeader/TableColumnHeader'),
+);
+
+function LoadLazyTableColumnHeaderComponent(props: Readonly<ComponentProps>) {
+	return (
+		<React.Suspense fallback={<>...</>}>
+			<LazyTableColumnHeaderComponent {...props} />
+		</React.Suspense>
+	);
+}
+
+export const TableColumnHeader: Component = {
+	name: 'TableColumnHeader',
+	displayName: 'Table Header',
+	description: 'Table Header component',
+	component: LoadLazyTableColumnHeaderComponent,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	styleProperties: tableColumnHeaderStylePropertiesDefinition,
+	properties: tableColumnHeaderPropertiesDefinintion,
+	styleComponent: TableColumnHeaderStyle,
+	styleDefaults: tableColumnHeaderStyleDefaults,
+	isHidden: true,
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: 'fa-solid fa-diagram-next',
+		},
+	],
+};
