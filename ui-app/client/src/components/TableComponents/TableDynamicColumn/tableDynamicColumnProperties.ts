@@ -1,6 +1,5 @@
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import { ComponentPropertyGroup, ComponentPropertyDefinition } from '../../../types/common';
-import * as tableColumnsProperties from '../TableColumns/tableColumnsProperties';
 import { COMMON_COMPONENT_PROPERTIES } from '../../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -40,6 +39,4 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
-const stylePropertiesDefinition = tableColumnsProperties.stylePropertiesDefinition;
-
-export { propertiesDefinition, stylePropertiesDefinition };
+export { propertiesDefinition };
