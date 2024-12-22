@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
-import { STORE_PATH_FUNCTION_EXECUTION } from '../../../constants';
+import { STORE_PATH_FUNCTION_EXECUTION, STORE_PREFIX } from '../../../constants';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -94,6 +94,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			bindingPath3,
 			bindingPath4,
 			bindingPath5,
+			bindingPath6,
+			bindingPath7,
 		},
 		pageDefinition,
 		locationHistory = [],
@@ -135,6 +137,9 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			gridModeImage,
 			columnsModeActiveImage,
 			gridModeActiveImage,
+			enablePersonalization,
+			onSort,
+			multiSort,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -199,6 +204,14 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 	const tableModeBindingPath =
 		bindingPath5 && getPathFromLocation(bindingPath5, locationHistory, pageExtractor);
+
+	const sortBindingPath =
+		bindingPath6 && getPathFromLocation(bindingPath6, locationHistory, pageExtractor);
+
+	const personalizationBindingPath = enablePersonalization
+		? ((bindingPath7 && getPathFromLocation(bindingPath7, locationHistory, pageExtractor)) ??
+			`${STORE_PREFIX}.personalization.${context.pageName}.${uniqueKey}`)
+		: undefined;
 
 	const [data, setData] = useState<any>();
 
@@ -1025,6 +1038,11 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							uniqueKey,
 							onSelect,
 							firstchildKey,
+							onSort,
+							enablePersonalization,
+							personalizationBindingPath,
+							sortBindingPath,
+							multiSort,
 						},
 					}}
 					locationHistory={locationHistory}

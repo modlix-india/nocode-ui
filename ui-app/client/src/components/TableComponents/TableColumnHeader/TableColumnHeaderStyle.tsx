@@ -28,60 +28,71 @@ export default function TableColumnStyle({
 	const css =
 		`${PREFIX} { display: table-cell; vertical-align: middle; text-align:center}
 
+		${PREFIX} ._headerContainer {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+		}
+
 		${PREFIX} ._rightIcon {
-			padding-left: 10px;
+			position: relative;			
+			padding-left: 5px;
+			padding-right: 5px;
 		}
 
 		${PREFIX} ._leftIcon {
-			padding-right: 10px;
+			position: relative;
+			padding-left: 5px;
+			padding-right: 5px;
 		}
 
-		.comp.compTable._design1 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design1 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design1HeaderPadding'),
 			values,
 		)}; }
 		
-		.comp.compTable._design3 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design3 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design3HeaderPadding'),
 			values,
 		)}; }
 
-		.comp.compTable._design5 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design5 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design5HeaderPadding'),
 			values,
 		)}; }
 
-		.comp.compTable._design7 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design7 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design7HeaderPadding'),
 			values,
 		)}; }
 
-		.comp.compTable._design9 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design9 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design9HeaderPadding'),
 			values,
 		)}; }
 
-		.comp.compTable._design2 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design2 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design2HeaderPadding'),
 			values,
 		)}; }
 		
-		.comp.compTable._design4 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design4 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design4HeaderPadding'),
 			values,
 		)}; }
 
-		.comp.compTable._design6 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design6 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design6HeaderPadding'),
 			values,
 		)}; }
 
-		.comp.compTable._design8 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design8 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design8HeaderPadding'),
 			values,
 		)}; }
 
-		.comp.compTable._design10 ${PREFIX} { padding: ${processStyleValueWithFunction(
+		.comp.compTable._design10 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
 			values.get('design10HeaderPadding'),
 			values,
 		)}; }

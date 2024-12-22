@@ -1,7 +1,15 @@
-import { deepEqual, duplicate, ExpressionEvaluator } from '@fincity/kirun-js';
+import { deepEqual, duplicate, ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
 import { useEffect, useMemo, useState } from 'react';
 import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
-import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
+import {
+	addListener,
+	fillerExtractor,
+	getDataFromPath,
+	localStoreExtractor,
+	PageStoreExtractor,
+	setData,
+	storeExtractor,
+} from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
 	ComponentProps,
@@ -18,6 +26,10 @@ import { runEvent } from '../../util/runEvent';
 import { updateLocationForChild } from '../../util/updateLoactionForChild';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableColumnsProperties';
+import { ParentExtractor } from '../../../context/ParentExtractor';
+import { propertiesDefinition as tableDynamicColumnPropertiesDefinition } from '../TableDynamicColumn/tableDynamicColumnProperties';
+import { createNewState } from '../../util/useDefinition/commons';
+import { getPathsFromComponentDefinition } from '../../util/getPaths';
 
 function fieldToName(field: string): string {
 	return field
@@ -50,10 +62,27 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			pageExtractor,
 		);
 
-	const { headerDef, columnDef } = useMemo(
-		() => generateTableColumnDefinitions(pageDefinition, children, context),
-		[pageDefinition],
-	);
+	const [pathsUpdatedAt, setPathsUpdatedAt] = useState(Date.now());
+
+	const { headerDef, columnDef, listenPaths } = useMemo(() => {
+		let { dynamicColumns, columnsPageDefinition, listenPaths } =
+			resolvePropertiesOfDynamicColumns(pageDefinition, pageExtractor, locationHistory);
+
+		return {
+			...generateTableColumnDefinitions(
+				dynamicColumns,
+				columnsPageDefinition,
+				children,
+				context,
+			),
+			listenPaths,
+		};
+	}, [pageDefinition, pathsUpdatedAt]);
+
+	useEffect(() => {
+		if (!listenPaths.length) return;
+		addListener(() => setPathsUpdatedAt(Date.now()), pageExtractor, ...listenPaths);
+	}, [setPathsUpdatedAt, pageExtractor, listenPaths]);
 
 	const emptyRowPageDef = useMemo(() => {
 		if (!showEmptyRows) return pageDefinition;
@@ -239,6 +268,68 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
+function resolvePropertiesOfDynamicColumns(
+	pageDefinition: PageDefinition,
+	pageExtractor: PageStoreExtractor,
+	locationHistory: LocationHistory[],
+) {
+	let dynamicColumns = Object.values(pageDefinition.componentDefinition).filter(
+		cd => cd?.type === 'TableDynamicColumn',
+	);
+	const listenPaths = new Array<string>();
+
+	let columnsPageDefinition = pageDefinition;
+	if (dynamicColumns.length > 0) {
+		columnsPageDefinition = duplicate(pageDefinition);
+		dynamicColumns = Object.values(columnsPageDefinition.componentDefinition).filter(
+			cd => cd?.type === 'TableDynamicColumn',
+		);
+
+		const evaluatorMaps = new Map<string, TokenValueExtractor>([
+			[storeExtractor.getPrefix(), storeExtractor],
+			[fillerExtractor.getPrefix(), fillerExtractor],
+			[localStoreExtractor.getPrefix(), localStoreExtractor],
+		]);
+		let tokenExtractors: TokenValueExtractor[] = [];
+
+		if (pageExtractor) {
+			evaluatorMaps.set(pageExtractor.getPrefix(), pageExtractor);
+			tokenExtractors.push(pageExtractor);
+		}
+
+		let parentExtractor: ParentExtractor | undefined;
+
+		if (locationHistory.length) {
+			parentExtractor = new ParentExtractor(locationHistory);
+			evaluatorMaps.set(parentExtractor.getPrefix(), parentExtractor);
+			tokenExtractors.push(parentExtractor);
+		}
+
+		const propDefMap = tableDynamicColumnPropertiesDefinition.reduce((a: any, c) => {
+			a[c.name] = c;
+			return a;
+		}, {});
+
+		for (let dynamicColumn of dynamicColumns) {
+			const paths = getPathsFromComponentDefinition(dynamicColumn, evaluatorMaps, propDefMap);
+			if (!paths.length || !dynamicColumn.properties) continue;
+
+			listenPaths.push(...paths);
+			const properties = createNewState(
+				dynamicColumn,
+				tableDynamicColumnPropertiesDefinition,
+				{},
+				locationHistory,
+				tokenExtractors,
+			);
+			Object.entries(properties).forEach(
+				([key, value]) => (dynamicColumn.properties![key] = { value }),
+			);
+		}
+	}
+	return { dynamicColumns, columnsPageDefinition, listenPaths };
+}
+
 function generateRows(properties: {
 	value: never[];
 	from: any;
@@ -351,15 +442,12 @@ function generateRows(properties: {
 }
 
 function generateTableColumnDefinitions(
+	dynamicColumns: ComponentDefinition[],
 	pageDefinition: PageDefinition,
 	children: { [key: string]: boolean } | undefined,
 	context: RenderContext,
 ) {
-	const dynamicColumns = Object.values(pageDefinition.componentDefinition).filter(
-		cd => cd?.type === 'TableDynamicColumn',
-	);
-
-	const cp = duplicate(pageDefinition);
+	let cp = pageDefinition;
 	if (dynamicColumns.length > 0) {
 		generateDynamicColumns(dynamicColumns, context, cp, children);
 		const displayOrderMap = new Map();
@@ -487,6 +575,11 @@ function generateDynamicColumns(
 						: Number.MAX_SAFE_INTEGER)),
 		);
 
+		const sortColumns = dynamicColumn?.properties?.sortColumns;
+		let sortColumnsArray = [];
+		if (sortColumns)
+			sortColumnsArray = Object.values(sortColumns).map(col => col.property.value);
+
 		for (let i = 0; i < columns.length; i++) {
 			const eachField = columns[i];
 
@@ -514,6 +607,16 @@ function generateDynamicColumns(
 				},
 				children: { [eachRenderer.key]: true },
 			};
+
+			if (
+				dynamicColumn?.properties?.enableSorting?.value &&
+				(!sortColumnsArray.length || sortColumnsArray.includes(eachField)) &&
+				context.table.onSort
+			) {
+				eachChild.properties!.sortKey = {
+					value: eachField,
+				};
+			}
 
 			cp.componentDefinition[eachRenderer.key] = eachRenderer;
 			cp.componentDefinition[eachChild.key] = eachChild;

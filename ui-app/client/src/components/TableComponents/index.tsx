@@ -15,7 +15,7 @@ const LazyTableComponent = React.lazy(
 
 function LoadLazyTableComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableComponent {...props} />
 		</React.Suspense>
 	);
@@ -45,6 +45,8 @@ export const Table: Component = {
 		bindingPath3: { name: 'Page Number Binding' },
 		bindingPath4: { name: 'Page Size Binding' },
 		bindingPath5: { name: 'Table Display Mode Binding' },
+		bindingPath6: { name: 'Sort Binding' },
+		bindingPath7: { name: 'Personalization Binding' },
 	},
 	subComponentDefinition: [
 		{
@@ -203,7 +205,7 @@ const LazyTableColumnComponent = React.lazy(
 
 function LoadLazyTableColumnComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableColumnComponent {...props} />
 		</React.Suspense>
 	);
@@ -292,14 +294,38 @@ export const TableColumn: Component = {
 		},
 		{
 			name: 'leftIcon',
-			displayName: 'left Icon',
-			description: 'left icon',
+			displayName: 'Left Icon',
+			description: 'Left icon',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'rightIcon',
-			displayName: 'right Icon',
-			description: 'right icon',
+			displayName: 'Right Icon',
+			description: 'Right icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'headerContainer',
+			displayName: 'Header Container',
+			description: 'Header Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortAscendingIcon',
+			displayName: 'Sort Ascending Icon',
+			description: 'Sort Ascending Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortDescendingIcon',
+			displayName: 'Sort Descending Icon',
+			description: 'Sort Descending Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortNoneIcon',
+			displayName: 'Sort None Icon',
+			description: 'Sort None Icon',
 			icon: 'fa-solid fa-box',
 		},
 	],
@@ -319,7 +345,7 @@ const LazyTableColumnHeaderComponent = React.lazy(
 
 function LoadLazyTableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableColumnHeaderComponent {...props} />
 		</React.Suspense>
 	);
@@ -362,7 +388,7 @@ const LazyTableColumnsComponent = React.lazy(
 
 function LoadLazyTableColumnsComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableColumnsComponent {...props} />
 		</React.Suspense>
 	);
@@ -478,6 +504,24 @@ export const TableDynamicColumn: Component = {
 			description: 'Header',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'sortAscendingIcon',
+			displayName: 'Sort Ascending Icon',
+			description: 'Sort Ascending Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortDescendingIcon',
+			displayName: 'Sort Descending Icon',
+			description: 'Sort Descending Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortNoneIcon',
+			displayName: 'Sort None Icon',
+			description: 'Sort None Icon',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 
@@ -495,7 +539,7 @@ const LazyTableEmptyGridComponent = React.lazy(
 
 function LoadLazyTableEmptyGridComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableEmptyGridComponent {...props} />
 		</React.Suspense>
 	);
@@ -602,7 +646,7 @@ const LazyTableGridComponent = React.lazy(
 
 function LoadLazyTableGridComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableGridComponent {...props} />
 		</React.Suspense>
 	);
@@ -704,7 +748,7 @@ const LazyTablePreviewGridComponent = React.lazy(
 
 function LoadLazyTablePreviewGridComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTablePreviewGridComponent {...props} />
 		</React.Suspense>
 	);

@@ -30,6 +30,48 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'sortKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sort Key',
+		description: 'Key to be used for sorting.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'initialSortOrder',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Initial Sort Order',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'ASC',
+		enumValues: [
+			{ name: 'ASC', displayName: 'Ascending' },
+			{ name: 'DESC', displayName: 'Descending' },
+		],
+	},
+	{
+		name: 'sortAscendingIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sort Ascending Icon',
+		description: 'Icon to be shown when sorting in ascending order.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'sortDescendingIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sort Descending Icon',
+		description: 'Icon to be shown when sorting in descending order.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'sortNoneIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sort None Icon',
+		description: 'Icon to be shown when sorting is not applied.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
