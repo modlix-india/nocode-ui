@@ -18,6 +18,7 @@ import useDefinition from '../../util/useDefinition';
 import { flattenUUID } from '../../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
 import { usedComponents } from '../../../App/usedComponents';
+import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -495,6 +496,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'gridModeIcon',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="modesContainer"
+							/>
 							<div
 								className={`_columns _pointer ${
 									mode === 'COLUMNS' ? '_selected' : ''
@@ -531,6 +536,14 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 										: 'columnsModeIcon',
 								)}
 							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName={
+										mode === 'COLUMNS'
+											? 'selectedColumnsModeIcon'
+											: 'columnsModeIcon'
+									}
+								/>
 								{columnsMode}
 							</div>
 							<div
@@ -559,6 +572,12 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 									mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon',
 								)}
 							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName={
+										mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon'
+									}
+								/>
 								{gridMode}
 							</div>
 						</div>
@@ -600,6 +619,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'perPageLabel',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="perPageLabel"
+							/>
 							{perPageLabel}
 						</span>
 						<select
@@ -683,6 +706,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'pageSelectionLabel',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="pageSelectionLabel"
+							/>
 							Page
 						</span>
 						<select
@@ -751,6 +778,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'pageSelectionLabel',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="pageSelectionLabel"
+							/>
 							of {totalPages}
 						</span>
 					</>
@@ -814,6 +845,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'previousText',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="previousText"
+							/>
 							{leftArrowLabel}
 						</span>
 					</div>
@@ -858,6 +893,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextText')}
 							onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'nextText')}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="nextText"
+							/>
 							{rightArrowLabel}
 						</span>
 						{showArrows && (
@@ -894,7 +933,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 									</div>,
 								);
 							}
-
+							const styleObjectName =
+								e === currentPage + 1 ? 'selectedPageNumber' : 'pageNumbers';
 							arr.push(
 								<div
 									key={`${numbers[i]}_pagenumber`}
@@ -904,11 +944,9 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 											: '_clickable _pointer _pageNumber'
 									}
 									style={getStyleObject(
-										e === currentPage + 1
-											? 'selectedPageNumber'
-											: 'pageNumbers',
+										styleObjectName,
 										hovers.has(`${numbers[i]}_pagenumber`)
-											? new Set(['pageNumbers'])
+											? new Set([styleObjectName])
 											: new Set(),
 									)}
 									onMouseEnter={addToToggleSetCurry(
@@ -950,6 +988,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 										}
 									}}
 								>
+									<SubHelperComponent
+										definition={definition}
+										subComponentName={styleObjectName}
+									/>
 									{e}
 								</div>,
 							);
