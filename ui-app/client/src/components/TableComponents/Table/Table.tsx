@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../../constants';
 import {
 	addListenerAndCallImmediately,
@@ -10,10 +10,7 @@ import {
 } from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
-import {
-	addToToggleSetCurry,
-	removeFromToggleSetCurry,
-} from '../../Calendar/components/calendarFunctions';
+
 import Children from '../../Children';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import { runEvent } from '../../util/runEvent';
@@ -424,7 +421,16 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					)}
 				></i>
 			) : (
-				<svg width="19" height="18" viewBox="0 0 19 18" fill="none">
+				<svg
+					width="19"
+					height="18"
+					viewBox="0 0 19 18"
+					fill="none"
+					style={getStyleObject(
+						mode === 'COLUMNS' ? 'selectedColumnsModeIcon' : 'columnsModeIcon',
+						hovers,
+					)}
+				>
 					<path
 						d="M0 2C0 0.89543 0.895431 0 2 0H5V18H2C0.89543 18 0 17.1046 0 16V2Z"
 						fill="currentColor"
@@ -454,7 +460,16 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					)}
 				></i>
 			) : (
-				<svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+				<svg
+					width="18"
+					height="18"
+					viewBox="0 0 18 18"
+					fill="none"
+					style={getStyleObject(
+						mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon',
+						hovers,
+					)}
+				>
 					<rect width="8" height="8" rx="1" fill="currentColor" />
 					<rect y="10" width="8" height="8" rx="1" fill="currentColor" />
 					<rect x="10" width="8" height="8" rx="1" fill="currentColor" />
@@ -474,12 +489,22 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								hovers,
 								setHovers,
 								'modesContainer',
+								'selectedColumnsModeIcon',
+								'columnsModeIcon',
+								'selectedGridModeIcon',
+								'gridModeIcon',
 							)}
 						>
 							<div
 								className={`_columns _pointer ${
 									mode === 'COLUMNS' ? '_selected' : ''
 								}`}
+								style={getStyleObject(
+									mode === 'COLUMNS'
+										? 'selectedColumnsModeIcon'
+										: 'columnsModeIcon',
+									hovers,
+								)}
 								onClick={() => {
 									if (tableModeBindingPath) {
 										setStoreData(
@@ -510,6 +535,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							</div>
 							<div
 								className={`_grid _pointer ${mode === 'GRID' ? '_selected' : ''}`}
+								style={getStyleObject(
+									mode === 'COLUMNS' ? 'selectedGridModeIcon' : 'gridModeIcon',
+									hovers,
+								)}
 								onClick={() => {
 									if (tableModeBindingPath)
 										setStoreData(
@@ -1005,4 +1034,28 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			{spinner}
 		</div>
 	);
+}
+
+export function addToToggleSetCurry(
+	set: Set<string>,
+	setStateFunction: Dispatch<SetStateAction<Set<string>>>,
+	key: string,
+) {
+	return () => {
+		if (set.has(key)) return;
+		setStateFunction(new Set([...Array.from(set), key]));
+	};
+}
+
+export function removeFromToggleSetCurry(
+	set: Set<string>,
+	setStateFunction: Dispatch<SetStateAction<Set<string>>>,
+	...key: string[]
+) {
+	return () => {
+		if (!key.find(e => set.has(e))) return;
+		const newSet = new Set([...Array.from(set)]);
+		key.forEach(e => newSet.delete(e));
+		setStateFunction(newSet);
+	};
 }
