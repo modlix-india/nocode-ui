@@ -1,15 +1,29 @@
-import React from 'react';
-import { StyleResolution } from '../../../types/common';
+import { useEffect, useState } from 'react';
+import { usedComponents } from '../../../App/usedComponents';
+import { StylePropertyDefinition, StyleResolution } from '../../../types/common';
 import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './tableColumnsStyleProperties';
+import { lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
+import { styleDefaults } from './tableColumnsStyleProperties';
 
 const PREFIX = '.comp.compTableColumns';
+const NAME = 'TableColumns';
 export default function TableColumnsStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`${PREFIX} { display: table; flex-direction: column; flex: 1; }
@@ -199,8 +213,8 @@ export default function TableColumnsStyle({
 			)};
 		}
 
-
-
+		.comp.compTableDynamicColumns { display: table; flex-direction: column; flex: 1; }
+		.comp.compTableDynamicColumns ._row { display: table-row; }
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnsCss">{css}</style>;

@@ -42,6 +42,4 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	...tableColumnsProperties.propertiesDefinition,
 ];
 
-const stylePropertiesDefinition = tableColumnsProperties.stylePropertiesDefinition;
-
-export { propertiesDefinition, stylePropertiesDefinition };
+export { propertiesDefinition };
