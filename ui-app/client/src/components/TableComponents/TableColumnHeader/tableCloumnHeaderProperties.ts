@@ -77,6 +77,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'DESC', displayName: 'Descending' },
 		],
 	},
+	{
+		name: 'hideIfNotPersonalized',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide If Not Personalized',
+		description: 'Hide the column if not personalized.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

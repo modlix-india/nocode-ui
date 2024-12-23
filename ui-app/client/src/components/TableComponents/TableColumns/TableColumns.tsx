@@ -1,9 +1,16 @@
-import { deepEqual, duplicate, ExpressionEvaluator, TokenValueExtractor } from '@fincity/kirun-js';
+import {
+	deepEqual,
+	duplicate,
+	ExpressionEvaluator,
+	isNullValue,
+	TokenValueExtractor,
+} from '@fincity/kirun-js';
 import { useEffect, useMemo, useState } from 'react';
 import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
 import {
 	addListener,
 	fillerExtractor,
+	getDataFromLocation,
 	getDataFromPath,
 	localStoreExtractor,
 	PageStoreExtractor,
@@ -114,6 +121,17 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	const [hover, setHover] = useState(false);
 	const [hoverRow, setHoverRow] = useState(-1);
 
+	const columnNames = useMemo(
+		() =>
+			getColumnNames({
+				children,
+				columnDef,
+				locationHistory,
+				pageExtractor,
+			}),
+		[columnDef, locationHistory, pageExtractor],
+	);
+
 	if (!Array.isArray(value)) return <></>;
 
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
@@ -218,6 +236,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		if (showCheckBox) {
 			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
+
 		headers = (
 			<div
 				className="_row"
@@ -227,7 +246,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				<Children
 					pageDefinition={headerDef}
 					renderableChildren={children}
-					context={context}
+					context={{ ...context, table: { ...context.table, columnNames } }}
 					locationHistory={locationHistory}
 				/>
 			</div>
@@ -266,6 +285,51 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			{emptyRows}
 		</div>
 	);
+}
+
+function getColumnNames({
+	children,
+	columnDef,
+	locationHistory,
+	pageExtractor,
+}: {
+	children: { [key: string]: boolean } | undefined;
+	columnDef: any;
+	locationHistory: LocationHistory[];
+	pageExtractor: PageStoreExtractor;
+}): Array<{
+	key: string;
+	label: string;
+	order: number;
+}> {
+	if (!children) return [];
+
+	const columnNames: Array<{
+		key: string;
+		label: string;
+		order: number;
+	}> = [];
+
+	for (let [k, v] of Object.entries(children)) {
+		if (!v) continue;
+		const column = columnDef.componentDefinition[k];
+		if (!column) continue;
+		let value = column.properties?.label?.value;
+		if (column.properties?.label?.location) {
+			const location = column.properties.label.location;
+			if (
+				'type' in location &&
+				(location.type === 'EXPRESSION' || location.type === 'VALUE')
+			) {
+				const newValue = getDataFromLocation(location, locationHistory, pageExtractor);
+				if (!isNullValue(newValue)) value = newValue;
+			}
+		}
+		columnNames.push({ key: k, label: value, order: column.displayOrder });
+	}
+
+	columnNames.sort((a, b) => a.order - b.order);
+	return columnNames;
 }
 
 function resolvePropertiesOfDynamicColumns(

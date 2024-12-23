@@ -1,4 +1,4 @@
-import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -71,6 +71,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Icon to be shown when sorting is not applied.',
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'hideIfNotPersonalized',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide If Not Personalized',
+		description: 'Hide the column if not personalized.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 ];
 

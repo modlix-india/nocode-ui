@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import {
@@ -28,6 +29,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			sortNoneIcon,
 			sortDescendingIcon,
 			sortAscendingIcon,
+			hideIfNotPersonalized,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -86,14 +88,20 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		} else {
 			rightIconComp = (
 				<svg
-					className={`_sortIcon ${currentSortOrder}`}
 					width="11"
 					height="10"
 					viewBox="0 0 11 10"
 					fill="none"
+					className={`_sortIconDefault ${currentSortOrder}`}
 				>
 					<path
-						d="M10.8437 7.70029C11.0521 7.49052 11.0521 7.15131 10.8437 6.94376C10.6353 6.73622 10.2982 6.73399 10.092 6.94376L8.87251 8.17117L8.87029 0.536711C8.87029 0.239902 8.63304 0.00111582 8.33814 0.00111582C8.04324 0.00111582 7.80599 0.239902 7.80599 0.536711V8.17117L6.58647 6.94376C6.37805 6.73399 6.04102 6.73399 5.83481 6.94376C5.6286 7.15354 5.62639 7.49275 5.83481 7.70029L7.96341 9.84267C8.17184 10.0524 8.50887 10.0524 8.71508 9.84267L10.8437 7.70029ZM3.0388 0.157331C2.83038 -0.0524436 2.49335 -0.0524436 2.28714 0.157331L0.156319 2.29971C-0.0521064 2.50948 -0.0521064 2.84869 0.156319 3.05624C0.364745 3.26378 0.701774 3.26601 0.907982 3.05624L2.12749 1.82883L2.12971 9.46329C2.12971 9.7601 2.36696 9.99888 2.66186 9.99888C2.95676 9.99888 3.19401 9.7601 3.19401 9.46329V1.82883L4.41353 3.05624C4.62195 3.26601 4.95898 3.26601 5.16519 3.05624C5.3714 2.84646 5.37361 2.50725 5.16519 2.29971L3.0388 0.157331Z"
+						d="M3.0388 0.157331C2.83038 -0.0524437 2.49335 -0.0524437 2.28714 0.157331L0.156319 2.29971C-0.0521064 2.50948 -0.0521064 2.84869 0.156319 3.05624C0.364745 3.26378 0.701774 3.26601 0.907982 3.05624L2.12749 1.82883L2.12971 9.46329C2.12971 9.7601 2.36696 9.99888 2.66186 9.99888C2.95676 9.99888 3.19401 9.7601 3.19401 9.46329V1.82883L4.41353 3.05624C4.62195 3.26601 4.95898 3.26601 5.16519 3.05624C5.3714 2.84646 5.37361 2.50725 5.16519 2.29971L3.0388 0.157331Z"
+						className="_upIcon"
+						fill="currentColor"
+					/>
+					<path
+						d="M10.844 6.9446C11.0525 7.15214 11.0525 7.49135 10.844 7.70113L8.71544 9.84351C8.50923 10.0533 8.17221 10.0533 7.96378 9.84351L5.83518 7.70113C5.62675 7.49359 5.62897 7.15438 5.83518 6.9446C6.04138 6.73483 6.37841 6.73483 6.58684 6.9446L7.80635 8.172V0.537548C7.80635 0.240739 8.0436 0.00195312 8.3385 0.00195312C8.6334 0.00195312 8.87065 0.240739 8.87065 0.537548L8.87287 8.172L10.0924 6.9446C10.2986 6.73483 10.6356 6.73706 10.844 6.9446Z"
+						className="_downIcon"
 						fill="currentColor"
 					/>
 				</svg>
@@ -140,6 +148,149 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		`.comp.compTableHeaderColumn.c${key}:hover ._rightIcon`,
 	);
 
+	const [showMenuLocation, setShowMenuLocation] = useState<{ x: number; y: number } | undefined>(
+		undefined,
+	);
+	let menu = undefined;
+
+	if (showMenuLocation) {
+		let sortItems = undefined;
+		if (hasSort) {
+			sortItems = (
+				<>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyUp={e =>
+							(e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()
+						}
+						onClick={e => {
+							e.stopPropagation();
+							e.preventDefault();
+							onChangeSort({
+								currentSortOrder,
+								initialSortOrder,
+								props,
+								multiSort,
+								sortBindingPath,
+								sortKey,
+								pageExtractor,
+								onSort,
+								hasSort,
+								sortTo: 'ASC',
+							});
+							setShowMenuLocation(undefined);
+						}}
+					>
+						Sort Ascending
+					</div>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyUp={e =>
+							(e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()
+						}
+						onClick={e => {
+							e.stopPropagation();
+							e.preventDefault();
+							onChangeSort({
+								currentSortOrder,
+								initialSortOrder,
+								props,
+								multiSort,
+								sortBindingPath,
+								sortKey,
+								pageExtractor,
+								onSort,
+								hasSort,
+								sortTo: 'DESC',
+							});
+							setShowMenuLocation(undefined);
+						}}
+					>
+						Sort Descending
+					</div>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyUp={e =>
+							(e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()
+						}
+						onClick={e => {
+							e.stopPropagation();
+							e.preventDefault();
+							onChangeSort({
+								currentSortOrder,
+								initialSortOrder,
+								props,
+								multiSort,
+								sortBindingPath,
+								sortKey,
+								pageExtractor,
+								onSort,
+								hasSort,
+								sortTo: 'undefined',
+							});
+							setShowMenuLocation(undefined);
+						}}
+					>
+						Clear Sorting
+					</div>
+					<div className="_popupMenuItemSeperator" />
+				</>
+			);
+		}
+		menu = (
+			<div
+				className="_popupBackground"
+				onClick={e => {
+					e.preventDefault();
+					e.stopPropagation();
+					setShowMenuLocation(undefined);
+				}}
+				onContextMenu={e => {
+					e.preventDefault();
+					e.stopPropagation();
+				}}
+				role="menu"
+				tabIndex={0}
+				onKeyUp={e => e.key === 'Escape' && setShowMenuLocation(undefined)}
+			>
+				<div
+					className="_popupMenu"
+					style={{
+						top: showMenuLocation.y,
+						left: showMenuLocation.x,
+					}}
+				>
+					{sortItems}
+					<div className="_popupMenuItem">Hide Column</div>
+					<div className="_popupMenuItem">Reset Column Visibility</div>
+					<div className="_popupMenuItemSeperator" />
+					{}
+				</div>
+			</div>
+		);
+	}
+
+	const personalizedObject = context.table.personalizationBindingPath
+		? getDataFromPath(
+				`${context.table.personalizationBindingPath}`,
+				locationHistory,
+				pageExtractor,
+			)
+		: undefined;
+
+	if (
+		(hideIfNotPersonalized && !personalizedObject) ||
+		personalizedObject?.hiddenFields?.[definition.key]
+	) {
+		return null;
+	}
+
 	return (
 		<div
 			className={`comp compTableHeaderColumn c${key} ${hasSort ? '_pointer' : ''}`}
@@ -159,6 +310,11 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			}
 			role="columnheader"
 			tabIndex={hasSort ? 0 : undefined}
+			onContextMenu={e => {
+				e.preventDefault();
+				e.stopPropagation();
+				setShowMenuLocation({ x: e.clientX, y: e.clientY });
+			}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			<style>{style}</style>
@@ -168,6 +324,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 				{label}
 				{rightIconComp}
 			</div>
+			{menu}
 		</div>
 	);
 }
@@ -182,6 +339,7 @@ function onChangeSort({
 	pageExtractor,
 	onSort,
 	hasSort,
+	sortTo,
 }: {
 	currentSortOrder: string | undefined;
 	initialSortOrder: string;
@@ -192,25 +350,31 @@ function onChangeSort({
 	pageExtractor: PageStoreExtractor;
 	onSort: string | undefined;
 	hasSort: boolean;
+	sortTo?: string;
 }) {
+	console.error('Here...');
 	if (!hasSort) return;
+
 	let newSortOrder = currentSortOrder;
-	if (newSortOrder === undefined) newSortOrder = initialSortOrder;
-	else if (newSortOrder === 'ASC') newSortOrder = 'DESC';
-	else newSortOrder = undefined;
+
+	if (!sortTo) {
+		if (newSortOrder === undefined) newSortOrder = initialSortOrder;
+		else if (newSortOrder === 'ASC') newSortOrder = 'DESC';
+		else newSortOrder = undefined;
+	} else newSortOrder = sortTo === 'undefined' ? undefined : sortTo;
 
 	if (multiSort)
 		setData(`${sortBindingPath}.${sortKey}`, newSortOrder, pageExtractor.getPageName());
 	else setData(sortBindingPath, { [sortKey]: newSortOrder }, pageExtractor.getPageName());
 
 	const onSortEvent = onSort ? props.pageDefinition.eventFunctions?.[onSort] : undefined;
-	if (onSortEvent)
-		(async () =>
-			await runEvent(
-				onSortEvent,
-				onSort,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
+	if (!onSortEvent) return;
+	(async () =>
+		await runEvent(
+			onSortEvent,
+			onSort,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		))();
 }
