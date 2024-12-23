@@ -17,7 +17,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './rangeSliderPr
 
 export default function RangeSlider(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath, bindingPath2},
+		definition: { bindingPath, bindingPath2 },
 		definition,
 		locationHistory,
 		context,
@@ -29,13 +29,12 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	const {
 		properties: {
 			trackDesign,
-			numberOfSliders,
 			trackColor,
 			rangeThumbDesign,
+			rangeThumbSize,
 			rangeThumbPitDesign,
 			toolTipDesign,
 			storageDataType,
-			rangeThumbSize,
 			min: originalMin,
 			minLabelDisplay,
 			minLabelPosition,
@@ -49,6 +48,8 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 			maxLabelValuePrefix,
 			maxLabelValueSuffix,
 			step,
+			minOffset,
+			maxOffset,
 			toolTipDisplayType,
 			toolTipPosition,
 			toolTipDisplay,
@@ -116,25 +117,94 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 		);
 	}, [bindingPathPath, storageDataType, min, max, step, precision]);
 
-	const constrainValues = useCallback((val1?: number, val2?: number) => {
-        let newVal1 = val1 ?? min;
-        let newVal2 = val2 ?? max;
+	const constrainValues = useCallback(
+		(val1?: number, val2?: number) => {
+			let newVal1 = val1 ?? min;
+			let newVal2 = val2 ?? max;
 
-        newVal1 = Math.max(min, Math.min(newVal1, max));
-        newVal2 = Math.max(min, Math.min(newVal2, max));
+			newVal1 = Math.max(min, Math.min(newVal1, max));
+			newVal2 = Math.max(min, Math.min(newVal2, max));
 
-        if (!sliderCrossing) {
-            if (numberOfSliders === 2) {
-                newVal1 = Math.min(newVal1, newVal2);
-                newVal2 = Math.max(newVal1, newVal2);
-            }
-        }
+			if (bindingPathPath2) {
+				const hasOffsetConstraints = minOffset !== undefined || maxOffset !== undefined;
 
-        return [newVal1, newVal2];
-    }, [min, max, sliderCrossing, numberOfSliders]);
+				if (hasOffsetConstraints) {
+					const currentDiff = Math.abs(newVal2 - newVal1);
+
+					if (sliderCrossing) {
+						if (minOffset !== undefined && currentDiff < minOffset) {
+							if (newVal1 > newVal2) {
+								newVal2 = Math.min(max, newVal1 + minOffset);
+								if (newVal2 === max) {
+									newVal1 = max - minOffset;
+								}
+							} else {
+								newVal1 = Math.min(max, newVal2 + minOffset);
+								if (newVal1 === max) {
+									newVal2 = max - minOffset;
+								}
+							}
+						}
+
+						if (maxOffset !== undefined && currentDiff > maxOffset) {
+							if (newVal1 > newVal2) {
+								newVal1 = newVal2 + maxOffset;
+							} else {
+								newVal2 = newVal1 + maxOffset;
+							}
+						}
+					} else {
+						if (minOffset !== undefined) {
+							if (newVal2 - newVal1 < minOffset) {
+								if (
+									val2 === undefined ||
+									(val1 !== undefined && val1 !== newVal1)
+								) {
+									newVal2 = Math.min(max, newVal1 + minOffset);
+									if (newVal2 === max) {
+										newVal1 = max - minOffset;
+									}
+								} else {
+									newVal1 = Math.max(min, newVal2 - minOffset);
+									if (newVal1 === min) {
+										newVal2 = min + minOffset;
+									}
+								}
+							}
+						}
+
+						if (maxOffset !== undefined) {
+							if (newVal2 - newVal1 > maxOffset) {
+								if (
+									val2 === undefined ||
+									(val1 !== undefined && val1 !== newVal1)
+								) {
+									newVal2 = newVal1 + maxOffset;
+								} else {
+									newVal1 = newVal2 - maxOffset;
+								}
+							}
+						}
+					}
+				} else if (!sliderCrossing) {
+					if (newVal1 > newVal2 - step) {
+						newVal1 = newVal2 - step;
+					}
+					if (newVal2 < newVal1 + step) {
+						newVal2 = newVal1 + step;
+					}
+					newVal1 = Math.max(min, Math.min(newVal1, max - step));
+					newVal2 = Math.max(min + step, Math.min(newVal2, max));
+				}
+			}
+
+			return [newVal1, newVal2];
+		},
+		[min, max, sliderCrossing, bindingPathPath2, step, minOffset, maxOffset],
+	);
 
 	useEffect(() => {
-		if (!bindingPathPath2 || numberOfSliders < 2) return;
+		if (!bindingPathPath2) return;
 		return addListenerAndCallImmediately(
 			(_, v) => {
 				if (isNullValue(v)) setValue2(undefined);
@@ -144,8 +214,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 			pageExtractor,
 			bindingPathPath2,
 		);
-	}, [bindingPathPath2, storageDataType, min, max, step, precision, numberOfSliders]);
-
+	}, [bindingPathPath2, storageDataType, min, max, step, precision]);
 
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -196,151 +265,161 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	const ref = useRef<HTMLDivElement>(null);
 
 	const updateStore1 = useCallback(
-        (newValue: number) => {
-            if (!bindingPathPath || readOnly) return;
+		(newValue: number) => {
+			if (!bindingPathPath || readOnly) return;
 
-            const [constrainedVal1, constrainedVal2] = constrainValues(newValue, value2);
+			const [constrainedVal1, constrainedVal2] = constrainValues(newValue, value2);
 
-            setData(
-                bindingPathPath,
-                storageDataType === 'value' ? constrainedVal1 : getPercentage(constrainedVal1, min, max, step, precision),
-                context.pageName,
-            );
+			setData(
+				bindingPathPath,
+				storageDataType === 'value'
+					? constrainedVal1
+					: getPercentage(constrainedVal1, min, max, step, precision),
+				context.pageName,
+			);
 
-            // Only update value2 if number of sliders is 2 and values changed
-            if (numberOfSliders === 2 && constrainedVal2 !== value2) {
-                updateStore2(constrainedVal2);
-            }
+			if (bindingPathPath2 && constrainedVal2 !== value2) {
+				updateStore2(constrainedVal2);
+			}
 
-            setValue1(constrainedVal1);
+			setValue1(constrainedVal1);
 
-            // Trigger onChange event if defined
-            if (onChange && pageDefinition.eventFunctions?.[onChange]) {
-                (async () => {
-                    await runEvent(
-                        pageDefinition.eventFunctions[onChange],
-                        definition.key,
-                        context.pageName,
-                        locationHistory,
-                        pageDefinition,
-                    );
-                })();
-            }
-        },
-        [
-            bindingPathPath,
-            readOnly,
-            storageDataType,
-            min,
-            max,
-            step,
-            precision,
-            numberOfSliders,
-            value2,
-            onChange,
-            pageDefinition,
-            context,
-            definition,
-            locationHistory,
-        ]
-    );
+			if (onChange && pageDefinition.eventFunctions?.[onChange]) {
+				(async () => {
+					await runEvent(
+						pageDefinition.eventFunctions[onChange],
+						definition.key,
+						context.pageName,
+						locationHistory,
+						pageDefinition,
+					);
+				})();
+			}
+		},
+		[
+			bindingPathPath,
+			readOnly,
+			storageDataType,
+			min,
+			max,
+			step,
+			precision,
+			value2,
+			onChange,
+			pageDefinition,
+			context,
+			definition,
+			locationHistory,
+		],
+	);
 
 	const updateStore2 = useCallback(
-        (newValue: number) => {
-            if (!bindingPathPath2 || readOnly || numberOfSliders < 2) return;
+		(newValue: number) => {
+			if (!bindingPathPath2 || readOnly) return;
 
-            const [constrainedVal1, constrainedVal2] = constrainValues(value1, newValue);
+			const [constrainedVal1, constrainedVal2] = constrainValues(value1, newValue);
 
-            setData(
-                bindingPathPath2,
-                storageDataType === 'value' ? constrainedVal2 : getPercentage(constrainedVal2, min, max, step, precision),
-                context.pageName,
-            );
+			setData(
+				bindingPathPath2,
+				storageDataType === 'value'
+					? constrainedVal2
+					: getPercentage(constrainedVal2, min, max, step, precision),
+				context.pageName,
+			);
 
-            // Update value1 if values have changed and slider crossing is not allowed
-            if (!sliderCrossing && constrainedVal1 !== value1) {
-                updateStore1(constrainedVal1);
-            }
+			if (!sliderCrossing && constrainedVal1 !== value1) {
+				updateStore1(constrainedVal1);
+			}
+			setValue2(constrainedVal2);
 
-            setValue2(constrainedVal2);
-
-            // Trigger onChange event if defined
-            if (onChange && pageDefinition.eventFunctions?.[onChange]) {
-                (async () => {
-                    await runEvent(
-                        pageDefinition.eventFunctions[onChange],
-                        definition.key,
-                        context.pageName,
-                        locationHistory,
-                        pageDefinition,
-                    );
-                })();
-            }
-        },
-        [
-            bindingPathPath2,
-            readOnly,
-            numberOfSliders,
-            storageDataType,
-            min,
-            max,
-            step,
-            precision,
-            sliderCrossing,
-            value1,
-            onChange,
-            pageDefinition,
-            context,
-            definition,
-            locationHistory,
+			if (onChange && pageDefinition.eventFunctions?.[onChange]) {
+				(async () => {
+					await runEvent(
+						pageDefinition.eventFunctions[onChange],
+						definition.key,
+						context.pageName,
+						locationHistory,
+						pageDefinition,
+					);
+				})();
+			}
+		},
+		[
+			bindingPathPath2,
+			bindingPathPath,
+			readOnly,
+			storageDataType,
+			min,
+			max,
+			step,
+			precision,
+			sliderCrossing,
+			value1,
+			onChange,
+			pageDefinition,
+			context,
+			definition,
+			locationHistory,
 			fillType,
-        ]
-    );
+		],
+	);
 
 	const handleChange1 = useCallback(
 		(v: number) => {
 			if (!bindingPathPath || readOnly) return;
 
-			if (numberOfSliders > 1 && !sliderCrossing && value2 !== undefined) {
-				if (numberOfSliders === 2 && v > value2) v = value2;
+			let newValue = getValue(v, 'value', min, max, step, precision);
+
+			if (bindingPathPath2 && !sliderCrossing && value2 !== undefined) {
+				newValue = Math.min(newValue, value2 - step);
 			}
 
-			v = getValue(v, 'value', min, max, step, precision);
+			newValue = Math.max(min, Math.min(newValue, max));
 
-			if (v < min) v = min;
-			else if (v > max) v = max;
-			if (updateStoreImmediately) updateStore1(v);
-			else setValue1(v);
+			if (updateStoreImmediately) updateStore1(newValue);
+			else setValue1(newValue);
 		},
-		[bindingPathPath, readOnly, min, max, updateStoreImmediately, updateStore1, step, precision, numberOfSliders, sliderCrossing, value2, fillType],
+		[
+			bindingPathPath,
+			bindingPathPath2,
+			readOnly,
+			min,
+			max,
+			updateStoreImmediately,
+			updateStore1,
+			step,
+			precision,
+			sliderCrossing,
+			value2,
+			fillType,
+		],
 	);
 
 	const handleChange2 = useCallback(
 		(v: number) => {
-			if (!bindingPathPath2 || readOnly || numberOfSliders < 2) return;
-			
+			if (!bindingPathPath2 || readOnly) return;
+
+			let newValue = getValue(v, 'value', min, max, step, precision);
+
 			if (!sliderCrossing && value1 !== undefined) {
-				if (v < value1) v = value1;
+				newValue = Math.max(newValue, value1 + step);
 			}
 
-			v = getValue(v, 'value', min, max, step, precision);
+			newValue = Math.max(min, Math.min(newValue, max));
 
-			if (v < min) v = min;
-			else if (v > max) v = max;
-			
-			if (updateStoreImmediately) updateStore2(v);
-			else setValue2(v);
+			if (updateStoreImmediately) updateStore2(newValue);
+			else setValue2(newValue);
 		},
 		[
-			bindingPathPath2, 
-			readOnly, 
-			min, 
-			max, 
-			updateStoreImmediately, 
-			updateStore2, 
-			step, 
+			bindingPathPath,
+			bindingPathPath2,
+			readOnly,
+			min,
+			max,
+			updateStoreImmediately,
+			updateStore2,
+			step,
 			precision,
-			numberOfSliders,
 			sliderCrossing,
 			value1,
 			fillType,
@@ -441,13 +520,32 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 		}
 	}
 
-	let toolTip = undefined;
-
+	let toolTip1 = undefined;
 	if (toolTipDisplay !== '_neverToolTip') {
-		toolTip = (
-			<div className={`_toolTip ${toolTipPosition}`} style={styleProperties?.toolTip ?? {}}>
-				<SubHelperComponent subComponentName="toolTip" definition={definition} />
+		toolTip1 = (
+			<div
+				className={`_toolTip ${toolTipPosition}`}
+				style={{
+					...(styleProperties?.toolTip1 ?? {}),
+				}}
+			>
+				<SubHelperComponent subComponentName="toolTip1" definition={definition} />
 				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (value1 ?? '') : labelPercent1 + '%'}${toolTipValueLabelSuffix ?? ''}`}
+			</div>
+		);
+	}
+
+	let toolTip2 = undefined;
+	if (toolTipDisplay !== '_neverToolTip' && bindingPathPath2) {
+		toolTip2 = (
+			<div
+				className={`_toolTip ${toolTipPosition}`}
+				style={{
+					...(styleProperties?.toolTip2 ?? {}),
+				}}
+			>
+				<SubHelperComponent subComponentName="toolTip2" definition={definition} />
+				{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (value2 ?? '') : labelPercent2 + '%'}${toolTipValueLabelSuffix ?? ''}`}
 			</div>
 		);
 	}
@@ -457,23 +555,22 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	const filledTrackRef = useRef<HTMLDivElement>(null);
 
 	const calculateFilledTrackWidth = () => {
-		if (numberOfSliders === 1) {
+		if (!bindingPathPath2) {
 			return visualPercent1;
 		}
-	
+
 		if (fillType === 'fromStart') {
-			return  Math.max(visualPercent2, visualPercent1);
+			return Math.max(visualPercent2, visualPercent1);
 		}
-	
+
 		return Math.abs(visualPercent2 - visualPercent1);
 	};
-	
+
 	const calculateFilledTrackLeft = () => {
-	
-		if (fillType === 'fromStart' || numberOfSliders === 1) {
+		if (fillType === 'fromStart' || !bindingPathPath2) {
 			return 0;
 		}
-	
+
 		return Math.min(visualPercent1, visualPercent2);
 	};
 
@@ -505,7 +602,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 				style={{
 					...((hoverSlider ? hoverStyleProperties : styleProperties)?.rangeTrack ?? {}),
 					left: `${calculateFilledTrackLeft()}%`,
-       				width: `${calculateFilledTrackWidth()}%`,
+					width: `${calculateFilledTrackWidth()}%`,
 				}}
 			>
 				<SubHelperComponent
@@ -522,7 +619,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 				onMouseOut={() => setHoverThumb(false)}
 				style={{
 					left: `${visualPercent1}%`,
-					...((hoverThumb ? hoverStyleProperties : styleProperties)?.thumb ?? {}),
+					...((hoverThumb ? hoverStyleProperties : styleProperties)?.thumb1 ?? {}),
 				}}
 				onMouseDown={e => {
 					e.preventDefault();
@@ -543,10 +640,15 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 								? Math.round(startValue + (diffX / width) * (max - min))
 								: Math.round((startValue + (diffX / width) * (max - min)) / step) *
 									step;
-							if (numberOfSliders > 1 && !sliderCrossing && value2 !== undefined) {
-								if (newValue > value2) newValue = value2;
+							if (
+								bindingPathPath2 &&
+								!sliderCrossing &&
+								value2 !== undefined &&
+								newValue > value2
+							) {
+								newValue = value2;
 							}
-							
+
 							handleChange1(newValue);
 						},
 						updateStoreImmediately
@@ -561,9 +663,14 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 										: Math.round(
 												(startValue + (diffX / width) * (max - min)) / step,
 											) * step;
-									
-									if (numberOfSliders > 1 && !sliderCrossing && value2 !== undefined) {
-										if (newValue > value2) newValue = value2;
+
+									if (
+										bindingPathPath2 &&
+										!sliderCrossing &&
+										value2 !== undefined &&
+										newValue > value2
+									) {
+										newValue = value2;
 									}
 
 									if (thumbRef1.current) thumbRef1.current.style.transition = '';
@@ -578,110 +685,133 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 					e.preventDefault();
 				}}
 			>
-				<SubHelperComponent subComponentName="thumb" definition={definition} zIndex={9} />
+				<SubHelperComponent subComponentName="thumb1" definition={definition} zIndex={10} />
 				<div
 					className="_thumbPit"
-					style={(hoverThumb ? hoverStyleProperties : styleProperties)?.thumbPit ?? {}}
+					style={{
+						...((hoverThumb ? hoverStyleProperties : styleProperties)?.thumbPit1 ?? {}),
+					}}
 				>
 					<SubHelperComponent
-						subComponentName="thumbPit"
+						subComponentName="thumbPit1"
 						definition={definition}
-						zIndex={10}
+						zIndex={7}
 					/>
 				</div>
-				{toolTipDesign !== '_fixedLabelTT' ? toolTip : null}
+				{toolTipDesign !== '_fixedLabelTT' ? toolTip1 : null}
 			</div>
-			
-			{numberOfSliders >1 && (
+
+			{bindingPathPath2 && (
 				<div
-				  className="_thumb"
-				  ref={thumbRef2}
-				  onMouseOver={() => setHoverThumb(true)}
-				  onMouseOut={() => setHoverThumb(false)}
-				  style={{
-					left: `${visualPercent2}%`,
-					...((hoverThumb ? hoverStyleProperties : styleProperties)?.thumb ?? {}),
-				  }}
-				  onMouseDown={e => {
-					e.preventDefault();
-					e.stopPropagation();
-		  
-					if (e.button !== 0) return;
-		  
-					const startValue = value2 ?? max;
-					const width = ref.current?.getBoundingClientRect()?.width ?? 0;
-					if (thumbRef2.current) thumbRef2.current.style.transition = 'none';
-					if (filledTrackRef.current) filledTrackRef.current.style.transition = 'none';
-		  
-					onMouseDownDragStartCurry(
-					  e.clientX,
-					  0,
-					  (newX, newY, diffX) => {
-						let newValue = !step
-						  ? Math.round(startValue + (diffX / width) * (max - min))
-						  : Math.round((startValue + (diffX / width) * (max - min)) / step) *
-							step;
-						
-						if (!sliderCrossing && value1 !== undefined) {
-						  if (newValue < value1) newValue = value1;
-						}
-						
-						handleChange2(newValue);
-					  },
-					  updateStoreImmediately
-						? () => {
-							if (thumbRef2.current) thumbRef2.current.style.transition = '';
-							if (filledTrackRef.current)
-							  filledTrackRef.current.style.transition = '';
-						  }
-						: (newX, newY, diffX) => {
-							let newValue = !step
-							  ? Math.round(startValue + (diffX / width) * (max - min))
-							  : Math.round(
-								  (startValue + (diffX / width) * (max - min)) / step,
-								) * step;
-							
-							if (!sliderCrossing && value1 !== undefined) {
-							  if (newValue < value1) newValue = value1;
-							}
-							
-							if (thumbRef2.current) thumbRef2.current.style.transition = '';
-							if (filledTrackRef.current)
-							  filledTrackRef.current.style.transition = '';
-							updateStore2(newValue);
-						  },
-					)(e);
-				  }}
-				  onMouseUp={e => {
-					e.stopPropagation();
-					e.preventDefault();
-				  }}
+					className="_thumb"
+					ref={thumbRef2}
+					onMouseOver={() => setHoverThumb(true)}
+					onMouseOut={() => setHoverThumb(false)}
+					style={{
+						left: `${visualPercent2}%`,
+						...((hoverThumb ? hoverStyleProperties : styleProperties)?.thumb2 ?? {}),
+						...styleProperties?.[rangeThumbDesign],
+						...styleProperties?.[rangeThumbSize],
+					}}
+					onMouseDown={e => {
+						e.preventDefault();
+						e.stopPropagation();
+
+						if (e.button !== 0) return;
+
+						const startValue = value2 ?? max;
+						const width = ref.current?.getBoundingClientRect()?.width ?? 0;
+						if (thumbRef2.current) thumbRef2.current.style.transition = 'none';
+						if (filledTrackRef.current)
+							filledTrackRef.current.style.transition = 'none';
+
+						onMouseDownDragStartCurry(
+							e.clientX,
+							0,
+							(newX, newY, diffX) => {
+								let newValue = !step
+									? Math.round(startValue + (diffX / width) * (max - min))
+									: Math.round(
+											(startValue + (diffX / width) * (max - min)) / step,
+										) * step;
+
+								if (!sliderCrossing && value1 !== undefined && newValue < value1) {
+									newValue = value1;
+								}
+
+								handleChange2(newValue);
+							},
+							updateStoreImmediately
+								? () => {
+										if (thumbRef2.current)
+											thumbRef2.current.style.transition = '';
+										if (filledTrackRef.current)
+											filledTrackRef.current.style.transition = '';
+									}
+								: (newX, newY, diffX) => {
+										let newValue = !step
+											? Math.round(startValue + (diffX / width) * (max - min))
+											: Math.round(
+													(startValue + (diffX / width) * (max - min)) /
+														step,
+												) * step;
+
+										if (
+											!sliderCrossing &&
+											value1 !== undefined &&
+											newValue < value1
+										) {
+											newValue = value1;
+										}
+
+										if (thumbRef2.current)
+											thumbRef2.current.style.transition = '';
+										if (filledTrackRef.current)
+											filledTrackRef.current.style.transition = '';
+										updateStore2(newValue);
+									},
+						)(e);
+					}}
+					onMouseUp={e => {
+						e.stopPropagation();
+						e.preventDefault();
+					}}
 				>
-				  <SubHelperComponent subComponentName="thumb" definition={definition} zIndex={9} />
-				  <div
-					className="_thumbPit"
-					style={(hoverThumb ? hoverStyleProperties : styleProperties)?.thumbPit ?? {toolTip}}
-				  >
 					<SubHelperComponent
-					  subComponentName="thumbPit"
-					  definition={definition}
-					  zIndex={10}
+						subComponentName="thumb2"
+						definition={definition}
+						zIndex={9}
+						style={styleProperties?.[rangeThumbDesign]}
 					/>
-				  </div>
-				{numberOfSliders > 1? (
-						<div 
-							className={`_toolTip ${toolTipPosition}`} 
-							style={styleProperties?.toolTip ?? {}}
-						>
-							<SubHelperComponent subComponentName="toolTip" definition={definition} />
-							{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (value2 ?? '') : labelPercent2 + '%'}${toolTipValueLabelSuffix ?? ''}`}
-						</div>
-					) : null}			
+					<div
+						className="_thumbPit"
+						style={{
+							...((hoverThumb ? hoverStyleProperties : styleProperties)?.thumbPit2 ??
+								{}),
+						}}
+					>
+						<SubHelperComponent
+							subComponentName="thumbPit2"
+							definition={definition}
+							style={styleProperties?.[rangeThumbPitDesign]}
+							zIndex={10}
+						/>
+					</div>
+					{toolTipDesign !== '_fixedLabelTT' ? toolTip2 : null}
+
+					{/* // tooltip here */}
+					<div
+						className={`_toolTip ${toolTipPosition}`}
+						style={styleProperties?.toolTip ?? {}}
+					>
+						<SubHelperComponent subComponentName="toolTip2" definition={definition} />
+						{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (value2 ?? '') : labelPercent2 + '%'}${toolTipValueLabelSuffix ?? ''}`}
+					</div>
 				</div>
-			  )}
-			  {markThumbs}
-			</div>
-		  );
+			)}
+			{markThumbs}
+		</div>
+	);
 
 	let topContainer = undefined;
 
@@ -828,19 +958,25 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compRangeSlider ${readOnly ? '_readOnly' : ''} ${hoverSlider ? '_hoverSlider' : ''} ${colorScheme} ${trackDesign} ${trackColor} ${rangeThumbDesign} ${rangeThumbPitDesign} ${toolTipDesign} ${toolTipPosition} ${rangeThumbSize} ${toolTipDisplay} `}
+			className={`comp compRangeSlider ${readOnly ? '_readOnly' : ''} ${hoverSlider ? '_hoverSlider' : ''} ${colorScheme} ${trackDesign} ${trackColor} ${rangeThumbDesign} ${rangeThumbPitDesign} ${toolTipDesign} ${toolTipPosition} ${rangeThumbSize} ${toolTipDisplay} ${bindingPathPath2 ? `${rangeThumbDesign} ${rangeThumbSize} ${rangeThumbPitDesign} ${toolTipDesign} ${toolTipPosition || toolTipPosition} ${toolTipDisplay || toolTipDisplay}` : ''} `}
 			style={(hoverSlider ? hoverStyleProperties : styleProperties)?.comp ?? {}}
 			onMouseEnter={() => setHoverSlider(true)}
 			onMouseLeave={() => setHoverSlider(false)}
 		>
 			<HelperComponent context={context} definition={definition} />
-			{toolTipPosition === '_top' && toolTipDesign === '_fixedLabelTT' ? toolTip : null}
+			{toolTipPosition === '_top' && toolTipDesign === '_fixedLabelTT' ? toolTip1 : null}
+			{bindingPathPath2 && toolTipPosition === '_top' && toolTipDesign === '_fixedLabelTT'
+				? toolTip2
+				: null}
 			{topContainer}
 			{ticksPosition === 'top' ? ticksContainer : null}
 			{track}
 			{ticksPosition === 'bottom' ? ticksContainer : null}
 			{bottomContainer}
-			{toolTipPosition !== '_top' && toolTipDesign === '_fixedLabelTT' ? toolTip : null}
+			{toolTipPosition !== '_top' && toolTipDesign === '_fixedLabelTT' ? toolTip1 : null}
+			{bindingPathPath2 && toolTipPosition !== '_top' && toolTipDesign === '_fixedLabelTT'
+				? toolTip2
+				: null}
 		</div>
 	);
 }

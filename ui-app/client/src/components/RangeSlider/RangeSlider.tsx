@@ -30,7 +30,7 @@ const component: Component = {
 	stylePseudoStates: ['hover', 'readOnly'],
 	bindingPaths: {
 		bindingPath: { name: 'Slider 1 Binding' },
-		bindingPath2: {name: 'Slider 2 Binding'}
+		bindingPath2: { name: 'Slider 2 Binding' },
 	},
 	defaultTemplate: {
 		key: '',
@@ -84,15 +84,39 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'thumb',
-			displayName: 'Thumb',
-			description: 'Thumb',
+			name: 'thumb1',
+			displayName: 'Thumb 1',
+			description: 'First Slider Thumb',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'thumbPit',
-			displayName: 'Thumb Pit',
-			description: 'Thumb Pit',
+			name: 'thumb2',
+			displayName: 'Thumb 2',
+			description: 'Second slider thumb',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumbPit1',
+			displayName: 'Thumb Pit 1',
+			description: 'First Slider Thumb Pit',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumbPit2',
+			displayName: 'Thumb Pit 2',
+			description: 'Second slider thumb pit',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toolTip1',
+			displayName: 'Tool Tip 1',
+			description: 'First Slider tooltip',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toolTip2',
+			displayName: 'Tool Tip 2',
+			description: 'Second slider tooltip',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -159,12 +183,6 @@ const component: Component = {
 			name: 'tickLabel',
 			displayName: 'Tick Label',
 			description: 'Tick Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'toolTip',
-			displayName: 'Tool Tip',
-			description: 'Tool Tip',
 			icon: 'fa-solid fa-box',
 		},
 	],
