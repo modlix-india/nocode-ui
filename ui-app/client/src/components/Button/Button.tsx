@@ -182,25 +182,12 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	const [editName, setEditName] = useState(false);
 	useEffect(() => setEditableLabel(label), [label]);
 	label = getTranslations(label, props.pageDefinition.translations);
-	return (
-		<button
-			className={`comp compButton button ${designType} ${colorScheme} ${
-				hasLeftIcon ? '_withLeftIcon' : ''
-			} ${hasRightIconClass ? '_withRightIcon' : ''}`}
-			disabled={isLoading || readOnly}
-			onClick={handleClick}
-			style={styleProperties.comp ?? {}}
-			onMouseEnter={() => setHover(true)}
-			onMouseLeave={() => setHover(false)}
-			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
-			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-			title={label ?? ''}
-		>
-			<HelperComponent
-				context={props.context}
-				definition={props.definition}
-				onDoubleClick={() => setEditName(true)}
-			>
+
+	let buttonBar = undefined;
+
+	if (globalThis.isDesignMode) {
+		buttonBar = (
+			<>
 				{editName && (
 					<>
 						<input
@@ -405,6 +392,30 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 						/>
 					</div>
 				</div>
+			</>
+		);
+	}
+
+	return (
+		<button
+			className={`comp compButton button ${designType} ${colorScheme} ${
+				hasLeftIcon ? '_withLeftIcon' : ''
+			} ${hasRightIconClass ? '_withRightIcon' : ''}`}
+			disabled={isLoading || readOnly}
+			onClick={handleClick}
+			style={styleProperties.comp ?? {}}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
+			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
+			title={label ?? ''}
+		>
+			<HelperComponent
+				context={props.context}
+				definition={props.definition}
+				onDoubleClick={() => setEditName(true)}
+			>
+				{buttonBar}
 			</HelperComponent>
 			{leftIconTag}
 			{!designType?.startsWith('_fabButton') && designType !== '_iconButton' ? label : ''}
