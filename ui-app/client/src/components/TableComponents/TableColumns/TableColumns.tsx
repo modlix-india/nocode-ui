@@ -71,26 +71,31 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		);
 
 	const [updateColumnsAt, setUpdateColumnsAt] = useState(Date.now());
-	const [personalizationObject, setPersonalizationObject] = useState<any>();
 
-	useEffect(
-		() =>
-			addListenerAndCallImmediatelyWithChildrenActivity(
-				(_, v) => setPersonalizationObject(v),
-				pageExtractor,
-				context.table.personalizationBindingPath,
-			),
-		[
+	useEffect(() => {
+		if (!context.table.personalizationBindingPath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, v) => setUpdateColumnsAt(Date.now()),
+			pageExtractor,
 			context.table.personalizationBindingPath,
-			context.table.enablePersonalization,
-			setPersonalizationObject,
-		],
-	);
+		);
+	}, [
+		context.table.personalizationBindingPath,
+		context.table.enablePersonalization,
+		setUpdateColumnsAt,
+	]);
 
 	const { headerDef, columnDef, listenPaths } = useMemo(() => {
 		let { dynamicColumns, columnsPageDefinition, listenPaths } =
 			resolvePropertiesOfDynamicColumns(pageDefinition, pageExtractor, locationHistory);
 
+		const personalizationObject = context.table.enablePersonalization
+			? getDataFromPath(
+					context.table.personalizationBindingPath,
+					locationHistory,
+					pageExtractor,
+				)
+			: {};
 		return {
 			...generateTableColumnDefinitions(
 				dynamicColumns,
@@ -101,7 +106,12 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			),
 			listenPaths,
 		};
-	}, [pageDefinition, updateColumnsAt]);
+	}, [
+		pageDefinition,
+		updateColumnsAt,
+		context.table.personalizationBindingPath,
+		context.table.enablePersonalization,
+	]);
 
 	useEffect(() => {
 		if (!listenPaths.length) return;
@@ -572,8 +582,6 @@ function generateTableColumnDefinitions(
 	if (personalizationObject?.columnOrder) {
 		if (!dynamicColumns.length) cp = duplicate(pageDefinition);
 	}
-
-	// console.log('Children: ', children, personalizationObject);
 
 	const hp = duplicate(cp);
 	Object.keys(children ?? {})
