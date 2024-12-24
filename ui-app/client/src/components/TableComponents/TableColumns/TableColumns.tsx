@@ -569,11 +569,11 @@ function generateTableColumnDefinitions(
 		}
 	}
 
-	if (personalizationObject.columnOrder) {
+	if (personalizationObject?.columnOrder) {
 		if (!dynamicColumns.length) cp = duplicate(pageDefinition);
 	}
 
-	console.log('Children: ', children, personalizationObject);
+	// console.log('Children: ', children, personalizationObject);
 
 	const hp = duplicate(cp);
 	Object.keys(children ?? {})
