@@ -119,88 +119,62 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 
 	const constrainValues = useCallback(
 		(val1?: number, val2?: number) => {
-			let newVal1 = val1 ?? min;
-			let newVal2 = val2 ?? max;
+			let newVal1 = Math.min(max, Math.max(min, val1 ?? min));
+			let newVal2 = Math.min(max, Math.max(min, val2 ?? max));
 
-			newVal1 = Math.max(min, Math.min(newVal1, max));
-			newVal2 = Math.max(min, Math.min(newVal2, max));
+			newVal1 = Math.round((newVal1 - min) / step) * step + min;
+			newVal2 = Math.round((newVal2 - min) / step) * step + min;
 
-			if (bindingPathPath2) {
-				const hasOffsetConstraints = minOffset !== undefined || maxOffset !== undefined;
+			if (!bindingPathPath2) {
+				return [newVal1, newVal2];
+			}
 
-				if (hasOffsetConstraints) {
-					const currentDiff = Math.abs(newVal2 - newVal1);
+			const isMovingFirstSlider = val1 !== undefined && val1 !== value1;
+			const diff = newVal2 - newVal1;
 
-					if (sliderCrossing) {
-						if (minOffset !== undefined && currentDiff < minOffset) {
-							if (newVal1 > newVal2) {
-								newVal2 = Math.min(max, newVal1 + minOffset);
-								if (newVal2 === max) {
-									newVal1 = max - minOffset;
-								}
-							} else {
-								newVal1 = Math.min(max, newVal2 + minOffset);
-								if (newVal1 === max) {
-									newVal2 = max - minOffset;
-								}
-							}
+			if (minOffset !== undefined || maxOffset !== undefined) {
+				if (sliderCrossing) {
+					if (isMovingFirstSlider) {
+						if (minOffset && Math.abs(diff) < minOffset) {
+							newVal1 = newVal1 > value2! ? value2! + minOffset : value2! - minOffset;
 						}
-
-						if (maxOffset !== undefined && currentDiff > maxOffset) {
-							if (newVal1 > newVal2) {
-								newVal1 = newVal2 + maxOffset;
-							} else {
-								newVal2 = newVal1 + maxOffset;
-							}
+						if (maxOffset && Math.abs(diff) > maxOffset) {
+							newVal1 = newVal1 > value2! ? value2! + maxOffset : value2! - maxOffset;
 						}
 					} else {
-						if (minOffset !== undefined) {
-							if (newVal2 - newVal1 < minOffset) {
-								if (
-									val2 === undefined ||
-									(val1 !== undefined && val1 !== newVal1)
-								) {
-									newVal2 = Math.min(max, newVal1 + minOffset);
-									if (newVal2 === max) {
-										newVal1 = max - minOffset;
-									}
-								} else {
-									newVal1 = Math.max(min, newVal2 - minOffset);
-									if (newVal1 === min) {
-										newVal2 = min + minOffset;
-									}
-								}
-							}
+						if (minOffset && Math.abs(diff) < minOffset) {
+							newVal2 = newVal2 > value1! ? value1! + minOffset : value1! - minOffset;
 						}
-
-						if (maxOffset !== undefined) {
-							if (newVal2 - newVal1 > maxOffset) {
-								if (
-									val2 === undefined ||
-									(val1 !== undefined && val1 !== newVal1)
-								) {
-									newVal2 = newVal1 + maxOffset;
-								} else {
-									newVal1 = newVal2 - maxOffset;
-								}
-							}
+						if (maxOffset && Math.abs(diff) > maxOffset) {
+							newVal2 = newVal2 > value1! ? value1! + maxOffset : value1! - maxOffset;
 						}
 					}
-				} else if (!sliderCrossing) {
-					if (newVal1 > newVal2 - step) {
-						newVal1 = newVal2 - step;
+				} else {
+					if (isMovingFirstSlider) {
+						if (minOffset) newVal1 = Math.min(newVal1, newVal2 - minOffset);
+						if (maxOffset) newVal1 = Math.max(newVal1, newVal2 - maxOffset);
+					} else {
+						if (minOffset) newVal2 = Math.max(newVal2, newVal1 + minOffset);
+						if (maxOffset) newVal2 = Math.min(newVal2, newVal1 + maxOffset);
 					}
-					if (newVal2 < newVal1 + step) {
-						newVal2 = newVal1 + step;
-					}
-					newVal1 = Math.max(min, Math.min(newVal1, max - step));
-					newVal2 = Math.max(min + step, Math.min(newVal2, max));
+				}
+			} else if (!sliderCrossing && diff < step) {
+				if (isMovingFirstSlider) {
+					newVal1 = newVal2 - step;
+				} else {
+					newVal2 = newVal1 + step;
 				}
 			}
 
+			newVal1 = Math.min(max, Math.max(min, newVal1));
+			newVal2 = Math.min(max, Math.max(min, newVal2));
+
+			newVal1 = Math.round((newVal1 - min) / step) * step + min;
+			newVal2 = Math.round((newVal2 - min) / step) * step + min;
+
 			return [newVal1, newVal2];
 		},
-		[min, max, sliderCrossing, bindingPathPath2, step, minOffset, maxOffset],
+		[min, max, step, sliderCrossing, bindingPathPath2, minOffset, maxOffset, value1, value2],
 	);
 
 	useEffect(() => {
@@ -799,7 +773,6 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 					</div>
 					{toolTipDesign !== '_fixedLabelTT' ? toolTip2 : null}
 
-					{/* // tooltip here */}
 					<div
 						className={`_toolTip ${toolTipPosition}`}
 						style={styleProperties?.toolTip ?? {}}
