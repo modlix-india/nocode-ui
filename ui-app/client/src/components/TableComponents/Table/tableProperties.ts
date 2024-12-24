@@ -370,6 +370,33 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when the page is changed.',
 	},
+
+	{
+		name: 'onSort',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Sort',
+		group: ComponentPropertyGroup.EVENTS,
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when the table is sorted.',
+	},
+
+	{
+		name: 'multiSort',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Multi Sort',
+		group: ComponentPropertyGroup.BASIC,
+		description: 'Sort multiple columns',
+		defaultValue: false,
+	},
+
+	{
+		name: 'enablePersonalization',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Enable Personalization',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: true,
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

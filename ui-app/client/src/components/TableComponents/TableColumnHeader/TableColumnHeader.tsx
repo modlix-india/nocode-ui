@@ -1,27 +1,50 @@
-import { PageStoreExtractor } from '../../../context/StoreContext';
+import { useEffect, useState } from 'react';
+import {
+	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
+	getDataFromPath,
+	PageStoreExtractor,
+	setData,
+} from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
-import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
+import {
+	processComponentStylePseudoClasses,
+	processStyleObjectToCSS,
+} from '../../../util/styleProcessor';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import { runEvent } from '../../util/runEvent';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnHeaderProperties';
 
 export default function TableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 	const {
-		definition: { children },
 		locationHistory = [],
 		context,
 		definition,
+		definition: { key },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { label, leftIcon, rightIcon } = {}, stylePropertiesWithPseudoStates } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-		);
+	const {
+		properties: {
+			label,
+			leftIcon,
+			rightIcon,
+			sortKey,
+			initialSortOrder,
+			sortNoneIcon,
+			sortDescendingIcon,
+			sortAscendingIcon,
+			hideIfNotPersonalized,
+		} = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -29,32 +52,396 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		stylePropertiesWithPseudoStates,
 	);
 
-	return (
-		<div className="comp compTableHeaderColumn" style={{ ...styleProperties.comp }}>
-			<HelperComponent context={props.context} definition={definition} />
+	const hoverStyleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ hover: true },
+		stylePropertiesWithPseudoStates,
+	);
 
-			<div>
-				{leftIcon ? (
-					<i style={styleProperties.leftIcon ?? {}} className={`_leftIcon ${leftIcon}`}>
-						<SubHelperComponent
-							definition={definition}
-							subComponentName="leftIcon"
-						></SubHelperComponent>
-					</i>
-				) : undefined}
-				{label}
-				{rightIcon ? (
-					<i
-						style={styleProperties.rightIcon ?? {}}
-						className={`_rightIcon ${rightIcon}`}
+	let leftIconComp;
+	if (leftIcon) {
+		leftIconComp = (
+			<i className={`_leftIcon ${leftIcon}`}>
+				<SubHelperComponent definition={definition} subComponentName="leftIcon" />
+			</i>
+		);
+	}
+
+	const { sortBindingPath, onSort, multiSort } = context.table;
+
+	let rightIconComp;
+	const hasSort = sortKey && sortBindingPath && onSort;
+	let currentSortOrder: string | undefined;
+	if (hasSort) {
+		currentSortOrder = getDataFromPath(
+			`${sortBindingPath}.${sortKey}`,
+			locationHistory,
+			pageExtractor,
+		);
+		const sortIcon =
+			currentSortOrder === 'ASC'
+				? sortAscendingIcon
+				: currentSortOrder === 'DESC'
+					? sortDescendingIcon
+					: sortNoneIcon;
+
+		if (sortIcon) {
+			rightIconComp = (
+				<i className={`_sortIcon ${currentSortOrder} ${sortIcon}`}>
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+				</i>
+			);
+		} else {
+			rightIconComp = (
+				<svg
+					width="11"
+					height="10"
+					viewBox="0 0 11 10"
+					fill="none"
+					className={`_sortIconDefault ${currentSortOrder}`}
+				>
+					<path
+						d="M3.0388 0.157331C2.83038 -0.0524437 2.49335 -0.0524437 2.28714 0.157331L0.156319 2.29971C-0.0521064 2.50948 -0.0521064 2.84869 0.156319 3.05624C0.364745 3.26378 0.701774 3.26601 0.907982 3.05624L2.12749 1.82883L2.12971 9.46329C2.12971 9.7601 2.36696 9.99888 2.66186 9.99888C2.95676 9.99888 3.19401 9.7601 3.19401 9.46329V1.82883L4.41353 3.05624C4.62195 3.26601 4.95898 3.26601 5.16519 3.05624C5.3714 2.84646 5.37361 2.50725 5.16519 2.29971L3.0388 0.157331Z"
+						className="_upIcon"
+						fill="currentColor"
+					/>
+					<path
+						d="M10.844 6.9446C11.0525 7.15214 11.0525 7.49135 10.844 7.70113L8.71544 9.84351C8.50923 10.0533 8.17221 10.0533 7.96378 9.84351L5.83518 7.70113C5.62675 7.49359 5.62897 7.15438 5.83518 6.9446C6.04138 6.73483 6.37841 6.73483 6.58684 6.9446L7.80635 8.172V0.537548C7.80635 0.240739 8.0436 0.00195312 8.3385 0.00195312C8.6334 0.00195312 8.87065 0.240739 8.87065 0.537548L8.87287 8.172L10.0924 6.9446C10.2986 6.73483 10.6356 6.73706 10.844 6.9446Z"
+						className="_downIcon"
+						fill="currentColor"
+					/>
+				</svg>
+			);
+		}
+	} else if (rightIcon) {
+		rightIconComp = (
+			<i className={`_rightIcon ${rightIcon}`}>
+				<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+			</i>
+		);
+	}
+
+	let style = processStyleObjectToCSS(
+		styleProperties.comp,
+		`.comp.compTableHeaderColumn.c${key}`,
+	);
+	style += processStyleObjectToCSS(
+		hoverStyleProperties.comp,
+		`.comp.compTableHeaderColumn.c${key}:hover`,
+	);
+	style += processStyleObjectToCSS(
+		styleProperties.headerContainer,
+		`.comp.compTableHeaderColumn.c${key} ._headerContainer`,
+	);
+	style += processStyleObjectToCSS(
+		hoverStyleProperties.headerContainer,
+		`.comp.compTableHeaderColumn.c${key}:hover ._headerContainer`,
+	);
+	style += processStyleObjectToCSS(
+		styleProperties.leftIcon,
+		`.comp.compTableHeaderColumn.c${key} ._leftIcon`,
+	);
+	style += processStyleObjectToCSS(
+		hoverStyleProperties.leftIcon,
+		`.comp.compTableHeaderColumn.c${key}:hover ._leftIcon`,
+	);
+	style += processStyleObjectToCSS(
+		styleProperties.rightIcon,
+		`.comp.compTableHeaderColumn.c${key} ._rightIcon`,
+	);
+	style += processStyleObjectToCSS(
+		hoverStyleProperties.rightIcon,
+		`.comp.compTableHeaderColumn.c${key}:hover ._rightIcon`,
+	);
+
+	const [showMenuLocation, setShowMenuLocation] = useState<{ x: number; y: number } | undefined>(
+		undefined,
+	);
+	let menu = undefined;
+
+	const [personalizedObject, setPersonalizedObject] = useState<any>(undefined);
+	useEffect(
+		() =>
+			addListenerAndCallImmediatelyWithChildrenActivity(
+				(_, v) => setPersonalizedObject(v),
+				pageExtractor,
+				context.table.personalizationBindingPath,
+			),
+		[
+			context.table.personalizationBindingPath,
+			context.table.enablePersonalization,
+			setPersonalizedObject,
+		],
+	);
+
+	if (
+		(hideIfNotPersonalized && !personalizedObject?.hiddenFields?.[definition.key]) ||
+		(!hideIfNotPersonalized && personalizedObject?.hiddenFields?.[definition.key])
+	) {
+		return null;
+	}
+
+	if (showMenuLocation) {
+		let sortItems = undefined;
+		if (hasSort) {
+			sortItems = (
+				<>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyUp={e =>
+							(e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()
+						}
+						onClick={e => {
+							e.stopPropagation();
+							e.preventDefault();
+							onChangeSort({
+								currentSortOrder,
+								initialSortOrder,
+								props,
+								multiSort,
+								sortBindingPath,
+								sortKey,
+								pageExtractor,
+								onSort,
+								hasSort,
+								sortTo: 'ASC',
+							});
+							setShowMenuLocation(undefined);
+						}}
 					>
-						<SubHelperComponent
-							definition={definition}
-							subComponentName="rightIcon"
-						></SubHelperComponent>
-					</i>
-				) : undefined}
+						Sort Ascending
+					</div>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyUp={e =>
+							(e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()
+						}
+						onClick={e => {
+							e.stopPropagation();
+							e.preventDefault();
+							onChangeSort({
+								currentSortOrder,
+								initialSortOrder,
+								props,
+								multiSort,
+								sortBindingPath,
+								sortKey,
+								pageExtractor,
+								onSort,
+								hasSort,
+								sortTo: 'DESC',
+							});
+							setShowMenuLocation(undefined);
+						}}
+					>
+						Sort Descending
+					</div>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyUp={e =>
+							(e.key === 'Enter' || e.key === ' ') && e.currentTarget.click()
+						}
+						onClick={e => {
+							e.stopPropagation();
+							e.preventDefault();
+							onChangeSort({
+								currentSortOrder,
+								initialSortOrder,
+								props,
+								multiSort,
+								sortBindingPath,
+								sortKey,
+								pageExtractor,
+								onSort,
+								hasSort,
+								sortTo: 'undefined',
+							});
+							setShowMenuLocation(undefined);
+						}}
+					>
+						Clear Sorting
+					</div>
+					<div className="_popupMenuItemSeperator" />
+				</>
+			);
+		}
+
+		menu = (
+			<div
+				className="_popupBackground"
+				onClick={e => {
+					e.preventDefault();
+					e.stopPropagation();
+					setShowMenuLocation(undefined);
+				}}
+				onContextMenu={e => {
+					e.preventDefault();
+					e.stopPropagation();
+				}}
+				role="menu"
+				tabIndex={0}
+				onKeyUp={e => e.key === 'Escape' && setShowMenuLocation(undefined)}
+			>
+				<div
+					className="_popupMenu"
+					style={{
+						top: showMenuLocation.y,
+						left: showMenuLocation.x,
+					}}
+				>
+					{sortItems}
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
+						onClick={() =>
+							setData(
+								`${context.table.personalizationBindingPath}.hiddenFields.${key}`,
+								true,
+								pageExtractor.getPageName(),
+							)
+						}
+					>
+						Hide Column
+					</div>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
+						onClick={() =>
+							setData(
+								`${context.table.personalizationBindingPath}.hiddenFields`,
+								undefined,
+								pageExtractor.getPageName(),
+								true,
+							)
+						}
+					>
+						Reset Column Visibility
+					</div>
+					<div className="_popupMenuItemSeperator" />
+					{context.table.columnNames.map(({ key, label }: any) => {
+						if (!label) return null;
+						return (
+							<div
+								key={key}
+								className="_popupMenuItem"
+								role="menuitem"
+								tabIndex={0}
+								onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
+								onClick={() =>
+									setData(
+										`${context.table.personalizationBindingPath}.hiddenFields.${key}`,
+										!personalizedObject?.hiddenFields?.[key],
+										pageExtractor.getPageName(),
+									)
+								}
+							>
+								{label}
+							</div>
+						);
+					})}
+				</div>
 			</div>
+		);
+	}
+
+	return (
+		<div
+			className={`comp compTableHeaderColumn c${key} ${hasSort ? '_pointer' : ''}`}
+			style={{ ...styleProperties.comp }}
+			onClick={() =>
+				onChangeSort({
+					currentSortOrder,
+					initialSortOrder,
+					props,
+					multiSort,
+					sortBindingPath,
+					sortKey,
+					pageExtractor,
+					onSort,
+					hasSort,
+				})
+			}
+			role="columnheader"
+			tabIndex={hasSort ? 0 : undefined}
+			onContextMenu={
+				context.table.enablePersonalization
+					? e => {
+							e.preventDefault();
+							e.stopPropagation();
+							setShowMenuLocation({ x: e.clientX, y: e.clientY });
+						}
+					: undefined
+			}
+		>
+			<HelperComponent context={props.context} definition={definition} />
+			<style>{style}</style>
+			<div className={`_headerContainer _${(currentSortOrder ?? 'no').toLowerCase()}`}>
+				<SubHelperComponent definition={definition} subComponentName="headerContainer" />
+				{leftIconComp}
+				{label}
+				{rightIconComp}
+			</div>
+			{menu}
 		</div>
 	);
+}
+
+function onChangeSort({
+	currentSortOrder,
+	initialSortOrder,
+	props,
+	multiSort,
+	sortBindingPath,
+	sortKey,
+	pageExtractor,
+	onSort,
+	hasSort,
+	sortTo,
+}: {
+	currentSortOrder: string | undefined;
+	initialSortOrder: string;
+	props: Readonly<ComponentProps>;
+	multiSort: boolean;
+	sortBindingPath: string;
+	sortKey: string;
+	pageExtractor: PageStoreExtractor;
+	onSort: string | undefined;
+	hasSort: boolean;
+	sortTo?: string;
+}) {
+	console.error('Here...');
+	if (!hasSort) return;
+
+	let newSortOrder = currentSortOrder;
+
+	if (!sortTo) {
+		if (newSortOrder === undefined) newSortOrder = initialSortOrder;
+		else if (newSortOrder === 'ASC') newSortOrder = 'DESC';
+		else newSortOrder = undefined;
+	} else newSortOrder = sortTo === 'undefined' ? undefined : sortTo;
+
+	if (multiSort)
+		setData(`${sortBindingPath}.${sortKey}`, newSortOrder, pageExtractor.getPageName());
+	else setData(sortBindingPath, { [sortKey]: newSortOrder }, pageExtractor.getPageName());
+
+	const onSortEvent = onSort ? props.pageDefinition.eventFunctions?.[onSort] : undefined;
+	if (!onSortEvent) return;
+	(async () =>
+		await runEvent(
+			onSortEvent,
+			onSort,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		))();
 }
