@@ -71,18 +71,19 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		);
 
 	const [updateColumnsAt, setUpdateColumnsAt] = useState(Date.now());
+	const [personalizationObject, setPersonalizationObject] = useState<any>();
 
 	useEffect(
 		() =>
 			addListenerAndCallImmediatelyWithChildrenActivity(
-				(_, v) => setUpdateColumnsAt(Date.now()),
+				(_, v) => setPersonalizationObject(v),
 				pageExtractor,
 				context.table.personalizationBindingPath,
 			),
 		[
 			context.table.personalizationBindingPath,
 			context.table.enablePersonalization,
-			setUpdateColumnsAt,
+			setPersonalizationObject,
 		],
 	);
 
@@ -96,6 +97,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				columnsPageDefinition,
 				children,
 				context,
+				personalizationObject,
 			),
 			listenPaths,
 		};
@@ -525,6 +527,7 @@ function generateTableColumnDefinitions(
 	pageDefinition: PageDefinition,
 	children: { [key: string]: boolean } | undefined,
 	context: RenderContext,
+	personalizationObject: any,
 ) {
 	let cp = pageDefinition;
 	if (dynamicColumns.length > 0) {
@@ -565,6 +568,12 @@ function generateTableColumnDefinitions(
 			});
 		}
 	}
+
+	if (personalizationObject.columnOrder) {
+		if (!dynamicColumns.length) cp = duplicate(pageDefinition);
+	}
+
+	console.log('Children: ', children, personalizationObject);
 
 	const hp = duplicate(cp);
 	Object.keys(children ?? {})

@@ -217,7 +217,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 	const personalizationBindingPath = enablePersonalization
 		? ((bindingPath7 && getPathFromLocation(bindingPath7, locationHistory, pageExtractor)) ??
-			`${STORE_PREFIX}.personalization.${context.pageName}.${key}`)
+			`${STORE_PREFIX}.personalization.${context.pageName}.${flattenUUID(key)}`)
 		: undefined;
 
 	useEffect(
@@ -1125,12 +1125,6 @@ function personalizationEvent({
 	locationHistory: any[];
 	pageExtractor: PageStoreExtractor;
 }) {
-	console.log({
-		personalizationBindingPath,
-		key,
-		locationHistory,
-		pageExtractor,
-	});
 	if (!personalizationBindingPath) return;
 
 	const appCode = getDataFromPath(

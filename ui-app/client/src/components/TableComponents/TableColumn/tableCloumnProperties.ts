@@ -80,6 +80,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
+	{
+		name: 'disableColumnDragging',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Disable Column Dragging',
+		description: 'Disable the column dragging.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
