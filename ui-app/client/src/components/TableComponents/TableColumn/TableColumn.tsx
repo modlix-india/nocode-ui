@@ -16,14 +16,16 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { stylePropertiesWithPseudoStates, properties: { hideIfNotPersonalized } = {} } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-		);
+	const {
+		stylePropertiesWithPseudoStates,
+		properties: { hideIfNotPersonalized, disableColumnDragging } = {},
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 
 	const [hover, setHover] = useState(false);
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
