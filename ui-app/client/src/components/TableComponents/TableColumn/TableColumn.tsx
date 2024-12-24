@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { PageStoreExtractor } from '../../../context/StoreContext';
+import { getDataFromPath, PageStoreExtractor } from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
 import Children from '../../Children';
@@ -16,13 +16,14 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { stylePropertiesWithPseudoStates } = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
+	const { stylePropertiesWithPseudoStates, properties: { hideIfNotPersonalized } = {} } =
+		useDefinition(
+			definition,
+			propertiesDefinition,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		);
 
 	const [hover, setHover] = useState(false);
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
@@ -35,6 +36,21 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		{ hover },
 		stylePropertiesWithPseudoStates,
 	);
+
+	const personalizedObject = context.table.personalizationBindingPath
+		? getDataFromPath(
+				`${context.table.personalizationBindingPath}`,
+				locationHistory,
+				pageExtractor,
+			)
+		: undefined;
+
+	if (
+		(hideIfNotPersonalized && !personalizedObject?.hiddenFields?.[definition.key]) ||
+		(!hideIfNotPersonalized && personalizedObject?.hiddenFields?.[definition.key])
+	) {
+		return null;
+	}
 
 	return (
 		<div

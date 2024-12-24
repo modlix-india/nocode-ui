@@ -1,5 +1,9 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { STORE_PATH_FUNCTION_EXECUTION } from '../../../constants';
+import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import {
+	LOCAL_STORE_PREFIX,
+	STORE_PATH_FUNCTION_EXECUTION,
+	STORE_PREFIX,
+} from '../../../constants';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -10,10 +14,7 @@ import {
 } from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
-import {
-	addToToggleSetCurry,
-	removeFromToggleSetCurry,
-} from '../../Calendar/components/calendarFunctions';
+
 import Children from '../../Children';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import { runEvent } from '../../util/runEvent';
@@ -21,6 +22,9 @@ import useDefinition from '../../util/useDefinition';
 import { flattenUUID } from '../../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
 import { usedComponents } from '../../../App/usedComponents';
+import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import axios from 'axios';
+import { deepEqual, duplicate } from '@fincity/kirun-js';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -90,12 +94,15 @@ function spinCalculate(
 export default function TableComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition: {
+			key,
 			children,
 			bindingPath,
 			bindingPath2,
 			bindingPath3,
 			bindingPath4,
 			bindingPath5,
+			bindingPath6,
+			bindingPath7,
 		},
 		pageDefinition,
 		locationHistory = [],
@@ -137,6 +144,9 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			gridModeImage,
 			columnsModeActiveImage,
 			gridModeActiveImage,
+			enablePersonalization,
+			onSort,
+			multiSort,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -201,6 +211,25 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 	const tableModeBindingPath =
 		bindingPath5 && getPathFromLocation(bindingPath5, locationHistory, pageExtractor);
+
+	const sortBindingPath =
+		bindingPath6 && getPathFromLocation(bindingPath6, locationHistory, pageExtractor);
+
+	const personalizationBindingPath = enablePersonalization
+		? ((bindingPath7 && getPathFromLocation(bindingPath7, locationHistory, pageExtractor)) ??
+			`${STORE_PREFIX}.personalization.${context.pageName}.${key}`)
+		: undefined;
+
+	useEffect(
+		() =>
+			personalizationEvent({
+				personalizationBindingPath,
+				pageExtractor,
+				locationHistory,
+				key,
+			}),
+		[personalizationBindingPath, locationHistory, pageExtractor, key],
+	);
 
 	const [data, setData] = useState<any>();
 
@@ -424,7 +453,16 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					)}
 				></i>
 			) : (
-				<svg width="19" height="18" viewBox="0 0 19 18" fill="none">
+				<svg
+					width="19"
+					height="18"
+					viewBox="0 0 19 18"
+					fill="none"
+					style={getStyleObject(
+						mode === 'COLUMNS' ? 'selectedColumnsModeIcon' : 'columnsModeIcon',
+						hovers,
+					)}
+				>
 					<path
 						d="M0 2C0 0.89543 0.895431 0 2 0H5V18H2C0.89543 18 0 17.1046 0 16V2Z"
 						fill="currentColor"
@@ -454,7 +492,16 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					)}
 				></i>
 			) : (
-				<svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+				<svg
+					width="18"
+					height="18"
+					viewBox="0 0 18 18"
+					fill="none"
+					style={getStyleObject(
+						mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon',
+						hovers,
+					)}
+				>
 					<rect width="8" height="8" rx="1" fill="currentColor" />
 					<rect y="10" width="8" height="8" rx="1" fill="currentColor" />
 					<rect x="10" width="8" height="8" rx="1" fill="currentColor" />
@@ -474,12 +521,26 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								hovers,
 								setHovers,
 								'modesContainer',
+								'selectedColumnsModeIcon',
+								'columnsModeIcon',
+								'selectedGridModeIcon',
+								'gridModeIcon',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="modesContainer"
+							/>
 							<div
 								className={`_columns _pointer ${
 									mode === 'COLUMNS' ? '_selected' : ''
 								}`}
+								style={getStyleObject(
+									mode === 'COLUMNS'
+										? 'selectedColumnsModeIcon'
+										: 'columnsModeIcon',
+									hovers,
+								)}
 								onClick={() => {
 									if (tableModeBindingPath) {
 										setStoreData(
@@ -506,10 +567,22 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 										: 'columnsModeIcon',
 								)}
 							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName={
+										mode === 'COLUMNS'
+											? 'selectedColumnsModeIcon'
+											: 'columnsModeIcon'
+									}
+								/>
 								{columnsMode}
 							</div>
 							<div
 								className={`_grid _pointer ${mode === 'GRID' ? '_selected' : ''}`}
+								style={getStyleObject(
+									mode === 'COLUMNS' ? 'selectedGridModeIcon' : 'gridModeIcon',
+									hovers,
+								)}
 								onClick={() => {
 									if (tableModeBindingPath)
 										setStoreData(
@@ -530,6 +603,12 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 									mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon',
 								)}
 							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName={
+										mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon'
+									}
+								/>
 								{gridMode}
 							</div>
 						</div>
@@ -571,6 +650,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'perPageLabel',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="perPageLabel"
+							/>
 							{perPageLabel}
 						</span>
 						<select
@@ -654,6 +737,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'pageSelectionLabel',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="pageSelectionLabel"
+							/>
 							Page
 						</span>
 						<select
@@ -722,6 +809,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'pageSelectionLabel',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="pageSelectionLabel"
+							/>
 							of {totalPages}
 						</span>
 					</>
@@ -785,6 +876,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								'previousText',
 							)}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="previousText"
+							/>
 							{leftArrowLabel}
 						</span>
 					</div>
@@ -829,6 +924,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextText')}
 							onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'nextText')}
 						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="nextText"
+							/>
 							{rightArrowLabel}
 						</span>
 						{showArrows && (
@@ -865,7 +964,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 									</div>,
 								);
 							}
-
+							const styleObjectName =
+								e === currentPage + 1 ? 'selectedPageNumber' : 'pageNumbers';
 							arr.push(
 								<div
 									key={`${numbers[i]}_pagenumber`}
@@ -875,11 +975,9 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 											: '_clickable _pointer _pageNumber'
 									}
 									style={getStyleObject(
-										e === currentPage + 1
-											? 'selectedPageNumber'
-											: 'pageNumbers',
+										styleObjectName,
 										hovers.has(`${numbers[i]}_pagenumber`)
-											? new Set(['pageNumbers'])
+											? new Set([styleObjectName])
 											: new Set(),
 									)}
 									onMouseEnter={addToToggleSetCurry(
@@ -921,6 +1019,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 										}
 									}}
 								>
+									<SubHelperComponent
+										definition={definition}
+										subComponentName={styleObjectName}
+									/>
 									{e}
 								</div>,
 							);
@@ -954,6 +1056,11 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							uniqueKey,
 							onSelect,
 							firstchildKey,
+							onSort,
+							enablePersonalization,
+							personalizationBindingPath,
+							sortBindingPath,
+							multiSort,
 						},
 					}}
 					locationHistory={locationHistory}
@@ -1005,4 +1112,87 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			{spinner}
 		</div>
 	);
+}
+
+function personalizationEvent({
+	personalizationBindingPath,
+	key,
+	locationHistory,
+	pageExtractor,
+}: {
+	personalizationBindingPath: string | undefined;
+	key: string;
+	locationHistory: any[];
+	pageExtractor: PageStoreExtractor;
+}) {
+	console.log({
+		personalizationBindingPath,
+		key,
+		locationHistory,
+		pageExtractor,
+	});
+	if (!personalizationBindingPath) return;
+
+	const appCode = getDataFromPath(
+		`${STORE_PREFIX}.application.appCode`,
+		locationHistory,
+		pageExtractor,
+	);
+	const url = `api/ui/personalization/${appCode}/table_${pageExtractor.getPageName()}_${key}`;
+	let currentObject: any;
+	(async () => {
+		const po = await axios.get(url, {
+			headers: {
+				Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+			},
+		});
+		if (po.data) setStoreData(personalizationBindingPath, po.data, pageExtractor.getPageName());
+		currentObject = duplicate(po.data);
+	})();
+
+	let timeoutHandle: NodeJS.Timeout | undefined;
+	return addListenerAndCallImmediatelyWithChildrenActivity(
+		(_, v) => {
+			if (!timeoutHandle) clearTimeout(timeoutHandle);
+			if (deepEqual(currentObject, v) || currentObject === undefined) return;
+			currentObject = duplicate(v);
+
+			timeoutHandle = setTimeout(() => {
+				(async () => {
+					await axios.post(url, v, {
+						headers: {
+							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+						},
+					});
+					timeoutHandle = undefined;
+				})();
+			}, 2000);
+		},
+		pageExtractor,
+		personalizationBindingPath,
+	);
+}
+
+export function addToToggleSetCurry(
+	set: Set<string>,
+	setStateFunction: Dispatch<SetStateAction<Set<string>>>,
+	key: string,
+) {
+	return () => {
+		if (set.has(key)) return;
+		setStateFunction(new Set([...Array.from(set), key]));
+	};
+}
+
+export function removeFromToggleSetCurry(
+	set: Set<string>,
+	setStateFunction: Dispatch<SetStateAction<Set<string>>>,
+	...key: string[]
+) {
+	return () => {
+		if (!key.find(e => set.has(e))) return;
+		const newSet = new Set([...Array.from(set)]);
+		key.forEach(e => newSet.delete(e));
+		setStateFunction(newSet);
+	};
 }

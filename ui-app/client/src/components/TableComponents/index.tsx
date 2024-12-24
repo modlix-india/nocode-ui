@@ -15,7 +15,7 @@ const LazyTableComponent = React.lazy(
 
 function LoadLazyTableComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableComponent {...props} />
 		</React.Suspense>
 	);
@@ -45,6 +45,8 @@ export const Table: Component = {
 		bindingPath3: { name: 'Page Number Binding' },
 		bindingPath4: { name: 'Page Size Binding' },
 		bindingPath5: { name: 'Table Display Mode Binding' },
+		bindingPath6: { name: 'Sort Binding' },
+		bindingPath7: { name: 'Personalization Binding' },
 	},
 	subComponentDefinition: [
 		{
@@ -203,7 +205,7 @@ const LazyTableColumnComponent = React.lazy(
 
 function LoadLazyTableColumnComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableColumnComponent {...props} />
 		</React.Suspense>
 	);
@@ -292,14 +294,38 @@ export const TableColumn: Component = {
 		},
 		{
 			name: 'leftIcon',
-			displayName: 'left Icon',
-			description: 'left icon',
+			displayName: 'Left Icon',
+			description: 'Left icon',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'rightIcon',
-			displayName: 'right Icon',
-			description: 'right icon',
+			displayName: 'Right Icon',
+			description: 'Right icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'headerContainer',
+			displayName: 'Header Container',
+			description: 'Header Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortAscendingIcon',
+			displayName: 'Sort Ascending Icon',
+			description: 'Sort Ascending Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortDescendingIcon',
+			displayName: 'Sort Descending Icon',
+			description: 'Sort Descending Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortNoneIcon',
+			displayName: 'Sort None Icon',
+			description: 'Sort None Icon',
 			icon: 'fa-solid fa-box',
 		},
 	],
@@ -319,7 +345,7 @@ const LazyTableColumnHeaderComponent = React.lazy(
 
 function LoadLazyTableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableColumnHeaderComponent {...props} />
 		</React.Suspense>
 	);
@@ -362,7 +388,7 @@ const LazyTableColumnsComponent = React.lazy(
 
 function LoadLazyTableColumnsComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableColumnsComponent {...props} />
 		</React.Suspense>
 	);
@@ -478,88 +504,22 @@ export const TableDynamicColumn: Component = {
 			description: 'Header',
 			icon: 'fa-solid fa-box',
 		},
-	],
-};
-
-import { propertiesDefinition as tableDynamicColumnsPropertiesDefinition } from './TableDynamicColumns/tableDynamicColumnsProperties';
-
-const LazyTableDynamicColumnsComponent = React.lazy(
-	() =>
-		import(
-			/* webpackChunkName: "TableDynamicColumns" */ './TableDynamicColumns/TableDynamicColumns'
-		),
-);
-
-function LoadLazyTableDynamicColumnsComponent(props: Readonly<ComponentProps>) {
-	return (
-		<React.Suspense fallback={<>...</>}>
-			<LazyTableDynamicColumnsComponent {...props} />
-		</React.Suspense>
-	);
-}
-
-export const TableDynamicColumns: Component = {
-	name: 'TableDynamicColumns',
-	displayName: 'Table Dynamic Columns',
-	description: 'Table Dynamic Columns component',
-	component: LoadLazyTableDynamicColumnsComponent,
-	styleProperties: tableColumnsStylePropertiesDefinition,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
-	properties: tableDynamicColumnsPropertiesDefinition,
-	styleComponent: () => <></>,
-	styleDefaults: tableColumnsStyleDefaults,
-	parentType: 'Table',
-	stylePseudoStates: ['hover'],
-	subComponentDefinition: [
 		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" rx="4" fill="white" />
-					<path
-						d="M2.54769 14.2852C2.39752 14.2846 2.24873 14.3136 2.10977 14.3705C1.97081 14.4274 1.84442 14.5112 1.73784 14.617C1.63126 14.7228 1.54657 14.8486 1.48861 14.9871C1.43064 15.1256 1.40055 15.2742 1.40003 15.4244C1.39944 15.5753 1.4287 15.7248 1.48617 15.8643C1.54363 16.0038 1.62815 16.1305 1.73484 16.2372C1.84153 16.3439 1.96832 16.4284 2.10783 16.4859C2.24734 16.5433 2.39681 16.5726 2.54769 16.572H9.69492C9.8458 16.5726 9.99532 16.5433 10.1348 16.4859C10.2743 16.4284 10.4011 16.3439 10.5077 16.2372C10.6144 16.1305 10.6989 16.0038 10.7564 15.8643C10.8139 15.7248 10.8431 15.5753 10.8425 15.4244C10.842 15.2742 10.8119 15.1256 10.754 14.9871C10.696 14.8486 10.6113 14.7228 10.5048 14.617C10.3982 14.5112 10.2718 14.4275 10.1328 14.3705C9.99389 14.3136 9.84509 14.2846 9.69492 14.2852H2.54769Z"
-						fill="#CFD8DD"
-					/>
-					<path
-						d="M2.54769 20.5742C2.39752 20.5736 2.24873 20.6026 2.10977 20.6595C1.97081 20.7165 1.84442 20.8002 1.73784 20.906C1.63126 21.0118 1.54657 21.1376 1.48861 21.2761C1.43064 21.4147 1.40055 21.5632 1.40003 21.7134C1.39944 21.8643 1.4287 22.0138 1.48617 22.1533C1.54363 22.2928 1.62815 22.4196 1.73484 22.5263C1.84153 22.633 1.96832 22.7174 2.10783 22.7749C2.24734 22.8324 2.39681 22.8617 2.54769 22.8611H9.69492C9.8458 22.8617 9.99532 22.8324 10.1348 22.7749C10.2743 22.7174 10.4011 22.6329 10.5077 22.5263C10.6144 22.4196 10.6989 22.2928 10.7564 22.1533C10.8139 22.0138 10.8431 21.8643 10.8425 21.7134C10.842 21.5632 10.8119 21.4147 10.754 21.2761C10.696 21.1376 10.6113 21.0119 10.5048 20.9061C10.3982 20.8003 10.2718 20.7165 10.1328 20.6596C9.99389 20.6026 9.84509 20.5736 9.69492 20.5742H2.54769Z"
-						fill="#CFD8DD"
-					/>
-					<path d="M9.40833 8.71289V26.9995H11.6952V8.71289H9.40833Z" fill="#CFD8DD" />
-					<path
-						d="M2.54769 7.00001C2.39752 6.99941 2.24873 7.02842 2.10977 7.08535C1.97081 7.14229 1.84442 7.22606 1.73784 7.33185C1.63126 7.43765 1.54657 7.5634 1.48861 7.70193C1.43064 7.84047 1.40055 7.98906 1.40003 8.13923C1.39944 8.29011 1.4287 8.43961 1.48617 8.57913C1.54363 8.71864 1.62815 8.84539 1.73484 8.95208C1.84154 9.05877 1.96828 9.14329 2.10779 9.20075C2.24731 9.25822 2.39681 9.28749 2.54769 9.28689H27.6949C27.8458 9.28748 27.9953 9.25822 28.1348 9.20075C28.2743 9.14329 28.4011 9.05877 28.5078 8.95208C28.6145 8.84539 28.699 8.71864 28.7564 8.57913C28.8139 8.43962 28.8431 8.29011 28.8425 8.13923C28.842 7.98906 28.8119 7.84047 28.754 7.70193C28.696 7.5634 28.6113 7.43765 28.5048 7.33185C28.3982 7.22606 28.2718 7.14229 28.1328 7.08535C27.9939 7.02841 27.8451 6.99942 27.6949 7.00001H2.54769Z"
-						fill="#CFD8DD"
-					/>
-					<path
-						d="M1.5 9.5H28.5V26C28.5 27.3807 27.3807 28.5 26 28.5H4C2.61929 28.5 1.5 27.3807 1.5 26V9.5Z"
-						stroke="#CFD8DD"
-						strokeWidth="3"
-						fillOpacity={0}
-					/>
-					<path
-						d="M0 4C0 1.79086 1.79086 0 4 0H26C28.2091 0 30 1.79086 30 4V8H0V4Z"
-						fill="#2196F3"
-					/>
-					<path
-						d="M24.729 21.1816L22.8564 20.7334C22.6844 21.0708 22.4579 21.3879 22.1722 21.6698C20.736 23.0871 18.4063 23.0871 16.9695 21.6698C15.5327 20.252 15.5327 17.9533 16.9695 16.5357C18.2074 15.3139 20.1077 15.1481 21.5291 16.0323L20.3189 17.2266L25 18.2183L23.9945 13.5996L22.8868 14.693C20.7059 13.0928 17.6112 13.2629 15.6316 15.2156C13.4561 17.3623 13.4561 20.8429 15.6316 22.9896C17.8071 25.1362 21.335 25.1362 23.5105 22.9898C24.0513 22.4557 24.4573 21.8391 24.729 21.1816Z"
-						fill="#2196F3"
-						className="_tableDCSpinner"
-					/>
-				</IconHelper>
-			),
-		},
-		{
-			name: 'row',
-			displayName: 'Row',
-			description: 'Row',
+			name: 'sortAscendingIcon',
+			displayName: 'Sort Ascending Icon',
+			description: 'Sort Ascending Icon',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'header',
-			displayName: 'Header',
-			description: 'Header',
+			name: 'sortDescendingIcon',
+			displayName: 'Sort Descending Icon',
+			description: 'Sort Descending Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sortNoneIcon',
+			displayName: 'Sort None Icon',
+			description: 'Sort None Icon',
 			icon: 'fa-solid fa-box',
 		},
 	],
@@ -579,7 +539,7 @@ const LazyTableEmptyGridComponent = React.lazy(
 
 function LoadLazyTableEmptyGridComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableEmptyGridComponent {...props} />
 		</React.Suspense>
 	);
@@ -686,7 +646,7 @@ const LazyTableGridComponent = React.lazy(
 
 function LoadLazyTableGridComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTableGridComponent {...props} />
 		</React.Suspense>
 	);
@@ -788,7 +748,7 @@ const LazyTablePreviewGridComponent = React.lazy(
 
 function LoadLazyTablePreviewGridComponent(props: Readonly<ComponentProps>) {
 	return (
-		<React.Suspense fallback={<>...</>}>
+		<React.Suspense fallback={<></>}>
 			<LazyTablePreviewGridComponent {...props} />
 		</React.Suspense>
 	);
