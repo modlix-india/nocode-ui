@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import {
-	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	PageStoreExtractor,
@@ -16,6 +15,7 @@ import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { runEvent } from '../../util/runEvent';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnHeaderProperties';
+import { duplicate } from '@fincity/kirun-js';
 
 export default function TableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -36,6 +36,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			sortDescendingIcon,
 			sortAscendingIcon,
 			hideIfNotPersonalized,
+			disableColumnDragging,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -354,6 +355,41 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		);
 	}
 
+	const dragProperties: any = {};
+
+	if (!disableColumnDragging && context.table.enablePersonalization) {
+		dragProperties.draggable = true;
+		dragProperties.onDragStart = (ev: React.DragEvent<HTMLElement>) =>
+			ev.dataTransfer.setData('text/plain', `COLUMN_NAME_${key}`);
+		dragProperties.onDrop = (ev: React.DragEvent<HTMLElement>) => {
+			let droppedKey = ev.dataTransfer.getData('text/plain');
+			if (!droppedKey.startsWith('COLUMN_NAME_')) return;
+			droppedKey = droppedKey.substring(12);
+			if (droppedKey === key) return;
+
+			const columnOrder = context.table.columnNames
+				.sort((a: any, b: any) => a.order - b.order)
+				.map(({ key }: any) => key);
+
+			const di = columnOrder.indexOf(droppedKey);
+			const doi = columnOrder.indexOf(key);
+			columnOrder.splice(di, 1);
+			columnOrder.splice(doi, 0, droppedKey);
+
+			const newOrder = columnOrder.reduce((acc: any, key: string, i: number) => {
+				acc[key] = i;
+				return acc;
+			}, {});
+
+			setData(
+				`${context.table.personalizationBindingPath}.columnOrder`,
+				newOrder,
+				pageExtractor.getPageName(),
+			);
+		};
+		dragProperties.onDragOver = (ev: React.DragEvent<HTMLElement>) => ev.preventDefault();
+	}
+
 	return (
 		<div
 			className={`comp compTableHeaderColumn c${key} ${hasSort ? '_pointer' : ''}`}
@@ -382,6 +418,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 						}
 					: undefined
 			}
+			{...dragProperties}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			<style>{style}</style>
