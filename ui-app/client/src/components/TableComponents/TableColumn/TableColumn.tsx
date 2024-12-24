@@ -46,8 +46,8 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		: undefined;
 
 	if (
-		(hideIfNotPersonalized && !personalizedObject) ||
-		personalizedObject?.hiddenFields?.[definition.key]
+		(hideIfNotPersonalized && !personalizedObject?.hiddenFields?.[definition.key]) ||
+		(!hideIfNotPersonalized && personalizedObject?.hiddenFields?.[definition.key])
 	) {
 		return null;
 	}

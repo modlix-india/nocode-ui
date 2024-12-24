@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from 'react';
 import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
 import {
 	addListener,
+	addListenerAndCallImmediatelyWithChildrenActivity,
 	fillerExtractor,
 	getDataFromLocation,
 	getDataFromPath,
@@ -69,7 +70,21 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			pageExtractor,
 		);
 
-	const [pathsUpdatedAt, setPathsUpdatedAt] = useState(Date.now());
+	const [updateColumnsAt, setUpdateColumnsAt] = useState(Date.now());
+
+	useEffect(
+		() =>
+			addListenerAndCallImmediatelyWithChildrenActivity(
+				(_, v) => setUpdateColumnsAt(Date.now()),
+				pageExtractor,
+				context.table.personalizationBindingPath,
+			),
+		[
+			context.table.personalizationBindingPath,
+			context.table.enablePersonalization,
+			setUpdateColumnsAt,
+		],
+	);
 
 	const { headerDef, columnDef, listenPaths } = useMemo(() => {
 		let { dynamicColumns, columnsPageDefinition, listenPaths } =
@@ -84,12 +99,12 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			),
 			listenPaths,
 		};
-	}, [pageDefinition, pathsUpdatedAt]);
+	}, [pageDefinition, updateColumnsAt]);
 
 	useEffect(() => {
 		if (!listenPaths.length) return;
-		addListener(() => setPathsUpdatedAt(Date.now()), pageExtractor, ...listenPaths);
-	}, [setPathsUpdatedAt, pageExtractor, listenPaths]);
+		addListener(() => setUpdateColumnsAt(Date.now()), pageExtractor, ...listenPaths);
+	}, [setUpdateColumnsAt, pageExtractor, listenPaths]);
 
 	const emptyRowPageDef = useMemo(() => {
 		if (!showEmptyRows) return pageDefinition;

@@ -1,5 +1,11 @@
-import { useState } from 'react';
-import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
+import { useEffect, useState } from 'react';
+import {
+	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
+	getDataFromPath,
+	PageStoreExtractor,
+	setData,
+} from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import {
 	processComponentStylePseudoClasses,
@@ -153,6 +159,28 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 	);
 	let menu = undefined;
 
+	const [personalizedObject, setPersonalizedObject] = useState<any>(undefined);
+	useEffect(
+		() =>
+			addListenerAndCallImmediatelyWithChildrenActivity(
+				(_, v) => setPersonalizedObject(v),
+				pageExtractor,
+				context.table.personalizationBindingPath,
+			),
+		[
+			context.table.personalizationBindingPath,
+			context.table.enablePersonalization,
+			setPersonalizedObject,
+		],
+	);
+
+	if (
+		(hideIfNotPersonalized && !personalizedObject?.hiddenFields?.[definition.key]) ||
+		(!hideIfNotPersonalized && personalizedObject?.hiddenFields?.[definition.key])
+	) {
+		return null;
+	}
+
 	if (showMenuLocation) {
 		let sortItems = undefined;
 		if (hasSort) {
@@ -243,6 +271,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 				</>
 			);
 		}
+
 		menu = (
 			<div
 				className="_popupBackground"
@@ -267,28 +296,62 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 					}}
 				>
 					{sortItems}
-					<div className="_popupMenuItem">Hide Column</div>
-					<div className="_popupMenuItem">Reset Column Visibility</div>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
+						onClick={() =>
+							setData(
+								`${context.table.personalizationBindingPath}.hiddenFields.${key}`,
+								true,
+								pageExtractor.getPageName(),
+							)
+						}
+					>
+						Hide Column
+					</div>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
+						onClick={() =>
+							setData(
+								`${context.table.personalizationBindingPath}.hiddenFields`,
+								undefined,
+								pageExtractor.getPageName(),
+								true,
+							)
+						}
+					>
+						Reset Column Visibility
+					</div>
 					<div className="_popupMenuItemSeperator" />
-					{}
+					{context.table.columnNames.map(({ key, label }: any) => {
+						if (!label) return null;
+						return (
+							<div
+								key={key}
+								className="_popupMenuItem"
+								role="menuitem"
+								tabIndex={0}
+								onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
+								onClick={() =>
+									setData(
+										`${context.table.personalizationBindingPath}.hiddenFields.${key}`,
+										!personalizedObject?.hiddenFields?.[key],
+										pageExtractor.getPageName(),
+									)
+								}
+							>
+								{label}
+							</div>
+						);
+					})}
 				</div>
 			</div>
 		);
-	}
-
-	const personalizedObject = context.table.personalizationBindingPath
-		? getDataFromPath(
-				`${context.table.personalizationBindingPath}`,
-				locationHistory,
-				pageExtractor,
-			)
-		: undefined;
-
-	if (
-		(hideIfNotPersonalized && !personalizedObject) ||
-		personalizedObject?.hiddenFields?.[definition.key]
-	) {
-		return null;
 	}
 
 	return (
@@ -310,11 +373,15 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			}
 			role="columnheader"
 			tabIndex={hasSort ? 0 : undefined}
-			onContextMenu={e => {
-				e.preventDefault();
-				e.stopPropagation();
-				setShowMenuLocation({ x: e.clientX, y: e.clientY });
-			}}
+			onContextMenu={
+				context.table.enablePersonalization
+					? e => {
+							e.preventDefault();
+							e.stopPropagation();
+							setShowMenuLocation({ x: e.clientX, y: e.clientY });
+						}
+					: undefined
+			}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			<style>{style}</style>
