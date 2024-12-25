@@ -579,8 +579,17 @@ function generateTableColumnDefinitions(
 		}
 	}
 
-	if (personalizationObject?.columnOrder) {
+	if (children && personalizationObject?.columnOrder) {
 		if (!dynamicColumns.length) cp = duplicate(pageDefinition);
+		Object.entries(children)
+			.filter(([, v]) => v)
+			.map(([k]) => cp.componentDefinition[k])
+			.sort(
+				(a, b) =>
+					(personalizationObject.columnOrder[a.key] ?? a.displayOrder ?? 0) -
+					(personalizationObject.columnOrder[b.key] ?? b.displayOrder ?? 0),
+			)
+			.forEach((cd, i) => (cd.displayOrder = i));
 	}
 
 	const hp = duplicate(cp);
