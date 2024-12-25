@@ -15,7 +15,6 @@ import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { runEvent } from '../../util/runEvent';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnHeaderProperties';
-import { duplicate } from '@fincity/kirun-js';
 
 export default function TableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -329,6 +328,23 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 						Reset Column Visibility
 					</div>
 					<div className="_popupMenuItemSeperator" />
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
+						onClick={() =>
+							setData(
+								`${context.table.personalizationBindingPath}.columnOrder`,
+								undefined,
+								pageExtractor.getPageName(),
+								true,
+							)
+						}
+					>
+						Reset Column Order
+					</div>
+					<div className="_popupMenuItemSeperator" />
 					{context.table.columnNames.map(({ key, label }: any) => {
 						if (!label) return null;
 						return (
@@ -456,7 +472,6 @@ function onChangeSort({
 	hasSort: boolean;
 	sortTo?: string;
 }) {
-	console.error('Here...');
 	if (!hasSort) return;
 
 	let newSortOrder = currentSortOrder;
