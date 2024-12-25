@@ -136,7 +136,7 @@
 .comp.compTable ._popupMenu {
     position:fixed;
     border-radius: 6px;
-    max-height: 20vh;
+    max-height: 30vh;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
