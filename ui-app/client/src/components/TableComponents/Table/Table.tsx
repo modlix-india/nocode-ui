@@ -147,6 +147,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			enablePersonalization,
 			onSort,
 			multiSort,
+			hideContextMenu,
+			disableColumnDragging,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -1061,6 +1063,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							personalizationBindingPath,
 							sortBindingPath,
 							multiSort,
+							hideContextMenu,
+							disableColumnDragging,
 						},
 					}}
 					locationHistory={locationHistory}
