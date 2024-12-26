@@ -773,13 +773,13 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 					</div>
 					{toolTipDesign !== '_fixedLabelTT' ? toolTip2 : null}
 
-					<div
+					{/* <div
 						className={`_toolTip ${toolTipPosition}`}
 						style={styleProperties?.toolTip ?? {}}
 					>
 						<SubHelperComponent subComponentName="toolTip2" definition={definition} />
 						{`${toolTipValueLabelPrefix ?? ''}${toolTipDisplayType == 'value' ? (value2 ?? '') : labelPercent2 + '%'}${toolTipValueLabelSuffix ?? ''}`}
-					</div>
+					</div> */}
 				</div>
 			)}
 			{markThumbs}
