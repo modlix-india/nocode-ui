@@ -1,4 +1,12 @@
-import React, { useEffect, Fragment } from 'react';
+import {
+	deepEqual,
+	duplicate,
+	ExpressionEvaluator,
+	isNullValue,
+	TokenValueExtractor,
+} from '@fincity/kirun-js';
+import React, { Fragment, useEffect } from 'react';
+import { ParentExtractorForRunEvent } from '../../context/ParentExtractor';
 import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getPathFromLocation,
@@ -21,23 +29,15 @@ import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
+import { runEvent } from '../util/runEvent';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './arrayRepeaterStyleProperties';
-import { IconHelper } from '../util/IconHelper';
-import {
-	deepEqual,
-	duplicate,
-	ExpressionEvaluator,
-	isNullValue,
-	TokenValueExtractor,
-} from '@fincity/kirun-js';
-import { flattenUUID } from '../util/uuid';
-import { ParentExtractorForRunEvent } from '../../context/ParentExtractor';
 
 function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -328,8 +328,6 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 	const hasDrop = onDropData || bindingPathPath2;
 
-	console.log(items);
-
 	return (
 		<div
 			className={`comp compArrayRepeater _${layout}`}
@@ -469,8 +467,8 @@ function createRepeaterItem({
 		dvExtractor.setData(arrayValue[index]);
 		const ev = new ExpressionEvaluator(filterCondition);
 		const value = ev.evaluate(valuesMap);
-		console.log(key, '-', indKeys.current.array[index], index, value, arrayValue[index].name);
-		if (!value) return <Fragment key={`${indKeys.current.array[index]}`} />;
+
+		if (!value) return <Fragment key={`fragment_${indKeys.current.array[index]}`} />;
 	}
 	const comp = (
 		<Children
@@ -558,7 +556,7 @@ function createRepeaterItem({
 		<div
 			tabIndex={0}
 			role="button"
-			key={`${indKeys.current.array[index]}`}
+			key={`div_${indKeys.current.array[index]}`}
 			data-key={`${indKeys.current.array[index]}`}
 			className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
 			onDragStart={dataType === 'object' ? undefined : e => handleDragStart(e, index)}
