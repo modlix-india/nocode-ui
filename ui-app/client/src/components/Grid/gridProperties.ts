@@ -22,7 +22,42 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
 		displayName: 'Drag Data',
-		description: 'Drag Data.',
+	},
+	{
+		name: 'dragDataPrefix',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drag Data Prefix',
+	},
+	{
+		name: 'dragDataType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drag Data Type',
+		description: 'When prefix is used json is stringified and prefix is added to the string.',
+		defaultValue: 'text/plain',
+		enumValues: [
+			{ name: 'text/plain', displayName: 'Text' },
+			{ name: 'application/json', displayName: 'JSON' },
+		],
+	},
+	{
+		name: 'dropDataPrefix',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drop Data Prefix',
+		description: 'Prefix to be removed from the dropped data and then parsed.',
+	},
+	{
+		name: 'dropDataType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drop Data Type',
+		defaultValue: 'text/plain',
+		enumValues: [
+			{ name: 'text/plain', displayName: 'Text' },
+			{ name: 'application/json', displayName: 'JSON' },
+		],
 	},
 	{
 		name: 'onMouseEnter',
@@ -56,7 +91,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Event to be triggered when grid leaves view port.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
-
+	{
+		name: 'onDropData',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Drop Data',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when data is dropped.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	{
 		name: 'containerType',
 		schema: SCHEMA_STRING_COMP_PROP,

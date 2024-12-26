@@ -26,11 +26,10 @@ function Grid(props: Readonly<ComponentProps>) {
 	const location = useLocation();
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
-	const [observer, setObserver] = React.useState<IntersectionObserver>();
 	const ref = React.useRef(null);
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
@@ -54,6 +53,11 @@ function Grid(props: Readonly<ComponentProps>) {
 			boxShadow,
 			stopPropagation,
 			preventDefault,
+			dragDataPrefix,
+			dragDataType,
+			dropDataPrefix,
+			dropDataType,
+			onDropData,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -74,7 +78,11 @@ function Grid(props: Readonly<ComponentProps>) {
 	);
 
 	const dragstartHandler = (ev: React.DragEvent<HTMLElement>) => {
-		ev.dataTransfer.setData('text/plain', dragData);
+		let data = dragData;
+		if (dragDataType === 'application/json')
+			data = dragData === undefined ? 'undefined' : JSON.stringify(dragData);
+		if (dragDataPrefix) data = dragDataPrefix + data;
+		ev.dataTransfer.setData(dragDataType, data);
 	};
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -103,6 +111,10 @@ function Grid(props: Readonly<ComponentProps>) {
 
 	const bindingPathPath2 = bindingPath2
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPathPath3 = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
 		: undefined;
 
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -187,18 +199,43 @@ function Grid(props: Readonly<ComponentProps>) {
 		return () => observer.disconnect();
 	}, [ref.current, onEnteringViewport, onLeavingViewport]);
 
+	let onDragOverFunction: React.DragEventHandler<HTMLInputElement> | undefined = undefined;
+	let onDropFunction: React.DragEventHandler<HTMLInputElement> | undefined = undefined;
+
+	if (bindingPathPath3 || onDropData) {
+		onDragOverFunction = e => e.preventDefault();
+
+		onDropFunction = e => {
+			e.preventDefault();
+			let data = e.dataTransfer.getData(dropDataType);
+			if (dropDataPrefix) {
+				if (!data.startsWith(dropDataPrefix)) return;
+				data = data.substring(dropDataPrefix.length);
+			}
+			if (dropDataType === 'application/json') data = JSON.parse(data);
+			if (bindingPathPath3) setData(bindingPathPath3, data, context.pageName);
+			if (!onDropData || !pageDefinition.eventFunctions[onDropData]) return;
+			(async () =>
+				await runEvent(
+					pageDefinition.eventFunctions[onDropData],
+					onDropData,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		};
+	}
+
 	if (linkPath) {
 		return React.createElement(
 			containerType.toLowerCase(),
 			{
 				className: 'comp compGrid',
 				id: key,
-				draggable:
-					dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
-				onDragStart:
-					dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
-						? dragstartHandler
-						: undefined,
+				draggable: !!dragData,
+				onDragStart: dragData ? dragstartHandler : undefined,
+				onDragOver: onDragOverFunction,
+				onDrop: onDropFunction,
 			},
 			[
 				<HelperComponent
@@ -320,11 +357,13 @@ function Grid(props: Readonly<ComponentProps>) {
 								))();
 						}
 					: undefined,
-			onDragStart: dragData?.length ? dragstartHandler : undefined,
+			onDragStart: !!dragData ? dragstartHandler : undefined,
+			onDragOver: onDragOverFunction,
+			onDrop: onDropFunction,
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
-			draggable: !!dragData?.length,
+			draggable: !!dragData,
 			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${
 				sepStyle ? `_${key}_grid_css` : ''
 			}`,
@@ -361,6 +400,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Grid X Scroll Percentage Binding' },
 		bindingPath2: { name: 'Grid Y Scroll Percentage Binding' },
+		bindingPath3: { name: 'Dropped Data Binding' },
 	},
 	defaultTemplate: {
 		key: '',
