@@ -1,7 +1,23 @@
-import { deepEqual, duplicate, ExpressionEvaluator } from '@fincity/kirun-js';
+import {
+	deepEqual,
+	duplicate,
+	ExpressionEvaluator,
+	isNullValue,
+	TokenValueExtractor,
+} from '@fincity/kirun-js';
 import { useEffect, useMemo, useState } from 'react';
 import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
-import { getDataFromPath, PageStoreExtractor, setData } from '../../../context/StoreContext';
+import {
+	addListener,
+	addListenerAndCallImmediatelyWithChildrenActivity,
+	fillerExtractor,
+	getDataFromLocation,
+	getDataFromPath,
+	localStoreExtractor,
+	PageStoreExtractor,
+	setData,
+	storeExtractor,
+} from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
 	ComponentProps,
@@ -18,6 +34,10 @@ import { runEvent } from '../../util/runEvent';
 import { updateLocationForChild } from '../../util/updateLoactionForChild';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableColumnsProperties';
+import { ParentExtractor } from '../../../context/ParentExtractor';
+import { propertiesDefinition as tableDynamicColumnPropertiesDefinition } from '../TableDynamicColumn/tableDynamicColumnProperties';
+import { createNewState } from '../../util/useDefinition/commons';
+import { getPathsFromComponentDefinition } from '../../util/getPaths';
 
 function fieldToName(field: string): string {
 	return field
@@ -50,10 +70,53 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			pageExtractor,
 		);
 
-	const { headerDef, columnDef } = useMemo(
-		() => generateTableColumnDefinitions(pageDefinition, children, context),
-		[pageDefinition],
-	);
+	const [updateColumnsAt, setUpdateColumnsAt] = useState(Date.now());
+
+	useEffect(() => {
+		if (!context.table.personalizationBindingPath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, v) => setUpdateColumnsAt(Date.now()),
+			pageExtractor,
+			context.table.personalizationBindingPath,
+		);
+	}, [
+		context.table.personalizationBindingPath,
+		context.table.enablePersonalization,
+		setUpdateColumnsAt,
+	]);
+
+	const { headerDef, columnDef, listenPaths } = useMemo(() => {
+		let { dynamicColumns, columnsPageDefinition, listenPaths } =
+			resolvePropertiesOfDynamicColumns(pageDefinition, pageExtractor, locationHistory);
+
+		const personalizationObject = context.table.enablePersonalization
+			? getDataFromPath(
+					context.table.personalizationBindingPath,
+					locationHistory,
+					pageExtractor,
+				)
+			: {};
+		return {
+			...generateTableColumnDefinitions(
+				dynamicColumns,
+				columnsPageDefinition,
+				children,
+				context,
+				personalizationObject,
+			),
+			listenPaths,
+		};
+	}, [
+		pageDefinition,
+		updateColumnsAt,
+		context.table.personalizationBindingPath,
+		context.table.enablePersonalization,
+	]);
+
+	useEffect(() => {
+		if (!listenPaths.length) return;
+		addListener(() => setUpdateColumnsAt(Date.now()), pageExtractor, ...listenPaths);
+	}, [setUpdateColumnsAt, pageExtractor, listenPaths]);
 
 	const emptyRowPageDef = useMemo(() => {
 		if (!showEmptyRows) return pageDefinition;
@@ -84,6 +147,17 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	const [hover, setHover] = useState(false);
 	const [hoverRow, setHoverRow] = useState(-1);
+
+	const columnNames = useMemo(
+		() =>
+			getColumnNames({
+				children,
+				columnDef,
+				locationHistory,
+				pageExtractor,
+			}),
+		[columnDef, locationHistory, pageExtractor],
+	);
 
 	if (!Array.isArray(value)) return <></>;
 
@@ -189,6 +263,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		if (showCheckBox) {
 			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
+
 		headers = (
 			<div
 				className="_row"
@@ -198,7 +273,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				<Children
 					pageDefinition={headerDef}
 					renderableChildren={children}
-					context={context}
+					context={{ ...context, table: { ...context.table, columnNames } }}
 					locationHistory={locationHistory}
 				/>
 			</div>
@@ -237,6 +312,113 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			{emptyRows}
 		</div>
 	);
+}
+
+function getColumnNames({
+	children,
+	columnDef,
+	locationHistory,
+	pageExtractor,
+}: {
+	children: { [key: string]: boolean } | undefined;
+	columnDef: any;
+	locationHistory: LocationHistory[];
+	pageExtractor: PageStoreExtractor;
+}): Array<{
+	key: string;
+	label: string;
+	order: number;
+}> {
+	if (!children) return [];
+
+	const columnNames: Array<{
+		key: string;
+		label: string;
+		order: number;
+	}> = [];
+
+	for (let [k, v] of Object.entries(children)) {
+		if (!v) continue;
+		const column = columnDef.componentDefinition[k];
+		if (!column) continue;
+		let value = column.properties?.label?.value;
+		if (column.properties?.label?.location) {
+			const location = column.properties.label.location;
+			if (
+				'type' in location &&
+				(location.type === 'EXPRESSION' || location.type === 'VALUE')
+			) {
+				const newValue = getDataFromLocation(location, locationHistory, pageExtractor);
+				if (!isNullValue(newValue)) value = newValue;
+			}
+		}
+		columnNames.push({ key: k, label: value, order: column.displayOrder });
+	}
+
+	columnNames.sort((a, b) => a.order - b.order);
+	return columnNames;
+}
+
+function resolvePropertiesOfDynamicColumns(
+	pageDefinition: PageDefinition,
+	pageExtractor: PageStoreExtractor,
+	locationHistory: LocationHistory[],
+) {
+	let dynamicColumns = Object.values(pageDefinition.componentDefinition).filter(
+		cd => cd?.type === 'TableDynamicColumn',
+	);
+	const listenPaths = new Array<string>();
+
+	let columnsPageDefinition = pageDefinition;
+	if (dynamicColumns.length > 0) {
+		columnsPageDefinition = duplicate(pageDefinition);
+		dynamicColumns = Object.values(columnsPageDefinition.componentDefinition).filter(
+			cd => cd?.type === 'TableDynamicColumn',
+		);
+
+		const evaluatorMaps = new Map<string, TokenValueExtractor>([
+			[storeExtractor.getPrefix(), storeExtractor],
+			[fillerExtractor.getPrefix(), fillerExtractor],
+			[localStoreExtractor.getPrefix(), localStoreExtractor],
+		]);
+		let tokenExtractors: TokenValueExtractor[] = [];
+
+		if (pageExtractor) {
+			evaluatorMaps.set(pageExtractor.getPrefix(), pageExtractor);
+			tokenExtractors.push(pageExtractor);
+		}
+
+		let parentExtractor: ParentExtractor | undefined;
+
+		if (locationHistory.length) {
+			parentExtractor = new ParentExtractor(locationHistory);
+			evaluatorMaps.set(parentExtractor.getPrefix(), parentExtractor);
+			tokenExtractors.push(parentExtractor);
+		}
+
+		const propDefMap = tableDynamicColumnPropertiesDefinition.reduce((a: any, c) => {
+			a[c.name] = c;
+			return a;
+		}, {});
+
+		for (let dynamicColumn of dynamicColumns) {
+			const paths = getPathsFromComponentDefinition(dynamicColumn, evaluatorMaps, propDefMap);
+			if (!paths.length || !dynamicColumn.properties) continue;
+
+			listenPaths.push(...paths);
+			const properties = createNewState(
+				dynamicColumn,
+				tableDynamicColumnPropertiesDefinition,
+				{},
+				locationHistory,
+				tokenExtractors,
+			);
+			Object.entries(properties).forEach(
+				([key, value]) => (dynamicColumn.properties![key] = { value }),
+			);
+		}
+	}
+	return { dynamicColumns, columnsPageDefinition, listenPaths };
 }
 
 function generateRows(properties: {
@@ -351,15 +533,13 @@ function generateRows(properties: {
 }
 
 function generateTableColumnDefinitions(
+	dynamicColumns: ComponentDefinition[],
 	pageDefinition: PageDefinition,
 	children: { [key: string]: boolean } | undefined,
 	context: RenderContext,
+	personalizationObject: any,
 ) {
-	const dynamicColumns = Object.values(pageDefinition.componentDefinition).filter(
-		cd => cd?.type === 'TableDynamicColumn',
-	);
-
-	const cp = duplicate(pageDefinition);
+	let cp = pageDefinition;
 	if (dynamicColumns.length > 0) {
 		generateDynamicColumns(dynamicColumns, context, cp, children);
 		const displayOrderMap = new Map();
@@ -397,6 +577,19 @@ function generateTableColumnDefinitions(
 				cp.componentDefinition[key].displayOrder = index + 1;
 			});
 		}
+	}
+
+	if (children && personalizationObject?.columnOrder) {
+		if (!dynamicColumns.length) cp = duplicate(pageDefinition);
+		Object.entries(children)
+			.filter(([, v]) => v)
+			.map(([k]) => cp.componentDefinition[k])
+			.sort(
+				(a, b) =>
+					(personalizationObject.columnOrder[a.key] ?? a.displayOrder ?? 0) -
+					(personalizationObject.columnOrder[b.key] ?? b.displayOrder ?? 0),
+			)
+			.forEach((cd, i) => (cd.displayOrder = i));
 	}
 
 	const hp = duplicate(cp);
@@ -487,6 +680,11 @@ function generateDynamicColumns(
 						: Number.MAX_SAFE_INTEGER)),
 		);
 
+		const sortColumns = dynamicColumn?.properties?.sortColumns;
+		let sortColumnsArray = [];
+		if (sortColumns)
+			sortColumnsArray = Object.values(sortColumns).map(col => col.property.value);
+
 		for (let i = 0; i < columns.length; i++) {
 			const eachField = columns[i];
 
@@ -514,6 +712,16 @@ function generateDynamicColumns(
 				},
 				children: { [eachRenderer.key]: true },
 			};
+
+			if (
+				dynamicColumn?.properties?.enableSorting?.value &&
+				(!sortColumnsArray.length || sortColumnsArray.includes(eachField)) &&
+				context.table.onSort
+			) {
+				eachChild.properties!.sortKey = {
+					value: eachField,
+				};
+			}
 
 			cp.componentDefinition[eachRenderer.key] = eachRenderer;
 			cp.componentDefinition[eachChild.key] = eachChild;

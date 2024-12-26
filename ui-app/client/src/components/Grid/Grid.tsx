@@ -320,14 +320,11 @@ function Grid(props: Readonly<ComponentProps>) {
 								))();
 						}
 					: undefined,
-			onDragStart:
-				dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
-					? dragstartHandler
-					: undefined,
+			onDragStart: dragData?.length ? dragstartHandler : undefined,
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
-			draggable: dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
+			draggable: !!dragData?.length,
 			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${
 				sepStyle ? `_${key}_grid_css` : ''
 			}`,

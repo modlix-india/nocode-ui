@@ -194,6 +194,26 @@
 		"np": true
 	},
 	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 1 Default Sort Icon Color",
+		"n": "design1DefaultSortIconColor",
+		"de": "Design 1 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 1 Default Sort Icon Highlight Color",
+		"n": "design1DefaultSortIconHighlightColor",
+		"de": "Design 1 Default Sort Icon Highlight Color",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design1 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
+		"np": true
+	},
+	{
 		"gn": "Header Font Color",
 		"dn": "Design 2 Header Font Color",
 		"n": "design2HeaderFontColor",
@@ -204,12 +224,52 @@
 		"np": true
 	},
 	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 2 Default Sort Icon Color",
+		"n": "design2DefaultSortIconColor",
+		"de": "Design 2 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 2 Default Sort Icon Highlight Color",
+		"n": "design2DefaultSortIconHighlightColor",
+		"de": "Design 2 Default Sort Icon Highlight Color",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design2 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
+		"np": true
+	},
+	{
 		"gn": "Header Font Color",
 		"dn": "Design 3 Header Font Color",
 		"n": "design3HeaderFontColor",
 		"de": "Design 3 Header Font Color",
 		"cp": "color",
 		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 3 Default Sort Icon Color",
+		"n": "design3DefaultSortIconColor",
+		"de": "Design 3 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 3 Default Sort Icon Highlight Color",
+		"n": "design3DefaultSortIconHighlightColor",
+		"de": "Design 3 Default Sort Icon Highlight Color",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design3 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
 		"np": true
 	},
 	{
@@ -223,6 +283,26 @@
 		"np": true
 	},
 	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 4 Default Sort Icon Color",
+		"n": "design4DefaultSortIconColor",
+		"de": "Design 4 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 4 Default Sort Icon Highlight Color",
+		"n": "design4DefaultSortIconHighlightColor",
+		"de": "Design 4 Default Sort Icon Highlight Color",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design4 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
+		"np": true
+	},
+	{
 		"gn": "Header Font Color",
 		"dn": "Design 5 Header Font Color",
 		"n": "design5HeaderFontColor",
@@ -230,6 +310,26 @@
 		"de": "Design 5 Header Font Color",
 		"cp": "color",
 		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 5 Default Sort Icon Color",
+		"n": "design5DefaultSortIconColor",
+		"de": "Design 5 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 5 Default Sort Icon Highlight Color",
+		"n": "design5DefaultSortIconHighlightColor",
+		"de": "Design 5 Default Sort Icon Highlight Color",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design5 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
 		"np": true
 	},
 	{
@@ -243,6 +343,26 @@
 		"np": true
 	},
 	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 6 Default Sort Icon Color",
+		"n": "desig6DefaultSortIconColor",
+		"de": "Design 16 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 6 Default Sort Icon Highlight Color",
+		"n": "design6DefaultSortIconHighlightColor",
+		"de": "Design 6 Default Sort Icon Highlight Color",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design6 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
+		"np": true
+	},
+	{
 		"gn": "Header Font Color",
 		"dn": "Design 7 Header Font Color",
 		"n": "design7HeaderFontColor",
@@ -252,12 +372,52 @@
 		"np": true
 	},
 	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 7 Default Sort Icon Color",
+		"n": "design7DefaultSortIconColor",
+		"de": "Design 7 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 7 Default Sort Icon Highlight Color",
+		"n": "design7DefaultSortIconHighlightColor",
+		"de": "Design 7 Default Sort Icon Highlight Color",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design7 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
+		"np": true
+	},
+	{
 		"gn": "Header Font Color",
 		"dn": "Design 8 Header Font Color",
 		"n": "design8HeaderFontColor",
 		"de": "Design 8 Header Font Color",
 		"cp": "color",
 		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 8 Default Sort Icon Color",
+		"n": "design8DefaultSortIconColor",
+		"de": "Design 8 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 8 Default Sort Icon Highlight Color",
+		"n": "design8DefaultSortIconHighlightColor",
+		"de": "Design 8 Default Sort Icon Highlight Color",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design8 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
 		"np": true
 	},
 	{
@@ -271,6 +431,26 @@
 		"np": true
 	},
 	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 9 Default Sort Icon Color",
+		"n": "design9DefaultSortIconColor",
+		"de": "Design 9 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 9 Default Sort Icon Highlight Color",
+		"n": "design9DefaultSortIconHighlightColor",
+		"de": "Design 9 Default Sort Icon Highlight Color",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design9 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
+		"np": true
+	},
+	{
 		"gn": "Header Font Color",
 		"dn": "Design 10 Header Font Color",
 		"n": "design10HeaderFontColor",
@@ -280,7 +460,36 @@
 		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
 		"np": true
 	},
-
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 10 Default Sort Icon Color",
+		"n": "design10DefaultSortIconColor",
+		"de": "Design 10 Default Sort Icon Color",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon Color",
+		"dn": "Design 10 Default Sort Icon Highlight Color",
+		"n": "design10DefaultSortIconHighlightColor",
+		"de": "Design 10 Default Sort Icon Highlight Color",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design10 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
+		"np": true
+	},
+	{
+		"gn": "Default Sort Icon",
+		"dn": "Default Sort Icon Margin",
+		"n": "defaultSortIconMargin",
+		"dv": "0px 10px",
+		"de": "Default Sort Icon Margin",
+		"cp": "margin",
+		"sel": ".comp.compTable .comp.compTableHeaderColumn ._sortIconDefault",
+		"np": true
+	},
 	{
 		"gn": "Header Font Size",
 		"dn": "Design 1 Header Font Size",
@@ -887,7 +1096,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color Primary Design4",
 		"n": "headerBorderColorPrimaryDesign4",
-		"dv": "1px solid <fontColorThree>",
+		"dv": "none",
 		"de": "Header Border Color Primary Design4",
 		"cp": "border",
 		"sel": ".comp.compTable._design4._primary .comp.compTableHeaderColumn",
@@ -897,7 +1106,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color SecondaryDesign4",
 		"n": "headerBorderColorSecondaryDesign4",
-		"dv": "1px solid <fontColorFour>",
+		"dv": "none",
 		"de": "Header Border Color SecondaryDesign4",
 		"cp": "border",
 		"sel": ".comp.compTable._design4._secondary .comp.compTableHeaderColumn",
@@ -907,7 +1116,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color TertiaryDesign4",
 		"n": "headerBorderColorTertiaryDesign4",
-		"dv": "1px solid <fontColorFive>",
+		"dv": "none",
 		"de": "Header Border Color TertiaryDesign4",
 		"cp": "border",
 		"sel": ".comp.compTable._design4._tertiary .comp.compTableHeaderColumn",
@@ -917,7 +1126,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color QuaternaryDesign4",
 		"n": "headerBorderColorQuaternaryDesign4",
-		"dv": "1px solid <fontColorNine>",
+		"dv": "none",
 		"de": "Header Border Color QuaternaryDesign4",
 		"cp": "border",
 		"sel": ".comp.compTable._design4._quaternary .comp.compTableHeaderColumn",
@@ -927,7 +1136,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color QuinaryDesign4",
 		"n": "headerBorderColorQuinaryDesign4",
-		"dv": "1px solid <fontColorSeven>",
+		"dv": "none",
 		"de": "Header Border Color QuinaryDesign4",
 		"cp": "border",
 		"sel": ".comp.compTable._design4._quinary .comp.compTableHeaderColumn",
@@ -989,7 +1198,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color Primary Design2",
 		"n": "headerBorderColorPrimaryDesign2",
-		"dv": "1px solid <fontColorThree>",
+		"dv": "none",
 		"de": "Header Border Color Primary Design2",
 		"cp": "border",
 		"sel": ".comp.compTable._design2._primary .comp.compTableHeaderColumn",
@@ -999,7 +1208,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color SecondaryDesign2",
 		"n": "headerBorderColorSecondaryDesign2",
-		"dv": "1px solid <fontColorFour>",
+		"dv": "none",
 		"de": "Header Border Color SecondaryDesign2",
 		"cp": "border",
 		"sel": ".comp.compTable._design2._secondary .comp.compTableHeaderColumn",
@@ -1009,7 +1218,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color TertiaryDesign2",
 		"n": "headerBorderColorTertiaryDesign2",
-		"dv": "1px solid <fontColorFive>",
+		"dv": "none",
 		"de": "Header Border Color TertiaryDesign2",
 		"cp": "border",
 		"sel": ".comp.compTable._design2._tertiary .comp.compTableHeaderColumn",
@@ -1019,7 +1228,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color QuaternaryDesign2",
 		"n": "headerBorderColorQuaternaryDesign2",
-		"dv": "1px solid <fontColorNine>",
+		"dv": "none",
 		"de": "Header Border Color QuaternaryDesign2",
 		"cp": "border",
 		"sel": ".comp.compTable._design2._quaternary .comp.compTableHeaderColumn",
@@ -1029,7 +1238,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color QuinaryDesign2",
 		"n": "headerBorderColorQuinaryDesign2",
-		"dv": "1px solid <fontColorSeven>",
+		"dv": "none",
 		"de": "Header Border Color QuinaryDesign2",
 		"cp": "border",
 		"sel": ".comp.compTable._design2._quinary .comp.compTableHeaderColumn",
@@ -1089,7 +1298,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color Primary Design6",
 		"n": "headerBorderColorPrimaryDesign6",
-		"dv": "1px solid <fontColorThree>",
+		"dv": "none",
 		"de": "Header Border Color Primary Design6",
 		"cp": "border",
 		"sel": ".comp.compTable._design6._primary .comp.compTableHeaderColumn",
@@ -1099,7 +1308,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color SecondaryDesign6",
 		"n": "headerBorderColorSecondaryDesign6",
-		"dv": "1px solid <fontColorFour>",
+		"dv": "none",
 		"de": "Header Border Color SecondaryDesign6",
 		"cp": "border",
 		"sel": ".comp.compTable._design6._secondary .comp.compTableHeaderColumn",
@@ -1109,7 +1318,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color TertiaryDesign6",
 		"n": "headerBorderColorTertiaryDesign6",
-		"dv": "1px solid <fontColorFive>",
+		"dv": "none",
 		"de": "Header Border Color TertiaryDesign6",
 		"cp": "border",
 		"sel": ".comp.compTable._design6._tertiary .comp.compTableHeaderColumn",
@@ -1119,7 +1328,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color QuaternaryDesign6",
 		"n": "headerBorderColorQuaternaryDesign6",
-		"dv": "1px solid <fontColorNine>",
+		"dv": "none",
 		"de": "Header Border Color QuaternaryDesign6",
 		"cp": "border",
 		"sel": ".comp.compTable._design6._quaternary .comp.compTableHeaderColumn",
@@ -1129,7 +1338,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color QuinaryDesign6",
 		"n": "headerBorderColorQuinaryDesign6",
-		"dv": "1px solid <fontColorSeven>",
+		"dv": "none",
 		"de": "Header Border Color QuinaryDesign6",
 		"cp": "border",
 		"sel": ".comp.compTable._design6._quinary .comp.compTableHeaderColumn",
@@ -1280,7 +1489,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color Primary Design8",
 		"n": "headerBorderColorPrimaryDesign8",
-		"dv": "1px solid <fontColorSix>",
+		"dv": "none",
 		"de": "Header Border Color Primary Design8",
 		"cp": "border",
 		"sel": ".comp.compTable._design8._primary .comp.compTableHeaderColumn",
@@ -1290,7 +1499,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color SecondaryDesign8",
 		"n": "headerBorderColorSecondaryDesign8",
-		"dv": "1px solid <fontColorSix>",
+		"dv": "none",
 		"de": "Header Border Color SecondaryDesign8",
 		"cp": "border",
 		"sel": ".comp.compTable._design8._secondary .comp.compTableHeaderColumn",
@@ -1300,7 +1509,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color TertiaryDesign8",
 		"n": "headerBorderColorTertiaryDesign8",
-		"dv": "1px solid <fontColorSix>",
+		"dv": "none",
 		"de": "Header Border Color TertiaryDesign8",
 		"cp": "border",
 		"sel": ".comp.compTable._design8._tertiary .comp.compTableHeaderColumn",
@@ -1310,7 +1519,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color QuaternaryDesign8",
 		"n": "headerBorderColorQuaternaryDesign8",
-		"dv": "1px solid <fontColorSix>",
+		"dv": "none",
 		"de": "Header Border Color QuaternaryDesign8",
 		"cp": "border",
 		"sel": ".comp.compTable._design8._quaternary .comp.compTableHeaderColumn",
@@ -1320,7 +1529,7 @@
 		"gn": "Header Border Color",
 		"dn": "Header Border Color QuinaryDesign8",
 		"n": "headerBorderColorQuinaryDesign8",
-		"dv": "1px solid <fontColorSix>",
+		"dv": "none",
 		"de": "Header Border Color QuinaryDesign8",
 		"cp": "border",
 		"sel": ".comp.compTable._design8._quinary .comp.compTableHeaderColumn",
@@ -1476,6 +1685,765 @@
 		"de": "Header Background Color QuinaryDesign10",
 		"cp": "background",
 		"sel": ".comp.compTable._design10._quinary .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design1",
+		"n": "popupMenuBackgroundColorDesign1",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design1",
+		"cp": "background",
+		"sel": ".comp.compTable._design1 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design2",
+		"n": "popupMenuBackgroundColorDesign2",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design2",
+		"cp": "background",
+		"sel": ".comp.compTable._design2 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design3",
+		"n": "popupMenuBackgroundColorDesign3",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design3",
+		"cp": "background",
+		"sel": ".comp.compTable._design3 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design4",
+		"n": "popupMenuBackgroundColorDesign4",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design4",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design5",
+		"n": "popupMenuBackgroundColorDesign5",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design5",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design6",
+		"n": "popupMenuBackgroundColorDesign6",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design6",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design7",
+		"n": "popupMenuBackgroundColorDesign7",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design7",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design8",
+		"n": "popupMenuBackgroundColorDesign8",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design8",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design9",
+		"n": "popupMenuBackgroundColorDesign9",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design9",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Background Color Design10",
+		"n": "popupMenuBackgroundColorDesign10",
+		"dv": "<backgroundColorSeven>",
+		"de": "Popup Menu Background Color Design10",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design1",
+		"n": "popupMenuBoxShadowDesign1",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design1",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design1 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design2",
+		"n": "popupMenuBoxShadowDesign2",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design2",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design2 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design3",
+		"n": "popupMenuBoxShadowDesign3",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design3",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design3 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design4",
+		"n": "popupMenuBoxShadowDesign4",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design4",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design4 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design5",
+		"n": "popupMenuBoxShadowDesign5",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design5",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design5 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design6",
+		"n": "popupMenuBoxShadowDesign6",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design6",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design6 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design7",
+		"n": "popupMenuBoxShadowDesign7",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design7",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design7 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design8",
+		"n": "popupMenuBoxShadowDesign8",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design8",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design8 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design9",
+		"n": "popupMenuBoxShadowDesign9",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design9",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design9 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Box Shadow Design10",
+		"n": "popupMenuBoxShadowDesign10",
+		"dv": "0 0 10px rgba(0,0,0,0.5)",
+		"de": "Popup Menu Box Shadow Design10",
+		"cp": "box-shadow",
+		"sel": ".comp.compTable._design10 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design1",
+		"n": "popupMenuFontColorDesign1",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design1",
+		"cp": "color",
+		"sel": ".comp.compTable._design1 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design2",
+		"n": "popupMenuFontColorDesign2",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design2",
+		"cp": "color",
+		"sel": ".comp.compTable._design2 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design3",
+		"n": "popupMenuFontColorDesign3",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design3",
+		"cp": "color",
+		"sel": ".comp.compTable._design3 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design4",
+		"n": "popupMenuFontColorDesign4",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design4",
+		"cp": "color",
+		"sel": ".comp.compTable._design4 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design5",
+		"n": "popupMenuFontColorDesign5",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design5",
+		"cp": "color",
+		"sel": ".comp.compTable._design5 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design6",
+		"n": "popupMenuFontColorDesign6",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design6",
+		"cp": "color",
+		"sel": ".comp.compTable._design6 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design7",
+		"n": "popupMenuFontColorDesign7",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design7",
+		"cp": "color",
+		"sel": ".comp.compTable._design7 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design8",
+		"n": "popupMenuFontColorDesign8",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design8",
+		"cp": "color",
+		"sel": ".comp.compTable._design8 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design9",
+		"n": "popupMenuFontColorDesign9",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design9",
+		"cp": "color",
+		"sel": ".comp.compTable._design9 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu",
+		"dn": "Popup Menu Font Color Design10",
+		"n": "popupMenuFontColorDesign10",
+		"dv": "<fontColorOne>",
+		"de": "Popup Menu Font Color Design10",
+		"cp": "color",
+		"sel": ".comp.compTable._design10 ._popupMenu",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design1",
+		"n": "popupMenuItemHoverColorDesign1",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design1 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design2",
+		"n": "popupMenuItemHoverColorDesign2",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design2 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design3",
+		"n": "popupMenuItemHoverColorDesign3",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design3 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design4",
+		"n": "popupMenuItemHoverColorDesign4",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design5",
+		"n": "popupMenuItemHoverColorDesign5",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design6",
+		"n": "popupMenuItemHoverColorDesign6",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design7",
+		"n": "popupMenuItemHoverColorDesign7",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design8",
+		"n": "popupMenuItemHoverColorDesign8",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design9",
+		"n": "popupMenuItemHoverColorDesign9",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Hover Color Design10",
+		"n": "popupMenuItemHoverColorDesign10",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItem:hover",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design1",
+		"n": "popupMenuItemFontDesign1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design1 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design2",
+		"n": "popupMenuItemFontDesign2",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design2 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design3",
+		"n": "popupMenuItemFontDesign3",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design3 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design4",
+		"n": "popupMenuItemFontDesign4",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design4 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design5",
+		"n": "popupMenuItemFontDesign5",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design5 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design6",
+		"n": "popupMenuItemFontDesign6",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design6 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design7",
+		"n": "popupMenuItemFontDesign7",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design7 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design8",
+		"n": "popupMenuItemFontDesign8",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design8 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design9",
+		"n": "popupMenuItemFontDesign9",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design9 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Font Design10",
+		"n": "popupMenuItemFontDesign10",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design1",
+		"n": "popupMenuItemSeperatorHeightDesign1",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design1 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design1",
+		"n": "popupMenuItemSeperatorColorDesign1",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design1 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design2",
+		"n": "popupMenuItemSeperatorHeightDesign2",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design2 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design2",
+		"n": "popupMenuItemSeperatorColorDesign2",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design2 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design3",
+		"n": "popupMenuItemSeperatorHeightDesign3",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design3 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design3",
+		"n": "popupMenuItemSeperatorColorDesign3",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design3 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design4",
+		"n": "popupMenuItemSeperatorHeightDesign4",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design4 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design4",
+		"n": "popupMenuItemSeperatorColorDesign4",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design5",
+		"n": "popupMenuItemSeperatorHeightDesign5",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design5 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design5",
+		"n": "popupMenuItemSeperatorColorDesign5",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design6",
+		"n": "popupMenuItemSeperatorHeightDesign6",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design6 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design6",
+		"n": "popupMenuItemSeperatorColorDesign6",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design7",
+		"n": "popupMenuItemSeperatorHeightDesign7",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design7 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design7",
+		"n": "popupMenuItemSeperatorColorDesign7",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design8",
+		"n": "popupMenuItemSeperatorHeightDesign8",
+		"dv": "min-1px",
+		"cp": "height",
+		"sel": ".comp.compTable._design8 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design8",
+		"n": "popupMenuItemSeperatorColorDesign8",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design9",
+		"n": "popupMenuItemSeperatorHeightDesign9",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design9 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design9",
+		"n": "popupMenuItemSeperatorColorDesign9",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Height Design10",
+		"n": "popupMenuItemSeperatorHeightDesign10",
+		"dv": "1px",
+		"cp": "min-height",
+		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Color Design10",
+		"n": "popupMenuItemSeperatorColorDesign10",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItemSeperator",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design1",
+		"n": "popupMenuItemPaddingDesign1",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design1 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design2",
+		"n": "popupMenuItemPaddingDesign2",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design2 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design3",
+		"n": "popupMenuItemPaddingDesign3",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design3 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design4",
+		"n": "popupMenuItemPaddingDesign4",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design4 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design5",
+		"n": "popupMenuItemPaddingDesign5",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design5 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design6",
+		"n": "popupMenuItemPaddingDesign6",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design6 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design7",
+		"n": "popupMenuItemPaddingDesign7",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design7 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design8",
+		"n": "popupMenuItemPaddingDesign8",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design8 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design9",
+		"n": "popupMenuItemPaddingDesign9",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design9 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item Padding",
+		"dn": "Popup Menu Item Padding Design10",
+		"n": "popupMenuItemPaddingDesign10",
+		"dv": "10px 20px",
+		"cp": "padding",
+		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItem",
+		"np": true
+	},
+	{
+		"gn": "Popup Menu Item",
+		"dn": "Popup Menu Item Seperator Margin",
+		"n": "popupMenuItemSeperatorMargin",
+		"dv": "0 10px",
+		"cp": "margin",
+		"sel": ".comp.compTable ._popupMenu ._popupMenuItemSeperator",
 		"np": true
 	}
 ]
