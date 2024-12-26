@@ -1,29 +1,47 @@
-import React, { useEffect, useState } from 'react';
+import {
+	deepEqual,
+	duplicate,
+	ExpressionEvaluator,
+	isNullValue,
+	TokenValueExtractor,
+} from '@fincity/kirun-js';
+import React, { Fragment, useEffect } from 'react';
+import { ParentExtractorForRunEvent } from '../../context/ParentExtractor';
 import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getPathFromLocation,
+	localStoreExtractor,
 	PageStoreExtractor,
 	setData,
+	storeExtractor,
+	themeExtractor,
 } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import {
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	DataLocation,
+	LocationHistory,
+	PageDefinition,
+	RenderContext,
+} from '../../types/common';
 import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
+import { runEvent } from '../util/runEvent';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
 import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { runEvent } from '../util/runEvent';
 import { styleDefaults } from './arrayRepeaterStyleProperties';
-import { IconHelper } from '../util/IconHelper';
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import { flattenUUID } from '../util/uuid';
 
 function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	const {
-		definition: { children, bindingPath, key },
+		definition: { children, bindingPath, bindingPath2, key },
 		pageDefinition,
 		locationHistory = [],
 		context,
@@ -48,6 +66,10 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			moveUpIcon,
 			moveDownIcon,
 			dataType,
+			dropDataPrefix,
+			dropDataType,
+			onDropData,
+			filterCondition,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -70,6 +92,10 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: `Store.defaultData.${pageExtractor?.getPageName() ?? '_global'}.${flattenUUID(key)}`;
+
+	const bindingPathPath2 = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
 
 	const indKeys = React.useRef<{
 		array: Array<string>;
@@ -224,154 +250,59 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 				}.${flattenUUID(key)}`,
 			};
 		}
+		let valuesMap: Map<string, TokenValueExtractor> | undefined = undefined;
+		if (filterCondition) {
+			valuesMap = new Map<string, TokenValueExtractor>([
+				[storeExtractor.getPrefix(), storeExtractor],
+				[localStoreExtractor.getPrefix(), localStoreExtractor],
+				[pageExtractor.getPrefix(), pageExtractor],
+				[themeExtractor.getPrefix(), themeExtractor],
+				[dvExtractor.getPrefix(), dvExtractor],
+			]);
+			if (locationHistory.length) {
+				const pse = new ParentExtractorForRunEvent(locationHistory, valuesMap);
+				valuesMap.set(pse.getPrefix(), pse);
+				valuesMap.set(pse.getPrefix(), pse);
+			}
+		}
 		items = (
 			<>
-				{arrayValue.map((e: any, index) => {
-					const comp = (
-						<Children
-							pageDefinition={pageDefinition}
-							renderableChildren={firstchild}
-							context={context}
-							locationHistory={[
-								...locationHistory,
-								updateLocationForChild(
-									key,
-									updatableBindingPath!,
-									dataType === 'object' ? indKeys.current.array[index] : index,
-									locationHistory,
-									context.pageName,
-									pageExtractor,
-								),
-							]}
-						/>
-					);
-					let addButton;
-					if (showAdd && dataType !== 'object') {
-						addButton = (
-							<i
-								tabIndex={0}
-								className={`addOne ${addIcon ?? 'fa fa-circle-plus fa-solid'}`}
-								onClick={showAdd ? () => handleAdd(index) : undefined}
-								style={styleProperties.add ?? {}}
-								onKeyDown={e =>
-									e.key === 'Enter' || e.key == ' ' ? handleAdd(index) : undefined
-								}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="add"
-								></SubHelperComponent>
-							</i>
-						);
-					}
-					let firstMoveButton;
-					let secondMoveButton;
-					if (showMove && dataType !== 'object') {
-						firstMoveButton = (
-							<i
-								tabIndex={0}
-								className={`moveOne ${
-									index == arrayValue?.length - 1
-										? (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
-										: (moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid')
-								}`}
-								style={styleProperties.move ?? {}}
-								onClick={
-									showMove
-										? () =>
-												handleMove(
-													index,
-													index == arrayValue?.length - 1
-														? index - 1
-														: index + 1,
-												)
-										: undefined
-								}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="move"
-								></SubHelperComponent>
-							</i>
-						);
-
-						secondMoveButton = (
-							<i
-								tabIndex={0}
-								className={`moveOne ${
-									index == 0 || index == arrayValue?.length - 1
-										? ''
-										: (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
-								}`}
-								onClick={showMove ? () => handleMove(index, index - 1) : undefined}
-								style={styleProperties.move ?? {}}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="move"
-								></SubHelperComponent>
-							</i>
-						);
-					}
-					return (
-						<div
-							tabIndex={0}
-							role="button"
-							key={`${indKeys.current.array[index]}`}
-							data-key={`${indKeys.current.array[index]}`}
-							className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
-							onDragStart={
-								dataType === 'object' ? undefined : e => handleDragStart(e, index)
-							}
-							onDragOver={dataType === 'object' ? undefined : handleDragOver}
-							onDrop={dataType === 'object' ? undefined : e => handleDrop(e, index)}
-							onDragEnter={dataType === 'object' ? undefined : handleDragEnter}
-							onDragLeave={dataType === 'object' ? undefined : handleDragLeave}
-							draggable={dataType !== 'object' && isItemDraggable && !readOnly}
-							style={styleProperties.repeaterProperties ?? {}}
-							onKeyDown={() => {}}
-						>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="repeaterProperties"
-							></SubHelperComponent>
-							<div
-								className="repeatedComp comp"
-								style={styleProperties.repeatedComp ?? {}}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="repeatedComp"
-								></SubHelperComponent>
-								{comp}
-							</div>
-
-							<div className="iconGrid" style={styleProperties.iconGrid ?? {}}>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="iconGrid"
-								></SubHelperComponent>
-
-								{addButton}
-								{showDelete && (
-									<i
-										tabIndex={0}
-										className={`reduceOne ${deleteIcon ?? 'fa fa-circle-minus fa-solid'}`}
-										onClick={showDelete ? () => handleDelete(index) : undefined}
-										style={styleProperties.remove ?? {}}
-									>
-										<SubHelperComponent
-											definition={props.definition}
-											subComponentName="remove"
-										></SubHelperComponent>
-									</i>
-								)}
-								{firstMoveButton}
-								{secondMoveButton}
-							</div>
-						</div>
-					);
-				})}
+				{arrayValue.map((e: any, index) =>
+					createRepeaterItem({
+						pageDefinition,
+						firstchild,
+						context,
+						locationHistory,
+						key,
+						updatableBindingPath,
+						dataType,
+						indKeys,
+						index,
+						pageExtractor,
+						showAdd,
+						addIcon,
+						handleAdd,
+						styleProperties,
+						props,
+						showMove,
+						arrayValue,
+						moveUpIcon,
+						moveDownIcon,
+						handleMove,
+						readOnly,
+						handleDragStart,
+						handleDragOver,
+						handleDrop,
+						handleDragEnter,
+						handleDragLeave,
+						isItemDraggable,
+						showDelete,
+						deleteIcon,
+						handleDelete,
+						filterCondition,
+						valuesMap,
+					}),
+				)}
 			</>
 		);
 	} else if (!arrayValue?.length && dataType !== 'object' && showAdd) {
@@ -395,10 +326,283 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	const hasDrop = onDropData || bindingPathPath2;
+
 	return (
-		<div className={`comp compArrayRepeater _${layout}`} style={styleProperties.comp}>
+		<div
+			className={`comp compArrayRepeater _${layout}`}
+			style={styleProperties.comp}
+			role="none"
+			onDragOver={hasDrop ? e => e.preventDefault() : undefined}
+			onDrop={
+				hasDrop
+					? e => {
+							e.preventDefault();
+							let data = e.dataTransfer.getData(dropDataType);
+							if (dropDataPrefix) {
+								if (!data.startsWith(dropDataPrefix)) return;
+								data = data.substring(dropDataPrefix.length);
+							}
+							if (dropDataType === 'application/json') data = JSON.parse(data);
+							if (bindingPathPath2) setData(bindingPathPath2, data, context.pageName);
+							if (!onDropData || !pageDefinition.eventFunctions[onDropData]) return;
+							(async () =>
+								await runEvent(
+									pageDefinition.eventFunctions[onDropData],
+									onDropData,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+						}
+					: undefined
+			}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			{items}
+		</div>
+	);
+}
+
+class DataValueExtractor extends TokenValueExtractor {
+	private data: any;
+
+	public setData(newData: any): void {
+		this.data = newData;
+	}
+
+	public getPrefix(): string {
+		return 'Data.';
+	}
+
+	protected getValueInternal(token: string): any {
+		if (token === 'Data') return this.data;
+
+		return this.retrieveElementFrom(
+			token,
+			token.split(TokenValueExtractor.REGEX_DOT),
+			1,
+			this.data,
+		);
+	}
+
+	public getStore(): any {
+		return this.data;
+	}
+}
+
+const dvExtractor = new DataValueExtractor();
+
+function createRepeaterItem({
+	pageDefinition,
+	firstchild,
+	context,
+	locationHistory,
+	key,
+	updatableBindingPath,
+	dataType,
+	indKeys,
+	index,
+	pageExtractor,
+	showAdd,
+	addIcon,
+	handleAdd,
+	styleProperties,
+	props,
+	showMove,
+	arrayValue,
+	moveUpIcon,
+	moveDownIcon,
+	handleMove,
+	readOnly,
+	handleDragStart,
+	handleDragOver,
+	handleDrop,
+	handleDragEnter,
+	handleDragLeave,
+	isItemDraggable,
+	showDelete,
+	deleteIcon,
+	handleDelete,
+	filterCondition,
+	valuesMap,
+}: {
+	pageDefinition: PageDefinition;
+	firstchild: any;
+	context: RenderContext;
+	locationHistory: LocationHistory[];
+	key: string;
+	updatableBindingPath: DataLocation | undefined;
+	dataType: any;
+	indKeys: React.MutableRefObject<{
+		array: Array<string>;
+		oldKeys: Array<{ object: any; key: string }>;
+	}>;
+	index: number;
+	pageExtractor: PageStoreExtractor;
+	showAdd: any;
+	addIcon: any;
+	handleAdd: (index: any) => Promise<void>;
+	styleProperties: any;
+	props: Readonly<ComponentProps>;
+	showMove: any;
+	arrayValue: any[];
+	moveUpIcon: any;
+	moveDownIcon: any;
+	handleMove: (from: number, to: number) => Promise<void>;
+	readOnly: any;
+	handleDragStart: (e: any, index: any) => Promise<void>;
+	handleDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
+	handleDrop: (e: React.DragEvent<HTMLDivElement>, to: number) => void;
+	handleDragEnter: (e: React.DragEvent<HTMLDivElement>) => void;
+	handleDragLeave: (e: React.DragEvent<HTMLDivElement>) => void;
+	isItemDraggable: any;
+	showDelete: any;
+	deleteIcon: any;
+	handleDelete: (index: any) => Promise<void>;
+	filterCondition: string | undefined;
+	valuesMap: Map<string, TokenValueExtractor> | undefined;
+}) {
+	if (valuesMap && filterCondition) {
+		dvExtractor.setData(arrayValue[index]);
+		const ev = new ExpressionEvaluator(filterCondition);
+		const value = ev.evaluate(valuesMap);
+
+		if (!value) return <Fragment key={`fragment_${indKeys.current.array[index]}`} />;
+	}
+	const comp = (
+		<Children
+			pageDefinition={pageDefinition}
+			renderableChildren={firstchild}
+			context={context}
+			locationHistory={[
+				...locationHistory,
+				updateLocationForChild(
+					key,
+					updatableBindingPath!,
+					dataType === 'object' ? indKeys.current.array[index] : index,
+					locationHistory,
+					context.pageName,
+					pageExtractor,
+				),
+			]}
+		/>
+	);
+	let addButton;
+	if (showAdd && dataType !== 'object') {
+		addButton = (
+			<i
+				tabIndex={0}
+				className={`addOne ${addIcon ?? 'fa fa-circle-plus fa-solid'}`}
+				onClick={showAdd ? () => handleAdd(index) : undefined}
+				style={styleProperties.add ?? {}}
+				onKeyDown={e => (e.key === 'Enter' || e.key == ' ' ? handleAdd(index) : undefined)}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="add"
+				></SubHelperComponent>
+			</i>
+		);
+	}
+	let firstMoveButton;
+	let secondMoveButton;
+	if (showMove && dataType !== 'object') {
+		firstMoveButton = (
+			<i
+				tabIndex={0}
+				className={`moveOne ${
+					index == arrayValue?.length - 1
+						? (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
+						: (moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid')
+				}`}
+				style={styleProperties.move ?? {}}
+				onClick={
+					showMove
+						? () =>
+								handleMove(
+									index,
+									index == arrayValue?.length - 1 ? index - 1 : index + 1,
+								)
+						: undefined
+				}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="move"
+				></SubHelperComponent>
+			</i>
+		);
+
+		secondMoveButton = (
+			<i
+				tabIndex={0}
+				className={`moveOne ${
+					index == 0 || index == arrayValue?.length - 1
+						? ''
+						: (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
+				}`}
+				onClick={showMove ? () => handleMove(index, index - 1) : undefined}
+				style={styleProperties.move ?? {}}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="move"
+				></SubHelperComponent>
+			</i>
+		);
+	}
+	return (
+		<div
+			tabIndex={0}
+			role="button"
+			key={`div_${indKeys.current.array[index]}`}
+			data-key={`${indKeys.current.array[index]}`}
+			className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
+			onDragStart={dataType === 'object' ? undefined : e => handleDragStart(e, index)}
+			onDragOver={dataType === 'object' ? undefined : handleDragOver}
+			onDrop={dataType === 'object' ? undefined : e => handleDrop(e, index)}
+			onDragEnter={dataType === 'object' ? undefined : handleDragEnter}
+			onDragLeave={dataType === 'object' ? undefined : handleDragLeave}
+			draggable={dataType !== 'object' && isItemDraggable && !readOnly}
+			style={styleProperties.repeaterProperties ?? {}}
+			onKeyDown={() => {}}
+		>
+			<SubHelperComponent
+				definition={props.definition}
+				subComponentName="repeaterProperties"
+			></SubHelperComponent>
+			<div className="repeatedComp comp" style={styleProperties.repeatedComp ?? {}}>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="repeatedComp"
+				></SubHelperComponent>
+				{comp}
+			</div>
+
+			<div className="iconGrid" style={styleProperties.iconGrid ?? {}}>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="iconGrid"
+				></SubHelperComponent>
+
+				{addButton}
+				{showDelete && (
+					<i
+						tabIndex={0}
+						className={`reduceOne ${deleteIcon ?? 'fa fa-circle-minus fa-solid'}`}
+						onClick={showDelete ? () => handleDelete(index) : undefined}
+						style={styleProperties.remove ?? {}}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="remove"
+						></SubHelperComponent>
+					</i>
+				)}
+				{firstMoveButton}
+				{secondMoveButton}
+			</div>
 		</div>
 	);
 }
@@ -438,16 +642,16 @@ function processArrayValue(
 	for (let i = 0; i < _v.length; i++) {
 		let oldIndex = -1;
 
-		let duplicate = duplicateCheck.find(e => deepEqual(e.object, _v[i]));
+		let duplicateObject = duplicateCheck.find(e => deepEqual(e.object, _v[i]));
 
-		if (!duplicate) {
-			duplicate = { object: _v[i], occurance: 1 };
-			duplicateCheck.push(duplicate);
+		if (!duplicateObject) {
+			duplicateObject = { object: _v[i], occurance: 1 };
+			duplicateCheck.push(duplicateObject);
 		} else {
-			duplicate.occurance++;
+			duplicateObject.occurance++;
 		}
 
-		let occurance = duplicate.occurance;
+		let occurance = duplicateObject.occurance;
 		let count = -1;
 		for (let oldIndexObject of indKeysCurrent.oldKeys) {
 			count++;
@@ -462,7 +666,7 @@ function processArrayValue(
 			indKeysCurrent.array[i] = shortUUID();
 			if (_v[i] !== undefined && _v[i] !== null)
 				indKeysCurrent.oldKeys.push({
-					object: _v[i],
+					object: duplicate(_v[i]),
 					key: indKeysCurrent.array[i],
 				});
 		} else {
@@ -485,6 +689,7 @@ const component: Component = {
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	bindingPaths: {
 		bindingPath: { name: 'Array/Object Binding' },
+		bindingPath2: { name: 'Dropped Data Binding' },
 	},
 	defaultTemplate: {
 		key: '',

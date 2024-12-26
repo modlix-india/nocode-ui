@@ -392,9 +392,25 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'enablePersonalization',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Enable Personalization',
-		group: ComponentPropertyGroup.BASIC,
+		displayName: 'Enable Personalization for dragging and hiding columns',
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: true,
+	},
+
+	{
+		name: 'disableColumnDragging',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Disable Column Dragging',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+
+	{
+		name: 'hideContextMenu',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Context Menu',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 
 	COMMON_COMPONENT_PROPERTIES.visibility,
