@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './checkBoxStyleProperties';
 
 const PREFIX = '.comp.compCheckbox';
-export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function CheckBoxStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 
@@ -18,8 +20,8 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
         margin: 0;
         min-width: 16px;
         min-height: 16px;
-        border: 0.15em solid;
-        border-radius: 0.15em;
+        border: 2px solid;
+        border-radius: 2px;
         display: grid;
         place-content: center;
         cursor: pointer;
@@ -49,7 +51,10 @@ export default function CheckBoxStyle({ theme }: { theme: Map<string, Map<string
         top: 0px;        
     }
     
-    span.commonTriStateCheckbox._true,
+    span.commonTriStateCheckbox._true {
+        border: 2px transpernt;
+    }
+
     span.commonCheckbox._checked {
         border: 0px;
     }

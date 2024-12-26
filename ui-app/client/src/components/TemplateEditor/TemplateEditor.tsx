@@ -16,7 +16,7 @@ import { styleDefaults } from './TemplateEditorStyleProperties';
 import EmailEditor from './email/EmailEditor';
 import { propertiesDefinition, stylePropertiesDefinition } from './templateEditorProperties';
 
-function TemplateEditor(props: ComponentProps) {
+function TemplateEditor(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		definition,
@@ -107,20 +107,30 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
 					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="2"
-						fillOpacity="0.2"
-						fill="currentColor"
+						x="0.5"
+						y="0.5"
+						width="29"
+						height="29"
+						rx="1.5"
+						fill="white"
+						stroke="#EDEAEA"
 					/>
 					<path
-						d="M17.0938 6.40625V9.27344H16.8125C16.6458 8.61198 16.4609 8.13802 16.2578 7.85156C16.0547 7.5599 15.776 7.32812 15.4219 7.15625C15.224 7.0625 14.8776 7.01562 14.3828 7.01562H13.5938V15.1875C13.5938 15.7292 13.6224 16.0677 13.6797 16.2031C13.7422 16.3385 13.8594 16.4583 14.0312 16.5625C14.2083 16.6615 14.4479 16.7109 14.75 16.7109H15.1016V17H9.55469V16.7109H9.90625C10.2135 16.7109 10.4609 16.6562 10.6484 16.5469C10.7839 16.474 10.8906 16.349 10.9688 16.1719C11.026 16.0469 11.0547 15.7188 11.0547 15.1875V7.01562H10.2891C9.57552 7.01562 9.05729 7.16667 8.73438 7.46875C8.28125 7.89062 7.99479 8.49219 7.875 9.27344H7.57812V6.40625H17.0938Z"
-						fill="currentColor"
+						d="M5.1197 17.1237L11.2011 11.0423C12.2288 10.0146 13.3661 10.0146 14.3939 11.0423C15.4216 12.07 15.4216 13.2073 14.3939 14.235L8.31244 20.3164L5.1197 17.1237ZM7.49592 20.777L4.86547 21.0693C4.57789 21.1012 4.33489 20.8582 4.36685 20.5707L4.65912 17.9402L7.49592 20.777Z"
+						fill="#F94566"
+						className="_TEIcon"
 					/>
+					<path
+						d="M4 25C3.44772 25 3 24.5523 3 24C3 23.4477 3.44772 23 4 23H25C25.5523 23 26 23.4477 26 24C26 24.5523 25.5523 25 25 25H4Z"
+						fill="#EDEAEA"
+					/>
+					<path
+						d="M1 2C1 1.44772 1.44772 1 2 1H28C28.5523 1 29 1.44772 29 2V5H1V2Z"
+						fill="#F94566"
+					/>
+					<rect x="3" y="2.5" width="4" height="1" rx="0.5" fill="white" />
 				</IconHelper>
 			),
 		},

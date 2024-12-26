@@ -1,25 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import Children from '../Children';
 import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
-import { runEvent } from '../util/runEvent';
-import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
+import React, { useEffect, useState } from 'react';
+import { STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
-	addListenerAndCallImmediatelyWithChildrenActivity,
 	addListenerWithChildrenActivity,
 	getDataFromPath,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import PageStyle from './PageStyle';
-import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
-import useDefinition from '../util/useDefinition';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import pageHistory from './pageHistory';
-import { styleDefaults } from './pageStyleProperties';
+import Children from '../Children';
+import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import PageStyle from './PageStyle';
+import pageHistory from './pageHistory';
+import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
+import { styleDefaults } from './pageStyleProperties';
 
 const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
 
@@ -41,7 +40,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
-	const [_, setLastChanged] = useState<number>(Date.now());
+	const [, setLastChanged] = useState<number>(Date.now());
 
 	useEffect(
 		() =>
@@ -98,14 +97,21 @@ function PageComponent(props: Readonly<ComponentProps>) {
 					!isNullValue(onLoadEvent) &&
 					!isNullValue(eventFunctions[onLoadEvent!])
 				) {
-					(async () =>
-						await runEvent(
-							eventFunctions[onLoadEvent!],
-							'pageOnLoad',
-							pageName,
-							locationHistory,
-							pageDefinition,
-						))();
+					if (
+						!getDataFromPath(
+							`Store.functionExecutions.${pageName}.pageOnLoad.isRunning`,
+							[],
+						)
+					) {
+						(async () =>
+							await runEvent(
+								eventFunctions[onLoadEvent!],
+								'pageOnLoad',
+								pageName,
+								locationHistory,
+								pageDefinition,
+							))();
+					}
 				}
 			},
 			pageExtractor,
@@ -172,7 +178,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			<style>{styleText}</style>
 			<Children
 				pageDefinition={pageDefinition}
-				children={{
+				renderableChildren={{
 					[pageDefinition.rootComponent]: true,
 				}}
 				context={context}
@@ -200,16 +206,31 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
 					<path
-						d="M12.4836 5.4706V1H3.5493C2.69501 1 2 1.69501 2 2.5493V21.4507C2 22.305 2.69501 23 3.5493 23H17.4706C18.3249 23 19.0199 22.305 19.0199 21.4507V7.53632H14.5493C13.4103 7.53632 12.4836 6.60964 12.4836 5.4706Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						d="M17.3144 7.68985V2H1.86912C0.838487 2 0 2.88456 0 3.97183V28.0282C0 29.1154 0.838487 30 1.86912 30H23.3309C24.3615 30 25.2 29.1154 25.2 28.0282V10.319H19.8065C18.4324 10.319 17.3144 9.13954 17.3144 7.68985Z"
+						fill="#F72C5B"
+						fillOpacity="0.1"
 					/>
 					<path
-						d="M13.5176 5.47056C13.5176 6.04008 13.9809 6.50342 14.5504 6.50342H18.2553L13.5176 1.78809V5.47056Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						d="M18.5623 7.69459C18.5623 8.41944 19.1212 9.00915 19.8083 9.00915H24.278L18.5623 3.00781V7.69459Z"
+						fill="#F72C5B"
+						fillOpacity="0.1"
+					/>
+					<path
+						d="M20.1143 5.82462V0.134766H4.66905C3.63841 0.134766 2.79993 1.01933 2.79993 2.1066V26.1629C2.79993 27.2502 3.63841 28.1348 4.66905 28.1348H26.1308C27.1614 28.1348 27.9999 27.2502 27.9999 26.1629V8.45372H22.6065C21.2323 8.45372 20.1143 7.27431 20.1143 5.82462Z"
+						fill="#F72C5B"
+					/>
+					<path
+						className="_pagePen"
+						d="M6.45915 21.1634L10.1542 17.4683C10.7787 16.8439 11.4697 16.8439 12.0942 17.4683C12.7186 18.0928 12.7186 18.7838 12.0942 19.4083L8.39908 23.1033L6.45915 21.1634ZM7.90296 23.3832L6.30469 23.5608C6.12995 23.5802 5.98231 23.4325 6.00172 23.2578L6.17931 21.6595L7.90296 23.3832Z"
+						fill="white"
+					/>
+					<ellipse cx="6.75026" cy="4.75026" rx="0.750265" ry="0.750265" fill="white" />
+					<ellipse cx="9.75002" cy="4.75026" rx="0.750265" ry="0.750265" fill="white" />
+					<path
+						d="M21.3622 5.82936C21.3622 6.5542 21.9212 7.14391 22.6083 7.14391H27.0779L21.3622 1.14258V5.82936Z"
+						fill="#F72C5B"
 					/>
 				</IconHelper>
 			),

@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './textListStyleProperties';
 
 const PREFIX = '.comp.compTextList';
-export default function TextListStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function TextListStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		${PREFIX} .list {

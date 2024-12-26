@@ -1,0 +1,1498 @@
+[
+	{
+		"gn": "Video Range Slider Accent Color",
+		"dn": "Primary Video Range Slider Accent Color",
+		"n": "primaryVideoRangeSliderAccentColor",
+		"dv": "<backgroundColorOne>",
+		"de": "rangeSlider design one primary  color",
+		"cp": "accent-color",
+		"sel": ".comp.compVideo._videoDesign1._primary input[type=\"range\"], .comp.compVideo._videoDesign2._primary input[type=\"range\"], .comp.compVideo._videoDesign3._primary input[type=\"range\"], .comp.compVideo._videoDesign4._primary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Video Range Slider Accent Color",
+		"dn": "Secondary Video Range Slider Accent Color",
+		"n": "secondaryVideoRangeSliderAccentColor",
+		"dv": "<backgroundColorTwo>",
+		"de": "rangeSlider design one secondary  color",
+		"cp": "accent-color",
+		"sel": ".comp.compVideo._videoDesign1._secondary input[type=\"range\"], .comp.compVideo._videoDesign2._secondary input[type=\"range\"], .comp.compVideo._videoDesign3._secondary input[type=\"range\"], .comp.compVideo._videoDesign4._secondary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Video Range Slider Accent Color",
+		"dn": "Tertiary Video Range Slider Accent Color",
+		"n": "tertiaryVideoRangeSliderAccentColor",
+		"dv": "<backgroundColorThree>",
+		"de": "rangeSlider design one tertiary  color",
+		"cp": "accent-color",
+		"sel": ".comp.compVideo._videoDesign1._tertiary input[type=\"range\"], .comp.compVideo._videoDesign2._tertiary input[type=\"range\"], .comp.compVideo._videoDesign3._tertiary input[type=\"range\"], .comp.compVideo._videoDesign4._tertiary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Video Range Slider Accent Color",
+		"dn": "Quaternary Video Range Slider Accent Color",
+		"n": "quaternaryVideoRangeSliderAccentColor",
+		"dv": "<backgroundColorFour>",
+		"de": "rangeSlider design one quaternary  color ",
+		"cp": "accent-color",
+		"sel": ".comp.compVideo._videoDesign1._quaternary input[type=\"range\"], .comp.compVideo._videoDesign2._quaternary input[type=\"range\"], .comp.compVideo._videoDesign3._quaternary input[type=\"range\"], .comp.compVideo._videoDesign4._quaternary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Video Range Slider Accent Color",
+		"dn": "Quinary Video Range Slider Accent Color",
+		"n": "quinaryVideoRangeSliderAccentColor",
+		"dv": "<backgroundColorFive>",
+		"de": "rangeSlider design one quinary  color",
+		"cp": "accent-color",
+		"sel": ".comp.compVideo._videoDesign1._quinary input[type=\"range\"], .comp.compVideo._videoDesign2._quinary input[type=\"range\"], .comp.compVideo._videoDesign3._quinary input[type=\"range\"], .comp.compVideo._videoDesign4._quinary input[type=\"range\"]",
+		"np": true
+	},
+
+	{
+		"gn": "Video Range Slider Height",
+		"dn": "Video Range Slider Height Design One",
+		"n": "videoRangeSliderHeightDesignOne",
+		"dv": "3px",
+		"de": "rangeSlider Height for Design One",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign1 input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Video Range Slider Height",
+		"dn": "Video Range Slider Height Design Two",
+		"n": "videoRangeSliderHeightDesignTwo",
+		"dv": "3px",
+		"de": "rangeSlider Height for Design Two",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign2 input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Video Range Slider Height",
+		"dn": "Video Range Slider Height Design Three",
+		"n": "videoRangeSliderHeightDesignThree",
+		"dv": "3px",
+		"de": "rangeSlider Height for Design Three",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign3 input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Video Range Slider Height",
+		"dn": "Video Range Slider Height Design Four",
+		"n": "videoRangeSliderHeightDesignFour",
+		"dv": "3px",
+		"de": "rangeSlider Height for Design Four",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign4 input[type=\"range\"]",
+		"np": true
+	},
+
+	{
+		"gn": "VideoProgressBarWidthDesignOne",
+		"dn": "ProgressBar Width DesignOne",
+		"n": "progressBarWidthDesignOne",
+		"dv": "0.99",
+		"de": "Progress bar width for design one",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign1 ._progressBar",
+		"np": true
+	},
+
+	{
+		"gn": "Video progress Bar container Padding",
+		"dn": "Video progress Bar container PaddingDesign One",
+		"n": "videoprogressBarcontainerPaddingDesignOne",
+		"dv": "0px 8px 0px 4px",
+		"de": "Progress bar container padding",
+		"cp": "padding",
+		"sel": ".comp.compVideo ._progressBarContainer",
+		"np": true
+	},
+
+	{
+		"gn": "VideoProgressBarCursorAll",
+		"dn": "ProgressBar Cursor All",
+		"n": "ProgressBarCursorAll",
+		"dv": "pointer",
+		"de": "progress bar cursor for all",
+		"cp": "cursor",
+		"sel": ".comp.compVideo ._progressBar",
+		"np": true
+	},
+
+	{
+		"gn": "Video Progress Bar ToolTip Color",
+		"dn": "Video Progress Bar ToolTip Color All Designs",
+		"n": "videoProgressBarToolTipColorAllDesigns",
+		"dv": "<fontColorTwo>",
+		"de": "progress bar tooltip color All designs.",
+		"cp": "color",
+		"sel": ".comp.compVideo ._toolTip",
+		"np": true
+	},
+
+	{
+		"gn": "Video Time Color",
+		"dn": "Video Time Color Design One",
+		"n": "videoTimeColorDesignOne",
+		"dv": "<fontColorTwo>",
+		"de": "Video time color for Design One",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign1 ._time",
+		"np": true
+	},
+	{
+		"gn": "Video Time Color",
+		"dn": "Video Time Color Design Two",
+		"n": "videoTimeColorDesignTwo",
+		"dv": "<fontColorTwo>",
+		"de": "Video time color for Design Two",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign2 ._time",
+		"np": true
+	},
+	{
+		"gn": "Video Time Color",
+		"dn": "Video Time Color Design Three",
+		"n": "videoTimeColorDesignThree",
+		"dv": "<fontColorTwo>",
+		"de": "Video time color for Design Three",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign3 ._time",
+		"np": true
+	},
+	{
+		"gn": "Video Time Color",
+		"dn": "Video Time Color Design Four",
+		"n": "videoTimeColorDesignFour",
+		"dv": "<fontColorTwo>",
+		"de": "Video time color for Design Four",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign4 ._time",
+		"np": true
+	},
+
+	{
+		"gn": "Video Volume Icon Color",
+		"dn": "Video Volume Icon Color Design One",
+		"n": "videoVolumeIconColorDesignOne",
+		"dv": "<fontColorTwo>",
+		"de": "Video time color for Design One",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign1 ._volumeButton",
+		"np": true
+	},
+	{
+		"gn": "Video Volume Icon Color",
+		"dn": "Video Volume Icon Color Design Two",
+		"n": "videoVolumeIconColorDesignTwo",
+		"dv": "<fontColorTwo>",
+		"de": "Video time color for Design Two",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign2 ._volumeButton",
+		"np": true
+	},
+	{
+		"gn": "Video Volume Icon Color",
+		"dn": "Video Volume Icon Color Design Three",
+		"n": "videoVolumeIconColorDesignThree",
+		"dv": "<fontColorTwo>",
+		"de": "Video time color for Design Three",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign3 ._volumeButton",
+		"np": true
+	},
+	{
+		"gn": "Video Volume Icon Color",
+		"dn": "Video Volume Icon Color Design Four",
+		"n": "videoVolumeIconColorDesignFour",
+		"dv": "<fontColorTwo>",
+		"de": "Video time color for Design Four",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign4 ._volumeButton",
+		"np": true
+	},
+
+	{
+		"gn": "Video Full Screen Icon Color",
+		"dn": "Video Full Screen Icon Color Design One",
+		"n": "videoFullScreenIconColorDesignOne",
+		"dv": "<fontColorTwo>",
+		"de": "Video full screen iconDesign One",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign1 ._fullScreen",
+		"np": true
+	},
+	{
+		"gn": "Video Full Screen Icon Color",
+		"dn": "Video Full Screen Icon Color Design Two",
+		"n": "videoFullScreenIconColorDesignTwo",
+		"dv": "<fontColorTwo>",
+		"de": "Video full screen iconDesign Two",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign2 ._fullScreen",
+		"np": true
+	},
+	{
+		"gn": "Video Full Screen Icon Color",
+		"dn": "Video Full Screen Icon Color Design Three",
+		"n": "videoFullScreenIconColorDesignThree",
+		"dv": "<fontColorTwo>",
+		"de": "Video full screen iconDesign Three",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign3 ._fullScreen",
+		"np": true
+	},
+	{
+		"gn": "Video Full Screen Icon Color",
+		"dn": "Video Full Screen Icon Color Design Four",
+		"n": "videoFullScreenIconColorDesignFour",
+		"dv": "<fontColorTwo>",
+		"de": "Video full screen iconDesign Four",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign4 ._fullScreen",
+		"np": true
+	},
+
+	{
+		"gn": "Video PIP Icon",
+		"dn": "Video PIP Icon Design One",
+		"n": "videoPIPIconDesignOne",
+		"dv": "<fontColorTwo>",
+		"de": "Video PIP iconDesign One",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign1 ._pip",
+		"np": true
+	},
+	{
+		"gn": "Video PIP Icon",
+		"dn": "Video PIP Icon Design Two",
+		"n": "videoPIPIconDesignTwo",
+		"dv": "<fontColorTwo>",
+		"de": "Video PIP iconDesign Two",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign2 ._pip",
+		"np": true
+	},
+	{
+		"gn": "Video PIP Icon",
+		"dn": "Video PIP Icon Design Three",
+		"n": "videoPIPIconDesignThree",
+		"dv": "<fontColorTwo>",
+		"de": "Video PIP iconDesign Three",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign3 ._pip",
+		"np": true
+	},
+	{
+		"gn": "Video PIP Icon",
+		"dn": "Video PIP Icon Design Four",
+		"n": "videoPIPIconDesignFour",
+		"dv": "<fontColorTwo>",
+		"de": "Video PIP iconDesign Four",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign4 ._pip",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play And Volume Grid",
+		"dn": "Video Play And Volume Grid Design One",
+		"n": "videoPlayAndVolumeGridDesignOne",
+		"dv": "flex",
+		"de": "Video Play and Volume GridDesign One",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid",
+		"dn": "Video Play And Volume Grid Design Two",
+		"n": "videoPlayAndVolumeGridDesignTwo",
+		"dv": "flex",
+		"de": "Video Play and Volume GridDesign Two",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid",
+		"dn": "Video Play And Volume Grid Design Three",
+		"n": "videoPlayAndVolumeGridDesignThree",
+		"dv": "flex",
+		"de": "Video Play and Volume GridDesign Three",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid",
+		"dn": "Video Play And Volume Grid Design Four",
+		"n": "videoPlayAndVolumeGridDesignFour",
+		"de": "Video Play and Volume GridDesign Four",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndVolumeGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play And Volume Grid Gap",
+		"dn": "Video Play And Volume Grid Gap Design One",
+		"n": "videoPlayAndVolumeGridGapDesignOne",
+		"dv": "10px",
+		"de": "Video Play and Volume Grid GapDesign One",
+		"cp": "gap",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Gap",
+		"dn": "Video Play And Volume Grid Gap Design Two",
+		"n": "videoPlayAndVolumeGridGapDesignTwo",
+		"dv": "10px",
+		"de": "Video Play and Volume Grid GapDesign Two",
+		"cp": "gap",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Gap",
+		"dn": "Video Play And Volume Grid Gap Design Three",
+		"n": "videoPlayAndVolumeGridGapDesignThree",
+		"dv": "10px",
+		"de": "Video Play and Volume Grid GapDesign Three",
+		"cp": "gap",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Gap",
+		"dn": "Video Play And Volume Grid Gap Design Four",
+		"n": "videoPlayAndVolumeGridGapDesignFour",
+		"de": "Video Play and Volume Grid GapDesign Four",
+		"cp": "gap",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndVolumeGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play And Volume Grid Align Items",
+		"dn": "Video Play And Volume Grid Align Items Design One",
+		"n": "Video Play And Volume Grid Flex direction one",
+		"dv": "center",
+		"de": "videoPlayAndVolumeGridAlignItemsDesign One",
+		"cp": "align-items",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Align Items",
+		"dn": "Video Play And Volume Grid Align Items Design Two",
+		"n": "Video Play And Volume Grid Flex direction two",
+		"dv": "center",
+		"de": "videoPlayAndVolumeGridAlignItemsDesign Two",
+		"cp": "align-items",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Align Items",
+		"dn": "Video Play And Volume Grid Align Items Design Three",
+		"n": "Video Play And Volume Grid Flex direction three",
+		"dv": "center",
+		"de": "videoPlayAndVolumeGridAlignItemsDesign Three",
+		"cp": "align-items",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Align Items",
+		"dn": "Video Play And Volume Grid Align Items Design Four",
+		"n": "Video Play And Volume Grid Flex direction four",
+		"de": "videoPlayAndVolumeGridAlignItemsDesign Four",
+		"cp": "align-items",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndVolumeGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play And Volume Grid Height",
+		"dn": "Video Play And Volume Grid Height Design One",
+		"n": "videoPlayAndVolumeGridHeightDesignOne",
+		"dv": "20px",
+		"de": "videoPlayAndVolumeGridHeight",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Height",
+		"dn": "Video Play And Volume Grid Height Design Two",
+		"n": "videoPlayAndVolumeGridHeightDesignTwo",
+		"dv": "20px",
+		"de": "videoPlayAndVolumeGridHeight",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Height",
+		"dn": "Video Play And Volume Grid Height Design Three",
+		"n": "videoPlayAndVolumeGridHeightDesignThree",
+		"dv": "20px",
+		"de": "videoPlayAndVolumeGridHeight",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Height",
+		"dn": "Video Play And Volume Grid Height Design Four",
+		"n": "videoPlayAndVolumeGridHeightDesignFour",
+		"de": "videoPlayAndVolumeGridHeight",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndVolumeGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play And Volume Grid Height",
+		"dn": "Video Play And Volume Grid Height ",
+		"n": "videoPlayAndVolumeGridHeight",
+		"dv": "20px",
+		"de": "videoPlayAndVolumeGridHeight",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Height",
+		"dn": "Video Play And Volume Grid Height ",
+		"n": "videoPlayAndVolumeGridHeight",
+		"dv": "20px",
+		"de": "videoPlayAndVolumeGridHeight",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Height",
+		"dn": "Video Play And Volume Grid Height ",
+		"n": "videoPlayAndVolumeGridHeight",
+		"dv": "20px",
+		"de": "videoPlayAndVolumeGridHeight",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndVolumeGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play And Volume Grid Height",
+		"dn": "Video Play And Volume Grid Height ",
+		"n": "videoPlayAndVolumeGridHeight",
+		"dv": "20px",
+		"de": "videoPlayAndVolumeGridHeight",
+		"cp": "height",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndVolumeGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play Back Icon Color",
+		"dn": "Video Play Back Icon Color Design One",
+		"n": "videoPlayBackIconColorDesignOne",
+		"dv": "<fontColorTwo>",
+		"de": "video playbackiconDesign One",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign1 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon Color",
+		"dn": "Video Play Back Icon Color Design Two",
+		"n": "videoPlayBackIconColorDesignTwo",
+		"dv": "<fontColorTwo>",
+		"de": "video playbackiconDesign Two",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign2 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon Color",
+		"dn": "Video Play Back Icon Color Design Three",
+		"n": "videoPlayBackIconColorDesignThree",
+		"dv": "<fontColorTwo>",
+		"de": "video playbackiconDesign Three",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign3 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon Color",
+		"dn": "Video Play Back Icon Color Design Four",
+		"n": "videoPlayBackIconColorDesignFour",
+		"dv": "<fontColorTwo>",
+		"de": "video playbackiconDesign Four",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign4 ._playIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video PauseIcon Color",
+		"dn": "Video PauseIcon Color Design One",
+		"n": "videoPauseIconColorDesignOne",
+		"dv": "<fontColorTwo>",
+		"de": "video pauseicon",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign1 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video PauseIcon Color",
+		"dn": "Video PauseIcon Color Design Two",
+		"n": "videoPauseIconColorDesignTwo",
+		"dv": "<fontColorTwo>",
+		"de": "video pauseicon",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign2 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video PauseIcon Color",
+		"dn": "Video PauseIcon Color Design Three",
+		"n": "videoPauseIconColorDesignThree",
+		"dv": "<fontColorTwo>",
+		"de": "video pauseicon",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign3 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video PauseIcon Color",
+		"dn": "Video PauseIcon Color Design Four",
+		"n": "videoPauseIconColorDesignFour",
+		"dv": "<fontColorTwo>",
+		"de": "video pauseicon",
+		"cp": "color",
+		"sel": ".comp.compVideo._videoDesign4 ._pauseIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play and Fullscreen grid",
+		"dn": "Video Play and Fullscreen grid Design One",
+		"n": "videoPlayandFullscreengridDesignOne",
+		"dv": "flex",
+		"de": "video Play and fullscreen gridDesign One",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid",
+		"dn": "Video Play and Fullscreen grid Design Two",
+		"n": "videoPlayandFullscreengridDesignTwo",
+		"dv": "flex",
+		"de": "video Play and fullscreen gridDesign Two",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid",
+		"dn": "Video Play and Fullscreen grid Design Three",
+		"n": "videoPlayandFullscreengridDesignThree",
+		"dv": "flex",
+		"de": "video Play and fullscreen gridDesign Three",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid",
+		"dn": "Video Play and Fullscreen grid Design Four",
+		"n": "videoPlayandFullscreengridDesignFour",
+		"de": "video Play and fullscreen gridDesign Four",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndFullscreenGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play and Fullscreen grid Padding top",
+		"dn": "Video Play and Fullscreen grid Padding top Design One",
+		"n": "videoPlayandFullscreengridPaddingtopDesignOne",
+		"dv": "10px",
+		"de": "video Play and  grid Padding topDesign One",
+		"cp": "padding-top",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding top",
+		"dn": "Video Play and Fullscreen grid Padding top Design Two",
+		"n": "videoPlayandFullscreengridPaddingtopDesignTwo",
+		"dv": "10px",
+		"de": "video Play and  grid Padding topDesign Two",
+		"cp": "padding-top",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding top",
+		"dn": "Video Play and Fullscreen grid Padding top Design Three",
+		"n": "videoPlayandFullscreengridPaddingtopDesignThree",
+		"dv": "10px",
+		"de": "video Play and  grid Padding topDesign Three",
+		"cp": "padding-top",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding top",
+		"dn": "Video Play and Fullscreen grid Padding top Design Four",
+		"n": "videoPlayandFullscreengridPaddingtopDesignFour",
+		"de": "video Play and  grid Padding topDesign Four",
+		"cp": "padding-top",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndFullscreenGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play and Fullscreen grid Padding Left",
+		"dn": "Video Play and Fullscreen grid Padding Left Design One",
+		"n": "videoPlayandFullscreengridPaddingLeftDesignOne",
+		"dv": "10px",
+		"de": "video Play and  grid Padding LeftDesign One",
+		"cp": "padding-Left",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding Left",
+		"dn": "Video Play and Fullscreen grid Padding Left Design Two",
+		"n": "videoPlayandFullscreengridPaddingLeftDesignTwo",
+		"dv": "10px",
+		"de": "video Play and  grid Padding LeftDesign Two",
+		"cp": "padding-Left",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding Left",
+		"dn": "Video Play and Fullscreen grid Padding Left Design Three",
+		"n": "videoPlayandFullscreengridPaddingLeftDesignThree",
+		"dv": "10px",
+		"de": "video Play and  grid Padding LeftDesign Three",
+		"cp": "padding-Left",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding Left",
+		"dn": "Video Play and Fullscreen grid Padding Left Design Four",
+		"n": "videoPlayandFullscreengridPaddingLeftDesignFour",
+		"de": "video Play and  grid Padding LeftDesign Four",
+		"cp": "padding-Left",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndFullscreenGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play and Fullscreen grid content",
+		"dn": "Video Play and Fullscreen grid content Design One",
+		"n": "videoPlayandFullscreengridcontentDesignOne",
+		"dv": "space-between",
+		"de": "video Play and fullscreen grid contentDesign One",
+		"cp": "justify-content",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid content",
+		"dn": "Video Play and Fullscreen grid content Design Two",
+		"n": "videoPlayandFullscreengridcontentDesignTwo",
+		"dv": "space-between",
+		"de": "video Play and fullscreen grid contentDesign Two",
+		"cp": "justify-content",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid content",
+		"dn": "Video Play and Fullscreen grid content Design Three",
+		"n": "videoPlayandFullscreengridcontentDesignThree",
+		"dv": "space-between",
+		"de": "video Play and fullscreen grid contentDesign Three",
+		"cp": "justify-content",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid content",
+		"dn": "Video Play and Fullscreen grid content Design Four",
+		"n": "videoPlayandFullscreengridcontentDesignFour",
+		"de": "video Play and fullscreen grid contentDesign Four",
+		"cp": "justify-content",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndFullscreenGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play and Fullscreen grid Padding right",
+		"dn": "Video Play and Fullscreen grid Padding right Design One",
+		"n": "videoPlayandFullscreengridPaddingrightDesignOne",
+		"dv": "10px",
+		"de": "video Play and  grid Padding RightDesign One",
+		"cp": "padding-right",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding right",
+		"dn": "Video Play and Fullscreen grid Padding right Design Two",
+		"n": "videoPlayandFullscreengridPaddingrightDesignTwo",
+		"dv": "10px",
+		"de": "video Play and  grid Padding RightDesign Two",
+		"cp": "padding-right",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding right",
+		"dn": "Video Play and Fullscreen grid Padding right Design Three",
+		"n": "videoPlayandFullscreengridPaddingrightDesignThree",
+		"dv": "10px",
+		"de": "video Play and  grid Padding RightDesign Three",
+		"cp": "padding-right",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding right",
+		"dn": "Video Play and Fullscreen grid Padding right Design Four",
+		"n": "videoPlayandFullscreengridPaddingrightDesignFour",
+		"de": "video Play and  grid Padding RightDesign Four",
+		"cp": "padding-right",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndFullscreenGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play and Fullscreen grid Padding bottom",
+		"dn": "Video Play and Fullscreen grid Padding bottom Design One",
+		"n": "videoPlayandFullscreengridPaddingbottomDesignOne",
+		"dv": "3px",
+		"de": "video Play and  grid Padding bottomDesign One",
+		"cp": "padding-bottom",
+		"sel": ".comp.compVideo._videoDesign1 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding bottom",
+		"dn": "Video Play and Fullscreen grid Padding bottom Design Two",
+		"n": "videoPlayandFullscreengridPaddingbottomDesignTwo",
+		"dv": "3px",
+		"de": "video Play and  grid Padding bottomDesign Two",
+		"cp": "padding-bottom",
+		"sel": ".comp.compVideo._videoDesign2 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding bottom",
+		"dn": "Video Play and Fullscreen grid Padding bottom Design Three",
+		"n": "videoPlayandFullscreengridPaddingbottomDesignThree",
+		"dv": "3px",
+		"de": "video Play and  grid Padding bottomDesign Three",
+		"cp": "padding-bottom",
+		"sel": ".comp.compVideo._videoDesign3 ._playAndFullscreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Play and Fullscreen grid Padding bottom",
+		"dn": "Video Play and Fullscreen grid Padding bottom Design Four",
+		"n": "videoPlayandFullscreengridPaddingbottomDesignFour",
+		"de": "video Play and  grid Padding bottomDesign Four",
+		"cp": "padding-bottom",
+		"sel": ".comp.compVideo._videoDesign4 ._playAndFullscreenGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Pip and Fullscreen Grid Display",
+		"dn": "Video Pip and Fullscreen Grid Display Design One",
+		"n": "videoPipandFullscreenGridDisplayDesignOne",
+		"dv": "flex",
+		"de": "video pip and fullscreen GridDesign One",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign1 ._pipAndFullScreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Pip and Fullscreen Grid Display",
+		"dn": "Video Pip and Fullscreen Grid Display Design Two",
+		"n": "videoPipandFullscreenGridDisplayDesignTwo",
+		"dv": "flex",
+		"de": "video pip and fullscreen GridDesign Two",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign2 ._pipAndFullScreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Pip and Fullscreen Grid Display",
+		"dn": "Video Pip and Fullscreen Grid Display Design Three",
+		"n": "videoPipandFullscreenGridDisplayDesignThree",
+		"dv": "flex",
+		"de": "video pip and fullscreen GridDesign Three",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign3 ._pipAndFullScreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Pip and Fullscreen Grid Display",
+		"dn": "Video Pip and Fullscreen Grid Display Design Four",
+		"n": "videoPipandFullscreenGridDisplayDesignFour",
+		"de": "video pip and fullscreen GridDesign Four",
+		"cp": "display",
+		"sel": ".comp.compVideo._videoDesign4 ._pipAndFullScreenGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Video Pip and Fullscreen Grid Gap",
+		"dn": "Video Pip and Fullscreen Grid Gap Design One",
+		"n": "videoPipandFullscreenGridGapDesignOne",
+		"dv": "10px",
+		"de": "video pip and fullscreen GridDesign One",
+		"cp": "gap",
+		"sel": ".comp.compVideo._videoDesign1 ._pipAndFullScreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Pip and Fullscreen Grid Gap",
+		"dn": "Video Pip and Fullscreen Grid Gap Design Two",
+		"n": "videoPipandFullscreenGridGapDesignTwo",
+		"dv": "10px",
+		"de": "video pip and fullscreen GridDesign Two",
+		"cp": "gap",
+		"sel": ".comp.compVideo._videoDesign2 ._pipAndFullScreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Pip and Fullscreen Grid Gap",
+		"dn": "Video Pip and Fullscreen Grid Gap Design Three",
+		"n": "videoPipandFullscreenGridGapDesignThree",
+		"dv": "10px",
+		"de": "video pip and fullscreen GridDesign Three",
+		"cp": "gap",
+		"sel": ".comp.compVideo._videoDesign3 ._pipAndFullScreenGrid",
+		"np": true
+	},
+	{
+		"gn": "Video Pip and Fullscreen Grid Gap",
+		"dn": "Video Pip and Fullscreen Grid Gap Design Four",
+		"n": "videoPipandFullscreenGridGapDesignFour",
+		"de": "video pip and fullscreen GridDesign Four",
+		"cp": "gap",
+		"sel": ".comp.compVideo._videoDesign4 ._pipAndFullScreenGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Volume Button Width",
+		"dn": "Volume Button Width Design One",
+		"n": "volumeButtonWidthDesignOne",
+		"dv": "20px",
+		"de": "volume button Width Design One",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign1 ._volumeButton",
+		"np": true
+	},
+	{
+		"gn": "Volume Button Width",
+		"dn": "Volume Button Width Design Two",
+		"n": "volumeButtonWidthDesignTwo",
+		"dv": "20px",
+		"de": "volume button Width Design Two",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign2 ._volumeButton",
+		"np": true
+	},
+	{
+		"gn": "Volume Button Width",
+		"dn": "Volume Button Width Design Three",
+		"n": "volumeButtonWidthDesignThree",
+		"dv": "20px",
+		"de": "volume button Width Design Three",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign3 ._volumeButton",
+		"np": true
+	},
+	{
+		"gn": "Volume Button Width",
+		"dn": "Volume Button Width Design Four",
+		"n": "volumeButtonWidthDesignFour",
+		"de": "volume button Width Design Four",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign4 ._volumeButton",
+		"np": true
+	},
+
+	{
+		"gn": "fullScreen icon Width",
+		"dn": "fullScreen icon Width Design One",
+		"n": "fullScreeniconWidthDesignOne",
+		"dv": "15px",
+		"de": "fullScreen icon WidthDesign One",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign1 ._fullScreen ",
+		"np": true
+	},
+	{
+		"gn": "fullScreen icon Width",
+		"dn": "fullScreen icon Width Design Two",
+		"n": "fullScreeniconWidthDesignTwo",
+		"dv": "18px",
+		"de": "fullScreen icon WidthDesign Two",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign2 ._fullScreen ",
+		"np": true
+	},
+	{
+		"gn": "fullScreen icon Width",
+		"dn": "fullScreen icon Width Design Three",
+		"n": "fullScreeniconWidthDesignThree",
+		"dv": "18px",
+		"de": "fullScreen icon WidthDesign Three",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign3 ._fullScreen ",
+		"np": true
+	},
+	{
+		"gn": "fullScreen icon Width",
+		"dn": "fullScreen icon Width Design Four",
+		"n": "fullScreeniconWidthDesignFour",
+		"de": "fullScreen icon WidthDesign Four",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign4 ._fullScreen ",
+		"np": true
+	},
+
+	{
+		"gn": "Video PIP Icon Width",
+		"dn": "Video PIP Icon Width Design One",
+		"n": "videoPIPIconWidthDesignOne",
+		"dv": "15px",
+		"de": "Video PIP iconDesign One",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign1 ._pip",
+		"np": true
+	},
+	{
+		"gn": "Video PIP Icon Width",
+		"dn": "Video PIP Icon Width Design Two",
+		"n": "videoPIPIconWidthDesignTwo",
+		"dv": "18px",
+		"de": "Video PIP iconDesign Two",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign2 ._pip",
+		"np": true
+	},
+	{
+		"gn": "Video PIP Icon Width",
+		"dn": "Video PIP Icon Width Design Three",
+		"n": "videoPIPIconWidthDesignThree",
+		"dv": "18px",
+		"de": "Video PIP iconDesign Three",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign3 ._pip",
+		"np": true
+	},
+	{
+		"gn": "Video PIP Icon Width",
+		"dn": "Video PIP Icon Width Design Four",
+		"n": "videoPIPIconWidthDesignFour",
+		"de": "Video PIP iconDesign Four",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign4 ._pip",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play Back Icon Width",
+		"dn": "Video Play Back Icon Width Design One",
+		"n": "videoPlayBackIconWidthDesignOne",
+		"dv": "15px",
+		"de": "video playbackiconDesign One",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign1 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon Width",
+		"dn": "Video Play Back Icon Width Design Two",
+		"n": "videoPlayBackIconWidthDesignTwo",
+		"dv": "20px",
+		"de": "video playbackiconDesign Two",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign2 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon Width",
+		"dn": "Video Play Back Icon Width Design Three",
+		"n": "videoPlayBackIconWidthDesignThree",
+		"dv": "30px",
+		"de": "video playbackiconDesign Three",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign3 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon Width",
+		"dn": "Video Play Back Icon Width Design Four",
+		"n": "videoPlayBackIconWidthDesignFour",
+		"de": "video playbackiconDesign Four",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign4 ._playIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video Pause  Icon Width",
+		"dn": "Video Pause  Icon Width Design One",
+		"n": "videoPauseIconWidthDesignOne",
+		"dv": "15px",
+		"de": "video Pause IconDesign One",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign1 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause  Icon Width",
+		"dn": "Video Pause  Icon Width Design Two",
+		"n": "videoPauseIconWidthDesignTwo",
+		"dv": "20px",
+		"de": "video Pause IconDesign Two",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign2 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause  Icon Width",
+		"dn": "Video Pause  Icon Width Design Three",
+		"n": "videoPauseIconWidthDesignThree",
+		"dv": "30px",
+		"de": "video Pause IconDesign Three",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign3 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause  Icon Width",
+		"dn": "Video Pause  Icon Width Design Four",
+		"n": "videoPauseIconWidthDesignFour",
+		"de": "video Pause IconDesign Four",
+		"cp": "width",
+		"sel": ".comp.compVideo._videoDesign4 ._pauseIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play Back Icon position",
+		"dn": "Video Play Back Icon position Design One",
+		"n": "videoPlayBackIconpositionDesignOne",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign1 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon position",
+		"dn": "Video Play Back Icon position Design Two",
+		"n": "videoPlayBackIconpositionDesignTwo",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign2 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon position",
+		"dn": "Video Play Back Icon position Design Three",
+		"n": "videoPlayBackIconpositionDesignThree",
+		"dv": "absolute",
+		"de": "video playbackicon",
+		"cp": "position",
+		"sel": ".comp.compVideo._videoDesign3 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon position",
+		"dn": "Video Play Back Icon position Design Four",
+		"n": "videoPlayBackIconpositionDesignFour",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign4 ._playIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play Back Icon top",
+		"dn": "Video Play Back Icon top Design One",
+		"n": "videoPlayBackIcontopDesignOne",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign1 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon top",
+		"dn": "Video Play Back Icon top Design Two",
+		"n": "videoPlayBackIcontopDesignTwo",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign2 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon top",
+		"dn": "Video Play Back Icon top Design Three",
+		"n": "videoPlayBackIcontopDesignThree",
+		"dv": "50%",
+		"de": "video playbackicon",
+		"cp": "top",
+		"sel": ".comp.compVideo._videoDesign3 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon top",
+		"dn": "Video Play Back Icon top Design Four",
+		"n": "videoPlayBackIcontopDesignFour",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign4 ._playIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video Play Back Icon left",
+		"dn": "Video Play Back Icon left Design One",
+		"n": "videoPlayBackIconleftDesignOne",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign1 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon left",
+		"dn": "Video Play Back Icon left Design Two",
+		"n": "videoPlayBackIconleftDesignTwo",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign2 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon left",
+		"dn": "Video Play Back Icon left Design Three",
+		"n": "videoPlayBackIconleftDesignThree",
+		"dv": "50%",
+		"de": "video playbackicon",
+		"cp": "left",
+		"sel": ".comp.compVideo._videoDesign3 ._playIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Play Back Icon left",
+		"dn": "Video Play Back Icon left Design Four",
+		"n": "videoPlayBackIconleftDesignFour",
+		"de": "video playbackicon",
+		"sel": ".comp.compVideo._videoDesign4 ._playIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video pause Icon top",
+		"dn": "Video pause Icon top Design One",
+		"n": "videopauseIcontopDesignOne",
+		"de": "video Pause IconDesign One",
+		"sel": ".comp.compVideo._videoDesign1 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video pause Icon top",
+		"dn": "Video pause Icon top Design Two",
+		"n": "videopauseIcontopDesignTwo",
+		"de": "video Pause IconDesign Two",
+		"sel": ".comp.compVideo._videoDesign2 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video pause Icon top",
+		"dn": "Video pause Icon top Design Three",
+		"n": "videopauseIcontopDesignThree",
+		"dv": "absolute",
+		"de": "video Pause IconDesign Three",
+		"cp": "position",
+		"sel": ".comp.compVideo._videoDesign3 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video pause Icon top",
+		"dn": "Video pause Icon top Design Four",
+		"n": "videopauseIcontopDesignFour",
+		"de": "video Pause IconDesign Four",
+		"sel": ".comp.compVideo._videoDesign4 ._pauseIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video Pause Icon left",
+		"dn": "Video Pause Icon left Design One",
+		"n": "videoPauseIconleftDesignOne",
+		"de": "video playbackiconDesign One",
+		"sel": ".comp.compVideo._videoDesign1 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause Icon left",
+		"dn": "Video Pause Icon left Design Two",
+		"n": "videoPauseIconleftDesignTwo",
+		"de": "video playbackiconDesign Two",
+		"sel": ".comp.compVideo._videoDesign2 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause Icon left",
+		"dn": "Video Pause Icon left Design Three",
+		"n": "videoPauseIconleftDesignThree",
+		"dv": "50%",
+		"de": "video playbackiconDesign Three",
+		"cp": "top",
+		"sel": ".comp.compVideo._videoDesign3 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause Icon left",
+		"dn": "Video Pause Icon left Design Four",
+		"n": "videoPauseIconleftDesignFour",
+		"de": "video playbackiconDesign Four",
+		"sel": ".comp.compVideo._videoDesign4 ._pauseIcon",
+		"np": true
+	},
+
+	{
+		"gn": "Video Pause Icon position",
+		"dn": "Video Pause Icon position Design One",
+		"n": "videoPauseIconpositionDesignOne",
+		"de": "video pause icon positionDesign One",
+		"sel": ".comp.compVideo._videoDesign1 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause Icon position",
+		"dn": "Video Pause Icon position Design Two",
+		"n": "videoPauseIconpositionDesignTwo",
+		"de": "video pause icon positionDesign Two",
+		"sel": ".comp.compVideo._videoDesign2 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause Icon position",
+		"dn": "Video Pause Icon position Design Three",
+		"n": "videoPauseIconpositionDesignThree",
+		"dv": "50%",
+		"de": "video pause icon positionDesign Three",
+		"cp": "left",
+		"sel": ".comp.compVideo._videoDesign3 ._pauseIcon",
+		"np": true
+	},
+	{
+		"gn": "Video Pause Icon position",
+		"dn": "Video Pause Icon position Design Four",
+		"n": "videoPauseIconpositionDesignFour",
+		"de": "video pause icon positionDesign Four",
+		"sel": ".comp.compVideo._videoDesign4 ._pauseIcon",
+		"np": true
+	},
+
+	{
+		"gn": "video volume control position",
+		"dn": "video volume control position Design One",
+		"n": "videovolumecontrolpositionDesignOne",
+		"de": "volume control positionDesign One",
+		"sel": ".comp.compVideo._videoDesign1 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control position",
+		"dn": "video volume control position Design Two",
+		"n": "videovolumecontrolpositionDesignTwo",
+		"de": "volume control positionDesign Two",
+		"sel": ".comp.compVideo._videoDesign2 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control position",
+		"dn": "video volume control position Design Three",
+		"n": "videovolumecontrolpositionDesignThree",
+		"de": "volume control positionDesign Three",
+		"sel": ".comp.compVideo._videoDesign3 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control position",
+		"dn": "video volume control position Design Four",
+		"n": "videovolumecontrolpositionDesignFour",
+		"de": "volume control positionDesign Four",
+		"sel": ".comp.compVideo._videoDesign4 ._volumeControls",
+		"np": true
+	},
+
+	{
+		"gn": "video volume control top",
+		"dn": "video volume control top Design One",
+		"n": "videovolumecontroltopDesignOne",
+		"de": "volume control topDesign One",
+		"sel": ".comp.compVideo._videoDesign1 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control top",
+		"dn": "video volume control top Design Two",
+		"n": "videovolumecontroltopDesignTwo",
+		"de": "volume control topDesign Two",
+		"sel": ".comp.compVideo._videoDesign2 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control top",
+		"dn": "video volume control top Design Three",
+		"n": "videovolumecontroltopDesignThree",
+		"dv": "10%",
+		"de": "volume control topDesign Three",
+		"cp": "top",
+		"sel": ".comp.compVideo._videoDesign3 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control top",
+		"dn": "video volume control top Design Four",
+		"n": "videovolumecontroltopDesignFour",
+		"de": "volume control topDesign Four",
+		"sel": ".comp.compVideo._videoDesign4 ._volumeControls",
+		"np": true
+	},
+
+	{
+		"gn": "video volume control left",
+		"dn": "video volume control left Design One",
+		"n": "videovolumecontrolleftDesignOne",
+		"de": "volume control leftDesign One",
+		"sel": ".comp.compVideo._videoDesign1 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control left",
+		"dn": "video volume control left Design Two",
+		"n": "videovolumecontrolleftDesignTwo",
+		"de": "volume control leftDesign Two",
+		"sel": ".comp.compVideo._videoDesign2 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control left",
+		"dn": "video volume control left Design Three",
+		"n": "videovolumecontrolleftDesignThree",
+		"dv": "2%",
+		"de": "volume control leftDesign Three",
+		"cp": "left",
+		"sel": ".comp.compVideo._videoDesign3 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control left",
+		"dn": "video volume control left Design Four",
+		"n": "videovolumecontrolleftDesignFour",
+		"de": "volume control leftDesign Four",
+		"sel": ".comp.compVideo._videoDesign4 ._volumeControls",
+		"np": true
+	},
+
+	{
+		"gn": "video volume control rotate",
+		"dn": "video volume control rotate Design One",
+		"n": "videovolumecontrolrotateDesignOne",
+		"de": "video volume control rotateDesign One",
+		"sel": ".comp.compVideo._videoDesign1 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control rotate",
+		"dn": "video volume control rotate Design Two",
+		"n": "videovolumecontrolrotateDesignTwo",
+		"de": "video volume control rotateDesign Two",
+		"sel": ".comp.compVideo._videoDesign2 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control rotate",
+		"dn": "video volume control rotate Design Three",
+		"n": "videovolumecontrolrotateDesignThree",
+		"dv": "absolute",
+		"de": "video volume control rotateDesign Three",
+		"cp": "position",
+		"sel": ".comp.compVideo._videoDesign3 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control rotate",
+		"dn": "video volume control rotate Design Four",
+		"n": "videovolumecontrolrotateDesignFour",
+		"de": "video volume control rotateDesign Four",
+		"sel": ".comp.compVideo._videoDesign4 ._volumeControls",
+		"np": true
+	},
+
+	{
+		"gn": "video controls container position",
+		"dn": "video controls container position",
+		"n": "videocontrolscontainerposition",
+		"dv": "0%",
+		"de": "video volume control rotateDesign Three",
+		"cp": "bottom",
+		"sel": ".comp.compVideo ._videoControlsContainer",
+		"np": true
+	},
+
+	{
+		"gn": "video volume control position",
+		"dn": "video volume control position Design One",
+		"n": "videovolumecontrolpositionDesignOne",
+		"de": "volume control position",
+		"sel": ".comp.compVideo._videoDesign1 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control position",
+		"dn": "video volume control position Design Two",
+		"n": "videovolumecontrolpositionDesignTwo",
+		"de": "volume control position",
+		"sel": ".comp.compVideo._videoDesign2 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control position",
+		"dn": "video volume control position Design Three",
+		"n": "videovolumecontrolpositionDesignThree",
+		"dv": "1",
+		"de": "volume control position",
+		"cp": "z-index",
+		"sel": ".comp.compVideo._videoDesign3 ._volumeControls",
+		"np": true
+	},
+	{
+		"gn": "video volume control position",
+		"dn": "video volume control position Design Four",
+		"n": "videovolumecontrolpositionDesignFour",
+		"de": "volume control position",
+		"sel": ".comp.compVideo._videoDesign4 ._volumeControls",
+		"np": true
+	}
+]

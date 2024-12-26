@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './schemaFormStyleProperies';
 
 const PREFIX = '.comp.compSchemaForm';
-export default function SchemaFormStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function SchemaFormStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		${PREFIX} { display: flex; flex-direction: column; gap: 5px;}

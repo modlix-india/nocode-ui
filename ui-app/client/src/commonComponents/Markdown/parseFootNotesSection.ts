@@ -3,10 +3,10 @@ import { MarkdownParserParameters } from './common';
 import { parseInline } from './parseInline';
 
 export function parseFootNotesSection(params: MarkdownParserParameters): Array<React.JSX.Element> {
-	const { lineNumber, styles, footNotes } = params;
+	const { lineNumber, footNotes } = params;
 	let comps: Array<React.JSX.Element> = [];
 
-	if (!footNotes.footNoteRefs.size) return comps;
+	if (!footNotes?.footNoteRefs.size) return comps;
 
 	const iterator = footNotes.footNoteRefs.values();
 

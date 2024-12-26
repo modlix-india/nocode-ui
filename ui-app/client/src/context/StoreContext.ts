@@ -1,9 +1,4 @@
-import {
-	ExpressionEvaluator,
-	TokenValueExtractor,
-	duplicate,
-	isNullValue,
-} from '@fincity/kirun-js';
+import { TokenValueExtractor, duplicate, isNullValue } from '@fincity/kirun-js';
 import { setStoreData, useStore } from '@fincity/path-reactive-state-management';
 import {
 	LOCAL_STORE_PREFIX,
@@ -15,14 +10,14 @@ import { messageToMaster } from '../slaveFunctions';
 import { ComponentProperty, DataLocation, LocationHistory } from '../types/common';
 import { FillerExtractor } from './FillerExtractor';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
-import { ParentExtractor, ParentExtractorForRunEvent } from './ParentExtractor';
+import { ParentExtractorForRunEvent } from './ParentExtractor';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import { sample } from './sampleData';
 
 export class StoreExtractor extends SpecialTokenValueExtractor {
-	private store: any;
-	private prefix: string;
+	private readonly store: any;
+	private readonly prefix: string;
 	constructor(store: any, prefix: string) {
 		super();
 		this.store = store;
@@ -233,8 +228,8 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 }
 
 export class PageStoreExtractor extends SpecialTokenValueExtractor {
-	private pageName: string;
-	private myStore: any;
+	private readonly pageName: string;
+	private readonly myStore: any;
 
 	static readonly extractorMap: Map<string, PageStoreExtractor> = new Map();
 

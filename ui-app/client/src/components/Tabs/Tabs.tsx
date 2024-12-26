@@ -32,7 +32,7 @@ function setHighlighter(
 	const tabRect = currentTab?.getBoundingClientRect();
 	if (!tabRect) return;
 	const tabsContainer = tabRefs.current[0];
-	if(!tabsContainer || !tabsContainer.parentElement) return;
+	if (!tabsContainer || !tabsContainer.parentElement) return;
 	const tabsRect = tabsContainer.parentElement.getBoundingClientRect();
 	const hp: CSSProperties = {};
 	hp['left'] = tabRect.left - tabsRect.left;
@@ -43,7 +43,7 @@ function setHighlighter(
 	setHighlighterPosition(hp);
 }
 
-function TabsComponent(props: ComponentProps) {
+function TabsComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { bindingPath },
@@ -54,7 +54,7 @@ function TabsComponent(props: ComponentProps) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
-			tabs=[],
+			tabs = [],
 			defaultActive,
 			readOnly,
 			icon,
@@ -102,19 +102,20 @@ function TabsComponent(props: ComponentProps) {
 		);
 	}, [bindingPathPath, defaultActive, tabs?.[0]]);
 
-	const onChangeTabEvent = onTabChange ? props.pageDefinition.eventFunctions?.[onTabChange] : undefined;
+	const onChangeTabEvent = onTabChange
+		? props.pageDefinition.eventFunctions?.[onTabChange]
+		: undefined;
 
-	const handleOnChange = onChangeTabEvent ?  async() => 
-		await runEvent(
-			onChangeTabEvent,
-			onTabChange,
-			props.context.pageName,
-			props.locationHistory,
-			props.pageDefinition,
-		)
-	 : undefined;
-
-
+	const handleOnChange = onChangeTabEvent
+		? async () =>
+				await runEvent(
+					onChangeTabEvent,
+					onTabChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				)
+		: undefined;
 
 	const handleClick = async (key: string) => {
 		if (!bindingPathPath) {
@@ -135,7 +136,7 @@ function TabsComponent(props: ComponentProps) {
 			return v === 0
 				? (pageDefinition.componentDefinition[a[0]]?.key ?? '').localeCompare(
 						pageDefinition.componentDefinition[b[0]]?.key ?? '',
-				  )
+					)
 				: v;
 		})[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
@@ -157,9 +158,9 @@ function TabsComponent(props: ComponentProps) {
 		setHighlighterPosition,
 	]);
 
-	 useEffect(() => {
-	 	tabRefs.current = [...tabRefs.current.slice(0, tabs.length)];
-	 }, [tabs]);
+	useEffect(() => {
+		tabRefs.current = [...tabRefs.current.slice(0, tabs.length)];
+	}, [tabs]);
 
 	return (
 		<div
@@ -203,8 +204,8 @@ function TabsComponent(props: ComponentProps) {
 								}`}
 								style={
 									hover === i || activeTab === e
-										? resolvedStylesWithHover.tab ?? {}
-										: resolvedStyles.tab ?? {}
+										? (resolvedStylesWithHover.tab ?? {})
+										: (resolvedStyles.tab ?? {})
 								}
 								onMouseEnter={() => setHover(i)}
 								onMouseLeave={e => {
@@ -224,8 +225,8 @@ function TabsComponent(props: ComponentProps) {
 									className={`icon ${icon[i]}`}
 									style={
 										e === hover
-											? resolvedStylesWithHover.icon ?? {}
-											: resolvedStyles.icon ?? {}
+											? (resolvedStylesWithHover.icon ?? {})
+											: (resolvedStyles.icon ?? {})
 									}
 								>
 									<SubHelperComponent
@@ -264,7 +265,7 @@ function TabsComponent(props: ComponentProps) {
 				<Children
 					key={`${activeTab}_chld`}
 					pageDefinition={pageDefinition}
-					children={selectedChild}
+					renderableChildren={selectedChild}
 					context={context}
 					locationHistory={locationHistory}
 				/>
@@ -353,15 +354,13 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect x="4.28577" width="25.7143" height="25.7143" rx="4" fill="#EDEAEA" />
+					<rect y="4.28516" width="25.7143" height="25.7143" rx="4" fill="#3792FE" />
 					<path
-						d="M16.5006 7H1.50002C1.22387 7 1 7.22387 1 7.50002V22.5006C1 22.7768 1.22387 23.0006 1.50002 23.0006H16.5006C16.7768 23.0006 17.0006 22.7768 17.0006 22.5006V7.50002C17.0006 7.22387 16.7768 7 16.5006 7Z"
-						fill="currentColor"
-					/>
-					<path
-						d="M22.5006 0.999512H7.50002C7.36741 0.999512 7.24022 1.05219 7.14645 1.14596C7.05268 1.23974 7 1.36692 7 1.49953V5.99971H16.5004C16.8982 5.99971 17.2798 6.15776 17.5611 6.43907C17.8424 6.72039 18.0004 7.10193 18.0004 7.49977V17.0002H22.5006C22.6332 17.0002 22.7604 16.9475 22.8542 16.8537C22.948 16.7599 23.0006 16.6328 23.0006 16.5001V1.49953C23.0006 1.36692 22.948 1.23974 22.8542 1.14596C22.7604 1.05219 22.6332 0.999512 22.5006 0.999512Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						className="_tabs"
+						d="M12.8572 24.6426C14.8463 24.6426 16.754 23.8524 18.1605 22.4459C19.567 21.0394 20.3572 19.1317 20.3572 17.1426C20.3572 15.1535 19.567 13.2458 18.1605 11.8393C16.754 10.4328 14.8463 9.64258 12.8572 9.64258C10.8681 9.64258 8.9604 10.4328 7.55388 11.8393C6.14735 13.2458 5.35718 15.1535 5.35718 17.1426C5.35718 19.1317 6.14735 21.0394 7.55388 22.4459C8.9604 23.8524 10.8681 24.6426 12.8572 24.6426ZM12.1541 19.7207V17.8457H10.2791C9.8894 17.8457 9.57593 17.5322 9.57593 17.1426C9.57593 16.7529 9.8894 16.4395 10.2791 16.4395H12.1541V14.5645C12.1541 14.1748 12.4675 13.8613 12.8572 13.8613C13.2468 13.8613 13.5603 14.1748 13.5603 14.5645V16.4395H15.4353C15.825 16.4395 16.1384 16.7529 16.1384 17.1426C16.1384 17.5322 15.825 17.8457 15.4353 17.8457H13.5603V19.7207C13.5603 20.1104 13.2468 20.4238 12.8572 20.4238C12.4675 20.4238 12.1541 20.1104 12.1541 19.7207Z"
+						fill="white"
 					/>
 				</IconHelper>
 			),

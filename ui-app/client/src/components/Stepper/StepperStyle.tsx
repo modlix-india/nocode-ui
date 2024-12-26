@@ -1,10 +1,26 @@
-import React from 'react';
-import { StyleResolution } from '../../types/common';
+import React, { useEffect, useState } from 'react';
+import { StylePropertyDefinition, StyleResolution } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './StepperStyleProperties';
+import { styleDefaults } from './StepperStyleProperties';
+import { usedComponents } from '../../App/usedComponents';
+import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compStepper';
-export default function StepperStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+const NAME = 'Stepper';
+export default function StepperStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const css =
 		`
 		  

@@ -99,7 +99,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'BINARY_TO_BASE_64_WITH_MD',
 				displayName: 'File Objects as base64 strings with metadata',
-				description: 'The value of the upload component is a file objects as base64 and file metadata',
+				description:
+					'The value of the upload component is a file objects as base64 and file metadata',
 			},
 			{
 				name: 'JSON_OBJECT',

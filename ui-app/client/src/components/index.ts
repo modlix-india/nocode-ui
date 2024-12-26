@@ -21,14 +21,17 @@ import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
 import Stepper from './Stepper/Stepper';
 import SubPage from './SubPage/SubPage';
-import Table from './Table/Table';
-import TableColumn from './TableColumn/TableColumn';
-import TableColumnHeader from './TableColumnHeader/TableColumnHeader';
-import TableColumns from './TableColumns/TableColumns';
-import TableDynamicColumns from './TableDynamicColumns/TableDynamicColumns';
-import TableEmptyGrid from './TableEmptyGrid/TableEmptyGrid';
-import TableGrid from './TableGrid/TableGrid';
-import TablePreviewGrid from './TablePreviewGrid/TablePreviewGrid';
+import {
+	Table,
+	TableColumn,
+	TableColumnHeader,
+	TableColumns,
+	TableDynamicColumn,
+	TableEmptyGrid,
+	TableGrid,
+	TablePreviewGrid,
+} from './TableComponents';
+
 import Tabs from './Tabs/Tabs';
 import Tags from './Tags/Tags';
 import Text from './Text/Text';
@@ -43,7 +46,6 @@ import SectionGrid from './SectionGrid/SectionGrid';
 import PhoneNumber from './PhoneNumber/PhoneNumber';
 import SmallCarousel from './SmallCarousel/SmallCarousel';
 import Otp from './Otp/Otp';
-import TableDynamicColumn from './TableDynamicColumn/TableDynamicColumn';
 import Calendar from './Calendar/Calendar';
 import RangeSlider from './RangeSlider/RangeSlider';
 import Timer from './Timer/Timer';
@@ -87,7 +89,6 @@ const componentMap = new Map<string, Component>([
 	[Video.name, Video],
 	[Gallery.name, Gallery],
 	[TextArea.name, TextArea],
-	[TableDynamicColumns.name, TableDynamicColumns],
 	[TableDynamicColumn.name, TableDynamicColumn],
 	[Animator.name, Animator],
 	[ImageWithBrowser.name, ImageWithBrowser],

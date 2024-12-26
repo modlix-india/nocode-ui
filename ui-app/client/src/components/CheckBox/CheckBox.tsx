@@ -18,7 +18,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxPrope
 import { styleDefaults } from './checkBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function CheckBox(props: ComponentProps) {
+function CheckBox(props: Readonly<ComponentProps>) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
 	const [hover, setHover] = useState(false);
 	const [focus, setFocus] = useState(false);
@@ -119,6 +119,7 @@ function CheckBox(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 8,
 	name: 'CheckBox',
 	displayName: 'Check Box',
 	description: 'CheckBox component',
@@ -147,15 +148,24 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
 					<path
-						d="M19.5289 1H4.49556C2.56444 1 1 2.56444 1 4.49556V19.5289C1 21.4356 2.56444 23 4.49556 23H19.5289C21.4356 23 23 21.4356 23 19.5289V4.49556C23 2.56444 21.4356 1 19.5289 1ZM18.4044 9.77556L11.2667 16.9133C11.0222 17.1578 10.7044 17.28 10.4111 17.28C10.1178 17.28 9.77556 17.1578 9.55556 16.9133L5.59556 12.9533C5.10667 12.4644 5.10667 17.2067 5.59556 16.7178C6.08444 16.2289 6.84222 16.2289 7.33111 16.7178L10.4356 19.8222L20.25 8.5625C20.7389 8.07361 17.9644 7.55111 18.4533 8.04C18.8933 8.52889 18.8933 9.31111 18.4044 9.77556Z"
-						fillOpacity="0.2"
-						fill="currentColor"
+						d="M25.2667 0H4.76667C2.13333 0 0 2.13333 0 4.76667V25.2667C0 27.8667 2.13333 30 4.76667 30H25.2667C27.8667 30 30 27.8667 30 25.2667V4.76667C30 2.13333 27.8667 0 25.2667 0ZM23.7333 11.9667L14 21.7C13.6667 22.0333 13.2333 22.2 12.8333 22.2C12.4333 22.2 11.9667 22.0333 11.6667 21.7L6.26667 16.3C5.6 15.6333 5.6 22.1 6.26667 21.4333C6.93333 20.7667 7.96667 20.7667 8.63333 21.4333L12.8667 25.6667L26.25 10.3125C26.9167 9.64583 23.1333 8.93333 23.8 9.6C24.4 10.2667 24.4 11.3333 23.7333 11.9667Z"
+						fill="#02B694"
 					/>
 					<path
-						d="M17.7825 8.98354L11.3521 15.3403C11.1539 15.558 10.8456 15.6669 10.5813 15.6669C10.3171 15.6669 10.0308 15.558 9.81054 15.3403L6.22096 11.8354C5.78051 11.4 5.78051 10.7251 6.22096 10.2897C6.6614 9.85433 7.34408 9.85433 7.78452 10.2897L10.5813 13.0327L16.219 7.43788C16.6594 7.00248 17.3421 7.00248 17.7825 7.43788C18.223 7.87327 18.223 8.54814 17.7825 8.98354Z"
-						fill="currentColor"
+						d="M21.6216 12.1883L14.2559 19.6183C14.0288 19.8728 13.6757 20 13.373 20C13.0703 20 12.7423 19.8728 12.4901 19.6183L8.37838 15.5216C7.87387 15.0127 7.87387 14.2239 8.37838 13.715C8.88288 13.2061 9.66486 13.2061 10.1694 13.715L13.373 16.9211L19.8306 10.3817C20.3351 9.87277 21.1171 9.87277 21.6216 10.3817C22.1261 10.8906 22.1261 11.6794 21.6216 12.1883Z"
+						fill="white"
+						className="_checkboxTick"
+					/>
+					<rect
+						className="_checkboxbox"
+						x={0}
+						y={0}
+						width="15"
+						height="15"
+						fill="#02B694"
+						opacity="0"
 					/>
 				</IconHelper>
 			),

@@ -2,17 +2,17 @@ import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
-		name: 'imageRendering',
-		cssProperty: 'image-rendering',
-		displayName: 'Image rendering',
-		description: 'This property specifies the type of algorithm to be used for image scaling',
-		defaultValue: 'auto',
-		selector: '.image',
+		n: 'imageRendering',
+		cp: 'image-rendering',
+		dn: 'Image rendering',
+		de: 'This property specifies the type of algorithm to be used for image scaling',
+		dv: 'auto',
+		sel: '.image',
 	},
 ];
 
 export const styleDefaults = new Map<string, string>(
 	styleProperties
-		.filter(e => !!e.defaultValue)
-		.map(({ name, defaultValue }) => [name, defaultValue!]),
+		.filter(e => !!e.dv)
+		.map(({ n: name, dv: defaultValue }) => [name, defaultValue!]),
 );

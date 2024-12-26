@@ -12,7 +12,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './carouselStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Carousel(props: ComponentProps) {
+function Carousel(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const { locationHistory, definition, pageDefinition } = props;
 	const {
@@ -59,9 +59,9 @@ function Carousel(props: ComponentProps) {
 							return v === 0
 								? (
 										pageDefinition?.componentDefinition[a[0]]?.key ?? ''
-								  ).localeCompare(
+									).localeCompare(
 										pageDefinition?.componentDefinition[b[0]]?.key ?? '',
-								  )
+									)
 								: v;
 						})
 						.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
@@ -156,7 +156,7 @@ function Carousel(props: ComponentProps) {
 					ref={previousSlide}
 				>
 					<Children
-						children={childrenDef[transitionFrom!].children}
+						renderableChildren={childrenDef[transitionFrom!].children}
 						context={props.context}
 						pageDefinition={props.pageDefinition}
 						locationHistory={locationHistory}
@@ -175,7 +175,7 @@ function Carousel(props: ComponentProps) {
 					style={style}
 				>
 					<Children
-						children={childrenDef[slideNum].children}
+						renderableChildren={childrenDef[slideNum].children}
 						context={props.context}
 						pageDefinition={props.pageDefinition}
 						locationHistory={locationHistory}
@@ -186,7 +186,7 @@ function Carousel(props: ComponentProps) {
 			showChildren = [
 				<div className="_eachSlide _previous" key={childrenDef[slideNum!].key}>
 					<Children
-						children={childrenDef[slideNum!].children}
+						renderableChildren={childrenDef[slideNum!].children}
 						context={props.context}
 						pageDefinition={props.pageDefinition}
 						locationHistory={locationHistory}
@@ -318,6 +318,7 @@ function Carousel(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 9,
 	name: 'Carousel',
 	displayName: 'Carousel',
 	description: 'Carousel component',
@@ -334,30 +335,31 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
 					<path
-						d="M15.0934 5.34961H9.24609C8.69381 5.34961 8.24609 5.79732 8.24609 6.34961V17.6071C8.24609 18.1594 8.69381 18.6071 9.24609 18.6071H15.0934C15.6457 18.6071 16.0934 18.1594 16.0934 17.6071V6.34961C16.0934 5.79732 15.6457 5.34961 15.0934 5.34961Z"
-						fill="currentColor"
+						d="M7.41416 8.17383H5.06702C4.51473 8.17383 4.06702 8.62154 4.06702 9.17383V21.1865C4.06702 21.7388 4.51473 22.1865 5.06702 22.1865H7.41416C7.96644 22.1865 8.41416 21.7388 8.41416 21.1865V9.17383C8.41416 8.62154 7.96644 8.17383 7.41416 8.17383Z"
+						fill="#EF7E3440"
+						className="_carouselsecondframe"
 					/>
 					<path
-						d="M6.41442 6.91943H5.27539C4.72311 6.91943 4.27539 7.36715 4.27539 7.91943V16.0379C4.27539 16.5902 4.72311 17.0379 5.27539 17.0379H6.41442C6.9667 17.0379 7.41442 16.5902 7.41442 16.0379V7.91943C7.41442 7.36715 6.9667 6.91943 6.41442 6.91943Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						d="M24.9327 8.17383H22.5852C22.0329 8.17383 21.5852 8.62154 21.5852 9.17383V21.1865C21.5852 21.7388 22.0329 22.1865 22.5852 22.1865H24.9327C25.485 22.1865 25.9327 21.7388 25.9327 21.1865V9.17383C25.9327 8.62154 25.485 8.17383 24.9327 8.17383Z"
+						fill="#EF7E3440"
+						className="_carouselthirdframe"
 					/>
 					<path
-						d="M19.0631 6.91943H17.9238C17.3715 6.91943 16.9238 7.36715 16.9238 7.91943V16.0379C16.9238 16.5902 17.3715 17.0379 17.9238 17.0379H19.0631C19.6154 17.0379 20.0631 16.5902 20.0631 16.0379V7.91943C20.0631 7.36715 19.6154 6.91943 19.0631 6.91943Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						d="M29.0001 9.66992H28.0828C27.5305 9.66992 27.0828 10.1176 27.0828 10.6699V19.6934C27.0828 20.2457 27.5305 20.6934 28.0828 20.6934H29C29.5523 20.6934 30.0001 20.2457 30.0001 19.6934V10.6699C30.0001 10.1176 29.5523 9.66992 29.0001 9.66992Z"
+						fill="#EF7E3440"
+						className="_carouselfourthframe"
 					/>
 					<path
-						d="M22.0011 7.99902H21.8945C21.3422 7.99902 20.8945 8.44674 20.8945 8.99902V14.959C20.8945 15.5112 21.3422 15.959 21.8945 15.959H22.0011C22.5534 15.959 23.0011 15.5112 23.0011 14.959V8.99902C23.0011 8.44674 22.5534 7.99902 22.0011 7.99902Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						d="M1.91763 9.66992H1C0.447715 9.66992 0 10.1176 0 10.6699V19.6934C0 20.2457 0.447716 20.6934 1 20.6934H1.91763C2.46991 20.6934 2.91763 20.2457 2.91763 19.6934V10.6699C2.91763 10.1176 2.46991 9.66992 1.91763 9.66992Z"
+						fill="#EF7E3440"
+						className="_carouselfirstframe"
 					/>
 					<path
-						d="M2.44468 7.99902H2.33789C1.78561 7.99902 1.33789 8.44674 1.33789 8.99902V14.959C1.33789 15.5112 1.78561 15.959 2.33789 15.959H2.44468C2.99697 15.959 3.44468 15.5112 3.44468 14.959V8.99902C3.44468 8.44674 2.99697 7.99902 2.44468 7.99902Z"
-						fill="currentColor"
-						fillOpacity="0.2"
+						d="M19.4348 6H10.5673C10.015 6 9.56726 6.44771 9.56726 7V23.3598C9.56726 23.9121 10.015 24.3598 10.5673 24.3598H19.4348C19.9871 24.3598 20.4348 23.9121 20.4348 23.3598V7C20.4348 6.44772 19.9871 6 19.4348 6Z"
+						fill="#EF7E34"
+						className="_carouselmainframe"
 					/>
 				</IconHelper>
 			),

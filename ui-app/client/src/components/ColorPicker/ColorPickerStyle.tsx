@@ -1,9 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults, styleProperties } from './colorPickerStyleProperties';
+import { styleDefaults } from './colorPickerStyleProperties';
+import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import { usedComponents } from '../../App/usedComponents';
+import { StylePropertyDefinition } from '../../types/common';
 
 const PREFIX = '.comp.compColorPicker';
-export default function ColorPickerStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+const NAME = 'ColorPicker';
+export default function ColorPickerStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
 	const css =
 		`
         ${PREFIX} {

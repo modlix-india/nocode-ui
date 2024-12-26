@@ -17,7 +17,7 @@ import { messageToMaster } from '../../slaveFunctions';
 import { styleDefaults } from './buttonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function ButtonComponent(props: ComponentProps) {
+function ButtonComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [focus, setFocus] = useState(false);
 	const [hover, setHover] = useState(false);
@@ -55,12 +55,12 @@ function ButtonComponent(props: ComponentProps) {
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClick,
-		  )}.isRunning`
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
 		onClick
-			? getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false
+			? (getDataFromPath(spinnerPath, props.locationHistory, pageExtractor) ?? false)
 			: false,
 	);
 
@@ -90,7 +90,7 @@ function ButtonComponent(props: ComponentProps) {
 					linkPath?.startsWith('www')
 				)
 					window.location.href = linkPath;
-				else navigate(getHref(linkPath, location));
+				else navigate(getHref(linkPath, location)!);
 			}
 		}
 
@@ -123,7 +123,7 @@ function ButtonComponent(props: ComponentProps) {
 				alt="right"
 				style={
 					(hover
-						? styleProperties.activeRightImage ?? styleProperties.rightImage
+						? (styleProperties.activeRightImage ?? styleProperties.rightImage)
 						: styleProperties.rightImage) ?? {}
 				}
 				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
@@ -153,7 +153,7 @@ function ButtonComponent(props: ComponentProps) {
 				alt="left"
 				style={
 					(hover
-						? styleProperties.activeLeftImage ?? styleProperties.leftImage
+						? (styleProperties.activeLeftImage ?? styleProperties.leftImage)
 						: styleProperties.leftImage) ?? {}
 				}
 				className={hover ? '_leftButtonActiveImage' : '_leftButtonImage'}
@@ -182,25 +182,12 @@ function ButtonComponent(props: ComponentProps) {
 	const [editName, setEditName] = useState(false);
 	useEffect(() => setEditableLabel(label), [label]);
 	label = getTranslations(label, props.pageDefinition.translations);
-	return (
-		<button
-			className={`comp compButton button ${designType} ${colorScheme} ${
-				hasLeftIcon ? '_withLeftIcon' : ''
-			} ${hasRightIconClass ? '_withRightIcon' : ''}`}
-			disabled={isLoading || readOnly}
-			onClick={handleClick}
-			style={styleProperties.comp ?? {}}
-			onMouseEnter={() => setHover(true)}
-			onMouseLeave={() => setHover(false)}
-			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
-			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-			title={label ?? ''}
-		>
-			<HelperComponent
-				context={props.context}
-				definition={props.definition}
-				onDoubleClick={() => setEditName(true)}
-			>
+
+	let buttonBar = undefined;
+
+	if (globalThis.isDesignMode) {
+		buttonBar = (
+			<>
 				{editName && (
 					<>
 						<input
@@ -405,6 +392,30 @@ function ButtonComponent(props: ComponentProps) {
 						/>
 					</div>
 				</div>
+			</>
+		);
+	}
+
+	return (
+		<button
+			className={`comp compButton button ${designType} ${colorScheme} ${
+				hasLeftIcon ? '_withLeftIcon' : ''
+			} ${hasRightIconClass ? '_withRightIcon' : ''}`}
+			disabled={isLoading || readOnly}
+			onClick={handleClick}
+			style={styleProperties.comp ?? {}}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
+			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
+			title={label ?? ''}
+		>
+			<HelperComponent
+				context={props.context}
+				definition={props.definition}
+				onDoubleClick={() => setEditName(true)}
+			>
+				{buttonBar}
 			</HelperComponent>
 			{leftIconTag}
 			{!designType?.startsWith('_fabButton') && designType !== '_iconButton' ? label : ''}
@@ -414,6 +425,7 @@ function ButtonComponent(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 4,
 	name: 'Button',
 	displayName: 'Button',
 	description: 'Button component',
@@ -439,17 +451,24 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" fill="none" />
 					<rect
-						x="3.25"
-						y="3.25"
-						width="19.25"
-						height="19.25"
+						width="24.286"
+						height="24.286"
 						rx="2"
-						fill="currentColor"
-						fillOpacity="0.2"
+						transform="translate(4.786 4.795)"
+						fill="#edeaea"
 					/>
-					<rect x="1.5" y="1.5" width="17" height="17" rx="2" fill="currentColor" />
+					<g className="_updownAnimation _leftrightAnimation">
+						<rect
+							width="24.286"
+							height="24.286"
+							rx="2"
+							transform="translate(0.929 0.92)"
+							fill="#1893E9"
+						/>
+					</g>
 				</IconHelper>
 			),
 			mainComponent: true,

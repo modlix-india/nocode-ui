@@ -1,0 +1,1055 @@
+[
+	{
+		"gn": "File Upload Border Inline Design1",
+		"dn": "File Upload Border Inline Design1 Border",
+		"n": "fileuploadborderinlinedesign1Border",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Inline Design2",
+		"dn": "File Upload Border Inline Design2 Border",
+		"n": "fileuploadborderinlinedesign2Border",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_design2  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Inline Design3",
+		"dn": "File Upload Border Inline Design3 Border",
+		"n": "fileuploadborderinlinedesign3Border",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_design3  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Inline Design4",
+		"dn": "File Upload Border Inline Design4 Border",
+		"n": "fileuploadborderinlinedesign4Border",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_design4",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Icon Design1",
+		"dn": "File Upload Border Icon Design1 Border",
+		"n": "fileuploadbordericondesign1Border",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_icon_design1  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border DropArea Design1",
+		"dn": "File Upload Border DropArea Design1 Border",
+		"n": "fileuploadborderdropareadesign1Border",
+		"dv": "1px dashed",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._droparea_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border DropArea Design2",
+		"dn": "File Upload Border DropArea Design2 Border",
+		"n": "fileuploadborderdropareadesign2Border",
+		"dv": "1px dashed",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._droparea_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border DropArea Design3",
+		"dn": "File Upload Border DropArea Design3 Border",
+		"n": "fileuploadborderdropareadesign3Border",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._droparea_design3",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border DropArea Design3",
+		"dn": "File Upload Border DropArea Design3 Border Bottom",
+		"n": "fileUploadBorderDropAreaDesign3BorderBottom",
+		"dv": "1px solid",
+		"cp": "border-bottom",
+		"sel": ".comp.compFileUpload._droparea_design3 ._mainText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Inline Design1",
+		"dn": "File Upload Border Inline Design1 Top Border",
+		"n": "fileUploadBorderInlineDesign1TopBorder",
+		"dv": "1px solid",
+		"cp": "border-top",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Inline Design1",
+		"dn": "File Upload Border Inline Design1 Right Border",
+		"n": "fileUploadBorderInlineDesign1RightBorder",
+		"cp": "border-right",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Inline Design1",
+		"dn": "File Upload Border Inline Design1 Bottom Border",
+		"n": "fileUploadBorderInlineDesign1BottomBorder",
+		"dv": "1px solid",
+		"cp": "border-bottom",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Inline Design1",
+		"dn": "File Upload Border Inline Design1 Left Border",
+		"n": "fileUploadBorderInlineDesign1LeftBorder",
+		"dv": "1px solid",
+		"cp": "border-left",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Icon Design1",
+		"dn": "File Upload Border Icon Design1 Top Border",
+		"n": "fileUploadBorderIconDesign1TopBorder",
+		"dv": "1px solid",
+		"cp": "border-top",
+		"sel": ".comp.compFileUpload._inline_icon_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Icon Design2",
+		"dn": "File Upload Border Icon Design1 Right Border",
+		"n": "fileUploadBorderIconDesign1RightBorder",
+		"cp": "border-right",
+		"sel": ".comp.compFileUpload._inline_icon_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Icon Design3",
+		"dn": "File Upload Border Icon Design1 Bottom Border",
+		"n": "fileUploadBorderIconDesign1BottomBorder",
+		"dv": "1px solid",
+		"cp": "border-bottom",
+		"sel": ".comp.compFileUpload._inline_icon_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Icon Design4",
+		"dn": "File Upload Border Icon Design1 Left Border",
+		"n": "fileUploadBorderIconDesign1LeftBorder",
+		"dv": "1px solid",
+		"cp": "border-left",
+		"sel": ".comp.compFileUpload._inline_icon_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color Inline Design1",
+		"dn": "File Upload Border Color Inline Design1 Border",
+		"n": "fileuploadbordercolorinlinedesign1Border",
+		"dv": "<borderColorSix>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color Inline Design2",
+		"dn": "File Upload Border Color Inline Design2 Border",
+		"n": "fileuploadbordercolorinlinedesign2Border",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._inline_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color Inline Design3",
+		"dn": "File Upload Border Color Inline Design3 Border",
+		"n": "fileuploadbordercolorinlinedesign3Border",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._inline_design3",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color Inline Design4",
+		"dn": "File Upload Border Color Inline Design4 Border",
+		"n": "fileuploadbordercolorinlinedesign4Border",
+		"dv": "<borderColorSix>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._inline_design4",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color Icon Design1",
+		"dn": "File Upload Border Color Icon Design1 Border",
+		"n": "fileuploadbordercoloricondesign1Border",
+		"dv": "<borderColorSix>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._inline_icon_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color DropArea Design1",
+		"dn": "File Upload Border Color DropArea Design1 Border Color",
+		"n": "fileuploadbordercolordropareadesign1Border",
+		"dv": "<borderColorSix>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color DropArea Design2",
+		"dn": "File Upload Border Color DropArea Design2 Border Color",
+		"n": "fileuploadbordercolordropareadesign2Border",
+		"dv": "<borderColorSix>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color DropArea Design3",
+		"dn": "File Upload Border Color DropArea Design3 Border Color",
+		"n": "fileuploadbordercolordropareadesign3Border",
+		"dv": "<borderColorSix>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design3",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color DropArea Design3",
+		"dn": "File Upload Border Color DropArea Design3 Border Bottom Color",
+		"n": "fileUploadBorderColorDropAreaDesign3BorderBottomColor",
+		"dv": "<borderColorSix>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design3 ._mainText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Radius Inline Design1",
+		"dn": "File Upload Border Radius Inline Design1 Border",
+		"n": "fileuploadborderradiusinlinedesign1Border",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Radius Inline Design2",
+		"dn": "File Upload Border Radius Inline Design2 Border",
+		"n": "fileuploadborderradiusinlinedesign2Border",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Radius Inline Design3",
+		"dn": "File Upload Border Radius Inline Design3 Border",
+		"n": "fileuploadborderradiusinlinedesign3Border",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_design3",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Radius Inline Design4",
+		"dn": "File Upload Border Radius Inline Design4 Border",
+		"n": "fileuploadborderradiusinlinedesign4Border",
+		"dv": "100px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_design4",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Radius Icon Design1",
+		"dn": "File Upload Border Radius Icon Design1 Border",
+		"n": "fileuploadborderradiusicondesign1Border",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_icon_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Radius Droparea Design1",
+		"dn": "File Upload Border Radius Droparea Design1 Border",
+		"n": "fileuploadborderradiusdropareadesign1Border",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._droparea_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Radius Droparea Design2",
+		"dn": "File Upload Border Radius Droparea Design2 Border",
+		"n": "fileuploadborderradiusdropareadesign2Border",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._droparea_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Radius Droparea Design3",
+		"dn": "File Upload Border Radius Droparea Design3 Border",
+		"n": "fileuploadborderradiusdropareadesign3Border",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._droparea_design3",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Background Color",
+		"dn": "Primary File Upload Background Color for Button Background",
+		"n": "primaryFileUploadBackgroundColorforButtonBackground",
+		"dv": "<backgroundColorOne>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._primary ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color",
+		"dn": "Secondary File Upload Background Color for Button Background",
+		"n": "secondaryFileUploadBackgroundColorforButtonBackground",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._secondary ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color",
+		"dn": "Tertiary File Upload Background Color for Button Background",
+		"n": "tertiaryFileUploadBackgroundColorforButtonBackground",
+		"dv": "<backgroundColorThree>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._tertiary ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color",
+		"dn": "Quaternary File Upload Background Color for Button Background",
+		"n": "quaternaryFileUploadBackgroundColorforButtonBackground",
+		"dv": "<backgroundColorFour>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._quaternary ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color",
+		"dn": "Quinary File Upload Background Color for Button Background",
+		"n": "quinaryFileUploadBackgroundColorforButtonBackground",
+		"dv": "<backgroundColorFive>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._quinary ._fileUploadButton",
+		"np": true
+	},
+
+	{
+		"gn": "Color",
+		"dn": "Primary File Upload Main Text Color",
+		"n": "primaryFileUploadMainTextColor",
+		"dv": "<backgroundColorOne>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._inline_design3._primary ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "Color",
+		"dn": "Secondary File Upload Main Text Color",
+		"n": "secondaryFileUploadMainTextColor",
+		"dv": "<backgroundColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._inline_design3._secondary ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "Color",
+		"dn": "Tertiary File Upload Main Text Color",
+		"n": "tertiaryFileUploadMainTextColor",
+		"dv": "<backgroundColorThree>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._inline_design3._tertiary ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "Color",
+		"dn": "Quaternary File Upload Main Text Color",
+		"n": "quaternaryFileUploadMainTextColor",
+		"dv": "<backgroundColorFour>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._inline_design3._quaternary ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "Color",
+		"dn": "Quinary File Upload Main Text Color",
+		"n": "quinaryFileUploadMainTextColor",
+		"dv": "<backgroundColorFive>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._inline_design3._quinary ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "Color",
+		"dn": "Dark File Upload Text Color",
+		"n": "darkFileUploadTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "Color",
+		"dn": "Light File Upload Text Color",
+		"n": "lightFileUploadTextColor",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload ._fileUploadButton",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Button Padding",
+		"dn": "File Upload Button Padding Inline Design One",
+		"n": "fileUploadButtonPaddingInlineDesignOne",
+		"dv": "8px 12px",
+		"cp": "padding",
+		"sel": ".comp.compFileUpload ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Button Padding",
+		"dn": "File Upload Button Padding Inline Design Two",
+		"n": "fileUploadButtonPaddingInlineDesignTwo",
+		"dv": "8px 12px",
+		"cp": "padding",
+		"sel": ".comp.compFileUpload ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Button Padding",
+		"dn": "File Upload Button Padding Inline Design Three",
+		"n": "fileUploadButtonPaddingInlineDesignThree",
+		"dv": "8px 12px",
+		"cp": "padding",
+		"sel": ".comp.compFileUpload ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Button Padding",
+		"dn": "File Upload Button Padding Inline Design Four",
+		"n": "fileUploadButtonPaddingInlineDesignFour",
+		"dv": "8px 12px",
+		"cp": "padding",
+		"sel": ".comp.compFileUpload ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Padding",
+		"dn": "File Upload Padding DropArea Design3",
+		"n": "fileUploadPaddingDropAreaDesign3",
+		"dv": "10px",
+		"cp": "padding",
+		"sel": ".comp.compFileUpload._droparea_design3",
+		"np": true
+	},
+
+	{
+		"gn": "Border Radius",
+		"dn": "Border Radius File Upload Button Inline Design One",
+		"n": "borderRadiusFileUploadButtonInlineDesignOne",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Border Radius File Upload Button Inline Design Two",
+		"n": "borderRadiusFileUploadButtonInlineDesignTwo",
+		"dv": "0px 2px 2px 0px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_design2  ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Border Radius File Upload Button Inline Design Three",
+		"n": "borderRadiusFileUploadButtonInlineDesignThree",
+		"dv": "5px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_design3  ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Border Radius File Upload Button Inline Design Four",
+		"n": "borderRadiusFileUploadButtonInlineDesignFour",
+		"dv": "100px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_design4  ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Border Radius File Upload Button Icon Design One",
+		"n": "borderRadiusFileUploadButtonIconDesignOne",
+		"dv": "0px 4px 4px 0px",
+		"cp": "border-radius",
+		"sel": ".comp.compFileUpload._inline_icon_design1  ._fileUploadButton",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Button Border Inline Design1",
+		"dn": "File Upload Button Border Inline Design1 Border",
+		"n": "fileuploadbuttonborderinlinedesign1Border",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Button Border Inline Design2",
+		"dn": "File Upload Button Border Inline Design2 Border",
+		"n": "fileuploadbuttonborderinlinedesign2Border",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_design2  ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Button Border Inline Design3",
+		"dn": "File Upload Button Border Inline Design3 Border",
+		"n": "fileuploadbuttonborderinlinedesign3Border",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_design3  ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Button Border Inline Design4",
+		"dn": "File Upload Button Border Inline Design4 Border",
+		"n": "fileuploadbuttonborderinlinedesign4Border",
+		"dv": "none",
+		"cp": "border",
+		"sel": ".comp.compFileUpload._inline_design4  ._fileUploadButton",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Background Color Hover",
+		"dn": "File Upload Background Color Hover Upload Button Background Primary",
+		"n": "fileUploadBackgroundColorHoverUploadButtonBackgroundPrimary",
+		"dv": "<backgroundHoverColorOne>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._primary ._fileUploadButton:hover",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color Hover",
+		"dn": "File Upload Background Color Hover Upload Button Background Secondary",
+		"n": "fileUploadBackgroundColorHoverUploadButtonBackgroundSecondary",
+		"dv": "<backgroundHoverColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._secondary ._fileUploadButton:hover",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color Hover",
+		"dn": "File Upload Background Color Hover Upload Button Background Tertiary",
+		"n": "fileUploadBackgroundColorHoverUploadButtonBackgroundTertiary",
+		"dv": "<backgroundHoverColorThree>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._tertiary ._fileUploadButton:hover",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color Hover",
+		"dn": "File Upload Background Color Hover Upload Button Background Quaternary",
+		"n": "fileUploadBackgroundColorHoverUploadButtonBackgroundQuaternary",
+		"dv": "<backgroundHoverColorFour>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._quaternary ._fileUploadButton:hover",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color Hover",
+		"dn": "File Upload Background Color Hover Upload Button Background Quinary",
+		"n": "fileUploadBackgroundColorHoverUploadButtonBackgroundQuinary",
+		"dv": "<backgroundHoverColorFive>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._quinary ._fileUploadButton:hover",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Width",
+		"dn": "File Upload Width Inline Design One Button Width",
+		"n": "fileUploadWidthInlineDesignOneButtonWidth",
+		"dv": "50%",
+		"cp": "width",
+		"sel": ".comp.compFileUpload ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Width",
+		"dn": "File Upload Width Inline Design One Text Width",
+		"n": "fileUploadWidthInlineDesignOneTextWidth",
+		"dv": "50%",
+		"cp": "width",
+		"sel": ".comp.compFileUpload ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Width",
+		"dn": "File Upload Width Icon Only Design One Button Width",
+		"n": "fileUploadWidthIconOnlyDesignOneButtonWidth",
+		"dv": "30px",
+		"cp": "width",
+		"sel": ".comp.compFileUpload._inline_icon_design1 ._fileUploadButton",
+		"np": true
+	},
+	{
+		"gn": "File Upload Width",
+		"dn": "File Upload Width Icon Only Design One Text Width",
+		"n": "fileUploadWidthIconOnlyDesignOneTextWidth",
+		"dv": "1",
+		"cp": "flex",
+		"sel": ".comp.compFileUpload._inline_icon_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Width",
+		"dn": "File Upload Width Full Icon Design One Text Width",
+		"n": "fileUploadWidthFullIconDesignOneTextWidth",
+		"dv": "100%",
+		"cp": "width",
+		"sel": ".comp.compFileUpload._only_icon_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Width",
+		"dn": "File Upload Width Full Icon Design Two Text Width",
+		"n": "fileUploadWidthFullIconDesignTwoTextWidth",
+		"dv": "100%",
+		"cp": "width",
+		"sel": ".comp.compFileUpload._only_icon_design2 ._fileUploadText",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Text Background",
+		"dn": "File Upload Text Background Inline Design One Text Background",
+		"n": "fileUploadTextBackgroundInlineDesignOneTextBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._inline_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Text Background",
+		"dn": "File Upload Text Background Inline Design Two Text Background",
+		"n": "fileUploadTextBackgroundInlineDesignTwoTextBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._inline_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Text Background",
+		"dn": "File Upload Text Background Inline Design Three Text Background",
+		"n": "fileUploadTextBackgroundInlineDesignThreeTextBackground",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._inline_design3",
+		"np": true
+	},
+	{
+		"gn": "File Upload Text Background",
+		"dn": "File Upload Text Background Inline Design Four Text Background",
+		"n": "fileUploadTextBackgroundInlineDesignFourTextBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._inline_design4",
+		"np": true
+	},
+	{
+		"gn": "File Upload Text Background",
+		"dn": "File Upload Text Background Icon Design One Text Background",
+		"n": "fileUploadTextBackgroundIconDesignOneTextBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._inline_icon_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Text Background",
+		"dn": "File Upload Text Background DropArea Design One Text Background",
+		"n": "fileUploadTextBackgroundDropAreaDesignOneTextBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._droparea_design1",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Text Background",
+		"dn": "File Upload Text Background DropArea Design Three Text Background",
+		"n": "fileUploadTextBackgroundDropAreaDesignThreeTextBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._droparea_design3",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Flex Direction",
+		"dn": "File Upload Flex Direction Droparea Design 1 Flex Direction",
+		"n": "fileUploadFlexDirectionDropareaDesign1FlexDirection",
+		"dv": "column",
+		"cp": "flex-direction",
+		"sel": ".comp.compFileUpload._droparea_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Flex Direction",
+		"dn": "File Upload Flex Direction Droparea Design 2 Flex Direction",
+		"n": "fileUploadFlexDirectionDropareaDesign2FlexDirection",
+		"dv": "column",
+		"cp": "flex-direction",
+		"sel": ".comp.compFileUpload._droparea_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Flex Direction",
+		"dn": "File Upload Flex Direction Droparea Design 3 Flex Direction",
+		"n": "fileUploadFlexDirectionDropareaDesign3FlexDirection",
+		"cp": "flex-direction",
+		"sel": ".comp.compFileUpload._droparea_design3",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Flex Alignment",
+		"dn": "File Upload Flex Alignment Droparea Design 1 Flex Alignment",
+		"n": "fileUploadFlexAlignmentDropareaDesign1FlexAlignment",
+		"dv": "space-around",
+		"cp": "justify-content",
+		"sel": ".comp.compFileUpload._droparea_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Flex Alignment",
+		"dn": "File Upload Flex Alignment Droparea Design 2 Flex Alignment",
+		"n": "fileUploadFlexAlignmentDropareaDesign2FlexAlignment",
+		"dv": "space-around",
+		"cp": "justify-content",
+		"sel": ".comp.compFileUpload._droparea_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Flex Alignment",
+		"dn": "File Upload Flex Alignment Droparea Design 3 Flex Alignment",
+		"n": "fileUploadFlexAlignmentDropareaDesign3FlexAlignment",
+		"dv": "space-around",
+		"cp": "justify-content",
+		"sel": ".comp.compFileUpload._droparea_design3",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Height",
+		"dn": "File Upload Height Droparea Design One Height",
+		"n": "fileUploadHeightDropareaDesignOneHeight",
+		"dv": "150px",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._droparea_design1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Height",
+		"dn": "File Upload Height Droparea Design Two Height",
+		"n": "fileUploadHeightDropareaDesignTwoHeight",
+		"dv": "150px",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._droparea_design2",
+		"np": true
+	},
+	{
+		"gn": "File Upload Height",
+		"dn": "File Upload Height Droparea Design Three Height",
+		"n": "fileUploadHeightDropareaDesignThreeHeight",
+		"dv": "80px",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._droparea_design3",
+		"np": true
+	},
+	{
+		"gn": "File Upload Height",
+		"dn": "File Upload Height Inline Design One Text Height",
+		"n": "fileUploadHeightInlineDesignOneTextHeight",
+		"dv": "100%",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._inline_design1 ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Height",
+		"dn": "File Upload Height Inline Design Two Text Height",
+		"n": "fileUploadHeightInlineDesignTwoTextHeight",
+		"dv": "100%",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._inline_design2  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Height",
+		"dn": "File Upload Height Inline Design Three Text Height",
+		"n": "fileUploadHeightInlineDesignThreeTextHeight",
+		"dv": "100%",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._inline_design3  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Height",
+		"dn": "File Upload Height Inline Design Four Text Height",
+		"n": "fileUploadHeightInlineDesignFourTextHeight",
+		"dv": "100%",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._inline_design4  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Height",
+		"dn": "File Upload Height Inline Design Icon Text Height",
+		"n": "fileUploadHeightInlineDesignIconTextHeight",
+		"dv": "100%",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._inline_icon_design1  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Icon Height",
+		"dn": "File Upload Icon Height Icon Only Design One Height",
+		"n": "fileUploadIconHeightIconOnlyDesignOneHeight",
+		"dv": "50px",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._only_icon_design1 ._uploadIcon._upload_icon_1",
+		"np": true
+	},
+	{
+		"gn": "File Upload Icon Height",
+		"dn": "File Upload Icon Height Icon Only Design Two Height",
+		"n": "fileUploadIconHeightIconOnlyDesignTwoHeight",
+		"dv": "84px",
+		"cp": "height",
+		"sel": ".comp.compFileUpload._only_icon_design2 ._uploadIcon._upload_icon_2",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Border Color",
+		"dn": "Primary File Upload Border Color Droparea design2 border Color",
+		"n": "primaryFileUploadBorderColorDropareadesign2borderColor",
+		"dv": "<backgroundColorOne>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design2._primary",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color",
+		"dn": "Secondary File Upload Border Color Droparea design2 border Color",
+		"n": "secondaryFileUploadBorderColorDropareadesign2borderColor",
+		"dv": "<backgroundColorTwo>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design2._secondary",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color",
+		"dn": "Tertiary File Upload Border Color Droparea design2 border Color",
+		"n": "tertiaryFileUploadBorderColorDropareadesign2borderColor",
+		"dv": "<backgroundColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design2._tertiary",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color",
+		"dn": "Quaternary File Upload Border Color Droparea design2 border Color",
+		"n": "quaternaryFileUploadBorderColorDropareadesign2borderColor",
+		"dv": "<backgroundColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design2._quaternary",
+		"np": true
+	},
+	{
+		"gn": "File Upload Border Color",
+		"dn": "Quinary File Upload Border Color Droparea design2 border Color",
+		"n": "quinaryFileUploadBorderColorDropareadesign2borderColor",
+		"dv": "<backgroundColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compFileUpload._droparea_design2._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Background Color Droparea Design2",
+		"dn": "Primary File Upload Background Color Droparea Design2 Droparea design2 Background Color",
+		"n": "primaryFileUploadBackgroundColorDropareaDesign2Dropareadesign2BackgroundColor",
+		"dv": "<backgroundHoverColorOne>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._droparea_design2._primary",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color Droparea Design3",
+		"dn": "Secondary File Upload Background Color Droparea Design3 Droparea design2 Background Color",
+		"n": "secondaryFileUploadBackgroundColorDropareaDesign3Dropareadesign2BackgroundColor",
+		"dv": "<backgroundHoverColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._droparea_design2._secondary",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color Droparea Design4",
+		"dn": "Tertiary File Upload Background Color Droparea Design4 Droparea design2 Background Color",
+		"n": "tertiaryFileUploadBackgroundColorDropareaDesign4Dropareadesign2BackgroundColor",
+		"dv": "<backgroundHoverColorThree>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._droparea_design2._tertiary",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color Droparea Design5",
+		"dn": "Quaternary File Upload Background Color Droparea Design5 Droparea design2 Background Color",
+		"n": "quaternaryFileUploadBackgroundColorDropareaDesign5Dropareadesign2BackgroundColor",
+		"dv": "<backgroundHoverColorFour>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._droparea_design2._quaternary",
+		"np": true
+	},
+	{
+		"gn": "File Upload Background Color Droparea Design6",
+		"dn": "Quinary File Upload Background Color Droparea Design6 Droparea design2 Background Color",
+		"n": "quinaryFileUploadBackgroundColorDropareaDesign6Dropareadesign2BackgroundColor",
+		"dv": "<backgroundHoverColorFive>",
+		"cp": "background",
+		"sel": ".comp.compFileUpload._droparea_design2._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Icon Color",
+		"dn": "Primary File Upload Icon Color Droparea design Icon Color",
+		"n": "primaryFileUploadIconColorDropareadesignIconColor",
+		"dv": "<backgroundColorOne>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._droparea_design1._primary ._uploadIcon, .comp.compFileUpload._droparea_design2._primary ._uploadIcon, .comp.compFileUpload._droparea_design3._primary ._uploadIcon, .comp.compFileUpload._only_icon_design1._primary ._uploadIcon, .comp.compFileUpload._only_icon_design2._primary ._uploadIcon",
+		"np": true
+	},
+	{
+		"gn": "File Upload Icon Color",
+		"dn": "Secondary File Upload Icon Color Droparea design Icon Color",
+		"n": "secondaryFileUploadIconColorDropareadesignIconColor",
+		"dv": "<backgroundColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._droparea_design1._secondary ._uploadIcon, .comp.compFileUpload._droparea_design2._secondary ._uploadIcon, .comp.compFileUpload._droparea_design3._secondary ._uploadIcon, .comp.compFileUpload._only_icon_design1._secondary ._uploadIcon, .comp.compFileUpload._only_icon_design2._secondary ._uploadIcon",
+		"np": true
+	},
+	{
+		"gn": "File Upload Icon Color",
+		"dn": "Tertiary File Upload Icon Color Droparea design Icon Color",
+		"n": "tertiaryFileUploadIconColorDropareadesignIconColor",
+		"dv": "<backgroundColorThree>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._droparea_design1._tertiary ._uploadIcon, .comp.compFileUpload._droparea_design2._tertiary ._uploadIcon, .comp.compFileUpload._droparea_design3._tertiary ._uploadIcon, .comp.compFileUpload._only_icon_design1._tertiary ._uploadIcon, .comp.compFileUpload._only_icon_design2._tertiary ._uploadIcon",
+		"np": true
+	},
+	{
+		"gn": "File Upload Icon Color",
+		"dn": "Quaternary File Upload Icon Color Droparea design Icon Color",
+		"n": "quaternaryFileUploadIconColorDropareadesignIconColor",
+		"dv": "<backgroundColorFour>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._droparea_design1._quaternary ._uploadIcon, .comp.compFileUpload._droparea_design2._quaternary ._uploadIcon, .comp.compFileUpload._droparea_design3._quaternary ._uploadIcon, .comp.compFileUpload._only_icon_design1._quaternary ._uploadIcon, .comp.compFileUpload._only_icon_design2._quaternary ._uploadIcon",
+		"np": true
+	},
+	{
+		"gn": "File Upload Icon Color",
+		"dn": "Quinary File Upload Icon Color Droparea design Icon Color",
+		"n": "quinaryFileUploadIconColorDropareadesignIconColor",
+		"dv": "<backgroundColorFive>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload._droparea_design1._quinary ._uploadIcon, .comp.compFileUpload._droparea_design2._quinary ._uploadIcon, .comp.compFileUpload._droparea_design3._quinary ._uploadIcon, .comp.compFileUpload._only_icon_design1._quinary ._uploadIcon, .comp.compFileUpload._only_icon_design2._quinary ._uploadIcon",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Color",
+		"dn": " File Upload ColorSupport Text Color One File Upload",
+		"n": " FileUploadColorSupportTextColorOneFileUpload",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compFileUpload ._subtext",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Support Text Font Size",
+		"dn": "File Upload Support Text Font Size",
+		"n": "fileUploadSupportTextFontSize",
+		"dv": "12px",
+		"cp": "font-size",
+		"sel": ".comp.compFileUpload ._subtext",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Padding",
+		"dn": "File Upload Padding Top DropArea Design 3",
+		"n": "fileUploadPaddingTopDropAreaDesign3",
+		"dv": "16px",
+		"cp": "padding-top",
+		"sel": ".comp.compFileUpload._droparea_design3  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Margin",
+		"dn": "File Upload Margin DropArea Design 3 Margin Right",
+		"n": "fileUploadMarginDropAreaDesign3MarginRight",
+		"dv": "5px",
+		"cp": "margin-right",
+		"sel": ".comp.compFileUpload._droparea_design3  ._fileUploadText",
+		"np": true
+	},
+	{
+		"gn": "File Upload Bottom",
+		"dn": "File Upload Bottom DropArea Design 3",
+		"n": "fileUploadBottomDropAreaDesign3",
+		"dv": "4px",
+		"cp": "bottom",
+		"sel": ".comp.compFileUpload._droparea_design3  ._subtext",
+		"np": true
+	},
+
+	{
+		"gn": "File Upload Icon Font Size",
+		"dn": "File Upload Icon Font Size Big Icon Design One",
+		"n": "fileUploadIconFontSizeBigIconDesignOne",
+		"dv": "64px",
+		"cp": "font-size",
+		"sel": ".comp.compFileUpload._only_icon_design1 ._uploadIcon",
+		"np": true
+	},
+	{
+		"gn": "File Upload Icon Font Size",
+		"dn": "File Upload Icon Font Size Big Icon Design Two",
+		"n": "fileUploadIconFontSizeBigIconDesignTwo",
+		"dv": "84px",
+		"cp": "font-size",
+		"sel": ".comp.compFileUpload._only_icon_design2 ._uploadIcon",
+		"np": true
+	}
+]

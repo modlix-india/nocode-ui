@@ -98,7 +98,7 @@ export default function Editor({
 				let editors = isParentEditor
 					? newFiller.definition![sectionKey].editors!.find(
 							ed => ed.key == parentEditor?.key,
-					  )?.objectEditors!
+						)?.objectEditors!
 					: newFiller.definition![sectionKey].editors!;
 				const dgiIndex = editors.findIndex(s => s.key == dgin);
 				const dgoIndex = editors.findIndex(s => s.key == dgon);
