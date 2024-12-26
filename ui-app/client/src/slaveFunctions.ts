@@ -1,7 +1,6 @@
 import { duplicate } from '@fincity/kirun-js';
-import { getDataFromPath, setData } from './context/StoreContext';
-import { ComponentDefinition } from './types/common';
 import { STORE_PREFIX } from './constants';
+import { getDataFromPath, setData } from './context/StoreContext';
 
 export const isSlave = (() => {
 	try {
@@ -12,7 +11,7 @@ export const isSlave = (() => {
 })();
 
 const _parent = window.parent !== window.top ? window.parent : window.top;
-export function messageToMaster(message: { type: string; payload: any | undefined }) {
+export function messageToMaster(message: { type: string; payload: any }) {
 	_parent.postMessage(
 		{ ...message, editorType: window.designMode, screenType: window.screenType },
 		'*',
@@ -95,7 +94,7 @@ if (isSlave) {
 		if (!iframe) return { x: 0, y: 0 };
 
 		const iframeRect = iframe.getBoundingClientRect();
-		const sf = Number(iframe!.dataset.scaleFactor ?? 1);
+		const sf = iframe.dataset.scaleFactor ? parseInt(iframe.dataset.scaleFactor) : 1;
 
 		let top = iframeRect.top;
 		let left = iframeRect.left;

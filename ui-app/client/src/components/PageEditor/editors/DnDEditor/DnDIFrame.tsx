@@ -5,7 +5,6 @@ import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../../context/StoreContext';
 import { IconHelper } from '../../../util/IconHelper';
-import Portal from '../../../Portal';
 
 interface DnDIFrameProps {
 	personalizationPath: string | undefined;
@@ -249,19 +248,18 @@ export default function DnDIFrame({
 				style={{
 					minWidth: desktopDevice.width + 'px',
 					maxWidth: desktopDevice.width + 'px',
-					gap: `${20 / scale}px`,
+					gap: `${40 / scale}px`,
 				}}
 			>
-				<div
+				<button
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
 					onClick={e =>
 						setShowDevices({ left: e.clientX, top: e.clientY, name: 'desktop' })
 					}
 				>
-					<DesktopIcon />
 					{desktopDevice.name} ({desktopDevice.width} x {desktopDevice.height})
-				</div>
+				</button>
 				<iframe
 					id="desktop"
 					data-scale-factor={scale}
@@ -276,7 +274,7 @@ export default function DnDIFrame({
 		);
 	}
 
-	if (desktop && (tablet || mobile)) {
+	if (desktop) {
 		left += desktopDevice.width + 20;
 	}
 
@@ -287,19 +285,18 @@ export default function DnDIFrame({
 				style={{
 					minWidth: tabletDevice.width + 'px',
 					maxWidth: tabletDevice.width + 'px',
-					gap: `${20 / scale}px`,
+					gap: `${40 / scale}px`,
 				}}
 			>
-				<div
+				<button
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
 					onClick={e =>
 						setShowDevices({ left: e.clientX, top: e.clientY, name: 'tablet' })
 					}
 				>
-					<TabletIcon />
 					{tabletDevice.name} ({tabletDevice.width} x {tabletDevice.height})
-				</div>
+				</button>
 				<iframe
 					id="tablet"
 					data-scale-factor={scale}
@@ -314,7 +311,7 @@ export default function DnDIFrame({
 		);
 	}
 
-	if (tablet && mobile) {
+	if (tablet) {
 		left += tabletDevice.width + 20;
 	}
 
@@ -325,19 +322,18 @@ export default function DnDIFrame({
 				style={{
 					minWidth: mobileDevice.width + 'px',
 					maxWidth: mobileDevice.width + 'px',
-					gap: `${20 / scale}px`,
+					gap: `${40 / scale}px`,
 				}}
 			>
-				<div
+				<button
 					className="_iframeHeader _screenSizes"
 					style={{ width: `${scale * 100}%`, transform: `scale(${1 / scale})` }}
 					onClick={e =>
 						setShowDevices({ left: e.clientX, top: e.clientY, name: 'mobile' })
 					}
 				>
-					<MobileIcon />
 					{mobileDevice.name} ({mobileDevice.width} x {mobileDevice.height})
-				</div>
+				</button>
 				<iframe
 					id="mobile"
 					data-scale-factor={scale}
@@ -358,7 +354,7 @@ export default function DnDIFrame({
 			<div
 				className="_control"
 				onKeyDown={() => {}}
-				onClick={() => onChangePersonalization('preview', !previewMode)}
+				onClick={() => onChangePersonalization('preview', false)}
 			>
 				<IconHelper viewBox="0 0 20 16">
 					<path
@@ -385,10 +381,11 @@ export default function DnDIFrame({
 				<div
 					className="_popupMenuContainer _plain"
 					style={{ left: showDevices.left, top: showDevices.top }}
+					onClick={e => e.stopPropagation()}
 				>
 					<div className="_contextMenu">
 						{devices.map((d: { name: string; width: number; height: number }) => (
-							<div
+							<button
 								key={d.name}
 								className="_popupMenuItem"
 								onClick={() => {
@@ -400,7 +397,7 @@ export default function DnDIFrame({
 								}}
 							>
 								{d.name} ({d.width} x {d.height})
-							</div>
+							</button>
 						))}
 					</div>
 				</div>
@@ -422,17 +419,14 @@ export default function DnDIFrame({
 						}
 					>
 						<svg
-							width="16"
+							width="10px"
 							height="3"
 							viewBox="0 0 16 3"
-							fill="none"
 							xmlns="http://www.w3.org/2000/svg"
 						>
 							<path
 								d="M1.33333 2.8C0.727785 2.8 0.2 2.24203 0.2 1.5C0.2 0.757973 0.727785 0.2 1.33333 0.2H14.6667C15.2722 0.2 15.8 0.757973 15.8 1.5C15.8 2.24203 15.2722 2.8 14.6667 2.8H1.33333Z"
-								fill="#4D7FEE"
-								stroke="white"
-								strokeWidth="0.4"
+								fill="currentColor"
 							/>
 						</svg>
 					</button>
@@ -452,18 +446,10 @@ export default function DnDIFrame({
 							)
 						}
 					>
-						<svg
-							width="16"
-							height="15"
-							viewBox="0 0 16 15"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="10" height="10" viewBox="0 0 10 10">
 							<path
-								d="M6.54545 6.33636H6.74545V6.13636V1.36364C6.74545 0.731795 7.29356 0.2 8 0.2C8.70644 0.2 9.25455 0.731795 9.25455 1.36364V6.13636V6.33636H9.45455H14.5455C15.2519 6.33636 15.8 6.86816 15.8 7.5C15.8 8.13184 15.2519 8.66364 14.5455 8.66364H9.45455H9.25455V8.86364V13.6364C9.25455 14.2682 8.70644 14.8 8 14.8C7.29356 14.8 6.74545 14.2682 6.74545 13.6364V8.86364V8.66364H6.54545H1.45455C0.748102 8.66364 0.2 8.13184 0.2 7.5C0.2 6.86816 0.748102 6.33636 1.45455 6.33636H6.54545Z"
-								fill="#4C7FEE"
-								stroke="white"
-								strokeWidth="0.4"
+								d="M5.76923 0.769231C5.76923 0.34375 5.42548 0 5 0C4.57452 0 4.23077 0.34375 4.23077 0.769231V4.23077H0.769231C0.34375 4.23077 0 4.57452 0 5C0 5.42548 0.34375 5.76923 0.769231 5.76923H4.23077V9.23077C4.23077 9.65625 4.57452 10 5 10C5.42548 10 5.76923 9.65625 5.76923 9.23077V5.76923H9.23077C9.65625 5.76923 10 5.42548 10 5C10 4.57452 9.65625 4.23077 9.23077 4.23077H5.76923V0.769231Z"
+								fill="currentColor"
 							/>
 						</svg>
 					</button>
@@ -471,19 +457,19 @@ export default function DnDIFrame({
 						className={`_control _device ${desktop ? '_active' : ''}`}
 						onClick={() => onChangePersonalization('devices.desktop', !desktop)}
 					>
-						<DesktopIcon />
+						<DesktopIcon isActive={desktop} />
 					</button>
 					<button
 						className={`_control _device ${tablet ? '_active' : ''}`}
 						onClick={() => onChangePersonalization('devices.tablet', !tablet)}
 					>
-						<TabletIcon />
+						<TabletIcon isActive={tablet} />
 					</button>
 					<button
 						className={`_control _device ${mobile ? '_active' : ''}`}
 						onClick={() => onChangePersonalization('devices.mobile', !mobile)}
 					>
-						<MobileIcon />
+						<MobileIcon isActive={mobile} />
 					</button>
 					{previewButton}
 				</div>
@@ -502,81 +488,123 @@ export default function DnDIFrame({
 	);
 }
 
-export function DesktopIcon() {
+export function DesktopIcon({ isActive }: Readonly<{ isActive: boolean }>) {
+	const [isHover, setIsHover] = useState(false);
+
 	return (
 		<svg
-			width="18"
-			height="17"
-			viewBox="0 0 18 17"
+			width="22"
+			height="18"
 			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
+			viewBox="0 0 22 18"
+			onMouseEnter={() => setIsHover(true)}
+			onMouseLeave={() => setIsHover(false)}
 		>
 			<path
-				d="M15.7302 1H2.26984C1.56853 1 1 1.58107 1 2.29786V12.989C1 13.7058 1.56853 14.2869 2.26984 14.2869H15.7302C16.4315 14.2869 17 13.7058 17 12.989V2.29786C17 1.58107 16.4315 1 15.7302 1Z"
+				d="M19.4127 1H2.5873C1.71066 1 1 1.5831 1 2.3024V13.0309C1 13.7502 1.71066 14.3333 2.5873 14.3333H19.4127C20.2893 14.3333 21 13.7502 21 13.0309V2.3024C21 1.5831 20.2893 1 19.4127 1Z"
 				stroke="#C2C3CE"
 			/>
 			<path
-				d="M14.0476 3H3.95238C3.4264 3 3 3.3936 3 3.87912V11.1209C3 11.6064 3.4264 12 3.95238 12H14.0476C14.5736 12 15 11.6064 15 11.1209V3.87912C15 3.3936 14.5736 3 14.0476 3Z"
-				fill="#E8E9ED"
-			/>
-			<path
-				d="M4.64062 16H13.3781"
+				d="M5.55078 16.5557H16.4726"
 				stroke="#C2C3CE"
 				strokeLinecap="round"
 				strokeLinejoin="round"
 			/>
+			<path
+				d="M3.22266 4.58639L3.22266 10.7469C3.22266 11.5003 3.89069 12.1111 4.71475 12.1111L17.2861 12.1111C18.1102 12.1111 18.7782 11.5003 18.7782 10.7469L18.7782 4.58639C18.7782 3.83297 18.1102 3.22219 17.2861 3.2222L4.71475 3.2222C3.89069 3.2222 3.22266 3.83297 3.22266 4.58639Z"
+				fill={isActive || isHover ? 'url(#paint0_linear_1540_7211)' : '#8E90A433'}
+			/>
+			<defs>
+				<linearGradient
+					id="paint0_linear_1540_7211"
+					x1="3.22266"
+					y1="3.2222"
+					x2="18.2227"
+					y2="11.5555"
+					gradientUnits="userSpaceOnUse"
+				>
+					<stop stopColor="#43B2FF" />
+					<stop offset="1" stopColor="#52BD94" />
+				</linearGradient>
+			</defs>
 		</svg>
 	);
 }
 
-export function TabletIcon() {
+export function TabletIcon({ isActive }: Readonly<{ isActive: boolean }>) {
+	const [isHover, setIsHover] = useState(false);
+
 	return (
 		<svg
-			width="18"
-			height="13"
-			viewBox="0 0 18 13"
+			width="22"
+			height="16"
+			viewBox="0 0 22 16"
 			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
+			onMouseEnter={() => setIsHover(true)}
+			onMouseLeave={() => setIsHover(false)}
 		>
 			<path
-				d="M1 2.15104L1 11.099C1 11.7347 1.51534 12.25 2.15104 12.25L15.849 12.25C16.4847 12.25 17 11.7347 17 11.099L17 2.15104C17 1.51534 16.4847 0.999999 15.849 0.999999L2.15104 1C1.51534 1 1 1.51534 1 2.15104Z"
+				d="M0.999999 2.47777L1 13.9665C1 14.7827 1.64417 15.4443 2.4388 15.4443L19.5612 15.4443C20.3558 15.4443 21 14.7827 21 13.9665L21 2.47777C21 1.66156 20.3558 0.999891 19.5612 0.999891L2.4388 0.999892C1.64417 0.999892 0.999999 1.66156 0.999999 2.47777Z"
 				stroke="#C2C3CE"
 			/>
 			<path
-				opacity="0.2"
-				d="M3 4.02604L3 9.22396C3 9.85966 3.51534 10.375 4.15104 10.375L13.849 10.375C14.4847 10.375 15 9.85966 15 9.22396L15 4.02604C15 3.39034 14.4847 2.875 13.849 2.875L4.15104 2.875C3.51534 2.875 3 3.39034 3 4.02604Z"
-				fill="#8E90A4"
+				d="M3.22266 4.75689L3.22266 11.6874C3.22266 12.5351 3.89069 13.2222 4.71475 13.2222L17.2861 13.2222C18.1102 13.2222 18.7782 12.535 18.7782 11.6874L18.7782 4.75689C18.7782 3.90929 18.1102 3.22217 17.2861 3.22217L4.71475 3.22217C3.89069 3.22217 3.22266 3.90929 3.22266 4.75689Z"
+				fill={isActive || isHover ? 'url(#paint0_linear_1540_7211)' : '#8E90A433'}
 			/>
-			<path
-				d="M16.33 6.5474C16.33 5.90399 15.8084 5.3824 15.165 5.3824C14.5216 5.3824 14 5.90399 14 6.5474C14 7.19081 14.5216 7.7124 15.165 7.7124C15.8084 7.7124 16.33 7.19081 16.33 6.5474Z"
-				fill="#8E90A4"
-			/>
+			<defs>
+				<linearGradient
+					id="paint0_linear_1540_7211"
+					x1="3.22266"
+					y1="3.2222"
+					x2="18.2227"
+					y2="11.5555"
+					gradientUnits="userSpaceOnUse"
+				>
+					<stop stopColor="#43B2FF" />
+					<stop offset="1" stopColor="#52BD94" />
+				</linearGradient>
+			</defs>
 		</svg>
 	);
 }
 
-export function MobileIcon() {
+export function MobileIcon({ isActive }: Readonly<{ isActive: boolean }>) {
+	const [isHover, setIsHover] = useState(false);
 	return (
 		<svg
-			width="11"
+			width="12"
 			height="18"
-			viewBox="0 0 11 18"
+			viewBox="0 0 12 18"
 			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
+			onMouseEnter={() => setIsHover(true)}
+			onMouseLeave={() => setIsHover(false)}
 		>
 			<path
-				d="M2.53752 17.0288L8.36752 17.0288C9.21666 17.0288 9.90503 16.3404 9.90503 15.4913L9.90503 2.53729C9.90503 1.68815 9.21667 0.999786 8.36753 0.999786L2.53752 0.999786C1.68838 0.999786 1.00002 1.68815 1.00002 2.53729L1.00002 15.4913C1.00002 16.3404 1.68838 17.0288 2.53752 17.0288Z"
+				d="M9.27344 1H2.72656C1.77301 1 1 1.69785 1 2.5587V15.6913C1 16.5521 1.77301 17.25 2.72656 17.25H9.27344C10.227 17.25 11 16.5521 11 15.6913V2.5587C11 1.69785 10.227 1 9.27344 1Z"
 				stroke="#8E90A4"
 				strokeOpacity="0.5"
 			/>
-			<path
-				d="M3.33951 15.2798L7.51097 15.2798C8.11855 15.2798 8.61108 14.7644 8.61108 14.1287L8.61109 3.43083C8.61109 2.79512 8.11855 2.27979 7.51098 2.27979L3.33952 2.27978C2.73194 2.27978 2.23941 2.79512 2.23941 3.43083L2.2394 14.1287C2.2394 14.7644 2.73194 15.2798 3.33951 15.2798Z"
-				fill="#E8E9ED"
+			<rect
+				x="2.875"
+				y="2.875"
+				width="6.25"
+				height="12.5"
+				rx="0.5"
+				fill={isActive || isHover ? 'url(#paint0_linear_1540_7211)' : '#8E90A433'}
 			/>
-			<path
-				d="M6.64128 14.7505C6.64128 14.1071 6.11969 13.5855 5.47628 13.5855C4.83287 13.5855 4.31128 14.1071 4.31128 14.7505C4.31128 15.3939 4.83287 15.9155 5.47628 15.9155C6.11969 15.9155 6.64128 15.3939 6.64128 14.7505Z"
-				fill="#8E90A4"
-			/>
+			<defs>
+				<linearGradient
+					id="paint0_linear_1540_7211"
+					x1="3.22266"
+					y1="3.2222"
+					x2="18.2227"
+					y2="11.5555"
+					gradientUnits="userSpaceOnUse"
+				>
+					<stop stopColor="#43B2FF" />
+					<stop offset="1" stopColor="#52BD94" />
+				</linearGradient>
+			</defs>
 		</svg>
 	);
 }

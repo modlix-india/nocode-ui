@@ -1,10 +1,25 @@
-import React from 'react';
-import { StyleResolution } from '../../types/common';
+import React, { useState, useEffect } from 'react';
+import { StylePropertyDefinition, StyleResolution } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './dropdownStyleProperties';
+import { styleDefaults } from './dropdownStyleProperties';
+import { usedComponents } from '../../App/usedComponents';
+import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compDropdown';
-export default function DropdownStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+const NAME = 'Dropdown';
+export default function DropdownStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
 	const css =
 		`
         ${PREFIX} {

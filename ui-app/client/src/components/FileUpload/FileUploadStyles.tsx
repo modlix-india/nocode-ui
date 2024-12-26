@@ -1,10 +1,25 @@
-import React from 'react';
-import { StyleResolution } from '../../types/common';
+import React, { useState, useEffect } from 'react';
+import { StylePropertyDefinition, StyleResolution } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './fileUploadStyleProperties';
+import { styleDefaults } from './fileUploadStyleProperties';
+import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import { usedComponents } from '../../App/usedComponents';
 
 const PREFIX = '.comp.compFileUpload';
-export default function ProgressBarStyles({ theme }: { theme: Map<string, Map<string, string>> }) {
+const NAME = 'FileUpload';
+export default function ProgressBarStyles({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
 	const css =
 		`
 	${PREFIX} {

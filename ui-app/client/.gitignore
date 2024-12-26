@@ -1,7 +1,11 @@
 node_modules
 .parcel-cache
 dist/*.js
-dist/*.css
 dist/*.map
 dist/*.html
+dist/*.json
 .DS_Store
+report/**
+reports/**
+stats.json
+dist/*.txt

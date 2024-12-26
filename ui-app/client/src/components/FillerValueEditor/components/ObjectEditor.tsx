@@ -13,10 +13,13 @@ export default function ObjectEditor({
 	value: Array<any> | undefined;
 	onPopup: () => void;
 }>) {
-	const previewFields = editor.objectEditors?.reduce((acc, curr) => {
-		acc[curr.key] = curr;
-		return acc;
-	}, {} as { [key: string]: EditorDefinition });
+	const previewFields = editor.objectEditors?.reduce(
+		(acc, curr) => {
+			acc[curr.key] = curr;
+			return acc;
+		},
+		{} as { [key: string]: EditorDefinition },
+	);
 
 	return (
 		<div

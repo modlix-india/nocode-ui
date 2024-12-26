@@ -5,9 +5,9 @@ import { styleProperties, styleDefaults } from './markdownEditorStyleProperties'
 const PREFIX = '.comp.compMarkdownEditor';
 export default function MarkdownEditorStyle({
 	theme,
-}: {
+}: Readonly<{
 	theme: Map<string, Map<string, string>>;
-}) {
+}>) {
 	const css =
 		`
 	${PREFIX} {

@@ -4,7 +4,9 @@ import { styleDefaults, styleProperties } from './imageStyleProperties';
 
 const PREFIX = '.comp.compImage';
 
-export default function ImageStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function ImageStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
         ${PREFIX} ._onClickTrue {
@@ -14,6 +16,8 @@ export default function ImageStyle({ theme }: { theme: Map<string, Map<string, s
         ${PREFIX} img {
             width: inherit;
             height: inherit;
+            opacity: 1;
+            transition: opacity 0.3s;
         }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

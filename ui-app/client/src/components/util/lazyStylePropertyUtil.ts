@@ -6,17 +6,29 @@ export function lazyStylePropertyLoadFunction(
 	setStyleProperties: (styleProperties: Array<StylePropertyDefinition>) => void,
 	styleDefaults: Map<string, string>,
 ) {
-	return () =>
-		axios
-			.get(
-				`${window.cdnPrefix ? 'https://' + window.cdnPrefix + '/js/dist' : ''}/styleProperties/${name}.json`,
-			)
-			.then((res: any) => {
-				if (!res?.data) return;
-				setStyleProperties(res.data);
+	return () => {
+		if (styleDefaults.size > 0) return;
+		axios.get(lazyStylePropURL(name)).then((res: any) => {
+			if (!Array.isArray(res.data)) {
+				console.error('Unable to load style properties for component : ', name);
+				console.error('Response : ', res);
+				return;
+			}
+			setStyleProperties(res.data);
 
-				res.data
-					.filter((e: any) => !!e.defaultValue)
-					.map(({ name, defaultValue }: any) => styleDefaults.set(name, defaultValue));
-			});
+			res.data
+				?.filter((e: any) => !!e.dv)
+				?.map(({ n: name, dv: defaultValue }: any) =>
+					styleDefaults.set(name, defaultValue),
+				);
+		});
+	};
+}
+
+export function lazyStylePropURL(name: string) {
+	return `${window.cdnPrefix ? 'https://' + window.cdnPrefix + '/js/dist' : ''}/styleProperties/${name}.json`;
+}
+
+export function lazyCSSURL(name: string) {
+	return `${window.cdnPrefix ? 'https://' + window.cdnPrefix + '/js/dist' : ''}/css/${name}.css`;
 }

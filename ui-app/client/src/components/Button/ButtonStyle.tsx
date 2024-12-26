@@ -1,10 +1,26 @@
-import React from 'react';
-import { StyleResolution } from '../../types/common';
+import React, { useEffect, useState } from 'react';
+import { StylePropertyDefinition, StyleResolution } from '../../types/common';
 import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './buttonStyleProperties';
+import { styleDefaults } from './buttonStyleProperties';
+import { usedComponents } from '../../App/usedComponents';
+import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compButton';
-export default function ButtonStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+const NAME = 'Button';
+export default function ButtonStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const values = new Map([
 		...Array.from(theme.get(StyleResolution.ALL) ?? []),
 		...Array.from(styleDefaults),

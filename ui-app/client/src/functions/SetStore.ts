@@ -1,19 +1,18 @@
 import {
 	AbstractFunction,
+	duplicate,
 	Event,
 	EventResult,
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
+	isNullValue,
 	Parameter,
 	Schema,
-	TokenValueExtractor,
-	duplicate,
-	isNullValue,
 } from '@fincity/kirun-js';
 import { GLOBAL_CONTEXT_NAME, NAMESPACE_UI_ENGINE } from '../constants';
-import { getData, PageStoreExtractor, setData } from '../context/StoreContext';
 import { ParentExtractorForRunEvent } from '../context/ParentExtractor';
+import { PageStoreExtractor, setData } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('SetStore')
 	.setNamespace(NAMESPACE_UI_ENGINE)

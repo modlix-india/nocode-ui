@@ -20,7 +20,9 @@ function CommonTriStateCheckbox({
 	focusHandler,
 	blurHandler,
 	states = 3,
-}: CommonTriStateCheckboxType) {
+}: Readonly<CommonTriStateCheckboxType>) {
+	let setValue: boolean | undefined = !value;
+	if (states === 3 && value !== false) setValue = value === true ? undefined : false;
 	return (
 		<span
 			className={`commonTriStateCheckbox _${states == 3 ? value : !!value} ${
@@ -28,19 +30,17 @@ function CommonTriStateCheckbox({
 			}`}
 			id={id}
 			onClick={() => {
-				(isReadOnly ? undefined : onChange)?.(
-					states === 3
-						? value === true
-							? false
-							: value === false
-							? undefined
-							: true
-						: !value,
-				);
+				(isReadOnly ? undefined : onChange)?.(setValue);
 			}}
 			style={styles}
 			onFocus={focusHandler}
 			onBlur={blurHandler}
+			role="checkbox"
+			aria-checked={value}
+			tabIndex={0}
+			onKeyUp={e =>
+				(e.key === 'Enter' || e.key === ' ') && !isReadOnly && onChange?.(setValue)
+			}
 		/>
 	);
 }

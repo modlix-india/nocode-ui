@@ -53,7 +53,7 @@ export default function PropertyValueEditor({
 	editPageName,
 	pageOperations,
 	appPath,
-}: PropertyValueEditorProps) {
+}: Readonly<PropertyValueEditorProps>) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
 	const [expression, setExpression] = useState<string>('');
@@ -123,9 +123,8 @@ export default function PropertyValueEditor({
 	);
 
 	const microToggle = onlyValue ? undefined : (
-		<div
+		<button
 			className={`_microToggle2 ${showAdvanced ? '_on' : '_off'}`}
-			tabIndex={0}
 			onKeyDown={e => (e.key === ' ' ? toggleAdvanced() : undefined)}
 			onClick={toggleAdvanced}
 			title={showAdvanced ? 'Value' : 'Expression'}
@@ -161,11 +160,9 @@ function makeValueEditor(
 	if (propDef.editor === ComponentPropertyEditor.TEXT_EDITOR)
 		return (
 			<TextValueEditor
-				isIconButton={true}
 				value={chngValue === '' ? undefined : chngValue}
 				defaultValue={propDef.defaultValue}
 				onChange={e => onChange({ ...value, value: e })}
-				propDef={propDef}
 			/>
 		);
 
@@ -207,7 +204,7 @@ function makeValueEditor(
 			<Dropdown
 				showNoneLabel={isNullValue(propDef.defaultValue)}
 				selectNoneLabel="--NONE--"
-				value={(chngValue === '' ? propDef.defaultValue ?? '' : chngValue) ?? ''}
+				value={(chngValue === '' ? (propDef.defaultValue ?? '') : chngValue) ?? ''}
 				onChange={v => {
 					const newValue: ComponentProperty<any> = {
 						...(value ?? {}),

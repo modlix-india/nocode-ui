@@ -230,7 +230,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 					const comp = (
 						<Children
 							pageDefinition={pageDefinition}
-							children={firstchild}
+							renderableChildren={firstchild}
 							context={context}
 							locationHistory={[
 								...locationHistory,
@@ -272,8 +272,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 								tabIndex={0}
 								className={`moveOne ${
 									index == arrayValue?.length - 1
-										? moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
-										: moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid'
+										? (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
+										: (moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid')
 								}`}
 								style={styleProperties.move ?? {}}
 								onClick={
@@ -301,7 +301,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 								className={`moveOne ${
 									index == 0 || index == arrayValue?.length - 1
 										? ''
-										: moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid'
+										: (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
 								}`}
 								onClick={showMove ? () => handleMove(index, index - 1) : undefined}
 								style={styleProperties.move ?? {}}
@@ -472,6 +472,7 @@ function processArrayValue(
 }
 
 const component: Component = {
+	order: 6,
 	name: 'ArrayRepeater',
 	displayName: 'Repeater',
 	description: 'Array Repeater component',
@@ -497,29 +498,11 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<path
-						d="M11.9976 18C13.6009 18 15.1078 17.3762 16.2405 16.2436C17.3201 15.1642 17.9437 13.7328 17.9969 12.2106C18.05 10.5256 17.4263 8.94463 16.2405 7.75895C15.0546 6.57328 13.4747 5.95098 11.7858 6.00302C10.2657 6.05605 8.83411 6.67963 7.75471 7.75895C5.4151 10.0982 5.4151 13.9044 7.75471 16.2436C8.88742 17.3762 10.3943 18 11.9976 18Z"
-						fill="currentColor"
-					/>
-					<path
-						d="M18.3606 18.4685L18.3606 18.4685C16.661 20.168 14.4023 21.103 11.9962 21.103C9.59005 21.103 7.33143 20.168 5.63183 18.4685L5.63181 18.4685C2.12273 14.96 2.12273 9.25016 5.63181 5.74162L5.63183 5.7416C7.25148 4.12205 9.39779 3.18732 11.6772 3.10754C14.2144 3.02963 16.5817 3.96301 18.3606 5.74162C20.1398 7.52057 21.075 9.88963 20.9953 12.4203C20.9153 14.703 19.9804 16.8489 18.3606 18.4685Z"
-						stroke="currentColor"
-						strokeOpacity="0.2"
-						fill="none"
-					/>
-					<path
-						fillRule="evenodd"
-						clipRule="evenodd"
-						d="M8.81991 5.62444C8.81267 5.81538 9.05171 5.9297 9.18675 5.79451L11.9786 2.99962C12.0875 2.89054 12.0373 2.7044 11.8883 2.66494L8.06798 1.65333C7.88342 1.60446 7.73446 1.82302 7.83661 1.98432C8.52656 3.0737 8.86859 4.33994 8.81991 5.62444Z"
-						fill="currentColor"
-					/>
-					<path
-						fillRule="evenodd"
-						clipRule="evenodd"
-						d="M14.4365 19.3763C14.5052 19.198 14.3161 19.0124 14.1445 19.0965L10.5977 20.836C10.4593 20.9038 10.4465 21.0962 10.5747 21.1818L13.861 23.3768C14.0198 23.4828 14.2315 23.3243 14.1871 23.1386C13.8874 21.8845 13.9742 20.5757 14.4365 19.3763Z"
-						fill="currentColor"
-					/>
+				<IconHelper id="_arrayRepeaterIcon" viewBox="0 0 30 30">
+					<rect id="_rect1" width="13" height="13" rx="1" fill="#3aad6c" />
+					<rect id="_rect5" y="15" width="13" height="13" rx="1" fill="#008FDD" />
+					<rect id="_rect3" x="15" width="13" height="13" rx="1" fill="#3aad6c" />
+					<rect id="_rect7" x="15" y="15" width="13" height="13" rx="1" fill="#008FDD" />
 				</IconHelper>
 			),
 			mainComponent: true,

@@ -144,10 +144,13 @@ export default function ObjectPopup({
 			</>
 		);
 
-		const previewFields = editor.objectEditors?.reduce((acc, curr) => {
-			acc[curr.key] = curr;
-			return acc;
-		}, {} as { [key: string]: EditorDefinition });
+		const previewFields = editor.objectEditors?.reduce(
+			(acc, curr) => {
+				acc[curr.key] = curr;
+				return acc;
+			},
+			{} as { [key: string]: EditorDefinition },
+		);
 
 		tabContent = (
 			<>
@@ -209,10 +212,13 @@ export default function ObjectPopup({
 		(editor?.sampleObjects && tabNum === 1) ||
 		(!editor?.sampleObjects && tabNum === 0)
 	) {
-		const previewFields = editor?.objectEditors?.reduce((acc, curr) => {
-			acc[curr.key] = curr;
-			return acc;
-		}, {} as { [key: string]: EditorDefinition });
+		const previewFields = editor?.objectEditors?.reduce(
+			(acc, curr) => {
+				acc[curr.key] = curr;
+				return acc;
+			},
+			{} as { [key: string]: EditorDefinition },
+		);
 
 		if (isNullValue(updateObject)) {
 			tabButtons = (

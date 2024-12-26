@@ -386,8 +386,8 @@ export default function TextTypeEditor({
 										? '' + data.validation['STRING_LENGTH']?.minLength
 										: undefined
 									: data.validation['NUMBER_VALUE']?.minValue != undefined
-									? '' + data.validation['NUMBER_VALUE']?.minValue
-									: undefined
+										? '' + data.validation['NUMBER_VALUE']?.minValue
+										: undefined
 							}
 							min={0}
 							placeholder="min"
@@ -401,8 +401,8 @@ export default function TextTypeEditor({
 										? '' + data.validation['STRING_LENGTH']?.maxLength
 										: undefined
 									: data.validation['NUMBER_VALUE']?.maxValue != undefined
-									? '' + data.validation['NUMBER_VALUE']?.maxValue
-									: undefined
+										? '' + data.validation['NUMBER_VALUE']?.maxValue
+										: undefined
 							}
 							min={0}
 							placeholder="max"

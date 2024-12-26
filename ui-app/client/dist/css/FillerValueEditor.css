@@ -1,0 +1,791 @@
+.comp.compFillerValueEditor {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.comp.compFillerValueEditor ._topBar {
+	display: flex;
+	height: 65px;
+	background-color: #fff;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.05);
+	align-items: center;
+	padding: 0 15px;
+	flex-shrink: 0;
+}
+
+.comp.compFillerValueEditor ._body {
+	flex: 1;
+	display: flex;
+	overflow: hidden;
+}
+
+.comp.compFillerValueEditor ._body ._pageViewer {
+	flex: 1;
+	padding-left: 5px;
+	display: flex;
+	align-items: center;
+	background-color: #fff;
+	background: repeating-conic-gradient(#fafafa 0% 25%, transparent 0% 50%) 50% / 20px 20px;
+	overflow: auto;
+}
+
+.comp.compFillerValueEditor ._body ._pageViewer iframe {
+	flex: 1;
+	height: 100%;
+	outline: none;
+	border: none;
+	width: 100%;
+	transition:
+		min-width 0.5s,
+		max-width 0.5s,
+		width 0.5s;
+}
+
+.comp.compFillerValueEditor ._body ._pageViewer._DESKTOP iframe {
+	min-width: 1024px;
+	max-width: 3024px;
+}
+
+.comp.compFillerValueEditor ._body ._pageViewer._TABLET {
+	justify-content: center;
+}
+
+.comp.compFillerValueEditor ._body ._pageViewer._TABLET iframe {
+	width: 0%;
+	max-width: 961px;
+	min-width: 961px;
+}
+
+.comp.compFillerValueEditor ._body ._pageViewer._MOBILE iframe {
+	width: 0%;
+	max-width: 481px;
+	min-width: 481px;
+}
+
+.comp.compFillerValueEditor ._body ._pageViewer._MOBILE {
+	justify-content: center;
+}
+
+.comp.compFillerValueEditor ._body ._valueEditor {
+	width: 350px;
+	height: 100%;
+	background-color: #f8fafb;
+	box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.25);
+	position: relative;
+	transition: width 0.5s;
+	display: flex;
+	flex-direction: column;
+}
+
+.comp.compFillerValueEditor ._body ._valueEditor ._collapseButton {
+	position: fixed;
+	top: 86px;
+	left: 338px;
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+	background-color: #52bd94;
+	border-radius: 100%;
+	transition:
+		left 0.5s,
+		rotate 0.5s;
+}
+
+.comp.compFillerValueEditor ._body ._valueEditor._collapsed {
+	width: 5px;
+}
+
+.comp.compFillerValueEditor ._body ._valueEditor._collapsed ._collapseButton {
+	left: -6px;
+	rotate: 180deg;
+}
+
+.comp.compFillerValueEditor ._logo {
+	height: 20px;
+	cursor: pointer;
+}
+
+.comp.compFillerValueEditor ._simpleFillerPickerSelect {
+	min-height: 25px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	border-radius: 6px;
+	border: none;
+	background: transparent;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 4px;
+	height: 35px;
+	padding: 0 8px;
+	background-color: #f8fafb;
+}
+
+.comp.compFillerValueEditor ._simpleFillerPickerSelect:focus {
+	border: 2px solid #015ecc;
+}
+
+.comp.compFillerValueEditor
+	._simpleFillerPickerSelect
+	._simpleFillerPickerDropdownBody
+	._simpleFillerPickerDropdownOption {
+	height: 25px;
+	padding: 5px 10px;
+	color: rgba(0, 0, 0, 0.4);
+	border-radius: 4px;
+	white-space: nowrap;
+	cursor: pointer;
+	display: flex;
+}
+
+.comp.compFillerValueEditor
+	._simpleFillerPickerSelect
+	._simpleFillerPickerDropdownBody
+	._simpleFillerPickerDropdownOptionColors {
+	display: flex;
+	flex: 1;
+	height: 20px;
+	gap: 5px;
+}
+
+.comp.compFillerValueEditor ._eachColor {
+	width: 24px;
+	height: 24px;
+	border-radius: 100%;
+	border: 2px solid #fff;
+	box-shadow: 0px 1px 4px 0px #00000026;
+}
+
+.comp.compFillerValueEditor ._simpleEditorColorSelector {
+	border-width: 2px;
+}
+
+.comp.compFillerValueEditor ._eachColor:hover {
+	z-index: 5;
+}
+
+.comp.compFillerValueEditor ._currentPalette {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
+}
+
+.comp.compFillerValueEditor ._generateButtonContainer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 10px;
+	flex: 1;
+}
+
+.comp.compFillerValueEditor ._generateButton {
+	width: 50px;
+	height: 25px;
+	border-radius: 100px;
+	background: #ffffff;
+	border: 0.5px solid #0000001a;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0px 1px 2px 0px #0000000d;
+}
+
+.comp.compFillerValueEditor ._main_editor_dropdown ._simpleFillerPickerDropdownBody,
+.comp.compFillerValueEditor ._simpleFillerPickerSelect ._simpleFillerPickerDropdownBody {
+	position: fixed;
+	min-width: 100%;
+	background-color: #fff;
+	z-index: 2;
+	box-shadow: 0px 1px 4px 0px #00000026;
+	border-radius: 6px;
+	margin-top: 0px;
+	padding: 10px;
+	max-height: 250px;
+	overflow: auto;
+}
+
+.comp.compFillerValueEditor ._main_editor_dropdown ._simpleFillerPickerDropdownBody {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	margin-top: 0px;
+}
+
+.comp.compFillerValueEditor
+	._simpleFillerPickerSelect
+	._simpleFillerPickerDropdownBody
+	._simpleFillerPickerDropdownOption._hovered,
+.comp.compFillerValueEditor
+	._simpleFillerPickerSelect
+	._simpleFillerPickerDropdownBody
+	._simpleFillerPickerDropdownOption:hover {
+	background-color: #f8fafb;
+}
+
+.comp.compFillerValueEditor
+	._simpleFillerPickerSelect
+	._simpleFillerPickerDropdownBody
+	._simpleFillerPickerDropdownOption._selected {
+	color: #333;
+	font-weight: bold;
+}
+
+.comp.compFillerValueEditor ._simpleFillerPickerDropdownBody._colorDropdown {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	margin-top: 0px;
+}
+
+.comp.compFillerValueEditor ._simpleFillerPickerSelect svg {
+	min-width: 8px;
+}
+
+.comp.compFillerValueEditor ._simpleFillerPickerSelect ._selectedOption {
+	min-width: calc(100% - 8px);
+}
+
+.comp.compFillerValueEditor ._simpleFillerPickerSelect ._selectedOption._placeholder {
+	text-transform: capitalize;
+	color: #757575;
+}
+
+.comp.compFillerValueEditor
+	._simpleFillerPickerDropdownBody._colorDropdown
+	._simpleFillerPickerDropdownOption {
+	height: 34px;
+	align-items: center;
+}
+
+.comp.compFillerValueEditor ._main_editor_dropdown {
+	position: relative;
+	border: none;
+}
+
+.comp.compFillerValueEditor ._resoultionBar {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+}
+
+.comp.compFillerValueEditor ._resoultionBar ._icon {
+	width: 36px;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+}
+
+.comp.compFillerValueEditor ._resoultionBar ._icon._selected {
+	background-color: #8e90a41a;
+}
+
+.comp.compFillerValueEditor ._rightButtonBar {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 15px;
+}
+
+.comp.compFillerValueEditor ._rightButtonBar ._button {
+	width: 27px;
+	height: 27px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	background-color: #f8fafb;
+	border-radius: 10px;
+}
+
+.comp.compFillerValueEditor ._rightButtonBar ._saveButton {
+	border-radius: 6px;
+	background: #52bd94;
+	box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
+	padding: 6px 15px;
+	color: #fff;
+
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.comp.compFillerValueEditor ._rightButtonBar ._outlineButton {
+	border-radius: 6px;
+	background: transparent;
+	border: 1px solid #52bd94;
+	box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.1);
+	padding: 6px 15px;
+	color: #52bd94;
+
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+.comp.compFillerValueEditor ._rightButtonBar ._button._disabled svg {
+	opacity: 0.3;
+}
+
+.comp.compFillerValueEditor ._valueEditor ._sectionContainerHeader {
+	display: flex;
+	justify-content: center;
+	padding: 15px 20px;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.comp.compFillerValueEditor ._valueEditor ._sectionContainerHeader ._headerTitle {
+	font-size: 16px;
+	font-weight: 600;
+	color: #000000;
+}
+
+.comp.compFillerValueEditor ._valueEditor ._sectionContainerHeader ._headerSubTitle {
+	font-size: 12px;
+	font-weight: 400;
+	color: #00000066;
+}
+
+.comp.compFillerValueEditor ._valueEditor ._sectionContainer {
+	flex: 1;
+	overflow: auto;
+	display: flex;
+	background: #fff;
+	flex-direction: column;
+	padding: 20px;
+	gap: 20px;
+}
+
+.comp.compFillerValueEditor ._toggleButton {
+	position: relative;
+	min-width: 40px;
+	max-width: 40px;
+	height: 20px;
+	border-radius: 10px;
+	background-color: #0000001d;
+	cursor: pointer;
+}
+
+.comp.compFillerValueEditor ._toggleButton._on {
+	background-color: #52bd94;
+}
+
+.comp.compFillerValueEditor ._toggleButton::after {
+	content: '';
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	width: 12px;
+	height: 12px;
+	border-radius: 9px;
+	background-color: #ffffff;
+	transition: all 0.2s ease-in-out;
+}
+
+.comp.compFillerValueEditor ._toggleButton._on::after {
+	left: 24px;
+}
+
+.comp.compFillerValueEditor input[type='text']._textBox,
+.comp.compFillerValueEditor textarea._textEditor {
+	border-radius: 6px;
+	background: #f8fafb;
+	height: 35px;
+	padding: 0 8px;
+	border: none;
+	font-family: inherit;
+}
+
+.comp.compFillerValueEditor textarea._textEditor {
+	height: 150px;
+	resize: none;
+	padding: 10px;
+}
+
+.comp.compFillerValueEditor ._sectionHeader ._sectionNumber {
+	width: 24px;
+	height: 24px;
+	border-radius: 100%;
+	box-shadow: 0px 1px 4px 0px #00000025;
+	background: #fdab3d;
+	color: #ffffff;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+.comp.compFillerValueEditor ._section._selected ._sectionNumber {
+	background-color: #427ee4;
+}
+
+.comp.compFillerValueEditor ._sectionHeader ._sectionName {
+	border: 1px solid transparent;
+	padding: 5px 2px;
+
+	font-size: 12px;
+	font-weight: 500;
+	color: #33333366;
+	flex: 1;
+}
+
+.comp.compFillerValueEditor ._sectionHeader ._sectionNameInput {
+	flex: 1;
+	font-size: inherit;
+	line-height: inherit;
+	border: none;
+	outline: none;
+	background: #ffffff2d;
+	color: inherit;
+	font-family: inherit;
+	font-weight: inherit;
+	padding: 5px 2px;
+	border: 1px solid #0000002d;
+	border-radius: 3px;
+}
+
+.comp.compFillerValueEditor ._sectionHeader {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 8px;
+}
+
+.comp.compFillerValueEditor ._sectionBody {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	padding-top: 10px;
+}
+
+.comp.compFillerValueEditor ._sectionEnd {
+	min-height: 200px;
+}
+
+.comp.compFillerValueEditor ._sectionBody._HORIZONTAL {
+	flex-direction: row;
+	align-items: center;
+}
+
+.comp.compFillerValueEditor ._sectionBody._TWO_PER_ROW {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	align-items: center;
+}
+
+.comp.compFillerValueEditor ._sectionBody._THREE_PER_ROW {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	align-items: center;
+}
+
+.comp.compFillerValueEditor ._editor {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	flex: 1;
+}
+
+.comp.compFillerValueEditor ._sectionBody._HORIZONTAL ._editor {
+	height: 100%;
+}
+
+.comp.compFillerValueEditor ._editor ._editorLabel {
+	font-size: 12px;
+	font-weight: 500;
+	color: #33333366;
+	white-space: nowrap;
+}
+
+.comp.compFillerValueEditor ._imageEditor {
+	width: 100%;
+	height: 70px;
+	background-size: contain;
+	background-position: center;
+	background-repeat: no-repeat;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #f8fafb;
+	border-radius: 6px;
+	border: 1px solid #f8fafb99;
+}
+
+.comp.compFillerValueEditor ._imageEditor ._imageControls {
+	display: none;
+	flex-direction: column;
+	gap: 10px;
+	justify-content: center;
+	align-items: center;
+	background-color: #00000014;
+	flex: 1;
+	border-radius: 6px;
+	height: 100%;
+}
+
+.comp.compFillerValueEditor ._imageEditor:hover ._imageControls,
+.comp.compFillerValueEditor ._imageControls._show {
+	display: flex;
+}
+
+.comp.compFillerValueEditor ._imageControls button {
+	height: 22px;
+	padding: 0 10px;
+	border-radius: 18px;
+	border: 0.4px solid #fff;
+	background: #000000b2;
+	color: #ffffff;
+	font-size: 10px;
+	font-weight: 500;
+
+	cursor: pointer;
+}
+
+.comp.compFillerValueEditor ._imageControls button:hover {
+	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.comp.compFillerValueEditor ._popupContainer {
+	position: fixed;
+	width: calc(100vw - 350px);
+	height: calc(100vh - 65px);
+	z-index: 6;
+	background-color: #0000002d;
+	left: 350px;
+	top: 65px;
+	display: flex;
+	align-items: center;
+	justify-content: left;
+}
+
+.comp.compFillerValueEditor ._popup {
+	width: 650px;
+	height: 400px;
+	background-color: #fff;
+	border-radius: 6px;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	margin-left: 20px;
+	position: relative;
+}
+
+.comp.compFillerValueEditor ._popupClose {
+	font-family: monospace;
+	position: absolute;
+	right: 10px;
+	top: 7px;
+	cursor: pointer;
+}
+
+.comp.compFillerValueEditor ._popupContainer ._iconSelectionBrowser {
+	width: auto;
+	height: 325px;
+	gap: 20px;
+}
+
+.comp.compFillerValueEditor ._browserBack {
+	gap: 20px;
+}
+
+.comp.compFillerValueEditor ._arrayOfImages {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+	grid-gap: 5px;
+	row-gap: 8px;
+}
+
+.comp.compFillerValueEditor ._arrayOfImages ._imageEditor {
+	width: 70px;
+	height: 70px;
+}
+
+.comp.compFillerValueEditor ._objectEditor {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	overflow-y: auto;
+	height: 280px;
+	border-radius: 6px;
+	background-color: #f8fafb;
+	padding: 13px;
+}
+
+.comp.compFillerValueEditor ._objectEditor._LIST_HORIZONTAL {
+	background-color: transparent;
+}
+
+.comp.compFillerValueEditor ._objectEditor._LIST_HORIZONTAL ._eachObject {
+	background-color: #f8fafb;
+	border-radius: 6px;
+}
+
+.comp.compFillerValueEditor ._objectEditor ._eachObject,
+.comp.compFillerValueEditor ._tab ._eachObject {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	align-items: center;
+}
+
+.comp.compFillerValueEditor ._tab ._eachObject {
+	background: #f8fafb;
+	padding: 5px;
+	border-radius: 4px;
+	align-items: center;
+	cursor: pointer;
+}
+
+.comp.compFillerValueEditor ._tab ._eachObject ._controlGrid {
+	display: flex;
+	flex-direction: direction;
+	gap: 5px;
+}
+
+.comp.compFillerValueEditor ._tab ._eachObject span {
+	white-space: nowrap;
+}
+
+.comp.compFillerValueEditor ._objectEditor._LIST img,
+.comp.compFillerValueEditor ._tab ._eachObject img {
+	width: 24px;
+}
+
+.comp.compFillerValueEditor ._objectEditor._GRID img,
+.comp.compFillerValueEditor ._tab._GRID ._eachObject img {
+	width: 70px;
+}
+
+.comp.compFillerValueEditor ._objectEditor._LIST_HORIZONTAL img,
+.comp.compFillerValueEditor ._tab._LIST_HORIZONTAL ._eachObject img {
+	width: auto;
+	height: 70px;
+}
+
+.comp.compFillerValueEditor ._objectEditor::-webkit-scrollbar {
+	width: 3px;
+}
+
+.comp.compFillerValueEditor ._objectEditor._GRID ._eachObject,
+.comp.compFillerValueEditor ._tab._GRID ._eachObject {
+	flex-direction: column;
+	align-items: center;
+}
+
+.comp.compFillerValueEditor ._objectEditor._LIST_HORIZONTAL ._eachField,
+.comp.compFillerValueEditor ._tab._LIST_HORIZONTAL ._eachField {
+	flex-direction: row;
+	display: flex;
+	justify-content: center;
+	flex: 1;
+}
+
+.comp.compFillerValueEditor ._objectEditor._GRID {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.comp.compFillerValueEditor ._tabContainer {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	gap: 5px;
+	padding: 10px;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tabHeader {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tabHeader ._tabTitle {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	color: rgba(0, 0, 0, 0.2);
+	border-bottom: 2px solid #f1f1f1;
+	cursor: pointer;
+	padding-bottom: 10px;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tabHeader ._tabTitle._selected {
+	color: #427ee4;
+	border-color: #427ee4;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tabDivider {
+	height: 0px;
+	border: 1px solid #f1f1f1;
+	width: 175px;
+	margin-top: 10px;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tab {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	max-height: 250px;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tab {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	overflow: auto;
+	grid-auto-rows: max-content;
+	gap: 10px;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tab._newObject {
+	display: flex;
+	flex-direction: column;
+	overflow: auto;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tabFooter {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+	padding-top: 10px;
+}
+
+.comp.compFillerValueEditor ._tabContainer ._tabFooter ._button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 14px;
+	background-color: #427ee4;
+	color: #fff;
+	cursor: pointer;
+	padding: 10px;
+	border-radius: 6px;
+	border: none;
+	font-size: 12px;
+}
+
+.comp.compFillerValueEditor ._palette {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.comp.compFillerValueEditor ._colorPickerBody {
+	margin-left: 0px;
+}

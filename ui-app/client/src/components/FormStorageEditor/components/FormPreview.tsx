@@ -22,7 +22,7 @@ export default function FormPreview({
 			<Children
 				key={`${''}_chld`}
 				pageDefinition={pageDef}
-				children={children}
+				renderableChildren={children}
 				context={{ ...context! }}
 				locationHistory={locationHistory!}
 			/>

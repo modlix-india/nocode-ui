@@ -2,13 +2,15 @@
 	"name": "nocode-ui",
 	"version": "2.0.0",
 	"description": "UI Engine for NoCode SaaS Platform",
-	"source": "src/index.html",
 	"browserslist": "> 0.5%, last 2 versions, not dead",
 	"scripts": {
-		"start": "parcel --no-cache",
-		"build": "parcel build src/index.html",
-		"aws": "parcel build src/index.tsx",
-		"cf": "parcel build --detailed-report 50 src/index.tsx",
+		"start": "webpack serve --config webpack.dev.js",
+		"build": "webpack --config webpack.prod.js",
+		"cf-local": "webpack --config webpack.prod.js --env publicUrl=https://cdn-local.modlix.com/js/dist/ ",
+		"cf-dev": "webpack --config webpack.prod.js --env publicUrl=https://cdn-dev.modlix.com/js/dist/",
+		"cf-stage": "webpack --config webpack.prod.js --env publicUrl=https://cdn-stage.modlix.com/js/dist/",
+		"cf-prod": "webpack --config webpack.prod.js --env publicUrl=https://cdn.modlix.com/js/dist/",
+		"bundle-analyze": "webpack --config webpack.prod.js --profile --json --env publicUrl=https://cdn-local.modlix.com/js/dist/ > report/stats.json && webpack-bundle-analyzer report/stats.json dist -p 1234",
 		"test": "jest --watchAll",
 		"coverage": "jest --coverage",
 		"pretty": "prettier --write ./src || prettier --write ./__tests__"
@@ -50,30 +52,46 @@
 	"license": "MIT",
 	"devDependencies": {
 		"@babel/core": "^7.26.0",
+		"@babel/preset-env": "^7.26.0",
+		"@babel/preset-react": "^7.26.3",
 		"@babel/preset-typescript": "^7.26.0",
+		"@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
+		"@tsconfig/recommended": "^1.0.8",
 		"@types/d3": "^7.4.3",
 		"@types/jest": "^29.5.14",
-		"@types/node": "^22.10.1",
+		"@types/node": "^22.10.2",
 		"@types/react": "^18.3.13",
 		"@types/react-dom": "^18.3.1",
 		"@typescript-eslint/eslint-plugin": "^8.17.0",
 		"@typescript-eslint/parser": "^8.17.0",
+		"babel-loader": "^9.2.1",
 		"buffer": "^6.0.3",
+		"clean-webpack-plugin": "^4.0.0",
+		"css-loader": "^7.1.2",
 		"eslint": "^9.16.0",
 		"eslint-plugin-react": "^7.37.2",
+		"html-webpack-plugin": "^5.6.3",
 		"husky": "^9.1.7",
 		"jest": "^29.7.0",
 		"lint-staged": "^15.2.10",
-		"parcel": "^2.13.2",
 		"prettier": "^3.4.2",
+		"prettier-plugin-organize-imports": "^4.1.0",
 		"process": "^0.11.10",
-		"ts-jest": "^29.2.5"
+		"react-refresh-typescript": "^2.0.9",
+		"source-map-loader": "^5.0.0",
+		"style-loader": "^4.0.0",
+		"ts-jest": "^29.2.5",
+		"ts-loader": "^9.5.1",
+		"typescript": "^5.7.2",
+		"webpack": "^5.97.1",
+		"webpack-bundle-analyzer": "^4.10.2",
+		"webpack-cli": "^5.1.4",
+		"webpack-dev-server": "^5.2.0"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^2.8.5",
+		"@fincity/kirun-js": "^2.9.0",
 		"@fincity/path-reactive-state-management": "^1.7.3",
 		"@monaco-editor/react": "^4.6.0",
-		"@tsconfig/recommended": "^1.0.8",
 		"axios": "^1.7.9",
 		"monaco-editor": "^0.51.0",
 		"react": "^18.3.1",
@@ -93,8 +111,5 @@
 		"globals": {
 			"window": {}
 		}
-	},
-	"optionalDependencies": {
-		"@parcel/watcher-linux-x64-glibc": "^2.4.1"
 	}
 }

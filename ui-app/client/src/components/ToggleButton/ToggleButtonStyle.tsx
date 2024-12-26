@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './toggleButtonStyleProperties';
 
 const PREFIX = '.comp.compToggleButton';
-export default function ToggleButtonStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function ToggleButtonStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
     ${PREFIX} {

@@ -36,7 +36,7 @@ export function Dropdown({
 	value: DropdownOption;
 	onChange: (v: DropdownOption) => void;
 	options: DropdownOptions;
-	readOnly:boolean;
+	readOnly: boolean;
 	isSearchable?: boolean;
 	searchLabel?: string;
 	clearSearchTextOnClose?: boolean;
@@ -105,18 +105,16 @@ export function Dropdown({
 	}, [open, searchText, handleClose]);
 
 	let body;
-	
+
 	if (open) {
 		const dropdownBodyStyle: CSSProperties = computedStyles.dropdownBody ?? {};
 		if (dropDown.current) {
 			const rect = dropDown.current.getBoundingClientRect();
-			const parentRect =
-				dropDown.current.parentElement?.getBoundingClientRect();
+			const parentRect = dropDown.current.parentElement?.getBoundingClientRect();
 			if (parentRect) {
 				if (rect.top + 300 > document.body.clientHeight)
 					dropdownBodyStyle.bottom = parentRect.height;
-				else 
-					dropdownBodyStyle.top = rect.height;
+				else dropdownBodyStyle.top = rect.height;
 				dropdownBodyStyle.left = parentRect.left - rect.left;
 				dropdownBodyStyle.minWidth = parentRect?.width;
 				dropdownBodyStyle.maxWidth = parentRect?.width ?? '100%';
@@ -244,7 +242,7 @@ export function Dropdown({
 		>
 			<SubHelperComponent definition={definition} subComponentName="dropdownSelect" />
 			{label}
-			{ open && !readOnly ? (
+			{open && !readOnly ? (
 				<svg
 					style={computedStyles.arrowIcon ?? {}}
 					className="_arrowIcon"

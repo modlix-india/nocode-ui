@@ -19,14 +19,16 @@ const SIGNATURE = new FunctionSignature('Login')
 	.setParameters(
 		new Map([
 			Parameter.ofEntry('userName', Schema.ofString('userName')),
-			Parameter.ofEntry('password', Schema.ofString('password')),
-			Parameter.ofEntry('rememberMe', Schema.ofBoolean('rememberMe').setDefaultValue(false)),
+			Parameter.ofEntry('password', Schema.ofString('password').setDefaultValue('')),
+			Parameter.ofEntry('userId', Schema.ofAny('userId').setDefaultValue(null)),
+			Parameter.ofEntry('otp', Schema.ofString('otp').setDefaultValue('')),
+			Parameter.ofEntry('pin', Schema.ofString('pin').setDefaultValue('')),
 			Parameter.ofEntry(
 				'identifierType',
 				Schema.ofString('identifierType').setDefaultValue(''),
 			),
+			Parameter.ofEntry('rememberMe', Schema.ofBoolean('rememberMe').setDefaultValue(false)),
 			Parameter.ofEntry('cookie', Schema.ofBoolean('cookie').setDefaultValue(false)),
-			Parameter.ofEntry('userId', Schema.ofAny('userId').setDefaultValue(null)),
 		]),
 	)
 	.setEvents(
@@ -47,15 +49,19 @@ export class Login extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		const userName: string = context.getArguments()?.get('userName');
 		const password: string = context.getArguments()?.get('password');
+		const userId: any = context.getArguments()?.get('userId');
+		const otp: string = context.getArguments()?.get('otp');
+		const pin: string = context.getArguments()?.get('pin');
+		const identifierType: string = context.getArguments()?.get('identifierType');
 		const rememberMe: string = context.getArguments()?.get('rememberMe');
 		const cookie: boolean = context.getArguments()?.get('cookie');
-		const identifierType: string = context.getArguments()?.get('identifierType');
-		const userId: any = context.getArguments()?.get('userId');
 
 		const data: any = { userName, password, rememberMe, cookie };
 		if (identifierType) data.indentifierType = identifierType;
 
 		if (userId) data.userId = userId;
+		if (otp) data.otp = otp;
+		if (pin) data.pin = pin;
 
 		const headers: any = {};
 		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();

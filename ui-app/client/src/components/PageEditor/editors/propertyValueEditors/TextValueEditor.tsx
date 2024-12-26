@@ -1,18 +1,14 @@
 import Editor from '@monaco-editor/react';
 import React, { useEffect } from 'react';
-import { ComponentPropertyDefinition } from '../../../../types/common';
 import { MarkdownParser } from '../../../../commonComponents/Markdown/MarkdownParser';
 
-interface AnyValueEditorProps {
+interface TextValueEditorProps {
 	value?: any;
 	defaultValue?: any;
 	onChange?: (v: any) => void;
-	isIconButton?: boolean;
-	buttonLabel?: string;
-	propDef: ComponentPropertyDefinition;
 }
 
-export function TextValueEditor({ value, defaultValue, onChange }: AnyValueEditorProps) {
+export function TextValueEditor({ value, defaultValue, onChange }: Readonly<TextValueEditorProps>) {
 	const [localValue, setLocalValue] = React.useState(value ?? defaultValue);
 	const [showEditor, setShowEditor] = React.useState(false);
 	const [editorValue, setEditorValue] = React.useState(value ?? defaultValue);
@@ -69,7 +65,11 @@ export function TextValueEditor({ value, defaultValue, onChange }: AnyValueEdito
 						</div>
 					</div>
 					<div className="_mdPreviewContainer">
-						<MarkdownParser text={editorValue ?? ''} styles={{}} />
+						<MarkdownParser
+							componentKey={'previewContainer'}
+							text={editorValue ?? ''}
+							styles={{}}
+						/>
 					</div>
 				</div>
 			</div>
