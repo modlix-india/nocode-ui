@@ -162,11 +162,13 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 	const [personalizedObject, setPersonalizedObject] = useState<any>(undefined);
 	useEffect(
 		() =>
-			addListenerAndCallImmediatelyWithChildrenActivity(
-				(_, v) => setPersonalizedObject(v),
-				pageExtractor,
-				context.table.personalizationBindingPath,
-			),
+			context.table.personalizationBindingPath
+				? addListenerAndCallImmediatelyWithChildrenActivity(
+						(_, v) => setPersonalizedObject(v),
+						pageExtractor,
+						context.table.personalizationBindingPath,
+					)
+				: undefined,
 		[
 			context.table.personalizationBindingPath,
 			context.table.enablePersonalization,
@@ -272,6 +274,31 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			);
 		}
 
+		let resetColoumnOrder = undefined;
+		if (!context.table.disableColumnDragging) {
+			resetColoumnOrder = (
+				<>
+					<div
+						className="_popupMenuItem"
+						role="menuitem"
+						tabIndex={0}
+						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
+						onClick={() =>
+							setData(
+								`${context.table.personalizationBindingPath}.columnOrder`,
+								undefined,
+								pageExtractor.getPageName(),
+								true,
+							)
+						}
+					>
+						Reset Column Order
+					</div>
+					<div className="_popupMenuItemSeperator" />
+				</>
+			);
+		}
+
 		menu = (
 			<div
 				className="_popupBackground"
@@ -328,23 +355,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 						Reset Column Visibility
 					</div>
 					<div className="_popupMenuItemSeperator" />
-					<div
-						className="_popupMenuItem"
-						role="menuitem"
-						tabIndex={0}
-						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
-						onClick={() =>
-							setData(
-								`${context.table.personalizationBindingPath}.columnOrder`,
-								undefined,
-								pageExtractor.getPageName(),
-								true,
-							)
-						}
-					>
-						Reset Column Order
-					</div>
-					<div className="_popupMenuItemSeperator" />
+					{resetColoumnOrder}
 					{context.table.columnNames.map(({ key, label }: any) => {
 						if (!label) return null;
 						return (
@@ -373,7 +384,11 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 
 	const dragProperties: any = {};
 
-	if (!disableColumnDragging && context.table.enablePersonalization) {
+	if (
+		!disableColumnDragging &&
+		context.table.enablePersonalization &&
+		!context.table.disableColumnDragging
+	) {
 		dragProperties.draggable = true;
 		dragProperties.onDragStart = (ev: React.DragEvent<HTMLElement>) =>
 			ev.dataTransfer.setData('text/plain', `COLUMN_NAME_${key}`);
@@ -426,7 +441,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			role="columnheader"
 			tabIndex={hasSort ? 0 : undefined}
 			onContextMenu={
-				context.table.enablePersonalization
+				context.table.enablePersonalization && !context.table.hideContextMenu
 					? e => {
 							e.preventDefault();
 							e.stopPropagation();

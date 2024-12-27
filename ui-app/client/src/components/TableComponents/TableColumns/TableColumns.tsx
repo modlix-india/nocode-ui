@@ -607,6 +607,8 @@ function generateDynamicColumns(
 	cp: any,
 	children: { [key: string]: boolean } | undefined,
 ) {
+	if (!children) return;
+
 	let includeColumnsArray = [];
 	let excludeColumnsArray = [];
 	let columnsOrderArray = [];
