@@ -3451,8 +3451,8 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon {
 	position: relative;
 	left: 50%;
-	top: -5%;
-	opacity: 0.1;
+	top: -7%;
+	opacity: 0;
 	transition: opacity 0.2s;
 	cursor: pointer;
 	width: 10px;
