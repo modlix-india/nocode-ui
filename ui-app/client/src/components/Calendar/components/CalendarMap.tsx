@@ -425,16 +425,14 @@ function CalendarMonthsInHeader(
 	const parentKey = props.currentDate.toDateString();
 
 	let months: Array<React.JSX.Element> = [];
-	const totalMonths = 12;
+
 	const monthsToShow = props.headerMonthsCount;
-	const step = totalMonths / monthsToShow;
 	const startOffset = -Math.floor(monthsToShow / 2);
 
-	for (let i = 0; i < monthsToShow; i++) {
-		const monthOffset = Math.floor(startOffset + i * step);
+	for (let i = startOffset; i < monthsToShow + startOffset; i++) {
 		const iterationDate = new Date(props.currentDate);
 		iterationDate.setDate(1);
-		iterationDate.setMonth(iterationDate.getMonth() + monthOffset);
+		iterationDate.setMonth(iterationDate.getMonth() + i);
 		const monthYear = `${iterationDate.getMonth() + 1}-${iterationDate.getFullYear()}`;
 
 		months.push(
@@ -483,8 +481,7 @@ function makeMonths(
 	let months: Array<React.JSX.Element> = [];
 	for (let i = 0; i < count; i++) {
 		const nextDate = new Date(date);
-		nextDate.setMonth((nextDate.getMonth() + i) % 12);
-		nextDate.setFullYear(date.getFullYear() + Math.floor((nextDate.getMonth() + i) / 12));
+		nextDate.setMonth(nextDate.getMonth() + i);
 		months.push(
 			<CalendarMonth
 				key={nextDate.toDateString()}
