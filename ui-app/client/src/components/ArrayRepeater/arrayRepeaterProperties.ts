@@ -122,6 +122,40 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'object', displayName: 'Object' },
 		],
 	},
+	{
+		name: 'dropDataPrefix',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drop Data Prefix',
+		description: 'Prefix to be removed from the dropped data and then parsed.',
+	},
+	{
+		name: 'dropDataType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drop Data Type',
+		defaultValue: 'text/plain',
+		enumValues: [
+			{ name: 'text/plain', displayName: 'Text' },
+			{ name: 'application/json', displayName: 'JSON' },
+		],
+	},
+	{
+		name: 'onDropData',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Drop Data',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when data is dropped.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+
+	{
+		name: 'filterCondition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Filter Condition',
+		description:
+			'Filter condition using "Data." to filter the array items. Eg: "Data.marks > 20" gives all the objects with marks greater than 20.',
+	},
 
 	COMMON_COMPONENT_PROPERTIES.layout,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
