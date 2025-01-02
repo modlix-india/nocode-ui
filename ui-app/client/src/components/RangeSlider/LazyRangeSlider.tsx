@@ -100,7 +100,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	const [hoverMark, setHoverMark] = useState<number | undefined>(undefined);
 
 	const [value1, setValue1] = useState<number | undefined>(min);
-	const [value2, setValue2] = useState<number | undefined>(max);
+	const [value2, setValue2] = useState<number | undefined>(bindingPathPath2 ? max : min);
 
 	const precision = getPrecision(step, decimalPrecision);
 
@@ -178,12 +178,33 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	);
 
 	useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => {
+				if (isNullValue(v)) {
+					setValue1(min);
+				} else if (storageDataType === 'value') {
+					setValue1(getValue(v, 'value', min, max, step, precision));
+				} else {
+					setValue1(getValue(v, 'percent', min, max, step, precision));
+				}
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, [bindingPathPath, storageDataType, min, max, step, precision]);
+
+	useEffect(() => {
 		if (!bindingPathPath2) return;
 		return addListenerAndCallImmediately(
 			(_, v) => {
-				if (isNullValue(v)) setValue2(undefined);
-				else if (storageDataType === 'value') setValue2(v);
-				else setValue2(getValue(v, storageDataType, min, max, step, precision));
+				if (isNullValue(v)) {
+					setValue2(max);
+				} else if (storageDataType === 'value') {
+					setValue2(getValue(v, 'value', min, max, step, precision));
+				} else {
+					setValue2(getValue(v, 'percent', min, max, step, precision));
+				}
 			},
 			pageExtractor,
 			bindingPathPath2,
@@ -204,8 +225,8 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 
 	const visualPercent1 = value1 ? getPercentage(value1, min, max, step, 2) : 0;
 	const labelPercent1 = value1 ? getPercentage(value1, min, max, step, precision) : 0;
-	const visualPercent2 = value2 ? getPercentage(value2, min, max, step, 2) : 0;
-	const labelPercent2 = value2 ? getPercentage(value2, min, max, step, precision) : 0;
+	const visualPercent2 = value2 ? getPercentage(value2, min, max, step, 2) : 100;
+	const labelPercent2 = value2 ? getPercentage(value2, min, max, step, precision) : 100;
 
 	const topLabels: Array<JSX.Element> = [];
 	const bottomLabels: Array<JSX.Element> = [];
