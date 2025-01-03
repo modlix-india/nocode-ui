@@ -413,6 +413,63 @@ export default function PropertyEditor({
 									pageOperations={pageOperations}
 								/>
 							</div>
+							<div className="_eachProp">
+								<div className="_propLabel" title="Tag">
+									Tag :
+									<span
+										className="_description _tooltip"
+										title="Tag to identify the component"
+									>
+										i
+									</span>
+								</div>
+								<PropertyMultiValueEditor
+									appPath={appPath}
+									pageDefinition={pageDef}
+									propDef={{
+										name: 'tag',
+										displayName: 'Tag',
+										description: 'Tag to identify the component',
+										schema: SCHEMA_STRING_COMP_PROP,
+										multiValued: true,
+									}}
+									value={
+										Array.isArray(def.tag)
+											? def.tag.reduce(
+													(acc, tag, index) => ({
+														...acc,
+														[index]: {
+															key: index.toString(),
+															property: {
+																value: tag,
+															},
+														},
+													}),
+													{},
+												)
+											: {}
+									}
+									storePaths={storePaths}
+									onChange={v => {
+										const newDef = duplicate(def);
+										// Convert the multi-value format back to array of tags
+										newDef.tag = Object.values(v)
+											.map(item => item.property.value)
+											.filter(Boolean);
+										updateDefinition(
+											defPath!,
+											locationHistory,
+											pageExtractor,
+											selectedComponent,
+											newDef,
+										);
+									}}
+									onShowCodeEditor={onShowCodeEditor}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									pageOperations={pageOperations}
+								/>
+							</div>
 						</div>
 					</PropertyGroup>
 				)}

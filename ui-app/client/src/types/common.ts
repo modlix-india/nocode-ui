@@ -263,6 +263,7 @@ export interface ComponentStyle {
 }
 
 export interface ComponentDefinition {
+	tag: any;
 	key: string;
 	name: string;
 	bindingPath?: DataLocation;
