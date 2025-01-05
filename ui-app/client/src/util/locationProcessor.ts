@@ -1,7 +1,13 @@
 import { Location as ReactLocation } from 'react-router-dom';
 
 export function processLocation(location: ReactLocation | Location) {
-	const details: any = { queryParameters: {} };
+	const details: {
+		queryParameters: any;
+		pathParts?: Array<string> | undefined;
+		pageName?: string | undefined;
+		appName?: string | undefined;
+		clientCode?: string | undefined;
+	} = { queryParameters: {} };
 
 	if (location.search) {
 		details.queryParameters = location.search

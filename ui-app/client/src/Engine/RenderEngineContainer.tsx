@@ -1,7 +1,6 @@
 import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import GlobalLoader from '../App/GlobalLoader';
 import ComponentDefinitions from '../components';
 import { getPathsFrom } from '../components/util/getPaths';
 import { runEvent } from '../components/util/runEvent';
@@ -45,7 +44,7 @@ export const RenderEngineContainer = () => {
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				await getPageDefinition(pageName);
+				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName!));
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
 				if (appCode !== pDef?.appCode) {
@@ -305,7 +304,7 @@ export const RenderEngineContainer = () => {
 
 	const Page = ComponentDefinitions.get('Page')?.component as React.ComponentType<any>;
 
-	if (isNullValue(pageDefinition)) return <GlobalLoader />;
+	if (isNullValue(pageDefinition)) return <></>;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
@@ -341,7 +340,7 @@ export const RenderEngineContainer = () => {
 	} else if (pageDefinition) {
 		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
 		const hasDefinitions = !!Object.keys(definitions).length;
-		if (!hasDefinitions) return <GlobalLoader />;
+		if (!hasDefinitions) return <></>;
 
 		return (
 			<Page
@@ -356,6 +355,6 @@ export const RenderEngineContainer = () => {
 		);
 	} else {
 		//TODO: Need to throw an error that there is not page definition found.
-		return <GlobalLoader />;
+		return <></>;
 	}
 };

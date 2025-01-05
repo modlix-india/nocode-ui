@@ -61,6 +61,14 @@ if (index != undefined && index != -1) {
 	}
 }
 
+let storeInitialObject: any = { url: { appCode: urlAppCode, clientCode: urlClientCode } };
+if (globalThis.appDefinitionResponse)
+	storeInitialObject = { ...storeInitialObject, ...globalThis.appDefinitionResponse };
+if (globalThis.pageDefinitionResponse)
+	storeInitialObject.pageDefinition = {
+		[globalThis.pageDefinitionRequestPageName]: globalThis.pageDefinitionResponse,
+	};
+
 const {
 	getData: _getData,
 	setData: _setData,
@@ -71,7 +79,7 @@ const {
 	addListenerAndCallImmediatelyWithChildrenActivity:
 		_addListenerAndCallImmediatelyWithChildrenActivity,
 } = useStore(
-	{ url: { appCode: urlAppCode, clientCode: urlClientCode } },
+	storeInitialObject,
 	STORE_PREFIX,
 	localStoreExtractor,
 	themeExtractor,
