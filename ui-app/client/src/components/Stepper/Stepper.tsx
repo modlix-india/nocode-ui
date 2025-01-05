@@ -318,9 +318,9 @@ const component: Component = {
 					<path
 						d="M18 6L10 6"
 						stroke="black"
-						stroke-opacity="0.1"
-						stroke-linecap="square"
-						stroke-dasharray="1 1"
+						strokeOpacity="0.1"
+						strokeLinecap="square"
+						strokeDasharray="1 1"
 					/>
 					<circle className="_greenStepperInitialIcon" cx="6" cy="6" r="6" fill="white" />
 					<path
