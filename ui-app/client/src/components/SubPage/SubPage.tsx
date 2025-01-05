@@ -5,6 +5,7 @@ import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import getPageDefinition from '../../Engine/pageDefinition';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -66,7 +67,8 @@ function SubPage(props: Readonly<ComponentProps>) {
 			);
 			if (isRunning) return;
 
-			(async () => await getPageDefinition(pageName))();
+			(async () =>
+				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName)))();
 		}, 10);
 	}, [subPage]);
 
