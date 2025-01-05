@@ -3449,17 +3449,18 @@ input._peInput[type='number'] {
 }
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon {
-	position: relative;
-	left: 50%;
-	top: -7%;
-	opacity: 0;
-	transition: opacity 0.2s;
-	cursor: pointer;
-	width: 10px;
-	height: 10px;
-	display: flex;
-	align-items: right;
-	justify-content: right;
+	position: absolute;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+	top: 10%;
+	right: 10%;
+	
 }
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon.pinned {

@@ -15,24 +15,24 @@ interface PinIconProps {
 	onClick: () => void;
 }
 
-const PinIcon: React.FC<PinIconProps> = ({ isPinned, onClick }) => {
+function PinIcon({ isPinned, onClick }: Readonly<PinIconProps>) {
 	return (
-		<div
+		<button
 			className={`_pinIcon ${isPinned ? 'pinned' : ''}`}
 			onClick={e => {
 				e.stopPropagation();
 				onClick();
 			}}
 		>
-			<svg width="10" height="10" viewBox="0 0 10 10">
+			<svg width="15" height="15" viewBox="0 0 10 10">
 				<path
 					d="M5.15518 1.46233C5.35074 1.26677 5.65915 1.25919 5.84533 1.44537L8.53807 4.13811C8.72425 4.32429 8.71667 4.6327 8.52111 4.82826C8.32555 5.02382 8.01714 5.0314 7.83096 4.84522L7.52067 4.53492L6.00318 6.29223C6.16935 6.89812 6.10647 7.57108 5.79311 8.17475L5.77048 8.21841C5.69692 8.3614 5.56082 8.46174 5.406 8.49033C5.25119 8.51892 5.09392 8.47213 4.98558 8.36379L1.61965 4.99786C1.5113 4.88952 1.46446 4.7344 1.49311 4.57743C1.52175 4.42046 1.62314 4.28541 1.76503 4.21295L1.80869 4.19033C2.41236 3.87697 3.08531 3.81409 3.69121 3.98025L5.44852 2.46277L5.13822 2.15247C4.95204 1.96629 4.95962 1.65789 5.15518 1.46233ZM2.61246 6.69779L3.28565 7.37097L2.22499 8.43163C2.02943 8.62719 1.72102 8.63477 1.53484 8.44859C1.34867 8.26241 1.35624 7.954 1.5518 7.75845L2.61246 6.69779Z"
 					fill={isPinned ? '#4C7FEE' : '#EDEAEA'}
 				/>
 			</svg>
-		</div>
+		</button>
 	);
-};
+}
 
 export default function ComponentMenu({
 	selectedComponent,
