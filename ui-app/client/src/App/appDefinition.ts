@@ -1,16 +1,22 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { STORE_PREFIX } from '../constants';
-import { setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
 
-let firstTime = true;
-export default async function getAppDefinition() {
+export interface AppDefinitionResponse {
+	auth: any;
+	application: any;
+	isApplicationLoadFailed: boolean;
+	theme: any;
+}
+
+export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 	let TOKEN_NAME = 'AuthToken';
 	let TOKEN_EXPIRY = 'AuthTokenExpiry';
+	let TOKEN_LANGUAGE = 'currentLanguage';
 
 	if (window.isDesignMode) {
 		TOKEN_NAME = 'designmode_AuthToken';
 		TOKEN_EXPIRY = 'designmode_AuthTokenExpiry';
+		TOKEN_LANGUAGE = 'designmode_currentLanguage';
 	}
 
 	const authToken = localStorage.getItem(TOKEN_NAME);
@@ -18,12 +24,13 @@ export default async function getAppDefinition() {
 
 	let axiosOptions: AxiosRequestConfig<any> = { headers: {} };
 	let language: string | undefined = undefined;
+	let auth: any = undefined;
 	if (authToken) {
 		if (parseInt(authExpiry ?? '0') * 1000 < Date.now()) {
 			localStorage.removeItem(TOKEN_NAME);
 			localStorage.removeItem(TOKEN_EXPIRY);
 		} else {
-			({ axiosOptions, language } = await makeVerifyTokenCall(
+			({ axiosOptions, auth } = await makeVerifyTokenCall(
 				axiosOptions,
 				authToken,
 				language,
@@ -33,41 +40,44 @@ export default async function getAppDefinition() {
 		}
 	}
 
-	if (firstTime && globalThis.applicationDefinition) {
-		setData(`${STORE_PREFIX}.application`, globalThis.applicationDefinition);
-		if (!language) language = globalThis.applicationDefinition.defaultLanguage;
-	} else {
-		language = await makeAppDefinitionCall(axiosOptions, language);
-	}
+	let application,
+		isApplicationLoadFailed = false,
+		theme;
+
+	({ application, isApplicationLoadFailed, language } = await makeAppDefinitionCall(
+		axiosOptions,
+		language,
+	));
 
 	(async () => {
 		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
 		const response = await axios.get('api/ui/theme', axiosOptions);
-		if (response.status === 200) setData(`${STORE_PREFIX}.theme`, response.data);
+		if (response.status === 200) theme = response.data;
 	})();
 
-	(async () => {
-		setData('LocalStore.currentLanguage', language);
-	})();
+	if (language) localStorage.setItem(TOKEN_LANGUAGE, language);
+	else localStorage.removeItem(TOKEN_LANGUAGE);
 
-	firstTime = false;
+	return { auth, application, isApplicationLoadFailed, theme };
 }
 
 async function makeAppDefinitionCall(
 	axiosOptions: AxiosRequestConfig<any>,
 	language: string | undefined,
 ) {
+	let application = undefined;
+	let isApplicationLoadFailed = false;
 	try {
 		const response = await axios.get('api/ui/application', axiosOptions);
 		if (response.status === 200) {
-			setData(`${STORE_PREFIX}.application`, response.data);
+			application = response.data;
 			if (!language) language = response.data.defaultLanguage;
 		}
 	} catch (e) {
-		setData(`${STORE_PREFIX}.isApplicationLoadFailed`, true);
+		isApplicationLoadFailed = true;
 		console.error('Unable to load application definition:', e);
 	}
-	return language;
+	return { application, isApplicationLoadFailed, language };
 }
 
 async function makeVerifyTokenCall(
@@ -83,13 +93,14 @@ async function makeVerifyTokenCall(
 		const response = await axios.get('api/security/verifyToken', axiosOptions);
 
 		if (response.status === 200) {
-			setData('Store.auth', response.data);
 			language = response.data.localeCode;
+			// localStorage.setItem(, language);
 		} else {
 			localStorage.removeItem(TOKEN_NAME);
 			localStorage.removeItem(TOKEN_EXPIRY);
 			axiosOptions = {};
 		}
+		return { auth: response?.data, axiosOptions, language };
 	} catch (e) {
 		localStorage.removeItem(TOKEN_NAME);
 		localStorage.removeItem(TOKEN_EXPIRY);
