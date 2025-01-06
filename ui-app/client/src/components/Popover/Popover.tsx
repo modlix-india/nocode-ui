@@ -209,8 +209,8 @@ const component: Component = {
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
 					<path
-						fill-rule="evenodd"
-						clip-rule="evenodd"
+						fillRule="evenodd"
+						clipRule="evenodd"
 						d="M1.5 9C0.671573 9 0 8.32843 0 7.5V1.5C0 0.671573 0.671573 0 1.5 0H28.5C29.3284 0 30 0.671573 30 1.5V7.5C30 8.32843 29.3284 9 28.5 9H1.5ZM8.5 3.5H21.5C21.7761 3.5 22 3.72386 22 4V5C22 5.27614 21.7761 5.5 21.5 5.5H8.5C8.22386 5.5 8 5.27614 8 5V4C8 3.72386 8.22386 3.5 8.5 3.5Z"
 						fill="#C5A400"
 						className="_popOver"

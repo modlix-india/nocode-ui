@@ -43,8 +43,8 @@ export function ManyValuesEditor({
 	groupTitle,
 	showNewGroup,
 	relatedProps,
-	gridSize,
-	withBackground,
+	// gridSize,
+	// withBackground,
 	textValue,
 }: {
 	values: { prop: string; value: string }[];
@@ -55,8 +55,8 @@ export function ManyValuesEditor({
 	groupTitle?: string;
 	showNewGroup?: boolean;
 	relatedProps?: RelatedProps;
-	gridSize?: string;
-	withBackground?: boolean;
+	// gridSize?: string;
+	// withBackground?: boolean;
 	textValue?: string;
 }) {
 	const props: { [key: string]: Array<string> } = {};

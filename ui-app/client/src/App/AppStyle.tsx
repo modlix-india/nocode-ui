@@ -10,7 +10,7 @@ import { processStyleDefinition, StyleResolutionDefinition } from '../util/style
 import { styleDefaults, styleProperties } from './appStyleProperties';
 import MessageStyle from './Messages/MessageStyle';
 
-export default function AppStyle() {
+export function AppStyle() {
 	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
 		new Map([[StyleResolution.ALL, styleDefaults]]),
 	);

@@ -3438,6 +3438,42 @@ input._peInput[type='number'] {
 	display: none;
 }
 
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem {
+	position: relative;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItemContent {
+	display: flex;
+	align-items: center;
+	flex-grow: 1;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon {
+	position: absolute;
+    opacity: 0;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+	top: 10%;
+	right: 10%;
+	
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon.pinned {
+	opacity: 1;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem:hover ._pinIcon {
+	opacity: 1;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon:hover {
+	color: var(--primary-color);
+}
 .comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem:hover img.hover,
 .comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem.active img.hover {
 	display: inline;
