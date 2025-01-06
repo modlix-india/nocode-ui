@@ -39,6 +39,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		ZERO: 0,
 	};
 	const countryMap = useRef(new Map<string, DropdownOption>());
+	const lastSelectedCountry = useRef<DropdownOption | null>(null);
 
 	const {
 		definition: { bindingPath },
@@ -380,8 +381,17 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		let unformattedText = getUnformattedNumber(value);
 		let selectedCountry = getSelectedCountry(unformattedText);
-		if (selectedCountry) setSelected(selectedCountry);
-		else setSelected(countryList[0]);
+
+		if (selectedCountry) {
+			setSelected(selectedCountry);
+			lastSelectedCountry.current = selectedCountry;
+		} else if (lastSelectedCountry.current) {
+			setSelected(lastSelectedCountry.current);
+		} else {
+			setSelected(countryList[0]);
+			lastSelectedCountry.current = countryList[0];
+		}
+
 		let dc = selectedCountry ? (selectedCountry.D ?? '') : '';
 		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
 		else setPhoneNumber(unformattedText.slice(dc.length));
@@ -422,8 +432,10 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 				? mapValue[emptyValue]
 				: getUnformattedNumber(phoneNumber);
 		if (event?.target.value === '' && removeKeyWhenEmpty) {
+			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(undefined, true);
 		} else if (!text && !updateStoreImmediately) {
+			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(text);
 		} else if (text && text.startsWith('+')) {
 			let { dc, phone } = extractDCAndPhone(text);
@@ -448,6 +460,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	) => {
 		let text = event.target.value;
 		if (removeKeyWhenEmpty && text === '') {
+			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(undefined, true);
 			return;
 		}
@@ -455,6 +468,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		let formattedText = getFormattedNumber(text, selected.D);
 
 		if (!text && updateStoreImmediately) {
+			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(text);
 		} else if (!text && !updateStoreImmediately) {
 			setPhoneNumber('');
@@ -472,6 +486,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	};
 	const handleCountryChange = (v: DropdownOption) => {
 		setSelected(v);
+		lastSelectedCountry.current = v;
 		countryMap.current.clear();
 		countryMap.current.set(v.D, v);
 	};

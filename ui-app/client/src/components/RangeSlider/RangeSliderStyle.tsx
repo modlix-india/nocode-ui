@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './rangeSliderStyleProperties';
 import { usedComponents } from '../../App/usedComponents';
