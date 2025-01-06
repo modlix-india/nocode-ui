@@ -34,6 +34,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
+	{
+		name: 'runEventOnDropDownClose',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Event Run on Close',
+		description: 'Allows the users to run event on close of dropdown.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
 
 	{
 		name: 'isSearchable',
