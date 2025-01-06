@@ -10,15 +10,13 @@ import {
 	innerSetData,
 	setData,
 } from '../context/StoreContext';
-import { isSlave, messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
+import { messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
 import { getAppDefinition } from './appDefinition';
 
 // In design mode we are listening to the messages from editor
-
-window.isDesignMode = isSlave;
 
 function onMessageFromEditor(event: MessageEvent) {
 	const { data: { type, payload } = {} } = event;
