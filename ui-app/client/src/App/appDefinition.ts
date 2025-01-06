@@ -48,12 +48,11 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 		axiosOptions,
 		language,
 	));
-
-	(async () => {
-		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
+	if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
+	try {
 		const response = await axios.get('api/ui/theme', axiosOptions);
 		if (response.status === 200) theme = response.data;
-	})();
+	} catch (err) {}
 
 	if (language) localStorage.setItem(TOKEN_LANGUAGE, language);
 	else localStorage.removeItem(TOKEN_LANGUAGE);
