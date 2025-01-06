@@ -2,14 +2,6 @@ import { duplicate } from '@fincity/kirun-js';
 import { STORE_PREFIX } from './constants';
 import { getDataFromPath, setData } from './context/StoreContext';
 
-export const isSlave = (() => {
-	try {
-		return window.self !== window.top;
-	} catch (e) {
-		return false;
-	}
-})();
-
 const _parent = window.parent !== window.top ? window.parent : window.top;
 export function messageToMaster(message: { type: string; payload: any }) {
 	_parent.postMessage(
@@ -88,7 +80,7 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	],
 ]);
 
-if (isSlave) {
+if (window.isDesignMode) {
 	window.determineRightClickPosition = e => {
 		const iframe = parent.window.document.getElementById(window.screenType);
 		if (!iframe) return { x: 0, y: 0 };
