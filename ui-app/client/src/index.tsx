@@ -41,11 +41,20 @@ declare global {
 	// var d3: typeof import('d3/index');
 }
 
+// To check if it is designMode
+globalThis.isDesignMode = (() => {
+	try {
+		return window.self !== window.top;
+	} catch (e) {
+		return false;
+	}
+})();
+
 // To enable debug mode, add ?debug to the URL
-window.isDebugMode = window.location.search.indexOf('debug') != -1;
+globalThis.isDebugMode = window.location.search.indexOf('debug') != -1;
 
 // To check if the app is being interacted with
-window.lastInteracted = Date.now();
+globalThis.lastInteracted = Date.now();
 
 const THREE_MINUTES = 3 * 60 * 1000;
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
