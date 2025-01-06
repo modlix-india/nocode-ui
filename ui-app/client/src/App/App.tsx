@@ -10,16 +10,13 @@ import {
 	innerSetData,
 	setData,
 } from '../context/StoreContext';
-import { isSlave, messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
+import { messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
-import GlobalLoader from './GlobalLoader';
 import { Messages } from './Messages/Messages';
-import getAppDefinition from './appDefinition';
+import { getAppDefinition } from './appDefinition';
 
 // In design mode we are listening to the messages from editor
-
-window.isDesignMode = isSlave;
 
 function onMessageFromEditor(event: MessageEvent) {
 	const { data: { type, payload } = {} } = event;
@@ -172,7 +169,6 @@ function processIconPacks(iconPacks: any) {
 
 export function App() {
 	const [isApplicationLoadFailed, setIsApplicationLoadFailed] = useState(false);
-	const [applicationLoaded, setApplicationLoaded] = useState(false);
 
 	const [firstTime, setFirstTime] = useState(true);
 	useEffect(
@@ -180,8 +176,13 @@ export function App() {
 			addListenerAndCallImmediately(
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						await getAppDefinition();
-						setApplicationLoaded(true);
+						const { auth, application, isApplicationLoadFailed, theme } =
+							await getAppDefinition();
+						setData(`${STORE_PREFIX}.application`, application);
+						setData(`${STORE_PREFIX}.auth`, auth);
+						setData(`${STORE_PREFIX}.isApplicationLoadFailed`, isApplicationLoadFailed);
+						setData(`${STORE_PREFIX}.theme`, theme);
+
 						return;
 					}
 
@@ -222,7 +223,6 @@ export function App() {
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
-	if (!applicationLoaded) return <GlobalLoader noSpin={true} />;
 	return (
 		<>
 			<BrowserRouter
