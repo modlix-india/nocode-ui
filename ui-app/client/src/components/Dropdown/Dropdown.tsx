@@ -41,6 +41,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [hoverKey, setHoverKey] = useState<string | undefined>();
+	const [isChanged, setIsChanged] = useState(false);
 	const {
 		definition: { bindingPath, bindingPath2 },
 		locationHistory,
@@ -71,6 +72,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			searchLabel,
 			clearSearchTextOnClose,
 			onSearch,
+			runEventOnDropDownClose,
 			onScrollReachedEnd,
 			designType,
 			colorScheme,
@@ -167,6 +169,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			let newSelectionIndex = (selected ?? []).findIndex((e: any) =>
 				deepEqual(e, each.value),
 			);
+			setIsChanged(true);
 			setData(
 				bindingPathPath,
 				newSelectionIndex === -1
@@ -174,6 +177,16 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					: selected.filter((_: any, i: number) => i !== newSelectionIndex),
 				context.pageName,
 			);
+
+			if (!runEventOnDropDownClose && clickEvent) {
+				await runEvent(
+					clickEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+			}
 		} else {
 			setData(
 				bindingPathPath,
@@ -182,20 +195,21 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					: each.value,
 				context?.pageName,
 			);
+			if (clickEvent) {
+				await runEvent(
+					clickEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+			}
+			handleClose();
 		}
-		if (clickEvent) {
-			await runEvent(
-				clickEvent,
-				key,
-				context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			);
-		}
-		if (!isMultiSelect) handleClose();
 	};
 
 	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
+		if (!searchBindingPath) return;
 		setData(searchBindingPath, event.target.value, context.pageName);
 	};
 
@@ -230,11 +244,34 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
+
+		if (clickEvent && runEventOnDropDownClose && isMultiSelect && isChanged) {
+			(async () => {
+				await runEvent(
+					clickEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+			})();
+		}
 		setShowDropdown(false);
 		setFocus(false);
 		inputRef?.current?.blur();
 		clearSearchTextOnClose && setSearchText('');
-	}, [showDropdown, setShowDropdown, setFocus, inputRef, clearSearchTextOnClose, setSearchText]);
+		setIsChanged(false);
+	}, [
+		showDropdown,
+		isChanged,
+		setShowDropdown,
+		setFocus,
+		inputRef,
+		clearSearchTextOnClose,
+		setSearchText,
+		clickEvent,
+		runEventOnDropDownClose,
+	]);
 
 	const getLabel = useCallback(() => {
 		let label = '';
@@ -325,6 +362,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					? (rightIconOpen ?? 'fa-solid fa-angle-up')
 					: (rightIcon ?? 'fa-solid fa-angle-down')
 			}
+			handleRightIcon={() => setShowDropdown(prev => !prev)}
 			valueType="text"
 			isPassword={false}
 			placeholder={placeholder}
