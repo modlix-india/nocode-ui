@@ -429,7 +429,6 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		>
 			{showDropdown && (
 				<div
-					
 					className="_dropdownContainer"
 					style={computedStyles.dropDownContainer ?? {}}
 					onScroll={scrollEndEvent}
