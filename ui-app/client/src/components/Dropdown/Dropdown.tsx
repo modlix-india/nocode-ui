@@ -42,7 +42,6 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const [hoverKey, setHoverKey] = useState<string | undefined>();
 	const [isChanged, setIsChanged] = useState(false);
-	const dropdownRef = useRef<HTMLDivElement>(null);
 	const {
 		definition: { bindingPath, bindingPath2 },
 		locationHistory,
@@ -430,7 +429,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		>
 			{showDropdown && (
 				<div
-					ref={dropdownRef}
+					
 					className="_dropdownContainer"
 					style={computedStyles.dropDownContainer ?? {}}
 					onScroll={scrollEndEvent}
