@@ -1,4 +1,4 @@
-import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
+import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{ dn: 'Font', n: 'rangeSliderFont', dv: '<primaryFont>' },

@@ -206,21 +206,33 @@ export function CalendarMap(
 			from.setFullYear(browseMonths);
 			from.setMonth(0);
 			const monthNames: React.JSX.Element[] = [];
+
 			for (let i = 0; i < 12; i++) {
 				const monthDate = new Date(from);
-				if (
-					minimumPossibleDate &&
-					monthDate.getFullYear() === minimumPossibleDate.getFullYear()
-				) {
-					if (i < minimumPossibleDate.getMonth()) continue;
-				}
-				if (
-					maximumPossibleDate &&
-					monthDate.getFullYear() === maximumPossibleDate.getFullYear()
-				) {
-					if (i > maximumPossibleDate.getMonth()) continue;
-				}
 				monthDate.setMonth(i);
+
+				let isDisabled = false;
+
+				if (minimumPossibleDate) {
+					const minYear = minimumPossibleDate.getFullYear();
+					if (
+						browseMonths < minYear ||
+						(browseMonths === minYear && i < minimumPossibleDate.getMonth())
+					) {
+						isDisabled = true;
+					}
+				}
+
+				if (maximumPossibleDate) {
+					const maxYear = maximumPossibleDate.getFullYear();
+					if (
+						browseMonths > maxYear ||
+						(browseMonths === maxYear && i > maximumPossibleDate.getMonth())
+					) {
+						isDisabled = true;
+					}
+				}
+
 				monthNames.push(
 					<CalendarMonthTitle
 						key={monthDate.toDateString()}
@@ -229,9 +241,18 @@ export function CalendarMap(
 							month: props.monthLabels,
 						})}
 						onClick={() => {
-							onBMYChange(`${i + 1}-${browseMonths}`);
-							setBrowseMonths(undefined);
-							setBrowseYears(undefined);
+							if (!isDisabled) {
+								onBMYChange(`${i + 1}-${browseMonths}`);
+								setBrowseMonths(undefined);
+								setBrowseYears(undefined);
+							}
+						}}
+						styles={{
+							...props.styles,
+							monthName: {
+								...props.styles?.monthName,
+								...(isDisabled && { opacity: 0.5, cursor: 'not-allowed' }),
+							},
 						}}
 					/>,
 				);
@@ -404,8 +425,11 @@ function CalendarMonthsInHeader(
 	const parentKey = props.currentDate.toDateString();
 
 	let months: Array<React.JSX.Element> = [];
-	const stepper = Math.floor(Math.abs(12 / props.headerMonthsCount)) || 1;
-	for (let i = -5, cnt = 0; i <= 6 && cnt < props.headerMonthsCount; i += stepper, cnt++) {
+
+	const monthsToShow = props.headerMonthsCount;
+	const startOffset = -Math.floor(monthsToShow / 2);
+
+	for (let i = startOffset; i < monthsToShow + startOffset; i++) {
 		const iterationDate = new Date(props.currentDate);
 		iterationDate.setDate(1);
 		iterationDate.setMonth(iterationDate.getMonth() + i);
@@ -462,7 +486,7 @@ function makeMonths(
 			<CalendarMonth
 				key={nextDate.toDateString()}
 				{...props}
-				showMonthName={count != 1}
+				showMonthName={count !== 1}
 				monthDate={nextDate}
 				onSelection={onSelection}
 			/>,
