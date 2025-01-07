@@ -4,7 +4,7 @@ import ComponentDefinitions from '../components';
 import { getHref } from '../components/util/getHref';
 import { lazyCSSURL } from '../components/util/lazyStylePropertyUtil';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
-import { addListener } from '../context/StoreContext';
+import { addListener, addListenerAndCallImmediately } from '../context/StoreContext';
 import { StyleResolution } from '../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
@@ -27,7 +27,7 @@ export function AppStyle() {
 
 	useEffect(
 		() =>
-			addListener(
+			addListenerAndCallImmediately(
 				(path, value) => {
 					if (path == STORE_PATH_THEME_PATH) {
 						if (!value) {
