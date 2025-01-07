@@ -131,8 +131,10 @@ if (!app) {
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
 
-		const { App } = await import('./App/App');
-		const { AppStyle } = await import('./App/AppStyle');
+		const { App } = await import(/* webpackChunkName: "Application" */ './App/App');
+		const { AppStyle } = await import(
+			/* webpackChunkName: "ApplicationStyle" */ './App/AppStyle'
+		);
 		const root = createRoot(app);
 		root.render(
 			<>
