@@ -72,10 +72,11 @@ setInterval(async () => {
 	if (authTokenExpiry < now) {
 		// Token is expired
 
+		const token = window.localStorage.getItem(AUTH_TOKEN);
 		window.localStorage.removeItem(AUTH_TOKEN);
 		window.localStorage.removeItem(AUTH_TOKEN_EXPIRY);
 
-		window.location.reload();
+		if (token) window.location.reload();
 		return;
 	}
 
