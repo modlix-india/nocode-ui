@@ -4,7 +4,12 @@ import ComponentDefinitions from '../components';
 import { getHref } from '../components/util/getHref';
 import { lazyCSSURL } from '../components/util/lazyStylePropertyUtil';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
-import { addListener, addListenerAndCallImmediately } from '../context/StoreContext';
+import {
+	addListener,
+	addListenerAndCallImmediately,
+	getData,
+	getDataFromPath,
+} from '../context/StoreContext';
 import { StyleResolution } from '../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
@@ -25,9 +30,36 @@ export function AppStyle() {
 		StyleResolution.DESKTOP_SCREEN,
 	)?.minWidth;
 
+	useEffect(() => {
+		const thmValue = getDataFromPath(STORE_PATH_THEME_PATH, []);
+		if (!thmValue) {
+			setTheme(new Map([[StyleResolution.ALL, styleDefaults]]));
+			return;
+		}
+
+		const thm: Map<string, Map<string, string>> = new Map(
+			Object.entries<any>(thmValue).map(([k, v]) => [
+				k,
+				new Map<string, string>(Object.entries<string>(v)),
+			]),
+		);
+
+		thm.set(
+			StyleResolution.ALL,
+			thm.has(StyleResolution.ALL)
+				? new Map<string, string>([
+						...Array.from(styleDefaults),
+						...Array.from(thm.get(StyleResolution.ALL) ?? []),
+					])
+				: styleDefaults,
+		);
+
+		setTheme(thm);
+	}, [setTheme]);
+
 	useEffect(
 		() =>
-			addListenerAndCallImmediately(
+			addListener(
 				(path, value) => {
 					if (path == STORE_PATH_THEME_PATH) {
 						if (!value) {
