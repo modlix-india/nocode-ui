@@ -375,6 +375,13 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		} else {
 			tempList = duplicate(SORTED_COUNTRY_LIST);
 		}
+
+		if (tempList.length > 0) {
+			const indiaOption = tempList.find((country: DropdownOption) => country.C === 'IN');
+			setSelected(indiaOption);
+			lastSelectedCountry.current = indiaOption;
+		}
+
 		setCountryList(tempList);
 	}, [countries, topCountries, SORTED_COUNTRY_LIST]);
 
