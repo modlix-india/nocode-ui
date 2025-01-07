@@ -31,34 +31,29 @@ jobs:
           input: '["test", "test2", "test3"]'
           script: |-
             map(select(. == "test"))
-      # - name: Building to JS Dev
-      #   working-directory: ./ui-app/client
-      #   run: npm run cf-dev
-      # - name: Pushing Dev to Cloudflare
-      #   working-directory: ./ui-app/client
-      #   env:
-      #     CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      #     CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      #   run: |
-      #     find dist -name "*.js" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type text/javascript --cache-control="public,max-age=3600" \;
-      #     find dist -name "*.map" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
-      #     find dist -name "*.css" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type text/css --cache-control="public,max-age=3600" \;
-      #     find dist -name "*.html" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type text/html --cache-control="public,max-age=3600" \;
-      #     find dist -name "*.json" -type f -exec npx wrangler r2 object put dev-static/js/{} --file={} --content-type application/json --cache-control="public,max-age=3600" \;
+      - name: Building to JS Dev
+        working-directory: ./ui-app/client
+        run: npm run cf-dev
+      - name: Pushing Dev to Cloudflare
+        working-directory: ./ui-app/client
+        run: |
+          rclone sync ./dist r2user:dev-static/js/dist
 
-      #     echo "\n"
-      #     echo "JSON prepared :"
-      #     find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}'; done
-      #     echo "Calling purge for cdn-dev.modlix.com :"
-      #     find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}' | curl -s https://api.cloudflare.com/client/v4/zones/f8fe46c016fcfdc188401768a0ac7d01/purge_cache --request POST --header "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" --header "Content-Type: application/json"  --data @- ; echo ""; done
-      # - name: Invalidating Application Server cache
-      #   run: |
-      #     curl -s --header "Authorization: ${{ secrets.NOCODE_TOKEN }}" https://apps.dev.modlix.com/api/ui/newdeployment
+          echo "\n"
+          echo "JSON prepared :"
+          find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}'; done
+
+          echo "Calling purge for cdn-dev.modlix.com :"
+          find dist -type f | xargs -d '\n' -n 25 | while IFS= read -r batch; do echo "$batch" | tr ' ' '\n' | jq -R -s '{"files": split("\n")[:-1] | map("https://cdn-dev.modlix.com/js/" + .)}' | curl -s https://api.cloudflare.com/client/v4/zones/f8fe46c016fcfdc188401768a0ac7d01/purge_cache --request POST --header "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" --header "Content-Type: application/json"  --data @- ; echo ""; done
+
+      - name: Invalidating Application Server cache
+        run: |
+          curl -s --header "Authorization: ${{ secrets.NOCODE_TOKEN }}" https://apps.dev.modlix.com/api/ui/newdeployment
 
       - name: Building to JS Local
         working-directory: ./ui-app/client
         run: npm run cf-local
-      - name: Pushing Dev to Cloudflare
+      - name: Pushing Local to Cloudflare
         working-directory: ./ui-app/client
         run: |
           rclone sync ./dist r2user:local-static/js/dist
