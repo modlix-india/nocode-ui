@@ -50,6 +50,8 @@ globalThis.isDesignMode = (() => {
 	}
 })();
 
+console.log(globalThis.isDesignMode);
+
 // To enable debug mode, add ?debug to the URL
 globalThis.isDebugMode = window.location.search.indexOf('debug') != -1;
 
@@ -67,8 +69,17 @@ setInterval(async () => {
 
 	const now = Date.now();
 
+	if (authTokenExpiry < now) {
+		// Token is expired
+
+		window.localStorage.removeItem(AUTH_TOKEN);
+		window.localStorage.removeItem(AUTH_TOKEN_EXPIRY);
+
+		window.location.reload();
+		return;
+	}
+
 	if (
-		authTokenExpiry < now || // Token is already expired
 		authTokenExpiry - now > THREE_MINUTES || // Token expires in more than 2 minutes
 		now - window.lastInteracted > FIFTEEN_MINUTES // No interaction for 15 minutes
 	)
