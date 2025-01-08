@@ -544,6 +544,8 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				data: { type, payload, editorType, screenType },
 			} = e;
 
+			if (type) console.log(type, payload);
+
 			if (!type?.startsWith('SLAVE_')) return;
 			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
 

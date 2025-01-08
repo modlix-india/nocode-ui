@@ -14,6 +14,9 @@ declare global {
 	var nodeDev: boolean;
 	var isDesignMode: boolean;
 	var designMode: string;
+	var addDesignModeChangeListener: (fn: () => void) => () => void;
+	var removeDesignModeChangeListener: (fn: () => void) => void;
+	var raiseDesignModeChangeEvent: () => void;
 	var screenType: string;
 	var getStore: () => any;
 	var isDebugMode: boolean;
@@ -40,6 +43,14 @@ declare global {
 	var pageDefinitionRequestPageName: string;
 	// var d3: typeof import('d3/index');
 }
+
+let listeners: Set<() => void> = new Set();
+globalThis.removeDesignModeChangeListener = (fn: () => void) => listeners.delete(fn);
+globalThis.addDesignModeChangeListener = (fn: () => void) => {
+	listeners.add(fn);
+	return () => globalThis.removeDesignModeChangeListener(fn);
+};
+globalThis.raiseDesignModeChangeEvent = () => listeners.forEach(fn => fn());
 
 // To check if it is designMode
 globalThis.isDesignMode = (() => {
