@@ -37,7 +37,7 @@ jobs:
       - name: Pushing Dev to Cloudflare
         working-directory: ./ui-app/client
         run: |
-          rclone sync ./dist r2user:dev-static/js/dist
+          rclone copy ./dist r2user:dev-static/js/dist
 
           echo "\n"
           echo "JSON prepared :"
@@ -56,7 +56,7 @@ jobs:
       - name: Pushing Local to Cloudflare
         working-directory: ./ui-app/client
         run: |
-          rclone sync ./dist r2user:local-static/js/dist
+          rclone copy ./dist r2user:local-static/js/dist
 
           echo "\n"
           echo "JSON prepared :"
