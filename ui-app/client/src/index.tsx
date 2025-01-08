@@ -50,6 +50,8 @@ globalThis.isDesignMode = (() => {
 	}
 })();
 
+console.log(globalThis.isDesignMode);
+
 // To enable debug mode, add ?debug to the URL
 globalThis.isDebugMode = window.location.search.indexOf('debug') != -1;
 
@@ -67,8 +69,18 @@ setInterval(async () => {
 
 	const now = Date.now();
 
+	if (authTokenExpiry < now) {
+		// Token is expired
+
+		const token = window.localStorage.getItem(AUTH_TOKEN);
+		window.localStorage.removeItem(AUTH_TOKEN);
+		window.localStorage.removeItem(AUTH_TOKEN_EXPIRY);
+
+		if (token) window.location.reload();
+		return;
+	}
+
 	if (
-		authTokenExpiry < now || // Token is already expired
 		authTokenExpiry - now > THREE_MINUTES || // Token expires in more than 2 minutes
 		now - window.lastInteracted > FIFTEEN_MINUTES // No interaction for 15 minutes
 	)
@@ -119,8 +131,10 @@ if (!app) {
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
 
-		const { App } = await import('./App/App');
-		const { AppStyle } = await import('./App/AppStyle');
+		const { App } = await import(/* webpackChunkName: "Application" */ './App/App');
+		const { AppStyle } = await import(
+			/* webpackChunkName: "ApplicationStyle" */ './App/AppStyle'
+		);
 		const root = createRoot(app);
 		root.render(
 			<>
