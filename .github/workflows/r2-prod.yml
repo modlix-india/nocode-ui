@@ -37,7 +37,7 @@ jobs:
       - name: Pushing Prod to Cloudflare
         working-directory: ./ui-app/client
         run: |
-          rclone sync ./dist r2user:prod-static/js/dist
+          rclone copy ./dist r2user:prod-static/js/dist
 
           echo "\n"
           echo "JSON prepared :"
