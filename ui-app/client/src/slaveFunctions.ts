@@ -16,6 +16,8 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 		p => {
 			window.designMode = p.type;
 			window.screenType = p.screenType;
+
+			window.raiseDesignModeChangeEvent();
 		},
 	],
 	[
