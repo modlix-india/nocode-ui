@@ -279,6 +279,11 @@ export const RenderEngineContainer = () => {
 
 	const [, setLastChanged] = useState(Date.now());
 
+	useEffect(
+		() => window.addDesignModeChangeListener(() => setLastChanged(Date.now())),
+		[setLastChanged],
+	);
+
 	useEffect(() => {
 		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
 
@@ -295,7 +300,7 @@ export const RenderEngineContainer = () => {
 	useEffect(() => {
 		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
 
-		return addListener(
+		return addListenerAndCallImmediately(
 			(_, v) => setPageDefinition(processClassesForPageDefinition(v)),
 			undefined,
 			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
