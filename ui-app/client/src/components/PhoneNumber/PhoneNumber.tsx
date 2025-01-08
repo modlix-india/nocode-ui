@@ -40,6 +40,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	};
 	const countryMap = useRef(new Map<string, DropdownOption>());
 	const lastSelectedCountry = useRef<DropdownOption | null>(null);
+	const isFirstRender = useRef(true);
 
 	const {
 		definition: { bindingPath },
@@ -318,6 +319,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		if (countryMap.current.has(dc)) return countryMap.current.get(dc);
 		return temp[0];
 	};
+
 	const getUnformattedNumber = (text: string | undefined) => {
 		if (!text) return '';
 		return text.replace(/[^+\d]/g, '');
@@ -376,13 +378,12 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			tempList = duplicate(SORTED_COUNTRY_LIST);
 		}
 
-		if (tempList.length > 0) {
-			const indiaOption = tempList.find((country: DropdownOption) => country.C === 'IN');
-			setSelected(indiaOption);
-			lastSelectedCountry.current = indiaOption;
-		}
-
 		setCountryList(tempList);
+		if (isFirstRender.current && tempList.length > 0) {
+			setSelected(tempList[0]);
+			lastSelectedCountry.current = tempList[0];
+			isFirstRender.current = false;
+		}
 	}, [countries, topCountries, SORTED_COUNTRY_LIST]);
 
 	useEffect(() => {
