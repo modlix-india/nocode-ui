@@ -20,6 +20,7 @@ import { getAppDefinition } from './appDefinition';
 
 function onMessageFromEditor(event: MessageEvent) {
 	const { data: { type, payload } = {} } = event;
+	if (type) console.log(type, payload);
 	if (!type?.startsWith('EDITOR_')) return;
 
 	if (!SLAVE_FUNCTIONS.has(type)) throw Error('Unknown message from Editor : ' + type);
