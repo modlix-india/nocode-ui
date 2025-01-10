@@ -62,7 +62,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'format',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Formar Number',
+		displayName: 'Format Number',
 		description: 'Format Phone Number.',
 		defaultValue: true,
 		group: ComponentPropertyGroup.BASIC,
