@@ -215,6 +215,24 @@ export default function TableColumnsStyle({
 
 		.comp.compTableDynamicColumns { display: table; flex-direction: column; flex: 1; }
 		.comp.compTableDynamicColumns ._row { display: table-row; }
+
+		.comp.compTable ._row:first-child .comp.compTableHeaderColumn,
+		.comp.compTable ._row:first-child .comp.compTableColumn {
+			border-top: none !important;
+		}
+		.comp.compTable ._row:last-child .comp.compTableColumn {
+			border-bottom: none !important;
+		}
+		
+		.comp.compTable ._row .comp.compTableHeaderColumn:first-child,
+		.comp.compTable ._row .comp.compTableColumn:first-child {
+			border-left: none !important;
+		}
+
+		.comp.compTable ._row .comp.compTableHeaderColumn:last-child,
+		.comp.compTable ._row .comp.compTableColumn:last-child {
+			border-right: none !important;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnsCss">{css}</style>;

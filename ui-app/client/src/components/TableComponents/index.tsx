@@ -328,6 +328,12 @@ export const TableColumn: Component = {
 			description: 'Sort None Icon',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'header',
+			displayName: 'Header',
+			description: 'Header',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 
@@ -369,6 +375,12 @@ export const TableColumnHeader: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: 'fa-solid fa-diagram-next',
+		},
+		{
+			name: 'header',
+			displayName: 'Header',
+			description: 'Header',
+			icon: 'fa-solid fa-box',
 		},
 	],
 };
@@ -465,6 +477,12 @@ export const TableColumns: Component = {
 			name: 'header',
 			displayName: 'Header',
 			description: 'Header',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'selectedRow',
+			displayName: 'Selected Row',
+			description: 'Selected Row',
 			icon: 'fa-solid fa-box',
 		},
 	],

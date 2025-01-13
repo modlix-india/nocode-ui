@@ -40,9 +40,10 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	};
 	const countryMap = useRef(new Map<string, DropdownOption>());
 	const lastSelectedCountry = useRef<DropdownOption | null>(null);
+	const isFirstRender = useRef(true);
 
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2 },
 		definition,
 		pageDefinition: { translations },
 		locationHistory,
@@ -94,9 +95,14 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 	const [value, setValue] = React.useState<string>('');
+	const [countryCode, setCountryCode] = React.useState<string>('');
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPathPath2 = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
 		: undefined;
 
 	React.useEffect(() => {
@@ -113,6 +119,27 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
+
+	React.useEffect(() => {
+		if (!bindingPathPath2) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				if (isNullValue(value)) {
+					setCountryCode('');
+					return;
+				}
+				setCountryCode(value);
+				// Find and set the country based on country code
+				const country = SORTED_COUNTRY_LIST.find(c => c.C === value);
+				if (country) {
+					setSelected(country);
+					lastSelectedCountry.current = country;
+				}
+			},
+			pageExtractor,
+			bindingPathPath2,
+		);
+	}, [bindingPathPath2]);
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -376,6 +403,15 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			tempList = duplicate(SORTED_COUNTRY_LIST);
 		}
 		setCountryList(tempList);
+
+		if (isFirstRender.current && tempList.length > 0) {
+			setSelected(tempList[0]);
+			lastSelectedCountry.current = tempList[0];
+			if (bindingPathPath2) {
+				setData(bindingPathPath2, tempList[0].C, context?.pageName);
+			}
+			isFirstRender.current = false;
+		}
 	}, [countries, topCountries, SORTED_COUNTRY_LIST]);
 
 	useEffect(() => {
@@ -489,6 +525,21 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		lastSelectedCountry.current = v;
 		countryMap.current.clear();
 		countryMap.current.set(v.D, v);
+
+		if (bindingPathPath) {
+			const formattedPhone = format
+				? storeFormatted
+					? seperator + getFormattedNumber(phoneNumber, v.D)
+					: phoneNumber
+				: phoneNumber;
+			const newValue = phoneNumber ? v.D + formattedPhone : '';
+			setData(bindingPathPath, newValue, context?.pageName);
+		}
+
+		if (bindingPathPath2) {
+			setData(bindingPathPath2, v.C, context?.pageName);
+			callChangeEvent();
+		}
 	};
 
 	const leftChildren = (
@@ -566,7 +617,8 @@ const component: Component = {
 	stylePseudoStates: ['focus', 'disabled'],
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
-		bindingPath: { name: 'Phone Binding' },
+		bindingPath: { name: 'Phone Number Binding' },
+		bindingPath2: { name: 'Country Code Binding' },
 	},
 	defaultTemplate: {
 		key: '',
