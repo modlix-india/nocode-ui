@@ -61,8 +61,6 @@ globalThis.isDesignMode = (() => {
 	}
 })();
 
-console.log(globalThis.isDesignMode);
-
 // To enable debug mode, add ?debug to the URL
 globalThis.isDebugMode = window.location.search.indexOf('debug') != -1;
 
