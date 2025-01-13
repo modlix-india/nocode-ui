@@ -121,37 +121,41 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		);
 	}
 
+	let styleKey = `tch${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
+
 	let style = processStyleObjectToCSS(
-		styleProperties.comp,
-		`.comp.compTableHeaderColumn.c${key}`,
+		styleProperties.header,
+		`.comp.compTableHeaderColumn#${styleKey}`,
 	);
 	style += processStyleObjectToCSS(
-		hoverStyleProperties.comp,
-		`.comp.compTableHeaderColumn.c${key}:hover`,
+		hoverStyleProperties.header,
+		`.comp.compTableHeaderColumn#${styleKey}:hover`,
 	);
 	style += processStyleObjectToCSS(
 		styleProperties.headerContainer,
-		`.comp.compTableHeaderColumn.c${key} ._headerContainer`,
+		`.comp.compTableHeaderColumn#${styleKey} ._headerContainer`,
 	);
 	style += processStyleObjectToCSS(
 		hoverStyleProperties.headerContainer,
-		`.comp.compTableHeaderColumn.c${key}:hover ._headerContainer`,
+		`.comp.compTableHeaderColumn#${styleKey}:hover ._headerContainer`,
 	);
 	style += processStyleObjectToCSS(
 		styleProperties.leftIcon,
-		`.comp.compTableHeaderColumn.c${key} ._leftIcon`,
+		`.comp.compTableHeaderColumn#${styleKey} ._leftIcon`,
 	);
 	style += processStyleObjectToCSS(
 		hoverStyleProperties.leftIcon,
-		`.comp.compTableHeaderColumn.c${key}:hover ._leftIcon`,
+		`.comp.compTableHeaderColumn#${styleKey}:hover ._leftIcon`,
 	);
 	style += processStyleObjectToCSS(
 		styleProperties.rightIcon,
-		`.comp.compTableHeaderColumn.c${key} ._rightIcon`,
+		`.comp.compTableHeaderColumn#${styleKey} ._rightIcon`,
 	);
 	style += processStyleObjectToCSS(
 		hoverStyleProperties.rightIcon,
-		`.comp.compTableHeaderColumn.c${key}:hover ._rightIcon`,
+		`.comp.compTableHeaderColumn#${styleKey}:hover ._rightIcon`,
 	);
 
 	const [showMenuLocation, setShowMenuLocation] = useState<{ x: number; y: number } | undefined>(
@@ -423,8 +427,9 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 
 	return (
 		<div
-			className={`comp compTableHeaderColumn c${key} ${hasSort ? '_pointer' : ''}`}
-			style={{ ...styleProperties.comp }}
+			id={styleKey}
+			className={`comp compTableHeaderColumn ${hasSort ? '_pointer' : ''}`}
+			style={{ ...(styleProperties.header ?? {}) }}
 			onClick={() =>
 				onChangeSort({
 					currentSortOrder,

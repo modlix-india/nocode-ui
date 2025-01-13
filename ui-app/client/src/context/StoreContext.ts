@@ -158,7 +158,7 @@ export function getDataFromPath(
 	...tve: Array<TokenValueExtractor>
 ) {
 	if (!path) return undefined;
-	if (locationHistory?.length && !tve.some(e => e.getPrefix() === 'Parent.'))
+	if (locationHistory?.length && !tve?.some(e => e.getPrefix() === 'Parent.'))
 		tve = [
 			...tve,
 			new ParentExtractorForRunEvent(
