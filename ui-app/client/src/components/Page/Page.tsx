@@ -56,7 +56,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				const v = duplicate(value);
-				if (isNullValue(v.pageName)) {
+				if (isNullValue(v?.pageName)) {
 					v.pageName = getDataFromPath(
 						`${STORE_PREFIX}.application.properties.defaultPage`,
 						[],

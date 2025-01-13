@@ -26,7 +26,10 @@ import {
 	RenderContext,
 } from '../../../types/common';
 import { difference } from '../../../util/setOperations';
-import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
+import {
+	processComponentStylePseudoClasses,
+	processStyleObjectToCSS,
+} from '../../../util/styleProcessor';
 import Children from '../../Children';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import { getExtractionMap } from '../../util/getRenderData';
@@ -53,7 +56,7 @@ function fieldToName(field: string): string {
 export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	const [value, setValue] = useState([]);
 	const {
-		definition: { children },
+		definition: { key, children },
 		pageDefinition,
 		locationHistory = [],
 		context,
@@ -193,7 +196,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			(multiSelect ? (selection ?? []) : [selection]).filter((e: any) =>
 				selectionType === 'OBJECT'
 					? deepEqual(e, data[index])
-					: e === `(${dataBindingPath})[${index}]`,
+					: e === `${dataBindingPath}[${index}]`,
 			).length !== 0;
 
 		return selected;
@@ -244,11 +247,6 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		selectionType,
 		uniqueKey,
 		data,
-		stylePropertiesWithPseudoStates,
-		setHoverRow,
-		hoverRow,
-		styleHoverProperties,
-		styleNormalProperties,
 		columnDef,
 		children,
 		context,
@@ -266,7 +264,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 		headers = (
 			<div
-				className="_row"
+				className="_row _header"
 				style={(hover ? styleHoverProperties : styleNormalProperties).header}
 			>
 				{checkBoxTop}
@@ -296,9 +294,28 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		}
 	}
 
+	const styleKey = `row${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
+
+	let rowStyles =
+		processStyleObjectToCSS(
+			styleNormalProperties.row,
+			`.comp.compTableColumns#${styleKey} ._row._dataRow`,
+		) +
+		processStyleObjectToCSS(
+			styleHoverProperties.row,
+			`.comp.compTableColumns#${styleKey} ._row._dataRow:hover`,
+		) +
+		processStyleObjectToCSS(
+			styleNormalProperties.selectedRow ?? styleHoverProperties.row,
+			`.comp.compTableColumns#${styleKey} ._row._dataRow._selected`,
+		);
+
 	return (
 		<div
-			className="comp compTableColumns"
+			id={styleKey}
+			className={`comp compTableColumns ${styleKey}`}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
 			onMouseLeave={
 				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
@@ -306,10 +323,11 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			style={(hover ? styleHoverProperties : styleNormalProperties).comp}
 			role="table"
 		>
-			<HelperComponent context={props.context} definition={definition} />
 			{headers}
+			<style>{rowStyles}</style>
 			{rows}
 			{emptyRows}
+			<HelperComponent context={props.context} definition={definition} />
 		</div>
 	);
 }
@@ -432,11 +450,6 @@ function generateRows(properties: {
 	selectionType: any;
 	uniqueKey: any;
 	data: any;
-	stylePropertiesWithPseudoStates: any;
-	setHoverRow: any;
-	hoverRow: number;
-	styleHoverProperties: any;
-	styleNormalProperties: any;
 	columnDef: any;
 	children: { [key: string]: boolean } | undefined;
 	context: RenderContext;
@@ -455,11 +468,6 @@ function generateRows(properties: {
 		selectionType,
 		uniqueKey,
 		data,
-		stylePropertiesWithPseudoStates,
-		setHoverRow,
-		hoverRow,
-		styleHoverProperties,
-		styleNormalProperties,
 		columnDef,
 		children,
 		context,
@@ -497,14 +505,7 @@ function generateRows(properties: {
 			<div
 				key={key}
 				className={`_row _dataRow ${onClick ? '_pointer' : ''} ${isSelected(index) ? '_selected' : ''}`}
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHoverRow(index) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHoverRow(-1) : undefined
-				}
 				onClick={onClick}
-				style={(hoverRow === index ? styleHoverProperties : styleNormalProperties).row}
 				tabIndex={onClick ? 0 : undefined}
 				role="row"
 			>
