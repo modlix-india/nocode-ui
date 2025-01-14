@@ -1,8 +1,9 @@
 const STATIC_FILE_API_PREFIX = 'api/files/static/file';
 const STATIC_FILE_API_PREFIX_LENGTH = STATIC_FILE_API_PREFIX.length;
 
-export default function getSrcUrl(url: string) {
-	if (window.isDebugMode || !window.cdnPrefix || !url) return url;
+export default function getSrcUrl(urlAny: any) {
+	if (window.isDebugMode || !window.cdnPrefix || !urlAny) return urlAny;
+	let url = typeof urlAny !== 'string' ? '' + urlAny : urlAny;
 
 	const index = url.indexOf(STATIC_FILE_API_PREFIX);
 
