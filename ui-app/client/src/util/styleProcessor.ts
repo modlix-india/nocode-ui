@@ -347,7 +347,6 @@ function processCDN(style: any) {
 			if (index == -1) continue;
 
 			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH).trim();
-			lastPart = lastPart.substring(0, lastPart.length - 2);
 			let url = `url('https://${window.cdnPrefix}/`;
 			if (!window.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
 			url += `${lastPart}')`;
