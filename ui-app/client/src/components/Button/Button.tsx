@@ -16,6 +16,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
 import { styleDefaults } from './buttonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import getSrcUrl from '../util/getSrcUrl';
 
 function ButtonComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -119,7 +120,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	if (rightImage) {
 		rightIconTag = (
 			<img
-				src={hover && activeRightImage ? activeRightImage : rightImage}
+				src={hover && getSrcUrl(activeRightImage ? activeRightImage : rightImage)}
 				alt="right"
 				style={
 					(hover
@@ -149,7 +150,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	if (leftImage) {
 		leftIconTag = (
 			<img
-				src={hover && activeLeftImage ? activeLeftImage : leftImage}
+				src={hover && getSrcUrl(activeLeftImage ? activeLeftImage : leftImage)}
 				alt="left"
 				style={
 					(hover
