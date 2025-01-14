@@ -120,7 +120,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	if (rightImage) {
 		rightIconTag = (
 			<img
-				src={hover && getSrcUrl(activeRightImage ? activeRightImage : rightImage)}
+				src={getSrcUrl(hover && activeRightImage ? activeRightImage : rightImage)}
 				alt="right"
 				style={
 					(hover
@@ -150,7 +150,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	if (leftImage) {
 		leftIconTag = (
 			<img
-				src={hover && getSrcUrl(activeLeftImage ? activeLeftImage : leftImage)}
+				src={getSrcUrl(hover && activeLeftImage ? activeLeftImage : leftImage)}
 				alt="left"
 				style={
 					(hover
