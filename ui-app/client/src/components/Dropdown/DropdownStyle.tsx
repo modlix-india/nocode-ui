@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { StylePropertyDefinition, StyleResolution } from '../../types/common';
-import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults } from './dropdownStyleProperties';
+import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
+import { StylePropertyDefinition } from '../../types/common';
+import { processStyleDefinition } from '../../util/styleProcessor';
 import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import { styleDefaults } from './dropdownStyleProperties';
 
 const PREFIX = '.comp.compDropdown';
 const NAME = 'Dropdown';
