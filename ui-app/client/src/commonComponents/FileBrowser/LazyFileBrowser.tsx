@@ -62,15 +62,25 @@ export default function FileBrowser({
 
 	useEffect(() => usedComponents.using('FileBrowser'), []);
 
+	useEffect(() => {
+		if (startLocation || !selectedFile) return;
+
+		const startPath = `api/files/${resourceType}/file/`;
+		let pathIndex = selectedFile.indexOf(startPath);
+		if (pathIndex == -1) return;
+		let finPath = selectedFile.substring(pathIndex + startPath.length);
+		pathIndex = finPath.indexOf('/');
+		if (pathIndex != -1) finPath = finPath.substring(pathIndex);
+		pathIndex = finPath.lastIndexOf('/');
+		if (pathIndex != -1) finPath = finPath.substring(0, pathIndex);
+
+		setPathAndClearFilter(finPath);
+	}, [startLocation, selectedFile, setPathAndClearFilter, resourceType]);
+
 	const headers: any = {
 		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 	};
 	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
-
-	useEffect(
-		() => setPathAndClearFilter(startLocation ?? '/'),
-		[startLocation, setPathAndClearFilter],
-	);
 
 	useEffect(() => {
 		setInProgress(true);
@@ -195,7 +205,8 @@ export default function FileBrowser({
 					formData.append('file', file);
 					setInProgress(true);
 					try {
-						let url = `/api/files/${resourceType}/${path}`;
+						let url = `/api/files/${resourceType}/${path}/`;
+						url = url.replaceAll('//', '/');
 						if (clientCode) {
 							url += `?clientCode=${clientCode}`;
 						}
