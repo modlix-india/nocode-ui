@@ -28,6 +28,7 @@ import { styleDefaults } from './smallCarouselStyleProperties';
 import { flattenUUID } from '../util/uuid';
 import { shortUUID } from '../../util/shortUUID';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
+import getSrcUrl from '../util/getSrcUrl';
 
 function SmallCarousel(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -428,7 +429,7 @@ function makeArrowButtons(
 				onClick={onPrevClick}
 			>
 				{prevImage ? (
-					<img src={prevImage} alt="prev" />
+					<img src={getSrcUrl(prevImage)} alt="prev" />
 				) : isVertical ? (
 					<UpArrow />
 				) : (
@@ -447,7 +448,7 @@ function makeArrowButtons(
 				onClick={onNextClick}
 			>
 				{nextImage ? (
-					<img src={nextImage} alt="next" />
+					<img src={getSrcUrl(nextImage)} alt="next" />
 				) : isVertical ? (
 					<DownArrow />
 				) : (
@@ -470,7 +471,7 @@ function makeArrowButtons(
 					onClick={onPrevClick}
 				>
 					{prevImage ? (
-						<img src={prevImage} alt="prev" />
+						<img src={getSrcUrl(prevImage)} alt="prev" />
 					) : isVertical ? (
 						<UpArrow />
 					) : (
@@ -487,7 +488,7 @@ function makeArrowButtons(
 					onClick={onNextClick}
 				>
 					{nextImage ? (
-						<img src={nextImage} alt="next" />
+						<img src={getSrcUrl(nextImage)} alt="next" />
 					) : isVertical ? (
 						<DownArrow />
 					) : (

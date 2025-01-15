@@ -326,9 +326,13 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!showDropdown || closeOnMouseLeave) return;
-		window.addEventListener('mousedown', handleClose);
-		return () => window.removeEventListener('mousedown', handleClose);
-	}, [showDropdown, searchText, handleClose, closeOnMouseLeave]);
+		const closeFunction = () => {
+			if (mouseIsInside) return;
+			handleClose();
+		};
+		window.addEventListener('mousedown', closeFunction);
+		return () => window.removeEventListener('mousedown', closeFunction);
+	}, [mouseIsInside, showDropdown, searchText, handleClose, closeOnMouseLeave]);
 
 	const scrollEndEvent =
 		onScrollReachedEnd && props.pageDefinition.eventFunctions?.[onScrollReachedEnd]
@@ -362,7 +366,14 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					? (rightIconOpen ?? 'fa-solid fa-angle-up')
 					: (rightIcon ?? 'fa-solid fa-angle-down')
 			}
-			handleRightIcon={() => setShowDropdown(prev => !prev)}
+			handleRightIcon={e => {
+				if (!showDropdown) {
+					inputRef.current?.focus();
+				} else {
+					setFocus(false);
+					setShowDropdown(false);
+				}
+			}}
 			valueType="text"
 			isPassword={false}
 			placeholder={placeholder}
@@ -451,43 +462,49 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					{(searchDropdownData?.length || (searchText && !onSearch)
 						? searchDropdownData
 						: dropdownData
-					)?.map(each => (
-						<div
-							className={`_dropdownItem ${
-								getIsSelected(each?.key) ? '_selected' : ''
-							} ${each.key === hoverKey ? '_hover' : ''}`} // because of default className the background-color is not changing on hover to user defined.
-							style={computedStyles.dropdownItem ?? {}}
-							key={each?.key}
-							onMouseEnter={() => setHoverKey(each?.key)}
-							onMouseDown={() => handleClick(each)}
-						>
-							<SubHelperComponent
-								definition={props.definition}
-								subComponentName="dropdownItem"
-							/>
-							<label
-								style={computedStyles.dropdownItemLabel ?? {}}
-								className="_dropdownItemLabel"
+					)?.map(each => {
+						const isOptionSelected = getIsSelected(each?.key);
+						return (
+							<div
+								className={`_dropdownItem ${
+									isOptionSelected ? '_selected' : ''
+								} ${each.key === hoverKey ? '_hover' : ''}`} // because of default className the background-color is not changing on hover to user defined.
+								style={computedStyles.dropdownItem ?? {}}
+								key={each?.key}
+								onMouseEnter={() => setHoverKey(each?.key)}
+								onMouseDown={() => handleClick(each)}
+								tabIndex={0}
+								role="option"
+								aria-selected={isOptionSelected}
 							>
 								<SubHelperComponent
 									definition={props.definition}
-									subComponentName="dropdownItemLabel"
+									subComponentName="dropdownItem"
 								/>
-								{each?.label}
-							</label>
-							{getIsSelected(each?.key) && (
-								<i
-									className="_dropdownCheckIcon"
-									style={computedStyles.dropdownCheckIcon ?? {}}
+								<label
+									style={computedStyles.dropdownItemLabel ?? {}}
+									className="_dropdownItemLabel"
 								>
 									<SubHelperComponent
 										definition={props.definition}
-										subComponentName="dropdownCheckIcon"
+										subComponentName="dropdownItemLabel"
 									/>
-								</i>
-							)}
-						</div>
-					))}
+									{each?.label}
+								</label>
+								{isOptionSelected && (
+									<i
+										className="_dropdownCheckIcon"
+										style={computedStyles.dropdownCheckIcon ?? {}}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="dropdownCheckIcon"
+										/>
+									</i>
+								)}
+							</div>
+						);
+					})}
 				</div>
 			)}
 		</CommonInputText>

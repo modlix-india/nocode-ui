@@ -25,6 +25,7 @@ import { usedComponents } from '../../../App/usedComponents';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import axios from 'axios';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
+import getSrcUrl from '../../util/getSrcUrl';
 
 function spinCalculate(
 	spinnerPath1: string | undefined,
@@ -440,7 +441,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 			const columnsMode = columnsModeImage ? (
 				<img
-					src={mode === 'COLUMNS' ? columnsModeActiveImage : columnsModeImage}
+					src={getSrcUrl(mode === 'COLUMNS' ? columnsModeActiveImage : columnsModeImage)}
 					style={getStyleObject(
 						'columnsModeImage',
 						hovers.has('columnsModeIcon') ? new Set(['columnsModeImage']) : new Set(),
@@ -479,7 +480,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 			const gridMode = gridModeImage ? (
 				<img
-					src={mode === 'COLUMNS' ? gridModeActiveImage : gridModeImage}
+					src={getSrcUrl(mode === 'COLUMNS' ? gridModeActiveImage : gridModeImage)}
 					style={getStyleObject(
 						'gridModeImage',
 						hovers.has('gridModeIcon') ? new Set(['gridModeImage']) : new Set(),
