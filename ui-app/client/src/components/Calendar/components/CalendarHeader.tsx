@@ -6,6 +6,7 @@ import {
 	removeFromToggleSetCurry,
 } from './calendarFunctions';
 import { CalendarAllProps } from './calendarTypes';
+import getSrcUrl from '../../util/getSrcUrl';
 
 export interface CalendarHeaderProps extends CalendarAllProps {
 	onMonthClick: () => void;
@@ -71,7 +72,7 @@ export function CalendarHeader(props: CalendarHeaderProps & { children: React.Re
 			<SubHelperComponent definition={definition} subComponentName="leftArrow" zIndex={7} />
 			{leftArrowImage ? (
 				<img
-					src={leftArrowImage}
+					src={getSrcUrl(leftArrowImage)}
 					style={getStyleObject(
 						'leftArrowImage',
 						hovers.has('leftArrow') ? new Set(['leftArrowImage']) : new Set(),
@@ -93,7 +94,7 @@ export function CalendarHeader(props: CalendarHeaderProps & { children: React.Re
 			<SubHelperComponent definition={definition} subComponentName="rightArrow" zIndex={7} />
 			{rightArrowImage ? (
 				<img
-					src={rightArrowImage}
+					src={getSrcUrl(rightArrowImage)}
 					style={getStyleObject(
 						'rightArrowImage',
 						hovers.has('rightArrow') ? new Set(['rightArrowImage']) : new Set(),
