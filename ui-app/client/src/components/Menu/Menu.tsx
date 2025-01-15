@@ -17,6 +17,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './menuPropertie
 import Children from '../Children';
 import { styleDefaults } from './menuStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import getSrcUrl from '../util/getSrcUrl';
 
 function Menu(props: Readonly<ComponentProps>) {
 	const location = useLocation();
@@ -135,14 +136,14 @@ function Menu(props: Readonly<ComponentProps>) {
 		</i>
 	) : imageIcon && !activeImageIcon ? (
 		<>
-			<img className={`_imageIcon ${imageIcon}`} src={imageIcon} alt="imageIcon" />
+			<img className={`_imageIcon ${imageIcon}`} src={getSrcUrl(imageIcon)} alt="imageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
 		</>
 	) : !imageIcon && activeImageIcon ? (
 		<>
 			<img
 				className={`_activeImageIcon ${activeImageIcon}`}
-				src={activeImageIcon}
+				src={getSrcUrl(activeImageIcon)}
 				alt="activeImageIcon"
 			/>
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
@@ -151,14 +152,14 @@ function Menu(props: Readonly<ComponentProps>) {
 		<>
 			<img
 				className={`_activeImageIcon ${activeImageIcon}`}
-				src={activeImageIcon}
+				src={getSrcUrl(activeImageIcon)}
 				alt="activeImageIcon"
 			/>
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
 		</>
 	) : imageIcon && activeImageIcon && (!isHovered || !isMenuActive) ? (
 		<>
-			<img className={`_imageIcon ${imageIcon}`} src={imageIcon} alt="imageIcon" />
+			<img className={`_imageIcon ${imageIcon}`} src={getSrcUrl(imageIcon)} alt="imageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
 		</>
 	) : (

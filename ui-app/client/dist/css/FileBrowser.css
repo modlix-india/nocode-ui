@@ -268,7 +268,7 @@
     background-color: #fff;
     padding: 20px;
     border-radius: 3px;
-    max-width: 60vw;
+    width: 60vw;
     max-height: 60vh;
     display: flex;
     flex-direction: column;

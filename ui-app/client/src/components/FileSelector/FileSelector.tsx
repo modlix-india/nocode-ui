@@ -20,6 +20,7 @@ import { flattenUUID } from '../util/uuid';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import { select } from 'd3';
+import getSrcUrl from '../util/getSrcUrl';
 
 function FileSelector(props: Readonly<ComponentProps>) {
 	const {
@@ -317,7 +318,7 @@ function UploadImage({ image, onClick }: { image: string; onClick: () => void })
 		return (
 			<img
 				className="_imageButton"
-				src={image}
+				src={getSrcUrl(image)}
 				alt="Upload"
 				onClick={e => (e.target === e.currentTarget ? onClick() : undefined)}
 			/>
@@ -365,7 +366,7 @@ function RemoveImage({ image, onClick }: { image: string; onClick: () => void })
 		return (
 			<img
 				className="_imageButton"
-				src={image}
+				src={getSrcUrl(image)}
 				alt="Remove"
 				onClick={e => (e.target === e.currentTarget ? onClick() : undefined)}
 			/>
