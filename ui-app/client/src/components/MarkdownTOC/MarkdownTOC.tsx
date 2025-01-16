@@ -15,6 +15,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownTOCProperties';
 import MarkdownTOCStyle from './MarkdownTOCStyle';
 import { styleDefaults } from './markdownTOCStyleProperties';
+import getSrcUrl from '../util/getSrcUrl';
 
 interface BulletPoint {
 	level: number;
@@ -255,7 +256,7 @@ function MarkdownTOC(props: Readonly<ComponentProps>) {
 				</i>
 			);
 		} else if (topTextImage) {
-			iconImage = <img src={topTextImage} alt="topTextImage" />;
+			iconImage = <img src={getSrcUrl(topTextImage)} alt="topTextImage" />;
 		}
 
 		topComp = (
@@ -280,7 +281,7 @@ function MarkdownTOC(props: Readonly<ComponentProps>) {
 				</i>
 			);
 		} else if (bottomTextImage) {
-			iconImage = <img src={bottomTextImage} alt="bottomTextImage" />;
+			iconImage = <img src={getSrcUrl(bottomTextImage)} alt="bottomTextImage" />;
 		}
 
 		bottomComp = (
@@ -351,7 +352,9 @@ function ContentLink({
 			</i>
 		);
 	} else if (bulletImage) {
-		iconImage = <img className="_bulletIconImage" alt={`${id}`} src={bulletImage}></img>;
+		iconImage = (
+			<img className="_bulletIconImage" alt={`${id}`} src={getSrcUrl(bulletImage)}></img>
+		);
 	} else {
 		iconImage = (
 			<span className="_bulletIconImage">

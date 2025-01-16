@@ -9,6 +9,7 @@ import { LocationHistory, PageDefinition, Section, Component } from '../../../ty
 import ComponentDefinitions from '../../index';
 import { PageOperations } from '../functions/PageOperations';
 import axios from 'axios';
+import getSrcUrl from '../../util/getSrcUrl';
 
 interface PinIconProps {
 	isPinned: boolean;
@@ -299,8 +300,8 @@ export default function ComponentMenu({
 							ev.dataTransfer.items.add(`${DRAG_COMP_NAME}${e.name}`, 'text/plain')
 						}
 					>
-						<img className="actual" src={e.image} />
-						<img className="hover" src={e.hoverImage} />
+						<img className="actual" src={getSrcUrl(e.image)} />
+						<img className="hover" src={getSrcUrl(e.hoverImage)} />
 						{e.name}
 					</div>
 				));

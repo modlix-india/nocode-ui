@@ -144,14 +144,17 @@ export function AppStyle() {
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
+	if (ComponentDefinitions) {
+		const comps = ComponentDefinitions.values();
+		for (let comp = comps.next(); !comp.done; comp = comps.next()) {
+			if (!comp.value.styleComponent) continue;
+			if (compList.size != 0 && !compList.has(comp.value.name)) continue;
 
-	const comps = ComponentDefinitions.values();
-	for (let comp = comps.next(); !comp.done; comp = comps.next()) {
-		if (!comp.value.styleComponent) continue;
-		if (compList.size != 0 && !compList.has(comp.value.name)) continue;
-
-		const StyleComp = comp.value.styleComponent;
-		styleComps.push(<StyleComp key={comp.value.displayName + '_stylcomps'} theme={theme} />);
+			const StyleComp = comp.value.styleComponent;
+			styleComps.push(
+				<StyleComp key={comp.value.displayName + '_stylcomps'} theme={theme} />,
+			);
+		}
 	}
 
 	return (
