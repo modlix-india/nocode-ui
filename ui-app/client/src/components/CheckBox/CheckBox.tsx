@@ -33,7 +33,15 @@ function CheckBox(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
-		properties: { label, readOnly, orientation, onClick, designType, colorScheme } = {},
+		properties: {
+			label,
+			readOnly,
+			orientation,
+			onClick,
+			designType,
+			colorScheme,
+			hideLabel,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -76,12 +84,16 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			);
 	};
 
+	const labelText = getTranslations(label, translations);
+
 	return (
 		<div
 			className={`comp compCheckbox ${designType} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
+			title={labelText}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+
 			<label
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
@@ -112,7 +124,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 					}
 					definition={props.definition}
 				/>
-				{getTranslations(label, translations)}
+				{hideLabel ? undefined : labelText}
 			</label>
 		</div>
 	);
