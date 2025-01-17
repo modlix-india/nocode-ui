@@ -326,6 +326,44 @@ select._peInput {
 	border-radius: 2px;
 }
 
+.comp.compPageEditor ._tagsEditor input {
+	width: 100%;
+}
+
+.comp.compPageEditor ._tagInput input {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+	padding: 2px;
+	min-height: 32px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.comp.compPageEditor ._tagsList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+}
+
+.comp.compPageEditor ._tag {
+	display: flex;
+	align-items: center;
+	background: #f0f0f0;
+	border-radius: 3px;
+	padding: 4px 4px;
+	margin: 2px;
+	font-size: 12px;
+}
+
+.comp.compPageEditor ._peInput {
+	border: none;
+	outline: none;
+	flex: 1;
+	min-width: 60px;
+}
+
 .comp.compPageEditor textarea._peInput {
 	flex: 1;
 	height: 132px;
@@ -3450,17 +3488,16 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon {
 	position: absolute;
-    opacity: 0;
-    transition: opacity 0.2s;
-    cursor: pointer;
-    width: 10px;
-    height: 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
+	opacity: 0;
+	transition: opacity 0.2s;
+	cursor: pointer;
+	width: 10px;
+	height: 10px;
+	padding: 0;
+	border: 0;
+	background: transparent;
 	top: 10%;
 	right: 10%;
-	
 }
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon.pinned {
