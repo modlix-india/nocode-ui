@@ -25,6 +25,7 @@ export default function DropdownStyle({
         ${PREFIX} {
             display: flex;
             align-items: center;
+            cursor: pointer;
         }
     
         ${PREFIX} input {
@@ -38,6 +39,7 @@ export default function DropdownStyle({
             background: transparent;
             color: inherit;
             min-width: 20px;
+            cursor: pointer;
         }
     
         ${PREFIX}._isActive ._label,
