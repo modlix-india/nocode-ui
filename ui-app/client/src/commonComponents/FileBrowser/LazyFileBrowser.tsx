@@ -1,7 +1,7 @@
 import { ImageResizer2 } from './ImageResizer2';
 import { usedComponents } from '../../App/usedComponents';
 import axios from 'axios';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { imageURLForFile } from '.';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { getDataFromPath } from '../../context/StoreContext';
@@ -82,25 +82,31 @@ export default function FileBrowser({
 	};
 	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 
+	const axiosAborter = useRef<AbortController | undefined>();
+
 	useEffect(() => {
 		setInProgress(true);
+
+		axiosAborter.current?.abort();
 
 		(async () => {
 			try {
 				let url = `api/files/${resourceType}${path}?size=200`;
+				console.log(url, path);
 				if (fileCategory?.length) url += `&fileType=${fileCategory}`;
 				if (filter.trim() !== '') url += `&filter=${filter}`;
 				if (clientCode) url += `&clientCode=${clientCode}`;
-
-				const response = await axios.get(url, { headers });
+				axiosAborter.current = new AbortController();
+				const response = await axios.get(url, {
+					signal: axiosAborter.current.signal,
+					headers,
+				});
 				setFiles(response.data);
 			} catch (error: any) {
 				if (error.response && error.response.status === 403) {
 					console.error('Access forbidden: ', error.response);
-					// alert('You do not have permission to access this resource.');
 				} else {
 					console.error('An error occurred: ', error);
-					// alert('An error occurred while fetching files.');
 				}
 			} finally {
 				setInProgress(false);
@@ -115,6 +121,7 @@ export default function FileBrowser({
 		somethingChanged,
 		fileCategory,
 		clientCode,
+		axiosAborter.current,
 	]);
 
 	const newFolderDiv = newFolder ? (

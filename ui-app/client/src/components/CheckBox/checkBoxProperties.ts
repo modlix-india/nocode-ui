@@ -1,4 +1,4 @@
-import { SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -53,6 +53,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Filled Checkbox type',
 			},
 		],
+	},
+	{
+		name: 'hideLabel',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Label',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.onClick,
