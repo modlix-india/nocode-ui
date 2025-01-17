@@ -346,13 +346,13 @@ function processCDN(style: any) {
 			const index = v.indexOf(STATIC_FILE_API_PREFIX);
 			if (index == -1) continue;
 
-			const marker = v.indexOf("'") ? "'" : '"';
+			const marker = v.indexOf("'") != -1 ? "'" : '"';
 			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH).trim();
 			let url = `url(${marker}https://${window.cdnPrefix}/`;
 			if (!window.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
 			url += lastPart;
 			if (window.cdnReplacePlus) url = url.replaceAll('+', '%20');
-
+			console.log(value[k], url);
 			value[k] = url;
 		}
 	}
