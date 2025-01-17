@@ -2932,6 +2932,7 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor ._imagePopupContainer ._fileBrowser {
 	height: 60vh;
+	width: calc(60vw - 30px);
 }
 
 .comp.compPageEditor ._paginationContainer ._prevButton {
