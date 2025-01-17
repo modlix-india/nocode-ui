@@ -33,7 +33,15 @@ function CheckBox(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		key,
-		properties: { label, readOnly, orientation, onClick, designType, colorScheme } = {},
+		properties: {
+			label,
+			readOnly,
+			orientation,
+			onClick,
+			designType,
+			colorScheme,
+			hideLabel,
+		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -85,21 +93,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			title={labelText}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-			<CommonCheckbox
-				isChecked={checkBoxdata}
-				isReadOnly={readOnly}
-				id={key}
-				onChange={handleChange}
-				styles={resolvedStyles.checkbox ?? {}}
-				thumbStyles={resolvedStyles.thumb ?? {}}
-				focusHandler={
-					stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
-				}
-				blurHandler={
-					stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
-				}
-				definition={props.definition}
-			/>
+
 			<label
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
@@ -115,8 +109,22 @@ function CheckBox(props: Readonly<ComponentProps>) {
 				onClick={() => handleChange(!checkBoxdata)}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="label" />
-
-				{labelText}
+				<CommonCheckbox
+					isChecked={checkBoxdata}
+					isReadOnly={readOnly}
+					id={key}
+					onChange={handleChange}
+					styles={resolvedStyles.checkbox ?? {}}
+					thumbStyles={resolvedStyles.thumb ?? {}}
+					focusHandler={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
+					}
+					blurHandler={
+						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
+					}
+					definition={props.definition}
+				/>
+				{hideLabel ? undefined : labelText}
 			</label>
 		</div>
 	);
