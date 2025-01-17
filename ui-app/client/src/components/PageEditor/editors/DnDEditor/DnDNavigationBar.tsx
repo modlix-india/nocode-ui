@@ -118,21 +118,23 @@ export default function DnDNavigationBar({
 
 			const set = new Set(openParents);
 			Object.values(pageDef?.componentDefinition ?? {})
-				// .filter(e => (e.name ?? '').toUpperCase().includes(f.toUpperCase()))
-				.filter(e =>
-					// (e.name ?? '').toUpperCase().includes(f.toUpperCase()))
-					{
-						const nameMatch = (e.name ?? '').toUpperCase().includes(f.toUpperCase());
+				.filter(e => {
+					const nameMatch = (e.name ?? '').toUpperCase().includes(f.toUpperCase());
 
-						// Check component tags
-						const tags = e.properties?.tags?.value ?? [];
-						const tagMatch =
-							Array.isArray(tags) &&
-							tags.some(tag => tag.toUpperCase().includes(f.toUpperCase()));
+					// Check component tags - handle different tag formats
+					let tags: string[] = [];
+					if (e.tag) {
+						if (Array.isArray(e.tag)) {
+							tags = e.tag;
+						} else if (typeof e.tag === 'string') {
+							tags = e.tag.split(/\s+/).filter(t => t.length > 0);
+						}
+					}
 
-						return nameMatch || tagMatch;
-					},
-				)
+					const tagMatch = tags.some(tag => tag.toUpperCase().includes(f.toUpperCase()));
+
+					return nameMatch || tagMatch;
+				})
 				.map(e => e.key)
 				.forEach(e => {
 					let p: string | undefined = e;

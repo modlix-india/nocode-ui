@@ -1,4 +1,4 @@
-import { isNullValue } from '@fincity/kirun-js';
+import { isNullValue, duplicate } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
 import ComponentDefinitions from '../../';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
@@ -14,16 +14,17 @@ import {
 	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	LocationHistory,
 	PageDefinition,
 } from '../../../types/common';
-import { duplicate } from '@fincity/kirun-js';
 import { PropertyGroup } from './PropertyGroup';
 import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
 import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { PageOperations } from '../functions/PageOperations';
+import { TagsValueEditor } from './propertyValueEditors/TagsValueEditor';
 
 interface PropertyEditorProps {
 	selectedComponent: string;
@@ -58,7 +59,7 @@ function updatePropertyDefinition(
 	) as PageDefinition;
 
 	for (let component of componentList?.length > 0 ? componentList : [componentKey]) {
-		if (!pageDef?.componentDefinition) continue;
+		if (!pageDef) continue;
 		if (!pageDef.componentDefinition[component].properties)
 			pageDef.componentDefinition[component].properties = {};
 
@@ -423,39 +424,33 @@ export default function PropertyEditor({
 										i
 									</span>
 								</div>
-								<PropertyMultiValueEditor
+
+								<TagsValueEditor
 									appPath={appPath}
 									pageDefinition={pageDef}
 									propDef={{
-										name: 'tag',
-										displayName: 'Tag',
-										description: 'Tag to identify the component',
+										name: '_tag',
+										displayName: 'Tags',
+										description: 'Tags to categorize the component',
 										schema: SCHEMA_STRING_COMP_PROP,
-										multiValued: true,
+										editor: ComponentPropertyEditor.TAGS_EDITOR,
+										group: ComponentPropertyGroup.BASIC,
+										defaultValue: {},
 									}}
-									value={
-										Array.isArray(def.tag)
-											? def.tag.reduce(
-													(acc, tag, index) => ({
-														...acc,
-														[index]: {
-															key: index.toString(),
-															property: {
-																value: tag,
-															},
-														},
-													}),
-													{},
-												)
-											: {}
-									}
-									storePaths={storePaths}
+									value={{
+										value: Array.isArray(def.tag)
+											? def.tag.join(' ')
+											: def.tag || '',
+									}}
+									onlyValue={true}
 									onChange={v => {
 										const newDef = duplicate(def);
-										// Convert the multi-value format back to array of tags
-										newDef.tag = Object.values(v)
-											.map(item => item.property.value)
-											.filter(Boolean);
+										newDef.tag = v.value
+											? v.value
+													.split(/\s+/)
+													.filter((t: string | any[]) => t.length > 0)
+											: [];
+										newDef._tags = newDef.tag;
 										updateDefinition(
 											defPath!,
 											locationHistory,

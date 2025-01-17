@@ -74,6 +74,7 @@ export enum ComponentPropertyEditor {
 	COLOR_PICKER,
 	SECTION_PROPERTIES_EDITOR,
 	TEXT_EDITOR,
+	TAGS_EDITOR,
 }
 
 export enum ComponentPropertyGroup {
@@ -283,6 +284,7 @@ export interface ComponentDefinition {
 			| ComponentMultiProperty<any>
 			| { [key: string]: ComponentProperty<any> }
 			| { [key: string]: Validation };
+		// | Array<any>;
 	};
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
