@@ -76,12 +76,30 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			);
 	};
 
+	const labelText = getTranslations(label, translations);
+
 	return (
 		<div
 			className={`comp compCheckbox ${designType} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
+			title={labelText}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			<CommonCheckbox
+				isChecked={checkBoxdata}
+				isReadOnly={readOnly}
+				id={key}
+				onChange={handleChange}
+				styles={resolvedStyles.checkbox ?? {}}
+				thumbStyles={resolvedStyles.thumb ?? {}}
+				focusHandler={
+					stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
+				}
+				blurHandler={
+					stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
+				}
+				definition={props.definition}
+			/>
 			<label
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
@@ -97,22 +115,8 @@ function CheckBox(props: Readonly<ComponentProps>) {
 				onClick={() => handleChange(!checkBoxdata)}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="label" />
-				<CommonCheckbox
-					isChecked={checkBoxdata}
-					isReadOnly={readOnly}
-					id={key}
-					onChange={handleChange}
-					styles={resolvedStyles.checkbox ?? {}}
-					thumbStyles={resolvedStyles.thumb ?? {}}
-					focusHandler={
-						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
-					}
-					blurHandler={
-						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
-					}
-					definition={props.definition}
-				/>
-				{getTranslations(label, translations)}
+
+				{labelText}
 			</label>
 		</div>
 	);
