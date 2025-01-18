@@ -236,6 +236,7 @@ export function App() {
 				</Routes>
 			</BrowserRouter>
 			<Messages />
+			<div id="_rendered" />
 		</>
 	);
 }

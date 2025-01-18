@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { AppDefinitionResponse, getAppDefinition } from './App/appDefinition';
 import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
@@ -140,16 +140,27 @@ if (!app) {
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
 
+		const AUTH_TOKEN = window.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
+
 		const { App } = await import(/* webpackChunkName: "Application" */ './App/App');
 		const { AppStyle } = await import(
 			/* webpackChunkName: "ApplicationStyle" */ './App/AppStyle'
 		);
-		const root = createRoot(app);
-		root.render(
+
+		const reactNode = (
 			<>
 				<AppStyle />
 				<App />
-			</>,
+			</>
 		);
+		if (window.localStorage.getItem(AUTH_TOKEN) || !document.getElementById('_rendered'))
+			createRoot(app).render(reactNode);
+		else
+			try {
+				hydrateRoot(app, reactNode);
+			} catch (err) {
+				console.log('Hydration failed...');
+				createRoot(app).render(reactNode);
+			}
 	})();
 }
