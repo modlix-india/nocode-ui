@@ -11,7 +11,7 @@ export default function FormStorageEditorStyle({
 }: Readonly<{
 	theme: Map<string, Map<string, string>>;
 }>) {
-	const [used, setUsed] = useState(false);
+	const [used, setUsed] = useState(usedComponents.used(NAME));
 
 	useEffect(() => {
 		const fn = () => setUsed(true);
