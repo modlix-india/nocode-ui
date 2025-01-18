@@ -21,10 +21,6 @@ export default function ButtonStyle({
 		return () => usedComponents.deRegister(NAME);
 	}, []);
 
-	const values = new Map([
-		...Array.from(theme.get(StyleResolution.ALL) ?? []),
-		...Array.from(styleDefaults),
-	]);
 	const css =
 		`
 		${PREFIX} {
