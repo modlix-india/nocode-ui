@@ -42,8 +42,11 @@ declare global {
 	var appDefinitionResponse: AppDefinitionResponse;
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;
+	var styleProperties: any;
 	// var d3: typeof import('d3/index');
 }
+
+window.styleProperties = {};
 
 let listeners: Set<() => void> = new Set();
 globalThis.removeDesignModeChangeListener = (fn: () => void) => listeners.delete(fn);
@@ -173,10 +176,11 @@ if (!app) {
 		const rendered = document.getElementById('_rendered');
 		if (rendered) {
 			const comps = (rendered.getAttribute('data-used-components') ?? '').split(',');
+
 			for (const eachcomp of comps) {
 				if (!externalStylePropertyJSONComponents.has(eachcomp)) continue;
 				try {
-					await axios.get(lazyStylePropURL(eachcomp));
+					window.styleProperties[eachcomp] = await axios.get(lazyStylePropURL(eachcomp));
 				} catch (err) {}
 			}
 		}

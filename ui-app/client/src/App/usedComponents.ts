@@ -1,4 +1,9 @@
 const usedSet = new Set<string>();
+const rendered = document.getElementById('_rendered');
+if (rendered) {
+	const comps = (rendered.getAttribute('data-used-components') ?? '').split(',');
+	comps.forEach(e => usedSet.add(e));
+}
 
 const registeredComponents = new Map<string, () => void>();
 let lastAdded = Date.now();
