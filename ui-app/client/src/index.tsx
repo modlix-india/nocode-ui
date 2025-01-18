@@ -4,6 +4,7 @@ import { AppDefinitionResponse, getAppDefinition } from './App/appDefinition';
 import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
 import { processLocation } from './util/locationProcessor';
+import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 
 // TEST CDN CODE
 // window.cdnPrefix = 'cdn-dev.modlix.com';
@@ -147,19 +148,51 @@ if (!app) {
 			/* webpackChunkName: "ApplicationStyle" */ './App/AppStyle'
 		);
 
+		const externalStylePropertyJSONComponents = new Set([
+			'Button',
+			'Calendar',
+			'ColorPicker',
+			'Dropdown',
+			'FileUpload',
+			'Menu',
+			'Otp',
+			'PhoneNumber',
+			'Stepper',
+			'Table',
+			'TableColumn',
+			'TableColumnHeader',
+			'TableColumns',
+			'TableEmptyGrid',
+			'TableGrid',
+			'TablePreviewGrid',
+			'TextArea',
+			'TextBox',
+			'Video',
+		]);
+
+		const rendered = document.getElementById('_rendered');
+		if (rendered) {
+			const comps = (rendered.getAttribute('data-used-components') ?? '').split(',');
+			for (const eachcomp of comps) {
+				if (!externalStylePropertyJSONComponents.has(eachcomp)) continue;
+				try {
+					await axios.get(lazyStylePropURL(eachcomp));
+				} catch (err) {}
+			}
+		}
+
 		const reactNode = (
 			<>
 				<AppStyle />
 				<App />
 			</>
 		);
-		if (window.localStorage.getItem(AUTH_TOKEN) || !document.getElementById('_rendered'))
-			createRoot(app).render(reactNode);
+		if (window.localStorage.getItem(AUTH_TOKEN) || !rendered) createRoot(app).render(reactNode);
 		else
 			try {
 				hydrateRoot(app, reactNode);
 			} catch (err) {
-				console.log('Hydration failed...');
+				console.error('Hydration failed...', err);
 				createRoot(app).render(reactNode);
 			}
 	})();
