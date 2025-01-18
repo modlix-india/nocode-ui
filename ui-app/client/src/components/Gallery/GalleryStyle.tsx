@@ -15,7 +15,7 @@ export default function GalleryStyle({
 		...Array.from(styleDefaults),
 	]);
 
-	const [used, setUsed] = useState(false);
+	const [used, setUsed] = useState(usedComponents.used(NAME));
 
 	useEffect(() => {
 		const fn = () => setUsed(true);
