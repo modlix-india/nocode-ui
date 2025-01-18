@@ -180,7 +180,9 @@ if (!app) {
 			for (const eachcomp of comps) {
 				if (!externalStylePropertyJSONComponents.has(eachcomp)) continue;
 				try {
-					window.styleProperties[eachcomp] = await axios.get(lazyStylePropURL(eachcomp));
+					window.styleProperties[eachcomp] = (
+						await axios.get(lazyStylePropURL(eachcomp))
+					)?.data;
 				} catch (err) {}
 			}
 		}
