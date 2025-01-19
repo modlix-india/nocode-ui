@@ -15,6 +15,7 @@ import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
 import { getAppDefinition } from './appDefinition';
+import { usedComponents } from './usedComponents';
 
 // In design mode we are listening to the messages from editor
 
@@ -220,6 +221,15 @@ export function App() {
 		[],
 	);
 
+	const [usedComps, setUsedComps] = useState<string>('');
+	useEffect(
+		() =>
+			usedComponents.registerGloblalListener(uc =>
+				setTimeout(() => setUsedComps(Array.from(uc).join(',')), 100),
+			),
+		[setUsedComps],
+	);
+
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
@@ -236,6 +246,7 @@ export function App() {
 				</Routes>
 			</BrowserRouter>
 			<Messages />
+			<div id="_rendered" data-used-components={usedComps} />
 		</>
 	);
 }

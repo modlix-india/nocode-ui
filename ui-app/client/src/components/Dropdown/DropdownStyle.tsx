@@ -10,7 +10,15 @@ const NAME = 'Dropdown';
 export default function DropdownStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
+		window.styleProperties[NAME] ?? [],
+	);
+
+	if (window.styleProperties[NAME] && !styleDefaults.size) {
+		window.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
+			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
+		);
+	}
 
 	useEffect(() => {
 		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
@@ -25,6 +33,7 @@ export default function DropdownStyle({
         ${PREFIX} {
             display: flex;
             align-items: center;
+            cursor: pointer;
         }
     
         ${PREFIX} input {
@@ -38,6 +47,7 @@ export default function DropdownStyle({
             background: transparent;
             color: inherit;
             min-width: 20px;
+            cursor: pointer;
         }
     
         ${PREFIX}._isActive ._label,

@@ -352,7 +352,6 @@ function processCDN(style: any) {
 			if (!window.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
 			url += lastPart;
 			if (window.cdnReplacePlus) url = url.replaceAll('+', '%20');
-			console.log(value[k], url);
 			value[k] = url;
 		}
 	}

@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { createRoot } from 'react-dom/client';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import { AppDefinitionResponse, getAppDefinition } from './App/appDefinition';
 import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
 import { processLocation } from './util/locationProcessor';
+import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 
 // TEST CDN CODE
 // window.cdnPrefix = 'cdn-dev.modlix.com';
@@ -41,8 +42,11 @@ declare global {
 	var appDefinitionResponse: AppDefinitionResponse;
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;
+	var styleProperties: any;
 	// var d3: typeof import('d3/index');
 }
+
+window.styleProperties = {};
 
 let listeners: Set<() => void> = new Set();
 globalThis.removeDesignModeChangeListener = (fn: () => void) => listeners.delete(fn);
@@ -140,16 +144,62 @@ if (!app) {
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
 
+		const AUTH_TOKEN = window.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
+
 		const { App } = await import(/* webpackChunkName: "Application" */ './App/App');
 		const { AppStyle } = await import(
 			/* webpackChunkName: "ApplicationStyle" */ './App/AppStyle'
 		);
-		const root = createRoot(app);
-		root.render(
+
+		const externalStylePropertyJSONComponents = new Set([
+			'Button',
+			'Calendar',
+			'ColorPicker',
+			'Dropdown',
+			'FileUpload',
+			'Menu',
+			'Otp',
+			'PhoneNumber',
+			'Stepper',
+			'Table',
+			'TableColumn',
+			'TableColumnHeader',
+			'TableColumns',
+			'TableEmptyGrid',
+			'TableGrid',
+			'TablePreviewGrid',
+			'TextArea',
+			'TextBox',
+			'Video',
+		]);
+
+		const rendered = document.getElementById('_rendered');
+		if (rendered) {
+			const comps = (rendered.getAttribute('data-used-components') ?? '').split(',');
+
+			for (const eachcomp of comps) {
+				if (!externalStylePropertyJSONComponents.has(eachcomp)) continue;
+				try {
+					window.styleProperties[eachcomp] = (
+						await axios.get(lazyStylePropURL(eachcomp))
+					)?.data;
+				} catch (err) {}
+			}
+		}
+
+		const reactNode = (
 			<>
 				<AppStyle />
 				<App />
-			</>,
+			</>
 		);
+		if (window.localStorage.getItem(AUTH_TOKEN) || !rendered) createRoot(app).render(reactNode);
+		else
+			try {
+				hydrateRoot(app, reactNode);
+			} catch (err) {
+				console.error('Hydration failed...', err);
+				createRoot(app).render(reactNode);
+			}
 	})();
 }

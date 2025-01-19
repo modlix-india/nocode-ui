@@ -10,7 +10,7 @@ export function FileBrowserStyles() {
 		StyleResolution.TABLET_POTRAIT_SCREEN,
 	)?.minWidth;
 
-	const [used, setUsed] = useState(false);
+	const [used, setUsed] = useState(usedComponents.used(NAME));
 
 	useEffect(() => {
 		const fn = () => setUsed(true);
