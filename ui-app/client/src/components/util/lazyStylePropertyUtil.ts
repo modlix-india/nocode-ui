@@ -8,6 +8,14 @@ export function lazyStylePropertyLoadFunction(
 ) {
 	return () => {
 		if (styleDefaults.size > 0) return;
+		if (window.styleProperties[name]) {
+			window.styleProperties[name]
+				.filter((e: any) => !!e.dv)
+				?.map(({ n: name, dv: defaultValue }: any) =>
+					styleDefaults.set(name, defaultValue),
+				);
+			return;
+		}
 		axios.get(lazyStylePropURL(name)).then((res: any) => {
 			if (!Array.isArray(res.data)) {
 				console.error('Unable to load style properties for component : ', name);
