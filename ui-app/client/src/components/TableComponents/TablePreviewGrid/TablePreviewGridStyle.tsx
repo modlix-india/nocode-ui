@@ -12,7 +12,15 @@ export default function TablePreviewGridStyle({
 }: Readonly<{
 	theme: Map<string, Map<string, string>>;
 }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>([]);
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
+		window.styleProperties[NAME] ?? [],
+	);
+
+	if (window.styleProperties[NAME] && !styleDefaults.size) {
+		window.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
+			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
+		);
+	}
 
 	useEffect(() => {
 		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
