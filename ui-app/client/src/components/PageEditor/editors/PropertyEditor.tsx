@@ -429,28 +429,28 @@ export default function PropertyEditor({
 									appPath={appPath}
 									pageDefinition={pageDef}
 									propDef={{
-										name: '_tag',
+										name: '_tags',
 										displayName: 'Tags',
 										description: 'Tags to categorize the component',
 										schema: SCHEMA_STRING_COMP_PROP,
 										editor: ComponentPropertyEditor.TAGS_EDITOR,
 										group: ComponentPropertyGroup.BASIC,
-										defaultValue: {},
+										defaultValue: [],
 									}}
 									value={{
-										value: Array.isArray(def.tag)
-											? def.tag.join(' ')
-											: def.tag || '',
+										value: def.properties?._tags?.value || [],
 									}}
 									onlyValue={true}
 									onChange={v => {
 										const newDef = duplicate(def);
-										newDef.tag = v.value
-											? v.value
-													.split(/\s+/)
-													.filter((t: string | any[]) => t.length > 0)
-											: [];
-										newDef._tags = newDef.tag;
+										if (!newDef.properties) newDef.properties = {};
+
+										if (v.value && v.value.length > 0) {
+											newDef.properties._tags = { value: v.value };
+										} else {
+											delete newDef.properties._tags;
+										}
+
 										updateDefinition(
 											defPath!,
 											locationHistory,

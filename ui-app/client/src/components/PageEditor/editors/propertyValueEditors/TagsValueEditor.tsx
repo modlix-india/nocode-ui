@@ -81,7 +81,7 @@ export function TagsValueEditor({
 				const updatedTags = [...tags, ...newTags];
 				setTags(updatedTags);
 				setInputValue('');
-				onChange({ value: updatedTags.join(' '), _tags: updatedTags });
+				onChange({ value: updatedTags });
 			}
 		}
 	};
@@ -92,7 +92,7 @@ export function TagsValueEditor({
 			const newTags = [...tags, inputValue.trim()];
 			setTags(newTags);
 			setInputValue('');
-			onChange({ value: newTags.join(' ') });
+			onChange({ value: newTags });
 		} else if (
 			(e.key === 'Backspace' || e.key === 'delete') &&
 			!inputValue &&
@@ -100,14 +100,14 @@ export function TagsValueEditor({
 		) {
 			const newTags = tags.slice(0, -1);
 			setTags(newTags);
-			onChange({ value: newTags.length > 0 ? newTags.join(' ') : undefined });
+			onChange({ value: newTags.length > 0 ? newTags : undefined });
 		}
 	};
 
 	const removeTag = (indexToRemove: number) => {
 		const newTags = tags.filter((_, index) => index !== indexToRemove);
 		setTags(newTags);
-		onChange({ value: newTags.length > 0 ? newTags.join(' ') : undefined });
+		onChange({ value: newTags.length > 0 ? newTags : undefined });
 	};
 
 	return (
