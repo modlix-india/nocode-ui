@@ -118,14 +118,12 @@ export function TagsValueEditor({
 						<span key={`${tag}-${index}`} className="_tag">
 							<svg
 								fill="#666"
-								height="14px"
-								width="14px"
+								height="12px"
+								width="12px"
 								viewBox="-44.27 -44.27 531.23 531.23"
 								stroke="#ccc"
 							>
-								<g strokeWidth="0"></g>
 								<g strokeLinecap="round" strokeLinejoin="round"></g>
-
 								<g>
 									<path d="M442.666,178.822l-4.004-145.078c-0.447-16.222-13.504-29.279-29.727-29.728l-145.08-4.004 c-8.475-0.237-16.493,2.97-22.468,8.945L8.954,241.391c-11.924,11.924-11.924,31.325,0,43.249l149.083,149.082 c11.951,11.953,31.296,11.956,43.25,0.001L433.721,201.29C439.636,195.374,442.897,187.184,442.666,178.822z M376.238,139.979 c-20.323,20.322-53.215,20.324-73.539,0c-20.275-20.275-20.275-53.265,0-73.539c20.323-20.323,53.215-20.324,73.539,0 C396.512,86.714,396.512,119.704,376.238,139.979z"></path>
 								</g>
@@ -134,7 +132,7 @@ export function TagsValueEditor({
 							<span
 								className="_clearText _rightIcon fa fa-regular fa-circle-xmark fa-fw"
 								onClick={() => removeTag(index)}
-								title="Remove the tag"
+								title="Remove this Tag"
 							/>
 						</span>
 					))}
