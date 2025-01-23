@@ -264,7 +264,7 @@ export interface ComponentStyle {
 }
 
 export interface ComponentDefinition {
-	tag: any;
+	tag?: any;
 	key: string;
 	name: string;
 	bindingPath?: DataLocation;
@@ -284,12 +284,12 @@ export interface ComponentDefinition {
 			| ComponentMultiProperty<any>
 			| { [key: string]: ComponentProperty<any> }
 			| { [key: string]: Validation };
-		// | Array<any>;
 	};
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
 	displayOrder?: number;
 	children?: { [key: string]: boolean };
+	_tags?: string[];
 }
 
 export interface ComponentDefinitionValues {

@@ -53,6 +53,9 @@ export default function DnDNavigationBar({
 	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined); // which component expand last
 	const [dragStart, setDragStart] = useState<boolean>(false); // dragging any component or not
 	const [map, setMap] = useState(new Map<string, string>()); // contains all the components object ids
+	const [oldSelected, setOldSelected] = useState<string>('');
+	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
+	const [showMultiSelect, setShowMultiSelect] = useState(false); // Add new state for multi-select button visibility
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -97,8 +100,6 @@ export default function DnDNavigationBar({
 		[defPath, setPageDef],
 	);
 
-	const [oldSelected, setOldSelected] = useState<string>('');
-
 	useEffect(() => {
 		if (oldSelected === selectedComponent || !selectedComponent) return;
 		let current = map.get(selectedComponent);
@@ -114,39 +115,108 @@ export default function DnDNavigationBar({
 
 	const applyFilter = useCallback(
 		(f: string) => {
-			if (!f.trim()) return;
+			if (!f.trim()) {
+				setShowMultiSelect(false);
+				onSelectedComponentChanged('');
+				onSelectedComponentListChanged('');
+				return;
+			}
 
 			const set = new Set(openParents);
+			const matchingComponents: string[] = [];
+
 			Object.values(pageDef?.componentDefinition ?? {})
 				.filter(e => {
 					const nameMatch = (e.name ?? '').toUpperCase().includes(f.toUpperCase());
 
-					// Check component tags - handle different tag formats
+					// Check component tags
 					let tags: string[] = [];
-					if (e.tag) {
-						if (Array.isArray(e.tag)) {
-							tags = e.tag;
-						} else if (typeof e.tag === 'string') {
-							tags = e.tag.split(/\s+/).filter(t => t.length > 0);
-						}
+					if (e._tags) {
+						tags = Array.isArray(e._tags) ? e._tags : [e._tags];
 					}
+					const tagMatch = tags.some(tag =>
+						tag.toString().toUpperCase().includes(f.toUpperCase()),
+					);
 
-					const tagMatch = tags.some(tag => tag.toUpperCase().includes(f.toUpperCase()));
+					// Check component type
+					const typeMatch = (e.type ?? '').toUpperCase().includes(f.toUpperCase());
 
-					return nameMatch || tagMatch;
+					// Check style properties
+					const styleMatch = Object.values(e.styleProperties ?? {}).some(style =>
+						Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+							prop.value?.toString().toUpperCase().includes(f.toUpperCase()),
+						),
+					);
+
+					// Check regular properties
+					const propMatch = Object.values(e.properties ?? {}).some(prop =>
+						prop.value?.toString().toUpperCase().includes(f.toUpperCase()),
+					);
+
+					const isMatch = nameMatch || tagMatch || typeMatch || styleMatch || propMatch;
+					if (isMatch) {
+						matchingComponents.push(e.key);
+					}
+					return isMatch;
 				})
-				.map(e => e.key)
 				.forEach(e => {
-					let p: string | undefined = e;
+					let p: string | undefined = e.key;
 					while ((p = map.get(p))) {
 						if (expandAll) set.delete(p);
 						else set.add(p);
 					}
 				});
+
 			setOpenParents(set);
+
+			// Show multi-select button if multiple matches found
+			setShowMultiSelect(matchingComponents.length > 1);
+
+			// Auto-select the first matching component
+			if (matchingComponents.length > 0) {
+				onSelectedComponentChanged(matchingComponents[0]);
+			}
 		},
-		[openParents, setOpenParents, pageDef, expandAll, map],
+		[
+			openParents,
+			setOpenParents,
+			pageDef,
+			expandAll,
+			map,
+			onSelectedComponentChanged,
+			onSelectedComponentListChanged,
+		],
 	);
+
+	const handleMultiSelect = useCallback(() => {
+		// Find all matching components based on filter
+		const matchingComponents = Object.values(pageDef?.componentDefinition ?? {})
+			.filter(e => {
+				const nameMatch = (e.name ?? '').toUpperCase().includes(filter.toUpperCase());
+				const tags = Array.isArray(e._tags) ? e._tags : [e._tags];
+				const tagMatch = tags.some(tag =>
+					tag?.toString().toUpperCase().includes(filter.toUpperCase()),
+				);
+				const typeMatch = (e.type ?? '').toUpperCase().includes(filter.toUpperCase());
+				const styleMatch = Object.values(e.styleProperties ?? {}).some(style =>
+					Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+						prop.value?.toString().toUpperCase().includes(filter.toUpperCase()),
+					),
+				);
+				const propMatch = Object.values(e.properties ?? {}).some(prop =>
+					prop.value?.toString().toUpperCase().includes(filter.toUpperCase()),
+				);
+				return nameMatch || tagMatch || typeMatch || styleMatch || propMatch;
+			})
+			.map(e => e.key);
+
+		if (matchingComponents.length > 0) {
+			onSelectedComponentChanged(matchingComponents[0]);
+			matchingComponents.forEach(key => {
+				onSelectedComponentListChanged(key);
+			});
+		}
+	}, [filter, pageDef, onSelectedComponentChanged, onSelectedComponentListChanged]);
 
 	useEffect(() => {
 		if (!selectedComponent || selectedComponentsList?.length != 1) return;
@@ -162,11 +232,9 @@ export default function DnDNavigationBar({
 				const rect = element.getBoundingClientRect();
 				if (rect.top < 0 || rect.bottom > window.innerHeight)
 					element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-			}, 500);
+			}, 100);
 		}
 	}, [selectedComponent]);
-
-	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
 
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
 		return <div className="_propBar"></div>;
@@ -184,13 +252,31 @@ export default function DnDNavigationBar({
 						setFilterHandle(setTimeout(() => applyFilter(e.target.value), 1000));
 					}}
 				/>
+				{showMultiSelect &&
+					(filter.trim() && selectedComponentsList.length > 0 ? (
+						<i
+							className="fa fa-solid fa-circle-xmark"
+							onClick={() => {
+								onSelectedComponentChanged('');
+								onSelectedComponentListChanged('');
+								setShowMultiSelect(true); // Keep showing multi-select button
+							}}
+							title="Clear selection"
+						/>
+					) : (
+						<i
+							className="fa fa-solid fa-check-circle"
+							onClick={handleMultiSelect}
+							title="Select all matching components"
+						/>
+					))}
 				<i
-					className={`fa fa-solid ${expandAll ? 'fa-circle-minus' : 'fa-circle-plus'}`}
+					className={`fa fa-solid fa-circle-${expandAll ? 'minus' : 'plus'}`}
 					onClick={() => {
 						setExpandAll(!expandAll);
 						setOpenParents(new Set());
 					}}
-				></i>
+				/>
 			</div>
 			<div className="_compsTree">
 				<CompTree

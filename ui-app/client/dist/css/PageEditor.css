@@ -345,6 +345,7 @@ select._peInput {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 2px;
+	cursor: pointer;
 }
 
 .comp.compPageEditor ._tag {
