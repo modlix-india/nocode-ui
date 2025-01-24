@@ -103,13 +103,10 @@ export default function DnDNavigationBar({
 	useEffect(() => {
 		if (oldSelected === selectedComponent || !selectedComponent) return;
 
-		// Find all parent components of the selected component
 		let current = map.get(selectedComponent);
 		let set = new Set(openParents);
 
-		// Add all parent components to the openParents set to expand the tree
 		while (current) {
-			// Always add the parent to open it, regardless of expandAll state
 			set.add(current);
 			current = map.get(current);
 		}
@@ -135,7 +132,6 @@ export default function DnDNavigationBar({
 				.filter(e => {
 					const nameMatch = (e.name ?? '').toUpperCase().includes(f.toUpperCase());
 
-					// Check component tags
 					let tags: string[] = [];
 					if (e._tags) {
 						tags = Array.isArray(e._tags) ? e._tags : [e._tags];
@@ -144,17 +140,14 @@ export default function DnDNavigationBar({
 						tag.toString().toUpperCase().includes(f.toUpperCase()),
 					);
 
-					// Check component type
 					const typeMatch = (e.type ?? '').toUpperCase().includes(f.toUpperCase());
 
-					// Check style properties
 					const styleMatch = Object.values(e.styleProperties ?? {}).some(style =>
 						Object.values(style.resolutions?.ALL ?? {}).some(prop =>
 							prop.value?.toString().toUpperCase().includes(f.toUpperCase()),
 						),
 					);
 
-					// Check regular properties
 					const propMatch = Object.values(e.properties ?? {}).some(prop =>
 						prop.value?.toString().toUpperCase().includes(f.toUpperCase()),
 					);
@@ -176,10 +169,8 @@ export default function DnDNavigationBar({
 
 			setOpenParents(set);
 
-			// Show multi-select button if multiple matches found
 			setShowMultiSelect(matchingComponents.length > 1);
 
-			// Auto-select the first matching component
 			if (matchingComponents.length > 0) {
 				onSelectedComponentChanged(matchingComponents[0]);
 				matchingComponents.forEach(key => {
