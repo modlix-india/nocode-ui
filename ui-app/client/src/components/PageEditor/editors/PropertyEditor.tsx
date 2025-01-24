@@ -139,10 +139,16 @@ export default function PropertyEditor({
 	}, [defPath, selectedComponent]);
 
 	useEffect(() => {
-		if (!defPath) return; // Page.pageDefinition
+		if (!defPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, v: PageDefinition) => {
+				// Guard against empty selectedComponentsList
+				if (!selectedComponentsList?.length) {
+					setAllCommonProperties([]);
+					return;
+				}
+
 				// sets of sets of property names
 				const propertyNamesSets = selectedComponentsList.map(currentComponent => {
 					let properties =
@@ -150,12 +156,11 @@ export default function PropertyEditor({
 							?.properties ?? [];
 					return new Set(properties.map(obj => obj.name));
 				});
-				// set of all common names
+
 				const commonPropertyNames = propertyNamesSets.reduce((accumulator, currentSet) => {
 					let accArr = Array.from(accumulator);
 					return new Set(accArr.filter(name => currentSet.has(name)));
-				});
-
+				}, propertyNamesSets[0] || new Set());
 				let properties =
 					ComponentDefinitions?.get(
 						v?.componentDefinition[selectedComponentsList[0]]?.type,
