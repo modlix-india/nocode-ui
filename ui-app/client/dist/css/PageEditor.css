@@ -104,22 +104,6 @@
 	fill: url(#greenPropBarGradient);
 }
 
-.comp.compPageEditor ._filterBar {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding: 15px 10px;
-	gap: 5px;
-	width: 100%;
-}
-
-.comp.compPageEditor ._filterBar i.fa {
-	font-size: 22px;
-	cursor: pointer;
-	color: #52bd94;
-}
-
 .comp.compPageEditor ._compsTree {
 	display: flex;
 	flex-direction: column;
@@ -346,6 +330,51 @@ select._peInput {
 	flex-wrap: wrap;
 	gap: 2px;
 	cursor: pointer;
+}
+
+.comp.compPageEditor ._filterBar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 15px 10px;
+	gap: 5px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._filterBar i.fa {
+	font-size: 22px;
+	cursor: pointer;
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._advancedFilter {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	padding: 8px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._advancedFilterBody {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: 80%;
+	/* max-width: 100px; */
+}
+
+.comp.compPageEditor ._advancedFilterHeader {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 8px;
+}
+
+.comp.compPageEditor ._advancedFilter input {
+	width: 100%;
+	padding: 4px 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
 }
 
 .comp.compPageEditor ._tag {

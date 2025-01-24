@@ -56,6 +56,15 @@ export default function DnDNavigationBar({
 	const [oldSelected, setOldSelected] = useState<string>('');
 	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
 	const [showMultiSelect, setShowMultiSelect] = useState(false); // Add new state for multi-select button visibility
+	const [isAdvancedSearch, setIsAdvancedSearch] = useState(false);
+	const [advancedFilters, setAdvancedFilters] = useState({
+		name: '',
+		type: '',
+		tag: '',
+		value: '',
+		style: '',
+		prop: '',
+	});
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -134,11 +143,13 @@ export default function DnDNavigationBar({
 
 					let tags: string[] = [];
 					if (e._tags) {
-						tags = Array.isArray(e._tags) ? e._tags : [e._tags];
+						if (Array.isArray(e._tags)) {
+							tags = e._tags.filter(tag => tag != null).map(tag => String(tag));
+						} else if (e._tags != null) {
+							tags = [String(e._tags)];
+						}
 					}
-					const tagMatch = tags.some(tag =>
-						tag.toString().toUpperCase().includes(f.toUpperCase()),
-					);
+					const tagMatch = tags.some(tag => tag.toUpperCase().includes(f.toUpperCase()));
 
 					const typeMatch = (e.type ?? '').toUpperCase().includes(f.toUpperCase());
 
@@ -190,24 +201,90 @@ export default function DnDNavigationBar({
 	);
 
 	const handleMultiSelect = useCallback(() => {
-		// Find all matching components based on filter
+		// Find all matching components based on current search mode
 		const matchingComponents = Object.values(pageDef?.componentDefinition ?? {})
 			.filter(e => {
-				const nameMatch = (e.name ?? '').toUpperCase().includes(filter.toUpperCase());
-				const tags = Array.isArray(e._tags) ? e._tags : [e._tags];
-				const tagMatch = tags.some(tag =>
-					tag?.toString().toUpperCase().includes(filter.toUpperCase()),
-				);
-				const typeMatch = (e.type ?? '').toUpperCase().includes(filter.toUpperCase());
-				const styleMatch = Object.values(e.styleProperties ?? {}).some(style =>
-					Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+				if (isAdvancedSearch) {
+					const nameMatch = advancedFilters.name
+						? (e.name ?? '').toUpperCase().includes(advancedFilters.name.toUpperCase())
+						: true;
+
+					const typeMatch = advancedFilters.type
+						? (e.type ?? '').toUpperCase().includes(advancedFilters.type.toUpperCase())
+						: true;
+
+					let tags: string[] = [];
+					if (e._tags) {
+						if (Array.isArray(e._tags)) {
+							tags = e._tags.filter(tag => tag != null).map(tag => String(tag));
+						} else if (e._tags != null) {
+							tags = [String(e._tags)];
+						}
+					}
+					const tagMatch = advancedFilters.tag
+						? tags.some(tag =>
+								tag.toUpperCase().includes(advancedFilters.tag.toUpperCase()),
+							)
+						: true;
+
+					const valueMatch = advancedFilters.value
+						? Object.values(e.properties ?? {}).some(prop =>
+								prop.value
+									?.toString()
+									.toUpperCase()
+									.includes(advancedFilters.value.toUpperCase()),
+							)
+						: true;
+
+					const styleMatch = advancedFilters.style
+						? Object.values(e.styleProperties ?? {}).some(style =>
+								Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+									prop.value
+										?.toString()
+										.toUpperCase()
+										.includes(advancedFilters.style.toUpperCase()),
+								),
+							)
+						: true;
+
+					const propMatch = advancedFilters.prop
+						? Object.values(e.properties ?? {}).some(prop =>
+								prop.value
+									?.toString()
+									.toUpperCase()
+									.includes(advancedFilters.prop.toUpperCase()),
+							)
+						: true;
+
+					return (
+						nameMatch && typeMatch && tagMatch && valueMatch && styleMatch && propMatch
+					);
+				} else {
+					const nameMatch = (e.name ?? '').toUpperCase().includes(filter.toUpperCase());
+
+					let tags: string[] = [];
+					if (e._tags) {
+						if (Array.isArray(e._tags)) {
+							tags = e._tags.filter(tag => tag != null).map(tag => String(tag));
+						} else if (e._tags != null) {
+							tags = [String(e._tags)];
+						}
+					}
+					const tagMatch = tags.some(tag =>
+						tag.toUpperCase().includes(filter.toUpperCase()),
+					);
+
+					const typeMatch = (e.type ?? '').toUpperCase().includes(filter.toUpperCase());
+					const styleMatch = Object.values(e.styleProperties ?? {}).some(style =>
+						Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+							prop.value?.toString().toUpperCase().includes(filter.toUpperCase()),
+						),
+					);
+					const propMatch = Object.values(e.properties ?? {}).some(prop =>
 						prop.value?.toString().toUpperCase().includes(filter.toUpperCase()),
-					),
-				);
-				const propMatch = Object.values(e.properties ?? {}).some(prop =>
-					prop.value?.toString().toUpperCase().includes(filter.toUpperCase()),
-				);
-				return nameMatch || tagMatch || typeMatch || styleMatch || propMatch;
+					);
+					return nameMatch || tagMatch || typeMatch || styleMatch || propMatch;
+				}
 			})
 			.map(e => e.key);
 
@@ -217,7 +294,14 @@ export default function DnDNavigationBar({
 				onSelectedComponentListChanged(key);
 			});
 		}
-	}, [filter, pageDef, onSelectedComponentChanged, onSelectedComponentListChanged]);
+	}, [
+		filter,
+		advancedFilters,
+		isAdvancedSearch,
+		pageDef,
+		onSelectedComponentChanged,
+		onSelectedComponentListChanged,
+	]);
 
 	useEffect(() => {
 		if (!selectedComponent || selectedComponentsList?.length != 1) return;
@@ -237,40 +321,191 @@ export default function DnDNavigationBar({
 		}
 	}, [selectedComponent]);
 
+	const applyAdvancedFilter = useCallback(() => {
+		const hasAnyFilter = Object.values(advancedFilters).some(f => f.trim() !== '');
+
+		if (!hasAnyFilter) {
+			setShowMultiSelect(false);
+			onSelectedComponentChanged('');
+			onSelectedComponentListChanged('');
+			setOpenParents(new Set());
+			return;
+		}
+
+		const set = new Set(openParents);
+		const matchingComponents: string[] = [];
+
+		Object.values(pageDef?.componentDefinition ?? {})
+			.filter(e => {
+				const nameMatch = advancedFilters.name
+					? (e.name ?? '').toUpperCase().includes(advancedFilters.name.toUpperCase())
+					: true;
+
+				const typeMatch = advancedFilters.type
+					? (e.type ?? '').toUpperCase().includes(advancedFilters.type.toUpperCase())
+					: true;
+
+				let tags: string[] = [];
+				if (e._tags) {
+					if (Array.isArray(e._tags)) {
+						tags = e._tags.filter(tag => tag != null).map(tag => String(tag));
+					} else if (e._tags != null) {
+						tags = [String(e._tags)];
+					}
+				}
+				const tagMatch = advancedFilters.tag
+					? tags.some(tag =>
+							tag.toUpperCase().includes(advancedFilters.tag.toUpperCase()),
+						)
+					: true;
+
+				const valueMatch = advancedFilters.value
+					? Object.values(e.properties ?? {}).some(prop =>
+							prop.value
+								?.toString()
+								.toUpperCase()
+								.includes(advancedFilters.value.toUpperCase()),
+						)
+					: true;
+
+				const styleMatch = advancedFilters.style
+					? Object.values(e.styleProperties ?? {}).some(style =>
+							Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+								prop.value
+									?.toString()
+									.toUpperCase()
+									.includes(advancedFilters.style.toUpperCase()),
+							),
+						)
+					: true;
+
+				const propMatch = advancedFilters.prop
+					? Object.values(e.properties ?? {}).some(prop =>
+							prop.value
+								?.toString()
+								.toUpperCase()
+								.includes(advancedFilters.prop.toUpperCase()),
+						)
+					: true;
+
+				const isMatch =
+					nameMatch && typeMatch && tagMatch && valueMatch && styleMatch && propMatch;
+
+				if (isMatch) {
+					matchingComponents.push(e.key);
+				}
+				return isMatch;
+			})
+			.forEach(e => {
+				let p: string | undefined = e.key;
+				while ((p = map.get(p))) {
+					if (expandAll) set.delete(p);
+					else set.add(p);
+				}
+			});
+
+		setOpenParents(set);
+		setShowMultiSelect(matchingComponents.length > 1);
+
+		if (matchingComponents.length > 0) {
+			onSelectedComponentChanged(matchingComponents[0]);
+			matchingComponents.forEach(key => {
+				onSelectedComponentListChanged(key);
+			});
+		} else {
+			onSelectedComponentChanged('');
+			onSelectedComponentListChanged('');
+		}
+	}, [
+		advancedFilters,
+		openParents,
+		pageDef,
+		expandAll,
+		map,
+		onSelectedComponentChanged,
+		onSelectedComponentListChanged,
+	]);
+
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
 		return <div className="_propBar"></div>;
 
 	return (
 		<div className="_propBar _compNavBarVisible _left">
 			<div className="_filterBar">
-				<input
-					type="text"
-					placeholder="Search filter"
-					value={filter}
-					onChange={e => {
-						setFilter(e.target.value);
-						if (filterHandle) clearTimeout(filterHandle);
-						setFilterHandle(setTimeout(() => applyFilter(e.target.value), 1000));
-					}}
-				/>
-				{showMultiSelect &&
-					(filter.trim() && selectedComponentsList.length > 0 ? (
+				{!isAdvancedSearch ? (
+					<>
 						<i
-							className="fa fa-solid fa-circle-xmark"
-							onClick={() => {
-								onSelectedComponentChanged('');
-								onSelectedComponentListChanged('');
-								setShowMultiSelect(true); // Keep showing multi-select button
+							className="fa fa-solid fa-chevron-circle-right"
+							onClick={() => setIsAdvancedSearch(true)}
+							title="Advanced Search"
+						/>
+						<input
+							type="text"
+							placeholder="Search filter"
+							value={filter}
+							onChange={e => {
+								setFilter(e.target.value);
+								if (filterHandle) clearTimeout(filterHandle);
+								setFilterHandle(
+									setTimeout(() => applyFilter(e.target.value), 1000),
+								);
 							}}
-							title="Clear selection"
 						/>
-					) : (
+						{showMultiSelect && (
+							<i
+								className="fa fa-solid fa-check-circle"
+								onClick={handleMultiSelect}
+								title="Select All Matching Components"
+							/>
+						)}
+					</>
+				) : (
+					<>
 						<i
-							className="fa fa-solid fa-check-circle"
-							onClick={handleMultiSelect}
-							title="Select all matching components"
+							className="fa fa-solid fa-chevron-circle-up"
+							onClick={() => {
+								setIsAdvancedSearch(false);
+								setAdvancedFilters({
+									name: '',
+									type: '',
+									tag: '',
+									value: '',
+									style: '',
+									prop: '',
+								});
+							}}
 						/>
-					))}
+
+						<span className="_advancedFilterBody">
+							{Object.entries(advancedFilters).map(([key, value]) => (
+								<div key={key} className="_filterRow">
+									<input
+										type="text"
+										placeholder={`Enter ${key}`}
+										value={value}
+										onChange={e => {
+											setAdvancedFilters(prev => ({
+												...prev,
+												[key]: e.target.value,
+											}));
+											if (filterHandle) clearTimeout(filterHandle);
+											setFilterHandle(
+												setTimeout(() => applyAdvancedFilter(), 1000),
+											);
+										}}
+									/>
+								</div>
+							))}
+						</span>
+						{showMultiSelect && (
+							<i
+								className="fa fa-solid fa-check-circle"
+								onClick={() => handleMultiSelect()}
+								title="Select All Matching Components"
+							/>
+						)}
+					</>
+				)}
 				<i
 					className={`fa fa-solid fa-circle-${expandAll ? 'minus' : 'plus'}`}
 					onClick={() => {
@@ -489,7 +724,7 @@ function CompTree({
 				} ${dragStart ? '_dragStart' : ''}`}
 				title={`${comp.name ?? ''} - ${compKey}`} // it will be visible when we hover to the component tab in the tree
 				onClick={e => {
-					// selecting multiple components by clicking ctrl or meta keys(ios).
+					// selecting multiple components by c	licking ctrl or meta keys(ios).
 					if (e.metaKey || e.ctrlKey) {
 						return onSelectedComponentListChanged(compKey);
 					}
@@ -601,7 +836,6 @@ function SubCompTree({
 					? '_selected'
 					: ''
 			}`}
-			// it gets called when sub component gets selected
 			onClick={() => onSelectedSubComponentChanged(`${componentKey}:${subComp.name}`)}
 		>
 			{levels}
