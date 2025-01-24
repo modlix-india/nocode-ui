@@ -102,16 +102,21 @@ export default function DnDNavigationBar({
 
 	useEffect(() => {
 		if (oldSelected === selectedComponent || !selectedComponent) return;
+
+		// Find all parent components of the selected component
 		let current = map.get(selectedComponent);
 		let set = new Set(openParents);
+
+		// Add all parent components to the openParents set to expand the tree
 		while (current) {
-			if (expandAll) set.delete(current);
-			else set.add(current);
+			// Always add the parent to open it, regardless of expandAll state
+			set.add(current);
 			current = map.get(current);
 		}
+
 		setOpenParents(set);
 		setOldSelected(selectedComponent);
-	}, [pageDef, expandAll, selectedComponent, openParents, map, setOpenParents, setOldSelected]);
+	}, [pageDef, selectedComponent, openParents, map, setOpenParents, setOldSelected]);
 
 	const applyFilter = useCallback(
 		(f: string) => {
@@ -119,6 +124,7 @@ export default function DnDNavigationBar({
 				setShowMultiSelect(false);
 				onSelectedComponentChanged('');
 				onSelectedComponentListChanged('');
+				setOpenParents(new Set());
 				return;
 			}
 
@@ -154,6 +160,7 @@ export default function DnDNavigationBar({
 					);
 
 					const isMatch = nameMatch || tagMatch || typeMatch || styleMatch || propMatch;
+
 					if (isMatch) {
 						matchingComponents.push(e.key);
 					}
@@ -175,6 +182,9 @@ export default function DnDNavigationBar({
 			// Auto-select the first matching component
 			if (matchingComponents.length > 0) {
 				onSelectedComponentChanged(matchingComponents[0]);
+				matchingComponents.forEach(key => {
+					onSelectedComponentListChanged(key);
+				});
 			}
 		},
 		[
