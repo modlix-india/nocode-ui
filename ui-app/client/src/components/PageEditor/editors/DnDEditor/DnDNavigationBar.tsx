@@ -481,7 +481,7 @@ export default function DnDNavigationBar({
 								<div key={key} className="_filterRow">
 									<input
 										type="text"
-										placeholder={`Enter ${key}`}
+										placeholder={`Search with ${key}`}
 										value={value}
 										onChange={e => {
 											setAdvancedFilters(prev => ({
