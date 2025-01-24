@@ -82,17 +82,17 @@ export default function DnDNavigationBar({
 			addListenerAndCallImmediatelyWithChildrenActivity(
 				(_, v) => {
 					setPageDef(v);
-					setMap(
-						new Map<string, string>(
-							Object.values(v?.componentDefinition ?? {})
-								.map((e: any) => ({
-									parentKey: e.key as string,
-									children: Object.keys(e.children ?? {}),
-								}))
-								.filter(e => !!e.children.length)
-								.flatMap(e => e.children.map(f => [f, e.parentKey])),
-						),
+					const componentMap = new Map<string, string>(
+						Object.values(v?.componentDefinition ?? {})
+							.filter(e => e && typeof e === 'object')
+							.map((e: any) => ({
+								parentKey: e.key as string,
+								children: Object.keys(e.children ?? {}),
+							}))
+							.filter(e => e.children && e.children.length > 0)
+							.flatMap(e => e.children.map(f => [f, e.parentKey])),
 					);
+					setMap(componentMap);
 				},
 				pageExtractor,
 				`${defPath}`,
