@@ -10,12 +10,7 @@ interface ImageSelectionEditorProps {
 	pageOperations: PageOperations;
 }
 
-export function ImageEditor({
-	value,
-	onChange,
-	propDef,
-	pageOperations,
-}: Readonly<ImageSelectionEditorProps>) {
+export function ImageEditor({ value, onChange, propDef }: Readonly<ImageSelectionEditorProps>) {
 	const [showFileBrowser, setShowFileBrowser] = useState(false);
 	const [chngValue, setChngValue] = useState(value ?? '');
 
@@ -32,6 +27,7 @@ export function ImageEditor({
 			>
 				<FileBrowser
 					editOnUpload={false}
+					allowMultipleSelection={true}
 					selectedFile={chngValue}
 					onChange={v => {
 						changed(v);
@@ -69,4 +65,5 @@ export function ImageEditor({
 		</div>
 	);
 }
+
 ``;
