@@ -1,7 +1,7 @@
 import { ImageResizer2 } from './ImageResizer2';
 import { usedComponents } from '../../App/usedComponents';
 import axios from 'axios';
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { imageURLForFile } from '.';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { getDataFromPath } from '../../context/StoreContext';
@@ -12,6 +12,34 @@ const RESIZABLE_EXT = new Set<string>(['jpg', 'jpeg', 'jpe', 'png']);
 const TRANSPARENT_EXT = new Set<string>(['png', 'webp', 'avif']);
 
 const FOLDER_SVG = 'api/files/static/file/SYSTEM/icons/folder.svg';
+
+async function uploadFile(
+	file: FileList,
+	setInProgress: (value: ((prevState: boolean) => boolean) | boolean) => void,
+	resourceType: string | undefined,
+	path: string,
+	clientCode: string | undefined,
+	headers: any,
+	setSomethingChanged: (value: ((prevState: number) => number) | number) => void,
+) {
+	const formData = new FormData();
+	Array.from(file).forEach(f => formData.append('file', f));
+	setInProgress(true);
+	try {
+		let url = `/api/files/${resourceType}/${path}/`;
+		url = url.replaceAll('//', '/');
+		if (clientCode) {
+			url += `?clientCode=${clientCode}`;
+		}
+		await axios.post(url, formData, {
+			headers,
+		});
+	} catch (e) {
+	} finally {
+		setInProgress(false);
+		setSomethingChanged(Date.now());
+	}
+}
 
 export default function FileBrowser({
 	selectedFile,
@@ -38,6 +66,7 @@ export default function FileBrowser({
 	cropToAspectRatio,
 	editOnUpload,
 	clientCode,
+	allowMultipleSelection,
 }: Readonly<FileBrowserProps>) {
 	const [filter, setFilter] = useState('');
 	const [path, setPath] = useState(startLocation ?? '/');
@@ -97,6 +126,7 @@ export default function FileBrowser({
 				if (filter.trim() !== '') url += `&filter=${filter}`;
 				if (clientCode) url += `&clientCode=${clientCode}`;
 				axiosAborter.current = new AbortController();
+				setFiles(undefined);
 				const response = await axios.get(url, {
 					signal: axiosAborter.current.signal,
 					headers,
@@ -179,8 +209,22 @@ export default function FileBrowser({
 				className="_peInput"
 				key={shortUUID()}
 				type="file"
+				multiple={allowMultipleSelection && !editOnUpload}
 				onChange={async e => {
-					if (e.target.files?.length !== 1) return;
+					if (!e.target.files?.length) return;
+
+					if (e.target.files?.length !== 1) {
+						await uploadFile(
+							e.target.files,
+							setInProgress,
+							resourceType,
+							path,
+							clientCode,
+							headers,
+							setSomethingChanged,
+						);
+						return;
+					}
 
 					const file = e.target.files[0];
 					if (fileUploadSizeLimit && file.size > fileUploadSizeLimit * 1000 * 1000) {
@@ -208,23 +252,15 @@ export default function FileBrowser({
 						return;
 					}
 
-					const formData = new FormData();
-					formData.append('file', file);
-					setInProgress(true);
-					try {
-						let url = `/api/files/${resourceType}/${path}/`;
-						url = url.replaceAll('//', '/');
-						if (clientCode) {
-							url += `?clientCode=${clientCode}`;
-						}
-						await axios.post(url, formData, {
-							headers,
-						});
-					} catch (e) {
-					} finally {
-						setInProgress(false);
-						setSomethingChanged(Date.now());
-					}
+					await uploadFile(
+						e.target.files,
+						setInProgress,
+						resourceType,
+						path,
+						clientCode,
+						headers,
+						setSomethingChanged,
+					);
 				}}
 			/>
 		</div>
