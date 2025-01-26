@@ -23,4 +23,5 @@ interface FileBrowserProps {
 	editOnUpload: boolean;
 	cropToAspectRatio?: string;
 	clientCode?: string;
+	allowMultipleSelection?: boolean;
 }
