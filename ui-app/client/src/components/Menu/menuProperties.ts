@@ -99,6 +99,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Menu open click event',
 		description: "Menu's event to trigger on menu open click.",
 		group: ComponentPropertyGroup.EVENTS,
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 	},
 	{
 		name: 'onMenuClose',
@@ -106,6 +107,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Menu close click event',
 		description: "Menu's event to trigger on menu close click.",
 		group: ComponentPropertyGroup.EVENTS,
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 	},
 	{
 		name: 'onlyIconMenu',
