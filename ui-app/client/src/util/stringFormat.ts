@@ -257,6 +257,22 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 	['EU_NUMBER_FORMAT', numberFormattingCurry('de-DE')],
 	['FR_NUMBER_FORMAT', numberFormattingCurry('fr-FR')],
 	['LI_NUMBER_FORMAT', numberFormattingCurry('de-LI')],
+	[
+		'FILE_SIZE',
+		str => {
+			let size = parseInt(str);
+			const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+			let i = 0;
+			if (isNaN(size)) return str;
+			while (size > 1024) {
+				size /= 1024;
+				i++;
+			}
+			let fixedString = size.toFixed(2);
+			if (fixedString.endsWith('.00')) fixedString = fixedString.slice(0, -3);
+			return `${fixedString} ${sizes[i]}`;
+		},
+	],
 ]);
 
 function numberFormattingCurry(format: string) {
