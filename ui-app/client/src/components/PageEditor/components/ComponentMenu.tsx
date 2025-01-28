@@ -35,6 +35,104 @@ function PinIcon({ isPinned, onClick }: Readonly<PinIconProps>) {
 	);
 }
 
+// Add new tutorial icons component
+interface TutorialIconsProps {
+	showTutorial: boolean;
+	demoVideo?: string;
+	description?: string;
+	youtubeLink?: string;
+	onInfoClick: () => void;
+}
+
+function TutorialIcons({
+	showTutorial,
+	demoVideo,
+	description,
+	youtubeLink,
+	onInfoClick,
+}: TutorialIconsProps) {
+	if (!showTutorial) return null;
+
+	return (
+		<div className="_tutorialIcons">
+			{(demoVideo || description) && (
+				<i
+					className="fa-solid fa-info-circle"
+					onClick={e => {
+						e.stopPropagation();
+						onInfoClick();
+					}}
+				/>
+			)}
+			{youtubeLink && (
+				<a
+					href={youtubeLink}
+					target="_blank"
+					rel="noopener noreferrer"
+					className="_youtubeIcon"
+					onClick={e => e.stopPropagation()}
+				>
+					<i className="fa-brands fa-youtube" />
+				</a>
+			)}
+		</div>
+	);
+}
+
+interface TutorialTooltipProps {
+	componentName?: string;
+	demoVideo?: string;
+	description?: string;
+	onClose: () => void;
+	style?: React.CSSProperties;
+}
+
+function TutorialTooltip({
+	componentName,
+	demoVideo,
+	description,
+	onClose,
+	style,
+}: TutorialTooltipProps) {
+	const isYoutubeVideo = demoVideo?.includes('youtube.com') || demoVideo?.includes('youtu.be');
+
+	return (
+		<div
+			className="_tutorialTooltipContainer"
+			style={style}
+			onMouseDown={e => e.target === e.currentTarget && onClose()}
+			role="dialog"
+			aria-modal="true"
+			onKeyDown={e => (e.key === 'Escape' || e.key === 'tab') && onClose()}
+			tabIndex={6}
+		>
+			<div className="_tutorialTooltipPanel">
+				<div className="_tutorialHeader">
+					<h3>{componentName ? `${componentName} Tutorial` : 'Component Tutorial'}</h3>
+					<i className="fa-solid fa-circle-xmark" onClick={onClose} />
+				</div>
+				{demoVideo && (
+					<div className="_videoContainer">
+						{isYoutubeVideo ? (
+							<iframe
+								src={demoVideo.replace('watch?v=', 'embed/')}
+								title="YouTube video player"
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+								allowFullScreen
+							/>
+						) : (
+							<video autoPlay loop muted playsInline>
+								<source src={demoVideo} type="video/mp4" />
+							</video>
+						)}
+					</div>
+				)}
+				{description && <div className="_descriptionT">{description}</div>}
+			</div>
+		</div>
+	);
+}
+
 export default function ComponentMenu({
 	selectedComponent,
 	defPath,
@@ -70,6 +168,8 @@ export default function ComponentMenu({
 	const [originalCompType, setOriginalCompType] = useState('SECTIONS');
 	const [sectionsList, setSectionsList] = useState<any>(null);
 	const [pinnedComponents, setPinnedComponents] = useState(new Set());
+	const [showTutorialHelp, setShowTutorialHelp] = useState(true);
+	const [activeTutorial, setActiveTutorial] = useState<string | null>(null);
 
 	let compType = sectionsListConnectionName ? originalCompType : 'COMPONENTS';
 
@@ -282,6 +382,13 @@ export default function ComponentMenu({
 								isPinned={pinnedComponents.has(e.name)}
 								onClick={() => handlePinComponent(e.name)}
 							/>
+							<TutorialIcons
+								showTutorial={showTutorialHelp}
+								demoVideo={e.tutorial?.demoVideo}
+								description={e.tutorial?.description}
+								youtubeLink={e.tutorial?.youtubeLink}
+								onInfoClick={() => setActiveTutorial(e.name)}
+							/>
 							{typeof e.subComponentDefinition?.[0].icon === 'string' ? (
 								<i className={`fa ${e.subComponentDefinition?.[0].icon}`} />
 							) : (
@@ -441,10 +548,39 @@ export default function ComponentMenu({
 							value={query}
 						/>
 					)}
+					<div className="_filterBar">
+						<div className="_tutorialToggle">
+							<label>
+								Need Tutorial Help?
+								<div
+									role="button"
+									tabIndex={0}
+									className={`_toggleButton ${showTutorialHelp ? '_on' : '_off'}`}
+									onClick={() => setShowTutorialHelp(!showTutorialHelp)}
+								/>
+							</label>
+						</div>
+					</div>
 					<div className="_compList">{compList}</div>
 				</div>
 			</div>
 			{rightPart}
+			{activeTutorial && (
+				<TutorialTooltip
+					componentName={compsList.find(e => e.name === activeTutorial)?.displayName}
+					demoVideo={compsList.find(e => e.name === activeTutorial)?.tutorial?.demoVideo}
+					description={
+						compsList.find(e => e.name === activeTutorial)?.tutorial?.description
+					}
+					onClose={() => setActiveTutorial(null)}
+					style={{
+						position: 'absolute',
+						left: '320px',
+						top: '50%',
+						transform: 'translateY(-50%)',
+					}}
+				/>
+			)}
 		</div>
 	);
 }
