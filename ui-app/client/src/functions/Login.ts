@@ -56,10 +56,10 @@ export class Login extends AbstractFunction {
 		const rememberMe: string = context.getArguments()?.get('rememberMe');
 		const cookie: boolean = context.getArguments()?.get('cookie');
 
-		const data: any = { userName, password, rememberMe, cookie };
-		if (identifierType) data.indentifierType = identifierType;
-
+		const data: any = { userName, rememberMe, cookie };
 		if (userId) data.userId = userId;
+		if (identifierType) data.identifierType = identifierType;
+		if (password) data.password = password;
 		if (otp) data.otp = otp;
 		if (pin) data.pin = pin;
 
