@@ -2081,6 +2081,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._iframe iframe {
 	border: none;
 	width: 100%;
+	background-color: #FFFFFF;
 }
 
 .comp.compPageEditor ._urlInput._peInput:focus-within {
