@@ -65,6 +65,7 @@ export default function DnDNavigationBar({
 		style: '',
 		prop: '',
 	});
+	const [allFilteredSelected, setAllFilteredSelected] = useState(false);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -201,7 +202,6 @@ export default function DnDNavigationBar({
 	);
 
 	const handleMultiSelect = useCallback(() => {
-		// Find all matching components based on current search mode
 		const matchingComponents = Object.values(pageDef?.componentDefinition ?? {})
 			.filter(e => {
 				if (isAdvancedSearch) {
@@ -289,10 +289,17 @@ export default function DnDNavigationBar({
 			.map(e => e.key);
 
 		if (matchingComponents.length > 0) {
-			onSelectedComponentChanged(matchingComponents[0]);
-			matchingComponents.forEach(key => {
-				onSelectedComponentListChanged(key);
-			});
+			if (allFilteredSelected) {
+				onSelectedComponentChanged('');
+				onSelectedComponentListChanged('');
+				setAllFilteredSelected(false);
+			} else {
+				onSelectedComponentChanged(matchingComponents[0]);
+				matchingComponents.forEach(key => {
+					onSelectedComponentListChanged(key);
+				});
+				setAllFilteredSelected(true);
+			}
 		}
 	}, [
 		filter,
@@ -301,6 +308,7 @@ export default function DnDNavigationBar({
 		pageDef,
 		onSelectedComponentChanged,
 		onSelectedComponentListChanged,
+		allFilteredSelected,
 	]);
 
 	useEffect(() => {
@@ -348,15 +356,16 @@ export default function DnDNavigationBar({
 				let tags: string[] = [];
 				if (e._tags) {
 					if (Array.isArray(e._tags)) {
-						tags = e._tags.filter(tag => tag != null).map(tag => String(tag));
+						tags = e._tags
+							.filter(tag => tag != null)
+							.map(tag => String(tag).toUpperCase());
 					} else if (e._tags != null) {
-						tags = [String(e._tags)];
+						tags = [String(e._tags).toUpperCase()];
 					}
 				}
+
 				const tagMatch = advancedFilters.tag
-					? tags.some(tag =>
-							tag.toUpperCase().includes(advancedFilters.tag.toUpperCase()),
-						)
+					? tags.some(tag => tag.includes(advancedFilters.tag.toUpperCase()))
 					: true;
 
 				const valueMatch = advancedFilters.value
@@ -453,9 +462,13 @@ export default function DnDNavigationBar({
 						/>
 						{showMultiSelect && (
 							<i
-								className="fa fa-solid fa-check-circle"
+								className={`fa fa-solid ${allFilteredSelected ? 'fa-xmark-circle' : 'fa-check-circle'}`}
 								onClick={handleMultiSelect}
-								title="Select All Matching Components"
+								title={
+									allFilteredSelected
+										? 'Deselect All Matching Components'
+										: 'Select All Matching Components'
+								}
 							/>
 						)}
 					</>
@@ -499,9 +512,13 @@ export default function DnDNavigationBar({
 						</span>
 						{showMultiSelect && (
 							<i
-								className="fa fa-solid fa-check-circle"
-								onClick={() => handleMultiSelect()}
-								title="Select All Matching Components"
+								className={`fa fa-solid ${allFilteredSelected ? 'fa-xmark-circle' : 'fa-check-circle'}`}
+								onClick={handleMultiSelect}
+								title={
+									allFilteredSelected
+										? 'Deselect All Matching Components'
+										: 'Select All Matching Components'
+								}
 							/>
 						)}
 					</>

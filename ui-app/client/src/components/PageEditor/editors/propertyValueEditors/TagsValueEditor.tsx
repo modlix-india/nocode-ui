@@ -17,20 +17,7 @@ interface TagsValueEditorProps {
 	pageOperations?: PageOperations;
 }
 
-export function TagsValueEditor({
-	value,
-	onChange,
-	defaultValue,
-	appPath,
-	pageDefinition,
-	propDef,
-	onlyValue,
-	storePaths,
-	onShowCodeEditor,
-	editPageName,
-	slaveStore,
-	pageOperations,
-}: TagsValueEditorProps) {
+export function TagsValueEditor({ value, onChange, defaultValue }: TagsValueEditorProps) {
 	const [inputValue, setInputValue] = useState('');
 	const [tags, setTags] = useState<string[]>([]);
 
