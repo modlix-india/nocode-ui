@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { PageStoreExtractor, addListenerAndCallImmediately } from '../../context/StoreContext';
+import { addListenerAndCallImmediately, PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -34,6 +34,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			imgLazyLoading,
 			stopPropagation,
 			preventDefault,
+			useObjectToRender,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -95,31 +96,37 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	let imageTag = undefined;
 
 	if (actualSrc) {
+		const actualImage = useObjectToRender ? (
+			<object type="image/svg+xml" data={actualSrc} style={resolvedStyles.image ?? {}} />
+		) : (
+			<img
+				onMouseEnter={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
+				}
+				onMouseLeave={
+					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
+				}
+				onClick={
+					onClickEvent
+						? ev => {
+								if (stopPropagation) ev.stopPropagation();
+								if (preventDefault) ev.preventDefault();
+								handleClick();
+							}
+						: undefined
+				}
+				className={onClickEvent ? '_onclicktrue' : ''}
+				style={resolvedStyles.image ?? {}}
+				src={actualSrc}
+				alt={alt}
+				onError={fallBackImg ? handleError : undefined}
+				loading={imgLazyLoading ? 'lazy' : 'eager'}
+			/>
+		);
+
 		imageTag = (
 			<>
-				<img
-					onMouseEnter={
-						stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-					}
-					onMouseLeave={
-						stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-					}
-					onClick={
-						onClickEvent
-							? ev => {
-									if (stopPropagation) ev.stopPropagation();
-									if (preventDefault) ev.preventDefault();
-									handleClick();
-								}
-							: undefined
-					}
-					className={onClickEvent ? '_onclicktrue' : ''}
-					style={resolvedStyles.image ?? {}}
-					src={actualSrc}
-					alt={alt}
-					onError={fallBackImg ? handleError : undefined}
-					loading={imgLazyLoading ? 'lazy' : 'eager'}
-				/>
+				{actualImage}
 				<SubHelperComponent
 					style={resolvedStyles.image ?? {}}
 					className={onClickEvent ? '_onclicktrue' : ''}
@@ -152,7 +159,7 @@ const component: Component = {
 	stylePseudoStates: ['hover'],
 	defaultTemplate: {
 		key: '',
-		name: 'image',
+		name: 'Image',
 		type: 'Image',
 		properties: {
 			src: { value: 'api/files/static/file/SYSTEM/appbuilder/sample.svg' },

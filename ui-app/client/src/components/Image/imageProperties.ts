@@ -1,4 +1,3 @@
-import { Schema } from '@fincity/kirun-js';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
@@ -110,6 +109,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	{
+		name: 'useObjectToRender',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Use Object to render (SVG only)',
+		defaultValue: false,
+	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
