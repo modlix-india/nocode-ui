@@ -390,6 +390,47 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'sortObjectType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sort Object Type',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'Sort object type',
+		defaultValue: 'spring',
+		enumValues: [
+			{ name: 'spring', displayName: 'Spring Sort' },
+			{ name: 'keyValue', displayName: 'Object with Key Order' },
+			{
+				name: 'stringWithColon',
+				displayName: 'String with field:order',
+				description: 'String with fields and order, like field1:asc,field2:desc',
+			},
+			{
+				name: 'stringWithSpace',
+				displayName: 'String with field order',
+				description: 'String with fields and order, like field1 asc,field2 desc',
+			},
+		],
+	},
+
+	{
+		name: 'ascValue',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Ascending Value',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'Ascending value (when numbers are used it will be converted to string)',
+		defaultValue: 'ASC',
+	},
+
+	{
+		name: 'descValue',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Descending Value',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'Descending value (when numbers are used it will be converted to string)',
+		defaultValue: 'DESC',
+	},
+
+	{
 		name: 'enablePersonalization',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Enable Personalization for dragging and hiding columns',
