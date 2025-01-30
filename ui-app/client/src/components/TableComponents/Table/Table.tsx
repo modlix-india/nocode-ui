@@ -150,6 +150,9 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			multiSort,
 			hideContextMenu,
 			disableColumnDragging,
+			descValue,
+			ascValue,
+			sortObjectType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -382,8 +385,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			}
 		}
 
-		let selectedChildrenArray = [columnsChild];
-		let firstchildKey = undefined;
+		let selectedChildrenArray;
+		let firstChildKey = undefined;
 		if (gridChild && (!columnsChild || mode === 'GRID')) {
 			selectedChildrenArray = [gridChild];
 		} else {
@@ -395,9 +398,9 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					if (
 						(k.displayOrder ?? 0) < order ||
 						((k.displayOrder ?? 0) === order &&
-							(!firstchildKey || k.key.localeCompare(firstchildKey) < 0))
+							(!firstChildKey || k.key.localeCompare(firstChildKey) < 0))
 					)
-						firstchildKey = childrenEntries[i][0];
+						firstChildKey = childrenEntries[i][0];
 					selectedChildrenArray.push(childrenEntries[i][0]);
 				}
 			}
@@ -441,6 +444,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 			const columnsMode = columnsModeImage ? (
 				<img
+					alt="Column Mode"
 					src={getSrcUrl(mode === 'COLUMNS' ? columnsModeActiveImage : columnsModeImage)}
 					style={getStyleObject(
 						'columnsModeImage',
@@ -480,6 +484,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 			const gridMode = gridModeImage ? (
 				<img
+					alt="Grid Mode"
 					src={getSrcUrl(mode === 'COLUMNS' ? gridModeActiveImage : gridModeImage)}
 					style={getStyleObject(
 						'gridModeImage',
@@ -1058,7 +1063,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							pageSize,
 							uniqueKey,
 							onSelect,
-							firstchildKey,
+							firstChildKey,
 							onSort,
 							enablePersonalization,
 							personalizationBindingPath,
@@ -1066,6 +1071,9 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							multiSort,
 							hideContextMenu,
 							disableColumnDragging,
+							descValue,
+							ascValue,
+							sortObjectType,
 						},
 					}}
 					locationHistory={locationHistory}
