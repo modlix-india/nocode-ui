@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	PageStoreExtractor,
 	setData,
 } from '../../../context/StoreContext';
-import { ComponentProps } from '../../../types/common';
+import { ComponentProps, LocationHistory } from '../../../types/common';
 import {
 	processComponentStylePseudoClasses,
 	processStyleObjectToCSS,
@@ -15,6 +15,73 @@ import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { runEvent } from '../../util/runEvent';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnHeaderProperties';
+
+interface SortObject {
+	[key: string]: 'ASC' | 'DESC';
+}
+
+function getSortObject(
+	dataFromPath: any,
+	sortObjectType: 'spring' | 'keyValue' | 'stringWithColon' | 'stringWithSpace',
+	ascValue: any,
+): SortObject {
+	if (!dataFromPath) return {};
+
+	const sortObject: SortObject = {};
+
+	if (sortObjectType === 'spring') {
+		if (typeof dataFromPath === 'object')
+			(Array.isArray(dataFromPath) ? dataFromPath : [dataFromPath]).forEach(
+				e => (sortObject[e.property] = e.direction == ascValue ? 'ASC' : 'DESC'),
+			);
+	} else if (sortObjectType === 'keyValue') {
+		if (typeof dataFromPath === 'object')
+			Object.keys(dataFromPath).forEach(
+				e => (sortObject[e] = dataFromPath[e] == ascValue ? 'ASC' : 'DESC'),
+			);
+	} else {
+		if (typeof dataFromPath === 'string')
+			dataFromPath.split(',').forEach(e => {
+				const [key, value] = e.split(sortObjectType === 'stringWithColon' ? ':' : ' ');
+				sortObject[key] = value == ascValue ? 'ASC' : 'DESC';
+			});
+	}
+
+	return sortObject;
+}
+
+function getSortOrderFromSortObject(
+	sortObject: SortObject,
+	sortObjectType: 'spring' | 'keyValue' | 'stringWithColon' | 'stringWithSpace',
+	ascValue: any,
+	descValue: any,
+	isMultiSort: boolean,
+): any {
+	const keyValues = Object.entries(sortObject);
+	if (!keyValues.length) return undefined;
+
+	if (sortObjectType === 'spring') {
+		const list = keyValues.map(([key, value]) => ({
+			property: key,
+			direction: value == 'ASC' ? ascValue : descValue,
+		}));
+		return isMultiSort ? list : list[0];
+	}
+
+	if (sortObjectType === 'keyValue') {
+		return keyValues.reduce((a, [key, direction]) => {
+			a[key] = direction == 'ASC' ? ascValue : descValue;
+			return a;
+		}, {} as any);
+	}
+
+	return keyValues
+		.map(
+			([key, direction]) =>
+				`${key}${sortObjectType == 'stringWithColon' ? ':' : ' '}${direction == 'ASC' ? ascValue : descValue}`,
+		)
+		.join(',');
+}
 
 export default function TableColumnHeaderComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -67,17 +134,18 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		);
 	}
 
-	const { sortBindingPath, onSort, multiSort } = context.table;
+	const { sortBindingPath, onSort, multiSort, descValue, ascValue, sortObjectType } =
+		context.table;
 
 	let rightIconComp;
 	const hasSort = sortKey && sortBindingPath && onSort;
-	let currentSortOrder: string | undefined;
+	let currentSortOrder: 'ASC' | 'DESC' | undefined;
 	if (hasSort) {
-		currentSortOrder = getDataFromPath(
-			`${sortBindingPath}.${sortKey}`,
-			locationHistory,
-			pageExtractor,
-		);
+		currentSortOrder = getSortObject(
+			getDataFromPath(`${sortBindingPath}`, locationHistory, pageExtractor),
+			sortObjectType,
+			ascValue,
+		)[sortKey];
 		const sortIcon =
 			currentSortOrder === 'ASC'
 				? sortAscendingIcon
@@ -244,6 +312,10 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 								onSort,
 								hasSort,
 								sortTo: 'ASC',
+								sortObjectType,
+								ascValue,
+								descValue,
+								locationHistory,
 							});
 							setShowMenuLocation(undefined);
 						}}
@@ -271,6 +343,10 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 								onSort,
 								hasSort,
 								sortTo: 'DESC',
+								sortObjectType,
+								ascValue,
+								descValue,
+								locationHistory,
 							});
 							setShowMenuLocation(undefined);
 						}}
@@ -298,6 +374,10 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 								onSort,
 								hasSort,
 								sortTo: 'undefined',
+								sortObjectType,
+								ascValue,
+								descValue,
+								locationHistory,
 							});
 							setShowMenuLocation(undefined);
 						}}
@@ -472,6 +552,10 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 					pageExtractor,
 					onSort,
 					hasSort,
+					sortObjectType,
+					ascValue,
+					descValue,
+					locationHistory,
 				})
 			}
 			role="columnheader"
@@ -511,9 +595,13 @@ function onChangeSort({
 	onSort,
 	hasSort,
 	sortTo,
+	sortObjectType,
+	ascValue,
+	descValue,
+	locationHistory,
 }: {
-	currentSortOrder: string | undefined;
-	initialSortOrder: string;
+	currentSortOrder: 'ASC' | 'DESC' | undefined;
+	initialSortOrder: 'ASC' | 'DESC';
 	props: Readonly<ComponentProps>;
 	multiSort: boolean;
 	sortBindingPath: string;
@@ -521,11 +609,22 @@ function onChangeSort({
 	pageExtractor: PageStoreExtractor;
 	onSort: string | undefined;
 	hasSort: boolean;
-	sortTo?: string;
+	sortTo?: 'ASC' | 'DESC' | 'undefined' | undefined;
+	sortObjectType: 'spring' | 'keyValue' | 'stringWithColon' | 'stringWithSpace';
+	ascValue: string;
+	descValue: string;
+	locationHistory: Array<LocationHistory>;
 }) {
 	if (!hasSort) return;
 
-	let newSortOrder = currentSortOrder;
+	let newSortOrder: 'ASC' | 'DESC' | undefined = currentSortOrder;
+	const sortObject = multiSort
+		? getSortObject(
+				getDataFromPath(`${sortBindingPath}`, locationHistory, pageExtractor),
+				sortObjectType,
+				ascValue,
+			)
+		: {};
 
 	if (!sortTo) {
 		if (newSortOrder === undefined) newSortOrder = initialSortOrder;
@@ -533,9 +632,14 @@ function onChangeSort({
 		else newSortOrder = undefined;
 	} else newSortOrder = sortTo === 'undefined' ? undefined : sortTo;
 
-	if (multiSort)
-		setData(`${sortBindingPath}.${sortKey}`, newSortOrder, pageExtractor.getPageName());
-	else setData(sortBindingPath, { [sortKey]: newSortOrder }, pageExtractor.getPageName());
+	if (!newSortOrder) delete sortObject[sortKey];
+	else sortObject[sortKey] = newSortOrder;
+
+	setData(
+		sortBindingPath,
+		getSortOrderFromSortObject(sortObject, sortObjectType, ascValue, descValue, multiSort),
+		pageExtractor.getPageName(),
+	);
 
 	const onSortEvent = onSort ? props.pageDefinition.eventFunctions?.[onSort] : undefined;
 	if (!onSortEvent) return;

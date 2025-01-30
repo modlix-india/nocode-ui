@@ -1,4 +1,4 @@
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../constants';
+import { SCHEMA_BOOL_COMP_PROP } from '../../../constants';
 import { ComponentPropertyDefinition, ComponentPropertyGroup } from '../../../types/common';
 import {
 	COMMON_COMPONENT_PROPERTIES,
@@ -21,13 +21,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Show Headers',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
-	},
-	{
-		name: 'sortKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Sort Key',
-		description: 'Key to be used for sorting.',
-		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
