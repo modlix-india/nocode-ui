@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { duplicate, Position } from '@fincity/kirun-js';
+import { useState, useEffect } from 'react';
+import { duplicate } from '@fincity/kirun-js';
 import { FileBrowser } from '../../../../commonComponents/FileBrowser';
 import {
 	EachSimpleEditor,
@@ -11,9 +11,7 @@ import {
 import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { ManyValuesEditor } from './simpleEditors/ManyValuesEditor';
 import { FunctionDetail, ManyFunctionsEditor } from './simpleEditors/ManyFunctionsEditor';
-import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
-import { ComponentProperty } from '../../../../types/common';
-// import { color, index, max } from 'd3';
+
 import { ButtonBar } from './simpleEditors/ButtonBar';
 
 type BackgroundImage = {
@@ -221,12 +219,12 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 
 	useEffect(() => {
 		if (!props.selectedComponent) return;
-		const extractedImage = propAndValue.find(p => p.prop === 'backgroundImage')?.value || '';
+		const extractedImage = propAndValue.find(p => p.prop === 'backgroundImage')?.value ?? '';
 		const parsedImages = extractedImage.split(/,(?![^(]*\))/g).map((v: string) => {
-			// const parsedImages = parseImageValues(extractedImage).map((v: string) => {
 			const trimmed = v.trim();
 			if (trimmed.startsWith('url(')) {
-				return { type: 'URL', value: trimmed.slice(4, -1) };
+				const urlValue = trimmed.slice(4, -1).replace(/^['"](.*)['"]$/, '$1');
+				return { type: 'URL', value: urlValue };
 			} else {
 				return { type: 'Gradient', value: trimmed.slice(16, -1) };
 			}
@@ -280,9 +278,16 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 
 	const updateBackgroundImages = (newImages: Array<BackgroundImage>) => {
 		const newValue = newImages
-			.map(img =>
-				img.type === 'URL' ? `url(${img.value})` : `linear-gradient(${img.value})`,
-			)
+			.map(img => {
+				if (img.type === 'URL') {
+					const needsQuotes = /[\s,'"]/.test(img.value);
+					const urlValue = needsQuotes
+						? `'${img.value.replace(/'/g, '%27')}'`
+						: img.value;
+					return `url(${urlValue})`;
+				}
+				return `linear-gradient(${img.value})`;
+			})
 			.join(', ');
 		valuesChangedOnlyValues({
 			subComponentName: props.subComponentName,
@@ -479,7 +484,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 			>
 				<FileBrowser
 					selectedFile=""
-					onChange={(url, type, directory) => {
+					onChange={(url, directory) => {
 						if (!directory) {
 							const newImages = duplicate(backgroundImages);
 							newImages[newImages.length - 1].value = url;
