@@ -85,10 +85,17 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 					? sortDescendingIcon
 					: sortNoneIcon;
 
+		const subHelperComp =
+			currentSortOrder === 'ASC'
+				? 'sortAscendingIcon'
+				: currentSortOrder === 'DESC'
+					? 'sortDescendingIcon'
+					: 'sortNoneIcon';
+
 		if (sortIcon) {
 			rightIconComp = (
 				<i className={`_sortIcon ${currentSortOrder} ${sortIcon}`}>
-					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+					<SubHelperComponent definition={definition} subComponentName={subHelperComp} />
 				</i>
 			);
 		} else {
@@ -156,6 +163,30 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 	style += processStyleObjectToCSS(
 		hoverStyleProperties.rightIcon,
 		`.comp.compTableHeaderColumn#${styleKey}:hover ._rightIcon`,
+	);
+	style += processStyleObjectToCSS(
+		styleProperties.sortNoneIcon,
+		`.comp.compTableHeaderColumn#${styleKey} ._sortIcon`,
+	);
+	style += processStyleObjectToCSS(
+		hoverStyleProperties.sortNoneIcon,
+		`.comp.compTableHeaderColumn#${styleKey}:hover ._sortIcon`,
+	);
+	style += processStyleObjectToCSS(
+		styleProperties.sortAscendingIcon,
+		`.comp.compTableHeaderColumn#${styleKey} ._sortIcon.ASC`,
+	);
+	style += processStyleObjectToCSS(
+		hoverStyleProperties.sortAscendingIcon,
+		`.comp.compTableHeaderColumn#${styleKey}:hover ._sortIcon.ASC`,
+	);
+	style += processStyleObjectToCSS(
+		styleProperties.sortDescendingIcon,
+		`.comp.compTableHeaderColumn#${styleKey} ._sortIcon.DESC`,
+	);
+	style += processStyleObjectToCSS(
+		hoverStyleProperties.sortDescendingIcon,
+		`.comp.compTableHeaderColumn#${styleKey}:hover ._sortIcon.DESC`,
 	);
 
 	const [showMenuLocation, setShowMenuLocation] = useState<{ x: number; y: number } | undefined>(
