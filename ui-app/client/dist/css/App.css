@@ -76,6 +76,9 @@
 }
 ._validationMessages {
 	position: absolute;
+	display: flex;
+	flex-direction: column;
+	top: 100%;
 	z-index: 1;
 	left: 0;
 	top: 100%;
