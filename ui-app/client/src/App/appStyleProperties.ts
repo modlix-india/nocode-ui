@@ -882,7 +882,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Validation Message',
 		dn: 'Validation Message Container Background',
 		n: 'validationMessageBackgroundColor',
-		dv: '<errorColor>',
 		cp: 'background',
 		sel: '._validationMessages',
 		np: true,
