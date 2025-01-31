@@ -27,9 +27,14 @@ export function TagsValueEditor({ value, onChange, defaultValue }: TagsValueEdit
 			if (Array.isArray(value.value)) {
 				tagArray = value.value;
 			} else if (typeof value.value === 'string') {
-				tagArray = (value.value as string).split(/\s+/).filter((t: string) => t.length > 0);
+				tagArray = (value.value as string)
+					.split(/\s+/)
+					.map(t => t.trim())
+					.filter((t: string) => t.length > 0);
 			} else if (typeof value.value === 'object') {
-				tagArray = Object.values(value.value);
+				tagArray = Object.values(value.value)
+					.map(v => v?.toString().trim())
+					.filter(v => v && v.length > 0);
 			}
 
 			setTags(tagArray as string[]);
@@ -41,9 +46,12 @@ export function TagsValueEditor({ value, onChange, defaultValue }: TagsValueEdit
 			} else if (typeof defaultValue === 'string') {
 				defaultTags = (defaultValue as string)
 					.split(/\s+/)
+					.map(t => t.trim())
 					.filter((t: string) => t.length > 0);
 			} else {
-				defaultTags = Object.values(defaultValue);
+				defaultTags = Object.values(defaultValue)
+					.map(v => v?.toString().trim())
+					.filter(v => v && v.length > 0);
 			}
 
 			setTags(defaultTags);
@@ -62,13 +70,14 @@ export function TagsValueEditor({ value, onChange, defaultValue }: TagsValueEdit
 			const newTags = newInputValue
 				.slice(0, -1)
 				.split(/[\s,]+/)
+				.map(tag => tag.trim())
 				.filter(tag => tag.length > 0);
 
 			if (newTags.length > 0) {
-				const updatedTags = [...tags, ...newTags];
-				setTags(updatedTags);
+				const uniqueTags = [...new Set([...tags, ...newTags])];
+				setTags(uniqueTags);
 				setInputValue('');
-				onChange({ value: updatedTags });
+				onChange({ value: uniqueTags });
 			}
 		}
 	};
