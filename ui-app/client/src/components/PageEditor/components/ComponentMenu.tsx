@@ -551,7 +551,7 @@ export default function ComponentMenu({
 					<div className="_filterBar">
 						<div className="_tutorialToggle">
 							<label>
-								Need Tutorial Help?
+								Looking for Tutorial Help?
 								<div
 									role="button"
 									tabIndex={0}
