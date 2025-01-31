@@ -826,6 +826,97 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Text Align',
+		n: 'validationMessageTextAlign',
+		cp: 'textAlign',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Margin',
+		n: 'validationMessageMargin',
+		cp: 'margin',
+		sel: '._validationMessages',
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Border Radius',
+		n: 'validationMessageBorderRadius',
+		cp: 'border-radius',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Border',
+		n: 'validationMessageBorder',
+		cp: 'border',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Width',
+		n: 'validationMessageWidth',
+		cp: 'width',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Inset',
+		n: 'validationMessageInset',
+		cp: 'inset',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Background',
+		n: 'validationMessageBackgroundColor',
+		dv: '<errorColor>',
+		cp: 'background',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Gap',
+		n: 'validationMessageGap',
+		dv: '3px',
+		cp: 'gap',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Padding',
+		n: 'validationMessagePadding',
+		cp: 'padding',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
+		gn: 'Validation Message',
+		dn: 'Validation Message Container Box shadow',
+		n: 'validationMessageShadow',
+		cp: 'box-shadow',
+		sel: '._validationMessages',
+		np: true,
+	},
+
+	{
 		gn: 'Background Hover Color',
 		dn: 'Background Hover Color One',
 		n: 'backgroundHoverColorOne',
