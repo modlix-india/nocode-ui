@@ -181,6 +181,11 @@ export interface Component {
 			pageExtractor: PageStoreExtractor,
 		) => Array<string>;
 	};
+	tutorial?: {
+		demoVideo?: string;
+		description?: string;
+		youtubeLink?: string;
+	};
 }
 
 export enum StyleResolution {
