@@ -226,24 +226,26 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 	useEffect(() => {
 		if (!props.selectedComponent) return;
 		const extractedImage = propAndValue.find(p => p.prop === 'backgroundImage')?.value ?? '';
-		const parsedImages = extractedImage.split(/,(?![^(]*\))/g).map((v: string) => {
-			const trimmed = v.trim();
-			if (trimmed.startsWith('url(')) {
-				const urlValue = trimmed.slice(4, -1).replace(/^['"](.*)['"]$/, '$1');
-				return { type: 'URL', value: urlValue };
-			} else {
-				const gradientMatch = trimmed.match(/^(.*?)-gradient\((.*)\)$/);
-				if (gradientMatch) {
-					return {
-						type: 'Gradient',
-						gradientType:
-							`${gradientMatch[1]}-gradient` as BackgroundImage['gradientType'],
-						value: gradientMatch[2],
-					};
+		const parsedImages = extractedImage
+			.split(/,(?![^(]*\))(?![^"']*["'])/g)
+			.map((v: string) => {
+				const trimmed = v.trim();
+				if (trimmed.startsWith('url(')) {
+					const urlValue = trimmed.slice(4, -1).replace(/^['"](.*)['"]$/, '$1');
+					return { type: 'URL', value: urlValue };
+				} else {
+					const gradientMatch = trimmed.match(/^(.*?)-gradient\((.*)\)$/);
+					if (gradientMatch) {
+						return {
+							type: 'Gradient',
+							gradientType:
+								`${gradientMatch[1]}-gradient` as BackgroundImage['gradientType'],
+							value: gradientMatch[2],
+						};
+					}
+					return { type: 'Gradient', gradientType: 'linear-gradient', value: '' };
 				}
-				return { type: 'Gradient', gradientType: 'linear-gradient', value: '' };
-			}
-		});
+			});
 
 		setBackgroundImages(
 			parsedImages.length === 0
@@ -493,15 +495,6 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 										fill="none"
 										transform="translate(9 9)"
 									>
-										{/* <rect
-											x="0.5"
-											y="0.5"
-											width="13"
-											height="13"
-											fill="none"
-											stroke="#B9BAC7"
-											strokeWidth="#02B694"
-										/> */}
 										<line
 											x1="2.85355"
 											y1="8.52535"
@@ -754,6 +747,29 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 									displayName: 'Color',
 									type: 'color',
 									default: '',
+									splitByComma: false,
+									// preserveValue: true,
+								},
+								{
+									name: 'backgroundImage',
+									displayName: 'Image',
+									type: 'buttonBar',
+									default: 'image',
+									withBackground: true,
+									buttonBarOptions: [
+										{
+											name: 'image',
+											displayName: 'Image',
+										},
+										{
+											name: 'gradient',
+											displayName: 'Gradient',
+										},
+										{
+											name: 'color',
+											displayName: 'Color',
+										},
+									],
 								},
 								{
 									name: 'backgroundSize',
@@ -1235,7 +1251,6 @@ function BackgroundDetailedEditor(props: Readonly<StyleEditorsProps>) {
 
 			a.propValues.push(value);
 			a.propAndValue.push({ prop: c, value: value.value?.value ?? '' });
-
 			return a;
 		},
 		{ propValues: [] as any[], propAndValue: [] as { prop: string; value: string }[] },
