@@ -1,4 +1,4 @@
-import { isNullValue } from '@fincity/kirun-js';
+import { isNullValue, duplicate } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
 import ComponentDefinitions from '../../';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
@@ -14,16 +14,17 @@ import {
 	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	LocationHistory,
 	PageDefinition,
 } from '../../../types/common';
-import { duplicate } from '@fincity/kirun-js';
 import { PropertyGroup } from './PropertyGroup';
 import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
 import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { PageOperations } from '../functions/PageOperations';
+import { TagsValueEditor } from './propertyValueEditors/TagsValueEditor';
 
 interface PropertyEditorProps {
 	selectedComponent: string;
@@ -58,7 +59,7 @@ function updatePropertyDefinition(
 	) as PageDefinition;
 
 	for (let component of componentList?.length > 0 ? componentList : [componentKey]) {
-		if (!pageDef?.componentDefinition) continue;
+		if (!pageDef) continue;
 		if (!pageDef.componentDefinition[component].properties)
 			pageDef.componentDefinition[component].properties = {};
 
@@ -138,10 +139,16 @@ export default function PropertyEditor({
 	}, [defPath, selectedComponent]);
 
 	useEffect(() => {
-		if (!defPath) return; // Page.pageDefinition
+		if (!defPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, v: PageDefinition) => {
+				// Guard against empty selectedComponentsList
+				if (!selectedComponentsList?.length) {
+					setAllCommonProperties([]);
+					return;
+				}
+
 				// sets of sets of property names
 				const propertyNamesSets = selectedComponentsList.map(currentComponent => {
 					let properties =
@@ -149,12 +156,11 @@ export default function PropertyEditor({
 							?.properties ?? [];
 					return new Set(properties.map(obj => obj.name));
 				});
-				// set of all common names
+
 				const commonPropertyNames = propertyNamesSets.reduce((accumulator, currentSet) => {
 					let accArr = Array.from(accumulator);
 					return new Set(accArr.filter(name => currentSet.has(name)));
-				});
-
+				}, propertyNamesSets[0] || new Set());
 				let properties =
 					ComponentDefinitions?.get(
 						v?.componentDefinition[selectedComponentsList[0]]?.type,
@@ -407,6 +413,57 @@ export default function PropertyEditor({
 									onlyValue={true}
 									storePaths={storePaths}
 									onChange={v => {}}
+									onShowCodeEditor={onShowCodeEditor}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									pageOperations={pageOperations}
+								/>
+							</div>
+							<div className="_eachProp">
+								<div className="_propLabel" title="Tag">
+									Tag :
+									<span
+										className="_description _tooltip"
+										title="Tag to identify the component"
+									>
+										i
+									</span>
+								</div>
+
+								<TagsValueEditor
+									appPath={appPath}
+									pageDefinition={pageDef}
+									propDef={{
+										name: '_tags',
+										displayName: 'Tags',
+										description: 'Tags to categorize the component',
+										schema: SCHEMA_STRING_COMP_PROP,
+										editor: ComponentPropertyEditor.TAGS_EDITOR,
+										group: ComponentPropertyGroup.BASIC,
+										defaultValue: [],
+									}}
+									value={{
+										value: def.properties?._tags?.value || [],
+									}}
+									onlyValue={true}
+									onChange={v => {
+										const newDef = duplicate(def);
+										if (!newDef.properties) newDef.properties = {};
+
+										if (v.value && v.value.length > 0) {
+											newDef.properties._tags = { value: v.value };
+										} else {
+											delete newDef.properties._tags;
+										}
+
+										updateDefinition(
+											defPath!,
+											locationHistory,
+											pageExtractor,
+											selectedComponent,
+											newDef,
+										);
+									}}
 									onShowCodeEditor={onShowCodeEditor}
 									editPageName={editPageName}
 									slaveStore={slaveStore}
