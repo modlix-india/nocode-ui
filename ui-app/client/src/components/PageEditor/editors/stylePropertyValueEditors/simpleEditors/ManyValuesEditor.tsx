@@ -32,6 +32,7 @@ export interface PropertyDetail {
 	gridSize?: string;
 	withBackground?: boolean;
 	textValue?: string;
+	splitByComma?: boolean; // Add this new property
 }
 
 export function ManyValuesEditor({
@@ -43,8 +44,6 @@ export function ManyValuesEditor({
 	groupTitle,
 	showNewGroup,
 	relatedProps,
-	// gridSize,
-	// withBackground,
 	textValue,
 }: {
 	values: { prop: string; value: string }[];
@@ -55,22 +54,23 @@ export function ManyValuesEditor({
 	groupTitle?: string;
 	showNewGroup?: boolean;
 	relatedProps?: RelatedProps;
-	// gridSize?: string;
-	// withBackground?: boolean;
 	textValue?: string;
 }) {
 	const props: { [key: string]: Array<string> } = {};
 	let max = 0;
 
-	// Initialize all properties from propDefinitions with default values
 	propDefinitions.forEach(def => {
 		props[def.name] = [];
 	});
 
-	// Then process the values
 	for (let i = 0; i < values.length; i++) {
+		const def = propDefinitions.find(d => d.name === values[i].prop);
+		const splitByComma = def?.splitByComma ?? true; // Default to true for backward compatibility
+
 		props[values[i].prop] = values[i].value.trim()
-			? (values[i].value.split(',').map(e => e.trim()) ?? [])
+			? splitByComma
+				? values[i].value.split(',').map(e => e.trim())
+				: [values[i].value]
 			: [];
 		if (max < props[values[i].prop].length) max = props[values[i].prop].length;
 	}
@@ -110,11 +110,16 @@ export function ManyValuesEditor({
 			});
 		}
 
+		// Modify the onChange call to respect splitByComma
 		onChange(
-			Object.entries(newProps).map(e => ({
-				prop: e[0],
-				value: e[1].join(','),
-			})),
+			Object.entries(newProps).map(([key, value]) => {
+				const def = propDefinitions.find(d => d.name === key);
+				const splitByComma = def?.splitByComma ?? true;
+				return {
+					prop: key,
+					value: splitByComma ? value.join(',') : value[0] || '',
+				};
+			}),
 		);
 	};
 
