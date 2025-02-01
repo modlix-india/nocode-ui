@@ -228,6 +228,7 @@ export function validate(
 	const CUSTOM_VAL_FUNC = CD.get(def.type)?.validations;
 
 	if (!validation?.length) return [];
+	console.log(validation);
 	return validation
 		.map((e: any) => {
 			let vals: { [key: string]: any } = {};
@@ -238,9 +239,10 @@ export function validate(
 						? getData(v as ComponentProperty<any>, locationHistory, pageExtractor)
 						: v;
 			}
-			return vals;
+			return [vals, e.condition];
 		})
-		.filter((e: any) => e.condition)
+		.filter((e: any[]) => !e[1] || e[0].condition)
+		.map((e: any[]) => e[0])
 		.flatMap((e: any) => {
 			const type = e.type ?? 'MANDATORY';
 			if (CUSTOM_VAL_FUNC && CUSTOM_VAL_FUNC[type])
