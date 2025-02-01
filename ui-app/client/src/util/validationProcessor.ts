@@ -228,7 +228,6 @@ export function validate(
 	const CUSTOM_VAL_FUNC = CD.get(def.type)?.validations;
 
 	if (!validation?.length) return [];
-	console.log(validation);
 	return validation
 		.map((e: any) => {
 			let vals: { [key: string]: any } = {};
