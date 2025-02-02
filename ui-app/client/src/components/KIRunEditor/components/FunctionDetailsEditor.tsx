@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react';
 
-interface FunctionDetialsEditorProps {
+interface FunctionDetailsEditorProps {
 	rawDef: any;
 	onChange: (newDef: any) => void;
 	onEditFunctionClose: () => void;
 	functionKey?: string;
 }
 
-const NAME_REGEX = /^[A-Za-z_]{1,1}[_A-Za-z0-9]{0,}$/;
+const NAME_REGEX = /^[A-Za-z_][_A-Za-z0-9]*$/;
 
-export default function FunctionDetialsEditor({
+export default function FunctionDetailsEditor({
 	rawDef,
 	functionKey = '',
 	onChange,
 	onEditFunctionClose,
-}: FunctionDetialsEditorProps) {
+}: FunctionDetailsEditorProps) {
 	const [errors, setErrors] = useState<any>({});
 	const [name, setName] = React.useState(rawDef?.name);
 	const [namespace, setNamespace] = React.useState(rawDef?.namespace ?? '');
