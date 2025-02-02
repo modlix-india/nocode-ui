@@ -1,25 +1,25 @@
 import {
+	duplicate,
 	ExecutionGraph,
 	Function,
 	FunctionDefinition,
 	FunctionExecutionParameters,
 	HybridRepository,
+	isNullValue,
 	KIRuntime,
 	LinkedList,
 	Repository,
 	Schema,
 	StatementExecution,
 	TokenValueExtractor,
-	duplicate,
-	isNullValue,
 } from '@fincity/kirun-js';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
-import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
+import { RemoteRepository, REPO_SERVER } from '../../Engine/RemoteRepository';
 import {
-	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getPathFromLocation,
+	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
@@ -27,7 +27,7 @@ import { UISchemaRepository } from '../../schemas/common';
 import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { UIError, toUIError } from '../util/errorHandling';
+import { toUIError, UIError } from '../util/errorHandling';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import { generateColor } from './colors';
@@ -455,7 +455,7 @@ export default function LazyKIRunEditor(
 					onDependencyDrop={stmt => {
 						if (!dragDependencyNode) return;
 						if (isReadonly) return;
-						if (dragDependencyNode.dependency?.startsWith(`Steps.${stmt}`)) return;
+						if (dragDependencyNode.dependency?.startsWith(`Steps.${stmt}.`)) return;
 
 						const newRawDef = duplicate(rawDef);
 
