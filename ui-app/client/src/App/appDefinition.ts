@@ -101,11 +101,11 @@ async function makeVerifyTokenCall(
 		}
 		return { auth: response?.data, axiosOptions, language };
 	} catch (e) {
-		localStorage.removeItem(TOKEN_NAME);
-		localStorage.removeItem(TOKEN_EXPIRY);
+		console.error('Unable to verify token:', e);
+		// localStorage.removeItem(TOKEN_NAME);
+		// localStorage.removeItem(TOKEN_EXPIRY);
 		axiosOptions = { headers: {} };
 		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
-		console.error('Unable to verify token:', e);
 	}
 	return { axiosOptions, language };
 }
