@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { STORE_PATH_APP_MESSAGE_TIMEOUT, STORE_PATH_MESSAGES } from '../../constants';
 import {
 	addListenerAndCallImmediately,
-	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	setData,
 } from '../../context/StoreContext';
@@ -75,7 +74,7 @@ export function Messages() {
 		return (
 			<React.Fragment key={e.id}>
 				<div key={e.id} data-custom={e.id} className={`_message ${e.type}`}>
-					<i className={`fa-xl ${ICONS[e.type]}`} />
+					<i className={`fa-xl ${ICONS[e.type]} _msgIcon`} />
 					<div className="_msgStringContainer">
 						<div className="_msgString">
 							{debugMessageCaret}
@@ -85,7 +84,7 @@ export function Messages() {
 						{debugMessage}
 					</div>
 					<i
-						className="fa fa-solid fa-circle-xmark"
+						className="fa fa-solid fa-circle-xmark _msgCloseIcon"
 						tabIndex={0}
 						onClick={() => removeMessage(e.id)}
 					/>
@@ -106,7 +105,7 @@ export enum MESSAGE_TYPE {
 }
 
 const ICONS: any = {
-	[MESSAGE_TYPE.ERROR]: 'fa-solid fa-xmark',
+	[MESSAGE_TYPE.ERROR]: 'fa-solid fa-triangle-exclamation',
 	[MESSAGE_TYPE.WARNING]: 'fa-solid fa-exclamation',
 	[MESSAGE_TYPE.INFORMATION]: 'fa-solid fa-info',
 	[MESSAGE_TYPE.SUCCESS]: 'fa-solid fa-circle-check',

@@ -1,4 +1,4 @@
-import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
+import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
@@ -41,6 +41,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: ' ',
 	},
 	{
+		n: 'messagesOuterContainerMargin',
+		cp: 'margin',
+		dn: 'Messages Outer Container Margin',
+		de: 'Messages Outer Container margin',
+		sel: ' ',
+	},
+	{
 		n: 'messageContainerWidth',
 		cp: 'width',
 		dn: 'Messages Container Width',
@@ -65,6 +72,34 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '._message',
 	},
 	{
+		n: 'messageContainerBackgroundError',
+		cp: 'background',
+		dn: 'Messages Container Background Error',
+		de: 'Messages Container background error',
+		sel: '._message.ERROR',
+	},
+	{
+		n: 'messageContainerBackgroundWarning',
+		cp: 'background',
+		dn: 'Messages Container Background Warning',
+		de: 'Messages Container background warning',
+		sel: '._message.WARNING',
+	},
+	{
+		n: 'messageContainerBackgroundInformation',
+		cp: 'background',
+		dn: 'Messages Container Background Information',
+		de: 'Messages Container background information',
+		sel: '._message.INFORMATION',
+	},
+	{
+		n: 'messageContainerBackgroundSuccess',
+		cp: 'background',
+		dn: 'Messages Container Background Success',
+		de: 'Messages Container background success',
+		sel: '._message.SUCCESS',
+	},
+	{
 		n: 'messageContainerBorderRadius',
 		cp: 'border-radius',
 		dn: 'Message Container border radius',
@@ -81,12 +116,26 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '._message',
 	},
 	{
-		n: 'messageFontSize',
-		cp: 'font-size',
-		dn: 'Message Font Size',
-		de: 'Message Font Size',
-		dv: 'calc(<mainFontSize> - 1px)',
+		n: 'messageFont',
+		cp: 'font',
+		dn: 'Message Font',
+		de: 'Message Font',
+		dv: '<primaryFont>',
 		sel: '._message ._msgString',
+	},
+	{
+		n: 'messageIconSize',
+		cp: 'font-size',
+		dn: 'Message Icon Size',
+		de: 'Message Icon Size',
+		sel: '._message ._msgIcon',
+	},
+	{
+		n: 'messageCloseIconSize',
+		cp: 'font-size',
+		dn: 'Message Close Icon Size',
+		de: 'Message Close Icon Size',
+		sel: '._message ._msgCloseIcon',
 	},
 	{
 		n: 'messageBorderLeft',
@@ -167,6 +216,20 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Message success border color',
 		dv: '<successColor>',
 		sel: '._message.SUCCESS',
+	},
+	{
+		n: 'messageAnimation',
+		cp: 'animation',
+		dn: 'Message Animation',
+		de: 'Message Animation',
+		sel: '._message',
+	},
+	{
+		n: 'messageBoxShadow',
+		cp: 'box-shadow',
+		dn: 'Message Box Shadow',
+		de: 'Message Box Shadow',
+		sel: '._message',
 	},
 ];
 
