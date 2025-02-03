@@ -17,7 +17,7 @@ interface TagsValueEditorProps {
 	pageOperations?: PageOperations;
 }
 
-export function TagsValueEditor({ value, onChange, defaultValue }: TagsValueEditorProps) {
+export function TagsValueEditor({ value, onChange, defaultValue }: Readonly<TagsValueEditorProps>) {
 	const [inputValue, setInputValue] = useState('');
 	const [tags, setTags] = useState<string[]>([]);
 
