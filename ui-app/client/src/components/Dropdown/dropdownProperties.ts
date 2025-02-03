@@ -4,9 +4,9 @@ import {
 	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
-	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
+	ComponentPropertyGroup,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -135,6 +135,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Clear On Selecting Same Value',
 		description: 'Clear on selecting same value.',
 		defaultValue: true,
+	},
+	{
+		name: 'supportingText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Supporting Text',
+		description: 'Text to be shown to help fill the textbox.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'leftIcon',
