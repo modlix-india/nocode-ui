@@ -1,25 +1,25 @@
 import {
+	duplicate,
 	ExecutionGraph,
 	Function,
 	FunctionDefinition,
 	FunctionExecutionParameters,
 	HybridRepository,
+	isNullValue,
 	KIRuntime,
 	LinkedList,
 	Repository,
 	Schema,
 	StatementExecution,
 	TokenValueExtractor,
-	duplicate,
-	isNullValue,
 } from '@fincity/kirun-js';
 import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
-import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
+import { RemoteRepository, REPO_SERVER } from '../../Engine/RemoteRepository';
 import {
-	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getPathFromLocation,
+	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
@@ -27,12 +27,12 @@ import { UISchemaRepository } from '../../schemas/common';
 import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { UIError, toUIError } from '../util/errorHandling';
+import { toUIError, UIError } from '../util/errorHandling';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import { generateColor } from './colors';
 import ExecutionGraphLines from './components/ExecutionGraphLines';
-import FunctionDetialsEditor from './components/FunctionDetailsEditor';
+import FunctionDetailsEditor from './components/FunctionDetailsEditor';
 import KIRunContextMenu from './components/KIRunContextMenu';
 import Search from './components/Search';
 import StatementNode from './components/StatementNode';
@@ -43,7 +43,7 @@ import { correctStatementNames, savePersonalizationCurry } from './utils';
 const gridSize = 20;
 
 function makePositions(
-	executionPlan: ExecutionGraph<string, StatementExecution> | UIError | undefined | undefined,
+	executionPlan: ExecutionGraph<string, StatementExecution> | UIError | undefined,
 	setPositions: (p: Map<string, { left: number; top: number }>) => void,
 ) {
 	if (!executionPlan) return;
@@ -74,7 +74,6 @@ function makePositions(
 				positions.set(s.getStatementName(), { left: firstLeft, top: firstTop });
 				firstTop += 100;
 			}
-			continue;
 		}
 	}
 
@@ -158,14 +157,7 @@ export default function LazyKIRunEditor(
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: {
-			readOnly,
-			editorType,
-			onDeletePersonalization,
-			onChangePersonalization,
-			clientCode,
-			appCode,
-		} = {},
+		properties: { readOnly, editorType, onChangePersonalization, clientCode, appCode } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -354,7 +346,7 @@ export default function LazyKIRunEditor(
 	>();
 
 	const savePersonalization = useMemo(() => {
-		if (!personalizationPath) return (key: string, value: any) => {};
+		if (!personalizationPath) return () => {};
 
 		return savePersonalizationCurry(
 			personalizationPath,
@@ -455,7 +447,7 @@ export default function LazyKIRunEditor(
 					onDependencyDrop={stmt => {
 						if (!dragDependencyNode) return;
 						if (isReadonly) return;
-						if (dragDependencyNode.dependency?.startsWith(`Steps.${stmt}`)) return;
+						if (dragDependencyNode.dependency?.startsWith(`Steps.${stmt}.`)) return;
 
 						const newRawDef = duplicate(rawDef);
 
@@ -532,7 +524,7 @@ export default function LazyKIRunEditor(
 
 			setPrimedToClick(false);
 			const rect = container.current.getBoundingClientRect();
-			const { dragStart, startLeft, startTop, oldLeft, oldTop } = scrMove;
+			const { startLeft, startTop, oldLeft, oldTop } = scrMove;
 			if (selectionBox.selectionStart || dragNode) {
 				if (e.clientY - rect.top < gridSize * 1.5)
 					container.current.scrollTop -= gridSize / 2;
@@ -621,7 +613,7 @@ export default function LazyKIRunEditor(
 							const rect = el?.getBoundingClientRect();
 							if (!rect) return false;
 
-							let { left, top, right, bottom, x, y } = rect;
+							let { left, top, right, bottom } = rect;
 
 							left +=
 								(container.current?.scrollLeft || 0) - (containerRect?.left ?? 0);
@@ -632,9 +624,7 @@ export default function LazyKIRunEditor(
 								(container.current?.scrollTop || 0) - (containerRect?.top ?? 0);
 
 							if (boxRect.left > right || left > boxRect.right) return false;
-							if (boxRect.top > bottom || top > boxRect.bottom) return false;
-
-							return true;
+							return !(boxRect.top > bottom || top > boxRect.bottom);
 						})
 						.reduce((a, k) => {
 							a.set(k, true);
@@ -870,7 +860,7 @@ export default function LazyKIRunEditor(
 	const [editFunction, setEditFunction] = useState<boolean>(false);
 
 	let functionEditor = editFunction ? (
-		<FunctionDetialsEditor
+		<FunctionDetailsEditor
 			functionKey={props.functionKey}
 			rawDef={rawDef}
 			onChange={(def: any) => {
@@ -932,7 +922,7 @@ export default function LazyKIRunEditor(
 		stylePropertiesWithPseudoStates,
 	);
 
-	let containerContents = <></>;
+	let containerContents: React.JSX.Element;
 
 	if (!error) {
 		containerContents = (
@@ -971,7 +961,7 @@ export default function LazyKIRunEditor(
 							setSelectedStatements(
 								entries.length === selectedStatements.size
 									? new Map()
-									: new Map<string, boolean>(entries.map(([k, v]) => [k, true])),
+									: new Map<string, boolean>(entries.map(([k]) => [k, true])),
 							);
 						} else if (ev.key === 'Escape') {
 							setSelectedStatements(new Map());
@@ -1055,7 +1045,7 @@ export default function LazyKIRunEditor(
 							setSelectedStatements(
 								entries.length === selectedStatements.size
 									? new Map()
-									: new Map<string, boolean>(entries.map(([k, v]) => [k, true])),
+									: new Map<string, boolean>(entries.map(([k]) => [k, true])),
 							);
 						}}
 					/>
