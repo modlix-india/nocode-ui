@@ -47,7 +47,7 @@ function STRING_LENGTH(validation: any, value: any): Array<string> {
 	return [];
 }
 
-function BOOLEAN_CONDITION(validation: any, value: any): Array<string> {
+function BOOLEAN_CONDITION(validation: any): Array<string> {
 	if (validation.booleanCondition) return [];
 	return [validation.message];
 }
@@ -72,6 +72,7 @@ function SCHEMA_TYPE(validation: any, value: any): Array<string> {
 }
 
 const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+
 function EMAIL(validation: any, value: any): Array<string> {
 	if (isNullValue(value) || value === '') return [];
 	if (!value.match(EMAIL_REGEX)) return [validation.message];
@@ -237,9 +238,10 @@ export function validate(
 						? getData(v as ComponentProperty<any>, locationHistory, pageExtractor)
 						: v;
 			}
-			return vals;
+			return [vals, e.condition];
 		})
-		.filter((e: any) => e.condition !== false)
+		.filter((e: any[]) => !e[1] || e[0].condition)
+		.map((e: any[]) => e[0])
 		.flatMap((e: any) => {
 			const type = e.type ?? 'MANDATORY';
 			if (CUSTOM_VAL_FUNC && CUSTOM_VAL_FUNC[type])
