@@ -69,7 +69,7 @@ export function ManyValuesEditor({
 
 		props[values[i].prop] = values[i].value.trim()
 			? splitByComma
-				? values[i].value.split(',').map(e => e.trim())
+				? values[i].value.split(/,(?![^(]*\))/).map(e => e.trim())
 				: [values[i].value]
 			: [];
 		if (max < props[values[i].prop].length) max = props[values[i].prop].length;

@@ -751,27 +751,6 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 									// preserveValue: true,
 								},
 								{
-									name: 'backgroundImage',
-									displayName: 'Image',
-									type: 'buttonBar',
-									default: 'image',
-									withBackground: true,
-									buttonBarOptions: [
-										{
-											name: 'image',
-											displayName: 'Image',
-										},
-										{
-											name: 'gradient',
-											displayName: 'Gradient',
-										},
-										{
-											name: 'color',
-											displayName: 'Color',
-										},
-									],
-								},
-								{
 									name: 'backgroundSize',
 									displayName: 'Size',
 									type: 'icons',
