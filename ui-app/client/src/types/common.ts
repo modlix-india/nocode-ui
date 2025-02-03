@@ -141,6 +141,12 @@ export interface Section {
 	pageName: string;
 }
 
+interface Tutorial {
+  demoVideo?: string;
+  description?: string;
+  youtubeLink?: string;
+}
+
 export interface Component {
 	name: string;
 	order?: number;
