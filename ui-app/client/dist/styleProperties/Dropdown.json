@@ -2971,141 +2971,6 @@
 		"np": true
 	},
 	{
-		"gn": "DropDown Support Text",
-		"dn": "DropDown Support Text Default Dropdown Support Text Font",
-		"n": "dropdownsupporttextDefaultDropdownSupportTextFont",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compDropdown._default ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text",
-		"dn": "DropDown Support Text Outlined Dropdown Support Text Font",
-		"n": "dropdownsupporttextOutlinedDropdownSupportTextFont",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compDropdown._outlined ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text",
-		"dn": "DropDown Support Text Filled Dropdown Support Text Font",
-		"n": "dropdownsupporttextFilledDropdownSupportTextFont",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compDropdown._filled ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text",
-		"dn": "DropDown Support Text Big Design One Dropdown Support Text Font",
-		"n": "dropdownsupporttextBigDesignOneDropdownSupportTextFont",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compDropdown._bigDesign1 ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text",
-		"dn": "DropDown Support Text Text Dropdown Support Text Font",
-		"n": "dropdownsupporttextTextDropdownSupportTextFont",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compDropdown._text ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text Color",
-		"dn": "DropDown Support Text Color Default Dropdown Support Text",
-		"n": "dropdownsupporttextcolorDefaultDropdownSupportText",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._default ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text Color",
-		"dn": "DropDown Support Text Color Outlined Dropdown Support Text",
-		"n": "dropdownsupporttextcolorOutlinedDropdownSupportText",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._outlined ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text Color",
-		"dn": "DropDown Support Text Color Filled Dropdown Support Text",
-		"n": "dropdownsupporttextcolorFilledDropdownSupportText",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._filled ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text Color",
-		"dn": "DropDown Support Text Color Big Design One Dropdown Support Text",
-		"n": "dropdownsupporttextcolorBigDesignOneDropdownSupportText",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._bigDesign1 ._supportText",
-		"np": true
-	},
-	{
-		"gn": "DropDown Support Text Color",
-		"dn": "DropDown Support Text Color Text Dropdown Support Text",
-		"n": "dropdownsupporttextcolorTextDropdownSupportText",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._text ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Success Border Color",
-		"dn": "Default Success Border color",
-		"n": "successDropdownBorderDefaultColor",
-		"dv": "<successColor>",
-		"cp": "border-color",
-		"sel": ".comp.compDropdown._default ._successIcon ._supportText, .comp.compDropdown._default._isActive ._successIcon ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Success Border Color",
-		"dn": "Outline Success Border Icon color",
-		"n": "successDropdownBorderOutlinedColor",
-		"dv": "<successColor>",
-		"cp": "border-color",
-		"sel": ".comp.compDropdown._outlined ._successIcon ._supportText, .comp.compDropdown._outlined._isActive ._successIcon ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Success Border Color",
-		"dn": "Filled Success Border Icon color",
-		"n": "successDropdownBorderFilledColor",
-		"dv": "<successColor>",
-		"cp": "border-color",
-		"sel": ".comp.compDropdown._filled ._successIcon ._supportText, .comp.compDropdown._filled._isActive ._successIcon ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Success Border Color",
-		"dn": "Design One Success Border Icon color",
-		"n": "successDropdownBorderBigDesignOneColor",
-		"dv": "<successColor>",
-		"cp": "border-color",
-		"sel": ".comp.compDropdown._bigDesign1 ._successIcon ._supportText, .comp.compDropdown._bigDesign1._isActive ._successIcon ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Success Border Color",
-		"dn": "Text Success Border Icon color",
-		"n": "successDropdownBorderTextColor",
-		"dv": "<successColor>",
-		"cp": "border-color",
-		"sel": ".comp.compDropdown._text ._successIcon ._supportText, .comp.compDropdown._text._isActive ._successIcon ._supportText",
-		"np": true
-	},
-	{
 		"gn": "Success Background Color",
 		"dn": "Success Default Dropdown Background",
 		"n": "successDropdownBackgroundColorForDefaultDesign",
@@ -3120,7 +2985,7 @@
 		"n": "successDropdownBackgroundColorForOutlinedDesign",
 		"dv": "<successColor>",
 		"cp": "background",
-		"sel": ".comp.compDropdown._outlined._isActive ._successIcon ._supportText, .comp.compDropdown._outlined ._successIcon ",
+		"sel": ".comp.compDropdown._outlined._isActive ._successIcon, .comp.compDropdown._outlined ._successIcon ",
 		"np": true
 	},
 	{
@@ -3138,7 +3003,7 @@
 		"n": "successDropdownBackgroundColorForBigDesignOneDesign",
 		"dv": "<successColor>",
 		"cp": "background",
-		"sel": ".comp.compDropdown._bigDesign1._isActive ._successIcon ._supportText, .comp.compDropdown._bigDesign1 ._successIcon ",
+		"sel": ".comp.compDropdown._bigDesign1._isActive ._successIcon, .comp.compDropdown._bigDesign1 ._successIcon ",
 		"np": true
 	},
 	{
@@ -3307,51 +3172,6 @@
 		"dv": "2px",
 		"cp": "border-radius",
 		"sel": ".comp.compDropdown._text ._dropdownSearchBox",
-		"np": true
-	},
-	{
-		"gn": "Active Support Text Color",
-		"dn": "Primary Dropdown Active Support Text Color",
-		"n": "primaryDropdownActiveSupportTextColor",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._default._isActive._primary ._supportText, .comp.compDropdown._outlined._primary ._supportText, .comp.compDropdown._filled._isActive._primary ._supportText, .comp.compDropdown._bigDesign1._isActive._primary ._supportText,.comp.compDropdown._text._isActive._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Active Support Text Color",
-		"dn": "Secondary Dropdown Active  Support Text Color",
-		"n": "secondaryDropdownActiveSupportTextColor",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._default._isActive._secondary ._supportText, .comp.compDropdown._outlined._secondary ._supportText, .comp.compDropdown._filled._isActive._secondary ._supportText, .comp.compDropdown._bigDesign1._isActive._secondary ._supportText, .comp.compDropdown._text._isActive._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Active Support Text Color",
-		"dn": "Tertiary Dropdown Active Support Text Color",
-		"n": "tertiaryDropdownActiveSupportTextColor",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._default._isActive._tertiary ._supportText, .comp.compDropdown._outlined._tertiary ._supportText, .comp.compDropdown._filled._isActive._tertiary ._supportText, .comp.compDropdown._bigDesign1._isActive._tertiary ._supportText,.comp.compDropdown._text._isActive._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Active Support Text Color",
-		"dn": "Quaternary Dropdown Active Support Text Color",
-		"n": "quaternaryDropdownActiveSupportTextColor",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._default._isActive._quaternary ._supportText, .comp.compDropdown._outlined._quaternary ._supportText, .comp.compDropdown._filled._isActive._quaternary ._supportText, .comp.compDropdown._bigDesign1._isActive._quaternary ._supportText, .comp.compDropdown._text._isActive._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Active Support Text Color",
-		"dn": "Quinary Dropdown Active Support Text Color",
-		"n": "quinaryDropdownActiveSupportTextColor",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compDropdown._default._isActive._quinary ._supportText, .comp.compDropdown._outlined._quinary ._supportText, .comp.compDropdown._filled._isActive._quinary ._supportText, .comp.compDropdown._bigDesign1._isActive._quinary ._supportText, .comp.compDropdown._text._isActive._quinary ._supportText",
 		"np": true
 	},
 	{
@@ -5584,6 +5404,595 @@
 		"dv": "<colorTwelve>",
 		"cp": "color",
 		"sel": ".comp.compDropdown ._label ._asterisk",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Font",
+		"dn": "Dropdown Support Text Font Design Default",
+		"n": "dropdownSupportTextFontDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compDropdown._default ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Font",
+		"dn": "Dropdown Support Text Font Design Outline",
+		"n": "dropdownSupportTextFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compDropdown._outlined ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Font",
+		"dn": "Dropdown Support Text Font Design Filled",
+		"n": "dropdownSupportTextFontDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compDropdown._filled ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Font",
+		"dn": "Dropdown Support Text Font Design Big 1",
+		"n": "dropdownSupportTextFontDesignBig1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compDropdown._bigDesign1 ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Primary Dropdown Support Text Color Default Design Default",
+		"n": "primaryDropdownSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Secondary Dropdown Support Text Color Default Design Default",
+		"n": "secondaryDropdownSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Tertiary Dropdown Support Text Color Default Design Default",
+		"n": "tertiaryDropdownSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Quaternary Dropdown Support Text Color Default Design Default",
+		"n": "quaternaryDropdownSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Quinary Dropdown Support Text Color Default Design Default",
+		"n": "quinaryDropdownSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Primary Dropdown Support Text Color Default Design Outline",
+		"n": "primaryDropdownSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Secondary Dropdown Support Text Color Default Design Outline",
+		"n": "secondaryDropdownSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Tertiary Dropdown Support Text Color Default Design Outline",
+		"n": "tertiaryDropdownSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Quaternary Dropdown Support Text Color Default Design Outline",
+		"n": "quaternaryDropdownSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Quinary Dropdown Support Text Color Default Design Outline",
+		"n": "quinaryDropdownSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Primary Dropdown Support Text Color Default Design Filled",
+		"n": "primaryDropdownSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Secondary Dropdown Support Text Color Default Design Filled",
+		"n": "secondaryDropdownSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Tertiary Dropdown Support Text Color Default Design Filled",
+		"n": "tertiaryDropdownSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Quaternary Dropdown Support Text Color Default Design Filled",
+		"n": "quaternaryDropdownSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Quinary Dropdown Support Text Color Default Design Filled",
+		"n": "quinaryDropdownSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Primary Dropdown Support Text Color Default Design Big 1",
+		"n": "primaryDropdownSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Secondary Dropdown Support Text Color Default Design Big 1",
+		"n": "secondaryDropdownSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Tertiary Dropdown Support Text Color Default Design Big 1",
+		"n": "tertiaryDropdownSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Quaternary Dropdown Support Text Color Default Design Big 1",
+		"n": "quaternaryDropdownSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Default",
+		"dn": "Quinary Dropdown Support Text Color Default Design Big 1",
+		"n": "quinaryDropdownSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Primary Dropdown Support Text Color Active Design Default",
+		"n": "primaryDropdownSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Secondary Dropdown Support Text Color Active Design Default",
+		"n": "secondaryDropdownSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Tertiary Dropdown Support Text Color Active Design Default",
+		"n": "tertiaryDropdownSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Quaternary Dropdown Support Text Color Active Design Default",
+		"n": "quaternaryDropdownSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Quinary Dropdown Support Text Color Active Design Default",
+		"n": "quinaryDropdownSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Primary Dropdown Support Text Color Active Design Outline",
+		"n": "primaryDropdownSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Secondary Dropdown Support Text Color Active Design Outline",
+		"n": "secondaryDropdownSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Tertiary Dropdown Support Text Color Active Design Outline",
+		"n": "tertiaryDropdownSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Quaternary Dropdown Support Text Color Active Design Outline",
+		"n": "quaternaryDropdownSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Quinary Dropdown Support Text Color Active Design Outline",
+		"n": "quinaryDropdownSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Primary Dropdown Support Text Color Active Design Filled",
+		"n": "primaryDropdownSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Secondary Dropdown Support Text Color Active Design Filled",
+		"n": "secondaryDropdownSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Tertiary Dropdown Support Text Color Active Design Filled",
+		"n": "tertiaryDropdownSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Quaternary Dropdown Support Text Color Active Design Filled",
+		"n": "quaternaryDropdownSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Quinary Dropdown Support Text Color Active Design Filled",
+		"n": "quinaryDropdownSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Primary Dropdown Support Text Color Active Design Big 1",
+		"n": "primaryDropdownSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Secondary Dropdown Support Text Color Active Design Big 1",
+		"n": "secondaryDropdownSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Tertiary Dropdown Support Text Color Active Design Big 1",
+		"n": "tertiaryDropdownSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Quaternary Dropdown Support Text Color Active Design Big 1",
+		"n": "quaternaryDropdownSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Active",
+		"dn": "Quinary Dropdown Support Text Color Active Design Big 1",
+		"n": "quinaryDropdownSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Primary Dropdown Support Text Color Has Value Design Default",
+		"n": "primaryDropdownSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Secondary Dropdown Support Text Color Has Value Design Default",
+		"n": "secondaryDropdownSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Tertiary Dropdown Support Text Color Has Value Design Default",
+		"n": "tertiaryDropdownSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Quaternary Dropdown Support Text Color Has Value Design Default",
+		"n": "quaternaryDropdownSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Quinary Dropdown Support Text Color Has Value Design Default",
+		"n": "quinaryDropdownSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._default._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Primary Dropdown Support Text Color Has Value Design Outline",
+		"n": "primaryDropdownSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Secondary Dropdown Support Text Color Has Value Design Outline",
+		"n": "secondaryDropdownSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Tertiary Dropdown Support Text Color Has Value Design Outline",
+		"n": "tertiaryDropdownSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Quaternary Dropdown Support Text Color Has Value Design Outline",
+		"n": "quaternaryDropdownSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Quinary Dropdown Support Text Color Has Value Design Outline",
+		"n": "quinaryDropdownSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._outlined._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Primary Dropdown Support Text Color Has Value Design Filled",
+		"n": "primaryDropdownSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Secondary Dropdown Support Text Color Has Value Design Filled",
+		"n": "secondaryDropdownSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Tertiary Dropdown Support Text Color Has Value Design Filled",
+		"n": "tertiaryDropdownSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Quaternary Dropdown Support Text Color Has Value Design Filled",
+		"n": "quaternaryDropdownSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Quinary Dropdown Support Text Color Has Value Design Filled",
+		"n": "quinaryDropdownSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._filled._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Primary Dropdown Support Text Color Has Value Design Big 1",
+		"n": "primaryDropdownSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Secondary Dropdown Support Text Color Has Value Design Big 1",
+		"n": "secondaryDropdownSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Tertiary Dropdown Support Text Color Has Value Design Big 1",
+		"n": "tertiaryDropdownSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Quaternary Dropdown Support Text Color Has Value Design Big 1",
+		"n": "quaternaryDropdownSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Support Text Color Has Value",
+		"dn": "Quinary Dropdown Support Text Color Has Value Design Big 1",
+		"n": "quinaryDropdownSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compDropdown._bigDesign1._hasValue._quinary ._supportText",
 		"np": true
 	}
 ]
