@@ -2,12 +2,12 @@ import { deepEqual, isNullValue } from '@fincity/kirun-js';
 import React, { ChangeEvent, UIEvent, useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
-	PageStoreExtractor,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
+	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { Component, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
@@ -81,6 +81,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			rightIcon,
 			rightIconOpen,
 			showMandatoryAsterisk,
+			supportingText,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -299,7 +300,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!validation?.length) return;
 
-		const msgs = validate(
+		const validationMessages = validate(
 			props.definition,
 			props.pageDefinition,
 			validation,
@@ -307,11 +308,11 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			locationHistory,
 			pageExtractor,
 		);
-		setValidationMessages(msgs);
+		setValidationMessages(validationMessages);
 
 		setData(
 			`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
-			msgs.length ? msgs : undefined,
+			validationMessages.length ? validationMessages : undefined,
 			context.pageName,
 			true,
 		);
@@ -366,7 +367,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					? (rightIconOpen ?? 'fa-solid fa-angle-up')
 					: (rightIcon ?? 'fa-solid fa-angle-down')
 			}
-			handleRightIcon={e => {
+			handleRightIcon={() => {
 				if (!showDropdown) {
 					inputRef.current?.focus();
 				} else {
@@ -407,12 +408,13 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				if (closeOnMouseLeave) handleClose();
 			}}
 			showMandatoryAsterisk={
-				(validation ?? []).find(
-					(e: any) => e.type === undefined || e.type === 'MANDATORY',
-				) && showMandatoryAsterisk
-					? true
-					: false
+				!!(
+					(validation ?? []).find(
+						(e: any) => e.type === undefined || e.type === 'MANDATORY',
+					) && showMandatoryAsterisk
+				)
 			}
+			supportingText={supportingText}
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {
 					if (!showDropdown) setShowDropdown(true);
@@ -431,7 +433,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					if (index >= data.length) index = 0;
 					setHoverKey(data[index]?.key);
 				} else if (e.key === 'Enter' && showDropdown && hoverKey) {
-					handleClick(dropdownData.find(e => e.key === hoverKey));
+					handleClick(dropdownData.find(e => e.key === hoverKey)).then();
 				} else if (e.key === 'Escape') {
 					setHoverKey(undefined);
 					setShowDropdown(false);
@@ -519,7 +521,7 @@ const component: Component = {
 	component: DropdownComponent,
 	styleComponent: DropdownStyle,
 	styleDefaults: styleDefaults,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'focus', 'disabled'],
 	styleProperties: stylePropertiesDefinition,
