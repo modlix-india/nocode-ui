@@ -214,17 +214,23 @@ export default function DnDNavigationBar({
 						: true;
 
 					let tags: string[] = [];
-					if (e._tags) {
-						if (Array.isArray(e._tags)) {
-							tags = e._tags.filter(tag => tag != null).map(tag => String(tag));
-						} else if (e._tags != null) {
-							tags = [String(e._tags)];
+					if (e.properties?._tags?.value) {
+						const tagValue = e.properties._tags.value;
+						if (Array.isArray(tagValue)) {
+							tags = tagValue
+								.filter(tag => tag != null)
+								.map(tag => String(tag).toUpperCase());
+						} else if (typeof tagValue === 'string') {
+							tags = [tagValue.toUpperCase()];
+						} else if (typeof tagValue === 'object') {
+							tags = Object.values(tagValue)
+								.filter(v => v != null)
+								.map(v => String(v).toUpperCase());
 						}
 					}
+
 					const tagMatch = advancedFilters.tag
-						? tags.some(tag =>
-								tag.toUpperCase().includes(advancedFilters.tag.toUpperCase()),
-							)
+						? tags.some(tag => tag.includes(advancedFilters.tag.toUpperCase()))
 						: true;
 
 					const valueMatch = advancedFilters.value
@@ -354,13 +360,18 @@ export default function DnDNavigationBar({
 					: true;
 
 				let tags: string[] = [];
-				if (e._tags) {
-					if (Array.isArray(e._tags)) {
-						tags = e._tags
+				if (e.properties?._tags?.value) {
+					const tagValue = e.properties._tags.value;
+					if (Array.isArray(tagValue)) {
+						tags = tagValue
 							.filter(tag => tag != null)
 							.map(tag => String(tag).toUpperCase());
-					} else if (e._tags != null) {
-						tags = [String(e._tags).toUpperCase()];
+					} else if (typeof tagValue === 'string') {
+						tags = [tagValue.toUpperCase()];
+					} else if (typeof tagValue === 'object') {
+						tags = Object.values(tagValue)
+							.filter(v => v != null)
+							.map(v => String(v).toUpperCase());
 					}
 				}
 
