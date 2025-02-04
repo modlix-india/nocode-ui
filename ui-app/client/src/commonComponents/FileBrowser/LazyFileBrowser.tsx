@@ -94,7 +94,7 @@ export default function FileBrowser({
 	useEffect(() => {
 		if (startLocation || !selectedFile) return;
 
-		const startPath = `api/files/${resourceType}/file/`;
+		const startPath = `/api/files/${resourceType}/file/`;
 		let pathIndex = selectedFile.indexOf(startPath);
 		if (pathIndex == -1) return;
 		let finPath = selectedFile.substring(pathIndex + startPath.length);
@@ -120,7 +120,7 @@ export default function FileBrowser({
 
 		(async () => {
 			try {
-				let url = `api/files/${resourceType}${path}?size=200`;
+				let url = `/api/files/${resourceType}${path}?size=200`;
 				console.log(url, path);
 				if (fileCategory?.length) url += `&fileType=${fileCategory}`;
 				if (filter.trim() !== '') url += `&filter=${filter}`;
