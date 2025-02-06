@@ -1466,7 +1466,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Dropdown Default Design background Color",
 		"n": "primaryDropdownDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1475,7 +1475,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Dropdown Default Design background Color",
 		"n": "secondaryDropdownDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1484,7 +1484,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Dropdown Default Design background Color",
 		"n": "tertiaryDropdownDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1493,7 +1493,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Dropdown Default Design background Color",
 		"n": "quaternaryDropdownDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1502,7 +1502,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Dropdown Default Design background Color",
 		"n": "quinaryDropdownDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1511,7 +1511,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Dropdown Outline Design background Color",
 		"n": "primaryDropdownOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1520,7 +1520,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Dropdown Outline Design background Color",
 		"n": "secondaryDropdownOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1529,7 +1529,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Dropdown Outline Design background Color",
 		"n": "tertiaryDropdownOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1538,7 +1538,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Dropdown Outline Design background Color",
 		"n": "quaternaryDropdownOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1547,7 +1547,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Dropdown Outline Design background Color",
 		"n": "quinaryDropdownOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1556,7 +1556,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Dropdown Filled Design background Color",
 		"n": "primaryDropdownFilledDesignbackgroundColor",
 		"dv": "<fontColorThree>",
@@ -1565,7 +1565,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Dropdown Filled Design background Color",
 		"n": "secondaryDropdownFilledDesignbackgroundColor",
 		"dv": "<fontColorFour>",
@@ -1574,7 +1574,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Dropdown Filled Design background Color",
 		"n": "tertiaryDropdownFilledDesignbackgroundColor",
 		"dv": "<fontColorFive>",
@@ -1583,7 +1583,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Dropdown Filled Design background Color",
 		"n": "quaternaryDropdownFilledDesignbackgroundColor",
 		"dv": "<fontColorNine>",
@@ -1592,7 +1592,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Dropdown Filled Design background Color",
 		"n": "quinaryDropdownFilledDesignbackgroundColor",
 		"dv": "<fontColorSeven>",
@@ -1601,7 +1601,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Dropdown Design One Design background Color",
 		"n": "primaryDropdownDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1610,7 +1610,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Dropdown Design One Design background Color",
 		"n": "secondaryDropdownDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1619,7 +1619,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Dropdown Design One Design background Color",
 		"n": "tertiaryDropdownDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1628,7 +1628,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Dropdown Design One Design background Color",
 		"n": "quaternaryDropdownDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1637,7 +1637,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Dropdown Design One Design background Color",
 		"n": "quinaryDropdownDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1646,7 +1646,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Dropdown Text Design background Color",
 		"n": "primaryDropdownTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1655,7 +1655,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Dropdown Text Design background Color",
 		"n": "secondaryDropdownTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1664,7 +1664,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Dropdown Text Design background Color",
 		"n": "tertiaryDropdownTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1673,7 +1673,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Dropdown Text Design background Color",
 		"n": "quaternaryDropdownTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1682,7 +1682,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Dropdown Text Design background Color",
 		"n": "quinaryDropdownTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1916,7 +1916,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Primary Dropdown Container Default Design background Color",
 		"n": "primaryDropdownContainerDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1925,7 +1925,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Secondary Dropdown Container Default Design background Color",
 		"n": "secondaryDropdownContainerDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1934,7 +1934,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Tertiary Dropdown Container Default Design background Color",
 		"n": "tertiaryDropdownContainerDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1943,7 +1943,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quaternary Dropdown Container Default Design background Color",
 		"n": "quaternaryDropdownContainerDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1952,7 +1952,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quinary Dropdown Container Default Design background Color",
 		"n": "quinaryDropdownContainerDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1961,7 +1961,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Primary Dropdown Container Outline Design background Color",
 		"n": "primaryDropdownContainerOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1970,7 +1970,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Secondary Dropdown Container Outline Design background Color",
 		"n": "secondaryDropdownContainerOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1979,7 +1979,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Tertiary Dropdown Container Outline Design background Color",
 		"n": "tertiaryDropdownContainerOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1988,7 +1988,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quaternary Dropdown Container Outline Design background Color",
 		"n": "quaternaryDropdownContainerOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1997,7 +1997,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quinary Dropdown Container Outline Design background Color",
 		"n": "quinaryDropdownContainerOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -2006,7 +2006,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Primary Dropdown Container Filled Design background Color",
 		"n": "primaryDropdownContainerFilledDesignbackgroundColor",
 		"dv": "<backgroundColorOne>",
@@ -2015,7 +2015,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Secondary Dropdown Container Filled Design background Color",
 		"n": "secondaryDropdownContainerFilledDesignbackgroundColor",
 		"dv": "<backgroundColorTwo>",
@@ -2024,7 +2024,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Tertiary Dropdown Container Filled Design background Color",
 		"n": "tertiaryDropdownContainerFilledDesignbackgroundColor",
 		"dv": "<backgroundColorThree>",
@@ -2033,7 +2033,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quaternary Dropdown Container Filled Design background Color",
 		"n": "quaternaryDropdownContainerFilledDesignbackgroundColor",
 		"dv": "<backgroundColorNine>",
@@ -2042,7 +2042,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quinary Dropdown Container Filled Design background Color",
 		"n": "quinaryDropdownContainerFilledDesignbackgroundColor",
 		"dv": "<backgroundColorNine>",
@@ -2051,7 +2051,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Primary Dropdown Container Design One Design background Color",
 		"n": "primaryDropdownContainerDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -2060,7 +2060,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Secondary Dropdown Container Design One Design background Color",
 		"n": "secondaryDropdownContainerDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -2069,7 +2069,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Tertiary Dropdown Container Design One Design background Color",
 		"n": "tertiaryDropdownContainerDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -2078,7 +2078,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quaternary Dropdown Container Design One Design background Color",
 		"n": "quaternaryDropdownContainerDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -2087,7 +2087,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quinary Dropdown Container Design One Design background Color",
 		"n": "quinaryDropdownContainerDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -2096,7 +2096,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Primary Dropdown Container Text Design background Color",
 		"n": "primaryDropdownContainerTextDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -2105,7 +2105,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Secondary Dropdown Container Text Design background Color",
 		"n": "secondaryDropdownContainerTextDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -2114,7 +2114,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Tertiary Dropdown Container Text Design background Color",
 		"n": "tertiaryDropdownContainerTextDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -2123,7 +2123,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quaternary Dropdown Container Text Design background Color",
 		"n": "quaternaryDropdownContainerTextDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -2132,7 +2132,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Background Color ",
+		"gn": "Dropdown Background Color",
 		"dn": "Quinary Dropdown Container Text Design background Color",
 		"n": "quinaryDropdownContainerTextDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -2141,7 +2141,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Primary Dropdown item Default Design background Color",
 		"n": "primaryDropdownitemDefaultDesignbackgroundColor",
 		"cp": "background",
@@ -2149,7 +2149,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Secondary Dropdown item Default Design background Color",
 		"n": "secondaryDropdownitemDefaultDesignbackgroundColor",
 		"cp": "background",
@@ -2157,7 +2157,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Tertiary Dropdown item Default Design background Color",
 		"n": "tertiaryDropdownitemDefaultDesignbackgroundColor",
 		"cp": "background",
@@ -2165,7 +2165,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quaternary Dropdown item Default Design background Color",
 		"n": "quaternaryDropdownitemDefaultDesignbackgroundColor",
 		"cp": "background",
@@ -2173,7 +2173,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quinary Dropdown item Default Design background Color",
 		"n": "quinaryDropdownitemDefaultDesignbackgroundColor",
 		"cp": "background",
@@ -2181,7 +2181,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Primary Dropdown item Outline Design background Color",
 		"n": "primaryDropdownitemOutlineDesignbackgroundColor",
 		"cp": "background",
@@ -2189,7 +2189,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Secondary Dropdown item Outline Design background Color",
 		"n": "secondaryDropdownitemOutlineDesignbackgroundColor",
 		"cp": "background",
@@ -2197,7 +2197,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Tertiary Dropdown item Outline Design background Color",
 		"n": "tertiaryDropdownitemOutlineDesignbackgroundColor",
 		"cp": "background",
@@ -2205,7 +2205,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quaternary Dropdown item Outline Design background Color",
 		"n": "quaternaryDropdownitemOutlineDesignbackgroundColor",
 		"cp": "background",
@@ -2213,7 +2213,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quinary Dropdown item Outline Design background Color",
 		"n": "quinaryDropdownitemOutlineDesignbackgroundColor",
 		"cp": "background",
@@ -2221,7 +2221,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Primary Dropdown item Filled Design background Color",
 		"n": "primaryDropdownitemFilledDesignbackgroundColor",
 		"cp": "background",
@@ -2229,7 +2229,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Secondary Dropdown item Filled Design background Color",
 		"n": "secondaryDropdownitemFilledDesignbackgroundColor",
 		"cp": "background",
@@ -2237,7 +2237,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Tertiary Dropdown item Filled Design background Color",
 		"n": "tertiaryDropdownitemFilledDesignbackgroundColor",
 		"cp": "background",
@@ -2245,7 +2245,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quaternary Dropdown item Filled Design background Color",
 		"n": "quaternaryDropdownitemFilledDesignbackgroundColor",
 		"cp": "background",
@@ -2253,7 +2253,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quinary Dropdown item Filled Design background Color",
 		"n": "quinaryDropdownitemFilledDesignbackgroundColor",
 		"cp": "background",
@@ -2261,7 +2261,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Primary Dropdown item Design One Design background Color",
 		"n": "primaryDropdownitemDesignOneDesignbackgroundColor",
 		"cp": "background",
@@ -2269,7 +2269,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Secondary Dropdown item Design One Design background Color",
 		"n": "secondaryDropdownitemDesignOneDesignbackgroundColor",
 		"cp": "background",
@@ -2277,7 +2277,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Tertiary Dropdown item Design One Design background Color",
 		"n": "tertiaryDropdownitemDesignOneDesignbackgroundColor",
 		"cp": "background",
@@ -2285,7 +2285,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quaternary Dropdown item Design One Design background Color",
 		"n": "quaternaryDropdownitemDesignOneDesignbackgroundColor",
 		"cp": "background",
@@ -2293,7 +2293,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quinary Dropdown item Design One Design background Color",
 		"n": "quinaryDropdownitemDesignOneDesignbackgroundColor",
 		"cp": "background",
@@ -2301,7 +2301,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Primary Dropdown item Text Design background Color",
 		"n": "primaryDropdownitemTextDesignbackgroundColor",
 		"cp": "background",
@@ -2309,7 +2309,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Secondary Dropdown item Text Design background Color",
 		"n": "secondaryDropdownitemTextDesignbackgroundColor",
 		"cp": "background",
@@ -2317,7 +2317,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Tertiary Dropdown item Text Design background Color",
 		"n": "tertiaryDropdownitemTextDesignbackgroundColor",
 		"cp": "background",
@@ -2325,7 +2325,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quaternary Dropdown item Text Design background Color",
 		"n": "quaternaryDropdownitemTextDesignbackgroundColor",
 		"cp": "background",
@@ -2333,7 +2333,7 @@
 		"np": true
 	},
 	{
-		"gn": "Dropdown Item Background Color ",
+		"gn": "Dropdown Item Background Color",
 		"dn": "Quinary Dropdown item Text Design background Color",
 		"n": "quinaryDropdownitemTextDesignbackgroundColor",
 		"cp": "background",
@@ -4906,492 +4906,492 @@
 	},
 
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Primary Drodpdown Shadow Default Design Default",
-		"n": "primaryDrodpdownShadowDefaultDesignDefault",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Primary Dropdown Shadow Default Design Default",
+		"n": "primaryDropdownShadowDefaultDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Secondary Drodpdown Shadow Default Design Default",
-		"n": "secondaryDrodpdownShadowDefaultDesignDefault",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Secondary Dropdown Shadow Default Design Default",
+		"n": "secondaryDropdownShadowDefaultDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Tertiary Drodpdown Shadow Default Design Default",
-		"n": "tertiaryDrodpdownShadowDefaultDesignDefault",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Tertiary Dropdown Shadow Default Design Default",
+		"n": "tertiaryDropdownShadowDefaultDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Quaternary Drodpdown Shadow Default Design Default",
-		"n": "quaternaryDrodpdownShadowDefaultDesignDefault",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Quaternary Dropdown Shadow Default Design Default",
+		"n": "quaternaryDropdownShadowDefaultDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Quinary Drodpdown Shadow Default Design Default",
-		"n": "quinaryDrodpdownShadowDefaultDesignDefault",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Quinary Dropdown Shadow Default Design Default",
+		"n": "quinaryDropdownShadowDefaultDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Primary Drodpdown Shadow Default Design Outline",
-		"n": "primaryDrodpdownShadowDefaultDesignOutline",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Primary Dropdown Shadow Default Design Outline",
+		"n": "primaryDropdownShadowDefaultDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Secondary Drodpdown Shadow Default Design Outline",
-		"n": "secondaryDrodpdownShadowDefaultDesignOutline",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Secondary Dropdown Shadow Default Design Outline",
+		"n": "secondaryDropdownShadowDefaultDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Tertiary Drodpdown Shadow Default Design Outline",
-		"n": "tertiaryDrodpdownShadowDefaultDesignOutline",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Tertiary Dropdown Shadow Default Design Outline",
+		"n": "tertiaryDropdownShadowDefaultDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Quaternary Drodpdown Shadow Default Design Outline",
-		"n": "quaternaryDrodpdownShadowDefaultDesignOutline",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Quaternary Dropdown Shadow Default Design Outline",
+		"n": "quaternaryDropdownShadowDefaultDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Quinary Drodpdown Shadow Default Design Outline",
-		"n": "quinaryDrodpdownShadowDefaultDesignOutline",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Quinary Dropdown Shadow Default Design Outline",
+		"n": "quinaryDropdownShadowDefaultDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Primary Drodpdown Shadow Default Design Filled",
-		"n": "primaryDrodpdownShadowDefaultDesignFilled",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Primary Dropdown Shadow Default Design Filled",
+		"n": "primaryDropdownShadowDefaultDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Secondary Drodpdown Shadow Default Design Filled",
-		"n": "secondaryDrodpdownShadowDefaultDesignFilled",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Secondary Dropdown Shadow Default Design Filled",
+		"n": "secondaryDropdownShadowDefaultDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Tertiary Drodpdown Shadow Default Design Filled",
-		"n": "tertiaryDrodpdownShadowDefaultDesignFilled",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Tertiary Dropdown Shadow Default Design Filled",
+		"n": "tertiaryDropdownShadowDefaultDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Quaternary Drodpdown Shadow Default Design Filled",
-		"n": "quaternaryDrodpdownShadowDefaultDesignFilled",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Quaternary Dropdown Shadow Default Design Filled",
+		"n": "quaternaryDropdownShadowDefaultDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Quinary Drodpdown Shadow Default Design Filled",
-		"n": "quinaryDrodpdownShadowDefaultDesignFilled",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Quinary Dropdown Shadow Default Design Filled",
+		"n": "quinaryDropdownShadowDefaultDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Primary Drodpdown Shadow Default Design Big 1",
-		"n": "primaryDrodpdownShadowDefaultDesignBig1",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Primary Dropdown Shadow Default Design Big 1",
+		"n": "primaryDropdownShadowDefaultDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Secondary Drodpdown Shadow Default Design Big 1",
-		"n": "secondaryDrodpdownShadowDefaultDesignBig1",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Secondary Dropdown Shadow Default Design Big 1",
+		"n": "secondaryDropdownShadowDefaultDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Tertiary Drodpdown Shadow Default Design Big 1",
-		"n": "tertiaryDrodpdownShadowDefaultDesignBig1",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Tertiary Dropdown Shadow Default Design Big 1",
+		"n": "tertiaryDropdownShadowDefaultDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Quaternary Drodpdown Shadow Default Design Big 1",
-		"n": "quaternaryDrodpdownShadowDefaultDesignBig1",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Quaternary Dropdown Shadow Default Design Big 1",
+		"n": "quaternaryDropdownShadowDefaultDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Default",
-		"dn": "Quinary Drodpdown Shadow Default Design Big 1",
-		"n": "quinaryDrodpdownShadowDefaultDesignBig1",
+		"gn": "Dropdown Shadow Default",
+		"dn": "Quinary Dropdown Shadow Default Design Big 1",
+		"n": "quinaryDropdownShadowDefaultDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Primary Drodpdown Shadow Active Design Default",
-		"n": "primaryDrodpdownShadowActiveDesignDefault",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Primary Dropdown Shadow Active Design Default",
+		"n": "primaryDropdownShadowActiveDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._isActive._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Secondary Drodpdown Shadow Active Design Default",
-		"n": "secondaryDrodpdownShadowActiveDesignDefault",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Secondary Dropdown Shadow Active Design Default",
+		"n": "secondaryDropdownShadowActiveDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._isActive._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Tertiary Drodpdown Shadow Active Design Default",
-		"n": "tertiaryDrodpdownShadowActiveDesignDefault",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Tertiary Dropdown Shadow Active Design Default",
+		"n": "tertiaryDropdownShadowActiveDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._isActive._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Quaternary Drodpdown Shadow Active Design Default",
-		"n": "quaternaryDrodpdownShadowActiveDesignDefault",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Quaternary Dropdown Shadow Active Design Default",
+		"n": "quaternaryDropdownShadowActiveDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._isActive._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Quinary Drodpdown Shadow Active Design Default",
-		"n": "quinaryDrodpdownShadowActiveDesignDefault",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Quinary Dropdown Shadow Active Design Default",
+		"n": "quinaryDropdownShadowActiveDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._isActive._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Primary Drodpdown Shadow Active Design Outline",
-		"n": "primaryDrodpdownShadowActiveDesignOutline",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Primary Dropdown Shadow Active Design Outline",
+		"n": "primaryDropdownShadowActiveDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._isActive._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Secondary Drodpdown Shadow Active Design Outline",
-		"n": "secondaryDrodpdownShadowActiveDesignOutline",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Secondary Dropdown Shadow Active Design Outline",
+		"n": "secondaryDropdownShadowActiveDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._isActive._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Tertiary Drodpdown Shadow Active Design Outline",
-		"n": "tertiaryDrodpdownShadowActiveDesignOutline",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Tertiary Dropdown Shadow Active Design Outline",
+		"n": "tertiaryDropdownShadowActiveDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._isActive._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Quaternary Drodpdown Shadow Active Design Outline",
-		"n": "quaternaryDrodpdownShadowActiveDesignOutline",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Quaternary Dropdown Shadow Active Design Outline",
+		"n": "quaternaryDropdownShadowActiveDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._isActive._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Quinary Drodpdown Shadow Active Design Outline",
-		"n": "quinaryDrodpdownShadowActiveDesignOutline",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Quinary Dropdown Shadow Active Design Outline",
+		"n": "quinaryDropdownShadowActiveDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._isActive._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Primary Drodpdown Shadow Active Design Filled",
-		"n": "primaryDrodpdownShadowActiveDesignFilled",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Primary Dropdown Shadow Active Design Filled",
+		"n": "primaryDropdownShadowActiveDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._isActive._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Secondary Drodpdown Shadow Active Design Filled",
-		"n": "secondaryDrodpdownShadowActiveDesignFilled",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Secondary Dropdown Shadow Active Design Filled",
+		"n": "secondaryDropdownShadowActiveDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._isActive._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Tertiary Drodpdown Shadow Active Design Filled",
-		"n": "tertiaryDrodpdownShadowActiveDesignFilled",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Tertiary Dropdown Shadow Active Design Filled",
+		"n": "tertiaryDropdownShadowActiveDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._isActive._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Quaternary Drodpdown Shadow Active Design Filled",
-		"n": "quaternaryDrodpdownShadowActiveDesignFilled",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Quaternary Dropdown Shadow Active Design Filled",
+		"n": "quaternaryDropdownShadowActiveDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._isActive._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Quinary Drodpdown Shadow Active Design Filled",
-		"n": "quinaryDrodpdownShadowActiveDesignFilled",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Quinary Dropdown Shadow Active Design Filled",
+		"n": "quinaryDropdownShadowActiveDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._isActive._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Primary Drodpdown Shadow Active Design Big 1",
-		"n": "primaryDrodpdownShadowActiveDesignBig1",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Primary Dropdown Shadow Active Design Big 1",
+		"n": "primaryDropdownShadowActiveDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._isActive._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Secondary Drodpdown Shadow Active Design Big 1",
-		"n": "secondaryDrodpdownShadowActiveDesignBig1",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Secondary Dropdown Shadow Active Design Big 1",
+		"n": "secondaryDropdownShadowActiveDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._isActive._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Tertiary Drodpdown Shadow Active Design Big 1",
-		"n": "tertiaryDrodpdownShadowActiveDesignBig1",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Tertiary Dropdown Shadow Active Design Big 1",
+		"n": "tertiaryDropdownShadowActiveDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._isActive._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Quaternary Drodpdown Shadow Active Design Big 1",
-		"n": "quaternaryDrodpdownShadowActiveDesignBig1",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Quaternary Dropdown Shadow Active Design Big 1",
+		"n": "quaternaryDropdownShadowActiveDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._isActive._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Active",
-		"dn": "Quinary Drodpdown Shadow Active Design Big 1",
-		"n": "quinaryDrodpdownShadowActiveDesignBig1",
+		"gn": "Dropdown Shadow Active",
+		"dn": "Quinary Dropdown Shadow Active Design Big 1",
+		"n": "quinaryDropdownShadowActiveDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._isActive._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Primary Drodpdown Shadow Has Value Design Default",
-		"n": "primaryDrodpdownShadowHasValueDesignDefault",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Primary Dropdown Shadow Has Value Design Default",
+		"n": "primaryDropdownShadowHasValueDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Secondary Drodpdown Shadow Has Value Design Default",
-		"n": "secondaryDrodpdownShadowHasValueDesignDefault",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Secondary Dropdown Shadow Has Value Design Default",
+		"n": "secondaryDropdownShadowHasValueDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Tertiary Drodpdown Shadow Has Value Design Default",
-		"n": "tertiaryDrodpdownShadowHasValueDesignDefault",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Tertiary Dropdown Shadow Has Value Design Default",
+		"n": "tertiaryDropdownShadowHasValueDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Quaternary Drodpdown Shadow Has Value Design Default",
-		"n": "quaternaryDrodpdownShadowHasValueDesignDefault",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Quaternary Dropdown Shadow Has Value Design Default",
+		"n": "quaternaryDropdownShadowHasValueDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Quinary Drodpdown Shadow Has Value Design Default",
-		"n": "quinaryDrodpdownShadowHasValueDesignDefault",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Quinary Dropdown Shadow Has Value Design Default",
+		"n": "quinaryDropdownShadowHasValueDesignDefault",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._default._hasValue._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Primary Drodpdown Shadow Has Value Design Outline",
-		"n": "primaryDrodpdownShadowHasValueDesignOutline",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Primary Dropdown Shadow Has Value Design Outline",
+		"n": "primaryDropdownShadowHasValueDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Secondary Drodpdown Shadow Has Value Design Outline",
-		"n": "secondaryDrodpdownShadowHasValueDesignOutline",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Secondary Dropdown Shadow Has Value Design Outline",
+		"n": "secondaryDropdownShadowHasValueDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Tertiary Drodpdown Shadow Has Value Design Outline",
-		"n": "tertiaryDrodpdownShadowHasValueDesignOutline",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Tertiary Dropdown Shadow Has Value Design Outline",
+		"n": "tertiaryDropdownShadowHasValueDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Quaternary Drodpdown Shadow Has Value Design Outline",
-		"n": "quaternaryDrodpdownShadowHasValueDesignOutline",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Quaternary Dropdown Shadow Has Value Design Outline",
+		"n": "quaternaryDropdownShadowHasValueDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Quinary Drodpdown Shadow Has Value Design Outline",
-		"n": "quinaryDrodpdownShadowHasValueDesignOutline",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Quinary Dropdown Shadow Has Value Design Outline",
+		"n": "quinaryDropdownShadowHasValueDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._outlined._hasValue._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Primary Drodpdown Shadow Has Value Design Filled",
-		"n": "primaryDrodpdownShadowHasValueDesignFilled",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Primary Dropdown Shadow Has Value Design Filled",
+		"n": "primaryDropdownShadowHasValueDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Secondary Drodpdown Shadow Has Value Design Filled",
-		"n": "secondaryDrodpdownShadowHasValueDesignFilled",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Secondary Dropdown Shadow Has Value Design Filled",
+		"n": "secondaryDropdownShadowHasValueDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Tertiary Drodpdown Shadow Has Value Design Filled",
-		"n": "tertiaryDrodpdownShadowHasValueDesignFilled",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Tertiary Dropdown Shadow Has Value Design Filled",
+		"n": "tertiaryDropdownShadowHasValueDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Quaternary Drodpdown Shadow Has Value Design Filled",
-		"n": "quaternaryDrodpdownShadowHasValueDesignFilled",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Quaternary Dropdown Shadow Has Value Design Filled",
+		"n": "quaternaryDropdownShadowHasValueDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Quinary Drodpdown Shadow Has Value Design Filled",
-		"n": "quinaryDrodpdownShadowHasValueDesignFilled",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Quinary Dropdown Shadow Has Value Design Filled",
+		"n": "quinaryDropdownShadowHasValueDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._filled._hasValue._quinary",
 		"np": true
 	},
 
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Primary Drodpdown Shadow Has Value Design Big 1",
-		"n": "primaryDrodpdownShadowHasValueDesignBig1",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Primary Dropdown Shadow Has Value Design Big 1",
+		"n": "primaryDropdownShadowHasValueDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Secondary Drodpdown Shadow Has Value Design Big 1",
-		"n": "secondaryDrodpdownShadowHasValueDesignBig1",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Secondary Dropdown Shadow Has Value Design Big 1",
+		"n": "secondaryDropdownShadowHasValueDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Tertiary Drodpdown Shadow Has Value Design Big 1",
-		"n": "tertiaryDrodpdownShadowHasValueDesignBig1",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Tertiary Dropdown Shadow Has Value Design Big 1",
+		"n": "tertiaryDropdownShadowHasValueDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Quaternary Drodpdown Shadow Has Value Design Big 1",
-		"n": "quaternaryDrodpdownShadowHasValueDesignBig1",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Quaternary Dropdown Shadow Has Value Design Big 1",
+		"n": "quaternaryDropdownShadowHasValueDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Drodpdown Shadow Has Value",
-		"dn": "Quinary Drodpdown Shadow Has Value Design Big 1",
-		"n": "quinaryDrodpdownShadowHasValueDesignBig1",
+		"gn": "Dropdown Shadow Has Value",
+		"dn": "Quinary Dropdown Shadow Has Value Design Big 1",
+		"n": "quinaryDropdownShadowHasValueDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown._bigDesign1._hasValue._quinary",
 		"np": true
