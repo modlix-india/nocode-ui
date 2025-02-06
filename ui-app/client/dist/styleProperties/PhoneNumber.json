@@ -5652,6 +5652,38 @@
 		"sel": ".comp.compPhoneNumber._bigDesign1._hasError, .comp.compPhoneNumber._bigDesign1._isActive._hasError, .comp.compPhoneNumber._bigDesign1._hasValue._hasError",
 		"np": true
 	},
+	{
+		"gn": "Phone Number Error Box Shadow",
+		"dn": "Phone Number Error Box Shadow Design Default",
+		"n": "phoneNumberErrorBoxShadowDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compPhoneNumber._default._hasError, .comp.compPhoneNumber._default._isActive._hasError, .comp.compPhoneNumber._default._hasValue._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Phone Number Error Box Shadow",
+		"dn": "Phone Number Error Box Shadow Design Outline",
+		"n": "phoneNumberErrorBoxShadowDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compPhoneNumber._outlined._hasError, .comp.compPhoneNumber._outlined._isActive._hasError, .comp.compPhoneNumber._outlined._hasValue._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Phone Number Error Box Shadow",
+		"dn": "Phone Number Error Box Shadow Design Filled",
+		"n": "phoneNumberErrorBoxShadowDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compPhoneNumber._filled._hasError, .comp.compPhoneNumber._filled._isActive._hasError, .comp.compPhoneNumber._filled._hasValue._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Phone Number Error Box Shadow",
+		"dn": "Phone Number Error Box Shadow Design Big 1",
+		"n": "phoneNumberErrorBoxShadowDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compPhoneNumber._bigDesign1._hasError, .comp.compPhoneNumber._bigDesign1._isActive._hasError, .comp.compPhoneNumber._bigDesign1._hasValue._hasError",
+		"np": true
+	  },
 
 	{
 		"gn": "Phone Number Success Border Color",
