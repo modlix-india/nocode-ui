@@ -39,7 +39,7 @@
 	},
 
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Primary Otp Color  Design Default",
 		"n": "primaryOtpColorDesignDefault",
 		"dv": "<fontColorOne>",
@@ -48,7 +48,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Secondary Otp Color  Design Default",
 		"n": "secondaryOtpColorDesignDefault",
 		"dv": "<fontColorOne>",
@@ -57,7 +57,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Tertiary Otp Color Active Design Default",
 		"n": "tertiaryOtpColorActiveDesignDefault",
 		"dv": "<fontColorOne>",
@@ -66,7 +66,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Quaternary Otp Color Design Default",
 		"n": "quaternaryOtpColorDesignDefault",
 		"dv": "<fontColorOne>",
@@ -75,7 +75,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Quinary Otp Color Design Default",
 		"n": "quinaryOtpColorDesignDefault",
 		"dv": "<fontColorOne>",
@@ -85,7 +85,7 @@
 	},
 
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Primary Otp Color Design Dashed",
 		"n": "primaryOtpColorDesignDashed",
 		"dv": "<fontColorOne>",
@@ -94,7 +94,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Secondary Otp Color Design Dashed",
 		"n": "secondaryOtpColorDesignDashed",
 		"dv": "<fontColorOne>",
@@ -103,7 +103,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Tertiary Otp Color Design Dashed",
 		"n": "tertiaryOtpColorDesignDashed",
 		"dv": "<fontColorOne>",
@@ -112,7 +112,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Quaternary Otp Color Design Dashed",
 		"n": "quaternaryOtpColorDesignDashed",
 		"dv": "<fontColorOne>",
@@ -121,7 +121,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Quinary Otp Color Design Dashed",
 		"n": "quinaryOtpColorDesignDashed",
 		"dv": "<fontColorOne>",
@@ -131,7 +131,7 @@
 	},
 
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Primary Otp Color Design Filled",
 		"n": "primaryOtpColorDesignFilled",
 		"dv": "<fontColorTwo>",
@@ -140,7 +140,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Secondary Otp Color Design Filled",
 		"n": "secondaryOtpColorDesignFilled",
 		"dv": "<fontColorTwo>",
@@ -149,7 +149,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Tertiary Otp Color Design Filled",
 		"n": "tertiaryOtpColorDesignFilled",
 		"dv": "<fontColorOne>",
@@ -158,7 +158,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Quaternary Otp Color Design Filled",
 		"n": "quaternaryOtpColorDesignFilled",
 		"dv": "<fontColorTwo>",
@@ -167,7 +167,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Quinary Otp Color Design Filled",
 		"n": "quinaryOtpColorDesignFilled",
 		"dv": "<fontColorOne>",
@@ -177,7 +177,7 @@
 	},
 
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Primary Otp Color Design Round",
 		"n": "primaryOtpColorDesignRound",
 		"dv": "<fontColorOne>",
@@ -186,7 +186,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Secondary Otp Color Design Round",
 		"n": "secondaryOtpColorDesignRound",
 		"dv": "<fontColorOne>",
@@ -195,7 +195,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Tertiary Otp Color Design Round",
 		"n": "tertiaryOtpColorDesignRound",
 		"dv": "<fontColorOne>",
@@ -204,7 +204,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Quaternary Otp Color Design Round",
 		"n": "quaternaryOtpColorDesignRound",
 		"dv": "<fontColorOne>",
@@ -213,7 +213,7 @@
 		"np": true
 	},
 	{
-		"gn": "Otp Color ",
+		"gn": "Otp Color",
 		"dn": "Quinary Otp Color Design Round",
 		"n": "quinaryOtpColorDesignRound",
 		"dv": "<fontColorOne>",
