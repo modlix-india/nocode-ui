@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults } from './colorPickerStyleProperties';
 import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
@@ -33,6 +33,7 @@ export default function ColorPickerStyle({
         ${PREFIX} {
             display: flex;
             align-items: center;
+            cursor: pointer;
         }
     
         ${PREFIX} input {
@@ -42,10 +43,26 @@ export default function ColorPickerStyle({
             font: inherit;
             line-height: inherit;
             outline: none;
-            padding: 0;
+            padding: 0px;
             background: transparent;
             color: inherit;
             min-width: 20px;
+            cursor: pointer;
+        }
+        
+        ${PREFIX} ._colorPickerBody input {
+        	flex: 1;
+            height: 100%;
+            border: none;
+            font: inherit;
+            line-height: inherit;
+            outline: none;
+            background: transparent;
+            color: inherit;
+            min-width: 20px;
+            cursor: pointer;
+            border: 1px solid;
+            padding: 3px 10px;
         }
     
         ${PREFIX}._isActive ._label,
@@ -105,7 +122,7 @@ export default function ColorPickerStyle({
             bottom: 0px;
         }
     
-        ${PREFIX} ._clearText, ${PREFIX} ._passwordIcon {
+        ${PREFIX} ._clearText {
             cursor: pointer;
         }
     
@@ -117,62 +134,44 @@ export default function ColorPickerStyle({
             margin-top: 5px;
         }
 
-        ${PREFIX} ._dropdownContainer._colorPickerBody{
+        ${PREFIX} ._dropdownContainer{
             width: 100%;
             z-index: 5;
             left: 0;
             position: absolute;
             top: 100%;
-            margin-left: 0px;
-            max-width: 400px;
-            min-width: 200px;
-            width: 100%;
+            margin-left: auto;
+            gap: 4px;
+            min-width: 260px;
         }
-
-        ${PREFIX} ._dropdownContainer ._combineEditors {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        ${PREFIX} ._dropdownContainer ._combineEditors._vertical {
-            flex-direction: column;
-            align-items: flex-start;
-            width: 100%;
-        }
-
-        ${PREFIX} ._dropdownContainer ._combineEditors input {
-            padding-left: 5px;
-        }
-
-        ${PREFIX} ._dropdownContainer ._colorValues {
-            border-right: none;
-        }
-
-        ${PREFIX} ._dropdownContainer ._colorValueline,
-        ${PREFIX} ._dropdownContainer ._colorValueline input {
-            width: 100%;
-            flex: 1;
-        }
-
-        ${PREFIX} ._colorPickerBody ._simpleEditorSelect {
-            position: relative;
-        }
-
-        ${PREFIX} ._colorPickerBody ._colorSchemeType {
-            cursor: pointer;    
-        }
-
-        ${PREFIX}._boxRoundedDesign {
-            background: linear-gradient(90deg, #35F803 -26.56%, #4D7FEE 26.55%, #F9A71E 69.94%, #35F803 126.56%);
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 3px solid #FFF;
-            box-shadow: 0px 0px 5px 3px #00000017;
-            position: relative;
-        }
+        
+        ${PREFIX} ._combineEditors {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			padding: 5px 15px;
+			gap: 10px;
+			width: 100%;
+		}
+		
+		${PREFIX} ._combineEditors._vertical {
+			flex-direction: column;
+		}
+		
+		${PREFIX} ._colorPickerBody ._colorValues {
+			border: none;
+			gap: 4px;
+		}
+		
+		${PREFIX}._boxRoundedDesign {
+			cursor: pointer;
+			position: relative;
+		}
+		
+		${PREFIX}._boxSquareDesign {
+			cursor: pointer;
+			position: relative;
+		}
 
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
