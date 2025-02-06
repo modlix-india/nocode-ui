@@ -146,6 +146,27 @@ export default function MarkdownEditorStyle({
 		opacity: 1;
 	}
 	
+	${PREFIX} ._html-preview {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    padding: 20px;
+}
+
+${PREFIX} ._html-preview img {
+    max-width: 100%;
+    height: auto;
+}
+
+${PREFIX} ._html-content {
+    width: 100%;
+    padding: 20px;
+}
+
+	${PREFIX} ._resizer:hover {
+		opacity: 1;
+	}
+	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MarkdownEditorCSS">{css}</style>;

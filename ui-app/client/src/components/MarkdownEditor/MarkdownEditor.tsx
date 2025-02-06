@@ -127,14 +127,18 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	let showBoth = false;
 	if (readOnly) {
-		renderingComponent = (
+		renderingComponent = mode.includes('HTML') ? (
+			<div className="_html-content" dangerouslySetInnerHTML={{ __html: text }} />
+		) : (
 			<MarkdownParser componentKey={componentKey} text={text} styles={styleProperties} />
 		);
 	} else {
-		const showText = mode.indexOf('Text') != -1;
-		const showDoc = mode.indexOf('Doc') != -1;
+		const showText = mode.indexOf('Text') !== -1 || mode.indexOf('HTML') !== -1;
+		const showDoc = mode.indexOf('Doc') !== -1;
+		const isHTML = mode.indexOf('HTML') !== -1;
 		showBoth = showText && showDoc;
 		const finTextAreaWidth = showBoth ? `calc(50% + ${textAreaWidth}px)` : '100%';
+
 		const textComp = showText ? (
 			<textarea
 				ref={textAreaRef}
@@ -144,8 +148,12 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						? {
 								...styleProperties.textArea,
 								width: finTextAreaWidth,
+								fontFamily: isHTML ? 'monospace' : undefined,
 							}
-						: { width: finTextAreaWidth }
+						: {
+								width: finTextAreaWidth,
+								fontFamily: isHTML ? 'monospace' : undefined,
+							}
 				}
 				onBlur={
 					onBlurEvent
@@ -246,14 +254,20 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		) : undefined;
 
 		let docComp = showDoc ? (
-			<MarkdownParser
-				componentKey={componentKey}
-				text={text}
-				styles={styleProperties}
-				editable={true}
-				onChange={onChangeText}
-				className={showBoth ? '_both' : ''}
-			/>
+			isHTML ? (
+				<div className="_html-preview">
+					<div dangerouslySetInnerHTML={{ __html: text }} />
+				</div>
+			) : (
+				<MarkdownParser
+					componentKey={componentKey}
+					text={text}
+					styles={styleProperties}
+					editable={true}
+					onChange={onChangeText}
+					className={showBoth ? '_both' : ''}
+				/>
+			)
 		) : undefined;
 
 		if (showBoth) {
