@@ -50,6 +50,7 @@ function RadioButton(props: Readonly<ComponentProps>) {
 			isMultiSelect,
 			designType,
 			colorScheme,
+			stopPropagation,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -191,6 +192,7 @@ function RadioButton(props: Readonly<ComponentProps>) {
 						onChange={() => handleClick(e)}
 						showAsRadio={!isMultiSelect}
 						isReadOnly={readOnly}
+						stopPropagation={stopPropagation}
 						definition={props.definition}
 						styles={{
 							...((focus === e.key
