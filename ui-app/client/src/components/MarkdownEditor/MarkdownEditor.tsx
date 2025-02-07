@@ -21,6 +21,17 @@ import { EditorMode, MEButtonBar } from './components/MEButtonBar';
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
+import { RichTextButtonBar } from './components/RichTextButtonBar';
+
+// Update EditorMode type
+// type EditorMode =
+// 	| 'editText'
+// 	| 'editDoc'
+// 	| 'editTextnDoc'
+// 	| 'editHTML'
+// 	| 'editHTMLnDoc'
+// 	| 'editRichText'
+// 	| 'editRichTextnDoc';
 
 function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -330,20 +341,222 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	let buttonBar = undefined;
 
+	// Add keyboard shortcut handler
+	const handleKeyboardShortcut = (ev: KeyboardEvent) => {
+		if (!textAreaRef.current) return;
+		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+		const modifier = isMac ? ev.metaKey : ev.ctrlKey;
+
+		if (modifier) {
+			switch (ev.key.toLowerCase()) {
+				case 'b':
+					ev.preventDefault();
+					handleRichTextCommand('bold');
+					break;
+				case 'i':
+					ev.preventDefault();
+					handleRichTextCommand('italic');
+					break;
+				case 'u':
+					ev.preventDefault();
+					handleRichTextCommand('underline');
+					break;
+				// Add more shortcuts as needed
+			}
+		}
+	};
+
+	// Add effect for keyboard shortcuts
+	useEffect(() => {
+		document.addEventListener('keydown', handleKeyboardShortcut);
+		return () => document.removeEventListener('keydown', handleKeyboardShortcut);
+	}, [text]);
+
+	// Modify handleRichTextCommand to handle document format
+	const handleRichTextCommand = (
+		command: string,
+		value?: string | { url: string; text: string },
+	) => {
+		if (!textAreaRef.current) return;
+
+		const { selectionStart, selectionEnd } = textAreaRef.current;
+		const selectedText = text.substring(selectionStart, selectionEnd);
+		const beforeText = text.substring(0, selectionStart);
+		const afterText = text.substring(selectionEnd);
+
+		let newText = text;
+		let newCursorPos = selectionEnd;
+
+		switch (command) {
+			case 'bold':
+				const hasBoldMarkers = selectedText.startsWith('**') && selectedText.endsWith('**');
+				const hasBoldTag = selectedText.match(/<strong>(.*?)<\/strong>/);
+
+				if (hasBoldMarkers) {
+					newText = beforeText + selectedText.slice(2, -2) + afterText;
+					newCursorPos = selectionEnd - 4;
+				} else if (hasBoldTag) {
+					newText =
+						beforeText +
+						selectedText.replace(/<strong>(.*?)<\/strong>/, '$1') +
+						afterText;
+					newCursorPos =
+						selectionStart +
+						selectedText.replace(/<strong>(.*?)<\/strong>/, '$1').length;
+				} else {
+					newText = `${beforeText}**${selectedText}**${afterText}`;
+					newCursorPos = selectionEnd + 4;
+				}
+				break;
+
+			case 'italic':
+				const hasItalicMarkers = selectedText.startsWith('*') && selectedText.endsWith('*');
+				const hasItalicTag = selectedText.match(/<em>(.*?)<\/em>/);
+
+				if (hasItalicMarkers) {
+					newText = beforeText + selectedText.slice(1, -1) + afterText;
+					newCursorPos = selectionEnd - 2;
+				} else if (hasItalicTag) {
+					newText =
+						beforeText + selectedText.replace(/<em>(.*?)<\/em>/, '$1') + afterText;
+					newCursorPos =
+						selectionStart + selectedText.replace(/<em>(.*?)<\/em>/, '$1').length;
+				} else {
+					newText = `${beforeText}*${selectedText}*${afterText}`;
+					newCursorPos = selectionEnd + 2;
+				}
+				break;
+
+			case 'underline':
+				const hasUnderlineMarkers =
+					selectedText.startsWith('__') && selectedText.endsWith('__');
+				const hasUnderlineTag = selectedText.match(/<u>(.*?)<\/u>/);
+
+				if (hasUnderlineMarkers) {
+					newText = beforeText + selectedText.slice(2, -2) + afterText;
+					newCursorPos = selectionEnd - 4;
+				} else if (hasUnderlineTag) {
+					newText = beforeText + selectedText.replace(/<u>(.*?)<\/u>/, '$1') + afterText;
+					newCursorPos =
+						selectionStart + selectedText.replace(/<u>(.*?)<\/u>/, '$1').length;
+				} else {
+					newText = `${beforeText}__${selectedText}__${afterText}`;
+					newCursorPos = selectionEnd + 4;
+				}
+				break;
+
+			case 'h1':
+			case 'h2':
+			case 'h3':
+				const headingLevel = command.charAt(1);
+				const headingMarker = '#'.repeat(Number(headingLevel));
+				const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
+				const lineEnd =
+					text.indexOf('\n', selectionEnd) === -1
+						? text.length
+						: text.indexOf('\n', selectionEnd);
+				const currentLine = text.substring(lineStart, lineEnd);
+
+				if (currentLine.startsWith(headingMarker + ' ')) {
+					newText =
+						text.substring(0, lineStart) +
+						currentLine.substring(headingMarker.length + 1) +
+						text.substring(lineEnd);
+				} else {
+					const cleanLine = currentLine.replace(/^#+\s*/, '');
+					newText =
+						text.substring(0, lineStart) +
+						`${headingMarker} ${cleanLine}` +
+						text.substring(lineEnd);
+				}
+				break;
+			case 'color':
+				if (selectedText.match(/<span style="color: #[0-9a-f]{6}">(.*?)<\/span>/)) {
+					newText =
+						text.substring(0, selectionStart) +
+						selectedText.replace(
+							/<span style="color: #[0-9a-f]{6}">(.*?)<\/span>/,
+							'$1',
+						) +
+						text.substring(selectionEnd);
+				} else {
+					newText = `${text.substring(0, selectionStart)}<span style="color: #ff0000">${selectedText}</span>${text.substring(selectionEnd)}`;
+					newCursorPos = selectionEnd + 32;
+				}
+				break;
+			case 'highlight':
+				if (selectedText.match(/<mark>(.*?)<\/mark>/)) {
+					newText =
+						text.substring(0, selectionStart) +
+						selectedText.replace(/<mark>(.*?)<\/mark>/, '$1') +
+						text.substring(selectionEnd);
+				} else {
+					newText = `${text.substring(0, selectionStart)}<mark>${selectedText}</mark>${text.substring(selectionEnd)}`;
+					newCursorPos = selectionEnd + 13;
+				}
+				break;
+			case 'link':
+				if (typeof value === 'object' && 'url' in value) {
+					newText = `${text.substring(0, selectionStart)}[${value.text}](${value.url})${text.substring(selectionEnd)}`;
+					newCursorPos = selectionStart + value.text.length + value.url.length + 4;
+				}
+				break;
+			case 'image':
+				if (typeof value === 'string') {
+					newText = `${text.substring(0, selectionStart)}![](${value})${text.substring(selectionEnd)}`;
+					newCursorPos = selectionStart + value.length + 4;
+				}
+				break;
+			case 'ul':
+				newText = insertList(text, selectionStart, selectionEnd, '*');
+				break;
+			case 'ol':
+				newText = insertList(text, selectionStart, selectionEnd, '1.');
+				break;
+			case 'quote':
+				newText = insertPrefix(text, selectionStart, selectionEnd, '>');
+				break;
+			case 'code':
+				newText = `${text.substring(0, selectionStart)}\`\`\`\n${selectedText}\n\`\`\`${text.substring(selectionEnd)}`;
+				newCursorPos = selectionEnd + 8;
+				break;
+		}
+
+		onChangeText(newText, () => {
+			textAreaRef.current?.setSelectionRange(newCursorPos, newCursorPos);
+		});
+	};
+
+	// ... existing code ...
+
+	// Modify the buttonBar rendering
 	if (!readOnly) {
 		buttonBar = (
-			<MEButtonBar
-				mode={mode}
-				onModeChange={m => setMode(m)}
-				styleProperties={styleProperties}
-				textAreaRef={textAreaRef.current}
-				onFileSelected={(s, e, file) => {
-					let newText = makeTextForImageSelection(text, s, e, file);
-					onChangeText(newText, () => {
-						textAreaRef.current.setSelectionRange(s, s + file.length);
-					});
-				}}
-			/>
+			<>
+				<MEButtonBar
+					mode={mode}
+					onModeChange={m => {
+						setMode(m);
+						if (m.includes('RichText')) {
+							setShowRichTextBar(true);
+						}
+					}}
+					styleProperties={styleProperties}
+					textAreaRef={textAreaRef.current}
+					onFileSelected={(s, e, file) => {
+						let newText = makeTextForImageSelection(text, s, e, file);
+						onChangeText(newText, () => {
+							textAreaRef.current.setSelectionRange(s, s + file.length);
+						});
+					}}
+				/>
+				{mode.includes('RichText') && (
+					<RichTextButtonBar
+						onCommand={handleRichTextCommand}
+						textAreaRef={textAreaRef.current}
+					/>
+				)}
+			</>
 		);
 	}
 
@@ -377,6 +590,60 @@ function scrollToCaret(textAreaRef: any, componentKey: string, lineNumber?: numb
 	}
 	if (!element) return;
 	setTimeout(() => element.scrollIntoView({ block, inline: 'nearest', behavior: 'smooth' }), 10);
+}
+
+function insertHeading(
+	text: string,
+	selectionStart: any,
+	selectionEnd: any,
+	prefix: string,
+): string {
+	const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
+	const lineEnd = text.indexOf('\n', selectionEnd);
+	const actualEnd = lineEnd === -1 ? text.length : lineEnd;
+	const currentLine = text.substring(lineStart, actualEnd);
+
+	const cleanLine = currentLine.replace(/^#+\s*/, '');
+
+	const newLine = `${prefix} ${cleanLine}`;
+
+	return text.substring(0, lineStart) + newLine + text.substring(actualEnd);
+}
+
+function insertList(text: string, selectionStart: any, selectionEnd: any, marker: string): string {
+	const selectedText = text.substring(selectionStart, selectionEnd);
+	const lines = selectedText.split('\n');
+
+	const newLines = lines
+		.map((line, index) => {
+			const trimmedLine = line.trim();
+			if (!trimmedLine) return '';
+
+			const prefix = marker === '1.' ? `${index + 1}.` : marker;
+			return `${prefix} ${trimmedLine}`;
+		})
+		.join('\n');
+
+	return text.substring(0, selectionStart) + newLines + text.substring(selectionEnd);
+}
+
+function insertPrefix(
+	text: string,
+	selectionStart: any,
+	selectionEnd: any,
+	prefix: string,
+): string {
+	const selectedText = text.substring(selectionStart, selectionEnd);
+	const lines = selectedText.split('\n');
+
+	const newLines = lines
+		.map(line => {
+			const trimmedLine = line.trim();
+			return trimmedLine ? `${prefix} ${trimmedLine}` : '';
+		})
+		.join('\n');
+
+	return text.substring(0, selectionStart) + newLines + text.substring(selectionEnd);
 }
 
 function makeTextForImageSelection(text: string, s: number, e: number, file: string): string {
@@ -700,3 +967,6 @@ const component: Component = {
 };
 
 export default component;
+function setShowRichTextBar(arg0: boolean) {
+	throw new Error('Function not implemented.');
+}

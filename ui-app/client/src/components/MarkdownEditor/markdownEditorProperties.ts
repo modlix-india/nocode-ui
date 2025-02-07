@@ -15,26 +15,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'editText',
 		enumValues: [
-			{
-				name: 'editText',
-				displayName: 'Edit Text',
-			},
-			{
-				name: 'editDoc',
-				displayName: 'Edit Document',
-			},
-			{
-				name: 'editTextnDoc',
-				displayName: 'Edit Text and Document',
-			},
-			{
-				name: 'editHTML',
-				displayName: 'Edit HTML',
-			},
-			{
-				name: 'editHTMLnDoc',
-				displayName: 'Edit HTML and Document',
-			},
+			{ name: 'editText', displayName: 'Edit Text' },
+			{ name: 'editDoc', displayName: 'Edit Document' },
+			{ name: 'editTextnDoc', displayName: 'Edit Text and Document' },
+			{ name: 'editHTML', displayName: 'Edit HTML' },
+			{ name: 'editHTMLnDoc', displayName: 'Edit HTML and Document' },
+			{ name: 'editRichText', displayName: 'Rich Text Editor' },
+			{ name: 'editRichTextnDoc', displayName: 'Rich Text and Document' },
 		],
 	},
 	{

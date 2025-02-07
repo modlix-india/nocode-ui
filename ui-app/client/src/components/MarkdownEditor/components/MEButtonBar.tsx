@@ -3,7 +3,14 @@ import { styleProperties } from '../markdownEditorStyleProperties';
 import { FileBrowser } from '../../../commonComponents/FileBrowser';
 import { isNullValue } from '@fincity/kirun-js';
 
-export type EditorMode = 'editText' | 'editDoc' | 'editTextnDoc' | 'editHTML' | 'editHTMLnDoc';
+export type EditorMode =
+	| 'editText'
+	| 'editDoc'
+	| 'editTextnDoc'
+	| 'editHTML'
+	| 'editHTMLnDoc'
+	| 'editRichText'
+	| 'editRichTextnDoc';
 
 interface MEButtonBarProps {
 	mode: EditorMode;
