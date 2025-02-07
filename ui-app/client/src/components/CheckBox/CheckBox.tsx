@@ -41,7 +41,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			hideLabel,
-			stopPropagation,
+			
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -114,7 +114,6 @@ function CheckBox(props: Readonly<ComponentProps>) {
 					isChecked={checkBoxdata}
 					isReadOnly={readOnly}
 					id={key}
-					stopPropagation={stopPropagation}
 					onChange={handleChange}
 					styles={resolvedStyles.checkbox ?? {}}
 					thumbStyles={resolvedStyles.thumb ?? {}}

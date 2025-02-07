@@ -48,15 +48,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
-		name: 'stopPropagation',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		group: ComponentPropertyGroup.ADVANCED,
-		displayName: 'Stop propagation of click event',
-		description:
-			'Stop propagation of click event which will not trigger the container click event.',
-		defaultValue: false,
-	},
-	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,

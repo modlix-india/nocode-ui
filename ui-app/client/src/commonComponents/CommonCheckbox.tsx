@@ -5,7 +5,7 @@ import { ComponentDefinition } from '../types/common';
 type CommonCheckboxType = {
 	isChecked: boolean;
 	showAsRadio?: boolean;
-	onChange?: (value: boolean, event?: React.SyntheticEvent) => void;
+	onChange?: (value: boolean) => void;
 	id?: string;
 	isReadOnly?: boolean;
 	styles?: any;
@@ -13,7 +13,6 @@ type CommonCheckboxType = {
 	focusHandler?: () => void;
 	blurHandler?: () => void;
 	definition?: ComponentDefinition;
-	stopPropagation?: boolean;
 };
 
 function CommonCheckbox({
@@ -27,7 +26,7 @@ function CommonCheckbox({
 	focusHandler,
 	blurHandler,
 	definition,
-	stopPropagation,
+	
 }: CommonCheckboxType) {
 	const sh = definition ? (
 		<SubHelperComponent definition={definition} subComponentName="checkbox" />
@@ -37,11 +36,9 @@ function CommonCheckbox({
 		<SubHelperComponent definition={definition} subComponentName="thumb" zIndex={6} />
 	) : undefined;
 	const handleClick = (e: React.MouseEvent) => {
-		if (stopPropagation) {
 			e.stopPropagation();
-		}
 		if (isReadOnly) return;
-		onChange?.(!isChecked, e);
+		onChange?.(!isChecked);
 	};
 
 	return (
