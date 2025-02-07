@@ -4515,6 +4515,38 @@
 		"sel": ".comp.compTextBox._filled._hasValue._hasError ._rightIcon",
 		"np": true
 	},
+	{
+		"gn": "Text Box Error Box Shadow",
+		"dn": "Text Box Error Box Shadow Design Default",
+		"n": "textBoxErrorBoxShadowDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextBox._default._hasError, .comp.compTextBox._default._isActive._hasError, .comp.compTextBox._default._hasValue._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Text Box Error Box Shadow",
+		"dn": "Text Box Error Box Shadow Design Outline",
+		"n": "textBoxErrorBoxShadowDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextBox._outlined._hasError, .comp.compTextBox._outlined._isActive._hasError, .comp.compTextBox._outlined._hasValue._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Text Box Error Box Shadow",
+		"dn": "Text Box Error Box Shadow Design Filled",
+		"n": "textBoxErrorBoxShadowDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextBox._filled._hasError, .comp.compTextBox._filled._isActive._hasError, .comp.compTextBox._filled._hasValue._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Text Box Error Box Shadow",
+		"dn": "Text Box Error Box Shadow Design Big 1",
+		"n": "textBoxErrorBoxShadowDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextBox._bigDesign1._hasError, .comp.compTextBox._bigDesign1._isActive._hasError, .comp.compTextBox._bigDesign1._hasValue._hasError",
+		"np": true
+	  },
 
 	{
 		"gn": "Text Box Border Top",

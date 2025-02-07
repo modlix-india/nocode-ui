@@ -967,7 +967,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Calendar Default Design background Color",
 		"n": "primaryCalendarDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -976,7 +976,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Calendar Default Design background Color",
 		"n": "secondaryCalendarDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -985,7 +985,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Calendar Default Design background Color",
 		"n": "tertiaryCalendarDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -994,7 +994,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Calendar Default Design background Color",
 		"n": "quaternaryCalendarDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1003,7 +1003,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Calendar Default Design background Color",
 		"n": "quinaryCalendarDefaultDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1012,7 +1012,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Calendar Outline Design background Color",
 		"n": "primaryCalendarOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1021,7 +1021,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Calendar Outline Design background Color",
 		"n": "secondaryCalendarOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1030,7 +1030,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Calendar Outline Design background Color",
 		"n": "tertiaryCalendarOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1039,7 +1039,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Calendar Outline Design background Color",
 		"n": "quaternaryCalendarOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1048,7 +1048,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Calendar Outline Design background Color",
 		"n": "quinaryCalendarOutlineDesignbackgroundColor",
 		"dv": "<backgroundColorSeven>",
@@ -1057,7 +1057,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Calendar Filled Design background Color",
 		"n": "primaryCalendarFilledDesignbackgroundColor",
 		"dv": "<fontColorThree>",
@@ -1066,7 +1066,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Calendar Filled Design background Color",
 		"n": "secondaryCalendarFilledDesignbackgroundColor",
 		"dv": "<fontColorFour>",
@@ -1075,7 +1075,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Calendar Filled Design background Color",
 		"n": "tertiaryCalendarFilledDesignbackgroundColor",
 		"dv": "<fontColorFive>",
@@ -1084,7 +1084,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Calendar Filled Design background Color",
 		"n": "quaternaryCalendarFilledDesignbackgroundColor",
 		"dv": "<fontColorNine>",
@@ -1093,7 +1093,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Calendar Filled Design background Color",
 		"n": "quinaryCalendarFilledDesignbackgroundColor",
 		"dv": "<fontColorSeven>",
@@ -1102,7 +1102,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Calendar Design One Design background Color",
 		"n": "primaryCalendarDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1111,7 +1111,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Calendar Design One Design background Color",
 		"n": "secondaryCalendarDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1120,7 +1120,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Calendar Design One Design background Color",
 		"n": "tertiaryCalendarDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1129,7 +1129,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Calendar Design One Design background Color",
 		"n": "quaternaryCalendarDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1138,7 +1138,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Calendar Design One Design background Color",
 		"n": "quinaryCalendarDesignOneDesignbackgroundColor",
 		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
@@ -1147,7 +1147,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Primary Calendar Text Design background Color",
 		"n": "primaryCalendarTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1156,7 +1156,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Secondary Calendar Text Design background Color",
 		"n": "secondaryCalendarTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1165,7 +1165,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Tertiary Calendar Text Design background Color",
 		"n": "tertiaryCalendarTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1174,7 +1174,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quaternary Calendar Text Design background Color",
 		"n": "quaternaryCalendarTextDesignbackgroundColor",
 		"dv": "transparent",
@@ -1183,7 +1183,7 @@
 		"np": true
 	},
 	{
-		"gn": "Background Color ",
+		"gn": "Background Color",
 		"dn": "Quinary Calendar Text Design background Color",
 		"n": "quinaryCalendarTextDesignbackgroundColor",
 		"dv": "transparent",

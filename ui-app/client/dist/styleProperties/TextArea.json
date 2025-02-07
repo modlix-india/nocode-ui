@@ -3264,7 +3264,30 @@
 		"sel": ".comp.compTextArea._filled._hasError, .comp.compTextArea._filled._isActive._hasError, .comp.compTextArea._filled._hasValue._hasError",
 		"np": true
 	},
-
+	{
+		"gn": "Text Area Error Box Shadow",
+		"dn": "Text Area Error Box Shadow Design Default",
+		"n": "textAreaErrorBoxShadowDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._default._hasError, .comp.compTextArea._default._isActive._hasError, .comp.compTextArea._default._hasValue._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Text Area Error Box Shadow",
+		"dn": "Text Area Error Box Shadow Design Outline",
+		"n": "textAreaErrorBoxShadowDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._outlined._hasError, .comp.compTextArea._outlined._isActive._hasError, .comp.compTextArea._outlined._hasValue._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Text Area Error Box Shadow",
+		"dn": "Text Area Error Box Shadow Design Filled",
+		"n": "textAreaErrorBoxShadowDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._filled._hasError, .comp.compTextArea._filled._isActive._hasError, .comp.compTextArea._filled._hasValue._hasError",
+		"np": true
+	  },
 	{
 		"gn": "Text Area Success Border Color",
 		"dn": "Text Area Success Border Color Design Default",

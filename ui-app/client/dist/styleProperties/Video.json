@@ -34,7 +34,7 @@
 		"dn": "Quaternary Video Range Slider Accent Color",
 		"n": "quaternaryVideoRangeSliderAccentColor",
 		"dv": "<backgroundColorFour>",
-		"de": "rangeSlider design one quaternary  color ",
+		"de": "rangeSlider design one quaternary  color",
 		"cp": "accent-color",
 		"sel": ".comp.compVideo._videoDesign1._quaternary input[type=\"range\"], .comp.compVideo._videoDesign2._quaternary input[type=\"range\"], .comp.compVideo._videoDesign3._quaternary input[type=\"range\"], .comp.compVideo._videoDesign4._quaternary input[type=\"range\"]",
 		"np": true

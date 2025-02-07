@@ -52,7 +52,7 @@ export default function TextAreaStyle({
 	
 		${PREFIX}._isActive ._label,
 		${PREFIX} ._label._noFloat {
-			transform: translateY(-150%);
+			transform: translateY(calc(-150% - 7px));
 		}
 	
 		${PREFIX}._hasLeftIcon ._label {
