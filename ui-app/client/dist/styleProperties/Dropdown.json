@@ -2971,6 +2971,38 @@
 		"np": true
 	},
 	{
+		"gn": "Error Box Shadow",
+		"dn": "Error Default Dropdown Box Shadow",
+		"n": "errorDropdownBoxShadowForDefaultDesign",
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown._default._hasError, .comp.compDropdown._default._isActive._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Error Box Shadow",
+		"dn": "Error Outlined Dropdown Box Shadow",
+		"n": "errorDropdownBoxShadowForOutlinedDesign",
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown._outlined._hasError, .comp.compDropdown._outlined._isActive._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Error Box Shadow",
+		"dn": "Error Filled Dropdown Box Shadow",
+		"n": "errorDropdownBoxShadowForBigDesignOneDesign",
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown._Filled._hasError, .comp.compDropdown._Filled._isActive._hasError",
+		"np": true
+	  },
+	  {
+		"gn": "Error Box Shadow",
+		"dn": "Error Big Design One Dropdown Box Shadow",
+		"n": "errorDropdownBoxShadowForTextDesign",
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown._bigDesign1._hasError, .comp.compDropdown._bigDesign1._isActive._hasError",
+		"np": true
+	  },
+	{
 		"gn": "Success Background Color",
 		"dn": "Success Default Dropdown Background",
 		"n": "successDropdownBackgroundColorForDefaultDesign",
