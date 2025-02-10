@@ -86,14 +86,12 @@ function Stepper(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 	const sepStyle = resolvedStyles?.comp?.hideScrollBar;
-	console.log(sepStyle);
 
 	const styleComp = sepStyle ? (
 		<style
 			key={`${key}_style`}
 		>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
 	) : undefined;
-	console.log(styleComp);
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
