@@ -41,6 +41,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			hideLabel,
+			
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(

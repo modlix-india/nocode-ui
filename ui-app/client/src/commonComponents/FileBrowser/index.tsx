@@ -97,7 +97,22 @@ export async function imageURLForFile(
 			if (!window.cdnStripAPIPrefix) {
 				imgUrl += STATIC_FILE_API_PREFIX;
 			}
-			imgUrl += urlPart;
+			if (window.cdnResizeOptionsType == 'cloudflare') {
+				const qIndex = urlPart.indexOf('?');
+				if (qIndex != -1) {
+					const paramPart = urlPart.substring(qIndex + 1);
+					const front = urlPart.substring(0, qIndex);
+					if (
+						front.endsWith('png') ||
+						front.endsWith('jpg') ||
+						front.endsWith('jpeg') ||
+						front.endsWith('webp') ||
+						front.endsWith('avif')
+					)
+						imgUrl += `cdn-cgi/image/${paramPart.replaceAll('&', ',')}/${front}`;
+					else imgUrl += urlPart;
+				} else imgUrl += urlPart;
+			} else imgUrl += urlPart;
 
 			if (window.cdnReplacePlus) {
 				imgUrl = imgUrl.replace(/\+/g, '%20');

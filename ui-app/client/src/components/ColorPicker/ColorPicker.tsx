@@ -1,10 +1,10 @@
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import React, { ChangeEvent, UIEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { isNullValue } from '@fincity/kirun-js';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
-	PageStoreExtractor,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
+	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -25,7 +25,6 @@ import {
 	HSLA_RGBA_TO_HSLAString,
 	HSLA_RGBA_TO_RGBAString,
 	RGBA,
-	RGBA_HEX,
 } from '../util/colorUtil';
 
 function getEmptyValue(emptyValue: string | undefined): string | null | undefined {
@@ -89,6 +88,7 @@ function ColorPickerComponent(props: Readonly<ComponentProps>) {
 			autoComplete,
 			noAlpha,
 			format,
+			supportingText,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -299,6 +299,7 @@ function ColorPickerComponent(props: Readonly<ComponentProps>) {
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
+			supportingText={supportingText}
 			onMouseEnter={() => {
 				setMouseIsInside(true);
 			}}

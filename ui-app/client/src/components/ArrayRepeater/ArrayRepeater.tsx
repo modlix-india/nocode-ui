@@ -18,7 +18,6 @@ import {
 } from '../../context/StoreContext';
 import {
 	Component,
-	ComponentPropertyDefinition,
 	ComponentProps,
 	DataLocation,
 	LocationHistory,
@@ -127,6 +126,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const handleAdd = async (index: any) => {
+		if (dataType === 'object') return;
+
 		const newData = [...(arrayValue ?? [])];
 		newData.splice(index + 1, 0, undefined as unknown as never);
 		setData(bindingPathPath!, newData, context?.pageName);
@@ -146,7 +147,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 		if (dataType === 'object') {
 			newData = { ...objectValue };
-			delete newData[index];
+			delete newData[indKeys.current.array[index]];
 		} else {
 			newData = arrayValue.slice();
 			newData.splice(index, 1);
@@ -267,7 +268,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		}
 		items = (
 			<>
-				{arrayValue.map((e: any, index) =>
+				{arrayValue.map((_, index) =>
 					createRepeaterItem({
 						pageDefinition,
 						firstchild,
@@ -620,8 +621,8 @@ function processObjectValue(
 	}
 
 	const entries = Object.entries(_v);
-	const keys = entries.map(([k, v]) => k);
-	const values = entries.map(([k, v]) => v);
+	const keys = entries.map(([k]) => k);
+	const values = entries.map(([, v]) => v);
 
 	setArrayValue(values);
 	setObjectValue(_v);
@@ -681,7 +682,7 @@ const component: Component = {
 	displayName: 'Repeater',
 	description: 'Array Repeater component',
 	component: ArrayRepeaterComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: ArrayRepeaterStyle,
@@ -714,8 +715,8 @@ const component: Component = {
 		},
 		{
 			name: 'repeaterProperties',
-			displayName: 'Repeater Properties',
-			description: 'Repeater Properties',
+			displayName: 'Each Repeater Container',
+			description: 'Each Repeater Container',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -732,20 +733,20 @@ const component: Component = {
 		},
 		{
 			name: 'add',
-			displayName: 'Add',
-			description: 'Add',
+			displayName: 'Add Button',
+			description: 'Add Button',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'remove',
-			displayName: 'Remove',
-			description: 'Remove',
+			displayName: 'Delete Button',
+			description: 'Delete Button',
 			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'move',
-			displayName: 'Move',
-			description: 'Move',
+			displayName: 'Move Button',
+			description: 'Move Button',
 			icon: 'fa-solid fa-box',
 		},
 	],

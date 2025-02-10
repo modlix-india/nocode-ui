@@ -350,8 +350,26 @@ function processCDN(style: any) {
 			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH).trim();
 			let url = `url(${marker}https://${window.cdnPrefix}/`;
 			if (!window.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
-			url += lastPart;
+			if (window.cdnResizeOptionsType == 'cloudflare') {
+				const qIndex = lastPart.indexOf('?');
+				if (qIndex != -1) {
+					let paramPart = lastPart.substring(qIndex + 1);
+					let lastIndex = paramPart.lastIndexOf(marker);
+					if (lastIndex != -1) paramPart = paramPart.substring(0, lastIndex);
+					const front = lastPart.substring(0, qIndex);
+					if (
+						front.endsWith('png') ||
+						front.endsWith('jpg') ||
+						front.endsWith('jpeg') ||
+						front.endsWith('webp') ||
+						front.endsWith('avif')
+					)
+						url += `cdn-cgi/image/${paramPart.replaceAll('&', ',')}/${front}${marker})`;
+					else url += lastPart;
+				} else url += lastPart;
+			} else url += lastPart;
 			if (window.cdnReplacePlus) url = url.replaceAll('+', '%20');
+
 			value[k] = url;
 		}
 	}
@@ -409,7 +427,7 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 		})
 		.join('');
 
-	const styles = str
+	return str
 		.split(';')
 		.map(s => {
 			let ind = s.indexOf(':');
@@ -430,7 +448,6 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 			ia[ic.prop] = ic.value;
 			return ia;
 		}, {} as any);
-	return styles;
 }
 
 export function processStyleObjectToCSS(styleObj: any, selector: string): string {

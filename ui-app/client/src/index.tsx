@@ -10,6 +10,7 @@ import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 // window.cdnPrefix = 'cdn-dev.modlix.com';
 // window.cdnStripAPIPrefix = true;
 // window.cdnReplacePlus = true;
+// window.cdnResizeOptionsType = 'cloudflare';
 
 declare global {
 	var nodeDev: boolean;
@@ -35,6 +36,7 @@ declare global {
 	var cdnPrefix: string;
 	var cdnStripAPIPrefix: boolean;
 	var cdnReplacePlus: boolean;
+	var cdnResizeOptionsType: string;
 	var determineRightClickPosition: (e: MouseEvent) => { x: number; y: number };
 	var domainClientCode: string;
 	var domainAppCode: string;

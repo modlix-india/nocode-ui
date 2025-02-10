@@ -18,5 +18,21 @@ export default function getSrcUrl(urlAny: any) {
 		url = url.replaceAll('+', '%20');
 	}
 
+	if (window.cdnResizeOptionsType == 'cloudflare') {
+		const qIndex = url.indexOf('?');
+		if (qIndex != -1) {
+			const paramPart = url.substring(qIndex);
+			const front = url.substring(0, qIndex);
+			if (
+				front.endsWith('png') ||
+				front.endsWith('jpg') ||
+				front.endsWith('jpeg') ||
+				front.endsWith('webp') ||
+				front.endsWith('avif')
+			)
+				url = `/cdn-cgi/image/${paramPart.replaceAll('&', ',')}` + front;
+		}
+	}
+
 	return 'https://' + window.cdnPrefix + url;
 }

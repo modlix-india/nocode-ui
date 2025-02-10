@@ -26,6 +26,7 @@ function CommonCheckbox({
 	focusHandler,
 	blurHandler,
 	definition,
+	
 }: CommonCheckboxType) {
 	const sh = definition ? (
 		<SubHelperComponent definition={definition} subComponentName="checkbox" />
@@ -34,6 +35,11 @@ function CommonCheckbox({
 	const sh2 = definition ? (
 		<SubHelperComponent definition={definition} subComponentName="thumb" zIndex={6} />
 	) : undefined;
+	const handleClick = (e: React.MouseEvent) => {
+			e.stopPropagation();
+		if (isReadOnly) return;
+		onChange?.(!isChecked);
+	};
 
 	return (
 		<span
@@ -42,7 +48,7 @@ function CommonCheckbox({
 			} ${isReadOnly ? '_disabled' : ''}`}
 			role="checkbox"
 			id={id}
-			onClick={isReadOnly ? undefined : e => onChange?.(!isChecked)}
+			onClick={handleClick}
 			style={styles ?? {}}
 			onFocus={focusHandler}
 			onBlur={blurHandler}
