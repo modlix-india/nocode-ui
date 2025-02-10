@@ -51,6 +51,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	{
+		name: 'supportingText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Supporting Text',
+		description: 'Text to be shown to help fill the textbox.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'leftIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Left Icon',
