@@ -1,9 +1,8 @@
 import React from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { Component, ComponentProps } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './iconProperties';
-import { Component } from '../../types/common';
 import IconStyle from './IconStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -44,7 +43,7 @@ const component: Component = {
 	displayName: 'Icon',
 	description: 'Icon component',
 	component: Icon,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: IconStyle,
 	styleDefaults: styleDefaults,
@@ -54,7 +53,7 @@ const component: Component = {
 		name: 'Icon',
 		type: 'Icon',
 		properties: {
-			icon: { value: 'fa-solid fa-icons' },
+			icon: { value: 'fa fa-solid fa-icons' },
 		},
 	},
 	sections: [{ name: 'Icons', pageName: 'icon' }],
