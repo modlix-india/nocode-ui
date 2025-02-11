@@ -1,5 +1,5 @@
 import React from 'react';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { Component, ComponentProps } from '../../types/common';
 import { IconHelper } from '../util/IconHelper';
 
 import TableStyle from './Table/TableStyle';
@@ -8,6 +8,53 @@ import {
 	stylePropertiesDefinition as tableStylePropertiesDefinition,
 } from './Table/tableProperties';
 import { styleDefaults as tableStyleDefaults } from './Table/tableStyleProperties';
+import TableColumnStyle from './TableColumn/TableColumnStyle';
+import {
+	propertiesDefinition as tableColumnPropertiesDefinintion,
+	stylePropertiesDefinition as tableColumnStylePropertiesDefinition,
+} from './TableColumn/tableCloumnProperties';
+import { styleDefaults as tableColumnStyleDefaults } from './TableColumn/tableColumnStyleProperties';
+import TableColumnHeaderStyle from './TableColumnHeader/TableColumnHeaderStyle';
+import {
+	propertiesDefinition as tableColumnHeaderPropertiesDefinintion,
+	stylePropertiesDefinition as tableColumnHeaderStylePropertiesDefinition,
+} from './TableColumnHeader/tableCloumnHeaderProperties';
+import { styleDefaults as tableColumnHeaderStyleDefaults } from './TableColumnHeader/tableColumnHeaderStyleProperties';
+import TableColumnsStyle from './TableColumns/TableColumnsStyle';
+
+import {
+	propertiesDefinition as tableColumnsPropertiesDefinition,
+	stylePropertiesDefinition as tableColumnsStylePropertiesDefinition,
+} from './TableColumns/tableColumnsProperties';
+
+import { styleDefaults as tableColumnsStyleDefaults } from './TableColumns/tableColumnsStyleProperties';
+import {
+	propertiesDefinition as tableDynamicColumnPropertiesDefinition,
+	stylePropertiesDefinition as tableDynamicColumnStylePropertiesDefinition,
+} from './TableDynamicColumn/tableDynamicColumnProperties';
+import TableEmptyGridStyle from './TableEmptyGrid/TableEmptyGridStyle';
+import {
+	propertiesDefinition as tableEmptyGridPropertiesDefinintion,
+	stylePropertiesDefinition as tableEmptyGridStylePropertiesDefinition,
+} from './TableEmptyGrid/tableEmptyGridProperties';
+
+import { styleDefaults as tableEmptyGridStyleDefaults } from './TableEmptyGrid/tableEmptyGridStyleProperties';
+import TableGridStyle from './TableGrid/TableGridStyle';
+
+import {
+	propertiesDefinition as tableGridPropertiesDefinintion,
+	stylePropertiesDefinition as tableGridStylePropertiesDefinition,
+} from './TableGrid/tableGridProperties';
+
+import { styleDefaults as tableGridStyleDefaults } from './TableGrid/tableGridStyleProperties';
+import TablePreviewGridStyle from './TablePreviewGrid/TablePreviewGridStyle';
+
+import {
+	propertiesDefinition as tablePreviewGridPropertiesDefinition,
+	stylePropertiesDefinition as tablePreviewGridStylePropertiesDefinition,
+} from './TablePreviewGrid/tablePreviewGridProperties';
+
+import { styleDefaults as tablePreviewGridStyleDefaults } from './TablePreviewGrid/tablePreviewGridStyleProperties';
 
 const LazyTableComponent = React.lazy(
 	() => import(/* webpackChunkName: "Table" */ './Table/Table'),
@@ -26,7 +73,7 @@ export const Table: Component = {
 	displayName: 'Table',
 	description: 'Table component',
 	component: LoadLazyTableComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: tablePropertiesDefinintion,
 	styleProperties: tableStylePropertiesDefinition,
 	styleComponent: TableStyle,
@@ -192,13 +239,6 @@ export const Table: Component = {
 	],
 };
 
-import TableColumnStyle from './TableColumn/TableColumnStyle';
-import {
-	propertiesDefinition as tableColumnPropertiesDefinintion,
-	stylePropertiesDefinition as tableColumnStylePropertiesDefinition,
-} from './TableColumn/tableCloumnProperties';
-import { styleDefaults as tableColumnStyleDefaults } from './TableColumn/tableColumnStyleProperties';
-
 const LazyTableColumnComponent = React.lazy(
 	() => import(/* webpackChunkName: "TableColumn" */ './TableColumn/TableColumn'),
 );
@@ -216,7 +256,7 @@ export const TableColumn: Component = {
 	displayName: 'Table Column',
 	description: 'Table Column component',
 	component: LoadLazyTableColumnComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: tableColumnPropertiesDefinintion,
 	styleComponent: TableColumnStyle,
 	styleDefaults: tableColumnStyleDefaults,
@@ -337,13 +377,6 @@ export const TableColumn: Component = {
 	],
 };
 
-import TableColumnHeaderStyle from './TableColumnHeader/TableColumnHeaderStyle';
-import {
-	propertiesDefinition as tableColumnHeaderPropertiesDefinintion,
-	stylePropertiesDefinition as tableColumnHeaderStylePropertiesDefinition,
-} from './TableColumnHeader/tableCloumnHeaderProperties';
-import { styleDefaults as tableColumnHeaderStyleDefaults } from './TableColumnHeader/tableColumnHeaderStyleProperties';
-
 const LazyTableColumnHeaderComponent = React.lazy(
 	() =>
 		import(/* webpackChunkName: "TableColumnHeader" */ './TableColumnHeader/TableColumnHeader'),
@@ -362,7 +395,7 @@ export const TableColumnHeader: Component = {
 	displayName: 'Table Header',
 	description: 'Table Header component',
 	component: LoadLazyTableColumnHeaderComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	styleProperties: tableColumnHeaderStylePropertiesDefinition,
 	properties: tableColumnHeaderPropertiesDefinintion,
 	styleComponent: TableColumnHeaderStyle,
@@ -385,15 +418,6 @@ export const TableColumnHeader: Component = {
 	],
 };
 
-import TableColumnsStyle from './TableColumns/TableColumnsStyle';
-
-import {
-	propertiesDefinition as tableColumnsPropertiesDefinition,
-	stylePropertiesDefinition as tableColumnsStylePropertiesDefinition,
-} from './TableColumns/tableColumnsProperties';
-
-import { styleDefaults as tableColumnsStyleDefaults } from './TableColumns/tableColumnsStyleProperties';
-
 const LazyTableColumnsComponent = React.lazy(
 	() => import(/* webpackChunkName: "TableColumns" */ './TableColumns/TableColumns'),
 );
@@ -412,7 +436,7 @@ export const TableColumns: Component = {
 	description: 'Table Columns component',
 	component: LoadLazyTableColumnsComponent,
 	styleProperties: tableColumnsStylePropertiesDefinition,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: tableColumnsPropertiesDefinition,
 	styleComponent: TableColumnsStyle,
 	styleDefaults: tableColumnsStyleDefaults,
@@ -488,15 +512,13 @@ export const TableColumns: Component = {
 	],
 };
 
-import { propertiesDefinition as tableDynamicColumnPropertiesDefinition } from './TableDynamicColumn/tableDynamicColumnProperties';
-
 export const TableDynamicColumn: Component = {
 	name: 'TableDynamicColumn',
 	displayName: 'Table Dynamic Column',
 	description: 'Table Dynamic Column component',
 	component: () => <></>,
-	styleProperties: tableColumnStylePropertiesDefinition,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	styleProperties: tableDynamicColumnStylePropertiesDefinition,
+	propertyValidation: (): Array<string> => [],
 	properties: tableDynamicColumnPropertiesDefinition,
 	styleComponent: () => <></>,
 	styleDefaults: tableColumnStyleDefaults,
@@ -511,15 +533,21 @@ export const TableDynamicColumn: Component = {
 			icon: 'fa-solid fa-table-columns',
 		},
 		{
-			name: 'row',
-			displayName: 'Row',
-			description: 'Row',
+			name: 'leftIcon',
+			displayName: 'Left Icon',
+			description: 'Left icon',
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'header',
-			displayName: 'Header',
-			description: 'Header',
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'headerContainer',
+			displayName: 'Header Container',
+			description: 'Header Container',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -540,16 +568,14 @@ export const TableDynamicColumn: Component = {
 			description: 'Sort None Icon',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'header',
+			displayName: 'Header',
+			description: 'Header',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
-
-import TableEmptyGridStyle from './TableEmptyGrid/TableEmptyGridStyle';
-import {
-	propertiesDefinition as tableEmptyGridPropertiesDefinintion,
-	stylePropertiesDefinition as tableEmptyGridStylePropertiesDefinition,
-} from './TableEmptyGrid/tableEmptyGridProperties';
-
-import { styleDefaults as tableEmptyGridStyleDefaults } from './TableEmptyGrid/tableEmptyGridStyleProperties';
 
 const LazyTableEmptyGridComponent = React.lazy(
 	() => import(/* webpackChunkName: "TableEmptyGrid" */ './TableEmptyGrid/TableEmptyGrid'),
@@ -568,7 +594,7 @@ export const TableEmptyGrid: Component = {
 	displayName: 'Table Empty Grid',
 	description: 'Table Empty Grid component',
 	component: LoadLazyTableEmptyGridComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: tableEmptyGridPropertiesDefinintion,
 	styleProperties: tableEmptyGridStylePropertiesDefinition,
 	styleComponent: TableEmptyGridStyle,
@@ -649,15 +675,6 @@ export const TableEmptyGrid: Component = {
 	],
 };
 
-import TableGridStyle from './TableGrid/TableGridStyle';
-
-import {
-	propertiesDefinition as tableGridPropertiesDefinintion,
-	stylePropertiesDefinition as tableGridStylePropertiesDefinition,
-} from './TableGrid/tableGridProperties';
-
-import { styleDefaults as tableGridStyleDefaults } from './TableGrid/tableGridStyleProperties';
-
 const LazyTableGridComponent = React.lazy(
 	() => import(/* webpackChunkName: "TableGrid" */ './TableGrid/TableGrid'),
 );
@@ -675,7 +692,7 @@ export const TableGrid: Component = {
 	displayName: 'Table Grid',
 	description: 'Table Grid component',
 	component: LoadLazyTableGridComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: tableGridPropertiesDefinintion,
 	styleProperties: tableGridStylePropertiesDefinition,
 	styleComponent: TableGridStyle,
@@ -751,15 +768,6 @@ export const TableGrid: Component = {
 	],
 };
 
-import TablePreviewGridStyle from './TablePreviewGrid/TablePreviewGridStyle';
-
-import {
-	propertiesDefinition as tablePreviewGridPropertiesDefinition,
-	stylePropertiesDefinition as tablePreviewGridStylePropertiesDefinition,
-} from './TablePreviewGrid/tablePreviewGridProperties';
-
-import { styleDefaults as tablePreviewGridStyleDefaults } from './TablePreviewGrid/tablePreviewGridStyleProperties';
-
 const LazyTablePreviewGridComponent = React.lazy(
 	() => import(/* webpackChunkName: "TablePreviewGrid" */ './TablePreviewGrid/TablePreviewGrid'),
 );
@@ -777,7 +785,7 @@ export const TablePreviewGrid = {
 	displayName: 'Table Preview Grid',
 	description: 'Table Preview Grid component',
 	component: LoadLazyTablePreviewGridComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: tablePreviewGridPropertiesDefinition,
 	styleComponent: TablePreviewGridStyle,
 	styleDefaults: tablePreviewGridStyleDefaults,
