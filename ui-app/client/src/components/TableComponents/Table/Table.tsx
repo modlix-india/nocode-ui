@@ -1022,6 +1022,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							sortObjectType,
 							isLoading,
 							spinnerType,
+							showSpinner,
 						},
 					}}
 					locationHistory={locationHistory}
@@ -1053,6 +1054,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								uniqueKey,
 								isLoading,
 								spinnerType,
+								showSpinner,
 							},
 						}}
 						locationHistory={locationHistory}

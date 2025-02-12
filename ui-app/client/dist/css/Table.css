@@ -225,3 +225,12 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(-360deg); }
 }
+
+.comp.compTable ._animateData {
+    height:100%;
+    animation: 2s _tableEmptyRowSpin ease-in-out infinite;
+}
+@keyframes _tableEmptyRowSpin {
+    50% { background-position: 100%;}
+    100% { background-position-x: 0; }
+}
