@@ -198,17 +198,19 @@ export default function ComponentMenu({
 	}, [personalizationPath]);
 
 	useEffect(() => {
-		const savedPinnedComponents = localStorage.getItem('pinnedComponents');
-		if (savedPinnedComponents) {
-			setPinnedComponents(new Set(JSON.parse(savedPinnedComponents)));
-		}
-	}, []);
-
-	useEffect(() => {
-		if (pinnedComponents.size > 0) {
-			localStorage.setItem('pinnedComponents', JSON.stringify(Array.from(pinnedComponents)));
-		}
-	}, [pinnedComponents]);
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => {
+				if (v) {
+					setPinnedComponents(new Set(v));
+				} else {
+					setPinnedComponents(new Set());
+				}
+			},
+			pageExtractor,
+			`${personalizationPath}.pinnedComponents`,
+		);
+	}, [personalizationPath]);
 
 	const handlePinComponent = (componentName: unknown) => {
 		setPinnedComponents(prev => {
@@ -218,6 +220,7 @@ export default function ComponentMenu({
 			} else {
 				newPinned.add(componentName);
 			}
+			onChangePersonalization('pinnedComponents', Array.from(newPinned));
 			return newPinned;
 		});
 	};
