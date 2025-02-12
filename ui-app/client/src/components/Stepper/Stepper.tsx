@@ -38,6 +38,7 @@ function Stepper(props: Readonly<ComponentProps>) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
+		key,
 		properties: {
 			countingType,
 			titles,
@@ -84,7 +85,13 @@ function Stepper(props: Readonly<ComponentProps>) {
 		{ hover: true },
 		stylePropertiesWithPseudoStates,
 	);
+	const sepStyle = resolvedStyles?.comp?.hideScrollBar;
 
+	const styleComp = sepStyle ? (
+		<style
+			key={`${key}_style`}
+		>{`._${key}_grid_css::-webkit-scrollbar { display: none }`}</style>
+	) : undefined;
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
@@ -260,9 +267,13 @@ function Stepper(props: Readonly<ComponentProps>) {
 				stepperDesign !== '_rectangle_arrow' && isStepperVertical
 					? '_vertical'
 					: '_horizontal'
-			} ${getPositionStyle()} `}
+			} ${
+				sepStyle ? `_${key}_grid_css` : ''
+			}
+			${getPositionStyle()} `}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			{styleComp}
 			{steps}
 		</ul>
 	);
