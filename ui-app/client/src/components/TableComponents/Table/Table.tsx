@@ -27,71 +27,6 @@ import axios from 'axios';
 import { deepEqual, duplicate } from '@fincity/kirun-js';
 import getSrcUrl from '../../util/getSrcUrl';
 
-function spinCalculate(
-	spinnerPath1: string | undefined,
-	setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-	props: ComponentProps,
-	spinnerPath2: string | undefined,
-	pageExtractor: PageStoreExtractor,
-): React.EffectCallback {
-	return () => {
-		let sp1: () => void;
-		if (spinnerPath1) {
-			sp1 = addListenerAndCallImmediately(
-				() =>
-					setIsLoading(
-						(spinnerPath1
-							? (getDataFromPath(
-									spinnerPath1,
-									props.locationHistory,
-									pageExtractor,
-								) ?? false)
-							: false) ||
-							(spinnerPath2
-								? (getDataFromPath(
-										spinnerPath2,
-										props.locationHistory,
-										pageExtractor,
-									) ?? false)
-								: false),
-					),
-				pageExtractor,
-				spinnerPath1,
-			);
-		}
-
-		let sp2: () => void;
-		if (spinnerPath2) {
-			sp2 = addListenerAndCallImmediately(
-				() =>
-					setIsLoading(
-						(spinnerPath1
-							? (getDataFromPath(
-									spinnerPath1,
-									props.locationHistory,
-									pageExtractor,
-								) ?? false)
-							: false) ||
-							(spinnerPath2
-								? (getDataFromPath(
-										spinnerPath2,
-										props.locationHistory,
-										pageExtractor,
-									) ?? false)
-								: false),
-					),
-				pageExtractor,
-				spinnerPath2,
-			);
-		}
-
-		return () => {
-			if (sp1) sp1();
-			if (sp2) sp2();
-		};
-	};
-}
-
 export default function TableComponent(props: Readonly<ComponentProps>) {
 	const {
 		definition: {
@@ -153,6 +88,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			descValue,
 			ascValue,
 			sortObjectType,
+			spinnerType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -251,30 +187,40 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		[dataBindingPath],
 	);
 
-	const spinnerPath1 = onSelect
-		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-				onSelect,
-			)}.isRunning`
-		: undefined;
-
 	const paginationEvent = onPagination
 		? props.pageDefinition.eventFunctions?.[onPagination]
 		: undefined;
 
-	const spinnerPath2 = onPagination
-		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-				onPagination,
-			)}.isRunning`
-		: undefined;
-
 	const [isLoading, setIsLoading] = useState(false);
 
-	useEffect(spinCalculate(spinnerPath1, setIsLoading, props, spinnerPath2, pageExtractor), [
-		spinnerPath1,
-		spinnerPath2,
-	]);
+	useEffect(() => {
+		let paths: string[] = [];
+		if (onPagination)
+			paths.push(
+				`${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+					onPagination,
+				)}.isRunning`,
+			);
+		if (onSort && onSort != onPagination)
+			paths.push(
+				`${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+					onSort,
+				)}.isRunning`,
+			);
 
-	const spinner = isLoading && showSpinner ? <div className="_spinner"></div> : undefined;
+		if (!paths.length) return;
+
+		return addListenerAndCallImmediately((_, v) => setIsLoading(v), pageExtractor, ...paths);
+	}, [onPagination, onSort, pageExtractor]);
+
+	const spinner =
+		isLoading && showSpinner && !spinnerType.startsWith('_emptyRow') ? (
+			<div className={`_spinner ${spinnerType}`}>
+				<div className="_block1" />
+				<div className="_block2" />
+				<div className="_block3" />
+			</div>
+		) : undefined;
 
 	const [mode, setMode] = useState(
 		(tableModeBindingPath
@@ -330,7 +276,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 	const childrenEntries = Object.entries(children ?? {}).filter(e => e[1]);
 	const [selection, setSelection] = useState<any>();
 
-	if (!isLoading && !data?.length) {
+	if (!isLoading && data?.length === 0) {
 		const entry = childrenEntries
 			.filter(([k]) => pageDefinition.componentDefinition[k])
 			.filter(([k]) => pageDefinition.componentDefinition[k].type === 'TableEmptyGrid');
@@ -419,7 +365,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 		let pagination = undefined;
 
-		if (showPagination) {
+		if (showPagination && Array.isArray(data)) {
 			let pages = totalPages;
 			let currentPage = pageNumber;
 			let size = pageSize;
@@ -833,7 +779,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					<div
 						className="_clickable _pointer _leftArrow"
 						onClick={() => {
-							if (spinner || currentPage === 0) return;
+							if (isLoading || currentPage === 0) return;
 							const newPage = currentPage - 1;
 							if (pageNumberBindingPath)
 								setStoreData(pageNumberBindingPath, newPage, context.pageName);
@@ -900,7 +846,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					<div
 						className="_clickable _pointer _rightArrow"
 						onClick={() => {
-							if (spinner || currentPage === pages - 1) return;
+							if (isLoading || currentPage === pages - 1) return;
 							const newPage = currentPage + 1;
 							if (pageNumberBindingPath)
 								setStoreData(pageNumberBindingPath, newPage, context.pageName);
@@ -999,7 +945,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 										`${numbers[i]}_pagenumber`,
 									)}
 									onClick={() => {
-										if (spinner) return;
+										if (isLoading) return;
 										if (pageNumberBindingPath)
 											setStoreData(
 												pageNumberBindingPath,
@@ -1074,6 +1020,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							descValue,
 							ascValue,
 							sortObjectType,
+							isLoading,
+							spinnerType,
 						},
 					}}
 					locationHistory={locationHistory}
@@ -1103,6 +1051,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								multiSelect,
 								pageSize,
 								uniqueKey,
+								isLoading,
+								spinnerType,
 							},
 						}}
 						locationHistory={locationHistory}

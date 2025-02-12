@@ -1364,5 +1364,211 @@
 		"dv": "<colorNine>",
 		"cp": "background",
 		"sel": "._tablePagination ._modesContainer ._selected"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Background",
+		"n": "tableSpinnerBackground",
+		"cp": "background",
+		"sel": "._spinner",
+		"dv": "<colorNine>55"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 1 Border",
+		"n": "tableSpinnerCircleSpinner1Border",
+		"cp": "border",
+		"dv": "5px solid <colorSeven>",
+		"sel": "._spinner._circleSpinner ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 1 Background",
+		"n": "tableSpinnerCircleSpinner1Background",
+		"cp": "background",
+		"sel": "._spinner._circleSpinner ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 1 Accent Color",
+		"n": "tableSpinnerCircleSpinner1AccentColor",
+		"cp": "border-bottom-color",
+		"dv": "<colorOne>",
+		"sel": "._spinner._circleSpinner ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 1 Width",
+		"n": "tableSpinnerCircleSpinner1Width",
+		"cp": "width",
+		"dv": "50px",
+		"sel": "._spinner._circleSpinner ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 1 Height",
+		"n": "tableSpinnerCircleSpinner1Height",
+		"cp": "height",
+		"dv": "50px",
+		"sel": "._spinner._circleSpinner ._block1"
+	},
+
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 2 Border",
+		"n": "tableSpinnerCircleSpinner2Border",
+		"cp": "border",
+		"dv": "5px solid <colorSeven>",
+		"sel": "._spinner._circleSpinner2 ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 2 Background",
+		"n": "tableSpinnerCircleSpinner2Background",
+		"cp": "background",
+		"sel": "._spinner._circleSpinner2 ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 2 Accent Border",
+		"n": "tableSpinnerCircleSpinner2AccentBorder",
+		"cp": "border",
+		"dv": "3px solid <colorOne>, 3px solid transparent",
+		"sel": "._spinner._circleSpinner2 ._block1::after"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 2 Accent Background",
+		"n": "tableSpinnerCircleSpinner2AccentBackground",
+		"cp": "background",
+		"sel": "._spinner._circleSpinner2 ._block1::after"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 2 Width",
+		"n": "tableSpinnerCircleSpinner2Width",
+		"cp": "width",
+		"dv": "50px",
+		"sel": "._spinner._circleSpinner2 ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 2 Height",
+		"n": "tableSpinnerCircleSpinner2Height",
+		"cp": "height",
+		"dv": "50px",
+		"sel": "._spinner._circleSpinner2 ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 2 Accent Width",
+		"n": "tableSpinnerCircleSpinner2AccentWidth",
+		"cp": "width",
+		"dv": "85%",
+		"sel": "._spinner._circleSpinner2 ._block1::after"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 2 Accent Height",
+		"n": "tableSpinnerCircleSpinner2AccentHeight",
+		"cp": "height",
+		"dv": "85%",
+		"sel": "._spinner._circleSpinner2 ._block1::after"
+	},
+
+
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Border",
+		"n": "tableSpinnerCircleSpinner3Border",
+		"cp": "border",
+		"dv": "4px solid <colorSeven>, 4px solid <colorSeven>, 4px dotted <colorSeven>, 4px dotted <colorSeven>",
+		"sel": "._spinner._circleSpinner3 ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Background",
+		"n": "tableSpinnerCircleSpinner3Background",
+		"cp": "background",
+		"sel": "._spinner._circleSpinner3 ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Accent Background",
+		"n": "tableSpinnerCircleSpinner3AccentBackground",
+		"cp": "background",
+		"sel": "._spinner._circleSpinner3 ._block1::after"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Inner Background",
+		"n": "tableSpinnerCircleSpinner3InnerBackground",
+		"cp": "background",
+		"sel": "._spinner._circleSpinner3 ._block1::before"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Accent Border",
+		"n": "tableSpinnerCircleSpinner3AccentBorder",
+		"cp": "border",
+		"dv": "3px dotted <colorOne>, 3px dotted <colorOne>, 3px solid <colorOne>, 3px solid <colorOne>",
+		"sel": "._spinner._circleSpinner3 ._block1::after"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Inner Border",
+		"n": "tableSpinnerCircleSpinner3InnerBorder",
+		"cp": "border",
+		"dv": "4px solid <colorSeven>, 4px solid <colorSeven>, 4px dotted <colorSeven>, 4px dotted <colorSeven>",
+		"sel": "._spinner._circleSpinner3 ._block1::before"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Width",
+		"n": "tableSpinnerCircleSpinner3Width",
+		"cp": "width",
+		"dv": "50px",
+		"sel": "._spinner._circleSpinner3 ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Height",
+		"n": "tableSpinnerCircleSpinner3Height",
+		"cp": "height",
+		"dv": "50px",
+		"sel": "._spinner._circleSpinner3 ._block1"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Accent Width",
+		"n": "tableSpinnerCircleSpinner3AccentWidth",
+		"cp": "width",
+		"dv": "90%",
+		"sel": "._spinner._circleSpinner3 ._block1::after"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Accent Height",
+		"n": "tableSpinnerCircleSpinner3AccentHeight",
+		"cp": "height",
+		"dv": "90%",
+		"sel": "._spinner._circleSpinner3 ._block1::after"
+	},
+
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Inner Width",
+		"n": "tableSpinnerCircleSpinner3InnerWidth",
+		"cp": "width",
+		"dv": "70%",
+		"sel": "._spinner._circleSpinner3 ._block1::before"
+	},
+	{
+		"gn": "Table Spinner",
+		"dn": "Table Spinner Circle Spinner 3 Inner Height",
+		"n": "tableSpinnerCircleSpinner2InnerHeight",
+		"cp": "height",
+		"dv": "70%",
+		"sel": "._spinner._circleSpinner3 ._block1::before"
 	}
 ]
