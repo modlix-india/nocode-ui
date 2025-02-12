@@ -23,16 +23,6 @@ import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
 import { RichTextButtonBar } from './components/RichTextButtonBar';
 
-// Update EditorMode type
-// type EditorMode =
-// 	| 'editText'
-// 	| 'editDoc'
-// 	| 'editTextnDoc'
-// 	| 'editHTML'
-// 	| 'editHTMLnDoc'
-// 	| 'editRichText'
-// 	| 'editRichTextnDoc';
-
 function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
@@ -341,7 +331,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	let buttonBar = undefined;
 
-	// Add keyboard shortcut handler
 	const handleKeyboardShortcut = (ev: KeyboardEvent) => {
 		if (!textAreaRef.current) return;
 		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
@@ -361,18 +350,24 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 					ev.preventDefault();
 					handleRichTextCommand('underline');
 					break;
-				// Add more shortcuts as needed
+				case 'h':
+					ev.preventDefault();
+					handleRichTextCommand('h1');
+					break;
 			}
 		}
 	};
 
-	// Add effect for keyboard shortcuts
+	useEffect(() => {
+		if (!textAreaRef.current) return;
+		textAreaRef.current.style.height = '100%';
+	}, [text]);
+
 	useEffect(() => {
 		document.addEventListener('keydown', handleKeyboardShortcut);
 		return () => document.removeEventListener('keydown', handleKeyboardShortcut);
 	}, [text]);
 
-	// Modify handleRichTextCommand to handle document format
 	const handleRichTextCommand = (
 		command: string,
 		value?: string | { url: string; text: string },
@@ -527,9 +522,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		});
 	};
 
-	// ... existing code ...
-
-	// Modify the buttonBar rendering
 	if (!readOnly) {
 		buttonBar = (
 			<>
