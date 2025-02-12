@@ -1,4 +1,4 @@
-import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
+import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
@@ -260,43 +260,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dv: '<backgroundColorFive>',
 		cp: 'background',
 		sel: '.comp.compIcon._quinary._filled, .comp.compIcon._quinary._rounded',
-		np: true,
-	},
-
-	{
-		gn: 'Default',
-		dn: 'Default Icon Font Size',
-		n: 'defaultIconFontSize',
-		dv: '16px',
-		cp: 'font-size',
-		sel: '.comp.compIcon._default',
-		np: true,
-	},
-	{
-		gn: 'Outline',
-		dn: 'Outline Icon Font Size',
-		n: 'outlineIconFontSize',
-		dv: '16px',
-		cp: 'font-size',
-		sel: '.comp.compIcon._outlined',
-		np: true,
-	},
-	{
-		gn: 'Filled',
-		dn: 'Filled Icon Font Size',
-		n: 'filledIconFontSize',
-		dv: '16px',
-		cp: 'font-size',
-		sel: '.comp.compIcon._filled',
-		np: true,
-	},
-	{
-		gn: 'Rounded',
-		dn: 'Rounded Icon Font Size',
-		n: 'roundedIconFontSize',
-		dv: '16px',
-		cp: 'font-size',
-		sel: '.comp.compIcon._rounded',
 		np: true,
 	},
 
