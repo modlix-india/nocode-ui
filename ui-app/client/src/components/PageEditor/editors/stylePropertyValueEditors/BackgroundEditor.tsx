@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { duplicate, Position } from '@fincity/kirun-js';
+import { useState, useEffect } from 'react';
+import { duplicate } from '@fincity/kirun-js';
 import { FileBrowser } from '../../../../commonComponents/FileBrowser';
 import {
 	EachSimpleEditor,
@@ -11,13 +11,17 @@ import {
 import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { ManyValuesEditor } from './simpleEditors/ManyValuesEditor';
 import { FunctionDetail, ManyFunctionsEditor } from './simpleEditors/ManyFunctionsEditor';
-import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
-import { ComponentProperty } from '../../../../types/common';
-// import { color, index, max } from 'd3';
+
 import { ButtonBar } from './simpleEditors/ButtonBar';
 
 type BackgroundImage = {
 	type: 'URL' | 'Gradient';
+	gradientType?:
+		| 'linear-gradient'
+		| 'radial-gradient'
+		| 'conic-gradient'
+		| 'repeating-linear-gradient'
+		| 'repeating-radial-gradient';
 	value: string;
 };
 export interface RelatedProps {
@@ -221,16 +225,27 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 
 	useEffect(() => {
 		if (!props.selectedComponent) return;
-		const extractedImage = propAndValue.find(p => p.prop === 'backgroundImage')?.value || '';
-		const parsedImages = extractedImage.split(/,(?![^(]*\))/g).map((v: string) => {
-			// const parsedImages = parseImageValues(extractedImage).map((v: string) => {
-			const trimmed = v.trim();
-			if (trimmed.startsWith('url(')) {
-				return { type: 'URL', value: trimmed.slice(4, -1) };
-			} else {
-				return { type: 'Gradient', value: trimmed.slice(16, -1) };
-			}
-		});
+		const extractedImage = propAndValue.find(p => p.prop === 'backgroundImage')?.value ?? '';
+		const parsedImages = extractedImage
+			.split(/,(?![^(]*\))(?![^"']*["'])/g)
+			.map((v: string) => {
+				const trimmed = v.trim();
+				if (trimmed.startsWith('url(')) {
+					const urlValue = trimmed.slice(4, -1).replace(/^['"](.*)['"]$/, '$1');
+					return { type: 'URL', value: urlValue };
+				} else {
+					const gradientMatch = trimmed.match(/^(.*?)-gradient\((.*)\)$/);
+					if (gradientMatch) {
+						return {
+							type: 'Gradient',
+							gradientType:
+								`${gradientMatch[1]}-gradient` as BackgroundImage['gradientType'],
+							value: gradientMatch[2],
+						};
+					}
+					return { type: 'Gradient', gradientType: 'linear-gradient', value: '' };
+				}
+			});
 
 		setBackgroundImages(
 			parsedImages.length === 0
@@ -280,9 +295,16 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 
 	const updateBackgroundImages = (newImages: Array<BackgroundImage>) => {
 		const newValue = newImages
-			.map(img =>
-				img.type === 'URL' ? `url(${img.value})` : `linear-gradient(${img.value})`,
-			)
+			.map(img => {
+				if (img.type === 'URL') {
+					const needsQuotes = /[\s,'"]/.test(img.value);
+					const urlValue = needsQuotes
+						? `'${img.value.replace(/'/g, '%27')}'`
+						: img.value;
+					return `url(${urlValue})`;
+				}
+				return `${img.gradientType || 'linear-gradient'}(${img.value})`;
+			})
 			.join(', ');
 		valuesChangedOnlyValues({
 			subComponentName: props.subComponentName,
@@ -314,13 +336,11 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 						options={[
 							{
 								name: 'URL',
-								displayName: 'URL',
-								description: 'URL',
+								displayName: 'Image',
 							},
 							{
 								name: 'Gradient',
 								displayName: 'Gradient',
-								description: 'Gradient',
 							},
 						]}
 					/>
@@ -455,6 +475,196 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 				</div>
 			) : (
 				<div className="_simpleEditor">
+					<IconsSimpleEditor
+						selected={img.gradientType ?? 'linear-gradient'}
+						withBackground={true}
+						onChange={v => {
+							const newImages = duplicate(backgroundImages);
+							newImages[index].gradientType = v as BackgroundImage['gradientType'];
+							updateBackgroundImages(newImages);
+						}}
+						options={[
+							{
+								name: 'linear-gradient',
+								description: 'Linear Gradient',
+								icon: (
+									<g
+										width="14"
+										height="14"
+										viewBox="0 0 14 14"
+										fill="none"
+										transform="translate(9 9)"
+									>
+										<line
+											x1="2.85355"
+											y1="8.52535"
+											x2="4.97487"
+											y2="10.6467"
+											stroke="#B9BAC7"
+										/>
+										<line
+											x1="2.85355"
+											y1="5.68942"
+											x2="7.8033"
+											y2="10.6392"
+											stroke="#B9BAC7"
+										/>
+										<line
+											x1="11.0996"
+											y1="5.47465"
+											x2="8.97825"
+											y2="3.35333"
+											stroke="#B9BAC7"
+										/>
+										<line
+											x1="11.0996"
+											y1="8.31058"
+											x2="6.14982"
+											y2="3.36084"
+											stroke="#B9BAC7"
+										/>
+										<line
+											x1="2.85355"
+											y1="2.86129"
+											x2="10.6317"
+											y2="10.6395"
+											stroke="#B9BAC7"
+										/>
+									</g>
+								),
+							},
+							{
+								name: 'radial-gradient',
+								description: 'Radial Gradient',
+								icon: (
+									<g transform="translate(9 9)">
+										<rect
+											width="14"
+											height="14"
+											rx="1"
+											opacity={0}
+											strokeOpacity={1}
+											strokeWidth="#02B694"
+											fill="none"
+										/>
+										<circle
+											cx="7"
+											cy="7"
+											r="6"
+											fill=""
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+										<circle
+											cx="7"
+											cy="7"
+											r="4"
+											fill="none"
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+										<circle
+											cx="7"
+											cy="7"
+											r="2"
+											fill="none"
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+									</g>
+								),
+							},
+							{
+								name: 'conic-gradient',
+								description: 'Conic Gradient',
+								icon: (
+									<g transform="translate(9 9)">
+										<rect
+											width="14"
+											height="14"
+											rx="1"
+											opacity={0}
+											strokeOpacity={1}
+										/>
+										<path
+											d="M7 2v5M7 7h5M7 7l3-3M7 7l3 3"
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+										<circle
+											cx="7"
+											cy="7"
+											r="5"
+											fill="none"
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+									</g>
+								),
+							},
+							{
+								name: 'repeating-linear-gradient',
+								description: 'Repeating Linear Gradient',
+								icon: (
+									<g transform="translate(9 9)">
+										<rect
+											x="0.5"
+											y="0.5"
+											width="13"
+											height="13"
+											fill="white"
+											stroke="#000000"
+										/>
+									</g>
+								),
+							},
+							{
+								name: 'repeating-radial-gradient',
+								description: 'Repeating Radial Gradient',
+								icon: (
+									<g transform="translate(9 9)">
+										<rect
+											width="14"
+											height="14"
+											rx="1"
+											opacity={0}
+											strokeOpacity={1}
+										/>
+										<circle
+											cx="7"
+											cy="7"
+											r="5"
+											fill="none"
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+										<circle
+											cx="7"
+											cy="7"
+											r="3"
+											fill="none"
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+										<circle
+											cx="7"
+											cy="7"
+											r="1"
+											fill="none"
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+										<path
+											d="M7 2v1M7 11v1M2 7h1M11 7h1"
+											stroke="#02B694"
+											strokeWidth="1"
+										/>
+									</g>
+								),
+							},
+						]}
+					/>
+					<br />
 					<input
 						type="text"
 						className="_simpleEditorInput"
@@ -464,7 +674,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							newImages[index].value = e.target.value;
 							updateBackgroundImages(newImages);
 						}}
-						placeholder="Enter gradient color a,b,.."
+						placeholder={`Enter ${img.gradientType || 'Linear Gradient'} values...`}
 					/>
 				</div>
 			)}
@@ -482,7 +692,14 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 					onChange={(url, type, directory) => {
 						if (!directory) {
 							const newImages = duplicate(backgroundImages);
-							newImages[newImages.length - 1].value = url;
+							const currentIndex = backgroundImages.findIndex(
+								img => img.value === '',
+							);
+							if (currentIndex !== -1) {
+								newImages[currentIndex].value = url;
+							} else {
+								newImages[backgroundImages.length - 1].value = url;
+							}
 							updateBackgroundImages(newImages);
 							setShowFileBrowser(false);
 						}
@@ -499,6 +716,9 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 	return (
 		<>
 			{backgroundImages.map((img, index) => renderBackgroundImageEditor(img, index))}
+			{/* (
+				<div key={`background_layer_${index}`} className="_backgroundLayerContainer">
+					{renderBackgroundImageEditor(img, index)} */}
 			<div className="_simpleEditorBackground">
 				<ManyValuesEditor
 					onChange={v =>
@@ -514,7 +734,8 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 						})
 					}
 					values={propAndValue}
-					groupTitle={'Standard Properties'}
+					groupTitle="Standard Properties"
+					// groupTitle={`Layer ${index + 1} Properties`}
 					newValueProps={['backgroundColor']}
 					showNewGroup={false}
 					relatedProps={backgroundSizeRelatedProps}
@@ -524,6 +745,8 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							displayName: 'Color',
 							type: 'color',
 							default: '',
+							splitByComma: false,
+							// preserveValue: true,
 						},
 						{
 							name: 'backgroundSize',
@@ -998,7 +1221,6 @@ function BackgroundDetailedEditor(props: Readonly<StyleEditorsProps>) {
 
 			a.propValues.push(value);
 			a.propAndValue.push({ prop: c, value: value.value?.value ?? '' });
-
 			return a;
 		},
 		{ propValues: [] as any[], propAndValue: [] as { prop: string; value: string }[] },
