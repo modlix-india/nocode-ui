@@ -7,8 +7,8 @@ import {
 import {
 	FormCompDefinition,
 	FormCompValidation,
-	FormPreviewCompValidation,
 	FormDefinition,
+	FormPreviewCompValidation,
 	PREVIEW_COMP_DEFINITION_MAP,
 	PREVIEW_COMP_VALIDATION_MAP,
 	PreviewCompValidationProperties,
@@ -105,7 +105,7 @@ export function generateFormPreview(fieldDefinitionMap: FormDefinition, formName
 	};
 	let children: { [key: string]: boolean } = {};
 
-	for (const v of Object.values(fieldDefinitionMap)) {
+	for (const v of Object.values(fieldDefinitionMap ?? {})) {
 		let tempCompDef = compDefinitionGenerator(v, COMP_TYPE[v.editorType], formName);
 		pageDef.componentDefinition[tempCompDef.key] = tempCompDef;
 		children[tempCompDef.key] = true;

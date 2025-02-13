@@ -1,15 +1,12 @@
-import { duplicate } from '@fincity/kirun-js';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
-	setData,
 } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { FormStorageEditorDefinition } from './components/formCommons';
 import FormComponents from './components/FormComponents';
@@ -29,7 +26,6 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { bindingPath },
-		pageDefinition,
 		locationHistory,
 		context,
 	} = props;
@@ -38,7 +34,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { theme, onSave, onPublish } = {},
+		properties: { readOnly } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -76,26 +72,6 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 		);
 	}, [storagePath]);
 
-	const saveFunction = useCallback(() => {
-		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
-		(async () =>
-			await runEvent(
-				pageDefinition.eventFunctions[onSave],
-				'formStorageEditorSave',
-				context.pageName,
-				locationHistory,
-				pageDefinition,
-			))();
-	}, [onSave]);
-	const onCancel = () => {
-		let temp = {
-			...duplicate(formStorage),
-			fieldDefinitionMap: {},
-			schema: { type: 'OBJECT', additionalProperties: false },
-		};
-		setData(storagePath!, temp, pageExtractor.getPageName());
-	};
-
 	return (
 		<div className={`comp compFormStorageEditor`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} context={context} />
@@ -117,6 +93,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 						storagePath={storagePath!}
 						pageExtractor={pageExtractor}
 						locationHistory={locationHistory}
+						readOnly={readOnly}
 					/>
 				</div>
 				<div className="_previewSection">
@@ -131,14 +108,6 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 						locationHistory={locationHistory}
 					/>
 				</div>
-			</div>
-			<div className="_footer">
-				<button className="_cancel" onClick={onCancel}>
-					Cancel
-				</button>
-				<button className="_save" onClick={saveFunction}>
-					Save changes
-				</button>
 			</div>
 		</div>
 	);

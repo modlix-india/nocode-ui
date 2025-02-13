@@ -1,30 +1,9 @@
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
-import {
-	ComponentPropertyDefinition,
-	ComponentPropertyEditor,
-	ComponentPropertyGroup,
-	ComponentStylePropertyDefinition,
-} from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { ComponentPropertyDefinition, ComponentStylePropertyDefinition } from '../../types/common';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
-	{
-		name: 'onSave',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'On Save',
-		editor: ComponentPropertyEditor.EVENT_SELECTOR,
-		group: ComponentPropertyGroup.EVENTS,
-		description: 'Event to be triggered on page save.',
-	},
-
-	{
-		name: 'onPublish',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'On Publish',
-		editor: ComponentPropertyEditor.EVENT_SELECTOR,
-		group: ComponentPropertyGroup.EVENTS,
-		description: 'Event to be triggered on page publish.',
-	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

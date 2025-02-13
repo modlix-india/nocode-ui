@@ -332,10 +332,10 @@ export default function FileBrowser({
 				{files?.content?.map((e: any) => {
 					const selectable = isSelectable(e, selectionType, restrictSelectionType);
 
-					let deletButton;
+					let deleteButton;
 
 					if (!hideDelete && e.directory && selectionType === '_files') {
-						deletButton = (
+						deleteButton = (
 							<div
 								className="_deleteInner"
 								title="Delete"
@@ -383,7 +383,7 @@ export default function FileBrowser({
 								onChange(e.url, e.type, e.directory);
 							}}
 						>
-							{deletButton}
+							{deleteButton}
 							<div
 								className="_image"
 								ref={async ref => {

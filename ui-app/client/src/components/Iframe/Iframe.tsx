@@ -1,6 +1,6 @@
-import React from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import React, { useEffect, useState } from 'react';
+import { getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
+import { Component, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
@@ -8,12 +8,25 @@ import { propertiesDefinition, stylePropertiesDefinition } from './iframePropert
 import IframeStyle from './IframeStyle';
 import { styleDefaults } from './iframeStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { LOCAL_STORE_PREFIX } from '../../constants';
+import { shortUUID } from '../../util/shortUUID';
+import axios from 'axios';
+
+async function secureSource(src: string) {
+	const headers: any = {
+		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+	};
+	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+	return await axios
+		.get(src, { responseType: 'blob', headers })
+		.then(res => URL.createObjectURL(res.data));
+}
 
 function Iframe(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const { locationHistory, definition } = props;
 	const {
-		key,
 		stylePropertiesWithPseudoStates,
 		properties: {
 			width,
@@ -52,6 +65,15 @@ function Iframe(props: Readonly<ComponentProps>) {
 		} catch (err) {}
 	} else shouldRenderIframe = true;
 
+	const [actualSrc, setActualSrc] = useState<string | undefined>();
+	useEffect(() => {
+		if (!src?.includes('api/files/secured')) {
+			setActualSrc(src);
+			return;
+		}
+		(async () => setActualSrc(await secureSource(src)))();
+	}, [src]);
+
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
@@ -60,7 +82,7 @@ function Iframe(props: Readonly<ComponentProps>) {
 					className="iframe"
 					style={resolvedStyles.iframe ?? {}}
 					width={width}
-					src={srcdoc ? undefined : src}
+					src={srcdoc ? undefined : actualSrc}
 					srcDoc={srcdoc}
 					height={height}
 					name={name}
@@ -83,7 +105,7 @@ const component: Component = {
 	component: Iframe,
 	styleComponent: IframeStyle,
 	styleDefaults: styleDefaults,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
