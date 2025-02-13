@@ -48,7 +48,7 @@ const component: Component = {
 						height="27.1875"
 						rx="2"
 						fill="#F2599B"
-						fill-opacity="0.1"
+						fillOpacity="0.1"
 					/>
 					<path
 						d="M13.6033 6.56857C13.6033 7.20566 14.1956 7.72397 14.9237 7.72397H19.66L13.6033 2.44922V6.56857Z"
