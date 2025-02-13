@@ -5,7 +5,7 @@ import {
 	getDataFromPath,
 	PageStoreExtractor,
 } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { Component, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
@@ -175,7 +175,7 @@ const component: Component = {
 	displayName: 'Image',
 	description: 'Image Component',
 	component: ImageComponent,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: ImageStyle,
 	styleDefaults: styleDefaults,
