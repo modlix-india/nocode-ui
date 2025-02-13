@@ -168,7 +168,7 @@ export default function ComponentMenu({
 	const [originalCompType, setOriginalCompType] = useState('SECTIONS');
 	const [sectionsList, setSectionsList] = useState<any>(null);
 	const [pinnedComponents, setPinnedComponents] = useState(new Set());
-	const [showTutorialHelp, setShowTutorialHelp] = useState(true);
+	const [showTutorialHelp, setShowTutorialHelp] = useState(false);
 	const [activeTutorial, setActiveTutorial] = useState<string | null>(null);
 
 	let compType = sectionsListConnectionName ? originalCompType : 'COMPONENTS';

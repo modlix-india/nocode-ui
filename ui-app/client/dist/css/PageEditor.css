@@ -3502,7 +3502,7 @@ input._peInput[type='number'] {
 	top: 50%;
 	transform: translateY(-50%);
 	width: 450px;
-	z-index: 10000;
+	z-index: 100;
 }
 
 .comp.compPageEditor ._tutorialTooltipPanel {
@@ -3539,26 +3539,42 @@ input._peInput[type='number'] {
 }
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._tutorialIcons {
+	position: absolute;
+	top: 8%;
+	right: 25%;
 	display: flex;
-	height: 5px;
-	width: 5px;
+	gap: 5px;
+	align-items: center;
+	height: auto;
+	width: auto;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.2s;
+}
+
+.comp.compPageEditor ._popupMenuContainer._compMenu ._tutorialIcons:not(:empty) {
+	opacity: 1;
+	visibility: visible;
 }
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._infoIcon,
 .comp.compPageEditor ._popupMenuContainer._compMenu ._youtubeIcon {
 	width: 10px;
 	height: 10px;
-	padding: 5px;
+	padding: 0px;
 	border: none;
 	background: none;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
+	justify-content: center;
 }
 
 .comp.compPageEditor ._videoContainer {
 	width: 100%;
-	aspect-ratio: 16/9;
+	aspect-ratio: 18/9;
+	justify-content: center;
+	align-items: center;
 	background: #000;
 }
 
@@ -3603,7 +3619,7 @@ input._peInput[type='number'] {
 	padding: 0;
 	border: 0;
 	background: transparent;
-	top: 10%;
+	top: 7%;
 	right: 10%;
 }
 
