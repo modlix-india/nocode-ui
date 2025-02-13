@@ -25,16 +25,24 @@ export function TagsValueEditor({ value, onChange, defaultValue }: Readonly<Tags
 		if (value?.value) {
 			let tagArray;
 			if (Array.isArray(value.value)) {
-				tagArray = value.value;
+				tagArray = [...new Set(value.value)]; // Ensure uniqueness
 			} else if (typeof value.value === 'string') {
-				tagArray = (value.value as string)
-					.split(/\s+/)
-					.map(t => t.trim())
-					.filter((t: string) => t.length > 0);
+				tagArray = [
+					...new Set(
+						(value.value as string)
+							.split(/\s+/)
+							.map(t => t.trim())
+							.filter((t: string) => t.length > 0),
+					),
+				];
 			} else if (typeof value.value === 'object') {
-				tagArray = Object.values(value.value)
-					.map(v => v?.toString().trim())
-					.filter(v => v && v.length > 0);
+				tagArray = [
+					...new Set(
+						Object.values(value.value)
+							.map(v => v?.toString().trim())
+							.filter(v => v && v.length > 0),
+					),
+				];
 			}
 
 			setTags(tagArray as string[]);
@@ -42,16 +50,24 @@ export function TagsValueEditor({ value, onChange, defaultValue }: Readonly<Tags
 		} else if (defaultValue) {
 			let defaultTags;
 			if (Array.isArray(defaultValue)) {
-				defaultTags = defaultValue;
+				defaultTags = [...new Set(defaultValue)]; // Ensure uniqueness
 			} else if (typeof defaultValue === 'string') {
-				defaultTags = (defaultValue as string)
-					.split(/\s+/)
-					.map(t => t.trim())
-					.filter((t: string) => t.length > 0);
+				defaultTags = [
+					...new Set(
+						(defaultValue as string)
+							.split(/\s+/)
+							.map(t => t.trim())
+							.filter((t: string) => t.length > 0),
+					),
+				];
 			} else {
-				defaultTags = Object.values(defaultValue)
-					.map(v => v?.toString().trim())
-					.filter(v => v && v.length > 0);
+				defaultTags = [
+					...new Set(
+						Object.values(defaultValue)
+							.map(v => v?.toString().trim())
+							.filter(v => v && v.length > 0),
+					),
+				];
 			}
 
 			setTags(defaultTags);
@@ -85,10 +101,16 @@ export function TagsValueEditor({ value, onChange, defaultValue }: Readonly<Tags
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if ((e.key === 'Tab' || e.key === 'Enter') && inputValue.trim()) {
 			e.preventDefault();
-			const newTags = [...tags, inputValue.trim()];
-			setTags(newTags);
-			setInputValue('');
-			onChange({ value: newTags });
+			const trimmedInput = inputValue.trim();
+			if (!tags.includes(trimmedInput)) {
+				// Only add if not already present
+				const newTags = [...tags, trimmedInput];
+				setTags(newTags);
+				setInputValue('');
+				onChange({ value: newTags });
+			} else {
+				setInputValue(''); // Clear input if tag already exists
+			}
 		} else if (
 			(e.key === 'Backspace' || e.key === 'delete') &&
 			!inputValue &&
