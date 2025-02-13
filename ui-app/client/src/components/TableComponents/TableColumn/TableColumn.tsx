@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { getDataFromPath, PageStoreExtractor } from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
@@ -16,16 +16,14 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const {
-		stylePropertiesWithPseudoStates,
-		properties: { hideIfNotPersonalized, disableColumnDragging } = {},
-	} = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
+	const { stylePropertiesWithPseudoStates, properties: { hideIfNotPersonalized } = {} } =
+		useDefinition(
+			definition,
+			propertiesDefinition,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		);
 
 	const [hover, setHover] = useState(false);
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
@@ -54,6 +52,24 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		return null;
 	}
 
+	let dataPart;
+	const isLoading =
+		context.table.isLoading &&
+		context.table.showSpinner &&
+		context.table.spinnerType.startsWith('_emptyRow');
+
+	if (isLoading) {
+		dataPart = <div className={`_animateData ${context.table.spinnerType}`}>&nbsp;</div>;
+	} else {
+		dataPart = (
+			<Children
+				pageDefinition={pageDefinition}
+				renderableChildren={firstchild}
+				context={context}
+				locationHistory={locationHistory}
+			/>
+		);
+	}
 	return (
 		<div
 			className="comp compTableColumn"
@@ -64,12 +80,7 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 			}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-			<Children
-				pageDefinition={pageDefinition}
-				renderableChildren={firstchild}
-				context={context}
-				locationHistory={locationHistory}
-			/>
+			{dataPart}
 		</div>
 	);
 }

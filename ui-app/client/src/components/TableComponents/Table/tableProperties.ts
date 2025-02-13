@@ -31,6 +31,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
+		name: 'spinnerType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Spinner Type',
+		group: ComponentPropertyGroup.BASIC,
+		description: 'Spinner Type',
+		defaultValue: '_circleSpinner',
+		enumValues: [
+			{ name: '_circleSpinner', displayName: 'Circle Spinner One' },
+			{ name: '_circleSpinner2', displayName: 'Circle Spinner Two' },
+			{ name: '_circleSpinner3', displayName: 'Circle Spinner Three' },
+			{
+				name: '_emptyRow',
+				displayName: 'Empty Row',
+			},
+		],
+	},
+	{
 		name: 'showPagination',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Pagination',
