@@ -225,6 +225,15 @@ export default function ComponentMenu({
 		});
 	};
 
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => setShowTutorialHelp(v ?? false),
+			pageExtractor,
+			`${personalizationPath}.showTutorialHelp`,
+		);
+	}, [personalizationPath]);
+
 	const sortComponents = (components: any[]) => {
 		return components.sort(
 			(
@@ -559,7 +568,12 @@ export default function ComponentMenu({
 									role="button"
 									tabIndex={0}
 									className={`_toggleButton ${showTutorialHelp ? '_on' : '_off'}`}
-									onClick={() => setShowTutorialHelp(!showTutorialHelp)}
+									onClick={() => {
+										onChangePersonalization(
+											'showTutorialHelp',
+											!showTutorialHelp,
+										);
+									}}
 								/>
 							</label>
 						</div>
