@@ -45,17 +45,17 @@ export default function DnDNavigationBar({
 	previewMode,
 	editorType,
 }: DnDNavigationBarProps) {
-	const [componentTree, setComponentTree] = React.useState(false); // component tree is open or not
-	const [pageDef, setPageDef] = useState<PageDefinition>(); // page def object
-	const [openParents, setOpenParents] = useState<Set<string>>(new Set()); // set object contains ids of all the parent components those are expand.
-	const [expandAll, setExpandAll] = useState(false); // to expand all our componets
-	const [filter, setFilter] = useState(''); // filter for components search in our page
-	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined); // which component expand last
-	const [dragStart, setDragStart] = useState<boolean>(false); // dragging any component or not
-	const [map, setMap] = useState(new Map<string, string>()); // contains all the components object ids
+	const [componentTree, setComponentTree] = React.useState(false);
+	const [pageDef, setPageDef] = useState<PageDefinition>();
+	const [openParents, setOpenParents] = useState<Set<string>>(new Set());
+	const [expandAll, setExpandAll] = useState(false);
+	const [filter, setFilter] = useState('');
+	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined);
+	const [dragStart, setDragStart] = useState<boolean>(false);
+	const [map, setMap] = useState(new Map<string, string>());
 	const [oldSelected, setOldSelected] = useState<string>('');
 	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
-	const [showMultiSelect, setShowMultiSelect] = useState(false); // Add new state for multi-select button visibility
+	const [showMultiSelect, setShowMultiSelect] = useState(false);
 	const [isAdvancedSearch, setIsAdvancedSearch] = useState(false);
 	const [advancedFilters, setAdvancedFilters] = useState({
 		name: '',

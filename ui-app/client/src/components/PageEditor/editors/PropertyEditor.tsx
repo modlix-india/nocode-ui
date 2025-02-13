@@ -122,7 +122,7 @@ export default function PropertyEditor({
 }: Readonly<PropertyEditorProps>) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
-	const [allCommonProperties, setAllCommonProperties] = useState<ComponentPropertyDefinition[]>(); // cd.properties
+	const [allCommonProperties, setAllCommonProperties] = useState<ComponentPropertyDefinition[]>();
 	const [isDragging, setIsDragging] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -143,13 +143,11 @@ export default function PropertyEditor({
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, v: PageDefinition) => {
-				// Guard against empty selectedComponentsList
 				if (!selectedComponentsList?.length) {
 					setAllCommonProperties([]);
 					return;
 				}
 
-				// sets of sets of property names
 				const propertyNamesSets = selectedComponentsList.map(currentComponent => {
 					let properties =
 						ComponentDefinitions?.get(v?.componentDefinition[currentComponent]?.type)
@@ -214,7 +212,7 @@ export default function PropertyEditor({
 			'bindingPath9',
 			'bindingPath10',
 		];
-		// loop through all the binding paths
+
 		for (let i = 0; i < x.length; i++) {
 			if (!cd.bindingPaths[x[i]]) continue;
 			bps.push(
@@ -245,7 +243,7 @@ export default function PropertyEditor({
 		}
 		if (bps.length) {
 			bpGroup = (
-				<PropertyGroup // container for binding section which contains list of bindings
+				<PropertyGroup
 					name="bindings"
 					displayName="Bindings"
 					defaultStateOpen={false}
@@ -261,7 +259,6 @@ export default function PropertyEditor({
 		}
 	}
 
-	// how we are converting a to Array<React.ReactNode>.
 	const propGroups = (
 		selectedComponentsList.length === 1 ? cd?.properties : allCommonProperties
 	)?.reduce((a: { [key: string]: Array<React.ReactNode> }, e) => {
@@ -476,7 +473,6 @@ export default function PropertyEditor({
 
 				{selectedComponentsList?.length === 1 && bpGroup}
 				{Object.entries(ComponentPropertyGroup).map((e, i) => {
-					// contains rest of the properties
 					if (!propGroups?.[e[1]]) return null;
 					return (
 						<PropertyGroup
