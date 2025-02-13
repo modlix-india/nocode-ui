@@ -109,12 +109,19 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const actualSrc = getSrcUrl(getHref(src ?? defaultSrc, location)!);
+	const [actualSrc, setActualSrc] = useState<string | undefined>();
+	const computedUrl = getSrcUrl(getHref(src ?? defaultSrc, location)!);
+	useEffect(() => {
+		if (!computedUrl.includes('api/files/secured')) {
+			setActualSrc(computedUrl);
+			return;
+		}
+		(async () => setActualSrc(await secureImage(computedUrl)))();
+	}, [computedUrl]);
 
 	let imageTag = undefined;
 
 	if (actualSrc) {
-		const isSecured = actualSrc.includes('api/files/secured');
 		const actualImage = useObjectToRender ? (
 			<object type="image/svg+xml" data={actualSrc} style={resolvedStyles.image ?? {}} />
 		) : (
@@ -136,12 +143,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 				}
 				className={onClickEvent ? '_onclicktrue' : ''}
 				style={resolvedStyles.image ?? {}}
-				src={isSecured ? '' : actualSrc}
-				ref={
-					isSecured
-						? async ref => ref && (ref.src = await secureImage(actualSrc))
-						: undefined
-				}
+				src={actualSrc}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
 				loading={imgLazyLoading ? 'lazy' : 'eager'}
