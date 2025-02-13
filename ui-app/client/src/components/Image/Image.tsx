@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { addListenerAndCallImmediately, PageStoreExtractor } from '../../context/StoreContext';
+import {
+	addListenerAndCallImmediately,
+	getDataFromPath,
+	PageStoreExtractor,
+} from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -13,6 +17,20 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './imageProperties';
 import { styleDefaults } from './imageStyleProperties';
 import ImageStyle from './ImageStyles';
+import { LOCAL_STORE_PREFIX } from '../../constants';
+import { shortUUID } from '../../util/shortUUID';
+import axios from 'axios';
+
+async function secureImage(src: string) {
+	const headers: any = {
+		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+	};
+	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+	return await axios
+		.get(src, { responseType: 'blob', headers })
+		.then(res => URL.createObjectURL(res.data));
+}
 
 function ImageComponent(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
@@ -96,6 +114,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	let imageTag = undefined;
 
 	if (actualSrc) {
+		const isSecured = actualSrc.includes('api/files/secured');
 		const actualImage = useObjectToRender ? (
 			<object type="image/svg+xml" data={actualSrc} style={resolvedStyles.image ?? {}} />
 		) : (
@@ -117,7 +136,12 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 				}
 				className={onClickEvent ? '_onclicktrue' : ''}
 				style={resolvedStyles.image ?? {}}
-				src={actualSrc}
+				src={isSecured ? '' : actualSrc}
+				ref={
+					isSecured
+						? async ref => ref && (ref.src = await secureImage(actualSrc))
+						: undefined
+				}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
 				loading={imgLazyLoading ? 'lazy' : 'eager'}
