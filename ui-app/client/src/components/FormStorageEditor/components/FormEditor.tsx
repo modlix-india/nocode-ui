@@ -18,12 +18,14 @@ export default function FormEditor({
 	formStorage,
 	storagePath,
 	pageExtractor,
-	locationHistory,
+
+	readOnly,
 }: {
 	formStorage: FormStorageEditorDefinition;
 	storagePath: string;
 	pageExtractor: PageStoreExtractor;
 	locationHistory: Array<LocationHistory>;
+	readOnly: boolean;
 }) {
 	const { fieldDefinitionMap } = formStorage;
 
@@ -57,8 +59,7 @@ export default function FormEditor({
 				let tempVal = duplicate(v1) as FormCompValidation;
 				let key = k1 as string;
 				if (!tempVal.uuid) {
-					let uuid = shortUUID();
-					tempVal['uuid'] = uuid;
+					tempVal['uuid'] = shortUUID();
 					tempCompDef.validation[key] = tempVal;
 				}
 			});
@@ -68,6 +69,7 @@ export default function FormEditor({
 	};
 
 	const setFormData = (fieldDefinitionMap: FormDefinition) => {
+		if (readOnly) return;
 		let tempData: FormStorageEditorDefinition = {
 			...formStorage,
 			fieldDefinitionMap: fieldDefinitionMap,
