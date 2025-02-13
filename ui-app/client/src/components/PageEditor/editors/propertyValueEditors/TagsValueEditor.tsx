@@ -25,7 +25,7 @@ export function TagsValueEditor({ value, onChange, defaultValue }: Readonly<Tags
 		if (value?.value) {
 			let tagArray;
 			if (Array.isArray(value.value)) {
-				tagArray = [...new Set(value.value)]; // Ensure uniqueness
+				tagArray = [...new Set(value.value)];
 			} else if (typeof value.value === 'string') {
 				tagArray = [
 					...new Set(
@@ -50,7 +50,7 @@ export function TagsValueEditor({ value, onChange, defaultValue }: Readonly<Tags
 		} else if (defaultValue) {
 			let defaultTags;
 			if (Array.isArray(defaultValue)) {
-				defaultTags = [...new Set(defaultValue)]; // Ensure uniqueness
+				defaultTags = [...new Set(defaultValue)];
 			} else if (typeof defaultValue === 'string') {
 				defaultTags = [
 					...new Set(
@@ -103,13 +103,12 @@ export function TagsValueEditor({ value, onChange, defaultValue }: Readonly<Tags
 			e.preventDefault();
 			const trimmedInput = inputValue.trim();
 			if (!tags.includes(trimmedInput)) {
-				// Only add if not already present
 				const newTags = [...tags, trimmedInput];
 				setTags(newTags);
 				setInputValue('');
 				onChange({ value: newTags });
 			} else {
-				setInputValue(''); // Clear input if tag already exists
+				setInputValue('');
 			}
 		} else if (
 			(e.key === 'Backspace' || e.key === 'delete') &&
