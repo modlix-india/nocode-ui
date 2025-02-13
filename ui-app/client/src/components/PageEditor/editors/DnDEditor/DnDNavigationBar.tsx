@@ -29,7 +29,7 @@ interface DnDNavigationBarProps {
 }
 
 export default function DnDNavigationBar({
-	personalizationPath, // Page.personalization.editor
+	personalizationPath,
 	onChangePersonalization,
 	selectedComponent,
 	selectedComponentsList,
@@ -180,14 +180,11 @@ export default function DnDNavigationBar({
 				});
 
 			setOpenParents(set);
-
 			setShowMultiSelect(matchingComponents.length > 1);
 
 			if (matchingComponents.length > 0) {
 				onSelectedComponentChanged(matchingComponents[0]);
-				matchingComponents.forEach(key => {
-					onSelectedComponentListChanged(key);
-				});
+				onSelectedComponentListChanged('');
 			}
 		},
 		[
@@ -429,9 +426,7 @@ export default function DnDNavigationBar({
 
 		if (matchingComponents.length > 0) {
 			onSelectedComponentChanged(matchingComponents[0]);
-			matchingComponents.forEach(key => {
-				onSelectedComponentListChanged(key);
-			});
+			onSelectedComponentListChanged('');
 		} else {
 			onSelectedComponentChanged('');
 			onSelectedComponentListChanged('');
@@ -750,9 +745,8 @@ function CompTree({
 						? '_selected'
 						: ''
 				} ${dragStart ? '_dragStart' : ''}`}
-				title={`${comp.name ?? ''} - ${compKey}`} // it will be visible when we hover to the component tab in the tree
+				title={`${comp.name ?? ''} - ${compKey}`}
 				onClick={e => {
-					// selecting multiple components by c	licking ctrl or meta keys(ios).
 					if (e.metaKey || e.ctrlKey) {
 						return onSelectedComponentListChanged(compKey);
 					}
@@ -867,10 +861,7 @@ function SubCompTree({
 			onClick={() => onSelectedSubComponentChanged(`${componentKey}:${subComp.name}`)}
 		>
 			{levels}
-			<div
-				className="_treeNodeName"
-				onClick={() => {}} // why we need this on click function ?
-			>
+			<div className="_treeNodeName">
 				<i className="fa _animateTransform" />
 				{typeof subComp.icon === 'string' ? (
 					<i className={`fa ${subComp.icon}`} />
