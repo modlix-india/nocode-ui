@@ -163,47 +163,9 @@ ${PREFIX} ._html-content {
     padding: 20px;
 }
 
-	${PREFIX} ._resizer:hover {
+${PREFIX} ._resizer:hover {
 		opacity: 1;
 	}
-	
-	${PREFIX} ._richTextButtonBar {
-    display: flex;
-    gap: 10px;
-    padding: 10px;
-    background: #f5f5f5;
-    border-bottom: 1px solid #ddd;
-}
-
-${PREFIX} ._richTextButtonBar ._buttonGroup {
-    display: flex;
-    gap: 5px;
-    border-right: 1px solid #ddd;
-    padding-right: 10px;
-}
-
-${PREFIX} ._richTextButtonBar ._buttonGroup:last-child {
-    border-right: none;
-}
-
-${PREFIX} ._richTextButtonBar button {
-    padding: 5px 10px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-${PREFIX} ._richTextButtonBar button:hover {
-    background: #f0f0f0;
-}
-
-${PREFIX} ._richTextButtonBar ._headingBtn {
-    font-family: 'Times New Roman', serif;
-    font-weight: bold;
-    width: 32px;
-}
 
 ${PREFIX} ._popupContainer input {
     margin: 5px 0;
@@ -234,34 +196,41 @@ ${PREFIX} ._popupContainer button:hover {
 
 ${PREFIX} ._richTextButtonBar {
     display: flex;
-    gap: 10px;
-    padding: 10px;
-    background: #f5f5f5;
-    border-bottom: 1px solid #ddd;
+    gap: 5px;
+    padding: 5px;
+    background-color: #ccc8;
+    backdrop-filter: blur(10px);
+    border-radius: 5px;
+    padding-left: 15px;
+    z-index: 4;
+}
+
+${PREFIX} ._richTextButtonBar button {
+    padding: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #FFFFFF;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+${PREFIX} ._richTextButtonBar button:hover {
+    background-color: #f0f0f0;
 }
 
 ${PREFIX} ._richTextButtonBar ._buttonGroup {
     display: flex;
     gap: 5px;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid #fff3;
     padding-right: 10px;
 }
 
 ${PREFIX} ._richTextButtonBar ._buttonGroup:last-child {
     border-right: none;
-}
-
-${PREFIX} ._richTextButtonBar button {
-    padding: 5px 10px;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-}
-
-${PREFIX} ._richTextButtonBar button:hover {
-    background: #f0f0f0;
 }
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
