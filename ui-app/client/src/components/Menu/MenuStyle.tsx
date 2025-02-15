@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
+import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults } from './menuStyleProperties';
-import { StylePropertyDefinition, StyleResolution } from '../../types/common';
+import { StylePropertyDefinition } from '../../types/common';
 import { usedComponents } from '../../App/usedComponents';
 import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
@@ -11,11 +11,11 @@ export default function MenuStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		window.styleProperties[NAME] ?? [],
+		globalThis.styleProperties[NAME] ?? [],
 	);
 
-	if (window.styleProperties[NAME] && !styleDefaults.size) {
-		window.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
+	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
+		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
 			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
 		);
 	}
