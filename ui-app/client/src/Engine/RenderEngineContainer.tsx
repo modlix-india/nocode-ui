@@ -1,4 +1,4 @@
-import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
+import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import ComponentDefinitions from '../components';
@@ -6,12 +6,12 @@ import { getPathsFrom } from '../components/util/getPaths';
 import { runEvent } from '../components/util/runEvent';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import {
-	PageStoreExtractor,
 	addListener,
 	addListenerAndCallImmediately,
 	getData,
 	getDataFromPath,
 	localStoreExtractor,
+	PageStoreExtractor,
 	setData,
 	storeExtractor,
 } from '../context/StoreContext';
@@ -285,7 +285,8 @@ export const RenderEngineContainer = () => {
 	);
 
 	useEffect(() => {
-		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
+		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR')
+			return;
 
 		function onMessageRecieved(e: MessageEvent) {
 			const { data: { type } = { type: undefined } } = e ?? {};
@@ -293,19 +294,21 @@ export const RenderEngineContainer = () => {
 			if (!type || !type.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());
 		}
+
 		window.addEventListener('message', onMessageRecieved);
 		return () => window.removeEventListener('message', onMessageRecieved);
-	}, [window.designMode, setLastChanged]);
+	}, [globalThis.designMode, setLastChanged]);
 
 	useEffect(() => {
-		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
+		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR')
+			return;
 
 		return addListenerAndCallImmediately(
 			(_, v) => setPageDefinition(processClassesForPageDefinition(v)),
 			undefined,
 			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
 		);
-	}, [window.designMode, currentPageName]);
+	}, [globalThis.designMode, currentPageName]);
 
 	const Page = ComponentDefinitions.get('Page')?.component as React.ComponentType<any>;
 
@@ -317,7 +320,8 @@ export const RenderEngineContainer = () => {
 		if (
 			wrapShell &&
 			shellPageDefinition &&
-			(window.designMode !== 'PAGE' || !window.pageEditor?.personalization?.slave?.noShell)
+			(globalThis.designMode !== 'PAGE' ||
+				!globalThis.pageEditor?.personalization?.slave?.noShell)
 		)
 			return (
 				<Page

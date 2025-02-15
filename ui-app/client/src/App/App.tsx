@@ -189,7 +189,7 @@ export function App() {
 
 					if (appDef && firstTime) {
 						setFirstTime(false);
-						if (window.isDesignMode) {
+						if (globalThis.isDesignMode) {
 							window.addEventListener('message', onMessageFromEditor);
 							messageToMaster({ type: 'SLAVE_STARTED', payload: undefined });
 						}

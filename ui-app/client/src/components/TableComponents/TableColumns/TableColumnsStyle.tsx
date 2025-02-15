@@ -14,11 +14,11 @@ export default function TableColumnsStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		window.styleProperties[NAME] ?? [],
+		globalThis.styleProperties[NAME] ?? [],
 	);
 
-	if (window.styleProperties[NAME] && !styleDefaults.size) {
-		window.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
+	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
+		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
 			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
 		);
 	}

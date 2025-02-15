@@ -4,7 +4,7 @@ import { LocationHistory, PageDefinition } from '../../types/common';
 import { shortUUID } from '../../util/shortUUID';
 import { runEvent } from '../util/runEvent';
 
-export const LOCAL_STORAGE_PREFIX = window.isDesignMode ? 'designMode_' : '';
+export const LOCAL_STORAGE_PREFIX = globalThis.isDesignMode ? 'designMode_' : '';
 
 export const DEFAULT_PAPER = {
 	paperId: shortUUID(),
