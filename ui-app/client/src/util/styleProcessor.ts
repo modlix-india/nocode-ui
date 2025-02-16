@@ -330,7 +330,7 @@ export function processComponentStylePseudoClasses(
 		}
 	}
 
-	return window.cdnPrefix ? processCDN(style) : style;
+	return globalThis.cdnPrefix ? processCDN(style) : style;
 }
 
 const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
@@ -341,16 +341,16 @@ function processCDN(style: any) {
 		for (let [k, v] of Object.entries(value)) {
 			if (!v) continue;
 
-			if (!window.cdnPrefix) continue;
+			if (!globalThis.cdnPrefix) continue;
 
 			const index = v.indexOf(STATIC_FILE_API_PREFIX);
 			if (index == -1) continue;
 
 			const marker = v.indexOf("'") != -1 ? "'" : '"';
 			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH).trim();
-			let url = `url(${marker}https://${window.cdnPrefix}/`;
-			if (!window.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
-			if (window.cdnResizeOptionsType == 'cloudflare') {
+			let url = `url(${marker}https://${globalThis.cdnPrefix}/`;
+			if (!globalThis.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
+			if (globalThis.cdnResizeOptionsType == 'cloudflare') {
 				const qIndex = lastPart.indexOf('?');
 				if (qIndex != -1) {
 					let paramPart = lastPart.substring(qIndex + 1);
@@ -368,7 +368,7 @@ function processCDN(style: any) {
 					else url += lastPart;
 				} else url += lastPart;
 			} else url += lastPart;
-			if (window.cdnReplacePlus) url = url.replaceAll('+', '%20');
+			if (globalThis.cdnReplacePlus) url = url.replaceAll('+', '%20');
 
 			value[k] = url;
 		}

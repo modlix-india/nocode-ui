@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-	PageStoreExtractor,
 	addListenerAndCallImmediately,
+	PageStoreExtractor,
 } from '../../../../context/StoreContext';
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import { PageOperations } from '../../functions/PageOperations';
@@ -25,6 +25,7 @@ interface DnDEditorProps {
 	onSave: () => void;
 	onPublish?: () => void;
 	onVersions?: () => void;
+	onSavedVersions?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	pageExtractor: PageStoreExtractor;
@@ -106,6 +107,7 @@ export default function DnDEditor({
 	setStyleSelectorPref,
 	appPath,
 	onVersions,
+	onSavedVersions,
 	pagesData,
 	currentPageId,
 	settingsPageName,
@@ -136,6 +138,7 @@ export default function DnDEditor({
 					url={url}
 					onPublish={onPublish}
 					onVersions={onVersions}
+					onSavedVersions={onSavedVersions}
 					personalizationPath={personalizationPath}
 					onChangePersonalization={onChangePersonalization}
 					theme={theme}
