@@ -55,7 +55,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'No Float Label',
+		displayName: 'Do not float Label',
 		description: 'Dropdown without floating label.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
