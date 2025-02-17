@@ -74,6 +74,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			onSave,
 			onPublish,
 			onVersions,
+			onSavedVersions,
 			onChangePersonalization,
 			onDeletePersonalization,
 			pagesData,
@@ -191,6 +192,20 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				pageDefinition,
 			))();
 	}, [onVersions]);
+
+	// Function to get the versions
+	const savedVersionsFunction = useCallback(() => {
+		if (!onSavedVersions || !pageDefinition.eventFunctions?.[onSavedVersions]) return;
+
+		(async () =>
+			await runEvent(
+				pageDefinition.eventFunctions[onSavedVersions],
+				'pageEditorVersions',
+				context.pageName,
+				locationHistory,
+				pageDefinition,
+			))();
+	}, [onSavedVersions]);
 
 	// Clear the personalization
 	const deletePersonalization = useCallback(() => {
@@ -734,6 +749,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				styleSelectorPref={styleSelectorPref}
 				appPath={appPath}
 				onVersions={onVersions ? versionsFunction : undefined}
+				onSavedVersions={onSavedVersions ? savedVersionsFunction : undefined}
 				pagesData={pagesData}
 				currentPageId={currentPageId}
 				settingsPageName={settingsPageName}

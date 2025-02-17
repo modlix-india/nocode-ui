@@ -1,4 +1,4 @@
-import { TokenValueExtractor, duplicate, isNullValue } from '@fincity/kirun-js';
+import { duplicate, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import { setStoreData, useStore } from '@fincity/path-reactive-state-management';
 import {
 	LOCAL_STORE_PREFIX,
@@ -18,15 +18,18 @@ import { sample } from './sampleData';
 export class StoreExtractor extends SpecialTokenValueExtractor {
 	private readonly store: any;
 	private readonly prefix: string;
+
 	constructor(store: any, prefix: string) {
 		super();
 		this.store = store;
 		this.prefix = prefix;
 	}
+
 	protected getValueInternal(token: string) {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		return this.retrieveElementFrom(token, parts, 1, this.store);
 	}
+
 	getPrefix(): string {
 		return this.prefix;
 	}
@@ -180,7 +183,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 
-		const key = window.isDesignMode ? 'designmode_' + parts[1] : parts[1];
+		const key = globalThis.isDesignMode ? 'designmode_' + parts[1] : parts[1];
 		parts = parts.slice(2);
 		let store;
 		store = localStore.getItem(key);
@@ -217,20 +220,21 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			deleteKey,
 		);
 	} else if (
-		window.isDesignMode &&
-		window.designMode === 'PAGE' &&
-		window.pageEditor?.editingPageDefinition?.name &&
-		path === `${STORE_PREFIX}.pageDefinition.${window.pageEditor.editingPageDefinition.name}`
+		globalThis.isDesignMode &&
+		globalThis.designMode === 'PAGE' &&
+		globalThis.pageEditor?.editingPageDefinition?.name &&
+		path ===
+			`${STORE_PREFIX}.pageDefinition.${globalThis.pageEditor.editingPageDefinition.name}`
 	) {
 		_setData(
 			path,
-			window.pageEditor.editingPageDefinition.name !== value.name
+			globalThis.pageEditor.editingPageDefinition.name !== value.name
 				? value
-				: window.pageEditor.editingPageDefinition,
+				: globalThis.pageEditor.editingPageDefinition,
 		);
 	} else _setData(path, value, deleteKey);
 
-	if (window.designMode !== 'PAGE') return;
+	if (globalThis.designMode !== 'PAGE') return;
 
 	messageToMaster({ type: 'SLAVE_STORE', payload: _store });
 }

@@ -2,9 +2,9 @@ import { isNullValue } from '@fincity/kirun-js';
 import React, { FocusEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
-	PageStoreExtractor,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
+	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
@@ -73,6 +73,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			lowLightWeekEnd,
 			maxNumberOfDaysInRange,
 			minNumberOfDaysInRange,
+			supportingText,
 		} = {},
 		properties: computedProperties,
 		stylePropertiesWithPseudoStates,
@@ -536,6 +537,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 				showMandatoryAsterisk &&
 				(validation ?? []).find((e: any) => e.type === undefined || e.type === 'MANDATORY')
 			}
+			supportingText={supportingText}
 		>
 			{calendar && (
 				<div className="_dropdownContainer" style={computedStyles.dropDownContainer ?? {}}>

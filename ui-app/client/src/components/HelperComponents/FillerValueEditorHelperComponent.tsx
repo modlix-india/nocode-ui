@@ -12,7 +12,7 @@ export function FillerValueEditorHelperComponent({
 	onClick?: (e: MouseEvent) => void;
 	onDoubleClick?: (e: MouseEvent) => void;
 }>) {
-	const { selectedSectionNumber, selectedComponent } = window.fillerValueEditor ?? {};
+	const { selectedSectionNumber, selectedComponent } = globalThis.fillerValueEditor ?? {};
 	const [lastChanged, setLastChanged] = useState(Date.now());
 
 	useEffect(() => {
@@ -24,6 +24,7 @@ export function FillerValueEditorHelperComponent({
 			if (!type?.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());
 		}
+
 		window.addEventListener('message', onMessageRecieved);
 		return () => window.removeEventListener('message', onMessageRecieved);
 	}, [setLastChanged]);

@@ -1,7 +1,7 @@
 import React, { MouseEvent, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { Component, ComponentProps } from '../../types/common';
 import {
 	processComponentStylePseudoClasses,
 	processStyleObjectToCSS,
@@ -72,13 +72,14 @@ function Menu(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!pathsActiveFor?.length) return;
 		const paths = pathsActiveFor.split(',');
-		let hasPath = false;
+		let hasPath;
 		if (pathname === '/') {
 			hasPath = !!paths.find((e: string) => pathname === e);
 		} else {
+			const lowerPath = pathname.toLowerCase();
 			hasPath = !!paths
 				.filter((e: string) => e !== '/')
-				.find((e: string) => pathname.indexOf(e) >= 0);
+				.find((e: string) => lowerPath.indexOf('/' + e.toLowerCase()) >= 0);
 		}
 		setIsMenuActive(hasPath);
 	}, [pathname, pathsActiveFor]);
@@ -364,7 +365,7 @@ const component: Component = {
 	component: Menu,
 	styleComponent: MenuStyle,
 	styleDefaults: styleDefaults,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled', 'active', 'visited'],

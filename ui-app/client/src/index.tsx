@@ -7,10 +7,10 @@ import { processLocation } from './util/locationProcessor';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 
 // TEST CDN CODE
-// window.cdnPrefix = 'cdn-dev.modlix.com';
-// window.cdnStripAPIPrefix = true;
-// window.cdnReplacePlus = true;
-// window.cdnResizeOptionsType = 'cloudflare';
+// globalThis.cdnPrefix = 'cdn-dev.modlix.com';
+// globalThis.cdnStripAPIPrefix = true;
+// globalThis.cdnReplacePlus = true;
+// globalThis.cdnResizeOptionsType = 'cloudflare';
 
 declare global {
 	var nodeDev: boolean;
@@ -48,7 +48,7 @@ declare global {
 	// var d3: typeof import('d3/index');
 }
 
-window.styleProperties = {};
+globalThis.styleProperties = {};
 
 let listeners: Set<() => void> = new Set();
 globalThis.removeDesignModeChangeListener = (fn: () => void) => listeners.delete(fn);
@@ -76,8 +76,10 @@ globalThis.lastInteracted = Date.now();
 const THREE_MINUTES = 3 * 60 * 1000;
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
 setInterval(async () => {
-	const AUTH_TOKEN_EXPIRY = window.isDebugMode ? 'designMode_AuthTokenExpiry' : 'AuthTokenExpiry';
-	const AUTH_TOKEN = window.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
+	const AUTH_TOKEN_EXPIRY = globalThis.isDebugMode
+		? 'designMode_AuthTokenExpiry'
+		: 'AuthTokenExpiry';
+	const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
 	let authTokenExpiry = parseInt(window.localStorage.getItem(AUTH_TOKEN_EXPIRY) ?? '0');
 	if (isNaN(authTokenExpiry)) return;
 	authTokenExpiry *= 1000;
@@ -146,7 +148,7 @@ if (!app) {
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
 
-		const AUTH_TOKEN = window.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
+		const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
 
 		const { App } = await import(/* webpackChunkName: "Application" */ './App/App');
 		const { AppStyle } = await import(
@@ -182,7 +184,7 @@ if (!app) {
 			for (const eachcomp of comps) {
 				if (!externalStylePropertyJSONComponents.has(eachcomp)) continue;
 				try {
-					window.styleProperties[eachcomp] = (
+					globalThis.styleProperties[eachcomp] = (
 						await axios.get(lazyStylePropURL(eachcomp))
 					)?.data;
 				} catch (err) {}

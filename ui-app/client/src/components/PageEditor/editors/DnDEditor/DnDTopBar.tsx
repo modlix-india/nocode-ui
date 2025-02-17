@@ -1,12 +1,12 @@
 import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { MESSAGE_TYPE, addMessage } from '../../../../App/Messages/Messages';
+import { addMessage, MESSAGE_TYPE } from '../../../../App/Messages/Messages';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../../constants';
 import {
-	PageStoreExtractor,
 	addListenerWithChildrenActivity,
 	getDataFromPath,
+	PageStoreExtractor,
 	setData,
 } from '../../../../context/StoreContext';
 import {
@@ -32,6 +32,7 @@ interface TopBarProps {
 	onSave: () => void;
 	onPublish?: () => void;
 	onVersions?: () => void;
+	onSavedVersions?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	onUrlChange: (url: string) => void;
@@ -112,6 +113,7 @@ export default function DnDTopBar({
 	onSelectedSubComponentChanged,
 	pageOperations,
 	onVersions,
+	onSavedVersions,
 	pagesData,
 	currentPageId,
 	logo,
@@ -249,7 +251,7 @@ export default function DnDTopBar({
 		);
 	}, [pagesData]);
 
-	if (previewMode) return <div className="_topBarGrid _previewMode"> </div>;
+	if (previewMode) return <div className="_topBarGrid _previewMode"></div>;
 
 	const eventEnums = Object.entries(page?.eventFunctions ?? {}).map(([k, v]) => ({
 		name: k,
@@ -901,6 +903,16 @@ export default function DnDTopBar({
 				<button className="_topBarButton _save" onClick={onSave} title="Save">
 					Save
 				</button>
+
+				{onSavedVersions && (
+					<div className="_buttonBar">
+						<i
+							onClick={onSavedVersions}
+							title="Versions"
+							className="fa fa-solid  fa-clock-rotate-left"
+						/>
+					</div>
+				)}
 
 				{onPublish && (
 					<button className="_topBarButton _publish" onClick={onPublish} title="Publish">

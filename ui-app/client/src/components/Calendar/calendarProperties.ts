@@ -98,7 +98,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'placeholder',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Dropdown placeholder',
+		displayName: 'Calendar placeholder',
 		description: "Placeholder that's shown when no date is selected.",
 		group: ComponentPropertyGroup.BASIC,
 	},
@@ -113,8 +113,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'No Float Label',
-		description: 'Dropdown without floating label.',
+		displayName: 'Do not float Label',
+		description: 'Calendar without floating label.',
 		translatable: true,
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
@@ -123,17 +123,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Dropdown Label text',
-		description: "Label text that's shown on top of dropdown.",
+		displayName: 'Calendar Label text',
+		description: "Label text that's shown on top of calendar.",
 		group: ComponentPropertyGroup.BASIC,
 	},
 
 	{
 		name: 'closeOnMouseLeave',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Close dropdown on mouse leave',
+		displayName: 'Close calendar dropdown on mouse leave',
 		description:
-			'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
+			'Calendar Dropdown will be closed on mouse cursor leaving calendar dropdown container when this property is true.',
 		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
@@ -198,16 +198,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
 			{
 				name: '_outlined',
-				displayName: 'Outline Dropdown',
-				description: 'Outline Dropdown type',
+				displayName: 'Outline Calendar',
+				description: 'Outline Calendar type',
 			},
 			{
 				name: '_filled',
-				displayName: 'Filled Dropdown',
-				description: 'Filled Dropdown type',
+				displayName: 'Filled Calendar',
+				description: 'Filled Calendar type',
 			},
 			{ name: '_bigDesign1', displayName: 'Big Design 1', description: 'Big Design 1 type' },
-			{ name: '_text', displayName: 'Text Dropdown', description: 'Text Dropdown' },
+			{ name: '_text', displayName: 'Text Calendar', description: 'Text Calendar' },
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
@@ -545,6 +545,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when the month is changed in the calendar.',
 		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: 'supportingText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Supporting Text',
+		description: 'Text to be shown to help fill the textbox.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'leftIcon',

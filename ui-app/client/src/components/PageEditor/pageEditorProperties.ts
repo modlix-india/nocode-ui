@@ -107,10 +107,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'onVersions',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'On Versions',
+		displayName: 'On Published Versions',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
-		description: 'Event to be triggered on page versions request.',
+		description: 'Event to be triggered on page published versions request.',
+	},
+
+	{
+		name: 'onSavedVersions',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Published Versions',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+		description: 'Event to be triggered on page saved versions request.',
 	},
 
 	{

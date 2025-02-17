@@ -8,8 +8,8 @@ export function lazyStylePropertyLoadFunction(
 ) {
 	return () => {
 		if (styleDefaults.size > 0) return;
-		if (window.styleProperties[name]) {
-			window.styleProperties[name]
+		if (globalThis.styleProperties[name]) {
+			globalThis.styleProperties[name]
 				.filter((e: any) => !!e.dv)
 				?.map(({ n: name, dv: defaultValue }: any) =>
 					styleDefaults.set(name, defaultValue),
@@ -34,9 +34,9 @@ export function lazyStylePropertyLoadFunction(
 }
 
 export function lazyStylePropURL(name: string) {
-	return `${window.cdnPrefix ? 'https://' + window.cdnPrefix + '/js/dist' : ''}/styleProperties/${name}.json`;
+	return `${globalThis.cdnPrefix ? 'https://' + globalThis.cdnPrefix + '/js/dist' : ''}/styleProperties/${name}.json`;
 }
 
 export function lazyCSSURL(name: string) {
-	return `${window.cdnPrefix ? 'https://' + window.cdnPrefix + '/js/dist' : ''}/css/${name}.css`;
+	return `${globalThis.cdnPrefix ? 'https://' + globalThis.cdnPrefix + '/js/dist' : ''}/css/${name}.css`;
 }

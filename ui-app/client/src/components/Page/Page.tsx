@@ -136,7 +136,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			})
 			.join('\n');
 
-		if (!window.cdnPrefix) return fullStyle;
+		if (!globalThis.cdnPrefix) return fullStyle;
 
 		const styleParts = fullStyle.split(STATIC_FILE_API_PREFIX);
 		fullStyle = '';
@@ -145,11 +145,11 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			fullStyle += styleParts[i];
 			if (i + 1 == styleParts.length) break;
 			if (fullStyle.endsWith('/')) fullStyle = fullStyle.substring(0, fullStyle.length - 1);
-			fullStyle += `https://${window.cdnPrefix}/`;
-			if (!window.cdnStripAPIPrefix) fullStyle += STATIC_FILE_API_PREFIX;
+			fullStyle += `https://${globalThis.cdnPrefix}/`;
+			if (!globalThis.cdnStripAPIPrefix) fullStyle += STATIC_FILE_API_PREFIX;
 			const lastPartIndex = styleParts[i + 1].indexOf(')');
 			let lastPart = styleParts[i + 1].substring(0, lastPartIndex);
-			if (window.cdnReplacePlus) lastPart = lastPart.replaceAll('+', '%20');
+			if (globalThis.cdnReplacePlus) lastPart = lastPart.replaceAll('+', '%20');
 			fullStyle += lastPart + ')';
 			fullStyle += styleParts[i + 1].substring(lastPartIndex + 2);
 		}

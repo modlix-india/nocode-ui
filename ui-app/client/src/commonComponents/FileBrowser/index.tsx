@@ -89,15 +89,15 @@ export async function imageURLForFile(
 			.get(url, { responseType: 'blob', headers })
 			.then(res => URL.createObjectURL(res.data));
 	}
-	if (window.cdnPrefix) {
+	if (globalThis.cdnPrefix) {
 		let index = imgUrl.indexOf(STATIC_FILE_API_PREFIX);
 		if (index !== -1) {
 			let urlPart = imgUrl.substring(index + STATIC_FILE_API_PREFIX_LENGTH);
-			imgUrl = `https://${window.cdnPrefix}/`;
-			if (!window.cdnStripAPIPrefix) {
+			imgUrl = `https://${globalThis.cdnPrefix}/`;
+			if (!globalThis.cdnStripAPIPrefix) {
 				imgUrl += STATIC_FILE_API_PREFIX;
 			}
-			if (window.cdnResizeOptionsType == 'cloudflare') {
+			if (globalThis.cdnResizeOptionsType == 'cloudflare') {
 				const qIndex = urlPart.indexOf('?');
 				if (qIndex != -1) {
 					const paramPart = urlPart.substring(qIndex + 1);
@@ -114,7 +114,7 @@ export async function imageURLForFile(
 				} else imgUrl += urlPart;
 			} else imgUrl += urlPart;
 
-			if (window.cdnReplacePlus) {
+			if (globalThis.cdnReplacePlus) {
 				imgUrl = imgUrl.replace(/\+/g, '%20');
 			}
 		}

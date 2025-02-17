@@ -13,7 +13,7 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 	let TOKEN_EXPIRY = 'AuthTokenExpiry';
 	let TOKEN_LANGUAGE = 'currentLanguage';
 
-	if (window.isDesignMode) {
+	if (globalThis.isDesignMode) {
 		TOKEN_NAME = 'designmode_AuthToken';
 		TOKEN_EXPIRY = 'designmode_AuthTokenExpiry';
 		TOKEN_LANGUAGE = 'designmode_currentLanguage';

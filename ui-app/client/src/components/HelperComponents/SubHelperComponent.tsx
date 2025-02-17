@@ -1,4 +1,4 @@
-import React, { Children, CSSProperties, useEffect, useState } from 'react';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import { getDataFromPath } from '../../context/StoreContext';
 import { messageToMaster } from '../../slaveFunctions';
 import { ComponentDefinition } from '../../types/common';
@@ -31,6 +31,7 @@ function SubHelperComponentInternal({
 			if (!type || !type.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());
 		}
+
 		window.addEventListener('message', onMessageRecieved);
 		return () => window.removeEventListener('message', onMessageRecieved);
 	}, [setLastChanged]);
@@ -40,7 +41,7 @@ function SubHelperComponentInternal({
 		selectedComponents,
 		selectedSubComponent = '',
 		personalization: { slave: { highlightColor = '#3fa4d3', noSelection = false } = {} } = {},
-	} = window.pageEditor ?? {};
+	} = globalThis.pageEditor ?? {};
 
 	const currentPage = getDataFromPath(`Store.urlDetails.pageName`, []);
 
@@ -92,7 +93,7 @@ function SubHelperComponentInternal({
 					type: 'SLAVE_CONTEXT_MENU',
 					payload: {
 						componentKey: definition.key,
-						menuPosition: window.determineRightClickPosition(e.nativeEvent),
+						menuPosition: globalThis.determineRightClickPosition(e.nativeEvent),
 					},
 				});
 			}}
@@ -114,5 +115,5 @@ function SubHelperComponentInternal({
 export function SubHelperComponent(props: SubHelperComponentPropsType) {
 	let { children } = props;
 
-	return window.designMode === 'PAGE' ? <SubHelperComponentInternal {...props} /> : <></>;
+	return globalThis.designMode === 'PAGE' ? <SubHelperComponentInternal {...props} /> : <></>;
 }

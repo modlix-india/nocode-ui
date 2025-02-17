@@ -4,12 +4,7 @@ import ComponentDefinitions from '../components';
 import { getHref } from '../components/util/getHref';
 import { lazyCSSURL } from '../components/util/lazyStylePropertyUtil';
 import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
-import {
-	addListener,
-	addListenerAndCallImmediately,
-	getData,
-	getDataFromPath,
-} from '../context/StoreContext';
+import { addListener, getDataFromPath } from '../context/StoreContext';
 import { StyleResolution } from '../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
@@ -97,7 +92,7 @@ export function AppStyle() {
 	);
 
 	let css =
-		`${window.isDesignMode ? 'html { width: calc(100% - 6px) }' : ''}
+		`${globalThis.isDesignMode ? 'html { width: calc(100% - 6px) }' : ''}
 	._flag {
 		background: url('${getHref('api/files/static/file/SYSTEM/jslib/flags/flags.png', window.location)}') no-repeat;
 		background-size: 100%;
