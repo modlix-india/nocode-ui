@@ -35,6 +35,7 @@ export function PageEditorHelperComponent({
 			if (!type?.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());
 		}
+
 		window.addEventListener('message', onMessageRecieved);
 		return () => window.removeEventListener('message', onMessageRecieved);
 	}, [setLastChanged]);
@@ -46,7 +47,7 @@ export function PageEditorHelperComponent({
 			preview = false,
 			slave: { highlightColor = '#52BD94', noSelection = false } = {},
 		} = {},
-	} = window.pageEditor ?? {};
+	} = globalThis.pageEditor ?? {};
 
 	const currentPage = getDataFromPath(`Store.urlDetails.pageName`, []);
 
@@ -166,7 +167,7 @@ export function PageEditorHelperComponent({
 					type: 'SLAVE_CONTEXT_MENU',
 					payload: {
 						componentKey: definition.key,
-						menuPosition: window.determineRightClickPosition(e.nativeEvent),
+						menuPosition: globalThis.determineRightClickPosition(e.nativeEvent),
 					},
 				});
 			}}

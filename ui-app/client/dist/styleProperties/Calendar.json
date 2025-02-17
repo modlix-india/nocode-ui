@@ -8271,5 +8271,1096 @@
 		"cp": "border",
 		"sel": ".comp.compCalendar._lowLightWeekend._smallCalendar._quinary ._date._dateWeekend",
 		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Primary Calendar Shadow Default Design Default",
+		"n": "primaryCalendarShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Secondary Calendar Shadow Default Design Default",
+		"n": "secondaryCalendarShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Tertiary Calendar Shadow Default Design Default",
+		"n": "tertiaryCalendarShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Quaternary Calendar Shadow Default Design Default",
+		"n": "quaternaryCalendarShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Quinary Calendar Shadow Default Design Default",
+		"n": "quinaryCalendarShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Primary Calendar Shadow Default Design Outline",
+		"n": "primaryCalendarShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Secondary Calendar Shadow Default Design Outline",
+		"n": "secondaryCalendarShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Tertiary Calendar Shadow Default Design Outline",
+		"n": "tertiaryCalendarShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Quaternary Calendar Shadow Default Design Outline",
+		"n": "quaternaryCalendarShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Quinary Calendar Shadow Default Design Outline",
+		"n": "quinaryCalendarShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Primary Calendar Shadow Default Design Filled",
+		"n": "primaryCalendarShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Secondary Calendar Shadow Default Design Filled",
+		"n": "secondaryCalendarShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Tertiary Calendar Shadow Default Design Filled",
+		"n": "tertiaryCalendarShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Quaternary Calendar Shadow Default Design Filled",
+		"n": "quaternaryCalendarShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Quinary Calendar Shadow Default Design Filled",
+		"n": "quinaryCalendarShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Primary Calendar Shadow Default Design Big 1",
+		"n": "primaryCalendarShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Secondary Calendar Shadow Default Design Big 1",
+		"n": "secondaryCalendarShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Tertiary Calendar Shadow Default Design Big 1",
+		"n": "tertiaryCalendarShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Quaternary Calendar Shadow Default Design Big 1",
+		"n": "quaternaryCalendarShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Default",
+		"dn": "Quinary Calendar Shadow Default Design Big 1",
+		"n": "quinaryCalendarShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Primary Calendar Shadow Active Design Default",
+		"n": "primaryCalendarShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Secondary Calendar Shadow Active Design Default",
+		"n": "secondaryCalendarShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Tertiary Calendar Shadow Active Design Default",
+		"n": "tertiaryCalendarShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Quaternary Calendar Shadow Active Design Default",
+		"n": "quaternaryCalendarShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Quinary Calendar Shadow Active Design Default",
+		"n": "quinaryCalendarShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Primary Calendar Shadow Active Design Outline",
+		"n": "primaryCalendarShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Secondary Calendar Shadow Active Design Outline",
+		"n": "secondaryCalendarShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Tertiary Calendar Shadow Active Design Outline",
+		"n": "tertiaryCalendarShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Quaternary Calendar Shadow Active Design Outline",
+		"n": "quaternaryCalendarShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Quinary Calendar Shadow Active Design Outline",
+		"n": "quinaryCalendarShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Primary Calendar Shadow Active Design Filled",
+		"n": "primaryCalendarShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Secondary Calendar Shadow Active Design Filled",
+		"n": "secondaryCalendarShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Tertiary Calendar Shadow Active Design Filled",
+		"n": "tertiaryCalendarShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Quaternary Calendar Shadow Active Design Filled",
+		"n": "quaternaryCalendarShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Quinary Calendar Shadow Active Design Filled",
+		"n": "quinaryCalendarShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Primary Calendar Shadow Active Design Big 1",
+		"n": "primaryCalendarShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Secondary Calendar Shadow Active Design Big 1",
+		"n": "secondaryCalendarShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Tertiary Calendar Shadow Active Design Big 1",
+		"n": "tertiaryCalendarShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Quaternary Calendar Shadow Active Design Big 1",
+		"n": "quaternaryCalendarShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Active",
+		"dn": "Quinary Calendar Shadow Active Design Big 1",
+		"n": "quinaryCalendarShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Primary Calendar Shadow Has Value Design Default",
+		"n": "primaryCalendarShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Secondary Calendar Shadow Has Value Design Default",
+		"n": "secondaryCalendarShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Tertiary Calendar Shadow Has Value Design Default",
+		"n": "tertiaryCalendarShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Quaternary Calendar Shadow Has Value Design Default",
+		"n": "quaternaryCalendarShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Quinary Calendar Shadow Has Value Design Default",
+		"n": "quinaryCalendarShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._default._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Primary Calendar Shadow Has Value Design Outline",
+		"n": "primaryCalendarShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Secondary Calendar Shadow Has Value Design Outline",
+		"n": "secondaryCalendarShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Tertiary Calendar Shadow Has Value Design Outline",
+		"n": "tertiaryCalendarShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Quaternary Calendar Shadow Has Value Design Outline",
+		"n": "quaternaryCalendarShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Quinary Calendar Shadow Has Value Design Outline",
+		"n": "quinaryCalendarShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._outlined._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Primary Calendar Shadow Has Value Design Filled",
+		"n": "primaryCalendarShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Secondary Calendar Shadow Has Value Design Filled",
+		"n": "secondaryCalendarShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Tertiary Calendar Shadow Has Value Design Filled",
+		"n": "tertiaryCalendarShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Quaternary Calendar Shadow Has Value Design Filled",
+		"n": "quaternaryCalendarShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Quinary Calendar Shadow Has Value Design Filled",
+		"n": "quinaryCalendarShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._filled._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Primary Calendar Shadow Has Value Design Big 1",
+		"n": "primaryCalendarShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Secondary Calendar Shadow Has Value Design Big 1",
+		"n": "secondaryCalendarShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Tertiary Calendar Shadow Has Value Design Big 1",
+		"n": "tertiaryCalendarShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Quaternary Calendar Shadow Has Value Design Big 1",
+		"n": "quaternaryCalendarShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Calendar Shadow Has Value",
+		"dn": "Quinary Calendar Shadow Has Value Design Big 1",
+		"n": "quinaryCalendarShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "DropDown Asterisk Text Color",
+		"dn": "DropDown Asterisk Text Color",
+		"n": "dropDownAsteriskTextColor",
+		"dv": "<colorTwelve>",
+		"cp": "color",
+		"sel": ".comp.compCalendar ._label ._asterisk",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Font",
+		"dn": "Calendar Support Text Font Design Default",
+		"n": "calendarSupportTextFontDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Font",
+		"dn": "Calendar Support Text Font Design Outline",
+		"n": "calendarSupportTextFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Font",
+		"dn": "Calendar Support Text Font Design Filled",
+		"n": "calendarSupportTextFontDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Font",
+		"dn": "Calendar Support Text Font Design Big 1",
+		"n": "calendarSupportTextFontDesignBig1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1 ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Primary Calendar Support Text Color Default Design Default",
+		"n": "primaryCalendarSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Secondary Calendar Support Text Color Default Design Default",
+		"n": "secondaryCalendarSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Tertiary Calendar Support Text Color Default Design Default",
+		"n": "tertiaryCalendarSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Quaternary Calendar Support Text Color Default Design Default",
+		"n": "quaternaryCalendarSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Quinary Calendar Support Text Color Default Design Default",
+		"n": "quinaryCalendarSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Primary Calendar Support Text Color Default Design Outline",
+		"n": "primaryCalendarSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Secondary Calendar Support Text Color Default Design Outline",
+		"n": "secondaryCalendarSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Tertiary Calendar Support Text Color Default Design Outline",
+		"n": "tertiaryCalendarSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Quaternary Calendar Support Text Color Default Design Outline",
+		"n": "quaternaryCalendarSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Quinary Calendar Support Text Color Default Design Outline",
+		"n": "quinaryCalendarSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Primary Calendar Support Text Color Default Design Filled",
+		"n": "primaryCalendarSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Secondary Calendar Support Text Color Default Design Filled",
+		"n": "secondaryCalendarSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Tertiary Calendar Support Text Color Default Design Filled",
+		"n": "tertiaryCalendarSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Quaternary Calendar Support Text Color Default Design Filled",
+		"n": "quaternaryCalendarSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Quinary Calendar Support Text Color Default Design Filled",
+		"n": "quinaryCalendarSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Primary Calendar Support Text Color Default Design Big 1",
+		"n": "primaryCalendarSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Secondary Calendar Support Text Color Default Design Big 1",
+		"n": "secondaryCalendarSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Tertiary Calendar Support Text Color Default Design Big 1",
+		"n": "tertiaryCalendarSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Quaternary Calendar Support Text Color Default Design Big 1",
+		"n": "quaternaryCalendarSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Default",
+		"dn": "Quinary Calendar Support Text Color Default Design Big 1",
+		"n": "quinaryCalendarSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Primary Calendar Support Text Color Active Design Default",
+		"n": "primaryCalendarSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Secondary Calendar Support Text Color Active Design Default",
+		"n": "secondaryCalendarSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Tertiary Calendar Support Text Color Active Design Default",
+		"n": "tertiaryCalendarSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Quaternary Calendar Support Text Color Active Design Default",
+		"n": "quaternaryCalendarSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Quinary Calendar Support Text Color Active Design Default",
+		"n": "quinaryCalendarSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Primary Calendar Support Text Color Active Design Outline",
+		"n": "primaryCalendarSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Secondary Calendar Support Text Color Active Design Outline",
+		"n": "secondaryCalendarSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Tertiary Calendar Support Text Color Active Design Outline",
+		"n": "tertiaryCalendarSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Quaternary Calendar Support Text Color Active Design Outline",
+		"n": "quaternaryCalendarSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Quinary Calendar Support Text Color Active Design Outline",
+		"n": "quinaryCalendarSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Primary Calendar Support Text Color Active Design Filled",
+		"n": "primaryCalendarSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Secondary Calendar Support Text Color Active Design Filled",
+		"n": "secondaryCalendarSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Tertiary Calendar Support Text Color Active Design Filled",
+		"n": "tertiaryCalendarSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Quaternary Calendar Support Text Color Active Design Filled",
+		"n": "quaternaryCalendarSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Quinary Calendar Support Text Color Active Design Filled",
+		"n": "quinaryCalendarSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Primary Calendar Support Text Color Active Design Big 1",
+		"n": "primaryCalendarSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Secondary Calendar Support Text Color Active Design Big 1",
+		"n": "secondaryCalendarSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Tertiary Calendar Support Text Color Active Design Big 1",
+		"n": "tertiaryCalendarSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Quaternary Calendar Support Text Color Active Design Big 1",
+		"n": "quaternaryCalendarSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Active",
+		"dn": "Quinary Calendar Support Text Color Active Design Big 1",
+		"n": "quinaryCalendarSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Primary Calendar Support Text Color Has Value Design Default",
+		"n": "primaryCalendarSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Secondary Calendar Support Text Color Has Value Design Default",
+		"n": "secondaryCalendarSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Tertiary Calendar Support Text Color Has Value Design Default",
+		"n": "tertiaryCalendarSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Quaternary Calendar Support Text Color Has Value Design Default",
+		"n": "quaternaryCalendarSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Quinary Calendar Support Text Color Has Value Design Default",
+		"n": "quinaryCalendarSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._default._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Primary Calendar Support Text Color Has Value Design Outline",
+		"n": "primaryCalendarSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Secondary Calendar Support Text Color Has Value Design Outline",
+		"n": "secondaryCalendarSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Tertiary Calendar Support Text Color Has Value Design Outline",
+		"n": "tertiaryCalendarSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Quaternary Calendar Support Text Color Has Value Design Outline",
+		"n": "quaternaryCalendarSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Quinary Calendar Support Text Color Has Value Design Outline",
+		"n": "quinaryCalendarSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._outlined._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Primary Calendar Support Text Color Has Value Design Filled",
+		"n": "primaryCalendarSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Secondary Calendar Support Text Color Has Value Design Filled",
+		"n": "secondaryCalendarSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Tertiary Calendar Support Text Color Has Value Design Filled",
+		"n": "tertiaryCalendarSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Quaternary Calendar Support Text Color Has Value Design Filled",
+		"n": "quaternaryCalendarSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Quinary Calendar Support Text Color Has Value Design Filled",
+		"n": "quinaryCalendarSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._filled._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Primary Calendar Support Text Color Has Value Design Big 1",
+		"n": "primaryCalendarSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Secondary Calendar Support Text Color Has Value Design Big 1",
+		"n": "secondaryCalendarSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Tertiary Calendar Support Text Color Has Value Design Big 1",
+		"n": "tertiaryCalendarSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Quaternary Calendar Support Text Color Has Value Design Big 1",
+		"n": "quaternaryCalendarSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Support Text Color Has Value",
+		"dn": "Quinary Calendar Support Text Color Has Value Design Big 1",
+		"n": "quinaryCalendarSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigDesign1._hasValue._quinary ._supportText",
+		"np": true
 	}
 ]
