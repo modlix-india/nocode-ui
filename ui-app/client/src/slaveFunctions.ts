@@ -3,9 +3,10 @@ import { STORE_PREFIX } from './constants';
 import { getDataFromPath, setData } from './context/StoreContext';
 
 const _parent = window.parent !== window.top ? window.parent : window.top;
+
 export function messageToMaster(message: { type: string; payload: any }) {
 	_parent.postMessage(
-		{ ...message, editorType: window.designMode, screenType: window.screenType },
+		{ ...message, editorType: globalThis.designMode, screenType: globalThis.screenType },
 		'*',
 	);
 }
@@ -14,8 +15,8 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	[
 		'EDITOR_TYPE',
 		p => {
-			window.designMode = p.type;
-			window.screenType = p.screenType;
+			globalThis.designMode = p.type;
+			globalThis.screenType = p.screenType;
 
 			window.raiseDesignModeChangeEvent();
 		},
@@ -23,26 +24,30 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	[
 		'EDITOR_FILLER_SECTION_SELECTION',
 		p => {
-			if (!window.fillerValueEditor) window.fillerValueEditor = {};
-			window.fillerValueEditor.selectedComponent = p?.section.gridKey;
-			window.fillerValueEditor.selectedSectionNumber = p?.sectionNumber;
+			if (!globalThis.fillerValueEditor) globalThis.fillerValueEditor = {};
+			globalThis.fillerValueEditor.selectedComponent = p?.section.gridKey;
+			globalThis.fillerValueEditor.selectedSectionNumber = p?.sectionNumber;
 		},
 	],
 	[
 		'EDITOR_DEFINITION',
-		p => (window.pageEditor = { ...window.pageEditor, editingPageDefinition: p }),
+		p => (globalThis.pageEditor = { ...globalThis.pageEditor, editingPageDefinition: p }),
 	],
 	[
 		'EDITOR_SELECTION',
-		p => (window.pageEditor = { ...window.pageEditor, selectedComponents: p as string[] }),
+		p =>
+			(globalThis.pageEditor = {
+				...globalThis.pageEditor,
+				selectedComponents: p as string[],
+			}),
 	],
 	[
 		'EDITOR_SUB_SELECTION',
-		p => (window.pageEditor = { ...window.pageEditor, selectedSubComponent: p }),
+		p => (globalThis.pageEditor = { ...globalThis.pageEditor, selectedSubComponent: p }),
 	],
 	[
 		'EDITOR_PERSONALIZATION',
-		p => (window.pageEditor = { ...window.pageEditor, personalization: p }),
+		p => (globalThis.pageEditor = { ...globalThis.pageEditor, personalization: p }),
 	],
 	[
 		'EDITOR_APP_DEFINITION',
@@ -82,9 +87,9 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	],
 ]);
 
-if (window.isDesignMode) {
-	window.determineRightClickPosition = e => {
-		const iframe = parent.window.document.getElementById(window.screenType);
+if (globalThis.isDesignMode) {
+	globalThis.determineRightClickPosition = e => {
+		const iframe = parent.window.document.getElementById(globalThis.screenType);
 		if (!iframe) return { x: 0, y: 0 };
 
 		const iframeRect = iframe.getBoundingClientRect();

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { runEvent } from '../util/runEvent';
@@ -69,7 +69,7 @@ function Timer(props: Readonly<ComponentProps>) {
 
 	const ref = useRef<HTMLDivElement>(null);
 
-	return window.designMode ? (
+	return globalThis.designMode ? (
 		<div
 			className="comp compTimer"
 			ref={ref}
