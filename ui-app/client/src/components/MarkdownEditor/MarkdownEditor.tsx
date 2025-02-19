@@ -49,7 +49,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
-
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
@@ -58,11 +57,19 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	const [mode, setMode] = useState<EditorMode>(editType ?? 'editText');
 	const [text, setText] = useStateCallback<string>('');
+	const resizerBarRef = useRef<any>(null);
+	const [textAreaWidth, setTextAreaWidth] = useState<number>(0);
+	const [history, setHistory] = useState<string[]>([]);
+	const [historyIndex, setHistoryIndex] = useState(-1);
+	const [filterPanelPosition, setFilterPanelPosition] = useState<{ x: number; y: number } | null>(
+		null,
+	);
+	const [isFilterPanelVisible, setIsFilterPanelVisible] = useState(false);
+	const [isComponentPanelExpanded, setIsComponentPanelExpanded] = useState(false);
+	const [componentSearchTerm, setComponentSearchTerm] = useState('');
 
 	const textAreaRef = useRef<any>(null);
 	const wrapperRef = useRef<any>(null);
-	const resizerBarRef = useRef<any>(null);
-	const [textAreaWidth, setTextAreaWidth] = useState<number>(0);
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -102,8 +109,32 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		return () => window.removeEventListener('resize', func);
 	}, [mode, textAreaRef.current, wrapperRef.current]);
 
-	const [history, setHistory] = useState<string[]>([]);
-	const [historyIndex, setHistoryIndex] = useState(-1);
+	useEffect(() => {
+		if (!textAreaRef?.current) return;
+
+		const handleSelection = () => {
+			const { selectionStart, selectionEnd } = textAreaRef.current;
+
+			if (selectionStart !== selectionEnd && !filterPanelPosition) {
+				const rect = textAreaRef.current.getBoundingClientRect();
+				setFilterPanelPosition({
+					x: rect.left + rect.width / 2 - 150, // 300/2 for panel width
+					y: rect.top + 10,
+				});
+			}
+			setIsFilterPanelVisible(selectionStart !== selectionEnd);
+		};
+
+		textAreaRef.current.addEventListener('select', handleSelection);
+		textAreaRef.current.addEventListener('mouseup', handleSelection);
+		textAreaRef.current.addEventListener('keyup', handleSelection);
+
+		return () => {
+			textAreaRef?.current?.removeEventListener('select', handleSelection);
+			textAreaRef?.current?.removeEventListener('mouseup', handleSelection);
+			textAreaRef?.current?.removeEventListener('keyup', handleSelection);
+		};
+	}, [textAreaRef?.current]);
 
 	const handleUndo = () => {
 		if (historyIndex > 0) {
@@ -508,47 +539,33 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			<HelperComponent context={props.context} definition={definition} />
 			<AddComponentPanelButtons
 				onComponentAdd={type => {
-					const componentSyntax = {
-						quote: '> ',
-						h1: '# ',
-						h2: '## ',
-						h3: '### ',
-						h4: '#### ',
-						h5: '##### ',
-						h6: '###### ',
-					};
-
 					if (textAreaRef.current) {
 						const { selectionStart } = textAreaRef.current;
 						const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
 						const newText =
-							text.substring(0, lineStart) +
-							componentSyntax[type as keyof typeof componentSyntax] +
-							text.substring(lineStart);
+							text.substring(0, lineStart) + type + text.substring(lineStart);
 						onChangeText(newText);
 					}
 				}}
 				position={{
-					line: text.substring(0, textAreaRef.current?.selectionStart ?? 0).split('\n')
-						.length,
-					// Adjust the top position to align with the current line
-					top:
-						textAreaRef.current?.getBoundingClientRect().top ??
-						0 +
-							(textAreaRef.current?.selectionStart
-								? (text.substring(0, textAreaRef.current.selectionStart).split('\n')
-										.length -
-										1) *
-									20
-								: 0),
+					line: textAreaRef.current?.selectionStart
+						? text.substring(0, textAreaRef.current.selectionStart).split('\n').length
+						: 1,
+					top: textAreaRef.current?.getBoundingClientRect().top ?? 0,
 				}}
+				isExpanded={isComponentPanelExpanded}
+				onExpandChange={setIsComponentPanelExpanded}
+				searchTerm={componentSearchTerm}
+				onSearchChange={setComponentSearchTerm}
 				styleProperties={styleProperties}
 			/>
 			{buttonBar}
 			<div className="_editorContainer">{renderingComponent}</div>
 			<FilterPanelButtons
 				onFormatClick={handleRichTextCommand}
-				textAreaRef={textAreaRef}
+				position={filterPanelPosition}
+				isVisible={isFilterPanelVisible}
+				onPositionChange={setFilterPanelPosition}
 				styleProperties={styleProperties}
 			/>
 		</div>

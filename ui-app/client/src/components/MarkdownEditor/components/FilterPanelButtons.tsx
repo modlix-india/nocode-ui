@@ -1,54 +1,21 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 
 interface FilterPanelButtonsProps {
 	onFormatClick: (command: string, value?: string | { url: string; text: string }) => void;
-	textAreaRef: any;
+	position: { x: number; y: number } | null;
+	isVisible: boolean;
+	onPositionChange: (position: { x: number; y: number }) => void;
 	styleProperties: any;
 }
 
 export function FilterPanelButtons({
 	onFormatClick,
+	position,
+	isVisible,
+	onPositionChange,
 	styleProperties,
-	textAreaRef,
 }: Readonly<FilterPanelButtonsProps>) {
-	const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
 	const panelRef = useRef<any>(null);
-	const [isVisible, setIsVisible] = useState(false);
-
-	useEffect(() => {
-		if (textAreaRef?.current && !position) {
-			const rect = textAreaRef.current.getBoundingClientRect();
-			const panelWidth = panelRef.current?.offsetWidth || 300;
-			setPosition({ x: rect.left + rect.width / 2 - panelWidth / 2, y: rect.top + 10 });
-		}
-	}, [textAreaRef?.current]);
-
-	useEffect(() => {
-		const handleSelection = () => {
-			if (!textAreaRef?.current) return;
-			const { selectionStart, selectionEnd } = textAreaRef.current;
-
-			if (selectionStart !== selectionEnd && !position) {
-				const rect = textAreaRef.current.getBoundingClientRect();
-				const panelWidth = panelRef.current?.offsetWidth || 300;
-				setPosition({
-					x: rect.left + rect.width / 2 - panelWidth / 2,
-					y: rect.top + 10,
-				});
-			}
-			setIsVisible(selectionStart !== selectionEnd);
-		};
-
-		textAreaRef?.current?.addEventListener('select', handleSelection);
-		textAreaRef?.current?.addEventListener('mouseup', handleSelection);
-		textAreaRef?.current?.addEventListener('keyup', handleSelection);
-
-		return () => {
-			textAreaRef?.current?.removeEventListener('select', handleSelection);
-			textAreaRef?.current?.removeEventListener('mouseup', handleSelection);
-			textAreaRef?.current?.removeEventListener('keyup', handleSelection);
-		};
-	}, [textAreaRef?.current]);
 
 	return (
 		<div
@@ -76,7 +43,7 @@ export function FilterPanelButtons({
 				};
 
 				const mouseUp = () => {
-					setPosition({ x: newX, y: newY });
+					onPositionChange({ x: newX, y: newY });
 					document.removeEventListener('mousemove', mouseMove);
 					document.removeEventListener('mouseup', mouseUp);
 				};

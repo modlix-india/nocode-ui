@@ -3,35 +3,43 @@ import React, { useState } from 'react';
 interface AddComponentPanelButtonsProps {
 	onComponentAdd: (type: string) => void;
 	position: { line: number; top: number };
+	isExpanded: boolean;
+	onExpandChange: (expanded: boolean) => void;
+	searchTerm: string;
+	onSearchChange: (term: string) => void;
 	styleProperties: any;
 }
+
+const components = [
+	{ id: 'paragraph', name: 'Paragraph', icon: '¶', syntax: 'some content here' },
+	{ id: 'quote', name: 'Quote', icon: '"', syntax: '> here is a quote' },
+	{ id: 'pullquote', name: 'Pullquote', icon: '❝', syntax: '>>> Pull quote here' },
+	{ id: 'h1', name: 'Heading 1', icon: 'H1', syntax: '# heading 1' },
+	{ id: 'h2', name: 'Heading 2', icon: 'H2', syntax: '## heading 2' },
+	{ id: 'h3', name: 'Heading 3', icon: 'H3', syntax: '### heading 3' },
+	{ id: 'h4', name: 'Heading 4', icon: 'H4', syntax: '#### heading 4' },
+	{ id: 'h5', name: 'Heading 5', icon: 'H5', syntax: '##### heading 5' },
+	{ id: 'h6', name: 'Heading 6', icon: 'H6', syntax: '###### heading 6' },
+	{ id: 'ul', name: 'Bullet List', icon: '•', syntax: '- add the list here\n -' },
+	{ id: 'ol', name: 'Numbered List', icon: '1.', syntax: '1. add the list here' },
+	{ id: 'code', name: 'Code Block', icon: '<>', syntax: '```\n' },
+	{
+		id: 'table',
+		name: 'Table',
+		icon: '▦',
+		syntax: '| Header | Header |\n|---------|----------|\n| Cell | Cell |',
+	},
+];
 
 export function AddComponentPanelButtons({
 	onComponentAdd,
 	position,
+	isExpanded,
+	onExpandChange,
+	searchTerm,
+	onSearchChange,
 	styleProperties,
 }: Readonly<AddComponentPanelButtonsProps>) {
-	const [isExpanded, setIsExpanded] = useState(false);
-	const [searchTerm, setSearchTerm] = useState('');
-
-	const components = [
-		{ id: 'paragraph', name: 'Paragraph', icon: '¶', syntax: '' },
-		{ id: 'quote', name: 'Quote', icon: '"', syntax: '> here is a quote' },
-		{ id: 'pullquote', name: 'Pullquote', icon: '❝', syntax: '>>> ' },
-		{ id: 'h1', name: 'Heading 1', icon: 'H1', syntax: '# ' },
-		{ id: 'h2', name: 'Heading 2', icon: 'H2', syntax: '## ' },
-		{ id: 'h3', name: 'Heading 3', icon: 'H3', syntax: '### ' },
-		{ id: 'ul', name: 'Bullet List', icon: '•', syntax: '- ' },
-		{ id: 'ol', name: 'Numbered List', icon: '1.', syntax: '1. ' },
-		{ id: 'code', name: 'Code Block', icon: '<>', syntax: '```\n' },
-		{
-			id: 'table',
-			name: 'Table',
-			icon: '▦',
-			syntax: '| Header | Header |\n|---------|----------|\n| Cell | Cell |',
-		},
-	];
-
 	const filteredComponents = components.filter(comp =>
 		comp.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
@@ -44,7 +52,7 @@ export function AddComponentPanelButtons({
 				top: `${position.top}px`,
 				position: 'absolute',
 				left: '30px',
-				display: 'block', // Make sure it's always displayed
+				display: 'block',
 				transform: 'translateX(-100%)',
 				marginLeft: '10px',
 			}}
@@ -52,7 +60,7 @@ export function AddComponentPanelButtons({
 			{!isExpanded ? (
 				<button
 					className="_addButton"
-					onClick={() => setIsExpanded(true)}
+					onClick={() => onExpandChange(true)}
 					title="Add Component"
 				>
 					<i className="fa fa-plus-square"></i>
@@ -64,7 +72,7 @@ export function AddComponentPanelButtons({
 							type="text"
 							placeholder="Search"
 							value={searchTerm}
-							onChange={e => setSearchTerm(e.target.value)}
+							onChange={e => onSearchChange(e.target.value)}
 							className="_searchInput"
 						/>
 					</div>
@@ -74,8 +82,8 @@ export function AddComponentPanelButtons({
 								key={comp.id}
 								onClick={() => {
 									onComponentAdd(comp.syntax);
-									setIsExpanded(false);
-									setSearchTerm('');
+									onExpandChange(false);
+									onSearchChange('');
 								}}
 								className="_componentButton"
 								title={comp.name}
@@ -86,7 +94,7 @@ export function AddComponentPanelButtons({
 						))}
 					</div>
 					<div className="_footer">
-						<button className="_browseAll" onClick={() => setSearchTerm('')}>
+						<button className="_browseAll" onClick={() => onSearchChange('')}>
 							Browse all
 						</button>
 					</div>
