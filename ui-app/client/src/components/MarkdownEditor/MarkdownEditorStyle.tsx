@@ -232,6 +232,46 @@ ${PREFIX} ._richTextButtonBar ._buttonGroup {
 ${PREFIX} ._richTextButtonBar ._buttonGroup:last-child {
     border-right: none;
 }
+${PREFIX} ._dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+${PREFIX} ._dropdownContent {
+    position: absolute;
+    background-color: #fff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 5;
+    border-radius: 4px;
+    padding: 5px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+${PREFIX} ._dropdownContent button {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+${PREFIX} ._dropdownContent button:hover {
+    background-color: #f0f0f0;
+}
+
+${PREFIX} ._richTextButtonBar ._buttonGroup {
+    display: flex;
+    gap: 5px;
+    border-right: 1px solid #fff3;
+    padding-right: 10px;
+}
+
+${PREFIX} ._richTextButtonBar ._buttonGroup:last-child {
+    border-right: none;
+}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MarkdownEditorCSS">{css}</style>;

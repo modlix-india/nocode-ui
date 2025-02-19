@@ -331,6 +331,43 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	let buttonBar = undefined;
 
+	// const handleKeyboardShortcut = (ev: KeyboardEvent) => {
+	// 	if (!textAreaRef.current) return;
+	// 	const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+	// 	const modifier = isMac ? ev.metaKey : ev.ctrlKey;
+
+	// 	if (modifier) {
+	// 		switch (ev.key.toLowerCase()) {
+	// 			case 'b':
+	// 				ev.preventDefault();
+	// 				handleRichTextCommand('bold');
+	// 				break;
+	// 			case 'i':
+	// 				ev.preventDefault();
+	// 				handleRichTextCommand('italic');
+	// 				break;
+	// 			case 'u':
+	// 				ev.preventDefault();
+	// 				handleRichTextCommand('underline');
+	// 				break;
+	// 			case 'h':
+	// 				ev.preventDefault();
+	// 				handleRichTextCommand('h1');
+	// 				break;
+	// 		}
+	// 	}
+	// };
+
+	useEffect(() => {
+		if (!textAreaRef.current) return;
+		textAreaRef.current.style.height = '100%';
+	}, [text]);
+
+	useEffect(() => {
+		document.addEventListener('keydown', handleKeyboardShortcut);
+		return () => document.removeEventListener('keydown', handleKeyboardShortcut);
+	}, [text]);
+
 	const handleKeyboardShortcut = (ev: KeyboardEvent) => {
 		if (!textAreaRef.current) return;
 		const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
@@ -350,23 +387,43 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 					ev.preventDefault();
 					handleRichTextCommand('underline');
 					break;
-				case 'h':
+				case 'k':
 					ev.preventDefault();
-					handleRichTextCommand('h1');
+					// Open link dialog when Ctrl+K is pressed
+					if (textAreaRef.current) {
+						const selectedText = textAreaRef.current.value.substring(
+							textAreaRef.current.selectionStart,
+							textAreaRef.current.selectionEnd,
+						);
+						handleRichTextCommand('link', { url: '', text: selectedText });
+					}
+					break;
+				case '.':
+					if (ev.shiftKey) {
+						ev.preventDefault();
+						handleRichTextCommand('superscript');
+					}
+					break;
+				case ',':
+					if (ev.shiftKey) {
+						ev.preventDefault();
+						handleRichTextCommand('subscript');
+					}
+					break;
+				case '1':
+				case '2':
+				case '3':
+				case '4':
+				case '5':
+				case '6':
+					if (ev.altKey) {
+						ev.preventDefault();
+						handleRichTextCommand(`h${ev.key}`);
+					}
 					break;
 			}
 		}
 	};
-
-	useEffect(() => {
-		if (!textAreaRef.current) return;
-		textAreaRef.current.style.height = '100%';
-	}, [text]);
-
-	useEffect(() => {
-		document.addEventListener('keydown', handleKeyboardShortcut);
-		return () => document.removeEventListener('keydown', handleKeyboardShortcut);
-	}, [text]);
 
 	const handleRichTextCommand = (
 		command: string,
@@ -384,136 +441,479 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 		switch (command) {
 			case 'bold':
-				const hasBoldMarkers = selectedText.startsWith('**') && selectedText.endsWith('**');
-				const hasBoldTag = selectedText.match(/<strong>(.*?)<\/strong>/);
-
-				if (hasBoldMarkers) {
-					newText = beforeText + selectedText.slice(2, -2) + afterText;
-					newCursorPos = selectionEnd - 4;
-				} else if (hasBoldTag) {
-					newText =
-						beforeText +
-						selectedText.replace(/<strong>(.*?)<\/strong>/, '$1') +
-						afterText;
-					newCursorPos =
-						selectionStart +
-						selectedText.replace(/<strong>(.*?)<\/strong>/, '$1').length;
+				if (mode.includes('HTML')) {
+					const hasBoldTag = selectedText.match(/<strong>(.*?)<\/strong>/);
+					if (hasBoldTag) {
+						newText =
+							beforeText +
+							selectedText.replace(/<strong>(.*?)<\/strong>/, '$1') +
+							afterText;
+						newCursorPos =
+							selectionStart +
+							selectedText.replace(/<strong>(.*?)<\/strong>/, '$1').length;
+					} else {
+						newText = `${beforeText}<strong>${selectedText}</strong>${afterText}`;
+						newCursorPos = selectionEnd + 17;
+					}
 				} else {
-					newText = `${beforeText}**${selectedText}**${afterText}`;
-					newCursorPos = selectionEnd + 4;
+					const hasBoldMarkers =
+						selectedText.startsWith('**') && selectedText.endsWith('**');
+					if (hasBoldMarkers) {
+						newText = beforeText + selectedText.slice(2, -2) + afterText;
+						newCursorPos = selectionEnd - 4;
+					} else {
+						newText = `${beforeText}**${selectedText}**${afterText}`;
+						newCursorPos = selectionEnd + 4;
+					}
 				}
 				break;
 
 			case 'italic':
-				const hasItalicMarkers = selectedText.startsWith('*') && selectedText.endsWith('*');
-				const hasItalicTag = selectedText.match(/<em>(.*?)<\/em>/);
-
-				if (hasItalicMarkers) {
-					newText = beforeText + selectedText.slice(1, -1) + afterText;
-					newCursorPos = selectionEnd - 2;
-				} else if (hasItalicTag) {
-					newText =
-						beforeText + selectedText.replace(/<em>(.*?)<\/em>/, '$1') + afterText;
-					newCursorPos =
-						selectionStart + selectedText.replace(/<em>(.*?)<\/em>/, '$1').length;
+				if (mode.includes('HTML')) {
+					const hasItalicTag = selectedText.match(/<em>(.*?)<\/em>/);
+					if (hasItalicTag) {
+						newText =
+							beforeText + selectedText.replace(/<em>(.*?)<\/em>/, '$1') + afterText;
+						newCursorPos =
+							selectionStart + selectedText.replace(/<em>(.*?)<\/em>/, '$1').length;
+					} else {
+						newText = `${beforeText}<em>${selectedText}</em>${afterText}`;
+						newCursorPos = selectionEnd + 9;
+					}
 				} else {
-					newText = `${beforeText}*${selectedText}*${afterText}`;
-					newCursorPos = selectionEnd + 2;
+					const hasItalicMarkers =
+						selectedText.startsWith('*') && selectedText.endsWith('*');
+					if (hasItalicMarkers) {
+						newText = beforeText + selectedText.slice(1, -1) + afterText;
+						newCursorPos = selectionEnd - 2;
+					} else {
+						newText = `${beforeText}*${selectedText}*${afterText}`;
+						newCursorPos = selectionEnd + 2;
+					}
 				}
 				break;
 
 			case 'underline':
-				const hasUnderlineMarkers =
-					selectedText.startsWith('__') && selectedText.endsWith('__');
-				const hasUnderlineTag = selectedText.match(/<u>(.*?)<\/u>/);
-
-				if (hasUnderlineMarkers) {
-					newText = beforeText + selectedText.slice(2, -2) + afterText;
-					newCursorPos = selectionEnd - 4;
-				} else if (hasUnderlineTag) {
-					newText = beforeText + selectedText.replace(/<u>(.*?)<\/u>/, '$1') + afterText;
-					newCursorPos =
-						selectionStart + selectedText.replace(/<u>(.*?)<\/u>/, '$1').length;
+				if (mode.includes('HTML')) {
+					const hasUnderlineTag = selectedText.match(/<u>(.*?)<\/u>/);
+					if (hasUnderlineTag) {
+						newText =
+							beforeText + selectedText.replace(/<u>(.*?)<\/u>/, '$1') + afterText;
+						newCursorPos =
+							selectionStart + selectedText.replace(/<u>(.*?)<\/u>/, '$1').length;
+					} else {
+						newText = `${beforeText}<u>${selectedText}</u>${afterText}`;
+						newCursorPos = selectionEnd + 7;
+					}
 				} else {
-					newText = `${beforeText}__${selectedText}__${afterText}`;
-					newCursorPos = selectionEnd + 4;
+					// In Markdown, we use HTML tags for underline since Markdown doesn't have native underline syntax
+					const hasUnderlineTag = selectedText.match(/<u>(.*?)<\/u>/);
+					if (hasUnderlineTag) {
+						newText =
+							beforeText + selectedText.replace(/<u>(.*?)<\/u>/, '$1') + afterText;
+						newCursorPos =
+							selectionStart + selectedText.replace(/<u>(.*?)<\/u>/, '$1').length;
+					} else {
+						newText = `${beforeText}<u>${selectedText}</u>${afterText}`;
+						newCursorPos = selectionEnd + 7;
+					}
 				}
 				break;
 
 			case 'h1':
 			case 'h2':
 			case 'h3':
+			case 'h4':
+			case 'h5':
+			case 'h6':
 				const headingLevel = command.charAt(1);
-				const headingMarker = '#'.repeat(Number(headingLevel));
-				const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
-				const lineEnd =
-					text.indexOf('\n', selectionEnd) === -1
-						? text.length
-						: text.indexOf('\n', selectionEnd);
-				const currentLine = text.substring(lineStart, lineEnd);
-
-				if (currentLine.startsWith(headingMarker + ' ')) {
-					newText =
-						text.substring(0, lineStart) +
-						currentLine.substring(headingMarker.length + 1) +
-						text.substring(lineEnd);
+				if (mode.includes('HTML')) {
+					const headingTagRegex = new RegExp(
+						`<h${headingLevel}>(.*?)<\\/h${headingLevel}>`,
+						'i',
+					);
+					if (selectedText.match(headingTagRegex)) {
+						newText =
+							beforeText + selectedText.replace(headingTagRegex, '$1') + afterText;
+						newCursorPos =
+							selectionStart + selectedText.replace(headingTagRegex, '$1').length;
+					} else {
+						// Remove any existing heading tags first
+						const cleanText = selectedText.replace(/<h[1-6]>(.*?)<\/h[1-6]>/g, '$1');
+						newText = `${beforeText}<h${headingLevel}>${cleanText}</h${headingLevel}>${afterText}`;
+						newCursorPos = selectionEnd + headingLevel.length * 2 + 5;
+					}
 				} else {
-					const cleanLine = currentLine.replace(/^#+\s*/, '');
-					newText =
-						text.substring(0, lineStart) +
-						`${headingMarker} ${cleanLine}` +
-						text.substring(lineEnd);
+					// Markdown heading implementation
+					const headingMarker = '#'.repeat(Number(headingLevel));
+					const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
+					const lineEnd =
+						text.indexOf('\n', selectionEnd) === -1
+							? text.length
+							: text.indexOf('\n', selectionEnd);
+					const currentLine = text.substring(lineStart, lineEnd);
+
+					if (currentLine.startsWith(headingMarker + ' ')) {
+						newText =
+							text.substring(0, lineStart) +
+							currentLine.substring(headingMarker.length + 1) +
+							text.substring(lineEnd);
+					} else {
+						const cleanLine = currentLine.replace(/^#+\s*/, '');
+						newText =
+							text.substring(0, lineStart) +
+							`${headingMarker} ${cleanLine}` +
+							text.substring(lineEnd);
+					}
 				}
 				break;
+
 			case 'color':
 				if (selectedText.match(/<span style="color: #[0-9a-f]{6}">(.*?)<\/span>/)) {
 					newText =
-						text.substring(0, selectionStart) +
+						beforeText +
 						selectedText.replace(
 							/<span style="color: #[0-9a-f]{6}">(.*?)<\/span>/,
 							'$1',
 						) +
-						text.substring(selectionEnd);
+						afterText;
+					newCursorPos =
+						selectionStart +
+						selectedText.replace(
+							/<span style="color: #[0-9a-f]{6}">(.*?)<\/span>/,
+							'$1',
+						).length;
 				} else {
-					newText = `${text.substring(0, selectionStart)}<span style="color: #ff0000">${selectedText}</span>${text.substring(selectionEnd)}`;
+					newText = `${beforeText}<span style="color: #ff0000">${selectedText}</span>${afterText}`;
 					newCursorPos = selectionEnd + 32;
 				}
 				break;
+
 			case 'highlight':
 				if (selectedText.match(/<mark>(.*?)<\/mark>/)) {
 					newText =
-						text.substring(0, selectionStart) +
-						selectedText.replace(/<mark>(.*?)<\/mark>/, '$1') +
-						text.substring(selectionEnd);
+						beforeText + selectedText.replace(/<mark>(.*?)<\/mark>/, '$1') + afterText;
+					newCursorPos =
+						selectionStart + selectedText.replace(/<mark>(.*?)<\/mark>/, '$1').length;
 				} else {
-					newText = `${text.substring(0, selectionStart)}<mark>${selectedText}</mark>${text.substring(selectionEnd)}`;
+					newText = `${beforeText}<mark>${selectedText}</mark>${afterText}`;
 					newCursorPos = selectionEnd + 13;
 				}
 				break;
+
 			case 'link':
 				if (typeof value === 'object' && 'url' in value) {
-					newText = `${text.substring(0, selectionStart)}[${value.text}](${value.url})${text.substring(selectionEnd)}`;
-					newCursorPos = selectionStart + value.text.length + value.url.length + 4;
+					if (mode.includes('HTML')) {
+						newText = `${beforeText}<a href="${value.url}">${value.text}</a>${afterText}`;
+						newCursorPos = selectionStart + value.text.length + value.url.length + 15;
+					} else {
+						newText = `${beforeText}[${value.text}](${value.url})${afterText}`;
+						newCursorPos = selectionStart + value.text.length + value.url.length + 4;
+					}
 				}
 				break;
+
 			case 'image':
 				if (typeof value === 'string') {
-					newText = `${text.substring(0, selectionStart)}![](${value})${text.substring(selectionEnd)}`;
-					newCursorPos = selectionStart + value.length + 4;
+					if (mode.includes('HTML')) {
+						newText = `${beforeText}<img src="${value}" alt="" />${afterText}`;
+						newCursorPos = selectionStart + value.length + 18;
+					} else {
+						newText = `${beforeText}![](${value})${afterText}`;
+						newCursorPos = selectionStart + value.length + 4;
+					}
 				}
 				break;
+
 			case 'ul':
-				newText = insertList(text, selectionStart, selectionEnd, '*');
+				if (mode.includes('HTML')) {
+					const lines = selectedText.split('\n');
+					const listItems = lines
+						.map(line => (line.trim() ? `<li>${line.trim()}</li>` : ''))
+						.filter(Boolean);
+					if (listItems.length) {
+						const formattedList = `<ul>\n  ${listItems.join('\n  ')}\n</ul>`;
+						newText = beforeText + formattedList + afterText;
+						newCursorPos = selectionStart + formattedList.length;
+					}
+				} else {
+					newText = insertList(text, selectionStart, selectionEnd, '*');
+				}
 				break;
+
 			case 'ol':
-				newText = insertList(text, selectionStart, selectionEnd, '1.');
+				if (mode.includes('HTML')) {
+					const lines = selectedText.split('\n');
+					const listItems = lines
+						.map(line => (line.trim() ? `<li>${line.trim()}</li>` : ''))
+						.filter(Boolean);
+					if (listItems.length) {
+						const formattedList = `<ol>\n  ${listItems.join('\n  ')}\n</ol>`;
+						newText = beforeText + formattedList + afterText;
+						newCursorPos = selectionStart + formattedList.length;
+					}
+				} else {
+					newText = insertList(text, selectionStart, selectionEnd, '1.');
+				}
 				break;
+
 			case 'quote':
-				newText = insertPrefix(text, selectionStart, selectionEnd, '>');
+				if (mode.includes('HTML')) {
+					const hasBlockquote = selectedText.match(/<blockquote>(.*?)<\/blockquote>/s);
+					if (hasBlockquote) {
+						newText =
+							beforeText +
+							selectedText.replace(/<blockquote>(.*?)<\/blockquote>/s, '$1') +
+							afterText;
+						newCursorPos =
+							selectionStart +
+							selectedText.replace(/<blockquote>(.*?)<\/blockquote>/s, '$1').length;
+					} else {
+						newText = `${beforeText}<blockquote>${selectedText}</blockquote>${afterText}`;
+						newCursorPos = selectionEnd + 25;
+					}
+				} else {
+					newText = insertPrefix(text, selectionStart, selectionEnd, '>');
+				}
 				break;
+
+			case 'superscript':
+				if (selectedText.match(/<sup>(.*?)<\/sup>/)) {
+					newText =
+						beforeText + selectedText.replace(/<sup>(.*?)<\/sup>/, '$1') + afterText;
+					newCursorPos =
+						selectionStart + selectedText.replace(/<sup>(.*?)<\/sup>/, '$1').length;
+				} else {
+					newText = `${beforeText}<sup>${selectedText}</sup>${afterText}`;
+					newCursorPos = selectionEnd + 11;
+				}
+				break;
+
+			case 'subscript':
+				if (selectedText.match(/<sub>(.*?)<\/sub>/)) {
+					newText =
+						beforeText + selectedText.replace(/<sub>(.*?)<\/sub>/, '$1') + afterText;
+					newCursorPos =
+						selectionStart + selectedText.replace(/<sub>(.*?)<\/sub>/, '$1').length;
+				} else {
+					newText = `${beforeText}<sub>${selectedText}</sub>${afterText}`;
+					newCursorPos = selectionEnd + 11;
+				}
+				break;
+
+			case 'strikethrough':
+				if (mode.includes('HTML')) {
+					if (selectedText.match(/<s>(.*?)<\/s>/)) {
+						newText =
+							beforeText + selectedText.replace(/<s>(.*?)<\/s>/, '$1') + afterText;
+						newCursorPos =
+							selectionStart + selectedText.replace(/<s>(.*?)<\/s>/, '$1').length;
+					} else {
+						newText = `${beforeText}<s>${selectedText}</s>${afterText}`;
+						newCursorPos = selectionEnd + 7;
+					}
+				} else {
+					if (selectedText.match(/~~(.*?)~~/)) {
+						newText = beforeText + selectedText.replace(/~~(.*?)~~/, '$1') + afterText;
+						newCursorPos =
+							selectionStart + selectedText.replace(/~~(.*?)~~/, '$1').length;
+					} else {
+						newText = `${beforeText}~~${selectedText}~~${afterText}`;
+						newCursorPos = selectionEnd + 4;
+					}
+				}
+				break;
+
+			case 'fontFamily':
+				if (selectedText.match(/<span style="font-family:[^"]*">(.*?)<\/span>/)) {
+					newText =
+						beforeText +
+						selectedText.replace(
+							/<span style="font-family:[^"]*">(.*?)<\/span>/,
+							'$1',
+						) +
+						afterText;
+					newCursorPos =
+						selectionStart +
+						selectedText.replace(/<span style="font-family:[^"]*">(.*?)<\/span>/, '$1')
+							.length;
+				} else {
+					newText = `${beforeText}<span style="font-family: ${value}">${selectedText}</span>${afterText}`;
+					newCursorPos = selectionEnd + 20 + String(value).length + 12;
+				}
+				break;
+
+			case 'fontSize':
+				if (selectedText.match(/<span style="font-size:[^"]*">(.*?)<\/span>/)) {
+					newText =
+						beforeText +
+						selectedText.replace(/<span style="font-size:[^"]*">(.*?)<\/span>/, '$1') +
+						afterText;
+					newCursorPos =
+						selectionStart +
+						selectedText.replace(/<span style="font-size:[^"]*">(.*?)<\/span>/, '$1')
+							.length;
+				} else {
+					newText = `${beforeText}<span style="font-size: ${value}">${selectedText}</span>${afterText}`;
+					newCursorPos = selectionEnd + 18 + String(value).length + 12;
+				}
+				break;
+
+			case 'align':
+				if (selectedText.match(/<div style="text-align:[^"]*">(.*?)<\/div>/s)) {
+					newText =
+						beforeText +
+						selectedText.replace(/<div style="text-align:[^"]*">(.*?)<\/div>/s, '$1') +
+						afterText;
+					newCursorPos =
+						selectionStart +
+						selectedText.replace(/<div style="text-align:[^"]*">(.*?)<\/div>/s, '$1')
+							.length;
+				} else {
+					newText = `${beforeText}<div style="text-align: ${value}">${selectedText}</div>${afterText}`;
+					newCursorPos = selectionEnd + 19 + String(value).length + 12;
+				}
+				break;
+
+			case 'direction':
+				if (selectedText.match(/<div dir="[^"]*">(.*?)<\/div>/s)) {
+					newText =
+						beforeText +
+						selectedText.replace(/<div dir="[^"]*">(.*?)<\/div>/s, '$1') +
+						afterText;
+					newCursorPos =
+						selectionStart +
+						selectedText.replace(/<div dir="[^"]*">(.*?)<\/div>/s, '$1').length;
+				} else {
+					newText = `${beforeText}<div dir="${value}">${selectedText}</div>${afterText}`;
+					newCursorPos = selectionEnd + 10 + String(value).length + 12;
+				}
+				break;
+
+			case 'indent':
+				if (mode.includes('HTML')) {
+					// In HTML mode, add padding-left
+					if (selectedText.match(/<div style="padding-left:[^"]*">(.*?)<\/div>/s)) {
+						const currentPadding = selectedText.match(
+							/<div style="padding-left:(\d+)px">/,
+						)?.[1];
+						let newPadding = 0;
+						if (currentPadding) {
+							newPadding =
+								value === 'increase'
+									? parseInt(currentPadding) + 20
+									: Math.max(0, parseInt(currentPadding) - 20);
+						} else {
+							newPadding = value === 'increase' ? 20 : 0;
+						}
+
+						if (newPadding > 0) {
+							newText =
+								beforeText +
+								selectedText.replace(
+									/<div style="padding-left:[^"]*">(.*?)<\/div>/s,
+									`<div style="padding-left:${newPadding}px">$1</div>`,
+								) +
+								afterText;
+						} else {
+							newText =
+								beforeText +
+								selectedText.replace(
+									/<div style="padding-left:[^"]*">(.*?)<\/div>/s,
+									'$1',
+								) +
+								afterText;
+						}
+					} else if (value === 'increase') {
+						newText = `${beforeText}<div style="padding-left:20px">${selectedText}</div>${afterText}`;
+					} else {
+						newText = beforeText + selectedText + afterText;
+					}
+				} else {
+					// Markdown mode - use spaces for indentation
+					const indentSize = value === 'increase' ? 2 : -2;
+					const lines = selectedText.split('\n');
+					const indentedLines = lines.map(line => {
+						if (value === 'increase') {
+							return '  ' + line;
+						} else {
+							return line.replace(/^  /, '');
+						}
+					});
+					newText = beforeText + indentedLines.join('\n') + afterText;
+				}
+				break;
+
 			case 'code':
-				newText = `${text.substring(0, selectionStart)}\`\`\`\n${selectedText}\n\`\`\`${text.substring(selectionEnd)}`;
-				newCursorPos = selectionEnd + 8;
+				if (mode.includes('HTML')) {
+					if (selectedText.includes('\n')) {
+						if (selectedText.match(/<pre><code>(.*?)<\/code><\/pre>/s)) {
+							newText =
+								beforeText +
+								selectedText.replace(/<pre><code>(.*?)<\/code><\/pre>/s, '$1') +
+								afterText;
+						} else {
+							newText = `${beforeText}<pre><code>${selectedText}</code></pre>${afterText}`;
+						}
+					} else {
+						if (selectedText.match(/<code>(.*?)<\/code>/)) {
+							newText =
+								beforeText +
+								selectedText.replace(/<code>(.*?)<\/code>/, '$1') +
+								afterText;
+						} else {
+							newText = `${beforeText}<code>${selectedText}</code>${afterText}`;
+						}
+					}
+				} else {
+					if (selectedText.includes('\n')) {
+						if (selectedText.match(/```\n(.*?)\n```/s)) {
+							newText =
+								beforeText +
+								selectedText.replace(/```\n(.*?)\n```/s, '$1') +
+								afterText;
+						} else {
+							newText = `${beforeText}\`\`\`\n${selectedText}\n\`\`\`${afterText}`;
+						}
+						newCursorPos = selectionEnd + 8;
+					} else {
+						if (selectedText.match(/`(.*?)`/)) {
+							newText =
+								beforeText + selectedText.replace(/`(.*?)`/, '$1') + afterText;
+						} else {
+							newText = `${beforeText}\`${selectedText}\`${afterText}`;
+						}
+						newCursorPos = selectionEnd + 2;
+					}
+				}
+				break;
+
+			case 'hr':
+				if (mode.includes('HTML')) {
+					newText = `${beforeText}\n<hr />\n${afterText}`;
+					newCursorPos = selectionStart + 8;
+				} else {
+					newText = `${beforeText}\n---\n${afterText}`;
+					newCursorPos = selectionStart + 5;
+				}
+				break;
+
+			case 'clearFormat':
+				// Remove both HTML tags and Markdown formatting characters
+				let cleanText = selectedText
+					.replace(/<[^>]+>/g, '') // Remove HTML tags
+					.replace(/(\*\*|__)(.*?)(\*\*|__)/g, '$2') // Remove bold
+					.replace(/(\*|_)(.*?)(\*|_)/g, '$2') // Remove italic
+					.replace(/~~(.*?)~~/g, '$1') // Remove strikethrough
+					.replace(/`(.*?)`/g, '$1') // Remove inline code
+					.replace(/```(.*?)```/g, '$1') // Remove code blocks
+					.replace(/^\s*[#]{1,6}\s+/gm, '') // Remove heading markers
+					.replace(/^\s*[-+*]\s+/gm, '') // Remove unordered list markers
+					.replace(/^\s*\d+\.\s+/gm, '') // Remove ordered list markers
+					.replace(/^\s*>\s+/gm, ''); // Remove blockquote markers
+
+				newText = beforeText + cleanText + afterText;
+				newCursorPos = selectionStart + cleanText.length;
 				break;
 		}
 
@@ -521,6 +921,280 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			textAreaRef.current?.setSelectionRange(newCursorPos, newCursorPos);
 		});
 	};
+
+	// const handleRichTextCommand = (
+	// 	command: string,
+	// 	value?: string | { url: string; text: string },
+	// ) => {
+	// 	if (!textAreaRef.current) return;
+
+	// 	const { selectionStart, selectionEnd } = textAreaRef.current;
+	// 	const selectedText = text.substring(selectionStart, selectionEnd);
+	// 	const beforeText = text.substring(0, selectionStart);
+	// 	const afterText = text.substring(selectionEnd);
+
+	// 	let newText = text;
+	// 	let newCursorPos = selectionEnd;
+
+	// 	switch (command) {
+	// 		case 'bold':
+	// 			const hasBoldMarkers = selectedText.startsWith('**') && selectedText.endsWith('**');
+	// 			const hasBoldTag = selectedText.match(/<strong>(.*?)<\/strong>/);
+
+	// 			if (hasBoldMarkers) {
+	// 				newText = beforeText + selectedText.slice(2, -2) + afterText;
+	// 				newCursorPos = selectionEnd - 4;
+	// 			} else if (hasBoldTag) {
+	// 				newText =
+	// 					beforeText +
+	// 					selectedText.replace(/<strong>(.*?)<\/strong>/, '$1') +
+	// 					afterText;
+	// 				newCursorPos =
+	// 					selectionStart +
+	// 					selectedText.replace(/<strong>(.*?)<\/strong>/, '$1').length;
+	// 			} else {
+	// 				newText = `${beforeText}**${selectedText}**${afterText}`;
+	// 				newCursorPos = selectionEnd + 4;
+	// 			}
+	// 			break;
+
+	// 		case 'italic':
+	// 			const hasItalicMarkers = selectedText.startsWith('*') && selectedText.endsWith('*');
+	// 			const hasItalicTag = selectedText.match(/<em>(.*?)<\/em>/);
+
+	// 			if (hasItalicMarkers) {
+	// 				newText = beforeText + selectedText.slice(1, -1) + afterText;
+	// 				newCursorPos = selectionEnd - 2;
+	// 			} else if (hasItalicTag) {
+	// 				newText =
+	// 					beforeText + selectedText.replace(/<em>(.*?)<\/em>/, '$1') + afterText;
+	// 				newCursorPos =
+	// 					selectionStart + selectedText.replace(/<em>(.*?)<\/em>/, '$1').length;
+	// 			} else {
+	// 				newText = `${beforeText}*${selectedText}*${afterText}`;
+	// 				newCursorPos = selectionEnd + 2;
+	// 			}
+	// 			break;
+
+	// 		// case 'underline':
+	// 		// 	const hasUnderlineMarkers =
+	// 		// 		selectedText.startsWith('__') && selectedText.endsWith('__');
+	// 		// 	const hasUnderlineTag = selectedText.match(/<u>(.*?)<\/u>/);
+
+	// 		// 	if (hasUnderlineMarkers) {
+	// 		// 		newText = beforeText + selectedText.slice(2, -2) + afterText;
+	// 		// 		newCursorPos = selectionEnd - 4;
+	// 		// 	} else if (hasUnderlineTag) {
+	// 		// 		newText = beforeText + selectedText.replace(/<u>(.*?)<\/u>/, '$1') + afterText;
+	// 		// 		newCursorPos =
+	// 		// 			selectionStart + selectedText.replace(/<u>(.*?)<\/u>/, '$1').length;
+	// 		// 	} else {
+	// 		// 		newText = `${beforeText}__${selectedText}__${afterText}`;
+	// 		// 		newCursorPos = selectionEnd + 4;
+	// 		// 	}
+	// 		// 	break;
+
+	// 		case 'h1':
+	// 		case 'h2':
+	// 		case 'h3':
+	// 		case 'h4':
+	// 		case 'h5':
+	// 		case 'h6':
+	// 			const headingLevel = command.charAt(1);
+	// 			const headingMarker = '#'.repeat(Number(headingLevel));
+	// 			const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
+	// 			const lineEnd =
+	// 				text.indexOf('\n', selectionEnd) === -1
+	// 					? text.length
+	// 					: text.indexOf('\n', selectionEnd);
+	// 			const currentLine = text.substring(lineStart, lineEnd);
+
+	// 			if (currentLine.startsWith(headingMarker + ' ')) {
+	// 				newText =
+	// 					text.substring(0, lineStart) +
+	// 					currentLine.substring(headingMarker.length + 1) +
+	// 					text.substring(lineEnd);
+	// 			} else {
+	// 				const cleanLine = currentLine.replace(/^#+\s*/, '');
+	// 				newText =
+	// 					text.substring(0, lineStart) +
+	// 					`${headingMarker} ${cleanLine}` +
+	// 					text.substring(lineEnd);
+	// 			}
+	// 			break;
+
+	// 		case 'color':
+	// 			if (selectedText.match(/<span style="color: #[0-9a-f]{6}">(.*?)<\/span>/)) {
+	// 				newText =
+	// 					text.substring(0, selectionStart) +
+	// 					selectedText.replace(
+	// 						/<span style="color: #[0-9a-f]{6}">(.*?)<\/span>/,
+	// 						'$1',
+	// 					) +
+	// 					text.substring(selectionEnd);
+	// 			} else {
+	// 				newText = `${text.substring(0, selectionStart)}<span style="color: #ff0000">${selectedText}</span>${text.substring(selectionEnd)}`;
+	// 				newCursorPos = selectionEnd + 32;
+	// 			}
+	// 			break;
+
+	// 		case 'highlight':
+	// 			if (selectedText.match(/<mark>(.*?)<\/mark>/)) {
+	// 				newText =
+	// 					text.substring(0, selectionStart) +
+	// 					selectedText.replace(/<mark>(.*?)<\/mark>/, '$1') +
+	// 					text.substring(selectionEnd);
+	// 			} else {
+	// 				newText = `${text.substring(0, selectionStart)}<mark>${selectedText}</mark>${text.substring(selectionEnd)}`;
+	// 				newCursorPos = selectionEnd + 13;
+	// 			}
+	// 			break;
+
+	// 		case 'link':
+	// 			if (typeof value === 'object' && 'url' in value) {
+	// 				newText = `${text.substring(0, selectionStart)}[${value.text}](${value.url})${text.substring(selectionEnd)}`;
+	// 				newCursorPos = selectionStart + value.text.length + value.url.length + 4;
+	// 			}
+	// 			break;
+
+	// 		case 'image':
+	// 			if (typeof value === 'string') {
+	// 				newText = `${text.substring(0, selectionStart)}![](${value})${text.substring(selectionEnd)}`;
+	// 				newCursorPos = selectionStart + value.length + 4;
+	// 			}
+	// 			break;
+
+	// 		case 'ul':
+	// 			newText = insertList(text, selectionStart, selectionEnd, '*');
+	// 			break;
+
+	// 		case 'ol':
+	// 			newText = insertList(text, selectionStart, selectionEnd, '1.');
+	// 			break;
+
+	// 		case 'quote':
+	// 			newText = insertPrefix(text, selectionStart, selectionEnd, '>');
+	// 			break;
+
+	// 		case 'superscript':
+	// 			if (selectedText.match(/<sup>(.*?)<\/sup>/)) {
+	// 				newText =
+	// 					beforeText + selectedText.replace(/<sup>(.*?)<\/sup>/, '$1') + afterText;
+	// 				newCursorPos =
+	// 					selectionStart + selectedText.replace(/<sup>(.*?)<\/sup>/, '$1').length;
+	// 			} else {
+	// 				newText = `${beforeText}<sup>${selectedText}</sup>${afterText}`;
+	// 				newCursorPos = selectionEnd + 11;
+	// 			}
+	// 			break;
+
+	// 		case 'subscript':
+	// 			if (selectedText.match(/<sub>(.*?)<\/sub>/)) {
+	// 				newText =
+	// 					beforeText + selectedText.replace(/<sub>(.*?)<\/sub>/, '$1') + afterText;
+	// 				newCursorPos =
+	// 					selectionStart + selectedText.replace(/<sub>(.*?)<\/sub>/, '$1').length;
+	// 			} else {
+	// 				newText = `${beforeText}<sub>${selectedText}</sub>${afterText}`;
+	// 				newCursorPos = selectionEnd + 11;
+	// 			}
+	// 			break;
+
+	// 		case 'strikethrough':
+	// 			if (selectedText.match(/~~(.*?)~~/)) {
+	// 				newText = beforeText + selectedText.replace(/~~(.*?)~~/, '$1') + afterText;
+	// 				newCursorPos = selectionStart + selectedText.replace(/~~(.*?)~~/, '$1').length;
+	// 			} else {
+	// 				newText = `${beforeText}~~${selectedText}~~${afterText}`;
+	// 				newCursorPos = selectionEnd + 4;
+	// 			}
+	// 			break;
+
+	// 		case 'fontFamily':
+	// 			if (selectedText.match(/<span style="font-family:[^"]*">(.*?)<\/span>/)) {
+	// 				newText =
+	// 					beforeText +
+	// 					selectedText.replace(
+	// 						/<span style="font-family:[^"]*">(.*?)<\/span>/,
+	// 						'$1',
+	// 					) +
+	// 					afterText;
+	// 			} else {
+	// 				newText = `${beforeText}<span style="font-family: ${value}">${selectedText}</span>${afterText}`;
+	// 			}
+	// 			break;
+
+	// 		case 'fontSize':
+	// 			if (selectedText.match(/<span style="font-size:[^"]*">(.*?)<\/span>/)) {
+	// 				newText =
+	// 					beforeText +
+	// 					selectedText.replace(/<span style="font-size:[^"]*">(.*?)<\/span>/, '$1') +
+	// 					afterText;
+	// 			} else {
+	// 				newText = `${beforeText}<span style="font-size: ${value}">${selectedText}</span>${afterText}`;
+	// 			}
+	// 			break;
+
+	// 		case 'align':
+	// 			if (selectedText.match(/<div style="text-align:[^"]*">(.*?)<\/div>/)) {
+	// 				newText =
+	// 					beforeText +
+	// 					selectedText.replace(/<div style="text-align:[^"]*">(.*?)<\/div>/, '$1') +
+	// 					afterText;
+	// 			} else {
+	// 				newText = `${beforeText}<div style="text-align: ${value}">${selectedText}</div>${afterText}`;
+	// 			}
+	// 			break;
+
+	// 		case 'direction':
+	// 			if (selectedText.match(/<div dir="[^"]*">(.*?)<\/div>/)) {
+	// 				newText =
+	// 					beforeText +
+	// 					selectedText.replace(/<div dir="[^"]*">(.*?)<\/div>/, '$1') +
+	// 					afterText;
+	// 			} else {
+	// 				newText = `${beforeText}<div dir="${value}">${selectedText}</div>${afterText}`;
+	// 			}
+	// 			break;
+
+	// 		case 'indent':
+	// 			const indentSize = value === 'increase' ? 2 : -2;
+	// 			const lines = selectedText.split('\n');
+	// 			const indentedLines = lines.map(line => {
+	// 				if (value === 'increase') {
+	// 					return '  ' + line;
+	// 				} else {
+	// 					return line.replace(/^  /, '');
+	// 				}
+	// 			});
+	// 			newText = beforeText + indentedLines.join('\n') + afterText;
+	// 			break;
+
+	// 		case 'code':
+	// 			if (selectedText.includes('\n')) {
+	// 				newText = `${beforeText}\`\`\`\n${selectedText}\n\`\`\`${afterText}`;
+	// 				newCursorPos = selectionEnd + 8;
+	// 			} else {
+	// 				newText = `${beforeText}\`${selectedText}\`${afterText}`;
+	// 				newCursorPos = selectionEnd + 2;
+	// 			}
+	// 			break;
+
+	// 		case 'hr':
+	// 			newText = `${beforeText}\n---\n${afterText}`;
+	// 			newCursorPos = selectionStart + 5;
+	// 			break;
+
+	// 		case 'clearFormat':
+	// 			newText = beforeText + selectedText.replace(/<[^>]+>/g, '') + afterText;
+	// 			newCursorPos = selectionStart + selectedText.replace(/<[^>]+>/g, '').length;
+	// 			break;
+	// 	}
+
+	// 	onChangeText(newText, () => {
+	// 		textAreaRef.current?.setSelectionRange(newCursorPos, newCursorPos);
+	// 	});
+	// };
 
 	if (!readOnly) {
 		buttonBar = (

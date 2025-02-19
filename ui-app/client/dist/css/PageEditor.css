@@ -2081,7 +2081,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._iframe iframe {
 	border: none;
 	width: 100%;
-	background-color: #FFFFFF;
+	background-color: #ffffff;
 }
 
 .comp.compPageEditor ._urlInput._peInput:focus-within {
@@ -3452,17 +3452,16 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon {
 	position: absolute;
-    opacity: 0;
-    transition: opacity 0.2s;
-    cursor: pointer;
-    width: 10px;
-    height: 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
+	opacity: 0;
+	transition: opacity 0.2s;
+	cursor: pointer;
+	width: 10px;
+	height: 10px;
+	padding: 0;
+	border: 0;
+	background: transparent;
 	top: 10%;
 	right: 10%;
-	
 }
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon.pinned {

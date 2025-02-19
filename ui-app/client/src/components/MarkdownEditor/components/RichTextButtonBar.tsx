@@ -55,6 +55,9 @@ export function RichTextButtonBar({ onCommand, textAreaRef }: RichTextButtonBarP
 	const [position, setPosition] = useState({ x: 0, y: 0 });
 	const buttonBarRef = React.useRef<HTMLDivElement>(null);
 	const [buttonBarTop, setButtonBarTop] = useState<number>();
+	const [showFontFamily, setShowFontFamily] = useState(false);
+	const [showFontSize, setShowFontSize] = useState(false);
+	const [showHeadings, setShowHeadings] = useState(false);
 
 	React.useEffect(() => {
 		if (!textAreaRef) return;
@@ -117,28 +120,138 @@ export function RichTextButtonBar({ onCommand, textAreaRef }: RichTextButtonBarP
 					</button>
 				</div>
 				<div className="_buttonGroup">
-					<button
-						onClick={() => onCommand('h1')}
-						title="Heading 1"
-						className="_headingBtn"
-					>
-						<span style={{ fontSize: '1.2em' }}>H1</span>
+					<button onClick={() => onCommand('superscript')} title="Superscript">
+						<i className="fa-solid fa-superscript"></i>
 					</button>
-					<button
-						onClick={() => onCommand('h2')}
-						title="Heading 2"
-						className="_headingBtn"
-					>
-						<span style={{ fontSize: '1.1em' }}>H2</span>
+					<button onClick={() => onCommand('subscript')} title="Subscript">
+						<i className="fa-solid fa-subscript"></i>
 					</button>
-					<button
-						onClick={() => onCommand('h3')}
-						title="Heading 3"
-						className="_headingBtn"
-					>
-						<span style={{ fontSize: '1em' }}>H3</span>
+
+					<button onClick={() => onCommand('strikethrough')} title="Strikethrough">
+						<i className="fa-solid fa-strikethrough"></i>
 					</button>
 				</div>
+				<div className="_buttonGroup">
+					<div className="_dropdown">
+						<button onClick={() => setShowHeadings(!showHeadings)} title="Headings">
+							<i className="fa-solid fa-heading"></i>
+						</button>
+						{showHeadings && (
+							<div className="_dropdownContent">
+								{[1, 2, 3, 4, 5, 6].map(level => (
+									<button
+										key={`h${level}`}
+										onClick={() => {
+											onCommand(`h${level}`);
+											setShowHeadings(false);
+										}}
+									>
+										<span style={{ fontSize: `${1.4 - level * 0.1}em` }}>
+											Heading {level}
+										</span>
+									</button>
+								))}
+							</div>
+						)}
+					</div>
+				</div>
+				<div className="_buttonGroup">
+					<div className="_dropdown">
+						<button
+							onClick={() => setShowFontFamily(!showFontFamily)}
+							title="Font Family"
+						>
+							<i className="fa-solid fa-font"></i>
+						</button>
+						{showFontFamily && (
+							<div className="_dropdownContent">
+								{[
+									'Arial',
+									'Times New Roman',
+									'Courier New',
+									'Georgia',
+									'Verdana',
+								].map(font => (
+									<button
+										key={font}
+										onClick={() => {
+											onCommand('fontFamily', font);
+											setShowFontFamily(false);
+										}}
+									>
+										<span style={{ fontFamily: font }}>{font}</span>
+									</button>
+								))}
+							</div>
+						)}
+					</div>
+					<div className="_dropdown">
+						<button onClick={() => setShowFontSize(!showFontSize)} title="Font Size">
+							<i className="fa-solid fa-text-height"></i>
+						</button>
+						{showFontSize && (
+							<div className="_dropdownContent">
+								{[
+									'8px',
+									'10px',
+									'12px',
+									'14px',
+									'16px',
+									'18px',
+									'20px',
+									'24px',
+								].map(size => (
+									<button
+										key={size}
+										onClick={() => {
+											onCommand('fontSize', size);
+											setShowFontSize(false);
+										}}
+									>
+										<span style={{ fontSize: size }}>{size}</span>
+									</button>
+								))}
+							</div>
+						)}
+					</div>
+				</div>
+
+				<div className="_buttonGroup">
+					<button onClick={() => onCommand('align', 'left')} title="Align Left">
+						<i className="fa-solid fa-align-left"></i>
+					</button>
+					<button onClick={() => onCommand('align', 'center')} title="Align Center">
+						<i className="fa-solid fa-align-center"></i>
+					</button>
+					<button onClick={() => onCommand('align', 'right')} title="Align Right">
+						<i className="fa-solid fa-align-right"></i>
+					</button>
+					<button onClick={() => onCommand('clearFormat')} title="Clear Formatting">
+						<i className="fa-solid fa-remove-format"></i>
+					</button>
+				</div>
+
+				<div className="_buttonGroup">
+					<button onClick={() => onCommand('direction', 'rtl')} title="Right to Left">
+						<i className="fa-solid fa-align-right"></i>
+					</button>
+					<button onClick={() => onCommand('direction', 'ltr')} title="Left to Right">
+						<i className="fa-solid fa-align-left"></i>
+					</button>
+				</div>
+
+				<div className="_buttonGroup">
+					<button onClick={() => onCommand('indent', 'increase')} title="Increase Indent">
+						<i className="fa-solid fa-indent"></i>
+					</button>
+					<button onClick={() => onCommand('indent', 'decrease')} title="Decrease Indent">
+						<i className="fa-solid fa-outdent"></i>
+					</button>
+					<button onClick={() => onCommand('hr')} title="Horizontal Line">
+						<i className="fa-solid fa-minus"></i>
+					</button>
+				</div>
+
 				<div className="_buttonGroup">
 					<button onClick={() => onCommand('ul')} title="Unordered List">
 						<i className="fa-solid fa-list-ul"></i>
@@ -150,6 +263,7 @@ export function RichTextButtonBar({ onCommand, textAreaRef }: RichTextButtonBarP
 						<i className="fa-solid fa-quote-right"></i>
 					</button>
 				</div>
+
 				<div className="_buttonGroup">
 					<button
 						onClick={() => {
