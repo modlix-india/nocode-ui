@@ -146,6 +146,143 @@ export default function MarkdownEditorStyle({
 		opacity: 1;
 	}
 	
+	${PREFIX} ._filterPanel {
+		position: fixed;
+		display: flex;
+		gap: 5px;
+		background-color: #ccc8;
+		backdrop-filter: blur(10px);
+		padding: 5px;
+		border-radius: 5px;
+		z-index: 5;
+		cursor: move;
+	  }
+	  
+	${PREFIX} ._componentPanel {
+		position: absolute;
+		left: -30px;
+		opacity: 1;
+		transition: opacity 0.3s;
+		z-index: 5;
+	}
+	
+	${PREFIX} ._editorContainer:hover ._componentPanel {
+		opacity: 1;
+	}
+	
+	${PREFIX} ._addButton {
+		width: 24px;
+		height: 24px;
+		border-radius: 50%;
+		background: #000;
+		color: white;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 18px;
+		transition: transform 0.2s;
+		
+	}
+	
+	${PREFIX} ._addButton:hover {
+		background: #e0e0e0;
+		transform: scale(1.05);
+		color: #333;
+	}
+	
+	${PREFIX} ._componentPopup {
+		position: absolute;
+		left: 40px;
+		top: -300px;
+		width: 300px;
+		background: white;
+		border-radius: 8px;
+		box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+		padding: 12px;
+	}
+	
+	${PREFIX} ._searchContainer {
+		margin-bottom: 12px;
+	}
+	
+	${PREFIX} ._searchInput {
+		width: 100%;
+		padding: 8px;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		font-size: 14px;
+	}
+	
+	${PREFIX} ._componentGrid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 8px;
+		margin-bottom: 12px;
+	}
+	
+	${PREFIX} ._componentButton {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: 12px;
+		border: 1px solid #eee;
+		border-radius: 4px;
+		background: white;
+		cursor: pointer;
+		transition: background-color 0.2s;
+	}
+	
+	${PREFIX} ._componentButton:hover {
+		background-color: #f5f5f5;
+	}
+	
+	${PREFIX} ._componentIcon {
+		font-size: 20px;
+		margin-bottom: 4px;
+	}
+	
+	${PREFIX} ._componentName {
+		font-size: 12px;
+		text-align: center;
+	}
+	
+	${PREFIX} ._footer {
+		border-top: 1px solid #eee;
+		padding-top: 12px;
+	}
+	
+	${PREFIX} ._browseAll {
+		width: 100%;
+		padding: 8px;
+		background: #f5f5f5;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 14px;
+	}
+	
+	${PREFIX} ._componentButtons {
+		display: flex;
+		gap: 5px;
+		background-color: #fff;
+		padding: 5px;
+		border-radius: 5px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	}
+
+	${PREFIX} ._filterPanel ._buttonGroup {
+	  display: flex;
+	  gap: 5px;
+	}
+
+	${PREFIX} ._filterPanel ._buttonSeperator {
+	  width: 1px;
+	  background-color: rgba(255, 255, 255, 0.3);
+	  margin: 0 5px;
+	}
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MarkdownEditorCSS">{css}</style>;

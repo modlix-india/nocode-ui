@@ -18,6 +18,8 @@ import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
 import { styleDefaults } from './markdownEditorStyleProperties';
 import { EditorMode, MEButtonBar } from './components/MEButtonBar';
+import { FilterPanelButtons } from './components/FilterPanelButtons';
+import { AddComponentPanelButtons } from './components/AddComponentPanelButtons';
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
@@ -100,6 +102,127 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		return () => window.removeEventListener('resize', func);
 	}, [mode, textAreaRef.current, wrapperRef.current]);
 
+	const [history, setHistory] = useState<string[]>([]);
+	const [historyIndex, setHistoryIndex] = useState(-1);
+
+	const handleUndo = () => {
+		if (historyIndex > 0) {
+			setHistoryIndex(historyIndex - 1);
+			onChangeText(history[historyIndex - 1]);
+		}
+	};
+
+	const handleRedo = () => {
+		if (historyIndex < history.length - 1) {
+			setHistoryIndex(historyIndex + 1);
+			onChangeText(history[historyIndex + 1]);
+		}
+	};
+
+	const handleRichTextCommand = (
+		command: string,
+		value?: string | { url: string; text: string },
+	) => {
+		if (!textAreaRef.current) return;
+
+		const { selectionStart, selectionEnd } = textAreaRef.current;
+		const selectedText = text.substring(selectionStart, selectionEnd);
+		const beforeText = text.substring(0, selectionStart);
+		const afterText = text.substring(selectionEnd);
+
+		let newText = text;
+		let newCursorPos = selectionEnd;
+
+		switch (command) {
+			case 'bold':
+				const hasBoldMarkers = selectedText.startsWith('**') && selectedText.endsWith('**');
+				if (hasBoldMarkers) {
+					newText = beforeText + selectedText.slice(2, -2) + afterText;
+					newCursorPos = selectionEnd - 4;
+				} else {
+					newText = `${beforeText}**${selectedText}**${afterText}`;
+					newCursorPos = selectionEnd + 4;
+				}
+				break;
+
+			case 'italic':
+				const hasItalicMarkers = selectedText.startsWith('*') && selectedText.endsWith('*');
+				if (hasItalicMarkers) {
+					newText = beforeText + selectedText.slice(1, -1) + afterText;
+					newCursorPos = selectionEnd - 2;
+				} else {
+					newText = `${beforeText}*${selectedText}*${afterText}`;
+					newCursorPos = selectionEnd + 2;
+				}
+				break;
+
+			case 'strikethrough':
+				const hasStrikethroughMarkers =
+					selectedText.startsWith('~~') && selectedText.endsWith('~~');
+				if (hasStrikethroughMarkers) {
+					newText = beforeText + selectedText.slice(2, -2) + afterText;
+					newCursorPos = selectionEnd - 4;
+				} else {
+					newText = `${beforeText}~~${selectedText}~~${afterText}`;
+					newCursorPos = selectionEnd + 4;
+				}
+				break;
+
+			case 'heading1':
+				newText = `${beforeText}# ${selectedText}\n${afterText}`;
+				newCursorPos = selectionEnd + 3;
+				break;
+			case 'heading2':
+				newText = `${beforeText}## ${selectedText}\n${afterText}`;
+				newCursorPos = selectionEnd + 4;
+				break;
+			case 'heading3':
+				newText = `${beforeText}### ${selectedText}\n${afterText}`;
+				newCursorPos = selectionEnd + 5;
+				break;
+			case 'heading4':
+				newText = `${beforeText}#### ${selectedText}\n${afterText}`;
+				newCursorPos = selectionEnd + 6;
+				break;
+			case 'heading5':
+				newText = `${beforeText}##### ${selectedText}\n${afterText}`;
+				newCursorPos = selectionEnd + 7;
+				break;
+			case 'heading6':
+				newText = `${beforeText}###### ${selectedText}\n${afterText}`;
+				newCursorPos = selectionEnd + 8;
+				break;
+			case 'list':
+				newText = `${beforeText}- ${selectedText}\n${afterText}`;
+				newCursorPos = selectionEnd + 3;
+				break;
+			case 'quote':
+				newText = `${beforeText}> ${selectedText}\n${afterText}`;
+				newCursorPos = selectionEnd + 3;
+				break;
+			case 'code':
+				newText = `${beforeText}\`\`\`\n${selectedText}\n\`\`\`\n${afterText}`;
+				newCursorPos = selectionEnd + 6;
+				break;
+			case 'link':
+				if (typeof value === 'object' && 'text' in value && 'url' in value) {
+					newText = `${beforeText}[${value.text}](${value.url})${afterText}`;
+					newCursorPos = selectionEnd + 2;
+				}
+				break;
+			case 'image':
+				if (typeof value === 'object' && 'text' in value && 'url' in value) {
+					newText = `${beforeText}![${value.text}](${value.url})${afterText}`;
+					newCursorPos = selectionEnd + 2;
+				}
+				break;
+		}
+
+		onChangeText(newText, () => {
+			textAreaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+		});
+	};
+
 	const onBlurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
 	const onChangeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 
@@ -112,6 +235,12 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			context.pageName,
 			true,
 		);
+
+		const newHistory = history.slice(0, historyIndex + 1);
+		newHistory.push(editedText);
+		setHistory(newHistory);
+		setHistoryIndex(newHistory.length - 1);
+
 		if (!onChangeEvent) return;
 		(async () =>
 			await runEvent(
@@ -333,6 +462,43 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	useEffect(() => {
+		const handleKeyboard = (e: KeyboardEvent) => {
+			if (!textAreaRef.current) return;
+			const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+			const modifier = isMac ? e.metaKey : e.ctrlKey;
+
+			if (modifier) {
+				if (e.shiftKey && e.key.toLowerCase() === 'z') {
+					e.preventDefault();
+					handleRedo();
+				} else {
+					switch (e.key.toLowerCase()) {
+						case 'z':
+							e.preventDefault();
+							handleUndo();
+							break;
+						case 'b':
+							e.preventDefault();
+							handleRichTextCommand('bold');
+							break;
+						case 'i':
+							e.preventDefault();
+							handleRichTextCommand('italic');
+							break;
+						case 'u':
+							e.preventDefault();
+							handleRichTextCommand('underline');
+							break;
+					}
+				}
+			}
+		};
+
+		document.addEventListener('keydown', handleKeyboard);
+		return () => document.removeEventListener('keydown', handleKeyboard);
+	}, [text, history, historyIndex]);
+
 	return (
 		<div
 			key={mode}
@@ -340,8 +506,51 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			style={styleProperties.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			<AddComponentPanelButtons
+				onComponentAdd={type => {
+					const componentSyntax = {
+						quote: '> ',
+						h1: '# ',
+						h2: '## ',
+						h3: '### ',
+						h4: '#### ',
+						h5: '##### ',
+						h6: '###### ',
+					};
+
+					if (textAreaRef.current) {
+						const { selectionStart } = textAreaRef.current;
+						const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
+						const newText =
+							text.substring(0, lineStart) +
+							componentSyntax[type as keyof typeof componentSyntax] +
+							text.substring(lineStart);
+						onChangeText(newText);
+					}
+				}}
+				position={{
+					line: text.substring(0, textAreaRef.current?.selectionStart ?? 0).split('\n')
+						.length,
+					// Adjust the top position to align with the current line
+					top:
+						textAreaRef.current?.getBoundingClientRect().top ??
+						0 +
+							(textAreaRef.current?.selectionStart
+								? (text.substring(0, textAreaRef.current.selectionStart).split('\n')
+										.length -
+										1) *
+									20
+								: 0),
+				}}
+				styleProperties={styleProperties}
+			/>
 			{buttonBar}
 			<div className="_editorContainer">{renderingComponent}</div>
+			<FilterPanelButtons
+				onFormatClick={handleRichTextCommand}
+				textAreaRef={textAreaRef}
+				styleProperties={styleProperties}
+			/>
 		</div>
 	);
 }
