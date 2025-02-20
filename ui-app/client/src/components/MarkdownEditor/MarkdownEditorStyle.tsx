@@ -160,10 +160,13 @@ export default function MarkdownEditorStyle({
 	  
 	${PREFIX} ._componentPanel {
 		position: absolute;
-		left: -30px;
+		right: 0px;
+		// top: 100px;
 		opacity: 1;
 		transition: opacity 0.3s;
 		z-index: 5;
+		display: inline-flex; 
+		align-items: center;
 	}
 	
 	${PREFIX} ._editorContainer:hover ._componentPanel {
@@ -183,7 +186,8 @@ export default function MarkdownEditorStyle({
 		justify-content: center;
 		font-size: 18px;
 		transition: transform 0.2s;
-		
+		position: absolute;
+    	right: 10px;
 	}
 	
 	${PREFIX} ._addButton:hover {
@@ -194,8 +198,8 @@ export default function MarkdownEditorStyle({
 	
 	${PREFIX} ._componentPopup {
 		position: absolute;
-		left: 40px;
-		top: -300px;
+		left: calc(100% + 10px);
+		top: 0px;
 		width: 300px;
 		background: white;
 		border-radius: 8px;

@@ -51,19 +51,20 @@ export function AddComponentPanelButtons({
 				...styleProperties.componentPanel,
 				top: `${position.top}px`,
 				position: 'absolute',
-				left: '30px',
-				display: 'block',
-				transform: 'translateX(-100%)',
-				marginLeft: '10px',
+				right: '10px',
+				display: 'inline-flex',
+				alignItems: 'center',
+				// transform: 'translateX(-100%)',
+				// marginLeft: '10px',
 			}}
 		>
 			{!isExpanded ? (
 				<button
 					className="_addButton"
-					onClick={() => onExpandChange(true)}
+					onClick={() => onExpandChange(!isExpanded)}
 					title="Add Component"
 				>
-					<i className="fa fa-plus-square"></i>
+					<i className={`fa fa-${isExpanded ? 'times' : 'plus'}`}></i>
 				</button>
 			) : (
 				<div className="_componentPopup">

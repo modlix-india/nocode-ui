@@ -539,19 +539,34 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			<HelperComponent context={props.context} definition={definition} />
 			<AddComponentPanelButtons
 				onComponentAdd={type => {
-					if (textAreaRef.current) {
-						const { selectionStart } = textAreaRef.current;
-						const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
-						const newText =
-							text.substring(0, lineStart) + type + text.substring(lineStart);
-						onChangeText(newText);
-					}
+					if (!textAreaRef.current) return;
+
+					const { selectionStart } = textAreaRef.current;
+					const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
+					const newText = text.substring(0, lineStart) + type + text.substring(lineStart);
+					onChangeText(newText);
 				}}
 				position={{
 					line: textAreaRef.current?.selectionStart
 						? text.substring(0, textAreaRef.current.selectionStart).split('\n').length
 						: 1,
-					top: textAreaRef.current?.getBoundingClientRect().top ?? 0,
+					top: textAreaRef.current
+						? textAreaRef.current.selectionStart === textAreaRef.current.selectionEnd
+							? textAreaRef.current.getBoundingClientRect().top +
+								Math.floor(
+									textAreaRef.current.selectionStart > 0
+										? (
+												text
+													.substring(
+														0,
+														textAreaRef.current.selectionStart,
+													)
+													.match(/\n/g) || []
+											).length * 20
+										: 0,
+								)
+							: textAreaRef.current.getBoundingClientRect().top
+						: 0,
 				}}
 				isExpanded={isComponentPanelExpanded}
 				onExpandChange={setIsComponentPanelExpanded}
