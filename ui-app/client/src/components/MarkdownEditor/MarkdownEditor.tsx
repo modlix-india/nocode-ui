@@ -167,148 +167,101 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		let newText = text;
 		let newCursorPos = selectionEnd;
 
+		const toggleFormat = (startMarker: string, endMarker: string = startMarker) => {
+			const hasMarkers =
+				selectedText.startsWith(startMarker) && selectedText.endsWith(endMarker);
+			if (hasMarkers) {
+				newText =
+					beforeText +
+					selectedText.slice(startMarker.length, -endMarker.length) +
+					afterText;
+				newCursorPos = selectionEnd - (startMarker.length + endMarker.length);
+			} else {
+				newText = `${beforeText}${startMarker}${selectedText}${endMarker}${afterText}`;
+				newCursorPos = selectionEnd + startMarker.length + endMarker.length;
+			}
+		};
+
 		switch (command) {
 			case 'bold':
-				const hasBoldMarkers = selectedText.startsWith('**') && selectedText.endsWith('**');
-				if (hasBoldMarkers) {
-					newText = beforeText + selectedText.slice(2, -2) + afterText;
-					newCursorPos = selectionEnd - 4;
-				} else {
-					newText = `${beforeText}**${selectedText}**${afterText}`;
-					newCursorPos = selectionEnd + 4;
-				}
+				toggleFormat('**');
 				break;
 
 			case 'italic':
-				const hasItalicMarkers = selectedText.startsWith('*') && selectedText.endsWith('*');
-				if (hasItalicMarkers) {
-					newText = beforeText + selectedText.slice(1, -1) + afterText;
-					newCursorPos = selectionEnd - 2;
-				} else {
-					newText = `${beforeText}*${selectedText}*${afterText}`;
-					newCursorPos = selectionEnd + 2;
-				}
+				toggleFormat('*');
 				break;
 
 			case 'strikethrough':
-				const hasStrikethroughMarkers =
-					selectedText.startsWith('~~') && selectedText.endsWith('~~');
-				if (hasStrikethroughMarkers) {
-					newText = beforeText + selectedText.slice(2, -2) + afterText;
-					newCursorPos = selectionEnd - 4;
-				} else {
-					newText = `${beforeText}~~${selectedText}~~${afterText}`;
-					newCursorPos = selectionEnd + 4;
-				}
-				break;
-
-			case 'heading1':
-				newText = `${beforeText}# ${selectedText}\n${afterText}`;
-				newCursorPos = selectionEnd + 3;
-				break;
-			case 'heading2':
-				newText = `${beforeText}## ${selectedText}\n${afterText}`;
-				newCursorPos = selectionEnd + 4;
-				break;
-			case 'heading3':
-				newText = `${beforeText}### ${selectedText}\n${afterText}`;
-				newCursorPos = selectionEnd + 5;
-				break;
-			case 'heading4':
-				newText = `${beforeText}#### ${selectedText}\n${afterText}`;
-				newCursorPos = selectionEnd + 6;
-				break;
-			case 'heading5':
-				newText = `${beforeText}##### ${selectedText}\n${afterText}`;
-				newCursorPos = selectionEnd + 7;
-				break;
-			case 'heading6':
-				newText = `${beforeText}###### ${selectedText}\n${afterText}`;
-				newCursorPos = selectionEnd + 8;
-				break;
-			case 'list':
-				newText = `${beforeText}- ${selectedText}\n${afterText}`;
-				newCursorPos = selectionEnd + 3;
-				break;
-			case 'quote':
-				newText = `${beforeText}> ${selectedText}\n${afterText}`;
-				newCursorPos = selectionEnd + 3;
-				break;
-			case 'code':
-				newText = `${beforeText}\`\`\`\n${selectedText}\n\`\`\`\n${afterText}`;
-				newCursorPos = selectionEnd + 6;
-				break;
-			case 'link':
-				if (typeof value === 'object' && 'text' in value && 'url' in value) {
-					newText = `${beforeText}[${value.text}](${value.url})${afterText}`;
-					newCursorPos = selectionEnd + 2;
-				}
-				break;
-			case 'image':
-				if (typeof value === 'object' && 'text' in value && 'url' in value) {
-					newText = `${beforeText}![${value.text}](${value.url})${afterText}`;
-					newCursorPos = selectionEnd + 2;
-				}
+				toggleFormat('~~');
 				break;
 
 			case 'inlineCode':
-				newText = `${beforeText}\`${selectedText}\`${afterText}`;
-				newCursorPos = selectionEnd + 2;
+				toggleFormat('`');
 				break;
 
 			case 'highlight':
-				newText = `${beforeText}==${selectedText}==${afterText}`;
-				newCursorPos = selectionEnd + 4;
+				toggleFormat('==');
 				break;
 
 			case 'superscript':
-				newText = `${beforeText}^${selectedText}^${afterText}`;
-				newCursorPos = selectionEnd + 2;
+				toggleFormat('^');
 				break;
 
 			case 'subscript':
-				newText = `${beforeText}~${selectedText}~${afterText}`;
-				newCursorPos = selectionEnd + 2;
-				break;
-
-			case 'footnote':
-				const footnoteId = `fn${Date.now()}`;
-				newText = `${beforeText}[^${footnoteId}]${afterText}\n\n[^${footnoteId}]: ${selectedText}`;
-				newCursorPos = selectionEnd + footnoteId.length + 4;
-				break;
-
-			case 'inlineImage':
-				newText = `${beforeText}![${selectedText}](image-url)${afterText}`;
-				newCursorPos = selectionEnd + 13;
+				toggleFormat('~');
 				break;
 
 			case 'alignLeft':
-				newText = `${beforeText}::: left\n${selectedText}\n:::${afterText}`;
-				newCursorPos = selectionEnd + 12;
+				toggleFormat('::: left\n', '\n:::');
 				break;
 
 			case 'alignCenter':
-				newText = `${beforeText}::: center\n${selectedText}\n:::${afterText}`;
-				newCursorPos = selectionEnd + 14;
+				toggleFormat('::: center\n', '\n:::');
 				break;
 
 			case 'alignRight':
-				newText = `${beforeText}::: right ${selectedText} :::${afterText}`;
-				newCursorPos = selectionEnd + 13;
+				toggleFormat('::: right\n', '\n:::');
 				break;
 
 			case 'alignJustify':
-				newText = `${beforeText}::: justify\n${selectedText}\n:::${afterText}`;
-				newCursorPos = selectionEnd + 15;
+				toggleFormat('::: justify\n', '\n:::');
+				break;
+
+			// Special cases that don't use toggleFormat
+			case 'heading1':
+			case 'heading2':
+			case 'heading3':
+			case 'heading4':
+			case 'heading5':
+			case 'heading6':
+				const level = command.slice(-1);
+				const headerMarker = '#'.repeat(Number(level));
+				const hasHeader = selectedText.startsWith(headerMarker + ' ');
+				if (hasHeader) {
+					newText = `${beforeText}${selectedText.slice(headerMarker.length + 1)}${afterText}`;
+					newCursorPos = selectionEnd - (headerMarker.length + 1);
+				} else {
+					newText = `${beforeText}${headerMarker} ${selectedText}${afterText}`;
+					newCursorPos = selectionEnd + headerMarker.length + 1;
+				}
 				break;
 
 			case 'indent':
-				const indentedLines = selectedText
-					.split('\n')
-					.map(line => '    ' + line)
-					.join('\n');
-				newText = `${beforeText}${indentedLines}${afterText}`;
-				newCursorPos = selectionEnd + selectedText.split('\n').length * 4;
+				const hasIndent = selectedText.split('\n').every(line => line.startsWith('    '));
+				if (hasIndent) {
+					newText = `${beforeText}${selectedText
+						.split('\n')
+						.map(line => line.slice(4))
+						.join('\n')}${afterText}`;
+					newCursorPos = selectionEnd - selectedText.split('\n').length * 4;
+				} else {
+					const indentedLines = selectedText
+						.split('\n')
+						.map(line => '    ' + line)
+						.join('\n');
+					newText = `${beforeText}${indentedLines}${afterText}`;
+					newCursorPos = selectionEnd + selectedText.split('\n').length * 4;
+				}
 				break;
 
 			case 'unindent':
@@ -333,8 +286,27 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 							0,
 						);
 				break;
-		}
 
+			case 'link':
+				if (typeof value === 'object' && 'text' in value && 'url' in value) {
+					newText = `${beforeText}[${value.text}](${value.url})${afterText}`;
+					newCursorPos = selectionEnd + 2;
+				}
+				break;
+
+			case 'image':
+				if (typeof value === 'object' && 'text' in value && 'url' in value) {
+					newText = `${beforeText}![${value.text}](${value.url})${afterText}`;
+					newCursorPos = selectionEnd + 2;
+				}
+				break;
+
+			case 'footnote':
+				const footnoteId = `fn${Date.now()}`;
+				newText = `${beforeText}[^${footnoteId}]${afterText}\n\n[^${footnoteId}]: ${selectedText}`;
+				newCursorPos = selectionEnd + footnoteId.length + 4;
+				break;
+		}
 		onChangeText(newText, () => {
 			textAreaRef.current.setSelectionRange(newCursorPos, newCursorPos);
 		});
