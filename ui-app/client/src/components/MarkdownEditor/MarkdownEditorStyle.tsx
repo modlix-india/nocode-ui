@@ -177,6 +177,13 @@ export default function MarkdownEditorStyle({
 	}
 	
 	${PREFIX} ._addButton {
+		position: absolute;
+		right: 0px;
+		top: 0px;
+		opacity: 1;
+		z-index: 5;
+		display: inline-flex;
+		align-items: center;
 		width: 24px;
 		height: 24px;
 		border-radius: 50%;
@@ -374,22 +381,25 @@ export default function MarkdownEditorStyle({
     ${PREFIX} ._dropdown {
         position: absolute;
         top: 100%;
-        left: 0;
+        right: 0;
         background: white;
         border-radius: 4px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         z-index: 1000;
-        min-width: 120px;
+        min-width: 160px;
+        padding: 4px 0;
     }
 
     ${PREFIX} ._dropdownItem {
         width: 100%;
-        padding: 8px 12px;
+        padding: 8px 16px;
         border: none;
         background: none;
         cursor: pointer;
         text-align: left;
         font-size: 14px;
+        display: block;
+        white-space: nowrap;
     }
 
     ${PREFIX} ._dropdownItem:hover {
