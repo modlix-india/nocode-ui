@@ -141,15 +141,27 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	const handleUndo = () => {
 		if (historyIndex > 0) {
-			setHistoryIndex(historyIndex - 1);
-			onChangeText(history[historyIndex - 1]);
+			const newIndex = historyIndex - 1;
+			setHistoryIndex(newIndex);
+			setText(history[newIndex], () => {
+				if (textAreaRef.current) {
+					const pos = history[newIndex].length;
+					textAreaRef.current.setSelectionRange(pos, pos);
+				}
+			});
 		}
 	};
 
 	const handleRedo = () => {
 		if (historyIndex < history.length - 1) {
-			setHistoryIndex(historyIndex + 1);
-			onChangeText(history[historyIndex + 1]);
+			const newIndex = historyIndex + 1;
+			setHistoryIndex(newIndex);
+			setText(history[newIndex], () => {
+				if (textAreaRef.current) {
+					const pos = history[newIndex].length;
+					textAreaRef.current.setSelectionRange(pos, pos);
+				}
+			});
 		}
 	};
 
@@ -325,10 +337,13 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			true,
 		);
 
-		const newHistory = history.slice(0, historyIndex + 1);
-		newHistory.push(editedText);
-		setHistory(newHistory);
-		setHistoryIndex(newHistory.length - 1);
+		if (historyIndex === history.length - 1) {
+			if (history.length === 0 || history[history.length - 1] !== editedText) {
+				const newHistory = [...history, editedText];
+				setHistory(newHistory);
+				setHistoryIndex(newHistory.length - 1);
+			}
+		}
 
 		if (!onChangeEvent) return;
 		(async () =>
