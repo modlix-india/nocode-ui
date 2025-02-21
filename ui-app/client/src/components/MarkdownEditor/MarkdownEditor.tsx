@@ -306,15 +306,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				}
 				break;
 
-			case 'image':
-				if (typeof value === 'object' && 'text' in value && 'url' in value) {
-					newText = `${beforeText}![${value.text}](${value.url})${afterText}`;
-					newCursorPos = selectionEnd + 2;
-				}
-				break;
-
 			case 'footnote':
-				const footnoteId = `fn${Date.now()}`;
+				let footnoteId;
+				footnoteId = `fn${Date.now()}`;
 				newText = `${beforeText}[^${footnoteId}]${afterText}\n\n[^${footnoteId}]: ${selectedText}`;
 				newCursorPos = selectionEnd + footnoteId.length + 4;
 				break;
@@ -359,6 +353,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	let renderingComponent = undefined;
 
 	let showBoth = false;
+
 	if (readOnly) {
 		renderingComponent = (
 			<MarkdownParser componentKey={componentKey} text={text} styles={styleProperties} />
@@ -549,24 +544,20 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			? '100%'
 			: textAreaRef.current.scrollHeight + 'px';
 
-	let buttonBar = undefined;
-
-	if (!readOnly) {
-		buttonBar = (
-			<MEButtonBar
-				mode={mode}
-				onModeChange={m => setMode(m)}
-				styleProperties={styleProperties}
-				textAreaRef={textAreaRef.current}
-				onFileSelected={(s, e, file) => {
-					let newText = makeTextForImageSelection(text, s, e, file);
-					onChangeText(newText, () => {
-						textAreaRef.current.setSelectionRange(s, s + file.length);
-					});
-				}}
-			/>
-		);
-	}
+	let buttonBar = (
+		<MEButtonBar
+			mode={mode}
+			onModeChange={m => setMode(m)}
+			styleProperties={styleProperties}
+			textAreaRef={textAreaRef.current}
+			onFileSelected={(s, e, file) => {
+				let newText = makeTextForImageSelection(text, s, e, file);
+				onChangeText(newText, () => {
+					textAreaRef.current.setSelectionRange(s, s + file.length);
+				});
+			}}
+		/>
+	);
 
 	useEffect(() => {
 		const handleKeyboard = (e: KeyboardEvent) => {
@@ -620,6 +611,8 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			style={styleProperties.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			{!readOnly && buttonBar}
+			<div className="_editorContainer">{renderingComponent}</div>
 			<AddComponentPanelButtons
 				onComponentAdd={type => {
 					if (!textAreaRef.current) return;
@@ -661,8 +654,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				onSearchChange={setComponentSearchTerm}
 				styleProperties={styleProperties}
 			/>
-			{buttonBar}
-			<div className="_editorContainer">{renderingComponent}</div>
+
 			<FilterPanelButtons
 				onFormatClick={handleRichTextCommand}
 				position={filterPanelPosition}

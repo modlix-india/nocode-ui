@@ -88,13 +88,6 @@ export function FilterPanelButtons({
 				>
 					🔗
 				</button>
-				<button
-					onClick={() => onFormatClick('inlineImage')}
-					className="_button"
-					title="Inline Image"
-				>
-					🖼
-				</button>
 			</div>
 
 			<div className="_buttonSeperator" />
