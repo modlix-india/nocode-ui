@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 interface AddComponentPanelButtonsProps {
 	onComponentAdd: (type: string) => void;
-	position: { line: number; top: number };
+	position: { line: number; top: number; left: string }; // Updated position prop
 	isExpanded: boolean;
 	onExpandChange: (expanded: boolean) => void;
 	searchTerm: string;
@@ -12,22 +12,45 @@ interface AddComponentPanelButtonsProps {
 
 const components = [
 	{ id: 'paragraph', name: 'Paragraph', icon: '¶', syntax: 'some content here' },
-	{ id: 'quote', name: 'Quote', icon: '"', syntax: '> here is a quote' },
+	{ id: 'bold', name: 'Bold', icon: '**', syntax: '**bold text**' },
+	{ id: 'italic', name: 'Italic', icon: '_', syntax: '*italic text*' },
+	{ id: 'strikethrough', name: 'Strikethrough', icon: '~~', syntax: '~~strikethrough text~~' },
+	{ id: 'ul', name: 'Bullet List', icon: '•', syntax: '- add the list here\n -' },
+	{ id: 'ol', name: 'Numbered List', icon: '1.', syntax: '1. add the list here' },
+	{ id: 'blockquote', name: 'Block Quote', icon: '"', syntax: '> here is a quote' },
 	{ id: 'pullquote', name: 'Pullquote', icon: '❝', syntax: '>>> Pull quote here' },
+	{ id: 'img', name: 'Image', icon: '🖼', syntax: '![image](image.jpg)' },
 	{ id: 'h1', name: 'Heading 1', icon: 'H1', syntax: '# heading 1' },
 	{ id: 'h2', name: 'Heading 2', icon: 'H2', syntax: '## heading 2' },
 	{ id: 'h3', name: 'Heading 3', icon: 'H3', syntax: '### heading 3' },
 	{ id: 'h4', name: 'Heading 4', icon: 'H4', syntax: '#### heading 4' },
 	{ id: 'h5', name: 'Heading 5', icon: 'H5', syntax: '##### heading 5' },
 	{ id: 'h6', name: 'Heading 6', icon: 'H6', syntax: '###### heading 6' },
-	{ id: 'ul', name: 'Bullet List', icon: '•', syntax: '- add the list here\n -' },
-	{ id: 'ol', name: 'Numbered List', icon: '1.', syntax: '1. add the list here' },
+	// { id: 'hr', name: 'Horizontal Rule', icon: '---', syntax: '---' },//not working
 	{ id: 'code', name: 'Code Block', icon: '<>', syntax: '```\n' },
+	{ id: 'link', name: 'Link', icon: '🔗', syntax: '[link](URL_ADDRESS.com)' },
+	{ id: 'inlineCode', name: 'Inline Code', icon: '`', syntax: '`inline code`' },
+	{ id: 'superscript', name: 'Superscript', icon: '⁴', syntax: 'text^superscript^' },
+	{ id: 'subscript', name: 'Subscript', icon: '₄', syntax: 'text~subscript~' },
+	{ id: 'highlight', name: 'Highlight', icon: '==', syntax: '==highlighted text==' },
 	{
 		id: 'table',
 		name: 'Table',
 		icon: '▦',
-		syntax: '| Header | Header |\n|---------|----------|\n| Cell | Cell |',
+		syntax: "| Syntax      | Description | Test Text     |\n| :---        |    :----:   |          ---: |\n| Header      | Title       | Here's this   |\n| Paragraph   | Text        | And more      |\n",
+	},
+	{
+		id: 'taskList',
+		name: 'Task List',
+		icon: '☐',
+		syntax: '- [ ] Task to do\n- [x] Completed task',
+	},
+	{ id: 'definition', name: 'Definition', icon: '📚', syntax: 'Term\n: Definition' },
+	{
+		id: 'footnote',
+		name: 'Footnote',
+		icon: '†',
+		syntax: 'Text with footnote[^1]\n\n[^1]: Footnote content',
 	},
 ];
 
@@ -40,9 +63,14 @@ export function AddComponentPanelButtons({
 	onSearchChange,
 	styleProperties,
 }: Readonly<AddComponentPanelButtonsProps>) {
+	const [showAll, setShowAll] = useState(false);
+
 	const filteredComponents = components.filter(comp =>
 		comp.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
+
+	const displayComponents = showAll ? filteredComponents : filteredComponents.slice(0, 6);
+	const hasMoreComponents = filteredComponents.length > 6;
 
 	return (
 		<div
@@ -50,12 +78,10 @@ export function AddComponentPanelButtons({
 			style={{
 				...styleProperties.componentPanel,
 				top: `${position.top}px`,
+				left: position.left,
 				position: 'absolute',
-				right: '10px',
 				display: 'inline-flex',
 				alignItems: 'center',
-				// transform: 'translateX(-100%)',
-				// marginLeft: '10px',
 			}}
 		>
 			{!isExpanded ? (
@@ -78,13 +104,14 @@ export function AddComponentPanelButtons({
 						/>
 					</div>
 					<div className="_componentGrid">
-						{filteredComponents.map(comp => (
+						{displayComponents.map(comp => (
 							<button
 								key={comp.id}
 								onClick={() => {
 									onComponentAdd(comp.syntax);
 									onExpandChange(false);
 									onSearchChange('');
+									setShowAll(false);
 								}}
 								className="_componentButton"
 								title={comp.name}
@@ -94,11 +121,14 @@ export function AddComponentPanelButtons({
 							</button>
 						))}
 					</div>
-					<div className="_footer">
-						<button className="_browseAll" onClick={() => onSearchChange('')}>
-							Browse all
-						</button>
-					</div>
+					{hasMoreComponents && !showAll && (
+						<div className="_footer">
+							<button className="_browseAll" onClick={() => setShowAll(true)}>
+								Show all components
+								{/* ({filteredComponents.length}) */}
+							</button>
+						</div>
+					)}
 				</div>
 			)}
 		</div>

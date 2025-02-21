@@ -52,7 +52,7 @@ export default function MarkdownEditorStyle({
 		overflow-y: hidden;
 	}
 
-		${PREFIX} ._buttonBar {
+	${PREFIX} ._buttonBar {
 		padding: 5px;
 		display: flex;
 		gap: 5px;
@@ -187,7 +187,6 @@ export default function MarkdownEditorStyle({
 		font-size: 18px;
 		transition: transform 0.2s;
 		position: absolute;
-    	right: 10px;
 	}
 	
 	${PREFIX} ._addButton:hover {
@@ -198,7 +197,7 @@ export default function MarkdownEditorStyle({
 	
 	${PREFIX} ._componentPopup {
 		position: absolute;
-		left: calc(100% + 10px);
+		left: calc(50% + 10px);
 		top: 0px;
 		width: 300px;
 		background: white;
@@ -287,6 +286,112 @@ export default function MarkdownEditorStyle({
 	  margin: 0 5px;
 	}
 
+	${PREFIX} ._popupBackground {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    ${PREFIX} ._linkDialog {
+        background: white;
+        padding: 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+		min-width: 400px;
+        max-width: 90vw;
+    }
+
+    ${PREFIX} ._linkInput {
+        padding: 12px;
+		margin: 0 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+    }
+
+    ${PREFIX} ._dialogButtons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 8px;
+		padding: 0 10px;
+		flex-direction: row;
+    }
+
+	${PREFIX} ._dialogButtons ._button {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        min-width: 80px;
+		width: fit-content;
+        height: 36px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    ${PREFIX} ._dialogButtons ._addButton {
+		display: inline-block;
+        background-color: #2196F3;
+        color: white;
+        border: none;
+    }
+
+    ${PREFIX} ._dialogButtons ._addButton:hover {
+        background-color: #1976D2;
+    }
+
+    ${PREFIX} ._dialogButtons ._cancelButton {
+        display:  inline-block;
+        background-color: #DC3545;
+        color: white;
+        border: none;
+    }
+
+    ${PREFIX} ._dialogButtons ._cancelButton:hover {
+        background-color: #C82333;
+    }
+
+	${PREFIX} ._dropdownContainer {
+        position: relative;
+        display: inline-block;
+    }
+
+    ${PREFIX} ._dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 1000;
+        min-width: 120px;
+    }
+
+    ${PREFIX} ._dropdownItem {
+        width: 100%;
+        padding: 8px 12px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        text-align: left;
+        font-size: 14px;
+    }
+
+    ${PREFIX} ._dropdownItem:hover {
+        background: #f5f5f5;
+    }
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MarkdownEditorCSS">{css}</style>;

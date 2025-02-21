@@ -64,6 +64,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const [filterPanelPosition, setFilterPanelPosition] = useState<{ x: number; y: number } | null>(
 		null,
 	);
+	const [selectedText, setSelectedText] = useState('');
 	const [isFilterPanelVisible, setIsFilterPanelVisible] = useState(false);
 	const [isComponentPanelExpanded, setIsComponentPanelExpanded] = useState(false);
 	const [componentSearchTerm, setComponentSearchTerm] = useState('');
@@ -114,6 +115,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 		const handleSelection = () => {
 			const { selectionStart, selectionEnd } = textAreaRef.current;
+			const selectedText = text.substring(selectionStart, selectionEnd);
 
 			if (selectionStart !== selectionEnd && !filterPanelPosition) {
 				const rect = textAreaRef.current.getBoundingClientRect();
@@ -123,6 +125,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				});
 			}
 			setIsFilterPanelVisible(selectionStart !== selectionEnd);
+			setSelectedText(selectedText);
 		};
 
 		textAreaRef.current.addEventListener('select', handleSelection);
@@ -246,6 +249,89 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 					newText = `${beforeText}![${value.text}](${value.url})${afterText}`;
 					newCursorPos = selectionEnd + 2;
 				}
+				break;
+
+			case 'inlineCode':
+				newText = `${beforeText}\`${selectedText}\`${afterText}`;
+				newCursorPos = selectionEnd + 2;
+				break;
+
+			case 'highlight':
+				newText = `${beforeText}==${selectedText}==${afterText}`;
+				newCursorPos = selectionEnd + 4;
+				break;
+
+			case 'superscript':
+				newText = `${beforeText}^${selectedText}^${afterText}`;
+				newCursorPos = selectionEnd + 2;
+				break;
+
+			case 'subscript':
+				newText = `${beforeText}~${selectedText}~${afterText}`;
+				newCursorPos = selectionEnd + 2;
+				break;
+
+			case 'footnote':
+				const footnoteId = `fn${Date.now()}`;
+				newText = `${beforeText}[^${footnoteId}]${afterText}\n\n[^${footnoteId}]: ${selectedText}`;
+				newCursorPos = selectionEnd + footnoteId.length + 4;
+				break;
+
+			case 'inlineImage':
+				newText = `${beforeText}![${selectedText}](image-url)${afterText}`;
+				newCursorPos = selectionEnd + 13;
+				break;
+
+			case 'alignLeft':
+				newText = `${beforeText}::: left\n${selectedText}\n:::${afterText}`;
+				newCursorPos = selectionEnd + 12;
+				break;
+
+			case 'alignCenter':
+				newText = `${beforeText}::: center\n${selectedText}\n:::${afterText}`;
+				newCursorPos = selectionEnd + 14;
+				break;
+
+			case 'alignRight':
+				newText = `${beforeText}::: right ${selectedText} :::${afterText}`;
+				newCursorPos = selectionEnd + 13;
+				break;
+
+			case 'alignJustify':
+				newText = `${beforeText}::: justify\n${selectedText}\n:::${afterText}`;
+				newCursorPos = selectionEnd + 15;
+				break;
+
+			case 'indent':
+				const indentedLines = selectedText
+					.split('\n')
+					.map(line => '    ' + line)
+					.join('\n');
+				newText = `${beforeText}${indentedLines}${afterText}`;
+				newCursorPos = selectionEnd + selectedText.split('\n').length * 4;
+				break;
+
+			case 'unindent':
+				const unindentedLines = selectedText
+					.split('\n')
+					.map(line =>
+						line.startsWith('    ')
+							? line.slice(4)
+							: line.startsWith('\t')
+								? line.slice(1)
+								: line,
+					)
+					.join('\n');
+				newText = `${beforeText}${unindentedLines}${afterText}`;
+				newCursorPos =
+					selectionEnd -
+					selectedText
+						.split('\n')
+						.reduce(
+							(acc, line) =>
+								acc + (line.startsWith('    ') ? 4 : line.startsWith('\t') ? 1 : 0),
+							0,
+						);
 				break;
 		}
 
@@ -423,7 +509,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 					ref={x => {
 						wrapperRef.current = x;
 						if (!x || !textAreaRef.current) return;
-						x.style.height = textAreaRef.current.getBoundingClientRect().height + 'px';
+						x.style.height = textAreaRef.current.scrollHeight + 'px';
 					}}
 				>
 					{docComp}
@@ -432,32 +518,34 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		}
 
 		const resizer = showBoth ? (
-			<div
-				className="_resizer"
-				style={{ left: finTextAreaWidth }}
-				ref={resizerBarRef}
-				onDoubleClick={() => setTextAreaWidth(0)}
-				onMouseDown={ev => {
-					if (ev.buttons !== 1 || !resizerBarRef.current) return;
-					const currentX = ev.clientX;
-					let newTAW = textAreaWidth;
-					const mouseMove = (ev: MouseEvent) => {
-						if (ev.buttons !== 1) return;
-						newTAW = textAreaWidth + ev.clientX - currentX;
-						textAreaRef.current.style.width = `calc(50% + ${newTAW}px)`;
-						resizerBarRef.current.style.left = `calc(50% + ${newTAW}px)`;
-					};
+			<>
+				<div
+					className="_resizer"
+					style={{ left: finTextAreaWidth }}
+					ref={resizerBarRef}
+					onDoubleClick={() => setTextAreaWidth(0)}
+					onMouseDown={ev => {
+						if (ev.buttons !== 1 || !resizerBarRef.current) return;
+						const currentX = ev.clientX;
+						let newTAW = textAreaWidth;
+						const mouseMove = (ev: MouseEvent) => {
+							if (ev.buttons !== 1) return;
+							newTAW = textAreaWidth + ev.clientX - currentX;
+							textAreaRef.current.style.width = `calc(50% + ${newTAW}px)`;
+							resizerBarRef.current.style.left = `calc(50% + ${newTAW}px)`;
+						};
 
-					const mouseUp = () => {
-						setTextAreaWidth(newTAW);
-						document.removeEventListener('mousemove', mouseMove);
-						document.removeEventListener('mouseup', mouseUp);
-					};
+						const mouseUp = () => {
+							setTextAreaWidth(newTAW);
+							document.removeEventListener('mousemove', mouseMove);
+							document.removeEventListener('mouseup', mouseUp);
+						};
 
-					document.addEventListener('mousemove', mouseMove);
-					document.addEventListener('mouseup', mouseUp);
-				}}
-			/>
+						document.addEventListener('mousemove', mouseMove);
+						document.addEventListener('mouseup', mouseUp);
+					}}
+				/>
+			</>
 		) : undefined;
 
 		renderingComponent = (
@@ -495,7 +583,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		const handleKeyboard = (e: KeyboardEvent) => {
-			if (!textAreaRef.current) return;
+			if (!textAreaRef.current || document.activeElement !== textAreaRef.current) return;
 			const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
 			const modifier = isMac ? e.metaKey : e.ctrlKey;
 
@@ -517,9 +605,17 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 							e.preventDefault();
 							handleRichTextCommand('italic');
 							break;
-						case 'u':
+						case '/':
 							e.preventDefault();
-							handleRichTextCommand('underline');
+							setIsComponentPanelExpanded(prev => !prev);
+							break;
+						case '[':
+							e.preventDefault();
+							handleRichTextCommand('indent');
+							break;
+						case ']':
+							e.preventDefault();
+							handleRichTextCommand('unindent');
 							break;
 					}
 				}
@@ -551,22 +647,26 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						? text.substring(0, textAreaRef.current.selectionStart).split('\n').length
 						: 1,
 					top: textAreaRef.current
-						? textAreaRef.current.selectionStart === textAreaRef.current.selectionEnd
-							? textAreaRef.current.getBoundingClientRect().top +
-								Math.floor(
-									textAreaRef.current.selectionStart > 0
-										? (
-												text
-													.substring(
-														0,
-														textAreaRef.current.selectionStart,
-													)
-													.match(/\n/g) || []
-											).length * 20
-										: 0,
-								)
-							: textAreaRef.current.getBoundingClientRect().top
+						? Math.min(
+								textAreaRef.current.getBoundingClientRect().top +
+									Math.floor(
+										textAreaRef.current.selectionStart > 0
+											? (
+													text
+														.substring(
+															0,
+															textAreaRef.current.selectionStart,
+														)
+														.match(/\n/g) || []
+												).length *
+													20 -
+													50
+											: -50,
+									),
+								textAreaRef.current.getBoundingClientRect().bottom - 50,
+							)
 						: 0,
+					left: `calc(50% + ${textAreaWidth}px)`,
 				}}
 				isExpanded={isComponentPanelExpanded}
 				onExpandChange={setIsComponentPanelExpanded}
@@ -582,6 +682,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				isVisible={isFilterPanelVisible}
 				onPositionChange={setFilterPanelPosition}
 				styleProperties={styleProperties}
+				selectedText={selectedText}
 			/>
 		</div>
 	);
