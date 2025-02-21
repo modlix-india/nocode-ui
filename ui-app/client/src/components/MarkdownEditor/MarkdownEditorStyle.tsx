@@ -109,6 +109,9 @@ export default function MarkdownEditorStyle({
 		padding: 10px 20px;
 		border-radius: 5px;
 		min-width: 50vw;
+		max-width:80vw;
+		max-height: 50vh;
+		overflow: auto;
 	}
 
 	${PREFIX} ._markdown {
