@@ -90,7 +90,7 @@ export function AddComponentPanelButtons({
 					onClick={() => onExpandChange(!isExpanded)}
 					title="Add Component"
 				>
-					<i className={`fa fa-${isExpanded ? 'times' : 'plus'}`}></i>
+					<i className={`fa fa-${isExpanded ? 'times' : 'plus'}`} />
 				</button>
 			) : (
 				<div className="_componentPopup">

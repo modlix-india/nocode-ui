@@ -402,9 +402,91 @@ export default function MarkdownEditorStyle({
         white-space: nowrap;
     }
 
-    ${PREFIX} ._dropdownItem:hover {
+${PREFIX} ._dropdownItem:hover {
         background: #f5f5f5;
     }
+		
+${PREFIX} ._actionButtons {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 5;
+}
+
+${PREFIX} ._componentPanel {
+    position: absolute;
+    right: ${(props: { showBoth?: boolean }) => (props.showBoth ? 'calc(50% - 30px)' : '20px')};
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+}
+
+${PREFIX} ._buttonBar {
+
+    padding: 5px;
+    display: flex;
+    gap: 5px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+${PREFIX} ._actionButton {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #2196F3;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+${PREFIX} ._actionButton:hover {
+    transform: scale(1.05);
+    background: #1976D2;
+}
+
+${PREFIX} ._exportDropdown {
+    position: relative;
+}
+
+${PREFIX} ._exportOptions {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 8px 0;
+    min-width: 150px;
+}
+
+${PREFIX} ._exportOptions button {
+    display: block;
+    width: 100%;
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+${PREFIX} ._exportOptions button:hover {
+    background: #f5f5f5;
+}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MarkdownEditorCSS">{css}</style>;

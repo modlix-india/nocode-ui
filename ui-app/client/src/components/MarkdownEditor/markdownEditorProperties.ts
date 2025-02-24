@@ -55,6 +55,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: '/mdPastedFiles',
 	},
+	{
+		name: 'showActionButtons',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Show Action Buttons',
+		description: 'Show/Hide the copy and export buttons',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'true',
+		enumValues: [
+			{
+				name: 'true',
+				displayName: 'Show',
+			},
+			{
+				name: 'false',
+				displayName: 'Hide',
+			},
+		],
+	},
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	{ ...COMMON_COMPONENT_PROPERTIES.onBlur, displayName: 'On Blur of Editor' },
 	COMMON_COMPONENT_PROPERTIES.readOnly,

@@ -40,6 +40,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			onBlur,
 			editType,
 			pathForPastedFiles,
+			showActionButtons,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -68,6 +69,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const [isFilterPanelVisible, setIsFilterPanelVisible] = useState(false);
 	const [isComponentPanelExpanded, setIsComponentPanelExpanded] = useState(false);
 	const [componentSearchTerm, setComponentSearchTerm] = useState('');
+	const [showExportOptions, setShowExportOptions] = useState(false);
 
 	const textAreaRef = useRef<any>(null);
 	const wrapperRef = useRef<any>(null);
@@ -138,6 +140,125 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			textAreaRef?.current?.removeEventListener('keyup', handleSelection);
 		};
 	}, [textAreaRef?.current]);
+
+	const handleExport = (type: 'md' | 'html' | 'pdf') => {
+		let content = '';
+		let filename = `document_${new Date().getTime()}`;
+		let mimeType = '';
+
+		switch (type) {
+			case 'md':
+				content = text;
+				filename += '.md';
+				mimeType = 'text/markdown';
+				break;
+			case 'html':
+				const tempDiv = document.createElement('div');
+				tempDiv.innerHTML = text
+					.replace(/^### (.*$)/gim, '<h3>$1</h3>')
+					.replace(/^## (.*$)/gim, '<h2>$1</h2>')
+					.replace(/^# (.*$)/gim, '<h1>$1</h1>')
+					.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+					.replace(/\*(.*)\*/gim, '<em>$1</em>')
+					.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
+					.replace(/\n$/gim, '<br />');
+
+				content = `
+					<!DOCTYPE html>
+					<html>
+					<head>
+						<meta charset="UTF-8">
+						<title>${filename}</title>
+					</head>
+					<body>
+						${tempDiv.innerHTML}
+					</body>
+					</html>
+				`;
+				filename += '.html';
+				mimeType = 'text/html';
+				break;
+			case 'pdf':
+				const printWindow = window.open('', '_blank');
+				if (printWindow) {
+					const markdownContent = document.querySelector('._markdown')?.innerHTML || '';
+					printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${filename}</title>
+                        <style>
+                            body {
+                                font-family: Arial, sans-serif;
+                                line-height: 1.6;
+                                max-width: 800px;
+                                margin: 40px auto;
+                                padding: 20px;
+                            }
+                            pre { 
+                                white-space: pre-wrap;
+                                background: #f5f5f5;
+                                padding: 15px;
+                                border-radius: 5px;
+                            }
+                            code {
+                                background: #f5f5f5;
+                                padding: 2px 5px;
+                                border-radius: 3px;
+                            }
+                            img {
+                                max-width: 100%;
+                                height: auto;
+                            }
+                            table {
+                                border-collapse: collapse;
+                                width: 100%;
+                                margin: 15px 0;
+                            }
+                            th, td {
+                                border: 1px solid #ddd;
+                                padding: 8px;
+                                text-align: left;
+                            }
+                            th {
+                                background-color: #f5f5f5;
+                            }
+                            blockquote {
+                                border-left: 4px solid #ddd;
+                                margin: 15px 0;
+                                padding: 10px 20px;
+                                background: #f9f9f9;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${markdownContent}
+                        <script>
+                            window.onload = () => {
+                                setTimeout(() => {
+                                    window.print();
+                                    // setTimeout(() => window.close(), 500);
+                                }, 500);
+                            };
+                        </script>
+                    </body>
+                    </html>
+                `);
+					return;
+				}
+				return;
+		}
+
+		const blob = new Blob([content], { type: mimeType });
+		const url = window.URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = filename;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+		window.URL.revokeObjectURL(url);
+	};
 
 	const handleUndo = () => {
 		if (historyIndex > 0) {
@@ -616,7 +737,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			<AddComponentPanelButtons
 				onComponentAdd={type => {
 					if (!textAreaRef.current) return;
-
 					const { selectionStart } = textAreaRef.current;
 					const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
 					const newText = text.substring(0, lineStart) + type + text.substring(lineStart);
@@ -663,6 +783,40 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				styleProperties={styleProperties}
 				selectedText={selectedText}
 			/>
+			{showActionButtons === 'true' && (
+				<div className="_actionButtons">
+					<button
+						className="_actionButton"
+						onClick={() => {
+							const tempTextArea = document.createElement('textarea');
+							tempTextArea.value = text;
+							document.body.appendChild(tempTextArea);
+							tempTextArea.select();
+							navigator.clipboard.writeText(tempTextArea.value);
+							document.body.removeChild(tempTextArea);
+						}}
+						title="Copy Markdown"
+					>
+						<i className="fa fa-copy"></i>
+					</button>
+					<div className="_exportDropdown">
+						<button
+							className="_actionButton"
+							onClick={() => setShowExportOptions(prev => !prev)}
+							title="Export"
+						>
+							<i className="fa fa-download"></i>
+						</button>
+						{showExportOptions && (
+							<div className="_exportOptions">
+								<button onClick={() => handleExport('md')}>Markdown (.md)</button>
+								<button onClick={() => handleExport('html')}>HTML (.html)</button>
+								<button onClick={() => handleExport('pdf')}>PDF (.pdf)</button>
+							</div>
+						)}
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }
