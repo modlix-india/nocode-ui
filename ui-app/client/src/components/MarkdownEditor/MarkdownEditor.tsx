@@ -23,6 +23,13 @@ import { AddComponentPanelButtons } from './components/AddComponentPanelButtons'
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
+import { scrollToCaret, makeTextForImageSelection } from './utils/textManipulation';
+import { useMarkdownExport } from './hooks/useMarkdownExport';
+import { useMarkdownHistory } from './hooks/useMarkdownHistory';
+import { useMarkdownFormatting } from './hooks/useMarkdownFormatting';
+
+// Add import at the top with other imports
+import { ActionButtons } from './components/ActionButtons';
 
 function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -31,6 +38,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		locationHistory,
 		context,
 	} = props;
+
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
@@ -50,6 +58,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
+
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
@@ -58,10 +67,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	const [mode, setMode] = useState<EditorMode>(editType ?? 'editText');
 	const [text, setText] = useStateCallback<string>('');
-	const resizerBarRef = useRef<any>(null);
 	const [textAreaWidth, setTextAreaWidth] = useState<number>(0);
-	const [history, setHistory] = useState<string[]>([]);
-	const [historyIndex, setHistoryIndex] = useState(-1);
 	const [filterPanelPosition, setFilterPanelPosition] = useState<{ x: number; y: number } | null>(
 		null,
 	);
@@ -73,14 +79,30 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	const textAreaRef = useRef<any>(null);
 	const wrapperRef = useRef<any>(null);
+	const resizerBarRef = useRef<any>(null);
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
+	const { handleExport } = useMarkdownExport();
+	const { history, historyIndex, addToHistory, undo, redo } = useMarkdownHistory();
+	const { formatText } = useMarkdownFormatting();
+
+	const onExport = (type: 'md' | 'html' | 'pdf') => {
+		handleExport(text, type);
+	};
+
+	const handleUndo = () => {
+		undo(setText, textAreaRef);
+	};
+
+	const handleRedo = () => {
+		redo(setText, textAreaRef);
+	};
+
 	useEffect(() => {
 		if (!bindingPathPath) return;
-
 		return addListenerAndCallImmediately(
 			(_, fromStore) => {
 				setText((v: string) => {
@@ -98,7 +120,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!textAreaRef.current || !wrapperRef.current) return;
 
-		const func = () => {
+		const handleResize = () => {
 			if (!wrapperRef.current || !textAreaRef.current) return;
 			wrapperRef.current.style.height = '100px';
 			setTimeout(
@@ -108,8 +130,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				600,
 			);
 		};
-		window.addEventListener('resize', func);
-		return () => window.removeEventListener('resize', func);
+
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
 	}, [mode, textAreaRef.current, wrapperRef.current]);
 
 	useEffect(() => {
@@ -122,7 +145,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			if (selectionStart !== selectionEnd && !filterPanelPosition) {
 				const rect = textAreaRef.current.getBoundingClientRect();
 				setFilterPanelPosition({
-					x: rect.left + rect.width / 2 - 150, // 300/2 for panel width
+					x: rect.left + rect.width / 2 - 150,
 					y: rect.top + 10,
 				});
 			}
@@ -141,151 +164,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		};
 	}, [textAreaRef?.current]);
 
-	const handleExport = (type: 'md' | 'html' | 'pdf') => {
-		let content = '';
-		let filename = `document_${new Date().getTime()}`;
-		let mimeType = '';
-
-		switch (type) {
-			case 'md':
-				content = text;
-				filename += '.md';
-				mimeType = 'text/markdown';
-				break;
-			case 'html':
-				const tempDiv = document.createElement('div');
-				tempDiv.innerHTML = text
-					.replace(/^### (.*$)/gim, '<h3>$1</h3>')
-					.replace(/^## (.*$)/gim, '<h2>$1</h2>')
-					.replace(/^# (.*$)/gim, '<h1>$1</h1>')
-					.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-					.replace(/\*(.*)\*/gim, '<em>$1</em>')
-					.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
-					.replace(/\n$/gim, '<br />');
-
-				content = `
-					<!DOCTYPE html>
-					<html>
-					<head>
-						<meta charset="UTF-8">
-						<title>${filename}</title>
-					</head>
-					<body>
-						${tempDiv.innerHTML}
-					</body>
-					</html>
-				`;
-				filename += '.html';
-				mimeType = 'text/html';
-				break;
-			case 'pdf':
-				const printWindow = window.open('', '_blank');
-				if (printWindow) {
-					const markdownContent = document.querySelector('._markdown')?.innerHTML || '';
-					printWindow.document.write(`
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <title>${filename}</title>
-                        <style>
-                            body {
-                                font-family: Arial, sans-serif;
-                                line-height: 1.6;
-                                max-width: 800px;
-                                margin: 40px auto;
-                                padding: 20px;
-                            }
-                            pre { 
-                                white-space: pre-wrap;
-                                background: #f5f5f5;
-                                padding: 15px;
-                                border-radius: 5px;
-                            }
-                            code {
-                                background: #f5f5f5;
-                                padding: 2px 5px;
-                                border-radius: 3px;
-                            }
-                            img {
-                                max-width: 100%;
-                                height: auto;
-                            }
-                            table {
-                                border-collapse: collapse;
-                                width: 100%;
-                                margin: 15px 0;
-                            }
-                            th, td {
-                                border: 1px solid #ddd;
-                                padding: 8px;
-                                text-align: left;
-                            }
-                            th {
-                                background-color: #f5f5f5;
-                            }
-                            blockquote {
-                                border-left: 4px solid #ddd;
-                                margin: 15px 0;
-                                padding: 10px 20px;
-                                background: #f9f9f9;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        ${markdownContent}
-                        <script>
-                            window.onload = () => {
-                                setTimeout(() => {
-                                    window.print();
-                                    // setTimeout(() => window.close(), 500);
-                                }, 500);
-                            };
-                        </script>
-                    </body>
-                    </html>
-                `);
-					return;
-				}
-				return;
-		}
-
-		const blob = new Blob([content], { type: mimeType });
-		const url = window.URL.createObjectURL(blob);
-		const link = document.createElement('a');
-		link.href = url;
-		link.download = filename;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		window.URL.revokeObjectURL(url);
-	};
-
-	const handleUndo = () => {
-		if (historyIndex > 0) {
-			const newIndex = historyIndex - 1;
-			setHistoryIndex(newIndex);
-			setText(history[newIndex], () => {
-				if (textAreaRef.current) {
-					const pos = history[newIndex].length;
-					textAreaRef.current.setSelectionRange(pos, pos);
-				}
-			});
-		}
-	};
-
-	const handleRedo = () => {
-		if (historyIndex < history.length - 1) {
-			const newIndex = historyIndex + 1;
-			setHistoryIndex(newIndex);
-			setText(history[newIndex], () => {
-				if (textAreaRef.current) {
-					const pos = history[newIndex].length;
-					textAreaRef.current.setSelectionRange(pos, pos);
-				}
-			});
-		}
-	};
-
 	const handleRichTextCommand = (
 		command: string,
 		value?: string | { url: string; text: string },
@@ -293,147 +171,13 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		if (!textAreaRef.current) return;
 
 		const { selectionStart, selectionEnd } = textAreaRef.current;
-		const selectedText = text.substring(selectionStart, selectionEnd);
-		const beforeText = text.substring(0, selectionStart);
-		const afterText = text.substring(selectionEnd);
+		const { newText, newCursorPos } = formatText(
+			text,
+			command,
+			{ start: selectionStart, end: selectionEnd },
+			value,
+		);
 
-		let newText = text;
-		let newCursorPos = selectionEnd;
-
-		const toggleFormat = (startMarker: string, endMarker: string = startMarker) => {
-			const hasMarkers =
-				selectedText.startsWith(startMarker) && selectedText.endsWith(endMarker);
-			if (hasMarkers) {
-				newText =
-					beforeText +
-					selectedText.slice(startMarker.length, -endMarker.length) +
-					afterText;
-				newCursorPos = selectionEnd - (startMarker.length + endMarker.length);
-			} else {
-				newText = `${beforeText}${startMarker}${selectedText}${endMarker}${afterText}`;
-				newCursorPos = selectionEnd + startMarker.length + endMarker.length;
-			}
-		};
-
-		switch (command) {
-			case 'bold':
-				toggleFormat('**');
-				break;
-
-			case 'italic':
-				toggleFormat('*');
-				break;
-
-			case 'strikethrough':
-				toggleFormat('~~');
-				break;
-
-			case 'inlineCode':
-				toggleFormat('`');
-				break;
-
-			case 'highlight':
-				toggleFormat('==');
-				break;
-
-			case 'superscript':
-				toggleFormat('^');
-				break;
-
-			case 'subscript':
-				toggleFormat('~');
-				break;
-
-			case 'alignLeft':
-				toggleFormat('::: left\n', '\n:::');
-				break;
-
-			case 'alignCenter':
-				toggleFormat('::: center\n', '\n:::');
-				break;
-
-			case 'alignRight':
-				toggleFormat('::: right\n', '\n:::');
-				break;
-
-			case 'alignJustify':
-				toggleFormat('::: justify\n', '\n:::');
-				break;
-
-			// Special cases that don't use toggleFormat
-			case 'heading1':
-			case 'heading2':
-			case 'heading3':
-			case 'heading4':
-			case 'heading5':
-			case 'heading6':
-				const level = command.slice(-1);
-				const headerMarker = '#'.repeat(Number(level));
-				const hasHeader = selectedText.startsWith(headerMarker + ' ');
-				if (hasHeader) {
-					newText = `${beforeText}${selectedText.slice(headerMarker.length + 1)}${afterText}`;
-					newCursorPos = selectionEnd - (headerMarker.length + 1);
-				} else {
-					newText = `${beforeText}${headerMarker} ${selectedText}${afterText}`;
-					newCursorPos = selectionEnd + headerMarker.length + 1;
-				}
-				break;
-
-			case 'indent':
-				const hasIndent = selectedText.split('\n').every(line => line.startsWith('    '));
-				if (hasIndent) {
-					newText = `${beforeText}${selectedText
-						.split('\n')
-						.map(line => line.slice(4))
-						.join('\n')}${afterText}`;
-					newCursorPos = selectionEnd - selectedText.split('\n').length * 4;
-				} else {
-					const indentedLines = selectedText
-						.split('\n')
-						.map(line => '    ' + line)
-						.join('\n');
-					newText = `${beforeText}${indentedLines}${afterText}`;
-					newCursorPos = selectionEnd + selectedText.split('\n').length * 4;
-				}
-				break;
-
-			case 'unindent':
-				const unindentedLines = selectedText
-					.split('\n')
-					.map(line =>
-						line.startsWith('    ')
-							? line.slice(4)
-							: line.startsWith('\t')
-								? line.slice(1)
-								: line,
-					)
-					.join('\n');
-				newText = `${beforeText}${unindentedLines}${afterText}`;
-				newCursorPos =
-					selectionEnd -
-					selectedText
-						.split('\n')
-						.reduce(
-							(acc, line) =>
-								acc + (line.startsWith('    ') ? 4 : line.startsWith('\t') ? 1 : 0),
-							0,
-						);
-				break;
-
-			case 'link':
-				if (typeof value === 'object' && 'text' in value && 'url' in value) {
-					newText = `${beforeText}[${value.text}](${value.url})${afterText}`;
-					newCursorPos = selectionEnd + 2;
-				}
-				break;
-
-			case 'footnote':
-				let footnoteId;
-				footnoteId = `fn${Date.now()}`;
-				newText = `${beforeText}[^${footnoteId}]${afterText}\n\n[^${footnoteId}]: ${selectedText}`;
-				newCursorPos = selectionEnd + footnoteId.length + 4;
-				break;
-		}
 		onChangeText(newText, () => {
 			textAreaRef.current.setSelectionRange(newCursorPos, newCursorPos);
 		});
@@ -452,13 +196,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			true,
 		);
 
-		if (historyIndex === history.length - 1) {
-			if (history.length === 0 || history[history.length - 1] !== editedText) {
-				const newHistory = [...history, editedText];
-				setHistory(newHistory);
-				setHistoryIndex(newHistory.length - 1);
-			}
-		}
+		addToHistory(editedText);
 
 		if (!onChangeEvent) return;
 		(async () =>
@@ -472,7 +210,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	};
 
 	let renderingComponent = undefined;
-
 	let showBoth = false;
 
 	if (readOnly) {
@@ -484,6 +221,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		const showDoc = mode.indexOf('Doc') != -1;
 		showBoth = showText && showDoc;
 		const finTextAreaWidth = showBoth ? `calc(50% + ${textAreaWidth}px)` : '100%';
+
 		const textComp = showText ? (
 			<textarea
 				ref={textAreaRef}
@@ -514,7 +252,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				onClick={() => scrollToCaret(textAreaRef, componentKey)}
 				onScroll={() => {
 					if (!textAreaRef.current) return;
-
 					scrollToCaret(
 						textAreaRef,
 						componentKey,
@@ -532,7 +269,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						const newText = `${text.substring(0, selectionStart)}    ${text.substring(
 							selectionEnd,
 						)}`;
-
 						onChangeText(newText, () =>
 							textAreaRef.current.setSelectionRange(
 								selectionStart + 4,
@@ -555,6 +291,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 						};
 						if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
 						(async () => {
 							try {
 								let url = `/api/files/static/${pathForPastedFiles}`;
@@ -569,8 +306,8 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 									)}`;
 									onChangeText(newText, () =>
 										textAreaRef.current.setSelectionRange(
-											selectionStart + paste + 5,
-											selectionStart + paste + 5,
+											selectionStart + paste.length + 4,
+											selectionStart + paste.length + 4,
 										),
 									);
 								}
@@ -582,7 +319,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(
 							selectionEnd,
 						)}`;
-
 						onChangeText(newText, () =>
 							textAreaRef.current.setSelectionRange(
 								selectionStart + paste.length,
@@ -621,34 +357,32 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		}
 
 		const resizer = showBoth ? (
-			<>
-				<div
-					className="_resizer"
-					style={{ left: finTextAreaWidth }}
-					ref={resizerBarRef}
-					onDoubleClick={() => setTextAreaWidth(0)}
-					onMouseDown={ev => {
-						if (ev.buttons !== 1 || !resizerBarRef.current) return;
-						const currentX = ev.clientX;
-						let newTAW = textAreaWidth;
-						const mouseMove = (ev: MouseEvent) => {
-							if (ev.buttons !== 1) return;
-							newTAW = textAreaWidth + ev.clientX - currentX;
-							textAreaRef.current.style.width = `calc(50% + ${newTAW}px)`;
-							resizerBarRef.current.style.left = `calc(50% + ${newTAW}px)`;
-						};
+			<div
+				className="_resizer"
+				style={{ left: finTextAreaWidth }}
+				ref={resizerBarRef}
+				onDoubleClick={() => setTextAreaWidth(0)}
+				onMouseDown={ev => {
+					if (ev.buttons !== 1 || !resizerBarRef.current) return;
+					const currentX = ev.clientX;
+					let newTAW = textAreaWidth;
+					const mouseMove = (ev: MouseEvent) => {
+						if (ev.buttons !== 1) return;
+						newTAW = textAreaWidth + ev.clientX - currentX;
+						textAreaRef.current.style.width = `calc(50% + ${newTAW}px)`;
+						resizerBarRef.current.style.left = `calc(50% + ${newTAW}px)`;
+					};
 
-						const mouseUp = () => {
-							setTextAreaWidth(newTAW);
-							document.removeEventListener('mousemove', mouseMove);
-							document.removeEventListener('mouseup', mouseUp);
-						};
+					const mouseUp = () => {
+						setTextAreaWidth(newTAW);
+						document.removeEventListener('mousemove', mouseMove);
+						document.removeEventListener('mouseup', mouseUp);
+					};
 
-						document.addEventListener('mousemove', mouseMove);
-						document.addEventListener('mouseup', mouseUp);
-					}}
-				/>
-			</>
+					document.addEventListener('mousemove', mouseMove);
+					document.addEventListener('mouseup', mouseUp);
+				}}
+			/>
 		) : undefined;
 
 		renderingComponent = (
@@ -660,25 +394,11 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		);
 	}
 
-	if (textAreaRef.current)
+	if (textAreaRef.current) {
 		textAreaRef.current.style.height = showBoth
 			? '100%'
 			: textAreaRef.current.scrollHeight + 'px';
-
-	let buttonBar = (
-		<MEButtonBar
-			mode={mode}
-			onModeChange={m => setMode(m)}
-			styleProperties={styleProperties}
-			textAreaRef={textAreaRef.current}
-			onFileSelected={(s, e, file) => {
-				let newText = makeTextForImageSelection(text, s, e, file);
-				onChangeText(newText, () => {
-					textAreaRef.current.setSelectionRange(s, s + file.length);
-				});
-			}}
-		/>
-	);
+	}
 
 	useEffect(() => {
 		const handleKeyboard = (e: KeyboardEvent) => {
@@ -732,7 +452,20 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			style={styleProperties.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-			{!readOnly && buttonBar}
+			{!readOnly && (
+				<MEButtonBar
+					mode={mode}
+					onModeChange={m => setMode(m)}
+					styleProperties={styleProperties}
+					textAreaRef={textAreaRef.current}
+					onFileSelected={(s, e, file) => {
+						let newText = makeTextForImageSelection(text, s, e, file);
+						onChangeText(newText, () => {
+							textAreaRef.current.setSelectionRange(s, s + file.length);
+						});
+					}}
+				/>
+			)}
 			<div className="_editorContainer">{renderingComponent}</div>
 			<AddComponentPanelButtons
 				onComponentAdd={type => {
@@ -774,7 +507,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				onSearchChange={setComponentSearchTerm}
 				styleProperties={styleProperties}
 			/>
-
 			<FilterPanelButtons
 				onFormatClick={handleRichTextCommand}
 				position={filterPanelPosition}
@@ -784,89 +516,15 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				selectedText={selectedText}
 			/>
 			{showActionButtons === 'true' && (
-				<div className="_actionButtons">
-					<button
-						className="_actionButton"
-						onClick={() => {
-							const tempTextArea = document.createElement('textarea');
-							tempTextArea.value = text;
-							document.body.appendChild(tempTextArea);
-							tempTextArea.select();
-							navigator.clipboard.writeText(tempTextArea.value);
-							document.body.removeChild(tempTextArea);
-						}}
-						title="Copy Markdown"
-					>
-						<i className="fa fa-copy"></i>
-					</button>
-					<div className="_exportDropdown">
-						<button
-							className="_actionButton"
-							onClick={() => setShowExportOptions(prev => !prev)}
-							title="Export"
-						>
-							<i className="fa fa-download"></i>
-						</button>
-						{showExportOptions && (
-							<div className="_exportOptions">
-								<button onClick={() => handleExport('md')}>Markdown (.md)</button>
-								<button onClick={() => handleExport('html')}>HTML (.html)</button>
-								<button onClick={() => handleExport('pdf')}>PDF (.pdf)</button>
-							</div>
-						)}
-					</div>
-				</div>
+				<ActionButtons
+					text={text}
+					onExport={onExport}
+					showExportOptions={showExportOptions}
+					setShowExportOptions={setShowExportOptions}
+				/>
 			)}
 		</div>
 	);
-}
-
-function scrollToCaret(textAreaRef: any, componentKey: string, lineNumber?: number) {
-	const { selectionStart } = textAreaRef.current;
-	let block = 'center';
-	if (!lineNumber)
-		lineNumber = (textAreaRef.current.value ?? '')
-			.substring(0, selectionStart)
-			.split('\n').length;
-	else block = 'start';
-	let element;
-	while (lineNumber && lineNumber > 0) {
-		element = document.getElementById(`${componentKey}-div-${lineNumber}`);
-
-		if (!element) lineNumber--;
-		else break;
-	}
-	if (!element) return;
-	setTimeout(() => element.scrollIntoView({ block, inline: 'nearest', behavior: 'smooth' }), 10);
-}
-
-function makeTextForImageSelection(text: string, s: number, e: number, file: string): string {
-	if (s != e) {
-		const selection = text.substring(s, e);
-		if (selection.indexOf('![') != -1) file = `![](${file})`;
-		return text.substring(0, s) + file + text.substring(e);
-	}
-	let newStart = text.lastIndexOf('(', s);
-	let newLine = text.lastIndexOf('\n', s);
-	let found = false;
-	if (newStart == -1) newStart = s;
-	else found = true;
-	if (newLine > newStart) newStart = newLine;
-	let newEnd = text.indexOf(')', e);
-	let space = text.indexOf(' ', newStart);
-	newLine = text.indexOf('\n', e);
-
-	if (newEnd == -1) newEnd = e;
-	if (newLine < newEnd && newLine != -1) newEnd = newLine;
-	if (newEnd <= s) found = false;
-	if (space < newEnd && space != -1) newEnd = space;
-
-	if (found) {
-		return text.substring(0, newStart + 1) + file + text.substring(newEnd);
-	}
-
-	file = `![](${file})`;
-	return text.substring(0, s) + file + text.substring(e);
 }
 
 const component: Component = {
