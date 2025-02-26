@@ -14,23 +14,10 @@ export default function MarkdownEditorStyle({
 		flex-direction: column;
 		border: 1px solid #d0d7de;
 		border-radius: 6px;
-		overflow: hidden;
-		
+		overflow: visible;
+    	position: relative;
 	}
 
-	${PREFIX} ._headingDropdown {
-		position: absolute;
-		top: 100%;
-		right: 0;
-		margin-top: 4px;
-		background-color: #ffffff;
-		border: 1px solid #d0d7de;
-		border-radius: 6px;
-		box-shadow: 0 8px 24px rgba(140,149,159,0.2);
-		min-width: 60px;
-		z-index: 100;
-		padding: 4px 0;
-	}
 
 	${PREFIX} ._editorHeader {
 		display: flex;
@@ -88,10 +75,6 @@ export default function MarkdownEditorStyle({
 		background-color: rgba(255, 255, 255, 0.3);
 		margin: 0 5px;
 	  }
-
-	${PREFIX}._both _editorContainer {
-		max-height: 100%;
-	}
 
 	${PREFIX}._both ._wrapper {
 		flex: 1;
@@ -202,9 +185,10 @@ export default function MarkdownEditorStyle({
 	}
 
 	${PREFIX} ._editorContainer {
+		display: flex;
+		position: relative;
 		min-height: 30vh;
-		height: auto;
-		overflow: visible;
+		overflow: auto;
 	}
 
 	${PREFIX} ._resizer {
@@ -296,11 +280,14 @@ export default function MarkdownEditorStyle({
 	
 	${PREFIX} ._componentPopup {
 		position: absolute;
-		top: 0px;
-		width: 300px;
-		background: white;
-		border-radius: 8px;
-		box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+ 		top: 100%;
+		left: 0;
+		width: 330px;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+		min-width: 200px;
+		max-height: 400px;
 		padding: 12px;
 		z-index: 100;
 	}
@@ -324,6 +311,9 @@ export default function MarkdownEditorStyle({
 		grid-template-columns: repeat(3, 1fr);
 		gap: 8px;
 		margin-bottom: 12px;
+		max-height: 300px;
+		overflow-y: auto;
+		padding: 8px;
 	}
 	
 	${PREFIX} ._componentButton {
@@ -465,12 +455,12 @@ export default function MarkdownEditorStyle({
     	position: absolute;
 		top: 100%;
 		left: 0;
-		margin-top: 4px;
-		background-color: #ffffff;
+		z-index: 100;
+		background: white;
 		border: 1px solid #d0d7de;
 		border-radius: 6px;
-		box-shadow: 0 8px 24px rgba(140,149,159,0.2);
-		min-width: 120px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+		min-width: 150px;
     }
 
     ${PREFIX} ._dropdownItem {
@@ -547,7 +537,7 @@ ${PREFIX} ._exportOptions {
     background-color: #ffffff;
     border: 1px solid #d0d7de;
     border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(140,149,159,0.2);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     min-width: 160px;
     z-index: 100;
     padding: 4px 0;

@@ -85,21 +85,6 @@ export function useMarkdownFormatting() {
 			case 'heading6':
 				toggleFormat('###### ', '');
 				break;
-			// const level = command.slice(-1);
-			// const headerMarker = '#'.repeat(Number(level));
-			// const lines = selectedText.split('\n');
-			// const firstLine = lines[0];
-			// const hasHeader = firstLine.startsWith(headerMarker + ' ');
-
-			// if (hasHeader) {
-			// 	lines[0] = firstLine.substring(headerMarker.length + 1);
-			// } else {
-			// 	lines[0] = `${headerMarker} ${firstLine}`;
-			// }
-
-			// newText = `${beforeText}${lines.join('\n')}${afterText}`;
-			// newCursorPos = selection.start + lines[0].length;
-			// break;
 
 			case 'indent':
 			case 'unindent':

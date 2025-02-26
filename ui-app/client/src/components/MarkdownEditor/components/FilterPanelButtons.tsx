@@ -17,17 +17,12 @@ export function FilterPanelButtons({
 	const [linkText, setLinkText] = useState('');
 	const [linkUrl, setLinkUrl] = useState('');
 	const [showMoreDropdown, setShowMoreDropdown] = useState(false);
-	const [showHeadingDropdown, setShowHeadingDropdown] = useState(false);
-
-	const headingButtonRef = useRef<HTMLButtonElement>(null);
+	const dropdownRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				headingButtonRef.current &&
-				!headingButtonRef.current.contains(event.target as Node)
-			) {
-				setShowHeadingDropdown(false);
+			if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+				setShowMoreDropdown(false);
 			}
 		};
 
@@ -51,10 +46,18 @@ export function FilterPanelButtons({
 	const mainButtons = (
 		<>
 			<div className="_buttonGroup">
-				<button onClick={() => onFormatClick('bold')} className="_button" title="Bold">
+				<button
+					onClick={() => onFormatClick('bold')}
+					className="_button"
+					title="Bold ( ctrl/cmd + B )"
+				>
 					<strong>B</strong>
 				</button>
-				<button onClick={() => onFormatClick('italic')} className="_button" title="Italic">
+				<button
+					onClick={() => onFormatClick('italic')}
+					className="_button"
+					title="Italic ( ctrl/cmd + I )"
+				>
 					<em>I</em>
 				</button>
 			</div>
@@ -131,24 +134,24 @@ export function FilterPanelButtons({
 							</button>
 							<button
 								onClick={() => onFormatClick('heading4')}
-								className="_button"
+								className="_dropdownItem"
 								title="heading4"
 							>
-								<b>h4</b>
+								<b>h4</b> heading4
 							</button>
 							<button
 								onClick={() => onFormatClick('heading5')}
-								className="_button"
+								className="_dropdownItem"
 								title="heading5"
 							>
-								<b>h5</b>
+								<b>h5</b> heading5
 							</button>
 							<button
 								onClick={() => onFormatClick('heading6')}
-								className="_button"
+								className="_dropdownItem"
 								title="heading6"
 							>
-								<b>h6</b>
+								<b>h6</b> heading6
 							</button>
 							<button
 								onClick={() => onFormatClick('footnote')}
@@ -206,7 +209,7 @@ export function FilterPanelButtons({
 	);
 
 	return (
-		<div className="_filterToolbar">
+		<div className="_filterToolbar" ref={dropdownRef}>
 			<div className="_buttonGroup">{mainButtons}</div>
 			{showLinkDialog && (
 				<div

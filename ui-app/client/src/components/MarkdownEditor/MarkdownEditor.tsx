@@ -28,9 +28,6 @@ import { useMarkdownExport } from './hooks/useMarkdownExport';
 import { useMarkdownHistory } from './hooks/useMarkdownHistory';
 import { useMarkdownFormatting } from './hooks/useMarkdownFormatting';
 
-// Add import at the top with other imports
-import { ActionButtons } from './components/ActionButtons';
-
 function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
@@ -115,7 +112,32 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		);
 	}, [bindingPathPath, textAreaRef.current]);
 
-	useEffect(() => setMode(editType), [editType]);
+	const [activeTab, setActiveTab] = useState<'write' | 'doc' | 'preview'>(() => {
+		switch (editType) {
+			case 'editDoc':
+				return 'doc';
+			case 'editTextnDoc':
+				return 'preview';
+			default:
+				return 'write';
+		}
+	});
+
+	useEffect(() => {
+		switch (editType) {
+			case 'editDoc':
+				setActiveTab('doc');
+				setShowFullPreview(false);
+				break;
+			case 'editTextnDoc':
+				setActiveTab('preview');
+				setShowFullPreview(true);
+				break;
+			default:
+				setActiveTab('write');
+				setShowFullPreview(false);
+		}
+	}, [editType]);
 
 	useEffect(() => {
 		if (!textAreaRef.current || !wrapperRef.current) return;
@@ -445,7 +467,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	}, [text, history, historyIndex]);
 
 	// Modify mode handling to match GitHub style
-	const [activeTab, setActiveTab] = useState<'write' | 'doc' | 'preview'>('write');
 	const [showFullPreview, setShowFullPreview] = useState(false);
 
 	// New method to handle tab switching

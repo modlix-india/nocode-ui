@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 
 interface AddComponentPanelButtonsProps {
 	onComponentAdd: (type: string) => void;
@@ -62,21 +62,38 @@ export function AddComponentPanelButtons({
 	styleProperties,
 }: Readonly<AddComponentPanelButtonsProps>) {
 	const [showAll, setShowAll] = useState(false);
+	const panelRef = useRef<HTMLDivElement>(null);
 
 	const filteredComponents = components.filter(comp =>
 		comp.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
 
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (panelRef.current && !panelRef.current.contains(event.target as Node)) {
+				onExpandChange(false);
+			}
+		};
+
+		if (isExpanded) {
+			document.addEventListener('mousedown', handleClickOutside);
+		}
+
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, [isExpanded]);
+
 	const displayComponents = showAll ? filteredComponents : filteredComponents.slice(0, 6);
 	const hasMoreComponents = filteredComponents.length > 6;
 
 	return (
-		<div className="_componentPanel">
+		<div className="_componentPanel" ref={panelRef}>
 			{!isExpanded ? (
 				<button
 					className="_addButton"
 					onClick={() => onExpandChange(!isExpanded)}
-					title="Add Component"
+					title="Add Component ( ctrl/cmd + / )"
 				>
 					<i className={`fa fa-${isExpanded ? 'times' : 'plus'}`} />
 				</button>
@@ -86,7 +103,7 @@ export function AddComponentPanelButtons({
 						<button
 							className="_closeaddButton"
 							onClick={() => onExpandChange(!isExpanded)}
-							title="Close add Component"
+							title="Close add Component ( ctrl/cmd + / )"
 						>
 							<i className={`fa fa-${isExpanded ? 'times' : 'plus'}`} />
 						</button>
