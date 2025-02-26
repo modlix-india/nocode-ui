@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { FileBrowser } from '../../../commonComponents/FileBrowser';
 
 interface AddComponentPanelButtonsProps {
 	onComponentAdd: (type: string) => void;
@@ -7,6 +8,7 @@ interface AddComponentPanelButtonsProps {
 	searchTerm: string;
 	onSearchChange: (term: string) => void;
 	styleProperties: any;
+	textAreaRef?: React.RefObject<HTMLTextAreaElement>; // Add this prop
 }
 
 const components = [
@@ -60,9 +62,107 @@ export function AddComponentPanelButtons({
 	searchTerm,
 	onSearchChange,
 	styleProperties,
+	textAreaRef,
 }: Readonly<AddComponentPanelButtonsProps>) {
 	const [showAll, setShowAll] = useState(false);
 	const panelRef = useRef<HTMLDivElement>(null);
+	const [showImageBrowser, setShowImageBrowser] = useState(false);
+	const [showLinkDialog, setShowLinkDialog] = useState(false);
+	const [linkText, setLinkText] = useState('');
+	const [linkUrl, setLinkUrl] = useState('');
+
+	const handleComponentClick = (comp: any) => {
+		if (comp.id === 'img') {
+			setShowImageBrowser(true);
+		} else if (comp.id === 'link') {
+			setShowLinkDialog(true);
+			setLinkText('');
+			setLinkUrl('');
+		} else {
+			onComponentAdd(comp.syntax);
+			onExpandChange(false);
+			onSearchChange('');
+			setShowAll(false);
+		}
+	};
+
+	const handleLinkAdd = () => {
+		onComponentAdd(`[${linkText}](${linkUrl})`);
+		setShowLinkDialog(false);
+		onExpandChange(false);
+		onSearchChange('');
+		setShowAll(false);
+	};
+
+	let linkDialog = undefined;
+	if (showLinkDialog) {
+		linkDialog = (
+			<div
+				className="_popupBackground"
+				onClick={e => {
+					if (e.target === e.currentTarget) setShowLinkDialog(false);
+				}}
+			>
+				<div className="_linkDialog">
+					<input
+						type="text"
+						className="_linkInput"
+						placeholder="Link text"
+						value={linkText}
+						onChange={e => setLinkText(e.target.value)}
+					/>
+					<input
+						type="text"
+						className="_linkInput"
+						placeholder="URL"
+						value={linkUrl}
+						onChange={e => setLinkUrl(e.target.value)}
+					/>
+					<div className="_dialogButtons">
+						<button
+							className="_button _cancelButton"
+							onClick={() => setShowLinkDialog(false)}
+						>
+							Cancel
+						</button>
+						<button
+							className="_button _addButton"
+							onClick={handleLinkAdd}
+							disabled={!linkText || !linkUrl}
+						>
+							Add Link
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	}
+
+	let imageBrowser = undefined;
+	if (showImageBrowser) {
+		imageBrowser = (
+			<div
+				className="_popupBackground"
+				onClick={e => {
+					if (e.target === e.currentTarget) setShowImageBrowser(false);
+				}}
+			>
+				<div className="_popupContainer">
+					<FileBrowser
+						selectedFile=""
+						onChange={file => {
+							onComponentAdd(`![image](${file})`);
+							setShowImageBrowser(false);
+							onExpandChange(false);
+							onSearchChange('');
+							setShowAll(false);
+						}}
+						editOnUpload={false}
+					/>
+				</div>
+			</div>
+		);
+	}
 
 	const filteredComponents = components.filter(comp =>
 		comp.name.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -119,12 +219,7 @@ export function AddComponentPanelButtons({
 						{displayComponents.map(comp => (
 							<button
 								key={comp.id}
-								onClick={() => {
-									onComponentAdd(comp.syntax);
-									onExpandChange(false);
-									onSearchChange('');
-									setShowAll(false);
-								}}
+								onClick={() => handleComponentClick(comp)}
 								className="_componentButton"
 								title={comp.name}
 							>
@@ -133,11 +228,12 @@ export function AddComponentPanelButtons({
 							</button>
 						))}
 					</div>
+					{imageBrowser}
+					{linkDialog}
 					{hasMoreComponents && !showAll && (
 						<div className="_footer">
 							<button className="_browseAll" onClick={() => setShowAll(true)}>
 								Show all components
-								{/* ({filteredComponents.length}) */}
 							</button>
 						</div>
 					)}

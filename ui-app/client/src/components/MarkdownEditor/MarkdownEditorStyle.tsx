@@ -282,7 +282,7 @@ export default function MarkdownEditorStyle({
 		position: absolute;
  		top: 100%;
 		left: 0;
-		width: 330px;
+		width: 325px;
 		border: 1px solid #d0d7de;
 		border-radius: 6px;
 		box-shadow: 0 4px 8px rgba(0,0,0,0.1);
@@ -294,7 +294,8 @@ export default function MarkdownEditorStyle({
 
 	
 	${PREFIX} ._searchContainer {
-		margin-bottom: 12px;
+		width: 100%;
+		align-items: center;
 	}
 	
 	${PREFIX} ._searchInput {
