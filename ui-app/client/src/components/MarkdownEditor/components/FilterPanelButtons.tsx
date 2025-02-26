@@ -63,42 +63,38 @@ export function FilterPanelButtons({
 
 			<div className="_buttonGroup">
 				<button
+					onClick={() => onFormatClick('heading1')}
+					className="_button"
+					title="heading1"
+				>
+					<b>h1</b>
+				</button>
+				<button
+					onClick={() => onFormatClick('heading2')}
+					className="_button"
+					title="heading2"
+				>
+					<b>h2</b>
+				</button>
+				<button
+					onClick={() => onFormatClick('heading3')}
+					className="_button"
+					title="heading3"
+				>
+					<b>h3</b>
+				</button>
+			</div>
+			<div className="_buttonSeperator" />
+
+			<div className="_buttonGroup">
+				<button
 					onClick={() => onFormatClick('inlineCode')}
 					className="_button"
 					title="Inline Code"
 				>
 					<code>{'<>'}</code>
 				</button>
-				<div className="_dropdownContainer">
-					<button
-						ref={headingButtonRef}
-						onClick={() => setShowHeadingDropdown(!showHeadingDropdown)}
-						className={'_button'}
-						title="Heading"
-					>
-						H
-					</button>
-					{showHeadingDropdown && (
-						<div className="_headingDropdown">
-							{[1, 2, 3, 4, 5, 6].map(level => (
-								<button
-									key={level}
-									onClick={() => {
-										if (selectedText) {
-											onFormatClick(`heading${level}`, selectedText);
-										} else {
-											onFormatClick(`heading${level}`);
-										}
-										setShowHeadingDropdown(false);
-									}}
-									className="_dropdownItem"
-								>
-									H{level}
-								</button>
-							))}
-						</div>
-					)}
-				</div>
+
 				<button
 					onClick={() => setShowLinkDialog(true)}
 					className="_button"
@@ -132,6 +128,27 @@ export function FilterPanelButtons({
 								className="_dropdownItem"
 							>
 								x₂ Subscript
+							</button>
+							<button
+								onClick={() => onFormatClick('heading4')}
+								className="_button"
+								title="heading4"
+							>
+								<b>h4</b>
+							</button>
+							<button
+								onClick={() => onFormatClick('heading5')}
+								className="_button"
+								title="heading5"
+							>
+								<b>h5</b>
+							</button>
+							<button
+								onClick={() => onFormatClick('heading6')}
+								className="_button"
+								title="heading6"
+							>
+								<b>h6</b>
 							</button>
 							<button
 								onClick={() => onFormatClick('footnote')}

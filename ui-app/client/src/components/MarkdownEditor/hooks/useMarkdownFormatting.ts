@@ -63,26 +63,44 @@ export function useMarkdownFormatting() {
 				break;
 
 			case 'heading1':
-			case 'heading2':
-			case 'heading3':
-			case 'heading4':
-			case 'heading5':
-			case 'heading6':
-				let level = command.slice(-1);
-				const headerMarker = '#'.repeat(Number(level));
-				const lines = selectedText.split('\n');
-				const hasHeader = lines[0].startsWith(headerMarker + ' ');
-
-				if (hasHeader) {
-					lines[0] = lines[0].substring(headerMarker.length + 1);
-					newText = `${beforeText}${lines.join('\n')}${afterText}`;
-					newCursorPos = selection.start + lines[0].length;
-				} else {
-					lines[0] = `${headerMarker} ${lines[0]}`;
-					newText = `${beforeText}${lines.join('\n')}${afterText}`;
-					newCursorPos = selection.start + lines[0].length;
-				}
+				toggleFormat('# ', '');
 				break;
+
+			case 'heading2':
+				toggleFormat('## ', '');
+				break;
+
+			case 'heading3':
+				toggleFormat('### ', '');
+				break;
+
+			case 'heading4':
+				toggleFormat('#### ', '');
+				break;
+
+			case 'heading5':
+				toggleFormat('##### ', '');
+				break;
+
+			case 'heading6':
+				toggleFormat('###### ', '');
+				break;
+			// const level = command.slice(-1);
+			// const headerMarker = '#'.repeat(Number(level));
+			// const lines = selectedText.split('\n');
+			// const firstLine = lines[0];
+			// const hasHeader = firstLine.startsWith(headerMarker + ' ');
+
+			// if (hasHeader) {
+			// 	lines[0] = firstLine.substring(headerMarker.length + 1);
+			// } else {
+			// 	lines[0] = `${headerMarker} ${firstLine}`;
+			// }
+
+			// newText = `${beforeText}${lines.join('\n')}${afterText}`;
+			// newCursorPos = selection.start + lines[0].length;
+			// break;
+
 			case 'indent':
 			case 'unindent':
 				handleIndentation(command, selectedText, beforeText, afterText);

@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface ActionButtonsProps {
 	text: string;
 	onExport: (type: 'md' | 'html' | 'pdf') => void;

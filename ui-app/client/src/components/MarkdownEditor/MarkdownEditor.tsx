@@ -122,13 +122,12 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 		const handleResize = () => {
 			if (!wrapperRef.current || !textAreaRef.current) return;
-			wrapperRef.current.style.height = '100px';
-			setTimeout(
-				() =>
-					(wrapperRef.current.style.height =
-						textAreaRef.current.getBoundingClientRect().height + 'px'),
-				600,
+			const textAreaHeight = Math.max(
+				textAreaRef.current.scrollHeight,
+				window.innerHeight * 0.3, // 30vh minimum
 			);
+			wrapperRef.current.style.height = `${textAreaHeight}px`;
+			textAreaRef.current.style.height = `${textAreaHeight}px`;
 		};
 
 		window.addEventListener('resize', handleResize);

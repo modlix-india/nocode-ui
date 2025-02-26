@@ -110,13 +110,23 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} textarea {
 		width: 100%;
-		min-height: 100%;
+		min-height: 30vh;
+		height: auto;
 		resize: none;
 		padding: 10px;
 		border: 1px solid #efefef;
 		border-radius: 0px;
 		border-left: 20px solid #efefef;
-		overflow-y: hidden;
+		overflow-y: auto;
+	}
+
+	${PREFIX}._both ._wrapper {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: auto;
+		min-height: 30vh;
+		height: auto;
 	}
 
 	${PREFIX} ._buttonBar {
@@ -192,12 +202,9 @@ export default function MarkdownEditorStyle({
 	}
 
 	${PREFIX} ._editorContainer {
-		display: flex;
-		flex-direction: row;
-		width: 100%;
-		justify-content: center;
-		min-height: 100%;
-		overflow: auto;
+		min-height: 30vh;
+		height: auto;
+		overflow: visible;
 	}
 
 	${PREFIX} ._resizer {
@@ -488,11 +495,12 @@ export default function MarkdownEditorStyle({
 		border-color: #d0d7de;
 	}
 		
-${PREFIX} ._actionButtons {
-   display: flex;
-    gap: 4px;
-    margin-left: 4px;
-}
+	${PREFIX} ._actionButtons {
+		display: flex;
+		gap: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+	}
 
 
 ${PREFIX} ._buttonBar {
