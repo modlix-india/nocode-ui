@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 interface AddComponentPanelButtonsProps {
 	onComponentAdd: (type: string) => void;
-	position: { line: number; top: number; left: string }; // Updated position prop
 	isExpanded: boolean;
 	onExpandChange: (expanded: boolean) => void;
 	searchTerm: string;
@@ -56,7 +55,6 @@ const components = [
 
 export function AddComponentPanelButtons({
 	onComponentAdd,
-	position,
 	isExpanded,
 	onExpandChange,
 	searchTerm,
@@ -73,17 +71,7 @@ export function AddComponentPanelButtons({
 	const hasMoreComponents = filteredComponents.length > 6;
 
 	return (
-		<div
-			className="_componentPanel"
-			style={{
-				...styleProperties.componentPanel,
-				top: `${position.top}px`,
-				left: position.left,
-				position: 'absolute',
-				display: 'inline-flex',
-				alignItems: 'center',
-			}}
-		>
+		<div className="_componentPanel">
 			{!isExpanded ? (
 				<button
 					className="_addButton"
@@ -95,6 +83,13 @@ export function AddComponentPanelButtons({
 			) : (
 				<div className="_componentPopup">
 					<div className="_searchContainer">
+						<button
+							className="_closeaddButton"
+							onClick={() => onExpandChange(!isExpanded)}
+							title="Close add Component"
+						>
+							<i className={`fa fa-${isExpanded ? 'times' : 'plus'}`} />
+						</button>
 						<input
 							type="text"
 							placeholder="Search"

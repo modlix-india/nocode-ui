@@ -25,7 +25,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{
 				name: 'editTextnDoc',
-				displayName: 'Edit Text and Document',
+				displayName: 'Preview',
 			},
 		],
 	},

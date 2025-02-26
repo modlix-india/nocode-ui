@@ -15,6 +15,7 @@ export function useMarkdownExport() {
 				filename += '.html';
 				mimeType = 'text/html';
 				break;
+
 			case 'pdf':
 				exportToPDF(text, filename);
 				return;
@@ -29,6 +30,10 @@ export function useMarkdownExport() {
 function convertToHTML(text: string, filename: string): string {
 	const tempDiv = document.createElement('div');
 	tempDiv.innerHTML = text
+		.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
+		.replace(/^###### (.*$)/gim, '<h6>$1</h6>')
+		.replace(/^##### (.*$)/gim, '<h5>$1</h5>')
+		.replace(/^#### (.*$)/gim, '<h4>$1</h4>')
 		.replace(/^### (.*$)/gim, '<h3>$1</h3>')
 		.replace(/^## (.*$)/gim, '<h2>$1</h2>')
 		.replace(/^# (.*$)/gim, '<h1>$1</h1>')
@@ -64,10 +69,11 @@ function downloadFile(content: string, filename: string, mimeType: string) {
 }
 
 function exportToPDF(text: string, filename: string) {
+	const htmlContent = convertToHTML(text, filename);
+
 	const printWindow = window.open('', '_blank');
 	if (!printWindow) return;
 
-	const markdownContent = document.querySelector('._markdown')?.innerHTML || '';
 	printWindow.document.write(`
         <!DOCTYPE html>
         <html>
@@ -118,15 +124,19 @@ function exportToPDF(text: string, filename: string) {
             </style>
         </head>
         <body>
-            ${markdownContent}
-            <script>
-                window.onload = () => {
-                    setTimeout(() => {
-                        window.print();
-                    }, 500);
-                };
-            </script>
+            ${htmlContent}
         </body>
         </html>
     `);
+
+	printWindow.document.close(); // Important: close the document
+
+	// Wait for resources to load then print
+	printWindow.onload = () => {
+		printWindow.print();
+		// Close the window after print dialog is closed
+		setTimeout(() => {
+			printWindow.close();
+		}, 1000);
+	};
 }

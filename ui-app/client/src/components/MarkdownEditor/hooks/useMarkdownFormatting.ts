@@ -61,30 +61,32 @@ export function useMarkdownFormatting() {
 			case 'alignJustify':
 				toggleFormat('::: justify\n', '\n:::');
 				break;
-			// Handle headings
+
 			case 'heading1':
 			case 'heading2':
 			case 'heading3':
 			case 'heading4':
 			case 'heading5':
 			case 'heading6':
-				const level = command.slice(-1);
+				let level = command.slice(-1);
 				const headerMarker = '#'.repeat(Number(level));
-				const hasHeader = selectedText.startsWith(headerMarker + ' ');
+				const lines = selectedText.split('\n');
+				const hasHeader = lines[0].startsWith(headerMarker + ' ');
+
 				if (hasHeader) {
-					newText = `${beforeText}${selectedText.slice(headerMarker.length + 1)}${afterText}`;
-					newCursorPos = selection.end - (headerMarker.length + 1);
+					lines[0] = lines[0].substring(headerMarker.length + 1);
+					newText = `${beforeText}${lines.join('\n')}${afterText}`;
+					newCursorPos = selection.start + lines[0].length;
 				} else {
-					newText = `${beforeText}${headerMarker} ${selectedText}${afterText}`;
-					newCursorPos = selection.end + headerMarker.length + 1;
+					lines[0] = `${headerMarker} ${lines[0]}`;
+					newText = `${beforeText}${lines.join('\n')}${afterText}`;
+					newCursorPos = selection.start + lines[0].length;
 				}
 				break;
-			// Handle indentation
 			case 'indent':
 			case 'unindent':
 				handleIndentation(command, selectedText, beforeText, afterText);
 				break;
-			// Handle special cases
 			case 'link':
 				if (typeof value === 'object' && 'text' in value && 'url' in value) {
 					newText = `${beforeText}[${value.text}](${value.url})${afterText}`;

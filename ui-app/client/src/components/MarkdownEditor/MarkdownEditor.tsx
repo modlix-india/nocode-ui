@@ -445,84 +445,226 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		return () => document.removeEventListener('keydown', handleKeyboard);
 	}, [text, history, historyIndex]);
 
+	// Modify mode handling to match GitHub style
+	const [activeTab, setActiveTab] = useState<'write' | 'doc' | 'preview'>('write');
+	const [showFullPreview, setShowFullPreview] = useState(false);
+
+	// New method to handle tab switching
+	const handleTabChange = (tab: 'write' | 'doc' | 'preview') => {
+		setActiveTab(tab);
+		if (tab === 'preview') {
+			setShowFullPreview(true);
+		} else {
+			setShowFullPreview(false);
+		}
+	};
+
 	return (
-		<div
-			key={mode}
-			className={`comp compMarkdownEditor ${showBoth ? '_both' : ''}`}
-			style={styleProperties.comp ?? {}}
-		>
-			<HelperComponent context={props.context} definition={definition} />
-			{!readOnly && (
-				<MEButtonBar
-					mode={mode}
-					onModeChange={m => setMode(m)}
-					styleProperties={styleProperties}
-					textAreaRef={textAreaRef.current}
-					onFileSelected={(s, e, file) => {
-						let newText = makeTextForImageSelection(text, s, e, file);
-						onChangeText(newText, () => {
-							textAreaRef.current.setSelectionRange(s, s + file.length);
-						});
-					}}
-				/>
-			)}
-			<div className="_editorContainer">{renderingComponent}</div>
-			<AddComponentPanelButtons
-				onComponentAdd={type => {
-					if (!textAreaRef.current) return;
-					const { selectionStart } = textAreaRef.current;
-					const lineStart = text.lastIndexOf('\n', selectionStart - 1) + 1;
-					const newText = text.substring(0, lineStart) + type + text.substring(lineStart);
-					onChangeText(newText);
-				}}
-				position={{
-					line: textAreaRef.current?.selectionStart
-						? text.substring(0, textAreaRef.current.selectionStart).split('\n').length
-						: 1,
-					top: textAreaRef.current
-						? Math.min(
-								textAreaRef.current.getBoundingClientRect().top +
-									Math.floor(
-										textAreaRef.current.selectionStart > 0
-											? (
-													text
-														.substring(
-															0,
-															textAreaRef.current.selectionStart,
-														)
-														.match(/\n/g) || []
-												).length *
-													20 -
-													50
-											: -50,
+		<div className="comp compMarkdownEditor" style={styleProperties.comp ?? {}}>
+			<div className="_editorHeader">
+				<div className="_tabContainer">
+					<button
+						className={`_tab ${activeTab === 'write' ? '_active' : ''}`}
+						onClick={() => handleTabChange('write')}
+					>
+						Write
+					</button>
+					<button
+						className={`_tab ${activeTab === 'doc' ? '_active' : ''}`}
+						onClick={() => handleTabChange('doc')}
+					>
+						Document
+					</button>
+					<button
+						className={`_tab ${activeTab === 'preview' ? '_active' : ''}`}
+						onClick={() => handleTabChange('preview')}
+					>
+						Preview
+					</button>
+				</div>
+
+				{(activeTab === 'write' || activeTab === 'doc') && (
+					<>
+						<div className="_toolbarContainer">
+							<AddComponentPanelButtons
+								onComponentAdd={(componentType: string) => {
+									const { selectionStart } = textAreaRef.current;
+									const newText = `${text.substring(0, selectionStart)}${componentType}${text.substring(selectionStart)}`;
+									onChangeText(newText);
+								}}
+								isExpanded={isComponentPanelExpanded}
+								onExpandChange={setIsComponentPanelExpanded}
+								searchTerm={componentSearchTerm}
+								onSearchChange={setComponentSearchTerm}
+								styleProperties={styleProperties}
+							/>
+						</div>
+						<div className="_toolbarContainer">
+							<FilterPanelButtons
+								onFormatClick={handleRichTextCommand}
+								isVisible={true}
+								styleProperties={styleProperties}
+								selectedText={selectedText}
+							/>
+
+							{showActionButtons === 'true' && (
+								<div className="_actionButtons">
+									<button
+										className="_actionButton"
+										onClick={() => navigator.clipboard.writeText(text)}
+										title="Copy content"
+									>
+										<i className="fa fa-copy" />
+									</button>
+									<div className="_exportDropdown">
+										<button
+											className="_actionButton"
+											onClick={() => setShowExportOptions(!showExportOptions)}
+											title="Export"
+										>
+											<i className="fa fa-download" />
+										</button>
+										{showExportOptions && (
+											<div className="_exportOptions">
+												<button
+													onClick={() => {
+														onExport('md');
+														setShowExportOptions(false);
+													}}
+												>
+													Download as MD
+												</button>
+												<button
+													onClick={() => {
+														onExport('html');
+														setShowExportOptions(false);
+													}}
+												>
+													Download as HTML
+												</button>
+												<button
+													onClick={() => {
+														onExport('pdf');
+														setShowExportOptions(false);
+													}}
+												>
+													Download as PDF
+												</button>
+											</div>
+										)}
+									</div>
+								</div>
+							)}
+						</div>
+					</>
+				)}
+			</div>
+
+			<div className="_editorContainer">
+				{activeTab === 'write' || activeTab === 'doc' ? (
+					<textarea
+						ref={textAreaRef}
+						value={text}
+						onChange={ev => onChangeText(ev.target.value)}
+						onBlur={
+							onBlurEvent
+								? () =>
+										(async () =>
+											await runEvent(
+												onBlurEvent,
+												onBlur,
+												props.context.pageName,
+												props.locationHistory,
+												props.pageDefinition,
+											))()
+								: undefined
+						}
+						onKeyUp={() => scrollToCaret(textAreaRef, componentKey)}
+						onClick={() => scrollToCaret(textAreaRef, componentKey)}
+						onScroll={() => {
+							if (!textAreaRef.current) return;
+							scrollToCaret(
+								textAreaRef,
+								componentKey,
+								Math.round(
+									(textAreaRef.current.value.split('\n').length *
+										textAreaRef.current.scrollTop) /
+										textAreaRef.current.scrollHeight,
+								),
+							);
+						}}
+						onKeyDown={ev => {
+							if (ev.key === 'Tab') {
+								ev.preventDefault();
+								const { selectionStart, selectionEnd } = textAreaRef.current;
+								const newText = `${text.substring(0, selectionStart)}    ${text.substring(selectionEnd)}`;
+								onChangeText(newText, () =>
+									textAreaRef.current.setSelectionRange(
+										selectionStart + 4,
+										selectionStart + 4,
 									),
-								textAreaRef.current.getBoundingClientRect().bottom - 50,
-							)
-						: 0,
-					left: `calc(50% + ${textAreaWidth}px)`,
-				}}
-				isExpanded={isComponentPanelExpanded}
-				onExpandChange={setIsComponentPanelExpanded}
-				searchTerm={componentSearchTerm}
-				onSearchChange={setComponentSearchTerm}
-				styleProperties={styleProperties}
-			/>
-			<FilterPanelButtons
-				onFormatClick={handleRichTextCommand}
-				position={filterPanelPosition}
-				isVisible={isFilterPanelVisible}
-				onPositionChange={setFilterPanelPosition}
-				styleProperties={styleProperties}
-				selectedText={selectedText}
-			/>
-			{showActionButtons === 'true' && (
-				<ActionButtons
-					text={text}
-					onExport={onExport}
-					showExportOptions={showExportOptions}
-					setShowExportOptions={setShowExportOptions}
-				/>
-			)}
+								);
+							}
+						}}
+						onPaste={ev => {
+							ev.preventDefault();
+							if (ev.clipboardData.files.length) {
+								const file = ev.clipboardData.files[0];
+								const formData = new FormData();
+								formData.append('file', file);
+								const fileNamePrefix = `pasted_${shortUUID()}_`;
+								formData.append('name', fileNamePrefix);
+
+								const headers: any = {
+									Authorization: getDataFromPath(
+										`${LOCAL_STORE_PREFIX}.AuthToken`,
+										[],
+									),
+								};
+								if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+								(async () => {
+									try {
+										let url = `/api/files/static/${pathForPastedFiles}`;
+										let data = await axios.post(url, formData, { headers });
+										if (data.status === 200) {
+											const { selectionStart } = textAreaRef.current;
+											const paste = data.data.url;
+											const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(selectionStart)}`;
+											onChangeText(newText, () =>
+												textAreaRef.current.setSelectionRange(
+													selectionStart + paste.length + 4,
+													selectionStart + paste.length + 4,
+												),
+											);
+										}
+									} catch (e) {}
+								})();
+							} else {
+								const paste = ev.clipboardData.getData('text');
+								const { selectionStart, selectionEnd } = textAreaRef.current;
+								const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(selectionEnd)}`;
+								onChangeText(newText, () =>
+									textAreaRef.current.setSelectionRange(
+										selectionStart + paste.length,
+										selectionStart + paste.length,
+									),
+								);
+							}
+						}}
+						style={styleProperties.textArea ?? {}}
+						placeholder="Write your Content here..."
+						spellCheck="false"
+						autoComplete="off"
+					/>
+				) : (
+					<MarkdownParser
+						componentKey={componentKey}
+						text={text}
+						styles={styleProperties}
+					/>
+				)}
+			</div>
 		</div>
 	);
 }

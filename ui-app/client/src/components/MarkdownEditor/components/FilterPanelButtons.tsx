@@ -2,27 +2,38 @@ import React, { useRef, useState, useEffect } from 'react';
 
 interface FilterPanelButtonsProps {
 	onFormatClick: (command: string, value?: string | { url: string; text: string }) => void;
-	position: { x: number; y: number } | null;
 	isVisible: boolean;
-	onPositionChange: (position: { x: number; y: number }) => void;
 	styleProperties: any;
 	selectedText: string;
 }
 
 export function FilterPanelButtons({
 	onFormatClick,
-	position,
 	isVisible,
-	onPositionChange,
 	styleProperties,
 	selectedText,
 }: Readonly<FilterPanelButtonsProps>) {
-	const panelRef = useRef<any>(null);
 	const [showLinkDialog, setShowLinkDialog] = useState(false);
 	const [linkText, setLinkText] = useState('');
 	const [linkUrl, setLinkUrl] = useState('');
 	const [showMoreDropdown, setShowMoreDropdown] = useState(false);
 	const [showHeadingDropdown, setShowHeadingDropdown] = useState(false);
+
+	const headingButtonRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (
+				headingButtonRef.current &&
+				!headingButtonRef.current.contains(event.target as Node)
+			) {
+				setShowHeadingDropdown(false);
+			}
+		};
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
 
 	useEffect(() => {
 		if (showLinkDialog && selectedText) {
@@ -58,29 +69,36 @@ export function FilterPanelButtons({
 				>
 					<code>{'<>'}</code>
 				</button>
-				<button
-					onClick={() => setShowHeadingDropdown(!showHeadingDropdown)}
-					className="_button"
-					title="Heading"
-				>
-					H
-				</button>
-				{showHeadingDropdown && (
-					<div className="_dropdown">
-						{[1, 2, 3, 4, 5, 6].map(level => (
-							<button
-								key={level}
-								onClick={() => {
-									onFormatClick(`heading${level}`);
-									setShowHeadingDropdown(false);
-								}}
-								className="_dropdownItem"
-							>
-								H{level}
-							</button>
-						))}
-					</div>
-				)}
+				<div className="_dropdownContainer">
+					<button
+						ref={headingButtonRef}
+						onClick={() => setShowHeadingDropdown(!showHeadingDropdown)}
+						className={'_button'}
+						title="Heading"
+					>
+						H
+					</button>
+					{showHeadingDropdown && (
+						<div className="_headingDropdown">
+							{[1, 2, 3, 4, 5, 6].map(level => (
+								<button
+									key={level}
+									onClick={() => {
+										if (selectedText) {
+											onFormatClick(`heading${level}`, selectedText);
+										} else {
+											onFormatClick(`heading${level}`);
+										}
+										setShowHeadingDropdown(false);
+									}}
+									className="_dropdownItem"
+								>
+									H{level}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
 				<button
 					onClick={() => setShowLinkDialog(true)}
 					className="_button"
@@ -171,43 +189,8 @@ export function FilterPanelButtons({
 	);
 
 	return (
-		<>
-			<div
-				className="_filterPanel"
-				ref={panelRef}
-				style={{
-					...styleProperties.filterPanel,
-					transform: position ? `translate(${position.x}px, ${position.y}px)` : 'none',
-					display: isVisible ? 'flex' : 'none',
-					position: 'fixed',
-					top: 0,
-					left: 0,
-				}}
-				onMouseDown={ev => {
-					if (ev.buttons !== 1 || !panelRef.current || !position) return;
-					const currentLocation = { x: ev.clientX, y: ev.clientY };
-					let newX = position.x;
-					let newY = position.y;
-
-					const mouseMove = (ev: MouseEvent) => {
-						if (ev.buttons !== 1) return;
-						newX = position.x + ev.clientX - currentLocation.x;
-						newY = position.y + ev.clientY - currentLocation.y;
-						panelRef.current.style.transform = `translate(${newX}px, ${newY}px)`;
-					};
-
-					const mouseUp = () => {
-						onPositionChange({ x: newX, y: newY });
-						document.removeEventListener('mousemove', mouseMove);
-						document.removeEventListener('mouseup', mouseUp);
-					};
-
-					document.addEventListener('mousemove', mouseMove);
-					document.addEventListener('mouseup', mouseUp);
-				}}
-			>
-				{mainButtons}
-			</div>
+		<div className="_filterToolbar">
+			<div className="_buttonGroup">{mainButtons}</div>
 			{showLinkDialog && (
 				<div
 					className="_popupBackground"
@@ -249,6 +232,6 @@ export function FilterPanelButtons({
 					</div>
 				</div>
 			)}
-		</>
+		</div>
 	);
 }
