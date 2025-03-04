@@ -37,64 +37,49 @@ function PinIcon({ isPinned, onClick }: Readonly<PinIconProps>) {
 
 // Add new tutorial icons component
 interface TutorialIconsProps {
-	showTutorial: boolean;
-	demoVideo?: string;
-	description?: string;
-	youtubeLink?: string;
+	tutorial?: {
+		demoVideo?: string;
+		description?: string;
+		youtubeLink?: string;
+	};
 	onInfoClick: () => void;
 }
 
-function TutorialIcons({
-	showTutorial,
-	demoVideo,
-	description,
-	youtubeLink,
-	onInfoClick,
-}: TutorialIconsProps) {
-	if (!showTutorial) return null;
+function TutorialIcons({ tutorial, onInfoClick }: TutorialIconsProps) {
+	if (!tutorial?.demoVideo && !tutorial?.description && !tutorial?.youtubeLink) return null;
 
 	return (
-		<div className="_tutorialIcons">
-			{(demoVideo || description) && (
-				<i
-					className="fa-solid fa-info-circle"
-					onClick={e => {
-						e.stopPropagation();
-						onInfoClick();
-					}}
+		<button
+			className="_tutorialIcon"
+			onClick={e => {
+				e.stopPropagation();
+				onInfoClick();
+			}}
+		>
+			<svg width="15" height="15">
+				<path
+					d="M7.5 1.25C4.05 1.25 1.25 4.05 1.25 7.5C1.25 10.95 4.05 13.75 7.5 13.75C10.95 13.75 13.75 10.95 13.75 7.5C13.75 4.05 10.95 1.25 7.5 1.25ZM8.125 11.25H6.875V6.875H8.125V11.25ZM8.125 5.625H6.875V4.375H8.125V5.625Z"
+					fill="#999"
 				/>
-			)}
-			{youtubeLink && (
-				<a
-					href={youtubeLink}
-					target="_blank"
-					rel="noopener noreferrer"
-					className="_youtubeIcon"
-					onClick={e => e.stopPropagation()}
-				>
-					<i className="fa-brands fa-youtube" />
-				</a>
-			)}
-		</div>
+			</svg>
+		</button>
 	);
 }
 
 interface TutorialTooltipProps {
 	componentName?: string;
-	demoVideo?: string;
-	description?: string;
+	tutorial?: {
+		demoVideo?: string;
+		description?: string;
+		youtubeLink?: string;
+	};
 	onClose: () => void;
 	style?: React.CSSProperties;
 }
 
-function TutorialTooltip({
-	componentName,
-	demoVideo,
-	description,
-	onClose,
-	style,
-}: TutorialTooltipProps) {
-	const isYoutubeVideo = demoVideo?.includes('youtube.com') || demoVideo?.includes('youtu.be');
+function TutorialTooltip({ componentName, tutorial, onClose, style }: TutorialTooltipProps) {
+	const isYoutubeVideo =
+		tutorial?.demoVideo?.includes('youtube.com') || tutorial?.demoVideo?.includes('youtu.be');
 
 	return (
 		<div
@@ -111,23 +96,38 @@ function TutorialTooltip({
 					<h3>{componentName ? `${componentName} Tutorial` : 'Component Tutorial'}</h3>
 					<i className="fa-solid fa-circle-xmark" onClick={onClose} />
 				</div>
-				{demoVideo && (
+				{tutorial?.demoVideo && (
 					<div className="_videoContainer">
 						{isYoutubeVideo ? (
 							<iframe
-								src={demoVideo.replace('watch?v=', 'embed/')}
+								src={tutorial.demoVideo.replace('watch?v=', 'embed/')}
 								title="YouTube video player"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowFullScreen
 							/>
 						) : (
 							<video autoPlay loop muted playsInline>
-								<source src={demoVideo} type="video/mp4" />
+								<source src={tutorial.demoVideo} type="video/mp4" />
 							</video>
 						)}
 					</div>
 				)}
-				{description && <div className="_descriptionT">{description}</div>}
+				{tutorial?.description && (
+					<div className="_descriptionT">{tutorial.description}</div>
+				)}
+				{tutorial?.youtubeLink && (
+					<div className="_youtubeButtonContainer">
+						<a
+							href={tutorial.youtubeLink}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="_youtubeButton"
+						>
+							<i className="fa-brands fa-youtube" />
+							Click here to learn more
+						</a>
+					</div>
+				)}
 			</div>
 		</div>
 	);
@@ -224,15 +224,6 @@ export default function ComponentMenu({
 			return newPinned;
 		});
 	};
-
-	useEffect(() => {
-		if (!personalizationPath) return;
-		return addListenerAndCallImmediately(
-			(_, v) => setShowTutorialHelp(v ?? false),
-			pageExtractor,
-			`${personalizationPath}.showTutorialHelp`,
-		);
-	}, [personalizationPath]);
 
 	const sortComponents = (components: any[]) => {
 		return components.sort(
@@ -395,10 +386,7 @@ export default function ComponentMenu({
 								onClick={() => handlePinComponent(e.name)}
 							/>
 							<TutorialIcons
-								showTutorial={showTutorialHelp}
-								demoVideo={e.tutorial?.demoVideo}
-								description={e.tutorial?.description}
-								youtubeLink={e.tutorial?.youtubeLink}
+								tutorial={e.tutorial}
 								onInfoClick={() => setActiveTutorial(e.name)}
 							/>
 							{typeof e.subComponentDefinition?.[0].icon === 'string' ? (
@@ -560,24 +548,6 @@ export default function ComponentMenu({
 							value={query}
 						/>
 					)}
-					<div className="_filterBar">
-						<div className="_tutorialToggle">
-							<label>
-								Looking for Tutorial Help?
-								<div
-									role="button"
-									tabIndex={0}
-									className={`_toggleButton ${showTutorialHelp ? '_on' : '_off'}`}
-									onClick={() => {
-										onChangePersonalization(
-											'showTutorialHelp',
-											!showTutorialHelp,
-										);
-									}}
-								/>
-							</label>
-						</div>
-					</div>
 					<div className="_compList">{compList}</div>
 				</div>
 			</div>
@@ -585,10 +555,7 @@ export default function ComponentMenu({
 			{activeTutorial && (
 				<TutorialTooltip
 					componentName={compsList.find(e => e.name === activeTutorial)?.displayName}
-					demoVideo={compsList.find(e => e.name === activeTutorial)?.tutorial?.demoVideo}
-					description={
-						compsList.find(e => e.name === activeTutorial)?.tutorial?.description
-					}
+					tutorial={compsList.find(e => e.name === activeTutorial)?.tutorial}
 					onClose={() => setActiveTutorial(null)}
 					style={{
 						position: 'absolute',

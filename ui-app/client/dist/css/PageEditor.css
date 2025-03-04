@@ -3483,19 +3483,6 @@ input._peInput[type='number'] {
 	transform: translateX(16px);
 }
 
-.comp.compPageEditor ._popupMenuContainer._compMenu ._tutorialToggle {
-	display: flex;
-	align-items: center;
-	font-size: 12px;
-}
-
-.comp.compPageEditor ._popupMenuContainer._compMenu ._tutorialToggle label {
-	display: flex;
-	align-items: center;
-	gap: 5px;
-	cursor: pointer;
-}
-
 .comp.compPageEditor ._popupMenuContainer._compMenu ._tutorialTooltipContainer {
 	position: absolute;
 	left: 300px;
@@ -3536,9 +3523,11 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor ._tutorialHeader i {
 	cursor: pointer;
+	height: 10px;
+	width: 10px;
 }
 
-.comp.compPageEditor ._popupMenuContainer._compMenu ._tutorialIcons {
+/* .comp.compPageEditor ._popupMenuContainer._compMenu ._tutorialIcons {
 	position: absolute;
 	top: 8%;
 	right: 25%;
@@ -3568,8 +3557,52 @@ input._peInput[type='number'] {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+} */
+
+.comp.compPageEditor ._tutorialIcon {
+	position: absolute;
+	opacity: 0;
+	transition: opacity 0.2s;
+	cursor: pointer;
+	width: 10px;
+	height: 10px;
+	padding: 0;
+	border: 0;
+	top: 7%;
+	right: 30%;
 }
 
+.comp.compPageEditor ._tutorialIcon:hover svg path {
+	fill: #4c7fee;
+}
+
+.comp.compPageEditor ._youtubeButtonContainer {
+	margin: 8px;
+	padding-top: 8px;
+	border-top: 1px solid #eee;
+	text-align: center;
+}
+
+.comp.compPageEditor ._youtubeButton {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	background: #ff0000;
+	color: white;
+	border-radius: 4px;
+	text-decoration: none;
+	font-weight: 500;
+	transition: background-color 0.2s ease;
+}
+
+.comp.compPageEditor ._youtubeButton:hover {
+	background: #cc0000;
+}
+
+.comp.compPageEditor ._youtubeButton i {
+	font-size: 20px;
+}
 .comp.compPageEditor ._videoContainer {
 	width: 100%;
 	aspect-ratio: 18/9;
@@ -3587,6 +3620,14 @@ input._peInput[type='number'] {
 	.comp.compPageEditor ._tutorialTooltipPanel {
 		width: 450px;
 	}
+}
+
+.comp.compPageEditor ._compMenuItem ._tutorialIcon {
+	opacity: 0;
+}
+
+.comp.compPageEditor ._compMenuItem:hover ._tutorialIcon {
+	opacity: 1;
 }
 
 .comp.compPageEditor ._videoContainer iframe,
