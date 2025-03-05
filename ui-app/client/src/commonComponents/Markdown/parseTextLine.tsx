@@ -8,19 +8,26 @@ import { parseLine } from './parseLine';
 import { ORDERED_LIST_REGEX, UNORDERED_LIST_REGEX, parseLists } from './parseLists';
 import { parseTable } from './parseTable';
 import { parseYoutubeEmbedding } from './parseYoutubeEmbedding';
+import { parseAlignment } from './parseAlignment';
+import { parseTextDirection } from './parseTextDirection';
 
 const HR_REGEX = /^[-*=_]{3,}$/;
 const TABLE_REGEX = /^(\| )?(:)?-{3,}:?\s+(\|(:|\s+:?)-{3,}(:?\s*))*\|?$/;
 
 export function parseTextLine(params: MarkdownParserParameters): MarkdownParserReturnValue {
-	const { lines, lineNumber: i, editable, styles, line: acutalLine } = params;
+	const { lines, lineNumber: i, editable, styles, line: actualLine } = params;
 	let lineNumber = i;
-	let line = (acutalLine ?? lines[i].trim())?.substring(params.indentationLength ?? 0);
+	let line = (actualLine ?? lines[i].trim())?.substring(params.indentationLength ?? 0);
 	let nextLine = lines[i + 1]?.trim()?.substring(params.indentationLength ?? 0) ?? '';
 
 	let comp = undefined;
 
-	if (/^https:\/\/((www\.)?youtube.com\/(watch|embed)|youtu.be\/)/i.test(line)) {
+	// Add text direction check
+	if (line.match(/^:::\s*(rtl|ltr)\s*$/i)) {
+		({ lineNumber, comp } = parseTextDirection(params));
+	} else if (line.match(/^:::\s*(left|center|right|justify)\s*$/i)) {
+		({ lineNumber, comp } = parseAlignment(params));
+	} else if (/^https:\/\/((www\.)?youtube.com\/(watch|embed)|youtu.be\/)/i.test(line)) {
 		({ lineNumber, comp } = parseYoutubeEmbedding(params));
 	} else if (lineNumber + 1 < lines.length && TABLE_REGEX.test(nextLine)) {
 		({ lineNumber, comp } = parseTable(params));

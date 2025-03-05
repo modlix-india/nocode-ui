@@ -30,16 +30,44 @@ export function useMarkdownExport() {
 function convertToHTML(text: string, filename: string): string {
 	const tempDiv = document.createElement('div');
 	tempDiv.innerHTML = text
-		.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
+		// Headers
 		.replace(/^###### (.*$)/gim, '<h6>$1</h6>')
 		.replace(/^##### (.*$)/gim, '<h5>$1</h5>')
 		.replace(/^#### (.*$)/gim, '<h4>$1</h4>')
 		.replace(/^### (.*$)/gim, '<h3>$1</h3>')
 		.replace(/^## (.*$)/gim, '<h2>$1</h2>')
 		.replace(/^# (.*$)/gim, '<h1>$1</h1>')
+		// Block elements
+		.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
+		.replace(/^- (.*$)/gim, '<li>$1</li>')
+		.replace(/^1\. (.*$)/gim, '<li>$1</li>')
+		// Text formatting
 		.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
 		.replace(/\*(.*)\*/gim, '<em>$1</em>')
+		.replace(/~~(.*)~~/gim, '<del>$1</del>')
+		.replace(/`([^`]+)`/gim, '<code>$1</code>')
+		.replace(/==(.*)==/gim, '<mark>$1</mark>')
+		// Alignment and direction
+		.replace(/^:::\s*left\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: left">$1</div>')
+		.replace(/^:::\s*center\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: center">$1</div>')
+		.replace(/^:::\s*right\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: right">$1</div>')
+		.replace(
+			/^:::\s*justify\s*\n([\s\S]*?)\n:::/gim,
+			'<div style="text-align: justify">$1</div>',
+		)
+		.replace(/^:::\s*rtl\s*\n([\s\S]*?)\n:::/gim, '<div style="direction: rtl">$1</div>')
+		.replace(/^:::\s*ltr\s*\n([\s\S]*?)\n:::/gim, '<div style="direction: ltr">$1</div>')
+		// Links and images
+		.replace(
+			/!\[(.*?)\]\((.*?)\)/gim,
+			'<img src="$2" alt="$1" style="max-width: 100%; height: auto;">',
+		)
 		.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
+		// Indentation
+		.replace(/^(\s{4,})(.*?)$/gim, '<div style="padding-left: 2em">$2</div>')
+		// Lists wrapper
+		.replace(/<li>.*?<\/li>\n?/gim, match => `<ul>${match}</ul>`)
+		// Line breaks
 		.replace(/\n$/gim, '<br />');
 
 	return `
@@ -48,6 +76,39 @@ function convertToHTML(text: string, filename: string): string {
         <head>
             <meta charset="UTF-8">
             <title>${filename}</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    max-width: 800px;
+                    margin: 40px auto;
+                    padding: 20px;
+                }
+                img {
+                    max-width: 100%;
+                    height: auto;
+                    display: block;
+                    margin: 1em auto;
+                }
+                code {
+                    background: #f5f5f5;
+                    padding: 0.2em 0.4em;
+                    border-radius: 3px;
+                }
+                blockquote {
+                    border-left: 4px solid #ddd;
+                    margin: 1em 0;
+                    padding: 0.5em 1em;
+                    background: #f9f9f9;
+                }
+                mark {
+                    background-color: #fff1a7;
+                    padding: 0.2em;
+                }
+                ul, ol {
+                    padding-left: 2em;
+                }
+            </style>
         </head>
         <body>
             ${tempDiv.innerHTML}

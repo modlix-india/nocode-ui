@@ -61,6 +61,12 @@ export function useMarkdownFormatting() {
 			case 'alignJustify':
 				toggleFormat('::: justify\n', '\n:::');
 				break;
+			case 'rtl':
+				toggleFormat('::: rtl\n', '\n:::');
+				break;
+			case 'ltr':
+				toggleFormat('::: ltr\n', '\n:::');
+				break;
 
 			case 'heading1':
 				toggleFormat('# ', '');

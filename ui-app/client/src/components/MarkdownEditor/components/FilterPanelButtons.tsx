@@ -5,6 +5,8 @@ interface FilterPanelButtonsProps {
 	isVisible: boolean;
 	styleProperties: any;
 	selectedText: string;
+	isFloating?: boolean;
+	position?: { x: number; y: number };
 }
 
 export function FilterPanelButtons({
@@ -12,6 +14,8 @@ export function FilterPanelButtons({
 	isVisible,
 	styleProperties,
 	selectedText,
+	isFloating,
+	position,
 }: Readonly<FilterPanelButtonsProps>) {
 	const [showLinkDialog, setShowLinkDialog] = useState(false);
 	const [linkText, setLinkText] = useState('');
@@ -209,7 +213,22 @@ export function FilterPanelButtons({
 	);
 
 	return (
-		<div className="_filterToolbar" ref={dropdownRef}>
+		// <div className="_filterToolbar" ref={dropdownRef}>
+		<div
+			className={`_filterToolbar ${isFloating ? '_floating' : ''}`}
+			ref={dropdownRef}
+			style={
+				isFloating && position
+					? {
+							position: 'fixed',
+							left: `${position.x}px`,
+							top: `${position.y}px`,
+							transform: 'translateY(-100%)',
+							zIndex: 1000,
+						}
+					: undefined
+			}
+		>
 			<div className="_buttonGroup">{mainButtons}</div>
 			{showLinkDialog && (
 				<div
