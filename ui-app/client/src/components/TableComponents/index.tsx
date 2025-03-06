@@ -242,6 +242,18 @@ export const Table: Component = {
 			description: 'Page Selection Label',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'tableContainer',
+			displayName: 'Table Container',
+			description: 'Table Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tableWithPagination',
+			displayName: 'Table With Pagination',
+			description: 'Table With Pagination',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 
@@ -513,6 +525,18 @@ export const TableColumns: Component = {
 			name: 'selectedRow',
 			displayName: 'Selected Row',
 			description: 'Selected Row',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'headerContainer',
+			displayName: 'Header Container',
+			description: 'Header Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rowContainer',
+			displayName: 'Row Container',
+			description: 'Row Container',
 			icon: 'fa-solid fa-box',
 		},
 	],
