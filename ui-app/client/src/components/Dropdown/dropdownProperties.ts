@@ -4,9 +4,9 @@ import {
 	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
-	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
+	ComponentPropertyGroup,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -34,6 +34,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
+	{
+		name: 'runEventOnDropDownClose',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Event Run on Close',
+		description: 'Allows the users to run event on close of dropdown.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
 
 	{
 		name: 'isSearchable',
@@ -47,9 +55,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'No Float Label',
+		displayName: 'Do not float Label',
 		description: 'Dropdown without floating label.',
-		translatable: true,
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
@@ -128,6 +135,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Clear On Selecting Same Value',
 		description: 'Clear on selecting same value.',
 		defaultValue: true,
+	},
+	{
+		name: 'supportingText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Supporting Text',
+		description: 'Text to be shown to help fill the textbox.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'leftIcon',

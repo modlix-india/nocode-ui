@@ -1,7 +1,7 @@
 import React, { MouseEvent, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { Component, ComponentProps } from '../../types/common';
 import {
 	processComponentStylePseudoClasses,
 	processStyleObjectToCSS,
@@ -17,8 +17,9 @@ import { propertiesDefinition, stylePropertiesDefinition } from './menuPropertie
 import Children from '../Children';
 import { styleDefaults } from './menuStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import getSrcUrl from '../util/getSrcUrl';
 
-function Menu(props: ComponentProps) {
+function Menu(props: Readonly<ComponentProps>) {
 	const location = useLocation();
 	const {
 		pageDefinition: { translations },
@@ -71,13 +72,14 @@ function Menu(props: ComponentProps) {
 	React.useEffect(() => {
 		if (!pathsActiveFor?.length) return;
 		const paths = pathsActiveFor.split(',');
-		let hasPath = false;
+		let hasPath;
 		if (pathname === '/') {
 			hasPath = !!paths.find((e: string) => pathname === e);
 		} else {
+			const lowerPath = pathname.toLowerCase();
 			hasPath = !!paths
 				.filter((e: string) => e !== '/')
-				.find((e: string) => pathname.indexOf(e) >= 0);
+				.find((e: string) => lowerPath.indexOf('/' + e.toLowerCase()) >= 0);
 		}
 		setIsMenuActive(hasPath);
 	}, [pathname, pathsActiveFor]);
@@ -120,7 +122,7 @@ function Menu(props: ComponentProps) {
 									externalButtonFeatures ?? features,
 								);
 							}
-					  }
+						}
 			}
 		>
 			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
@@ -135,14 +137,14 @@ function Menu(props: ComponentProps) {
 		</i>
 	) : imageIcon && !activeImageIcon ? (
 		<>
-			<img className={`_imageIcon ${imageIcon}`} src={imageIcon} alt="imageIcon" />
+			<img className={`_imageIcon ${imageIcon}`} src={getSrcUrl(imageIcon)} alt="imageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
 		</>
 	) : !imageIcon && activeImageIcon ? (
 		<>
 			<img
 				className={`_activeImageIcon ${activeImageIcon}`}
-				src={activeImageIcon}
+				src={getSrcUrl(activeImageIcon)}
 				alt="activeImageIcon"
 			/>
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
@@ -151,14 +153,14 @@ function Menu(props: ComponentProps) {
 		<>
 			<img
 				className={`_activeImageIcon ${activeImageIcon}`}
-				src={activeImageIcon}
+				src={getSrcUrl(activeImageIcon)}
 				alt="activeImageIcon"
 			/>
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
 		</>
 	) : imageIcon && activeImageIcon && (!isHovered || !isMenuActive) ? (
 		<>
-			<img className={`_imageIcon ${imageIcon}`} src={imageIcon} alt="imageIcon" />
+			<img className={`_imageIcon ${imageIcon}`} src={getSrcUrl(imageIcon)} alt="imageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
 		</>
 	) : (
@@ -295,7 +297,7 @@ function Menu(props: ComponentProps) {
 				/>
 				<Children
 					pageDefinition={props.pageDefinition}
-					children={definition.children}
+					renderableChildren={definition.children}
 					context={{ ...context, menuLevel: (context.menuLevel ?? 0) + 1 }}
 					locationHistory={locationHistory}
 				/>
@@ -356,13 +358,14 @@ function Menu(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 22,
 	name: 'Menu',
 	displayName: 'Menu',
 	description: 'Menu component',
 	component: Menu,
 	styleComponent: MenuStyle,
 	styleDefaults: styleDefaults,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover', 'disabled', 'active', 'visited'],
@@ -390,28 +393,33 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<rect
-						x="1"
-						y="1"
-						width="22"
-						height="22"
-						rx="2"
-						fill="currentColor"
-						fillOpacity="0.2"
-					/>
-					<path d="M3 11H11V3H3.8C3.35817 3 3 3.35817 3 3.8V11Z" fill="currentColor" />
+				<IconHelper viewBox="0 0 30 30">
 					<path
-						d="M21 13L13 13L13 21H20.2C20.6418 21 21 20.6418 21 20.2V13Z"
-						fill="currentColor"
+						d="M15 0.85C7.19505 0.85 0.85 7.19505 0.85 15C0.85 22.8049 7.19505 29.15 15 29.15C22.8049 29.15 29.15 22.8049 29.15 15C29.15 7.19505 22.8049 0.85 15 0.85Z"
+						fill="#02B694"
+						stroke="#02B694"
+						strokeWidth="0.3"
 					/>
 					<path
-						d="M3 13L11 13L11 21H3.8C3.35817 21 3 20.6418 3 20.2L3 13Z"
-						fill="currentColor"
+						d="M20.3023 8.85H9.69767C9.44104 8.85 9.22511 8.99519 9.07931 9.20417C8.93365 9.41295 8.85 9.69401 8.85 10C8.85 10.306 8.93365 10.5871 9.07931 10.7958C9.22511 11.0048 9.44104 11.15 9.69767 11.15H20.3023C20.559 11.15 20.7749 11.0048 20.9207 10.7958C21.0663 10.5871 21.15 10.306 21.15 10C21.15 9.69401 21.0663 9.41295 20.9207 9.20417C20.7749 8.99519 20.559 8.85 20.3023 8.85Z"
+						fill="white"
+						stroke="white"
+						strokeWidth="0.3"
+						className="_menuInner1"
 					/>
 					<path
-						d="M21 11L13 11L13 3L20.2 3C20.6418 3 21 3.35817 21 3.8V11Z"
-						fill="currentColor"
+						d="M20.3023 13.85H9.69767C9.44104 13.85 9.22511 13.9952 9.07931 14.2042C8.93365 14.4129 8.85 14.694 8.85 15C8.85 15.306 8.93365 15.5871 9.07931 15.7958C9.22511 16.0048 9.44104 16.15 9.69767 16.15H20.3023C20.559 16.15 20.7749 16.0048 20.9207 15.7958C21.0663 15.5871 21.15 15.306 21.15 15C21.15 14.694 21.0663 14.4129 20.9207 14.2042C20.7749 13.9952 20.559 13.85 20.3023 13.85Z"
+						fill="white"
+						stroke="white"
+						strokeWidth="0.3"
+						className="_menuInner2"
+					/>
+					<path
+						d="M20.3023 18.85H9.69767C9.44104 18.85 9.22511 18.9952 9.07931 19.2042C8.93365 19.4129 8.85 19.694 8.85 20C8.85 20.306 8.93365 20.5871 9.07931 20.7958C9.22511 21.0048 9.44104 21.15 9.69767 21.15H20.3023C20.559 21.15 20.7749 21.0048 20.9207 20.7958C21.0663 20.5871 21.15 20.306 21.15 20C21.15 19.694 21.0663 19.4129 20.9207 19.2042C20.7749 18.9952 20.559 18.85 20.3023 18.85Z"
+						fill="white"
+						stroke="white"
+						strokeWidth="0.3"
+						className="_menuInner3"
 					/>
 				</IconHelper>
 			),

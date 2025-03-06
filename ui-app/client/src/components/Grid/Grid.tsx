@@ -22,15 +22,14 @@ import { isNullValue } from '@fincity/kirun-js';
 import { styleDefaults } from './gridStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-function Grid(props: ComponentProps) {
+function Grid(props: Readonly<ComponentProps>) {
 	const location = useLocation();
 	const [hover, setHover] = React.useState(false);
 	const [focus, setFocus] = React.useState(false);
-	const [observer, setObserver] = React.useState<IntersectionObserver>();
 	const ref = React.useRef(null);
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
@@ -54,6 +53,11 @@ function Grid(props: ComponentProps) {
 			boxShadow,
 			stopPropagation,
 			preventDefault,
+			dragDataPrefix,
+			dragDataType,
+			dropDataPrefix,
+			dropDataType,
+			onDropData,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -67,14 +71,18 @@ function Grid(props: ComponentProps) {
 		<Children
 			key={`${key}_chld`}
 			pageDefinition={pageDefinition}
-			children={definition.children}
+			renderableChildren={definition.children}
 			context={{ ...context, isReadonly }}
 			locationHistory={locationHistory}
 		/>
 	);
 
 	const dragstartHandler = (ev: React.DragEvent<HTMLElement>) => {
-		ev.dataTransfer.setData('text/plain', dragData);
+		let data = dragData;
+		if (dragDataType === 'application/json')
+			data = dragData === undefined ? 'undefined' : JSON.stringify(dragData);
+		if (dragDataPrefix) data = dragDataPrefix + data;
+		ev.dataTransfer.setData(dragDataType, data);
 	};
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -103,6 +111,10 @@ function Grid(props: ComponentProps) {
 
 	const bindingPathPath2 = bindingPath2
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPathPath3 = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
 		: undefined;
 
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -187,18 +199,43 @@ function Grid(props: ComponentProps) {
 		return () => observer.disconnect();
 	}, [ref.current, onEnteringViewport, onLeavingViewport]);
 
+	let onDragOverFunction: React.DragEventHandler<HTMLInputElement> | undefined = undefined;
+	let onDropFunction: React.DragEventHandler<HTMLInputElement> | undefined = undefined;
+
+	if (bindingPathPath3 || onDropData) {
+		onDragOverFunction = e => e.preventDefault();
+
+		onDropFunction = e => {
+			e.preventDefault();
+			let data = e.dataTransfer.getData(dropDataType);
+			if (dropDataPrefix) {
+				if (!data.startsWith(dropDataPrefix)) return;
+				data = data.substring(dropDataPrefix.length);
+			}
+			if (dropDataType === 'application/json') data = JSON.parse(data);
+			if (bindingPathPath3) setData(bindingPathPath3, data, context.pageName);
+			if (!onDropData || !pageDefinition.eventFunctions[onDropData]) return;
+			(async () =>
+				await runEvent(
+					pageDefinition.eventFunctions[onDropData],
+					onDropData,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		};
+	}
+
 	if (linkPath) {
 		return React.createElement(
 			containerType.toLowerCase(),
 			{
 				className: 'comp compGrid',
 				id: key,
-				draggable:
-					dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
-				onDragStart:
-					dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
-						? dragstartHandler
-						: undefined,
+				draggable: !!dragData,
+				onDragStart: dragData ? dragstartHandler : undefined,
+				onDragOver: onDragOverFunction,
+				onDrop: onDropFunction,
 			},
 			[
 				<HelperComponent
@@ -253,7 +290,7 @@ function Grid(props: ComponentProps) {
 					onBlur={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
 					}
-					to={getHref(linkPath, location)}
+					to={getHref(linkPath, location) ?? ''}
 					target={target}
 					style={resolvedStyles.comp ?? {}}
 				>
@@ -320,14 +357,13 @@ function Grid(props: ComponentProps) {
 								))();
 						}
 					: undefined,
-			onDragStart:
-				dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_')
-					? dragstartHandler
-					: undefined,
+			onDragStart: !!dragData ? dragstartHandler : undefined,
+			onDragOver: onDragOverFunction,
+			onDrop: onDropFunction,
 			onFocus: stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined,
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
-			draggable: dragData?.length && dragData?.startsWith('TEMPLATE_DRAG_') ? true : false,
+			draggable: !!dragData,
 			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${
 				sepStyle ? `_${key}_grid_css` : ''
 			}`,
@@ -349,6 +385,7 @@ function Grid(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 1,
 	name: 'Grid',
 	displayName: 'Grid',
 	description: 'Grid component',
@@ -363,6 +400,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Grid X Scroll Percentage Binding' },
 		bindingPath2: { name: 'Grid Y Scroll Percentage Binding' },
+		bindingPath3: { name: 'Dropped Data Binding' },
 	},
 	defaultTemplate: {
 		key: '',
@@ -382,36 +420,24 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 22 22">
+				<IconHelper viewBox="0 0 30 30">
 					<path
-						d="M8 1H2C1.44772 1 1 1.44772 1 2V12C1 12.5523 1.44772 13 2 13H8C8.55229 13 9 12.5523 9 12V2C9 1.44772 8.55229 1 8 1Z"
-						fill="currentColor"
-						strokeWidth="0"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						fillOpacity="0.5"
+						className="_scaleBottomTop"
+						d="M11 0H1C0.447715 0 0 0.447715 0 1V18C0 18.5523 0.447715 19 1 19H11C11.5523 19 12 18.5523 12 18V1C12 0.447715 11.5523 0 11 0Z"
+						fill="#7743DB"
 					/>
 					<path
-						d="M20 9H14C13.4477 9 13 9.44772 13 10V20C13 20.5523 13.4477 21 14 21H20C20.5523 21 21 20.5523 21 20V10C21 9.44772 20.5523 9 20 9Z"
-						fill="currentColor"
-						strokeWidth="0"
-						strokeLinecap="round"
-						strokeLinejoin="round"
+						className="_scaleTopBottom"
+						d="M26 11H16C15.4477 11 15 11.4477 15 12V29C15 29.5523 15.4477 30 16 30H26C26.5523 30 27 29.5523 27 29V12C27 11.4477 26.5523 11 26 11Z"
+						fill="#7743DB"
 					/>
 					<path
-						d="M8 17H2C1.44772 17 1 17.4477 1 18V20C1 20.5523 1.44772 21 2 21H8C8.55229 21 9 20.5523 9 20V18C9 17.4477 8.55229 17 8 17Z"
-						fill="currentColor"
-						strokeWidth="0"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						fillOpacity="0.5"
+						d="M11 22H1C0.447715 22 0 22.4477 0 23V29C0 29.5523 0.447715 30 1 30H11C11.5523 30 12 29.5523 12 29V23C12 22.4477 11.5523 22 11 22Z"
+						fill="#EDEAEA"
 					/>
 					<path
-						d="M20 1H14C13.4477 1 13 1.44772 13 2V4C13 4.55228 13.4477 5 14 5H20C20.5523 5 21 4.55228 21 4V2C21 1.44772 20.5523 1 20 1Z"
-						fill="currentColor"
-						strokeWidth="0"
-						strokeLinecap="round"
-						strokeLinejoin="round"
+						d="M26 0H16C15.4477 0 15 0.447715 15 1V7C15 7.55229 15.4477 8 16 8H26C26.5523 8 27 7.55229 27 7V1C27 0.447715 26.5523 0 26 0Z"
+						fill="#EDEAEA"
 					/>
 				</IconHelper>
 			),

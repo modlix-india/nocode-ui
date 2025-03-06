@@ -2,10 +2,10 @@ import { TokenValueExtractor } from '@fincity/kirun-js';
 import { GLOBAL_CONTEXT_NAME } from '../constants';
 import { LocationHistory } from '../types/common';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
-import { getData, getDataFromPath, PageStoreExtractor } from './StoreContext';
+import { getDataFromPath, PageStoreExtractor } from './StoreContext';
 
 export class ParentExtractor extends SpecialTokenValueExtractor {
-	private history: Array<LocationHistory>;
+	private readonly history: Array<LocationHistory>;
 
 	constructor(history: Array<LocationHistory>) {
 		super();
@@ -67,7 +67,7 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		while (parts[pNum] === 'Parent') pNum++;
 
 		const lastHistory = locationHistory[locationHistory.length - pNum];
-		let path = '';
+		let path;
 
 		if (typeof lastHistory.location === 'string')
 			path = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
@@ -95,17 +95,13 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 }
 
 export class ParentExtractorForRunEvent extends TokenValueExtractor {
-	private history: Array<LocationHistory>;
+	private readonly history: Array<LocationHistory>;
 	private valueMaps: Map<string, TokenValueExtractor>;
 
 	constructor(history: Array<LocationHistory>, valueMaps: Map<string, TokenValueExtractor>) {
 		super();
 		this.history = history;
 		this.valueMaps = valueMaps;
-	}
-
-	public getHistory(): Array<LocationHistory> {
-		return this.history;
 	}
 
 	public getPrefix(): string {
@@ -124,7 +120,6 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 			}
 			return this.history[this.history.length - count]?.index ?? value;
 		}
-
 		return value;
 	}
 
@@ -194,7 +189,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		while (parts[pNum] === 'Parent') pNum++;
 
 		const lastHistory = locationHistory[locationHistory.length - pNum];
-		let path = '';
+		let path;
 
 		if (typeof lastHistory.location === 'string')
 			path = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;

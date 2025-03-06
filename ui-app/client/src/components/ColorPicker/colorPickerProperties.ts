@@ -1,12 +1,8 @@
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
-	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
-import {
-	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
+	ComponentPropertyGroup,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -14,8 +10,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'placeholder',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Dropdown placeholder',
-		description: "Placeholder that's shown when no item is selected in dropdown.",
+		displayName: 'Color picker placeholder',
+		description: "Placeholder that's shown when no item is selected in color picker.",
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -30,7 +26,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'No Float Label',
-		description: 'Dropdown without floating label.',
+		description: 'Color Picker without floating label.',
 		translatable: true,
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
@@ -38,22 +34,30 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Dropdown Label text',
-		description: "Label text that's shown on top of dropdown.",
+		displayName: 'Color Picker Label text',
+		description: "Label text that's shown on top of color picker.",
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'closeOnMouseLeave',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Close dropdown on mouse leave',
+		displayName: 'Close color picker on mouse leave',
 		description:
-			'Dropdown will be closed on mouse cursor leaving dropdown container when this property is true.',
+			'Color Picker will be closed on mouse cursor leaving color picker container when this property is true.',
 		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.validation,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	{
+		name: 'supportingText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Supporting Text',
+		description: 'Text to be shown to help fill the textbox.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'leftIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -84,16 +88,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
 			{
 				name: '_outlined',
-				displayName: 'Outline Dropdown',
-				description: 'Outline Dropdown type',
+				displayName: 'Outline Color Picker',
+				description: 'Outline Color Picker type',
 			},
 			{
 				name: '_filled',
-				displayName: 'Filled Dropdown',
-				description: 'Filled Dropdown type',
+				displayName: 'Filled Color Picker',
+				description: 'Filled Color Picker type',
 			},
 			{ name: '_bigDesign1', displayName: 'Big Design 1', description: 'Big Design 1 type' },
-			{ name: '_text', displayName: 'Text Dropdown', description: 'Text Dropdown' },
+			{ name: '_text', displayName: 'Text Color Picker', description: 'Text Color Picker' },
 			{
 				name: '_boxRoundedDesign',
 				displayName: 'Color Picker Round Design',

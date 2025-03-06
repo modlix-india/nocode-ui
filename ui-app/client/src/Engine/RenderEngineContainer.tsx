@@ -1,4 +1,4 @@
-import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
+import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import ComponentDefinitions from '../components';
@@ -6,20 +6,19 @@ import { getPathsFrom } from '../components/util/getPaths';
 import { runEvent } from '../components/util/runEvent';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
 import {
-	PageStoreExtractor,
 	addListener,
 	addListenerAndCallImmediately,
 	getData,
 	getDataFromPath,
 	localStoreExtractor,
+	PageStoreExtractor,
 	setData,
 	storeExtractor,
 } from '../context/StoreContext';
 import { ComponentProperty, PageDefinition } from '../types/common';
 import { processLocation } from '../util/locationProcessor';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
-import * as getPageDefinition from './../definitions/getPageDefinition.json';
-import GlobalLoader from '../App/GlobalLoader';
+import getPageDefinition from './pageDefinition';
 
 const POSITIONS: { [key: string]: boolean } = {
 	center: true,
@@ -45,10 +44,10 @@ export const RenderEngineContainer = () => {
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				await runEvent(getPageDefinition, 'pageDefinition', GLOBAL_CONTEXT_NAME, []);
+				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName!));
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
-				if (appCode !== pDef.appCode) {
+				if (appCode !== pDef?.appCode) {
 					console.error(
 						"Trying to load a page that doesn't belong to the app. Host app code:",
 						appCode,
@@ -73,7 +72,7 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		if (!location.hash) return;
-		let handle: number | undefined = undefined;
+		let handle: ReturnType<typeof setInterval> | undefined = undefined;
 		handle = setInterval(() => {
 			const [id, block, inline] = location.hash.replace('#', '').split(':');
 			const element = document.getElementById(id);
@@ -280,8 +279,14 @@ export const RenderEngineContainer = () => {
 
 	const [, setLastChanged] = useState(Date.now());
 
+	useEffect(
+		() => window.addDesignModeChangeListener(() => setLastChanged(Date.now())),
+		[setLastChanged],
+	);
+
 	useEffect(() => {
-		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
+		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR')
+			return;
 
 		function onMessageRecieved(e: MessageEvent) {
 			const { data: { type } = { type: undefined } } = e ?? {};
@@ -289,23 +294,25 @@ export const RenderEngineContainer = () => {
 			if (!type || !type.startsWith('EDITOR_')) return;
 			setLastChanged(Date.now());
 		}
+
 		window.addEventListener('message', onMessageRecieved);
 		return () => window.removeEventListener('message', onMessageRecieved);
-	}, [window.designMode, setLastChanged]);
+	}, [globalThis.designMode, setLastChanged]);
 
 	useEffect(() => {
-		if (window.designMode !== 'PAGE' && window.designMode !== 'FILLER_VALUE_EDITOR') return;
+		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR')
+			return;
 
-		return addListener(
+		return addListenerAndCallImmediately(
 			(_, v) => setPageDefinition(processClassesForPageDefinition(v)),
 			undefined,
 			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
 		);
-	}, [window.designMode, currentPageName]);
+	}, [globalThis.designMode, currentPageName]);
 
-	const Page = ComponentDefinitions.get('Page')!.component;
+	const Page = ComponentDefinitions.get('Page')?.component as React.ComponentType<any>;
 
-	if (isNullValue(pageDefinition)) return <GlobalLoader />;
+	if (isNullValue(pageDefinition)) return <></>;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
@@ -313,7 +320,8 @@ export const RenderEngineContainer = () => {
 		if (
 			wrapShell &&
 			shellPageDefinition &&
-			(window.designMode !== 'PAGE' || !window.pageEditor?.personalization?.slave?.noShell)
+			(globalThis.designMode !== 'PAGE' ||
+				!globalThis.pageEditor?.personalization?.slave?.noShell)
 		)
 			return (
 				<Page
@@ -341,7 +349,7 @@ export const RenderEngineContainer = () => {
 	} else if (pageDefinition) {
 		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
 		const hasDefinitions = !!Object.keys(definitions).length;
-		if (!hasDefinitions) return <GlobalLoader />;
+		if (!hasDefinitions) return <></>;
 
 		return (
 			<Page
@@ -356,6 +364,6 @@ export const RenderEngineContainer = () => {
 		);
 	} else {
 		//TODO: Need to throw an error that there is not page definition found.
-		return <GlobalLoader />;
+		return <></>;
 	}
 };

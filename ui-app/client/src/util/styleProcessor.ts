@@ -195,7 +195,7 @@ export function processStyleDefinition(
 						Array.from(styleDefaults.entries()).concat(
 							Array.from(theme.get(StyleResolution.ALL)!),
 						),
-				  )
+					)
 				: styleDefaults,
 		);
 	}
@@ -220,12 +220,9 @@ export function processEachResolution(
 	const index = new Map<string, string>();
 
 	for (const propDef of styleProperties) {
-		if (!propDef.selector || !propDef.cssProperty) continue;
-		const sel = propDef.noPrefix ? propDef.selector : prefix + ' ' + propDef.selector;
-		index.set(
-			sel,
-			(index.get(sel) ?? '') + processStyleValue(propDef.name, theme, propDef.cssProperty),
-		);
+		if (!propDef.sel || !propDef.cp) continue;
+		const sel = propDef.np ? propDef.sel : prefix + ' ' + propDef.sel;
+		index.set(sel, (index.get(sel) ?? '') + processStyleValue(propDef.n, theme, propDef.cp));
 	}
 
 	if (index.size === 0) return EMPTY_STRING;
@@ -311,7 +308,7 @@ export function processComponentStylePseudoClasses(
 ): any {
 	if (!styleProperties) return {};
 
-	let style = { ...styleProperties[''] } ?? {};
+	let style = { ...styleProperties[''] };
 
 	for (let [state, status] of Object.entries(pseudoStates)) {
 		if (!status || !styleProperties[state]) continue;
@@ -332,6 +329,51 @@ export function processComponentStylePseudoClasses(
 			style[target] = s;
 		}
 	}
+
+	return globalThis.cdnPrefix ? processCDN(style) : style;
+}
+
+const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
+const STATIC_FILE_API_PREFIX_LENGTH = STATIC_FILE_API_PREFIX.length;
+
+function processCDN(style: any) {
+	for (let [_, value] of Object.entries(style as { [key: string]: { [key: string]: string } })) {
+		for (let [k, v] of Object.entries(value)) {
+			if (!v) continue;
+
+			if (!globalThis.cdnPrefix) continue;
+
+			const index = v.indexOf(STATIC_FILE_API_PREFIX);
+			if (index == -1) continue;
+
+			const marker = v.indexOf("'") != -1 ? "'" : '"';
+			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH).trim();
+			let url = `url(${marker}https://${globalThis.cdnPrefix}/`;
+			if (!globalThis.cdnStripAPIPrefix) url += STATIC_FILE_API_PREFIX;
+			if (globalThis.cdnResizeOptionsType == 'cloudflare') {
+				const qIndex = lastPart.indexOf('?');
+				if (qIndex != -1) {
+					let paramPart = lastPart.substring(qIndex + 1);
+					let lastIndex = paramPart.lastIndexOf(marker);
+					if (lastIndex != -1) paramPart = paramPart.substring(0, lastIndex);
+					const front = lastPart.substring(0, qIndex);
+					if (
+						front.endsWith('png') ||
+						front.endsWith('jpg') ||
+						front.endsWith('jpeg') ||
+						front.endsWith('webp') ||
+						front.endsWith('avif')
+					)
+						url += `cdn-cgi/image/${paramPart.replaceAll('&', ',')}/${front}${marker})`;
+					else url += lastPart;
+				} else url += lastPart;
+			} else url += lastPart;
+			if (globalThis.cdnReplacePlus) url = url.replaceAll('+', '%20');
+
+			value[k] = url;
+		}
+	}
+
 	return style;
 }
 
@@ -385,7 +427,7 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 		})
 		.join('');
 
-	const styles = str
+	return str
 		.split(';')
 		.map(s => {
 			let ind = s.indexOf(':');
@@ -406,7 +448,6 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 			ia[ic.prop] = ic.value;
 			return ia;
 		}, {} as any);
-	return styles;
 }
 
 export function processStyleObjectToCSS(styleObj: any, selector: string): string {

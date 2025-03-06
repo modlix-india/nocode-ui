@@ -299,7 +299,7 @@ export function EachSectionPropertyEditor({
 										inpE.key === ' '
 											? changeComponentProperty(i, {
 													isStyleProperty: !e.isStyleProperty,
-											  })
+												})
 											: undefined
 									}
 									onClick={() =>

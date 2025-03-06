@@ -41,7 +41,7 @@ export default function ImageBrowser({
 	const [files, setFiles] = useState<any>();
 	const [newFolderName, setNewFolderName] = useState('');
 	const [currentBindingPath, setCurrentBindingPath] = useState<string>(
-		bindingPaths.size > 0 ? bindingPaths.keys().next().value : '',
+		bindingPaths.size > 0 ? (bindingPaths.keys().next().value ?? '') : '',
 	);
 	const [altText, setAltText] = useState<string>('');
 

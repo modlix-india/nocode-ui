@@ -42,7 +42,7 @@ export function ValidationEditor({
 					};
 				}
 				return acc;
-		  }, {})
+			}, {})
 		: VALIDATION_FUNCTIONS;
 
 	return (

@@ -1,30 +1,51 @@
-import React from 'react';
-import { StyleResolution } from '../../types/common';
+import React, { useEffect, useState } from 'react';
+import { StylePropertyDefinition } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './StepperStyleProperties';
+import { styleDefaults } from './StepperStyleProperties';
+import { usedComponents } from '../../App/usedComponents';
+import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compStepper';
-export default function StepperStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+const NAME = 'Stepper';
+export default function StepperStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
+		globalThis.styleProperties[NAME] ?? [],
+	);
+
+	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
+		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
+			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
+		);
+	}
+
+	useEffect(() => {
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, []);
+
 	const css =
 		`
-		${PREFIX} {
-			display: flex;
-		}
 		  
-		${PREFIX} ul {
+		ul${PREFIX} {
 			display: flex;
 			list-style-type: none;
 			position: relative;
 			padding-inline-start: 0px;
 		}
 
-		${PREFIX} ul._horizontal {
+		ul${PREFIX}._horizontal {
 			width: 100%;
 			flex-direction: row;
 			overflow: auto;
 		}
 
-		${PREFIX} ul._vertical {
+		ul${PREFIX}._vertical {
 			flex-direction: column;
 		}
 
@@ -40,7 +61,7 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			flex-shrink: 0;
 		}
 
-		${PREFIX} ul._vertical ._listItem {
+		ul._vertical${PREFIX} ._listItem {
 		    flex-direction: column;
 		}
 
@@ -60,48 +81,38 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			justify-content: center;
 		}
 
-		${PREFIX}._rectangle_arrow ._listItem._withLines:not(:last-child)::after {
-			content: "";
-			width: 0;
-			height: 0;
+		${PREFIX}._rectangle_arrow ._listItem ._line {			
 			position: absolute;
 			top: 0;
 			left: 100%;
 			z-index: 1;
-		}
-		
-		${PREFIX}._default ._listItem._withLines:last-child,
-		${PREFIX}._big_circle ._listItem._withLines:last-child {
-		    flex-grow: 0;
+			clip-path: polygon(0 0, 100% 50%, 0 100%);
+			margin-left: -0.2px;
 		}
 
-		${PREFIX}._default ul._horizontal ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._horizontal ._listItem._withLines:not(:last-child)::after {
-			content: "";
+		ul${PREFIX}._default._horizontal ._listItem ._line,
+		ul${PREFIX}._big_circle._horizontal ._listItem ._line {
 			align-self: flex-start;
 			flex-grow: 1;
 		}
 
-		${PREFIX}._default ul._horizontal._textTop ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._horizontal._textTop ._listItem._withLines:not(:last-child)::after {
-			border-bottom: none;
+		ul${PREFIX}._default._horizontal._textTop ._listItem ._line,
+		ul${PREFIX}._big_circle._horizontal._textTop ._listItem ._line {
 			align-self: flex-end;
 		}
 		
-		${PREFIX}._default ul._vertical ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical ._listItem._withLines:not(:last-child)::after {
-			content: "";
+		ul${PREFIX}._default._vertical ._listItem ._line,
+		ul${PREFIX}._big_circle._vertical ._listItem ._line {
 			flex-grow: 1;
 		}
 
-		${PREFIX}._default ul._vertical._textRight ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical._textRight ._listItem._withLines:not(:last-child)::after {
-			border-left: none;
+		ul${PREFIX}._default._vertical._textRight ._listItem ._line,
+		ul${PREFIX}._big_circle._vertical._textRight ._listItem ._line {
 			align-self: flex-start;
 		}
 
-		${PREFIX}._default ul._vertical._textLeft ._listItem._withLines:not(:last-child)::after,
-		${PREFIX}._big_circle ul._vertical._textLeft ._listItem._withLines:not(:last-child)::after {
+		ul${PREFIX}._default._vertical._textLeft ._listItem ._line,
+		ul${PREFIX}._big_circle._vertical._textLeft ._listItem ._line {
 			align-self: flex-end;
 		}
 		
@@ -113,20 +124,20 @@ export default function StepperStyle({ theme }: { theme: Map<string, Map<string,
 			position: relative;
 		}
 
-		${PREFIX} ul._vertical ._itemContainer {
+		${PREFIX}._vertical ._itemContainer {
 			width: 100%;
 			justify-content: flex-start;
 		}
 
-		${PREFIX} ul._textRight ._itemContainer {
+		${PREFIX}._textRight ._itemContainer {
 			flex-direction: row;
 		}
 		
-		${PREFIX} ul._textLeft ._itemContainer {
+		${PREFIX}._textLeft ._itemContainer {
 			flex-direction: row-reverse;
 		}
 				
-		${PREFIX} ul._textTop ._itemContainer {
+		${PREFIX}._textTop ._itemContainer {
 		    flex-direction: column-reverse;
 		}
 

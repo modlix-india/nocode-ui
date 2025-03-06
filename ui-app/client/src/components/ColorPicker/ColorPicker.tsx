@@ -1,10 +1,10 @@
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import React, { ChangeEvent, UIEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { isNullValue } from '@fincity/kirun-js';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
-	PageStoreExtractor,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
+	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -25,7 +25,6 @@ import {
 	HSLA_RGBA_TO_HSLAString,
 	HSLA_RGBA_TO_RGBAString,
 	RGBA,
-	RGBA_HEX,
 } from '../util/colorUtil';
 
 function getEmptyValue(emptyValue: string | undefined): string | null | undefined {
@@ -52,7 +51,7 @@ function convertToFormat(
 	}
 }
 
-function ColorPickerComponent(props: ComponentProps) {
+function ColorPickerComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [focus, setFocus] = useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
@@ -89,6 +88,7 @@ function ColorPickerComponent(props: ComponentProps) {
 			autoComplete,
 			noAlpha,
 			format,
+			supportingText,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -255,8 +255,8 @@ function ColorPickerComponent(props: ComponentProps) {
 			translations={translations}
 			rightIcon={
 				showDropdown
-					? rightIconOpen ?? 'fa-solid fa-angle-up'
-					: rightIcon ?? 'fa-solid fa-angle-down'
+					? (rightIconOpen ?? 'fa-solid fa-angle-up')
+					: (rightIcon ?? 'fa-solid fa-angle-down')
 			}
 			valueType="text"
 			isPassword={false}
@@ -299,6 +299,7 @@ function ColorPickerComponent(props: ComponentProps) {
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
+			supportingText={supportingText}
 			onMouseEnter={() => {
 				setMouseIsInside(true);
 			}}
@@ -348,57 +349,47 @@ const component: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			icon: (
-				<IconHelper viewBox="0 0 22.526 22">
-					<g id="Group_134" data-name="Group 134" transform="translate(-1203 -629)">
-						<rect
-							id="Rectangle_73"
-							data-name="Rectangle 73"
-							width="22"
-							height="22"
-							rx="1"
-							transform="translate(1203 629)"
-							fill="currentColor"
-							fillOpacity="0.2"
-						/>
-						<path
-							id="Subtraction_12"
-							data-name="Subtraction 12"
-							d="M-120.013,211.7h0a8.926,8.926,0,0,1-5.075-2.107l2.547-3.082a4.95,4.95,0,0,0,2.907,1.207l-.379,3.981Zm1.482,0h0l-.379-3.981A4.952,4.952,0,0,0-116,206.509l2.547,3.082a8.925,8.925,0,0,1-5.073,2.106Zm6.121-3.153h0L-115.492,206a4.953,4.953,0,0,0,1.206-2.9l3.983.368a8.926,8.926,0,0,1-2.106,5.073Zm-13.726,0h0a8.926,8.926,0,0,1-2.106-5.074l3.984-.372a4.953,4.953,0,0,0,1.206,2.9l-3.082,2.547Zm1.877-6.186h0l-3.983-.372a8.924,8.924,0,0,1,2.106-5.074l3.083,2.547a4.951,4.951,0,0,0-1.206,2.9Zm9.972,0h0a4.952,4.952,0,0,0-1.206-2.893l3.083-2.547a8.925,8.925,0,0,1,2.106,5.074l-3.982.368Zm-8.255-3.405h0l-2.547-3.082a8.926,8.926,0,0,1,5.076-2.107l.376,3.984a4.951,4.951,0,0,0-2.9,1.206Zm6.538,0h0a4.954,4.954,0,0,0-2.9-1.205l.377-3.983a8.927,8.927,0,0,1,5.074,2.107L-116,198.947Z"
-							transform="translate(1333.272 438.188)"
-							fill="currentColor"
-						/>
-						<g
-							id="Group_133"
-							data-name="Group 133"
-							transform="translate(1555.346 1976.277) rotate(-131)"
-						>
-							<path
-								id="Path_367"
-								data-name="Path 367"
-								d="M1.558-.142a.442.442,0,0,1,.823,0l.454,1.176L3.252,2.1c.146.338,0,8.648,0,8.648H.641S.495,2.443.641,2.1L1.1,1.034Z"
-								transform="translate(1229.877 618.157)"
-								fill="currentColor"
-							/>
-							<rect
-								id="Rectangle_74"
-								data-name="Rectangle 74"
-								width="5.478"
-								height="1.524"
-								transform="translate(1229 628.537)"
-								fill="currentColor"
-							/>
-							<ellipse
-								id="Ellipse_41"
-								data-name="Ellipse 41"
-								cx="1.383"
-								cy="2.032"
-								rx="1.383"
-								ry="2.032"
-								transform="translate(1230.453 628.537)"
-								fill="currentColor"
-							/>
-						</g>
-					</g>
+				<IconHelper viewBox="0 0 30 30">
+					<path
+						d="M7.57739 21.6728C6.10024 20.0256 5.15977 17.8842 5.03225 15.5306H4.50621C4.27508 15.5266 0.0867971 15.5333 0.0374884 15.5306C0.032175 19.1186 1.67668 22.8113 4.04373 25.2063L7.57739 21.6728Z"
+						fill="#7743DB"
+						className="_colorPickerIcon"
+					/>
+					<path
+						d="M22.423 8.32848C23.9002 9.97566 24.8407 12.1171 24.9682 14.4706H25.4942C25.7253 14.4746 29.9136 14.468 29.9629 14.4706C29.9683 10.8827 28.3237 7.18996 25.9567 4.79492L22.423 8.32848Z"
+						fill="#018B8B"
+						className="_colorPickerIcon"
+					/>
+					<path
+						d="M15.5314 0.531615C15.53 0.823856 15.5327 4.90206 15.5314 5.03197C17.8852 5.15949 20.0266 6.09996 21.6735 7.57711L22.0455 7.20515C22.2142 7.04176 25.1671 4.07953 25.207 4.04365C22.7761 1.63269 19.2321 0.130243 15.5258 0C15.5311 0.0106269 15.5311 0.0265671 15.5311 0.0371957L15.5314 0.531615Z"
+						fill="#EC255A"
+						className="_colorPickerIcon"
+					/>
+					<path
+						d="M14.4686 29.4674C14.47 29.1751 14.4673 25.0969 14.4686 24.967C12.1148 24.8395 9.9734 23.899 8.32649 22.4219L7.95453 22.7938C7.78583 22.9572 4.83288 25.9195 4.79303 25.9553C7.22259 28.365 10.7679 29.8701 14.4742 29.999C14.4689 29.9884 14.4689 29.9724 14.4689 29.9618L14.4686 29.4674Z"
+						fill="#FFB534"
+						className="_colorPickerIcon"
+					/>
+					<path
+						d="M5.14353 4.39432C5.34943 4.60155 8.23597 7.4854 8.32629 7.57708C9.97347 6.09993 12.1149 5.15946 14.4684 5.03194V4.5059C14.4724 4.27476 14.4658 0.0864826 14.4684 0.0371739C10.8393 0.0252188 7.29658 1.67504 4.7713 4.02233L4.79255 4.04359L5.14353 4.39432Z"
+						fill="#3F83EA"
+						className="_colorPickerIcon"
+					/>
+					<path
+						d="M24.8565 25.6046C24.6506 25.3974 21.7641 22.5136 21.6737 22.4219C20.0266 23.899 17.8851 24.8395 15.5316 24.967V25.4931C15.5276 25.7242 15.5342 29.9125 15.5316 29.9618C19.1607 29.9737 22.7034 28.3239 25.2287 25.9766C25.2234 25.966 25.2128 25.9607 25.2075 25.9554L24.8565 25.6046Z"
+						fill="#BDD449"
+						className="_colorPickerIcon"
+					/>
+					<path
+						d="M29.4684 15.5309C29.1762 15.5296 25.098 15.5323 24.9681 15.5309C24.8405 17.8848 23.9001 20.0262 22.4229 21.6731L22.7949 22.045C22.9583 22.2137 25.9205 25.1667 25.9564 25.2065C28.3673 22.7757 29.8698 19.2317 30 15.5254C29.9894 15.5307 29.9735 15.5307 29.9628 15.5307L29.4684 15.5309Z"
+						fill="#02B694"
+						className="_colorPickerIcon"
+					/>
+					<path
+						d="M0.531615 14.4705C0.823856 14.4719 4.90206 14.4692 5.03197 14.4705C5.15949 12.1167 6.09996 9.97529 7.57711 8.32838L7.20515 7.95642C7.04176 7.78772 4.07953 4.83478 4.04365 4.79492C1.63269 7.2258 0.130243 10.7698 0 14.4761C0.0106269 14.4708 0.0265672 14.4708 0.0371958 14.4708L0.531615 14.4705Z"
+						fill="black"
+						className="_colorPickerIcon"
+					/>
 				</IconHelper>
 			),
 			mainComponent: true,

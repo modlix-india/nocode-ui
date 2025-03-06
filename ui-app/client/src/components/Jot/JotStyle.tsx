@@ -3,7 +3,7 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './jotStyleProperies';
 
 const PREFIX = '.comp.compJot';
-export default function JotStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function JotStyle({ theme }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		${PREFIX} {

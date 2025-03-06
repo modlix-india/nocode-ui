@@ -6,9 +6,9 @@ import { StyleResolution } from '../../types/common';
 const PREFIX = '.comp.compTemplateEditor';
 export default function TemplateEditorStyle({
 	theme,
-}: {
+}: Readonly<{
 	theme: Map<string, Map<string, string>>;
-}) {
+}>) {
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 
 	const css =

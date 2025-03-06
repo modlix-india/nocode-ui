@@ -18,6 +18,8 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_MM/DD/YYYY',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
 				date.setTime(parseInt(str) * 1000);
 				return `${prependZero(date.getMonth() + 1, 2)}/${prependZero(
@@ -34,6 +36,8 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_MM/DD/YYYY_HH:MM',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
 				date.setTime(parseInt(str) * 1000);
 				return `${prependZero(date.getMonth() + 1, 2)}/${prependZero(
@@ -53,8 +57,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_MM/DD/YYYY_HH:MM:SS',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${prependZero(date.getMonth() + 1, 2)}/${prependZero(
 					date.getDate(),
 					2,
@@ -72,8 +78,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_MM/DD/YYYY_HH:MM:SS.SSS',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${prependZero(date.getMonth() + 1, 2)}/${prependZero(
 					date.getDate(),
 					2,
@@ -91,8 +99,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_YYYY-MM-DD',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${date.getFullYear()}-${prependZero(date.getMonth() + 1, 2)}-${prependZero(
 					date.getDate(),
 					2,
@@ -107,8 +117,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_YYYY-MM-DD_HH:MM',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${date.getFullYear()}-${prependZero(date.getMonth() + 1, 2)}-${prependZero(
 					date.getDate(),
 					2,
@@ -123,8 +135,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_YYYY-MM-DD_HH:MM:SS',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${date.getFullYear()}-${prependZero(date.getMonth() + 1, 2)}-${prependZero(
 					date.getDate(),
 					2,
@@ -142,8 +156,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_YYYY-MM-DD_HH:MM:SS.SSS',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${date.getFullYear()}-${prependZero(date.getMonth() + 1, 2)}-${prependZero(
 					date.getDate(),
 					2,
@@ -161,8 +177,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_MONTH_DD,YYYY',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${MONTHS[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
 			} catch (e) {
 				console.error(e);
@@ -174,8 +192,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_MONTH_DD,YYYY_HH:MM',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${
 					MONTHS[date.getMonth()]
 				} ${date.getDate()}, ${date.getFullYear()} ${prependZero(
@@ -192,8 +212,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_MONTH_DD,YYYY_HH:MM:SS',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${
 					MONTHS[date.getMonth()]
 				} ${date.getDate()}, ${date.getFullYear()} ${prependZero(
@@ -210,8 +232,10 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 		'UTC_TO_MONTH_DD,YYYY_HH:MM:SS.SSS',
 		str => {
 			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
 				const date = new Date();
-				date.setTime(parseInt(str) * 1000);
+				date.setTime(pi * 1000);
 				return `${
 					MONTHS[date.getMonth()]
 				} ${date.getDate()}, ${date.getFullYear()} ${prependZero(
@@ -233,6 +257,22 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 	['EU_NUMBER_FORMAT', numberFormattingCurry('de-DE')],
 	['FR_NUMBER_FORMAT', numberFormattingCurry('fr-FR')],
 	['LI_NUMBER_FORMAT', numberFormattingCurry('de-LI')],
+	[
+		'FILE_SIZE',
+		str => {
+			let size = parseInt(str);
+			const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+			let i = 0;
+			if (isNaN(size)) return str;
+			while (size > 1024) {
+				size /= 1024;
+				i++;
+			}
+			let fixedString = size.toFixed(2);
+			if (fixedString.endsWith('.00')) fixedString = fixedString.slice(0, -3);
+			return `${fixedString} ${sizes[i]}`;
+		},
+	],
 ]);
 
 function numberFormattingCurry(format: string) {
@@ -246,6 +286,7 @@ function numberFormattingCurry(format: string) {
 }
 
 export function formatString(str: string, format: string): string {
+	if (!format || !str) return str;
 	return FORMATTING_FUNCTIONS.get(format)?.(str) ?? str;
 }
 

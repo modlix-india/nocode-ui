@@ -294,7 +294,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		description: 'Event to be triggered when Right Icon clicked.',
 		group: ComponentPropertyGroup.EVENTS,
-  },
+	},
 	{
 		name: 'numberFormat',
 		schema: SCHEMA_STRING_COMP_PROP,

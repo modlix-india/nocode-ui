@@ -50,7 +50,7 @@ export function ContextMenu({
 	let right: number | string = 'auto';
 	let bottom: number | string = 'auto';
 
-	if (window.innerHeight - top < 200) {
+	if (window.innerHeight - top < 450) {
 		bottom = window.innerHeight - top;
 		top = 'auto';
 	}
@@ -182,11 +182,14 @@ export function ContextMenu({
 		<div
 			className={`_popupMenuBackground ${theme}`}
 			onClick={onCloseContextmenu}
-			onContextMenu={e => {
-				e.preventDefault();
-			}}
+			onContextMenu={e => e.preventDefault()}
 		>
-			<div className="_popupMenuContainer _plain" style={{ left, top, right, bottom }}>
+			<div
+				className="_popupMenuContainer _plain"
+				style={{ left, top, right, bottom }}
+				onMouseUp={e => setTimeout(onCloseContextmenu, 100)}
+				onClick={e => e.stopPropagation()}
+			>
 				<div className="_contextMenu">
 					{addGrid}
 					{!ifRoot && (

@@ -3,7 +3,9 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './messageStyleProperies';
 
 const PREFIX = '.comp.compMessages';
-export default function MessageStyle({ theme }: { theme: Map<string, Map<string, string>> }) {
+export default function MessageStyle({
+	theme,
+}: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
 		${PREFIX} {

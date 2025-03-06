@@ -70,7 +70,8 @@ class _UISchemaRepository implements Repository<Schema> {
 	}
 }
 
-export const UISchemaRepository = new HybridRepository<Schema>(
-	new KIRunSchemaRepository(),
-	new _UISchemaRepository(),
-);
+export class UISchemaRepository extends HybridRepository<Schema> {
+	public constructor() {
+		super(new KIRunSchemaRepository(), new _UISchemaRepository());
+	}
+}

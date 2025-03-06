@@ -19,7 +19,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'When this option is set to true, User will be able to add items to repeater',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
-		
 	},
 	{
 		name: 'showDelete',
@@ -83,25 +82,25 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'addEvent',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'add',
+		displayName: 'On Adding',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
-		description: 'Event to be triggered when clicked on add button.',
+		description: 'Event to be triggered when clicked on Add button.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
 		name: 'removeEvent',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'remove',
+		displayName: 'On Delete',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
-		description: 'Event to be triggered when clicked on remove button.',
+		description: 'Event to be triggered when clicked on Delete button.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
 		name: 'moveEvent',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'move',
+		displayName: 'On Moving',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
-		description: 'Event to be triggered when clicked on move button.',
+		description: 'Event to be triggered when clicked on Move button.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
@@ -122,6 +121,40 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'array', displayName: 'Array' },
 			{ name: 'object', displayName: 'Object' },
 		],
+	},
+	{
+		name: 'dropDataPrefix',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drop Data Prefix',
+		description: 'Prefix to be removed from the dropped data and then parsed.',
+	},
+	{
+		name: 'dropDataType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Drop Data Type',
+		defaultValue: 'text/plain',
+		enumValues: [
+			{ name: 'text/plain', displayName: 'Text' },
+			{ name: 'application/json', displayName: 'JSON' },
+		],
+	},
+	{
+		name: 'onDropData',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Drop Data',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when data is dropped.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+
+	{
+		name: 'filterCondition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Filter Condition',
+		description:
+			'Filter condition using "Data." to filter the array items. Eg: "Data.marks > 20" gives all the objects with marks greater than 20.',
 	},
 
 	COMMON_COMPONENT_PROPERTIES.layout,
@@ -178,7 +211,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
-	
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

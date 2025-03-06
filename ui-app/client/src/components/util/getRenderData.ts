@@ -59,8 +59,8 @@ export function getRenderData<T>(
 							uniqueKeyType === 'INDEX'
 								? index
 								: uniqueKeyType === 'RANDOM'
-								? UUID()
-								: e,
+									? UUID()
+									: e,
 						originalObjectKey: index,
 					};
 				}

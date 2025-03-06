@@ -2,7 +2,7 @@ import React from 'react';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../types/common';
 import { HelperComponent } from './HelperComponents/HelperComponent';
 
-function Nothing(props: ComponentProps) {
+function Nothing(props: Readonly<ComponentProps>) {
 	const { definition, context } = props;
 	return (
 		<div className="comp compNothing">

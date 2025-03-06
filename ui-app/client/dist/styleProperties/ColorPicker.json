@@ -1,0 +1,4650 @@
+[
+	{ "dn": "Font", "n": "colorpickerFont", "dv": "<primaryFont>" },
+
+	{
+		"gn": "Font",
+		"dn": "Color Picker FontDefault Design",
+		"n": "colorpickerFontDefaultDesign",
+		"dv": "<colorpickerFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._default",
+		"np": true
+	},
+	{
+		"gn": "Font",
+		"dn": "Color Picker FontOutlined Design",
+		"n": "colorpickerFontOutlinedDesign",
+		"dv": "<colorpickerFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._outlined",
+		"np": true
+	},
+	{
+		"gn": "Font",
+		"dn": "Color Picker FontFilled Design",
+		"n": "colorpickerFontFilledDesign",
+		"dv": "<colorpickerFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._filled",
+		"np": true
+	},
+	{
+		"gn": "Font",
+		"dn": "Color Picker FontBig Design One",
+		"n": "colorpickerFontBigDesignOne",
+		"dv": "<colorpickerFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._bigDesign1",
+		"np": true
+	},
+	{
+		"gn": "Font",
+		"dn": "Color Picker FontText Design",
+		"n": "colorpickerFontTextDesign",
+		"dv": "<colorpickerFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._text",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Default Design Text Color",
+		"n": "primaryColorpickerDefaultDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Default Design Text Color",
+		"n": "secondaryColorpickerDefaultDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Default Design Text Color",
+		"n": "tertiaryColorpickerDefaultDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Default Design Text Color",
+		"n": "quaternaryColorpickerDefaultDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Default Design Text Color",
+		"n": "quinaryColorpickerDefaultDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Outlined Design Text Color",
+		"n": "primaryColorpickerOutlinedDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Outlined Design Text Color",
+		"n": "secondaryColorpickerOutlinedDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Outlined Design Text Color",
+		"n": "tertiaryColorpickerOutlinedDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Outlined Design Text Color",
+		"n": "quaternaryColorpickerOutlinedDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Outlined Design Text Color",
+		"n": "quinaryColorpickerOutlinedDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Filled Design Text Color",
+		"n": "primaryColorpickerFilledDesignTextColor",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Filled Design Text Color",
+		"n": "secondaryColorpickerFilledDesignTextColor",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Filled Design Text Color",
+		"n": "tertiaryColorpickerFilledDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Filled Design Text Color",
+		"n": "quaternaryColorpickerFilledDesignTextColor",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Filled Design Text Color",
+		"n": "quinaryColorpickerFilledDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Big Design One Text Color",
+		"n": "primaryColorpickerBigDesignOneTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Big Design One Text Color",
+		"n": "secondaryColorpickerBigDesignOneTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Big Design One Text Color",
+		"n": "tertiaryColorpickerBigDesignOneTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Big Design One Text Color",
+		"n": "quaternaryColorpickerBigDesignOneTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Big Design One Text Color",
+		"n": "quinaryColorpickerBigDesignOneTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Text Design Text Color",
+		"n": "primaryColorpickerTextDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Text Design Text Color",
+		"n": "secondaryColorpickerTextDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Text Design Text Color",
+		"n": "tertiaryColorpickerTextDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Text Design Text Color",
+		"n": "quaternaryColorpickerTextDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Text Design Text Color",
+		"n": "quinaryColorpickerTextDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Primary Color Picker Default Design Text Color For Placeholder",
+		"n": "primaryColorpickerDefaultDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Secondary Color Picker Default Design Text Color For Placeholder",
+		"n": "secondaryColorpickerDefaultDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Tertiary Color Picker Default Design Text Color For Placeholder",
+		"n": "tertiaryColorpickerDefaultDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quaternary Color Picker Default Design Text Color For Placeholder",
+		"n": "quaternaryColorpickerDefaultDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quinary Color Picker Default Design Text Color For Placeholder",
+		"n": "quinaryColorpickerDefaultDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Primary Color Picker Outlined Design Text Color For Placeholder",
+		"n": "primaryColorpickerOutlinedDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Secondary Color Picker Outlined Design Text Color For Placeholder",
+		"n": "secondaryColorpickerOutlinedDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Tertiary Color Picker Outlined Design Text Color For Placeholder",
+		"n": "tertiaryColorpickerOutlinedDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quaternary Color Picker Outlined Design Text Color For Placeholder",
+		"n": "quaternaryColorpickerOutlinedDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quinary Color Picker Outlined Design Text Color For Placeholder",
+		"n": "quinaryColorpickerOutlinedDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Primary Color Picker Filled Design Text Color For Placeholder",
+		"n": "primaryColorpickerFilledDesignTextColorForPlaceholder",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Secondary Color Picker Filled Design Text Color For Placeholder",
+		"n": "secondaryColorpickerFilledDesignTextColorForPlaceholder",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Tertiary Color Picker Filled Design Text Color For Placeholder",
+		"n": "tertiaryColorpickerFilledDesignTextColorForPlaceholder",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quaternary Color Picker Filled Design Text Color For Placeholder",
+		"n": "quaternaryColorpickerFilledDesignTextColorForPlaceholder",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quinary Color Picker Filled Design Text Color For Placeholder",
+		"n": "quinaryColorpickerFilledDesignTextColorForPlaceholder",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Primary Color Picker Big Design One Text Color For Placeholder",
+		"n": "primaryColorpickerBigDesignOneTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Secondary Color Picker Big Design One Text Color For Placeholder",
+		"n": "secondaryColorpickerBigDesignOneTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Tertiary Color Picker Big Design One Text Color For Placeholder",
+		"n": "tertiaryColorpickerBigDesignOneTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quaternary Color Picker Big Design One Text Color For Placeholder",
+		"n": "quaternaryColorpickerBigDesignOneTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quinary Color Picker Big Design One Text Color For Placeholder",
+		"n": "quinaryColorpickerBigDesignOneTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Primary Color Picker Text Design Text Color For Placeholder",
+		"n": "primaryColorpickerTextDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Secondary Color Picker Text Design Text Color For Placeholder",
+		"n": "secondaryColorpickerTextDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Tertiary Color Picker Text Design Text Color For Placeholder",
+		"n": "tertiaryColorpickerTextDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quaternary Color Picker Text Design Text Color For Placeholder",
+		"n": "quaternaryColorpickerTextDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Color Placeholder",
+		"dn": "Quinary Color Picker Text Design Text Color For Placeholder",
+		"n": "quinaryColorpickerTextDesignTextColorForPlaceholder",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Color Picker Default Height",
+		"n": "colorpickerDefaultHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compColorPicker._default",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Color Picker Outline Height",
+		"n": "colorpickerOutlineHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compColorPicker._outlined",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Color Picker Filled Height",
+		"n": "colorpickerFilledHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compColorPicker._filled",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Color Picker Big Design 1 Height",
+		"n": "colorpickerBigDesign1Height",
+		"dv": "60px",
+		"cp": "height",
+		"sel": ".comp.compColorPicker._bigDesign1",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Color Picker Text Height",
+		"n": "colorpickerTextHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compColorPicker._text",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Color Picker Box Square Height",
+		"n": "colorpickerBoxSquareHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compColorPicker._boxSquareDesign",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Color Picker Box Rounded Size/Min Height",
+		"n": "colorpickerBoxSquareMinHeight",
+		"dv": "32px",
+		"cp": "min-height",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Color Picker Box Rounded Max Height",
+		"n": "colorpickerBoxSquareMaxHeight",
+		"dv": "<colorpickerBoxSquareMinHeight>",
+		"cp": "max-height",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Width",
+		"dn": "Color Picker Box Rounded Min Width",
+		"n": "colorpickerBoxSquareMinWidth",
+		"dv": "<colorpickerBoxSquareMinHeight>",
+		"cp": "min-width",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Width",
+		"dn": "Color Picker Box Rounded Max Width",
+		"n": "colorpickerBoxSquareMaxWidth",
+		"dv": "<colorpickerBoxSquareMinHeight>",
+		"cp": "max-width",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Default Border Radius",
+		"n": "colorpickerDefaultBorderRadius",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._default",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Outline Border Radius",
+		"n": "colorpickerOutlineBorderRadius",
+		"dv": "16px",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._outlined",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Filled Border Radius",
+		"n": "colorpickerFilledBorderRadius",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._filled",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Big Design 1 Border Radius",
+		"n": "colorpickerBigDesign1BorderRadius",
+		"dv": "4px",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._bigDesign1",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Text Border Radius",
+		"n": "colorpickerTextBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._text",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Container Default Border Radius",
+		"n": "colorpickerContainerDefaultBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._default ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Container Outline Border Radius",
+		"n": "colorpickerContainerOutlineBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._outlined ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Container Filled Border Radius",
+		"n": "colorpickerContainerFilledBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._filled ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Container Big Design 1 Border Radius",
+		"n": "colorpickerContainerBigDesign1BorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._bigDesign1 ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Container Text Border Radius",
+		"n": "colorpickerContainerTextBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._text ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Box Rounded Design Border Radius",
+		"n": "colorpickerBoxRoundedDesignBorderRadius",
+		"dv": "50%",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Border Radius",
+		"dn": "Color Picker Box Square Design Border Radius",
+		"n": "colorpickerBoxSquareDesignBorderRadius",
+		"dv": "5px",
+		"cp": "border-radius",
+		"sel": ".comp.compColorPicker._boxSquareDesign",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Default Border",
+		"n": "colorpickerDefaultBorder",
+		"dv": "1px solid",
+		"cp": "Border",
+		"sel": ".comp.compColorPicker._default",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Outline Border",
+		"n": "colorpickerOutlineBorder",
+		"dv": "1px solid",
+		"cp": "Border",
+		"sel": ".comp.compColorPicker._outlined",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Filled Border",
+		"n": "colorpickerFilledBorder",
+		"dv": "1px solid",
+		"cp": "Border",
+		"sel": ".comp.compColorPicker._filled",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Big Design 1 Border",
+		"n": "colorpickerBigDesign1Border",
+		"dv": "1px solid",
+		"cp": "Border",
+		"sel": ".comp.compColorPicker._bigDesign1",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Text Border",
+		"n": "colorpickerTextBorder",
+		"dv": "1px solid",
+		"cp": "Border",
+		"sel": ".comp.compColorPicker._text",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Default Padding",
+		"n": "colorpickerDefaultPadding",
+		"dv": "0px 5px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._default",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Outline Padding",
+		"n": "colorpickerOutlinePadding",
+		"dv": "0px 14px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._outlined",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Filled Padding",
+		"n": "colorpickerFilledPadding",
+		"dv": "0px 5px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._filled",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Big Design 1 Padding",
+		"n": "colorpickerBigDesign1Padding",
+		"dv": "0px 5px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._bigDesign1",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Text Padding",
+		"n": "colorpickerTextPadding",
+		"dv": "0px 5px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._text",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Container Default Padding",
+		"n": "colorpickerContainerDefaultPadding",
+		"dv": "6px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._default ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Container Outline Padding",
+		"n": "colorpickerContainerOutlinePadding",
+		"dv": "6px 14px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._outlined ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Container Filled Padding",
+		"n": "colorpickerContainerFilledPadding",
+		"dv": "6px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._filled ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Container Big Design 1 Padding",
+		"n": "colorpickerContainerBigDesign1Padding",
+		"dv": "6px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._bigDesign1 ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Container Text Padding",
+		"n": "colorpickerContainerTextPadding",
+		"dv": "6px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._text ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Border",
+		"dn": "Color Picker Default Active Border",
+		"n": "colorpickerDefaultActiveBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._isActive._default",
+		"np": true
+	},
+	{
+		"gn": "Active Border",
+		"dn": "Color Picker Outline Active Border",
+		"n": "colorpickerOutlineActiveBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._isActive._outlined",
+		"np": true
+	},
+	{
+		"gn": "Active Border",
+		"dn": "Color Picker Filled Active Border",
+		"n": "colorpickerFilledActiveBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._isActive._filled",
+		"np": true
+	},
+	{
+		"gn": "Active Border",
+		"dn": "Color Picker Big Design 1 Active Border",
+		"n": "colorpickerBigDesign1ActiveBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._isActive._bigDesign1",
+		"np": true
+	},
+	{
+		"gn": "Active Border",
+		"dn": "Color Picker Text Active Border",
+		"n": "colorpickerTextActiveBorder",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._isActive._text",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Default Border",
+		"n": "colorpickerDefaultBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._default ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Outline Border",
+		"n": "colorpickerOutlineBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._outlined ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Filled Border",
+		"n": "colorpickerFilledBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._filled ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Big Design 1 Border",
+		"n": "colorpickerBigDesign1Border",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._bigDesign1 ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Text Border",
+		"n": "colorpickerTextBorder",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._text ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Box Rounded Design Border",
+		"n": "colorpickerBoxRoundedDesignBorder",
+		"dv": "3px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Box Square Design Border",
+		"n": "colorpickerBoxSquareDesignBorder",
+		"dv": "3px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._boxSquareDesign",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Default Design border Color",
+		"n": "primaryColorpickerDefaultDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._primary, .comp.compColorPicker._default._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Default Design border Color",
+		"n": "secondaryColorpickerDefaultDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._secondary, .comp.compColorPicker._default._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Default Design border Color",
+		"n": "tertiaryColorpickerDefaultDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._tertiary, .comp.compColorPicker._default._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Default Design border Color",
+		"n": "quaternaryColorpickerDefaultDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._quaternary, .comp.compColorPicker._default._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Default Design border Color",
+		"n": "quinaryColorpickerDefaultDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._quinary, .comp.compColorPicker._default._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Outline Design border Color",
+		"n": "primaryColorpickerOutlineDesignborderColor",
+		"dv": "<fontColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._primary, .comp.compColorPicker._outlined._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Outline Design border Color",
+		"n": "secondaryColorpickerOutlineDesignborderColor",
+		"dv": "<fontColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._secondary, .comp.compColorPicker._outlined._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Outline Design border Color",
+		"n": "tertiaryColorpickerOutlineDesignborderColor",
+		"dv": "<fontColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._tertiary, .comp.compColorPicker._outlined._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Outline Design border Color",
+		"n": "quaternaryColorpickerOutlineDesignborderColor",
+		"dv": "<fontColorNine>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._quaternary, .comp.compColorPicker._outlined._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Outline Design border Color",
+		"n": "quinaryColorpickerOutlineDesignborderColor",
+		"dv": "<fontColorSeven>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._quinary, .comp.compColorPicker._outlined._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Filled Design border Color",
+		"n": "primaryColorpickerFilledDesignborderColor",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._primary, .comp.compColorPicker._filled._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Filled Design border Color",
+		"n": "secondaryColorpickerFilledDesignborderColor",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._secondary, .comp.compColorPicker._filled._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Filled Design border Color",
+		"n": "tertiaryColorpickerFilledDesignborderColor",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._tertiary, .comp.compColorPicker._filled._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Filled Design border Color",
+		"n": "quaternaryColorpickerFilledDesignborderColor",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._quaternary, .comp.compColorPicker._filled._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Filled Design border Color",
+		"n": "quinaryColorpickerFilledDesignborderColor",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._quinary, .comp.compColorPicker._filled._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Design One Design border Color",
+		"n": "primaryColorpickerDesignOneDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._primary, .comp.compColorPicker._bigDesign1._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Design One Design border Color",
+		"n": "secondaryColorpickerDesignOneDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._secondary, .comp.compColorPicker._bigDesign1._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Design One Design border Color",
+		"n": "tertiaryColorpickerDesignOneDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._tertiary, .comp.compColorPicker._bigDesign1._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Design One Design border Color",
+		"n": "quaternaryColorpickerDesignOneDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._quaternary, .comp.compColorPicker._bigDesign1._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Design One Design border Color",
+		"n": "quinaryColorpickerDesignOneDesignborderColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._quinary, .comp.compColorPicker._bigDesign1._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Text Design border Color",
+		"n": "primaryColorpickerTextDesignborderColor",
+		"dv": "transparent",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._primary, .comp.compColorPicker._text._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Text Design border Color",
+		"n": "secondaryColorpickerTextDesignborderColor",
+		"dv": "transparent",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._secondary, .comp.compColorPicker._text._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Text Design border Color",
+		"n": "tertiaryColorpickerTextDesignborderColor",
+		"dv": "transparent",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._tertiary, .comp.compColorPicker._text._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Text Design border Color",
+		"n": "quaternaryColorpickerTextDesignborderColor",
+		"dv": "transparent",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._quaternary, .comp.compColorPicker._text._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Text Design border Color",
+		"n": "quinaryColorpickerTextDesignborderColor",
+		"dv": "transparent",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._quinary, .comp.compColorPicker._text._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Color Picker Box Rounded Design Border Color",
+		"n": "colorpickerBoxRoundedDesignBorderColor",
+		"dv": "#FFF",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Color Picker Box Square Design Border Color",
+		"n": "colorpickerBoxSquareDesignBorderColor",
+		"dv": "#FFF",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._boxSquareDesign",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Primary Color Picker Default Design background Color",
+		"n": "primaryColorpickerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._primary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Secondary Color Picker Default Design background Color",
+		"n": "secondaryColorpickerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._secondary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Tertiary Color Picker Default Design background Color",
+		"n": "tertiaryColorpickerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quaternary Color Picker Default Design background Color",
+		"n": "quaternaryColorpickerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quinary Color Picker Default Design background Color",
+		"n": "quinaryColorpickerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._quinary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Primary Color Picker Outline Design background Color",
+		"n": "primaryColorpickerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._primary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Secondary Color Picker Outline Design background Color",
+		"n": "secondaryColorpickerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._secondary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Tertiary Color Picker Outline Design background Color",
+		"n": "tertiaryColorpickerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quaternary Color Picker Outline Design background Color",
+		"n": "quaternaryColorpickerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quinary Color Picker Outline Design background Color",
+		"n": "quinaryColorpickerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._quinary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Primary Color Picker Filled Design background Color",
+		"n": "primaryColorpickerFilledDesignbackgroundColor",
+		"dv": "<fontColorThree>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._primary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Secondary Color Picker Filled Design background Color",
+		"n": "secondaryColorpickerFilledDesignbackgroundColor",
+		"dv": "<fontColorFour>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._secondary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Tertiary Color Picker Filled Design background Color",
+		"n": "tertiaryColorpickerFilledDesignbackgroundColor",
+		"dv": "<fontColorFive>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quaternary Color Picker Filled Design background Color",
+		"n": "quaternaryColorpickerFilledDesignbackgroundColor",
+		"dv": "<fontColorNine>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quinary Color Picker Filled Design background Color",
+		"n": "quinaryColorpickerFilledDesignbackgroundColor",
+		"dv": "<fontColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._quinary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Primary Color Picker Design One Design background Color",
+		"n": "primaryColorpickerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._primary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Secondary Color Picker Design One Design background Color",
+		"n": "secondaryColorpickerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._secondary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Tertiary Color Picker Design One Design background Color",
+		"n": "tertiaryColorpickerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quaternary Color Picker Design One Design background Color",
+		"n": "quaternaryColorpickerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quinary Color Picker Design One Design background Color",
+		"n": "quinaryColorpickerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._quinary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Primary Color Picker Text Design background Color",
+		"n": "primaryColorpickerTextDesignbackgroundColor",
+		"dv": "transparent",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._primary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Secondary Color Picker Text Design background Color",
+		"n": "secondaryColorpickerTextDesignbackgroundColor",
+		"dv": "transparent",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._secondary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Tertiary Color Picker Text Design background Color",
+		"n": "tertiaryColorpickerTextDesignbackgroundColor",
+		"dv": "transparent",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quaternary Color Picker Text Design background Color",
+		"n": "quaternaryColorpickerTextDesignbackgroundColor",
+		"dv": "transparent",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Quinary Color Picker Text Design background Color",
+		"n": "quinaryColorpickerTextDesignbackgroundColor",
+		"dv": "transparent",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._quinary",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Color Picker Box Rounded Design background Color",
+		"n": "colorpickerBoxRoundedDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #35f803 -26.56%, #4d7fee 26.55%, #f9a71e 69.94%, #35f803 126.56% )",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Color Picker Box Square Design background Color",
+		"n": "colorpickerBoxSquareDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #35f803 -26.56%, #4d7fee 26.55%, #f9a71e 69.94%, #35f803 126.56% )",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._boxSquareDesign",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Primary Color Picker Default Design Active label Color",
+		"n": "primaryColorpickerDefaultDesignActivelabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._default._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Secondary Color Picker Default Design Active label Color",
+		"n": "secondaryColorpickerDefaultDesignActivelabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._default._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Tertiary Color Picker Default Design Active label Color",
+		"n": "tertiaryColorpickerDefaultDesignActivelabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._default._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quaternary Color Picker Default Design Active label Color",
+		"n": "quaternaryColorpickerDefaultDesignActivelabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._default._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quinary Color Picker Default Design Active label Color",
+		"n": "quinaryColorpickerDefaultDesignActivelabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._default._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Primary Color Picker Outline Design Active label Color",
+		"n": "primaryColorpickerOutlineDesignActivelabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._outlined._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Secondary Color Picker Outline Design Active label Color",
+		"n": "secondaryColorpickerOutlineDesignActivelabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._outlined._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Tertiary Color Picker Outline Design Active label Color",
+		"n": "tertiaryColorpickerOutlineDesignActivelabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._outlined._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quaternary Color Picker Outline Design Active label Color",
+		"n": "quaternaryColorpickerOutlineDesignActivelabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._outlined._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quinary Color Picker Outline Design Active label Color",
+		"n": "quinaryColorpickerOutlineDesignActivelabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._outlined._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Primary Color Picker Filled Design Active label Color",
+		"n": "primaryColorpickerFilledDesignActivelabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._filled._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Secondary Color Picker Filled Design Active label Color",
+		"n": "secondaryColorpickerFilledDesignActivelabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._filled._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Tertiary Color Picker Filled Design Active label Color",
+		"n": "tertiaryColorpickerFilledDesignActivelabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._filled._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quaternary Color Picker Filled Design Active label Color",
+		"n": "quaternaryColorpickerFilledDesignActivelabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._filled._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quinary Color Picker Filled Design Active label Color",
+		"n": "quinaryColorpickerFilledDesignActivelabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._filled._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Primary Color Picker Design One Design Active label Color",
+		"n": "primaryColorpickerDesignOneDesignActivelabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._bigDesign1._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Secondary Color Picker Design One Design Active label Color",
+		"n": "secondaryColorpickerDesignOneDesignActivelabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._bigDesign1._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Tertiary Color Picker Design One Design Active label Color",
+		"n": "tertiaryColorpickerDesignOneDesignActivelabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._bigDesign1._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quaternary Color Picker Design One Design Active label Color",
+		"n": "quaternaryColorpickerDesignOneDesignActivelabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._bigDesign1._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quinary Color Picker Design One Design Active label Color",
+		"n": "quinaryColorpickerDesignOneDesignActivelabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._bigDesign1._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Primary Color Picker Text Design Active label Color",
+		"n": "primaryColorpickerTextDesignActivelabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._text._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Secondary Color Picker Text Design Active label Color",
+		"n": "secondaryColorpickerTextDesignActivelabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._text._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Tertiary Color Picker Text Design Active label Color",
+		"n": "tertiaryColorpickerTextDesignActivelabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._text._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quaternary Color Picker Text Design Active label Color",
+		"n": "quaternaryColorpickerTextDesignActivelabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._text._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Active Label Color",
+		"dn": "Quinary Color Picker Text Design Active label Color",
+		"n": "quinaryColorpickerTextDesignActivelabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._text._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Primary Color Picker Container Default Design background Color",
+		"n": "primaryColorpickerContainerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Secondary Color Picker Container Default Design background Color",
+		"n": "secondaryColorpickerContainerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Tertiary Color Picker Container Default Design background Color",
+		"n": "tertiaryColorpickerContainerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quaternary Color Picker Container Default Design background Color",
+		"n": "quaternaryColorpickerContainerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quinary Color Picker Container Default Design background Color",
+		"n": "quinaryColorpickerContainerDefaultDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Primary Color Picker Container Outline Design background Color",
+		"n": "primaryColorpickerContainerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Secondary Color Picker Container Outline Design background Color",
+		"n": "secondaryColorpickerContainerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Tertiary Color Picker Container Outline Design background Color",
+		"n": "tertiaryColorpickerContainerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quaternary Color Picker Container Outline Design background Color",
+		"n": "quaternaryColorpickerContainerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quinary Color Picker Container Outline Design background Color",
+		"n": "quinaryColorpickerContainerOutlineDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Primary Color Picker Container Filled Design background Color",
+		"n": "primaryColorpickerContainerFilledDesignbackgroundColor",
+		"dv": "<backgroundColorOne>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Secondary Color Picker Container Filled Design background Color",
+		"n": "secondaryColorpickerContainerFilledDesignbackgroundColor",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Tertiary Color Picker Container Filled Design background Color",
+		"n": "tertiaryColorpickerContainerFilledDesignbackgroundColor",
+		"dv": "<backgroundColorThree>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quaternary Color Picker Container Filled Design background Color",
+		"n": "quaternaryColorpickerContainerFilledDesignbackgroundColor",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quinary Color Picker Container Filled Design background Color",
+		"n": "quinaryColorpickerContainerFilledDesignbackgroundColor",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Primary Color Picker Container Design One Design background Color",
+		"n": "primaryColorpickerContainerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Secondary Color Picker Container Design One Design background Color",
+		"n": "secondaryColorpickerContainerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Tertiary Color Picker Container Design One Design background Color",
+		"n": "tertiaryColorpickerContainerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quaternary Color Picker Container Design One Design background Color",
+		"n": "quaternaryColorpickerContainerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quinary Color Picker Container Design One Design background Color",
+		"n": "quinaryColorpickerContainerDesignOneDesignbackgroundColor",
+		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Primary Color Picker Container Text Design background Color",
+		"n": "primaryColorpickerContainerTextDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Secondary Color Picker Container Text Design background Color",
+		"n": "secondaryColorpickerContainerTextDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Tertiary Color Picker Container Text Design background Color",
+		"n": "tertiaryColorpickerContainerTextDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quaternary Color Picker Container Text Design background Color",
+		"n": "quaternaryColorpickerContainerTextDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Background Color",
+		"dn": "Quinary Color Picker Container Text Design background Color",
+		"n": "quinaryColorpickerContainerTextDesignbackgroundColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Primary Color Picker Default Icon Color",
+		"n": "primaryColorpickerDefaultIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._primary._default ._leftIcon, .comp.compColorPicker._primary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Secondary Color Picker Default Icon Color",
+		"n": "secondaryColorpickerDefaultIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._secondary._default ._leftIcon, .comp.compColorPicker._secondary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Tertiary Color Picker Default Icon Color",
+		"n": "tertiaryColorpickerDefaultIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._tertiary._default ._leftIcon, .comp.compColorPicker._tertiary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quaternary Color Picker Default Icon Color",
+		"n": "quaternaryColorpickerDefaultIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quaternary._default ._leftIcon, .comp.compColorPicker._quaternary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quinary Color Picker Default Icon Color",
+		"n": "quinaryColorpickerDefaultIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quinary._default ._leftIcon, .comp.compColorPicker._quinary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Primary Color Picker Outline Icon Color",
+		"n": "primaryColorpickerOutlineIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._primary._outlined ._leftIcon, .comp.compColorPicker._primary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Secondary Color Picker Outline Icon Color",
+		"n": "secondaryColorpickerOutlineIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._secondary._outlined ._leftIcon, .comp.compColorPicker._secondary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Tertiary Color Picker Outline Icon Color",
+		"n": "tertiaryColorpickerOutlineIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._tertiary._outlined ._leftIcon, .comp.compColorPicker._tertiary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quaternary Color Picker Outline Icon Color",
+		"n": "quaternaryColorpickerOutlineIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quaternary._outlined ._leftIcon, .comp.compColorPicker._quaternary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quinary Color Picker Outline Icon Color",
+		"n": "quinaryColorpickerOutlineIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quinary._outlined ._leftIcon, .comp.compColorPicker._quinary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Primary Color Picker Filled Icon Color",
+		"n": "primaryColorpickerFilledIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._primary._filled ._leftIcon, .comp.compColorPicker._primary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Secondary Color Picker Filled Icon Color",
+		"n": "secondaryColorpickerFilledIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._secondary._filled ._leftIcon, .comp.compColorPicker._secondary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Tertiary Color Picker Filled Icon Color",
+		"n": "tertiaryColorpickerFilledIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._tertiary._filled ._leftIcon, .comp.compColorPicker._tertiary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quaternary Color Picker Filled Icon Color",
+		"n": "quaternaryColorpickerFilledIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quaternary._filled ._leftIcon, .comp.compColorPicker._quaternary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quinary Color Picker Filled Icon Color",
+		"n": "quinaryColorpickerFilledIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quinary._filled ._leftIcon, .comp.compColorPicker._quinary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Primary Color Picker Design One Icon Color",
+		"n": "primaryColorpickerDesignOneIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._primary._bigDesign1 ._leftIcon, .comp.compColorPicker._primary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Secondary Color Picker Design One Icon Color",
+		"n": "secondaryColorpickerDesignOneIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._secondary._bigDesign1 ._leftIcon, .comp.compColorPicker._secondary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Tertiary Color Picker Design One Icon Color",
+		"n": "tertiaryColorpickerDesignOneIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._tertiary._bigDesign1 ._leftIcon, .comp.compColorPicker._tertiary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quaternary Color Picker Design One Icon Color",
+		"n": "quaternaryColorpickerDesignOneIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quaternary._bigDesign1 ._leftIcon, .comp.compColorPicker._quaternary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quinary Color Picker Design One Icon Color",
+		"n": "quinaryColorpickerDesignOneIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quinary._bigDesign1 ._leftIcon, .comp.compColorPicker._quinary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Primary Color Picker Text Icon Color",
+		"n": "primaryColorpickerTextIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._primary._text ._leftIcon, .comp.compColorPicker._primary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Secondary Color Picker Text Icon Color",
+		"n": "secondaryColorpickerTextIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._secondary._text ._leftIcon, .comp.compColorPicker._secondary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Tertiary Color Picker Text Icon Color",
+		"n": "tertiaryColorpickerTextIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._tertiary._text ._leftIcon, .comp.compColorPicker._tertiary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quaternary Color Picker Text Icon Color",
+		"n": "quaternaryColorpickerTextIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quaternary._text ._leftIcon, .comp.compColorPicker._quaternary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Icon color",
+		"dn": "Quinary Color Picker Text Icon Color",
+		"n": "quinaryColorpickerTextIconColor",
+		"dv": "<fontColorSix>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._quinary._text ._leftIcon, .comp.compColorPicker._quinary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Primary Color Picker Default Active Icon Color",
+		"n": "primaryColorpickerDefaultActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._primary._default ._leftIcon, .comp.compColorPicker._isActive._primary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Secondary Color Picker Default Active Icon Color",
+		"n": "secondaryColorpickerDefaultActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._secondary._default ._leftIcon, .comp.compColorPicker._isActive._secondary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Tertiary Color Picker Default Active Icon Color",
+		"n": "tertiaryColorpickerDefaultActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._tertiary._default ._leftIcon, .comp.compColorPicker._isActive._tertiary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quaternary Color Picker Default Active Icon Color",
+		"n": "quaternaryColorpickerDefaultActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quaternary._default ._leftIcon, .comp.compColorPicker._isActive._quaternary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quinary Color Picker Default Active Icon Color",
+		"n": "quinaryColorpickerDefaultActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quinary._default ._leftIcon, .comp.compColorPicker._isActive._quinary._default ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Primary Color Picker Outline Active Icon Color",
+		"n": "primaryColorpickerOutlineActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._primary._outlined ._leftIcon, .comp.compColorPicker._isActive._primary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Secondary Color Picker Outline Active Icon Color",
+		"n": "secondaryColorpickerOutlineActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._secondary._outlined ._leftIcon, .comp.compColorPicker._isActive._secondary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Tertiary Color Picker Outline Active Icon Color",
+		"n": "tertiaryColorpickerOutlineActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._tertiary._outlined ._leftIcon, .comp.compColorPicker._isActive._tertiary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quaternary Color Picker Outline Active Icon Color",
+		"n": "quaternaryColorpickerOutlineActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quaternary._outlined ._leftIcon, .comp.compColorPicker._isActive._quaternary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quinary Color Picker Outline Active Icon Color",
+		"n": "quinaryColorpickerOutlineActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quinary._outlined ._leftIcon, .comp.compColorPicker._isActive._quinary._outlined ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Primary Color Picker Filled Active Icon Color",
+		"n": "primaryColorpickerFilledActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._primary._filled ._leftIcon, .comp.compColorPicker._isActive._primary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Secondary Color Picker Filled Active Icon Color",
+		"n": "secondaryColorpickerFilledActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._secondary._filled ._leftIcon, .comp.compColorPicker._isActive._secondary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Tertiary Color Picker Filled Active Icon Color",
+		"n": "tertiaryColorpickerFilledActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._tertiary._filled ._leftIcon, .comp.compColorPicker._isActive._tertiary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quaternary Color Picker Filled Active Icon Color",
+		"n": "quaternaryColorpickerFilledActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quaternary._filled ._leftIcon, .comp.compColorPicker._isActive._quaternary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quinary Color Picker Filled Active Icon Color",
+		"n": "quinaryColorpickerFilledActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quinary._filled ._leftIcon, .comp.compColorPicker._isActive._quinary._filled ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Primary Color Picker Design One Active Icon Color",
+		"n": "primaryColorpickerDesignOneActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._primary._bigDesign1 ._leftIcon, .comp.compColorPicker._isActive._primary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Secondary Color Picker Design One Active Icon Color",
+		"n": "secondaryColorpickerDesignOneActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._secondary._bigDesign1 ._leftIcon, .comp.compColorPicker._isActive._secondary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Tertiary Color Picker Design One Active Icon Color",
+		"n": "tertiaryColorpickerDesignOneActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._tertiary._bigDesign1 ._leftIcon, .comp.compColorPicker._isActive._tertiary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quaternary Color Picker Design One Active Icon Color",
+		"n": "quaternaryColorpickerDesignOneActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quaternary._bigDesign1 ._leftIcon, .comp.compColorPicker._isActive._quaternary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quinary Color Picker Design One Active Icon Color",
+		"n": "quinaryColorpickerDesignOneActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quinary._bigDesign1 ._leftIcon, .comp.compColorPicker._isActive._quinary._bigDesign1 ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Primary Color Picker Text Active Icon Color",
+		"n": "primaryColorpickerTextActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._primary._text ._leftIcon, .comp.compColorPicker._isActive._primary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Secondary Color Picker Text Active Icon Color",
+		"n": "secondaryColorpickerTextActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._secondary._text ._leftIcon, .comp.compColorPicker._isActive._secondary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Tertiary Color Picker Text Active Icon Color",
+		"n": "tertiaryColorpickerTextActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._tertiary._text ._leftIcon, .comp.compColorPicker._isActive._tertiary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quaternary Color Picker Text Active Icon Color",
+		"n": "quaternaryColorpickerTextActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quaternary._text ._leftIcon, .comp.compColorPicker._isActive._quaternary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Active Icon color",
+		"dn": "Quinary Color Picker Text Active Icon Color",
+		"n": "quinaryColorpickerTextActiveIconColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._isActive._quinary._text ._leftIcon, .comp.compColorPicker._isActive._quinary._text ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Success Icon Color",
+		"dn": "Default Color Picker Success Icon color",
+		"n": "successColorpickerIconDefaultColor",
+		"dv": "<successColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default ._successIcon._leftIcon, .comp.compColorPicker._isActive._default ._successIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Success Icon Color",
+		"dn": "Outline Color Picker Success Icon color",
+		"n": "successColorpickerIconOutlinedColor",
+		"dv": "<successColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined ._successIcon._leftIcon, .comp.compColorPicker._isActive._outlined ._successIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Success Icon Color",
+		"dn": "Filled Color Picker Success Icon color",
+		"n": "successColorpickerIconFilledColor",
+		"dv": "<successColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled ._successIcon._leftIcon, .comp.compColorPicker._isActive._filled ._successIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Success Icon Color",
+		"dn": "Design Color Picker One Success Icon color",
+		"n": "successColorpickerIconBigDesignOneColor",
+		"dv": "<successColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1 ._successIcon._leftIcon, .comp.compColorPicker._isActive._bigDesign1 ._successIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Success Icon Color",
+		"dn": "Text Color Picker Success Icon color",
+		"n": "successColorpickerIconTextColor",
+		"dv": "<successColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text ._successIcon._leftIcon, .comp.compColorPicker._isActive._text ._successIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Error Icon Color",
+		"dn": "Default Color Picker Error Icon color",
+		"n": "errorColorpickerIconDefaultColor",
+		"dv": "<errorColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._primary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._primary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._secondary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._secondary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._tertiary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._tertiary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._quaternary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._quaternary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._quinary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._default._quinary._isActive._hasError ._errorIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Error Icon Color",
+		"dn": "Outline Color Picker Error Icon color",
+		"n": "errorColorpickerIconOutlinedColor",
+		"dv": "<errorColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._primary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._primary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._secondary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._secondary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._tertiary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._tertiary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._quaternary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._quaternary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._quinary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._outlined._quinary._isActive._hasError ._errorIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Error Icon Color",
+		"dn": "Filled Color Picker Error Icon color",
+		"n": "errorColorpickerIconFilledColor",
+		"dv": "<errorColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._primary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._primary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._secondary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._secondary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._tertiary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._tertiary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._quaternary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._quaternary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._quinary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._filled._quinary._isActive._hasError ._errorIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Error Icon Color",
+		"dn": "Design One Color Picker Error Icon color",
+		"n": "errorColorpickerIconBigDesignOneColor",
+		"dv": "<errorColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._primary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._primary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._secondary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._secondary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._tertiary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._tertiary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._quaternary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._quaternary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._quinary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._bigDesign1._quinary._isActive._hasError ._errorIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Error Icon Color",
+		"dn": "Text Error Color Picker Icon color",
+		"n": "errorColorpickerIconTextColor",
+		"dv": "<errorColor>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._primary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._primary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._secondary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._secondary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._tertiary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._tertiary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._quaternary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._quaternary._isActive._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._quinary._hasError ._errorIcon._rightIcon, .comp.compColorPicker._text._quinary._isActive._hasError ._errorIcon._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Error Border Color",
+		"dn": "Default Error Color Picker Border color",
+		"n": "errorColorpickerBorderDefaultColor",
+		"dv": "<errorColor>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._hasError, .comp.compColorPicker._default._hasError._isActive._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Border Color",
+		"dn": "Outline Error Color Picker Border Icon color",
+		"n": "errorColorpickerBorderOutlinedColor",
+		"dv": "<errorColor>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._hasError, .comp.compColorPicker._outlined._isActive._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Border Color",
+		"dn": "Filled Error Color Picker Border Icon color",
+		"n": "errorColorpickerBorderFilledColor",
+		"dv": "<errorColor>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._hasError, .comp.compColorPicker._filled._isActive._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Border Color",
+		"dn": "Design One Color Picker Error Border Icon color",
+		"n": "errorColorpickerBorderBigDesignOneColor",
+		"dv": "<errorColor>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._hasError, .comp.compColorPicker._bigDesign1._isActive._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Border Color",
+		"dn": "Text Error Color Picker Border Icon color",
+		"n": "errorColorpickerBorderTextColor",
+		"dv": "<errorColor>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._hasError, .comp.compColorPicker._text._isActive._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Background Color",
+		"dn": "Error Default Color Picker Background",
+		"n": "errorColorpickerBackgroundColorForDefaultDesign",
+		"dv": "<errorColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._Default._isActive._hasError, .comp.compColorPicker._Default._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Background Color",
+		"dn": "Error Outlined Color Picker Background",
+		"n": "errorColorpickerBackgroundColorForOutlinedDesign",
+		"dv": "<errorColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._isActive._hasError, .comp.compColorPicker._outlined._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Background Color",
+		"dn": "Error Filled Color Picker Background",
+		"n": "errorColorpickerBackgroundColorForFilledDesign",
+		"dv": "<errorColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._isActive._hasError, .comp.compColorPicker._filled._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Background Color",
+		"dn": "Error Big Design One Color Picker Background",
+		"n": "errorColorpickerBackgroundColorForBigDesignOneDesign",
+		"dv": "<errorColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._hasError, .comp.compColorPicker._bigDesign1._hasError",
+		"np": true
+	},
+	{
+		"gn": "Error Background Color",
+		"dn": "Error Text Color Picker Background",
+		"n": "errorColorpickerBackgroundColorForTextDesign",
+		"dv": "<errorColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._isActive._hasError, .comp.compColorPicker._text._hasError",
+		"np": true
+	},
+	{
+		"gn": "Success Background Color",
+		"dn": "Success Default Color Picker Background",
+		"n": "successColorpickerBackgroundColorForDefaultDesign",
+		"dv": "<successColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._Default._isActive ._successIcon, .comp.compColorPicker._Default ._successIcon ",
+		"np": true
+	},
+	{
+		"gn": "Success Background Color",
+		"dn": "Success Outlined Color Picker Background",
+		"n": "successColorpickerBackgroundColorForOutlinedDesign",
+		"dv": "<successColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._isActive ._successIcon, .comp.compColorPicker._outlined ._successIcon ",
+		"np": true
+	},
+	{
+		"gn": "Success Background Color",
+		"dn": "Success Filled Color Picker Background",
+		"n": "successColorpickerBackgroundColorForFilledDesign",
+		"dv": "<successColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._isActive ._successIcon, .comp.compColorPicker._filled ._successIcon",
+		"np": true
+	},
+	{
+		"gn": "Success Background Color",
+		"dn": "Success Big Design One Color Picker Background",
+		"n": "successColorpickerBackgroundColorForBigDesignOneDesign",
+		"dv": "<successColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive ._successIcon, .comp.compColorPicker._bigDesign1 ._successIcon ",
+		"np": true
+	},
+	{
+		"gn": "Success Background Color",
+		"dn": "Success Text Color Picker Background",
+		"n": "successColorpickerBackgroundColorForTextDesign",
+		"dv": "<successColor>",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._isActive ._successIcon, .comp.compColorPicker._text ._successIcon",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Icon Default Padding",
+		"n": "colorpickerIconDefaultPadding",
+		"dv": "0px 8px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._default ._leftIcon, .comp.compColorPicker._default ._rightIcon ",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Icon Outline Padding",
+		"n": "colorpickerIconOutlinePadding",
+		"dv": "0px 8px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._outlined ._leftIcon, .comp.compColorPicker._outlined ._rightIcon ",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Icon Filled Padding",
+		"n": "colorpickerIconFilledPadding",
+		"dv": "0px 8px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._filled ._leftIcon, .comp.compColorPicker._filled ._rightIcon ",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Icon Big Design 1 Padding",
+		"n": "colorpickerIconBigDesign1Padding",
+		"dv": "0px 18px 0px 8px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._bigDesign1 ._leftIcon, .comp.compColorPicker._bigDesign1 ._rightIcon ",
+		"np": true
+	},
+	{
+		"gn": "Padding",
+		"dn": "Color Picker Icon Text Padding",
+		"n": "colorpickerIconTextPadding",
+		"dv": "0px 8px",
+		"cp": "padding",
+		"sel": ".comp.compColorPicker._text ._leftIcon, .comp.compColorPicker._text ._rightIcon ",
+		"np": true
+	},
+	{
+		"gn": "Default",
+		"dn": "Default Color Picker Label Font",
+		"n": "defaultColorpickerLabelFont",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._default ._label",
+		"np": true
+	},
+	{
+		"gn": "Outline",
+		"dn": "Outline Color Picker Label Font",
+		"n": "outlineColorpickerLabelFont",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._outlined ._label",
+		"np": true
+	},
+	{
+		"gn": "Filled",
+		"dn": "Filled Color Picker Label Font",
+		"n": "filledColorpickerLabelFont",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._filled ._label",
+		"np": true
+	},
+	{
+		"gn": "Big Design 1",
+		"dn": "Big Design 1 Color Picker Label Font",
+		"n": "bigdesign1ColorpickerLabelFont",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._bigDesign1 ._label",
+		"np": true
+	},
+	{
+		"gn": "Text",
+		"dn": "Text Color Picker Label Font",
+		"n": "textColorpickerLabelFont",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._bigDesign1 ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Label Default Design Text Color",
+		"n": "primaryColorpickerLabelDefaultDesignTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Label Default Design Text Color",
+		"n": "secondaryColorpickerLabelDefaultDesignTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Label Default Design Text Color",
+		"n": "tertiaryColorpickerLabelDefaultDesignTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Label Default Design Text Color",
+		"n": "quaternaryColorpickerLabelDefaultDesignTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Label Default Design Text Color",
+		"n": "quinaryColorpickerLabelDefaultDesignTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._quinary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Label Outlined Design Text Color",
+		"n": "primaryColorpickerLabelOutlinedDesignTextColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Label Outlined Design Text Color",
+		"n": "secondaryColorpickerLabelOutlinedDesignTextColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Label Outlined Design Text Color",
+		"n": "tertiaryColorpickerLabelOutlinedDesignTextColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Label Outlined Design Text Color",
+		"n": "quaternaryColorpickerLabelOutlinedDesignTextColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Label Outlined Design Text Color",
+		"n": "quinaryColorpickerLabelOutlinedDesignTextColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._quinary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Label Filled Design Text Color",
+		"n": "primaryColorpickerLabelFilledDesignTextColor",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Label Filled Design Text Color",
+		"n": "secondaryColorpickerLabelFilledDesignTextColor",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Label Filled Design Text Color",
+		"n": "tertiaryColorpickerLabelFilledDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Label Filled Design Text Color",
+		"n": "quaternaryColorpickerLabelFilledDesignTextColor",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Label Filled Design Text Color",
+		"n": "quinaryColorpickerLabelFilledDesignTextColor",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._quinary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Label Big Design One Text Color",
+		"n": "primaryColorpickerLabelBigDesignOneTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Label Big Design One Text Color",
+		"n": "secondaryColorpickerLabelBigDesignOneTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Label Big Design One Text Color",
+		"n": "tertiaryColorpickerLabelBigDesignOneTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Label Big Design One Text Color",
+		"n": "quaternaryColorpickerLabelBigDesignOneTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Label Big Design One Text Color",
+		"n": "quinaryColorpickerLabelBigDesignOneTextColor",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._quinary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Color",
+		"dn": "Primary Color Picker Label Text Design Text Color",
+		"n": "primaryColorpickerLabelTextDesignTextColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Secondary Color Picker Label Text Design Text Color",
+		"n": "secondaryColorpickerLabelTextDesignTextColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Tertiary Color Picker Label Text Design Text Color",
+		"n": "tertiaryColorpickerLabelTextDesignTextColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quaternary Color Picker Label Text Design Text Color",
+		"n": "quaternaryColorpickerLabelTextDesignTextColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Color",
+		"dn": "Quinary Color Picker Label Text Design Text Color",
+		"n": "quinaryColorpickerLabelTextDesignTextColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._text._quinary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Default Design border Color",
+		"n": "primaryColorpickerDefaultDesignborderColorisActive",
+		"dv": "<fontColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._isActive._primary, .comp.compColorPicker._default._isActive._primary ._dropdownContainer, .comp.compColorPicker._default._hasValue._primary, .comp.compColorPicker._default._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Default Design border Color",
+		"n": "secondaryColorpickerDefaultDesignborderColorisActive",
+		"dv": "<fontColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._isActive._secondary, .comp.compColorPicker._default._isActive._secondary ._dropdownContainer, .comp.compColorPicker._default._hasValue._secondary, .comp.compColorPicker._default._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Default Design border Color",
+		"n": "tertiaryColorpickerDefaultDesignborderColorisActive",
+		"dv": "<fontColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._isActive._tertiary, .comp.compColorPicker._default._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._default._hasValue._tertiary, .comp.compColorPicker._default._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Default Design border Color",
+		"n": "quaternaryColorpickerDefaultDesignborderColorisActive",
+		"dv": "<fontColorNine>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._isActive._quaternary, .comp.compColorPicker._default._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._default._hasValue._quaternary, .comp.compColorPicker._default._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Default Design border Color",
+		"n": "quinaryColorpickerDefaultDesignborderColorisActive",
+		"dv": "<fontColorSeven>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._default._isActive._quinary, .comp.compColorPicker._default._isActive._quinary ._dropdownContainer, .comp.compColorPicker._default._hasValue._quinary, .comp.compColorPicker._default._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Outline Design border Color",
+		"n": "primaryColorpickerOutlineDesignborderColorisActive",
+		"dv": "<fontColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._isActive._primary, .comp.compColorPicker._outlined._isActive._primary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._primary, .comp.compColorPicker._outlined._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Outline Design border Color",
+		"n": "secondaryColorpickerOutlineDesignborderColorisActive",
+		"dv": "<fontColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._isActive._secondary, .comp.compColorPicker._outlined._isActive._secondary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._secondary, .comp.compColorPicker._outlined._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Outline Design border Color",
+		"n": "tertiaryColorpickerOutlineDesignborderColorisActive",
+		"dv": "<fontColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._isActive._tertiary, .comp.compColorPicker._outlined._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._tertiary, .comp.compColorPicker._outlined._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Outline Design border Color",
+		"n": "quaternaryColorpickerOutlineDesignborderColorisActive",
+		"dv": "<fontColorNine>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._isActive._quaternary, .comp.compColorPicker._outlined._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._quaternary, .comp.compColorPicker._outlined._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Outline Design border Color",
+		"n": "quinaryColorpickerOutlineDesignborderColorisActive",
+		"dv": "<fontColorSeven>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._outlined._isActive._quinary, .comp.compColorPicker._outlined._isActive._quinary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._quinary, .comp.compColorPicker._outlined._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Filled Design border Color",
+		"n": "primaryColorpickerFilledDesignborderColorisActive",
+		"dv": "<fontColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._isActive._primary, .comp.compColorPicker._filled._isActive._primary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._primary, .comp.compColorPicker._filled._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Filled Design border Color",
+		"n": "secondaryColorpickerFilledDesignborderColorisActive",
+		"dv": "<fontColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._isActive._secondary, .comp.compColorPicker._filled._isActive._secondary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._secondary, .comp.compColorPicker._filled._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Filled Design border Color",
+		"n": "tertiaryColorpickerFilledDesignborderColorisActive",
+		"dv": "<fontColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._isActive._tertiary, .comp.compColorPicker._filled._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._tertiary, .comp.compColorPicker._filled._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Filled Design border Color",
+		"n": "quaternaryColorpickerFilledDesignborderColorisActive",
+		"dv": "<fontColorNine>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._isActive._quaternary, .comp.compColorPicker._filled._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._quaternary, .comp.compColorPicker._filled._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Filled Design border Color",
+		"n": "quinaryColorpickerFilledDesignborderColorisActive",
+		"dv": "<fontColorSeven>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._filled._isActive._quinary, .comp.compColorPicker._filled._isActive._quinary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._quinary, .comp.compColorPicker._filled._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Design One Design border Color",
+		"n": "primaryColorpickerDesignOneDesignborderColorisActive",
+		"dv": "<fontColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._primary, .comp.compColorPicker._bigDesign1._isActive._primary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._primary, .comp.compColorPicker._bigDesign1._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Design One Design border Color",
+		"n": "secondaryColorpickerDesignOneDesignborderColorisActive",
+		"dv": "<fontColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._secondary, .comp.compColorPicker._bigDesign1._isActive._secondary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._secondary, .comp.compColorPicker._bigDesign1._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Design One Design border Color",
+		"n": "tertiaryColorpickerDesignOneDesignborderColorisActive",
+		"dv": "<fontColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._tertiary, .comp.compColorPicker._bigDesign1._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._tertiary, .comp.compColorPicker._bigDesign1._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Design One Design border Color",
+		"n": "quaternaryColorpickerDesignOneDesignborderColorisActive",
+		"dv": "<fontColorNine>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._quaternary, .comp.compColorPicker._bigDesign1._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._quaternary, .comp.compColorPicker._bigDesign1._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Design One Design border Color",
+		"n": "quinaryColorpickerDesignOneDesignborderColorisActive",
+		"dv": "<fontColorSeven>",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._quinary, .comp.compColorPicker._bigDesign1._isActive._quinary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._quinary, .comp.compColorPicker._bigDesign1._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Primary Color Picker Text Design border Color",
+		"n": "primaryColorpickerTextDesignborderColorisActive",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._isActive._primary, .comp.compColorPicker._text._isActive._primary ._dropdownContainer, .comp.compColorPicker._text._hasValue._primary, .comp.compColorPicker._text._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Secondary Color Picker Text Design border Color",
+		"n": "secondaryColorpickerTextDesignborderColorisActive",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._isActive._secondary, .comp.compColorPicker._text._isActive._secondary ._dropdownContainer, .comp.compColorPicker._text._hasValue._secondary, .comp.compColorPicker._text._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Tertiary Color Picker Text Design border Color",
+		"n": "tertiaryColorpickerTextDesignborderColorisActive",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._isActive._tertiary, .comp.compColorPicker._text._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._text._hasValue._tertiary, .comp.compColorPicker._text._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quaternary Color Picker Text Design border Color",
+		"n": "quaternaryColorpickerTextDesignborderColorisActive",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._isActive._quaternary, .comp.compColorPicker._text._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._text._hasValue._quaternary, .comp.compColorPicker._text._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Border Color",
+		"dn": "Quinary Color Picker Text Design border Color",
+		"n": "quinaryColorpickerTextDesignborderColorisActive",
+		"cp": "border-color",
+		"sel": ".comp.compColorPicker._text._isActive._quinary, .comp.compColorPicker._text._isActive._quinary ._dropdownContainer, .comp.compColorPicker._text._hasValue._quinary, .comp.compColorPicker._text._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+
+	{
+		"gn": "Border",
+		"dn": "Color Picker Default Input Border",
+		"n": "colorpickerDefaultInputBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._default ._dropdownContainer._colorPickerBody input",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Outline Input Border",
+		"n": "colorpickerOutlineInputBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._outlined ._dropdownContainer._colorPickerBody input",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Filled Input Border",
+		"n": "colorpickerFilledInputBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._filled ._dropdownContainer._colorPickerBody input",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Big Design 1 Input Border",
+		"n": "colorpickerBigDesign1InputBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._bigDesign1 ._dropdownContainer._colorPickerBody input",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Color Picker Text Input Border",
+		"n": "colorpickerTextInputBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compColorPicker._text ._dropdownContainer._colorPickerBody input",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Primary Color Picker Default Design Has Text label Color",
+		"n": "primaryColorpickerDefaultDesignHasTextlabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._default._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Secondary Color Picker Default Design Has Text label Color",
+		"n": "secondaryColorpickerDefaultDesignHasTextlabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._default._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Tertiary Color Picker Default Design Has Text label Color",
+		"n": "tertiaryColorpickerDefaultDesignHasTextlabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._default._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quaternary Color Picker Default Design Has Text label Color",
+		"n": "quaternaryColorpickerDefaultDesignHasTextlabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._default._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quinary Color Picker Default Design Has Text label Color",
+		"n": "quinaryColorpickerDefaultDesignHasTextlabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._default._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Primary Color Picker Outline Design Has Text label Color",
+		"n": "primaryColorpickerOutlineDesignHasTextlabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._outlined._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Secondary Color Picker Outline Design Has Text label Color",
+		"n": "secondaryColorpickerOutlineDesignHasTextlabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._outlined._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Tertiary Color Picker Outline Design Has Text label Color",
+		"n": "tertiaryColorpickerOutlineDesignHasTextlabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._outlined._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quaternary Color Picker Outline Design Has Text label Color",
+		"n": "quaternaryColorpickerOutlineDesignHasTextlabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._outlined._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quinary Color Picker Outline Design Has Text label Color",
+		"n": "quinaryColorpickerOutlineDesignHasTextlabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._outlined._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Primary Color Picker Filled Design Has Text label Color",
+		"n": "primaryColorpickerFilledDesignHasTextlabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._filled._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Secondary Color Picker Filled Design Has Text label Color",
+		"n": "secondaryColorpickerFilledDesignHasTextlabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._filled._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Tertiary Color Picker Filled Design Has Text label Color",
+		"n": "tertiaryColorpickerFilledDesignHasTextlabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._filled._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quaternary Color Picker Filled Design Has Text label Color",
+		"n": "quaternaryColorpickerFilledDesignHasTextlabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._filled._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quinary Color Picker Filled Design Has Text label Color",
+		"n": "quinaryColorpickerFilledDesignHasTextlabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._filled._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Primary Color Picker Design One Design Has Text label Color",
+		"n": "primaryColorpickerDesignOneDesignHasTextlabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._bigDesign1._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Secondary Color Picker Design One Design Has Text label Color",
+		"n": "secondaryColorpickerDesignOneDesignHasTextlabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._bigDesign1._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Tertiary Color Picker Design One Design Has Text label Color",
+		"n": "tertiaryColorpickerDesignOneDesignHasTextlabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._bigDesign1._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quaternary Color Picker Design One Design Has Text label Color",
+		"n": "quaternaryColorpickerDesignOneDesignHasTextlabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._bigDesign1._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quinary Color Picker Design One Design Has Text label Color",
+		"n": "quinaryColorpickerDesignOneDesignHasTextlabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._bigDesign1._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Primary Color Picker Text Design Has Text label Color",
+		"n": "primaryColorpickerTextDesignHasTextlabelColor",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._text._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Secondary Color Picker Text Design Has Text label Color",
+		"n": "secondaryColorpickerTextDesignHasTextlabelColor",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._text._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Tertiary Color Picker Text Design Has Text label Color",
+		"n": "tertiaryColorpickerTextDesignHasTextlabelColor",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._text._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quaternary Color Picker Text Design Has Text label Color",
+		"n": "quaternaryColorpickerTextDesignHasTextlabelColor",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._text._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Has Text Label Color",
+		"dn": "Quinary Color Picker Text Design Has Text label Color",
+		"n": "quinaryColorpickerTextDesignHasTextlabelColor",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._hasValue._text._quinary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Active Background Color",
+		"dn": "Primary Color Picker Default Design Active Background",
+		"n": "primaryColorpickerDefaultDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._isActive._primary, .comp.compColorPicker._default._isActive._primary ._dropdownContainer, .comp.compColorPicker._default._hasValue._primary, .comp.compColorPicker._default._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Secondary Color Picker Default Design Active Background",
+		"n": "secondaryColorpickerDefaultDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._isActive._secondary, .comp.compColorPicker._default._isActive._secondary ._dropdownContainer, .comp.compColorPicker._default._hasValue._secondary, .comp.compColorPicker._default._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Tertiary Color Picker Default Design Active Background",
+		"n": "tertiaryColorpickerDefaultDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._isActive._tertiary, .comp.compColorPicker._default._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._default._hasValue._tertiary, .comp.compColorPicker._default._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quaternary Color Picker Default Design Active Background",
+		"n": "quaternaryColorpickerDefaultDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._isActive._quaternary, .comp.compColorPicker._default._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._default._hasValue._quaternary, .comp.compColorPicker._default._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quinary Color Picker Default Design Active Background",
+		"n": "quinaryColorpickerDefaultDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._default._isActive._quinary, .comp.compColorPicker._default._isActive._quinary ._dropdownContainer, .comp.compColorPicker._default._hasValue._quinary, .comp.compColorPicker._default._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Primary Color Picker Outline Design Active Background",
+		"n": "primaryColorpickerOutlineDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._isActive._primary, .comp.compColorPicker._outlined._isActive._primary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._primary, .comp.compColorPicker._outlined._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Secondary Color Picker Outline Design Active Background",
+		"n": "secondaryColorpickerOutlineDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._isActive._secondary, .comp.compColorPicker._outlined._isActive._secondary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._secondary, .comp.compColorPicker._outlined._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Tertiary Color Picker Outline Design Active Background",
+		"n": "tertiaryColorpickerOutlineDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._isActive._tertiary, .comp.compColorPicker._outlined._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._tertiary, .comp.compColorPicker._outlined._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quaternary Color Picker Outline Design Active Background",
+		"n": "quaternaryColorpickerOutlineDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._isActive._quaternary, .comp.compColorPicker._outlined._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._quaternary, .comp.compColorPicker._outlined._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quinary Color Picker Outline Design Active Background",
+		"n": "quinaryColorpickerOutlineDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._outlined._isActive._quinary, .comp.compColorPicker._outlined._isActive._quinary ._dropdownContainer, .comp.compColorPicker._outlined._hasValue._quinary, .comp.compColorPicker._outlined._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Primary Color Picker Filled Design Active Background",
+		"n": "primaryColorpickerFilledDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._isActive._primary, .comp.compColorPicker._filled._isActive._primary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._primary, .comp.compColorPicker._filled._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Secondary Color Picker Filled Design Active Background",
+		"n": "secondaryColorpickerFilledDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._isActive._secondary, .comp.compColorPicker._filled._isActive._secondary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._secondary, .comp.compColorPicker._filled._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Tertiary Color Picker Filled Design Active Background",
+		"n": "tertiaryColorpickerFilledDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._isActive._tertiary, .comp.compColorPicker._filled._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._tertiary, .comp.compColorPicker._filled._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quaternary Color Picker Filled Design Active Background",
+		"n": "quaternaryColorpickerFilledDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._isActive._quaternary, .comp.compColorPicker._filled._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._quaternary, .comp.compColorPicker._filled._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quinary Color Picker Filled Design Active Background",
+		"n": "quinaryColorpickerFilledDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._filled._isActive._quinary, .comp.compColorPicker._filled._isActive._quinary ._dropdownContainer, .comp.compColorPicker._filled._hasValue._quinary, .comp.compColorPicker._filled._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Primary Color Picker Design One Design Active Background",
+		"n": "primaryColorpickerDesignOneDesignActiveBackground",
+		"dv": "linear-gradient(90deg, <backgroundColorOne>19 0%, <backgroundColorSix>00 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._primary, .comp.compColorPicker._bigDesign1._isActive._primary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._primary, .comp.compColorPicker._bigDesign1._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Secondary Color Picker Design One Design Active Background",
+		"n": "secondaryColorpickerDesignOneDesignActiveBackground",
+		"dv": "linear-gradient(90deg, <backgroundColorTwo>19 0%, <backgroundColorSix>00 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._secondary, .comp.compColorPicker._bigDesign1._isActive._secondary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._secondary, .comp.compColorPicker._bigDesign1._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Tertiary Color Picker Design One Design Active Background",
+		"n": "tertiaryColorpickerDesignOneDesignActiveBackground",
+		"dv": "linear-gradient(90deg, <backgroundColorThree>19 0%, <backgroundColorSix>00 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._tertiary, .comp.compColorPicker._bigDesign1._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._tertiary, .comp.compColorPicker._bigDesign1._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quaternary Color Picker Design One Design Active Background",
+		"n": "quaternaryColorpickerDesignOneDesignActiveBackground",
+		"dv": "linear-gradient(90deg, <backgroundColorFour>19 0%, <backgroundColorSix>00 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._quaternary, .comp.compColorPicker._bigDesign1._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._quaternary, .comp.compColorPicker._bigDesign1._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quinary Color Picker Design One Design Active Background",
+		"n": "quinaryColorpickerDesignOneDesignActiveBackground",
+		"dv": "linear-gradient(90deg, <backgroundColorFive>19 0%, <backgroundColorSix>00 64.33%), white",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._quinary, .comp.compColorPicker._bigDesign1._isActive._quinary ._dropdownContainer, .comp.compColorPicker._bigDesign1._hasValue._quinary, .comp.compColorPicker._bigDesign1._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Primary Color Picker Text Design Active Background",
+		"n": "primaryColorpickerTextDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._isActive._primary, .comp.compColorPicker._text._isActive._primary ._dropdownContainer, .comp.compColorPicker._text._hasValue._primary, .comp.compColorPicker._text._hasValue._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Secondary Color Picker Text Design Active Background",
+		"n": "secondaryColorpickerTextDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._isActive._secondary, .comp.compColorPicker._text._isActive._secondary ._dropdownContainer, .comp.compColorPicker._text._hasValue._secondary, .comp.compColorPicker._text._hasValue._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Tertiary Color Picker Text Design Active Background",
+		"n": "tertiaryColorpickerTextDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._isActive._tertiary, .comp.compColorPicker._text._isActive._tertiary ._dropdownContainer, .comp.compColorPicker._text._hasValue._tertiary, .comp.compColorPicker._text._hasValue._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quaternary Color Picker Text Design Active Background",
+		"n": "quaternaryColorpickerTextDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._isActive._quaternary, .comp.compColorPicker._text._isActive._quaternary ._dropdownContainer, .comp.compColorPicker._text._hasValue._quaternary, .comp.compColorPicker._text._hasValue._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Active Background Color",
+		"dn": "Quinary Color Picker Text Design Active Background",
+		"n": "quinaryColorpickerTextDesignActiveBackground",
+		"cp": "background",
+		"sel": ".comp.compColorPicker._text._isActive._quinary, .comp.compColorPicker._text._isActive._quinary ._dropdownContainer, .comp.compColorPicker._text._hasValue._quinary, .comp.compColorPicker._text._hasValue._quinary ._dropdownContainer",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Primary Color Picker Shadow Default Design Default",
+		"n": "primaryColorpickerShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Secondary Color Picker Shadow Default Design Default",
+		"n": "secondaryColorpickerShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Tertiary Color Picker Shadow Default Design Default",
+		"n": "tertiaryColorpickerShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Quaternary Color Picker Shadow Default Design Default",
+		"n": "quaternaryColorpickerShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Quinary Color Picker Shadow Default Design Default",
+		"n": "quinaryColorpickerShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Primary Color Picker Shadow Default Design Outline",
+		"n": "primaryColorpickerShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Secondary Color Picker Shadow Default Design Outline",
+		"n": "secondaryColorpickerShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Tertiary Color Picker Shadow Default Design Outline",
+		"n": "tertiaryColorpickerShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Quaternary Color Picker Shadow Default Design Outline",
+		"n": "quaternaryColorpickerShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Quinary Color Picker Shadow Default Design Outline",
+		"n": "quinaryColorpickerShadowDefaultDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Primary Color Picker Shadow Default Design Filled",
+		"n": "primaryColorpickerShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Secondary Color Picker Shadow Default Design Filled",
+		"n": "secondaryColorpickerShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Tertiary Color Picker Shadow Default Design Filled",
+		"n": "tertiaryColorpickerShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Quaternary Color Picker Shadow Default Design Filled",
+		"n": "quaternaryColorpickerShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Quinary Color Picker Shadow Default Design Filled",
+		"n": "quinaryColorpickerShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Primary Color Picker Shadow Default Design Big 1",
+		"n": "primaryColorpickerShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Secondary Color Picker Shadow Default Design Big 1",
+		"n": "secondaryColorpickerShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Tertiary Color Picker Shadow Default Design Big 1",
+		"n": "tertiaryColorpickerShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Quaternary Color Picker Shadow Default Design Big 1",
+		"n": "quaternaryColorpickerShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Default",
+		"dn": "Quinary Color Picker Shadow Default Design Big 1",
+		"n": "quinaryColorpickerShadowDefaultDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Primary Color Picker Shadow Active Design Default",
+		"n": "primaryColorpickerShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Secondary Color Picker Shadow Active Design Default",
+		"n": "secondaryColorpickerShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Tertiary Color Picker Shadow Active Design Default",
+		"n": "tertiaryColorpickerShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Quaternary Color Picker Shadow Active Design Default",
+		"n": "quaternaryColorpickerShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Quinary Color Picker Shadow Active Design Default",
+		"n": "quinaryColorpickerShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Primary Color Picker Shadow Active Design Outline",
+		"n": "primaryColorpickerShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Secondary Color Picker Shadow Active Design Outline",
+		"n": "secondaryColorpickerShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Tertiary Color Picker Shadow Active Design Outline",
+		"n": "tertiaryColorpickerShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Quaternary Color Picker Shadow Active Design Outline",
+		"n": "quaternaryColorpickerShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Quinary Color Picker Shadow Active Design Outline",
+		"n": "quinaryColorpickerShadowActiveDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Primary Color Picker Shadow Active Design Filled",
+		"n": "primaryColorpickerShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Secondary Color Picker Shadow Active Design Filled",
+		"n": "secondaryColorpickerShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Tertiary Color Picker Shadow Active Design Filled",
+		"n": "tertiaryColorpickerShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Quaternary Color Picker Shadow Active Design Filled",
+		"n": "quaternaryColorpickerShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Quinary Color Picker Shadow Active Design Filled",
+		"n": "quinaryColorpickerShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Primary Color Picker Shadow Active Design Big 1",
+		"n": "primaryColorpickerShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Secondary Color Picker Shadow Active Design Big 1",
+		"n": "secondaryColorpickerShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Tertiary Color Picker Shadow Active Design Big 1",
+		"n": "tertiaryColorpickerShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Quaternary Color Picker Shadow Active Design Big 1",
+		"n": "quaternaryColorpickerShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Active",
+		"dn": "Quinary Color Picker Shadow Active Design Big 1",
+		"n": "quinaryColorpickerShadowActiveDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Primary Color Picker Shadow Has Value Design Default",
+		"n": "primaryColorpickerShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Secondary Color Picker Shadow Has Value Design Default",
+		"n": "secondaryColorpickerShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Tertiary Color Picker Shadow Has Value Design Default",
+		"n": "tertiaryColorpickerShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Quaternary Color Picker Shadow Has Value Design Default",
+		"n": "quaternaryColorpickerShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Quinary Color Picker Shadow Has Value Design Default",
+		"n": "quinaryColorpickerShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._default._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Primary Color Picker Shadow Has Value Design Outline",
+		"n": "primaryColorpickerShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Secondary Color Picker Shadow Has Value Design Outline",
+		"n": "secondaryColorpickerShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Tertiary Color Picker Shadow Has Value Design Outline",
+		"n": "tertiaryColorpickerShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Quaternary Color Picker Shadow Has Value Design Outline",
+		"n": "quaternaryColorpickerShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Quinary Color Picker Shadow Has Value Design Outline",
+		"n": "quinaryColorpickerShadowHasValueDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._outlined._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Primary Color Picker Shadow Has Value Design Filled",
+		"n": "primaryColorpickerShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Secondary Color Picker Shadow Has Value Design Filled",
+		"n": "secondaryColorpickerShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Tertiary Color Picker Shadow Has Value Design Filled",
+		"n": "tertiaryColorpickerShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Quaternary Color Picker Shadow Has Value Design Filled",
+		"n": "quaternaryColorpickerShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Quinary Color Picker Shadow Has Value Design Filled",
+		"n": "quinaryColorpickerShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._filled._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Primary Color Picker Shadow Has Value Design Big 1",
+		"n": "primaryColorpickerShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Secondary Color Picker Shadow Has Value Design Big 1",
+		"n": "secondaryColorpickerShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Tertiary Color Picker Shadow Has Value Design Big 1",
+		"n": "tertiaryColorpickerShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Quaternary Color Picker Shadow Has Value Design Big 1",
+		"n": "quaternaryColorpickerShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Shadow Has Value",
+		"dn": "Quinary Color Picker Shadow Has Value Design Big 1",
+		"n": "quinaryColorpickerShadowHasValueDesignBig1",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._quinary",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow",
+		"dn": "Color Picker Box Rounded Design Box Shadow",
+		"n": "colorpickerBoxRoundedDesignBoxShadow",
+		"dv": "0px 0px 5px 3px #00000017",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._boxRoundedDesign",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow",
+		"dn": "Color Picker Box Square Design Box Shadow",
+		"n": "colorpickerBoxSquareDesignBoxShadow",
+		"dv": "0px 0px 5px 3px #00000017",
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker._boxSquareDesign",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Asterisk Text Color",
+		"dn": "Color Picker Asterisk Text Color",
+		"n": "colorpickerAsteriskTextColor",
+		"dv": "<colorTwelve>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker ._label ._asterisk",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Font",
+		"dn": "Color Picker Support Text Font Design Default",
+		"n": "colorpickerSupportTextFontDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._default ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Font",
+		"dn": "Color Picker Support Text Font Design Outline",
+		"n": "colorpickerSupportTextFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._outlined ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Font",
+		"dn": "Color Picker Support Text Font Design Filled",
+		"n": "colorpickerSupportTextFontDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._filled ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Font",
+		"dn": "Color Picker Support Text Font Design Big 1",
+		"n": "colorpickerSupportTextFontDesignBig1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compColorPicker._bigDesign1 ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Primary Color Picker Support Text Color Default Design Default",
+		"n": "primaryColorpickerSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Secondary Color Picker Support Text Color Default Design Default",
+		"n": "secondaryColorpickerSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Tertiary Color Picker Support Text Color Default Design Default",
+		"n": "tertiaryColorpickerSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Quaternary Color Picker Support Text Color Default Design Default",
+		"n": "quaternaryColorpickerSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Quinary Color Picker Support Text Color Default Design Default",
+		"n": "quinaryColorpickerSupportTextColorDefaultDesignDefault",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Primary Color Picker Support Text Color Default Design Outline",
+		"n": "primaryColorpickerSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Secondary Color Picker Support Text Color Default Design Outline",
+		"n": "secondaryColorpickerSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Tertiary Color Picker Support Text Color Default Design Outline",
+		"n": "tertiaryColorpickerSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Quaternary Color Picker Support Text Color Default Design Outline",
+		"n": "quaternaryColorpickerSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Quinary Color Picker Support Text Color Default Design Outline",
+		"n": "quinaryColorpickerSupportTextColorDefaultDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Primary Color Picker Support Text Color Default Design Filled",
+		"n": "primaryColorpickerSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Secondary Color Picker Support Text Color Default Design Filled",
+		"n": "secondaryColorpickerSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Tertiary Color Picker Support Text Color Default Design Filled",
+		"n": "tertiaryColorpickerSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Quaternary Color Picker Support Text Color Default Design Filled",
+		"n": "quaternaryColorpickerSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Quinary Color Picker Support Text Color Default Design Filled",
+		"n": "quinaryColorpickerSupportTextColorDefaultDesignFilled",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Primary Color Picker Support Text Color Default Design Big 1",
+		"n": "primaryColorpickerSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Secondary Color Picker Support Text Color Default Design Big 1",
+		"n": "secondaryColorpickerSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Tertiary Color Picker Support Text Color Default Design Big 1",
+		"n": "tertiaryColorpickerSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Quaternary Color Picker Support Text Color Default Design Big 1",
+		"n": "quaternaryColorpickerSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Default",
+		"dn": "Quinary Color Picker Support Text Color Default Design Big 1",
+		"n": "quinaryColorpickerSupportTextColorDefaultDesignBig1",
+		"dv": "<fontColorEight>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Primary Color Picker Support Text Color Active Design Default",
+		"n": "primaryColorpickerSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Secondary Color Picker Support Text Color Active Design Default",
+		"n": "secondaryColorpickerSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Tertiary Color Picker Support Text Color Active Design Default",
+		"n": "tertiaryColorpickerSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Quaternary Color Picker Support Text Color Active Design Default",
+		"n": "quaternaryColorpickerSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Quinary Color Picker Support Text Color Active Design Default",
+		"n": "quinaryColorpickerSupportTextColorActiveDesignDefault",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Primary Color Picker Support Text Color Active Design Outline",
+		"n": "primaryColorpickerSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Secondary Color Picker Support Text Color Active Design Outline",
+		"n": "secondaryColorpickerSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Tertiary Color Picker Support Text Color Active Design Outline",
+		"n": "tertiaryColorpickerSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Quaternary Color Picker Support Text Color Active Design Outline",
+		"n": "quaternaryColorpickerSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Quinary Color Picker Support Text Color Active Design Outline",
+		"n": "quinaryColorpickerSupportTextColorActiveDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Primary Color Picker Support Text Color Active Design Filled",
+		"n": "primaryColorpickerSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Secondary Color Picker Support Text Color Active Design Filled",
+		"n": "secondaryColorpickerSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Tertiary Color Picker Support Text Color Active Design Filled",
+		"n": "tertiaryColorpickerSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Quaternary Color Picker Support Text Color Active Design Filled",
+		"n": "quaternaryColorpickerSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Quinary Color Picker Support Text Color Active Design Filled",
+		"n": "quinaryColorpickerSupportTextColorActiveDesignFilled",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Primary Color Picker Support Text Color Active Design Big 1",
+		"n": "primaryColorpickerSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Secondary Color Picker Support Text Color Active Design Big 1",
+		"n": "secondaryColorpickerSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Tertiary Color Picker Support Text Color Active Design Big 1",
+		"n": "tertiaryColorpickerSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Quaternary Color Picker Support Text Color Active Design Big 1",
+		"n": "quaternaryColorpickerSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Active",
+		"dn": "Quinary Color Picker Support Text Color Active Design Big 1",
+		"n": "quinaryColorpickerSupportTextColorActiveDesignBig1",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._isActive._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Primary Color Picker Support Text Color Has Value Design Default",
+		"n": "primaryColorpickerSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Secondary Color Picker Support Text Color Has Value Design Default",
+		"n": "secondaryColorpickerSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Tertiary Color Picker Support Text Color Has Value Design Default",
+		"n": "tertiaryColorpickerSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Quaternary Color Picker Support Text Color Has Value Design Default",
+		"n": "quaternaryColorpickerSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Quinary Color Picker Support Text Color Has Value Design Default",
+		"n": "quinaryColorpickerSupportTextColorHasValueDesignDefault",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._default._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Primary Color Picker Support Text Color Has Value Design Outline",
+		"n": "primaryColorpickerSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Secondary Color Picker Support Text Color Has Value Design Outline",
+		"n": "secondaryColorpickerSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Tertiary Color Picker Support Text Color Has Value Design Outline",
+		"n": "tertiaryColorpickerSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Quaternary Color Picker Support Text Color Has Value Design Outline",
+		"n": "quaternaryColorpickerSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Quinary Color Picker Support Text Color Has Value Design Outline",
+		"n": "quinaryColorpickerSupportTextColorHasValueDesignOutline",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._outlined._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Primary Color Picker Support Text Color Has Value Design Filled",
+		"n": "primaryColorpickerSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Secondary Color Picker Support Text Color Has Value Design Filled",
+		"n": "secondaryColorpickerSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Tertiary Color Picker Support Text Color Has Value Design Filled",
+		"n": "tertiaryColorpickerSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Quaternary Color Picker Support Text Color Has Value Design Filled",
+		"n": "quaternaryColorpickerSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Quinary Color Picker Support Text Color Has Value Design Filled",
+		"n": "quinaryColorpickerSupportTextColorHasValueDesignFilled",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._filled._hasValue._quinary ._supportText",
+		"np": true
+	},
+
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Primary Color Picker Support Text Color Has Value Design Big 1",
+		"n": "primaryColorpickerSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorThree>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._primary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Secondary Color Picker Support Text Color Has Value Design Big 1",
+		"n": "secondaryColorpickerSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorFour>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._secondary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Tertiary Color Picker Support Text Color Has Value Design Big 1",
+		"n": "tertiaryColorpickerSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorFive>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._tertiary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Quaternary Color Picker Support Text Color Has Value Design Big 1",
+		"n": "quaternaryColorpickerSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorNine>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._quaternary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Color Picker Support Text Color Has Value",
+		"dn": "Quinary Color Picker Support Text Color Has Value Design Big 1",
+		"n": "quinaryColorpickerSupportTextColorHasValueDesignBig1",
+		"dv": "<fontColorSeven>",
+		"cp": "color",
+		"sel": ".comp.compColorPicker._bigDesign1._hasValue._quinary ._supportText",
+		"np": true
+	}
+]

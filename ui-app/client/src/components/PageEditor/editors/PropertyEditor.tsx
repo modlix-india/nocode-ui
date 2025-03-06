@@ -58,6 +58,7 @@ function updatePropertyDefinition(
 	) as PageDefinition;
 
 	for (let component of componentList?.length > 0 ? componentList : [componentKey]) {
+		if (!pageDef?.componentDefinition) continue;
 		if (!pageDef.componentDefinition[component].properties)
 			pageDef.componentDefinition[component].properties = {};
 

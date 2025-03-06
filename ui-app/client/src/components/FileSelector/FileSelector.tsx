@@ -20,8 +20,9 @@ import { flattenUUID } from '../util/uuid';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import { select } from 'd3';
+import getSrcUrl from '../util/getSrcUrl';
 
-function FileSelector(props: ComponentProps) {
+function FileSelector(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		definition,
@@ -317,7 +318,7 @@ function UploadImage({ image, onClick }: { image: string; onClick: () => void })
 		return (
 			<img
 				className="_imageButton"
-				src={image}
+				src={getSrcUrl(image)}
 				alt="Upload"
 				onClick={e => (e.target === e.currentTarget ? onClick() : undefined)}
 			/>
@@ -365,7 +366,7 @@ function RemoveImage({ image, onClick }: { image: string; onClick: () => void })
 		return (
 			<img
 				className="_imageButton"
-				src={image}
+				src={getSrcUrl(image)}
 				alt="Remove"
 				onClick={e => (e.target === e.currentTarget ? onClick() : undefined)}
 			/>
@@ -491,6 +492,7 @@ function ToSmallScreen() {
 }
 
 const component: Component = {
+	order: 21,
 	name: 'FileSelector',
 	displayName: 'File Selector',
 	description: 'File Selector',
@@ -517,32 +519,21 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<g id="Group_112" data-name="Group 112" transform="translate(-0.4 -0.4)">
-						<path
-							id="Path_287"
-							data-name="Path 287"
-							d="M15.789,8.589,5.924.559A1.363,1.363,0,0,0,5.349.288,1.45,1.45,0,0,0,4.184.531L1.168,2.809A1.6,1.6,0,0,0,.5,4.075V7.386A1.486,1.486,0,0,0,.916,8.4a2.034,2.034,0,0,0,1.483.61H15.3A.462.462,0,0,0,15.789,8.589Z"
-							transform="translate(0.922 13.784)"
-							opacity="0.4"
-							fill="currentColor"
-						/>
-						<path
-							id="Path_288"
-							data-name="Path 288"
-							d="M11.123,6.168,5.924.559A1.363,1.363,0,0,0,5.349.288,1.45,1.45,0,0,0,4.184.531V4.075c-.424.321,0-.484,0,0L.571,6.237A1.486,1.486,0,0,0,.987,7.252a2.034,2.034,0,0,0,1.483.61L10.63,6.591A.462.462,0,0,0,11.123,6.168Z"
-							transform="translate(8.566 14.667)"
-							opacity="0.4"
-							fill="currentColor"
-						/>
-						<path
-							id="Path_286"
-							data-name="Path 286"
-							d="M18.095,15.423l.337.337v-.9a.93.93,0,1,1,1.859,0v5.638a3.185,3.185,0,0,1-3.184,3.185H3.584A3.185,3.185,0,0,1,.4,20.493V6.962A3.184,3.184,0,0,1,3.584,3.777h7.889a.93.93,0,0,1,0,1.861H3.584A1.324,1.324,0,0,0,2.259,6.962v6.791l.337-.337,1.666-1.667a3.013,3.013,0,0,1,4.153,0l2.793,2.795.14.14.14-.14.788-.789h0a2.946,2.946,0,0,1,4.15,0h0Zm-15.778.9-.058.058v4.107a1.325,1.325,0,0,0,1.324,1.325H15.848l-.337-.337-4.846-4.848L7.093,13.058h0l0,0a1.087,1.087,0,0,0-1.5,0h0l0,0Zm16.114,4.166h0v-2.1l-.057-.058-3.256-3.28h0a1.065,1.065,0,0,0-1.52,0h0l-.787.788-.139.139.139.139,5.083,5.108.16.161.137-.181A1.2,1.2,0,0,0,18.431,20.494ZM23.4,4.046h0a.931.931,0,0,1,0,1.321h0a.929.929,0,0,1-1.32,0h0L20.628,3.9l-.337-.34v6.782a.93.93,0,1,1-1.859,0V3.563l-.337.34L16.641,5.368h0A.935.935,0,0,1,15.32,4.046L18.7.665A.929.929,0,0,1,19,.471h0a.929.929,0,0,1,.706,0h0a.93.93,0,0,1,.305.194Z"
-							transform="translate(0)"
-							fill="currentColor"
-						/>
-					</g>
+				<IconHelper viewBox="0 0 30 30">
+					<path d="M15.5 2H2L1.5 23.5L5.5 27H19L22 23.5V8.5L15.5 2Z" fill="#5CCEFE" />
+					<path
+						d="M18.0371 27C21.3241 27 24 24.3506 24 21.0968V10.1701C24 9.09012 23.5739 8.07482 22.804 7.31123L16.6149 1.18407C15.8436 0.420477 14.8181 0 13.7272 0H5.96286C2.67594 0 0 2.64937 0 5.90324V21.0962C0 24.3503 2.67612 26.9995 5.96286 26.9995C6.56657 26.9995 7.05376 26.5171 7.05376 25.9195C7.05376 25.3218 6.56657 24.8395 5.96286 24.8395C3.87622 24.8395 2.1818 23.1576 2.1818 21.0962V5.90324C2.1818 3.83747 3.88066 2.15999 5.96286 2.15999H13.4544V5.46185C13.4544 7.90871 15.4658 9.8999 17.9373 9.8999H21.7882C21.8024 9.9899 21.8138 10.0799 21.8138 10.1699V21.0965C21.8138 23.1623 20.1149 24.8398 18.0327 24.8398C17.429 24.8398 16.9418 25.3221 16.9418 25.9198C16.9418 26.5175 17.4335 27 18.0371 27ZM17.9377 7.74013C16.6692 7.74013 15.6366 6.71781 15.6366 5.46203V3.27393L20.1537 7.74006L17.9377 7.74013Z"
+						fill="#5CCEFE"
+					/>
+					<path
+						d="M17.9377 7.74013C16.6692 7.74013 15.6366 6.71781 15.6366 5.46203V3.27393L20.1537 7.74006L17.9377 7.74013Z"
+						fill="white"
+					/>
+					<path
+						className="_FileSelectorArrow"
+						d="M17.6316 17.9337C18.1228 17.5096 18.1228 16.8224 17.6316 16.3997L12.8914 12.3065C12.4182 11.8978 11.5832 11.8978 11.1149 12.3065L6.3684 16.3997C5.8772 16.8239 5.8772 17.511 6.3684 17.9337C6.85961 18.3579 7.65533 18.3579 8.1449 17.9337L10.745 15.6942V20.9142C10.745 21.5151 11.3065 22 12.0024 22C12.6983 22 13.2599 21.5151 13.2599 20.9142V15.6942L15.855 17.9351C16.1022 18.1486 16.4215 18.2533 16.7441 18.2533C17.065 18.2533 17.3893 18.1486 17.6316 17.9337Z"
+						fill="white"
+					/>
 				</IconHelper>
 			),
 		},

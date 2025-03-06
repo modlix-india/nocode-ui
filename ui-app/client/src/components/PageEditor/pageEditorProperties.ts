@@ -107,10 +107,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'onVersions',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'On Versions',
+		displayName: 'On Published Versions',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
-		description: 'Event to be triggered on page versions request.',
+		description: 'Event to be triggered on page published versions request.',
+	},
+
+	{
+		name: 'onSavedVersions',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Published Versions',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+		description: 'Event to be triggered on page saved versions request.',
 	},
 
 	{
@@ -165,6 +174,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Section Items Connection Name',
 		group: ComponentPropertyGroup.DATA,
+	},
+
+	{
+		name: 'helpURL',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Help URL',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'URL to the help page.',
 	},
 ];
 

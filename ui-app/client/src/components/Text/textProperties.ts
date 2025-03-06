@@ -1,4 +1,3 @@
-import { Schema } from '@fincity/kirun-js';
 import {
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_NUM_COMP_PROP,
@@ -153,6 +152,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: 'LI_NUMBER_FORMAT',
 				displayName: 'German Liechtenstein Number Format',
 				description: 'Formats number in German Liechtenstein format.',
+			},
+			{
+				name: 'FILE_SIZE',
+				displayName: 'File Size',
+				description: 'Formats file size.',
 			},
 		],
 	},

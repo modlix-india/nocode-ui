@@ -28,7 +28,7 @@ interface mapType {
 	[key: string]: any;
 }
 
-function PhoneNumber(props: ComponentProps) {
+function PhoneNumber(props: Readonly<ComponentProps>) {
 	const [focus, setFocus] = React.useState(false);
 	const [dropdownOpen, setDropdownOpen] = React.useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
@@ -39,9 +39,11 @@ function PhoneNumber(props: ComponentProps) {
 		ZERO: 0,
 	};
 	const countryMap = useRef(new Map<string, DropdownOption>());
+	const lastSelectedCountry = useRef<DropdownOption | null>(null);
+	const isFirstRender = useRef(true);
 
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2 },
 		definition,
 		pageDefinition: { translations },
 		locationHistory,
@@ -93,9 +95,14 @@ function PhoneNumber(props: ComponentProps) {
 		pageExtractor,
 	);
 	const [value, setValue] = React.useState<string>('');
+	const [countryCode, setCountryCode] = React.useState<string>('');
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPathPath2 = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
 		: undefined;
 
 	React.useEffect(() => {
@@ -112,6 +119,27 @@ function PhoneNumber(props: ComponentProps) {
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
+
+	React.useEffect(() => {
+		if (!bindingPathPath2) return;
+		return addListenerAndCallImmediately(
+			(_, value) => {
+				if (isNullValue(value)) {
+					setCountryCode('');
+					return;
+				}
+				setCountryCode(value);
+				// Find and set the country based on country code
+				const country = SORTED_COUNTRY_LIST.find(c => c.C === value);
+				if (country) {
+					setSelected(country);
+					lastSelectedCountry.current = country;
+				}
+			},
+			pageExtractor,
+			bindingPathPath2,
+		);
+	}, [bindingPathPath2]);
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -375,14 +403,32 @@ function PhoneNumber(props: ComponentProps) {
 			tempList = duplicate(SORTED_COUNTRY_LIST);
 		}
 		setCountryList(tempList);
+
+		if (isFirstRender.current && tempList.length > 0) {
+			setSelected(tempList[0]);
+			lastSelectedCountry.current = tempList[0];
+			if (bindingPathPath2) {
+				setData(bindingPathPath2, tempList[0].C, context?.pageName);
+			}
+			isFirstRender.current = false;
+		}
 	}, [countries, topCountries, SORTED_COUNTRY_LIST]);
 
 	useEffect(() => {
 		let unformattedText = getUnformattedNumber(value);
 		let selectedCountry = getSelectedCountry(unformattedText);
-		if (selectedCountry) setSelected(selectedCountry);
-		else setSelected(countryList[0]);
-		let dc = selectedCountry ? selectedCountry.D ?? '' : '';
+
+		if (selectedCountry) {
+			setSelected(selectedCountry);
+			lastSelectedCountry.current = selectedCountry;
+		} else if (lastSelectedCountry.current) {
+			setSelected(lastSelectedCountry.current);
+		} else {
+			setSelected(countryList[0]);
+			lastSelectedCountry.current = countryList[0];
+		}
+
+		let dc = selectedCountry ? (selectedCountry.D ?? '') : '';
 		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList, seperator]);
@@ -422,8 +468,10 @@ function PhoneNumber(props: ComponentProps) {
 				? mapValue[emptyValue]
 				: getUnformattedNumber(phoneNumber);
 		if (event?.target.value === '' && removeKeyWhenEmpty) {
+			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(undefined, true);
 		} else if (!text && !updateStoreImmediately) {
+			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(text);
 		} else if (text && text.startsWith('+')) {
 			let { dc, phone } = extractDCAndPhone(text);
@@ -448,6 +496,7 @@ function PhoneNumber(props: ComponentProps) {
 	) => {
 		let text = event.target.value;
 		if (removeKeyWhenEmpty && text === '') {
+			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(undefined, true);
 			return;
 		}
@@ -455,6 +504,7 @@ function PhoneNumber(props: ComponentProps) {
 		let formattedText = getFormattedNumber(text, selected.D);
 
 		if (!text && updateStoreImmediately) {
+			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(text);
 		} else if (!text && !updateStoreImmediately) {
 			setPhoneNumber('');
@@ -472,8 +522,24 @@ function PhoneNumber(props: ComponentProps) {
 	};
 	const handleCountryChange = (v: DropdownOption) => {
 		setSelected(v);
+		lastSelectedCountry.current = v;
 		countryMap.current.clear();
 		countryMap.current.set(v.D, v);
+
+		if (bindingPathPath) {
+			const formattedPhone = format
+				? storeFormatted
+					? seperator + getFormattedNumber(phoneNumber, v.D)
+					: phoneNumber
+				: phoneNumber;
+			const newValue = phoneNumber ? v.D + formattedPhone : '';
+			setData(bindingPathPath, newValue, context?.pageName);
+		}
+
+		if (bindingPathPath2) {
+			setData(bindingPathPath2, v.C, context?.pageName);
+			callChangeEvent();
+		}
 	};
 
 	const leftChildren = (
@@ -482,6 +548,7 @@ function PhoneNumber(props: ComponentProps) {
 			onChange={handleCountryChange}
 			options={countryList}
 			isSearchable={isSearchable}
+			readOnly={readOnly}
 			searchLabel={searchLabel}
 			clearSearchTextOnClose={clearSearchTextOnClose}
 			computedStyles={computedStyles}
@@ -492,7 +559,8 @@ function PhoneNumber(props: ComponentProps) {
 		/>
 	);
 	const finKey: string = 't_' + key;
-	const x = noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : selected.D.length ?? 1;
+	const x =
+		noCodeForFirstCountry && selected.C === countryList[0].C ? 1 : (selected.D.length ?? 1);
 
 	return (
 		<CommonInputText
@@ -537,6 +605,7 @@ function PhoneNumber(props: ComponentProps) {
 }
 
 const component: Component = {
+	order: 16,
 	name: 'PhoneNumber',
 	displayName: 'Phone Number',
 	description: 'Phone Number component',
@@ -548,7 +617,8 @@ const component: Component = {
 	stylePseudoStates: ['focus', 'disabled'],
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
-		bindingPath: { name: 'Phone Binding' },
+		bindingPath: { name: 'Phone Number Binding' },
+		bindingPath2: { name: 'Country Code Binding' },
 	},
 	defaultTemplate: {
 		key: '',
@@ -566,24 +636,13 @@ const component: Component = {
 			description: 'Component',
 			mainComponent: true,
 			icon: (
-				<IconHelper viewBox="0 0 24 24">
-					<svg
-						width="24"
-						height="24"
-						viewBox="0 0 24 24"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
-						<path
-							opacity="0.4"
-							d="M4.14286 1C2.40938 1 1 2.40938 1 4.14286V19.8571C1 21.5906 2.40938 23 4.14286 23H19.8571C21.5906 23 23 21.5906 23 19.8571V4.14286C23 2.40938 21.5906 1 19.8571 1H4.14286ZM8.59687 5.74866C9.07321 5.62098 9.57411 5.86161 9.76071 6.3183L10.7429 8.67545C10.9098 9.07812 10.792 9.53973 10.458 9.81473L9.25 10.8067C10.0652 12.5353 11.4647 13.9348 13.1933 14.75L14.1853 13.5371C14.4603 13.2031 14.9219 13.0853 15.3246 13.2522L17.6817 14.2344C18.1384 14.4259 18.379 14.9219 18.2513 15.3982L17.6621 17.5589C17.5442 17.9911 17.1562 18.2857 16.7143 18.2857C10.6397 18.2857 5.71429 13.3603 5.71429 7.28571C5.71429 6.84375 6.00893 6.4558 6.43616 6.33795L8.59687 5.74866Z"
-							fill="#E7E9ED"
-						/>
-						<path
-							d="M9.75107 6.27922C9.55824 5.81938 9.05885 5.5771 8.57923 5.70566L6.40366 6.29899C5.96854 6.41766 5.67188 6.80828 5.67188 7.25328C5.67188 13.3696 10.6312 18.3289 16.7475 18.3289C17.1925 18.3289 17.5831 18.0323 17.7018 17.6021L18.2951 15.4265C18.4237 14.9469 18.1814 14.4426 17.7216 14.2547L15.3482 13.2658C14.9428 13.0977 14.478 13.2163 14.2011 13.5526L13.2023 14.7689C11.4619 13.9481 10.0527 12.5389 9.2319 10.7985L10.4532 9.79969C10.7894 9.5228 10.9081 9.05802 10.74 8.65257L9.75107 6.27922Z"
-							fill="#96A1B4"
-						/>
-					</svg>
+				<IconHelper viewBox="0 0 30 30">
+					<circle cx="15" cy="15" r="15" fill="#0FBDA0" />
+					<path
+						className="_phonenumber"
+						d="M11.9787 6.81636C11.7197 6.19876 11.049 5.87337 10.4048 6.04603L7.48284 6.84292C6.89845 7.0023 6.5 7.52693 6.5 8.1246C6.5 16.3393 13.1607 23 21.3754 23C21.9731 23 22.4977 22.6015 22.6571 22.0238L23.454 19.1018C23.6266 18.4577 23.3012 17.7803 22.6836 17.528L19.4961 16.1998C18.9515 15.974 18.3273 16.1334 17.9554 16.585L16.6139 18.2186C14.2764 17.1162 12.3838 15.2236 11.2814 12.8861L12.9217 11.5446C13.3732 11.1727 13.5326 10.5485 13.3068 10.0039L11.9787 6.81636Z"
+						fill="white"
+					/>
 				</IconHelper>
 			),
 		},

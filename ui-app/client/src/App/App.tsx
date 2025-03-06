@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { isNullValue } from '@fincity/kirun-js';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
-import * as getAppDefinition from '../definitions/getAppDefinition.json';
-import { runEvent } from '../components/util/runEvent';
+import { STORE_PREFIX } from '../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -10,17 +10,14 @@ import {
 	innerSetData,
 	setData,
 } from '../context/StoreContext';
-import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
+import { messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
 import { StyleResolution } from '../types/common';
 import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
-import { isSlave, messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
-import { isNullValue } from '@fincity/kirun-js';
-import GlobalLoader from './GlobalLoader';
+import { getAppDefinition } from './appDefinition';
+import { usedComponents } from './usedComponents';
 
 // In design mode we are listening to the messages from editor
-
-window.isDesignMode = isSlave;
 
 function onMessageFromEditor(event: MessageEvent) {
 	const { data: { type, payload } = {} } = event;
@@ -172,8 +169,7 @@ function processIconPacks(iconPacks: any) {
 }
 
 export function App() {
-	const [isApplicationLoadFailed, setIsApplicationFailed] = useState(false);
-	const [applicationLoaded, setApplicationLoaded] = useState(false);
+	const [isApplicationLoadFailed, setIsApplicationLoadFailed] = useState(false);
 
 	const [firstTime, setFirstTime] = useState(true);
 	useEffect(
@@ -181,19 +177,19 @@ export function App() {
 			addListenerAndCallImmediately(
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						await runEvent(
-							getAppDefinition,
-							'initialLoadFunction',
-							GLOBAL_CONTEXT_NAME,
-							[],
-						);
-						setApplicationLoaded(true);
+						const { auth, application, isApplicationLoadFailed, theme } =
+							await getAppDefinition();
+						setData(`${STORE_PREFIX}.application`, application);
+						setData(`${STORE_PREFIX}.auth`, auth);
+						setData(`${STORE_PREFIX}.isApplicationLoadFailed`, isApplicationLoadFailed);
+						setData(`${STORE_PREFIX}.theme`, theme);
+
 						return;
 					}
 
 					if (appDef && firstTime) {
 						setFirstTime(false);
-						if (window.isDesignMode) {
+						if (globalThis.isDesignMode) {
 							window.addEventListener('message', onMessageFromEditor);
 							messageToMaster({ type: 'SLAVE_STARTED', payload: undefined });
 						}
@@ -218,25 +214,39 @@ export function App() {
 	useEffect(
 		() =>
 			addListener(
-				(_, value) => setIsApplicationFailed(value),
+				(_, value) => setIsApplicationLoadFailed(value),
 				undefined,
 				`${STORE_PREFIX}.isApplicationLoadFailed`,
 			),
 		[],
 	);
 
+	const [usedComps, setUsedComps] = useState<string>('');
+	useEffect(
+		() =>
+			usedComponents.registerGloblalListener(uc =>
+				setTimeout(() => setUsedComps(Array.from(uc).join(',')), 100),
+			),
+		[setUsedComps],
+	);
+
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
-	if (!applicationLoaded) return <GlobalLoader noSpin={true} />;
 	return (
 		<>
-			<BrowserRouter>
+			<BrowserRouter
+				future={{
+					v7_startTransition: true,
+					v7_relativeSplatPath: true,
+				}}
+			>
 				<Routes>
 					<Route path="/*" element={<RenderEngineContainer />} />
 				</Routes>
 			</BrowserRouter>
 			<Messages />
+			<div id="_rendered" data-used-components={usedComps} />
 		</>
 	);
 }
@@ -321,6 +331,7 @@ function setSmallDeviceTypes(size: number, newDevices: { [key: string]: boolean 
 }
 
 function setDeviceType() {
+	if (!document.body) return;
 	const size = document.body.offsetWidth;
 	const newDevices: { [key: string]: boolean } = {};
 

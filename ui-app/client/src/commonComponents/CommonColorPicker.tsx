@@ -117,7 +117,7 @@ export function CommonColorPickerPropertyEditor({
 
 	let colorPicker = undefined;
 	if (showColorPicker) {
-		const bodyPosition: CSSProperties = {};
+		const bodyPosition: CSSProperties & { left?: number; top?: number; bottom?: number } = {};
 		if (buttonRef.current) {
 			const rect = buttonRef.current.getBoundingClientRect();
 			bodyPosition.left = rect.left;
@@ -146,7 +146,7 @@ export function CommonColorPickerPropertyEditor({
 			}
 		: {};
 
-	const [timeoutHandle, setTimeoutHandle] = useState<number | undefined>(undefined);
+	const [timeoutHandle, setTimeoutHandle] = useState<any>(undefined);
 
 	return (
 		<div
@@ -207,7 +207,7 @@ export function CommonColorPicker({
 			let { h, s, v, a } = (HEXRGBHSL_any(c, 'hsva') ?? {}) as HSVA;
 			if (isNullValue(h)) return;
 
-			setAlphaEdit('' + (showAlpha ? a ?? 1 : 1));
+			setAlphaEdit('' + (showAlpha ? (a ?? 1) : 1));
 			setHexString(HSV_HexString({ h: h!, s: s!, v: v!, a: a ?? 1 }));
 			const hsl = HSV_HSL({ h: h!, s: s!, v: v! });
 			const rgb = HSV_RGB({ h: h!, s: s!, v: v! });
@@ -313,30 +313,37 @@ export function CommonColorPicker({
 	};
 
 	const huePickerChange = (e: any) =>
-		onClickSlider(e, huePickerRef.current!, percent =>
+		onClickSlider(e, huePickerRef.current!, percent => {
+			const h = (percent / 100) * 360;
+			let s = saturation;
+			let v = value;
+			if (h > 1 && s < 2) s = v = 5;
 			onChange({
 				value: HSV_RGBAString({
-					h: (percent / 100) * 360,
-					s: saturation,
-					v: value,
+					h: h,
+					s,
+					v,
 					a: alpha,
 				}),
 				location: colorLocation,
-			}),
-		);
+			});
+		});
 
 	const alphaPickerChange = (e: any) =>
-		onClickSlider(e, alphaPickerRef.current!, percent =>
+		onClickSlider(e, alphaPickerRef.current!, percent => {
+			let a = percent / 100;
+			if (a < 0.03) a = 0;
+			if (a > 0.97) a = 1;
 			onChange({
 				value: HSV_RGBAString({
 					h: hue,
 					s: saturation,
 					v: value,
-					a: percent / 100,
+					a,
 				}),
 				location: colorLocation,
-			}),
-		);
+			});
+		});
 
 	const variablePicker = variableSelection ? (
 		<div className="_combineEditors _vertical">

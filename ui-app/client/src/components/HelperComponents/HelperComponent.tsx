@@ -16,8 +16,8 @@ export function HelperComponent(
 	}>,
 ) {
 	if (props.context.disableSelection) return <></>;
-	if (window.designMode === 'PAGE') return <PageEditorHelperComponent {...props} />;
-	else if (window.designMode === 'FILLER_VALUE_EDITOR')
+	if (globalThis.designMode === 'PAGE') return <PageEditorHelperComponent {...props} />;
+	else if (globalThis.designMode === 'FILLER_VALUE_EDITOR')
 		return <FillerValueEditorHelperComponent {...props} />;
 	return <></>;
 }

@@ -5,8 +5,8 @@ export interface MarkdownParserParameters {
 	styles: any;
 	onChange?: (text: string) => void;
 	editable?: boolean;
-	footNotes: MarkdowFootnotes;
-	urlRefs: Map<string, MarkdownURLRef>;
+	footNotes?: MarkdowFootnotes;
+	urlRefs?: Map<string, MarkdownURLRef>;
 	line?: string;
 	indentationLength?: number;
 }
