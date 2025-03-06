@@ -1,4 +1,4 @@
-import { isNullValue } from '@fincity/kirun-js';
+import { isNullValue, duplicate } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
 import ComponentDefinitions from '../../';
 import { SCHEMA_STRING_COMP_PROP } from '../../../constants';
@@ -14,16 +14,17 @@ import {
 	ComponentMultiProperty,
 	ComponentProperty,
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	LocationHistory,
 	PageDefinition,
 } from '../../../types/common';
-import { duplicate } from '@fincity/kirun-js';
 import { PropertyGroup } from './PropertyGroup';
 import { ExpressionEditor2 } from './propertyValueEditors/ExpressionEditor2';
 import PropertyMultiValueEditor from './propertyValueEditors/PropertyMultiValueEditor';
 import PropertyValueEditor from './propertyValueEditors/PropertyValueEditor';
 import { PageOperations } from '../functions/PageOperations';
+import { TagsValueEditor } from './propertyValueEditors/TagsValueEditor';
 
 interface PropertyEditorProps {
 	selectedComponent: string;
@@ -58,7 +59,7 @@ function updatePropertyDefinition(
 	) as PageDefinition;
 
 	for (let component of componentList?.length > 0 ? componentList : [componentKey]) {
-		if (!pageDef?.componentDefinition) continue;
+		if (!pageDef) continue;
 		if (!pageDef.componentDefinition[component].properties)
 			pageDef.componentDefinition[component].properties = {};
 
@@ -121,7 +122,7 @@ export default function PropertyEditor({
 }: Readonly<PropertyEditorProps>) {
 	const [def, setDef] = useState<ComponentDefinition>();
 	const [pageDef, setPageDef] = useState<PageDefinition>();
-	const [allCommonProperties, setAllCommonProperties] = useState<ComponentPropertyDefinition[]>(); // cd.properties
+	const [allCommonProperties, setAllCommonProperties] = useState<ComponentPropertyDefinition[]>();
 	const [isDragging, setIsDragging] = useState<boolean>(false);
 
 	useEffect(() => {
@@ -138,23 +139,26 @@ export default function PropertyEditor({
 	}, [defPath, selectedComponent]);
 
 	useEffect(() => {
-		if (!defPath) return; // Page.pageDefinition
+		if (!defPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, v: PageDefinition) => {
-				// sets of sets of property names
+				if (!selectedComponentsList?.length) {
+					setAllCommonProperties([]);
+					return;
+				}
+
 				const propertyNamesSets = selectedComponentsList.map(currentComponent => {
 					let properties =
 						ComponentDefinitions?.get(v?.componentDefinition[currentComponent]?.type)
 							?.properties ?? [];
 					return new Set(properties.map(obj => obj.name));
 				});
-				// set of all common names
+
 				const commonPropertyNames = propertyNamesSets.reduce((accumulator, currentSet) => {
 					let accArr = Array.from(accumulator);
 					return new Set(accArr.filter(name => currentSet.has(name)));
-				});
-
+				}, propertyNamesSets[0] || new Set());
 				let properties =
 					ComponentDefinitions?.get(
 						v?.componentDefinition[selectedComponentsList[0]]?.type,
@@ -208,7 +212,7 @@ export default function PropertyEditor({
 			'bindingPath9',
 			'bindingPath10',
 		];
-		// loop through all the binding paths
+
 		for (let i = 0; i < x.length; i++) {
 			if (!cd.bindingPaths[x[i]]) continue;
 			bps.push(
@@ -239,7 +243,7 @@ export default function PropertyEditor({
 		}
 		if (bps.length) {
 			bpGroup = (
-				<PropertyGroup // container for binding section which contains list of bindings
+				<PropertyGroup
 					name="bindings"
 					displayName="Bindings"
 					defaultStateOpen={false}
@@ -255,7 +259,6 @@ export default function PropertyEditor({
 		}
 	}
 
-	// how we are converting a to Array<React.ReactNode>.
 	const propGroups = (
 		selectedComponentsList.length === 1 ? cd?.properties : allCommonProperties
 	)?.reduce((a: { [key: string]: Array<React.ReactNode> }, e) => {
@@ -413,13 +416,63 @@ export default function PropertyEditor({
 									pageOperations={pageOperations}
 								/>
 							</div>
+							<div className="_eachProp">
+								<div className="_propLabel" title="Tag">
+									Tag :
+									<span
+										className="_description _tooltip"
+										title="Tag to identify the component"
+									>
+										i
+									</span>
+								</div>
+
+								<TagsValueEditor
+									appPath={appPath}
+									pageDefinition={pageDef}
+									propDef={{
+										name: '_tags',
+										displayName: 'Tags',
+										description: 'Tags to categorize the component',
+										schema: SCHEMA_STRING_COMP_PROP,
+										editor: ComponentPropertyEditor.TAGS_EDITOR,
+										group: ComponentPropertyGroup.BASIC,
+										defaultValue: [],
+									}}
+									value={{
+										value: def.properties?._tags?.value || [],
+									}}
+									onlyValue={true}
+									onChange={v => {
+										const newDef = duplicate(def);
+										if (!newDef.properties) newDef.properties = {};
+
+										if (v.value && v.value.length > 0) {
+											newDef.properties._tags = { value: v.value };
+										} else {
+											delete newDef.properties._tags;
+										}
+
+										updateDefinition(
+											defPath!,
+											locationHistory,
+											pageExtractor,
+											selectedComponent,
+											newDef,
+										);
+									}}
+									onShowCodeEditor={onShowCodeEditor}
+									editPageName={editPageName}
+									slaveStore={slaveStore}
+									pageOperations={pageOperations}
+								/>
+							</div>
 						</div>
 					</PropertyGroup>
 				)}
 
 				{selectedComponentsList?.length === 1 && bpGroup}
 				{Object.entries(ComponentPropertyGroup).map((e, i) => {
-					// contains rest of the properties
 					if (!propGroups?.[e[1]]) return null;
 					return (
 						<PropertyGroup
