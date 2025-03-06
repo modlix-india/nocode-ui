@@ -37,7 +37,8 @@ export default function TableStyle({
 	const css =
 		`${PREFIX} ._tablePagination ._seperator {
 		color: ${processStyleValueWithFunction(values.get('paginationSeperatorColor'), values)};
-	}` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+	}
+	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return (
 		<>

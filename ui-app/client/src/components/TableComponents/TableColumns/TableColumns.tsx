@@ -262,18 +262,20 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		}
 
 		headers = (
-			<div
-				className="_row _header"
-				style={(hover ? styleHoverProperties : styleNormalProperties).header}
-			>
-				{checkBoxTop}
-				<Children
-					pageDefinition={headerDef}
-					renderableChildren={children}
-					context={{ ...context, table: { ...context.table, columnNames } }}
-					locationHistory={locationHistory}
-				/>
-			</div>
+			<thead className="_headerContainer" style={styleNormalProperties.headerContainer}>
+				<tr
+					className="_row _header"
+					style={(hover ? styleHoverProperties : styleNormalProperties).header}
+				>
+					{checkBoxTop}
+					<Children
+						pageDefinition={headerDef}
+						renderableChildren={children}
+						context={{ ...context, table: { ...context.table, columnNames } }}
+						locationHistory={locationHistory}
+					/>
+				</tr>
+			</thead>
 		);
 	}
 
@@ -281,14 +283,14 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	if (emptyCount) {
 		for (let i = 0; i < emptyCount; i++) {
 			emptyRows.push(
-				<div key={`emptyRow_${i}`} className="_row" style={styleNormalProperties.row}>
+				<tr key={`emptyRow_${i}`} className="_row" style={styleNormalProperties.row}>
 					<Children
 						pageDefinition={emptyRowPageDef}
 						renderableChildren={children}
 						context={context}
 						locationHistory={locationHistory}
 					/>
-				</div>,
+				</tr>,
 			);
 		}
 	}
@@ -311,23 +313,31 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			`.comp.compTableColumns#${styleKey} ._row._dataRow._selected`,
 		);
 
+	let tableStyle = (hover ? styleHoverProperties : styleNormalProperties).comp;
+
 	return (
-		<div
+		<table
 			id={styleKey}
 			className={`comp compTableColumns ${styleKey}`}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
 			onMouseLeave={
 				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 			}
-			style={(hover ? styleHoverProperties : styleNormalProperties).comp}
-			role="table"
+			border={0}
+			style={tableStyle}
 		>
 			{headers}
-			<style>{rowStyles}</style>
-			{rows}
-			{emptyRows}
+			<tbody
+				className="_rowContainer"
+				style={styleNormalProperties.rowContainer}
+				role="rowgroup"
+			>
+				<style>{rowStyles}</style>
+				{rows}
+				{emptyRows}
+			</tbody>
 			<HelperComponent context={props.context} definition={definition} />
-		</div>
+		</table>
 	);
 }
 
@@ -480,13 +490,13 @@ function generateRows(properties: {
 	for (let index = 0; index < value.length; index++) {
 		if (index < from || index >= to) continue;
 		const checkBox = showCheckBox ? (
-			<div className="comp compTableColumn">
+			<td className="comp compTableColumn">
 				<CommonCheckbox
 					key="checkbox"
 					isChecked={isSelected(index)}
 					onChange={() => select(index)}
 				/>
-			</div>
+			</td>
 		) : (
 			<></>
 		);
@@ -501,7 +511,7 @@ function generateRows(properties: {
 		}
 
 		rows.push(
-			<div
+			<tr
 				key={key}
 				className={`_row _dataRow ${onClick ? '_pointer' : ''} ${isSelected(index) ? '_selected' : ''}`}
 				onClick={onClick}
@@ -525,7 +535,7 @@ function generateRows(properties: {
 						),
 					]}
 				/>
-			</div>,
+			</tr>,
 		);
 	}
 

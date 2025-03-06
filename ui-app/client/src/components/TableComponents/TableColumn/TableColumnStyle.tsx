@@ -34,7 +34,7 @@ export default function TableColumnStyle({
 
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
-		`${PREFIX} { display: table-cell; vertical-align: middle; text-align:center;}
+		`${PREFIX} { vertical-align: middle; text-align:center;}
 	
 		.comp.compTable._design1 ${PREFIX} { padding: ${processStyleValueWithFunction(
 			values.get('design1ColumnPadding'),
