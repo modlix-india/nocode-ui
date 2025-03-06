@@ -71,7 +71,7 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		);
 	}
 	return (
-		<div
+		<td
 			className="comp compTableColumn"
 			style={styleProperties.comp}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
@@ -81,6 +81,6 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{dataPart}
-		</div>
+		</td>
 	);
 }

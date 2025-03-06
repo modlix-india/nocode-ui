@@ -34,7 +34,7 @@ export default function TableColumnStyle({
 
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
-		`${PREFIX} { display: table-cell; vertical-align: middle; text-align:center}
+		`${PREFIX} { vertical-align: middle; text-align:center}
 
 		${PREFIX} ._headerContainer {
 			display: flex;

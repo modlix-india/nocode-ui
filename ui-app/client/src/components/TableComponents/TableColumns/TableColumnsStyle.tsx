@@ -34,9 +34,8 @@ export default function TableColumnsStyle({
 
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
-		`${PREFIX} { display: table; flex-direction: column; flex: 1; }
-		 ${PREFIX} ._row { display: table-row;}
-		
+		`${PREFIX} {flex-direction: column; flex: 1; border-spacing: 0; width: 100%; position: relative; }
+
 		.comp.compTable._design1 ._row { height: ${processStyleValueWithFunction(
 			values.get('design1RowHeight'),
 			values,
@@ -221,9 +220,6 @@ export default function TableColumnsStyle({
 			)};
 		}
 
-		.comp.compTableDynamicColumns { display: table; flex-direction: column; flex: 1; }
-		.comp.compTableDynamicColumns ._row { display: table-row; }
-
 		.comp.compTable ._row:first-child .comp.compTableHeaderColumn,
 		.comp.compTable ._row:first-child .comp.compTableColumn {
 			border-top: none !important;
@@ -241,6 +237,7 @@ export default function TableColumnsStyle({
 		.comp.compTable ._row .comp.compTableColumn:last-child {
 			border-right: none !important;
 		}
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnsCss">{css}</style>;
