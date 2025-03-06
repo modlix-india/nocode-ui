@@ -207,6 +207,12 @@ export const Table: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'ellipsesGrid',
+			displayName: 'Ellipses Grid',
+			description: 'Ellipses Grid',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'selectedPageNumber',
 			displayName: 'Selected Page Number',
 			description: 'Selected Page Number',

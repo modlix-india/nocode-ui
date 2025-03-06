@@ -80,6 +80,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			gridModeImage,
 			columnsModeActiveImage,
 			gridModeActiveImage,
+			previousArrowIcon,
+			nextArrowIcon,
+			previousArrowImage,
+			nextArrowImage,
 			enablePersonalization,
 			onSort,
 			multiSort,
@@ -773,6 +777,34 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 				);
 			}
 
+			const previousArrow = showArrows ? (
+				previousArrowImage ? (
+					<img
+						alt="PreviousArrow Image"
+						src={getSrcUrl(previousArrowImage)}
+						style={getStyleObject('previousArrow', hovers)}
+						onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'previousArrow')}
+						onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'previousArrow')}
+					></img>
+				) : previousArrowIcon ? (
+					<i
+						className={previousArrowIcon}
+						style={getStyleObject('previousArrow', hovers)}
+						onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'previousArrow')}
+						onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'previousArrow')}
+					></i>
+				) : (
+					<i
+						className="fas fa-chevron-left"
+						style={getStyleObject('previousArrow', hovers)}
+						onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'previousArrow')}
+						onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'previousArrow')}
+					></i>
+				)
+			) : (
+				<></>
+			);
+
 			let leftArrow = undefined;
 			if (!showPageSelectionDropdown) {
 				leftArrow = (
@@ -804,22 +836,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							}
 						}}
 					>
-						{showArrows && (
-							<i
-								className="fas fa-chevron-left"
-								style={getStyleObject('previousArrow', hovers)}
-								onMouseEnter={addToToggleSetCurry(
-									hovers,
-									setHovers,
-									'previousArrow',
-								)}
-								onMouseLeave={removeFromToggleSetCurry(
-									hovers,
-									setHovers,
-									'previousArrow',
-								)}
-							></i>
-						)}
+						{previousArrow}
 						<span
 							className="_prev"
 							style={getStyleObject('previousText', hovers)}
@@ -839,6 +856,34 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					</div>
 				);
 			}
+
+			const nextArrow = showArrows ? (
+				nextArrowImage ? (
+					<img
+						alt="NextArrow Image"
+						src={getSrcUrl(nextArrowImage)}
+						style={getStyleObject('nextArrow', hovers)}
+						onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextArrow')}
+						onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'nextArrow')}
+					></img>
+				) : nextArrowIcon ? (
+					<i
+						className={nextArrowIcon}
+						style={getStyleObject('nextArrow', hovers)}
+						onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextArrow')}
+						onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'nextArrow')}
+					></i>
+				) : (
+					<i
+						className="fas fa-chevron-right"
+						style={getStyleObject('nextArrow', hovers)}
+						onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextArrow')}
+						onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'nextArrow')}
+					></i>
+				)
+			) : (
+				<></>
+			);
 
 			let rightArrow = undefined;
 			if (!showPageSelectionDropdown) {
@@ -873,7 +918,6 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					>
 						<span
 							className="_next"
-							// style={resolvedStyles?.nextAndPreviousText}
 							style={getStyleObject('nextText', hovers)}
 							onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextText')}
 							onMouseLeave={removeFromToggleSetCurry(hovers, setHovers, 'nextText')}
@@ -884,19 +928,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							/>
 							{rightArrowLabel}
 						</span>
-						{showArrows && (
-							<i
-								className="fas fa-chevron-right"
-								// style={resolvedStyles?.nextAndPreviousArrows}
-								style={getStyleObject('nextArrow', hovers)}
-								onMouseEnter={addToToggleSetCurry(hovers, setHovers, 'nextArrow')}
-								onMouseLeave={removeFromToggleSetCurry(
-									hovers,
-									setHovers,
-									'nextArrow',
-								)}
-							></i>
-						)}
+						{nextArrow}
 					</div>
 				);
 			}
@@ -913,7 +945,11 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 							if (i > 0 && numbers[i - 1] + 1 !== numbers[i]) {
 								arr.push(
-									<div key={`${numbers[i]}_elipsis`} className="_noclick">
+									<div
+										key={`${numbers[i]}_elipsis`}
+										className="_noclick"
+										style={getStyleObject('ellipsesGrid', hovers)}
+									>
 										...
 									</div>,
 								);
