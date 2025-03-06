@@ -108,7 +108,6 @@ export default function DnDTopBar({
 	storePaths,
 	locationHistory,
 	selectedComponent,
-	selectedSubComponent,
 	onSelectedComponentChanged,
 	onSelectedSubComponentChanged,
 	pageOperations,
@@ -123,11 +122,11 @@ export default function DnDTopBar({
 	editorType,
 }: Readonly<TopBarProps>) {
 	const [localUrl, setLocalUrl] = useState(url);
-	const [deviceType, setDeviceType] = useState<string | undefined>();
+	const [, setDeviceType] = useState<string | undefined>();
 	const [properties, setProperties] = useState<any>({});
 	const [showProperties, setShowProperties] = useState(false);
 	const [page, setPage] = useState<PageDefinition>();
-	const [changed, setChanged] = useState(Date.now());
+	const [, setChanged] = useState(Date.now());
 	const [permission, setPermission] = useState<string>('');
 	const [selectedPage, setSelectedPage] = React.useState('');
 	const location = useLocation();
@@ -235,8 +234,6 @@ export default function DnDTopBar({
 		},
 		[],
 	);
-
-	const [showLogoDropdown, setShowLogoDropdown] = React.useState(false);
 
 	React.useEffect(() => {
 		if (!selectedPage) return;
