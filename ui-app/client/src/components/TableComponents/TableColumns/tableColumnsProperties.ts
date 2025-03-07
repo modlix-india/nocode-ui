@@ -22,6 +22,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
+	{
+		name: 'fixedHeader',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Fix Header on Scroll',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
