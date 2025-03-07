@@ -362,6 +362,88 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				}
 			: undefined;
 
+	const [isAtBottom, setIsAtBottom] = useState(false);
+
+	let dropdownContainer = null;
+	if (showDropdown) {
+		dropdownContainer = (
+			<div
+				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
+				style={computedStyles.dropDownContainer ?? {}}
+				onScroll={scrollEndEvent}
+				ref={element => {
+					if (!element) return;
+					const rect = element.getBoundingClientRect();
+					const parentRect = element.parentElement?.getBoundingClientRect();
+					if (!parentRect) return;
+					setIsAtBottom(parentRect.bottom + rect.height > window.innerHeight);
+				}}
+			>
+				<SubHelperComponent
+					definition={props.definition}
+					subComponentName="dropDownContainer"
+				/>
+				{isSearchable && (
+					<input
+						className="_dropdownSearchBox"
+						value={searchText}
+						placeholder={searchLabel}
+						onChange={handleSearch}
+						onMouseDown={e => {
+							e.stopPropagation();
+						}}
+					/>
+				)}
+				{(searchDropdownData?.length || (searchText && !onSearch)
+					? searchDropdownData
+					: dropdownData
+				)?.map(each => {
+					const isOptionSelected = getIsSelected(each?.key);
+					return (
+						<div
+							className={`_dropdownItem ${
+								isOptionSelected ? '_selected' : ''
+							} ${each.key === hoverKey ? '_hover' : ''}`} // because of default className the background-color is not changing on hover to user defined.
+							style={computedStyles.dropdownItem ?? {}}
+							key={each?.key}
+							onMouseEnter={() => setHoverKey(each?.key)}
+							onMouseDown={() => handleClick(each)}
+							tabIndex={0}
+							role="option"
+							aria-selected={isOptionSelected}
+						>
+							<SubHelperComponent
+								definition={props.definition}
+								subComponentName="dropdownItem"
+							/>
+							<label
+								style={computedStyles.dropdownItemLabel ?? {}}
+								className="_dropdownItemLabel"
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="dropdownItemLabel"
+								/>
+								{each?.label}
+							</label>
+							{isOptionSelected && (
+								<i
+									className="_dropdownCheckIcon"
+									style={computedStyles.dropdownCheckIcon ?? {}}
+								>
+									<SubHelperComponent
+										definition={props.definition}
+										subComponentName="dropdownCheckIcon"
+									/>
+								</i>
+							)}
+						</div>
+					);
+				})}
+			</div>
+		);
+	}
+
 	return (
 		<CommonInputText
 			id={key}
@@ -449,75 +531,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				}
 			}}
 		>
-			{showDropdown && (
-				<div
-					className="_dropdownContainer"
-					style={computedStyles.dropDownContainer ?? {}}
-					onScroll={scrollEndEvent}
-				>
-					<SubHelperComponent
-						definition={props.definition}
-						subComponentName="dropDownContainer"
-					/>
-					{isSearchable && (
-						<input
-							className="_dropdownSearchBox"
-							value={searchText}
-							placeholder={searchLabel}
-							onChange={handleSearch}
-							onMouseDown={e => {
-								e.stopPropagation();
-							}}
-						/>
-					)}
-					{(searchDropdownData?.length || (searchText && !onSearch)
-						? searchDropdownData
-						: dropdownData
-					)?.map(each => {
-						const isOptionSelected = getIsSelected(each?.key);
-						return (
-							<div
-								className={`_dropdownItem ${
-									isOptionSelected ? '_selected' : ''
-								} ${each.key === hoverKey ? '_hover' : ''}`} // because of default className the background-color is not changing on hover to user defined.
-								style={computedStyles.dropdownItem ?? {}}
-								key={each?.key}
-								onMouseEnter={() => setHoverKey(each?.key)}
-								onMouseDown={() => handleClick(each)}
-								tabIndex={0}
-								role="option"
-								aria-selected={isOptionSelected}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="dropdownItem"
-								/>
-								<label
-									style={computedStyles.dropdownItemLabel ?? {}}
-									className="_dropdownItemLabel"
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="dropdownItemLabel"
-									/>
-									{each?.label}
-								</label>
-								{isOptionSelected && (
-									<i
-										className="_dropdownCheckIcon"
-										style={computedStyles.dropdownCheckIcon ?? {}}
-									>
-										<SubHelperComponent
-											definition={props.definition}
-											subComponentName="dropdownCheckIcon"
-										/>
-									</i>
-								)}
-							</div>
-						);
-					})}
-				</div>
-			)}
+			{dropdownContainer}
 		</CommonInputText>
 	);
 }
