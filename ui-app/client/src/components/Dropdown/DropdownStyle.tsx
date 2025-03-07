@@ -127,6 +127,11 @@ export default function DropdownStyle({
             top: 100%;
         }
 
+        ${PREFIX} ._dropdownContainer._atBottom {
+            top: auto;
+            bottom: 100%;
+        }
+
         ${PREFIX} ._dropdownCheckIcon {
             position: relative;
             display: inline-block;   

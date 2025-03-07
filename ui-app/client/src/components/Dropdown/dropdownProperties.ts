@@ -35,6 +35,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'showMultipleSelectedValues',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Multiple Selected Values',
+		description: 'Show Multiple Selected Values',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'runEventOnDropDownClose',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Event Run on Close',
