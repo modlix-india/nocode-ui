@@ -50,7 +50,7 @@
 	border-bottom-right-radius: inherit;
 }
 
-.comp.compTable thead {
+.comp.compTableColumns._fixedHeader thead {
 	position: sticky;
 	top: 0;
 	z-index: 1;
