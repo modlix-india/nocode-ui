@@ -64,14 +64,16 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	} = props;
 
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const { properties: { showEmptyRows, showHeaders } = {}, stylePropertiesWithPseudoStates } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-		);
+	const {
+		properties: { showEmptyRows, showHeaders, fixedHeader } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+	);
 
 	const [updateColumnsAt, setUpdateColumnsAt] = useState(Date.now());
 
@@ -318,7 +320,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	return (
 		<table
 			id={styleKey}
-			className={`comp compTableColumns ${styleKey}`}
+			className={`comp compTableColumns ${styleKey} ${fixedHeader ? '_fixedHeader' : ''}`}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
 			onMouseLeave={
 				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
