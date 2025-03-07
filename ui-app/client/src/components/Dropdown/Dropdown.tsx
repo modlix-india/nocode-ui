@@ -82,6 +82,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			rightIconOpen,
 			showMandatoryAsterisk,
 			supportingText,
+			showMultipleSelectedValues,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -287,10 +288,18 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			return label;
 		}
 
+		if (showMultipleSelectedValues) {
+			const vals = [];
+			for (const each of selectedDataKey ?? []) {
+				vals.push(dropdownData?.find((e: any) => e?.key === each)?.label);
+			}
+			return vals.join(', ');
+		}
+
 		return `${selectedDataKey?.length} Item${
 			(selectedDataKey?.length ?? 0) > 1 ? 's' : ''
 		}  selected`;
-	}, [selected, selectedDataKey, dropdownData, isMultiSelect]);
+	}, [selected, selectedDataKey, dropdownData, isMultiSelect, showMultipleSelectedValues]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, disabled: readOnly },
