@@ -6,7 +6,7 @@ import SchemaFormStyle from './SchemaFormStyle';
 import { styleDefaults } from './schemaFormStyleProperies';
 
 const LazySchemaForm = React.lazy(
-	() => import(/* webpackChunkName: "FillerDefinitionEditor" */ './LazySchemaForm'),
+	() => import(/* webpackChunkName: "SchemaForm" */ './LazySchemaForm'),
 );
 function LoadLazySchemaForm(props: Readonly<ComponentProps>) {
 	return (

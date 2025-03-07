@@ -1027,42 +1027,52 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		}
 
 		let mainBody = selectedChildrenArray?.length ? (
-			<div className="_tableWithPagination">
-				<Children
-					pageDefinition={pageDefinition}
-					renderableChildren={selectedChildren}
-					context={{
-						...context,
-						table: {
-							data,
-							bindingPath,
-							dataBindingPath,
-							from,
-							to,
-							selectionBindingPath,
-							selectionType,
-							multiSelect,
-							pageSize,
-							uniqueKey,
-							onSelect,
-							firstChildKey,
-							onSort,
-							enablePersonalization,
-							personalizationBindingPath,
-							sortBindingPath,
-							multiSort,
-							hideContextMenu,
-							disableColumnDragging,
-							descValue,
-							ascValue,
-							sortObjectType,
-							isLoading,
-							spinnerType,
-							showSpinner,
-						},
-					}}
-					locationHistory={locationHistory}
+			<div
+				className="_tableWithPagination"
+				style={getStyleObject('tableWithPagination', hovers)}
+			>
+				<SubHelperComponent
+					definition={definition}
+					subComponentName="tableWithPagination"
 				/>
+				<div className="_tableContainer" style={getStyleObject('tableContainer', hovers)}>
+					<SubHelperComponent definition={definition} subComponentName="tableContainer" />
+					<Children
+						pageDefinition={pageDefinition}
+						renderableChildren={selectedChildren}
+						context={{
+							...context,
+							table: {
+								data,
+								bindingPath,
+								dataBindingPath,
+								from,
+								to,
+								selectionBindingPath,
+								selectionType,
+								multiSelect,
+								pageSize,
+								uniqueKey,
+								onSelect,
+								firstChildKey,
+								onSort,
+								enablePersonalization,
+								personalizationBindingPath,
+								sortBindingPath,
+								multiSort,
+								hideContextMenu,
+								disableColumnDragging,
+								descValue,
+								ascValue,
+								sortObjectType,
+								isLoading,
+								spinnerType,
+								showSpinner,
+							},
+						}}
+						locationHistory={locationHistory}
+					/>
+				</div>
 				{pagination}
 			</div>
 		) : (

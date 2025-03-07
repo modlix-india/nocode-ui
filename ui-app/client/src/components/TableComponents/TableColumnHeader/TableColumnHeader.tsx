@@ -537,7 +537,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 	}
 
 	return (
-		<div
+		<th
 			id={styleKey}
 			className={`comp compTableHeaderColumn ${hasSort ? '_pointer' : ''}`}
 			style={{ ...(styleProperties.header ?? {}) }}
@@ -558,7 +558,6 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 					locationHistory,
 				})
 			}
-			role="columnheader"
 			tabIndex={hasSort ? 0 : undefined}
 			onContextMenu={
 				context.table.enablePersonalization && !context.table.hideContextMenu
@@ -580,7 +579,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 				{rightIconComp}
 			</div>
 			{menu}
-		</div>
+		</th>
 	);
 }
 
