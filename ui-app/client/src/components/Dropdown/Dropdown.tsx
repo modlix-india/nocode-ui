@@ -83,6 +83,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			showMandatoryAsterisk,
 			supportingText,
 			showMultipleSelectedValues,
+			removeKeyWhenEmpty,
+			multiSelectNoSelectionValue,
+			searchIcon,
+			moveSelectedToTop,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -172,13 +176,15 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				deepEqual(e, each.value),
 			);
 			setIsChanged(true);
-			setData(
-				bindingPathPath,
+			let aValue =
 				newSelectionIndex === -1
 					? [...(selected ?? []), each.value]
-					: selected.filter((_: any, i: number) => i !== newSelectionIndex),
-				context.pageName,
-			);
+					: selected.filter((_: any, i: number) => i !== newSelectionIndex);
+			if (!aValue?.length && multiSelectNoSelectionValue !== 'EMPTY_ARRAY') {
+				if (multiSelectNoSelectionValue === 'UNDEFINED') aValue = undefined;
+				else if (multiSelectNoSelectionValue === 'NULL') aValue = null;
+			}
+			setData(bindingPathPath, aValue, context.pageName, removeKeyWhenEmpty);
 
 			if (!runEventOnDropDownClose && clickEvent) {
 				await runEvent(
@@ -196,6 +202,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					? undefined
 					: each.value,
 				context?.pageName,
+				removeKeyWhenEmpty,
 			);
 			if (clickEvent) {
 				await runEvent(
@@ -366,13 +373,33 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	let dropdownContainer = null;
 	if (showDropdown) {
+		let options =
+			searchDropdownData?.length || (searchText && !onSearch)
+				? searchDropdownData
+				: dropdownData;
+
+		if (moveSelectedToTop && options?.length) {
+			if (Array.isArray(selectedDataKey)) {
+				const newOptions = [];
+				for (const each of options) {
+					if (selectedDataKey.includes(each?.key)) newOptions.unshift(each);
+					else newOptions.push(each);
+				}
+				options = newOptions;
+			} else {
+				options = [...options];
+				const index = options.findIndex(e => e?.key === selectedDataKey);
+				const option = options.splice(index, 1)[0];
+				options.unshift(option);
+			}
+		}
 		dropdownContainer = (
 			<div
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
 				style={computedStyles.dropDownContainer ?? {}}
 				onScroll={scrollEndEvent}
 				ref={element => {
-					if (!element) return;
+					if (!element || searchText) return;
 					const rect = element.getBoundingClientRect();
 					const parentRect = element.parentElement?.getBoundingClientRect();
 					if (!parentRect) return;
@@ -384,20 +411,33 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					subComponentName="dropDownContainer"
 				/>
 				{isSearchable && (
-					<input
-						className="_dropdownSearchBox"
-						value={searchText}
-						placeholder={searchLabel}
-						onChange={handleSearch}
-						onMouseDown={e => {
-							e.stopPropagation();
-						}}
-					/>
+					<div
+						className="_dropdownSearchBoxContainer"
+						style={computedStyles.dropdownSearchBoxContainer ?? {}}
+					>
+						<SubHelperComponent
+							definition={props.definition}
+							subComponentName="dropdownSearchBoxContainer"
+						/>
+						{searchIcon ? (
+							<i
+								className={`_dropdownSearchIcon ${searchIcon}`}
+								style={computedStyles.dropDownSearchIcon ?? {}}
+							/>
+						) : undefined}
+						<input
+							className="_dropdownSearchBox"
+							style={computedStyles.dropdownSearchBox ?? {}}
+							value={searchText}
+							placeholder={searchLabel}
+							onChange={handleSearch}
+							onMouseDown={e => {
+								e.stopPropagation();
+							}}
+						/>
+					</div>
 				)}
-				{(searchDropdownData?.length || (searchText && !onSearch)
-					? searchDropdownData
-					: dropdownData
-				)?.map(each => {
+				{options?.map(each => {
 					const isOptionSelected = getIsSelected(each?.key);
 					return (
 						<div
@@ -664,6 +704,24 @@ const component: Component = {
 			name: 'errorTextContainer',
 			displayName: 'Error Text Container',
 			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownSearchBoxContainer',
+			displayName: 'Dropdown Search Box Container',
+			description: 'Dropdown Search Box Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropDownSearchIcon',
+			displayName: 'Dropdown Search Icon',
+			description: 'Dropdown Search Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'dropdownSearchBox',
+			displayName: 'Dropdown Search Box',
+			description: 'Dropdown Search Box',
 			icon: 'fa-solid fa-box',
 		},
 	],

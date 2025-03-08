@@ -153,6 +153,15 @@ export default function DropdownStyle({
             cursor: pointer;
         }
 
+        ${PREFIX} ._dropdownSearchBoxContainer {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            gap: 10px;
+            padding: 5px;
+        }
+
         ${PREFIX} ._dropdownSearchBox {
             width: 100%;
         }
