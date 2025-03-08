@@ -119,6 +119,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'moveSelectedToTop',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Move Selected to Top',
+		description: 'Move Selected to Top',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
 		name: 'clearSearchTextOnClose',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Clear Search on close',

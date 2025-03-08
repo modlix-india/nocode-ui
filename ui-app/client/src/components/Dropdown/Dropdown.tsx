@@ -86,6 +86,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			removeKeyWhenEmpty,
 			multiSelectNoSelectionValue,
 			searchIcon,
+			moveSelectedToTop,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -372,6 +373,26 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	let dropdownContainer = null;
 	if (showDropdown) {
+		let options =
+			searchDropdownData?.length || (searchText && !onSearch)
+				? searchDropdownData
+				: dropdownData;
+
+		if (moveSelectedToTop && options?.length) {
+			if (Array.isArray(selectedDataKey)) {
+				const newOptions = [];
+				for (const each of options) {
+					if (selectedDataKey.includes(each?.key)) newOptions.unshift(each);
+					else newOptions.push(each);
+				}
+				options = newOptions;
+			} else {
+				options = [...options];
+				const index = options.findIndex(e => e?.key === selectedDataKey);
+				const option = options.splice(index, 1)[0];
+				options.unshift(option);
+			}
+		}
 		dropdownContainer = (
 			<div
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
@@ -416,10 +437,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 						/>
 					</div>
 				)}
-				{(searchDropdownData?.length || (searchText && !onSearch)
-					? searchDropdownData
-					: dropdownData
-				)?.map(each => {
+				{options?.map(each => {
 					const isOptionSelected = getIsSelected(each?.key);
 					return (
 						<div
