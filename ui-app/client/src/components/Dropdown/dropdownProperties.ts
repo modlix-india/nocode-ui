@@ -246,6 +246,61 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.onClick,
+	{
+		name: 'selectedOptionTickPlace',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selected Option Tick Place',
+		description: 'Selected Option Tick Place',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '_nextToOption',
+		enumValues: [
+			{
+				name: '_nextToOption',
+				displayName: 'Next to Option',
+				description: 'Next to Option',
+			},
+			{
+				name: '_leftOfOption',
+				displayName: 'Left of Option',
+				description: 'Left of Option',
+			},
+			{
+				name: '_rightOfOption',
+				displayName: 'Right of Option',
+				description: 'Right of Option',
+			},
+		],
+	},
+	{
+		name: 'selectionOptionTickType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selected Option Tick Type',
+		description: 'Selected Option Tick Type',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'TICK',
+		enumValues: [
+			{
+				name: 'TICK',
+				displayName: 'Tick',
+				description: 'Tick',
+			},
+			{
+				name: 'CHECKBOX',
+				displayName: 'Checkbox',
+				description: 'Checkbox',
+			},
+			{
+				name: 'RADIO',
+				displayName: 'Radio',
+				description: 'Radio',
+			},
+			{
+				name: 'NONE',
+				displayName: 'None',
+				description: 'None',
+			},
+		],
+	},
 ];
 
 const stylePropertiesDefinition = {
@@ -354,6 +409,20 @@ const stylePropertiesDefinition = {
 	dropDownSearchIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	checkbox: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	thumb: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };
 
