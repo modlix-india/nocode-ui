@@ -20,6 +20,7 @@ import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 import { styleDefaults } from './dropdownStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 
 function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -87,6 +88,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			multiSelectNoSelectionValue,
 			searchIcon,
 			moveSelectedToTop,
+			selectedOptionTickPlace,
+			selectionOptionTickType,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -439,11 +442,39 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				)}
 				{options?.map(each => {
 					const isOptionSelected = getIsSelected(each?.key);
+					let tick = undefined;
+
+					if (selectionOptionTickType === 'TICK' && isOptionSelected) {
+						tick = (
+							<i
+								className="_dropdownCheckIcon"
+								style={computedStyles.dropdownCheckIcon ?? {}}
+							>
+								<SubHelperComponent
+									definition={props.definition}
+									subComponentName="dropdownCheckIcon"
+								/>
+							</i>
+						);
+					} else if (
+						selectionOptionTickType === 'CHECKBOX' ||
+						selectionOptionTickType === 'RADIO'
+					) {
+						tick = (
+							<CommonCheckbox
+								isChecked={isOptionSelected}
+								showAsRadio={selectionOptionTickType === 'RADIO'}
+								styles={computedStyles.checkbox ?? {}}
+								thumbStyles={computedStyles.thumb ?? {}}
+							/>
+						);
+					}
+
 					return (
 						<div
 							className={`_dropdownItem ${
 								isOptionSelected ? '_selected' : ''
-							} ${each.key === hoverKey ? '_hover' : ''}`} // because of default className the background-color is not changing on hover to user defined.
+							} ${each.key === hoverKey ? '_hover' : ''} ${selectedOptionTickPlace}`} // because of default className the background-color is not changing on hover to user defined.
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
 							onMouseEnter={() => setHoverKey(each?.key)}
@@ -466,17 +497,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 								/>
 								{each?.label}
 							</label>
-							{isOptionSelected && (
-								<i
-									className="_dropdownCheckIcon"
-									style={computedStyles.dropdownCheckIcon ?? {}}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="dropdownCheckIcon"
-									/>
-								</i>
-							)}
+							{tick}
 						</div>
 					);
 				})}
@@ -722,6 +743,18 @@ const component: Component = {
 			name: 'dropdownSearchBox',
 			displayName: 'Dropdown Search Box',
 			description: 'Dropdown Search Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'checkbox',
+			displayName: 'Checkbox',
+			description: 'Checkbox',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'thumb',
+			displayName: 'Thumb',
+			description: 'Thumb',
 			icon: 'fa-solid fa-box',
 		},
 	],
