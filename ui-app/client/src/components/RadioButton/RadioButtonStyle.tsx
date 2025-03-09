@@ -28,6 +28,11 @@ export default function RadioButtonStyle({
     ${PREFIX} .radioLabel.vertical {
         flex-direction: column;
     }
+    
+    ${PREFIX} span.commonCheckbox {
+        min-width: 16px;
+        min-height: 16px;
+    }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="RadioButtonCss">{css}</style>;
 }
