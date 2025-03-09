@@ -151,6 +151,10 @@ export default function DropdownStyle({
 
         ${PREFIX} ._dropdownItem {
             cursor: pointer;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
         }
 
         ${PREFIX} ._dropdownSearchBoxContainer {
@@ -164,6 +168,26 @@ export default function DropdownStyle({
 
         ${PREFIX} ._dropdownSearchBox {
             width: 100%;
+        }
+
+        ${PREFIX} ._dropdownItem._leftOfOption {
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+        }
+
+        ${PREFIX} ._dropdownItem._rightOfOption ._dropdownCheckIcon{
+            position: absolute;
+            right: 3%;
+        }
+
+        ${PREFIX} ._dropdownItem._rightOfOption .commonCheckbox {
+            position: absolute;
+            right: 0;
+            transform: translateX(-100%);
+        }
+
+        ${PREFIX} span.commonCheckbox.radio._checked ._thumb {
+            transform: scale(0.7);
         }
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

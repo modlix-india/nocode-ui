@@ -18,8 +18,6 @@ export default function CheckBoxStyle({
         -webkit-appearance: none;
         appearance: none;
         margin: 0;
-        min-width: 16px;
-        min-height: 16px;
         border: 2px solid;
         border-radius: 2px;
         display: grid;
@@ -27,6 +25,11 @@ export default function CheckBoxStyle({
         cursor: pointer;
         position: relative;
         box-sizing: content-box;
+    }
+
+    span.commonTriStateCheckbox {
+        width: 16px;
+        height: 16px;
     }
 
     span.commonCheckbox ._thumb,
@@ -37,10 +40,8 @@ export default function CheckBoxStyle({
         transform: scale(0);
         transition: 500ms transform ease-in-out, 500ms opacity ease-in-out;
         transform-origin: bottom left;
-        clip-path: path('M12.922.859a1.307,1.307,0,0,1,0,1.854l-7,7.005a1.307,1.307,0,0,1-1.854,0l-3.5-3.5A1.311,1.311,0,0,1,2.423,4.364l2.57,2.57L11.063.859a1.307,1.307,0,0,1,1.854,0Z');
+        clip-path: polygon(45% 85%, 10% 59%, 18% 45%, 44% 63%, 80% 15%, 90% 28%);
         position: absolute;
-        left: 1px; 
-        top: 3px;
         opacity: 0;
     }
     span.commonCheckbox.radio ._thumb {
@@ -93,6 +94,11 @@ export default function CheckBoxStyle({
 
     ${PREFIX} .checkbox.vertical {
         flex-direction: column;
+    }
+
+    ${PREFIX} span.commonCheckbox {
+        min-width: 16px;
+        min-height: 16px;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

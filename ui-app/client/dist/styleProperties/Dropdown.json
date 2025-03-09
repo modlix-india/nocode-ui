@@ -6293,5 +6293,330 @@
 		"cp": "color",
 		"sel": ".comp.compDropdown._bigDesign1._hasValue._quinary ._supportText",
 		"np": true
+	},
+
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Border",
+		"n": "dropdownCheckboxBorder",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compDropdown .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Border Color",
+		"n": "dropdownCheckboxPrimaryBorderColor",
+		"dv": "<fontColorThree>",
+		"cp": "border-color",
+		"sel": ".comp.compDropdown._primary .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Border Color",
+		"n": "dropdownCheckboxSecondaryBorderColor",
+		"dv": "<fontColorFour>",
+		"cp": "border-color",
+		"sel": ".comp.compDropdown._secondary .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Border Color",
+		"n": "dropdownCheckboxTertiaryBorderColor",
+		"dv": "<fontColorFive>",
+		"cp": "border-color",
+		"sel": ".comp.compDropdown._tertiary .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Border Color",
+		"n": "dropdownCheckboxQuaternaryBorderColor",
+		"dv": "<fontColorNine>",
+		"cp": "border-color",
+		"sel": ".comp.compDropdown._quaternary .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Border Color",
+		"n": "dropdownCheckboxQuinaryBorderColor",
+		"dv": "<fontColorSeven>",
+		"cp": "border-color",
+		"sel": ".comp.compDropdown._quinary .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Width",
+		"n": "dropdownCheckboxDefaultWidth",
+		"dv": "14px",
+		"cp": "width",
+		"sel": ".comp.compDropdown._default .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Height",
+		"n": "dropdownCheckboxDefaultHeight",
+		"dv": "14px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._default .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Width",
+		"n": "dropdownCheckboxOutlinedWidth",
+		"dv": "14px",
+		"cp": "width",
+		"sel": ".comp.compDropdown._outlined .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Height",
+		"n": "dropdownCheckboxOutlinedHeight",
+		"dv": "14px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._outlined .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Width",
+		"n": "dropdownCheckboxFilledWidth",
+		"dv": "14px",
+		"cp": "width",
+		"sel": ".comp.compDropdown._filled .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Height",
+		"n": "dropdownCheckboxFilledHeight",
+		"dv": "14px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._filled .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Width",
+		"n": "dropdownCheckboxBigDesign1Width",
+		"dv": "14px",
+		"cp": "width",
+		"sel": ".comp.compDropdown._bigDesign1 .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Height",
+		"n": "dropdownCheckboxBigDesign1Height",
+		"dv": "14px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._bigDesign1 .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Width",
+		"n": "dropdownCheckboxTextWidth",
+		"dv": "14px",
+		"cp": "width",
+		"sel": ".comp.compDropdown._text .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Height",
+		"n": "dropdownCheckboxTextHeight",
+		"dv": "14px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._text .commonCheckbox",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Selected Background Color",
+		"n": "dropdownCheckboxPrimarySelectedBackgroundColor",
+		"dv": "<fontColorThree>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._primary .commonCheckbox._checked",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Selected Background Color",
+		"n": "dropdownCheckboxSecondarySelectedBackgroundColor",
+		"dv": "<fontColorFour>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._secondary .commonCheckbox._checked",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Selected Background Color",
+		"n": "dropdownCheckboxTertiarySelectedBackgroundColor",
+		"dv": "<fontColorFive>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._tertiary .commonCheckbox._checked",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Selected Background Color",
+		"n": "dropdownCheckboxQuaternarySelectedBackgroundColor",
+		"dv": "<fontColorNine>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._quaternary .commonCheckbox._checked",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Selected Background Color",
+		"n": "dropdownCheckboxQuinarySelectedBackgroundColor",
+		"dv": "<fontColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._quinary .commonCheckbox._checked",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Tick Color",
+		"n": "dropdownCheckboxPrimaryTickColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._primary .commonCheckbox ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Tick Color",
+		"n": "dropdownCheckboxSecondaryTickColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._secondary .commonCheckbox ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Tick Color",
+		"n": "dropdownCheckboxTertiaryTickColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._tertiary .commonCheckbox ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Tick Color",
+		"n": "dropdownCheckboxQuaternaryTickColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._quaternary .commonCheckbox ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Checkbox",
+		"dn": "Dropdown Checkbox Tick Color",
+		"n": "dropdownCheckboxQuinaryTickColor",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._quinary .commonCheckbox ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Background",
+		"n": "dropdownRadioPrimaryBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._primary .commonCheckbox.radio ",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Background",
+		"n": "dropdownRadioSecondaryBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._secondary .commonCheckbox.radio ",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Background",
+		"n": "dropdownRadioTertiaryBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._tertiary .commonCheckbox.radio ",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Background",
+		"n": "dropdownRadioQuaternaryBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._quaternary .commonCheckbox.radio ",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Background",
+		"n": "dropdownRadioQuinaryBackground",
+		"dv": "<backgroundColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._quinary .commonCheckbox.radio ",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Selected Tick Color",
+		"n": "dropdownRadioPrimarySelectedTickColor",
+		"dv": "<fontColorThree>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._primary .commonCheckbox.radio._checked ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Selected Tick Color",
+		"n": "dropdownRadioSecondarySelectedTickColor",
+		"dv": "<fontColorFour>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._secondary .commonCheckbox.radio._checked ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Selected Tick Color",
+		"n": "dropdownRadioTertiarySelectedTickColor",
+		"dv": "<fontColorFive>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._tertiary .commonCheckbox.radio._checked ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Selected Tick Color",
+		"n": "dropdownRadioQuaternarySelectedTickColor",
+		"dv": "<fontColorNine>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._quaternary .commonCheckbox.radio._checked ._thumb",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Radio",
+		"dn": "Dropdown Radio Selected Tick Color",
+		"n": "dropdownRadioQuinarySelectedTickColor",
+		"dv": "<fontColorSeven>",
+		"cp": "background",
+		"sel": ".comp.compDropdown._quinary .commonCheckbox.radio._checked ._thumb",
+		"np": true
 	}
 ]
