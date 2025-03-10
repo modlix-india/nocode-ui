@@ -141,6 +141,12 @@ export interface Section {
 	pageName: string;
 }
 
+interface Tutorial {
+  demoVideo?: string;
+  description?: string;
+  youtubeLink?: string;
+}
+
 export interface Component {
 	name: string;
 	order?: number;
@@ -180,6 +186,11 @@ export interface Component {
 			locationHistory: Array<LocationHistory>,
 			pageExtractor: PageStoreExtractor,
 		) => Array<string>;
+	};
+	tutorial?: {
+		demoVideo?: string;
+		description?: string;
+		youtubeLink?: string;
 	};
 }
 

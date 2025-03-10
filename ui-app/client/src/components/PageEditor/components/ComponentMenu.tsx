@@ -35,6 +35,104 @@ function PinIcon({ isPinned, onClick }: Readonly<PinIconProps>) {
 	);
 }
 
+// Add new tutorial icons component
+interface TutorialIconsProps {
+	tutorial?: {
+		demoVideo?: string;
+		description?: string;
+		youtubeLink?: string;
+	};
+	onInfoClick: () => void;
+}
+
+function TutorialIcons({ tutorial, onInfoClick }: TutorialIconsProps) {
+	if (!tutorial?.demoVideo && !tutorial?.description && !tutorial?.youtubeLink) return null;
+
+	return (
+		<button
+			className="_tutorialIcon"
+			onClick={e => {
+				e.stopPropagation();
+				onInfoClick();
+			}}
+		>
+			<svg width="15" height="15">
+				<path
+					d="M7.5 1.25C4.05 1.25 1.25 4.05 1.25 7.5C1.25 10.95 4.05 13.75 7.5 13.75C10.95 13.75 13.75 10.95 13.75 7.5C13.75 4.05 10.95 1.25 7.5 1.25ZM8.125 11.25H6.875V6.875H8.125V11.25ZM8.125 5.625H6.875V4.375H8.125V5.625Z"
+					fill="#999"
+				/>
+			</svg>
+		</button>
+	);
+}
+
+interface TutorialTooltipProps {
+	componentName?: string;
+	tutorial?: {
+		demoVideo?: string;
+		description?: string;
+		youtubeLink?: string;
+	};
+	onClose: () => void;
+	style?: React.CSSProperties;
+}
+
+function TutorialTooltip({ componentName, tutorial, onClose, style }: TutorialTooltipProps) {
+	const isYoutubeVideo =
+		tutorial?.demoVideo?.includes('youtube.com') || tutorial?.demoVideo?.includes('youtu.be');
+
+	return (
+		<div
+			className="_tutorialTooltipContainer"
+			style={style}
+			onMouseDown={e => e.target === e.currentTarget && onClose()}
+			role="dialog"
+			aria-modal="true"
+			onKeyDown={e => (e.key === 'Escape' || e.key === 'tab') && onClose()}
+			tabIndex={6}
+		>
+			<div className="_tutorialTooltipPanel">
+				<div className="_tutorialHeader">
+					<h3>{componentName ? `${componentName} Tutorial` : 'Component Tutorial'}</h3>
+					<i className="fa-solid fa-circle-xmark" onClick={onClose} />
+				</div>
+				{tutorial?.demoVideo && (
+					<div className="_videoContainer">
+						{isYoutubeVideo ? (
+							<iframe
+								src={tutorial.demoVideo.replace('watch?v=', 'embed/')}
+								title="YouTube video player"
+								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+								allowFullScreen
+							/>
+						) : (
+							<video autoPlay loop muted playsInline>
+								<source src={tutorial.demoVideo} type="video/mp4" />
+							</video>
+						)}
+					</div>
+				)}
+				{tutorial?.description && (
+					<div className="_descriptionT">{tutorial.description}</div>
+				)}
+				{tutorial?.youtubeLink && (
+					<div className="_youtubeButtonContainer">
+						<a
+							href={tutorial.youtubeLink}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="_youtubeButton"
+						>
+							<i className="fa-brands fa-youtube" />
+							Click here to learn more
+						</a>
+					</div>
+				)}
+			</div>
+		</div>
+	);
+}
+
 export default function ComponentMenu({
 	selectedComponent,
 	defPath,
@@ -70,6 +168,8 @@ export default function ComponentMenu({
 	const [originalCompType, setOriginalCompType] = useState('SECTIONS');
 	const [sectionsList, setSectionsList] = useState<any>(null);
 	const [pinnedComponents, setPinnedComponents] = useState(new Set());
+	const [showTutorialHelp, setShowTutorialHelp] = useState(false);
+	const [activeTutorial, setActiveTutorial] = useState<string | null>(null);
 
 	let compType = sectionsListConnectionName ? originalCompType : 'COMPONENTS';
 
@@ -98,17 +198,19 @@ export default function ComponentMenu({
 	}, [personalizationPath]);
 
 	useEffect(() => {
-		const savedPinnedComponents = localStorage.getItem('pinnedComponents');
-		if (savedPinnedComponents) {
-			setPinnedComponents(new Set(JSON.parse(savedPinnedComponents)));
-		}
-	}, []);
-
-	useEffect(() => {
-		if (pinnedComponents.size > 0) {
-			localStorage.setItem('pinnedComponents', JSON.stringify(Array.from(pinnedComponents)));
-		}
-	}, [pinnedComponents]);
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			(_, v) => {
+				if (v) {
+					setPinnedComponents(new Set(v));
+				} else {
+					setPinnedComponents(new Set());
+				}
+			},
+			pageExtractor,
+			`${personalizationPath}.pinnedComponents`,
+		);
+	}, [personalizationPath]);
 
 	const handlePinComponent = (componentName: unknown) => {
 		setPinnedComponents(prev => {
@@ -118,6 +220,7 @@ export default function ComponentMenu({
 			} else {
 				newPinned.add(componentName);
 			}
+			onChangePersonalization('pinnedComponents', Array.from(newPinned));
 			return newPinned;
 		});
 	};
@@ -282,6 +385,10 @@ export default function ComponentMenu({
 								isPinned={pinnedComponents.has(e.name)}
 								onClick={() => handlePinComponent(e.name)}
 							/>
+							<TutorialIcons
+								tutorial={e.tutorial}
+								onInfoClick={() => setActiveTutorial(e.name)}
+							/>
 							{typeof e.subComponentDefinition?.[0].icon === 'string' ? (
 								<i className={`fa ${e.subComponentDefinition?.[0].icon}`} />
 							) : (
@@ -445,6 +552,19 @@ export default function ComponentMenu({
 				</div>
 			</div>
 			{rightPart}
+			{activeTutorial && (
+				<TutorialTooltip
+					componentName={compsList.find(e => e.name === activeTutorial)?.displayName}
+					tutorial={compsList.find(e => e.name === activeTutorial)?.tutorial}
+					onClose={() => setActiveTutorial(null)}
+					style={{
+						position: 'absolute',
+						left: '320px',
+						top: '50%',
+						transform: 'translateY(-50%)',
+					}}
+				/>
+			)}
 		</div>
 	);
 }
