@@ -1,236 +1,291 @@
 .comp.compTable {
-    display: flex;
-    flex-direction: row;
-
+	display: flex;
+	flex-direction: row;
 }
 
-.comp.compTable.FIXED .comp.compTableColumns { table-layout : fixed}
+.comp.compTable.FIXED .comp.compTableColumns {
+	table-layout: fixed;
+}
 
 .comp.compTable ._tableWithPagination {
-    flex: 1;
-    display: flex;
-    flex-wrap:wrap;
-    align-items:flex-start;
+	flex: 1;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-start;
+}
+
+.comp.compTable thead {
+	border-top-left-radius: inherit;
+	border-top-right-radius: inherit;
+}
+
+.comp.compTable thead tr {
+	border-top-left-radius: inherit;
+	border-top-right-radius: inherit;
+}
+
+.comp.compTable thead tr th:first-child {
+	border-top-left-radius: inherit;
+}
+
+.comp.compTable thead tr th:last-child {
+	border-top-right-radius: inherit;
+}
+
+.comp.compTable tbody {
+	border-bottom-left-radius: inherit;
+	border-bottom-right-radius: inherit;
+}
+
+.comp.compTable tbody tr:last-child {
+	border-bottom-left-radius: inherit;
+	border-bottom-right-radius: inherit;
+}
+
+.comp.compTable tbody tr:last-child td:first-child {
+	border-bottom-left-radius: inherit;
+}
+
+.comp.compTable tbody tr:last-child td:last-child {
+	border-bottom-right-radius: inherit;
+}
+
+.comp.compTableColumns._fixedHeader thead {
+	position: sticky;
+	top: 0;
+	z-index: 1;
 }
 
 .comp.compTable ._tablePagination {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    width:100%;
+	display: flex;
+	gap: 10px;
+	align-items: center;
+	width: 100%;
+}
 
+.comp.compTable ._tableWithPagination ._tableContainer {
+	width: 100%;
 }
 
 .comp.compTable ._tablePagination ._selected {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color:#427EE4;
-
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	color: #427ee4;
 }
 
 .comp.compTable ._tablePagination._RIGHT {
-    justify-content: right;
+	justify-content: right;
 }
 
 .comp.compTable ._tablePagination._CENTER {
-    justify-content: center;
+	justify-content: center;
 }
 
 .comp.compTable.RIGHT {
-    flex-direction:row-reverse;
+	flex-direction: row-reverse;
 }
 
 .comp.compTable.LEFT {
-    flex-direction:row;
+	flex-direction: row;
 }
 
 .comp.compTable.TOP {
-    flex-direction:column;
+	flex-direction: column;
 }
 
 .comp.compTable.BOTTOM {
-    flex-direction:column-reverse;
+	flex-direction: column-reverse;
 }
 
-.comp.compTable ._tablePagination ._pageNumber{
-    min-width:26px;
-    height:26px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding: 0px 6px;
-    position: relative;
+.comp.compTable ._tablePagination ._pageNumber {
+	min-width: 26px;
+	height: 26px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0px 6px;
+	position: relative;
 }
 
 .comp.compTable ._tablePagination ._next {
-    position: relative;
-    padding:5px;
+	position: relative;
+	padding: 5px;
 }
 
-.comp.compTable ._tablePagination ._prev{
-    position: relative;
-    padding:5px;
+.comp.compTable ._tablePagination ._prev {
+	position: relative;
+	padding: 5px;
 }
 
-.comp.compTable ._modesContainer{
-    display:flex;
-    border:1px solid #DDDDDD;
-    border-radius:6px;
-    margin-right:15px;
-    height:36px;
-    position: relative;
+.comp.compTable ._modesContainer {
+	display: flex;
+	border: 1px solid #dddddd;
+	border-radius: 6px;
+	margin-right: 15px;
+	height: 36px;
+	position: relative;
 }
 
 .comp.compTable ._grid {
-    padding:8px;
-    border-top-right-radius:inherit;
-    border-bottom-right-radius:inherit;
-    position: relative;
+	padding: 8px;
+	border-top-right-radius: inherit;
+	border-bottom-right-radius: inherit;
+	position: relative;
 }
 
-.comp.compTable ._columns{
-    padding:8px;
-    border-top-left-radius:inherit;
-    border-bottom-left-radius:inherit;
-    position: relative;
+.comp.compTable ._columns {
+	padding: 8px;
+	border-top-left-radius: inherit;
+	border-bottom-left-radius: inherit;
+	position: relative;
 }
 
-.comp.compTable ._tablePagination select{
-    border: 1px solid #DDDDDD;
-    border-radius:6px;
-    height:36px;
-    font-size: 14px;
-    font-weight: 500;
-    color:#333333;
-    padding-left: 8px;
+.comp.compTable ._tablePagination select {
+	border: 1px solid #dddddd;
+	border-radius: 6px;
+	height: 36px;
+	font-size: 14px;
+	font-weight: 500;
+	color: #333333;
+	padding-left: 8px;
 }
 
-.comp.compTable ._leftArrow{
-    padding-left:10px;
-    position: relative;
+.comp.compTable ._leftArrow {
+	padding-left: 10px;
+	position: relative;
 }
 
-
-.comp.compTable ._rightArrow{
-    padding-right:10px;
-    position: relative;
+.comp.compTable ._rightArrow {
+	padding-right: 10px;
+	position: relative;
 }
 
-.comp.compTable ._tablePagination ._pageNumber  {
-    position: relative;
+.comp.compTable ._tablePagination ._pageNumber {
+	position: relative;
 }
 
 .comp.compTable ._popupBackground {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 8;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 8;
 }
 
 .comp.compTable ._popupMenu {
-    position:fixed;
-    border-radius: 6px;
-    max-height: 30vh;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    text-align: left;
+	position: fixed;
+	border-radius: 6px;
+	max-height: 30vh;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	text-align: left;
 }
 
 .comp.compTable ._popupMenu ._popupMenuItem {
-    cursor: pointer;
-    display: flex;
-    gap: 5px;
+	cursor: pointer;
+	display: flex;
+	gap: 5px;
 }
 
 .comp.compTable ._spinner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 9;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 9;
 }
 
 .comp.compTable ._spinner._circleSpinner ._block1 {
-    border-radius: 50%;
-    display: inline-block;
-    box-sizing: border-box;
-    animation: _tableSpinnerRotation 1s linear infinite;
+	border-radius: 50%;
+	display: inline-block;
+	box-sizing: border-box;
+	animation: _tableSpinnerRotation 1s linear infinite;
 }
 
 .comp.compTable ._spinner._circleSpinner2 ._block1 {
-    border: 3px solid;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    box-sizing: border-box;
-    animation: _tableSpinnerRotation 1s linear infinite;
+	border: 3px solid;
+	border-radius: 50%;
+	display: inline-block;
+	position: relative;
+	box-sizing: border-box;
+	animation: _tableSpinnerRotation 1s linear infinite;
 }
 
 .comp.compTable ._spinner._circleSpinner2 ._block1::after {
-    content: '';
-    box-sizing: border-box;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
+	content: '';
+	box-sizing: border-box;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border-radius: 50%;
 }
 
 .comp.compTable ._spinner._circleSpinner3 ._block1 {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: inline-block;
-    position: relative;
-    box-sizing: border-box;
-    animation: _tableSpinnerRotation 2s linear infinite;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	display: inline-block;
+	position: relative;
+	box-sizing: border-box;
+	animation: _tableSpinnerRotation 2s linear infinite;
 }
 .comp.compTable ._spinner._circleSpinner3 ._block1::after,
 .comp.compTable ._spinner._circleSpinner3 ._block1::before {
-    content: '';
-    box-sizing: border-box;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    margin: auto;
-    border-radius: 50%;
-    box-sizing: border-box;
-    animation: _tableSpinnerRotationBack 1s linear infinite;
-    transform-origin: center center;
+	content: '';
+	box-sizing: border-box;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	border-radius: 50%;
+	box-sizing: border-box;
+	animation: _tableSpinnerRotationBack 1s linear infinite;
+	transform-origin: center center;
 }
 .comp.compTable ._spinner._circleSpinner3 ._block1::before {
-    animation: _tableSpinnerRotation 2s linear infinite;
+	animation: _tableSpinnerRotation 2s linear infinite;
 }
 
-
 @keyframes _tableSpinnerRotation {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg);}
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }
 
 @keyframes _tableSpinnerRotationBack {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(-360deg); }
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(-360deg);
+	}
 }
 
 .comp.compTable ._animateData {
-    height:100%;
-    animation: 2s _tableEmptyRowSpin ease-in-out infinite;
+	height: 100%;
+	animation: 2s _tableEmptyRowSpin ease-in-out infinite;
 }
 @keyframes _tableEmptyRowSpin {
-    50% { background-position: 100%;}
-    100% { background-position-x: 0; }
+	50% {
+		background-position: 100%;
+	}
+	100% {
+		background-position-x: 0;
+	}
 }

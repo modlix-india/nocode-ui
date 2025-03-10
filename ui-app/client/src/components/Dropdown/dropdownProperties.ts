@@ -35,6 +35,47 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'showMultipleSelectedValues',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Multiple Selected Values',
+		description: 'Show Multiple Selected Values',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'multiSelectNoSelectionValue',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Multi Select No Selection Value',
+		description: 'Value to be shown when no selection is made in multi select dropdown.',
+		defaultValue: 'EMPTY_ARRAY',
+		enumValues: [
+			{
+				name: 'EMPTY_ARRAY',
+				displayName: 'Empty Array',
+				description: 'Empty Array',
+			},
+			{
+				name: 'UNDEFINED',
+				displayName: 'Undefined',
+				description: 'Undefined',
+			},
+			{
+				name: 'NULL',
+				displayName: 'Null',
+				description: 'Null',
+			},
+		],
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'removeKeyWhenEmpty',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Delete Key on Empty',
+		description: 'Removes the key when the textbox is emptied.',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
+	},
+	{
 		name: 'runEventOnDropDownClose',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Event Run on Close',
@@ -75,6 +116,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Dropdown data',
 		description: 'Data that is used to render dropdown.',
 		group: ComponentPropertyGroup.DATA,
+	},
+
+	{
+		name: 'moveSelectedToTop',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Move Selected to Top',
+		description: 'Move Selected to Top',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	{
@@ -169,6 +219,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'searchIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Search Icon',
+		description: 'Icon to be shown on the searchbox.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
@@ -188,6 +246,61 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.onClick,
+	{
+		name: 'selectedOptionTickPlace',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selected Option Tick Place',
+		description: 'Selected Option Tick Place',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '_nextToOption',
+		enumValues: [
+			{
+				name: '_nextToOption',
+				displayName: 'Next to Option',
+				description: 'Next to Option',
+			},
+			{
+				name: '_leftOfOption',
+				displayName: 'Left of Option',
+				description: 'Left of Option',
+			},
+			{
+				name: '_rightOfOption',
+				displayName: 'Right of Option',
+				description: 'Right of Option',
+			},
+		],
+	},
+	{
+		name: 'selectionOptionTickType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selected Option Tick Type',
+		description: 'Selected Option Tick Type',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'TICK',
+		enumValues: [
+			{
+				name: 'TICK',
+				displayName: 'Tick',
+				description: 'Tick',
+			},
+			{
+				name: 'CHECKBOX',
+				displayName: 'Checkbox',
+				description: 'Checkbox',
+			},
+			{
+				name: 'RADIO',
+				displayName: 'Radio',
+				description: 'Radio',
+			},
+			{
+				name: 'NONE',
+				displayName: 'None',
+				description: 'None',
+			},
+		],
+	},
 ];
 
 const stylePropertiesDefinition = {
@@ -273,6 +386,40 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	dropdownSearchBox: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	dropdownSearchBoxContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	dropDownSearchIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	checkbox: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	thumb: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
