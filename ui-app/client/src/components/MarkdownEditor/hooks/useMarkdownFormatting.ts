@@ -107,6 +107,31 @@ export function useMarkdownFormatting() {
 				newText = `${beforeText}[^${footnoteId}]${afterText}\n\n[^${footnoteId}]: ${selectedText}`;
 				newCursorPos = selection.end + footnoteId.length + 4;
 				break;
+
+			case 'unorderedList':
+				if (selectedText) {
+					const lines = selectedText.split('\n');
+					const newLines = lines.map(line => `- ${line}`);
+					newText = `${beforeText}${newLines.join('\n')}${afterText}`;
+					newCursorPos = selection.end + lines.length * 2;
+				} else {
+					newText = `${beforeText}- ${afterText}`;
+					newCursorPos = selection.start + 2;
+				}
+				break;
+
+			case 'orderedList':
+				if (selectedText) {
+					const lines = selectedText.split('\n');
+					const newLines = lines.map((line, index) => `${index + 1}. ${line}`);
+					newText = `${beforeText}${newLines.join('\n')}${afterText}`;
+					newCursorPos =
+						selection.end + lines.reduce((acc, _, i) => acc + `${i + 1}. `.length, 0);
+				} else {
+					newText = `${beforeText}1. ${afterText}`;
+					newCursorPos = selection.start + 3;
+				}
+				break;
 		}
 
 		return { newText, newCursorPos };

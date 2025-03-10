@@ -31,6 +31,28 @@ export default function MarkdownEditorStyle({
 		padding: 8px 8px 0;
 		border-bottom: 1px solid #d0d7de;
 	  }
+
+	  ${PREFIX} ._floatingPanelContainer {
+		position: fixed;
+		background: #fff;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+		padding: 8px;
+		margin-top: -8px;
+	}
+	
+	${PREFIX} ._floatingPanelContainer::after {
+		content: '';
+		position: absolute;
+		bottom: -8px;
+		left: 10%;
+		transform: translateX(-50%);
+		border-left: 8px solid transparent;
+		border-right: 8px solid transparent;
+		border-top: 8px solid #fff;
+	}
+	  
   
 	  ${PREFIX} ._tab {
 	  	height: 48px;
@@ -93,7 +115,7 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} textarea {
 		width: 100%;
-		min-height: 30vh;
+		min-height: 15vh;
 		height: auto;
 		resize: none;
 		padding: 10px;
@@ -108,7 +130,7 @@ export default function MarkdownEditorStyle({
 		display: flex;
 		flex-direction: column;
 		overflow: auto;
-		min-height: 30vh;
+		min-height: 15vh;
 		height: auto;
 	}
 
@@ -175,7 +197,7 @@ export default function MarkdownEditorStyle({
 	}
 
 	${PREFIX} ._markdown {
-		max-width: 1020px;
+		max-width: 100vw;
 		width: 80%;
 		display: flex;
 		flex-direction: column;
@@ -187,7 +209,7 @@ export default function MarkdownEditorStyle({
 	${PREFIX} ._editorContainer {
 		display: flex;
 		position: relative;
-		min-height: 30vh;
+		min-height: 15vh;
 		overflow: auto;
 	}
 
@@ -227,6 +249,8 @@ export default function MarkdownEditorStyle({
 	  
 	${PREFIX} ._componentPanel {
 		position: absolute;
+		left: 50%;
+		padding-top: 10px;
 		opacity: 1;
 		transition: opacity 0.3s;
 		z-index: 1;
@@ -455,13 +479,14 @@ export default function MarkdownEditorStyle({
     ${PREFIX} ._dropdown {
     	position: absolute;
 		top: 100%;
-		left: 0;
+		right:0%;
 		z-index: 100;
 		background: white;
 		border: 1px solid #d0d7de;
 		border-radius: 6px;
 		box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 		min-width: 150px;
+		padding: 10px;
     }
 
     ${PREFIX} ._dropdownItem {
@@ -620,6 +645,72 @@ ${PREFIX} ._settingsDropdown {
 ${PREFIX} ._exportOptions button:hover {
     background: #f5f5f5;
 }
+	
+${PREFIX} ._alignment {
+    margin: 1em 0;
+    width: 100%;
+}
+
+${PREFIX} ._alignment._left {
+    text-align: left;
+    direction: ltr;
+}
+
+${PREFIX} ._alignment._right {
+    text-align: right;
+    direction: ltr;
+}
+
+${PREFIX} ._alignment._center {
+    text-align: center;
+    direction: ltr;
+}
+
+${PREFIX} ._alignment._justify {
+    text-align: justify;
+    direction: ltr;
+}
+
+${PREFIX} ._alignment._rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+${PREFIX} ._alignment._ltr {
+    direction: ltr;
+    text-align: left;
+}
+
+${PREFIX} [data-md-type="indent"] {
+    display: block;
+    padding-left: 2em;
+    border-left: 2px solid #e1e4e8;
+    margin: 0.5em 0;
+}
+
+${PREFIX} ._inputGroup {
+    margin-bottom: 12px;
+}
+
+${PREFIX} ._inputGroup label {
+    display: block;
+    margin-bottom: 4px;
+    color: #24292f;
+}
+
+${PREFIX} ._inputGroup input[type="number"] {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #d0d7de;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+${PREFIX} [data-md-type="indent-1"] { padding-left: 2em; }
+${PREFIX} [data-md-type="indent-2"] { padding-left: 4em; }
+${PREFIX} [data-md-type="indent-3"] { padding-left: 6em; }
+${PREFIX} [data-md-type="indent-4"] { padding-left: 8em; }
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MarkdownEditorCSS">{css}</style>;

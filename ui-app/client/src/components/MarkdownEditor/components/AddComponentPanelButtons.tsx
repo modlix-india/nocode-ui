@@ -11,13 +11,29 @@ interface AddComponentPanelButtonsProps {
 	textAreaRef?: React.RefObject<HTMLTextAreaElement>; // Add this prop
 }
 
+// Update the TableConfig interface
+interface TableConfig {
+	rows: number;
+	columns: number;
+}
+
 const components = [
 	{ id: 'paragraph', name: 'Paragraph', icon: '¶', syntax: 'some content here' },
 	{ id: 'bold', name: 'Bold', icon: '**', syntax: '**bold text**' },
 	{ id: 'italic', name: 'Italic', icon: '_', syntax: '*italic text*' },
 	{ id: 'strikethrough', name: 'Strikethrough', icon: '~~', syntax: '~~strikethrough text~~' },
-	{ id: 'ul', name: 'Bullet List', icon: '•', syntax: '- add the list here\n -' },
-	{ id: 'ol', name: 'Numbered List', icon: '1.', syntax: '1. add the list here' },
+	{
+		id: 'ul',
+		name: 'Bullet List',
+		icon: '•',
+		syntax: '- add the list items here. \n - Enter text here',
+	},
+	{
+		id: 'ol',
+		name: 'Numbered List',
+		icon: '1.',
+		syntax: '1. add the list here\n2. enter text here\n  3. enter text here',
+	},
 	{ id: 'blockquote', name: 'Block Quote', icon: '"', syntax: '> here is a quote' },
 	{ id: 'pullquote', name: 'Pullquote', icon: '❝', syntax: '>>> Pull quote here' },
 	{ id: 'img', name: 'Image', icon: '🖼', syntax: '![image](image.jpg)' },
@@ -63,7 +79,7 @@ const components = [
 	{ id: 'h4', name: 'Heading 4', icon: 'H4', syntax: '\n#### heading 4 \n' },
 	{ id: 'h5', name: 'Heading 5', icon: 'H5', syntax: '\n##### heading 5 \n' },
 	{ id: 'h6', name: 'Heading 6', icon: 'H6', syntax: '\n###### heading 6 \n' },
-	// { id: 'hr', name: 'Horizontal Rule', icon: '---', syntax: '---' },//not working
+	{ id: 'hr', name: 'Horizontal Rule', icon: '---', syntax: '\n****\n' },
 	{ id: 'code', name: 'Code Block', icon: '<>', syntax: '```\n' },
 	{ id: 'link', name: 'Link', icon: '🔗', syntax: '[link](URL_ADDRESS.com)' },
 	{ id: 'inlineCode', name: 'Inline Code', icon: '`', syntax: '`inline code`' },
@@ -107,6 +123,28 @@ export function AddComponentPanelButtons({
 	const [linkText, setLinkText] = useState('');
 	const [linkUrl, setLinkUrl] = useState('');
 
+	const [showTableDialog, setShowTableDialog] = useState(false);
+	// Update the initial state
+	const [tableConfig, setTableConfig] = useState<TableConfig>({
+		rows: 2,
+		columns: 2,
+	});
+
+	// Modify the generateTable function
+	const generateTable = ({ rows, columns }: TableConfig) => {
+		const headerRow = '| ' + Array(columns).fill('Header').join(' | ') + ' |';
+		const alignmentRow = '| ' + Array(columns).fill(':---').join(' | ') + ' |';
+		let tableContent = headerRow + '\n' + alignmentRow + '\n';
+
+		// Generate data rows (excluding header)
+		for (let i = 0; i < rows - 1; i++) {
+			const dataRow = '| ' + Array(columns).fill('Cell').join(' | ') + ' |';
+			tableContent += dataRow + (i < rows - 2 ? '\n' : '');
+		}
+
+		return tableContent;
+	};
+
 	const handleComponentClick = (comp: any) => {
 		if (comp.id === 'img') {
 			setShowImageBrowser(true);
@@ -114,12 +152,23 @@ export function AddComponentPanelButtons({
 			setShowLinkDialog(true);
 			setLinkText('');
 			setLinkUrl('');
+		} else if (comp.id === 'table') {
+			setShowTableDialog(true);
 		} else {
 			onComponentAdd(comp.syntax);
 			onExpandChange(false);
 			onSearchChange('');
 			setShowAll(false);
 		}
+	};
+
+	const handleTableAdd = () => {
+		const tableContent = generateTable(tableConfig);
+		onComponentAdd('\n' + tableContent + '\n');
+		setShowTableDialog(false);
+		onExpandChange(false);
+		onSearchChange('');
+		setShowAll(false);
 	};
 
 	const handleLinkAdd = () => {
@@ -129,6 +178,65 @@ export function AddComponentPanelButtons({
 		onSearchChange('');
 		setShowAll(false);
 	};
+
+	// Update the table dialog JSX, removing the checkbox section
+	let tableDialog = undefined;
+	if (showTableDialog) {
+		tableDialog = (
+			<div
+				className="_popupBackground"
+				onClick={e => {
+					if (e.target === e.currentTarget) setShowTableDialog(false);
+				}}
+			>
+				<div className="_linkDialog">
+					<div className="_inputGroup">
+						<label>Number of Rows (including header):</label>
+						<input
+							type="number"
+							min="2"
+							max="30"
+							className="_linkInput"
+							value={tableConfig.rows}
+							onChange={e =>
+								setTableConfig({
+									...tableConfig,
+									rows: Math.max(2, parseInt(e.target.value) || 2),
+								})
+							}
+						/>
+					</div>
+					<div className="_inputGroup">
+						<label>Number of Columns:</label>
+						<input
+							type="number"
+							min="1"
+							max="15"
+							className="_linkInput"
+							value={tableConfig.columns}
+							onChange={e =>
+								setTableConfig({
+									...tableConfig,
+									columns: Math.max(1, parseInt(e.target.value) || 1),
+								})
+							}
+						/>
+					</div>
+					<div className="_dialogButtons">
+						<button
+							className="_button _cancelButton"
+							onClick={() => setShowTableDialog(false)}
+						>
+							Cancel
+						</button>
+						<button className="_button _addButton" onClick={handleTableAdd}>
+							Add Table
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	let linkDialog = undefined;
 	if (showLinkDialog) {
@@ -264,6 +372,7 @@ export function AddComponentPanelButtons({
 							</button>
 						))}
 					</div>
+					{tableDialog}
 					{imageBrowser}
 					{linkDialog}
 					{hasMoreComponents && !showAll && (

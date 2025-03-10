@@ -11,6 +11,7 @@ export function MarkdownParser({
 	text,
 	styles,
 	editable,
+	writable,
 	onChange,
 	className = '',
 }: Readonly<{
@@ -18,6 +19,7 @@ export function MarkdownParser({
 	text: string;
 	styles: any;
 	editable?: boolean;
+	writable?: boolean;
 	onChange?: (text: string) => void;
 	className?: string;
 }>) {
@@ -31,6 +33,13 @@ export function MarkdownParser({
 			return styles;
 		});
 	}, [styles, setKey]);
+
+	const handleInput = (event: React.FormEvent<HTMLDivElement>) => {
+		if (!writable || !onChange) return;
+
+		const content = event.currentTarget.innerText;
+		onChange(content);
+	};
 
 	const lines = text.split('\n');
 	let comps: Array<React.JSX.Element | undefined> = [];
@@ -65,11 +74,41 @@ export function MarkdownParser({
 		}),
 	);
 
+	const handleSelection = () => {
+		const selection = window.getSelection();
+		if (!selection || !selection.rangeCount) return;
+
+		const range = selection.getRangeAt(0);
+		const selectedText = selection.toString();
+
+		if (selectedText) {
+			const rect = range.getBoundingClientRect();
+			const event = new CustomEvent('markdown-selection', {
+				detail: {
+					text: selectedText,
+					position: {
+						x: rect.left + rect.width / 2,
+						y: rect.top,
+					},
+				},
+			});
+			window.dispatchEvent(event);
+		} else {
+			window.dispatchEvent(new CustomEvent('markdown-selection-clear'));
+		}
+	};
+
 	return (
 		<div
 			key={`${key}-${cyrb53(text)}`}
 			className={`_markdown ${className}`}
 			style={styles.markdownContainer ?? {}}
+			contentEditable={writable}
+			onInput={handleInput}
+			onMouseUp={handleSelection}
+			onKeyUp={handleSelection}
+			suppressContentEditableWarning={true}
+			spellCheck={false}
 		>
 			{comps}
 		</div>
