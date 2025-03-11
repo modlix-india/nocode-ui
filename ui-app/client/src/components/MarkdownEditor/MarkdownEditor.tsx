@@ -10,20 +10,19 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { useStateCallback } from '../../util/useStateCallBack';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
 import { styleDefaults } from './markdownEditorStyleProperties';
-import { EditorMode, MEButtonBar } from './components/MEButtonBar';
+import { EditorMode } from './components/MEButtonBar';
 import { FilterPanelButtons } from './components/FilterPanelButtons';
 import { AddComponentPanelButtons } from './components/AddComponentPanelButtons';
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
-import { scrollToCaret, makeTextForImageSelection } from './utils/textManipulation';
+import { scrollToCaret } from './utils/textManipulation';
 import { useMarkdownExport } from './hooks/useMarkdownExport';
 import { useMarkdownHistory } from './hooks/useMarkdownHistory';
 import { useMarkdownFormatting } from './hooks/useMarkdownFormatting';
@@ -73,6 +72,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const [isComponentPanelExpanded, setIsComponentPanelExpanded] = useState(false);
 	const [componentSearchTerm, setComponentSearchTerm] = useState('');
 	const [showExportOptions, setShowExportOptions] = useState(false);
+	const [isDocModeEditing, setIsDocModeEditing] = useState(false);
 
 	const textAreaRef = useRef<any>(null);
 	const wrapperRef = useRef<any>(null);
@@ -123,6 +123,71 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		}
 	});
 
+	const handleKeyDown = (ev: React.KeyboardEvent) => {
+		if (!textAreaRef.current) return;
+
+		const { selectionStart, value } = textAreaRef.current;
+		const currentLine = value.substring(0, selectionStart).split('\n').pop() || '';
+		const isListItem = /^(\s*)([-*]|\d+\.)\s/.test(currentLine);
+		const indentMatch = currentLine.match(/^(\s*)/);
+		const currentIndent = indentMatch ? indentMatch[1].length : 0;
+
+		if (ev.key === 'Tab' && isListItem) {
+			ev.preventDefault();
+			const lines = value.split('\n');
+			const currentLineIndex = value.substring(0, selectionStart).split('\n').length - 1;
+
+			if (ev.shiftKey) {
+				// Decrease indentation
+				if (currentIndent >= 2) {
+					lines[currentLineIndex] = lines[currentLineIndex].substring(2);
+					const newText = lines.join('\n');
+					onChangeText(newText, () => {
+						const newPos = selectionStart - 2;
+						textAreaRef.current.setSelectionRange(newPos, newPos);
+					});
+				}
+			} else {
+				// Increase indentation
+				lines[currentLineIndex] = '  ' + lines[currentLineIndex];
+				const newText = lines.join('\n');
+				onChangeText(newText, () => {
+					const newPos = selectionStart + 2;
+					textAreaRef.current.setSelectionRange(newPos, newPos);
+				});
+			}
+		} else if (ev.key === 'Enter' && !ev.shiftKey && isListItem) {
+			ev.preventDefault();
+			const listMatch = currentLine.match(/^(\s*)([-*]|\d+\.)\s/);
+			if (listMatch) {
+				const [fullMatch, indent, marker] = listMatch;
+				const content = currentLine.substring(fullMatch.length);
+
+				if (content.trim() === '') {
+					// Empty list item - exit list
+					const newText =
+						value.substring(0, selectionStart - fullMatch.length) +
+						'\n' +
+						value.substring(selectionStart);
+					onChangeText(newText);
+				} else {
+					// Create new list item
+					const newMarker = /^\d+\./.test(marker) ? `${parseInt(marker) + 1}.` : marker;
+					const newListItem = `${indent}${newMarker} `;
+					const newText =
+						value.substring(0, selectionStart) +
+						'\n' +
+						newListItem +
+						value.substring(selectionStart);
+					onChangeText(newText, () => {
+						const newPos = selectionStart + newListItem.length + 1;
+						textAreaRef.current.setSelectionRange(newPos, newPos);
+					});
+				}
+			}
+		}
+	};
+
 	useEffect(() => {
 		switch (editType) {
 			case 'editDoc':
@@ -138,6 +203,34 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				setShowFullPreview(false);
 		}
 	}, [editType]);
+
+	useEffect(() => {
+		const handleMarkdownSelection = (e: CustomEvent) => {
+			if (activeTab === 'doc') {
+				setSelectedText(e.detail.text);
+				setFilterPanelPosition(e.detail.position);
+				setIsFilterPanelVisible(true);
+			}
+		};
+
+		const handleMarkdownSelectionClear = () => {
+			if (activeTab === 'doc') {
+				setIsFilterPanelVisible(false);
+				setFilterPanelPosition(null);
+			}
+		};
+
+		window.addEventListener('markdown-selection', handleMarkdownSelection as EventListener);
+		window.addEventListener('markdown-selection-clear', handleMarkdownSelectionClear);
+
+		return () => {
+			window.removeEventListener(
+				'markdown-selection',
+				handleMarkdownSelection as EventListener,
+			);
+			window.removeEventListener('markdown-selection-clear', handleMarkdownSelectionClear);
+		};
+	}, [activeTab]);
 
 	useEffect(() => {
 		if (!textAreaRef.current || !wrapperRef.current) return;
@@ -189,19 +282,37 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		command: string,
 		value?: string | { url: string; text: string },
 	) => {
-		if (!textAreaRef.current) return;
+		if (activeTab === 'write' && textAreaRef.current) {
+			const { selectionStart, selectionEnd } = textAreaRef.current;
+			const { newText, newCursorPos } = formatText(
+				text,
+				command,
+				{ start: selectionStart, end: selectionEnd },
+				value,
+			);
 
-		const { selectionStart, selectionEnd } = textAreaRef.current;
-		const { newText, newCursorPos } = formatText(
-			text,
-			command,
-			{ start: selectionStart, end: selectionEnd },
-			value,
-		);
+			onChangeText(newText, () => {
+				textAreaRef.current.setSelectionRange(newCursorPos, newCursorPos);
+			});
+		} else if (activeTab === 'doc') {
+			const selection = window.getSelection();
+			if (!selection || !selection.rangeCount) return;
 
-		onChangeText(newText, () => {
-			textAreaRef.current.setSelectionRange(newCursorPos, newCursorPos);
-		});
+			const range = selection.getRangeAt(0);
+			if (!range) return;
+
+			setIsDocModeEditing(true);
+
+			const selectedText = selection.toString();
+			const start = text.indexOf(selectedText);
+			const end = start + selectedText.length;
+
+			const { newText } = formatText(text, command, { start, end }, value);
+
+			onChangeText(newText, () => {
+				setIsDocModeEditing(false);
+			});
+		}
 	};
 
 	const onBlurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
@@ -228,6 +339,91 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				props.locationHistory,
 				props.pageDefinition,
 			))();
+	};
+
+	useEffect(() => {
+		if (activeTab === 'doc' && !isDocModeEditing) {
+			const docContent = document.querySelector(
+				`[data-component-key="${componentKey}"] ._markdown`,
+			);
+			if (docContent) {
+				const observer = new MutationObserver(mutations => {
+					mutations.forEach(mutation => {
+						if (mutation.type === 'characterData' || mutation.type === 'childList') {
+							const newContent = docContent.textContent || '';
+							if (newContent !== text) {
+								onChangeText(newContent);
+							}
+						}
+					});
+				});
+
+				observer.observe(docContent, {
+					childList: true,
+					characterData: true,
+					subtree: true,
+				});
+
+				return () => observer.disconnect();
+			}
+		}
+	}, [activeTab, isDocModeEditing, componentKey]);
+
+	const handleComponentAdd = (componentText: string) => {
+		if (activeTab === 'write') {
+			if (!textAreaRef.current) return;
+			const { selectionStart, selectionEnd } = textAreaRef.current;
+			const newText =
+				text.substring(0, selectionStart) + componentText + text.substring(selectionEnd);
+			onChangeText(newText);
+		} else if (activeTab === 'doc') {
+			const selection = window.getSelection();
+			if (!selection || !selection.rangeCount) return;
+
+			const range = selection.getRangeAt(0);
+			const markdownContainer = document.querySelector('._markdown');
+			if (!markdownContainer) return;
+
+			let offset = 0;
+			let currentNode = range.startContainer;
+
+			if (currentNode.nodeType === Node.TEXT_NODE) {
+				offset = range.startOffset;
+
+				while (currentNode.previousSibling) {
+					currentNode = currentNode.previousSibling;
+					if (currentNode.nodeType === Node.TEXT_NODE) {
+						offset += currentNode.textContent?.length || 0;
+					}
+				}
+
+				const parentNode = range.startContainer.parentNode;
+				if (parentNode) {
+					currentNode = parentNode;
+				}
+			}
+
+			while (currentNode && currentNode !== markdownContainer) {
+				let sibling = currentNode.previousSibling as Node | null;
+				while (sibling) {
+					if (sibling.nodeType === Node.TEXT_NODE) {
+						offset += sibling.textContent?.length || 0;
+					} else {
+						const textContent = sibling.textContent;
+						if (textContent) offset += textContent.length;
+					}
+					sibling = sibling.previousSibling;
+				}
+				const parent = currentNode.parentNode;
+				if (!parent) break;
+				currentNode = parent;
+			}
+			const newText =
+				text.substring(0, range.startOffset) +
+				componentText +
+				text.substring(range.endOffset);
+			onChangeText(newText);
+		}
 	};
 
 	let renderingComponent = undefined;
@@ -283,21 +479,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						),
 					);
 				}}
-				onKeyDown={ev => {
-					if (ev.key === 'Tab') {
-						ev.preventDefault();
-						const { selectionStart, selectionEnd } = textAreaRef.current;
-						const newText = `${text.substring(0, selectionStart)}    ${text.substring(
-							selectionEnd,
-						)}`;
-						onChangeText(newText, () =>
-							textAreaRef.current.setSelectionRange(
-								selectionStart + 4,
-								selectionStart + 4,
-							),
-						);
-					}
-				}}
+				onKeyDown={handleKeyDown}
 				onPaste={ev => {
 					ev.preventDefault();
 
@@ -466,10 +648,8 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		return () => document.removeEventListener('keydown', handleKeyboard);
 	}, [text, history, historyIndex]);
 
-	// Modify mode handling to match GitHub style
 	const [showFullPreview, setShowFullPreview] = useState(false);
 
-	// New method to handle tab switching
 	const handleTabChange = (tab: 'write' | 'doc' | 'preview') => {
 		setActiveTab(tab);
 		if (tab === 'preview') {
@@ -480,7 +660,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	};
 
 	return (
-		<div className="comp compMarkdownEditor" style={styleProperties.comp ?? {}}>
+		<div className={`comp compMarkdownEditor ${mode}`} style={styleProperties.comp ?? {}}>
 			<div className="_editorHeader">
 				<div className="_tabContainer">
 					<button
@@ -501,30 +681,27 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 					>
 						Preview
 					</button>
+					{(activeTab === 'write' || activeTab === 'doc') && (
+						<AddComponentPanelButtons
+							onComponentAdd={handleComponentAdd}
+							isExpanded={isComponentPanelExpanded}
+							onExpandChange={setIsComponentPanelExpanded}
+							searchTerm={componentSearchTerm}
+							onSearchChange={setComponentSearchTerm}
+							styleProperties={styleProperties}
+						/>
+					)}
 				</div>
 
-				{(activeTab === 'write' || activeTab === 'doc') && (
+				{activeTab === 'write' && (
 					<>
-						<div className="_toolbarContainer">
-							<AddComponentPanelButtons
-								onComponentAdd={(componentType: string) => {
-									const { selectionStart } = textAreaRef.current;
-									const newText = `${text.substring(0, selectionStart)}${componentType}${text.substring(selectionStart)}`;
-									onChangeText(newText);
-								}}
-								isExpanded={isComponentPanelExpanded}
-								onExpandChange={setIsComponentPanelExpanded}
-								searchTerm={componentSearchTerm}
-								onSearchChange={setComponentSearchTerm}
-								styleProperties={styleProperties}
-							/>
-						</div>
 						<div className="_toolbarContainer">
 							<FilterPanelButtons
 								onFormatClick={handleRichTextCommand}
 								isVisible={true}
 								styleProperties={styleProperties}
 								selectedText={selectedText}
+								isFloating={false}
 							/>
 
 							{showActionButtons === 'true' && (
@@ -581,7 +758,35 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			</div>
 
 			<div className="_editorContainer">
-				{activeTab === 'write' || activeTab === 'doc' ? (
+				{activeTab === 'doc' ? (
+					<>
+						<MarkdownParser
+							componentKey={componentKey}
+							text={text}
+							styles={styleProperties}
+							editable={true}
+							writable={true}
+							data-component-key={componentKey}
+						/>
+						{isFilterPanelVisible && filterPanelPosition && (
+							<div className="_floatingPanelContainer">
+								<FilterPanelButtons
+									onFormatClick={handleRichTextCommand}
+									isVisible={true}
+									styleProperties={styleProperties}
+									selectedText={selectedText}
+									isFloating={true}
+								/>
+							</div>
+						)}
+					</>
+				) : activeTab === 'preview' ? (
+					<MarkdownParser
+						componentKey={componentKey}
+						text={text}
+						styles={styleProperties}
+					/>
+				) : (
 					<textarea
 						ref={textAreaRef}
 						value={text}
@@ -613,19 +818,20 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 								),
 							);
 						}}
-						onKeyDown={ev => {
-							if (ev.key === 'Tab') {
-								ev.preventDefault();
-								const { selectionStart, selectionEnd } = textAreaRef.current;
-								const newText = `${text.substring(0, selectionStart)}    ${text.substring(selectionEnd)}`;
-								onChangeText(newText, () =>
-									textAreaRef.current.setSelectionRange(
-										selectionStart + 4,
-										selectionStart + 4,
-									),
-								);
-							}
-						}}
+						onKeyDown={handleKeyDown}
+						// onKeyDown={ev => {
+						// 	if (ev.key === 'Tab') {
+						// 		ev.preventDefault();
+						// 		const { selectionStart, selectionEnd } = textAreaRef.current;
+						// 		const newText = `${text.substring(0, selectionStart)}    ${text.substring(selectionEnd)}`;
+						// 		onChangeText(newText, () =>
+						// 			textAreaRef.current.setSelectionRange(
+						// 				selectionStart + 4,
+						// 				selectionStart + 4,
+						// 			),
+						// 		);
+						// 	}
+						// }}
 						onPaste={ev => {
 							ev.preventDefault();
 							if (ev.clipboardData.files.length) {
@@ -676,12 +882,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						placeholder="Write your Content here..."
 						spellCheck="false"
 						autoComplete="off"
-					/>
-				) : (
-					<MarkdownParser
-						componentKey={componentKey}
-						text={text}
-						styles={styleProperties}
 					/>
 				)}
 			</div>
