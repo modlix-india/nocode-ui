@@ -129,6 +129,29 @@ function Otp(props: Readonly<ComponentProps>) {
 		return false;
 	};
 
+	const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
+		e.preventDefault();
+		const pastedData = e.clipboardData.getData('text');
+		if(!isValidInputValue(pastedData, valueType)) return;
+		let newValueArray = value?.split('');
+		for(let i=0; i< Math.min(pastedData.length, otpLength-index); i++) {
+				newValueArray[index+i] = pastedData[i];
+		}
+		const newValue = newValueArray.join('')
+		if(bindingPathPath !== undefined) {
+			setData(bindingPathPath, newValue, context?.pageName);
+		}
+		else {
+			setValue(newValue);
+		}
+		if(index + pastedData.length < otpLength) {
+			const target = e.target as HTMLInputElement;
+			if (target.nextSibling instanceof HTMLInputElement)
+				(target.nextSibling as HTMLInputElement).focus();
+	}
+	
+}
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: any) => {
 		setIsDirty(true);
 
@@ -137,8 +160,10 @@ function Otp(props: Readonly<ComponentProps>) {
 		if (isValidInputValue(inputValue, valueType)) {
 			let newValueArray = value?.split('');
 			newValueArray[index] = inputValue === '' ? ' ' : inputValue;
+			const allCleared = newValueArray.every(e => e === ' ');
+			const valueSet = allCleared ? '' : newValueArray.join('');
 			bindingPathPath !== undefined
-				? setData(bindingPathPath, newValueArray.join(''), context?.pageName)
+				? setData(bindingPathPath, valueSet, context?.pageName)
 				: setValue(newValueArray.join(''));
 			if (inputValue === '' && index > 0 && target.previousSibling !== null) {
 				if (target.previousSibling instanceof HTMLInputElement)
@@ -174,12 +199,23 @@ function Otp(props: Readonly<ComponentProps>) {
 				if (nextSibling) {
 					nextSibling?.focus();
 				}
-			} else if (e.key === 'Backspace' && (value === '' || value[index] === ' ')) {
-				e.preventDefault();
-				if (!(target.previousSibling instanceof HTMLInputElement)) return;
-				const prevSibling = target.previousSibling as HTMLInputElement;
-				if (prevSibling) {
-					prevSibling?.focus();
+			}else if (e.key === 'Backspace') {
+				let newValueArray = value?.split('');
+				newValueArray[index] = ' ';
+				const allEmpty = newValueArray.every(char => char === ' ');
+				const newValue = allEmpty ? '' : newValueArray.join('');
+				
+				if (bindingPathPath !== undefined) {
+					setData(bindingPathPath, newValue, context?.pageName);
+				} else {
+					setValue(newValue);
+				}
+			
+				if (index > 0) {
+					e.preventDefault();
+					if (target.previousSibling instanceof HTMLInputElement) {
+						target.previousSibling.focus();
+					}
 				}
 			}
 		};
@@ -229,6 +265,7 @@ function Otp(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	const activeStyles = computedStyles.activeInputBox ?? {};
 	return (
 		<div
 			className={`comp compOtp ${designType} ${colorScheme} ${readOnly ? '_disabled' : ''} ${
@@ -250,7 +287,8 @@ function Otp(props: Readonly<ComponentProps>) {
 					onFocus={() => handleFocus(index)}
 					onBlur={handleBlur}
 					onKeyDown={handleKeyDown(index)}
-					style={inputStyle}
+					onPaste={e => handlePaste(e,index)}
+					style={focusBoxIndex === index ? activeStyles : inputStyle}
 					className={`_inputBox ${
 						focusBoxIndex === index && focusBoxIndex != -1 ? '_isActive' : ''
 					}${
@@ -383,6 +421,12 @@ const component: Component = {
 			name: 'inputBox',
 			displayName: 'Input Box',
 			description: 'Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'activeInputBox',
+			displayName: 'Active Input Box',
+			description: 'Active Input Box',
 			icon: 'fa-solid fa-box',
 		},
 		{
