@@ -102,7 +102,7 @@ ${PREFIX} ._toolTip {
 	white-space: nowrap;
 	top: -30px;
 	transform: translateX(-50%);
-	display: none;
+	
 }
 
 ${PREFIX} ._volumeControls {

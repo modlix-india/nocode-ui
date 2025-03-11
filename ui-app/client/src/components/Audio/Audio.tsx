@@ -24,12 +24,13 @@ function Audio(props: Readonly<ComponentProps>) {
 			loop,
 			muted: mutedProperty,
 			showTime,
-			autoUnMuteAfterPlaying,
-			showAudioControls,
+			showVolumeControls,
 			showSeekBar,
 			showPlayBackSpeed,
 			onHoverVolumeControl,
 			seekTimeTextOnHover,
+			showPlaypause,
+			showRewindAndFastForward,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -212,6 +213,21 @@ function Audio(props: Readonly<ComponentProps>) {
 		setToggleToolTip(false);
 	};
 
+	const rewind = () => {
+		if (audio.current) {
+			audio.current.currentTime = Math.max(0, audio.current.currentTime - 5);
+		}
+	};
+
+	const fastForward = () => {
+		if (audio.current) {
+			audio.current.currentTime = Math.min(
+				audio.current.duration,
+				audio.current.currentTime + 5,
+			);
+		}
+	};
+
 	const playIcon1 = (
 		<div
 			className="_playIcon _playIconIcon"
@@ -355,6 +371,7 @@ function Audio(props: Readonly<ComponentProps>) {
 				controls={audioControls}
 				preload="metadata"
 				autoPlay={autoPlay}
+				muted={muted}
 				loop={loop}
 				ref={audio}
 				key={getSrcUrl(src)}
@@ -362,8 +379,10 @@ function Audio(props: Readonly<ComponentProps>) {
 				onLoadedMetadata={initializeAudio}
 				onTimeUpdate={updateTimeElapsed}
 				style={resolvedStyles.player ?? {}}
+				onChange={volumeIconHandle}
+				onClick={handlePlayPause}
 				onPlay={() => {
-					if (!isFirstTimePlay || !autoPlay || !autoUnMuteAfterPlaying) return;
+					if (!isFirstTimePlay || !autoPlay) return;
 					setTimeout(() => {
 						setMuted(false);
 						setIsFirstTimePlay(false);
@@ -373,13 +392,15 @@ function Audio(props: Readonly<ComponentProps>) {
 				<source src={getSrcUrl(src)} type={type} />
 				Your browser does not support HTML5 audio.
 			</audio>
-			<div
-				className="_playPauseButton"
-				onClick={handlePlayPause}
-				style={resolvedStyles.playPauseButton}
-			>
-				{playPauseEnd === 'play' ? playIcon[audioDesign] : pauseIcon[audioDesign]}
-			</div>
+			{showPlaypause && (
+				<div
+					className="_playPauseButton"
+					onClick={handlePlayPause}
+					style={resolvedStyles.playPauseButton}
+				>
+					{playPauseEnd === 'play' ? playIcon[audioDesign] : pauseIcon[audioDesign]}
+				</div>
+			)}
 			{showTime && (
 				<div className="_time">
 					<time
@@ -450,7 +471,7 @@ function Audio(props: Readonly<ComponentProps>) {
 					)}
 				</div>
 			)}
-			{showAudioControls && (
+			{showVolumeControls && (
 				<div
 					className="_volumeControls"
 					onMouseEnter={() => onHoverVolumeControl && setShowVolumeSlider(true)}
@@ -485,6 +506,36 @@ function Audio(props: Readonly<ComponentProps>) {
 							</option>
 						))}
 					</select>
+				</div>
+			)}
+			{showRewindAndFastForward && (
+				<div className="_rewind" onClick={rewind} style={resolvedStyles.rewind ?? {}}>
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path d="M11 12L21 18V6L11 12ZM3 12L13 18V6L3 12Z" fill="currentColor" />
+					</svg>
+				</div>
+			)}
+			{showRewindAndFastForward && (
+				<div
+					className="_fastForward"
+					onClick={fastForward}
+					style={resolvedStyles.fastForward ?? {}}
+				>
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+					>
+						<path d="M13 12L3 18V6L13 12ZM21 12L11 18V6L21 12Z" fill="currentColor" />
+					</svg>
 				</div>
 			)}
 		</div>
@@ -582,6 +633,18 @@ const component: Component = {
 			name: 'playBackSpeed',
 			displayName: 'Play Back Speed',
 			description: 'Play Back Speed',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'rewind',
+			displayName: 'Rewind',
+			description: 'Rewind',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'fastForward',
+			displayName: 'Fast Forward',
+			description: 'Fast Forward',
 			icon: 'fa fa-solid fa-box',
 		},
 	],
