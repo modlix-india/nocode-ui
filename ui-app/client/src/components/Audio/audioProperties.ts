@@ -111,13 +111,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-	{
-		name: 'autoUnMuteAfterPlaying',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Auto Unmute After Playing',
-		defaultValue: false,
-		group: ComponentPropertyGroup.BASIC,
-	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
@@ -139,12 +132,6 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	timeText: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	seekTimeTextOnHover: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
