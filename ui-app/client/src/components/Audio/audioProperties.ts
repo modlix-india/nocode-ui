@@ -82,6 +82,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'showPlayBackSpeed',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show PlayBack Speed',
+		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'onHoverVolumeControl',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Volume Control on Hover',
+		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'seekTimeTextOnHover',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Time Text on Hover',
+		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'audioDesign',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'audio Player Design',
@@ -132,6 +153,12 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	timeText: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	seekTimeTextOnHover: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
