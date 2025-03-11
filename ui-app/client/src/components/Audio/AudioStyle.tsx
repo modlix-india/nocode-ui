@@ -32,12 +32,16 @@ export default function AudioStyle({
 		` 
     ${PREFIX} {
       position:relative;
-	  height:50px
+	  height:50px;
+	  display: flex;
+	  justify-content: center;
+	  align-items: center;
    }
-   ${PREFIX} audio {
+    ${PREFIX} audio {
     width: 100%;
     height: 100%;
-  }
+    }
+
      ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="AudioStyle">{css}</style>;
 }
