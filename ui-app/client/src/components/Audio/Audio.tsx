@@ -31,6 +31,7 @@ function Audio(props: Readonly<ComponentProps>) {
 			seekTimeTextOnHover,
 			showPlaypause,
 			showRewindAndFastForward,
+			volumeSliderPosition,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -473,7 +474,7 @@ function Audio(props: Readonly<ComponentProps>) {
 			)}
 			{showVolumeControls && (
 				<div
-					className="_volumeControls"
+					className={`_volumeControls ${volumeSliderPosition}`}
 					onMouseEnter={() => onHoverVolumeControl && setShowVolumeSlider(true)}
 					onMouseLeave={() => onHoverVolumeControl && setShowVolumeSlider(false)}
 				>

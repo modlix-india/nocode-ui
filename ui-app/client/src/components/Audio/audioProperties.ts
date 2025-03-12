@@ -132,6 +132,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'volumeSliderPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Volume Slider Position',
+		description: 'position of the volume slider',
+		defaultValue: '_leftHorizontal',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: '_leftHorizontal',
+				displayName: 'left Horizontal',
+				description: 'left Horizontal',
+			},
+			{
+				name: '_rightHorizontal',
+				displayName: 'right Horizontal',
+				description: 'right Horizontal',
+			},
+			{
+				name: '_leftVertical',
+				displayName: 'left Vertical',
+				description: 'left Vertical',
+			},
+			{
+				name: '_rightVertical',
+				displayName: 'right Vertical',
+				description: 'right Vertical',
+			},
+		],
+	},
 ];
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
