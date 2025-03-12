@@ -204,6 +204,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.onSelect,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	{
+		name: 'allowMultipleSelection',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Allow Multiple Selection',
+		description: 'Allow multiple files to be selected and if there is an edit option',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
