@@ -21,7 +21,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-
+	{
+		name: 'leftIconTitle',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Left Icon Title',
+		description: 'Title to be shown on the left icon.',
+		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.LARGE_TEXT,
+	},
 	{
 		name: 'rightIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -29,6 +36,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Icon to be shown on the right side.',
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'rightIconTitle',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Right Icon Title',
+		description: 'Title to be shown on the right icon.',
+		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.LARGE_TEXT,
 	},
 	{
 		name: 'sortKey',

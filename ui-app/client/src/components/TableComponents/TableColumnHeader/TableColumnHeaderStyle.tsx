@@ -41,6 +41,7 @@ export default function TableColumnStyle({
 			align-items: center;
 			justify-content: center;
 			width: 100%;
+			position: relative;
 		}
 
 		${PREFIX} ._rightIcon {
@@ -53,6 +54,38 @@ export default function TableColumnStyle({
 			position: relative;
 			padding-left: 5px;
 			padding-right: 5px;
+		}
+
+		${PREFIX} ._titleContainer {
+			display: none;
+		}
+
+		${PREFIX} ._headerContainer ._leftIcon:hover ._titleContainer,
+		${PREFIX} ._headerContainer ._rightIcon:hover ._titleContainer {
+			all: initial;
+			position: absolute;
+			bottom: 30px;
+			display: block;
+			padding: 3px 6px;
+			border-radius: 2px;
+			background: #000;
+			color: #fff;
+			font-size: 12px;
+			white-space: pre;
+			z-index: 1;
+			transform: translateX(-50%);
+		}
+		
+		${PREFIX} ._headerContainer ._leftIcon:hover ._titleContainer:after,
+		${PREFIX} ._headerContainer ._rightIcon:hover ._titleContainer:after {
+			content: '';
+			position: absolute;
+			left: 50%;
+			bottom: -15px;
+			display: block;
+			color: #fff;
+			border: 8px solid transparent;	
+			border-top: 8px solid #000;
 		}
 
 		.comp.compTable._design1 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
