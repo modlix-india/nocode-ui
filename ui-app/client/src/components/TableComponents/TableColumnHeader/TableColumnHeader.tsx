@@ -132,7 +132,12 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		leftIconComp = (
 			<i className={`_leftIcon ${leftIcon}`}>
 				<SubHelperComponent definition={definition} subComponentName="leftIcon" />
-				<span className="_titleContainer">{leftIconTitle}</span>
+				{leftIconTitle ? (
+					<span className="_titleContainer" style={styleProperties.tooltipContainer}>
+						{leftIconTitle}
+						<span className="_titleTriangle" style={styleProperties.tooltipTriangle} />
+					</span>
+				) : null}
 			</i>
 		);
 	}
@@ -198,7 +203,15 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			<>
 				<i className={`_rightIcon ${rightIcon}`}>
 					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
-					<span className="_titleContainer">{rightIconTitle}</span>
+					{rightIconTitle ? (
+						<span className="_titleContainer" style={styleProperties.tooltipContainer}>
+							{rightIconTitle}
+							<span
+								className="_titleTriangle"
+								style={styleProperties.tooltipTriangle}
+							/>
+						</span>
+					) : null}
 				</i>
 				{rightIconComp}
 			</>

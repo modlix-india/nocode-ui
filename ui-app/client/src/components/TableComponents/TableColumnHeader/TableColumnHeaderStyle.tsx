@@ -66,26 +66,40 @@ export default function TableColumnStyle({
 			position: absolute;
 			bottom: 30px;
 			display: block;
-			padding: 3px 6px;
-			border-radius: 2px;
-			background: #000;
-			color: #fff;
-			font-size: 12px;
 			white-space: pre;
 			z-index: 1;
 			transform: translateX(-50%);
 		}
 		
-		${PREFIX} ._headerContainer ._leftIcon:hover ._titleContainer:after,
-		${PREFIX} ._headerContainer ._rightIcon:hover ._titleContainer:after {
+		${PREFIX} ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,
+		${PREFIX} ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle {
 			content: '';
 			position: absolute;
 			left: 50%;
-			bottom: -15px;
+			bottom: -6px;
 			display: block;
-			color: #fff;
-			border: 8px solid transparent;	
-			border-top: 8px solid #000;
+			width: 15px;
+			height: 15px;
+			clip-path: polygon(100% 100%, 0% 100%, 100% 0%);
+			transform: rotate(45deg);
+		}
+
+		${PREFIX}:first-child ._headerContainer ._leftIcon:hover ._titleContainer {
+			transform: translateX(-10%);
+		}
+
+		${PREFIX}:first-child ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle {
+			left: 10%;
+		}
+
+		${PREFIX}:last-child ._headerContainer ._rightIcon:hover ._titleContainer {
+			transform: translateX(-100%);
+    		margin-left: 90%;
+		}
+
+		${PREFIX}:last-child ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle {
+			left: 100%;
+			margin-left: -10%;
 		}
 
 		.comp.compTable._design1 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(
