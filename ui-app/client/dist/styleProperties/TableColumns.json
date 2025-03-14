@@ -6,6 +6,7 @@
 		"dv": "60px",
 		"de": "Design 1 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design1 ._row",
 		"np": true
 	},
 	{
@@ -15,6 +16,7 @@
 		"dv": "60px",
 		"de": "Design 2 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design2 ._row",
 		"np": true
 	},
 	{
@@ -24,6 +26,7 @@
 		"dv": "68px",
 		"de": "Design 3 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design3 ._row",
 		"np": true
 	},
 	{
@@ -33,6 +36,7 @@
 		"dv": "68px",
 		"de": "Design 4 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design4 ._row",
 		"np": true
 	},
 	{
@@ -42,6 +46,7 @@
 		"dv": "60px",
 		"de": "Design 5 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design5 ._row",
 		"np": true
 	},
 	{
@@ -51,6 +56,7 @@
 		"dv": "60px",
 		"de": "Design 6 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design6 ._row",
 		"np": true
 	},
 	{
@@ -60,6 +66,7 @@
 		"dv": "40px",
 		"de": "Design 7 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design7 ._row",
 		"np": true
 	},
 	{
@@ -69,6 +76,7 @@
 		"dv": "40px",
 		"de": "Design 8 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design8 ._row",
 		"np": true
 	},
 	{
@@ -78,6 +86,7 @@
 		"dv": "60px",
 		"de": "Design 9 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design9 ._row",
 		"np": true
 	},
 	{
@@ -87,6 +96,7 @@
 		"dv": "60px",
 		"de": "Design 10 Row Height",
 		"cp": "height",
+		"sel": ".comp.compTable._design10 ._row",
 		"np": true
 	},
 
@@ -96,7 +106,8 @@
 		"n": "design1RowBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 1 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design1 ._row",
 		"np": true
 	},
 	{
@@ -105,7 +116,8 @@
 		"n": "design2RowBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 2 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design2 ._row",
 		"np": true
 	},
 	{
@@ -114,7 +126,8 @@
 		"n": "design3RowBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 3 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design3 ._row",
 		"np": true
 	},
 	{
@@ -123,7 +136,8 @@
 		"n": "design4RowBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 4 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 ._row",
 		"np": true
 	},
 	{
@@ -131,7 +145,8 @@
 		"dn": "Design 5 Row Background Color",
 		"n": "design5RowBackgroundColor",
 		"de": "Design 5 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 ._row",
 		"np": true
 	},
 	{
@@ -139,7 +154,8 @@
 		"dn": "Design 6 Row Background Color",
 		"n": "design6RowBackgroundColor",
 		"de": "Design 6 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 ._row",
 		"np": true
 	},
 	{
@@ -148,7 +164,8 @@
 		"n": "design7RowBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 7 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 ._row",
 		"np": true
 	},
 	{
@@ -157,7 +174,8 @@
 		"n": "design8RowBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 8 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 ._row",
 		"np": true
 	},
 	{
@@ -166,7 +184,8 @@
 		"n": "design9RowBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 9 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 ._row",
 		"np": true
 	},
 	{
@@ -175,7 +194,8 @@
 		"n": "design10RowBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 10 Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 ._row",
 		"np": true
 	},
 
@@ -185,7 +205,8 @@
 		"n": "design1EvenRowBackgroundColor",
 		"dv": "<backgroundColorNine>",
 		"de": "Design 1 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design1 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -194,7 +215,8 @@
 		"n": "design2EvenRowBackgroundColor",
 		"dv": "<backgroundColorNine>",
 		"de": "Design 2 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design2 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -202,7 +224,8 @@
 		"dn": "Design 3 Even Row Background Color",
 		"n": "design3EvenRowBackgroundColor",
 		"de": "Design 3 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design3 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -210,7 +233,8 @@
 		"dn": "Design 4 Even Row Background Color",
 		"n": "design4EvenRowBackgroundColor",
 		"de": "Design 4 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -218,7 +242,8 @@
 		"dn": "Design 5 Even Row Background Color",
 		"n": "design5EvenRowBackgroundColor",
 		"de": "Design 5 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -226,7 +251,8 @@
 		"dn": "Design 6 Even Row Background Color",
 		"n": "design6EvenRowBackgroundColor",
 		"de": "Design 6 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -234,7 +260,8 @@
 		"dn": "Design 7 Even Row Background Color",
 		"n": "design7EvenRowBackgroundColor",
 		"de": "Design 7 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -242,7 +269,8 @@
 		"dn": "Design 8 Even Row Background Color",
 		"n": "design8EvenRowBackgroundColor",
 		"de": "Design 8 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -251,7 +279,8 @@
 		"n": "design9EvenRowBackgroundColor",
 		"dv": "<backgroundColorNine>",
 		"de": "Design 9 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 ._row:nth-child(even)",
 		"np": true
 	},
 	{
@@ -259,7 +288,8 @@
 		"dn": "Design 10 Even Row Background Color",
 		"n": "design10EvenRowBackgroundColor",
 		"de": "Design 10 Even Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 ._row:nth-child(even)",
 		"np": true
 	},
 
@@ -268,7 +298,8 @@
 		"dn": "Design 1 Second Row Background Color",
 		"n": "design1SecondRowBackgroundColor",
 		"de": "Design 1 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design1 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
@@ -276,16 +307,17 @@
 		"dn": "Design 2 Second Row Background Color",
 		"n": "design2SecondRowBackgroundColor",
 		"de": "Design 2 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design2 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
 		"gn": "Second Row Background Color",
 		"dn": "Design 3 Second Row Background Color",
 		"n": "design3SecondRowBackgroundColor",
-		"dv": "<backgroundColorNine>",
 		"de": "Design 3 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design3 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
@@ -293,7 +325,8 @@
 		"dn": "Design 4 Second Row Background Color",
 		"n": "design4SecondRowBackgroundColor",
 		"de": "Design 4 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
@@ -301,7 +334,8 @@
 		"dn": "Design 5 Second Row Background Color",
 		"n": "design5SecondRowBackgroundColor",
 		"de": "Design 5 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
@@ -309,16 +343,17 @@
 		"dn": "Design 6 Second Row Background Color",
 		"n": "design6SecondRowBackgroundColor",
 		"de": "Design 6 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
 		"gn": "Second Row Background Color",
 		"dn": "Design 7 Second Row Background Color",
 		"n": "design7SecondRowBackgroundColor",
-		"dv": "<backgroundColorNine>",
 		"de": "Design 7 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
@@ -326,7 +361,8 @@
 		"dn": "Design 8 Second Row Background Color",
 		"n": "design8SecondRowBackgroundColor",
 		"de": "Design 8 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
@@ -334,7 +370,8 @@
 		"dn": "Design 9 Second Row Background Color",
 		"n": "design9SecondRowBackgroundColor",
 		"de": "Design 9 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 ._row:nth-child(3n+1)",
 		"np": true
 	},
 	{
@@ -342,7 +379,8 @@
 		"dn": "Design 10 Second Row Background Color",
 		"n": "design10SecondRowBackgroundColor",
 		"de": "Design 10 Second Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 ._row:nth-child(3n+1)",
 		"np": true
 	},
 
@@ -351,7 +389,8 @@
 		"dn": "Design 1 Third Row Background Color",
 		"n": "design1ThirdRowBackgroundColor",
 		"de": "Design 1 Third Row Background Color",
-		"cp": "background-color",
+		"sel": ".comp.compTable._design1 ._row:nth-child(3n+2)",
+		"cp": "background",
 		"np": true
 	},
 	{
@@ -359,16 +398,17 @@
 		"dn": "Design 2 Third Row Background Color",
 		"n": "design2ThirdRowBackgroundColor",
 		"de": "Design 2 Third Row Background Color",
-		"cp": "background-color",
+		"sel": ".comp.compTable._design2 ._row:nth-child(3n+2)",
+		"cp": "background",
 		"np": true
 	},
 	{
 		"gn": "Third Row Background Color",
 		"dn": "Design 3 Third Row Background Color",
 		"n": "design3ThirdRowBackgroundColor",
-		"dv": "<backgroundColorNine>",
 		"de": "Design 3 Third Row Background Color",
-		"cp": "background-color",
+		"sel": ".comp.compTable._design3 ._row:nth-child(3n+2)",
+		"cp": "background",
 		"np": true
 	},
 	{
@@ -376,7 +416,8 @@
 		"dn": "Design 4 Third Row Background Color",
 		"n": "design4ThirdRowBackgroundColor",
 		"de": "Design 4 Third Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 ._row:nth-child(3n+2)",
 		"np": true
 	},
 	{
@@ -384,7 +425,8 @@
 		"dn": "Design 5 Third Row Background Color",
 		"n": "design5ThirdRowBackgroundColor",
 		"de": "Design 5 Third Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 ._row:nth-child(3n+2)",
 		"np": true
 	},
 	{
@@ -392,16 +434,17 @@
 		"dn": "Design 6 Third Row Background Color",
 		"n": "design6ThirdRowBackgroundColor",
 		"de": "Design 6 Third Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 ._row:nth-child(3n+2)",
 		"np": true
 	},
 	{
 		"gn": "Third Row Background Color",
 		"dn": "Design 7 Third Row Background Color",
 		"n": "design7ThirdRowBackgroundColor",
-		"dv": "<backgroundColorNine>",
 		"de": "Design 7 Third Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 ._row:nth-child(3n+2)",
 		"np": true
 	},
 	{
@@ -409,7 +452,8 @@
 		"dn": "Design 8 Third Row Background Color",
 		"n": "design8ThirdRowBackgroundColor",
 		"de": "Design 8 Third Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 ._row:nth-child(3n+2)",
 		"np": true
 	},
 	{
@@ -417,7 +461,8 @@
 		"dn": "Design 9 Third Row Background Color",
 		"n": "design9ThirdRowBackgroundColor",
 		"de": "Design 9 Third Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 ._row:nth-child(3n+2)",
 		"np": true
 	},
 	{
@@ -425,7 +470,8 @@
 		"dn": "Design 10 Third Row Background Color",
 		"n": "design10ThirdRowBackgroundColor",
 		"de": "Design 10 Third Row Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 ._row:nth-child(3n+2)",
 		"np": true
 	},
 
@@ -435,7 +481,7 @@
 		"n": "design1RowHoverBackgroundColor",
 		"dv": "<backgroundHoverColorNine>",
 		"de": "Design 1 Row Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design1 ._row._dataRow:hover, .comp.compTable._design1 ._row._dataRow._selected",
 		"np": true
 	},
@@ -444,7 +490,7 @@
 		"dn": "Design 2 Row Hover Background Color",
 		"n": "design2RowHoverBackgroundColor",
 		"de": "Design 2 Row Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design2 ._row._dataRow:hover, .comp.compTable._design2 ._row._dataRow._selected",
 		"np": true
 	},
@@ -454,7 +500,7 @@
 		"n": "design3RowHoverBackgroundColor",
 		"dv": "<backgroundHoverColorNine>",
 		"de": "Design 3 Row HoverBackground Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design3 ._row._dataRow:hover, .comp.compTable._design3 ._row._dataRow._selected",
 		"np": true
 	},
@@ -463,7 +509,7 @@
 		"dn": "Design 4 Row HoverBackground Color",
 		"n": "design4RowHoverBackgroundColor",
 		"de": "Design 4 Row HoverBackground Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design4 ._row._dataRow:hover, .comp.compTable._design4 ._row._dataRow._selected",
 		"np": true
 	},
@@ -472,7 +518,7 @@
 		"dn": "Design 5 Row Hover Background Color",
 		"n": "design5RowHoverBackgroundColor",
 		"de": "Design 5 Row Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design5 ._row._dataRow:hover, .comp.compTable._design5 ._row._dataRow._selected",
 		"np": true
 	},
@@ -481,7 +527,7 @@
 		"dn": "Design 6 Row Hover Background Color",
 		"n": "design6RowHoverBackgroundColor",
 		"de": "Design 6 Row Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design6 ._row._dataRow:hover, .comp.compTable._design6 ._row._dataRow._selected",
 		"np": true
 	},
@@ -491,7 +537,7 @@
 		"n": "design7RowHoverBackgroundColor",
 		"dv": "<backgroundHoverColorNine>",
 		"de": "Design 7 Row Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design7 ._row._dataRow:hover, .comp.compTable._design7 ._row._dataRow._selected",
 		"np": true
 	},
@@ -501,7 +547,7 @@
 		"n": "design8RowHoverBackgroundColor",
 		"dv": "<backgroundHoverColorNine>",
 		"de": "Design 8 Row Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design8 ._row._dataRow:hover, .comp.compTable._design8 ._row._dataRow._selected",
 		"np": true
 	},
@@ -511,7 +557,7 @@
 		"n": "design9RowHoverBackgroundColor",
 		"dv": "<backgroundHoverColorNine>",
 		"de": "Design 9 Row Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9 ._row._dataRow:hover, .comp.compTable._design9 ._row._dataRow._selected",
 		"np": true
 	},
@@ -521,7 +567,7 @@
 		"n": "design10RowHoverBackgroundColor",
 		"dv": "<backgroundHoverColorNine>",
 		"de": "Design 10 Row Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10 ._row._dataRow:hover, .comp.compTable._design10 ._row._dataRow._selected",
 		"np": true
 	},
@@ -624,100 +670,99 @@
 
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 1 Row Hover Border Radius",
-		"n": "design1RowHoverBorderRadius",
-		"de": "Design 1 Row Hover Border Radius",
+		"dn": "Design 1 Row  Border Radius",
+		"n": "design1RowBorderRadius",
+		"de": "Design 1 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design1 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 2 Row Hover Border Radius",
-		"n": "design2RowHoverBorderRadius",
+		"dn": "Design 2 Row  Border Radius",
+		"n": "design2RowBorderRadius",
 		"dv": "8px 8px 8px  8px",
-		"de": "Design 2 Row Hover Border Radius",
+		"de": "Design 2 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design2 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 3 Row Hover Border Radius",
-		"n": "design3RowHoverBorderRadius",
-		"de": "Design 3 Row Hover Border Radius",
+		"dn": "Design 3 Row  Border Radius",
+		"n": "design3RowBorderRadius",
+		"de": "Design 3 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design3 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 4 Row Hover Border Radius",
-		"n": "design4RowHoverBorderRadius",
+		"dn": "Design 4 Row  Border Radius",
+		"n": "design4RowBorderRadius",
 		"dv": "8px 8px 8px  8px",
-		"de": "Design 4 Row Hover Border Radius",
+		"de": "Design 4 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design4 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 5 Row Hover Border Radius",
-		"n": "design5RowHoverBorderRadius",
+		"dn": "Design 5 Row  Border Radius",
+		"n": "design5RowBorderRadius",
 		"dv": "8px 8px 8px  8px",
-		"de": "Design 5 Row Hover Border Radius",
+		"de": "Design 5 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design5 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 6 Row Hover Border Radius",
-		"n": "design6RowHoverBorderRadius",
+		"dn": "Design 6 Row  Border Radius",
+		"n": "design6RowBorderRadius",
 		"dv": "8px 8px 8px  8px",
-		"de": "Design 6 Row Hover Border Radius",
+		"de": "Design 6 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design6 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 7 Row Hover Border Radius",
-		"n": "design7RowHoverBorderRadius",
-		"de": "Design 7 Row Hover Border Radius",
+		"dn": "Design 7 Row  Border Radius",
+		"n": "design7RowBorderRadius",
+		"de": "Design 7 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design7 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 8 Row Hover Border Radius",
-		"n": "design8RowHoverBorderRadius",
+		"dn": "Design 8 Row  Border Radius",
+		"n": "design8RowBorderRadius",
 		"dv": "8px 8px 8px  8px",
-		"de": "Design 8 Row Hover Border Radius",
+		"de": "Design 8 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design8 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 9 Row Hover Border Radius",
-		"n": "design9RowHoverBorderRadius",
-		"de": "Design 9 Row Hover Border Radius",
+		"dn": "Design 9 Row  Border Radius",
+		"n": "design9RowBorderRadius",
+		"de": "Design 9 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design9 .comp.compTableColumns",
 		"np": true
 	},
 	{
 		"gn": "Row Border Radius",
-		"dn": "Design 10 Row Hover Border Radius",
-		"n": "design10RowHoverBorderRadius",
-		"de": "Design 10 Row Hover Border Radius",
+		"dn": "Design 10 Row  Border Radius",
+		"n": "design10RowBorderRadius",
+		"de": "Design 10 Row  Border Radius",
 		"cp": "border-radius",
 		"sel": ".comp.compTable._design10 .comp.compTableColumns",
 		"np": true
 	},
-
 	{
 		"gn": "Row Overflow",
 		"dn": "Design 1 Row Overflow",
@@ -907,7 +952,7 @@
 		"n": "rowHoverBackgroundColorPrimaryDesign2",
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Row Hover Background Color Primary Design2",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design2._primary ._row._dataRow:hover, .comp.compTable._design2._primary ._row._dataRow._selected",
 		"np": true
 	},
@@ -917,7 +962,7 @@
 		"n": "rowHoverBackgroundColorSecondaryDesign2",
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Row Hover Background Color SecondaryDesign2",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design2._secondary ._row._dataRow:hover, .comp.compTable._design2._secondary ._row._dataRow._selected",
 		"np": true
 	},
@@ -927,7 +972,7 @@
 		"n": "rowHoverBackgroundColorTertiaryDesign2",
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Row Hover Background Color TertiaryDesign2",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design2._teritiary ._row._dataRow:hover, .comp.compTable._design2._teritiary ._row._dataRow._selected",
 		"np": true
 	},
@@ -937,7 +982,7 @@
 		"n": "rowHoverBackgroundColorQuaternaryDesign2",
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Row Hover Background Color QuaternaryDesign2",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design2._quaternary ._row._dataRow:hover, .comp.compTable._design2._quaternary ._row._dataRow._selected",
 		"np": true
 	},
@@ -947,7 +992,7 @@
 		"n": "rowHoverBackgroundColorQuinaryDesign2",
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Row Hover Background Color QuinaryDesign2",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design2._quinary ._row._dataRow:hover, .comp.compTable._design2._quinary ._row._dataRow._selected",
 		"np": true
 	},
@@ -957,7 +1002,8 @@
 		"dn": "Design 1 Column Background Color",
 		"n": "design1ColumnBackgroundColor",
 		"de": "Design 1 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design1 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -965,7 +1011,8 @@
 		"dn": "Design 2 Column Background Color",
 		"n": "design2ColumnBackgroundColor",
 		"de": "Design 2 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design2 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -973,7 +1020,8 @@
 		"dn": "Design 3 Column Background Color",
 		"n": "design3ColumnBackgroundColor",
 		"de": "Design 3 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design3 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -981,7 +1029,8 @@
 		"dn": "Design 4 Column Background Color",
 		"n": "design4ColumnBackgroundColor",
 		"de": "Design 4 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -990,7 +1039,8 @@
 		"n": "design5ColumnBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 5 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -999,7 +1049,8 @@
 		"n": "design6ColumnBackgroundColor",
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 6 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1007,7 +1058,8 @@
 		"dn": "Design 7 Column Background Color",
 		"n": "design7ColumnBackgroundColor",
 		"de": "Design 7 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1015,7 +1067,8 @@
 		"dn": "Design 8 Column Background Color",
 		"n": "design8ColumnBackgroundColor",
 		"de": "Design 8 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1023,7 +1076,8 @@
 		"dn": "Design 9 Column Background Color",
 		"n": "design9ColumnBackgroundColor",
 		"de": "Design 9 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1032,7 +1086,8 @@
 		"dv": "<backgroundColorSeven>",
 		"n": "design10ColumnBackgroundColor",
 		"de": "Design 10 Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 .comp.compTableColumn",
 		"np": true
 	},
 
@@ -1041,7 +1096,8 @@
 		"dn": "Design 1 Even Column Background Color",
 		"n": "design1EvenColumnBackgroundColor",
 		"de": "Design 1 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design1 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1049,7 +1105,8 @@
 		"dn": "Design 2 Even Column Background Color",
 		"n": "design2EvenColumnBackgroundColor",
 		"de": "Design 2 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design2 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1057,7 +1114,8 @@
 		"dn": "Design 3 Even Column Background Color",
 		"n": "design3EvenColumnBackgroundColor",
 		"de": "Design 3 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design3 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1065,7 +1123,8 @@
 		"dn": "Design 4 Even Column Background Color",
 		"n": "design4EvenColumnBackgroundColor",
 		"de": "Design 4 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design4 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1074,7 +1133,8 @@
 		"n": "design5EvenColumnBackgroundColor",
 		"dv": "<backgroundColorNine>",
 		"de": "Design 5 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design5 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1083,7 +1143,8 @@
 		"n": "design6EvenColumnBackgroundColor",
 		"dv": "<backgroundColorNine>",
 		"de": "Design 6 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design6 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1091,7 +1152,8 @@
 		"dn": "Design 7 Even Column Background Color",
 		"n": "design7EvenColumnBackgroundColor",
 		"de": "Design 7 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design7 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1099,7 +1161,8 @@
 		"dn": "Design 8 Even Column Background Color",
 		"n": "design8EvenColumnBackgroundColor",
 		"de": "Design 8 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design8 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1107,7 +1170,8 @@
 		"dn": "Design 9 Even Column Background Color",
 		"n": "design9EvenColumnBackgroundColor",
 		"de": "Design 9 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design9 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1116,7 +1180,8 @@
 		"n": "design10EvenColumnBackgroundColor",
 		"dv": "<backgroundColorNine>",
 		"de": "Design 10 Even Column Background Color",
-		"cp": "background-color",
+		"cp": "background",
+		"sel": ".comp.compTable._design10 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 
@@ -1125,7 +1190,7 @@
 		"dn": "Design 1 Column Hover Background Color",
 		"n": "design1ColumnHoverBackgroundColor",
 		"de": "Design 1 Column Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design1 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design1 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1134,7 +1199,7 @@
 		"dn": "Design 2 Column Hover Background Color",
 		"n": "design2ColumnHoverBackgroundColor",
 		"de": "Design 2 Column Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design2 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design2 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1143,7 +1208,7 @@
 		"dn": "Design 3 Column HoverBackground Color",
 		"n": "design3ColumnHoverBackgroundColor",
 		"de": "Design 3 Column HoverBackground Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design3 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design3 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1152,7 +1217,7 @@
 		"dn": "Design 4 Column HoverBackground Color",
 		"n": "design4ColumnHoverBackgroundColor",
 		"de": "Design 4 Column HoverBackground Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design4 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design4 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1162,7 +1227,7 @@
 		"n": "design5ColumnHoverBackgroundColor",
 		"dv": "<backgroundHoverColorNine>",
 		"de": "Design 5 Column Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design5 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design5 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1171,7 +1236,7 @@
 		"dn": "Design 6 Column Hover Background Color",
 		"n": "design6ColumnHoverBackgroundColor",
 		"de": "Design 6 Column Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design6 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design6 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1180,7 +1245,7 @@
 		"dn": "Design 7 Column Hover Background Color",
 		"n": "design7ColumnHoverBackgroundColor",
 		"de": "Design 7 Column Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design7 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design7 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1189,7 +1254,7 @@
 		"dn": "Design 8 Column Hover Background Color",
 		"n": "design8ColumnHoverBackgroundColor",
 		"de": "Design 8 Column Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design8 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design8 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1198,7 +1263,7 @@
 		"dn": "Design 9 Column Hover Background Color",
 		"n": "design9ColumnHoverBackgroundColor",
 		"de": "Design 9 Column Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design9 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1207,7 +1272,7 @@
 		"dn": "Design 10 Column Hover Background Color",
 		"n": "design10ColumnHoverBackgroundColor",
 		"de": "Design 10 Column Hover Background Color",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1218,7 +1283,7 @@
 		"n": "design6ColumnHoverBackgroundColorPrimary",
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Design 6 Column Hover Background Color Primary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design6._primary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design6._primary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1228,7 +1293,7 @@
 		"n": "design6ColumnHoverBackgroundColorSecondary",
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Design 6 Column Hover Background Color Secondary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design6._secondary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design6._secondary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1238,7 +1303,7 @@
 		"n": "design6ColumnHoverBackgroundColorTeritiary",
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Design 6 Column Hover Background Color Tertiary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design6._tertiary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design6._tertiary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1248,7 +1313,7 @@
 		"n": "design6ColumnHoverBackgroundColorQuaternary",
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Design 6 Column Hover Background Color Quaternary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design6._quaternary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design6._quaternary  ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1258,7 +1323,7 @@
 		"n": "design6ColumnHoverBackgroundColorQuinary",
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Design 6 Column Hover Background Color Quinary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design6._quinary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design6._quinary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1454,7 +1519,7 @@
 		"n": "rowHoverBackgroundColorPrimaryDesign8",
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Row Hover Background Color Primary Design8",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design8._primary ._row._dataRow:hover, .comp.compTable._design8._primary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1464,7 +1529,7 @@
 		"n": "rowHoverBackgroundColorSecondaryDesign8",
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Row Hover Background Color SecondaryDesign8",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design8._secondary ._row._dataRow:hover, .comp.compTable._design8._secondary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1474,7 +1539,7 @@
 		"n": "rowHoverBackgroundColorTertiaryDesign8",
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Row Hover Background Color TertiaryDesign8",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design8._tertiary ._row._dataRow:hover, .comp.compTable._design8._tertiary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1484,7 +1549,7 @@
 		"n": "rowHoverBackgroundColorQuaternaryDesign8",
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Row Hover Background Color QuaternaryDesign8",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design8._quaternary ._row._dataRow:hover, .comp.compTable._design8._quaternary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1494,7 +1559,7 @@
 		"n": "rowHoverBackgroundColorQuinaryDesign8",
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Row Hover Background Color QuinaryDesign8",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design8._quinary ._row._dataRow:hover, .comp.compTable._design8._quinary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1504,7 +1569,7 @@
 		"n": "design9EvenRowBackgroundColorPrimary",
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Design 9 Even Row Background Color Primary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._primary ._row:nth-child(odd)",
 		"np": true
 	},
@@ -1514,7 +1579,7 @@
 		"n": "design9EvenRowBackgroundColorSecondary",
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Design 9 Even Row Background Color Secondary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._secondary ._row:nth-child(odd)",
 		"np": true
 	},
@@ -1524,7 +1589,7 @@
 		"n": "design9EvenRowBackgroundColorTertiary",
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Design 9 Even Row Background Color Tertiary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._tertiary ._row:nth-child(odd)",
 		"np": true
 	},
@@ -1534,7 +1599,7 @@
 		"n": "design9EvenRowBackgroundColorQuaternary",
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Design 9 Even Row Background Color Quaternary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._quaternary ._row:nth-child(odd)",
 		"np": true
 	},
@@ -1544,7 +1609,7 @@
 		"n": "design9EvenRowBackgroundColorQuinary",
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Design 9 Even Row Background Color Quinary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._quinary ._row:nth-child(odd)",
 		"np": true
 	},
@@ -1554,7 +1619,7 @@
 		"n": "rowHoverBackgroundColorPrimaryDesign9",
 		"dv": "<backgroundColorOne>55",
 		"de": "Row Hover Background Color Primary Design9",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._primary ._row._dataRow:hover, .comp.compTable._design9._primary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1564,7 +1629,7 @@
 		"n": "rowHoverBackgroundColorSecondaryDesign9",
 		"dv": "<backgroundColorTwo>55",
 		"de": "Row Hover Background Color SecondaryDesign9",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._secondary ._row._dataRow:hover, .comp.compTable._design9._secondary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1574,7 +1639,7 @@
 		"n": "rowHoverBackgroundColorTertiaryDesign9",
 		"dv": "<backgroundColorThree>55",
 		"de": "Row Hover Background Color TertiaryDesign9",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._tertiary ._row._dataRow:hover, .comp.compTable._design9._tertiary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1584,7 +1649,7 @@
 		"n": "rowHoverBackgroundColorQuaternaryDesign9",
 		"dv": "<backgroundColorFour>55",
 		"de": "Row Hover Background Color QuaternaryDesign9",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._quaternary ._row._dataRow:hover, .comp.compTable._design9._quaternary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1594,7 +1659,7 @@
 		"n": "rowHoverBackgroundColorQuinaryDesign9",
 		"dv": "<backgroundColorFive>55",
 		"de": "Row Hover Background Color QuinaryDesign9",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design9._quinary ._row._dataRow:hover, .comp.compTable._design9._quinary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1605,7 +1670,7 @@
 		"n": "design10ColumnHoverBackgroundColorPrimary",
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Design 10 Column Hover Background Color Primary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._primary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._primary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1615,7 +1680,7 @@
 		"n": "design10ColumnHoverBackgroundColorSecondary",
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Design 10 Column Hover Background Color Secondary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._secondary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._secondary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1625,7 +1690,7 @@
 		"n": "design10ColumnHoverBackgroundColortertiary",
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Design 10 Column Hover Background Color tertiary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._tertiary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._tertiary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1635,7 +1700,7 @@
 		"n": "design10ColumnHoverBackgroundColorQuaternary",
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Design 10 Column Hover Background Color Quaternary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._quaternary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._quaternary  ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1645,7 +1710,7 @@
 		"n": "design10ColumnHoverBackgroundColorQuinary",
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Design 10 Column Hover Background Color Quinary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._quinary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._quinary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
@@ -1655,7 +1720,7 @@
 		"n": "design9OddColumnBackgroundColorPrimary",
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Design 9 Odd Column Background Color Primary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._primary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
@@ -1665,7 +1730,7 @@
 		"n": "design9OddColumnBackgroundColorSecondary",
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Design 9 Odd Column Background Color Secondary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._secondary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
@@ -1675,7 +1740,7 @@
 		"n": "design9OddColumnBackgroundColorTertiary",
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Design 9 Odd Column Background Color Tertiary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._tertiary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
@@ -1685,7 +1750,7 @@
 		"n": "design9OddColumnBackgroundColorQuaternary",
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Design 9 Odd Column Background Color Quaternary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._quaternary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
@@ -1695,7 +1760,7 @@
 		"n": "design9OddColumnBackgroundColorQuinary",
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Design 9 Odd Column Background Color Quinary",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design10._quinary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
@@ -1705,7 +1770,7 @@
 		"n": "rowHoverBackgroundColorPrimaryDesign4",
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Row Hover Background Color Primary Design4",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design4._primary ._row._dataRow:hover, .comp.compTable._design4._primary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1715,7 +1780,7 @@
 		"n": "rowHoverBackgroundColorSecondaryDesign4",
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Row Hover Background Color SecondaryDesign4",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design4._secondary ._row._dataRow:hover, .comp.compTable._design4._secondary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1725,7 +1790,7 @@
 		"n": "rowHoverBackgroundColorTertiaryDesign4",
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Row Hover Background Color TertiaryDesign4",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design4._tertiary ._row._dataRow:hover, .comp.compTable._design4._tertiary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1735,7 +1800,7 @@
 		"n": "rowHoverBackgroundColorQuaternaryDesign4",
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Row Hover Background Color QuaternaryDesign4",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design4._quaternary ._row._dataRow:hover, .comp.compTable._design4._quaternary ._row._dataRow._selected",
 		"np": true
 	},
@@ -1745,7 +1810,7 @@
 		"n": "rowHoverBackgroundColorQuinaryDesign4",
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Row Hover Background Color QuinaryDesign4",
-		"cp": "background-color",
+		"cp": "background",
 		"sel": ".comp.compTable._design4._quinary ._row._dataRow:hover, .comp.compTable._design4._quinary ._row._dataRow._selected",
 		"np": true
 	}

@@ -392,6 +392,18 @@ export const TableColumn: Component = {
 			description: 'Header',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'tooltipContainer',
+			displayName: 'Tooltip Container',
+			description: 'Tooltip Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tooltipTriangle',
+			displayName: 'Tooltip Triangle',
+			description: 'Tooltip Triangle',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 
