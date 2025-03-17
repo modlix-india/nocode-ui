@@ -116,6 +116,7 @@ import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
 import SchemaForm from './SchemaForm/SchemaForm';
 import TemplateEditor from './TemplateEditor/TemplateEditor';
 import TextEditor from './TextEditor/TextEditor';
+import SchemaForm2 from './SchemaForm2/SchemaForm2';
 
 componentMap.set(Chart.name, Chart);
 componentMap.set(FileSelector.name, FileSelector);
@@ -127,6 +128,7 @@ componentMap.set(FormStorageEditor.name, FormStorageEditor);
 componentMap.set(PageEditor.name, PageEditor);
 componentMap.set(SchemaBuilder.name, SchemaBuilder);
 componentMap.set(SchemaForm.name, SchemaForm);
+componentMap.set(SchemaForm2.name, SchemaForm2);
 componentMap.set(TemplateEditor.name, TemplateEditor);
 componentMap.set(TextEditor.name, TextEditor);
 
