@@ -175,7 +175,7 @@ export default function MarkdownEditorStyle({
 	}
 
 	${PREFIX} ._markdown {
-		max-width: 1020px;
+		max-width: 100vw;
 		width: 80%;
 		display: flex;
 		flex-direction: column;
@@ -455,7 +455,8 @@ export default function MarkdownEditorStyle({
     ${PREFIX} ._dropdown {
     	position: absolute;
 		top: 100%;
-		left: 0;
+		right: 0;
+		padding: 10px;
 		z-index: 100;
 		background: white;
 		border: 1px solid #d0d7de;

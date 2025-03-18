@@ -1,6 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FileBrowser } from '../../../commonComponents/FileBrowser';
 
+interface TableConfig {
+	rows: number;
+	columns: number;
+}
+
 interface AddComponentPanelButtonsProps {
 	onComponentAdd: (type: string) => void;
 	isExpanded: boolean;
@@ -107,6 +112,28 @@ export function AddComponentPanelButtons({
 	const [linkText, setLinkText] = useState('');
 	const [linkUrl, setLinkUrl] = useState('');
 
+	const [showTableDialog, setShowTableDialog] = useState(false);
+	// Update the initial state
+	const [tableConfig, setTableConfig] = useState<TableConfig>({
+		rows: 2,
+		columns: 2,
+	});
+
+	// Modify the generateTable function
+	const generateTable = ({ rows, columns }: TableConfig) => {
+		const headerRow = '| ' + Array(columns).fill('Header').join(' | ') + ' |';
+		const alignmentRow = '| ' + Array(columns).fill(':---').join(' | ') + ' |';
+		let tableContent = headerRow + '\n' + alignmentRow + '\n';
+
+		// Generate data rows (excluding header)
+		for (let i = 0; i < rows - 1; i++) {
+			const dataRow = '| ' + Array(columns).fill('Cell').join(' | ') + ' |';
+			tableContent += dataRow + (i < rows - 2 ? '\n' : '');
+		}
+
+		return tableContent;
+	};
+
 	const handleComponentClick = (comp: any) => {
 		if (comp.id === 'img') {
 			setShowImageBrowser(true);
@@ -114,6 +141,8 @@ export function AddComponentPanelButtons({
 			setShowLinkDialog(true);
 			setLinkText('');
 			setLinkUrl('');
+		} else if (comp.id === 'table') {
+			setShowTableDialog(true);
 		} else {
 			onComponentAdd(comp.syntax);
 			onExpandChange(false);
@@ -200,6 +229,15 @@ export function AddComponentPanelButtons({
 		);
 	}
 
+	const handleTableAdd = () => {
+		const tableContent = generateTable(tableConfig);
+		onComponentAdd('\n' + tableContent + '\n');
+		setShowTableDialog(false);
+		onExpandChange(false);
+		onSearchChange('');
+		setShowAll(false);
+	};
+
 	const filteredComponents = components.filter(comp =>
 		comp.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
@@ -222,6 +260,64 @@ export function AddComponentPanelButtons({
 
 	const displayComponents = showAll ? filteredComponents : filteredComponents.slice(0, 6);
 	const hasMoreComponents = filteredComponents.length > 6;
+
+	let tableDialog = undefined;
+	if (showTableDialog) {
+		tableDialog = (
+			<div
+				className="_popupBackground"
+				onClick={e => {
+					if (e.target === e.currentTarget) setShowTableDialog(false);
+				}}
+			>
+				<div className="_linkDialog">
+					<div className="_inputGroup">
+						<label>Number of Rows (including header):</label>
+						<input
+							type="number"
+							min="2"
+							max="30"
+							className="_linkInput"
+							value={tableConfig.rows}
+							onChange={e =>
+								setTableConfig({
+									...tableConfig,
+									rows: Math.max(2, parseInt(e.target.value) || 2),
+								})
+							}
+						/>
+					</div>
+					<div className="_inputGroup">
+						<label>Number of Columns:</label>
+						<input
+							type="number"
+							min="1"
+							max="15"
+							className="_linkInput"
+							value={tableConfig.columns}
+							onChange={e =>
+								setTableConfig({
+									...tableConfig,
+									columns: Math.max(1, parseInt(e.target.value) || 1),
+								})
+							}
+						/>
+					</div>
+					<div className="_dialogButtons">
+						<button
+							className="_button _cancelButton"
+							onClick={() => setShowTableDialog(false)}
+						>
+							Cancel
+						</button>
+						<button className="_button _addButton" onClick={handleTableAdd}>
+							Add Table
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="_componentPanel" ref={panelRef}>
@@ -264,6 +360,7 @@ export function AddComponentPanelButtons({
 							</button>
 						))}
 					</div>
+					{tableDialog}
 					{imageBrowser}
 					{linkDialog}
 					{hasMoreComponents && !showAll && (
