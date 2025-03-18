@@ -3,8 +3,7 @@ import React, { useEffect } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
-	PageStoreExtractor,
-	setData,
+	PageStoreExtractor, 
 } from '../../context/StoreContext';
 import { UISchemaRepository } from '../../schemas/common';
 import { ComponentProps } from '../../types/common';
@@ -12,9 +11,9 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaForm2Properties';
+import generateChildren from './components/GenerateChildren'
 import Children from '../Children';
-import { generateSchemaForm2 } from './components/generateChildren';
-
+ 
 let UI_SCHEMA_REPO: UISchemaRepository;
 
 export default function SchemaForm2(
@@ -44,21 +43,11 @@ export default function SchemaForm2(
 		locationHistory,
 		pageExtractor,
 	);
-
-	const bindingPathPath = bindingPath
-		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
-		: undefined;
-
+ 
 	const [value, setValue] = React.useState<any>(null);
-	useEffect(() => {
-		if (!bindingPathPath) {
-			setValue(props.value);
-			return;
-		}
-		return addListenerAndCallImmediately((_, v) => setValue(v), pageExtractor, bindingPathPath);
-	}, [bindingPathPath, props.value]);
 
-	const schema = React.useMemo(() => props.schema ?? Schema.from(jsonSchema), [jsonSchema]);
+
+	const schema = React.useMemo(() => props.schema ?? (jsonSchema ? Schema.from(jsonSchema) : null), [props.schema, jsonSchema]);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -66,17 +55,26 @@ export default function SchemaForm2(
 		stylePropertiesWithPseudoStates,
 	);
 
-	const { children, pageDef } = generateSchemaForm2(schema);
+	const schemaRepository = props.schemaRepository ?? UI_SCHEMA_REPO;
+
+	if (!schema || !schema.getType) {
+		return <div className="empty-grid"></div>;
+	}
+
+	const { children, pageDef } = generateChildren({
+		schema,
+		schemaRepository,
+		bindingPath
+	});
 
 	return (
 		<div className="comp compSchemaForm2" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-			<Children
-				key={`${''}_chld`}
+	 		<Children
 				pageDefinition={pageDef}
 				renderableChildren={children}
-				context={{ ...context! }}
-				locationHistory={locationHistory!}
+				context={context}
+				locationHistory={locationHistory}
 			/>
 		</div>
 	);
