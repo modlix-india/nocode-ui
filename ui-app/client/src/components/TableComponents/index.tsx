@@ -207,6 +207,12 @@ export const Table: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'ellipsesGrid',
+			displayName: 'Ellipses Grid',
+			description: 'Ellipses Grid',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'selectedPageNumber',
 			displayName: 'Selected Page Number',
 			description: 'Selected Page Number',
@@ -234,6 +240,18 @@ export const Table: Component = {
 			name: 'pageSelectionLabel',
 			displayName: 'Page Selection Label',
 			description: 'Page Selection Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tableContainer',
+			displayName: 'Table Container',
+			description: 'Table Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tableWithPagination',
+			displayName: 'Table With Pagination',
+			description: 'Table With Pagination',
 			icon: 'fa-solid fa-box',
 		},
 	],
@@ -374,6 +392,18 @@ export const TableColumn: Component = {
 			description: 'Header',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'tooltipContainer',
+			displayName: 'Tooltip Container',
+			description: 'Tooltip Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tooltipTriangle',
+			displayName: 'Tooltip Triangle',
+			description: 'Tooltip Triangle',
+			icon: 'fa-solid fa-box',
+		},
 	],
 };
 
@@ -507,6 +537,18 @@ export const TableColumns: Component = {
 			name: 'selectedRow',
 			displayName: 'Selected Row',
 			description: 'Selected Row',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'headerContainer',
+			displayName: 'Header Container',
+			description: 'Header Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rowContainer',
+			displayName: 'Row Container',
+			description: 'Row Container',
 			icon: 'fa-solid fa-box',
 		},
 	],

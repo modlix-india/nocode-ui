@@ -63,6 +63,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			cropToAspectRatio,
 			editOnUpload,
 			clientCode,
+			allowMultipleSelection,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -215,6 +216,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 								cropToAspectRatio={cropToAspectRatio}
 								editOnUpload={editOnUpload}
 								clientCode={clientCode}
+								allowMultipleSelection={allowMultipleSelection}
 							/>
 						</div>
 					</div>

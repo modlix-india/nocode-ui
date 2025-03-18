@@ -121,7 +121,6 @@ export default function FileBrowser({
 		(async () => {
 			try {
 				let url = `/api/files/${resourceType}${path}?size=200`;
-				console.log(url, path);
 				if (fileCategory?.length) url += `&fileType=${fileCategory}`;
 				if (filter.trim() !== '') url += `&filter=${filter}`;
 				if (clientCode) url += `&clientCode=${clientCode}`;

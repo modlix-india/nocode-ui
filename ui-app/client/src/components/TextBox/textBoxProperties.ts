@@ -215,6 +215,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Delete Key on Empty',
 		description: 'Removes the key when the textbox is emptied.',
 		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
 	},
 
 	{

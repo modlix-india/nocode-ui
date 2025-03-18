@@ -6,6 +6,7 @@
 		"dv": "5px",
 		"de": "Design 1 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design1 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -15,6 +16,7 @@
 		"dv": "5px",
 		"de": "Design 2 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design2 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -24,6 +26,7 @@
 		"dv": "5px",
 		"de": "Design 3 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design3 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -33,6 +36,7 @@
 		"dv": "5px",
 		"de": "Design 4 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design4 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -41,6 +45,7 @@
 		"n": "design5ColumnPadding",
 		"dv": "5px",
 		"de": "Design 5 Column Padding",
+		"sel": ".comp.compTable._design5 .comp.compTableColumn",
 		"cp": "padding",
 		"np": true
 	},
@@ -51,6 +56,7 @@
 		"dv": "0px",
 		"de": "Design 6 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design6 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -60,6 +66,7 @@
 		"dv": "5px",
 		"de": "Design 7 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design7 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -69,6 +76,7 @@
 		"dv": "0px",
 		"de": "Design 8 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design8 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -78,6 +86,7 @@
 		"dv": "5px",
 		"de": "Design 9 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design9 .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -87,6 +96,7 @@
 		"dv": "0px",
 		"de": "Design 10 Column Padding",
 		"cp": "padding",
+		"sel": ".comp.compTable._design10 .comp.compTableColumn",
 		"np": true
 	},
 
