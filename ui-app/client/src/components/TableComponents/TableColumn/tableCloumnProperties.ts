@@ -103,6 +103,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
+	{
+		name: 'tooltipPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tooltip Position',
+		description: 'Position of the tooltip.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '_top',
+		enumValues: [
+			{ name: '_top', displayName: 'Top' },
+			{ name: '_bottom', displayName: 'Bottom' },
+		],
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

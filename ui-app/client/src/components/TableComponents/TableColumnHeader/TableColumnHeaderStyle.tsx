@@ -84,6 +84,12 @@ export default function TableColumnStyle({
 			transform: rotate(45deg);
 		}
 
+		${PREFIX}._bottom ._headerContainer ._leftIcon:hover ._titleContainer,
+		${PREFIX}._bottom ._headerContainer ._rightIcon:hover ._titleContainer {
+			bottom: auto;
+			top: 20px;
+		}
+
 		${PREFIX}:first-child ._headerContainer ._leftIcon:hover ._titleContainer {
 			transform: translateX(-10%);
 		}
@@ -100,6 +106,12 @@ export default function TableColumnStyle({
 		${PREFIX}:last-child ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle {
 			left: 100%;
 			margin-left: -10%;
+		}
+
+		${PREFIX}._bottom ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,
+		${PREFIX}._bottom ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle {
+			top: -6px;
+			transform: rotate(225deg);
 		}
 
 		.comp.compTable._design1 ${PREFIX} ._headerContainer { padding: ${processStyleValueWithFunction(

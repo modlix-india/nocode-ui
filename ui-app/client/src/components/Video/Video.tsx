@@ -501,7 +501,9 @@ function Video(props: Readonly<ComponentProps>) {
 				onChange={volumeIconHandle}
 				onClick={handlePlayPause}
 				style={resolvedStyles.player ?? {}}
+				onPause={() => setPlayPauseEnd("play")}
 				onPlay={() => {
+					setPlayPauseEnd("pause");
 					if (!isFirstTimePlay || !autoPlay || !autoUnMuteAfterPlaying) return;
 					setTimeout(() => {
 						setMuted(false);
@@ -544,9 +546,11 @@ function Video(props: Readonly<ComponentProps>) {
 									setManualSeek(undefined);
 								}}
 								ref={progressBarRef}
-								onChange={ev => {
-									if (manualSeek) setManualSeek(parseInt(ev.target.value));
-								}}
+								onChange={(ev) => {
+									  const value = parseInt(ev.target.value);
+									  setManualSeek(value);
+									  setProgressbarCurr(value);
+								  }}
 								style={resolvedStyles.seekSlider ?? {}}
 							/>
 							<SubHelperComponent

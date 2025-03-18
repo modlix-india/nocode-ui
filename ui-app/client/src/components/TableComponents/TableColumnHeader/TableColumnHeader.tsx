@@ -105,6 +105,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			disableColumnDragging,
 			leftIconTitle,
 			rightIconTitle,
+			tooltipPosition,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -561,7 +562,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 	return (
 		<th
 			id={styleKey}
-			className={`comp compTableHeaderColumn ${hasSort ? '_pointer' : ''}`}
+			className={`comp compTableHeaderColumn ${hasSort ? '_pointer' : ''} ${tooltipPosition}`}
 			style={{ ...(styleProperties.header ?? {}) }}
 			onClick={() =>
 				onChangeSort({
