@@ -11,9 +11,9 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaForm2Properties';
-import generateChildren from './components/GenerateChildren'
+import generateChildren from './components/generateChildren'
 import Children from '../Children';
- 
+
 let UI_SCHEMA_REPO: UISchemaRepository;
 
 export default function SchemaForm2(
@@ -43,12 +43,14 @@ export default function SchemaForm2(
 		locationHistory,
 		pageExtractor,
 	);
- 
-	const [value, setValue] = React.useState<any>(null);
+	
 
+	const bindingPathPath = bindingPath
+	? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+	: undefined;
 
-	const schema = React.useMemo(() => props.schema ?? (jsonSchema ? Schema.from(jsonSchema) : null), [props.schema, jsonSchema]);
-
+	const schema = React.useMemo(() => props.schema ?? Schema.from(jsonSchema), [jsonSchema]);
+	
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
@@ -56,15 +58,11 @@ export default function SchemaForm2(
 	);
 
 	const schemaRepository = props.schemaRepository ?? UI_SCHEMA_REPO;
-
-	if (!schema || !schema.getType) {
-		return <div className="empty-grid"></div>;
-	}
-
+ 
 	const { children, pageDef } = generateChildren({
 		schema,
 		schemaRepository,
-		bindingPath
+		bindingPathPath,
 	});
 
 	return (

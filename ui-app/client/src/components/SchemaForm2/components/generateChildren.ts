@@ -1,102 +1,145 @@
 import { isNullValue, Repository, Schema, SchemaType, SchemaUtil } from "@fincity/kirun-js";
 import { useEffect, useState } from "react";
-import { shortUUID } from "../../../util/shortUUID";
 import { duplicate } from "@fincity/kirun-js";
 import { PREVIEW_COMP_DEFINITION_MAP } from "../../FormStorageEditor/components/formCommons";
-import { ComponentDefinition, DataLocation, PageDefinition } from "../../../types/common";
+import { ComponentDefinition, ComponentProperty, PageDefinition } from "../../../types/common";
 
-const NUMBER_SET = new Set([SchemaType.FLOAT, SchemaType.INTEGER, SchemaType.DOUBLE, SchemaType.LONG]);
+const NUMBER_TYPES = new Set([SchemaType.INTEGER, SchemaType.LONG, SchemaType.FLOAT, SchemaType.DOUBLE]);
 const ALL_SET = Schema.ofAny("Any").getType()?.getAllowedSchemaTypes()!;
+
 
 export default function generateChildren({
     schema: actualSchema = Schema.ofAny("Any"),
     schemaRepository,
-    bindingPath
+    bindingPathPath,
 }: {
     schema?: Schema;
     schemaRepository: Repository<Schema>;
-    bindingPath: any;
+    bindingPathPath?: string;
 }) {
     const [schema, setSchema] = useState(actualSchema);
 
     useEffect(() => {
         if (isNullValue(actualSchema.getRef())) {
-            setSchema(prev => (prev === actualSchema ? prev : actualSchema));
+            setSchema(actualSchema);
             return;
         }
-    
+
         (async () => {
-            const resolvedSchema = await SchemaUtil.getSchemaFromRef(actualSchema, schemaRepository, actualSchema.getRef());
-    
-            setSchema(prev => (prev === (resolvedSchema ?? actualSchema) ? prev : resolvedSchema ?? actualSchema));
+            setSchema((await SchemaUtil.getSchemaFromRef(schema, schemaRepository, schema.getRef())) ?? actualSchema);
         })();
     }, [actualSchema, schemaRepository]);
 
     let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 
-    if (types?.size === 1) {
-        return generateFormPreview(schema, types,bindingPath);
+    if (types.size > 0) {
+        return generateFormPreview(schema, bindingPathPath);
     }
 
     return { children: {}, pageDef: {} as PageDefinition };
 }
 
+function compDefinitionGenerator(label: string, schema: Schema, bindingPathPath?: string) {
 
-function compDefinitionGenerator(label: string, schemaTypes: Set<SchemaType>,bindingPath: any) {
-    let compName = getComponentName(schemaTypes);
+    let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
+
+    const compName = getComponentName(types);
     if (!compName) return null;
 
-    let uuid = shortUUID();
-    let compDef: ComponentDefinition = {
+    const compKey = `${compName}_${label.trim().replace(/\s+/g, "_")}`.toLowerCase();
+
+    const compDef: ComponentDefinition = {
         ...(duplicate(PREVIEW_COMP_DEFINITION_MAP.get(compName)) as ComponentDefinition),
-        key: uuid,
+        key: compKey,
         name: compName,
         displayOrder: 0,
         type: compName,
-        properties: {},
-        bindingPath: {
-            value: `${bindingPath.value}`,
-            type: "VALUE",
-        } as DataLocation,
+        properties: componentPropertyMap[compName] ? componentPropertyMap[compName](schema, types) : {},
+        bindingPath: bindingPathPath ? { type: "VALUE", value: `${bindingPathPath}` } : undefined,
     };
 
     return compDef;
 }
 
+function generateFormPreview(schema: Schema, bindingPathPath?: string) {
 
-function generateFormPreview(schema: Schema, schemaTypes: Set<SchemaType>,bindingPath: any) {
     const label = schema.getTitle() || "defaultLabel";
-    const compDef = compDefinitionGenerator(label, schemaTypes,bindingPath);
+    const compDef = compDefinitionGenerator(label, schema, bindingPathPath);
     if (!compDef) return { children: {}, pageDef: {} as PageDefinition };
 
-    let pageDef: PageDefinition = {
-        name: "SchemaForm2", 
-        baseClientCode: "",
-        permission: "",
-        isFromUndoRedoStack: false,
-        eventFunctions: {},
-        clientCode: "",
-        appCode: "",
-        version: 0,
-        translations: {},
-        properties: {},
-        rootComponent: "",
-        componentDefinition: { [compDef.key]: compDef },
+    return {
+        children: { [compDef.key]: true },
+        pageDef: {
+            name: "SchemaForm2",
+            baseClientCode: "",
+            permission: "",
+            isFromUndoRedoStack: false,
+            eventFunctions: {},
+            clientCode: "",
+            appCode: "",
+            version: 0,
+            translations: {},
+            properties: {},
+            rootComponent: "",
+            componentDefinition: { [compDef.key]: compDef },
+        },
     };
-
-    let children = { [compDef.key]: true };
-
-    return { children, pageDef };
 }
 
+function getComponentName(types: Set<SchemaType>) {
 
-function getComponentName(schemaType: Set<SchemaType>): string | null {
-    if (schemaType.has(SchemaType.STRING) ||
-        (schemaType.has(SchemaType.INTEGER)) ||
-        (schemaType.has(SchemaType.FLOAT)) ||
-        (schemaType.has(SchemaType.DOUBLE)) ||
-        (schemaType.has(SchemaType.LONG)))
-        return "TextBox";
-    if (schemaType.has(SchemaType.BOOLEAN)) return "CheckBox";
+    if (!types || types.size === 9) return null;
+
+    const hasString = types.has(SchemaType.STRING);
+    const hasNumber = [...types].some(type => NUMBER_TYPES.has(type));
+    const hasBoolean = types.has(SchemaType.BOOLEAN);
+    const hasArray = types.has(SchemaType.ARRAY);
+
+    if (hasBoolean) return "CheckBox";
+    if (hasArray) return "Dropdown";
+
+    if (hasString || hasNumber) return "TextBox";
+
     return null;
 }
+
+
+const componentPropertyMap : Record<string, (schema: Schema, types: Set<SchemaType>) => Record<string, ComponentProperty<any>>> = {
+    TextBox: (schema, types) => {
+
+        const hasString = types.has(SchemaType.STRING);
+        const hasNumber = [...types].some(type => NUMBER_TYPES.has(type));
+
+        if (hasString && hasNumber) return {};
+
+        const properties: Record<string, ComponentProperty<any>> = {};
+
+        if (!(hasString && hasNumber)) {
+            properties.valueType = { value: hasString ? "text" : "number" };
+
+            if (hasNumber) {
+                properties.numberType = {
+                    value: types.has(SchemaType.FLOAT) || types.has(SchemaType.DOUBLE) ? "DECIMAL" : "INTEGER",
+                };
+            }
+        }
+
+        properties.maxChars = { value: schema.getMaximum() ?? schema.getMaxLength() ?? undefined };
+        properties.minChars = { value: schema.getMinimum() ?? schema.getMinLength() ?? undefined };
+
+        return properties;
+    },
+
+    CheckBox: () => ({
+        valueType: { value: "boolean" },
+    }),
+
+    Dropdown: (schema) => ({
+        options: { value: schema.getEnums() ?? [] },
+        multiSelect: { value: false },
+    }),
+};
+
+
+
+
