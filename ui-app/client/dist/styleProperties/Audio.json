@@ -1,1 +1,93 @@
-[]
+[
+	{ "dn": "Audio Font", "n": "audioFont", "dv": "<primaryFont>" },
+	{
+		"gn": "Audio Background Color",
+		"dn": "Primary Audio Background Color",
+		"n": "primaryAudioBackgroundColor",
+		"dv": "<backgroundColorOne>",
+		"de": "audio primary  color background",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._primary, .comp.compAudio._audioDesign2._primary, .comp.compAudio._audioDesign3._primary, .comp.compAudio._audioDesign4._primary",
+		"np": true
+	},
+	{
+		"gn": "Audio Background Color",
+		"dn": "Secondary Audio Background Color",
+		"n": "secondaryAudioBackgroundColor",
+		"dv": "<backgroundColorTwo>",
+		"de": "audio primary  color background",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._secondary, .comp.compAudio._audioDesign2._secondary, .comp.compAudio._audioDesign3._secondary, .comp.compAudio._audioDesign4._secondary",
+		"np": true
+	},
+	{
+		"gn": "Audio Background Color",
+		"dn": "Tertiary Audio Background Color",
+		"n": "tertiaryAudioBackgroundColor",
+		"dv": "<backgroundColorThree>",
+		"de": "audio primary  color background",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._tertiary, .comp.compAudio._audioDesign2._tertiary, .comp.compAudio._audioDesign3._tertiary, .comp.compAudio._audioDesign4._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Audio Background Color",
+		"dn": "Quaternary Audio Background Color",
+		"n": "quaternaryAudioBackgroundColor",
+		"dv": "<backgroundColorFour>",
+		"de": "audio primary  color background",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._quaternary, .comp.compAudio._audioDesign2._quaternary, .comp.compAudio._audioDesign3._quaternary, .comp.compAudio._audioDesign4._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Audio Background Color",
+		"dn": "Quinary Audio Background Color",
+		"n": "quinaryAudioBackgroundColor",
+		"dv": "<backgroundColorFive>",
+		"de": "audio primary  color background",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._quinary, .comp.compAudio._audioDesign2._quinary, .comp.compAudio._audioDesign3._quinary, .comp.compAudio._audioDesign4._quinary",
+		"np": true
+	},
+	{
+		"gn": "Audio Padding",
+		"dn": "Audio Padding",
+		"n": "audioPadding",
+		"dv": "3px",
+		"de": "audio primary  color background",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign1",
+		"np": true
+	},
+	{
+		"gn": "Audio Padding",
+		"dn": "Audio Padding",
+		"n": "audioPadding",
+		"dv": "3px",
+		"de": "audio primary  color background",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign2",
+		"np": true
+	},
+	{
+		"gn": "Audio Padding",
+		"dn": "Audio Padding",
+		"n": "audioPadding",
+		"dv": "3px",
+		"de": "audio primary  color background",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign3",
+		"np": true
+	},
+	{
+		"gn": "Audio Padding",
+		"dn": "Audio Padding",
+		"n": "audioPadding",
+		"dv": "3px",
+		"de": "audio primary  color background",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign4",
+		"np": true
+	}
+]

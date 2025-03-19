@@ -82,6 +82,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'playBackSpeedType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'PlayBack Speed Type',
+		description: 'PlayBack Speed Type',
+		defaultValue: 'DROPDOWN',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: 'DROPDOWN',
+				displayName: 'DropDown',
+				description: 'DropDown',
+			},
+			{
+				name: 'GRID',
+				displayName: 'Grid',
+				description: 'Grid',
+			},
+			{
+				name: 'SINGLESELECT',
+				displayName: 'Single Select',
+				description: 'Single Select',
+			},
+		],
+	},
+	{
 		name: 'onHoverVolumeControl',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Volume Control on Hover',
@@ -103,10 +128,58 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'playIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Play icon',
+		description: 'Play Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'pauseIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Pause icon',
+		description: 'Pause Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'rewindIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Rewind icon',
+		description: 'Rewind Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'forwardIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Forward icon',
+		description: 'Forward Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'volumeIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Volume icon',
+		description: 'Volume Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'volumeMuteIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Volume Mute icon',
+		description: 'Volume Mute Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
 		name: 'audioDesign',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'audio Player Design',
-		description: 'Color Scheme',
+		description: 'Audio Player Design',
 		defaultValue: '_audioDesign1',
 		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
@@ -147,18 +220,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{
 				name: '_rightHorizontal',
-				displayName: 'right Horizontal',
-				description: 'right Horizontal',
+				displayName: 'Right Horizontal',
+				description: 'Right Horizontal',
 			},
 			{
-				name: '_leftVertical',
-				displayName: 'left Vertical',
-				description: 'left Vertical',
+				name: '_topVertical',
+				displayName: 'Top Vertical',
+				description: 'Top Vertical',
 			},
 			{
-				name: '_rightVertical',
-				displayName: 'right Vertical',
-				description: 'right Vertical',
+				name: '_bottomVertical',
+				displayName: 'Bottom Vertical',
+				description: 'Bottom Vertical',
 			},
 		],
 	},
@@ -212,6 +285,19 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
+	volumeSliderContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	playBackSpeedGrid: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
 };
+ 
 
 export { propertiesDefinition, stylePropertiesDefinition };
