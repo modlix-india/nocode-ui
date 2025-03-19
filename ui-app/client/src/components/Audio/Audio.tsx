@@ -76,6 +76,8 @@ function Audio(props: Readonly<ComponentProps>) {
 	const [manualSeek, setManualSeek] = useState<number | undefined>(undefined);
 	const playbackOptions = [0.5, 1, 1.5, 2];
 
+	const fileName = src.substring(src.lastIndexOf('/')+ 1)
+
 	useEffect(() => {
 		if (!onHoverVolumeControl) {
 			setShowVolumeSlider(true);
@@ -496,6 +498,7 @@ function Audio(props: Readonly<ComponentProps>) {
 			style={resolvedStyles.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			
 			<audio
 				controls={audioControls}
 				preload="metadata"
@@ -518,17 +521,24 @@ function Audio(props: Readonly<ComponentProps>) {
 				<source src={getSrcUrl(src)} type={type} />
 				Your browser does not support HTML5 audio.
 			</audio>
+			<div className="_audioWithoutProgressBar"
+			ref={audioContainer}
+			style={resolvedStyles.compAudioSub ?? {}}
+			>
 			{playPauseButtons}
 			{timeText}
-			{seekBar}
+			{audioDesign === "_audioDesign2" ? fileName : null}
+			{audioDesign === "_audioDesign1" ? seekBar : null}
 			{volumeControls}
 			{playBackSpeed}
-			{showRewindAndFastForward && (
+			{showRewindAndFastForward && audioDesign !== "_audioDesign2" && (
 				<div className="_rewindFastForward">
 					{rewindFinalIcon}
 					{forwardFinalIcon}
 				</div>
 			)}
+				</div>
+			{audioDesign === "_audioDesign2" ? seekBar : null}
 		</div>
 	);
 }

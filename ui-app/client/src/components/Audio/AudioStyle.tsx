@@ -32,9 +32,20 @@ export default function AudioStyle({
 		` 
     ${PREFIX} {
       display: flex;
+	  flex-direction: column;
 	  justify-content: center;
 	  align-items: center;
    }
+   ${PREFIX}._audioDesign2 ._audioWithoutProgressBar {
+	justify-content: space-between;
+ }
+
+   ${PREFIX} ._audioWithoutProgressBar {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%
+ }
 
 	${PREFIX} ._playIconIcon{
 		width:  100%;
