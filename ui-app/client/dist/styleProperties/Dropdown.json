@@ -6618,5 +6618,41 @@
 		"cp": "background",
 		"sel": ".comp.compDropdown._quinary .commonCheckbox.radio._checked ._thumb",
 		"np": true
+	},
+	{
+		"gn": "HasValue Box Shadow",
+		"dn": "HasValue Default Dropdown Box Shadow",
+		"n": "hasValueDropdownBoxShadowForDefaultDesign",
+		"dv": "0vw 0vw 0vw 0.278vw #4B43761A",
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown._default._hasValue, .comp.compDropdown._default._isActive._hasValue",
+		"np": true
+	},
+	{
+		"gn": "HasValue Box Shadow",
+		"dn": "HasValue Outlined Dropdown Box Shadow",
+		"n": "hasValueDropdownBoxShadowForOutlinedDesign",
+		"dv": "0vw 0vw 0vw 0.278vw #3F3A65",
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown._outlined._hasValue, .comp.compDropdown._outlined._isActive._hasValue",
+		"np": true
+	},
+	{
+		"gn": "HasValue Box Shadow",
+		"dn": "HasValue Filled Dropdown Box Shadow",
+		"n": "hasValueDropdownBoxShadowForBigDesignOneDesign",
+		"dv": "0vw 0vw 0vw 0.278vw #62589A",
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown._Filled._hasValue, .comp.compDropdown._Filled._isActive._hasValue",
+		"np": true
+	},
+	{
+		"gn": "HasValue Box Shadow",
+		"dn": "HasValue Big Design One Dropdown Box Shadow",
+		"n": "hasValueDropdownBoxShadowForTextDesign",
+		"dv": "0vw 0vw 0vw 0.278vw #4B43761A",
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown._bigDesign1._hasValue, .comp.compDropdown._bigDesign1._isActive._hasValue",
+		"np": true
 	}
 ]
