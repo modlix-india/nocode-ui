@@ -61,27 +61,49 @@ ${PREFIX} ._toolTip {
 	position: absolute;
 	}
 
-${PREFIX} ._volumeHighIcon{
-    width: 100%;
-   }
-
-   ${PREFIX} ._volumeMuteIcon{
-    width:  100%;
-   }
-
-${PREFIX} ._volumeControls {
-	display: flex;
-}
-
 ${PREFIX} ._rewindFastForward {
 	display: flex;
 	flex-direction: row;
 }
 
-${PREFIX} ._volumeHighIcon svg ,${PREFIX} ._volumeButton svg ,${PREFIX} ._volumeMuteIcon svg, ${PREFIX} ._playIconIcon svg, ${PREFIX} ._pauseIconIcon svg {
-    width:100%;
-    height:100%;
+${PREFIX} ._volumeControls  {
+    display: flex;
+	align-items: center;
    }
+
+  ${PREFIX} ._volumeControls._rightHorizontal  {
+    flex-direction: row-reverse;
+   }
+
+   ${PREFIX} ._volumeControls._topVertical {
+   flex-direction:column;
+    align-items: center;
+  
+   }
+
+   ${PREFIX} ._volumeControls._topVertical ._volumeSliderContainer {
+    transform:rotate(-90deg);
+	position:absolute;
+	bottom:80px;
+   }
+
+   ${PREFIX} ._volumeControls._bottomVertical {
+   flex-direction:column-reverse;
+    align-items: center;
+   }
+
+
+   ${PREFIX} ._volumeControls._bottomVertical ._volumeSliderContainer {
+    position:absolute;
+	transform:rotate(-90deg);
+	top:80px;
+
+   }
+
+
+
+
+
 	
      ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="AudioStyle">{css}</style>;
