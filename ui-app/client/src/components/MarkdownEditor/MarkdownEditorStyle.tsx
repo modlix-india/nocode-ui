@@ -43,6 +43,7 @@ export default function MarkdownEditorStyle({
 		position: relative;
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 8px;
 	  }
   
@@ -432,7 +433,8 @@ export default function MarkdownEditorStyle({
 		min-width: 200px;
 		max-height: 400px;
 		padding: 12px;
-		z-index: 100;
+		z-index: 10000;
+		background-color: #fff;
 	}
 
 	
@@ -463,6 +465,8 @@ export default function MarkdownEditorStyle({
 	${PREFIX} ._componentButton {
 		display: flex;
 		flex-direction: column;
+		width: 80px;
+		hieght: 70px;
 		align-items: center;
 		padding: 12px;
 		border: 1px solid #eee;
@@ -502,16 +506,14 @@ export default function MarkdownEditorStyle({
 		overflow-y: scroll;
 	}
 	
-	${PREFIX} ._componentButtons {
-		display: flex;
-		gap: 5px;
-		background-color: #fff;
-		padding: 5px;
-		border-radius: 5px;
-		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-	}
-
-	
+	// ${PREFIX} ._componentButtons {
+	// 	display: flex;
+	// 	gap: 5px;
+	// 	background-color: #fff;
+	// 	padding: 5px;
+	// 	border-radius: 5px;
+	// 	box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+	// }
 
 	${PREFIX} ._popupBackground {
         position: fixed;
@@ -591,26 +593,29 @@ export default function MarkdownEditorStyle({
 	}
 
 	${PREFIX} ._linkDialogHeader {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 16px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 16px;
 	}
 
 	${PREFIX} ._closeButton {
-	background: none;
-	border: none;
-	cursor: pointer;
-	padding: 4px;
-	border-radius: 4px;
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 4px;
+		border-radius: 4px;
+		transition: background-color 0.2s;
 	}
 
 	${PREFIX} ._closeButton:hover {
-	background-color: #f0f0f0;
+		background-color: #ff0000;
+		border-color: rgb(33, 6, 6);;
+		color: white;
 	}
 
 	${PREFIX} ._linkDialogContent {
-	margin-bottom: 16px;
+		margin-bottom: 16px;
 	}
 
 	${PREFIX} ._inputGroup {
@@ -618,7 +623,6 @@ export default function MarkdownEditorStyle({
 		flex: 1;
 		flex-direction: row;
 		margin-bottom: 12px;
-	
 	}
 
 	${PREFIX} ._inputGroup label {
