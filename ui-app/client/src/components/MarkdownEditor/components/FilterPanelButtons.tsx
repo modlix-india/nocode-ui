@@ -13,9 +13,9 @@ export function FilterPanelButtons({
 	onFormatClick,
 	isVisible,
 	styleProperties,
-	selectedText,
 	isFloating,
 	position,
+	selectedText,
 }: Readonly<FilterPanelButtonsProps>) {
 	const [showLinkDialog, setShowLinkDialog] = useState(false);
 	const [linkText, setLinkText] = useState('');
@@ -48,165 +48,168 @@ export function FilterPanelButtons({
 	};
 
 	const mainButtons = (
+		// <div className="_filterPanel" style={styleProperties.filterPanel ?? {}}>
 		<>
-			<div className="_buttonGroup">
-				<button
-					onClick={() => onFormatClick('bold')}
-					className="_button"
-					title="Bold ( ctrl/cmd + B )"
-				>
-					<strong>B</strong>
-				</button>
-				<button
-					onClick={() => onFormatClick('italic')}
-					className="_button"
-					title="Italic ( ctrl/cmd + I )"
-				>
-					<em>I</em>
-				</button>
-			</div>
-
-			<div className="_buttonSeperator" />
-
-			<div className="_buttonGroup">
-				<button
-					onClick={() => onFormatClick('heading1')}
-					className="_button"
-					title="heading1"
-				>
-					<b>h1</b>
-				</button>
-				<button
-					onClick={() => onFormatClick('heading2')}
-					className="_button"
-					title="heading2"
-				>
-					<b>h2</b>
-				</button>
-				<button
-					onClick={() => onFormatClick('heading3')}
-					className="_button"
-					title="heading3"
-				>
-					<b>h3</b>
-				</button>
-			</div>
-			<div className="_buttonSeperator" />
-
-			<div className="_buttonGroup">
-				<button
-					onClick={() => onFormatClick('inlineCode')}
-					className="_button"
-					title="Inline Code"
-				>
-					<code>{'<>'}</code>
-				</button>
-
-				<button
-					onClick={() => setShowLinkDialog(true)}
-					className="_button"
-					title="Add Link"
-				>
-					🔗
-				</button>
-			</div>
-
-			<div className="_buttonSeperator" />
-
-			<div className="_buttonGroup">
-				<div className="_dropdownContainer">
+			<div className="_filterPanel">
+				<div className="_formatButtonGroup">
 					<button
-						onClick={() => setShowMoreDropdown(!showMoreDropdown)}
-						className="_button"
-						title="More Options"
+						onClick={() => onFormatClick('bold')}
+						className="_formatbutton"
+						title="Bold ( ctrl/cmd + B )"
 					>
-						•••
+						<strong>B</strong>
 					</button>
-					{showMoreDropdown && (
-						<div className="_dropdown">
-							<button
-								onClick={() => onFormatClick('superscript')}
-								className="_dropdownItem"
-							>
-								x² Superscript
-							</button>
-							<button
-								onClick={() => onFormatClick('subscript')}
-								className="_dropdownItem"
-							>
-								x₂ Subscript
-							</button>
-							<button
-								onClick={() => onFormatClick('heading4')}
-								className="_dropdownItem"
-								title="heading4"
-							>
-								<b>h4</b> heading4
-							</button>
-							<button
-								onClick={() => onFormatClick('heading5')}
-								className="_dropdownItem"
-								title="heading5"
-							>
-								<b>h5</b> heading5
-							</button>
-							<button
-								onClick={() => onFormatClick('heading6')}
-								className="_dropdownItem"
-								title="heading6"
-							>
-								<b>h6</b> heading6
-							</button>
-							<button
-								onClick={() => onFormatClick('footnote')}
-								className="_dropdownItem"
-							>
-								† Footnote
-							</button>
-							<button
-								onClick={() => onFormatClick('highlight')}
-								className="_dropdownItem"
-							>
-								<span style={{ background: '#ff0' }}>Highlight</span>
-							</button>
-							<button
-								onClick={() => onFormatClick('alignLeft')}
-								className="_dropdownItem"
-							>
-								⇤ Align Left
-							</button>
-							<button
-								onClick={() => onFormatClick('alignCenter')}
-								className="_dropdownItem"
-							>
-								⇔ Center
-							</button>
-							<button
-								onClick={() => onFormatClick('alignRight')}
-								className="_dropdownItem"
-							>
-								⇥ Align Right
-							</button>
-							<button
-								onClick={() => onFormatClick('alignJustify')}
-								className="_dropdownItem"
-							>
-								⇹ Justify
-							</button>
-							<button
-								onClick={() => onFormatClick('indent')}
-								className="_dropdownItem"
-							>
-								⇥ Indent
-							</button>
-							<button
-								onClick={() => onFormatClick('unindent')}
-								className="_dropdownItem"
-							>
-								⇤ Unindent
-							</button>
-						</div>
-					)}
+					<button
+						onClick={() => onFormatClick('italic')}
+						className="_formatbutton"
+						title="Italic ( ctrl/cmd + I )"
+					>
+						<em>I</em>
+					</button>
+				</div>
+
+				<div className="_buttonSeperator" />
+
+				<div className="_formatButtonGroup">
+					<button
+						onClick={() => onFormatClick('heading1')}
+						className="_formatbutton"
+						title="heading1"
+					>
+						<b>h1</b>
+					</button>
+					<button
+						onClick={() => onFormatClick('heading2')}
+						className="_formatbutton"
+						title="heading2"
+					>
+						<b>h2</b>
+					</button>
+					<button
+						onClick={() => onFormatClick('heading3')}
+						className="_formatbutton"
+						title="heading3"
+					>
+						<b>h3</b>
+					</button>
+				</div>
+				<div className="_buttonSeperator" />
+
+				<div className="_formatButtonGroup">
+					<button
+						onClick={() => onFormatClick('inlineCode')}
+						className="_formatbutton"
+						title="Inline Code"
+					>
+						<code>{'<>'}</code>
+					</button>
+
+					<button
+						onClick={() => setShowLinkDialog(true)}
+						className="_formatbutton"
+						title="Add Link"
+					>
+						🔗
+					</button>
+				</div>
+
+				<div className="_buttonSeperator" />
+
+				<div className="_formatButtonGroup">
+					<div className="_dropdownContainer">
+						<button
+							onClick={() => setShowMoreDropdown(!showMoreDropdown)}
+							className="_formatbutton"
+							title="More Options"
+						>
+							•••
+						</button>
+						{showMoreDropdown && (
+							<div className="_dropdown">
+								<button
+									onClick={() => onFormatClick('superscript')}
+									className="_dropdownItem"
+								>
+									x² Superscript
+								</button>
+								<button
+									onClick={() => onFormatClick('subscript')}
+									className="_dropdownItem"
+								>
+									x₂ Subscript
+								</button>
+								<button
+									onClick={() => onFormatClick('heading4')}
+									className="_dropdownItem"
+									title="heading4"
+								>
+									<b>h4</b> heading4
+								</button>
+								<button
+									onClick={() => onFormatClick('heading5')}
+									className="_dropdownItem"
+									title="heading5"
+								>
+									<b>h5</b> heading5
+								</button>
+								<button
+									onClick={() => onFormatClick('heading6')}
+									className="_dropdownItem"
+									title="heading6"
+								>
+									<b>h6</b> heading6
+								</button>
+								<button
+									onClick={() => onFormatClick('footnote')}
+									className="_dropdownItem"
+								>
+									† Footnote
+								</button>
+								<button
+									onClick={() => onFormatClick('highlight')}
+									className="_dropdownItem"
+								>
+									<span style={{ background: '#ff0' }}>Highlight</span>
+								</button>
+								<button
+									onClick={() => onFormatClick('alignLeft')}
+									className="_dropdownItem"
+								>
+									⇤ Align Left
+								</button>
+								<button
+									onClick={() => onFormatClick('alignCenter')}
+									className="_dropdownItem"
+								>
+									⇔ Center
+								</button>
+								<button
+									onClick={() => onFormatClick('alignRight')}
+									className="_dropdownItem"
+								>
+									⇥ Align Right
+								</button>
+								<button
+									onClick={() => onFormatClick('alignJustify')}
+									className="_dropdownItem"
+								>
+									⇹ Justify
+								</button>
+								<button
+									onClick={() => onFormatClick('indent')}
+									className="_dropdownItem"
+								>
+									⇥ Indent
+								</button>
+								<button
+									onClick={() => onFormatClick('unindent')}
+									className="_dropdownItem"
+								>
+									⇤ Unindent
+								</button>
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 		</>
@@ -229,7 +232,7 @@ export function FilterPanelButtons({
 					: undefined
 			}
 		>
-			<div className="_buttonGroup">{mainButtons}</div>
+			<div className="_formatButtonGroup">{mainButtons}</div>
 			{showLinkDialog && (
 				<div
 					className="_popupBackground"
@@ -254,7 +257,7 @@ export function FilterPanelButtons({
 							className="_linkInput"
 						/>
 						<div className="_dialogButtons">
-							<button onClick={handleLinkAdd} className="_button _addButton">
+							<button onClick={handleLinkAdd} className="_formatbutton _addButton">
 								Add Link
 							</button>
 							<button
@@ -263,7 +266,7 @@ export function FilterPanelButtons({
 									setLinkText('');
 									setLinkUrl('');
 								}}
-								className="_button _cancelButton"
+								className="_formatbutton _cancelButton"
 							>
 								Cancel
 							</button>

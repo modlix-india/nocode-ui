@@ -68,7 +68,7 @@ const components = [
 	{ id: 'h4', name: 'Heading 4', icon: 'H4', syntax: '\n#### heading 4 \n' },
 	{ id: 'h5', name: 'Heading 5', icon: 'H5', syntax: '\n##### heading 5 \n' },
 	{ id: 'h6', name: 'Heading 6', icon: 'H6', syntax: '\n###### heading 6 \n' },
-	// { id: 'hr', name: 'Horizontal Rule', icon: '---', syntax: '---' },//not working
+	{ id: 'hr', name: 'Horizontal Rule', icon: '|---|', syntax: '****' }, //not working
 	{ id: 'code', name: 'Code Block', icon: '<>', syntax: '```\n' },
 	{ id: 'link', name: 'Link', icon: '🔗', syntax: '[link](URL_ADDRESS.com)' },
 	{ id: 'inlineCode', name: 'Inline Code', icon: '`', syntax: '`inline code`' },

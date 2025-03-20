@@ -12,69 +12,225 @@ export default function MarkdownEditorStyle({
 	${PREFIX} {
 		display: flex;
 		flex-direction: column;
-		border: 1px solid #d0d7de;
+		border: 1px solid #e1e4e8;
 		border-radius: 6px;
-		overflow: visible;
+		overflow: hidden;
     	position: relative;
+		background-color: #fff;
 	}
-
 
 	${PREFIX} ._editorHeader {
 		display: flex;
 		flex-direction: row;
-		border-bottom: 1px solid #d0d7de;
+		border-bottom: 1px solid #e1e4e8;
 		background-color: #f6f8fa;
 	  }
   
-	  ${PREFIX} ._tabContainer {
+	${PREFIX} ._tabContainer {
 		display: flex;
-		padding: 8px 8px 0;
-		border-bottom: 1px solid #d0d7de;
+		border-bottom: 1px solid #e1e4e8;
 	  }
   
-	  ${PREFIX} ._tab {
-	  	height: 48px;
-		padding: 8px 16px;
-		gap: 4px;
+	${PREFIX} ._tab {
+	  	height: 40px;
+		padding: 8px 8px;
 		border: none;
 		background: none;
-		border-radius: 6px 6px 0 0;
 		font-size: 14px;
 		font-weight: 500;
-		color: #24292f;
+		color: #57606a;
 		cursor: pointer;
-		border: 1px solid transparent;
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 8px;
 	  }
   
-	  ${PREFIX} ._tab._active {
-		background-color: #ffffff;
-		border: 1px solid #d0d7de;
-		border-bottom-color: #ffffff;
+	${PREFIX} ._tab svg {
+		width: 16px;
+		height: 16px;
 	  }
-
-	   ${PREFIX} ._tab._preview {
-		background-color: #ffffff;
-		border: 1px solid #d0d7de;
-		border-bottom-color: #ffffff;
+  
+	${PREFIX} ._tab._active {
+		color: #24292f;
+		font-weight: 800;
+		margin-bottom: 1px;
+	  }
+  
+	${PREFIX} ._tab._active._write-tab {
+	  	color:#016A70;
+		border-bottom: 3px solid #016A70;	
+	  }
+	  
+	${PREFIX} ._tab._active._doc-tab {
+	  	color: #FF3E3E;
+		border-bottom: 3px solid #FF3E3E;
+	  }
+	  
+	${PREFIX} ._tab._active._preview-tab {
+	  	color: #3F4CC0;
+		border-bottom: 3px solid #3F4CC0;
+	  }
+	  
+	${PREFIX} ._tab:hover:not(._active) {
+		color: #24292f;
+		background-color: rgba(0, 0, 0, 0.05);
 	  }
   
 	${PREFIX} ._toolbarContainer {
 		display: flex;
+		flex-direction: row;
+		margin-left: auto;
+		padding: 8px 12px;
+		gap: 8px;
 		align-items: center;
-		margin-left: auto; 
-	}  
+		flex-wrap: wrap;
+		border-bottom: 1px solid #e1e4e8;
+	  }
+  
+	${PREFIX} ._toolbarContainer:last-child {
+		border-bottom: 1px solid #e1e4e8;
+	  }
+
+	${PREFIX} ._filterPanel {
+		align-items: center;
+		position: relative;
+		display: flex;
+		gap: 5px;
+		background-color: #fff;
+		backdrop-filter: blur(10px);
+		padding: 5px;
+		border-radius: 5px;
+		z-index: 5;
+		cursor: move;
+	}
+
+	${PREFIX} ._formatButton {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border-radius: 4px;
+		background-color: none;
+		color: #fff;
+		cursor: pointer;
+	  }
+  
+	${PREFIX} ._formatButton:hover {
+		background-color: #f6f8fa;
+	  }
+  
+	${PREFIX} ._formatButton._active {
+		background-color: #EFF1F3;
+		color: white;
+		border-color: #EFF1F3;
+	  }
+  
+	${PREFIX} ._formatButtonGroup {
+		display: flex;
+		border-radius: 4px;
+		background-color: #fff;
+		overflow: hidden;
+	  }
+  
+	${PREFIX} ._formatButtonGroup ._formatButton {
+		width: 32px;
+		height: 32px;
+		padding: 4px;
+		gap: 5px;
+		border-radius: 0;
+		background-color: #fff;
+	  }
+  
+	${PREFIX} ._formatButtonGroup ._formatButton:first-child {
+		border-top-left-radius: 4px;
+		border-bottom-left-radius: 4px;
+	  }
+  
+	${PREFIX} ._formatButtonGroup ._formatButton:last-child {
+		border-top-right-radius: 4px;
+		border-bottom-right-radius: 4px;
+		border-right: 1px solid #d0d7de;
+	  }
+  
+	${PREFIX} ._formatButton:not(._formatButtonGroup ._formatButton) {
+		border-radius: 4px;
+	}
+
+	${PREFIX} ._filterPanel ._buttonSeperator {
+		width: 1px;
+		color: #ccc;
+		background-color: #fff;
+		margin: 0 5px;
+	  }
+
+	${PREFIX} ._actionButtons {
+		background-color: none;
+		display: flex;
+		margin-left: auto;
+		gap: 8px;
+	  }
+  
+	${PREFIX} ._actionButton {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		background-color: white;
+		color:rgb(174, 186, 201);
+		cursor: pointer;
+	  }
+  
+	  ${PREFIX} ._actionButton:hover {
+		background-color: #f6f8fa;
+	  }
+  
+	  ${PREFIX} ._exportDropdown {
+		position: relative;
+	  }
+  
+	  ${PREFIX} ._exportOptions {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		margin-top: 4px;
+		background: white;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+		z-index: 100;
+		min-width: 180px;
+	  }
+  
+	  ${PREFIX} ._exportOptions button {
+		display: block;
+		width: 100%;
+		text-align: left;
+		padding: 8px 12px;
+		border: none;
+		background: none;
+		cursor: pointer;
+		font-size: 14px;
+		color: #24292f;
+	  }
+  
+	${PREFIX} ._exportOptions button:hover {
+		background-color: #f6f8fa;
+	  }
+
+	${PREFIX} ._filtertoolbar{
+		display: flex;
+		flex-direction: row;
+	}
+
 
 	${PREFIX} ._filterToolbar ._buttonGroup {
 		display: flex;
 		flex-direction: row;
 		gap: 5px;
 	}
-  
-	  ${PREFIX} ._filterPanel ._buttonSeperator {
-		width: 1px;
-		background-color: rgba(255, 255, 255, 0.3);
-		margin: 0 5px;
-	  }
 
 	${PREFIX}._both ._wrapper {
 		flex: 1;
@@ -93,10 +249,11 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} textarea {
 		width: 100%;
+		height: 100%;
 		min-height: 30vh;
 		height: auto;
 		resize: none;
-		padding: 10px;
+		padding: 16px;
 		border: 1px solid #efefef;
 		border-radius: 0px;
 		border-left: 20px solid #efefef;
@@ -186,6 +343,7 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} ._editorContainer {
 		display: flex;
+		flex: 1;
 		position: relative;
 		min-height: 30vh;
 		overflow: auto;
@@ -206,24 +364,6 @@ export default function MarkdownEditorStyle({
 	${PREFIX} ._resizer:hover {
 		opacity: 1;
 	}
-	
-	${PREFIX} ._filterPanel {
-		align-items: center;
-		position: fixed;
-		display: flex;
-		gap: 5px;
-		background-color: #ccc8;
-		backdrop-filter: blur(10px);
-		padding: 5px;
-		border-radius: 5px;
-		z-index: 5;
-		cursor: move;
-	}
-
-	${PREFIX} ._filtertoolbar{
-		display: flex;
-		flex-direction: row;
-	}
 	  
 	${PREFIX} ._componentPanel {
 		position: absolute;
@@ -231,18 +371,20 @@ export default function MarkdownEditorStyle({
 		transition: opacity 0.3s;
 		z-index: 1;
 		display: flex; 
+		flex-direction: row;
 		align-items: center;
 	}
 	
 	
 	${PREFIX} ._addButton {
-		padding: 5px;
+		margin-left:auto;
+		padding: 2px;
 		opacity: 1;
 		z-index: 1;
 		display: flex;
-		fkex-direction: row;
-		width: 24px;
-		height: 24px;
+		flex-direction: row;
+		width: 2vw;
+		height: 2vw;
 		border-radius: 50%;
 		background: #000;
 		color: white;
@@ -487,12 +629,7 @@ export default function MarkdownEditorStyle({
 		border-color: #d0d7de;
 	}
 		
-	${PREFIX} ._actionButtons {
-		display: flex;
-		gap: 4px;
-		margin-left: 4px;
-		margin-right: 4px;
-	}
+
 
 
 ${PREFIX} ._buttonBar {
@@ -618,8 +755,146 @@ ${PREFIX} ._settingsDropdown {
 	background-color: #f3f4f6;
   }
 
+  ${PREFIX} ._editBoxContainer {
+	position: relative;
+	margin: 8px 0;
+	}
+
+  ${PREFIX} ._editBox {
+	width: 100%;
+	position: relative;
+	margin: 8px 0;
+	border: 1px solid transparent;
+	border-radius: 4px;
+	transition: all 0.2s ease;
+}
+
+${PREFIX} ._editBox:hover {
+	border-color: #d0d7de;
+}
+
+${PREFIX} ._editBox._editing {
+	border-color:rgb(223, 211, 211);
+	box-shadow: 0 0 0 3px rgba(208, 221, 235, 0.1);
+}
+
+${PREFIX} ._editBoxDisplay {
+	width: 100%;
+	position: relative;
+	padding: 8px;
+}
+
+${PREFIX} ._editBoxControls {
+	position: absolute;
+	justify-content: center;
+	align-items: center;
+	gap: 4px;
+	top: 4px;
+	right: 4px;
+	display: none;
+}
+
+${PREFIX} ._editBox:hover ._editBoxControls {
+	display: flex;
+}
+
+${PREFIX} ._editButton {
+	background: #f6f8fa;
+	border: 1px solid #d0d7de;
+	border-radius: 4px;
+	padding: 4px 8px;
+	cursor: pointer;
+	font-size: 12px;
+}
+
+${PREFIX} ._editButton:hover {
+	background: #0969da;
+	color: white;
+	border-color: #0969da;
+}
+
+${PREFIX} ._editBoxContent {
+	padding: 8px;
+	min-height: 24px;
+	outline: none;
+	white-space: pre-wrap;
+}
+
+${PREFIX} ._addComponentButtonContainer {
+	position: relative;
+	height: 0;
+	display: flex;
+	justify-content: center;
+	z-index: 10;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+${PREFIX} ._editBoxContainer:hover ._addComponentButtonContainer {
+	opacity: 1;
+}
+
+${PREFIX} ._addComponentButton {
+	position: absolute;
+	top: -12px;
+	background: #f6f8fa;
+	border: 1px solid #d0d7de;
+	border-radius: 50%;
+	width: 24px;
+	height: 24px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	font-size: 12px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+${PREFIX} ._addComponentButton:hover {
+	background: #0969da;
+	color: white;
+	border-color: #0969da;
+}
+
+
+${PREFIX} ._markdown._editable {
+	width: 100%;
+	padding: 16px;
+}
+
 ${PREFIX} ._exportOptions button:hover {
     background: #f5f5f5;
+}
+
+${PREFIX} ._documentModeContainer {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+	padding: 16px;
+}
+
+${PREFIX} ._addComponentButton {
+	display: flex;
+	justify-content: center;
+	margin: 16px 0;
+}
+
+${PREFIX} ._addComponentButton button {
+	background: #f6f8fa;
+	border: 1px solid #d0d7de;
+	border-radius: 6px;
+	padding: 8px 16px;
+	cursor: pointer;
+	font-size: 14px;
+	transition: all 0.2s ease;
+}
+
+${PREFIX} ._addComponentButton button:hover {
+	background: #0969da;
+	color: white;
+	border-color: #0969da;
 }
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

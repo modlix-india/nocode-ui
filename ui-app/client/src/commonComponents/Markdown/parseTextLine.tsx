@@ -15,7 +15,7 @@ const HR_REGEX = /^[-*=_]{3,}$/;
 const TABLE_REGEX = /^(\| )?(:)?-{3,}:?\s+(\|(:|\s+:?)-{3,}(:?\s*))*\|?$/;
 
 export function parseTextLine(params: MarkdownParserParameters): MarkdownParserReturnValue {
-	const { lines, lineNumber: i, editable, styles, line: actualLine } = params;
+	const { lines, lineNumber: i, editable, styles, line: actualLine, onChange } = params;
 	let lineNumber = i;
 	let line = (actualLine ?? lines[i].trim())?.substring(params.indentationLength ?? 0);
 	let nextLine = lines[i + 1]?.trim()?.substring(params.indentationLength ?? 0) ?? '';
@@ -50,6 +50,79 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 
 	if (!comp) {
 		({ lineNumber, comp } = parseLine(params));
+	}
+
+	// If editable, wrap the component with a contentEditable div
+	if (params.editable && comp) {
+		return {
+			lineNumber,
+			comp: React.createElement(
+				React.Fragment,
+				{ key: `${params.componentKey}-frag-${i}` },
+				React.createElement('div', {
+					key: `${params.componentKey}-div-${i}`,
+					id: `${params.componentKey}-div-${i}`,
+					className: '_lineHook',
+				}),
+				React.createElement(
+					'div',
+					{
+						key: `${params.componentKey}-editable-${i}`,
+						contentEditable: true,
+						suppressContentEditableWarning: true,
+						className: '_editableContent',
+						onKeyDown: (ev: React.KeyboardEvent<HTMLDivElement>) => {
+							if (!onChange) return;
+
+							// Get the current selection
+							if (window.getSelection) {
+								let sel = window.getSelection();
+								if (sel?.rangeCount) {
+									let range = sel.getRangeAt(0);
+									if (
+										range.commonAncestorContainer.parentNode ===
+										ev.currentTarget
+									) {
+										let caretPos = range.endOffset;
+
+										// Create updated line content
+										const updatedLine =
+											line.substring(0, caretPos) +
+											ev.key +
+											line.substring(caretPos);
+
+										// Create a new array of lines with the updated line
+										const updatedLines = [...lines];
+										updatedLines[i] = updatedLine;
+
+										// Call onChange with the updated text
+										onChange(updatedLines.join('\n'));
+
+										// Prevent default to handle the update manually
+										ev.preventDefault();
+										ev.stopPropagation();
+									}
+								}
+							}
+						},
+						onInput: (ev: React.FormEvent<HTMLDivElement>) => {
+							if (!onChange) return;
+
+							// Get the updated content
+							const updatedContent = ev.currentTarget.textContent || '';
+
+							// Create a new array of lines with the updated content
+							const updatedLines = [...lines];
+							updatedLines[i] = updatedContent;
+
+							// Call onChange with the updated text
+							onChange(updatedLines.join('\n'));
+						},
+					},
+					comp,
+				),
+			),
+		};
 	}
 
 	return {
