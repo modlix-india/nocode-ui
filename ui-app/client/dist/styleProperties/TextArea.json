@@ -3927,7 +3927,7 @@
 		"dn": "Text Area Label Margin Design Default",
 		"n": "textAreaLabelMarginDesignDefault",
 		"dv": "0px 0px 0px 0px",
-		"cp": "font",
+		"cp": "margin",
 		"sel": ".comp.compTextArea._default",
 		"np": true
 	},
@@ -3936,7 +3936,7 @@
 		"dn": "Text Area Label Margin Design Outline",
 		"n": "textAreaLabelMarginDesignOutline",
 		"dv": "0px 0px 0px 0px",
-		"cp": "font",
+		"cp": "margin",
 		"sel": ".comp.compTextArea._outlined",
 		"np": true
 	},
@@ -3945,7 +3945,7 @@
 		"dn": "Text Area Label Margin Design Filled",
 		"n": "textAreaLabelMarginDesignFilled",
 		"dv": "0px 0px 0px 0px",
-		"cp": "font",
+		"cp": "margin",
 		"sel": ".comp.compTextArea._filled",
 		"np": true
 	}
