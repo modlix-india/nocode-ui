@@ -5764,6 +5764,42 @@
 		"cp": "font",
 		"sel": ".comp.compTextBox._bigDesign1._quinary ._label",
 		"np": true
+	},
+	{
+		"gn": "Text Box Label Margin",
+		"dn": "Text Box Label Margin Design Default",
+		"n": "textBoxLabelMarginDesignDefault",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextBox._default ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Margin",
+		"dn": "Text Box Label Margin Design Outline",
+		"n": "textBoxLabelMarginDesignOutline",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextBox._outlined ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Margin",
+		"dn": "Text Box Label Margin Design Filled",
+		"n": "textBoxLabelMarginDesignFilled",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextBox._filled ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Margin",
+		"dn": "Text Box Label Margin Design Big 1",
+		"n": "textBoxLabelMarginDesignBig1",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextBox._bigDesign1 ._label",
+		"np": true
 	}
 
 ]
