@@ -3271,23 +3271,23 @@
 		"cp": "box-shadow",
 		"sel": ".comp.compTextArea._default._hasError, .comp.compTextArea._default._isActive._hasError, .comp.compTextArea._default._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Text Area Error Box Shadow",
 		"dn": "Text Area Error Box Shadow Design Outline",
 		"n": "textAreaErrorBoxShadowDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compTextArea._outlined._hasError, .comp.compTextArea._outlined._isActive._hasError, .comp.compTextArea._outlined._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Text Area Error Box Shadow",
 		"dn": "Text Area Error Box Shadow Design Filled",
 		"n": "textAreaErrorBoxShadowDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compTextArea._filled._hasError, .comp.compTextArea._filled._isActive._hasError, .comp.compTextArea._filled._hasValue._hasError",
 		"np": true
-	  },
+	},
 	{
 		"gn": "Text Area Success Border Color",
 		"dn": "Text Area Success Border Color Design Default",
@@ -3730,6 +3730,61 @@
 		"dv": "<colorTwelve>",
 		"cp": "color",
 		"sel": ".comp.compTextArea ._label ._asterisk",
+		"np": true
+	},
+
+	{
+		"gn": "Text Area Has Value Box Shadow",
+		"dn": "Text Area Has Value Box Shadow Design Default",
+		"n": "textAreaHasValueBoxShadowDesignDefault",
+		"cp": "box-shadow",
+		"dv": "0vw 0vw 0vw 0.278vw #4B43761A",
+		"sel": ".comp.compTextArea._default._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Text Area Has Value Box Shadow",
+		"dn": "Text Area Has Value Box Shadow Design Outline",
+		"n": "textAreaHasValueBoxShadowDesignOutline",
+		"cp": "box-shadow",
+		"dv": "0vw 0vw 0vw 0.278vw #3F3A65",
+		"sel": ".comp.compTextArea._outlined._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Text Area Has Value Box Shadow",
+		"dn": "Text Area Has Value Box Shadow Design Filled",
+		"n": "textAreaHasValueBoxShadowDesignFilled",
+		"cp": "box-shadow",
+		"dv": "0vw 0vw 0vw 0.278vw #62589A",
+		"sel": ".comp.compTextArea._filled._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Text Area Active Box Shadow",
+		"dn": "Text Area Active Box Shadow Design Default",
+		"n": "textAreaActiveBoxShadowDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._default._isActive",
+		"dv": "0vw 0vw 0vw 0.278vw #4B43761A",
+		"np": true
+	},
+	{
+		"gn": "Text Area Active Box Shadow",
+		"dn": "Text Area Active Box Shadow Design Outline",
+		"n": "textAreaActiveBoxShadowDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._outlined._isActive",
+		"dv": "0vw 0vw 0vw 0.278vw #3F3A65",
+		"np": true
+	},
+	{
+		"gn": "Text Area Active Box Shadow",
+		"dn": "Text Area Active Box Shadow Design Filled",
+		"n": "textAreaActiveBoxShadowDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._filled._isActive",
+		"dv": "0vw 0vw 0vw 0.278vw #62589A",
 		"np": true
 	}
 ]
