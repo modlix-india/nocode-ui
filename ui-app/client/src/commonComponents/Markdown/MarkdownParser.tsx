@@ -63,12 +63,57 @@ export function MarkdownParser({
 	};
 
 	// Handle adding a new component after a specific line
-	const handleAddComponent = (afterLineIndex: number) => {
+	const handleAddComponent = (afterLineIndex: number, componentType: string) => {
 		if (!onChange) return;
 
-		// Insert a new empty line after the specified index
+		// Create the markdown content for the selected component type
+		let componentContent = '';
+
+		// Map component types to their markdown representation
+		switch (componentType) {
+			case 'heading1':
+				componentContent = '# Heading 1';
+				break;
+			case 'heading2':
+				componentContent = '## Heading 2';
+				break;
+			case 'heading3':
+				componentContent = '### Heading 3';
+				break;
+			case 'bulletList':
+				componentContent = '- List item';
+				break;
+			case 'numberedList':
+				componentContent = '1. List item';
+				break;
+			case 'taskList':
+				componentContent = '- [ ] Task item';
+				break;
+			case 'blockquote':
+				componentContent = '> Blockquote';
+				break;
+			case 'codeBlock':
+				componentContent = '```\nCode block\n```';
+				break;
+			case 'table':
+				componentContent = '| Header 1 | Header 2 |\n| --- | --- |\n| Cell 1 | Cell 2 |';
+				break;
+			case 'image':
+				componentContent = '![Image description](https://example.com/image.jpg)';
+				break;
+			case 'link':
+				componentContent = '[Link text](https://example.com)';
+				break;
+			case 'horizontalRule':
+				componentContent = '---';
+				break;
+			default:
+				componentContent = componentType || '';
+		}
+
+		// Insert the component content after the specified index
 		const updatedLines = [...lines];
-		updatedLines.splice(afterLineIndex + 1, 0, '');
+		updatedLines.splice(afterLineIndex + 1, 0, componentContent);
 
 		// Call onChange with the updated text
 		onChange(updatedLines.join('\n'));
@@ -93,24 +138,24 @@ export function MarkdownParser({
 			const originalContent = lines[i];
 			const isEmpty = originalContent.trim() === '';
 
-			comps.push(
+			comp = (
 				<EditBox
-					key={`editbox-${i}-${cyrb53(originalContent || 'empty')}`}
+					key={`editbox-${i}`}
 					originalContent={originalContent}
 					lineIndex={i}
 					onContentChange={handleContentChange}
 					onFocus={() => setEditingLineIndex(i)}
 					onBlur={() => setEditingLineIndex(null)}
 					onAddComponent={handleAddComponent}
-					isEmpty={isEmpty && i === lines.length - 1} // Keep the last empty line for adding content
+					isEmpty={isEmpty}
 				>
 					{comp}
-				</EditBox>,
+				</EditBox>
 			);
-		} else {
-			if (Array.isArray(comp)) comps.push(...comp);
-			else comps.push(comp);
 		}
+
+		if (Array.isArray(comp)) comps.push(...comp);
+		else comps.push(comp);
 	}
 
 	// Add footnotes section

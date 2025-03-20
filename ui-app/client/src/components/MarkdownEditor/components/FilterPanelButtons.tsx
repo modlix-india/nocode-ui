@@ -141,13 +141,7 @@ export function FilterPanelButtons({
 					className="_formatbutton"
 					title="Bold ( ctrl/cmd + B )"
 				>
-					<svg
-						width="14"
-						height="17"
-						viewBox="0 0 14 17"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
+					<svg width="14" height="17" viewBox="0 0 14 17" fill="none">
 						<path
 							d="M7.71429 8.66667C8.59834 8.66667 9.44619 8.31548 10.0713 7.69036C10.6964 7.06523 11.0476 6.21739 11.0476 5.33333C11.0476 4.44928 10.6964 3.60143 10.0713 2.97631C9.44619 2.35119 8.59834 2 7.71429 2H2V8.66667M7.71429 8.66667H2M7.71429 8.66667H8.66667C9.55072 8.66667 10.3986 9.01786 11.0237 9.64298C11.6488 10.2681 12 11.1159 12 12C12 12.8841 11.6488 13.7319 11.0237 14.357C10.3986 14.9821 9.55072 15.3333 8.66667 15.3333H2V8.66667"
 							stroke="black"
@@ -162,13 +156,7 @@ export function FilterPanelButtons({
 					className="_formatbutton"
 					title="Italic ( ctrl/cmd + I )"
 				>
-					<svg
-						width="12"
-						height="16"
-						viewBox="0 0 12 16"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
+					<svg width="12" height="16" viewBox="0 0 12 16" fill="none">
 						<path
 							d="M4.80952 1H10.5238M1 14.3333H6.71429M7.66667 1L3.85714 14.3333"
 							stroke="black"
@@ -183,13 +171,7 @@ export function FilterPanelButtons({
 					className="_formatbutton"
 					title="Strikethrough"
 				>
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 16 16"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<path
 							d="M7.36686 7.66667H9.01295C10.8312 7.66667 12.3051 9.15905 12.3051 11C12.3051 12.8409 10.8312 14.3333 9.01295 14.3333H7.36686C5.54864 14.3333 4.07468 12.8409 4.07468 11M12.3051 4.33333C12.3051 2.49238 10.8312 1 9.01295 1H7.36686C5.54864 1 4.07468 2.49238 4.07468 4.33333C4.07468 4.62108 4.11069 4.90032 4.1784 5.16667M1.52344 7.66667H14.8568"
 							stroke="black"
@@ -211,13 +193,7 @@ export function FilterPanelButtons({
 						className="_formatbutton"
 						title="Alignment options"
 					>
-						<svg
-							width="14"
-							height="16"
-							viewBox="0 0 14 16"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="14" height="16" viewBox="0 0 14 16" fill="none">
 							<path
 								d="M13 1H1.8"
 								stroke="black"
@@ -254,13 +230,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('alignLeft')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="10"
-									height="12"
-									viewBox="0 0 10 12"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="10" height="12" viewBox="0 0 10 12" fill="none">
 									<path
 										d="M1 1H9"
 										stroke="black"
@@ -301,13 +271,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('alignCenter')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="10"
-									height="12"
-									viewBox="0 0 10 12"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="10" height="12" viewBox="0 0 10 12" fill="none">
 									<path
 										d="M1 1H9"
 										stroke="black"
@@ -348,13 +312,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('alignRight')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="10"
-									height="12"
-									viewBox="0 0 10 12"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="10" height="12" viewBox="0 0 10 12" fill="none">
 									<path d="M1 1H9H1Z" fill="black" />
 									<path
 										d="M1 1H9"
@@ -395,13 +353,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('alignJustify')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="10"
-									height="12"
-									viewBox="0 0 10 12"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="10" height="12" viewBox="0 0 10 12" fill="none">
 									<path
 										d="M1 1H9"
 										stroke="black"
@@ -441,13 +393,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('indent')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="13"
-									height="14"
-									viewBox="0 0 13 14"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="13" height="14" viewBox="0 0 13 14" fill="none">
 									<path
 										d="M1 2H4.33333"
 										stroke="black"
@@ -504,13 +450,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('unindent')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="13"
-									height="14"
-									viewBox="0 0 13 14"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="13" height="14" viewBox="0 0 13 14" fill="none">
 									<path
 										d="M11.666 2H8.33268"
 										stroke="black"
@@ -574,13 +514,7 @@ export function FilterPanelButtons({
 						className="_formatbutton"
 						title="Heading options"
 					>
-						<svg
-							width="18"
-							height="16"
-							viewBox="0 0 18 16"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="18" height="16" viewBox="0 0 18 16" fill="none">
 							<path
 								d="M1.33323 1L1.33301 12.7171M10.1209 1L10.1206 12.7171M1.33301 6.85858H10.1206M16.8338 14.67V5.88214L14.6368 8.07911"
 								stroke="black"
@@ -644,13 +578,7 @@ export function FilterPanelButtons({
 						className="_formatbutton"
 						title="List options"
 					>
-						<svg
-							width="16"
-							height="16"
-							viewBox="0 0 16 16"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 							<path
 								d="M5.33333 4H14M5.33333 8H14M5.33333 12H14M2 4V4.00667M2 8V8.00667M2 12V12.0067"
 								stroke="black"
@@ -666,13 +594,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('bulletList')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M6 4H14M6 8H14M6 12H14M3 4C3 4.55228 2.55228 5 2 5C1.44772 5 1 4.55228 1 4C1 3.44772 1.44772 3 2 3C2.55228 3 3 3.44772 3 4ZM3 8C3 8.55228 2.55228 9 2 9C1.44772 9 1 8.55228 1 8C1 7.44772 1.44772 7 2 7C2.55228 7 3 7.44772 3 8ZM3 12C3 12.5523 2.55228 13 2 13C1.44772 13 1 12.5523 1 12C1 11.4477 1.44772 11 2 11C2.55228 11 3 11.4477 3 12Z"
 										stroke="#666"
@@ -686,13 +608,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('numberedList')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M6 4H14M6 8H14M6 12H14M3 4H1.5V2.5L3 1.5M1.5 8H3V6.5H1.5V8ZM1.5 12H3C3 11 1.5 10.5 1.5 10C1.5 9.5 2 9 3 9"
 										stroke="#666"
@@ -707,13 +623,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('taskList')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M6 4H14M6 8H14M6 12H14M2 4C2 4.55228 1.55228 5 1 5C0.447715 5 0 4.55228 0 4C0 3.44772 0.447715 3 1 3C1.55228 3 2 3.44772 2 4ZM2 8C2 8.55228 1.55228 9 1 9C0.447715 9 0 8.55228 0 8C0 7.44772 0.447715 7 1 7C1.55228 7 2 7.44772 2 8ZM2 12C2 12.5523 1.55228 13 1 13C0.447715 13 0 12.5523 0 12C0 11.4477 0.447715 11 1 11C1.55228 11 2 11.4477 2 12Z"
 										stroke="#666"
@@ -773,13 +683,7 @@ export function FilterPanelButtons({
 					className="_formatbutton"
 					title="Add Link"
 				>
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 16 16"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<path
 							d="M6.66667 8.66667C7.05215 9.0799 7.52553 9.40959 8.05333 9.63358C8.58113 9.85758 9.15061 9.97148 9.72667 9.96718C10.3027 9.96288 10.8702 9.84047 11.3944 9.60865C11.9186 9.37684 12.3869 9.04009 12.7667 8.62L14.7667 6.5C15.5301 5.69498 15.9484 4.61198 15.9367 3.48834C15.925 2.36471 15.4842 1.29146 14.7037 0.503966C13.9233 -0.283526 12.8613 -0.729401 11.7502 -0.741397C10.6392 -0.753393 9.56836 -0.330891 8.77333 0.44L7.64667 1.56"
 							stroke="black"
@@ -802,13 +706,7 @@ export function FilterPanelButtons({
 					className="_formatbutton"
 					title="Inline Code"
 				>
-					<svg
-						width="16"
-						height="16"
-						viewBox="0 0 16 16"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
+					<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 						<path
 							d="M10.6667 12L14.6667 8L10.6667 4M5.33333 4L1.33333 8L5.33333 12"
 							stroke="black"
@@ -830,13 +728,7 @@ export function FilterPanelButtons({
 						className="_formatbutton"
 						title="More options"
 					>
-						<svg
-							width="16"
-							height="16"
-							viewBox="0 0 16 16"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 							<path
 								d="M8 8.66667C8.36819 8.66667 8.66667 8.36819 8.66667 8C8.66667 7.63181 8.36819 7.33333 8 7.33333C7.63181 7.33333 7.33333 7.63181 7.33333 8C7.33333 8.36819 7.63181 8.66667 8 8.66667Z"
 								stroke="black"
@@ -866,13 +758,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('highlight')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M2 12H14M4 2L8 10L12 2"
 										stroke="#666"
@@ -895,13 +781,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('superscript')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M6 8L2 12M2 8L6 12M10 12V8L14 4M14 8H10"
 										stroke="#666"
@@ -916,13 +796,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('subscript')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M6 4L2 8M2 4L6 8M10 12V8L14 4M14 12H10"
 										stroke="#666"
@@ -937,13 +811,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('footnote')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="16"
-									height="16"
-									viewBox="0 0 16 16"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M8 2V10M8 10L5 7M8 10L11 7M2 14H14"
 										stroke="#666"
@@ -976,13 +844,7 @@ export function FilterPanelButtons({
 					<div className="_linkDialogHeader">
 						<h3>Add Link</h3>
 						<button onClick={() => setShowLinkDialog(false)} className="_closeButton">
-							<svg
-								width="16"
-								height="16"
-								viewBox="0 0 16 16"
-								fill="none"
-								xmlns="http://www.w3.org/2000/svg"
-							>
+							<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 								<path
 									d="M12 4L4 12M4 4L12 12"
 									stroke="black"

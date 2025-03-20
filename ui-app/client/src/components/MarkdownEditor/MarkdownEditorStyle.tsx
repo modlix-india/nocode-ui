@@ -889,16 +889,18 @@ export default function MarkdownEditorStyle({
 	margin: 8px 0;
 	border: 1px solid transparent;
 	border-radius: 4px;
+	padding: 12px 8px;
 	transition: all 0.2s ease;
 }
 
 ${PREFIX} ._editBox:hover {
-	border-color: #d0d7de;
+	border-color: #2496FF;
+	background-color: #ffffff;
 }
 
 ${PREFIX} ._editBox._editing {
-	border-color:rgb(223, 211, 211);
-	box-shadow: 0 0 0 3px rgba(208, 221, 235, 0.1);
+	border-color: #2496FF;
+	box-shadow: 0 0 0 3px rgba(208, 221, 235, 0.2);
 }
 
 ${PREFIX} ._editBoxDisplay {
@@ -909,12 +911,12 @@ ${PREFIX} ._editBoxDisplay {
 
 ${PREFIX} ._editBoxControls {
 	position: absolute;
-	justify-content: center;
-	align-items: center;
-	gap: 4px;
-	top: 4px;
-	right: 4px;
+	right: -8px;
+	top: 50%;
+	transform: translateY(-50%);
 	display: none;
+	align-items: center;
+	height: 135%;
 }
 
 ${PREFIX} ._editBox:hover ._editBoxControls {
@@ -922,18 +924,22 @@ ${PREFIX} ._editBox:hover ._editBoxControls {
 }
 
 ${PREFIX} ._editButton {
-	background: #f6f8fa;
-	border: 1px solid #d0d7de;
-	border-radius: 4px;
+	height: 100%;
+	background: #2496FF;
+	border: 1px solid  #2496FF;;
+	border-radius: 2px;
 	padding: 4px 8px;
 	cursor: pointer;
 	font-size: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.2s ease;
 }
 
 ${PREFIX} ._editButton:hover {
-	background: #0969da;
-	color: white;
-	border-color: #0969da;
+	background: #2496FF;
+	border-color: #2496FF;
 }
 
 ${PREFIX} ._editBoxContent {
@@ -941,16 +947,19 @@ ${PREFIX} ._editBoxContent {
 	min-height: 24px;
 	outline: none;
 	white-space: pre-wrap;
+	font-size: 16px;
 }
 
 ${PREFIX} ._addComponentButtonContainer {
 	position: relative;
-	height: 0;
+	height: 20px;
 	display: flex;
 	justify-content: center;
 	z-index: 10;
 	opacity: 0;
 	transition: opacity 0.2s ease;
+	margin-top: -20px;
+	margin-bottom: 10px;
 }
 
 ${PREFIX} ._editBoxContainer:hover ._addComponentButtonContainer {
@@ -959,9 +968,8 @@ ${PREFIX} ._editBoxContainer:hover ._addComponentButtonContainer {
 
 ${PREFIX} ._addComponentButton {
 	position: absolute;
-	top: -12px;
-	background: #f6f8fa;
-	border: 1px solid #d0d7de;
+	background: #ffffff;
+	border: 1px solid #e0e0e0;
 	border-radius: 50%;
 	width: 24px;
 	height: 24px;
@@ -969,16 +977,29 @@ ${PREFIX} ._addComponentButton {
 	align-items: center;
 	justify-content: center;
 	cursor: pointer;
-	font-size: 12px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	font-size: 16px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	transition: background 0.2s ease;
 }
 
 ${PREFIX} ._addComponentButton:hover {
-	background: #0969da;
-	color: white;
-	border-color: #0969da;
+	background: #f5f5f5;
+	border-color: #d0d7de;
 }
 
+${PREFIX} ._addComponentPanel {
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-top: 8px;
+	background-color: #ffffff;
+	border-radius: 6px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	padding: 12px;
+	z-index: 1000;
+	min-width: 300px;
+}
 
 ${PREFIX} ._markdown._editable {
 	width: 100%;
