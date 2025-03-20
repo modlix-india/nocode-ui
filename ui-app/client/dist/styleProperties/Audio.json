@@ -5,7 +5,6 @@
 		"dn": "Primary Audio Background Color",
 		"n": "primaryAudioBackgroundColor",
 		"dv": "<backgroundColorOne>",
-		"de": "audio primary  color background",
 		"cp": "background",
 		"sel": ".comp.compAudio._audioDesign1._primary, .comp.compAudio._audioDesign2._primary, .comp.compAudio._audioDesign3._primary, .comp.compAudio._audioDesign4._primary",
 		"np": true
@@ -15,7 +14,6 @@
 		"dn": "Secondary Audio Background Color",
 		"n": "secondaryAudioBackgroundColor",
 		"dv": "<backgroundColorTwo>",
-		"de": "audio primary  color background",
 		"cp": "background",
 		"sel": ".comp.compAudio._audioDesign1._secondary, .comp.compAudio._audioDesign2._secondary, .comp.compAudio._audioDesign3._secondary, .comp.compAudio._audioDesign4._secondary",
 		"np": true
@@ -25,7 +23,6 @@
 		"dn": "Tertiary Audio Background Color",
 		"n": "tertiaryAudioBackgroundColor",
 		"dv": "<backgroundColorThree>",
-		"de": "audio primary  color background",
 		"cp": "background",
 		"sel": ".comp.compAudio._audioDesign1._tertiary, .comp.compAudio._audioDesign2._tertiary, .comp.compAudio._audioDesign3._tertiary, .comp.compAudio._audioDesign4._tertiary",
 		"np": true
@@ -35,7 +32,6 @@
 		"dn": "Quaternary Audio Background Color",
 		"n": "quaternaryAudioBackgroundColor",
 		"dv": "<backgroundColorFour>",
-		"de": "audio primary  color background",
 		"cp": "background",
 		"sel": ".comp.compAudio._audioDesign1._quaternary, .comp.compAudio._audioDesign2._quaternary, .comp.compAudio._audioDesign3._quaternary, .comp.compAudio._audioDesign4._quaternary",
 		"np": true
@@ -45,49 +41,983 @@
 		"dn": "Quinary Audio Background Color",
 		"n": "quinaryAudioBackgroundColor",
 		"dv": "<backgroundColorFive>",
-		"de": "audio primary  color background",
 		"cp": "background",
 		"sel": ".comp.compAudio._audioDesign1._quinary, .comp.compAudio._audioDesign2._quinary, .comp.compAudio._audioDesign3._quinary, .comp.compAudio._audioDesign4._quinary",
 		"np": true
 	},
+
 	{
 		"gn": "Audio Padding",
-		"dn": "Audio Padding",
-		"n": "audioPadding",
-		"dv": "3px",
-		"de": "audio primary  color background",
+		"dn": "Audio Padding Design1",
+		"n": "audioPaddingDesign1",
+		"dv": "10px",
 		"cp": "padding",
 		"sel": ".comp.compAudio._audioDesign1",
 		"np": true
 	},
 	{
 		"gn": "Audio Padding",
-		"dn": "Audio Padding",
-		"n": "audioPadding",
-		"dv": "3px",
-		"de": "audio primary  color background",
+		"dn": "Audio Padding Design2",
+		"n": "audioPaddingDesign2",
+		"dv": "10px",
 		"cp": "padding",
 		"sel": ".comp.compAudio._audioDesign2",
 		"np": true
 	},
 	{
 		"gn": "Audio Padding",
-		"dn": "Audio Padding",
-		"n": "audioPadding",
-		"dv": "3px",
-		"de": "audio primary  color background",
+		"dn": "Audio Padding Design3",
+		"n": "audioPaddingDesign3",
+		"dv": "10px",
 		"cp": "padding",
 		"sel": ".comp.compAudio._audioDesign3",
 		"np": true
 	},
 	{
 		"gn": "Audio Padding",
-		"dn": "Audio Padding",
-		"n": "audioPadding",
-		"dv": "3px",
-		"de": "audio primary  color background",
+		"dn": "Audio Padding Design4",
+		"n": "audioPaddingDesign4",
+		"dv": "10px",
 		"cp": "padding",
 		"sel": ".comp.compAudio._audioDesign4",
+		"np": true
+	},
+
+	{
+		"gn": "Audio Border Radius",
+		"dn": "Audio Border Radius Design1",
+		"n": "audioBorderRadiusDesign1",
+		"dv": "10px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign1",
+		"np": true
+	},
+	{
+		"gn": "Audio Border Radius",
+		"dn": "Audio Border Radius Design2",
+		"n": "audioBorderRadiusDesign2",
+		"dv": "10px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign2",
+		"np": true
+	},
+	{
+		"gn": "Audio Border Radius",
+		"dn": "Audio Border Radius Design3",
+		"n": "audioBorderRadiusDesign3",
+		"dv": "10px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign3",
+		"np": true
+	},
+	{
+		"gn": "Audio Border Radius",
+		"dn": "Audio Border Radius Design4",
+		"n": "audioBorderRadiusDesign4",
+		"dv": "10px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign4",
+		"np": true
+	},
+	{
+		"gn": "Audio Time Font",
+		"dn": "Audio Time Font Design1",
+		"n": "audioTimeFontDesign1",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign1 ._time",
+		"np": true
+	},
+	{
+		"gn": "Audio Time Font",
+		"dn": "Audio Time Font Design2",
+		"n": "audioTimeFontDesign2",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign2 ._time",
+		"np": true
+	},
+	{
+		"gn": "Audio Time Font",
+		"dn": "Audio Time Font Design3",
+		"n": "audioTimeFontDesign3",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign3 ._time",
+		"np": true
+	},
+	{
+		"gn": "Audio Time Font",
+		"dn": "Audio Time Font Design4",
+		"n": "audioTimeFontDesign4",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign4 ._time",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Font",
+		"dn": "Audio PlayBackSpeed Font Design1",
+		"n": "audioPlayBackSpeedFontDesign1",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign1 ._playBackSpeed",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Font",
+		"dn": "Audio PlayBackSpeed Font Design2",
+		"n": "audioPlayBackSpeedFontDesign2",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign2 ._playBackSpeed",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Font",
+		"dn": "Audio PlayBackSpeed Font Design3",
+		"n": "audioPlayBackSpeedFontDesign3",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign3 ._playBackSpeed",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Font",
+		"dn": "Audio PlayBackSpeed Font Design4",
+		"n": "audioPlayBackSpeedFontDesign4",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign4 ._playBackSpeed",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown",
+		"dn": "Audio PlayBackSpeed Dropdown Primary",
+		"n": "audioPlayBackSpeedDropdownPrimary",
+		"dv": "<backgroundColorOne>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeed select, .comp.compAudio._audioDesign2._primary ._playBackSpeed select, .comp.compAudio._audioDesign3._primary ._playBackSpeed select, .comp.compAudio._audioDesign4._primary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown",
+		"dn": "Audio PlayBackSpeed Dropdown Secondary",
+		"n": "audioPlayBackSpeedDropdownSecondary",
+		"dv": "<backgroundColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeed select, .comp.compAudio._audioDesign2._secondary ._playBackSpeed select, .comp.compAudio._audioDesign3._secondary ._playBackSpeed select, .comp.compAudio._audioDesign4._secondary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown",
+		"dn": "Audio PlayBackSpeed Dropdown Tertiary",
+		"n": "audioPlayBackSpeedDropdownTertiary",
+		"dv": "<backgroundColorThree>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign2._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign3._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign4._tertiary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown",
+		"dn": "Audio PlayBackSpeed Dropdown Quaternary",
+		"n": "audioPlayBackSpeedDropdownQuaternary",
+		"dv": "<backgroundColorFour>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign2._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign3._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign4._quaternary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown",
+		"dn": "Audio PlayBackSpeed Dropdown Quinary",
+		"n": "audioPlayBackSpeedDropdownQuinary",
+		"dv": "<backgroundColorFive>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeed select, .comp.compAudio._audioDesign2._quinary ._playBackSpeed select, .comp.compAudio._audioDesign3._quinary ._playBackSpeed select, .comp.compAudio._audioDesign4._quinary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Font",
+		"dn": "Audio PlayBackSpeed Dropdown Option Font Design1",
+		"n": "audioPlayBackSpeedDropdownOptionFontDesign1",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign1 ._playBackSpeed select option",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Font",
+		"dn": "Audio PlayBackSpeed Dropdown Option Font Design2",
+		"n": "audioPlayBackSpeedDropdownOptionFontDesign2",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign2 ._playBackSpeed select option",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Font",
+		"dn": "Audio PlayBackSpeed Dropdown Option Font Design3",
+		"n": "audioPlayBackSpeedDropdownOptionFontDesign3",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign3 ._playBackSpeed select option",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Font",
+		"dn": "Audio PlayBackSpeed Dropdown Option Font Design4",
+		"n": "audioPlayBackSpeedDropdownOptionFontDesign4",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign4 ._playBackSpeed select option",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Color",
+		"dn": "Audio PlayBackSpeed Dropdown Option Color Primary",
+		"n": "audioPlayBackSpeedDropdownOptionColorPrimary",
+		"dv": "<backgroundDarkerColorOne>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeed select option, .comp.compAudio._audioDesign2._primary ._playBackSpeed select option, .comp.compAudio._audioDesign3._primary ._playBackSpeed select option, .comp.compAudio._audioDesign4._primary ._playBackSpeed select option",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Color",
+		"dn": "Audio PlayBackSpeed Dropdown Option Color Secondary",
+		"n": "audioPlayBackSpeedDropdownOptionColorSecondary",
+		"dv": "<backgroundDarkerColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeed select option, .comp.compAudio._audioDesign2._secondary ._playBackSpeed select option, .comp.compAudio._audioDesign3._secondary ._playBackSpeed select option, .comp.compAudio._audioDesign4._secondary ._playBackSpeed select option",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Color",
+		"dn": "Audio PlayBackSpeed Dropdown Option Color Tertiary",
+		"n": "audioPlayBackSpeedDropdownOptionColorTertiary",
+		"dv": "<backgroundDarkerColorThree>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeed select option, .comp.compAudio._audioDesign2._tertiary ._playBackSpeed select option, .comp.compAudio._audioDesign3._tertiary ._playBackSpeed select option, .comp.compAudio._audioDesign4._tertiary ._playBackSpeed select option",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Color",
+		"dn": "Audio PlayBackSpeed Dropdown Option Color Quaternary",
+		"n": "audioPlayBackSpeedDropdownOptionColorQuaternary",
+		"dv": "<backgroundDarkerColorFour>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeed select option, .comp.compAudio._audioDesign2._quaternary ._playBackSpeed select option, .comp.compAudio._audioDesign3._quaternary ._playBackSpeed select option, .comp.compAudio._audioDesign4._quaternary ._playBackSpeed select option",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Option Color",
+		"dn": "Audio PlayBackSpeed Dropdown Option Color Quinary",
+		"n": "audioPlayBackSpeedDropdownOptionColorQuinary",
+		"dv": "<backgroundDarkerColorFive>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeed select option, .comp.compAudio._audioDesign2._quinary ._playBackSpeed select option, .comp.compAudio._audioDesign3._quinary ._playBackSpeed select option, .comp.compAudio._audioDesign4._quinary ._playBackSpeed select option",
+		"np": true
+	},
+
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Color ",
+		"dn": "Audio PlayBackSpeed Dropdown Color  Primary",
+		"n": "audioPlayBackSpeedDropdownColorPrimary",
+		"dv": "<backgroundDarkerColorOne>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeed select, .comp.compAudio._audioDesign2._primary ._playBackSpeed select, .comp.compAudio._audioDesign3._primary ._playBackSpeed select, .comp.compAudio._audioDesign4._primary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Color ",
+		"dn": "Audio PlayBackSpeed Dropdown Color  Secondary",
+		"n": "audioPlayBackSpeedDropdownColorSecondary",
+		"dv": "<backgroundDarkerColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeed select, .comp.compAudio._audioDesign2._secondary ._playBackSpeed select, .comp.compAudio._audioDesign3._secondary ._playBackSpeed select, .comp.compAudio._audioDesign4._secondary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Color ",
+		"dn": "Audio PlayBackSpeed Dropdown Color  Tertiary",
+		"n": "audioPlayBackSpeedDropdownColorTertiary",
+		"dv": "<backgroundDarkerColorThree>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign2._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign3._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign4._tertiary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Color ",
+		"dn": "Audio PlayBackSpeed Dropdown Color  Quaternary",
+		"n": "audioPlayBackSpeedDropdownColorQuaternary",
+		"dv": "<backgroundDarkerColorFour>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign2._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign3._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign4._quaternary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Color ",
+		"dn": "Audio PlayBackSpeed Dropdown Color  Quinary",
+		"n": "audioPlayBackSpeedDropdownColorQuinary",
+		"dv": "<backgroundDarkerColorFive>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeed select, .comp.compAudio._audioDesign2._quinary ._playBackSpeed select, .comp.compAudio._audioDesign3._quinary ._playBackSpeed select, .comp.compAudio._audioDesign4._quinary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Border ",
+		"dn": "Audio PlayBackSpeed Dropdown Border  Primary",
+		"n": "audioPlayBackSpeedDropdownBorderPrimary",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeed select, .comp.compAudio._audioDesign2._primary ._playBackSpeed select, .comp.compAudio._audioDesign3._primary ._playBackSpeed select, .comp.compAudio._audioDesign4._primary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Border ",
+		"dn": "Audio PlayBackSpeed Dropdown Border  Secondary",
+		"n": "audioPlayBackSpeedDropdownBorderSecondary",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeed select, .comp.compAudio._audioDesign2._secondary ._playBackSpeed select, .comp.compAudio._audioDesign3._secondary ._playBackSpeed select, .comp.compAudio._audioDesign4._secondary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Border ",
+		"dn": "Audio PlayBackSpeed Dropdown Border  Tertiary",
+		"n": "audioPlayBackSpeedDropdownBorderTertiary",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign2._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign3._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign4._tertiary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Border ",
+		"dn": "Audio PlayBackSpeed Dropdown Border  Quaternary",
+		"n": "audioPlayBackSpeedDropdownBorderQuaternary",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign2._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign3._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign4._quaternary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown Border ",
+		"dn": "Audio PlayBackSpeed Dropdown Border  Quinary",
+		"n": "audioPlayBackSpeedDropdownBorderQuinary",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeed select, .comp.compAudio._audioDesign2._quinary ._playBackSpeed select, .comp.compAudio._audioDesign3._quinary ._playBackSpeed select, .comp.compAudio._audioDesign4._quinary ._playBackSpeed select",
+		"np": true
+	},
+
+	{
+		"gn": "Audio PlayBackSpeed Dropdown BorderRadius ",
+		"dn": "Audio PlayBackSpeed Dropdown BorderRadius  Primary",
+		"n": "audioPlayBackSpeedDropdownBorderRadiusPrimary",
+		"dv": "8px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeed select, .comp.compAudio._audioDesign2._primary ._playBackSpeed select, .comp.compAudio._audioDesign3._primary ._playBackSpeed select, .comp.compAudio._audioDesign4._primary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown BorderRadius ",
+		"dn": "Audio PlayBackSpeed Dropdown BorderRadius  Secondary",
+		"n": "audioPlayBackSpeedDropdownBorderRadiusSecondary",
+		"dv": "8px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeed select, .comp.compAudio._audioDesign2._secondary ._playBackSpeed select, .comp.compAudio._audioDesign3._secondary ._playBackSpeed select, .comp.compAudio._audioDesign4._secondary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown BorderRadius ",
+		"dn": "Audio PlayBackSpeed Dropdown BorderRadius  Tertiary",
+		"n": "audioPlayBackSpeedDropdownBorderRadiusTertiary",
+		"dv": "8px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign2._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign3._tertiary ._playBackSpeed select, .comp.compAudio._audioDesign4._tertiary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown BorderRadius ",
+		"dn": "Audio PlayBackSpeed Dropdown BorderRadius  Quaternary",
+		"n": "audioPlayBackSpeedDropdownBorderRadiusQuaternary",
+		"dv": "8px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign2._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign3._quaternary ._playBackSpeed select, .comp.compAudio._audioDesign4._quaternary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Dropdown BorderRadius ",
+		"dn": "Audio PlayBackSpeed Dropdown BorderRadius  Quinary",
+		"n": "audioPlayBackSpeedDropdownBorderRadiusQuinary",
+		"dv": "8px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeed select, .comp.compAudio._audioDesign2._quinary ._playBackSpeed select, .comp.compAudio._audioDesign3._quinary ._playBackSpeed select, .comp.compAudio._audioDesign4._quinary ._playBackSpeed select",
+		"np": true
+	},
+	{
+		"gn": "Audio ProgressBar Height",
+		"dn": "Audio ProgressBar Height Design1",
+		"n": "audioProgressBarHeightDesign1",
+		"cp": "height",
+		"dv": "4px",
+		"sel": ".comp.compAudio._audioDesign1 input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio ProgressBar Height",
+		"dn": "Audio ProgressBar Height Design2",
+		"n": "audioProgressBarHeightDesign2",
+		"dv": "4px",
+		"cp": "height",
+		"sel": ".comp.compAudio._audioDesign2 input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio ProgressBar Height",
+		"dn": "Audio ProgressBar Height Design3",
+		"n": "audioProgressBarHeightDesign3",
+		"dv": "4px",
+		"cp": "height",
+		"sel": ".comp.compAudio._audioDesign3 input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio ProgressBar Height",
+		"dn": "Audio ProgressBar Height Design4",
+		"n": "audioProgressBarHeightDesign4",
+		"dv": "4px",
+		"cp": "height",
+		"sel": ".comp.compAudio._audioDesign4 input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio  Volume Icon Height",
+		"dn": "Audio  Volume Icon Height Design1",
+		"n": "audioVolumeIconHeightDesign1",
+		"dv": "13px",
+		"cp": "height",
+		"sel": ".comp.compAudio._audioDesign1 ._volumeControls ._volumeSliderContainer svg",
+		"np": true
+	},
+	{
+		"gn": "Audio  Volume Icon Height",
+		"dn": "Audio  Volume Icon Height Design2",
+		"n": "audioVolumeIconHeightDesign2",
+		"dv": "13px",
+		"cp": "height",
+		"sel": ".comp.compAudio._audioDesign2 ._volumeControls ._volumeSliderContainer svg",
+		"np": true
+	},
+	{
+		"gn": "Audio  Volume Icon Height",
+		"dn": "Audio  Volume Icon Height Design3",
+		"n": "audioVolumeIconHeightDesign3",
+		"dv": "13px",
+		"cp": "height",
+		"sel": ".comp.compAudio._audioDesign3 ._volumeControls ._volumeSliderContainer svg",
+		"np": true
+	},
+	{
+		"gn": "Audio  Volume Icon Height",
+		"dn": "Audio  Volume Icon Height Design4",
+		"n": "audioVolumeIconHeightDesign4",
+		"dv": "13px",
+		"cp": "height",
+		"sel": ".comp.compAudio._audioDesign4 ._volumeControls ._volumeSliderContainer svg",
+		"np": true
+	},
+	{
+		"gn": "Audio Range Slider Accent Color",
+		"dn": "Primary Audio Range Slider Accent Color",
+		"n": "primaryAudioRangeSliderAccentColor",
+		"dv": "<backgroundDarkerColorOne>",
+		"cp": "accent-color",
+		"sel": ".comp.compAudio._audioDesign1._primary input[type=\"range\"], .comp.compAudio._audioDesign2._primary input[type=\"range\"], .comp.compAudio._audioDesign3._primary input[type=\"range\"], .comp.compAudio._audioDesign4._primary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio Range Slider Accent Color",
+		"dn": "Secondary Audio Range Slider Accent Color",
+		"n": "secondaryAudioRangeSliderAccentColor",
+		"dv": "<backgroundDarkerColorTwo>",
+		"cp": "accent-color",
+		"sel": ".comp.compAudio._audioDesign1._secondary input[type=\"range\"], .comp.compAudio._audioDesign2._secondary input[type=\"range\"], .comp.compAudio._audioDesign3._secondary input[type=\"range\"], .comp.compAudio._audioDesign4._secondary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio Range Slider Accent Color",
+		"dn": "Tertiary Audio Range Slider Accent Color",
+		"n": "tertiaryAudioRangeSliderAccentColor",
+		"dv": "<backgroundDarkerColorThree>",
+		"cp": "accent-color",
+		"sel": ".comp.compAudio._audioDesign1._tertiary input[type=\"range\"], .comp.compAudio._audioDesign2._tertiary input[type=\"range\"], .comp.compAudio._audioDesign3._tertiary input[type=\"range\"], .comp.compAudio._audioDesign4._tertiary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio Range Slider Accent Color",
+		"dn": "Quaternary Audio Range Slider Accent Color",
+		"n": "quaternaryAudioRangeSliderAccentColor",
+		"dv": "<backgroundDarkerColorFour>",
+		"cp": "accent-color",
+		"sel": ".comp.compAudio._audioDesign1._quaternary input[type=\"range\"], .comp.compAudio._audioDesign2._quaternary input[type=\"range\"], .comp.compAudio._audioDesign3._quaternary input[type=\"range\"], .comp.compAudio._audioDesign4._quaternary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio Range Slider Accent Color",
+		"dn": "Quinary Audio Range Slider Accent Color",
+		"n": "quinaryAudioRangeSliderAccentColor",
+		"dv": "<backgroundDarkerColorFive>",
+		"cp": "accent-color",
+		"sel": ".comp.compAudio._audioDesign1._quinary input[type=\"range\"], .comp.compAudio._audioDesign2._quinary input[type=\"range\"], .comp.compAudio._audioDesign3._quinary input[type=\"range\"], .comp.compAudio._audioDesign4._quinary input[type=\"range\"]",
+		"np": true
+	},
+	{
+		"gn": "Audio Range Slider Accent Hover Color",
+		"dn": "Primary Audio Range Slider Accent Hover Color",
+		"n": "primaryAudioRangeSliderAccentHoverColor",
+		"dv": "<backgroundDarkerColorOne>",
+		"cp": "accent-color",
+		"sel": ".comp.compAudio._audioDesign1._primary input[type=\"range\"]:hover, .comp.compAudio._audioDesign2._primary input[type=\"range\"]:hover, .comp.compAudio._audioDesign3._primary input[type=\"range\"]:hover, .comp.compAudio._audioDesign4._primary input[type=\"range\"]:hover",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Gap",
+		"dn": "Audio PlayBackSpeed Grid Gap Design1",
+		"n": "audioPlayBackSpeedGridGapDesign1",
+		"dv": "5px",
+		"cp": "gap",
+		"sel": ".comp.compAudio._audioDesign1 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Gap",
+		"dn": "Audio PlayBackSpeed Grid Gap Design2",
+		"n": "audioPlayBackSpeedGridGapDesign2",
+		"dv": "5px",
+		"cp": "gap",
+		"sel": ".comp.compAudio._audioDesign2 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Gap",
+		"dn": "Audio PlayBackSpeed Grid Gap Design3",
+		"n": "audioPlayBackSpeedGridGapDesign3",
+		"dv": "5px",
+		"cp": "gap",
+		"sel": ".comp.compAudio._audioDesign3 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Gap",
+		"dn": "Audio PlayBackSpeed Grid Gap Design4",
+		"n": "audioPlayBackSpeedGridGapDesign4",
+		"dv": "5px",
+		"cp": "gap",
+		"sel": ".comp.compAudio._audioDesign4 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Font",
+		"dn": "Audio PlayBackSpeed Grid Font Design1",
+		"n": "audioPlayBackSpeedGridFontDesign1",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign1 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Font",
+		"dn": "Audio PlayBackSpeed Grid Font Design2",
+		"n": "audioPlayBackSpeedGridFontDesign2",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign2 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Font",
+		"dn": "Audio PlayBackSpeed Grid Font Design3",
+		"n": "audioPlayBackSpeedGridFontDesign3",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign3 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Font",
+		"dn": "Audio PlayBackSpeed Grid Font Design4",
+		"n": "audioPlayBackSpeedGridFontDesign4",
+		"dv": "<audioFont>",
+		"cp": "font",
+		"sel": ".comp.compAudio._audioDesign4 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Border",
+		"dn": "Primary Audio PlayBackSpeed Grid Border",
+		"n": "primaryAudioPlayBackSpeedGridBorder",
+		"dv": "1px solid <backgroundDarkerColorOne>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._primary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._primary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._primary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Border",
+		"dn": "Secondary Audio PlayBackSpeed Grid Border",
+		"n": "secondaryAudioPlayBackSpeedGridBorder",
+		"dv": "1px solid <backgroundDarkerColorTwo>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._secondary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._secondary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._secondary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Border",
+		"dn": "Tertiary Audio PlayBackSpeed Grid Border",
+		"n": "tertiaryAudioPlayBackSpeedGridBorder",
+		"dv": "1px solid <backgroundDarkerColorThree>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._tertiary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._tertiary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._tertiary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Border",
+		"dn": "Quaternary Audio PlayBackSpeed Grid Border",
+		"n": "quaternaryAudioPlayBackSpeedGridBorder",
+		"dv": "1px solid <backgroundDarkerColorFour>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._quaternary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._quaternary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._quaternary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Border",
+		"dn": "Quinary Audio PlayBackSpeed Grid Border",
+		"n": "quinaryAudioPlayBackSpeedGridBorder",
+		"dv": "1px solid <backgroundDarkerColorFive>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._quinary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._quinary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._quinary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Color",
+		"dn": "Primary Audio PlayBackSpeed Grid Color",
+		"n": "primaryAudioPlayBackSpeedGridColor",
+		"dv": "<backgroundDarkerColorOne>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._primary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._primary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._primary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Color",
+		"dn": "Secondary Audio PlayBackSpeed Grid Color",
+		"n": "secondaryAudioPlayBackSpeedGridColor",
+		"dv": "<backgroundDarkerColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._secondary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._secondary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._secondary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Color",
+		"dn": "Tertiary Audio PlayBackSpeed Grid Color",
+		"n": "tertiaryAudioPlayBackSpeedGridColor",
+		"dv": "<backgroundDarkerColorThree>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._tertiary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._tertiary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._tertiary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Color",
+		"dn": "Quaternary Audio PlayBackSpeed Grid Color",
+		"n": "quaternaryAudioPlayBackSpeedGridColor",
+		"dv": "<backgroundDarkerColorFour>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._quaternary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._quaternary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._quaternary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Color",
+		"dn": "Quinary Audio PlayBackSpeed Grid Color",
+		"n": "quinaryAudioPlayBackSpeedGridColor",
+		"dv": "<backgroundDarkerColorFive>",
+		"cp": "color",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeedGrid, .comp.compAudio._audioDesign2._quinary ._playBackSpeedGrid, .comp.compAudio._audioDesign3._quinary ._playBackSpeedGrid, .comp.compAudio._audioDesign4._quinary ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid  Active",
+		"dn": "Primary Audio PlayBackSpeed Grid  Active",
+		"n": "primaryAudioPlayBackSpeedGridActive",
+		"dv": "600",
+		"cp": "font-weight",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign2._primary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign3._primary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign4._primary ._playBackSpeedGrid ._speedOption._active",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid  Active",
+		"dn": "Secondary Audio PlayBackSpeed Grid  Active",
+		"n": "secondaryAudioPlayBackSpeedGridActive",
+		"dv": "600",
+		"cp": "font-weight",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign2._secondary ._playBackSpeedGrid  ._speedOption._active, .comp.compAudio._audioDesign3._secondary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign4._secondary ._playBackSpeedGrid ._speedOption._active",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid  Active",
+		"dn": "Tertiary Audio PlayBackSpeed Grid  Active",
+		"n": "tertiaryAudioPlayBackSpeedGridActive",
+		"dv": "600",
+		"cp": "font-weight",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign2._tertiary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign3._tertiary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign4._tertiary ._playBackSpeedGrid ._speedOption._active",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid  Active",
+		"dn": "Quaternary Audio PlayBackSpeed Grid  Active",
+		"n": "quaternaryAudioPlayBackSpeedGridActive",
+		"dv": "600",
+		"cp": "font-weight",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign2._quaternary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign3._quaternary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign4._quaternary ._playBackSpeedGrid ._speedOption._active",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid  Active",
+		"dn": "Quinary Audio PlayBackSpeed Grid  Active",
+		"n": "quinaryAudioPlayBackSpeedGridActive",
+		"dv": "600",
+		"cp": "font-weight",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign2._quinary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign3._quinary ._playBackSpeedGrid ._speedOption._active, .comp.compAudio._audioDesign4._quinary ._playBackSpeedGrid ._speedOption._active",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid BorderRadius",
+		"dn": "Audio PlayBackSpeed Grid BorderRadius Design1",
+		"n": "audioPlayBackSpeedGridBorderRadiusDesign1",
+		"dv": "40px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign1 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid BorderRadius",
+		"dn": "Audio PlayBackSpeed Grid BorderRadius Design2",
+		"n": "audioPlayBackSpeedGridBorderRadiusDesign2",
+		"dv": "40px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign2 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid BorderRadius",
+		"dn": "Audio PlayBackSpeed Grid BorderRadius Design3",
+		"n": "audioPlayBackSpeedGridBorderRadiusDesign3",
+		"dv": "40px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign3 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid BorderRadius",
+		"dn": "Audio PlayBackSpeed Grid BorderRadius Design4",
+		"n": "audioPlayBackSpeedGridBorderRadiusDesign4",
+		"dv": "40px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign4 ._playBackSpeedGrid",
+		"np": true
+	},
+
+	{
+		"gn": "Audio PlayBackSpeed Grid Padding",
+		"dn": "Audio PlayBackSpeed Grid Padding Design1",
+		"n": "audioPlayBackSpeedGridPaddingDesign1",
+		"dv": "8px",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign1 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Padding",
+		"dn": "Audio PlayBackSpeed Grid Padding Design2",
+		"n": "audioPlayBackSpeedGridPaddingDesign2",
+		"dv": "8px",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign2 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Padding",
+		"dn": "Audio PlayBackSpeed Grid Padding Design3",
+		"n": "audioPlayBackSpeedGridPaddingDesign3",
+		"dv": "8px",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign3 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Grid Padding",
+		"dn": "Audio PlayBackSpeed Grid Padding Design4",
+		"n": "audioPlayBackSpeedGridPaddingDesign4",
+		"dv": "8px",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign4 ._playBackSpeedGrid",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Border",
+		"dn": "Primary Audio PlayBackSpeed Single Border",
+		"n": "primaryAudioPlayBackSpeedSingleBorder",
+		"dv": "1px solid <backgroundDarkerColorOne>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._primary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._primary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._primary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Border",
+		"dn": "Secondary Audio PlayBackSpeed Single Border",
+		"n": "secondaryAudioPlayBackSpeedSingleBorder",
+		"dv": "1px solid <backgroundDarkerColorTwo>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._secondary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._secondary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._secondary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Border",
+		"dn": "Tertiary Audio PlayBackSpeed Single Border",
+		"n": "tertiaryAudioPlayBackSpeedSingleBorder",
+		"dv": "1px solid <backgroundDarkerColorThree>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._tertiary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._tertiary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._tertiary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Border",
+		"dn": "Quaternary Audio PlayBackSpeed Single Border",
+		"n": "quaternaryAudioPlayBackSpeedSingleBorder",
+		"dv": "1px solid <backgroundDarkerColorFour>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._quaternary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._quaternary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._quaternary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Border",
+		"dn": "Quinary Audio PlayBackSpeed Single Border",
+		"n": "quinaryAudioPlayBackSpeedSingleBorder",
+		"dv": "1px solid <backgroundDarkerColorFive>",
+		"cp": "border",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._quinary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._quinary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._quinary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+
+	{
+		"gn": "Audio PlayBackSpeed Single BorderRadius",
+		"dn": "Audio PlayBackSpeed Single BorderRadius Design1",
+		"n": "audioPlayBackSpeedSingleBorderRadiusDesign1",
+		"dv": "40px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign1 ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single BorderRadius",
+		"dn": "Audio PlayBackSpeed Single BorderRadius Design2",
+		"n": "audioPlayBackSpeedSingleBorderRadiusDesign2",
+		"dv": "40px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign2 ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single BorderRadius",
+		"dn": "Audio PlayBackSpeed Single BorderRadius Design3",
+		"n": "audioPlayBackSpeedSingleBorderRadiusDesign3",
+		"dv": "40px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign3 ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single BorderRadius",
+		"dn": "Audio PlayBackSpeed Single BorderRadius Design4",
+		"n": "audioPlayBackSpeedSingleBorderRadiusDesign4",
+		"dv": "40px",
+		"cp": "border-radius",
+		"sel": ".comp.compAudio._audioDesign4 ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+
+	{
+		"gn": "Audio PlayBackSpeed Single Padding",
+		"dn": "Audio PlayBackSpeed Single Padding Design1",
+		"n": "audioPlayBackSpeedSinglePaddingDesign1",
+		"dv": "6px 10px 6px 10px",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign1 ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Padding",
+		"dn": "Audio PlayBackSpeed Single Padding Design2",
+		"n": "audioPlayBackSpeedSinglePaddingDesign2",
+		"dv": "6px 10px 6px 10px",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign2 ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Padding",
+		"dn": "Audio PlayBackSpeed Single Padding Design3",
+		"n": "audioPlayBackSpeedSinglePaddingDesign3",
+		"dv": "6px 10px 6px 10px",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign3 ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Padding",
+		"dn": "Audio PlayBackSpeed Single Padding Design4",
+		"n": "audioPlayBackSpeedSinglePaddingDesign4",
+		"dv": "6px 10px 6px 10px",
+		"cp": "padding",
+		"sel": ".comp.compAudio._audioDesign4 ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+
+	{
+		"gn": "Audio PlayBackSpeed Single Background",
+		"dn": "Primary Audio PlayBackSpeed Single Background",
+		"n": "primaryAudioPlayBackSpeedSingleBackground",
+		"dv": "<backgroundHoverColorOne>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._primary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._primary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._primary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._primary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Background",
+		"dn": "Secondary Audio PlayBackSpeed Single Background",
+		"n": "secondaryAudioPlayBackSpeedSingleBackground",
+		"dv": "<backgroundHoverColorTwo>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._secondary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._secondary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._secondary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._secondary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Background",
+		"dn": "Tertiary Audio PlayBackSpeed Single Background",
+		"n": "tertiaryAudioPlayBackSpeedSingleBackground",
+		"dv": "<backgroundHoverColorThree>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._tertiary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._tertiary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._tertiary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._tertiary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Background",
+		"dn": "Quaternary Audio PlayBackSpeed Single Background",
+		"n": "quaternaryAudioPlayBackSpeedSingleBackground",
+		"dv": "<backgroundHoverColorFour>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._quaternary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._quaternary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._quaternary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._quaternary ._playBackSpeed ._singleSelect",
+		"np": true
+	},
+	{
+		"gn": "Audio PlayBackSpeed Single Background",
+		"dn": "Quinary Audio PlayBackSpeed Single Background",
+		"n": "quinaryAudioPlayBackSpeedSingleBackground",
+		"dv": "<backgroundHoverColorFive>",
+		"cp": "background",
+		"sel": ".comp.compAudio._audioDesign1._quinary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign2._quinary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign3._quinary ._playBackSpeed ._singleSelect, .comp.compAudio._audioDesign4._quinary ._playBackSpeed ._singleSelect",
 		"np": true
 	}
 ]
