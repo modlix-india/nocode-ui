@@ -30,22 +30,23 @@ export default function AudioStyle({
 	}, []);
 	const css =
 		` 
-    ${PREFIX} {
-      display: flex;
-	  flex-direction: column;
-	  justify-content: center;
-	  align-items: center;
-   }
-   ${PREFIX}._audioDesign2 ._audioWithoutProgressBar {
-	justify-content: space-between;
- }
-
-   ${PREFIX} ._audioWithoutProgressBar {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 100%
- }
+		${PREFIX} {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+		 }
+		 ${PREFIX}._audioDesign2 ._audioWithoutProgressBar {
+		  justify-content: space-between;
+	   }
+	   
+		 ${PREFIX} ._audioWithoutProgressBar {
+		  display: flex;
+		  justify-content: center;
+		  align-items: center;
+		  width: 100%;
+		  gap:10px;
+	   }
 
 	${PREFIX} ._playIconIcon{
 		width:  100%;
@@ -62,10 +63,16 @@ export default function AudioStyle({
 	${PREFIX} ._progressBarContainer {
 	position: relative;
 	width: 100%;
+	display:flex;
+}
+
+     ${PREFIX}._audioDesign2 ._progressBarContainer {
+	height: 5px;
 }
 
 ${PREFIX} ._progressBar {
     width: 100%;
+	
 }
 
 ${PREFIX} ._toolTip {
@@ -92,6 +99,11 @@ ${PREFIX} ._volumeControls  {
   
    }
 
+   ${PREFIX} ._volumeControls ._volumeSliderContainer {
+    display:flex;
+	transition: opacity 0.3s ease-in-out
+   }
+
    ${PREFIX} ._volumeControls._topVertical ._volumeSliderContainer {
     transform:rotate(-90deg);
 	position:absolute;
@@ -110,6 +122,16 @@ ${PREFIX} ._volumeControls  {
 	top:80px;
 
    }
+
+   ${PREFIX} ._playBackSpeedGrid {
+   display:flex;
+   cursor:pointer;
+   }
+
+   ${PREFIX} ._playBackSpeed span{
+	cursor:pointer;
+	}
+
 
 
 

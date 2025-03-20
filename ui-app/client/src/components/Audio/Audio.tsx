@@ -76,7 +76,7 @@ function Audio(props: Readonly<ComponentProps>) {
 	const [manualSeek, setManualSeek] = useState<number | undefined>(undefined);
 	const playbackOptions = [0.5, 1, 1.5, 2];
 
-	const fileName = src.substring(src.lastIndexOf('/')+ 1)
+	const fileName = src.substring(src.lastIndexOf('/') + 1);
 
 	useEffect(() => {
 		if (!onHoverVolumeControl) {
@@ -208,7 +208,7 @@ function Audio(props: Readonly<ComponentProps>) {
 			<SubHelperComponent definition={definition} subComponentName="forwardIcon" />
 		</i>
 	) : (
-		<svg height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<svg height="1.5em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path d="M13 12L3 18V6L13 12ZM21 12L11 18V6L21 12Z" fill="currentColor" />
 		</svg>
 	);
@@ -228,7 +228,7 @@ function Audio(props: Readonly<ComponentProps>) {
 			<SubHelperComponent definition={definition} subComponentName="rewindIcon" />
 		</i>
 	) : (
-		<svg height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<svg height="1.5em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 			<path d="M11 12L21 18V6L11 12ZM3 12L13 18V6L3 12Z" fill="currentColor" />
 		</svg>
 	);
@@ -475,6 +475,7 @@ function Audio(props: Readonly<ComponentProps>) {
 				</div>
 			) : (
 				<span
+					className="_singleSelect"
 					style={resolvedStyles.playBackSpeedGrid ?? {}}
 					onClick={() => {
 						const speeds = [0.5, 1, 1.5, 2];
@@ -498,7 +499,7 @@ function Audio(props: Readonly<ComponentProps>) {
 			style={resolvedStyles.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-			
+
 			<audio
 				controls={audioControls}
 				preload="metadata"
@@ -521,24 +522,21 @@ function Audio(props: Readonly<ComponentProps>) {
 				<source src={getSrcUrl(src)} type={type} />
 				Your browser does not support HTML5 audio.
 			</audio>
-			<div className="_audioWithoutProgressBar"
-			ref={audioContainer}
-			style={resolvedStyles.compAudioSub ?? {}}
+			<div
+				className="_audioWithoutProgressBar"
+				ref={audioContainer}
+				style={resolvedStyles.compAudioSub ?? {}}
 			>
-			{playPauseButtons}
-			{timeText}
-			{audioDesign === "_audioDesign2" ? fileName : null}
-			{audioDesign === "_audioDesign1" ? seekBar : null}
-			{volumeControls}
-			{playBackSpeed}
-			{showRewindAndFastForward && audioDesign !== "_audioDesign2" && (
-				<div className="_rewindFastForward">
-					{rewindFinalIcon}
-					{forwardFinalIcon}
-				</div>
-			)}
-				</div>
-			{audioDesign === "_audioDesign2" ? seekBar : null}
+				{showRewindAndFastForward && audioDesign !== '_audioDesign2' && rewindFinalIcon}
+				{playPauseButtons}
+				{showRewindAndFastForward && audioDesign !== '_audioDesign2' && forwardFinalIcon}
+				{timeText}
+				{audioDesign === '_audioDesign2' ? fileName : null}
+				{audioDesign === '_audioDesign1' ? seekBar : null}
+				{volumeControls}
+				{playBackSpeed}
+			</div>
+			{audioDesign === '_audioDesign2' ? seekBar : null}
 		</div>
 	);
 }
