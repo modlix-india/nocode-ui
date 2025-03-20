@@ -1,6 +1,5 @@
-import { isNullValue, Repository, Schema, SchemaType, SchemaUtil } from "@fincity/kirun-js";
-import { useEffect, useState } from "react";
-import { duplicate } from "@fincity/kirun-js";
+import { isNullValue, Repository, Schema, SchemaType, SchemaUtil, duplicate } from "@fincity/kirun-js";
+import { useEffect, useMemo, useState } from "react";
 import { PREVIEW_COMP_DEFINITION_MAP } from "../../FormStorageEditor/components/formCommons";
 import { ComponentDefinition, ComponentProperty, PageDefinition } from "../../../types/common";
 
@@ -24,19 +23,23 @@ export default function generateChildren({
             setSchema(actualSchema);
             return;
         }
-
-        (async () => {
-            setSchema((await SchemaUtil.getSchemaFromRef(schema, schemaRepository, schema.getRef())) ?? actualSchema);
-        })();
+    
+        const resolveSchema = async () => {
+            const resolvedSchema = await SchemaUtil.getSchemaFromRef(actualSchema, schemaRepository, actualSchema.getRef());
+            setSchema(resolvedSchema ?? actualSchema);
+        };
+    
+        resolveSchema();
     }, [actualSchema, schemaRepository]);
+    
 
     let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 
-    if (types.size > 0) {
-        return generateFormPreview(schema, bindingPathPath);
-    }
-
-    return { children: {}, pageDef: {} as PageDefinition };
+    const formPreview = useMemo(() => {
+        return types.size > 0 ? generateFormPreview(schema, bindingPathPath) : { children: {}, pageDef: {} as PageDefinition };
+    }, [schema, bindingPathPath]);
+    
+    return formPreview;
 }
 
 function compDefinitionGenerator(label: string, schema: Schema, bindingPathPath?: string) {
@@ -48,13 +51,15 @@ function compDefinitionGenerator(label: string, schema: Schema, bindingPathPath?
 
     const compKey = `${compName}_${label.trim().replace(/\s+/g, "_")}`.toLowerCase();
 
+const properties = componentPropertyMap[compName] ? componentPropertyMap[compName](schema, types) : {};
+
     const compDef: ComponentDefinition = {
         ...(duplicate(PREVIEW_COMP_DEFINITION_MAP.get(compName)) as ComponentDefinition),
         key: compKey,
         name: compName,
         displayOrder: 0,
         type: compName,
-        properties: componentPropertyMap[compName] ? componentPropertyMap[compName](schema, types) : {},
+        properties: properties,
         bindingPath: bindingPathPath ? { type: "VALUE", value: `${bindingPathPath}` } : undefined,
     };
 
@@ -88,33 +93,34 @@ function generateFormPreview(schema: Schema, bindingPathPath?: string) {
 
 function getComponentName(types: Set<SchemaType>) {
 
-    if (!types || types.size === 9) return null;
+if (!types || types.size === ALL_SET.size) return null;
+    
+    const hasBoolean = types.has(SchemaType.BOOLEAN);
+    if (hasBoolean) return "CheckBox";
+    
+    const hasArray = types.has(SchemaType.ARRAY);
+    if (hasArray) return "Dropdown";
 
     const hasString = types.has(SchemaType.STRING);
     const hasNumber = [...types].some(type => NUMBER_TYPES.has(type));
-    const hasBoolean = types.has(SchemaType.BOOLEAN);
-    const hasArray = types.has(SchemaType.ARRAY);
-
-    if (hasBoolean) return "CheckBox";
-    if (hasArray) return "Dropdown";
-
     if (hasString || hasNumber) return "TextBox";
 
     return null;
 }
 
 
-const componentPropertyMap : Record<string, (schema: Schema, types: Set<SchemaType>) => Record<string, ComponentProperty<any>>> = {
-    TextBox: (schema, types) => {
+interface ComponentPropertyGenerator {
+    (schema: Schema, types: Set<SchemaType>): { [key: string]: ComponentProperty<any> };
+}
 
+const componentPropertyMap: { [key: string]: ComponentPropertyGenerator } = {
+    TextBox: (schema, types) => {
         const hasString = types.has(SchemaType.STRING);
         const hasNumber = [...types].some(type => NUMBER_TYPES.has(type));
 
-        if (hasString && hasNumber) return {};
+        const properties: { [key: string]: ComponentProperty<any> } = {};
 
-        const properties: Record<string, ComponentProperty<any>> = {};
-
-        if (!(hasString && hasNumber)) {
+        if (!hasString || !hasNumber) {
             properties.valueType = { value: hasString ? "text" : "number" };
 
             if (hasNumber) {
@@ -130,8 +136,8 @@ const componentPropertyMap : Record<string, (schema: Schema, types: Set<SchemaTy
         return properties;
     },
 
-    CheckBox: () => ({
-        valueType: { value: "boolean" },
+    CheckBox: (schema, types) => ({
+        valueType: { value: types.has(SchemaType.BOOLEAN) ? "boolean" : undefined },
     }),
 
     Dropdown: (schema) => ({
@@ -139,7 +145,3 @@ const componentPropertyMap : Record<string, (schema: Schema, types: Set<SchemaTy
         multiSelect: { value: false },
     }),
 };
-
-
-
-
