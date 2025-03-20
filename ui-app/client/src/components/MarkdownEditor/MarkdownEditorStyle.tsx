@@ -29,6 +29,8 @@ export default function MarkdownEditorStyle({
 	${PREFIX} ._tabContainer {
 		display: flex;
 		border-bottom: 1px solid #e1e4e8;
+		width: 10vw;
+		min-width: 100px;
 	  }
   
 	${PREFIX} ._tab {
@@ -46,6 +48,35 @@ export default function MarkdownEditorStyle({
 		justify-content: center;
 		gap: 8px;
 	  }
+
+	${PREFIX}._tabspace{
+		width: 40px;
+		height: 60px;
+		background-color: none;
+		}
+
+
+	${PREFIX} ._tabSeperator {
+		transform: translateY(5px);
+		width: 2px;
+		height: 50px;
+		background-color: #DFE8F0;
+		margin: 0 4px;
+		justify-items: center;
+		align-items: center;
+		top: 6px;
+	}
+
+	${PREFIX} ._tabSeperator1 {
+		transform: translateY(5px);
+		width: 2px;
+		height: 50px;
+		background-color:none;
+		margin: 0 4px;
+		justify-items: center;
+		align-items: center;
+		top: 6px;
+	}
   
 	${PREFIX} ._tab svg {
 		width: 16px;

@@ -492,6 +492,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		<div className="comp compMarkdownEditor" style={styleProperties.comp ?? {}}>
 			<div className="_editorHeader">
 				<div className="_tabContainer">
+					<div className="_tabspace">
+						<div className="_tabSeperator1"></div>
+					</div>
 					<button
 						className={`_tab ${activeTab === 'write' ? '_active _write-tab' : ''}`}
 						onClick={() => handleTabChange('write')}
@@ -532,6 +535,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						</svg>
 						Write
 					</button>
+					<div className="_tabspace">
+						<div className="_tabSeperator" />
+					</div>
 					<button
 						className={`_tab ${activeTab === 'doc' ? '_active _doc-tab' : ''}`}
 						onClick={() => handleTabChange('doc')}
@@ -570,6 +576,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						</svg>
 						Document
 					</button>
+					<div className="_tabspace">
+						<div className="_tabSeperator" />
+					</div>
 					<button
 						className={`_tab ${activeTab === 'preview' ? '_active _preview-tab' : ''}`}
 						onClick={() => handleTabChange('preview')}
