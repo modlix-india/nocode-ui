@@ -939,6 +939,234 @@
 		"np": true
 	},
 	{
+		"gn": "Height",
+		"dn": "Dropdown Default Primary Height",
+		"n": "dropdownDefaultPrimaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._default._primary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Outline Primary Height",
+		"n": "dropdownOutlinePrimaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._outlined._primary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Filled Primary Height",
+		"n": "dropdownFilledPrimaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._filled._primary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Big Design 1 Primary Height",
+		"n": "dropdownBigDesign1PrimaryHeight",
+		"dv": "60px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._bigDesign1._primary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Text PrimaryHeight",
+		"n": "dropdownTextPrimaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._text._primary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Default Secondary Height",
+		"n": "dropdownDefaultSecondaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._default._secondary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Outline Secondary Height",
+		"n": "dropdownOutlineSecondaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._outlined._secondary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Filled Secondary Height",
+		"n": "dropdownFilledSecondaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._filled._secondary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Big Design 1 Secondary Height",
+		"n": "dropdownBigDesign1SecondaryHeight",
+		"dv": "60px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._bigDesign1._secondary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Text Secondary Height",
+		"n": "dropdownTextSecondaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._text._secondary",
+		"np": true
+	},
+
+	{
+		"gn": "Height",
+		"dn": "Dropdown Default Tertiary Height",
+		"n": "dropdownDefaultTertiaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._default._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Outline Tertiary Height",
+		"n": "dropdownOutlineTertiaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._outlined._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Filled Tertiary Height",
+		"n": "dropdownFilledTertiaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._filled._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Big Design 1 Tertiary Height",
+		"n": "dropdownBigDesign1TertiaryHeight",
+		"dv": "60px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._bigDesign1._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Text Tertiary Height",
+		"n": "dropdownTextTertiaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._text._tertiary",
+		"np": true
+	},
+
+	{
+		"gn": "Height",
+		"dn": "Dropdown Default Quaternary Height",
+		"n": "dropdownDefaultQuaternaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._default._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Outline Quaternary Height",
+		"n": "dropdownOutlineQuaternaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._outlined._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Filled Quaternary Height",
+		"n": "dropdownFilledQuaternaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._filled._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Big Design 1 Quaternary Height",
+		"n": "dropdownBigDesign1QuaternaryHeight",
+		"dv": "60px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._bigDesign1._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Text Quaternary Height",
+		"n": "dropdownTextQuaternaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._text._quaternary",
+		"np": true
+	},
+
+	{
+		"gn": "Height",
+		"dn": "Dropdown Default Quinary Height",
+		"n": "dropdownDefaultQuinaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._default._quinary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Outline Quinary Height",
+		"n": "dropdownOutlineQuinaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._outlined._quinary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Filled Quinary Height",
+		"n": "dropdownFilledQuinaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._filled._quinary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Big Design 1 Quinary Height",
+		"n": "dropdownBigDesign1QuinaryHeight",
+		"dv": "60px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._bigDesign1._quinary",
+		"np": true
+	},
+	{
+		"gn": "Height",
+		"dn": "Dropdown Text Quinary Height",
+		"n": "dropdownTextQuinaryHeight",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compDropdown._text._quinary",
+		"np": true
+	},
+	{
 		"gn": "Border Radius",
 		"dn": "Dropdown Default Border Radius",
 		"n": "dropdownDefaultBorderRadius",
