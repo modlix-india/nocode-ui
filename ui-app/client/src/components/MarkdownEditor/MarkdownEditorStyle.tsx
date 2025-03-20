@@ -32,7 +32,7 @@ export default function MarkdownEditorStyle({
 	  }
   
 	${PREFIX} ._tab {
-	  	height: 40px;
+	  	height: 60px;
 		padding: 8px 8px;
 		border: none;
 		background: none;
@@ -58,6 +58,7 @@ export default function MarkdownEditorStyle({
 	  }
   
 	${PREFIX} ._tab._active._write-tab {
+
 	  	color:#016A70;
 		border-bottom: 3px solid #016A70;	
 	  }
@@ -93,32 +94,41 @@ export default function MarkdownEditorStyle({
 	  }
 
 	${PREFIX} ._filterPanel {
-		align-items: center;
-		position: relative;
 		display: flex;
-		gap: 5px;
-		background-color: #fff;
-		backdrop-filter: blur(10px);
-		padding: 5px;
-		border-radius: 5px;
-		z-index: 5;
-		cursor: move;
+		flex-direction: row;
+		align-items: center;
+		background-color: #ffffff;
+		border-radius: 6px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+		padding: 8px;
+		gap: 4px;
 	}
 
-	${PREFIX} ._formatButton {
+	${PREFIX} ._formatButtonGroup {
+		display: flex;
+		flex-direction: row;
+		gap: 4px;
+	}
+  
+	${PREFIX} ._formatbutton {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 32px;
 		height: 32px;
 		border-radius: 4px;
-		background-color: none;
-		color: #fff;
+		border: none;
+		background-color: transparent;
 		cursor: pointer;
+		transition: background-color 0.2s;
 	  }
-  
-	${PREFIX} ._formatButton:hover {
-		background-color: #f6f8fa;
+	  
+	${PREFIX} ._formatbutton:hover {
+		background-color: #f0f0f0;
+	  }
+
+	${PREFIX}._formatbutton._active {
+		#e0e0e0;
 	  }
   
 	${PREFIX} ._formatButton._active {
@@ -127,43 +137,35 @@ export default function MarkdownEditorStyle({
 		border-color: #EFF1F3;
 	  }
   
-	${PREFIX} ._formatButtonGroup {
-		display: flex;
-		border-radius: 4px;
-		background-color: #fff;
-		overflow: hidden;
-	  }
-  
-	${PREFIX} ._formatButtonGroup ._formatButton {
-		width: 32px;
-		height: 32px;
-		padding: 4px;
-		gap: 5px;
-		border-radius: 0;
-		background-color: #fff;
-	  }
-  
-	${PREFIX} ._formatButtonGroup ._formatButton:first-child {
-		border-top-left-radius: 4px;
-		border-bottom-left-radius: 4px;
-	  }
-  
-	${PREFIX} ._formatButtonGroup ._formatButton:last-child {
-		border-top-right-radius: 4px;
-		border-bottom-right-radius: 4px;
-		border-right: 1px solid #d0d7de;
-	  }
-  
-	${PREFIX} ._formatButton:not(._formatButtonGroup ._formatButton) {
-		border-radius: 4px;
-	}
-
-	${PREFIX} ._filterPanel ._buttonSeperator {
+	${PREFIX} ._buttonSeperator {
 		width: 1px;
-		color: #ccc;
-		background-color: #fff;
-		margin: 0 5px;
+		height: 24px;
+		background-color: #e1e4e8;
+		margin: 0 4px;
 	  }
+  
+	
+	// ${PREFIX} ._formatButtonGroup ._formatButton:first-child {
+	// 	border-top-left-radius: 4px;
+	// 	border-bottom-left-radius: 4px;
+	//   }
+  
+	// ${PREFIX} ._formatButtonGroup ._formatButton:last-child {
+	// 	border-top-right-radius: 4px;
+	// 	border-bottom-right-radius: 4px;
+	// 	border-right: 1px solid #d0d7de;
+	//   }
+  
+	// ${PREFIX} ._formatButton:not(._formatButtonGroup ._formatButton) {
+	// 	border-radius: 4px;
+	// }
+
+	// ${PREFIX} ._filterPanel ._buttonSeperator {
+	// 	width: 1px;
+	// 	color: #ccc;
+	// 	background-color: #fff;
+	// 	margin: 0 5px;
+	//   }
 
 	${PREFIX} ._actionButtons {
 		background-color: none;
@@ -308,16 +310,15 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} ._popupBackground{
 	    position: fixed;
-		z-index: 4;
-		background: #0005;
-		width: 100vw;
-		height: 100vh;
-		backdrop-filter: blur(2px);
-		left: 0;
 		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
 		display: flex;
-		justify-content: center;
 		align-items: center;
+		justify-content: center;
+		z-index: 1100;
 	}
 
 	${PREFIX} ._popupContainer {
@@ -526,68 +527,138 @@ export default function MarkdownEditorStyle({
     }
 
     ${PREFIX} ._linkDialog {
-        background: white;
-        padding: 24px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-		min-width: 400px;
-        max-width: 90vw;
+        background-color: #ffffff;
+		border-radius: 8px;
+		padding: 20px;
+		width: 400px;
+		max-width: 90vw;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
-    ${PREFIX} ._linkInput {
-        padding: 12px;
-		margin: 0 10px;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-    }
+	${PREFIX} ._linkDialog h3 {
+		margin-top: 0;
+		margin-bottom: 16px;
+		font-size: 18px;
+		color: #333;
+		}
 
-    ${PREFIX} ._dialogButtons {
-        display: flex;
-        justify-content: flex-end;
-        gap: 12px;
-        margin-top: 8px;
-		padding: 0 10px;
-		flex-direction: row;
-    }
-
-	${PREFIX} ._dialogButtons ._button {
-        padding: 8px 16px;
-        border-radius: 4px;
-        font-size: 14px;
-        cursor: pointer;
-        min-width: 80px;
-		width: fit-content;
-        height: 36px;
-        position: relative;
+    ${PREFIX}._linkInputContainer {
         display: flex;
         align-items: center;
-        justify-content: center;
+        margin-bottom: 16px;
+    }
+    ${PREFIX} ._linkInput {
+        width: 100%;
+		padding: 10px 12px;
+		margin-bottom: 12px;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		font-size: 14px;
     }
 
-    ${PREFIX} ._dialogButtons ._addButton {
-		display: inline-block;
-        background-color: #2196F3;
-        color: white;
-        border: none;
-    }
+	${PREFIX} ._linkInput:focus {
+		outline: none;
+		border-color: #4a90e2;
+		box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+		}
 
-    ${PREFIX} ._dialogButtons ._addButton:hover {
-        background-color: #1976D2;
-    }
 
-    ${PREFIX} ._dialogButtons ._cancelButton {
-        display:  inline-block;
-        background-color: #DC3545;
-        color: white;
-        border: none;
-    }
+	${PREFIX} ._linkDialogButtons {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	margin-top: 16px;
+	}
 
-    ${PREFIX} ._dialogButtons ._cancelButton:hover {
-        background-color: #C82333;
-    }
+	${PREFIX} ._linkDialogButtons button {
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-size: 14px;
+	cursor: pointer;
+	border: 1px solid #ddd;
+	background-color: #f5f5f5;
+	}
+
+	${PREFIX} ._primaryButton {
+	background-color: #4a90e2 !important;
+	color: white !important;
+	border-color: #4a90e2 !important;
+	}
+
+	${PREFIX} ._floatingToolbar {
+	position: absolute;
+	z-index: 1000;
+	}
+
+	${PREFIX} ._linkDialogHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+	}
+
+	${PREFIX} ._closeButton {
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 4px;
+	border-radius: 4px;
+	}
+
+	${PREFIX} ._closeButton:hover {
+	background-color: #f0f0f0;
+	}
+
+	${PREFIX} ._linkDialogContent {
+	margin-bottom: 16px;
+	}
+
+	${PREFIX} ._inputGroup {
+		display: flex;
+		flex: 1;
+		flex-direction: row;
+		margin-bottom: 12px;
+	
+	}
+
+	${PREFIX} ._inputGroup label {
+		display: flex;
+		margin-bottom: 6px;
+		padding: 6px;
+		margin: 12px;
+		font-size: 14px;
+		color: #555;
+	}
+
+	${PREFIX} ._linkDialogFooter {
+	display: flex;
+	justify-content: flex-end;
+	gap: 12px;
+	}
+
+	${PREFIX} ._cancelButton {
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-size: 14px;
+	cursor: pointer;
+	border: 1px solid #ddd;
+	background-color: #f5f5f5;
+	}
+
+	${PREFIX} ._addButton {
+	padding: 8px 16px;
+	border-radius: 4px;
+	font-size: 14px;
+	cursor: pointer;
+	background-color: #4a90e2;
+	color: white;
+	border: 1px solid #4a90e2;
+	}
+
+	${PREFIX} ._addButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	}
 
 	${PREFIX} ._dropdownContainer {
         position: relative;
@@ -597,20 +668,112 @@ export default function MarkdownEditorStyle({
     ${PREFIX} ._dropdown {
     	position: absolute;
 		top: 100%;
+		left: 0;
+		z-index: 1000;
+		min-width: 180px;
+		background-color: #ffffff;
+		border-radius: 6px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		padding: 8px 0;
+		margin-top: 4px;
+		max-width: 40vw;
+
+		&:has(~ ._dropdownContainer:last-child) {
+			right: 0;
+			left: auto;
+		}
+		/* Adjust position for dropdowns that would overflow */
+		@media (max-width: 768px) {
+			right: 0;
+			left: auto;
+		}
+		}
+
+    ${PREFIX} ._dropdownItem {
+        display: flex;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		padding: 8px 12px;
+		border: none;
+		background-color: transparent;
+		cursor: pointer;
+		text-align: left;
+		font-size: 14px;
+		color: #333;
+		transition: background-color 0.2s;
+		}
+
+	${PREFIX} ._dropdownItem:hover {
+		background-color: #f5f5f5;
+		border-radius: 40px;
+
+		}
+
+	${PREFIX} ._dropdownItem span:last-child {
+		margin-left: 4px;
+		}
+	
+	${PREFIX} ._button._active {
+		background-color: #f3f4f6;
+		border-color: #d0d7de;
+	}
+
+
+	${PREFIX} ._buttonBar {
+		padding: 5px;
+		display: flex;
+		gap: 5px;
+		background-color: #f5f5f5;
+		border-bottom: 1px solid #ddd;
+		position: sticky;
+		top: 0;
+		z-index: 5;
+	}
+
+	${PREFIX} ._actionButton {
+	padding: 6px;
+		width: 32px;
+		height: 32px;
+		border-radius: 6px;
+		cursor: pointer;
+		background-color: transparent;
+		border: 1px solid #d0d7de;
+		color: #57606a;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background-color 0.2s;
+	}
+
+	${PREFIX} ._actionButton:hover {
+		background-color: #f3f4f6;
+		color: #24292f;
+	}
+
+	${PREFIX} ._exportDropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	${PREFIX} ._exportOptions {
+		position: absolute;
+		top: 100%;
 		right: 0;
-		padding: 10px;
-		z-index: 100;
-		background: white;
+		margin-top: 4px;
+		background-color: #ffffff;
 		border: 1px solid #d0d7de;
 		border-radius: 6px;
 		box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-		min-width: 150px;
-    }
+		min-width: 160px;
+		z-index: 100;
+		padding: 4px 0;
+	}
 
-    ${PREFIX} ._dropdownItem {
-        width: 100%;
+	${PREFIX} ._exportOptions ._button {
+		width: 100%;
 		text-align: left;
-		padding: 6px 12px;
+		padding: 6px 16px;
 		border: none;
 		background: none;
 		font-size: 14px;
@@ -618,91 +781,16 @@ export default function MarkdownEditorStyle({
 		cursor: pointer;
 		display: block;
 		white-space: nowrap;
-    }
+	}
 
-	${PREFIX} ._dropdownItem:hover {
+	${PREFIX} ._exportOptions button:hover {
 		background-color: #f3f4f6;
 	}
-	
-	${PREFIX} ._button._active {
-		background-color: #f3f4f6;
-		border-color: #d0d7de;
+
+	${PREFIX} ._settingsDropdown {
+		position: relative;
+		display: inline-block;
 	}
-		
-
-
-
-${PREFIX} ._buttonBar {
-    padding: 5px;
-    display: flex;
-    gap: 5px;
-    background-color: #f5f5f5;
-    border-bottom: 1px solid #ddd;
-    position: sticky;
-    top: 0;
-    z-index: 5;
-}
-
-${PREFIX} ._actionButton {
-   padding: 6px;
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    cursor: pointer;
-    background-color: transparent;
-    border: 1px solid #d0d7de;
-    color: #57606a;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.2s;
-}
-
-${PREFIX} ._actionButton:hover {
-    background-color: #f3f4f6;
-    color: #24292f;
-}
-
-${PREFIX} ._exportDropdown {
-    position: relative;
-	display: inline-block;
-}
-
-${PREFIX} ._exportOptions {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    margin-top: 4px;
-    background-color: #ffffff;
-    border: 1px solid #d0d7de;
-    border-radius: 6px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    min-width: 160px;
-    z-index: 100;
-    padding: 4px 0;
-}
-
-${PREFIX} ._exportOptions ._button {
-    width: 100%;
-    text-align: left;
-    padding: 6px 16px;
-    border: none;
-    background: none;
-    font-size: 14px;
-    color: #24292f;
-    cursor: pointer;
-    display: block;
-    white-space: nowrap;
-}
-
-${PREFIX} ._exportOptions button:hover {
-    background-color: #f3f4f6;
-}
-
-${PREFIX} ._settingsDropdown {
-	position: relative;
-	display: inline-block;
-  }
   
   ${PREFIX} ._settingsButton {
 	padding: 6px;
