@@ -2809,5 +2809,525 @@
 		"cp": "color",
 		"sel": ".comp.compOtp._filled._hasError ._inputBox._hasValue",
 		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Primary Otp Box Shadow Default Design Default",
+		"n": "primaryOtpBoxShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Secondary Otp Box Shadow Default Design Default",
+		"n": "secondaryOtpBoxShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Tertiary Otp Box Shadow Default Design Default",
+		"n": "tertiaryOtpBoxShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Quaternary Otp Box Shadow Default Design Default",
+		"n": "quaternaryOtpBoxShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Quinary Otp Box Shadow Default Design Default",
+		"n": "quinaryOtpBoxShadowDefaultDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Primary Otp Box Shadow Default Design Dashed",
+		"n": "primaryOtpBoxShadowDefaultDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Secondary Otp Box Shadow Default Design Dashed",
+		"n": "secondaryOtpBoxShadowDefaultDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Tertiary Otp Box Shadow Default Design Dashed",
+		"n": "tertiaryOtpBoxShadowDefaultDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Quaternary Otp Box Shadow Default Design Dashed",
+		"n": "quaternaryOtpBoxShadowDefaultDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Quinary Otp Box Shadow Default Design Dashed",
+		"n": "quinaryOtpBoxShadowDefaultDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._quinary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Primary Otp Box Shadow Default Design Filled",
+		"n": "primaryOtpBoxShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Secondary Otp Box Shadow Default Design Filled",
+		"n": "secondaryOtpBoxShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Tertiary Otp Box Shadow Default Design Filled",
+		"n": "tertiaryOtpBoxShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Quaternary Otp Box Shadow Default Design Filled",
+		"n": "quaternaryOtpBoxShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Quinary Otp Box Shadow Default Design Filled",
+		"n": "quinaryOtpBoxShadowDefaultDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._quinary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Primary Otp Box Shadow Default Design Round",
+		"n": "primaryOtpBoxShadowDefaultDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Secondary Otp Box Shadow Default Design Round",
+		"n": "secondaryOtpBoxShadowDefaultDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Tertiary Otp Box Shadow Default Design Round",
+		"n": "tertiaryOtpBoxShadowDefaultDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Quaternary Otp Box Shadow Default Design Round",
+		"n": "quaternaryOtpBoxShadowDefaultDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Default",
+		"dn": "Quinary Otp Box Shadow Default Design Round",
+		"n": "quinaryOtpBoxShadowDefaultDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Primary Otp Box Shadow Active Design Default",
+		"n": "primaryOtpBoxShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._primary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Secondary Otp Box Shadow Active Design Default",
+		"n": "secondaryOtpBoxShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._secondary  ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Tertiary Otp Box Shadow Active Design Default",
+		"n": "tertiaryOtpBoxShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._tertiary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Quaternary Otp Box Shadow Active Design Default",
+		"n": "quaternaryOtpBoxShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._quaternary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Quinary Otp Box Shadow Active Design Default",
+		"n": "quinaryOtpBoxShadowActiveDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._quinary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Primary Otp Box Shadow Active Design Dashed",
+		"n": "primaryOtpBoxShadowActiveDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._primary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Secondary Otp Box Shadow Active Design Dashed",
+		"n": "secondaryOtpBoxShadowActiveDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._secondary  ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Tertiary Otp Box Shadow Active Design Dashed",
+		"n": "tertiaryOtpBoxShadowActiveDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Quaternary Otp Box Shadow Active Design Dashed",
+		"n": "quaternaryOtpBoxShadowActiveDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Quinary Otp Box Shadow Active Design Dashed",
+		"n": "quinaryOtpBoxShadowActiveDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._quinary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Primary Otp Box Shadow Active Design Filled",
+		"n": "primaryOtpBoxShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._primary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Secondary Otp Box Shadow Active Design Filled",
+		"n": "secondaryOtpBoxShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._secondary  ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Tertiary Otp Box Shadow Active Design Filled",
+		"n": "tertiaryOtpBoxShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._tertiary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Quaternary Otp Box Shadow Active Design Filled",
+		"n": "quaternaryOtpBoxShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._quaternary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Quinary Otp Box Shadow Active Design Filled",
+		"n": "quinaryOtpBoxShadowActiveDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._quinary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Primary Otp Box Shadow Active Design Round",
+		"n": "primaryOtpBoxShadowActiveDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._primary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Secondary Otp Box Shadow Active Design Round",
+		"n": "secondaryOtpBoxShadowActiveDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._secondary  ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Tertiary Otp Box Shadow Active Design Round",
+		"n": "tertiaryOtpBoxShadowActiveDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._tertiary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Quaternary Otp Box Shadow Active Design Round",
+		"n": "quaternaryOtpBoxShadowActiveDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._quaternary ._inputBox._isActive",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Active",
+		"dn": "Quinary Otp Box Shadow Active Design Round",
+		"n": "quinaryOtpBoxShadowActiveDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._quinary ._inputBox._isActive",
+		"np": true
+	},
+
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Primary Otp Box Shadow Has Value Design Default",
+		"n": "primaryOtpBoxShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._primary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Secondary Otp Box Shadow Has Value Design Default",
+		"n": "secondaryOtpBoxShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._secondary  ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Tertiary Otp Box Shadow Has Value Design Default",
+		"n": "tertiaryOtpBoxShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._tertiary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Quaternary Otp Box Shadow Has Value Design Default",
+		"n": "quaternaryOtpBoxShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._quaternary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Quinary Otp Box Shadow Has Value Design Default",
+		"n": "quinaryOtpBoxShadowHasValueDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._quinary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Primary Otp Box Shadow Has Value Design Dashed",
+		"n": "primaryOtpBoxShadowHasValueDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._primary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Secondary Otp Box Shadow Has Value Design Dashed",
+		"n": "secondaryOtpBoxShadowHasValueDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._secondary  ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Tertiary Otp Box Shadow Has Value Design Dashed",
+		"n": "tertiaryOtpBoxShadowHasValueDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Quaternary Otp Box Shadow Has Value Design Dashed",
+		"n": "quaternaryOtpBoxShadowHasValueDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Quinary Otp Box Shadow Has Value Design Dashed",
+		"n": "quinaryOtpBoxShadowHasValueDesignDashed",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._quinary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Primary Otp Box Shadow Has Value Design Filled",
+		"n": "primaryOtpBoxShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._primary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Secondary Otp Box Shadow Has Value Design Filled",
+		"n": "secondaryOtpBoxShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._secondary  ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Tertiary Otp Box Shadow Has Value Design Filled",
+		"n": "tertiaryOtpBoxShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._tertiary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Quaternary Otp Box Shadow Has Value Design Filled",
+		"n": "quaternaryOtpBoxShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._quaternary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Quinary Otp Box Shadow Has Value Design Filled",
+		"n": "quinaryOtpBoxShadowHasValueDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._quinary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Primary Otp Box Shadow Has Value Design Round",
+		"n": "primaryOtpBoxShadowHasValueDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._primary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Secondary Otp Box Shadow Has Value Design Round",
+		"n": "secondaryOtpBoxShadowHasValueDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._secondary  ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Tertiary Otp Box Shadow Has Value Design Round",
+		"n": "tertiaryOtpBoxShadowHasValueDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._tertiary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Quaternary Otp Box Shadow Has Value Design Round",
+		"n": "quaternaryOtpBoxShadowHasValueDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._quaternary ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Box Shadow Has Value",
+		"dn": "Quinary Otp Box Shadow Has Value Design Round",
+		"n": "quinaryOtpBoxShadowHasValueDesignRound",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._quinary ._inputBox._hasValue",
+		"np": true
+	},
+
+	{
+		"gn": "Otp Error Box Shadow",
+		"dn": "Otp Error Box Shadow Design Default",
+		"n": "otpErrorBoxShadowDesignDefault",
+		"dv": "<errorColor>",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._default._hasError ._inputBox,.comp.compOtp._default._hasError ._inputBox._isActive, .comp.compOtp._default._hasError ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Error Box Shadow",
+		"dn": "Otp Error Box Shadow Design Dashed",
+		"n": "otpErrorBoxShadowDesignDashed",
+		"dv": "<errorColor>",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._dashed._hasError ._inputBox,.comp.compOtp._dashed._hasError ._inputBox._isActive, .comp.compOtp._dashed._hasError ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Error Box Shadow",
+		"dn": "Otp Error Box Shadow Design Filled",
+		"n": "otpErrorBoxShadowDesignFilled",
+		"dv": "<errorColor>",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._filled._hasError ._inputBox,.comp.compOtp._filled._hasError ._inputBox._isActive, .comp.compOtp._filled._hasError ._inputBox._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Otp Error Box Shadow",
+		"dn": "Otp Error Box Shadow Design Round",
+		"n": "otpErrorBoxShadowDesignRound",
+		"dv": "<errorColor>",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp._round._hasError ._inputBox,.comp.compOtp._round._hasError ._inputBox._isActive, .comp.compOtp._round._hasError ._inputBox._hasValue",
+		"np": true
 	}
 ]

@@ -118,7 +118,9 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	let rightIconTag = undefined;
 
 	if (rightImage) {
-		rightIconTag = (
+		rightIconTag = isLoading ? (
+			<i className="fa fa-circle-notch fa-spin _rightButtonIcon _icon"></i>
+		) : (
 			<img
 				src={getSrcUrl(hover && activeRightImage ? activeRightImage : rightImage)}
 				alt="right"
@@ -130,11 +132,17 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
 			/>
 		);
-	} else if (hasLabel) {
+	} else {
 		rightIconTag = (
 			<i
 				style={styleProperties.rightIcon ?? {}}
-				className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+				className={`_rightButtonIcon _icon ${
+					rightIcon
+						? !isLoading
+							? rightIcon
+							: 'fa fa-circle-notch fa-spin'
+						: 'fa fa-circle-notch hide'
+				}`}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -145,10 +153,13 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	}
 
 	const hasLeftIcon = leftIcon || leftImage || isLoading;
+	
 
 	let leftIconTag = undefined;
 	if (leftImage) {
-		leftIconTag = (
+		leftIconTag =isLoading ? (
+			<i className="fa fa-circle-notch fa-spin _rightButtonIcon _icon"></i>
+		) : (
 			<img
 				src={getSrcUrl(hover && activeLeftImage ? activeLeftImage : leftImage)}
 				alt="left"
@@ -401,7 +412,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		<button
 			className={`comp compButton button ${designType} ${colorScheme} ${
 				hasLeftIcon ? '_withLeftIcon' : ''
-			} ${hasRightIconClass ? '_withRightIcon' : ''}`}
+			} ${hasRightIcon ? '_withRightIcon' : ''}`}
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
