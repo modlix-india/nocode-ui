@@ -7148,5 +7148,41 @@
 		"cp": "padding",
 		"sel": ".comp.compPhoneNumber._bigDesign1._quinary input._inputBox::placeholder",
 		"np": true
+	},
+	{
+		"gn": "Phone Number Label Margin",
+		"dn": "Phone Number Label Margin Design Default",
+		"n": "phoneNumberLabelMarginDesignDefault",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compPhoneNumber._default ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Margin",
+		"dn": "Phone Number Label Margin Design Outline",
+		"n": "phoneNumberLabelMarginDesignOutline",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compPhoneNumber._outlined ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Margin",
+		"dn": "Phone Number Label Margin Design Filled",
+		"n": "phoneNumberLabelMarginDesignFilled",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compPhoneNumber._filled ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Margin",
+		"dn": "Phone Number Label Margin Design Big 1",
+		"n": "phoneNumberLabelMarginDesignBig1",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compPhoneNumber._bigDesign1 ._label",
+		"np": true
 	}
 ]
