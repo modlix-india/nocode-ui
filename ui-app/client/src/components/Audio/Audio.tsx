@@ -28,16 +28,22 @@ function Audio(props: Readonly<ComponentProps>) {
 			showSeekBar,
 			showPlayBackSpeed,
 			onHoverVolumeControl,
-			showPlaypause,
+			showPlayPause,
 			showRewindAndFastForward,
 			volumeSliderPosition,
 			seekTimeTextOnHover,
 			playIcon,
+			playIconImage,
 			pauseIcon,
+			pauseIconImage,
 			volumeIcon,
+			volumeMuteIconImage,
+			volumeIconImage,
 			volumeMuteIcon,
 			forwardIcon,
+			forwardIconImage,
 			rewindIcon,
+			rewindIconImage,
 			playBackSpeedType,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -76,7 +82,9 @@ function Audio(props: Readonly<ComponentProps>) {
 	const [manualSeek, setManualSeek] = useState<number | undefined>(undefined);
 	const playbackOptions = [0.5, 1, 1.5, 2];
 
-	const fileName = src.substring(src.lastIndexOf('/') + 1);
+	const fileName = (
+		<p className='_fileName'>{src?.substring(src.lastIndexOf('/') + 1)}</p>
+	)
 
 	useEffect(() => {
 		if (!onHoverVolumeControl) {
@@ -115,7 +123,7 @@ function Audio(props: Readonly<ComponentProps>) {
 	};
 
 	const handlePlayPause = () => {
-		if (!audio.current) return;
+		if (!audio.current && src) return;
 		if (audio.current.paused || audio.current.ended) {
 			if (isFirstTimePlay) {
 				setIsFirstTimePlay(false);
@@ -203,61 +211,74 @@ function Audio(props: Readonly<ComponentProps>) {
 		audio.current.currentTime = Math.min(audio.current.duration, audio.current.currentTime + 5);
 	};
 
-	const forward = forwardIcon ? (
-		<i style={resolvedStyles.forwardIcon} className={forwardIcon}>
-			<SubHelperComponent definition={definition} subComponentName="forwardIcon" />
-		</i>
-	) : (
-		<svg height="1.5em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<path d="M13 12L3 18V6L13 12ZM21 12L11 18V6L21 12Z" fill="currentColor" />
-		</svg>
-	);
-
 	const forwardFinalIcon = (
 		<div
 			className="_fastForward"
 			onClick={handleFastForward}
-			style={resolvedStyles.fastForward ?? {}}
 		>
-			{forward}
+			{forwardIconImage ? (
+				<img
+					src={forwardIconImage}
+					alt="Forward Icon"
+					className="_forwardIcon"
+					style={resolvedStyles.forwardIcon}
+				/>
+			) : forwardIcon ? (
+				<i style={resolvedStyles.forwardIcon ?? {}} className={forwardIcon}>
+					<SubHelperComponent definition={definition} subComponentName="forwardIcon" />
+				</i>
+			) : (
+				<svg height="1.5em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={resolvedStyles.forwardIcon ?? {}}>
+					<path d="M13 12L3 18V6L13 12ZM21 12L11 18V6L21 12Z" fill="currentColor" />
+				</svg>
+			)}
 		</div>
-	);
-
-	const rewind = rewindIcon ? (
-		<i style={resolvedStyles.rewindIcon} className={rewindIcon}>
-			<SubHelperComponent definition={definition} subComponentName="rewindIcon" />
-		</i>
-	) : (
-		<svg height="1.5em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<path d="M11 12L21 18V6L11 12ZM3 12L13 18V6L3 12Z" fill="currentColor" />
-		</svg>
 	);
 
 	const rewindFinalIcon = (
-		<div className="_rewind" onClick={handleRewind} style={resolvedStyles.rewind ?? {}}>
-			{rewind}
+		<div className="_rewind" onClick={handleRewind}>
+			{rewindIconImage ? (
+				<img
+					src={rewindIconImage}
+					alt="Rewind Icon"
+					className="_rewindIcon"
+					style={resolvedStyles.rewindIcon}
+				/>
+			) : rewindIcon ? (
+				<i style={resolvedStyles.rewindIcon ?? {}} className={rewindIcon}>
+					<SubHelperComponent definition={definition} subComponentName="rewindIcon" />
+				</i>
+			) : (
+				<svg height="1.5em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style={resolvedStyles.rewindIcon ?? {}}>
+					<path d="M11 12L21 18V6L11 12ZM3 12L13 18V6L3 12Z" fill="currentColor" />
+				</svg>
+			)}
 		</div>
 	);
 
+
 	const playIconFinal = (
 		<div
-			className="_playIcon _playIconIcon"
+			className='_playPauseContainer'
 			onClick={handlePlayPause}
-			style={resolvedStyles.playPauseButton ?? {}}
 		>
-			{playIcon ? (
-				<i style={resolvedStyles.playPauseButton} className={playIcon}>
-					<SubHelperComponent
-						definition={definition}
-						subComponentName="playPauseButton"
-					/>
+			{playIconImage ? (
+				<img
+					src={playIconImage}
+					alt="Play Icon"
+					className="playIcon"
+					style={resolvedStyles.playIcon}
+				/>
+			) : playIcon ? (
+				<i style={resolvedStyles.playIcon ?? {}} className={playIcon}>
 				</i>
 			) : (
-				<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512">
+				<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 384 512" style={resolvedStyles.playIcon ?? {}}>
 					<path
 						d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"
 						fill="currentColor"
 					/>
+
 				</svg>
 			)}
 		</div>
@@ -265,19 +286,21 @@ function Audio(props: Readonly<ComponentProps>) {
 
 	const pauseIconFinal = (
 		<div
-			className="_pauseIcon _pauseIconIcon"
+			className='_playPauseContainer'
 			onClick={handlePlayPause}
-			style={resolvedStyles.playPauseButton ?? {}}
 		>
-			{pauseIcon ? (
-				<i style={resolvedStyles.playPauseButton} className={pauseIcon}>
-					<SubHelperComponent
-						definition={definition}
-						subComponentName="playPauseButton"
-					/>
+			{pauseIconImage ? (
+				<img
+					src={pauseIconImage}
+					alt="Play Icon"
+					className="pauseIcon"
+					style={resolvedStyles.pauseIcon}
+				/>
+			) : pauseIcon ? (
+				<i style={resolvedStyles.pauseIcon} className={pauseIcon}>
 				</i>
 			) : (
-				<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512">
+				<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 320 512" style={resolvedStyles.pauseIcon}>
 					<path
 						d="M48 64C21.5 64 0 85.5 0 112V400c0 26.5 21.5 48 48 48H80c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H48zm192 0c-26.5 0-48 21.5-48 48V400c0 26.5 21.5 48 48 48h32c26.5 0 48-21.5 48-48V112c0-26.5-21.5-48-48-48H240z"
 						fill="currentColor"
@@ -289,17 +312,25 @@ function Audio(props: Readonly<ComponentProps>) {
 
 	const volumeIconFinal = (
 		<div
-			className="_volumeButton _volumeMuteIcon"
+			className="_volumeButton "
 			onClick={volumeIconHandle}
 			id="volume-button"
 			ref={volumeButton}
+			style={resolvedStyles.volumeButton ?? {}}
 		>
-			{volumeIcon ? (
-				<i style={resolvedStyles.volumeIcon} className={volumeIcon}>
+			{volumeIconImage ? (
+				<img
+					src={volumeIconImage}
+					alt="Play Icon"
+					className="volumeIcon"
+					style={resolvedStyles.volumeIcon ?? {}}
+				/>
+			) : volumeIcon ? (
+				<i style={resolvedStyles.volumeIcon ?? {}} className={volumeIcon}>
 					<SubHelperComponent definition={definition} subComponentName="volumeIcon" />
 				</i>
 			) : (
-				<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512 ">
+				<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512 " style={resolvedStyles.volumeIcon ?? {}}>
 					<path
 						d="M533.6 32.5C598.5 85.3 640 165.8 640 256s-41.5 170.8-106.4 223.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C557.5 398.2 592 331.2 592 256s-34.5-142.2-88.7-186.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zM473.1 107c43.2 35.2 70.9 88.9 70.9 149s-27.7 113.8-70.9 149c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C475.3 341.3 496 301.1 496 256s-20.7-85.3-53.2-111.8c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zm-60.5 74.5C434.1 199.1 448 225.9 448 256s-13.9 56.9-35.4 74.5c-10.3 8.4-25.4 6.8-33.8-3.5s-6.8-25.4 3.5-33.8C393.1 284.4 400 271 400 256s-6.9-28.4-17.7-37.3c-10.3-8.4-11.8-23.5-3.5-33.8s23.5-11.8 33.8-3.5zM301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3z"
 						fill="currentColor"
@@ -311,17 +342,24 @@ function Audio(props: Readonly<ComponentProps>) {
 
 	const volumeMuteIconFinal = (
 		<div
-			className="_volumeButton _volumeMuteIcon"
+			className="_volumeButton"
 			onClick={volumeIconHandle}
 			id="volume-button"
 			ref={volumeButton}
 		>
-			{volumeMuteIcon ? (
+			{volumeMuteIconImage ? (
+				<img
+					src={volumeMuteIconImage}
+					alt="Mute Icon"
+					className="volumeMuteIcon"
+					style={resolvedStyles.volumeMuteIcon ?? {}}
+				/>
+			) : volumeMuteIcon ? (
 				<i style={resolvedStyles.volumeMuteIcon} className={volumeMuteIcon}>
 					<SubHelperComponent definition={definition} subComponentName="volumeMuteIcon" />
 				</i>
 			) : (
-				<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512">
+				<svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 576 512" style={resolvedStyles.volumeMuteIcon ?? {}}>
 					<path
 						d="M301.1 34.8C312.6 40 320 51.4 320 64V448c0 12.6-7.4 24-18.9 29.2s-25 3.1-34.4-5.3L131.8 352H64c-35.3 0-64-28.7-64-64V224c0-35.3 28.7-64 64-64h67.8L266.7 40.1c9.4-8.4 22.9-10.4 34.4-5.3zM425 167l55 55 55-55c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-55 55 55 55c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0l-55-55-55 55c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l55-55-55-55c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0z"
 						fill="currentColor"
@@ -331,22 +369,36 @@ function Audio(props: Readonly<ComponentProps>) {
 		</div>
 	);
 
-	const playPauseButtons = showPlaypause && (
-		<div className="_playPauseButton" style={resolvedStyles.playPauseButton}>
-			{playPauseEnd === 'play' ? playIconFinal : pauseIconFinal}
+	const timeTextAudioDesign1 = showTime && (
+		<div className="_timeText" style={resolvedStyles.timeText ?? {}}>
+			{audioDesign === '_audioDesign1' && (
+				<>
+					<time
+						className="_timeElapsed"
+						id="time-elapsed"
+						dateTime={`${timeState.timeElapsed.hours !== '00' ? timeState.timeElapsed.hours : ''}${timeState.timeElapsed.minutes !== '00' ? timeState.timeElapsed.minutes : ''}${timeState.timeElapsed.seconds}`}
+					>
+						{`${timeState.timeElapsed.hours !== '00' ? timeState.timeElapsed.hours + ':' : ''}${timeState.timeElapsed.minutes}:${timeState.timeElapsed.seconds}`}
+					</time>
+				</>
+			)}
 		</div>
 	);
 
 	const timeText = showTime && (
-		<div className="_time" style={resolvedStyles.timeText ?? {}}>
-			<time
-				className="_timeElapsed"
-				id="time-elapsed"
-				dateTime={`${timeState.timeElapsed.hours !== '00' ? timeState.timeElapsed.hours : ''}${timeState.timeElapsed.minutes !== '00' ? timeState.timeElapsed.minutes : ''}${timeState.timeElapsed.seconds}`}
-			>
-				{`${timeState.timeElapsed.hours !== '00' ? timeState.timeElapsed.hours + ':' : ''}${timeState.timeElapsed.minutes}:${timeState.timeElapsed.seconds}`}
-			</time>
-			<span className="_timeSplitter">/</span>
+		<div className="_timeText" style={resolvedStyles.timeText ?? {}}>
+			{audioDesign !== '_audioDesign1' && (
+				<>
+					<time
+						className="_timeElapsed"
+						id="time-elapsed"
+						dateTime={`${timeState.timeElapsed.hours !== '00' ? timeState.timeElapsed.hours : ''}${timeState.timeElapsed.minutes !== '00' ? timeState.timeElapsed.minutes : ''}${timeState.timeElapsed.seconds}`}
+					>
+						{`${timeState.timeElapsed.hours !== '00' ? timeState.timeElapsed.hours + ':' : ''}${timeState.timeElapsed.minutes}:${timeState.timeElapsed.seconds}`}
+					</time>
+					<span className="_timeSplitter">/</span>
+				</>
+			)}
 			<time
 				className="_duration"
 				id="duration"
@@ -364,7 +416,7 @@ function Audio(props: Readonly<ComponentProps>) {
 			onMouseLeave={handleMouseLeaveInput}
 		>
 			<input
-				className="_progressBar _progress"
+				className="_progressBar _progress _seekSlider"
 				id="seek"
 				value={manualSeek === undefined ? progressbarCurr : manualSeek}
 				min="0"
@@ -392,9 +444,9 @@ function Audio(props: Readonly<ComponentProps>) {
 				<div
 					style={{
 						left: `${toolTipX}px`,
-						...(resolvedStyles.toogleToolTip ?? {}),
+						...(resolvedStyles.seekTimeTextOnHover ?? {}),
 					}}
-					className="_toolTip"
+					className="_seekTimeTextOnHover"
 				>
 					{`${timeState.seekToolTip.hours !== '00' ? timeState.seekToolTip.hours + ':' : ''}${timeState.seekToolTip.minutes}:${timeState.seekToolTip.seconds}`}
 				</div>
@@ -439,18 +491,20 @@ function Audio(props: Readonly<ComponentProps>) {
 	);
 
 	const playBackSpeed = showPlayBackSpeed && (
-		<div className="_playBackSpeed" style={resolvedStyles.playBackSpeed ?? {}}>
+		<div className="_playBackSpeed">
 			{playBackSpeedType === 'DROPDOWN' ? (
 				<select
 					id="speedSelect"
 					value={playbackSpeed}
 					onChange={e => changePlaybackSpeed(e)}
+					className='_playBackSpeedDropdown'
 					style={resolvedStyles.playBackSpeedDropdown ?? {}}
 				>
 					{playbackOptions.map(speed => (
 						<option
 							key={speed}
 							value={speed}
+							className='_playBackSpeedDropdownOption'
 							style={resolvedStyles.playBackSpeedDropdownOption ?? {}}
 						>
 							{speed}x
@@ -522,17 +576,19 @@ function Audio(props: Readonly<ComponentProps>) {
 				<source src={getSrcUrl(src)} type={type} />
 				Your browser does not support HTML5 audio.
 			</audio>
+			{audioDesign === '_audioDesign4' ? fileName : null}
 			<div
 				className="_audioWithoutProgressBar"
 				ref={audioContainer}
 				style={resolvedStyles.compAudioSub ?? {}}
 			>
 				{showRewindAndFastForward && audioDesign !== '_audioDesign2' && rewindFinalIcon}
-				{playPauseButtons}
+				{showPlayPause && playPauseEnd === 'play' ? playIconFinal : pauseIconFinal}
 				{showRewindAndFastForward && audioDesign !== '_audioDesign2' && forwardFinalIcon}
-				{timeText}
 				{audioDesign === '_audioDesign2' ? fileName : null}
-				{audioDesign === '_audioDesign1' ? seekBar : null}
+				{timeTextAudioDesign1}
+				{audioDesign !== '_audioDesign2' ? seekBar : null}
+				{timeText}
 				{volumeControls}
 				{playBackSpeed}
 			</div>
@@ -599,9 +655,15 @@ const component: Component = {
 			),
 		},
 		{
-			name: 'playPauseButton',
-			displayName: 'Play Pause Button',
-			description: 'Play Pause Button',
+			name: 'playIcon',
+			displayName: 'Play Icon',
+			description: 'Play Icon',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'pauseIcon',
+			displayName: 'Pause Icon',
+			description: 'Pause Icon',
 			icon: 'fa fa-solid fa-box',
 		},
 		{
@@ -629,21 +691,15 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 		{
-			name: 'playBackSpeed',
-			displayName: 'Play Back Speed',
-			description: 'Play Back Speed',
+			name: 'rewindIcon',
+			displayName: 'Rewind Icon',
+			description: 'Rewind Icon',
 			icon: 'fa fa-solid fa-box',
 		},
 		{
-			name: 'rewind',
-			displayName: 'Rewind',
-			description: 'Rewind',
-			icon: 'fa fa-solid fa-box',
-		},
-		{
-			name: 'fastForward',
-			displayName: 'Fast Forward',
-			description: 'Fast Forward',
+			name: 'forwardIcon',
+			displayName: 'Forward Icon',
+			description: 'Forward Icon',
 			icon: 'fa fa-solid fa-box',
 		},
 		{
@@ -665,7 +721,7 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 		{
-			name: 'volumeContainer',
+			name: 'volumeButton',
 			displayName: 'Volume Container',
 			description: 'Volume Container',
 			icon: 'fa fa-solid fa-box',
