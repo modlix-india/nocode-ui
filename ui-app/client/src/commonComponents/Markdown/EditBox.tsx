@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { cyrb53 } from '../../util/cyrb53';
 import { FilterPanelButtons } from '../../components/MarkdownEditor/components/FilterPanelButtons';
 import { AddComponentPanelButtons } from '../../components/MarkdownEditor/components/AddComponentPanelButtons';
+import { useMarkdownFormatting } from '../../components/MarkdownEditor/hooks/useMarkdownFormatting';
 
 interface EditBoxProps {
 	children: React.ReactNode;
@@ -28,9 +29,15 @@ export const EditBox: React.FC<EditBoxProps> = ({
 	const [content, setContent] = useState(originalContent);
 	const [showAddComponentPanel, setShowAddComponentPanel] = useState(false);
 	const [componentSearchTerm, setComponentSearchTerm] = useState('');
+	const [selectedText, setSelectedText] = useState('');
+	const [filterPanelPosition, setFilterPanelPosition] = useState({ top: 0, left: 0 });
+
 	const editRef = useRef<HTMLDivElement>(null);
+	const boxRef = useRef<HTMLDivElement>(null);
 	const addButtonRef = useRef<HTMLButtonElement>(null);
 	const addPanelRef = useRef<HTMLDivElement>(null);
+
+	const { formatText } = useMarkdownFormatting();
 
 	// Update content when originalContent changes
 	useEffect(() => {
@@ -59,6 +66,17 @@ export const EditBox: React.FC<EditBoxProps> = ({
 		};
 	}, [showAddComponentPanel]);
 
+	// Calculate filter panel position when editing starts
+	useEffect(() => {
+		if (isEditing && boxRef.current) {
+			const rect = boxRef.current.getBoundingClientRect();
+			setFilterPanelPosition({
+				top: rect.top - 40, // Position above the box
+				left: rect.left + rect.width / 2 - 150, // Center horizontally (assuming panel width ~300px)
+			});
+		}
+	}, [isEditing]);
+
 	const handleClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 		if (!isEditing) {
@@ -70,6 +88,7 @@ export const EditBox: React.FC<EditBoxProps> = ({
 	const handleBlur = () => {
 		setIsEditing(false);
 		onContentChange(content, lineIndex);
+		setSelectedText('');
 		if (onBlur) onBlur();
 	};
 
@@ -88,6 +107,29 @@ export const EditBox: React.FC<EditBoxProps> = ({
 			return;
 		}
 	};
+
+	// Track text selection for formatting
+	const handleSelectionChange = () => {
+		if (isEditing && editRef.current) {
+			const selection = window.getSelection();
+			if (selection && selection.toString()) {
+				setSelectedText(selection.toString());
+			} else {
+				setSelectedText('');
+			}
+		}
+	};
+
+	// Add event listener for selection changes
+	useEffect(() => {
+		if (isEditing) {
+			document.addEventListener('selectionchange', handleSelectionChange);
+		}
+
+		return () => {
+			document.removeEventListener('selectionchange', handleSelectionChange);
+		};
+	}, [isEditing]);
 
 	// Initialize the editable div with content when it first becomes editable
 	useEffect(() => {
@@ -127,10 +169,74 @@ export const EditBox: React.FC<EditBoxProps> = ({
 		}
 	};
 
+	// Handle formatting from filter panel
+	const handleFormatClick = (command: string, value?: string | { url: string; text: string }) => {
+		if (editRef.current) {
+			const selection = window.getSelection();
+			if (selection && selection.rangeCount > 0) {
+				const range = selection.getRangeAt(0);
+				if (
+					range.commonAncestorContainer.parentElement === editRef.current ||
+					range.commonAncestorContainer === editRef.current
+				) {
+					// Get the selected text and its position
+					const selectedText = selection.toString();
+					const selectionStart = getTextOffset(
+						editRef.current,
+						range.startContainer,
+						range.startOffset,
+					);
+					const selectionEnd = selectionStart + selectedText.length;
+
+					// Format the text
+					const { newText } = formatText(
+						content,
+						command,
+						{ start: selectionStart, end: selectionEnd },
+						value,
+					);
+
+					// Update the content
+					setContent(newText);
+					editRef.current.innerHTML = newText;
+				}
+			}
+		}
+	};
+
+	// Helper function to get text offset in contentEditable
+	const getTextOffset = (parent: Node, node: Node, offset: number): number => {
+		let totalOffset = 0;
+		const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT, null);
+
+		let currentNode = walker.nextNode();
+		while (currentNode && currentNode !== node) {
+			totalOffset += currentNode.textContent?.length || 0;
+			currentNode = walker.nextNode();
+		}
+
+		return totalOffset + offset;
+	};
+
 	return (
 		<div className="_editBoxContainer">
-			{}
-			<div className={`_editBox ${isEditing ? '_editing' : ''}`} onClick={handleClick}>
+			<div className="_editBoxContentContainer">
+				{isEditing && (
+					<FilterPanelButtons
+						onFormatClick={handleFormatClick}
+						isVisible={true}
+						styleProperties={{}}
+						selectedText={selectedText}
+						isFloating={true}
+					/>
+				)}
+			</div>
+
+			<div
+				className={`_editBox ${isEditing ? '_editing' : ''}`}
+				onClick={handleClick}
+				ref={boxRef}
+			>
 				{isEditing ? (
 					<div
 						ref={editRef}
