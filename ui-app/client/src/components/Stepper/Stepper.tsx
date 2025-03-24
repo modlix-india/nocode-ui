@@ -258,7 +258,9 @@ function Stepper(props: Readonly<ComponentProps>) {
 				</div>
 				{line}
 			</li>,
+			
 		);
+		
 	}
 	return (
 		<ul
@@ -277,6 +279,7 @@ function Stepper(props: Readonly<ComponentProps>) {
 			{steps}
 		</ul>
 	);
+	
 }
 
 const component: Component = {

@@ -5861,5 +5861,185 @@
 		"cp": "padding",
 		"sel": ".comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 1 Header Height",
+		"n": "design1HeaderHeight",
+		"de": "Design 1 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 2 Header Height",
+		"n": "design2HeaderHeight",
+		"de": "Design 2 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 3 Header Height",
+		"n": "design3HeaderHeight",
+		"de": "Design 3 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 4 Header Height",
+		"n": "design4HeaderHeight",
+		"de": "Design 4 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 5 Header Height",
+		"n": "design5HeaderHeight",
+		"de": "Design 5 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 6 Header Height",
+		"n": "design6HeaderHeight",
+		"de": "Design 6 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 7 Header Height",
+		"n": "design7HeaderHeight",
+		"de": "Design 7 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 8 Header Height",
+		"n": "design8HeaderHeight",
+		"de": "Design 8 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 9 Header Height",
+		"n": "design9HeaderHeight",
+		"de": "Design 9 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 10 Header Height",
+		"n": "design10HeaderHeight",
+		"de": "Design 10 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 1 Header Line Height",
+		"n": "design1HeaderLineHeight",
+		"de": "Design 1 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 2 Header Line Height",
+		"n": "design2HeaderLineHeight",
+		"de": "Design 2 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 3 Header Line Height",
+		"n": "design3HeaderLineHeight",
+		"de": "Design 3 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 4 Header Line Height",
+		"n": "design4HeaderLineHeight",
+		"de": "Design 4 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 5 Header Line Height",
+		"n": "design5HeaderLineHeight",
+		"de": "Design 5 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 6 Header Line Height",
+		"n": "design6HeaderLineHeight",
+		"de": "Design 6 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 7 Header Line Height",
+		"n": "design7HeaderLineHeight",
+		"de": "Design 7 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 8 Header Line Height",
+		"n": "design8HeaderLineHeight",
+		"de": "Design 8 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 9 Header Line Height",
+		"n": "design9HeaderLineHeight",
+		"de": "Design 9 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 10 Header Line Height",
+		"n": "design10HeaderLineHeight",
+		"de": "Design 10 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"np": true
 	}
 ]

@@ -6796,8 +6796,8 @@
 
 	{
 		"gn": "Calendar Month Date",
-		"dn": "DefaultCalendar Design Month Date Padding",
-		"n": "defaultCalendarDesignMonthDatePadding",
+		"dn": "DefaultCalendar Design Month Date Border Radius",
+		"n": "defaultCalendarDesignMonthDateBorderRadius",
 		"dv": "2px",
 		"cp": "border-radius",
 		"sel": ".comp.compCalendar._defaultCalendar ._date",
@@ -6805,8 +6805,8 @@
 	},
 	{
 		"gn": "Calendar Month Date",
-		"dn": "BigCalendar Design Month Date Padding",
-		"n": "bigCalendarDesignMonthDatePadding",
+		"dn": "BigCalendar Design Month Date Border Radius",
+		"n": "bigCalendarDesignMonthDateBorderRadius",
 		"dv": "2px",
 		"cp": "border-radius",
 		"sel": ".comp.compCalendar._bigCalendar ._date",
@@ -6814,8 +6814,8 @@
 	},
 	{
 		"gn": "Calendar Month Date",
-		"dn": "SmallCalendar Design Month Date Padding",
-		"n": "smallCalendarDesignMonthDatePadding",
+		"dn": "SmallCalendar Design Month Date BorderRadius",
+		"n": "smallCalendarDesignMonthDateBorderRadius",
 		"dv": "2px",
 		"cp": "border-radius",
 		"sel": ".comp.compCalendar._smallCalendar ._date",
@@ -9406,6 +9406,438 @@
 		"dv": "0px 0px 0px 0px",
 		"cp": "margin",
 		"sel": ".comp.compCalendar._text ._label",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Primary Calendar DefaultCalendar Font Design Year Number",
+		"n": "primaryCalendarDefaultCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._primary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Secondary Calendar DefaultCalendar Font Design Year Number",
+		"n": "secondaryCalendarDefaultCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._secondary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Tertiary Calendar DefaultCalendar Font Design Year Number",
+		"n": "tertiaryCalendarDefaultCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._tertiary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quaternary Calendar DefaultCalendar Font Design Year Number",
+		"n": "quaternaryCalendarDefaultCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._quaternary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quinary Calendar DefaultCalendar Font Design Year Number",
+		"n": "quinaryCalendarDefaultCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._quinary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Primary Calendar BigCalendar Font Design Year Number",
+		"n": "primaryCalendarBigCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._primary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Secondary Calendar BigCalendar Font Design Year Number",
+		"n": "secondaryCalendarBigCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._secondary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Tertiary Calendar BigCalendar Font Design Year Number",
+		"n": "tertiaryCalendarBigCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._tertiary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quaternary Calendar BigCalendar Font Design Year Number",
+		"n": "quaternaryCalendarBigCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._quaternary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quinary Calendar BigCalendar Font Design Year Number",
+		"n": "quinaryCalendarBigCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._quinary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Primary Calendar SmallCalendar Font Design Year Number",
+		"n": "primaryCalendarSmallCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._primary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Secondary Calendar SmallCalendar Font Design Year Number",
+		"n": "secondaryCalendarSmallCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._secondary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Tertiary Calendar SmallCalendar Font Design Year Number",
+		"n": "tertiaryCalendarSmallCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._tertiary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quaternary Calendar SmallCalendar Font Design Year Number",
+		"n": "quaternaryCalendarSmallCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._quaternary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quinary Calendar SmallCalendar Font Design Year Number",
+		"n": "quinaryCalendarSmallCalendarFontDesignYearNumber",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._quinary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Primary Calendar DefaultCalendar Font Design Month Name",
+		"n": "primaryCalendarDefaultCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._primary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Secondary Calendar DefaultCalendar Font Design Month Name",
+		"n": "secondaryCalendarDefaultCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._secondary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Tertiary Calendar DefaultCalendar Font Design Month Name",
+		"n": "tertiaryCalendarDefaultCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._tertiary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quaternary Calendar DefaultCalendar Font Design Month Name",
+		"n": "quaternaryCalendarDefaultCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._quaternary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quinary Calendar DefaultCalendar Font Design Month Name",
+		"n": "quinaryCalendarDefaultCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._quinary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Primary Calendar BigCalendar Font Design Month Name",
+		"n": "primaryCalendarBigCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._primary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Secondary Calendar BigCalendar Font Design Month Name",
+		"n": "secondaryCalendarBigCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._secondary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Tertiary Calendar BigCalendar Font Design Month Name",
+		"n": "tertiaryCalendarBigCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._tertiary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quaternary Calendar BigCalendar Font Design Month Name",
+		"n": "quaternaryCalendarBigCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._quaternary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quinary Calendar BigCalendar Font Design Month Name",
+		"n": "quinaryCalendarBigCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._quinary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Primary Calendar SmallCalendar Font Design Month Name",
+		"n": "primaryCalendarSmallCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._primary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Secondary Calendar SmallCalendar Font Design Month Name",
+		"n": "secondaryCalendarSmallCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._secondary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Tertiary Calendar SmallCalendar Font Design Month Name",
+		"n": "tertiaryCalendarSmallCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._tertiary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quaternary Calendar SmallCalendar Font Design Month Name",
+		"n": "quaternaryCalendarSmallCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._quaternary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Header Font",
+		"dn": "Quinary Calendar SmallCalendar Font Design Month Name",
+		"n": "quinaryCalendarSmallCalendarFontDesignMonthName",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._quinary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date",
+		"dn": "DefaultCalendar Design Month Date Font",
+		"n": "defaultCalendarDesignMonthDateFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date",
+		"dn": "BigCalendar Design Month Date Font",
+		"n": "bigCalendarDesignMonthDateFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date",
+		"dn": "SmallCalendar Design Month Date Font",
+		"n": "smallCalendarDesignMonthDateFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Primary Calendar DefaultCalendar Design Font",
+		"n": "primaryCalendarDefaultCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._primary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Secondary Calendar DefaultCalendar Design Font",
+		"n": "secondaryCalendarDefaultCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._secondary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Tertiary Calendar DefaultCalendar Design Font",
+		"n": "tertiaryCalendarDefaultCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._tertiary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Quaternary Calendar DefaultCalendar Design Font",
+		"n": "quaternaryCalendarDefaultCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._quaternary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Quinary Calendar DefaultCalendar Design Font",
+		"n": "quinaryCalendarDefaultCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._defaultCalendar._quinary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Primary Calendar BigCalendar Design Font",
+		"n": "primaryCalendarBigCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._primary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Secondary Calendar BigCalendar Design Font",
+		"n": "secondaryCalendarBigCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._secondary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Tertiary Calendar BigCalendar Design Font",
+		"n": "tertiaryCalendarBigCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._tertiary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Quaternary Calendar BigCalendar Design Font",
+		"n": "quaternaryCalendarBigCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._quaternary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Quinary Calendar BigCalendar Design Font",
+		"n": "quinaryCalendarBigCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigCalendar._quinary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Primary Calendar SmallCalendar Design Font",
+		"n": "primaryCalendarSmallCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._primary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Secondary Calendar SmallCalendar Design Font",
+		"n": "secondaryCalendarSmallCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._secondary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Tertiary Calendar SmallCalendar Design Font",
+		"n": "tertiaryCalendarSmallCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._tertiary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Quaternary Calendar SmallCalendar Design Font",
+		"n": "quaternaryCalendarSmallCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._quaternary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Calendar Body Font",
+		"dn": "Quinary Calendar SmallCalendar Design Font",
+		"n": "quinaryCalendarSmallCalendarDesignFont",
+		"dv": "<secondaryFont>",
+		"cp": "font",
+		"sel": ".comp.compCalendar._smallCalendar._quinary ._calendarBodyMonths",
 		"np": true
 	}
 ]
