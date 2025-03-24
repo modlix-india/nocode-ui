@@ -1813,5 +1813,566 @@
 		"cp": "background",
 		"sel": ".comp.compTable._design4._quinary ._row._dataRow:hover, .comp.compTable._design4._quinary ._row._dataRow._selected",
 		"np": true
+	},
+
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 1 Row Border Right",
+		"n": "design1RowBorderRight",
+		"de": "Design 1 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design1 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 2 Row Border Right",
+		"n": "design2RowBorderRight",
+		"dv": "1px solid #3333330D",
+		"de": "Design 2 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design2 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 3 Row Border Right",
+		"n": "design3RowBorderRight",
+		"de": "Design 3 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design3 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 4 Row Border Right",
+		"n": "design4RowBorderRight",
+		"dv": "1px solid #3333330D",
+		"de": "Design 4 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design4 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 5 Row Border Right",
+		"n": "design5RowBorderRight",
+		"dv": "1px solid #3333330D",
+		"de": "Design 5 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design5 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 6 Row Border Right",
+		"n": "design6RowBorderRight",
+		"dv": "1px solid #3333330D",
+		"de": "Design 6 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design6 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 7 Row Border Right",
+		"n": "design7RowBorderRight",
+		"de": "Design 7 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design7 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 8 Row Border Right",
+		"n": "design8RowBorderRight",
+		"dv": "1px solid #DBDBDB",
+		"de": "Design 8 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design8 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 9 Row Border Right",
+		"n": "design9RowBorderRight",
+		"de": "Design 9 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design9 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Right",
+		"dn": "Design 10 Row Border Right",
+		"n": "design10RowBorderRight",
+		"de": "Design 10 Row Border Right",
+		"cp": "border-right",
+		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 1 Row Border Left",
+		"n": "design1RowBorderLeft",
+		"de": "Design 1 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design1 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 2 Row Border Left",
+		"n": "design2RowBorderLeft",
+		"dv": "1px solid #3333330D",
+		"de": "Design 2 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design2 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 3 Row Border Left",
+		"n": "design3RowBorderLeft",
+		"de": "Design 3 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design3 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 4 Row Border Left",
+		"n": "design4RowBorderLeft",
+		"dv": "1px solid #3333330D",
+		"de": "Design 4 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design4 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 5 Row Border Left",
+		"n": "design5RowBorderLeft",
+		"dv": "1px solid #3333330D",
+		"de": "Design 5 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design5 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 6 Row Border Left",
+		"n": "design6RowBorderLeft",
+		"dv": "1px solid #3333330D",
+		"de": "Design 6 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design6 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 7 Row Border Left",
+		"n": "design7RowBorderLeft",
+		"de": "Design 7 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design7 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 8 Row Border Left",
+		"n": "design8RowBorderLeft",
+		"dv": "1px solid #DBDBDB",
+		"de": "Design 8 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design8 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 9 Row Border Left",
+		"n": "design9RowBorderLeft",
+		"de": "Design 9 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design9 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Left",
+		"dn": "Design 10 Row Border Left",
+		"n": "design10RowBorderLeft",
+		"de": "Design 10 Row Border Left",
+		"cp": "border-left",
+		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 1 Row Border Top",
+		"n": "design1RowBorderTop",
+		"de": "Design 1 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design1 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 2 Row Border Top",
+		"n": "design2RowBorderTop",
+		"dv": "1px solid #3333330D",
+		"de": "Design 2 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design2 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 3 Row Border Top",
+		"n": "design3RowBorderTop",
+		"de": "Design 3 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design3 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 4 Row Border Top",
+		"n": "design4RowBorderTop",
+		"dv": "1px solid #3333330D",
+		"de": "Design 4 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design4 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 5 Row Border Top",
+		"n": "design5RowBorderTop",
+		"dv": "1px solid #3333330D",
+		"de": "Design 5 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design5 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 6 Row Border Top",
+		"n": "design6RowBorderTop",
+		"dv": "1px solid #3333330D",
+		"de": "Design 6 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design6 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 7 Row Border Top",
+		"n": "design7RowBorderTop",
+		"de": "Design 7 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design7 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 8 Row Border Top",
+		"n": "design8RowBorderTop",
+		"dv": "1px solid #DBDBDB",
+		"de": "Design 8 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design8 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 9 Row Border Top",
+		"n": "design9RowBorderTop",
+		"de": "Design 9 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design9 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Top",
+		"dn": "Design 10 Row Border Top",
+		"n": "design10RowBorderTop",
+		"de": "Design 10 Row Border Top",
+		"cp": "border-top",
+		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 1 Row Border Bottom",
+		"n": "design1RowBorderBottom",
+		"de": "Design 1 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design1 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 2 Row Border Bottom",
+		"n": "design2RowBorderBottom",
+		"dv": "1px solid #3333330D",
+		"de": "Design 2 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design2 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 3 Row Border Bottom",
+		"n": "design3RowBorderBottom",
+		"de": "Design 3 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design3 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 4 Row Border Bottom",
+		"n": "design4RowBorderBottom",
+		"dv": "1px solid #3333330D",
+		"de": "Design 4 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design4 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 5 Row Border Bottom",
+		"n": "design5RowBorderBottom",
+		"dv": "1px solid #3333330D",
+		"de": "Design 5 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design5 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 6 Row Border Bottom",
+		"n": "design6RowBorderBottom",
+		"dv": "1px solid #3333330D",
+		"de": "Design 6 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design6 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 7 Row Border Bottom",
+		"n": "design7RowBorderBottom",
+		"de": "Design 7 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design7 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 8 Row Border Bottom",
+		"n": "design8RowBorderBottom",
+		"dv": "1px solid #DBDBDB",
+		"de": "Design 8 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design8 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 9 Row Border Bottom",
+		"n": "design9RowBorderBottom",
+		"de": "Design 9 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design9 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Border Bottom",
+		"dn": "Design 10 Row Border Bottom",
+		"n": "design10RowBorderBottom",
+		"de": "Design 10 Row Border Bottom",
+		"cp": "border-bottom",
+		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 1 Row Width",
+		"n": "design1RowWidth",
+		"de": "Design 1 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design1 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 2 Row Width",
+		"n": "design2RowWidth",
+		"de": "Design 2 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design2 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 3 Row Width",
+		"n": "design3RowWidth",
+		"de": "Design 3 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design3 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 4 Row Width",
+		"n": "design4RowWidth",
+		"de": "Design 4 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design4 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 5 Row Width",
+		"n": "design5RowWidth",
+		"de": "Design 5 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design5 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 6 Row Width",
+		"n": "design6RowWidth",
+		"de": "Design 6 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design6 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 7 Row Width",
+		"n": "design7RowWidth",
+		"de": "Design 7 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design7 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 8 Row Width",
+		"n": "design8RowWidth",
+		"de": "Design 8 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design8 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 9 Row Width",
+		"n": "design9RowWidth",
+		"de": "Design 9 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design9 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gn": "Row Width",
+		"dn": "Design 10 Row Width",
+		"n": "design10RowWidth",
+		"de": "Design 10 Row Width",
+		"cp": "width",
+		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 1 Row Min Width",
+		"n": "design1RowMinWidth",
+		"de": "Design 1 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design1 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 2 Row Min Width",
+		"n": "design2RowMinWidth",
+		"de": "Design 2 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design2 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 3 Row Min Width",
+		"n": "design3RowMinWidth",
+		"de": "Design 3 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design3 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 4 Row Min Width",
+		"n": "design4RowMinWidth",
+		"de": "Design 4 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design4 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 5 Row Min Width",
+		"n": "design5RowMinWidth",
+		"de": "Design 5 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design5 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 6 Row Min Width",
+		"n": "design6RowMinWidth",
+		"de": "Design 6 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design6 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 7 Row Min Width",
+		"n": "design7RowMinWidth",
+		"de": "Design 7 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design7 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 8 Row Min Width",
+		"n": "design8RowMinWidth",
+		"de": "Design 8 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design8 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 9 Row Min Width",
+		"n": "design9RowMinWidth",
+		"de": "Design 9 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design9 .comp.compTableColumns",
+		"np": true
+	},
+	{
+		"gp": "Row Min Width",
+		"dn": "Design 10 Row Min Width",
+		"n": "design10RowMinWidth",
+		"de": "Design 10 Row Min Width",
+		"cp": "min-width",
+		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"np": true
 	}
 ]
