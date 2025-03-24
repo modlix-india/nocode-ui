@@ -2358,7 +2358,7 @@
 		"n": "textCalendarLabelFont",
 		"dv": "<quaternaryFont>",
 		"cp": "font",
-		"sel": ".comp.compCalendar._bigDesign1 ._label",
+		"sel": ".comp.compCalendar._text ._label",
 		"np": true
 	},
 
@@ -9361,6 +9361,51 @@
 		"dv": "<fontColorSeven>",
 		"cp": "color",
 		"sel": ".comp.compCalendar._bigDesign1._hasValue._quinary ._supportText",
+		"np": true
+	},
+	{
+		"gn": "Calendar Label Margin",
+		"dn": "Default Calendar Label Margin",
+		"n": "defaultCalendarLabelMargin",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compCalendar._default ._label",
+		"np": true
+	},
+	{
+		"gn": "Calendar Label Margin",
+		"dn": "Outline Calendar Label Margin",
+		"n": "outlineCalendarLabelMargin",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compCalendar._outlined ._label",
+		"np": true
+	},
+	{
+		"gn": "Calendar Label Margin",
+		"dn": "Filled Calendar Label Margin",
+		"n": "filledCalendarLabelMargin",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compCalendar._filled ._label",
+		"np": true
+	},
+	{
+		"gn": "Calendar Label Margin",
+		"dn": "Big Design 1 Calendar Label Margin",
+		"n": "bigDesign1CalendarLabelMargin",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compCalendar._bigDesign1 ._label",
+		"np": true
+	},
+	{
+		"gn": "Calendar Label Margin",
+		"dn": "Text Calendar Label Margin",
+		"n": "textCalendarLabelMargin",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compCalendar._text ._label",
 		"np": true
 	}
 ]
