@@ -64,6 +64,10 @@ export default function StepperStyle({
 		ul._vertical${PREFIX} ._listItem {
 		    flex-direction: column;
 		}
+		
+		${PREFIX} ._listItem._active {
+			cursor: pointer;
+		}
 
 		${PREFIX} ._listItem._nextItem {
 			cursor: pointer;
@@ -152,6 +156,7 @@ export default function StepperStyle({
 		    white-space: nowrap;
 			position: relative;
 		}
+			
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
