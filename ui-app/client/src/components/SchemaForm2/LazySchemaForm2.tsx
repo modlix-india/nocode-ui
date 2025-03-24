@@ -1,17 +1,13 @@
 import { Repository, Schema } from '@fincity/kirun-js';
-import React, { useEffect } from 'react';
-import {
-	addListenerAndCallImmediately,
-	getPathFromLocation,
-	PageStoreExtractor, 
-} from '../../context/StoreContext';
+import React from 'react';
+import { getPathFromLocation, PageStoreExtractor } from '../../context/StoreContext';
 import { UISchemaRepository } from '../../schemas/common';
 import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaForm2Properties';
-import generateChildren from './components/generateChildren'
+import generateChildren from './components/generateChildren';
 import Children from '../Children';
 
 let UI_SCHEMA_REPO: UISchemaRepository;
@@ -33,24 +29,21 @@ export default function SchemaForm2(
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const {
-		properties: { schema: jsonSchema, design, readOnly, showJSONEditorButton } = {},
-		stylePropertiesWithPseudoStates,
-	} = useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-	);
-	
+	const { properties: { schema: jsonSchema } = {}, stylePropertiesWithPseudoStates } =
+		useDefinition(
+			definition,
+			propertiesDefinition,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+		);
 
 	const bindingPathPath = bindingPath
-	? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
-	: undefined;
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
 
 	const schema = React.useMemo(() => props.schema ?? Schema.from(jsonSchema), [jsonSchema]);
-	
+
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
@@ -58,7 +51,7 @@ export default function SchemaForm2(
 	);
 
 	const schemaRepository = props.schemaRepository ?? UI_SCHEMA_REPO;
- 
+
 	const { children, pageDef } = generateChildren({
 		schema,
 		schemaRepository,
@@ -68,7 +61,7 @@ export default function SchemaForm2(
 	return (
 		<div className="comp compSchemaForm2" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-	 		<Children
+			<Children
 				pageDefinition={pageDef}
 				renderableChildren={children}
 				context={context}
