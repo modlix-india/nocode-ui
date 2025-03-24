@@ -152,6 +152,7 @@ export default function StepperStyle({
 		    white-space: nowrap;
 			position: relative;
 		}
+			
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
