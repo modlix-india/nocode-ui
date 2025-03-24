@@ -1,11 +1,10 @@
 import { isNullValue, Repository, Schema, SchemaType, SchemaUtil, duplicate } from "@fincity/kirun-js";
 import { useEffect, useMemo, useState } from "react";
 import { PREVIEW_COMP_DEFINITION_MAP } from "../../FormStorageEditor/components/formCommons";
-import { ComponentDefinition, ComponentProperty, PageDefinition } from "../../../types/common";
+import { ComponentDefinition, ComponentProperty, PageDefinition } from "../../../types/common"; import { shortUUID } from "../../../util/shortUUID";
 
 const NUMBER_TYPES = new Set([SchemaType.INTEGER, SchemaType.LONG, SchemaType.FLOAT, SchemaType.DOUBLE]);
 const ALL_SET = Schema.ofAny("Any").getType()?.getAllowedSchemaTypes()!;
-
 
 export default function generateChildren({
     schema: actualSchema = Schema.ofAny("Any"),
@@ -23,41 +22,42 @@ export default function generateChildren({
             setSchema(actualSchema);
             return;
         }
-    
+
         const resolveSchema = async () => {
             const resolvedSchema = await SchemaUtil.getSchemaFromRef(actualSchema, schemaRepository, actualSchema.getRef());
             setSchema(resolvedSchema ?? actualSchema);
         };
-    
+
         resolveSchema();
     }, [actualSchema, schemaRepository]);
-    
 
     let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 
     const formPreview = useMemo(() => {
         return types.size > 0 ? generateFormPreview(schema, bindingPathPath) : { children: {}, pageDef: {} as PageDefinition };
     }, [schema, bindingPathPath]);
-    
     return formPreview;
 }
 
-function compDefinitionGenerator(label: string, schema: Schema, bindingPathPath?: string) {
-
+function compDefinitionGenerator(
+    label: string,
+    schema: Schema,
+    bindingPathPath?: string,
+    displayOrder: number = 0,
+) {
     let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 
     const compName = getComponentName(types);
     if (!compName) return null;
 
     const compKey = `${compName}_${label.trim().replace(/\s+/g, "_")}`.toLowerCase();
-
-const properties = componentPropertyMap[compName] ? componentPropertyMap[compName](schema, types) : {};
+    const properties = componentPropertyMap[compName] ? componentPropertyMap[compName](schema, types) : {};
 
     const compDef: ComponentDefinition = {
         ...(duplicate(PREVIEW_COMP_DEFINITION_MAP.get(compName)) as ComponentDefinition),
         key: compKey,
         name: compName,
-        displayOrder: 0,
+        displayOrder: displayOrder,
         type: compName,
         properties: properties,
         bindingPath: bindingPathPath ? { type: "VALUE", value: `${bindingPathPath}` } : undefined,
@@ -67,13 +67,46 @@ const properties = componentPropertyMap[compName] ? componentPropertyMap[compNam
 }
 
 function generateFormPreview(schema: Schema, bindingPathPath?: string) {
-
     const label = schema.getTitle() || "defaultLabel";
-    const compDef = compDefinitionGenerator(label, schema, bindingPathPath);
-    if (!compDef) return { children: {}, pageDef: {} as PageDefinition };
+    let componentDefinitions: { [key: string]: ComponentDefinition } = {};
+    let children: { [key: string]: boolean } = {};
+
+    let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
+    if (types.has(SchemaType.OBJECT)) {
+        const properties = schema.getProperties() || {};
+        if (properties instanceof Map) {
+            const propertiesArray = Array.from(properties.entries());
+
+            propertiesArray.forEach(([propName, subSchema], index) => {
+                const propBindingPath = bindingPathPath ? `${bindingPathPath}.${propName}` : bindingPathPath;
+                const compDef = compDefinitionGenerator(propName, subSchema as Schema, propBindingPath, index);
+                if (compDef) {
+                    componentDefinitions[compDef.key] = compDef;
+                    children[compDef.key] = true;
+                }
+            });
+
+            const sortedComponentDefinitions = Object.values(componentDefinitions).sort(
+                (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0),
+            );
+
+            componentDefinitions = {};
+            children = {};
+            sortedComponentDefinitions.forEach(compDef => {
+                componentDefinitions[compDef.key] = compDef;
+                children[compDef.key] = true;
+            });
+        }
+    } else {
+        const compDef = compDefinitionGenerator(label, schema, bindingPathPath, 0);
+        if (compDef) {
+            componentDefinitions[compDef.key] = compDef;
+            children[compDef.key] = true;
+        }
+    }
 
     return {
-        children: { [compDef.key]: true },
+        children,
         pageDef: {
             name: "SchemaForm2",
             baseClientCode: "",
@@ -86,18 +119,17 @@ function generateFormPreview(schema: Schema, bindingPathPath?: string) {
             translations: {},
             properties: {},
             rootComponent: "",
-            componentDefinition: { [compDef.key]: compDef },
+            componentDefinition: componentDefinitions,
         },
     };
 }
 
 function getComponentName(types: Set<SchemaType>) {
+    if (!types || types.size === ALL_SET.size) return null;
 
-if (!types || types.size === ALL_SET.size) return null;
-    
     const hasBoolean = types.has(SchemaType.BOOLEAN);
     if (hasBoolean) return "CheckBox";
-    
+
     const hasArray = types.has(SchemaType.ARRAY);
     if (hasArray) return "Dropdown";
 
@@ -107,7 +139,6 @@ if (!types || types.size === ALL_SET.size) return null;
 
     return null;
 }
-
 
 interface ComponentPropertyGenerator {
     (schema: Schema, types: Set<SchemaType>): { [key: string]: ComponentProperty<any> };
