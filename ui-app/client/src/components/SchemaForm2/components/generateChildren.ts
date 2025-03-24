@@ -66,42 +66,42 @@ function compDefinitionGenerator(
     return compDef;
 }
 
-function generateFormPreview(schema: Schema, bindingPathPath?: string) {
+function generateFormPreview(schema: Schema, bindingPathPath?: string, orderTracker: { currentOrder: number } = { currentOrder: 0 }) {
     const label = schema.getTitle() || "defaultLabel";
     let componentDefinitions: { [key: string]: ComponentDefinition } = {};
     let children: { [key: string]: boolean } = {};
 
     let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
+
     if (types.has(SchemaType.OBJECT)) {
         const properties = schema.getProperties() || {};
+
         if (properties instanceof Map) {
             const propertiesArray = Array.from(properties.entries());
 
-            propertiesArray.forEach(([propName, subSchema], index) => {
+            propertiesArray.forEach(([propName, subSchema]) => {
                 const propBindingPath = bindingPathPath ? `${bindingPathPath}.${propName}` : bindingPathPath;
-                const compDef = compDefinitionGenerator(propName, subSchema as Schema, propBindingPath, index);
+
+                const compDef = compDefinitionGenerator(propName, subSchema as Schema, propBindingPath, orderTracker.currentOrder);
                 if (compDef) {
                     componentDefinitions[compDef.key] = compDef;
                     children[compDef.key] = true;
+                    orderTracker.currentOrder++;
                 }
-            });
 
-            const sortedComponentDefinitions = Object.values(componentDefinitions).sort(
-                (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0),
-            );
-
-            componentDefinitions = {};
-            children = {};
-            sortedComponentDefinitions.forEach(compDef => {
-                componentDefinitions[compDef.key] = compDef;
-                children[compDef.key] = true;
+                if (subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT)) {
+                    const nestedPreview = generateFormPreview(subSchema, propBindingPath, orderTracker);
+                    Object.assign(componentDefinitions, nestedPreview.pageDef.componentDefinition);
+                    Object.assign(children, nestedPreview.children);
+                }
             });
         }
     } else {
-        const compDef = compDefinitionGenerator(label, schema, bindingPathPath, 0);
+        const compDef = compDefinitionGenerator(label, schema, bindingPathPath, orderTracker.currentOrder);
         if (compDef) {
             componentDefinitions[compDef.key] = compDef;
             children[compDef.key] = true;
+            orderTracker.currentOrder++;
         }
     }
 
@@ -122,6 +122,7 @@ function generateFormPreview(schema: Schema, bindingPathPath?: string) {
             componentDefinition: componentDefinitions,
         },
     };
+
 }
 
 function getComponentName(types: Set<SchemaType>) {
