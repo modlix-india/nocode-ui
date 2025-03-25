@@ -31,9 +31,9 @@ const components = [
 				<path
 					d="M12.5 2.5V17.5M12.5 2.5H8.33333M12.5 2.5H17.5M8.33333 2.5H6.25C4.17893 2.5 2.5 4.17893 2.5 6.25C2.5 8.32107 4.17893 10 6.25 10H8.33333M8.33333 2.5V10M8.33333 10V17.5"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -55,16 +55,16 @@ const components = [
 					clip-rule="evenodd"
 					d="M4.16699 5C4.16699 3.82149 4.16699 3.23223 4.53311 2.86612C4.89923 2.5 5.48848 2.5 6.66699 2.5H10.4827C12.5175 2.5 14.167 4.17893 14.167 6.25C14.167 8.32107 12.5175 10 10.4827 10H4.16699V5Z"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M10.3575 10H11.3892C13.3836 10 15.0003 11.6789 15.0003 13.75C15.0003 15.8211 13.3836 17.5 11.3892 17.5H6.66699C5.48848 17.5 4.89923 17.5 4.53311 17.1339C4.16699 16.7677 4.16699 16.1785 4.16699 15V10"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -84,20 +84,20 @@ const components = [
 				<path
 					d="M10 3.3335H15.8333"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 				<path
 					d="M6.66699 16.6668L13.3337 3.3335"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 				<path
 					d="M4.16699 16.6665H10.0003"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 			</svg>
 		),
@@ -117,15 +117,15 @@ const components = [
 				<path
 					d="M3.33301 10H16.6663"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M14.5833 6.38889C14.5833 4.24112 12.5313 2.5 10 2.5C7.46869 2.5 5.41667 4.24112 5.41667 6.38889C5.41667 6.79399 5.46113 7.16486 5.55567 7.5M5 13.6111C5 15.7589 7.23857 17.5 10 17.5C12.7614 17.5 15 16.3889 15 13.6111C15 11.617 14.1411 10.4818 12.4232 10"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 			</svg>
 		),
@@ -145,44 +145,44 @@ const components = [
 				<path
 					d="M12.5 3.3335H17.5"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12.5 12.5H17.5"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12.5 7.5H17.5"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12.5 16.6665H17.5"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M5.41667 8.33333C7.0275 8.33333 8.33333 7.0275 8.33333 5.41667C8.33333 3.80584 7.0275 2.5 5.41667 2.5C3.80584 2.5 2.5 3.80584 2.5 5.41667C2.5 7.0275 3.80584 8.33333 5.41667 8.33333Z"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M5.41667 17.4998C7.0275 17.4998 8.33333 16.194 8.33333 14.5832C8.33333 12.9723 7.0275 11.6665 5.41667 11.6665C3.80584 11.6665 2.5 12.9723 2.5 14.5832C2.5 16.194 3.80584 17.4998 5.41667 17.4998Z"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -202,34 +202,34 @@ const components = [
 				<path
 					d="M9.16699 5H17.5003"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 				<path
 					d="M9.16699 10H17.5003"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 				<path
 					d="M9.16699 15H17.5003"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 				<path
 					d="M2.5 12.5H3.75C3.98232 12.5 4.09849 12.5 4.19509 12.5192C4.59178 12.5981 4.90188 12.9083 4.98078 13.3049C5 13.4015 5 13.5177 5 13.75C5 13.9823 5 14.0985 4.98078 14.1951C4.90188 14.5917 4.59178 14.9019 4.19509 14.9808C4.09849 15 3.98232 15 3.75 15C3.51767 15 3.40151 15 3.30491 15.0192C2.90822 15.0981 2.59813 15.4083 2.51922 15.8049C2.5 15.9015 2.5 16.0177 2.5 16.25V17C2.5 17.2357 2.5 17.3536 2.57322 17.4267C2.64645 17.5 2.7643 17.5 3 17.5H5"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M2.5 2.5H3.5C3.63807 2.5 3.75 2.61192 3.75 2.75V7.5M3.75 7.5H2.5M3.75 7.5H5"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -287,23 +287,23 @@ const components = [
 				<path
 					d="M11.667 2.9165H8.33366C5.19096 2.9165 3.61962 2.9165 2.6433 3.89281C1.66699 4.86913 1.66699 6.44047 1.66699 9.58317V11.2498C1.66699 14.3925 1.66699 15.9639 2.6433 16.9402C3.61962 17.9165 5.19096 17.9165 8.33366 17.9165H11.667C14.8097 17.9165 16.3811 17.9165 17.3573 16.9402C18.3337 15.9639 18.3337 14.3925 18.3337 11.2498V9.58317C18.3337 6.44047 18.3337 4.86913 17.3573 3.89281C16.3811 2.9165 14.8097 2.9165 11.667 2.9165Z"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M7.08301 8.75C7.77336 8.75 8.33301 8.19036 8.33301 7.5C8.33301 6.80964 7.77336 6.25 7.08301 6.25C6.39265 6.25 5.83301 6.80964 5.83301 7.5C5.83301 8.19036 6.39265 8.75 7.08301 8.75Z"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M17.9163 14.5835L13.623 9.89991C13.4383 9.69825 13.1773 9.5835 12.9038 9.5835C12.645 9.5835 12.3968 9.68633 12.2139 9.86925L8.33301 13.7502L6.53241 11.9496C6.35138 11.7685 6.10585 11.6668 5.84983 11.6668C5.5741 11.6668 5.31153 11.7847 5.12835 11.9908L2.08301 15.4168"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -363,23 +363,23 @@ const components = [
 				<path
 					d="M4 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M4 8H12"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -403,23 +403,23 @@ const components = [
 				<path
 					d="M4 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M4 8H12"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -443,23 +443,23 @@ const components = [
 				<path
 					d="M4 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M4 8H12"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -483,23 +483,23 @@ const components = [
 				<path
 					d="M4 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M4 8H12"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -523,23 +523,23 @@ const components = [
 				<path
 					d="M4 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M4 8H12"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -563,23 +563,23 @@ const components = [
 				<path
 					d="M4 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M12 2.6665V13.3332"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M4 8H12"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -601,28 +601,28 @@ const components = [
 					<path
 						d="M10.0003 18.3332C14.6027 18.3332 18.3337 14.6022 18.3337 9.99984C18.3337 5.39746 14.6027 1.6665 10.0003 1.6665C5.39795 1.6665 1.66699 5.39746 1.66699 9.99984C1.66699 14.6022 5.39795 18.3332 10.0003 18.3332Z"
 						stroke="black"
-						stroke-width="1.5"
+						strokeWidth="1.5"
 					/>
 					<path
 						d="M13.333 8.3335L14.3551 9.2145C14.7848 9.58483 14.9997 9.77008 14.9997 10.0002C14.9997 10.2302 14.7848 10.4155 14.3551 10.7858L13.333 11.6668"
 						stroke="black"
-						stroke-width="1.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
 					/>
 					<path
 						d="M6.66667 8.3335L5.64455 9.2145C5.21485 9.58483 5 9.77008 5 10.0002C5 10.2302 5.21485 10.4155 5.64455 10.7858L6.66667 11.6668"
 						stroke="black"
-						stroke-width="1.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
 					/>
 					<path
 						d="M10.8337 7.5L9.16699 12.5"
 						stroke="black"
-						stroke-width="1.5"
-						stroke-linecap="round"
-						stroke-linejoin="round"
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
 					/>
 				</g>
 				<defs>
@@ -648,14 +648,14 @@ const components = [
 				<path
 					d="M7.61982 8.90915L7.79225 8.73674C9.44116 7.08775 12.1147 7.08775 13.7636 8.73674C15.4126 10.3857 15.4126 13.0592 13.7636 14.7081L11.3751 17.0966C9.72616 18.7456 7.05265 18.7456 5.4037 17.0966C3.75476 15.4477 3.75476 12.7742 5.4037 11.1252L5.79066 10.7383"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 				<path
 					d="M14.2097 9.2615L14.5966 8.87459C16.2456 7.22563 16.2456 4.55216 14.5966 2.90321C12.9477 1.25427 10.2742 1.25427 8.62525 2.90321L6.23671 5.29176C4.58776 6.9407 4.58776 9.61417 6.23671 11.2631C7.88566 12.9121 10.5592 12.9121 12.2081 11.2631L12.3805 11.0907"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
 				/>
 			</svg>
 		),
@@ -675,23 +675,23 @@ const components = [
 				<path
 					d="M16 3L19.0662 5.643C20.3555 6.754 21 7.30975 21 8C21 8.69025 20.3555 9.246 19.0662 10.357L16 13"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M6 3L2.93365 5.643C1.64455 6.754 1 7.30975 1 8C1 8.69025 1.64455 9.246 2.93365 10.357L6 13"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M13 1L9 15"
 					stroke="black"
-					stroke-width="1.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.5"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -720,44 +720,44 @@ const components = [
 				<path
 					d="M10 2.6665H14"
 					stroke="black"
-					stroke-width="1.3"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.3"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M10 10H14"
 					stroke="black"
-					stroke-width="1.3"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.3"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M10 6H14"
 					stroke="black"
-					stroke-width="1.3"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.3"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M10 13.3335H14"
 					stroke="black"
-					stroke-width="1.3"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.3"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M4.33333 6.66667C5.622 6.66667 6.66667 5.622 6.66667 4.33333C6.66667 3.04467 5.622 2 4.33333 2C3.04467 2 2 3.04467 2 4.33333C2 5.622 3.04467 6.66667 4.33333 6.66667Z"
 					stroke="black"
-					stroke-width="1.3"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.3"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 				<path
 					d="M4.33333 14.0002C5.622 14.0002 6.66667 12.9555 6.66667 11.6668C6.66667 10.3782 5.622 9.3335 4.33333 9.3335C3.04467 9.3335 2 10.3782 2 11.6668C2 12.9555 3.04467 14.0002 4.33333 14.0002Z"
 					stroke="black"
-					stroke-width="1.3"
-					stroke-linecap="round"
-					stroke-linejoin="round"
+					strokeWidth="1.3"
+					strokeLinecap="round"
+					strokeLinejoin="round"
 				/>
 			</svg>
 		),
@@ -867,6 +867,7 @@ export function AddComponentPanelButtons({
 							<input
 								type="text"
 								id="linkText"
+								className="_linkInput"
 								value={linkText}
 								onChange={e => setLinkText(e.target.value)}
 								placeholder="Link text"
@@ -877,6 +878,7 @@ export function AddComponentPanelButtons({
 							<input
 								type="text"
 								id="linkUrl"
+								className="_linkInput"
 								value={linkUrl}
 								onChange={e => setLinkUrl(e.target.value)}
 								placeholder="https://example.com"
@@ -889,7 +891,7 @@ export function AddComponentPanelButtons({
 						</button>
 						<button
 							onClick={handleLinkAdd}
-							className="_addButton"
+							className="_addLinkButton"
 							disabled={!linkText || !linkUrl}
 						>
 							Add
@@ -983,45 +985,49 @@ export function AddComponentPanelButtons({
 						</button>
 					</div>
 					<div className="_linkDialogContent">
-						<div className="_inputGroup"></div>
-						<label>Number of Rows (including header):</label>
-						<input
-							type="number"
-							min="2"
-							max="30"
-							className="_linkInput"
-							value={tableConfig.rows}
-							onChange={e =>
-								setTableConfig({
-									...tableConfig,
-									rows: Math.max(2, parseInt(e.target.value) || 2),
-								})
-							}
-						/>
-					</div>
-					<div className="_inputGroup">
-						<label>Number of Columns:</label>
-						<input
-							type="number"
-							min="1"
-							max="15"
-							className="_linkInput"
-							value={tableConfig.columns}
-							onChange={e =>
-								setTableConfig({
-									...tableConfig,
-									columns: Math.max(1, parseInt(e.target.value) || 1),
-								})
-							}
-						/>
-					</div>
-					<div className="_linkDialogFooter">
-						<button className="_cancelButton" onClick={() => setShowTableDialog(false)}>
-							Cancel
-						</button>
-						<button className="_button _addButton" onClick={handleTableAdd}>
-							Add Table
-						</button>
+						<div className="_inputGroup">
+							<label>Number of Rows (including header):</label>
+							<input
+								type="number"
+								min="2"
+								max="30"
+								className="_linkInput"
+								value={tableConfig.rows}
+								onChange={e =>
+									setTableConfig({
+										...tableConfig,
+										rows: Math.max(2, parseInt(e.target.value) || 2),
+									})
+								}
+							/>
+						</div>
+						<div className="_inputGroup">
+							<label>Number of Columns:</label>
+							<input
+								type="number"
+								min="1"
+								max="15"
+								className="_linkInput"
+								value={tableConfig.columns}
+								onChange={e =>
+									setTableConfig({
+										...tableConfig,
+										columns: Math.max(1, parseInt(e.target.value) || 1),
+									})
+								}
+							/>
+						</div>
+						<div className="_linkDialogFooter">
+							<button
+								className="_cancelButton"
+								onClick={() => setShowTableDialog(false)}
+							>
+								Cancel
+							</button>
+							<button className="_addLinkButton" onClick={handleTableAdd}>
+								Add Table
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>

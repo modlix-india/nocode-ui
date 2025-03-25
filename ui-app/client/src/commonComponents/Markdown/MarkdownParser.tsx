@@ -1,5 +1,5 @@
 import { deepEqual } from '@fincity/kirun-js';
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { cyrb53 } from '../../util/cyrb53';
 import { shortUUID } from '../../util/shortUUID';
 import { EditBox } from './EditBox';
@@ -25,6 +25,8 @@ export function MarkdownParser({
 	const [_, setStyleState] = React.useState(styles);
 	const [key, setKey] = React.useState(shortUUID());
 	const [editingLineIndex, setEditingLineIndex] = useState<number | null>(null);
+	const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+	const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
 	React.useEffect(() => {
 		setStyleState((existing: any) => {
@@ -119,6 +121,54 @@ export function MarkdownParser({
 		onChange(updatedLines.join('\n'));
 	};
 
+	// Handle deleting a line
+	const handleDeleteLine = (lineIndex: number) => {
+		if (!onChange) return;
+
+		// Create a new array of lines without the deleted line
+		const updatedLines = [...lines];
+		updatedLines.splice(lineIndex, 1);
+
+		// Call onChange with the updated text
+		onChange(updatedLines.join('\n'));
+	};
+
+	// Handle drag and drop reordering
+	const handleDragStart = (lineIndex: number) => {
+		setDraggedIndex(lineIndex);
+	};
+
+	const handleDragOver = (e: React.DragEvent, lineIndex: number) => {
+		e.preventDefault();
+		setDragOverIndex(lineIndex);
+	};
+
+	const handleDrop = () => {
+		if (draggedIndex === null || dragOverIndex === null || draggedIndex === dragOverIndex) {
+			setDraggedIndex(null);
+			setDragOverIndex(null);
+			return;
+		}
+
+		if (!onChange) {
+			setDraggedIndex(null);
+			setDragOverIndex(null);
+			return;
+		}
+
+		// Reorder the lines
+		const updatedLines = [...lines];
+		const [movedLine] = updatedLines.splice(draggedIndex, 1);
+		updatedLines.splice(dragOverIndex, 0, movedLine);
+
+		// Call onChange with the updated text
+		onChange(updatedLines.join('\n'));
+
+		// Reset drag state
+		setDraggedIndex(null);
+		setDragOverIndex(null);
+	};
+
 	// Process each line
 	for (let i = 0; i < lines.length; i++) {
 		let { lineNumber, comp } = parseTextLine({
@@ -137,20 +187,35 @@ export function MarkdownParser({
 		if (editable && comp) {
 			const originalContent = lines[i];
 			const isEmpty = originalContent.trim() === '';
+			const isDragging = draggedIndex === i;
+			const isDragOver = dragOverIndex === i;
 
 			comp = (
-				<EditBox
-					key={`editbox-${i}`}
-					originalContent={originalContent}
-					lineIndex={i}
-					onContentChange={handleContentChange}
-					onFocus={() => setEditingLineIndex(i)}
-					onBlur={() => setEditingLineIndex(null)}
-					onAddComponent={handleAddComponent}
-					isEmpty={isEmpty}
+				<div
+					key={`editbox-container-${i}`}
+					className={`_editBoxContainer ${isDragging ? '_dragging' : ''} ${isDragOver ? '_dragOver' : ''}`}
+					onDragOver={e => handleDragOver(e, i)}
+					onDrop={handleDrop}
 				>
-					{comp}
-				</EditBox>
+					<div className="_dragHandle" draggable onDragStart={() => handleDragStart(i)}>
+						<i className="fa-solid fa-arrows-up-down-left-right" />
+					</div>
+					<EditBox
+						key={`editbox-${i}`}
+						originalContent={originalContent}
+						lineIndex={i}
+						onContentChange={handleContentChange}
+						onFocus={() => setEditingLineIndex(i)}
+						onBlur={() => setEditingLineIndex(null)}
+						onAddComponent={handleAddComponent}
+						isEmpty={isEmpty}
+					>
+						{comp}
+					</EditBox>
+					<div className="_deleteButton" onClick={() => handleDeleteLine(i)}>
+						<i className="fa-solid fa-trash" />
+					</div>
+				</div>
 			);
 		}
 
@@ -171,16 +236,24 @@ export function MarkdownParser({
 
 	if (editable && footnotesComps.length > 0) {
 		comps.push(
-			<EditBox
-				key={`editbox-footnotes-${cyrb53(text)}`}
-				originalContent=""
-				lineIndex={lines.length}
-				onContentChange={handleContentChange}
-				onAddComponent={handleAddComponent}
-				isEmpty={true}
-			>
-				{footnotesComps}
-			</EditBox>,
+			<div key={`editbox-footnotes-container-${cyrb53(text)}`} className="_editBoxContainer">
+				<div className="_dragHandle">
+					<i className="fa-solid fa-grip-vertical" />
+				</div>
+				<EditBox
+					key={`editbox-footnotes-${cyrb53(text)}`}
+					originalContent=""
+					lineIndex={lines.length}
+					onContentChange={handleContentChange}
+					onAddComponent={handleAddComponent}
+					isEmpty={true}
+				>
+					{footnotesComps}
+				</EditBox>
+				<div className="_deleteButton">
+					<i className="fa-solid fa-trash" />
+				</div>
+			</div>,
 		);
 	} else {
 		comps.push(...footnotesComps);
@@ -189,16 +262,24 @@ export function MarkdownParser({
 	// If there are no components and we're in editable mode, add an empty one
 	if (editable && comps.length === 0) {
 		comps.push(
-			<EditBox
-				key="editbox-empty"
-				originalContent=""
-				lineIndex={0}
-				onContentChange={handleContentChange}
-				onAddComponent={handleAddComponent}
-				isEmpty={true}
-			>
-				<p></p>
-			</EditBox>,
+			<div key="editbox-empty-container" className="_editBoxContainer">
+				<div className="_dragHandle">
+					<i className="fa-solid fa-grip-vertical" />
+				</div>
+				<EditBox
+					key="editbox-empty"
+					originalContent=""
+					lineIndex={0}
+					onContentChange={handleContentChange}
+					onAddComponent={handleAddComponent}
+					isEmpty={true}
+				>
+					<p></p>
+				</EditBox>
+				<div className="_deleteButton">
+					<i className="fa-solid fa-trash" />
+				</div>
+			</div>,
 		);
 	}
 

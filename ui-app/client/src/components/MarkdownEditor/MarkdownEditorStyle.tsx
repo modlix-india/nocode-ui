@@ -625,6 +625,8 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} ._linkDialogHeader {
 		display: flex;
+		flex: 1;
+		flex-direction: row;
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 16px;
@@ -634,13 +636,12 @@ export default function MarkdownEditorStyle({
 		background: none;
 		border: none;
 		cursor: pointer;
-		padding: 4px;
-		border-radius: 4px;
+		border-radius: 50%;
 		transition: background-color 0.2s;
 	}
 
 	${PREFIX} ._closeButton:hover {
-		background-color: #ff0000;
+		background-color: #F32013;
 		border-color: rgb(33, 6, 6);;
 		color: white;
 	}
@@ -653,6 +654,8 @@ export default function MarkdownEditorStyle({
 		display: flex;
 		flex: 1;
 		flex-direction: row;
+		justify-content: center;
+		align-items:center;
 		margin-bottom: 12px;
 	}
 
@@ -677,7 +680,16 @@ export default function MarkdownEditorStyle({
 	font-size: 14px;
 	cursor: pointer;
 	border: 1px solid #ddd;
-	background-color: #f5f5f5;
+	background-color: #ff0000;
+	}
+
+	${PREFIX} ._addLinkButton {
+		padding: 8px 16px;
+		border-radius: 4px;
+		font-size: 14px;
+		cursor: pointer;
+		border: 1px solid #ddd;
+		background-color: #4a90e2;
 	}
 
 	${PREFIX} ._addButton {
@@ -690,7 +702,7 @@ export default function MarkdownEditorStyle({
 	border: 1px solid #4a90e2;
 	}
 
-	${PREFIX} ._addButton:disabled {
+	${PREFIX} ._addLinkButton:disabled {
 	opacity: 0.6;
 	cursor: not-allowed;
 	}
@@ -884,16 +896,77 @@ export default function MarkdownEditorStyle({
 		width: 30vw;
 		border-radius: 6px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-		padding: 4px;
+		// padding: 4px;
 		z-index: 1000;
 		position: fixed;
 		transform-origin: center bottom;
 	}
 
+	${PREFIX} ._filterPanelContainer ._dropdown {
+		z-index: 1001;
+	}
+
     ${PREFIX} ._editBoxContainer {
+		display: flex;
+		align-items: center;
 		position: relative;
-		margin: 8px 0;
-		}
+		width: 100%;
+		margin-bottom: 8px;
+	}
+
+	${PREFIX} ._editBoxContainer._dragging {
+		opacity: 0.5;
+	}
+
+	${PREFIX} ._editBoxContainer._dragOver {
+		border-top: 2px dashed #4a90e2;
+	}
+
+	${PREFIX} ._dragHandle {
+		width: 28px;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: grab;
+		opacity: 0;
+		transition: opacity 0.2s;
+	}
+
+	${PREFIX} ._deleteButton {
+		width: 28px;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		opacity: 0;
+		transition: opacity 0.2s;
+		color: #ff3b30;
+	}
+
+	${PREFIX} ._editBoxContainer:hover ._dragHandle,
+	${PREFIX} ._editBoxContainer:hover ._deleteButton {
+		opacity: 1;
+	}
+
+	${PREFIX} ._markdown._editable EditBox {
+		flex: 1;
+		width: calc(100% - 56px);
+	}
+
+	${PREFIX} ._dragHandle i,
+	${PREFIX} ._deleteButton i {
+		font-size: 14px;
+	}
+
+	${PREFIX} ._dragHandle:hover {
+		color: #4a90e2;
+	}
+
+	${PREFIX} ._deleteButton:hover {
+		color: #ff1a1a;
+	}
 
 	${PREFIX} ._editBoxContentContainer {
 		display: flex;
@@ -914,28 +987,29 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} ._editBox:hover {
 		border-color: #2496FF;
+		border-right: 28px solid #2496FF;
 		background-color: #ffffff;
 	}
 
 	${PREFIX} ._editBox._editing {
 		border-color: #2496FF;
+		border-right: 28px solid #2496FF;
 		box-shadow: 0 0 0 3px rgba(208, 221, 235, 0.2);
 	}
 
-	${PREFIX} ._editBoxDisplay {
-		width: 100%;
-		position: relative;
-		padding: 8px;
-	}
+	// ${PREFIX} ._editBoxDisplay {
+	// 	width: 100%;
+	// 	position: relative;
+	// 	padding: 8px;
+	// }
 
 	${PREFIX} ._editBoxControls {
 		position: absolute;
-		right: -8px;
+		right: -28px;
 		top: 50%;
 		transform: translateY(-50%);
 		display: none;
 		align-items: center;
-		height: 135%;
 	}
 
 	${PREFIX} ._editBox:hover ._editBoxControls {
@@ -944,21 +1018,20 @@ export default function MarkdownEditorStyle({
 
 	${PREFIX} ._editButton {
 		height: 100%;
-		background: #2496FF;
-		border: 1px solid  #2496FF;;
-		border-radius: 2px;
-		padding: 4px 8px;
+		width: 28px;
+		border: 1px solid transparent;
+		background: transparent;
 		cursor: pointer;
 		font-size: 12px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: background 0.2s ease;
+		transition: all 0.2s ease;
 	}
 
 	${PREFIX} ._editButton:hover {
-		background: #2496FF;
-		border-color: #2496FF;
+		background: none;
+		border-color: none;
 	}
 
 	${PREFIX} ._editBoxContent {
@@ -986,7 +1059,7 @@ export default function MarkdownEditorStyle({
 	}
 
 	${PREFIX} ._addComponentButton {
-		position: absolute;
+		position: relative;
 		background: #ffffff;
 		border: 1px solid #e0e0e0;
 		border-radius: 50%;
@@ -1007,9 +1080,9 @@ export default function MarkdownEditorStyle({
 	}
 
 	${PREFIX} ._addComponentPanel {
-		position: absolute;
+		position: relative;
 		top: 100%;
-		left: 50%;
+		left: -50%;
 		transform: translateX(-50%);
 		margin-top: 8px;
 		background-color: #ffffff;

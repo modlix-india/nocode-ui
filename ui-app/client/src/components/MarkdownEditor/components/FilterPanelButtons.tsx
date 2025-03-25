@@ -127,7 +127,6 @@ export function FilterPanelButtons({
 		setShowListDropdown(false);
 	};
 
-	// Handle dropdown item click
 	const handleDropdownItemClick = (command: string) => {
 		onFormatClick(command);
 		closeAllDropdowns();
@@ -186,7 +185,6 @@ export function FilterPanelButtons({
 			<div className="_buttonSeperator" />
 
 			<div className="_formatButtonGroup">
-				{/* Alignment Dropdown */}
 				<div className="_dropdownContainer">
 					<button
 						onClick={toggleAlignmentDropdown}
@@ -841,26 +839,19 @@ export function FilterPanelButtons({
 				}}
 			>
 				<div className="_linkDialog">
-					<div className="_linkDialogHeader">
+					<span className="_linkDialogHeader">
 						<h3>Add Link</h3>
 						<button onClick={() => setShowLinkDialog(false)} className="_closeButton">
-							<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-								<path
-									d="M12 4L4 12M4 4L12 12"
-									stroke="black"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-								/>
-							</svg>
+							<i className="fa fa-times" />
 						</button>
-					</div>
+					</span>
 					<div className="_linkDialogContent">
 						<div className="_inputGroup">
 							<label htmlFor="linkText">Text</label>
 							<input
 								type="text"
 								id="linkText"
+								className="_linkInput"
 								value={linkText}
 								onChange={e => setLinkText(e.target.value)}
 								placeholder="Link text"
@@ -871,6 +862,7 @@ export function FilterPanelButtons({
 							<input
 								type="text"
 								id="linkUrl"
+								className="_linkInput"
 								value={linkUrl}
 								onChange={e => setLinkUrl(e.target.value)}
 								placeholder="https://example.com"
@@ -883,7 +875,7 @@ export function FilterPanelButtons({
 						</button>
 						<button
 							onClick={handleLinkAdd}
-							className="_addButton"
+							className="_addLinkButton"
 							disabled={!linkText || !linkUrl}
 						>
 							Add
