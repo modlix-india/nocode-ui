@@ -119,7 +119,86 @@
 		"sel": ".comp.compStepper._default._quinary ._listItem._active",
 		"np": true
 	},
-
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Primary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultPrimary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._primary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Secondary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultSecondary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._secondary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Tertiary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultTertiary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Quaternary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultQuaternary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Quinary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultQuinary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quinary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Primary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultPrimary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._primary ._listItem._previousItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Secondary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultSecondary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._secondary ._listItem._previousItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Tertiary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultTertiary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._previousItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Quaternary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultQuaternary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._previousItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Quinary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultQuinary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quinary ._listItem._previousItem",
+		"np": true
+	},
 	{
 		"gn": "General",
 		"dn": "Stepper Font",

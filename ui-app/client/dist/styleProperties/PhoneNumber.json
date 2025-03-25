@@ -5659,31 +5659,31 @@
 		"cp": "box-shadow",
 		"sel": ".comp.compPhoneNumber._default._hasError, .comp.compPhoneNumber._default._isActive._hasError, .comp.compPhoneNumber._default._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Phone Number Error Box Shadow",
 		"dn": "Phone Number Error Box Shadow Design Outline",
 		"n": "phoneNumberErrorBoxShadowDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compPhoneNumber._outlined._hasError, .comp.compPhoneNumber._outlined._isActive._hasError, .comp.compPhoneNumber._outlined._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Phone Number Error Box Shadow",
 		"dn": "Phone Number Error Box Shadow Design Filled",
 		"n": "phoneNumberErrorBoxShadowDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compPhoneNumber._filled._hasError, .comp.compPhoneNumber._filled._isActive._hasError, .comp.compPhoneNumber._filled._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Phone Number Error Box Shadow",
 		"dn": "Phone Number Error Box Shadow Design Big 1",
 		"n": "phoneNumberErrorBoxShadowDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compPhoneNumber._bigDesign1._hasError, .comp.compPhoneNumber._bigDesign1._isActive._hasError, .comp.compPhoneNumber._bigDesign1._hasValue._hasError",
 		"np": true
-	  },
+	},
 
 	{
 		"gn": "Phone Number Success Border Color",
@@ -7183,6 +7183,46 @@
 		"dv": "0px 0px 0px 0px",
 		"cp": "margin",
 		"sel": ".comp.compPhoneNumber._bigDesign1 ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Primary Phone Number Placeholder Font Design Default",
+		"n": "primaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._primary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Secondary Phone Number Placeholder Font Design Default",
+		"n": "secondaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._secondary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Tertiary Phone Number Placeholder Font Design Default",
+		"n": "tertiaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._tertiary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Quaternary Phone Number Placeholder Font Design Default",
+		"n": "quaternaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._quaternary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Quinary Phone Number Placeholder Font Design Default",
+		"n": "quinaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._quinary input._inputBox::placeholder",
 		"np": true
 	}
 ]
