@@ -1,5 +1,13 @@
 [
 	{
+		"gn": "Stepper Step List Item Padding",
+		"dn": "Stepper Step List Item Padding",
+		"n": "stepperStepListItemPadding",
+		"cp": "padding",
+		"sel": ".comp.compStepper ._listItem",
+		"np": true
+	},
+	{
 		"gn": "Stepper Step Title Background Color Active",
 		"dn": "Stepper Step Title Background Color Active Design DefaultPrimary",
 		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultPrimary",
