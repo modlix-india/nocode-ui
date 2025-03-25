@@ -261,9 +261,32 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Volume Slider Position',
 		description: 'Defines the position of the volume slider in the player.',
-		defaultValue: 'LeftHorizontal',
+		defaultValue: '_leftHorizontal',
 		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: '_rightHorizontal',
+				displayName: 'Right Horizontal',
+				description: 'Right Horizontal',
+			},
+			{
+				name: '_leftHorizontal',
+				displayName: 'Left Horizontal',
+				description: 'Left Horizontal',
+			},
+			{
+				name: '_topVertical',
+				displayName: 'Top Vertical',
+				description: 'Top Vertical',
+			},
+			{
+				name: '_bottomVertical',
+				displayName: 'Bottom Vertical',
+				description: 'Bottom Vertical',
+			},
+		],
 	},
+
 	{
 		name: 'type',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -285,8 +308,22 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	volumeSlider: [COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type],
-	seekSlider: [COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type],
+	volumeSlider: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	seekSlider: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
 	playIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
@@ -309,7 +346,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	volumeMuteIcon: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,	
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
@@ -384,7 +421,15 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
+	fileName: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
 };
-
 
 export { propertiesDefinition, stylePropertiesDefinition };

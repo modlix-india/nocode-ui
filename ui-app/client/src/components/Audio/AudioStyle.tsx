@@ -120,13 +120,16 @@ ${PREFIX} ._rewindFastForward {
 	flex-direction: row;
 }
 
+ ${PREFIX} ._volumeSliderContainer {
+   display: flex;
+   }
 
   ${PREFIX} ._volumeControls._rightHorizontal  {
     flex-direction: row-reverse;
    }
 
    ${PREFIX} ._volumeControls._topVertical {
-   flex-direction:column;
+   flex-direction: row ;
    justify-content: center;
     align-items: center;
    }
@@ -136,7 +139,7 @@ ${PREFIX} ._rewindFastForward {
     align-items: center;
 }
 
-${PREFIX} ._volumeControls ._volumeSliderContainer {
+${PREFIX} ._volumeControls ._onHoverVolumeControl {
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -146,17 +149,19 @@ ${PREFIX} ._volumeControls ._volumeSliderContainer {
     transition: width 0.3s ease-in-out;
 }
 
-${PREFIX} ._volumeControls:hover ._volumeSliderContainer {
+${PREFIX} ._volumeControls:hover ._onHoverVolumeControl {
     width: 135px;
 }
 
    ${PREFIX} ._volumeControls._topVertical ._volumeSliderContainer {
+   display: flex;
     transform:rotate(-90deg);
 	position:absolute;
-	bottom:100px;
+	bottom:90px;
    }
 
    ${PREFIX} ._volumeControls._bottomVertical {
+   display: flex;
    flex-direction:column-reverse;
     align-items: center;
 	position: relative;
@@ -164,8 +169,10 @@ ${PREFIX} ._volumeControls:hover ._volumeSliderContainer {
 
 
    ${PREFIX} ._volumeControls._bottomVertical ._volumeSliderContainer {
+   display: flex;
     position:absolute;
-	transform:rotate(-270deg);
+	transform:rotate(-90deg);
+	 align-items: center;
 	top:80px;
    }
 
@@ -174,9 +181,15 @@ ${PREFIX} ._volumeControls:hover ._volumeSliderContainer {
    cursor:pointer;
    }
 
+   ${PREFIX} ._volumeButton {
+	display:flex;
+	cursor:pointer;
+	}
+
    ${PREFIX} ._playBackSpeed span{
 	cursor:pointer;
 	}
+	 
 	
      ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="AudioStyle">{css}</style>;

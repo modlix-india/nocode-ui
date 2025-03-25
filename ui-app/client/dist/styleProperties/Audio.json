@@ -59,7 +59,7 @@
 		"gn": "Audio Padding",
 		"dn": "Audio Padding Design2",
 		"n": "audioPaddingDesign2",
-		"dv": "10px",
+		"dv": "10px 10px 0px 10px",
 		"cp": "padding",
 		"sel": ".comp.compAudio._audioDesign2",
 		"np": true
