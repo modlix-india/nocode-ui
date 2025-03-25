@@ -4522,31 +4522,31 @@
 		"cp": "box-shadow",
 		"sel": ".comp.compTextBox._default._hasError, .comp.compTextBox._default._isActive._hasError, .comp.compTextBox._default._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Text Box Error Box Shadow",
 		"dn": "Text Box Error Box Shadow Design Outline",
 		"n": "textBoxErrorBoxShadowDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compTextBox._outlined._hasError, .comp.compTextBox._outlined._isActive._hasError, .comp.compTextBox._outlined._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Text Box Error Box Shadow",
 		"dn": "Text Box Error Box Shadow Design Filled",
 		"n": "textBoxErrorBoxShadowDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compTextBox._filled._hasError, .comp.compTextBox._filled._isActive._hasError, .comp.compTextBox._filled._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Text Box Error Box Shadow",
 		"dn": "Text Box Error Box Shadow Design Big 1",
 		"n": "textBoxErrorBoxShadowDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compTextBox._bigDesign1._hasError, .comp.compTextBox._bigDesign1._isActive._hasError, .comp.compTextBox._bigDesign1._hasValue._hasError",
 		"np": true
-	  },
+	},
 
 	{
 		"gn": "Text Box Border Top",
@@ -5444,5 +5444,402 @@
 		"cp": "color",
 		"sel": ".comp.compTextBox ._label ._asterisk",
 		"np": true
+	},
+
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Primary Text Box Label Font Design Default",
+		"n": "primaryTextBoxLabelFontDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._primary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Secondary Text Box Label Font Design Default",
+		"n": "secondaryTextBoxLabelFontDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._secondary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Tertiary Text Box Label Font Design Default",
+		"n": "tertiaryTextBoxLabelFontDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._tertiary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Quaternary Text Box Label Font Design Default",
+		"n": "quaternaryTextBoxLabelFontDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._quaternary ._label",
+		"np": true
+	},
+
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Quinary Text Box Label Font Design Default",
+		"n": "quinaryTextBoxLabelFontDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Default",
+		"dn": "Primary Text Box Border Default Design Default",
+		"n": "primaryTextBoxBorderDefaultDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Default",
+		"dn": "Secondary Text Box Border Default Design Default",
+		"n": "secondaryTextBoxBorderDefaultDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Default",
+		"dn": "Tertiary Text Box Border Default Design Default",
+		"n": "tertiaryTextBoxBorderDefaultDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Default",
+		"dn": "Quaternary Text Box Border Default Design Default",
+		"n": "quaternaryTextBoxBorderDefaultDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Default",
+		"dn": "Quinary Text Box Border Default Design Default",
+		"n": "quinaryTextBoxBorderDefaultDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._quinary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Active",
+		"dn": "Primary Text Box Border Active Design Default",
+		"n": "primaryTextBoxBorderActiveDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Active",
+		"dn": "Secondary Text Box Border Active Design Default",
+		"n": "secondaryTextBoxBorderActiveDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Active",
+		"dn": "Tertiary Text Box Border Active Design Default",
+		"n": "tertiaryTextBoxBorderActiveDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Active",
+		"dn": "Quaternary Text Box Border Active Design Default",
+		"n": "quaternaryTextBoxBorderActiveDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Active",
+		"dn": "Quinary Text Box Border Active Design Default",
+		"n": "quinaryTextBoxBorderActiveDesignDefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._isActive._quinary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Has Value",
+		"dn": "Primary Text Box Border Has Value Design Default",
+		"n": "primaryTextBoxBorderHasValueDesigndefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Has Value",
+		"dn": "Secondary Text Box Border Has Value Design Default",
+		"n": "secondaryTextBoxBorderHasValueDesigndefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Has Value",
+		"dn": "Tertiary Text Box Border Has Value Design Default",
+		"n": "tertiaryTextBoxBorderHasValueDesigndefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Has Value",
+		"dn": "Quaternary Text Box Border Has Value Design Default",
+		"n": "quaternaryTextBoxBorderHasValueDesigndefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Border Has Value",
+		"dn": "Quinary Text Box Border Has Value Design Default",
+		"n": "quinaryTextBoxBorderHasValueDesigndefault",
+		"dv": "1px solid",
+		"cp": "border",
+		"sel": ".comp.compTextBox._default._hasValue._quinary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Primary Text Box Label Font Design Outline",
+		"n": "primaryTextBoxLabelFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Secondary Text Box Label Font Design Outline",
+		"n": "secondaryTextBoxLabelFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Tertiary Text Box Label Font Design Outline",
+		"n": "tertiaryTextBoxLabelFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Quaternary Text Box Label Font Design Outline",
+		"n": "quaternaryTextBoxLabelFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Quinary Text Box Label Font Design Outline",
+		"n": "quinaryTextBoxLabelFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Primary Text Box Label Font Design Filled",
+		"n": "primaryTextBoxLabelFontDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Secondary Text Box Label Font Design Filled",
+		"n": "secondaryTextBoxLabelFontDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Tertiary Text Box Label Font Design Filled",
+		"n": "tertiaryTextBoxLabelFontDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Quaternary Text Box Label Font Design Filled",
+		"n": "quaternaryTextBoxLabelFontDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Quinary Text Box Label Font Design Outline",
+		"n": "quinaryTextBoxLabelFontDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Primary Text Box Label Font Design Big 1",
+		"n": "primaryTextBoxLabelFontDesignBig1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Secondary Text Box Label Font Design Big 1",
+		"n": "secondaryTextBoxLabelFontDesignBig1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Tertiary Text Box Label Font Design Big 1",
+		"n": "tertiaryTextBoxLabelFontDesignBig1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Quaternary Text Box Label Font Design Big 1",
+		"n": "quaternaryTextBoxLabelFontDesignBig1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Font",
+		"dn": "Quinary Text Box Label Font Design Big 1",
+		"n": "quinaryTextBoxLabelFontDesignBig1",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Margin",
+		"dn": "Text Box Label Margin Design Default",
+		"n": "textBoxLabelMarginDesignDefault",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextBox._default ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Margin",
+		"dn": "Text Box Label Margin Design Outline",
+		"n": "textBoxLabelMarginDesignOutline",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextBox._outlined ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Margin",
+		"dn": "Text Box Label Margin Design Filled",
+		"n": "textBoxLabelMarginDesignFilled",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextBox._filled ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Label Margin",
+		"dn": "Text Box Label Margin Design Big 1",
+		"n": "textBoxLabelMarginDesignBig1",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextBox._bigDesign1 ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font",
+		"dn": "PrimaryText Box Font Design Default",
+		"n": "primaryTextBoxFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font",
+		"dn": "SecondaryText Box Font Design Default",
+		"n": "secondaryTextBoxFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font",
+		"dn": "TertiaryText Box Font Design Default",
+		"n": "tertiaryTextBoxFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font",
+		"dn": "QuaternaryText Box Font Design Default",
+		"n": "quaternaryTextBoxFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font",
+		"dn": "QuinaryText Box Font Design Default",
+		"n": "quinaryTextBoxFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._quinary input::placeholder",
+		"np": true
 	}
+	
 ]

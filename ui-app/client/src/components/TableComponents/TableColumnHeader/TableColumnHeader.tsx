@@ -103,6 +103,9 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			sortAscendingIcon,
 			hideIfNotPersonalized,
 			disableColumnDragging,
+			leftIconTitle,
+			rightIconTitle,
+			tooltipPosition,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -130,6 +133,12 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		leftIconComp = (
 			<i className={`_leftIcon ${leftIcon}`}>
 				<SubHelperComponent definition={definition} subComponentName="leftIcon" />
+				{leftIconTitle ? (
+					<span className="_titleContainer" style={styleProperties.tooltipContainer}>
+						{leftIconTitle}
+						<span className="_titleTriangle" style={styleProperties.tooltipTriangle} />
+					</span>
+				) : null}
 			</i>
 		);
 	}
@@ -188,11 +197,25 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 				</svg>
 			);
 		}
-	} else if (rightIcon) {
+	}
+
+	if (rightIcon) {
 		rightIconComp = (
-			<i className={`_rightIcon ${rightIcon}`}>
-				<SubHelperComponent definition={definition} subComponentName="rightIcon" />
-			</i>
+			<>
+				<i className={`_rightIcon ${rightIcon}`}>
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+					{rightIconTitle ? (
+						<span className="_titleContainer" style={styleProperties.tooltipContainer}>
+							{rightIconTitle}
+							<span
+								className="_titleTriangle"
+								style={styleProperties.tooltipTriangle}
+							/>
+						</span>
+					) : null}
+				</i>
+				{rightIconComp}
+			</>
 		);
 	}
 
@@ -539,7 +562,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 	return (
 		<th
 			id={styleKey}
-			className={`comp compTableHeaderColumn ${hasSort ? '_pointer' : ''}`}
+			className={`comp compTableHeaderColumn ${hasSort ? '_pointer' : ''} ${tooltipPosition}`}
 			style={{ ...(styleProperties.header ?? {}) }}
 			onClick={() =>
 				onChangeSort({
