@@ -5,10 +5,14 @@ import {
 	SchemaType,
 	SchemaUtil,
 	duplicate,
+	SchemaValidator,
 } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
 import { PREVIEW_COMP_DEFINITION_MAP } from '../../FormStorageEditor/components/formCommons';
-import { ComponentDefinition, ComponentProperty } from '../../../types/common';
+import { ComponentDefinition, ComponentProperty, RenderContext } from '../../../types/common';
+import TextBoxPropertyGenerator from './TextBox';
+import CheckBoxPropertyGenerator from './CheckBox';
+import DropdownPropertyGenerator from './DropDown';
 
 const NUMBER_TYPES = new Set([
 	SchemaType.INTEGER,
@@ -16,6 +20,7 @@ const NUMBER_TYPES = new Set([
 	SchemaType.FLOAT,
 	SchemaType.DOUBLE,
 ]);
+
 const ALL_SET = Schema.ofAny('Any').getType()?.getAllowedSchemaTypes()!;
 
 export default function generateChildren({
@@ -58,7 +63,7 @@ function compDefinitionGenerator(
 ) {
 	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 
-	const compName = getComponentName(types);
+	const compName = getComponentName(schema, types);
 	if (!compName) return null;
 
 	const compKey = `${compName}_${label.trim().replace(/\s+/g, '_')}`.toLowerCase();
@@ -147,8 +152,10 @@ function generateSchemaForm(
 	};
 }
 
-function getComponentName(types: Set<SchemaType>) {
+function getComponentName(schema: Schema, types: Set<SchemaType>) {
 	if (!types || types.size === ALL_SET.size) return null;
+
+	if (schema.getEnums()?.length) return 'Dropdown';
 
 	const hasBoolean = types.has(SchemaType.BOOLEAN);
 	if (hasBoolean) return 'CheckBox';
@@ -167,47 +174,16 @@ interface ComponentPropertyGenerator {
 	(
 		schema: Schema,
 		types: Set<SchemaType>,
+		bindingPathPath?: string,
 	): {
 		[key: string]: ComponentProperty<any>;
 	};
 }
 
 const componentPropertyMap: { [key: string]: ComponentPropertyGenerator } = {
-	TextBox: (schema, types) => {
-		const hasString = types.has(SchemaType.STRING);
-		const hasNumber = [...types].some(type => NUMBER_TYPES.has(type));
+	TextBox: TextBoxPropertyGenerator,
 
-		const properties: { [key: string]: ComponentProperty<any> } = {};
+	CheckBox: CheckBoxPropertyGenerator,
 
-		if (!hasString || !hasNumber) {
-			properties.valueType = { value: hasString ? 'text' : 'number' };
-
-			if (hasNumber) {
-				properties.numberType = {
-					value:
-						types.has(SchemaType.FLOAT) || types.has(SchemaType.DOUBLE)
-							? 'DECIMAL'
-							: 'INTEGER',
-				};
-			}
-		}
-
-		properties.maxChars = {
-			value: schema.getMaximum() ?? schema.getMaxLength() ?? undefined,
-		};
-		properties.minChars = {
-			value: schema.getMinimum() ?? schema.getMinLength() ?? undefined,
-		};
-
-		return properties;
-	},
-
-	CheckBox: (schema, types) => ({
-		valueType: { value: types.has(SchemaType.BOOLEAN) ? 'boolean' : undefined },
-	}),
-
-	Dropdown: schema => ({
-		options: { value: schema.getEnums() ?? [] },
-		multiSelect: { value: false },
-	}),
+	Dropdown: DropdownPropertyGenerator,
 };
