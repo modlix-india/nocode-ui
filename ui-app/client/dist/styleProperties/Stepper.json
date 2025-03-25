@@ -1,5 +1,205 @@
 [
 	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultPrimary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultPrimary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._primary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultSecondary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultSecondary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._secondary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultTertiary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultTertiary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultQuaternary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultQuaternary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Title Background Color Active",
+		"dn": "Stepper Step Title Background Color Active Design DefaultQuinary",
+		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultQuinary",
+		"cp": "background-color",
+		"sel": ".comp.compStepper._default._quinary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Border",
+		"dn": "Stepper Step List Item Active Border Design Default Primary",
+		"n": "stepperStepListItemActiveBorderDesignDefaultPrimary",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._primary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Border",
+		"dn": "Stepper Step List Item Active Border Design Default Secondary",
+		"n": "stepperStepListItemActiveBorderDesignDefaultSecondary",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._secondary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Border",
+		"dn": "Stepper Step List Item Active Border Design DefaultTertiary",
+		"n": "stepperStepListItemActiveBorderDesignDefaultTertiary",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Border",
+		"dn": "Stepper Step List Item Active Border Design Default Quaternary",
+		"n": "stepperStepListItemActiveBorderDesignDefaultQuaternary",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Border",
+		"dn": "Stepper Step List Item Active Border Design Default Quinary",
+		"n": "stepperStepListItemActiveBorderDesignDefaultQuinary",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._quinary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Padding",
+		"dn": "Stepper Step List Item Active Padding Design Default Primary",
+		"n": "stepperStepListItemActivePaddingDesignDefaultPrimary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._primary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Padding",
+		"dn": "Stepper Step List Item Active Padding Design Default Secondary",
+		"n": "stepperStepListItemActivePaddingDesignDefaultSecondary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._secondary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Padding",
+		"dn": "Stepper Step List Item Active Padding Design Default Tertiary",
+		"n": "stepperStepListItemActivePaddingDesignDefaultTertiary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Padding",
+		"dn": "Stepper Step List Item Active Padding Design Default Quaternary",
+		"n": "stepperStepListItemActivePaddingDesignDefaultQuaternary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Active Padding",
+		"dn": "Stepper Step List Item Active Padding Design Default Quinary",
+		"n": "stepperStepListItemActivePaddingDesignDefaultQuinary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quinary ._listItem._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Primary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultPrimary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._primary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Secondary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultSecondary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._secondary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Tertiary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultTertiary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Quaternary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultQuaternary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item Next Padding",
+		"dn": "Stepper Step List Item Next Padding Design Default Quinary",
+		"n": "stepperStepListItemNextPaddingDesignDefaultQuinary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quinary ._listItem._nextItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Primary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultPrimary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._primary ._listItem._previousItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Secondary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultSecondary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._secondary ._listItem._previousItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Tertiary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultTertiary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._tertiary ._listItem._previousItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Quaternary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultQuaternary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quaternary ._listItem._previousItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step List Item PreviousItem Padding",
+		"dn": "Stepper Step List Item PreviousItem Padding Design Default Quinary",
+		"n": "stepperStepListItemPreviousItemPaddingDesignDefaultQuinary",
+		"cp": "padding",
+		"sel": ".comp.compStepper._default._quinary ._listItem._previousItem",
+		"np": true
+	},
+	{
 		"gn": "General",
 		"dn": "Stepper Font",
 		"n": "stepperFont",
@@ -2409,47 +2609,6 @@
 	},
 
 	{
-		"gn": "Stepper Step Title Background Color Active",
-		"dn": "Stepper Step Title Background Color Active Design DefaultPrimary",
-		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultPrimary",
-		"cp": "background-color",
-		"sel": ".comp.compStepper._default._primary ._listItem._active",
-		"np": true
-	},
-	{
-		"gn": "Stepper Step Title Background Color Active",
-		"dn": "Stepper Step Title Background Color Active Design DefaultSecondary",
-		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultSecondary",
-		"cp": "background-color",
-		"sel": ".comp.compStepper._default._secondary ._listItem._active",
-		"np": true
-	},
-	{
-		"gn": "Stepper Step Title Background Color Active",
-		"dn": "Stepper Step Title Background Color Active Design DefaultTertiary",
-		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultTertiary",
-		"cp": "background-color",
-		"sel": ".comp.compStepper._default._tertiary ._listItem._active",
-		"np": true
-	},
-	{
-		"gn": "Stepper Step Title Background Color Active",
-		"dn": "Stepper Step Title Background Color Active Design DefaultQuaternary",
-		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultQuaternary",
-		"cp": "background-color",
-		"sel": ".comp.compStepper._default._quaternary ._listItem._active",
-		"np": true
-	},
-	{
-		"gn": "Stepper Step Title Background Color Active",
-		"dn": "Stepper Step Title Background Color Active Design DefaultQuinary",
-		"n": "stepperStepTitleBackgroundColorActiveDesignDefaultQuinary",
-		"cp": "background-color",
-		"sel": ".comp.compStepper._default._quinary ._listItem._active",
-		"np": true
-	},
-
-	{
 		"gn": "Stepper Step Title Background Color Done",
 		"dn": "Stepper Step Title Background Color Done Design DefaultPrimary",
 		"n": "stepperStepTitleBackgroundColorDoneDesignDefaultPrimary",
@@ -2587,6 +2746,96 @@
 		"dv": "2px",
 		"cp": "width",
 		"sel": ".comp.compStepper._big_circle._vertical ._listItem ._line",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Height",
+		"dn": "Stepper Step Circle Height Design Default Primary",
+		"n": "stepperStepCircleHeightDesignDefaultPrimary",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compStepper._default._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Height",
+		"dn": "Stepper Step Circle Height Design Default Secondary",
+		"n": "stepperStepCircleHeightDesignDefaultSecondary",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compStepper._default._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Height",
+		"dn": "Stepper Step Circle Height Design Default Tertiary",
+		"n": "stepperStepCircleHeightDesignDefaultTertiary",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compStepper._default._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Height",
+		"dn": "Stepper Step Circle Height Design Default Quaternary",
+		"n": "stepperStepCircleHeightDesignDefaultQuaternary",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compStepper._default._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Height",
+		"dn": "Stepper Step Circle Height Design Default Quinary",
+		"n": "stepperStepCircleHeightDesignDefaultQuinary",
+		"dv": "32px",
+		"cp": "height",
+		"sel": ".comp.compStepper._default._quinary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Width",
+		"dn": "Stepper Step Circle Width Design Default Primary",
+		"n": "stepperStepCircleWidthDesignDefaultPrimary",
+		"dv": "32px",
+		"cp": "width",
+		"sel": ".comp.compStepper._default._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Width",
+		"dn": "Stepper Step Circle Width Design Default Secondary",
+		"n": "stepperStepCircleWidthDesignDefaultSecondary",
+		"dv": "32px",
+		"cp": "width",
+		"sel": ".comp.compStepper._default._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Width",
+		"dn": "Stepper Step Circle Width Design Default Tertiary",
+		"n": "stepperStepCircleWidthDesignDefaultTertiary",
+		"dv": "32px",
+		"cp": "width",
+		"sel": ".comp.compStepper._default._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Width",
+		"dn": "Stepper Step Circle Width Design Default Quaternary",
+		"n": "stepperStepCircleWidthDesignDefaultQuaternary",
+		"dv": "32px",
+		"cp": "width",
+		"sel": ".comp.compStepper._default._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Circle Width",
+		"dn": "Stepper Step Circle Width Design Default Quinary",
+		"n": "stepperStepCircleWidthDesignDefaultQuinary",
+		"dv": "32px",
+		"cp": "width",
+		"sel": ".comp.compStepper._default._quinary ._step",
 		"np": true
 	}
 ]

@@ -3271,23 +3271,23 @@
 		"cp": "box-shadow",
 		"sel": ".comp.compTextArea._default._hasError, .comp.compTextArea._default._isActive._hasError, .comp.compTextArea._default._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Text Area Error Box Shadow",
 		"dn": "Text Area Error Box Shadow Design Outline",
 		"n": "textAreaErrorBoxShadowDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compTextArea._outlined._hasError, .comp.compTextArea._outlined._isActive._hasError, .comp.compTextArea._outlined._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Text Area Error Box Shadow",
 		"dn": "Text Area Error Box Shadow Design Filled",
 		"n": "textAreaErrorBoxShadowDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compTextArea._filled._hasError, .comp.compTextArea._filled._isActive._hasError, .comp.compTextArea._filled._hasValue._hasError",
 		"np": true
-	  },
+	},
 	{
 		"gn": "Text Area Success Border Color",
 		"dn": "Text Area Success Border Color Design Default",
@@ -3730,6 +3730,223 @@
 		"dv": "<colorTwelve>",
 		"cp": "color",
 		"sel": ".comp.compTextArea ._label ._asterisk",
+		"np": true
+	},
+
+	{
+		"gn": "Text Area Has Value Box Shadow",
+		"dn": "Text Area Has Value Box Shadow Design Default",
+		"n": "textAreaHasValueBoxShadowDesignDefault",
+		"cp": "box-shadow",
+		"dv": "0vw 0vw 0vw 0.278vw #4B43761A",
+		"sel": ".comp.compTextArea._default._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Text Area Has Value Box Shadow",
+		"dn": "Text Area Has Value Box Shadow Design Outline",
+		"n": "textAreaHasValueBoxShadowDesignOutline",
+		"cp": "box-shadow",
+		"dv": "0vw 0vw 0vw 0.278vw #3F3A65",
+		"sel": ".comp.compTextArea._outlined._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Text Area Has Value Box Shadow",
+		"dn": "Text Area Has Value Box Shadow Design Filled",
+		"n": "textAreaHasValueBoxShadowDesignFilled",
+		"cp": "box-shadow",
+		"dv": "0vw 0vw 0vw 0.278vw #62589A",
+		"sel": ".comp.compTextArea._filled._hasValue",
+		"np": true
+	},
+	{
+		"gn": "Text Area Active Box Shadow",
+		"dn": "Text Area Active Box Shadow Design Default",
+		"n": "textAreaActiveBoxShadowDesignDefault",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._default._isActive",
+		"dv": "0vw 0vw 0vw 0.278vw #4B43761A",
+		"np": true
+	},
+	{
+		"gn": "Text Area Active Box Shadow",
+		"dn": "Text Area Active Box Shadow Design Outline",
+		"n": "textAreaActiveBoxShadowDesignOutline",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._outlined._isActive",
+		"dv": "0vw 0vw 0vw 0.278vw #3F3A65",
+		"np": true
+	},
+	{
+		"gn": "Text Area Active Box Shadow",
+		"dn": "Text Area Active Box Shadow Design Filled",
+		"n": "textAreaActiveBoxShadowDesignFilled",
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea._filled._isActive",
+		"dv": "0vw 0vw 0vw 0.278vw #62589A",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Primary Text Area Label Font Default Design Default",
+		"n": "primaryTextAreaLabelFontDefaultDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._default._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Secondary Text Area Label Font Default Design Default",
+		"n": "secondaryTextAreaLabelFontDefaultDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._default._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Tertiary Text Area Label Font Default Design Default",
+		"n": "tertiaryTextAreaLabelFontDefaultDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._default._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Quaternary Text Area Label Font Default Design Default",
+		"n": "quaternaryTextAreaLabelFontDefaultDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._default._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Quinary Text Area Label Font Default Design Default",
+		"n": "quinaryTextAreaLabelFontDefaultDesignDefault",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._default._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Primary Text Area Label Font Default Design Outline",
+		"n": "primaryTextAreaLabelFontDefaultDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._outlined._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Secondary Text Area Label Font Default Design Outline",
+		"n": "secondaryTextAreaLabelFontDefaultDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._outlined._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Tertiary Text Area Label Font Default Design Outline",
+		"n": "tertiaryTextAreaLabelFontDefaultDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._outlined._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Quaternary Text Area Label Font Default Design Outline",
+		"n": "quaternaryTextAreaLabelFontDefaultDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._outlined._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Quinary Text Area Label Font Default Design Outline",
+		"n": "quinaryTextAreaLabelFontDefaultDesignOutline",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._outlined._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Primary Text Area Label Font Default Design Filled",
+		"n": "primaryTextAreaLabelFontDefaultDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._filled._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Secondary Text Area Label Font Default Design Filled",
+		"n": "secondaryTextAreaLabelFontDefaultDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._filled._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Tertiary Text Area Label Font Default Design Filled",
+		"n": "tertiaryTextAreaLabelFontDefaultDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._filled._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Quaternary Text Area Label Font Default Design Filled",
+		"n": "quaternaryTextAreaLabelFontDefaultDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._filled._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Font",
+		"dn": "Quinary Text Area Label Font Default Design Filled",
+		"n": "quinaryTextAreaLabelFontDefaultDesignFilled",
+		"dv": "<quaternaryFont>",
+		"cp": "font",
+		"sel": ".comp.compTextArea._filled._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Margin",
+		"dn": "Text Area Label Margin Design Default",
+		"n": "textAreaLabelMarginDesignDefault",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextArea._default",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Margin",
+		"dn": "Text Area Label Margin Design Outline",
+		"n": "textAreaLabelMarginDesignOutline",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextArea._outlined",
+		"np": true
+	},
+	{
+		"gn": "Text Area Label Margin",
+		"dn": "Text Area Label Margin Design Filled",
+		"n": "textAreaLabelMarginDesignFilled",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compTextArea._filled",
 		"np": true
 	}
 ]

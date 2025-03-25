@@ -5659,31 +5659,31 @@
 		"cp": "box-shadow",
 		"sel": ".comp.compPhoneNumber._default._hasError, .comp.compPhoneNumber._default._isActive._hasError, .comp.compPhoneNumber._default._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Phone Number Error Box Shadow",
 		"dn": "Phone Number Error Box Shadow Design Outline",
 		"n": "phoneNumberErrorBoxShadowDesignOutline",
 		"cp": "box-shadow",
 		"sel": ".comp.compPhoneNumber._outlined._hasError, .comp.compPhoneNumber._outlined._isActive._hasError, .comp.compPhoneNumber._outlined._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Phone Number Error Box Shadow",
 		"dn": "Phone Number Error Box Shadow Design Filled",
 		"n": "phoneNumberErrorBoxShadowDesignFilled",
 		"cp": "box-shadow",
 		"sel": ".comp.compPhoneNumber._filled._hasError, .comp.compPhoneNumber._filled._isActive._hasError, .comp.compPhoneNumber._filled._hasValue._hasError",
 		"np": true
-	  },
-	  {
+	},
+	{
 		"gn": "Phone Number Error Box Shadow",
 		"dn": "Phone Number Error Box Shadow Design Big 1",
 		"n": "phoneNumberErrorBoxShadowDesignBig1",
 		"cp": "box-shadow",
 		"sel": ".comp.compPhoneNumber._bigDesign1._hasError, .comp.compPhoneNumber._bigDesign1._isActive._hasError, .comp.compPhoneNumber._bigDesign1._hasValue._hasError",
 		"np": true
-	  },
+	},
 
 	{
 		"gn": "Phone Number Success Border Color",
@@ -6975,6 +6975,254 @@
 		"dv": "<colorTwelve>",
 		"cp": "color",
 		"sel": ".comp.compPhoneNumber ._label ._asterisk",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Country Code DropDown Width ",
+		"dn": "Phone Number Country Code DropDown Width",
+		"n": "phoneNumberCountryCodeDropDownWidth",
+		"dv": "70px",
+		"cp": "width",
+		"sel": ".comp.compPhoneNumber ._dropdownSelect ._selectedOption",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Primary Phone Number Placeholder Padding Design Default",
+		"n": "primaryPhoneNumberPlaceholderPaddingDesignDefault",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._default._primary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Secondary Phone Number Placeholder Padding Design Default",
+		"n": "secondaryPhoneNumberPlaceholderPaddingDesignDefault",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._default._secondary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Tertiary Phone Number Placeholder Padding Design Default",
+		"n": "tertiaryPhoneNumberPlaceholderPaddingDesignDefault",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._default._tertiary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Quaternary Phone Number Placeholder Padding Design Default",
+		"n": "quaternaryPhoneNumberPlaceholderPaddingDesignDefault",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._default._quaternary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Quinary Phone Number Placeholder Padding Design Default",
+		"n": "quinaryPhoneNumberPlaceholderPaddingDesignDefault",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._default._quinary input._inputBox::placeholder",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Primary Phone Number Placeholder Padding Design Outline",
+		"n": "primaryPhoneNumberPlaceholderPaddingDesignOutline",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._outlined._primary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Secondary Phone Number Placeholder Padding Design Outline",
+		"n": "secondaryPhoneNumberPlaceholderPaddingDesignOutline",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._outlined._secondary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Tertiary Phone Number Placeholder Padding Design Outline",
+		"n": "tertiaryPhoneNumberPlaceholderPaddingDesignOutline",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._outlined._tertiary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Quaternary Phone Number Placeholder Padding Design Outline",
+		"n": "quaternaryPhoneNumberPlaceholderPaddingDesignOutline",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._outlined._quaternary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Quinary Phone Number Placeholder Padding Design Outline",
+		"n": "quinaryPhoneNumberPlaceholderPaddingDesignOutline",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._outlined._quinary input._inputBox::placeholder",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Primary Phone Number Placeholder Padding Design Filled",
+		"n": "primaryPhoneNumberPlaceholderPaddingDesignFilled",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._filled._primary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Secondary Phone Number Placeholder Padding Design Filled",
+		"n": "secondaryPhoneNumberPlaceholderPaddingDesignFilled",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._filled._secondary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Tertiary Phone Number Placeholder Padding Design Filled",
+		"n": "tertiaryPhoneNumberPlaceholderPaddingDesignFilled",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._filled._tertiary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Quaternary Phone Number Placeholder Padding Design Filled",
+		"n": "quaternaryPhoneNumberPlaceholderPaddingDesignFilled",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._filled._quaternary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Quinary Phone Number Placeholder Padding Design Filled",
+		"n": "quinaryPhoneNumberPlaceholderPaddingDesignFilled",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._filled._quinary input._inputBox::placeholder",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Primary Phone Number Placeholder Padding Design Big 1",
+		"n": "primaryPhoneNumberPlaceholderPaddingDesignBig1",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._bigDesign1._primary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Secondary Phone Number Placeholder Padding Design Big 1",
+		"n": "secondaryPhoneNumberPlaceholderPaddingDesignBig1",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._bigDesign1._secondary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Tertiary Phone Number Placeholder Padding Design Big 1",
+		"n": "tertiaryPhoneNumberPlaceholderPaddingDesignBig1",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._bigDesign1._tertiary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Quaternary Phone Number Placeholder Padding Design Big 1",
+		"n": "quaternaryPhoneNumberPlaceholderPaddingDesignBig1",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._bigDesign1._quaternary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Padding",
+		"dn": "Quinary Phone Number Placeholder Padding Design Big 1",
+		"n": "quinaryPhoneNumberPlaceholderPaddingDesignBig1",
+		"cp": "padding",
+		"sel": ".comp.compPhoneNumber._bigDesign1._quinary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Margin",
+		"dn": "Phone Number Label Margin Design Default",
+		"n": "phoneNumberLabelMarginDesignDefault",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compPhoneNumber._default ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Margin",
+		"dn": "Phone Number Label Margin Design Outline",
+		"n": "phoneNumberLabelMarginDesignOutline",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compPhoneNumber._outlined ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Margin",
+		"dn": "Phone Number Label Margin Design Filled",
+		"n": "phoneNumberLabelMarginDesignFilled",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compPhoneNumber._filled ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Margin",
+		"dn": "Phone Number Label Margin Design Big 1",
+		"n": "phoneNumberLabelMarginDesignBig1",
+		"dv": "0px 0px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compPhoneNumber._bigDesign1 ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Primary Phone Number Placeholder Font Design Default",
+		"n": "primaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._primary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Secondary Phone Number Placeholder Font Design Default",
+		"n": "secondaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._secondary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Tertiary Phone Number Placeholder Font Design Default",
+		"n": "tertiaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._tertiary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Quaternary Phone Number Placeholder Font Design Default",
+		"n": "quaternaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._quaternary input._inputBox::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Placeholder Font",
+		"dn": "Quinary Phone Number Placeholder Font Design Default",
+		"n": "quinaryPhoneNumberPlaceholderFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._quinary input._inputBox::placeholder",
 		"np": true
 	}
 ]
