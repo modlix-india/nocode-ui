@@ -486,7 +486,7 @@ export default function MarkdownEditorStyle({
 	${PREFIX} ._componentGrid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
-		gap: 8px;
+		gap: 20px;
 		margin-bottom: 12px;
 		max-height: 300px;
 		overflow-y: auto;
@@ -523,18 +523,24 @@ export default function MarkdownEditorStyle({
 	
 	${PREFIX} ._footer {
 		border-top: 1px solid #eee;
-		padding-top: 12px;
+		background: #000000;
+		border-radius: 6px 6px;
 	}
 	
 	${PREFIX} ._browseAll {
-		width: 100%;
-		padding: 8px;
-		background: #f5f5f5;
+		// width: 100%;
+		width: 325px;
+		height: 51px;
+		padding: 0px 0px;
+		background: #000000;
+		color: white;
 		border: none;
 		border-radius: 4px;
 		cursor: pointer;
 		font-size: 14px;
 		overflow-y: scroll;
+		justify-content: center;
+		align-items: center;
 	}
 	
 	// ${PREFIX} ._componentButtons {

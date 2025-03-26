@@ -312,37 +312,215 @@ const components = [
 	{
 		id: 'left',
 		name: 'Left Align',
-		icon: '◀',
+		icon: (
+			<svg
+				width="12"
+				height="12"
+				viewBox="0 0 12 12"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M1 1H11"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M1 4.33398H5.44445"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M1 7.66602H11"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M1 11H5.44445"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+			</svg>
+		),
 		syntax: '::: left \n left align text here \n :::',
 	},
 	{
 		id: 'center',
 		name: 'Center Align',
-		icon: '↔',
+		icon: (
+			<svg
+				width="12"
+				height="12"
+				viewBox="0 0 12 12"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M11 1H1"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M8 4.33398H3.55555"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M11 7.66602H1"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M8 11H3.55555"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+			</svg>
+		),
 		syntax: '::: center \n This text will be centered \n :::',
 	},
 	{
 		id: 'right',
 		name: 'Right Align',
-		icon: '▶',
+		icon: (
+			<svg
+				width="12"
+				height="12"
+				viewBox="0 0 12 12"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M11 1H1"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M11 4.33398H6.55555"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M11 7.66602H1"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M11 11H6.55555"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+			</svg>
+		),
 		syntax: '::: right \n This text will be right aligned \n :::',
 	},
 	{
 		id: 'justify',
 		name: 'Justify',
-		icon: '↔',
+		icon: (
+			<svg
+				width="12"
+				height="12"
+				viewBox="0 0 12 12"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M11 1H1"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M11 4.16699H1"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M11 7.66602H1"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M11 11.167H1"
+					stroke="black"
+					stroke-width="1.4"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+			</svg>
+		),
 		syntax: '::: justify \n This text will be justified \n :::',
 	},
 	{
 		id: 'rtl',
 		name: 'Right to Left',
-		icon: '◀ ↔',
+		icon: (
+			<svg
+				width="16"
+				height="17"
+				viewBox="0 0 16 17"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					fill-rule="evenodd"
+					clip-rule="evenodd"
+					d="M7.14767 8.15458H7.42336V10.9505C7.42336 11.336 7.73585 11.6485 8.12132 11.6485C8.5068 11.6485 8.81929 11.336 8.81929 10.9505V3.31945H10.4455V10.9505C10.4455 11.336 10.758 11.6485 11.1435 11.6485C11.529 11.6485 11.8415 11.336 11.8415 10.9505V3.31945H12.5986C12.963 3.31945 13.2583 3.02408 13.2583 2.65973C13.2583 2.29537 12.963 2 12.5986 2H7.14767C5.3525 2 3.89167 3.38015 3.89167 5.07695C3.89167 6.77443 5.35251 8.15458 7.14767 8.15458ZM15 13.8953C15 13.5311 14.7047 13.2358 14.3404 13.2358H4.67347L5.75293 12.2163C6.03625 11.9487 6.03625 11.4979 5.75293 11.2304C5.49161 10.9836 5.08311 10.9836 4.8218 11.2304L2.7698 13.1683C2.35196 13.5629 2.35196 14.2277 2.7698 14.6223L4.8218 16.5603C5.08311 16.8071 5.49161 16.8071 5.75293 16.5603C6.03625 16.2927 6.03625 15.842 5.75293 15.5744L4.67347 14.5549H14.3404C14.7047 14.5549 15 14.2596 15 13.8953Z"
+					fill="black"
+				/>
+			</svg>
+		),
 		syntax: '::: rtl \n Direction of content is from right to left \n :::',
 	},
 	{
 		id: 'ltr',
 		name: 'Left to Right',
-		icon: '↔ ▶',
+		icon: (
+			<svg
+				width="16"
+				height="17"
+				viewBox="0 0 16 17"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					fill-rule="evenodd"
+					clip-rule="evenodd"
+					d="M8.85233 8.15458H8.57664V10.9505C8.57664 11.336 8.26415 11.6485 7.87868 11.6485C7.4932 11.6485 7.18071 11.336 7.18071 10.9505V3.31945H5.55446V10.9505C5.55446 11.336 5.24197 11.6485 4.85649 11.6485C4.47102 11.6485 4.15853 11.336 4.15853 10.9505V3.31945H3.40139C3.03704 3.31945 2.74167 3.02408 2.74167 2.65973C2.74167 2.29537 3.03704 2 3.40139 2H8.85233C10.6475 2 12.1083 3.38015 12.1083 5.07695C12.1083 6.77443 10.6475 8.15458 8.85233 8.15458ZM0.999999 13.8953C0.999999 13.5311 1.29531 13.2358 1.65958 13.2358H11.3265L10.2471 12.2163C9.96375 11.9487 9.96375 11.4979 10.2471 11.2304C10.5084 10.9836 10.9169 10.9836 11.1782 11.2304L13.2302 13.1683C13.648 13.5629 13.648 14.2277 13.2302 14.6223L11.1782 16.5603C10.9169 16.8071 10.5084 16.8071 10.2471 16.5603C9.96375 16.2927 9.96375 15.842 10.2471 15.5744L11.3265 14.5549H1.65958C1.29531 14.5549 0.999999 14.2596 0.999999 13.8953Z"
+					fill="black"
+				/>
+			</svg>
+		),
 		syntax: '::: ltr \n Direction of content is from left to right \n :::',
 	},
 	{
@@ -585,7 +763,49 @@ const components = [
 		),
 		syntax: '\n###### heading 6 \n',
 	},
-	{ id: 'hr', name: 'Horizontal Rule', icon: '|---|', syntax: '****' }, //not working
+	{
+		id: 'hr',
+		name: 'Horizontal Rule',
+		icon: (
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 14 14"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M8.33301 1V3.66667C8.33301 3.84348 8.40325 4.01305 8.52827 4.13807C8.65329 4.2631 8.82286 4.33333 8.99967 4.33333H11.6663"
+					stroke="black"
+					stroke-width="1.2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M11.6663 10.9995V11.6662C11.6663 12.0198 11.5259 12.3589 11.2758 12.609C11.0258 12.859 10.6866 12.9995 10.333 12.9995H3.66634C3.31272 12.9995 2.97358 12.859 2.72353 12.609C2.47348 12.3589 2.33301 12.0198 2.33301 11.6662V10.9995"
+					stroke="black"
+					stroke-width="1.2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M1 8.33301H3M6 8.33301H8M11 8.33301H13"
+					stroke="black"
+					stroke-width="1.2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M2.33301 5.66667V2.33333C2.33301 1.97971 2.47348 1.64057 2.72353 1.39052C2.97358 1.14048 3.31272 1 3.66634 1H8.33301L11.6663 4.33333V5.66667"
+					stroke="black"
+					stroke-width="1.2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				/>
+			</svg>
+		),
+		syntax: '****',
+	}, //not working
 	{
 		id: 'code',
 		name: 'Code Block',
@@ -697,9 +917,42 @@ const components = [
 		),
 		syntax: '`inline code`',
 	},
-	{ id: 'superscript', name: 'Superscript', icon: '⁴', syntax: 'text^superscript^' },
-	{ id: 'subscript', name: 'Subscript', icon: '₄', syntax: 'text~subscript~' },
-	{ id: 'highlight', name: 'Highlight', icon: '==', syntax: '==highlighted text==' },
+	{ id: 'superscript', name: 'Superscript', icon: 'x⁴', syntax: 'text^superscript^' },
+	{ id: 'subscript', name: 'Subscript', icon: 'x₄', syntax: 'text~subscript~' },
+	{
+		id: 'highlight',
+		name: 'Highlight',
+		icon: (
+			<svg
+				width="15"
+				height="17"
+				viewBox="0 0 15 17"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M7.8568 11.9098L2.88162 12.8337C1.92735 13.0109 1.45023 13.0995 1.17535 12.8247C0.900479 12.5497 0.989079 12.0726 1.16629 11.1183L2.09015 6.14287C2.2383 5.34508 2.31237 4.94617 2.57535 4.70513C2.83833 4.46411 3.31926 4.41707 4.28113 4.32299C5.20818 4.23231 6.08553 3.91451 7 3L11 7.00033C10.0855 7.91487 9.76753 8.7916 9.67673 9.71873C9.58253 10.6807 9.5354 11.1617 9.2944 11.4247C9.0534 11.6876 8.65453 11.7617 7.8568 11.9098Z"
+					stroke="black"
+					stroke-width="1.2"
+					stroke-linejoin="round"
+				/>
+				<path
+					d="M6.33366 9.14066C5.96066 9.08013 5.61963 8.91786 5.35121 8.64946M5.35121 8.64946C5.08278 8.38106 4.92053 8.03999 4.85997 7.66699M5.35121 8.64946L1.66699 12.3337"
+					stroke="black"
+					stroke-width="1.2"
+					stroke-linecap="round"
+				/>
+				<path
+					d="M7 3C7.47487 2.2994 8.11807 1.1208 9.071 1.00732C9.72147 0.92986 10.2604 1.46875 11.3381 2.54652L11.4535 2.66185C12.5313 3.73963 13.0701 4.27851 12.9927 4.929C12.8792 5.88193 11.7006 6.52513 11 7"
+					stroke="black"
+					stroke-width="1.2"
+					stroke-linejoin="round"
+				/>
+				<path d="M1 16H14" stroke="black" stroke-linecap="round" stroke-linejoin="round" />
+			</svg>
+		),
+		syntax: '==highlighted text==',
+	},
 	{
 		id: 'table',
 		name: 'Table',
@@ -711,53 +964,41 @@ const components = [
 		name: 'Task List',
 		icon: (
 			<svg
-				width="16"
-				height="16"
-				viewBox="0 0 16 16"
+				width="19"
+				height="19"
+				viewBox="0 0 19 19"
 				fill="none"
 				xmlns="http://www.w3.org/2000/svg"
 			>
 				<path
-					d="M10 2.6665H14"
-					stroke="black"
-					strokeWidth="1.3"
-					strokeLinecap="round"
-					strokeLinejoin="round"
+					d="M10.681 6.19482C10.2898 6.19482 9.97266 6.51196 9.97266 6.90316C9.97266 7.29436 10.2898 7.61149 10.681 7.61149H13.9865C14.3777 7.61149 14.6949 7.29436 14.6949 6.90316C14.6949 6.51196 14.3777 6.19482 13.9865 6.19482H10.681Z"
+					fill="#212121"
+					stroke="white"
+					stroke-width="0.1"
 				/>
 				<path
-					d="M10 10H14"
-					stroke="black"
-					strokeWidth="1.3"
-					strokeLinecap="round"
-					strokeLinejoin="round"
+					d="M9.97266 12.0975C9.97266 11.7063 10.2897 11.3892 10.681 11.3892H13.9864C14.3776 11.3892 14.6947 11.7063 14.6947 12.0975C14.6947 12.4887 14.3776 12.8058 13.9864 12.8058H10.681C10.2897 12.8058 9.97266 12.4887 9.97266 12.0975Z"
+					fill="#212121"
+					stroke="white"
+					stroke-width="0.1"
 				/>
 				<path
-					d="M10 6H14"
-					stroke="black"
-					strokeWidth="1.3"
-					strokeLinecap="round"
-					strokeLinejoin="round"
+					d="M8.34817 5.45746C8.62479 5.73408 8.62479 6.18258 8.34817 6.4592L6.45931 8.34806C6.18269 8.62469 5.73419 8.62469 5.45757 8.34806L4.51313 7.40364C4.23651 7.12702 4.23651 6.67853 4.51313 6.40191C4.78975 6.12529 5.23824 6.12529 5.51486 6.40191L5.95844 6.84549L7.34646 5.45746C7.62312 5.18085 8.07154 5.18085 8.34817 5.45746Z"
+					fill="#212121"
+					stroke="white"
+					stroke-width="0.1"
 				/>
 				<path
-					d="M10 13.3335H14"
-					stroke="black"
-					strokeWidth="1.3"
-					strokeLinecap="round"
-					strokeLinejoin="round"
+					d="M8.34817 11.654C8.62479 11.3773 8.62479 10.9289 8.34817 10.6523C8.07154 10.3757 7.62312 10.3757 7.34646 10.6523L5.95844 12.0403L5.51486 11.5967C5.23824 11.3201 4.78975 11.3201 4.51313 11.5967C4.23651 11.8734 4.23651 12.3218 4.51313 12.5984L5.45757 13.5429C5.73419 13.8195 6.18269 13.8195 6.45931 13.5429L8.34817 11.654Z"
+					fill="#212121"
+					stroke="white"
+					stroke-width="0.1"
 				/>
 				<path
-					d="M4.33333 6.66667C5.622 6.66667 6.66667 5.622 6.66667 4.33333C6.66667 3.04467 5.622 2 4.33333 2C3.04467 2 2 3.04467 2 4.33333C2 5.622 3.04467 6.66667 4.33333 6.66667Z"
-					stroke="black"
-					strokeWidth="1.3"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				/>
-				<path
-					d="M4.33333 14.0002C5.622 14.0002 6.66667 12.9555 6.66667 11.6668C6.66667 10.3782 5.622 9.3335 4.33333 9.3335C3.04467 9.3335 2 10.3782 2 11.6668C2 12.9555 3.04467 14.0002 4.33333 14.0002Z"
-					stroke="black"
-					strokeWidth="1.3"
-					strokeLinecap="round"
-					strokeLinejoin="round"
+					d="M3.125 1C1.9514 1 1 1.9514 1 3.125V15.875C1 17.0486 1.9514 18 3.125 18H15.875C17.0486 18 18 17.0486 18 15.875V3.125C18 1.9514 17.0486 1 15.875 1H3.125ZM2.41667 3.125C2.41667 2.7338 2.7338 2.41667 3.125 2.41667H15.875C16.2662 2.41667 16.5833 2.7338 16.5833 3.125V15.875C16.5833 16.2662 16.2662 16.5833 15.875 16.5833H3.125C2.7338 16.5833 2.41667 16.2662 2.41667 15.875V3.125Z"
+					fill="#212121"
+					stroke="white"
+					stroke-width="0.1"
 				/>
 			</svg>
 		),
@@ -767,7 +1008,52 @@ const components = [
 	{
 		id: 'footnote',
 		name: 'Footnote',
-		icon: '†',
+		icon: (
+			<svg
+				width="19"
+				height="17"
+				viewBox="0 0 19 17"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M17.684 1H6.21363C5.96658 1 5.77246 1.19411 5.77246 1.44117C5.77246 1.68822 5.96658 1.88234 6.21363 1.88234H17.684C17.9311 1.88234 18.1252 1.68822 18.1252 1.44117C18.1252 1.19411 17.9311 1 17.684 1Z"
+					fill="black"
+					stroke="black"
+					stroke-width="0.3"
+				/>
+				<path
+					d="M6.21363 4.5298H15.9193C16.1664 4.5298 16.3605 4.33568 16.3605 4.08863C16.3605 3.84158 16.1664 3.64746 15.9193 3.64746H6.21363C5.96658 3.64746 5.77246 3.84158 5.77246 4.08863C5.77246 4.33568 5.96658 4.5298 6.21363 4.5298Z"
+					fill="black"
+					stroke="black"
+					stroke-width="0.3"
+				/>
+				<path
+					d="M17.684 6.29395H6.21363C5.96658 6.29395 5.77246 6.48806 5.77246 6.73511C5.77246 6.98217 5.96658 7.17628 6.21363 7.17628H17.684C17.9311 7.17628 18.1252 6.98217 18.1252 6.73511C18.1252 6.48806 17.9311 6.29395 17.684 6.29395Z"
+					fill="black"
+					stroke="black"
+					stroke-width="0.3"
+				/>
+				<path
+					d="M6.21363 9.82277H15.9193C16.1664 9.82277 16.3605 9.62865 16.3605 9.3816C16.3605 9.13454 16.1664 8.94043 15.9193 8.94043H6.21363C5.96658 8.94043 5.77246 9.13454 5.77246 9.3816C5.77246 9.62865 5.96658 9.82277 6.21363 9.82277Z"
+					fill="black"
+					stroke="black"
+					stroke-width="0.3"
+				/>
+				<path
+					d="M17.684 11.5884H6.21363C5.96658 11.5884 5.77246 11.7825 5.77246 12.0295V15.5589C5.77246 15.8059 5.96658 16.0001 6.21363 16.0001H17.684C17.9311 16.0001 18.1252 15.8059 18.1252 15.5589V12.0295C18.1252 11.7825 17.9311 11.5884 17.684 11.5884ZM17.2428 15.1177H6.6548V12.4707H17.2428V15.1177Z"
+					fill="black"
+					stroke="black"
+					stroke-width="0.3"
+				/>
+				<path
+					d="M1.117 15.876C1.20523 15.9642 1.32876 15.9995 1.43464 15.9995C1.54052 15.9995 1.66405 15.9642 1.75228 15.876L3.51695 14.1113C3.69342 13.9349 3.69342 13.6525 3.51695 13.4937L1.75228 11.729C1.57581 11.5526 1.29346 11.5526 1.13464 11.729C0.958176 11.9055 0.958176 12.1878 1.13464 12.3467L2.58168 13.7937L1.13464 15.2407C0.958176 15.4172 0.958176 15.6995 1.117 15.876Z"
+					fill="black"
+					stroke="black"
+					stroke-width="0.3"
+				/>
+			</svg>
+		),
 		syntax: 'Text with footnote[^1]\n\n[^1]: Footnote content',
 	},
 ];
