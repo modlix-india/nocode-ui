@@ -3942,7 +3942,7 @@
 		"n": "textAreaLabelMarginDesignDefault",
 		"dv": "0px 0px 0px 0px",
 		"cp": "margin",
-		"sel": ".comp.compTextArea._default._label",
+		"sel": ".comp.compTextArea._default ._label",
 		"np": true
 	},
 	{
@@ -3951,7 +3951,7 @@
 		"n": "textAreaLabelMarginDesignOutline",
 		"dv": "0px 0px 0px 0px",
 		"cp": "margin",
-		"sel": ".comp.compTextArea._outlined._label",
+		"sel": ".comp.compTextArea._outlined ._label",
 		"np": true
 	},
 	{
@@ -3960,7 +3960,7 @@
 		"n": "textAreaLabelMarginDesignFilled",
 		"dv": "0px 0px 0px 0px",
 		"cp": "margin",
-		"sel": ".comp.compTextArea._filled._label",
+		"sel": ".comp.compTextArea._filled ._label",
 		"np": true
 	},
 	{
