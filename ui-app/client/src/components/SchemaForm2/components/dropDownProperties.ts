@@ -1,6 +1,6 @@
 import { Schema, SchemaType } from '@fincity/kirun-js';
 
-const DropdownPropertyGenerator = (schema: Schema, types: Set<SchemaType>) => {
+const dropdownPropertyGenerator = (schema: Schema, types: Set<SchemaType>) => {
 	const properties: { [key: string]: any } = {};
 
 	if (types.has(SchemaType.ARRAY)) {
@@ -15,7 +15,7 @@ const DropdownPropertyGenerator = (schema: Schema, types: Set<SchemaType>) => {
 		(types.has(SchemaType.INTEGER) ||
 			types.has(SchemaType.LONG) ||
 			types.has(SchemaType.FLOAT) ||
-			types.has(SchemaType.DOUBLE))
+			+types.has(SchemaType.DOUBLE))
 	) {
 		const enums = schema.getEnums() ?? [];
 		properties.data = {
@@ -33,4 +33,4 @@ const DropdownPropertyGenerator = (schema: Schema, types: Set<SchemaType>) => {
 	return properties;
 };
 
-export default DropdownPropertyGenerator;
+export default dropdownPropertyGenerator;

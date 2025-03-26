@@ -5,14 +5,13 @@ import {
 	SchemaType,
 	SchemaUtil,
 	duplicate,
-	SchemaValidator,
 } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
 import { PREVIEW_COMP_DEFINITION_MAP } from '../../FormStorageEditor/components/formCommons';
 import { ComponentDefinition, ComponentProperty, RenderContext } from '../../../types/common';
-import TextBoxPropertyGenerator from './TextBox';
-import CheckBoxPropertyGenerator from './CheckBox';
-import DropdownPropertyGenerator from './DropDown';
+import TextBoxPropertyGenerator from './textBoxProperties';
+import CheckBoxPropertyGenerator from './checkBoxProperties';
+import DropdownPropertyGenerator from './dropDownProperties';
 
 const NUMBER_TYPES = new Set([
 	SchemaType.INTEGER,
@@ -51,8 +50,85 @@ export default function generateChildren({
 
 		resolveSchema();
 	}, [actualSchema, schemaRepository]);
-
+	console.log(schema);
 	return generateSchemaForm(schema, bindingPathPath);
+}
+
+function generateSchemaForm(
+	schema: Schema,
+	bindingPathPath?: string,
+	order: { currentOrder: number } = { currentOrder: 0 },
+) {
+	let componentDefinitions: { [key: string]: ComponentDefinition } = {};
+	let children: { [key: string]: boolean } = {};
+
+	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
+
+	if (types.has(SchemaType.OBJECT)) {
+		processObjectSchema(schema, bindingPathPath, order, componentDefinitions, children);
+	} else {
+		const label = schema.getTitle() || 'defaultLabel';
+		const compDef = compDefinitionGenerator(label, schema, bindingPathPath, order.currentOrder);
+		if (compDef) {
+			componentDefinitions[compDef.key] = compDef;
+			children[compDef.key] = true;
+		}
+	}
+
+	return {
+		children,
+		pageDef: {
+			name: 'SchemaForm2',
+			baseClientCode: '',
+			permission: '',
+			isFromUndoRedoStack: false,
+			eventFunctions: {},
+			clientCode: '',
+			appCode: '',
+			version: 0,
+			translations: {},
+			properties: {},
+			rootComponent: '',
+			componentDefinition: componentDefinitions,
+		},
+	};
+}
+
+function processObjectSchema(
+	schema: Schema,
+	bindingPathPath: string | undefined,
+	order: { currentOrder: number },
+	componentDefinitions: { [key: string]: ComponentDefinition },
+	children: { [key: string]: boolean },
+) {
+	const properties = schema.getProperties() || {};
+
+	if (properties instanceof Map) {
+		for (const [propName, subSchema] of properties.entries()) {
+			const propBindingPath = bindingPathPath
+				? `${bindingPathPath}.${propName}`
+				: bindingPathPath;
+
+			const compDef = compDefinitionGenerator(
+				propName,
+				subSchema as Schema,
+				propBindingPath,
+				order.currentOrder,
+			);
+
+			if (compDef) {
+				componentDefinitions[compDef.key] = compDef;
+				children[compDef.key] = true;
+				order.currentOrder++;
+			}
+
+			if (subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT)) {
+				const nestedSchema = generateSchemaForm(subSchema, propBindingPath, order);
+				Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
+				Object.assign(children, nestedSchema.children);
+			}
+		}
+	}
 }
 
 function compDefinitionGenerator(
@@ -82,74 +158,6 @@ function compDefinitionGenerator(
 	};
 
 	return compDef;
-}
-
-function generateSchemaForm(
-	schema: Schema,
-	bindingPathPath?: string,
-	order: { currentOrder: number } = { currentOrder: 0 },
-) {
-	let componentDefinitions: { [key: string]: ComponentDefinition } = {};
-	let children: { [key: string]: boolean } = {};
-
-	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
-
-	if (types.has(SchemaType.OBJECT)) {
-		const properties = schema.getProperties() || {};
-
-		if (properties instanceof Map) {
-			const propertiesArray = Array.from(properties.entries());
-
-			propertiesArray.forEach(([propName, subSchema]) => {
-				const propBindingPath = bindingPathPath
-					? `${bindingPathPath}.${propName}`
-					: bindingPathPath;
-
-				const compDef = compDefinitionGenerator(
-					propName,
-					subSchema as Schema,
-					propBindingPath,
-					order.currentOrder,
-				);
-				if (compDef) {
-					componentDefinitions[compDef.key] = compDef;
-					children[compDef.key] = true;
-					order.currentOrder++;
-				}
-
-				if (subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT)) {
-					const nestedSchema = generateSchemaForm(subSchema, propBindingPath, order);
-					Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
-					Object.assign(children, nestedSchema.children);
-				}
-			});
-		}
-	} else {
-		const label = schema.getTitle() || 'defaultLabel';
-		const compDef = compDefinitionGenerator(label, schema, bindingPathPath, order.currentOrder);
-		if (compDef) {
-			componentDefinitions[compDef.key] = compDef;
-			children[compDef.key] = true;
-		}
-	}
-
-	return {
-		children,
-		pageDef: {
-			name: 'SchemaForm2',
-			baseClientCode: '',
-			permission: '',
-			isFromUndoRedoStack: false,
-			eventFunctions: {},
-			clientCode: '',
-			appCode: '',
-			version: 0,
-			translations: {},
-			properties: {},
-			rootComponent: '',
-			componentDefinition: componentDefinitions,
-		},
-	};
 }
 
 function getComponentName(schema: Schema, types: Set<SchemaType>) {
