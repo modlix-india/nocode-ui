@@ -7224,5 +7224,332 @@
 		"cp": "font",
 		"sel": ".comp.compPhoneNumber._default._quinary input._inputBox::placeholder",
 		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Primary Phone Number Font Active Design Default",
+		"n": "primaryPhoneNumberFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._isActive._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Secondary Phone Number Font Active Design Default",
+		"n": "secondaryPhoneNumberFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._isActive._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Tertiary Phone Number Font Active Design Default",
+		"n": "tertiaryPhoneNumberFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._isActive._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Quaternary Phone Number Font Active Design Default",
+		"n": "quaternaryPhoneNumberFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._isActive._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Quinary Phone Number Font Active Design Default",
+		"n": "quinaryPhoneNumberFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._isActive._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Primary Phone Number Font Active Design Outline",
+		"n": "primaryPhoneNumberFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._isActive._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Secondary Phone Number Font Active Design Outline",
+		"n": "secondaryPhoneNumberFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._isActive._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Tertiary Phone Number Font Active Design Outline",
+		"n": "tertiaryPhoneNumberFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._isActive._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Quaternary Phone Number Font Active Design Outline",
+		"n": "quaternaryPhoneNumberFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._isActive._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Quinary Phone Number Font Active Design Outline",
+		"n": "quinaryPhoneNumberFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._isActive._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Primary Phone Number Font Active Design Filled",
+		"n": "primaryPhoneNumberFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._isActive._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Secondary Phone Number Font Active Design Filled",
+		"n": "secondaryPhoneNumberFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._isActive._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Tertiary Phone Number Font Active Design Filled",
+		"n": "tertiaryPhoneNumberFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._isActive._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Quaternary Phone Number Font Active Design Filled",
+		"n": "quaternaryPhoneNumberFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._isActive._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Active",
+		"dn": "Quinary Phone Number Font Active Design Filled",
+		"n": "quinaryPhoneNumberFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._isActive._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Border Font  Active",
+		"dn": "Primary Phone Number Border Font  Active Design Big 1",
+		"n": "primaryPhoneNumberBorderFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._isActive._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Border Font  Active",
+		"dn": "Secondary Phone Number Border Font  Active Design Big 1",
+		"n": "secondaryPhoneNumberBorderFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._isActive._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Border Font  Active",
+		"dn": "Tertiary Phone Number Border Font  Active Design Big 1",
+		"n": "tertiaryPhoneNumberBorderFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._isActive._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Border Font  Active",
+		"dn": "Quaternary Phone Number Border Font  Active Design Big 1",
+		"n": "quaternaryPhoneNumberBorderFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._isActive._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Border Font  Active",
+		"dn": "Quinary Phone Number Border Font  Active Design Big 1",
+		"n": "quinaryPhoneNumberBorderFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._isActive._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Primary Phone Number Font Has Value Design Default",
+		"n": "primaryPhoneNumberFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._hasValue._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Secondary Phone Number Font Has Value Design Default",
+		"n": "secondaryPhoneNumberFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._hasValue._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Tertiary Phone Number Font Has Value Design Default",
+		"n": "tertiaryPhoneNumberFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._hasValue._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Quaternary Phone Number Font Has Value Design Default",
+		"n": "quaternaryPhoneNumberFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._hasValue._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Quinary Phone Number Font Has Value Design Default",
+		"n": "quinaryPhoneNumberFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._hasValue._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Primary Phone Number Font Has Value Design Outline",
+		"n": "primaryPhoneNumberFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._hasValue._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Secondary Phone Number Font Has Value Design Outline",
+		"n": "secondaryPhoneNumberFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._hasValue._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Tertiary Phone Number Font Has Value Design Outline",
+		"n": "tertiaryPhoneNumberFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._hasValue._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Quaternary Phone Number Font Has Value Design Outline",
+		"n": "quaternaryPhoneNumberFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._hasValue._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Quinary Phone Number Font Has Value Design Outline",
+		"n": "quinaryPhoneNumberFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._hasValue._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Primary Phone Number Font Has Value Design Filled",
+		"n": "primaryPhoneNumberFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._hasValue._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Secondary Phone Number Font Has Value Design Filled",
+		"n": "secondaryPhoneNumberFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._hasValue._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Tertiary Phone Number Font Has Value Design Filled",
+		"n": "tertiaryPhoneNumberFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._hasValue._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Quaternary Phone Number Font Has Value Design Filled",
+		"n": "quaternaryPhoneNumberFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._hasValue._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Quinary Phone Number Font Has Value Design Filled",
+		"n": "quinaryPhoneNumberFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._hasValue._quinary ._inputBox",
+		"np": true
+	},
+
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Primary Phone Number Font Has Value Design Big 1",
+		"n": "primaryPhoneNumberFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._hasValue._primary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Secondary Phone Number Font Has Value Design Big 1",
+		"n": "secondaryPhoneNumberFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._hasValue._secondary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Tertiary Phone Number Font Has Value Design Big 1",
+		"n": "tertiaryPhoneNumberFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._hasValue._quaternary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Quaternary Phone Number Font Has Value Design Big 1",
+		"n": "quaternaryPhoneNumberFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._hasValue._tertiary ._inputBox",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Font Has Value",
+		"dn": "Quinary Phone Number Font Has Value Design Big 1",
+		"n": "quinaryPhoneNumberFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._hasValue._quinary ._inputBox",
+		"np": true
 	}
 ]
