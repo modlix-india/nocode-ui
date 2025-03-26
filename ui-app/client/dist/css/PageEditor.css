@@ -4253,6 +4253,43 @@ input._peInput[type='number'] {
 	}
 }
 
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._audioWave1 {
+	animation: audioWave1 1s infinite ease-in-out;
+}
+
+@keyframes audioWave1 {
+	0% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._audioWave2 {
+	animation: audioWave2 1s infinite ease-in-out 0.2s;
+}
+
+@keyframes audioWave2 {
+	0% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 0.8;
+	}
+
+	100% {
+		opacity: 0;
+	}
+}
+
 .comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._popupInner {
 	animation: popupInnerAnimation var(--comp-item-animation-duration-long) infinite;
 	transform-origin: 15px 15px;
