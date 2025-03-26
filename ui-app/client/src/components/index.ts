@@ -51,6 +51,7 @@ import RangeSlider from './RangeSlider/RangeSlider';
 import Timer from './Timer/Timer';
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 import MarkdownTOC from './MarkdownTOC/MarkdownTOC';
+import Audio from './Audio/Audio';
 
 const componentMap = new Map<string, Component>([
 	[Button.name, Button],
@@ -102,6 +103,7 @@ const componentMap = new Map<string, Component>([
 	[Timer.name, Timer],
 	[MarkdownEditor.name, MarkdownEditor],
 	[MarkdownTOC.name, MarkdownTOC],
+	[Audio.name, Audio],
 ]);
 
 import Chart from './Chart/Chart';

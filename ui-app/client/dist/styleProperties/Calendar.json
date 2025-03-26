@@ -2591,224 +2591,203 @@
 		"sel": ".comp.compCalendar._text._quinary ._label",
 		"np": true
 	},
-
 	{
-		"gn": "Border Color",
-		"dn": "Primary Calendar Default Design border Color",
-		"n": "primaryCalendarDefaultDesignborderColorisActive",
-		"dv": "<fontColorThree>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Primary Calendar Default Design border ",
+		"n": "primaryCalendarDefaultDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._default._isActive._primary, .comp.compCalendar._default._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Secondary Calendar Default Design border Color",
-		"n": "secondaryCalendarDefaultDesignborderColorisActive",
-		"dv": "<fontColorFour>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Secondary Calendar Default Design border ",
+		"n": "secondaryCalendarDefaultDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._default._isActive._secondary, .comp.compCalendar._default._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Tertiary Calendar Default Design border Color",
-		"n": "tertiaryCalendarDefaultDesignborderColorisActive",
-		"dv": "<fontColorFive>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Tertiary Calendar Default Design border",
+		"n": "tertiaryCalendarDefaultDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._default._isActive._tertiary, .comp.compCalendar._default._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quaternary Calendar Default Design border Color",
-		"n": "quaternaryCalendarDefaultDesignborderColorisActive",
-		"dv": "<fontColorNine>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quaternary Calendar Default Design border",
+		"n": "quaternaryCalendarDefaultDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._default._isActive._quaternary, .comp.compCalendar._default._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quinary Calendar Default Design border Color",
-		"n": "quinaryCalendarDefaultDesignborderColorisActive",
-		"dv": "<fontColorSeven>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quinary Calendar Default Design border",
+		"n": "quinaryCalendarDefaultDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._default._isActive._quinary, .comp.compCalendar._default._hasValue._quinary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Primary Calendar Outline Design border Color",
-		"n": "primaryCalendarOutlineDesignborderColorisActive",
-		"dv": "<fontColorThree>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Primary Calendar Outline Design border",
+		"n": "primaryCalendarOutlineDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._outlined._isActive._primary, .comp.compCalendar._outlined._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Secondary Calendar Outline Design border Color",
-		"n": "secondaryCalendarOutlineDesignborderColorisActive",
-		"dv": "<fontColorFour>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Secondary Calendar Outline Design border",
+		"n": "secondaryCalendarOutlineDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._outlined._isActive._secondary, .comp.compCalendar._outlined._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Tertiary Calendar Outline Design border Color",
-		"n": "tertiaryCalendarOutlineDesignborderColorisActive",
-		"dv": "<fontColorFive>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Tertiary Calendar Outline Design border",
+		"n": "tertiaryCalendarOutlineDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._outlined._isActive._tertiary, .comp.compCalendar._outlined._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quaternary Calendar Outline Design border Color",
-		"n": "quaternaryCalendarOutlineDesignborderColorisActive",
-		"dv": "<fontColorNine>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quaternary Calendar Outline Design border",
+		"n": "quaternaryCalendarOutlineDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._outlined._isActive._quaternary, .comp.compCalendar._outlined._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quinary Calendar Outline Design border Color",
-		"n": "quinaryCalendarOutlineDesignborderColorisActive",
-		"dv": "<fontColorSeven>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quinary Calendar Outline Design border",
+		"n": "quinaryCalendarOutlineDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._outlined._isActive._quinary, .comp.compCalendar._outlined._hasValue._quinary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Primary Calendar Filled Design border Color",
-		"n": "primaryCalendarFilledDesignborderColorisActive",
-		"dv": "<fontColorThree>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Primary Calendar Filled Design border",
+		"n": "primaryCalendarFilledDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._filled._isActive._primary, .comp.compCalendar._filled._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Secondary Calendar Filled Design border Color",
-		"n": "secondaryCalendarFilledDesignborderColorisActive",
-		"dv": "<fontColorFour>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Secondary Calendar Filled Design border",
+		"n": "secondaryCalendarFilledDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._filled._isActive._secondary, .comp.compCalendar._filled._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Tertiary Calendar Filled Design border Color",
-		"n": "tertiaryCalendarFilledDesignborderColorisActive",
-		"dv": "<fontColorFive>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Tertiary Calendar Filled Design border",
+		"n": "tertiaryCalendarFilledDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._filled._isActive._tertiary, .comp.compCalendar._filled._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quaternary Calendar Filled Design border Color",
-		"n": "quaternaryCalendarFilledDesignborderColorisActive",
-		"dv": "<fontColorNine>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quaternary Calendar Filled Design border",
+		"n": "quaternaryCalendarFilledDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._filled._isActive._quaternary, .comp.compCalendar._filled._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quinary Calendar Filled Design border Color",
-		"n": "quinaryCalendarFilledDesignborderColorisActive",
-		"dv": "<fontColorSeven>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quinary Calendar Filled Design border",
+		"n": "quinaryCalendarFilledDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._filled._isActive._quinary, .comp.compCalendar._filled._hasValue._quinary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Primary Calendar Design One Design border Color",
-		"n": "primaryCalendarDesignOneDesignborderColorisActive",
-		"dv": "<fontColorThree>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Primary Calendar Design One Design border",
+		"n": "primaryCalendarDesignOneDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._bigDesign1._isActive._primary, .comp.compCalendar._bigDesign1._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Secondary Calendar Design One Design border Color",
-		"n": "secondaryCalendarDesignOneDesignborderColorisActive",
-		"dv": "<fontColorFour>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Secondary Calendar Design One Design border",
+		"n": "secondaryCalendarDesignOneDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._bigDesign1._isActive._secondary, .comp.compCalendar._bigDesign1._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Tertiary Calendar Design One Design border Color",
-		"n": "tertiaryCalendarDesignOneDesignborderColorisActive",
-		"dv": "<fontColorFive>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Tertiary Calendar Design One Design border",
+		"n": "tertiaryCalendarDesignOneDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._bigDesign1._isActive._tertiary, .comp.compCalendar._bigDesign1._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quaternary Calendar Design One Design border Color",
-		"n": "quaternaryCalendarDesignOneDesignborderColorisActive",
-		"dv": "<fontColorNine>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quaternary Calendar Design One Design border",
+		"n": "quaternaryCalendarDesignOneDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._bigDesign1._isActive._quaternary, .comp.compCalendar._bigDesign1._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quinary Calendar Design One Design border Color",
-		"n": "quinaryCalendarDesignOneDesignborderColorisActive",
-		"dv": "<fontColorSeven>",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quinary Calendar Design One Design border",
+		"n": "quinaryCalendarDesignOneDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._bigDesign1._isActive._quinary, .comp.compCalendar._bigDesign1._hasValue._quinary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Primary Calendar Text Design border Color",
-		"n": "primaryCalendarTextDesignborderColorisActive",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Primary Calendar Text Design border",
+		"n": "primaryCalendarTextDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._text._isActive._primary, .comp.compCalendar._text._hasValue._primary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Secondary Calendar Text Design border Color",
-		"n": "secondaryCalendarTextDesignborderColorisActive",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Secondary Calendar Text Design border",
+		"n": "secondaryCalendarTextDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._text._isActive._secondary, .comp.compCalendar._text._hasValue._secondary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Tertiary Calendar Text Design border Color",
-		"n": "tertiaryCalendarTextDesignborderColorisActive",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Tertiary Calendar Text Design border",
+		"n": "tertiaryCalendarTextDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._text._isActive._tertiary, .comp.compCalendar._text._hasValue._tertiary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quaternary Calendar Text Design border Color",
-		"n": "quaternaryCalendarTextDesignborderColorisActive",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quaternary Calendar Text Design border",
+		"n": "quaternaryCalendarTextDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._text._isActive._quaternary, .comp.compCalendar._text._hasValue._quaternary",
 		"np": true
 	},
 	{
-		"gn": "Border Color",
-		"dn": "Quinary Calendar Text Design border Color",
-		"n": "quinaryCalendarTextDesignborderColorisActive",
-		"cp": "border-color",
+		"gn": "Border ",
+		"dn": "Quinary Calendar Text Design border",
+		"n": "quinaryCalendarTextDesignborderisActive",
+		"cp": "border",
 		"sel": ".comp.compCalendar._text._isActive._quinary, .comp.compCalendar._text._hasValue._quinary",
 		"np": true
 	},
@@ -9838,6 +9817,329 @@
 		"dv": "<secondaryFont>",
 		"cp": "font",
 		"sel": ".comp.compCalendar._smallCalendar._quinary ._calendarBodyMonths",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Primary Calendar Default Design Text Color For Placeholder",
+		"n": "primaryCalendarDefaultDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Secondary Calendar Default Design Text Color For Placeholder",
+		"n": "secondaryCalendarDefaultDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Tertiary Calendar Default Design Text Color For Placeholder",
+		"n": "tertiaryCalendarDefaultDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Quaternary Calendar Default Design Text Color For Placeholder",
+		"n": "quaternaryCalendarDefaultDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Quinary Calendar Default Design Text Color For Placeholder",
+		"n": "quinaryCalendarDefaultDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Primary Calendar Outlined Design Text Color For Placeholder",
+		"n": "primaryCalendarOutlinedDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Secondary Calendar Outlined Design Text Color For Placeholder",
+		"n": "secondaryCalendarOutlinedDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Tertiary Calendar Outlined Design Text Color For Placeholder",
+		"n": "tertiaryCalendarOutlinedDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Quaternary Calendar Outlined Design Text Color For Placeholder",
+		"n": "quaternaryCalendarOutlinedDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Quinary Calendar Outlined Design Text Color For Placeholder",
+		"n": "quinaryCalendarOutlinedDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Primary Calendar Filled Design Text Color For Placeholder",
+		"n": "primaryCalendarFilledDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Secondary Calendar Filled Design Text Color For Placeholder",
+		"n": "secondaryCalendarFilledDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Tertiary Calendar Filled Design Text Color For Placeholder",
+		"n": "tertiaryCalendarFilledDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Quaternary Calendar Filled Design Text Color For Placeholder",
+		"n": "quaternaryCalendarFilledDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Quinary Calendar Filled Design Text Color For Placeholder",
+		"n": "quinaryCalendarFilledDesignTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Primary Calendar Big Design One Text Color For Placeholder",
+		"n": "primaryCalendarBigDesignOneTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._primary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Secondary Calendar Big Design One Text Color For Placeholder",
+		"n": "secondaryCalendarBigDesignOneTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._secondary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Tertiary Calendar Big Design One Text Color For Placeholder",
+		"n": "tertiaryCalendarBigDesignOneTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._tertiary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Quaternary Calendar Big Design One Text Color For Placeholder",
+		"n": "quaternaryCalendarBigDesignOneTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._quaternary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font PlaceHolder",
+		"dn": "Quinary Calendar Big Design One Text Color For Placeholder",
+		"n": "quinaryCalendarBigDesignOneTextColorForPlaceholder",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._quinary input::placeholder",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Primary Calendar Default Design Text Font",
+		"n": "primaryCalendarDefaultDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Secondary Calendar Default Design Text Font",
+		"n": "secondaryCalendarDefaultDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Tertiary Calendar Default Design Text Font",
+		"n": "tertiaryCalendarDefaultDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Quaternary Calendar Default Design Text Font",
+		"n": "quaternaryCalendarDefaultDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Quinary Calendar Default Design Text Font",
+		"n": "quinaryCalendarDefaultDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._default._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Font",
+		"dn": "Primary Calendar Outlined Design Text Font",
+		"n": "primaryCalendarOutlinedDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Secondary Calendar Outlined Design Text Font",
+		"n": "secondaryCalendarOutlinedDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Tertiary Calendar Outlined Design Text Font",
+		"n": "tertiaryCalendarOutlinedDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Quaternary Calendar Outlined Design Text Font",
+		"n": "quaternaryCalendarOutlinedDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Quinary Calendar Outlined Design Text Font",
+		"n": "quinaryCalendarOutlinedDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._outlined._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Font",
+		"dn": "Primary Calendar Filled Design Text Font",
+		"n": "primaryCalendarFilledDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Secondary Calendar Filled Design Text Font",
+		"n": "secondaryCalendarFilledDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Tertiary Calendar Filled Design Text Font",
+		"n": "tertiaryCalendarFilledDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Quaternary Calendar Filled Design Text Font",
+		"n": "quaternaryCalendarFilledDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Quinary Calendar Filled Design Text Font",
+		"n": "quinaryCalendarFilledDesignTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._filled._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Font",
+		"dn": "Primary Calendar Big Design One Text Font",
+		"n": "primaryCalendarBigDesignOneTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Secondary Calendar Big Design One Text Font",
+		"n": "secondaryCalendarBigDesignOneTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Tertiary Calendar Big Design One Text Font",
+		"n": "tertiaryCalendarBigDesignOneTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Quaternary Calendar Big Design One Text Font",
+		"n": "quaternaryCalendarBigDesignOneTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Font",
+		"dn": "Quinary Calendar Big Design One Text Font",
+		"n": "quinaryCalendarBigDesignOneTextFont",
+		"cp": "font",
+		"sel": ".comp.compCalendar._bigDesign1._quinary",
 		"np": true
 	}
 ]

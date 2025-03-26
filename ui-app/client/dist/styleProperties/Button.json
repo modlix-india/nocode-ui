@@ -7137,5 +7137,1005 @@
 		"cp": "box-shadow",
 		"sel": ".comp.compButton._bigDesign1",
 		"np": true
+	},
+	{
+		"gn": "Background Color Hover",
+		"dn": "Primary Primary Icon  Button Design Background Color Hover",
+		"n": "primaryPrimaryIconButtonDesignBackgroundColorHover",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._primary:hover",
+		"np": true
+	},
+	{
+		"gn": "Background Color Hover",
+		"dn": "Secondary Primary Icon  Button Design Background Color Hover",
+		"n": "secondaryPrimaryIconButtonDesignBackgroundColorHover",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._secondary:hover",
+		"np": true
+	},
+	{
+		"gn": "Background Color Hover",
+		"dn": "Tertiary Primary Icon  Button Design Background Color Hover",
+		"n": "tertiaryPrimaryIconButtonDesignBackgroundColorHover",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._tertiary:hover",
+		"np": true
+	},
+	{
+		"gn": "Background Color Hover",
+		"dn": "Quaternary Primary Icon  Button Design Background Color Hover",
+		"n": "quaternaryPrimaryIconButtonDesignBackgroundColorHover",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._quaternary:hover",
+		"np": true
+	},
+	{
+		"gn": "Background Color Hover",
+		"dn": "Quinary Primary Icon  Button Design Background Color Hover",
+		"n": "quinaryPrimaryIconButtonDesignBackgroundColorHover",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._quinary:hover",
+		"np": true
+	},
+	{
+		"gn": "Text Color Hover",
+		"dn": "Primary Primary Icon Button Design Text Color Hover",
+		"n": "primaryPrimaryIconButtonDesignTextColorHover",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._primary:hover",
+		"np": true
+	},
+	{
+		"gn": "Text Color Hover",
+		"dn": "Secondary Primary Icon Button Design Text Color Hover",
+		"n": "secondaryPrimaryIconButtonDesignTextColorHover",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._secondary:hover",
+		"np": true
+	},
+	{
+		"gn": "Text Color Hover",
+		"dn": "Tertiary Primary Icon Button Design Text Color Hover",
+		"n": "tertiaryPrimaryIconButtonDesignTextColorHover",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._tertiary:hover",
+		"np": true
+	},
+	{
+		"gn": "Text Color Hover",
+		"dn": "Quaternary Primary Icon Button Design Text Color Hover",
+		"n": "quaternaryPrimaryIconButtonDesignTextColorHover",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._quaternary:hover",
+		"np": true
+	},
+	{
+		"gn": "Text Color Hover",
+		"dn": "Quinary Primary Icon Button Design Text Color Hover",
+		"n": "quinaryPrimaryIconButtonDesignTextColorHover",
+		"dv": "<fontColorTwo>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._quinary:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Background Color Hover",
+		"dn": "Primary Primary Icon Button Design Disabled Background Color Hover",
+		"n": "primaryPrimaryIconButtonDesignDisabledBackgroundColorHover",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._primary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Background Color Hover",
+		"dn": "Secondary Primary Icon Button Design Disabled Background Color Hover",
+		"n": "secondaryPrimaryIconButtonDesignDisabledBackgroundColorHover",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._secondary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Background Color Hover",
+		"dn": "Tertiary Primary Icon Button Design Disabled Background Color Hover",
+		"n": "tertiaryPrimaryIconButtonDesignDisabledBackgroundColorHover",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._tertiary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Background Color Hover",
+		"dn": "Quaternary Primary Icon Button Design Disabled Background Color Hover",
+		"n": "quaternaryPrimaryIconButtonDesignDisabledBackgroundColorHover",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._quaternary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Background Color Hover",
+		"dn": "Quinary Primary Icon Button Design Disabled Background Color Hover",
+		"n": "quinaryPrimaryIconButtonDesignDisabledBackgroundColorHover",
+		"dv": "<backgroundColorNine>",
+		"cp": "background",
+		"sel": ".comp.compButton._iconPrimaryButton._quinary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Font Color Hover",
+		"dn": "Primary Primary Icon Button Design Disabled Font Color Hover",
+		"n": "primaryPrimaryIconButtonDesignDisabledFontColorHover",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._primary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Font Color Hover",
+		"dn": "Secondary Primary Icon Button Design Disabled Font Color Hover",
+		"n": "secondaryPrimaryIconButtonDesignDisabledFontColorHover",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._secondary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Font Color Hover",
+		"dn": "Tertiary Primary Icon Button Design Disabled Font Color Hover",
+		"n": "tertiaryPrimaryIconButtonDesignDisabledFontColorHover",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._tertiary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Font Color Hover",
+		"dn": "Quaternary Primary Icon Button Design Disabled Font Color Hover",
+		"n": "quaternaryPrimaryIconButtonDesignDisabledFontColorHover",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._quaternary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Font Color Hover",
+		"dn": "Quinary Primary Icon Button Design Disabled Font Color Hover",
+		"n": "quinaryPrimaryIconButtonDesignDisabledFontColorHover",
+		"dv": "<fontColorOne>",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._quinary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Border Hover Color",
+		"dn": "Primary Primary Icon Button Design Disabled Border Hover Color",
+		"n": "primaryPrimaryIconButtonDesignDisabledBorderHoverColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._primary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Border Hover Color",
+		"dn": "Secondary Primary Icon Button Design Disabled Border Hover Color",
+		"n": "secondaryPrimaryIconButtonDesignDisabledBorderHoverColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._secondary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Border Hover Color",
+		"dn": "Tertiary Primary Icon Button Design Disabled Border Hover Color",
+		"n": "tertiaryPrimaryIconButtonDesignDisabledBorderHoverColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._tertiary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Border Hover Color",
+		"dn": "Quaternary Primary Icon Button Design Disabled Border Hover Color",
+		"n": "quaternaryPrimaryIconButtonDesignDisabledBorderHoverColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._quaternary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Disabled Border Hover Color",
+		"dn": "Quinary Primary Icon Button Design Disabled Border Hover Color",
+		"n": "quinaryPrimaryIconButtonDesignDisabledBorderHoverColor",
+		"dv": "<fontColorEight>",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._quinary:disabled:hover",
+		"np": true
+	},
+	{
+		"gn": "Border Hover Color",
+		"dn": "Primary Primary Icon Button Design Border Hover Color",
+		"n": "primaryPrimaryIconButtonDesignBorderHoverColor",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._primary:hover",
+		"np": true
+	},
+	{
+		"gn": "Border Hover Color",
+		"dn": "Secondary Primary Icon Button Design Border Hover Color",
+		"n": "secondaryPrimaryIconButtonDesignBorderHoverColor",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._secondary:hover",
+		"np": true
+	},
+	{
+		"gn": "Border Hover Color",
+		"dn": "Tertiary Primary Icon Button Design Border Hover Color",
+		"n": "tertiaryPrimaryIconButtonDesignBorderHoverColor",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._tertiary:hover",
+		"np": true
+	},
+	{
+		"gn": "Border Hover Color",
+		"dn": "Quaternary Primary Icon Button Design Border Hover Color",
+		"n": "quaternaryPrimaryIconButtonDesignBorderHoverColor",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._quaternary:hover",
+		"np": true
+	},
+	{
+		"gn": "Border Hover Color",
+		"dn": "Quinary Primary Icon Button Design Border Hover Color",
+		"n": "quinaryPrimaryIconButtonDesignBorderHoverColor",
+		"cp": "border-color",
+		"sel": ".comp.compButton._iconPrimaryButton._quinary:hover",
+		"np": true
+	},
+	{
+		"gn": "Icon Hover Color",
+		"dn": "Primary Primary Icon Button Design Icon Hover Color",
+		"n": "primaryPrimaryIconButtonDesignIconHoverColor",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._primary:hover ._icon",
+		"np": true
+	},
+	{
+		"gn": "Icon Hover Color",
+		"dn": "Secondary Primary Icon Button Design Icon Hover Color",
+		"n": "secondaryPrimaryIconButtonDesignIconHoverColor",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._secondary:hover ._icon",
+		"np": true
+	},
+	{
+		"gn": "Icon Hover Color",
+		"dn": "Tertiary Primary Icon Button Design Icon Hover Color",
+		"n": "tertiaryPrimaryIconButtonDesignIconHoverColor",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._tertiary:hover ._icon",
+		"np": true
+	},
+	{
+		"gn": "Icon Hover Color",
+		"dn": "Quaternary Primary Icon Button Design Icon Hover Color",
+		"n": "quaternaryPrimaryIconButtonDesignIconHoverColor",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._quaternary:hover ._icon",
+		"np": true
+	},
+	{
+		"gn": "Icon Hover Color",
+		"dn": "Quinary Primary Icon Button Design Icon Hover Color",
+		"n": "quinaryPrimaryIconButtonDesignIconHoverColor",
+		"cp": "color",
+		"sel": ".comp.compButton._iconPrimaryButton._quinary:hover ._icon",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Default Button Design Left Image Margin",
+		"n": "defaultButtonDesignLeftImageMargin",
+		"dv": "0px 5px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compButton._default ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Outlined Button Design Left Image Margin",
+		"n": "outlinedButtonDesignLeftImageMargin",
+		"dv": "0px 5px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compButton._outlined ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Text Button Design Left Image Margin",
+		"n": "textButtonDesignLeftImageMargin",
+		"dv": "0px 5px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compButton._text ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Primary Icon Button Design Left Image Margin",
+		"n": "primaryIconButtonDesignLeftImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._iconPrimaryButton ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Icon Button Design Left Image Margin",
+		"n": "iconButtonDesignLeftImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._iconButton ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Fab Button Design Left Image Margin",
+		"n": "fabButtonDesignLeftImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._fabButton ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Fab Button Mini Design Left Image Margin",
+		"n": "fabButtonMiniDesignLeftImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._fabButtonMini ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Decorative Button Design Left Image Margin",
+		"n": "decorativeButtonDesignLeftImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._decorative ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Margin",
+		"dn": "Biig Design One Button Design Left Image Margin",
+		"n": "biigDesignOneButtonDesignLeftImageMargin",
+		"dv": "0px 10px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compButton._bigDesign1 ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Default Button Design Left Active Image Margin",
+		"n": "defaultButtonDesignLeftActiveImageMargin",
+		"dv": "0px 5px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compButton._default ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Outlined Button Design Left Active Image Margin",
+		"n": "outlinedButtonDesignLeftActiveImageMargin",
+		"dv": "0px 5px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compButton._outlined ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Text Button Design Left Active Image Margin",
+		"n": "textButtonDesignLeftActiveImageMargin",
+		"dv": "0px 5px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compButton._text ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Primary Icon Button Design Left Active Image Margin",
+		"n": "primaryIconButtonDesignLeftActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._iconPrimaryButton ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Icon Button Design Left Active Image Margin",
+		"n": "iconButtonDesignLeftActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._iconButton ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Fab Button Design Left Active Image Margin",
+		"n": "fabButtonDesignLeftActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._fabButton ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Fab Button Mini Design Left Active Image Margin",
+		"n": "fabButtonMiniDesignLeftActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._fabButtonMini ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Decorative Button Design Left Active Image Margin",
+		"n": "decorativeButtonDesignLeftActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._decorative ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Margin",
+		"dn": "Biig Design One Button Design Left Active Image Margin",
+		"n": "biigDesignOneButtonDesignLeftActiveImageMargin",
+		"dv": "0px 10px 0px 0px",
+		"cp": "margin",
+		"sel": ".comp.compButton._bigDesign1 ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Default Button Design Left Image Padding",
+		"n": "defaultButtonDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._default ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Outlined Button Design Left Image Padding",
+		"n": "outlinedButtonDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._outlined ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Text Button Design Left Image Padding",
+		"n": "textButtonDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._text ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Primary Icon Button Design Left Image Padding",
+		"n": "primaryIconButtonDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._iconPrimaryButton ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Icon Button Design Left Image Padding",
+		"n": "iconButtonDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._iconButton ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Fab Button Design Left Image Padding",
+		"n": "fabButtonDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._fabButton ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Fab Button Mini Design Left Image Padding",
+		"n": "fabButtonMiniDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._fabButtonMini ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Decorative Button Design Left Image Padding",
+		"n": "decorativeButtonDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._decorative ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Image Padding",
+		"dn": "Biig Design One Button Design Left Image Padding",
+		"n": "biigDesignOneButtonDesignLeftImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._bigDesign1 ._leftButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Default Button Design Left Active Image Padding",
+		"n": "defaultButtonDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._default ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Outlined Button Design Left Active Image Padding",
+		"n": "outlinedButtonDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._outlined ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Text Button Design Left Active Image Padding",
+		"n": "textButtonDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._text ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Primary Icon Button Design Left Active Image Padding",
+		"n": "primaryIconButtonDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._iconPrimaryButton ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Icon Button Design Left Active Image Padding",
+		"n": "iconButtonDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._iconButton ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Fab Button Design Left Active Image Padding",
+		"n": "fabButtonDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._fabButton ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Fab Button Mini Design Left Active Image Padding",
+		"n": "fabButtonMiniDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._fabButtonMini ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Decorative Button Design Left Active Image Padding",
+		"n": "decorativeButtonDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._decorative ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Left Active Image Padding",
+		"dn": "Biig Design One Button Design Left Active Image Padding",
+		"n": "biigDesignOneButtonDesignLeftActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._bigDesign1 ._leftButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Default Button Design Right Image Padding",
+		"n": "defaultButtonDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._default ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Outlined Button Design Right Image Padding",
+		"n": "outlinedButtonDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._outlined ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Text Button Design Right Image Padding",
+		"n": "textButtonDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._text ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Primary Icon Button Design Right Image Padding",
+		"n": "primaryIconButtonDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._iconPrimaryButton ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Icon Button Design Right Image Padding",
+		"n": "iconButtonDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._iconButton ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Fab Button Design Right Image Padding",
+		"n": "fabButtonDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._fabButton ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Fab Button Mini Design Right Image Padding",
+		"n": "fabButtonMiniDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._fabButtonMini ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Decorative Button Design Right Image Padding",
+		"n": "decorativeButtonDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._decorative ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Padding",
+		"dn": "Biig Design One Button Design Right Image Padding",
+		"n": "biigDesignOneButtonDesignRightImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._bigDesign1 ._rightButtonImage",
+		"np": true
+	},
+
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Default Button Design Right Active Image Padding",
+		"n": "defaultButtonDesignRightActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._default ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Outlined Button Design Right Active Image Padding",
+		"n": "outlinedButtonDesignRightActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._outlined ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Text Button Design Right Active Image Padding",
+		"n": "textButtonDesignRightActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._text ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Primary Icon Button Design Right Active Image Padding",
+		"n": "primaryIconButtonDesignRightActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._iconPrimaryButton ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Icon Button Design Right Active Image Padding",
+		"n": "iconButtonDesignRightActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._iconButton ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Fab Button Design Right Active Image Padding",
+		"n": "fabButtonDesignRightActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._fabButton ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Fab Button Mini Design Right Active Image Padding",
+		"n": "fabButtonMiniDesignRightActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._fabButtonMini ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Decorative Button Design Right Active Image Padding",
+		"n": "decorativeButtonDesignRightActiveImagePadding",
+		"dv": "0",
+		"cs": "padding",
+		"sel": ".comp.compButton._decorative ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Padding",
+		"dn": "Biig Design One Button Design Right Active Image Padding",
+		"n": "biigDesignOneButtonDesignRightActiveImagePadding",
+		"dv": "0",
+		"cp": "padding",
+		"sel": ".comp.compButton._bigDesign1 ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Default Button Design Right Image Margin",
+		"n": "defaultButtonDesignRightImageMargin",
+		"dv": "0px 0px 0px 5px",
+		"cp": "margin",
+		"sel": ".comp.compButton._default ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Outlined Button Design Right Image Margin",
+		"n": "outlinedButtonDesignRightImageMargin",
+		"dv": "0px 0px 0px 5px",
+		"cp": "margin",
+		"sel": ".comp.compButton._outlined ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Text Button Design Right Image Margin",
+		"n": "textButtonDesignRightImageMargin",
+		"dv": "0px 0px 0px 5px",
+		"cp": "margin",
+		"sel": ".comp.compButton._text ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Primary Icon Button Design Right Image Margin",
+		"n": "primaryIconButtonDesignRightImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._iconPrimaryButton ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Icon Button Design Right Image Margin",
+		"n": "iconButtonDesignRightImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._iconButton ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Fab Button Design Right Image Margin",
+		"n": "fabButtonDesignRightImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._fabButton ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Fab Button Mini Design Right Image Margin",
+		"n": "fabButtonMiniDesignRightImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._fabButtonMini ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Decorative Button Design Right Image Margin",
+		"n": "decorativeButtonDesignRightImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._decorative ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Image Margin",
+		"dn": "Biig Design One Button Design Right Image Margin",
+		"n": "biigDesignOneButtonDesignRightImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._bigDesign1 ._rightButtonImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Default Button Design Right Active Image Margin",
+		"n": "defaultButtonDesignRightActiveImageMargin",
+		"dv": "0px 0px 0px 5px",
+		"cp": "margin",
+		"sel": ".comp.compButton._default ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Outlined Button Design Right Active Image Margin",
+		"n": "outlinedButtonDesignRightActiveImageMargin",
+		"dv": "0px 0px 0px 5px",
+		"cp": "margin",
+		"sel": ".comp.compButton._outlined ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Text Button Design Right Active Image Margin",
+		"n": "textButtonDesignRightActiveImageMargin",
+		"dv": "0px 0px 0px 5px",
+		"cp": "margin",
+		"sel": ".comp.compButton._text ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Primary Icon Button Design Right Active Image Margin",
+		"n": "primaryIconButtonDesignRightActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._iconPrimaryButton ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Icon Button Design Right Active Image Margin",
+		"n": "iconButtonDesignRightActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._iconButton ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Fab Button Design Right Active Image Margin",
+		"n": "fabButtonDesignRightActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._fabButton ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Fab Button Mini Design Right Active Image Margin",
+		"n": "fabButtonMiniDesignRightActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._fabButtonMini ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Decorative Button Design Right Active Image Margin",
+		"n": "decorativeButtonDesignRightActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._decorative ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Right Active Image Margin",
+		"dn": "Biig Design One Button Design Right Active Image Margin",
+		"n": "biigDesignOneButtonDesignRightActiveImageMargin",
+		"cp": "margin",
+		"sel": ".comp.compButton._bigDesign1 ._rightButtonActiveImage",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Default Button Design Box Shadow Hover",
+		"n": "defaultButtonDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._default:hover",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Outlined Button Design Box Shadow Hover",
+		"n": "outlinedButtonDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._outlined:hover",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Text Button Design Box Shadow Hover",
+		"n": "textButtonDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._text:hover",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Primary Icon Button Design Box Shadow Hover",
+		"n": "primaryIconButtonDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._iconPrimaryButton:hover",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Icon Button Design Box Shadow Hover",
+		"n": "iconButtonDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._iconButton:hover",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Fab Button Design Box Shadow Hover",
+		"n": "fabButtonDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._fabButton:hover",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Fab Button Mini Design Box Shadow Hover",
+		"n": "fabButtonMiniDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._fabButtonMini:hover",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Decorative Button Design Box Shadow Hover",
+		"n": "decorativeButtonDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._decorative:hover",
+		"np": true
+	},
+	{
+		"gn": "Box Shadow Hover",
+		"dn": "Biig Design One Button Design Box Shadow Hover",
+		"n": "biigDesignOneButtonDesignBoxShadowHover",
+		"cp": "box-shadow",
+		"sel": ".comp.compButton._bigDesign1:hover",
+		"np": true
 	}
+
 ]
