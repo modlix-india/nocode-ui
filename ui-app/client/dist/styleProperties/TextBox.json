@@ -5840,6 +5840,331 @@
 		"cp": "font",
 		"sel": ".comp.compTextBox._default._quinary input::placeholder",
 		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Primary Text Font Has Value Design Default",
+		"n": "primaryTextFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Secondary Text Font Has Value Design Default",
+		"n": "secondaryTextFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Tertiary Text Font Has Value Design Default",
+		"n": "tertiaryTextFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Quaternary Text Font Has Value Design Default",
+		"n": "quaternaryTextFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Quinary Text Font Has Value Design Default",
+		"n": "quinaryTextFontHasValueDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Primary Text Font Has Value Design Outline",
+		"n": "primaryTextFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Secondary Text Font Has Value Design Outline",
+		"n": "secondaryTextFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Tertiary Text Font Has Value Design Outline",
+		"n": "tertiaryTextFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Quaternary Text Font Has Value Design Outline",
+		"n": "quaternaryTextFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Quinary Text Font Has Value Design Outline",
+		"n": "quinaryTextFontHasValueDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Primary Text Font Has Value Design Filled",
+		"n": "primaryTextFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Secondary Text Font Has Value Design Filled",
+		"n": "secondaryTextFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Tertiary Text Font Has Value Design Filled",
+		"n": "tertiaryTextFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Quaternary Text Font Has Value Design Filled",
+		"n": "quaternaryTextFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Quinary Text Font Has Value Design Filled",
+		"n": "quinaryTextFontHasValueDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._hasValue._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Primary Text Font Has Value Design Big 1",
+		"n": "primaryTextFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._hasValue._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Secondary Text Font Has Value Design Big 1",
+		"n": "secondaryTextFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._hasValue._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Tertiary Text Font Has Value Design Big 1",
+		"n": "tertiaryTextFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._hasValue._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Quaternary Text Font Has Value Design Big 1",
+		"n": "quaternaryTextFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._hasValue._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Font Has Value",
+		"dn": "Quinary Text Font Has Value Design Big 1",
+		"n": "quinaryTextFontHasValueDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._hasValue._quinary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Primary Text Box Font Active Design Default",
+		"n": "primaryTextBoxFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Secondary Text Box Font Active Design Default",
+		"n": "secondaryTextBoxFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Tertiary Text Box Font Active Design Default",
+		"n": "tertiaryTextBoxFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Quaternary Text Box Font Active Design Default",
+		"n": "quaternaryTextBoxFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Quinary Text Box Font Active Design Default",
+		"n": "quinaryTextBoxFontActiveDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compTextBox._default._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Primary Text Box Font Active Design Outline",
+		"n": "primaryTextBoxFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Secondary Text Box Font Active Design Outline",
+		"n": "secondaryTextBoxFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Tertiary Text Box Font Active Design Outline",
+		"n": "tertiaryTextBoxFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Quaternary Text Box Font Active Design Outline",
+		"n": "quaternaryTextBoxFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Quinary Text Box Font Active Design Outline",
+		"n": "quinaryTextBoxFontActiveDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compTextBox._outlined._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Primary Text Box Font Active Design Filled",
+		"n": "primaryTextBoxFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Secondary Text Box Font Active Design Filled",
+		"n": "secondaryTextBoxFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Tertiary Text Box Font Active Design Filled",
+		"n": "tertiaryTextBoxFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Quaternary Text Box Font Active Design Filled",
+		"n": "quaternaryTextBoxFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Quinary Text Box Font Active Design Filled",
+		"n": "quinaryTextBoxFontActiveDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compTextBox._filled._isActive._quinary",
+		"np": true
+	},
+
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Primary Text Box Font Active Design Big 1",
+		"n": "primaryTextBoxFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._isActive._primary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Secondary Text Box Font Active Design Big 1",
+		"n": "secondaryTextBoxFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._isActive._secondary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Tertiary Text Box Font Active Design Big 1",
+		"n": "tertiaryTextBoxFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._isActive._tertiary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Quaternary Text Box Font Active Design Big 1",
+		"n": "quaternaryTextBoxFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._isActive._quaternary",
+		"np": true
+	},
+	{
+		"gn": "Text Box Font Active",
+		"dn": "Quinary Text Box Font Active Design Big 1",
+		"n": "quinaryTextBoxFontActiveDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compTextBox._bigDesign1._isActive._quinary",
+		"np": true
 	}
-	
 ]
