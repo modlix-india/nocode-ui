@@ -436,8 +436,8 @@ export default function MarkdownEditorStyle({
 		width: 20px;
 		height: 20px;
 		border-radius: 50%;
-		background: #e0e0e0;
-		color: #333;
+		background: #000000;
+		color: white;
 		cursor: pointer;
 		display: flex;
 		align-items: center;  
@@ -528,10 +528,8 @@ export default function MarkdownEditorStyle({
 	}
 	
 	${PREFIX} ._browseAll {
-		// width: 100%;
-		width: 325px;
-		height: 51px;
-		padding: 0px 0px;
+		width: 100%;
+		height: 30px;
 		background: #000000;
 		color: white;
 		border: none;
