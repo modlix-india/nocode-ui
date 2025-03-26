@@ -32,6 +32,8 @@ export default function generateChildren({
 	bindingPathPath?: string;
 }) {
 	const [schema, setSchema] = useState(actualSchema);
+	const itemSchemas = schema.getItems();
+	console.log(itemSchemas, 'item');
 
 	useEffect(() => {
 		if (isNullValue(actualSchema.getRef())) {
@@ -66,6 +68,8 @@ function generateSchemaForm(
 
 	if (types.has(SchemaType.OBJECT)) {
 		processObjectSchema(schema, bindingPathPath, order, componentDefinitions, children);
+	} else if (types.has(SchemaType.ARRAY)) {
+		processArraySchema(schema, bindingPathPath, order, componentDefinitions, children);
 	} else {
 		const label = schema.getTitle() || 'defaultLabel';
 		const compDef = compDefinitionGenerator(label, schema, bindingPathPath, order.currentOrder);
@@ -122,10 +126,59 @@ function processObjectSchema(
 				order.currentOrder++;
 			}
 
+			if (subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.ARRAY)) {
+				processArraySchema(
+					subSchema,
+					propBindingPath,
+					order,
+					componentDefinitions,
+					children,
+				);
+			}
+
 			if (subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT)) {
 				const nestedSchema = generateSchemaForm(subSchema, propBindingPath, order);
 				Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
 				Object.assign(children, nestedSchema.children);
+			}
+		}
+	}
+}
+
+function processArraySchema(
+	schema: Schema,
+	bindingPathPath: string | undefined,
+	order: { currentOrder: number },
+	componentDefinitions: { [key: string]: ComponentDefinition },
+	children: { [key: string]: boolean },
+) {
+	const itemSchemas = schema.getItems();
+	if (!itemSchemas) return;
+
+	const singleSchema = itemSchemas.getSingleSchema();
+	const tupleSchema = itemSchemas.getTupleSchema();
+
+	const isTupleSchema = Array.isArray(tupleSchema);
+
+	const minItems = schema.getMinItems() ?? 0;
+	const maxItems = schema.getMaxItems() ?? (isTupleSchema ? tupleSchema.length : 1);
+
+	for (let i = 0; i < maxItems; i++) {
+		const eachBindingPath = bindingPathPath ? `${bindingPathPath}[${i}]` : 'undefined';
+		const schema = isTupleSchema ? tupleSchema[i] : singleSchema;
+		console.log(schema, 'try', i, eachBindingPath, order.currentOrder++);
+		if (schema instanceof Schema) {
+			console.log(schema, 'schemaName');
+			const eachCompDef = compDefinitionGenerator(
+				`Item ${i}`,
+				schema,
+				eachBindingPath,
+				order.currentOrder++,
+			);
+			if (eachCompDef) {
+				componentDefinitions[eachCompDef.key] = eachCompDef;
+				children[eachCompDef.key] = true;
+				console.log(children, 'children');
 			}
 		}
 	}
@@ -167,9 +220,6 @@ function getComponentName(schema: Schema, types: Set<SchemaType>) {
 
 	const hasBoolean = types.has(SchemaType.BOOLEAN);
 	if (hasBoolean) return 'CheckBox';
-
-	const hasArray = types.has(SchemaType.ARRAY);
-	if (hasArray) return 'Dropdown';
 
 	const hasString = types.has(SchemaType.STRING);
 	const hasNumber = [...types].some(type => NUMBER_TYPES.has(type));

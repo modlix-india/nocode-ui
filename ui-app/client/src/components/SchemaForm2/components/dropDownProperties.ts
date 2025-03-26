@@ -3,7 +3,7 @@ import { Schema, SchemaType } from '@fincity/kirun-js';
 const dropdownPropertyGenerator = (schema: Schema, types: Set<SchemaType>) => {
 	const properties: { [key: string]: any } = {};
 
-	if (types.has(SchemaType.ARRAY)) {
+	if (types.has(SchemaType.ARRAY) && schema.getEnums()?.length) {
 		properties.isMultiSelect = { value: true };
 	}
 
