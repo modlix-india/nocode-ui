@@ -8,8 +8,8 @@ const NUMBER_TYPES = new Set([
 	SchemaType.DOUBLE,
 ]);
 
-const generateValidation = (schema: Schema): Record<string, any> => {
-	const validation: Record<string, any> = {};
+const generateValidation = (schema: Schema, isMandatory: boolean): { [key: string]: any } => {
+	const validation: { [key: string]: any } = {};
 	let order = 1;
 
 	if (schema.getMinLength() !== undefined || schema.getMaxLength() !== undefined) {
@@ -85,10 +85,24 @@ const generateValidation = (schema: Schema): Record<string, any> => {
 		};
 	}
 
+	if (isMandatory) {
+		const key = shortUUID();
+		validation[key] = {
+			key,
+			order: order++,
+			property: {
+				value: {
+					type: 'MANDATORY',
+					message: { value: `This field is required` },
+				},
+			},
+		};
+	}
+
 	return validation;
 };
 
-const textBoxPropertyGenerator = (schema: Schema, types: Set<SchemaType>) => {
+const textBoxPropertyGenerator = (schema: Schema, types: Set<SchemaType>, isMandatory: boolean) => {
 	const hasString = types.has(SchemaType.STRING);
 	const hasNumber = [...types].some(type => NUMBER_TYPES.has(type));
 
@@ -107,7 +121,7 @@ const textBoxPropertyGenerator = (schema: Schema, types: Set<SchemaType>) => {
 		}
 	}
 
-	properties.validation = generateValidation(schema);
+	properties.validation = generateValidation(schema, isMandatory);
 
 	return properties;
 };

@@ -8,7 +8,7 @@ import {
 } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
 import { PREVIEW_COMP_DEFINITION_MAP } from '../../FormStorageEditor/components/formCommons';
-import { ComponentDefinition, ComponentProperty, RenderContext } from '../../../types/common';
+import { ComponentDefinition, ComponentProperty } from '../../../types/common';
 import TextBoxPropertyGenerator from './textBoxProperties';
 import CheckBoxPropertyGenerator from './checkBoxProperties';
 import DropdownPropertyGenerator from './dropDownProperties';
@@ -32,8 +32,6 @@ export default function generateChildren({
 	bindingPathPath?: string;
 }) {
 	const [schema, setSchema] = useState(actualSchema);
-	const itemSchemas = schema.getItems();
-	console.log(itemSchemas, 'item');
 
 	useEffect(() => {
 		if (isNullValue(actualSchema.getRef())) {
@@ -52,7 +50,7 @@ export default function generateChildren({
 
 		resolveSchema();
 	}, [actualSchema, schemaRepository]);
-	console.log(schema);
+
 	return generateSchemaForm(schema, bindingPathPath);
 }
 
@@ -66,13 +64,21 @@ function generateSchemaForm(
 
 	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 
+	const required: string[] = schema.getRequired() || [];
+
 	if (types.has(SchemaType.OBJECT)) {
 		processObjectSchema(schema, bindingPathPath, order, componentDefinitions, children);
 	} else if (types.has(SchemaType.ARRAY)) {
 		processArraySchema(schema, bindingPathPath, order, componentDefinitions, children);
 	} else {
 		const label = schema.getTitle() || 'defaultLabel';
-		const compDef = compDefinitionGenerator(label, schema, bindingPathPath, order.currentOrder);
+		const compDef = compDefinitionGenerator(
+			label,
+			schema,
+			bindingPathPath,
+			order.currentOrder,
+			required,
+		);
 		if (compDef) {
 			componentDefinitions[compDef.key] = compDef;
 			children[compDef.key] = true;
@@ -104,6 +110,7 @@ function processObjectSchema(
 	order: { currentOrder: number },
 	componentDefinitions: { [key: string]: ComponentDefinition },
 	children: { [key: string]: boolean },
+	required: string[] = [],
 ) {
 	const properties = schema.getProperties() || {};
 
@@ -118,8 +125,8 @@ function processObjectSchema(
 				subSchema as Schema,
 				propBindingPath,
 				order.currentOrder,
+				required,
 			);
-
 			if (compDef) {
 				componentDefinitions[compDef.key] = compDef;
 				children[compDef.key] = true;
@@ -160,15 +167,12 @@ function processArraySchema(
 
 	const isTupleSchema = Array.isArray(tupleSchema);
 
-	const minItems = schema.getMinItems() ?? 0;
 	const maxItems = schema.getMaxItems() ?? (isTupleSchema ? tupleSchema.length : 1);
 
 	for (let i = 0; i < maxItems; i++) {
-		const eachBindingPath = bindingPathPath ? `${bindingPathPath}[${i}]` : 'undefined';
+		const eachBindingPath = bindingPathPath ? `${bindingPathPath}[${i}]` : undefined;
 		const schema = isTupleSchema ? tupleSchema[i] : singleSchema;
-		console.log(schema, 'try', i, eachBindingPath, order.currentOrder++);
 		if (schema instanceof Schema) {
-			console.log(schema, 'schemaName');
 			const eachCompDef = compDefinitionGenerator(
 				`Item ${i}`,
 				schema,
@@ -178,7 +182,6 @@ function processArraySchema(
 			if (eachCompDef) {
 				componentDefinitions[eachCompDef.key] = eachCompDef;
 				children[eachCompDef.key] = true;
-				console.log(children, 'children');
 			}
 		}
 	}
@@ -189,15 +192,17 @@ function compDefinitionGenerator(
 	schema: Schema,
 	bindingPathPath?: string,
 	displayOrder: number = 0,
+	required: string[] = [],
 ) {
 	let types: Set<SchemaType> = schema.getType()?.getAllowedSchemaTypes() ?? ALL_SET;
 
 	const compName = getComponentName(schema, types);
 	if (!compName) return null;
+	const isMandatory = required.includes(label);
 
 	const compKey = `${compName}_${label.trim().replace(/\s+/g, '_')}`.toLowerCase();
 	const properties = componentPropertyMap[compName]
-		? componentPropertyMap[compName](schema, types)
+		? componentPropertyMap[compName](schema, types, isMandatory)
 		: {};
 
 	const compDef: ComponentDefinition = {
@@ -232,7 +237,7 @@ interface ComponentPropertyGenerator {
 	(
 		schema: Schema,
 		types: Set<SchemaType>,
-		bindingPathPath?: string,
+		isMandatory: boolean,
 	): {
 		[key: string]: ComponentProperty<any>;
 	};
