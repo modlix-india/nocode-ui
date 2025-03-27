@@ -57,7 +57,7 @@ export function parseHeaderLine(params: MarkdownParserParameters): MarkdownParse
 
 	const comp = React.createElement(
 		`h${hNumber}`,
-		{ key, className: '_h1', id: makeId(text), ...(attrs ?? {}), style },
+		{ key, className: `_h${hNumber}`, id: makeId(text), ...(attrs ?? {}), style },
 		parseInline({ ...params, line: text, indentationLength: undefined }),
 	);
 
