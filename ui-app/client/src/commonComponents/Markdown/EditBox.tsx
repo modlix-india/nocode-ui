@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, FC } from 'react';
 // import { cyrb53 } from '../../util/cyrb53';
 import { FilterPanelButtons } from '../../components/MarkdownEditor/components/FilterPanelButtons';
 import { AddComponentPanelButtons } from '../../components/MarkdownEditor/components/AddComponentPanelButtons';
@@ -16,7 +16,7 @@ interface EditBoxProps {
 	isEmpty?: boolean;
 }
 
-export const EditBox: React.FC<EditBoxProps> = ({
+export const EditBox: FC<EditBoxProps> = ({
 	children,
 	originalContent,
 	lineIndex,
