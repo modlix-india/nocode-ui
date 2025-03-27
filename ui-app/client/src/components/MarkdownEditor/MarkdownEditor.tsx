@@ -440,6 +440,22 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				if (e.shiftKey && e.key.toLowerCase() === 'z') {
 					e.preventDefault();
 					handleRedo();
+				} else if (e.key.toLowerCase() === 'h') {
+					// Store that H is pressed with shift to wait for a number key
+					e.preventDefault();
+					// Set a small timeout to wait for the number key
+					setTimeout(() => {
+						const handleNumberKey = (numEvent: KeyboardEvent) => {
+							const num = parseInt(numEvent.key);
+							if (!isNaN(num) && num >= 1 && num <= 6) {
+								numEvent.preventDefault();
+								handleRichTextCommand(`heading${num}`);
+							}
+							// Remove the event listener after handling or if not a valid number
+							document.removeEventListener('keydown', handleNumberKey);
+						};
+						document.addEventListener('keydown', handleNumberKey, { once: true });
+					}, 10);
 				} else {
 					switch (e.key.toLowerCase()) {
 						case 'z':
@@ -465,6 +481,18 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						case ']':
 							e.preventDefault();
 							handleRichTextCommand('unindent');
+							break;
+						case '1':
+						case '2':
+						case '3':
+						case '4':
+						case '5':
+						case '6':
+							if (e.shiftKey) {
+								e.preventDefault();
+								const headingLevel = parseInt(e.key);
+								handleRichTextCommand(`heading${headingLevel}`);
+							}
 							break;
 					}
 				}
