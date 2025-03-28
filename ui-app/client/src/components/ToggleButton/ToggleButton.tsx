@@ -38,6 +38,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 			toggleButtonLabelAlignment,
 			colorScheme,
 			onClick,
+			readOnly,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -69,7 +70,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 
 	const handleChange = useCallback(
 		(event: any) => {
-			if (!bindingPathPath) return;
+			if (readOnly || !bindingPathPath) return;
 			setData(bindingPathPath, event.target.checked, context.pageName);
 			if (!onClick || !props.pageDefinition.eventFunctions?.[onClick]) return;
 			const eventFunction = props.pageDefinition.eventFunctions[onClick];
@@ -84,7 +85,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 				);
 			})();
 		},
-		[onClick, bindingPathPath, props.pageDefinition.eventFunctions?.[onClick]],
+		[onClick, bindingPathPath, props.pageDefinition.eventFunctions?.[onClick],readOnly],
 	);
 
 	const label = isToggled ? onLabel : (offLabel ?? onLabel);
@@ -102,7 +103,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 		<label
 			className={`comp compToggleButton ${designType} ${colorScheme} ${
 				isToggled ? '_on' : '_off'
-			}`}
+			} ${readOnly ? '_disabled':''}`}
 			style={resolvedStyles.comp ?? {}}
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
@@ -124,6 +125,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 				id={key}
 				onChange={handleChange}
 				checked={!!isToggled}
+				disabled={readOnly}
 			/>
 			{toggleButtonLabelAlignment === '_ontrack' ? labelComp : null}
 		</label>
