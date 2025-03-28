@@ -132,7 +132,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
 			/>
 		);
-	} else {
+	} else if (hasLabel){
 		rightIconTag = (
 			<i
 				style={styleProperties.rightIcon ?? {}}
@@ -158,7 +158,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	let leftIconTag = undefined;
 	if (leftImage) {
 		leftIconTag =isLoading ? (
-			<i className="fa fa-circle-notch fa-spin _rightButtonIcon _icon"></i>
+			<i className="fa fa-circle-notch fa-spin _leftButtonIcon _icon"></i>
 		) : (
 			<img
 				src={getSrcUrl(hover && activeLeftImage ? activeLeftImage : leftImage)}
