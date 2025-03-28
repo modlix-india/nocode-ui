@@ -2845,5 +2845,544 @@
 		"cp": "width",
 		"sel": ".comp.compStepper._default._quinary ._step",
 		"np": true
+	},
+	{
+		"gn": "Stepper Active Line background",
+		"dn": "Stepper Active Line background",
+		"n": "stepperActiveLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line background",
+		"dn": "Primary Stepper Active Line background",
+		"n": "primaryStepperActiveLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._primary_horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line background",
+		"dn": "Secondary Stepper Active Line background",
+		"n": "secondaryStepperActiveLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line background",
+		"dn": "Tertiary Stepper Active Line background",
+		"n": "tertiaryStepperActiveLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line background",
+		"dn": "Quaternary Stepper Active Line background",
+		"n": "quaternaryStepperActiveLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line background",
+		"dn": "Quinary Stepper Active Line background",
+		"n": "quinaryStepperActiveLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper done Line background",
+		"dn": "Stepper done Line background",
+		"n": "stepperdoneLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line background",
+		"dn": "Primary Stepper done Line background",
+		"n": "primaryStepperdoneLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._primary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line background",
+		"dn": "Secondary Stepper done Line background",
+		"n": "secondaryStepperdoneLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line background",
+		"dn": "Tertiary Stepper done Line background",
+		"n": "tertiaryStepperdoneLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line background",
+		"dn": "Quaternary Stepper done Line background",
+		"n": "quaternaryStepperdoneLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line background",
+		"dn": "Quinary Stepper done Line background",
+		"n": "quinaryStepperdoneLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper ActiveBefore Line background",
+		"dn": "Stepper ActiveBefore Line background",
+		"n": "stepperActiveBeforeLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line background",
+		"dn": "Primary Stepper ActiveBefore Line background",
+		"n": "primaryStepperActiveBeforeLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._primary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line background",
+		"dn": "Secondary Stepper ActiveBefore Line background",
+		"n": "secondaryStepperActiveBeforeLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line background",
+		"dn": "Tertiary Stepper ActiveBefore Line background",
+		"n": "tertiaryStepperActiveBeforeLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line background",
+		"dn": "Quaternary Stepper ActiveBefore Line background",
+		"n": "quaternaryStepperActiveBeforeLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line background",
+		"dn": "Quinary Stepper ActiveBefore Line background",
+		"n": "quinaryStepperActiveBeforeLinebackground",
+		"cp": "background",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Active Line Margin",
+		"dn": "Stepper Active Line Margin",
+		"n": "stepperActiveLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Margin",
+		"dn": "Primary Stepper Active Line Margin",
+		"n": "primaryStepperActiveLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._primary_horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Margin",
+		"dn": "Secondary Stepper Active Line Margin",
+		"n": "secondaryStepperActiveLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Margin",
+		"dn": "Tertiary Stepper Active Line Margin",
+		"n": "tertiaryStepperActiveLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Margin",
+		"dn": "Quaternary Stepper Active Line Margin",
+		"n": "quaternaryStepperActiveLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Margin",
+		"dn": "Quinary Stepper Active Line Margin",
+		"n": "quinaryStepperActiveLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper done Line Margin",
+		"dn": "Stepper done Line Margin",
+		"n": "stepperdoneLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Margin",
+		"dn": "Primary Stepper done Line Margin",
+		"n": "primaryStepperdoneLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._primary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Margin",
+		"dn": "Secondary Stepper done Line Margin",
+		"n": "secondaryStepperdoneLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Margin",
+		"dn": "Tertiary Stepper done Line Margin",
+		"n": "tertiaryStepperdoneLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Margin",
+		"dn": "Quaternary Stepper done Line Margin",
+		"n": "quaternaryStepperdoneLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Margin",
+		"dn": "Quinary Stepper done Line Margin",
+		"n": "quinaryStepperdoneLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper ActiveBefore Line Margin",
+		"dn": "Stepper ActiveBefore Line Margin",
+		"n": "stepperActiveBeforeLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Margin",
+		"dn": "Primary Stepper ActiveBefore Line Margin",
+		"n": "primaryStepperActiveBeforeLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._primary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Margin",
+		"dn": "Secondary Stepper ActiveBefore Line Margin",
+		"n": "secondaryStepperActiveBeforeLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Margin",
+		"dn": "Tertiary Stepper ActiveBefore Line Margin",
+		"n": "tertiaryStepperActiveBeforeLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Margin",
+		"dn": "Quaternary Stepper ActiveBefore Line Margin",
+		"n": "quaternaryStepperActiveBeforeLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Margin",
+		"dn": "Quinary Stepper ActiveBefore Line Margin",
+		"n": "quinaryStepperActiveBeforeLineMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Active Line Border",
+		"dn": "Stepper Active Line Border",
+		"n": "stepperActiveLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Border",
+		"dn": "Primary Stepper Active Line Border",
+		"n": "primaryStepperActiveLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._primary_horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Border",
+		"dn": "Secondary Stepper Active Line Border",
+		"n": "secondaryStepperActiveLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Border",
+		"dn": "Tertiary Stepper Active Line Border",
+		"n": "tertiaryStepperActiveLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Border",
+		"dn": "Quaternary Stepper Active Line Border",
+		"n": "quaternaryStepperActiveLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+	{
+		"gn": "Stepper Active Line Border",
+		"dn": "Quinary Stepper Active Line Border",
+		"n": "quinaryStepperActiveLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._active",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper done Line Border",
+		"dn": "Stepper done Line Border",
+		"n": "stepperdoneLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Border",
+		"dn": "Primary Stepper done Line Border",
+		"n": "primaryStepperdoneLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._primary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Border",
+		"dn": "Secondary Stepper done Line Border",
+		"n": "secondaryStepperdoneLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Border",
+		"dn": "Tertiary Stepper done Line Border",
+		"n": "tertiaryStepperdoneLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Border",
+		"dn": "Quaternary Stepper done Line Border",
+		"n": "quaternaryStepperdoneLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+	{
+		"gn": "Stepper done Line Border",
+		"dn": "Quinary Stepper done Line Border",
+		"n": "quinaryStepperdoneLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._done",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper ActiveBefore Line Border",
+		"dn": "Stepper ActiveBefore Line Border",
+		"n": "stepperActiveBeforeLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Border",
+		"dn": "Primary Stepper ActiveBefore Line Border",
+		"n": "primaryStepperActiveBeforeLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._primary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Border",
+		"dn": "Secondary Stepper ActiveBefore Line Border",
+		"n": "secondaryStepperActiveBeforeLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Border",
+		"dn": "Tertiary Stepper ActiveBefore Line Border",
+		"n": "tertiaryStepperActiveBeforeLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Border",
+		"dn": "Quaternary Stepper ActiveBefore Line Border",
+		"n": "quaternaryStepperActiveBeforeLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+	{
+		"gn": "Stepper ActiveBefore Line Border",
+		"dn": "Quinary Stepper ActiveBefore Line Border",
+		"n": "quinaryStepperActiveBeforeLineBorder",
+		"cp": "border",
+		"sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line._activeBeforeLine",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step Margin",
+		"dn": "Stepper Step Margin Design Default",
+		"n": "stepperStepMarginDesignDefault",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Margin",
+		"dn": "Primary Stepper Step Margin Design Default",
+		"n": "primaryStepperStepMarginDesignDefault",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._primary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Margin",
+		"dn": "Secondary Stepper Step Margin Design Default",
+		"n": "secondaryStepperStepMarginDesignDefault",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._secondary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Margin",
+		"dn": "Tertiary Stepper Step Margin Design Default",
+		"n": "tertiaryStepperStepMarginDesignDefault",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._tertiary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Margin",
+		"dn": "Quaternary Stepper Step Margin Design Default",
+		"n": "quaternaryStepperStepMarginDesignDefault",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._quaternary ._step",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step Margin",
+		"dn": "Quinary Stepper Step Margin Design Default",
+		"n": "quinaryStepperStepMarginDesignDefault",
+		"cp": "margin",
+		"sel": ".comp.compStepper._default._quinary ._step",
+		"np": true
+	},
+
+	{
+		"gn": "Stepper Step ListItem Margin",
+		"dn": "Stepper Step ListItem Margin",
+		"n": "stepperStepListItemMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step ListItem Margin",
+		"dn": "Primary Stepper Step ListItem Margin",
+		"n": "primaryStepperStepListItemMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._primary ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step ListItem Margin",
+		"dn": "Secondary Stepper Step ListItem Margin",
+		"n": "secondaryStepperStepListItemMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._secondary ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step ListItem Margin",
+		"dn": "Tertiary Stepper Step ListItem Margin",
+		"n": "tertiaryStepperStepListItemMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._tertiary ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step ListItem Margin",
+		"dn": "Quaternary Stepper Step ListItem Margin",
+		"n": "quaternaryStepperStepListItemMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._quaternary ._listItem",
+		"np": true
+	},
+	{
+		"gn": "Stepper Step ListItem Margin",
+		"dn": "Quinary Stepper Step ListItem Margin",
+		"n": "quinaryStepperStepListItemMargin",
+		"cp": "margin",
+		"sel": ".comp.compStepper._quinary ._listItem",
+		"np": true
 	}
+
 ]
