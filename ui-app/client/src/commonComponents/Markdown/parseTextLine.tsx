@@ -73,8 +73,6 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 						className: '_editableContent',
 						onKeyDown: (ev: React.KeyboardEvent<HTMLDivElement>) => {
 							if (!onChange) return;
-
-							// Get the current selection
 							if (window.getSelection) {
 								let sel = window.getSelection();
 								if (sel?.rangeCount) {
@@ -84,21 +82,16 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 										ev.currentTarget
 									) {
 										let caretPos = range.endOffset;
-
-										// Create updated line content
 										const updatedLine =
 											line.substring(0, caretPos) +
 											ev.key +
 											line.substring(caretPos);
 
-										// Create a new array of lines with the updated line
 										const updatedLines = [...lines];
 										updatedLines[i] = updatedLine;
 
-										// Call onChange with the updated text
 										onChange(updatedLines.join('\n'));
 
-										// Prevent default to handle the update manually
 										ev.preventDefault();
 										ev.stopPropagation();
 									}

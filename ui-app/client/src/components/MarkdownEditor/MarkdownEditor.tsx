@@ -527,13 +527,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						className={`_tab ${activeTab === 'write' ? '_active _write-tab' : ''}`}
 						onClick={() => handleTabChange('write')}
 					>
-						<svg
-							width="15"
-							height="15"
-							viewBox="0 0 19 15"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="15" height="15" viewBox="0 0 19 15" fill="none">
 							<path
 								d="M9.04913 2.25697C9.54593 1.71872 9.79433 1.4496 10.0583 1.29262C10.6951 0.91384 11.4794 0.90206 12.1269 1.26155C12.3953 1.41053 12.6513 1.67208 13.1633 2.19517C13.6754 2.71827 13.9315 2.97981 14.0773 3.25395C14.4292 3.91541 14.4177 4.71653 14.0469 5.36713C13.8932 5.63677 13.6297 5.89052 13.1029 6.398L6.83373 12.4362C5.83525 13.3979 5.336 13.8788 4.71204 14.1225C4.08808 14.3662 3.40213 14.3483 2.03024 14.3124L1.84359 14.3075C1.42594 14.2966 1.21711 14.2911 1.09573 14.1533C0.974334 14.0156 0.990907 13.8029 1.02405 13.3775L1.04205 13.1465C1.13534 11.949 1.18198 11.3503 1.41581 10.8121C1.64963 10.2739 2.05296 9.837 2.85962 8.963L9.04913 2.25697Z"
 								fill="#016A70"
@@ -570,13 +564,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						className={`_tab ${activeTab === 'doc' ? '_active _doc-tab' : ''}`}
 						onClick={() => handleTabChange('doc')}
 					>
-						<svg
-							width="17"
-							height="17"
-							viewBox="0 0 19 17"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="17" height="17" viewBox="0 0 19 17" fill="none">
 							<path
 								d="M6.60102 14.6624H5.95523C3.61931 14.6624 2.45135 14.6624 1.72568 13.9253C1 13.1881 1 12.0017 1 9.62891V6.03352C1 3.66069 1 2.47428 1.72568 1.73715C2.45135 1 3.61931 1 5.95523 1H8.07887C10.4148 1 11.7794 1.03968 12.5052 1.77682C13.2309 2.51396 13.2243 3.66069 13.2243 6.03352V6.88664"
 								fill="#FF3E3E"
@@ -611,13 +599,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						className={`_tab ${activeTab === 'preview' ? '_active _preview-tab' : ''}`}
 						onClick={() => handleTabChange('preview')}
 					>
-						<svg
-							width="18"
-							height="16"
-							viewBox="0 0 18 16"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
+						<svg width="18" height="16" viewBox="0 0 18 16" fill="none">
 							<path
 								d="M6.60412 14.67H5.95797C3.62076 14.67 2.45216 14.67 1.72608 13.9325C1 13.1949 1 12.0078 1 9.63369V6.03631C1 3.66217 1 2.4751 1.72608 1.73755C2.45216 1 3.62076 1 5.95797 1H8.08279C10.42 1 11.7854 1.0397 12.5116 1.77725C13.2377 2.5148 13.2311 3.66217 13.2311 6.03631V6.8899"
 								fill="#3F4CC0"
@@ -689,13 +671,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 										onClick={() => navigator.clipboard.writeText(text)}
 										title="Copy content"
 									>
-										<svg
-											width="17"
-											height="17"
-											viewBox="0 0 17 17"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-										>
+										<svg width="17" height="17" viewBox="0 0 17 17" fill="none">
 											<path
 												d="M14.5 5.5H7C6.17157 5.5 5.5 6.17157 5.5 7V14.5C5.5 15.3284 6.17157 16 7 16H14.5C15.3284 16 16 15.3284 16 14.5V7C16 6.17157 15.3284 5.5 14.5 5.5Z"
 												stroke="black"
@@ -723,7 +699,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 												height="16"
 												viewBox="0 0 13 16"
 												fill="none"
-												xmlns="http://www.w3.org/2000/svg"
 											>
 												<path
 													d="M6.25 11.5V1"
