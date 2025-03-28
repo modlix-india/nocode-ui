@@ -51,7 +51,10 @@ export default function generateChildren({
 		resolveSchema();
 	}, [actualSchema, schemaRepository]);
 
-	return generateSchemaForm(schema, bindingPathPath);
+    const form = generateSchemaForm(schema, bindingPathPath);
+    console.log('schema', form);
+	// return generateSchemaForm(schema, bindingPathPath);
+    return form
 }
 
 function generateSchemaForm(
@@ -84,7 +87,6 @@ function generateSchemaForm(
 			children[compDef.key] = true;
 		}
 	}
-
 	return {
 		children,
 		pageDef: {
@@ -101,6 +103,7 @@ function generateSchemaForm(
 			rootComponent: '',
 			componentDefinition: componentDefinitions,
 		},
+        
 	};
 }
 
@@ -167,24 +170,58 @@ function processArraySchema(
 
 	const isTupleSchema = Array.isArray(tupleSchema);
 
-	const maxItems = schema.getMaxItems() ?? (isTupleSchema ? tupleSchema.length : 1);
+	const arrKey = `arrayRepeator`;
+	const gridKey = `grid_${arrKey}`;
 
-	for (let i = 0; i < maxItems; i++) {
-		const eachBindingPath = bindingPathPath ? `${bindingPathPath}[${i}]` : undefined;
-		const schema = isTupleSchema ? tupleSchema[i] : singleSchema;
+	const arrayRepeatorComp: ComponentDefinition = {
+		key: arrKey,
+		name: 'Repeator',
+		displayOrder: 0,
+		type: 'ArrayRepeater',
+		bindingPath: bindingPathPath ? { type: 'VALUE', value: `${bindingPathPath}` } : undefined,
+		properties: {
+			showAdd: { value: true },
+			// defaultData: { value: [] },
+            dataType: { value: 'array' },
+		},
+		children: {
+			[gridKey]: true,
+		},
+	};
+	componentDefinitions[arrayRepeatorComp.key] = arrayRepeatorComp;
+	children[arrayRepeatorComp.key] = true;
+
+	const gridCompDef: ComponentDefinition = {
+		key: gridKey,
+		name: 'Grid',
+		displayOrder: order.currentOrder,
+		type: 'Grid',
+		children: {},
+	};
+
+	componentDefinitions[gridCompDef.key] = gridCompDef;
+
+	children[gridCompDef.key] = true;
+
+	const schemaFinal = isTupleSchema ? tupleSchema : [singleSchema];
+	schemaFinal.forEach((subSchema, index) => {
 		if (schema instanceof Schema) {
+			// console.log('bin', bindingPathPath);
+			// const bindingPathPath = 'Parent';
 			const eachCompDef = compDefinitionGenerator(
-				`Item ${i}`,
-				schema,
-				eachBindingPath,
+				`Item ${index}`,
+				subSchema as Schema,
+                'Parent',
 				order.currentOrder++,
+				[],
 			);
 			if (eachCompDef) {
+				console.log('eachCompDef', eachCompDef);
 				componentDefinitions[eachCompDef.key] = eachCompDef;
-				children[eachCompDef.key] = true;
+				gridCompDef.children![eachCompDef.key] = true;
 			}
 		}
-	}
+	});
 }
 
 function compDefinitionGenerator(
@@ -214,6 +251,7 @@ function compDefinitionGenerator(
 		properties: properties,
 		bindingPath: bindingPathPath ? { type: 'VALUE', value: `${bindingPathPath}` } : undefined,
 	};
+	console.log('bp', bindingPathPath);
 
 	return compDef;
 }

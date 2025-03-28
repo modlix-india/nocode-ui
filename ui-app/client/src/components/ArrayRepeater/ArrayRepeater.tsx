@@ -131,6 +131,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		const newData = [...(arrayValue ?? [])];
 		newData.splice(index + 1, 0, undefined as unknown as never);
 		setData(bindingPathPath!, newData, context?.pageName);
+		console.log('data', newData, arrayValue);
 
 		clickAdd &&
 			(await runEvent(
