@@ -8,7 +8,12 @@ const NUMBER_TYPES = new Set([
 	SchemaType.DOUBLE,
 ]);
 
-const generateValidation = (schema: Schema, isMandatory: boolean): { [key: string]: any } => {
+const generateValidation = (
+	schema: Schema,
+	isMandatory: boolean,
+	minItems?: number,
+	arrbindingPathPath?: string,
+): { [key: string]: any } => {
 	const validation: { [key: string]: any } = {};
 	let order = 1;
 
@@ -99,10 +104,34 @@ const generateValidation = (schema: Schema, isMandatory: boolean): { [key: strin
 		};
 	}
 
+	if (minItems) {
+		const key = shortUUID();
+		validation[key] = {
+			key,
+			property: {
+				value: {
+					condition: {
+						location: {
+							type: 'EXPRESSION',
+							expression: `{{${arrbindingPathPath}.length ?? 0}} < ${minItems} ? true : false`,
+						},
+					},
+					message: { value: `This field requires ${minItems} values` },
+				},
+			},
+		};
+	}
+
 	return validation;
 };
 
-const textBoxPropertyGenerator = (schema: Schema, types: Set<SchemaType>, isMandatory: boolean) => {
+const textBoxPropertyGenerator = (
+	schema: Schema,
+	types: Set<SchemaType>,
+	isMandatory: boolean,
+	arrbindingPathPath?: string,
+	minItems?: number,
+) => {
 	const hasString = types.has(SchemaType.STRING);
 	const hasNumber = [...types].some(type => NUMBER_TYPES.has(type));
 
@@ -121,7 +150,7 @@ const textBoxPropertyGenerator = (schema: Schema, types: Set<SchemaType>, isMand
 		}
 	}
 
-	properties.validation = generateValidation(schema, isMandatory);
+	properties.validation = generateValidation(schema, isMandatory, minItems, arrbindingPathPath);
 
 	return properties;
 };
