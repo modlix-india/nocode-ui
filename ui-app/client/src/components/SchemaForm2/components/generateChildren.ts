@@ -84,6 +84,7 @@ function generateSchemaForm(
 			children[compDef.key] = true;
 		}
 	}
+
 	return {
 		children,
 		pageDef: {
@@ -191,6 +192,7 @@ function processArraySchema(
 		bindingPath: bindingPathPath ? { type: 'VALUE', value: `${bindingPathPath}` } : undefined,
 		properties: {
 			showAdd: showAdd,
+			showDelete: { value: !isTupleSchema },
 			dataType: { value: 'array' },
 			...(defaultData !== undefined && { defaultData }),
 		},
@@ -217,18 +219,29 @@ function processArraySchema(
 		const eachBindingPath = isTupleSchema ? `${bindingPathPath}[${index}]` : 'Parent';
 
 		if (schema instanceof Schema) {
-			const eachCompDef = compDefinitionGenerator(
-				`Item ${index}`,
-				subSchema as Schema,
-				eachBindingPath,
-				order.currentOrder++,
-				[],
-				minItems,
-				bindingPathPath,
-			);
-			if (eachCompDef) {
-				componentDefinitions[eachCompDef.key] = eachCompDef;
-				gridCompDef.children![eachCompDef.key] = true;
+			if (subSchema!.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT)) {
+				const nestedSchema = generateSchemaForm(
+					subSchema as Schema,
+					eachBindingPath,
+					order,
+				);
+				Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
+				Object.assign(gridCompDef.children!, nestedSchema.children);
+			} else {
+				const eachCompDef = compDefinitionGenerator(
+					`Item ${index}`,
+					subSchema as Schema,
+					eachBindingPath,
+					order.currentOrder++,
+
+					[],
+					minItems,
+					bindingPathPath,
+				);
+				if (eachCompDef) {
+					componentDefinitions[eachCompDef.key] = eachCompDef;
+					gridCompDef.children![eachCompDef.key] = true;
+				}
 			}
 		}
 	});
