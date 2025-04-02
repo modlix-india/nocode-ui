@@ -90,7 +90,7 @@ function Text(props: Readonly<ComponentProps>) {
 
 	if (textType === 'MD') {
 		return (
-			<div className={`comp compText _textMarkdown`} style={styleProperties.comp ?? {}}>
+			<div className={`comp compText _textMarkdown  ${textColor}`} style={styleProperties.comp ?? {}}>
 				<HelperComponent context={props.context} definition={definition} />
 				<MarkdownParser
 					componentKey={definition.key}
