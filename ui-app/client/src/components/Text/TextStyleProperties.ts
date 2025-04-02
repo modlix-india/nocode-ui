@@ -3089,5 +3089,5 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 ];
 
 export const styleDefaults = new Map<string, string>(
-	styleProperties.filter(e => !!e.dv).map(({ n: n, dv: defaultValue }) => [n, defaultValue!]),
+	styleProperties.filter(e => !!e.dv).map(({ n: name, dv: defaultValue }) => [name, defaultValue!]),
 );
