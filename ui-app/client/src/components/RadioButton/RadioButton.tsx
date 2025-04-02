@@ -20,6 +20,7 @@ import RadioButtonStyle from './RadioButtonStyle';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './RadioButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { get } from 'http';
 
 function RadioButton(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -134,8 +135,9 @@ function RadioButton(props: Readonly<ComponentProps>) {
 				context?.pageName,
 			);
 		} else {
-			const index = (selected ?? []).findIndex((e: any) => deepEqual(e, each.value));
-			const newValue = [...(selected ?? [])];
+			const currentSelected = Array.isArray(selected) ? selected : [];
+			const index = (currentSelected).findIndex((e: any) => deepEqual(e, each.value));
+			const newValue = [...currentSelected];
 			if (index === -1) newValue.push(each.value);
 			else newValue.splice(index, 1);
 			setData(bindingPathPath, newValue, context?.pageName);
@@ -167,7 +169,7 @@ function RadioButton(props: Readonly<ComponentProps>) {
 				<label
 					className={`radioLabel ${
 						orientation === 'VERTICAL' ? 'vertical' : 'horizontal'
-					} ${readOnly ? '_disabled' : ''}`}
+					} ${readOnly ? '_disabled' : ''} ${getIsSelected(e.key) ? '_selected' : ''}`}
 					key={e.key}
 					htmlFor={e.key}
 					onMouseEnter={
