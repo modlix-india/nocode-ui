@@ -120,6 +120,15 @@ function processObjectSchema(
 	const properties = schema.getProperties() || {};
 
 	if (properties instanceof Map) {
+		const gridKey = `grid_${order.currentOrder}`;
+		const gridCompDef: ComponentDefinition = {
+			key: gridKey,
+			name: 'Grid',
+			displayOrder: order.currentOrder,
+			type: 'Grid',
+			children: {},
+		};
+
 		for (const [propName, subSchema] of properties.entries()) {
 			const propBindingPath = bindingPathPath
 				? `${bindingPathPath}.${propName}`
@@ -134,7 +143,7 @@ function processObjectSchema(
 			);
 			if (compDef) {
 				componentDefinitions[compDef.key] = compDef;
-				children[compDef.key] = true;
+				gridCompDef.children![compDef.key] = true;
 				order.currentOrder++;
 			}
 
@@ -147,6 +156,8 @@ function processObjectSchema(
 				Object.assign(children, nestedSchema.children);
 			}
 		}
+		componentDefinitions[gridKey] = gridCompDef;
+		children[gridKey] = true;
 	}
 }
 
@@ -166,8 +177,6 @@ function processArraySchema(
 	const minItems = schema.getMinItems();
 
 	const isTupleSchema = Array.isArray(tupleSchema);
-	const length = tupleSchema ? tupleSchema.length : undefined;
-
 	const arrKey = `arrayRepeator${order.currentOrder}`;
 	const gridKey = `grid_${arrKey}`;
 
@@ -181,7 +190,6 @@ function processArraySchema(
 					},
 				}
 			: { value: !isTupleSchema };
-	const defaultData = length ? { value: [undefined] } : undefined;
 	const arrayRepeatorComp: ComponentDefinition = {
 		key: arrKey,
 		name: 'Repeator',
@@ -192,7 +200,6 @@ function processArraySchema(
 			showAdd: showAdd,
 			showDelete: { value: !isTupleSchema },
 			dataType: { value: 'array' },
-			...(defaultData !== undefined && { defaultData }),
 		},
 		children: {
 			[gridKey]: true,
