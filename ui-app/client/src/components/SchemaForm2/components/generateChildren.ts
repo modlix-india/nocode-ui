@@ -6,7 +6,7 @@ import {
 	SchemaUtil,
 	duplicate,
 } from '@fincity/kirun-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PREVIEW_COMP_DEFINITION_MAP } from '../../FormStorageEditor/components/formCommons';
 import { ComponentDefinition, ComponentProperty } from '../../../types/common';
 import TextBoxPropertyGenerator from './textBoxProperties';
@@ -51,7 +51,12 @@ export default function generateChildren({
 		resolveSchema();
 	}, [actualSchema, schemaRepository]);
 
-	return generateSchemaForm(schema, bindingPathPath);
+	const formData = useMemo(
+		() => generateSchemaForm(schema, bindingPathPath),
+		[schema, bindingPathPath],
+	);
+
+	return formData;
 }
 
 function generateSchemaForm(
@@ -133,17 +138,10 @@ function processObjectSchema(
 				order.currentOrder++;
 			}
 
-			if (subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.ARRAY)) {
-				processArraySchema(
-					subSchema,
-					propBindingPath,
-					order,
-					componentDefinitions,
-					children,
-				);
-			}
-
-			if (subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT)) {
+			if (
+				subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT) ||
+				subSchema.getType()?.getAllowedSchemaTypes()?.has(SchemaType.ARRAY)
+			) {
 				const nestedSchema = generateSchemaForm(subSchema, propBindingPath, order);
 				Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
 				Object.assign(children, nestedSchema.children);
@@ -170,7 +168,7 @@ function processArraySchema(
 	const isTupleSchema = Array.isArray(tupleSchema);
 	const length = tupleSchema ? tupleSchema.length : undefined;
 
-	const arrKey = `arrayRepeator`;
+	const arrKey = `arrayRepeator${order.currentOrder}`;
 	const gridKey = `grid_${arrKey}`;
 
 	const showAdd: ComponentProperty<any> =
@@ -187,7 +185,7 @@ function processArraySchema(
 	const arrayRepeatorComp: ComponentDefinition = {
 		key: arrKey,
 		name: 'Repeator',
-		displayOrder: 0,
+		displayOrder: order.currentOrder,
 		type: 'ArrayRepeater',
 		bindingPath: bindingPathPath ? { type: 'VALUE', value: `${bindingPathPath}` } : undefined,
 		properties: {
@@ -202,6 +200,7 @@ function processArraySchema(
 	};
 	componentDefinitions[arrayRepeatorComp.key] = arrayRepeatorComp;
 	children[arrayRepeatorComp.key] = true;
+	order.currentOrder++;
 
 	const gridCompDef: ComponentDefinition = {
 		key: gridKey,
@@ -212,7 +211,7 @@ function processArraySchema(
 	};
 
 	componentDefinitions[gridCompDef.key] = gridCompDef;
-
+	order.currentOrder++;
 	const schemaFinal = isTupleSchema ? tupleSchema : [singleSchema];
 
 	schemaFinal.forEach((subSchema, index) => {
@@ -241,6 +240,7 @@ function processArraySchema(
 				if (eachCompDef) {
 					componentDefinitions[eachCompDef.key] = eachCompDef;
 					gridCompDef.children![eachCompDef.key] = true;
+					order.currentOrder++;
 				}
 			}
 		}
