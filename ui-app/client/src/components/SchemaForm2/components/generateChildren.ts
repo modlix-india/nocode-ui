@@ -232,7 +232,10 @@ function processArraySchema(
 					order,
 				);
 				Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
-				Object.assign(gridCompDef.children!, nestedSchema.children);
+				Object.assign(
+					!isTupleSchema ? gridCompDef.children! : children,
+					nestedSchema.children,
+				);
 			} else {
 				const eachCompDef = compDefinitionGenerator(
 					`Item ${index}`,
@@ -246,7 +249,9 @@ function processArraySchema(
 				);
 				if (eachCompDef) {
 					componentDefinitions[eachCompDef.key] = eachCompDef;
-					gridCompDef.children![eachCompDef.key] = true;
+					!isTupleSchema
+						? (gridCompDef.children![eachCompDef.key] = true)
+						: (children[eachCompDef.key] = true);
 					order.currentOrder++;
 				}
 			}
