@@ -20,7 +20,6 @@ import RadioButtonStyle from './RadioButtonStyle';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleDefaults } from './RadioButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
-import { get } from 'http';
 
 function RadioButton(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
