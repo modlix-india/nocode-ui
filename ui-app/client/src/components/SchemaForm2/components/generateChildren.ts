@@ -90,6 +90,8 @@ function generateSchemaForm(
 		}
 	}
 
+	console.log('comp', componentDefinitions);
+
 	return {
 		children,
 		pageDef: {
@@ -120,7 +122,7 @@ function processObjectSchema(
 	const properties = schema.getProperties() || {};
 
 	if (properties instanceof Map) {
-		const gridKey = `grid_${order.currentOrder}`;
+		const gridKey = `objGrid_${order.currentOrder}`;
 		const gridCompDef: ComponentDefinition = {
 			key: gridKey,
 			name: 'Grid',
@@ -201,24 +203,22 @@ function processArraySchema(
 			showDelete: { value: !isTupleSchema },
 			dataType: { value: 'array' },
 		},
-		children: {
-			[gridKey]: true,
-		},
+		children: {},
 	};
 	componentDefinitions[arrayRepeatorComp.key] = arrayRepeatorComp;
 	children[arrayRepeatorComp.key] = true;
 	order.currentOrder++;
 
-	const gridCompDef: ComponentDefinition = {
-		key: gridKey,
-		name: 'Grid',
-		displayOrder: order.currentOrder,
-		type: 'Grid',
-		children: {},
-	};
+	// const gridCompDef: ComponentDefinition = {
+	// 	key: gridKey,
+	// 	name: 'Grid',
+	// 	displayOrder: order.currentOrder,
+	// 	type: 'Grid',
+	// 	children: {},
+	// };
 
-	componentDefinitions[gridCompDef.key] = gridCompDef;
-	order.currentOrder++;
+	// componentDefinitions[gridCompDef.key] = gridCompDef;
+	// order.currentOrder++;
 	const schemaFinal = isTupleSchema ? tupleSchema : [singleSchema];
 
 	schemaFinal.forEach((subSchema, index) => {
@@ -233,7 +233,7 @@ function processArraySchema(
 				);
 				Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
 				Object.assign(
-					!isTupleSchema ? gridCompDef.children! : children,
+					!isTupleSchema ? arrayRepeatorComp.children! : children,
 					nestedSchema.children,
 				);
 			} else {
@@ -242,7 +242,6 @@ function processArraySchema(
 					subSchema as Schema,
 					eachBindingPath,
 					order.currentOrder++,
-
 					[],
 					minItems,
 					bindingPathPath,
@@ -250,7 +249,7 @@ function processArraySchema(
 				if (eachCompDef) {
 					componentDefinitions[eachCompDef.key] = eachCompDef;
 					!isTupleSchema
-						? (gridCompDef.children![eachCompDef.key] = true)
+						? (arrayRepeatorComp.children![eachCompDef.key] = true)
 						: (children[eachCompDef.key] = true);
 					order.currentOrder++;
 				}
