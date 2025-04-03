@@ -7551,5 +7551,165 @@
 		"cp": "font",
 		"sel": ".comp.compPhoneNumber._bigDesign1._hasValue._quinary ._inputBox",
 		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Primary Phone Number Label Font Design Default",
+		"n": "primaryPhoneNumberLabelFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Secondary Phone Number Label Font Design Default",
+		"n": "secondaryPhoneNumberLabelFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Tertiary Phone Number Label Font Design Default",
+		"n": "tertiaryPhoneNumberLabelFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Quaternary Phone Number Label Font Design Default",
+		"n": "quaternaryPhoneNumberLabelFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Quinary Phone Number Label Font Design Default",
+		"n": "quinaryPhoneNumberLabelFontDesignDefault",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._default._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Primary Phone Number Label Font Design Outline",
+		"n": "primaryPhoneNumberLabelFontDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Secondary Phone Number Label Font Design Outline",
+		"n": "secondaryPhoneNumberLabelFontDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Tertiary Phone Number Label Font Design Outline",
+		"n": "tertiaryPhoneNumberLabelFontDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Quaternary Phone Number Label Font Design Outline",
+		"n": "quaternaryPhoneNumberLabelFontDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Quinary Phone Number Label Font Design Outline",
+		"n": "quinaryPhoneNumberLabelFontDesignOutline",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._outlined._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Primary Phone Number Label Font Design Filled",
+		"n": "primaryPhoneNumberLabelFontDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Secondary Phone Number Label Font Design Filled",
+		"n": "secondaryPhoneNumberLabelFontDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Tertiary Phone Number Label Font Design Filled",
+		"n": "tertiaryPhoneNumberLabelFontDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Quaternary Phone Number Label Font Design Filled",
+		"n": "quaternaryPhoneNumberLabelFontDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Quinary Phone Number Label Font Design Filled",
+		"n": "quinaryPhoneNumberLabelFontDesignFilled",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._filled._quinary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Primary Phone Number Label Font Design Big 1",
+		"n": "primaryPhoneNumberLabelFontDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._primary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Secondary Phone Number Label Font Design Big 1",
+		"n": "secondaryPhoneNumberLabelFontDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._secondary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Tertiary Phone Number Label Font Design Big 1",
+		"n": "tertiaryPhoneNumberLabelFontDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._tertiary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Quaternary Phone Number Label Font Design Big 1",
+		"n": "quaternaryPhoneNumberLabelFontDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._quaternary ._label",
+		"np": true
+	},
+	{
+		"gn": "Phone Number Label Font",
+		"dn": "Quinary Phone Number Label Font Design Big 1",
+		"n": "quinaryPhoneNumberLabelFontDesignBig1",
+		"cp": "font",
+		"sel": ".comp.compPhoneNumber._bigDesign1._quinary ._label",
+		"np": true
 	}
 ]
