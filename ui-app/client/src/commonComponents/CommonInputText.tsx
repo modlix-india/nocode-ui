@@ -217,7 +217,7 @@ function CommonInputText(props: CommonInputType) {
 				!focus && value?.toString()?.length ? '_hasValue' : ''
 			} ${!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''} ${
 				hasErrorMessages ? '_hasError' : ''
-			} ${readOnly ? 'disabled' : ''}`}
+			} ${readOnly ? '_disabled' : ''}`}
 			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
 			onMouseEnter={onMouseEnter}

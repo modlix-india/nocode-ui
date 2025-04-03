@@ -6172,7 +6172,7 @@
 		"dn": "Primary Text Box Disabled Background Color Design Default",
 		"n": "primaryTextBoxDisabledBackgroundColorDesignDefault",
 		"cp": "background",
-		"sel": ".comp.compTextBox._default._primary input:disabled, .comp.compTextBox._default._primary._disabled, .comp.compTextBox._default._hasValue._primary._disabled",
+		"sel": ".comp.compTextBox._default._primary._disabled, .comp.compTextBox._default._hasValue._primary._disabled",
 		"np": true
 	},
 	{
@@ -6180,7 +6180,7 @@
 		"dn": "Secondary Text Box Disabled Background Color Design Default",
 		"n": "secondaryTextBoxDisabledBackgroundColorDesignDefault",
 		"cp": "background",
-		"sel": ".comp.compTextBox._default._secondary input:disabled, .comp.compTextBox._default._secondary._disabled, .comp.compTextBox._default._hasValue._secondary._disabled",
+		"sel": ".comp.compTextBox._default._secondary._disabled, .comp.compTextBox._default._hasValue._secondary._disabled",
 		"np": true
 	},
 	{
@@ -6188,7 +6188,7 @@
 		"dn": "Tertiary Text Box Disabled Background Color Design Default",
 		"n": "tertiaryTextBoxDisabledBackgroundColorDesignDefault",
 		"cp": "background",
-		"sel": ".comp.compTextBox._default._tertiary input:disabled, .comp.compTextBox._default._tertiary._disabled, .comp.compTextBox._default._hasValue._tertiary._disabled",
+		"sel": ".comp.compTextBox._default._tertiary._disabled, .comp.compTextBox._default._hasValue._tertiary._disabled",
 		"np": true
 	},
 	{
@@ -6196,7 +6196,7 @@
 		"dn": "Quaternary Text Box Disabled Background Color Design Default",
 		"n": "quaternaryTextBoxDisabledBackgroundColorDesignDefault",
 		"cp": "background",
-		"sel": ".comp.compTextBox._default._quaternary input:disabled, .comp.compTextBox._default._quaternary._disabled, .comp.compTextBox._default._hasValue._quaternary._disabled",
+		"sel": ".comp.compTextBox._default._quaternary._disabled, .comp.compTextBox._default._hasValue._quaternary._disabled",
 		"np": true
 	},
 	{
@@ -6204,7 +6204,7 @@
 		"dn": "Quinary Text Box Disabled Background Color Design Default",
 		"n": "quinaryTextBoxDisabledBackgroundColorDesignDefault",
 		"cp": "background",
-		"sel": ".comp.compTextBox._default._quinary input:disabled, .comp.compTextBox._default._quinary._disabled, .comp.compTextBox._default._hasValue._quinary._disabled",
+		"sel": ".comp.compTextBox._default._quinary._disabled, .comp.compTextBox._default._hasValue._quinary._disabled",
 		"np": true
 	},
 	{
@@ -6212,7 +6212,7 @@
 		"dn": "Primary Text Box Disabled Background Color Design Outline",
 		"n": "primaryTextBoxDisabledBackgroundColorDesignOutline",
 		"cp": "background",
-		"sel": ".comp.compTextBox._outlined._primary input:disabled, .comp.compTextBox._outlined._primary._disabled, .comp.compTextBox._outlined._hasValue._primary._disabled",
+		"sel": ".comp.compTextBox._outlined._primary._disabled, .comp.compTextBox._outlined._hasValue._primary._disabled",
 		"np": true
 	},
 	{
@@ -6220,7 +6220,7 @@
 		"dn": "Secondary Text Box Disabled Background Color Design Outline",
 		"n": "secondaryTextBoxDisabledBackgroundColorDesignOutline",
 		"cp": "background",
-		"sel": ".comp.compTextBox._outlined._secondary input:disabled, .comp.compTextBox._outlined._secondary._disabled, .comp.compTextBox._outlined._hasValue._secondary._disabled",
+		"sel": ".comp.compTextBox._outlined._secondary._disabled, .comp.compTextBox._outlined._hasValue._secondary._disabled",
 		"np": true
 	},
 	{
@@ -6228,7 +6228,7 @@
 		"dn": "Tertiary Text Box Disabled Background Color Design Outline",
 		"n": "tertiaryTextBoxDisabledBackgroundColorDesignOutline",
 		"cp": "background",
-		"sel": ".comp.compTextBox._outlined._tertiary input:disabled, .comp.compTextBox._outlined._tertiary._disabled, .comp.compTextBox._outlined._hasValue._tertiary._disabled",
+		"sel": ".comp.compTextBox._outlined._tertiary._disabled, .comp.compTextBox._outlined._hasValue._tertiary._disabled",
 		"np": true
 	},
 	{
@@ -6236,7 +6236,7 @@
 		"dn": "Quaternary Text Box Disabled Background Color Design Outline",
 		"n": "quaternaryTextBoxDisabledBackgroundColorDesignOutline",
 		"cp": "background",
-		"sel": ".comp.compTextBox._outlined._quaternary input:disabled, .comp.compTextBox._outlined._quaternary._disabled, .comp.compTextBox._outlined._hasValue._quaternary._disabled",
+		"sel": ".comp.compTextBox._outlined._quaternary._disabled, .comp.compTextBox._outlined._hasValue._quaternary._disabled",
 		"np": true
 	},
 	{
@@ -6244,7 +6244,7 @@
 		"dn": "Quinary Text Box Disabled Background Color Design Outline",
 		"n": "quinaryTextBoxDisabledBackgroundColorDesignOutline",
 		"cp": "background",
-		"sel": ".comp.compTextBox._outlined._quinary input:disabled, .comp.compTextBox._outlined._quinary._disabled, .comp.compTextBox._outlined._hasValue._quinary._disabled",
+		"sel": ".comp.compTextBox._outlined._quinary._disabled, .comp.compTextBox._outlined._hasValue._quinary._disabled",
 		"np": true
 	},
 	{
@@ -6252,7 +6252,7 @@
 		"dn": "Primary Text Box Disabled Background Color Design Filled",
 		"n": "primaryTextBoxDisabledBackgroundColorDesignFilled",
 		"cp": "background",
-		"sel": ".comp.compTextBox._filled._primary input:disabled, .comp.compTextBox._filled._primary._disabled, .comp.compTextBox._filled._hasValue._primary._disabled",
+		"sel": ".comp.compTextBox._filled._primary._disabled, .comp.compTextBox._filled._hasValue._primary._disabled",
 		"np": true
 	},
 	{
@@ -6260,7 +6260,7 @@
 		"dn": "Secondary Text Box Disabled Background Color Design Filled",
 		"n": "secondaryTextBoxDisabledBackgroundColorDesignFilled",
 		"cp": "background",
-		"sel": ".comp.compTextBox._filled._secondary input:disabled, .comp.compTextBox._filled._secondary._disabled, .comp.compTextBox._filled._hasValue._secondary._disabled",
+		"sel": ".comp.compTextBox._filled._secondary._disabled, .comp.compTextBox._filled._hasValue._secondary._disabled",
 		"np": true
 	},
 	{
@@ -6268,7 +6268,7 @@
 		"dn": "Tertiary Text Box Disabled Background Color Design Filled",
 		"n": "tertiaryTextBoxDisabledBackgroundColorDesignFilled",
 		"cp": "background",
-		"sel": ".comp.compTextBox._filled._tertiary input:disabled, .comp.compTextBox._filled._tertiary._disabled, .comp.compTextBox._filled._hasValue._tertiary._disabled",
+		"sel": ".comp.compTextBox._filled._tertiary._disabled, .comp.compTextBox._filled._hasValue._tertiary._disabled",
 		"np": true
 	},
 	{
@@ -6276,7 +6276,7 @@
 		"dn": "Quaternary Text Box Disabled Background Color Design Filled",
 		"n": "quaternaryTextBoxDisabledBackgroundColorDesignFilled",
 		"cp": "background",
-		"sel": ".comp.compTextBox._filled._quaternary input:disabled, .comp.compTextBox._filled._quaternary._disabled, .comp.compTextBox._filled._hasValue._quaternary._disabled",
+		"sel": ".comp.compTextBox._filled._quaternary._disabled, .comp.compTextBox._filled._hasValue._quaternary._disabled",
 		"np": true
 	},
 	{
@@ -6284,7 +6284,7 @@
 		"dn": "Quinary Text Box Disabled Background Color Design Filled",
 		"n": "quinaryTextBoxDisabledBackgroundColorDesignFilled",
 		"cp": "background",
-		"sel": ".comp.compTextBox._filled._quinary input:disabled, .comp.compTextBox._filled._quinary._disabled, .comp.compTextBox._filled._hasValue._quinary._disabled",
+		"sel": ".comp.compTextBox._filled._quinary._disabled, .comp.compTextBox._filled._hasValue._quinary._disabled",
 		"np": true
 	},
 	{
@@ -6292,7 +6292,7 @@
 		"dn": "Primary Text Box Disabled Background Color Design Big 1",
 		"n": "primaryTextBoxDisabledBackgroundColorDesignBig1",
 		"cp": "background",
-		"sel": ".comp.compTextBox._bigDesign1._primary input:disabled, .comp.compTextBox._bigDesign1._primary._disabled, .comp.compTextBox._bigDesign1._hasValue._primary._disabled",
+		"sel": ".comp.compTextBox._bigDesign1._primary._disabled, .comp.compTextBox._bigDesign1._hasValue._primary._disabled",
 		"np": true
 	},
 	{
@@ -6300,7 +6300,7 @@
 		"dn": "Secondary Text Box Disabled Background Color Design Big 1",
 		"n": "secondaryTextBoxDisabledBackgroundColorDesignBig1",
 		"cp": "background",
-		"sel": ".comp.compTextBox._bigDesign1._secondary input:disabled, .comp.compTextBox._bigDesign1._secondary._disabled, .comp.compTextBox._bigDesign1._hasValue._secondary._disabled",
+		"sel": ".comp.compTextBox._bigDesign1._secondary._disabled, .comp.compTextBox._bigDesign1._hasValue._secondary._disabled",
 		"np": true
 	},
 	{
@@ -6308,7 +6308,7 @@
 		"dn": "Tertiary Text Box Disabled Background Color Design Big 1",
 		"n": "tertiaryTextBoxDisabledBackgroundColorDesignBig1",
 		"cp": "background",
-		"sel": ".comp.compTextBox._bigDesign1._tertiary input:disabled, .comp.compTextBox._bigDesign1._tertiary._disabled, .comp.compTextBox._bigDesign1._hasValue._tertiary._disabled",
+		"sel": ".comp.compTextBox._bigDesign1._tertiary._disabled, .comp.compTextBox._bigDesign1._hasValue._tertiary._disabled",
 		"np": true
 	},
 	{
@@ -6316,7 +6316,7 @@
 		"dn": "Quaternary Text Box Disabled Background Color Design Big 1",
 		"n": "quaternaryTextBoxDisabledBackgroundColorDesignBig1",
 		"cp": "background",
-		"sel": ".comp.compTextBox._bigDesign1._quaternary input:disabled, .comp.compTextBox._bigDesign1._quaternary._disabled, .comp.compTextBox._bigDesign1._hasValue._quaternary._disabled",
+		"sel": ".comp.compTextBox._bigDesign1._quaternary._disabled, .comp.compTextBox._bigDesign1._hasValue._quaternary._disabled",
 		"np": true
 	},
 	{
@@ -6324,7 +6324,7 @@
 		"dn": "Quinary Text Box Disabled Background Color Design Big 1",
 		"n": "quinaryTextBoxDisabledBackgroundColorDesignBig1",
 		"cp": "background",
-		"sel": ".comp.compTextBox._bigDesign1._quinary input:disabled, .comp.compTextBox._bigDesign1._quinary._disabled, .comp.compTextBox._bigDesign1._hasValue._quinary._disabled",
+		"sel": ".comp.compTextBox._bigDesign1._quinary._disabled, .comp.compTextBox._bigDesign1._hasValue._quinary._disabled",
 		"np": true
 	}
 ]
