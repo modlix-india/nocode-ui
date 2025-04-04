@@ -7158,5 +7158,22 @@
 		"cp": "margin",
 		"sel": ".comp.compDropdown._text._label",
 		"np": true
+	},
+	{
+		"gn": "Dropdown Container Height",
+		"dn": "Dropdown Container Height",
+		"n": "dropdownContainerHeight",
+		"cp": "max-height",
+		"sel": ".comp.compDropdown ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Overflow-Y",
+		"dn": "Dropdown Container Overflow-Y",
+		"n": "dropdownContainerOverflow-Y",
+		"cp": "overflow-y",
+		"dv":"visible",
+		"sel": ".comp.compDropdown ._dropdownContainer",
+		"np": true
 	}
 ]

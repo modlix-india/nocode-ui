@@ -8,10 +8,7 @@ export default function RadioButtonStyle({
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
-    ${PREFIX}{
-        display: flex;
-    }
-
+    
     ${PREFIX} .radioLabel {
         display: inline-flex;
         gap: 5px;
