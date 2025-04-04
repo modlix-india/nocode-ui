@@ -12,6 +12,40 @@ export function useMarkdownFormatting() {
 		let newText = text;
 		let newCursorPos = selection.end;
 
+		
+		const handleStyleFormat = (styleToAdd: string) => {
+			const styleRegex = /\{style="([^"]+)"\}(.*?)\{style\}/g;
+			const matches = Array.from(selectedText.matchAll(styleRegex));
+			
+			if (matches.length > 0) {
+			  const styleMap = new Map<string, string>();
+			  
+			  matches[0][1].split(',').forEach(style => {
+			    const [property, value] = style.trim().split(':').map(s => s.trim());
+			    if (property && value) {
+			      styleMap.set(property, value);
+			    }
+			  });
+			  
+			  const [newProperty, newValue] = styleToAdd.split(':').map(s => s.trim());
+			  if (newProperty && newValue) {
+			    styleMap.set(newProperty, newValue);
+			  }
+			  
+			  const updatedStyles = Array.from(styleMap.entries())
+			    .map(([prop, val]) => `${prop}: ${val}`)
+			    .join(',');
+			  
+			  const content = selectedText.replace(styleRegex, '$2');
+			  
+			  newText = `${beforeText}{style="${updatedStyles}"}${content}{style}${afterText}`;
+			} else {
+			  newText = `${beforeText}{style="${styleToAdd}"}${selectedText}{style}${afterText}`;
+			}
+			
+			newCursorPos = selection.end;
+		};
+
 		const toggleFormat = (startMarker: string, endMarker: string = startMarker) => {
 			const hasMarkers =
 				selectedText.startsWith(startMarker) && selectedText.endsWith(endMarker);
@@ -107,6 +141,27 @@ export function useMarkdownFormatting() {
 				newText = `${beforeText}[^${footnoteId}]${afterText}\n\n[^${footnoteId}]: ${selectedText}`;
 				newCursorPos = selection.end + footnoteId.length + 4;
 				break;
+				
+				case 'fontColor':
+					if (typeof value === 'string') {
+						handleStyleFormat(`color: ${value}`);
+					}
+					break;
+					
+				case 'backgroundColor':
+					if (typeof value === 'string') {
+						handleStyleFormat(`background-color: ${value}`);
+					}
+					break;
+					
+				default:
+					if (command.startsWith('fontStyle-')) {
+						const fontFamily = command.substring(10); 
+						handleStyleFormat(`font-family: ${fontFamily}`);
+					} else if (command.startsWith('fontSize-')) {
+						const fontSize = command.substring(9); 
+					} 
+					break;
 		}
 
 		return { newText, newCursorPos };

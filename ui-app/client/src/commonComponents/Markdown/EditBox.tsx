@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, FC } from 'react';
-// import { cyrb53 } from '../../util/cyrb53';
 import { FilterPanelButtons } from '../../components/MarkdownEditor/components/FilterPanelButtons';
 import { AddComponentPanelButtons } from '../../components/MarkdownEditor/components/AddComponentPanelButtons';
 import { useMarkdownFormatting } from '../../components/MarkdownEditor/hooks/useMarkdownFormatting';
@@ -45,34 +44,10 @@ export const EditBox: FC<EditBoxProps> = ({
 	const { formatText } = useMarkdownFormatting();
 	const { markdownToEditableContent, editableContentToMarkdown } = useDocumentMode();
 
-	// Update content when originalContent changes
 	useEffect(() => {
 		setContent(originalContent);
 	}, [originalContent]);
 
-	// Handle click outside to close the add component panel
-	useEffect(() => {
-		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				addPanelRef.current &&
-				!addPanelRef.current.contains(event.target as Node) &&
-				addButtonRef.current &&
-				!addButtonRef.current.contains(event.target as Node)
-			) {
-				setShowAddComponentPanel(false);
-			}
-		};
-
-		if (showAddComponentPanel) {
-			document.addEventListener('mousedown', handleClickOutside);
-		}
-
-		return () => {
-			document.removeEventListener('mousedown', handleClickOutside);
-		};
-	}, [showAddComponentPanel]);
-
-	// Calculate filter panel position when editing starts
 	useEffect(() => {
 		if (isEditing && boxRef.current) {
 			setFilterPanelPosition({
@@ -83,6 +58,7 @@ export const EditBox: FC<EditBoxProps> = ({
 	}, [isEditing]);
 
 	const handleClick = (e: React.MouseEvent) => {
+		e.preventDefault();
 		e.stopPropagation();
 		if (!isEditing) {
 			setIsEditing(true);
@@ -91,21 +67,17 @@ export const EditBox: FC<EditBoxProps> = ({
 	};
 
 	const handleBlur = () => {
-		if (isEditing) {
-			setIsEditing(false);
-			if (editRef.current) {
-				// Convert HTML content back to markdown before saving
-				const htmlContent = editRef.current.innerHTML;
-				const markdownContent = editableContentToMarkdown(htmlContent);
+		if (isEditing && editRef.current) {
+			const htmlContent = editRef.current.innerHTML;
+			const markdownContent = editableContentToMarkdown(htmlContent);
 
-				if (markdownContent !== originalContent) {
-					setContent(markdownContent);
-					onContentChange(markdownContent, lineIndex);
-				}
+			if (markdownContent !== originalContent) {
+				setContent(markdownContent);
+				onContentChange(markdownContent, lineIndex);
 			}
-			setSelectedText('');
-			if (onBlur) onBlur();
 		}
+		setSelectedText('');
+		if (onBlur) onBlur();
 	};
 
 	const handleKeyDown = (ev: React.KeyboardEvent) => {
@@ -123,7 +95,6 @@ export const EditBox: FC<EditBoxProps> = ({
 			return;
 		}
 
-		// Add keyboard shortcuts for formatting
 		const isMac = /Mac|iPhone|iPod|iPad/.test(navigator.userAgent);
 		const modifier = isMac ? ev.metaKey : ev.ctrlKey;
 
@@ -156,12 +127,10 @@ export const EditBox: FC<EditBoxProps> = ({
 			if (selection && selection.rangeCount > 0) {
 				const range = selection.getRangeAt(0);
 
-				// Check if selection is within our editable div
 				if (editRef.current.contains(range.commonAncestorContainer)) {
 					const selectedContent = selection.toString();
 					setSelectedText(selectedContent);
 
-					// Calculate selection start and end positions
 					const start = getTextOffset(
 						editRef.current,
 						range.startContainer,
@@ -177,7 +146,6 @@ export const EditBox: FC<EditBoxProps> = ({
 		}
 	};
 
-	// Add event listener for selection changes
 	useEffect(() => {
 		if (isEditing) {
 			document.addEventListener('selectionchange', handleSelectionChange);
@@ -188,43 +156,36 @@ export const EditBox: FC<EditBoxProps> = ({
 		};
 	}, [isEditing]);
 
-	// Initialize the editable div with content when it first becomes editable
 	useEffect(() => {
 		if (isEditing && editRef.current) {
-			// Convert markdown to HTML for rich editing
 			const htmlContent = markdownToEditableContent(content);
 
-			// Set the inner HTML directly once when entering edit mode
 			if (editRef.current.innerHTML !== htmlContent) {
 				editRef.current.innerHTML = htmlContent;
 			}
 			editRef.current.focus();
 
-			// Place cursor at the end
 			const range = document.createRange();
 			const selection = window.getSelection();
 			range.selectNodeContents(editRef.current);
-			range.collapse(false); // collapse to end
+			range.collapse(false);
 			selection?.removeAllRanges();
 			selection?.addRange(range);
 		}
 	}, [isEditing, content, markdownToEditableContent]);
 
-	// Handle input changes - make sure we're not causing duplicate updates
 	const handleInput = () => {
 		if (editRef.current && isEditing) {
-			// We don't update content state here as we'll convert back to markdown on blur
-			// This allows the rich text to remain as HTML while editing
+			//do nothing
 		}
 	};
 
-	// Handle add component button click
 	const handleAddComponent = (e: React.MouseEvent) => {
+		e.preventDefault();
 		e.stopPropagation();
 		setShowAddComponentPanel(true);
 	};
 
-	// Handle component selection from the panel
 	const handleComponentSelect = (componentType: string) => {
 		if (onAddComponent) {
 			onAddComponent(lineIndex, componentType);
@@ -232,13 +193,10 @@ export const EditBox: FC<EditBoxProps> = ({
 		}
 	};
 
-	// Helper function to get text offset in contentEditable
 	const getTextOffset = (parent: Node, node: Node, offset: number): number => {
 		let totalOffset = 0;
 
-		// Handle text nodes
 		if (node.nodeType === Node.TEXT_NODE) {
-			// Create a TreeWalker to iterate through all text nodes
 			const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT, null);
 
 			let currentNode = walker.nextNode();
@@ -248,17 +206,13 @@ export const EditBox: FC<EditBoxProps> = ({
 			}
 
 			return totalOffset + offset;
-		}
-		// Handle element nodes
-		else if (node.nodeType === Node.ELEMENT_NODE) {
-			// If we're at an element node, count all text before this element
+		} else if (node.nodeType === Node.ELEMENT_NODE) {
 			const walker = document.createTreeWalker(parent, NodeFilter.SHOW_TEXT, null);
 
 			let textBefore = 0;
 			let currentNode = walker.nextNode();
 
 			while (currentNode) {
-				// Check if this text node is before our target in the DOM
 				if (node.compareDocumentPosition(currentNode) & Node.DOCUMENT_POSITION_PRECEDING) {
 					textBefore += currentNode.textContent?.length ?? 0;
 				}
@@ -271,16 +225,12 @@ export const EditBox: FC<EditBoxProps> = ({
 		return offset;
 	};
 
-	// Handle formatting from filter panel
-	// Handle dropdown item click
 	const handleFormatClick = (command: string, value?: string | { url: string; text: string }) => {
 		if (!editRef.current || !isEditing) return;
 
-		// Get current selection
 		const selection = window.getSelection();
 		if (!selection || selection.rangeCount === 0) return;
 
-		// Apply formatting directly using document.execCommand for rich text editing
 		switch (command) {
 			case 'bold':
 				document.execCommand('bold', false);
@@ -292,7 +242,6 @@ export const EditBox: FC<EditBoxProps> = ({
 				document.execCommand('strikeThrough', false);
 				break;
 			case 'heading1':
-				// Replace current selection with h1 element
 				wrapSelectionWithTag('h1');
 				break;
 			case 'heading2':
@@ -350,11 +299,9 @@ export const EditBox: FC<EditBoxProps> = ({
 				break;
 		}
 
-		// Ensure focus remains on the editor
 		editRef.current.focus();
 	};
 
-	// Helper function to wrap selection with HTML tag
 	const wrapSelectionWithTag = (tagName: string) => {
 		if (!editRef.current) return;
 

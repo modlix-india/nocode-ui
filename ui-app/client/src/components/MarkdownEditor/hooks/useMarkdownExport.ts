@@ -28,49 +28,53 @@ export function useMarkdownExport() {
 }
 
 function convertToHTML(text: string, filename: string): string {
-	const tempDiv = document.createElement('div');
-	tempDiv.innerHTML = text
-		// Headers
-		.replace(/^###### (.*$)/gim, '<h6>$1</h6>')
-		.replace(/^##### (.*$)/gim, '<h5>$1</h5>')
-		.replace(/^#### (.*$)/gim, '<h4>$1</h4>')
-		.replace(/^### (.*$)/gim, '<h3>$1</h3>')
-		.replace(/^## (.*$)/gim, '<h2>$1</h2>')
-		.replace(/^# (.*$)/gim, '<h1>$1</h1>')
-		// Block elements
-		.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
-		.replace(/^- (.*$)/gim, '<li>$1</li>')
-		.replace(/^1\. (.*$)/gim, '<li>$1</li>')
-		// Text formatting
-		.replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
-		.replace(/\*(.*)\*/gim, '<em>$1</em>')
-		.replace(/~~(.*)~~/gim, '<del>$1</del>')
-		.replace(/`([^`]+)`/gim, '<code>$1</code>')
-		.replace(/==(.*)==/gim, '<mark>$1</mark>')
-		// Alignment and direction
-		.replace(/^:::\s*left\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: left">$1</div>')
-		.replace(/^:::\s*center\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: center">$1</div>')
-		.replace(/^:::\s*right\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: right">$1</div>')
-		.replace(
-			/^:::\s*justify\s*\n([\s\S]*?)\n:::/gim,
-			'<div style="text-align: justify">$1</div>',
-		)
-		.replace(/^:::\s*rtl\s*\n([\s\S]*?)\n:::/gim, '<div style="direction: rtl">$1</div>')
-		.replace(/^:::\s*ltr\s*\n([\s\S]*?)\n:::/gim, '<div style="direction: ltr">$1</div>')
-		// Links and images
-		.replace(
-			/!\[(.*?)\]\((.*?)\)/gim,
-			'<img src="$2" alt="$1" style="max-width: 100%; height: auto;">',
-		)
-		.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
-		// Indentation
-		.replace(/^(\s{4,})(.*?)$/gim, '<div style="padding-left: 2em">$2</div>')
-		// Lists wrapper
-		.replace(/<li>.*?<\/li>\n?/gim, match => `<ul>${match}</ul>`)
-		// Line breaks
-		.replace(/\n$/gim, '<br />');
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = text
+    .replace(/\{style="([^"]+)"\}(.*?)\{style\}/g, (_, styles, content) => {
+      const styleAttr = styles
+        .split(',')
+        .map((style: string) => {
+          const [prop, value] = style.split(':').map(s => s.trim());
+          const cssProp = prop.replace(/-([a-z])/g, g => g[1].toUpperCase());
+          return `${cssProp}: ${value}`;
+        })
+        .join('; ');
+      return `<span style="${styleAttr}">${content}</span>`;
+    })
+    .replace(/^###### (.*$)/gim, '<h6>$1</h6>')
+    .replace(/^##### (.*$)/gim, '<h5>$1</h5>')
+    .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+    .replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>')
+    .replace(/^- (.*$)/gim, '<li>$1</li>')
+    .replace(/^1\. (.*$)/gim, '<li>$1</li>')
+    .replace(/\*\*(.*)\*\*/gim, '<strong>$1</strong>')
+    .replace(/\*(.*)\*/gim, '<em>$1</em>')
+    .replace(/~~(.*)~~/gim, '<del>$1</del>')
+    .replace(/`([^`]+)`/gim, '<code>$1</code>')
+    .replace(/==(.*)==/gim, '<mark>$1</mark>')
+    .replace(/^:::\s*left\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: left">$1</div>')
+    .replace(/^:::\s*center\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: center">$1</div>')
+    .replace(/^:::\s*right\s*\n([\s\S]*?)\n:::/gim, '<div style="text-align: right">$1</div>')
+    .replace(
+      /^:::\s*justify\s*\n([\s\S]*?)\n:::/gim,
+      '<div style="text-align: justify">$1</div>',
+    )
+    .replace(/^:::\s*rtl\s*\n([\s\S]*?)\n:::/gim, '<div style="direction: rtl">$1</div>')
+    .replace(/^:::\s*ltr\s*\n([\s\S]*?)\n:::/gim, '<div style="direction: ltr">$1</div>')
+    .replace(
+      /!\[(.*?)\]\((.*?)\)/gim,
+      '<img src="$2" alt="$1" style="max-width: 100%; height: auto;">',
+    )
+    .replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2">$1</a>')
+    .replace(/^(\s{4,})(.*?)$/gim, '<div style="padding-left: 2em">$2</div>')
+    .replace(/<li>.*?<\/li>\n?/gim, match => `<ul>${match}</ul>`)
+    // Line breaks
+    .replace(/\n$/gim, '<br />');
 
-	return `
+  return `
         <!DOCTYPE html>
         <html>
         <head>

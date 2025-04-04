@@ -21,60 +21,71 @@ export function FilterPanelButtons({
 	const [linkText, setLinkText] = useState('');
 	const [linkUrl, setLinkUrl] = useState('');
 
-	// State for dropdowns
 	const [showAlignmentDropdown, setShowAlignmentDropdown] = useState(false);
 	const [showHeadingDropdown, setShowHeadingDropdown] = useState(false);
 	const [showListDropdown, setShowListDropdown] = useState(false);
 	const [showMoreDropdown, setShowMoreDropdown] = useState(false);
+	const [showFontStyleDropdown, setShowFontStyleDropdown] = useState(false);
+	const [showFontSizeDropdown, setShowFontSizeDropdown] = useState(false);
+	const [showColorDropdown, setShowColorDropdown] = useState(false);
 
-	// Refs for dropdowns
 	const alignmentDropdownRef = useRef<HTMLDivElement>(null);
 	const headingDropdownRef = useRef<HTMLDivElement>(null);
 	const listDropdownRef = useRef<HTMLDivElement>(null);
 	const moreDropdownRef = useRef<HTMLDivElement>(null);
+	const fontStyleDropdownRef = useRef<HTMLDivElement>(null);
+	const fontSizeDropdownRef = useRef<HTMLDivElement>(null);
+	const colorDropdownRef = useRef<HTMLDivElement>(null);
 
-	// Close all dropdowns
-	const closeAllDropdowns = () => {
-		setShowAlignmentDropdown(false);
-		setShowHeadingDropdown(false);
-		setShowListDropdown(false);
-		setShowMoreDropdown(false);
-	};
-
-	// Handle click outside to close dropdowns
 	useEffect(() => {
+		const dropdownConfig = [
+			{
+				ref: alignmentDropdownRef,
+				setter: setShowAlignmentDropdown,
+				identifier: 'alignmnet',
+			},
+			{
+				ref: headingDropdownRef,
+				setter: setShowHeadingDropdown,
+				identifier: 'heading',
+			},
+			{
+				ref: listDropdownRef,
+				setter: setShowListDropdown,
+				identifier: 'List',
+			},
+			{
+				ref: moreDropdownRef,
+				setter: setShowMoreDropdown,
+				identifier: 'More',
+			},
+			{
+				ref: fontStyleDropdownRef,
+				setter: setShowFontStyleDropdown,
+				identifier: 'FontStyle',
+			},
+			{
+				ref: fontSizeDropdownRef,
+				setter: setShowFontSizeDropdown,
+				identifier: 'FontSize',
+			},
+			{
+				ref: colorDropdownRef,
+				setter: setShowColorDropdown,
+				identifier: 'Color',
+			},
+		];
+
 		const handleClickOutside = (event: MouseEvent) => {
-			if (
-				alignmentDropdownRef.current &&
-				!alignmentDropdownRef.current.contains(event.target as Node) &&
-				!(event.target && String(event.target).includes('alignmnet'))
-			) {
-				setShowAlignmentDropdown(false);
-			}
-
-			if (
-				headingDropdownRef.current &&
-				!headingDropdownRef.current.contains(event.target as Node) &&
-				!(event.target && String(event.target).includes('heading'))
-			) {
-				setShowHeadingDropdown(false);
-			}
-
-			if (
-				listDropdownRef.current &&
-				!listDropdownRef.current.contains(event.target as Node) &&
-				!(event.target && String(event.target).includes('List'))
-			) {
-				setShowListDropdown(false);
-			}
-
-			if (
-				moreDropdownRef.current &&
-				!moreDropdownRef.current.contains(event.target as Node) &&
-				!(event.target && String(event.target).includes('More'))
-			) {
-				setShowMoreDropdown(false);
-			}
+			dropdownConfig.forEach(({ ref, setter, identifier }) => {
+				if (
+					ref.current &&
+					!ref.current.contains(event.target as Node) &&
+					!(event.target && String(event.target).includes(identifier))
+				) {
+					setter(false);
+				}
+			});
 		};
 
 		document.addEventListener('mousedown', handleClickOutside);
@@ -94,42 +105,76 @@ export function FilterPanelButtons({
 		setLinkUrl('');
 	};
 
-	// Toggle dropdown functions
-	const toggleAlignmentDropdown = (e: React.MouseEvent) => {
-		e.stopPropagation();
-		setShowAlignmentDropdown(!showAlignmentDropdown);
-		setShowHeadingDropdown(false);
-		setShowListDropdown(false);
-		setShowMoreDropdown(false);
-	};
+	type DropdownType =
+		| 'alignment'
+		| 'heading'
+		| 'list'
+		| 'more'
+		| 'fontStyle'
+		| 'fontSize'
+		| 'color';
 
-	const toggleHeadingDropdown = (e: React.MouseEvent) => {
-		e.stopPropagation();
-		setShowHeadingDropdown(!showHeadingDropdown);
-		setShowAlignmentDropdown(false);
-		setShowListDropdown(false);
-		setShowMoreDropdown(false);
-	};
-
-	const toggleListDropdown = (e: React.MouseEvent) => {
-		e.stopPropagation();
-		setShowListDropdown(!showListDropdown);
-		setShowAlignmentDropdown(false);
-		setShowHeadingDropdown(false);
-		setShowMoreDropdown(false);
-	};
-
-	const toggleMoreDropdown = (e: React.MouseEvent) => {
-		e.stopPropagation();
-		setShowMoreDropdown(!showMoreDropdown);
+	const closeAllDropdowns = () => {
 		setShowAlignmentDropdown(false);
 		setShowHeadingDropdown(false);
 		setShowListDropdown(false);
+		setShowMoreDropdown(false);
+		setShowFontStyleDropdown(false);
+		setShowFontSizeDropdown(false);
+		setShowColorDropdown(false);
 	};
 
-	const handleDropdownItemClick = (command: string) => {
-		onFormatClick(command);
+	const toggleDropdown = (dropdownType: DropdownType, e: React.MouseEvent) => {
+		e.stopPropagation();
+
+		const setterMap = {
+			alignment: setShowAlignmentDropdown,
+			heading: setShowHeadingDropdown,
+			list: setShowListDropdown,
+			more: setShowMoreDropdown,
+			fontStyle: setShowFontStyleDropdown,
+			fontSize: setShowFontSizeDropdown,
+			color: setShowColorDropdown,
+		};
+
 		closeAllDropdowns();
+
+		setterMap[dropdownType](prev => !prev);
+	};
+
+	const toggleAlignmentDropdown = (e: React.MouseEvent) => toggleDropdown('alignment', e);
+	const toggleHeadingDropdown = (e: React.MouseEvent) => toggleDropdown('heading', e);
+	const toggleListDropdown = (e: React.MouseEvent) => toggleDropdown('list', e);
+	const toggleMoreDropdown = (e: React.MouseEvent) => toggleDropdown('more', e);
+	const toggleFontStyleDropdown = (e: React.MouseEvent) => toggleDropdown('fontStyle', e);
+	const toggleFontSizeDropdown = (e: React.MouseEvent) => toggleDropdown('fontSize', e);
+	const toggleColorDropdown = (e: React.MouseEvent) => toggleDropdown('color', e);
+
+	const handleDropdownItemClick = (command: string, value?: any) => {
+		onFormatClick(command, value);
+		closeAllDropdowns();
+	};
+
+	const fontStyles = [
+		{ name: 'Arial', displayName: 'Arial' },
+		{ name: 'Times New Roman', displayName: 'Times New Roman' },
+		{ name: 'Courier New', displayName: 'Courier New' },
+		{ name: 'Georgia', displayName: 'Georgia' },
+		{ name: 'Verdana', displayName: 'Verdana' },
+		{ name: 'Helvetica', displayName: 'Helvetica' },
+		{ name: 'Tahoma', displayName: 'Tahoma' },
+		{ name: 'Trebuchet MS', displayName: 'Trebuchet MS' },
+		{ name: 'Garamond', displayName: 'Garamond' },
+		{ name: 'Palatino', displayName: 'Palatino' },
+	];
+
+	const fontSizes = Array.from({ length: 29 }, (_, i) => i + 8).map(size => ({
+		name: size.toString(),
+		displayName: size.toString() + 'px',
+	}));
+
+	const handleColorChange = (type: 'fontColor' | 'backgroundColor', color: string) => {
+		onFormatClick(type, color);
 	};
 
 	const mainButtons = (
@@ -180,6 +225,130 @@ export function FilterPanelButtons({
 						/>
 					</svg>
 				</button>
+			</div>
+
+			<div className="_buttonSeperator" />
+
+			<div className="_formatButtonGroup">
+				<div className="_dropdownContainer">
+					<button
+						onClick={toggleFontStyleDropdown}
+						className="_formatbutton"
+						title="Font Style"
+					>
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+							<path
+								d="M2 14H14M8 2V11M8 2H5M8 2H11"
+								stroke="black"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+					</button>
+					{showFontStyleDropdown && (
+						<div className="_dropdown _fontStyleDropdown" ref={fontStyleDropdownRef}>
+							{fontStyles.map(style => (
+								<button
+									key={style.name}
+									onClick={() =>
+										handleDropdownItemClick(`fontStyle-${style.name}`)
+									}
+									className="_dropdownItem"
+									style={{ fontFamily: style.name }}
+								>
+									{style.displayName}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
+
+				<div className="_dropdownContainer">
+					<button
+						onClick={toggleFontSizeDropdown}
+						className="_formatbutton"
+						title="Font Size"
+					>
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+							<path
+								d="M3 14H13M8 2V12M8 2L5 5M8 2L11 5"
+								stroke="black"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+						</svg>
+					</button>
+					{showFontSizeDropdown && (
+						<div className="_dropdown _fontSizeDropdown" ref={fontSizeDropdownRef}>
+							{fontSizes.map(size => (
+								<button
+									key={size.name}
+									onClick={() => handleDropdownItemClick(`fontSize-${size.name}`)}
+									className="_dropdownItem"
+								>
+									{size.displayName}
+								</button>
+							))}
+						</div>
+					)}
+				</div>
+
+				<div className="_dropdownContainer">
+					<button
+						onClick={toggleColorDropdown}
+						className="_formatbutton"
+						title="Text & Background Color"
+					>
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+							<path
+								d="M8 2L2 8L8 14L14 8L8 2Z"
+								stroke="black"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+							<circle cx="8" cy="8" r="2" fill="black" />
+						</svg>
+					</button>
+					{showColorDropdown && (
+						<div className="_dropdown _colorDropdown" ref={colorDropdownRef}>
+							<div className="_colorSection">
+								<div className="_colorSectionTitle">Text Color</div>
+								<div className="_colorGrid">
+									<div className="_colorPickerContainer">
+										<label htmlFor="fontColorPicker">Custom:</label>
+										<input
+											type="color"
+											id="fontColorPicker"
+											onChange={e =>
+												handleColorChange('fontColor', e.target.value)
+											}
+											className="_colorPicker"
+										/>
+									</div>
+								</div>
+							</div>
+							<div className="_colorSection">
+								<div className="_colorSectionTitle">Background Color</div>
+								<div className="_colorGrid">
+									<div className="_colorPickerContainer">
+										<label htmlFor="bgColorPicker">Custom:</label>
+										<input
+											type="color"
+											id="bgColorPicker"
+											onChange={e =>
+												handleColorChange('backgroundColor', e.target.value)
+											}
+											className="_colorPicker"
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+					)}
+				</div>
 			</div>
 
 			<div className="_buttonSeperator" />
@@ -681,13 +850,7 @@ export function FilterPanelButtons({
 					className="_formatbutton"
 					title="Add Link"
 				>
-					<svg
-						width="20"
-						height="20"
-						viewBox="0 0 20 20"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-					>
+					<svg width="20" height="20" viewBox="0 0 20 20" fill="none">
 						<path
 							d="M7.61982 8.90915L7.79225 8.73674C9.44116 7.08775 12.1147 7.08775 13.7636 8.73674C15.4126 10.3857 15.4126 13.0592 13.7636 14.7081L11.3751 17.0966C9.72616 18.7456 7.05265 18.7456 5.4037 17.0966C3.75476 15.4477 3.75476 12.7742 5.4037 11.1252L5.79066 10.7383"
 							stroke="black"
@@ -722,7 +885,6 @@ export function FilterPanelButtons({
 
 			<div className="_buttonSeperator" />
 
-			{/* More Options Dropdown */}
 			<div className="_formatButtonGroup">
 				<div className="_dropdownContainer">
 					<button
@@ -760,13 +922,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('highlight')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="15"
-									height="17"
-									viewBox="0 0 15 17"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="15" height="17" viewBox="0 0 15 17" fill="none">
 									<path
 										d="M7.8568 11.9098L2.88162 12.8337C1.92735 13.0109 1.45023 13.0995 1.17535 12.8247C0.900479 12.5497 0.989079 12.0726 1.16629 11.1183L2.09015 6.14287C2.2383 5.34508 2.31237 4.94617 2.57535 4.70513C2.83833 4.46411 3.31926 4.41707 4.28113 4.32299C5.20818 4.23231 6.08553 3.91451 7 3L11 7.00033C10.0855 7.91487 9.76753 8.7916 9.67673 9.71873C9.58253 10.6807 9.5354 11.1617 9.2944 11.4247C9.0534 11.6876 8.65453 11.7617 7.8568 11.9098Z"
 										stroke="black"
@@ -799,13 +955,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('superscript')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="13"
-									height="15"
-									viewBox="0 0 13 15"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="13" height="15" viewBox="0 0 13 15" fill="none">
 									<path
 										d="M9.03195 6.62793V5.85336L11.0404 3.83891C11.2325 3.64045 11.3926 3.46415 11.5206 3.31001C11.6487 3.15587 11.7448 3.00654 11.8088 2.86203C11.8728 2.71753 11.9048 2.56338 11.9048 2.39961C11.9048 2.21271 11.8634 2.05279 11.7805 1.91984C11.6977 1.78496 11.5837 1.68092 11.4387 1.6077C11.2937 1.53448 11.1289 1.49787 10.9444 1.49787C10.7542 1.49787 10.5875 1.53833 10.4444 1.61926C10.3012 1.69826 10.1901 1.81097 10.111 1.95741C10.0338 2.10385 9.99522 2.27822 9.99522 2.48053H8.99805C8.99805 2.10481 9.08185 1.77822 9.24946 1.50076C9.41707 1.22331 9.64776 1.00847 9.94155 0.856254C10.2372 0.704038 10.5762 0.62793 10.9585 0.62793C11.3464 0.62793 11.6873 0.702111 11.9811 0.850473C12.2749 0.998835 12.5028 1.20211 12.6647 1.4603C12.8286 1.71849 12.9105 2.01329 12.9105 2.34469C12.9105 2.56627 12.869 2.784 12.7862 2.99787C12.7033 3.21174 12.5574 3.44874 12.3483 3.70885C12.1412 3.96897 11.8502 4.284 11.4754 4.65394L10.4783 5.69151V5.73198H12.998V6.62793H9.03195Z"
 										fill="black"
@@ -824,13 +974,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('subscript')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="13"
-									height="13"
-									viewBox="0 0 13 13"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="13" height="13" viewBox="0 0 13 13" fill="none">
 									<path
 										d="M9.03195 12.6279V11.8534L11.0404 9.83891C11.2325 9.64045 11.3926 9.46415 11.5206 9.31001C11.6487 9.15587 11.7448 9.00654 11.8088 8.86203C11.8728 8.71753 11.9048 8.56338 11.9048 8.39961C11.9048 8.21271 11.8634 8.05279 11.7805 7.91984C11.6977 7.78496 11.5837 7.68092 11.4387 7.6077C11.2937 7.53448 11.1289 7.49787 10.9444 7.49787C10.7542 7.49787 10.5875 7.53833 10.4444 7.61926C10.3012 7.69826 10.1901 7.81097 10.111 7.95741C10.0338 8.10385 9.99522 8.27822 9.99522 8.48053H8.99805C8.99805 8.10481 9.08185 7.77822 9.24946 7.50076C9.41707 7.22331 9.64776 7.00847 9.94155 6.85625C10.2372 6.70404 10.5762 6.62793 10.9585 6.62793C11.3464 6.62793 11.6873 6.70211 11.9811 6.85047C12.2749 6.99884 12.5028 7.20211 12.6647 7.4603C12.8286 7.71849 12.9105 8.01329 12.9105 8.34469C12.9105 8.56627 12.869 8.784 12.7862 8.99787C12.7033 9.21174 12.5574 9.44874 12.3483 9.70885C12.1412 9.96897 11.8502 10.284 11.4754 10.6539L10.4783 11.6915V11.732H12.998V12.6279H9.03195Z"
 										fill="black"
@@ -849,13 +993,7 @@ export function FilterPanelButtons({
 								onClick={() => handleDropdownItemClick('footnote')}
 								className="_dropdownItem"
 							>
-								<svg
-									width="19"
-									height="17"
-									viewBox="0 0 19 17"
-									fill="none"
-									xmlns="http://www.w3.org/2000/svg"
-								>
+								<svg width="19" height="17" viewBox="0 0 19 17" fill="none">
 									<path
 										d="M17.684 1H6.21363C5.96658 1 5.77246 1.19411 5.77246 1.44117C5.77246 1.68822 5.96658 1.88234 6.21363 1.88234H17.684C17.9311 1.88234 18.1252 1.68822 18.1252 1.44117C18.1252 1.19411 17.9311 1 17.684 1Z"
 										fill="black"

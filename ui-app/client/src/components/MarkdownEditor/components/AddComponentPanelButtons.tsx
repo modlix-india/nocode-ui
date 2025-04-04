@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, RefObject } from 'react';
 import { FileBrowser } from '../../../commonComponents/FileBrowser';
 
 interface TableConfig {
@@ -13,7 +13,7 @@ interface AddComponentPanelButtonsProps {
 	searchTerm: string;
 	onSearchChange: (term: string) => void;
 	styleProperties: any;
-	textAreaRef?: React.RefObject<HTMLTextAreaElement>; // Add this prop
+	textAreaRef?: RefObject<HTMLTextAreaElement>;
 }
 
 const components = [
@@ -673,7 +673,7 @@ const components = [
 			</svg>
 		),
 		syntax: '****',
-	}, //not working
+	},
 	{
 		id: 'code',
 		name: 'Code Block',
@@ -969,19 +969,17 @@ export function AddComponentPanelButtons({
 	const [linkUrl, setLinkUrl] = useState('');
 
 	const [showTableDialog, setShowTableDialog] = useState(false);
-	// Update the initial state
+
 	const [tableConfig, setTableConfig] = useState<TableConfig>({
 		rows: 2,
 		columns: 2,
 	});
 
-	// Modify the generateTable function
 	const generateTable = ({ rows, columns }: TableConfig) => {
 		const headerRow = '| ' + Array(columns).fill('Header').join(' | ') + ' |';
 		const alignmentRow = '| ' + Array(columns).fill(':---').join(' | ') + ' |';
 		let tableContent = headerRow + '\n' + alignmentRow + '\n';
 
-		// Generate data rows (excluding header)
 		for (let i = 0; i < rows - 1; i++) {
 			const dataRow = '| ' + Array(columns).fill('Cell').join(' | ') + ' |';
 			tableContent += dataRow + (i < rows - 2 ? '\n' : '');

@@ -2,8 +2,8 @@ import { useCallback } from 'react';
 
 export function useDocumentMode() {
 	const markdownToEditableContent = useCallback((markdown: string) => {
-		// First process combined formats to avoid conflicts
 		let processedContent = markdown
+			.replace(/\{style="([^"]+)"\}(.*?)\{style\}/g, '<span style="$1" data-md-type="styled">$2</span>')
 			.replace(/\*\*\*(.*?)\*\*\*/g, '<span data-md-type="bold-italic">$1</span>')
 			.replace(/\*\*(.*?)\*\*/g, '<span data-md-type="bold">$1</span>')
 			.replace(/\*(.*?)\*/g, '<span data-md-type="italic">$1</span>')
@@ -12,7 +12,6 @@ export function useDocumentMode() {
 			.replace(/==(.*?)==/g, '<span data-md-type="highlight">$1</span>')
 			.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" data-md-type="link">$1</a>');
 
-		// Then process headers
 		processedContent = processedContent
 			.replace(/^###### (.*$)/gm, '<h6 data-md-type="h6">$1</h6>')
 			.replace(/^##### (.*$)/gm, '<h5 data-md-type="h5">$1</h5>')
@@ -21,7 +20,6 @@ export function useDocumentMode() {
 			.replace(/^## (.*$)/gm, '<h2 data-md-type="h2">$1</h2>')
 			.replace(/^# (.*$)/gm, '<h1 data-md-type="h1">$1</h1>');
 
-		// Add alignment processing
 		processedContent = processedContent
 			.replace(/^:::\s*left\s*\n([\s\S]*?)\n:::/gm, '<div data-md-type="align-left">$1</div>')
 			.replace(
@@ -42,15 +40,15 @@ export function useDocumentMode() {
 	}, []);
 
 	const editableContentToMarkdown = useCallback((content: string) => {
-		// First normalize any HTML formatting to our data attributes
 		let processedContent = content
+			// Add custom style processing
+			.replace(/<span style="([^"]+)"[^>]*>(.*?)<\/span>/g, '{style="$1"}$2{style}')
 			.replace(/<b>(.*?)<\/b>/g, '<span data-md-type="bold">$1</span>')
 			.replace(/<strong>(.*?)<\/strong>/g, '<span data-md-type="bold">$1</span>')
 			.replace(/<i>(.*?)<\/i>/g, '<span data-md-type="italic">$1</span>')
 			.replace(/<em>(.*?)<\/em>/g, '<span data-md-type="italic">$1</span>')
 			.replace(/<code>(.*?)<\/code>/g, '<span data-md-type="code">$1</span>');
 
-		// Convert back to markdown, handling nested formats first
 		return processedContent
 			.replace(/<span data-md-type="bold-italic">(.*?)<\/span>/g, '***$1***')
 			.replace(
@@ -75,7 +73,6 @@ export function useDocumentMode() {
 			.replace(/<a[^>]*href="(.*?)"[^>]*>(.*?)<\/a>/g, '[$2]($1)')
 			.replace(/<[^>]+>/g, '');
 
-		// Add alignment conversion
 		return processedContent
 			.replace(
 				/<div[^>]*data-md-type="align-left"[^>]*>([\s\S]*?)<\/div>/g,

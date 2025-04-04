@@ -89,6 +89,55 @@ export default function MarkdownEditorStyle({
 		margin-bottom: 1px;
 	  }
   
+	  ${PREFIX} ._fontStyleDropdown,
+	  ${PREFIX} ._fontSizeDropdown {
+		  max-height: 200px;
+		  overflow-y: auto;
+	  }
+	  
+	  ${PREFIX} ._colorDropdown {
+		  width: 250px;
+		  padding: 10px;
+	  }
+	  
+	  ${PREFIX} ._colorSection {
+		  margin-bottom: 10px;
+	  }
+	  
+	  ${PREFIX} ._colorSectionTitle {
+		  font-weight: bold;
+		  margin-bottom: 5px;
+	  }
+	  
+	  ${PREFIX} ._colorGrid {
+		  display: grid;
+		  grid-template-columns: repeat(5, 1fr);
+		  gap: 5px;
+	  }
+	  
+	  ${PREFIX} ._colorButton {
+		  width: 25px;
+		  height: 25px;
+		  border: 1px solid #ccc;
+		  border-radius: 3px;
+		  cursor: pointer;
+	  }
+	  
+	  ${PREFIX} ._colorPickerContainer {
+		  grid-column: span 5;
+		  display: flex;
+		  align-items: center;
+		  margin-top: 5px;
+	  }
+	  
+	  ${PREFIX} ._colorPicker {
+		  margin-left: 5px;
+		  width: 30px;
+		  height: 30px;
+		  padding: 0;
+		  border: none;
+	  }
+		  
 	${PREFIX} ._tab._active._write-tab {
 
 	  	color:#016A70;
@@ -160,9 +209,9 @@ export default function MarkdownEditorStyle({
 	  }
 
 	${PREFIX}._formatbutton._active {
-		#e0e0e0;
+		background-color: #e0e0e0;
 	  }
-  
+		
 	${PREFIX} ._formatButton._active {
 		background-color: #EFF1F3;
 		color: white;
@@ -175,29 +224,6 @@ export default function MarkdownEditorStyle({
 		background-color: #e1e4e8;
 		margin: 0 4px;
 	  }
-  
-	
-	// ${PREFIX} ._formatButtonGroup ._formatButton:first-child {
-	// 	border-top-left-radius: 4px;
-	// 	border-bottom-left-radius: 4px;
-	//   }
-  
-	// ${PREFIX} ._formatButtonGroup ._formatButton:last-child {
-	// 	border-top-right-radius: 4px;
-	// 	border-bottom-right-radius: 4px;
-	// 	border-right: 1px solid #d0d7de;
-	//   }
-  
-	// ${PREFIX} ._formatButton:not(._formatButtonGroup ._formatButton) {
-	// 	border-radius: 4px;
-	// }
-
-	// ${PREFIX} ._filterPanel ._buttonSeperator {
-	// 	width: 1px;
-	// 	color: #ccc;
-	// 	background-color: #fff;
-	// 	margin: 0 5px;
-	//   }
 
 	${PREFIX} ._actionButtons {
 		background-color: none;
