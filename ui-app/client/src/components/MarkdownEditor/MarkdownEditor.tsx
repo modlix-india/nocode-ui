@@ -30,9 +30,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
-	const bindingPathPath = bindingPath
-		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
-		: undefined;
 
 	const {
 		properties: {
@@ -53,12 +50,30 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
-	const editTypes = !editType.length ? ['editText', 'editDoc'] : editType;
+	const editTypes = !editType?.length ? ['editText', 'editDoc'] : editType;
 	const [mode, setMode] = useState(showPreviewFirst ? 'preview' : editTypes[0]);
 	const [text, setText] = useState('');
 	const [finTextAreaWidth, setFinTextAreaWidth] = useState('100%');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+
+	useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			(_, fromStore) => {
+				setText((v: string) => {
+					if (v === fromStore) return v;
+					return fromStore ?? '';
+				});
+			},
+			pageExtractor,
+			bindingPathPath,
+		);
+	}, [bindingPathPath, textAreaRef.current]);
 
 	const onChangeText = (newText: string, callback?: () => void) => {
 		if (!bindingPathPath) return;
@@ -90,8 +105,8 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const tabBar = (
 		<div className="_tabBar">
 			<div
-				className={`_tab ${mode === 'write' ? '_active' : ''}`}
-				onClick={() => handleTabClick('write')}
+				className={`_tab _write ${mode === 'editText' ? '_active' : ''}`}
+				onClick={() => handleTabClick('editText')}
 			>
 				<svg width="15" height="15" viewBox="0 0 19 17" fill="none">
 					<path
@@ -120,9 +135,10 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				</svg>
 				Write
 			</div>
+			<div className="_tabSeparator"></div>
 			<div
-				className={`_tab ${mode === 'document' ? '_active' : ''}`}
-				onClick={() => handleTabClick('document')}
+				className={`_tab _doc ${mode === 'editDoc' ? '_active' : ''}`}
+				onClick={() => handleTabClick('editDoc')}
 			>
 				<svg width="17" height="17" viewBox="0 0 19 17" fill="none">
 					<path
@@ -152,8 +168,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				</svg>
 				Document
 			</div>
+			<div className="_tabSeparator"></div>
 			<div
-				className={`_tab ${mode === 'preview' ? '_active' : ''}`}
+				className={`_tab _preview ${mode === 'preview' ? '_active' : ''}`}
 				onClick={() => handleTabClick('preview')}
 			>
 				<svg width="18" height="16" viewBox="0 0 19 17" fill="none">
@@ -195,7 +212,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 
 	const renderContent = () => {
 		switch (mode) {
-			case 'write':
+			case 'editText':
 				return (
 					<textarea
 						ref={textAreaRef}
@@ -204,33 +221,20 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 							...(styleProperties.textArea ?? {}),
 							width: finTextAreaWidth,
 						}}
+
 						onBlur={
 							onBlur
 								? () =>
-										runEvent(
-											undefined,
-											onBlur,
-											props.context.pageName,
-											props.locationHistory,
-											props.pageDefinition,
-										)
+									runEvent(
+										undefined,
+										onBlur,
+										props.context.pageName,
+										props.locationHistory,
+										props.pageDefinition,
+									)
 								: undefined
 						}
-						onChange={ev => onChange(ev.target.value)}
-						onKeyUp={() => scrollToCaret(textAreaRef, componentKey)}
-						onClick={() => scrollToCaret(textAreaRef, componentKey)}
-						onScroll={() => {
-							if (!textAreaRef.current) return;
-							scrollToCaret(
-								textAreaRef,
-								componentKey,
-								Math.round(
-									(textAreaRef.current.value.split('\n').length *
-										textAreaRef.current.scrollTop) /
-										textAreaRef.current.scrollHeight,
-								),
-							);
-						}}
+						onChange={ev => onChangeText(ev.target.value)}
 						onKeyDown={ev => {
 							if (ev.key === 'Tab') {
 								ev.preventDefault();
@@ -238,7 +242,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 								const newText = `${text.substring(0, selectionStart)}    ${text.substring(
 									selectionEnd,
 								)}`;
-								onChange(newText, () =>
+								onChangeText(newText, () =>
 									textAreaRef.current!.setSelectionRange(
 										selectionStart + 4,
 										selectionStart + 4,
@@ -248,29 +252,68 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 						}}
 						onPaste={ev => {
 							ev.preventDefault();
-							const text = ev.clipboardData?.getData('text/plain');
-							const { selectionStart, selectionEnd } = textAreaRef.current!;
-							const newText = `${textAreaRef.current?.value.substring(0, selectionStart)}${text}${textAreaRef.current?.value.substring(selectionEnd)}`;
-							onChange(newText, () =>
-								textAreaRef.current!.setSelectionRange(
-									selectionStart + text.length,
-									selectionStart + text.length,
-								),
-							);
+
+							if (!textAreaRef.current) return;
+
+							if (ev.clipboardData.files.length) {
+								const file = ev.clipboardData.files[0];
+								const formData = new FormData();
+								formData.append('file', file);
+								const fileNamePrefix = `pasted_${shortUUID()}_`;
+								formData.append('name', fileNamePrefix);
+
+								const headers: any = {
+									Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+								};
+								if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+								(async () => {
+									try {
+										let url = `/api/files/static/${pathForPastedFiles}`;
+										let data = await axios.post(url, formData, {
+											headers,
+										});
+										if (data.status === 200) {
+											const { selectionStart, selectionEnd } = textAreaRef.current!;
+											const paste = data.data.url;
+											const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(
+												selectionEnd,
+											)}`;
+											onChangeText(newText, () =>
+												textAreaRef.current!.setSelectionRange(
+													selectionStart + paste.length + 4,
+													selectionStart + paste.length + 4,
+												),
+											);
+										}
+									} catch (e) { }
+								})();
+							} else {
+								const paste = ev.clipboardData.getData('text');
+								const { selectionStart, selectionEnd } = textAreaRef.current!;
+								const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(
+									selectionEnd,
+								)}`;
+								onChangeText(newText, () =>
+									textAreaRef.current!.setSelectionRange(
+										selectionStart + paste.length,
+										selectionStart + paste.length,
+									),
+								);
+							}
 						}}
 					/>
 				);
-			case 'document':
+			case 'editDoc':
 				return (
-					<div className="_docMode">
-						<MarkdownParser
-							componentKey={componentKey}
-							text={text}
-							styles={styleProperties}
-							editable={true}
-							onChange={onChange}
-						/>
-					</div>
+
+					<MarkdownParser
+						componentKey={componentKey}
+						text={text}
+						styles={styleProperties}
+						editable={true}
+						onChange={onChangeText}
+					/>
 				);
 			case 'preview':
 				return (

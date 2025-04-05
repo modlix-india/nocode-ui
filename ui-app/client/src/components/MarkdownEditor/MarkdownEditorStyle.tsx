@@ -12,6 +12,7 @@ export default function MarkdownEditorStyle({
 		`
 		${PREFIX} {
 			width: 100%;
+			height: 100%;
 			flex: 1;
 			display: flex;
 			flex-direction: column;
@@ -24,51 +25,57 @@ export default function MarkdownEditorStyle({
 			display: flex;
 			align-items: center;
 			justify-content: left;
-			margin-bottom: 10px;
 			background-color: #F8FAFC;
-			border-bottom: 1px solid #e1e4e8;
+			border-top-left-radius: 2px;
+			border-top-right-radius: 2px;
+			padding: 10px 20px;
+			z-index: 1;
+			box-shadow: 0px 6px 2px 0px rgba(0, 0, 0, 0.00), 0px 4px 2px 0px rgba(0, 0, 0, 0.01), 0px 2px 1px 0px rgba(0, 0, 0, 0.03), 0px 1px 1px 0px rgba(0, 0, 0, 0.04), 0px 0px 1px 0px rgba(0, 0, 0, 0.05);
 		}
 	
 		${PREFIX} ._tabBar ._tab {
-			padding: 10px 20px;
-			border-right: 1px solid #DFE8F0;
 			cursor: pointer;
-			align-items: center;
+			display: flex;
 			gap: 8px;
-		}	
-
-		${PREFIX} ._tabBar ._tab._active {
-			border-bottom: 3px solid #0366d6;
-			color: #0366d6;
+			align-items: center;
+			letter-spacing: 0.3px;
+			font-weight: 500;
+			border-bottom: 2px solid transparent;
+			padding: 10px 0px;
 		}
 
-		${PREFIX} ._tabBar._tab._active svg path {
-			stroke: #0366d6;
+		${PREFIX} ._tabSeparator{
+			height:80%;
+			margin-left:13px;
+			margin-right: 13px;
+			border-right: 1px solid #DFE8F0;
 		}
-		
-		${PREFIX} ._tabBar ._tab._content {
-			padding: 16px;
-			min-height: 200px;
+
+		${PREFIX} ._tabBar ._tab._write._active {
+			border-bottom-color: #016a70;
+		}
+
+		${PREFIX} ._tabBar ._tab._doc._active {
+			border-bottom-color: #FF3e3e;
+		}
+
+		${PREFIX} ._tabBar ._tab._preview._active {
+			border-bottom-color: #3f4cc0;
+		}
+
+		${PREFIX} textarea {
 			width: 100%;
+			height: 100%;
+			resize: none;
+			outline: none;
+			border-radius: 0px;
+			border: 1px solid #DFE8F0;
+			border-top: none;
+			padding: 4px;
 		}
 		
-		${PREFIX} ._tabBar._tab._textarea {
+		${PREFIX} ._markdown {
 			width: 100%;
-			min-height: 200px;
-			padding: 8px;
-			border: 1px solid #e1e4e8;
-			border-radius: 6px;
-			font-family: inherit;
-			font-size: inherit;
-			line-height: 1.5;
-			resize: vertical;
-		}
-		
-		${PREFIX} ._tabBar._tab._docMode {
-			min-height: 200px;
-			border: 1px solid #e1e4e8;
-			border-radius: 6px;
-			padding: 8px;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
