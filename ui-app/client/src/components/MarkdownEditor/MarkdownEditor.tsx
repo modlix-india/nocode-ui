@@ -17,10 +17,11 @@ import useDefinition from '../util/useDefinition';
 import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
 import { styleDefaults } from './markdownEditorStyleProperties';
-import { EditorMode, MEButtonBar } from './components/MEButtonBar';
+import { FilterPanelButtons } from './components/FilterPanelButtons';
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
+import formatText from './utils/formatText';
 
 function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -53,6 +54,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const editTypes = !editType?.length ? ['editText', 'editDoc'] : editType;
 	const [mode, setMode] = useState(showPreviewFirst ? 'preview' : editTypes[0]);
 	const [text, setText] = useState('');
+	const [selectedText, setSelectedText] = useState('');
 	const [finTextAreaWidth, setFinTextAreaWidth] = useState('100%');
 
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -98,15 +100,39 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const handleTabClick = (newMode: string) => {
-		setMode(newMode);
+	const handleRichTextCommand = (
+		command: string,
+		value?: string | { url: string; text: string },
+	) => {
+		if (mode === 'editText' && textAreaRef.current) {
+			const { selectionStart, selectionEnd } = textAreaRef.current;
+			const { newText, newCursorPos } = formatText(
+				text,
+				command,
+				{ start: selectionStart, end: selectionEnd },
+				value,
+			);
+
+			onChangeText(newText, () => {
+				textAreaRef.current?.setSelectionRange(newCursorPos, newCursorPos);
+			});
+		} else {
+			const { newText } = formatText(
+				text,
+				command,
+				{ start: 0, end: text.length }, // Default to selecting all text
+				value,
+			);
+
+			onChangeText(newText);
+		}
 	};
 
 	const tabBar = (
 		<div className="_tabBar" style={styleProperties.tabBar ?? {}}>
 			<div
 				className={`_tab _write ${mode === 'editText' ? '_active' : ''}`}
-				onClick={() => handleTabClick('editText')}
+				onClick={() => setMode('editText')}
 				style={styleProperties.tabButton ?? {}}
 			>
 				<svg width="15" height="15" viewBox="0 0 19 17" fill="none">
@@ -139,7 +165,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			<div className="_tabSeparator" style={styleProperties.tabSeparator ?? {}}></div>
 			<div
 				className={`_tab _doc ${mode === 'editDoc' ? '_active' : ''}`}
-				onClick={() => handleTabClick('editDoc')}
+				onClick={() => setMode('editDoc')}
 				style={styleProperties.tabButton ?? {}}
 			>
 				<svg width="17" height="17" viewBox="0 0 19 17" fill="none">
@@ -173,7 +199,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			<div className="_tabSeparator" style={styleProperties.tabSeparator ?? {}}></div>
 			<div
 				className={`_tab _preview ${mode === 'preview' ? '_active' : ''}`}
-				onClick={() => handleTabClick('preview')}
+				onClick={() => setMode('preview')}
 				style={styleProperties.tabButton ?? {}}
 			>
 				<svg width="18" height="16" viewBox="0 0 19 17" fill="none">
@@ -210,6 +236,13 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				</svg>
 				Preview
 			</div>
+
+			{mode == 'editText' && <FilterPanelButtons
+				onFormatClick={handleRichTextCommand}
+				isVisible={true}
+				styleProperties={styleProperties}
+				selectedText={selectedText}
+			/>}
 		</div>
 	);
 
@@ -224,7 +257,10 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 							...(styleProperties.textArea ?? {}),
 							width: finTextAreaWidth,
 						}}
-
+						onSelect={e => {
+							const { selectionStart, selectionEnd } = textAreaRef.current!;
+							setSelectedText(selectionStart == selectionEnd ? '' : text.substring(selectionStart, selectionEnd));
+						}}
 						onBlur={
 							onBlur
 								? () =>
@@ -338,54 +374,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			{renderContent()}
 		</div>
 	);
-}
-
-function scrollToCaret(textAreaRef: any, componentKey: string, lineNumber?: number) {
-	const { selectionStart } = textAreaRef.current;
-	let block = 'center';
-	if (!lineNumber)
-		lineNumber = (textAreaRef.current.value ?? '')
-			.substring(0, selectionStart)
-			.split('\n').length;
-	else block = 'start';
-	let element;
-	while (lineNumber && lineNumber > 0) {
-		element = document.getElementById(`${componentKey}-div-${lineNumber}`);
-
-		if (!element) lineNumber--;
-		else break;
-	}
-	if (!element) return;
-	setTimeout(() => element.scrollIntoView({ block, inline: 'nearest', behavior: 'smooth' }), 10);
-}
-
-function makeTextForImageSelection(text: string, s: number, e: number, file: string): string {
-	if (s != e) {
-		const selection = text.substring(s, e);
-		if (selection.indexOf('![') != -1) file = `![](${file})`;
-		return text.substring(0, s) + file + text.substring(e);
-	}
-	let newStart = text.lastIndexOf('(', s);
-	let newLine = text.lastIndexOf('\n', s);
-	let found = false;
-	if (newStart == -1) newStart = s;
-	else found = true;
-	if (newLine > newStart) newStart = newLine;
-	let newEnd = text.indexOf(')', e);
-	let space = text.indexOf(' ', newStart);
-	newLine = text.indexOf('\n', e);
-
-	if (newEnd == -1) newEnd = e;
-	if (newLine < newEnd && newLine != -1) newEnd = newLine;
-	if (newEnd <= s) found = false;
-	if (space < newEnd && space != -1) newEnd = space;
-
-	if (found) {
-		return text.substring(0, newStart + 1) + file + text.substring(newEnd);
-	}
-
-	file = `![](${file})`;
-	return text.substring(0, s) + file + text.substring(e);
 }
 
 const component: Component = {
