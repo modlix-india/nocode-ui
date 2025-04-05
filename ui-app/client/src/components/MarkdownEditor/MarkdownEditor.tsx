@@ -73,7 +73,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, textAreaRef.current]);
+	}, [bindingPathPath, setText, textAreaRef.current]);
 
 	const onChangeText = (newText: string, callback?: () => void) => {
 		if (!bindingPathPath) return;
@@ -103,10 +103,11 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	};
 
 	const tabBar = (
-		<div className="_tabBar">
+		<div className="_tabBar" style={styleProperties.tabBar ?? {}}>
 			<div
 				className={`_tab _write ${mode === 'editText' ? '_active' : ''}`}
 				onClick={() => handleTabClick('editText')}
+				style={styleProperties.tabButton ?? {}}
 			>
 				<svg width="15" height="15" viewBox="0 0 19 17" fill="none">
 					<path
@@ -135,10 +136,11 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				</svg>
 				Write
 			</div>
-			<div className="_tabSeparator"></div>
+			<div className="_tabSeparator" style={styleProperties.tabSeparator ?? {}}></div>
 			<div
 				className={`_tab _doc ${mode === 'editDoc' ? '_active' : ''}`}
 				onClick={() => handleTabClick('editDoc')}
+				style={styleProperties.tabButton ?? {}}
 			>
 				<svg width="17" height="17" viewBox="0 0 19 17" fill="none">
 					<path
@@ -168,10 +170,11 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 				</svg>
 				Document
 			</div>
-			<div className="_tabSeparator"></div>
+			<div className="_tabSeparator" style={styleProperties.tabSeparator ?? {}}></div>
 			<div
 				className={`_tab _preview ${mode === 'preview' ? '_active' : ''}`}
 				onClick={() => handleTabClick('preview')}
+				style={styleProperties.tabButton ?? {}}
 			>
 				<svg width="18" height="16" viewBox="0 0 19 17" fill="none">
 					<path
@@ -431,6 +434,30 @@ const component: Component = {
 			name: 'tabBar',
 			displayName: 'Tab Bar',
 			description: 'Tab Bar',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tabButton',
+			displayName: 'Tab Button',
+			description: 'Tab Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tabSeparator',
+			displayName: 'Tab Separator',
+			description: 'Tab Separator',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'textArea',
+			displayName: 'Text Area',
+			description: 'Text Area',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'markdownContainer',
+			displayName: 'Markdown Container',
+			description: 'Markdown Container',
 			icon: 'fa-solid fa-box',
 		},
 		{
