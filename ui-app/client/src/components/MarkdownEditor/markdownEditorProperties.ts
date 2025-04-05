@@ -10,8 +10,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'editType',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Editing Type',
-		description: 'Type of editors',
+		displayName: 'Editing Modes',
+		description: 'Editing modes',
 		group: ComponentPropertyGroup.BASIC,
 		multiValued: true,
 		enumValues: [
@@ -22,16 +22,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'editDoc',
 				displayName: 'Edit Document',
-			}
+			},
+			{
+				name: 'preview',
+				displayName: 'Preview',
+			},
 		],
-	},
-	{
-		name: 'showPreviewFirst',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show Preview First',
-		description: 'Show preview first',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: false,
 	},
 	{
 		name: 'emptyStringValue',
