@@ -3639,7 +3639,7 @@ input._peInput[type='number'] {
 	object-fit: cover;
 }
 
-.comp.compPageEditor ._descriptionT {
+.comp.compPageEditor ._tutorialDescription {
 	width: 100%;
 	max-width: 450px;
 	padding: 10px;

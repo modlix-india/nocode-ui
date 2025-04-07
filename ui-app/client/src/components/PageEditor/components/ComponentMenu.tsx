@@ -128,7 +128,7 @@ function TutorialTooltip({ componentName, tutorial, onClose, style }: TutorialTo
 					</div>
 				)}
 				{tutorial?.description && (
-					<div className="_descriptionT">{tutorial.description}</div>
+					<div className="_tutorialDescription">{tutorial.description}</div>
 				)}
 				{tutorial?.youtubeLink && (
 					<div className="_youtubeButtonContainer">
