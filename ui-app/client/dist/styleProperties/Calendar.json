@@ -10141,5 +10141,608 @@
 		"cp": "font",
 		"sel": ".comp.compCalendar._bigDesign1._quinary",
 		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Primary Calendar DefaultCalendar Design Date Disabled Date Background Color",
+		"n": "primaryCalendarDefaultCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._primary ._date._dateDisabled, .comp.compCalendar._defaultCalendar._primary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Secondary Calendar DefaultCalendar Design Date Disabled Date Background Color",
+		"n": "secondaryCalendarDefaultCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._secondary ._date._dateDisabled, .comp.compCalendar._defaultCalendar._secondary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Tertiary Calendar DefaultCalendar Design Date Disabled Date Background Color",
+		"n": "tertiaryCalendarDefaultCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._tertiary ._date._dateDisabled, .comp.compCalendar._defaultCalendar._tertiary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Quaternary Calendar DefaultCalendar Design Date Disabled Date Background Color",
+		"n": "quaternaryCalendarDefaultCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._quaternary ._date._dateDisabled, .comp.compCalendar._defaultCalendar._quaternary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Quinary Calendar DefaultCalendar Design Date Disabled Date Background Color",
+		"n": "quinaryCalendarDefaultCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._quinary ._date._dateDisabled, .comp.compCalendar._defaultCalendar._quinary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Primary Calendar BigCalendar Design Date Disabled Date Background Color",
+		"n": "primaryCalendarBigCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._primary ._date._dateDisabled, .comp.compCalendar._bigCalendar._primary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Secondary Calendar BigCalendar Design Date Disabled Date Background Color",
+		"n": "secondaryCalendarBigCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._secondary ._date._dateDisabled, .comp.compCalendar._bigCalendar._secondary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Tertiary Calendar BigCalendar Design Date Disabled Date Background Color",
+		"n": "tertiaryCalendarBigCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._tertiary ._date._dateDisabled, .comp.compCalendar._bigCalendar._tertiary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Quaternary Calendar BigCalendar Design Date Disabled Date Background Color",
+		"n": "quaternaryCalendarBigCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._quaternary ._date._dateDisabled, .comp.compCalendar._bigCalendar._quaternary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Quinary Calendar BigCalendar Design Date Disabled Date Background Color",
+		"n": "quinaryCalendarBigCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._quinary ._date._dateDisabled, .comp.compCalendar._bigCalendar._quinary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Primary Calendar SmallCalendar Design Date Disabled Date Background Color",
+		"n": "primaryCalendarSmallCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._primary ._date._dateDisabled, .comp.compCalendar._smallCalendar._primary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Secondary Calendar SmallCalendar Design Date Disabled Date Background Color",
+		"n": "secondaryCalendarSmallCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._secondary ._date._dateDisabled, .comp.compCalendar._smallCalendar._secondary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Tertiary Calendar SmallCalendar Design Date Disabled Date Background Color",
+		"n": "tertiaryCalendarSmallCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._tertiary ._date._dateDisabled, .comp.compCalendar._smallCalendar._tertiary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Quaternary Calendar SmallCalendar Design Date Disabled Date Background Color",
+		"n": "quaternaryCalendarSmallCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._quaternary ._date._dateDisabled, .comp.compCalendar._smallCalendar._quaternary ._date._dateNotInMonth",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Date Background",
+		"dn": "Quinary Calendar SmallCalendar Design Date Disabled Date Background Color",
+		"n": "quinaryCalendarSmallCalendarDesignDateDisabledDateBackgroundColor",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._quinary ._date._dateDisabled, .comp.compCalendar._smallCalendar._quinary ._date._dateNotInMonth",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Primary Calendar DefaultCalendar Design Date Today Background",
+		"n": "primaryCalendarDefaultCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._primary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Secondary Calendar DefaultCalendar Design Date Today Background",
+		"n": "secondaryCalendarDefaultCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._secondary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Tertiary Calendar DefaultCalendar Design Date Today Background",
+		"n": "tertiaryCalendarDefaultCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._tertiary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Quaternary Calendar DefaultCalendar Design Date Today Background",
+		"n": "quaternaryCalendarDefaultCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._quaternary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Quinary Calendar DefaultCalendar Design Date Today Background",
+		"n": "quinaryCalendarDefaultCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._defaultCalendar._quinary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Primary Calendar BigCalendar Design Date Today Background",
+		"n": "primaryCalendarBigCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._primary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Secondary Calendar BigCalendar Design Date Today Background",
+		"n": "secondaryCalendarBigCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._secondary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Tertiary Calendar BigCalendar Design Date Today Background",
+		"n": "tertiaryCalendarBigCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._tertiary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Quaternary Calendar BigCalendar Design Date Today Background",
+		"n": "quaternaryCalendarBigCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._quaternary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Quinary Calendar BigCalendar Design Date Today Background",
+		"n": "quinaryCalendarBigCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._bigCalendar._quinary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Primary Calendar SmallCalendar Design Date Today Background",
+		"n": "primaryCalendarSmallCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._primary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Secondary Calendar SmallCalendar Design Date Today Background",
+		"n": "secondaryCalendarSmallCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._secondary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Tertiary Calendar SmallCalendar Design Date Today Background",
+		"n": "tertiaryCalendarSmallCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._tertiary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Quaternary Calendar SmallCalendar Design Date Today Background",
+		"n": "quaternaryCalendarSmallCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._quaternary ._date._dateToday",
+		"np": true
+	},
+	{
+		"gn": "Calendar Today Date  Background",
+		"dn": "Quinary Calendar SmallCalendar Design Date Today Background",
+		"n": "quinaryCalendarSmallCalendarDesignDateTodayBackground",
+		"cp": "background",
+		"sel": ".comp.compCalendar._smallCalendar._quinary ._date._dateToday",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Primary Calendar DefaultCalendar Color Design Month Name",
+		"n": "primaryCalendarDefaultCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._primary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Secondary Calendar DefaultCalendar Color Design Month Name",
+		"n": "secondaryCalendarDefaultCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._secondary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Tertiary Calendar DefaultCalendar Color Design Month Name",
+		"n": "tertiaryCalendarDefaultCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._tertiary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Quaternary Calendar DefaultCalendar Color Design Month Name",
+		"n": "quaternaryCalendarDefaultCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._quaternary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Quinary Calendar DefaultCalendar Color Design Month Name",
+		"n": "quinaryCalendarDefaultCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._quinary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Primary Calendar BigCalendar Color Design Month Name",
+		"n": "primaryCalendarBigCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._primary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Secondary Calendar BigCalendar Color Design Month Name",
+		"n": "secondaryCalendarBigCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._secondary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Tertiary Calendar BigCalendar Color Design Month Name",
+		"n": "tertiaryCalendarBigCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._tertiary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Quaternary Calendar BigCalendar Color Design Month Name",
+		"n": "quaternaryCalendarBigCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._quaternary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Quinary Calendar BigCalendar Color Design Month Name",
+		"n": "quinaryCalendarBigCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._quinary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Primary Calendar SmallCalendar Color Design Month Name",
+		"n": "primaryCalendarSmallCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._primary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Secondary Calendar SmallCalendar Color Design Month Name",
+		"n": "secondaryCalendarSmallCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._secondary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Tertiary Calendar SmallCalendar Color Design Month Name",
+		"n": "tertiaryCalendarSmallCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._tertiary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Quaternary Calendar SmallCalendar Color Design Month Name",
+		"n": "quaternaryCalendarSmallCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._quaternary ._monthName",
+		"np": true
+	},
+	{
+		"gn": "Calendar Month Name Color",
+		"dn": "Quinary Calendar SmallCalendar Color Design Month Name",
+		"n": "quinaryCalendarSmallCalendarColorDesignMonthName",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._quinary ._monthName",
+		"np": true
+	},
+
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Primary Calendar DefaultCalendar Color Design Year Number",
+		"n": "primaryCalendarDefaultCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._primary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Secondary Calendar DefaultCalendar Color Design Year Number",
+		"n": "secondaryCalendarDefaultCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._secondary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Tertiary Calendar DefaultCalendar Color Design Year Number",
+		"n": "tertiaryCalendarDefaultCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._tertiary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Quaternary Calendar DefaultCalendar Color Design Year Number",
+		"n": "quaternaryCalendarDefaultCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._quaternary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Quinary Calendar DefaultCalendar Color Design Year Number",
+		"n": "quinaryCalendarDefaultCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._quinary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Primary Calendar BigCalendar Color Design Year Number",
+		"n": "primaryCalendarBigCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._primary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Secondary Calendar BigCalendar Color Design Year Number",
+		"n": "secondaryCalendarBigCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._secondary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Tertiary Calendar BigCalendar Color Design Year Number",
+		"n": "tertiaryCalendarBigCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._tertiary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Quaternary Calendar BigCalendar Color Design Year Number",
+		"n": "quaternaryCalendarBigCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._quaternary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Quinary Calendar BigCalendar Color Design Year Number",
+		"n": "quinaryCalendarBigCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._quinary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Primary Calendar SmallCalendar Color Design Year Number",
+		"n": "primaryCalendarSmallCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._primary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Secondary Calendar SmallCalendar Color Design Year Number",
+		"n": "secondaryCalendarSmallCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._secondary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Tertiary Calendar SmallCalendar Color Design Year Number",
+		"n": "tertiaryCalendarSmallCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._tertiary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Quaternary Calendar SmallCalendar Color Design Year Number",
+		"n": "quaternaryCalendarSmallCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._quaternary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar Year Number Color",
+		"dn": "Quinary Calendar SmallCalendar Color Design Year Number",
+		"n": "quinaryCalendarSmallCalendarColorDesignYearNumber",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._quinary ._yearNumber",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Primary Calendar DefaultCalendar Design Date Color",
+		"n": "primaryCalendarDefaultCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._primary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Secondary Calendar DefaultCalendar Design Date Color",
+		"n": "secondaryCalendarDefaultCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._secondary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Tertiary Calendar DefaultCalendar Design Date Color",
+		"n": "tertiaryCalendarDefaultCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._tertiary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Quaternary Calendar DefaultCalendar Design Date Color",
+		"n": "quaternaryCalendarDefaultCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._quaternary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Quinary Calendar DefaultCalendar Design Date Color",
+		"n": "quinaryCalendarDefaultCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._defaultCalendar._quinary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Primary Calendar BigCalendar Design Date Color",
+		"n": "primaryCalendarBigCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._primary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Secondary Calendar BigCalendar Design Date Color",
+		"n": "secondaryCalendarBigCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._secondary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Tertiary Calendar BigCalendar Design Date Color",
+		"n": "tertiaryCalendarBigCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._tertiary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Quaternary Calendar BigCalendar Design Date Color",
+		"n": "quaternaryCalendarBigCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._quaternary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Quinary Calendar BigCalendar Design Date Color",
+		"n": "quinaryCalendarBigCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._bigCalendar._quinary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Primary Calendar SmallCalendar Design Date Color",
+		"n": "primaryCalendarSmallCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._primary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Secondary Calendar SmallCalendar Design Date Color",
+		"n": "secondaryCalendarSmallCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._secondary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Tertiary Calendar SmallCalendar Design Date Color",
+		"n": "tertiaryCalendarSmallCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._tertiary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Quaternary Calendar SmallCalendar Design Date Color",
+		"n": "quaternaryCalendarSmallCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._quaternary ._date",
+		"np": true
+	},
+	{
+		"gn": "Calendar  Date Color",
+		"dn": "Quinary Calendar SmallCalendar Design Date Color",
+		"n": "quinaryCalendarSmallCalendarDesignDateColor",
+		"cp": "color",
+		"sel": ".comp.compCalendar._smallCalendar._quinary ._date",
+		"np": true
 	}
 ]
