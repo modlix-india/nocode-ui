@@ -89,7 +89,7 @@ function TutorialTooltip({ componentName, tutorial, onClose, style }: TutorialTo
 			role="dialog"
 			aria-modal="true"
 			onKeyDown={e => (e.key === 'Escape' || e.key === 'tab') && onClose()}
-			tabIndex={6}
+			tabIndex={0}
 		>
 			<div className="_tutorialTooltipPanel">
 				<div className="_tutorialHeader">
