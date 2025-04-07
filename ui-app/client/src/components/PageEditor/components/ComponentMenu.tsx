@@ -78,7 +78,8 @@ function getYoutubeEmbedUrl(url: string): string {
 	try {
 		const videoUrl = new URL(url);
 		if (videoUrl.hostname === 'youtu.be') {
-			return `https://www.youtube.com/embed/${videoUrl.pathname}`;
+			const videoId = videoUrl.pathname.replace(/^\//, '');
+			return `https://www.youtube.com/embed/${videoId}`;
 		}
 		if (videoUrl.hostname.includes('youtube.com')) {
 			const videoId = videoUrl.searchParams.get('v');
