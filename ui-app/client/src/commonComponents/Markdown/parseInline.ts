@@ -36,6 +36,51 @@ export function parseInline(
 		let found = false;
 		if (parseNewline && actualLine[i] === '\n') {
 			current = processNewLineWithBR(current, lineParts, lineNumber, i, actualLine, styles);
+		} else if (actualLine[i] === '!' && i + 1 < actualLine.length && actualLine[i + 1] === '!') {
+			// Handle !!content!!{style="..."} format
+			const endMarker = actualLine.indexOf('!!', i + 2);
+			if (endMarker !== -1) {
+				const content = actualLine.substring(i + 2, endMarker);
+				const styleStart = actualLine.indexOf('{style="', endMarker);
+				if (styleStart === endMarker + 2) {
+					const styleEnd = actualLine.indexOf('"}', styleStart);
+					if (styleEnd !== -1) {
+						if (current) {
+							lineParts.push(
+								React.createElement(
+									React.Fragment,
+									{ key: cyrb53(`${current}-${lineNumber}-${i}`) },
+									processForURLs(current, styles),
+								),
+							);
+							current = '';
+						}
+
+						const styleValue = actualLine.substring(styleStart + 8, styleEnd);
+						const styleObj = {};
+						styleValue.split(';').forEach(style => {
+							const [property, value] = style.trim().split(':').map(s => s.trim());
+							if (property && value) {
+								(styleObj as { [key: string]: string })[property] = value;
+							}
+						});
+
+						lineParts.push(
+							React.createElement(
+								'span',
+								{
+									key: cyrb53(`${content}-${lineNumber}-${i}`),
+									style: styleObj,
+								},
+								parseInline({ ...params, line: content })
+							)
+						);
+
+						i = styleEnd + 1;
+						found = true;
+					}
+				}
+			}
 		} else if (
 			(actualLine[i] === '[' && i + 1 < actualLine.length && actualLine[i + 1] === '^') ||
 			(actualLine[i] === '^' && i + 1 < actualLine.length && actualLine[i + 1] === '[')
