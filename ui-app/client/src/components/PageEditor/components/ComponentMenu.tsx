@@ -228,7 +228,7 @@ export default function ComponentMenu({
 		);
 	}, [personalizationPath]);
 
-	const handlePinComponent = (componentName: unknown) => {
+	const handlePinComponent = (componentName: string) => {
 		setPinnedComponents(prev => {
 			const newPinned = new Set(prev);
 			if (newPinned.has(componentName)) {
