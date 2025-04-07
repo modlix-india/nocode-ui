@@ -1,22 +1,81 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-interface FilterPanelButtonsProps {
-	onFormatClick: (command: string, value?: string | { url: string; text: string }) => void;
-	isVisible: boolean;
-	styleProperties: any;
-	selectedText: string;
-	isFloating?: boolean;
-	position?: { x: number; y: number };
+export function StyleButtonsPanel({
+	text,
+	selectionRange,
+	styleProperties,
+	onChangeText,
+}: Readonly<{
+	text: string;
+	selectionRange: { start: number; end: number } | null;
+	styleProperties: Record<string, any>;
+	onChangeText: (newText: string, callback?: () => void) => void;
+}>) {
+	return <div className="_filterPanel" style={styleProperties.filterPanel ?? {}}>
+		<div className="_formatButtonGroup">
+			<button
+				onClick={() => onFormatClick('bold')}
+				className="_formatbutton"
+				title="Bold ( ctrl/cmd + B )"
+			>
+				<svg width="14" height="17" viewBox="0 0 14 17" fill="none">
+					<path
+						d="M7.71429 8.66667C8.59834 8.66667 9.44619 8.31548 10.0713 7.69036C10.6964 7.06523 11.0476 6.21739 11.0476 5.33333C11.0476 4.44928 10.6964 3.60143 10.0713 2.97631C9.44619 2.35119 8.59834 2 7.71429 2H2V8.66667M7.71429 8.66667H2M7.71429 8.66667H8.66667C9.55072 8.66667 10.3986 9.01786 11.0237 9.64298C11.6488 10.2681 12 11.1159 12 12C12 12.8841 11.6488 13.7319 11.0237 14.357C10.3986 14.9821 9.55072 15.3333 8.66667 15.3333H2V8.66667"
+						stroke="black"
+						strokeWidth="3"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+					/>
+				</svg>
+			</button>
+			<button
+				onClick={() => onFormatClick('italic')}
+				className="_formatbutton"
+				title="Italic ( ctrl/cmd + I )"
+			>
+				<svg width="12" height="16" viewBox="0 0 12 16" fill="none">
+					<path
+						d="M4.80952 1H10.5238M1 14.3333H6.71429M7.66667 1L3.85714 14.3333"
+						stroke="black"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+					/>
+				</svg>
+			</button>
+			<button
+				onClick={() => onFormatClick('strikethrough')}
+				className="_formatbutton"
+				title="Strikethrough"
+			>
+				<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+					<path
+						d="M7.36686 7.66667H9.01295C10.8312 7.66667 12.3051 9.15905 12.3051 11C12.3051 12.8409 10.8312 14.3333 9.01295 14.3333H7.36686C5.54864 14.3333 4.07468 12.8409 4.07468 11M12.3051 4.33333C12.3051 2.49238 10.8312 1 9.01295 1H7.36686C5.54864 1 4.07468 2.49238 4.07468 4.33333C4.07468 4.62108 4.11069 4.90032 4.1784 5.16667M1.52344 7.66667H14.8568"
+						stroke="black"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+					/>
+				</svg>
+			</button>
+		</div>
+
+		<div className="_buttonSeperator" />
+	</div>;
 }
 
-export function FilterPanelButtons({
-	onFormatClick,
-	isVisible,
+
+function StyleButtonsPanel1({
+	text,
+	selectionRange,
 	styleProperties,
-	isFloating,
-	position,
-	selectedText,
-}: Readonly<FilterPanelButtonsProps>) {
+	onChangeText,
+}: Readonly<{
+	text: string;
+	selectionRange: [number, number];
+	styleProperties: Record<string, any>;
+	onChangeText: (newText: string, callback?: () => void) => void;
+}>) {
 	const [showLinkDialog, setShowLinkDialog] = useState(false);
 	const [linkText, setLinkText] = useState('');
 	const [linkUrl, setLinkUrl] = useState('');
@@ -36,6 +95,9 @@ export function FilterPanelButtons({
 	const fontStyleDropdownRef = useRef<HTMLDivElement>(null);
 	const fontSizeDropdownRef = useRef<HTMLDivElement>(null);
 	const colorDropdownRef = useRef<HTMLDivElement>(null);
+
+	const selectedText = '';
+	const onFormatClick = (command: string, value?: any) => { };
 
 	useEffect(() => {
 		const dropdownConfig = [
@@ -1098,10 +1160,6 @@ export function FilterPanelButtons({
 				</div>
 			</div>
 		);
-	}
-
-	if (!isVisible) {
-		return null;
 	}
 
 	return (

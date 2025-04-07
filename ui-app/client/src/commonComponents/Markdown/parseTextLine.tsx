@@ -1,5 +1,5 @@
 import React from 'react';
-import { MarkdownParserParameters, MarkdownParserReturnValue } from './common';
+import { MarkdownParserParameters, MarkdownParserReturnValue, MDDef } from './common';
 import { parseBlockQuote } from './parseBlockQuote';
 import { parseCodeBlock } from './parseCodeBlock';
 import { parseHeaderLine } from './parseHeaderLine';
@@ -18,7 +18,7 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 	let line = (acutalLine ?? lines[i].trim())?.substring(params.indentationLength ?? 0);
 	let nextLine = lines[i + 1]?.trim()?.substring(params.indentationLength ?? 0) ?? '';
 
-	let comp = undefined;
+	let comp: Array<MDDef> = [];
 
 	if (/^https:\/\/((www\.)?youtube.com\/(watch|embed)|youtu.be\/)/i.test(line)) {
 		({ lineNumber, comp } = parseYoutubeEmbedding(params));
@@ -47,17 +47,6 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 
 	return {
 		lineNumber,
-		comp: params.editable
-			? React.createElement(
-					React.Fragment,
-					{ key: `${params.componentKey}-frag-${i}` },
-					React.createElement('div', {
-						key: `${params.componentKey}-div-${i}`,
-						id: `${params.componentKey}-div-${i}`,
-						className: '_lineHook',
-					}),
-					comp,
-				)
-			: comp,
+		comp
 	};
 }

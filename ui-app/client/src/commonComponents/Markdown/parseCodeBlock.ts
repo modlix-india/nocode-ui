@@ -1,6 +1,6 @@
 import React from 'react';
 import { cyrb53 } from '../../util/cyrb53';
-import { MarkdownParserParameters, MarkdownParserReturnValue } from './common';
+import { MarkdownParserParameters, MarkdownParserReturnValue, MDDef } from './common';
 import { parseAttributes } from './utils';
 
 export function parseCodeBlock(params: MarkdownParserParameters): MarkdownParserReturnValue {
@@ -31,20 +31,27 @@ export function parseCodeBlock(params: MarkdownParserParameters): MarkdownParser
 	}
 
 	const key = cyrb53(lines.slice(lineNumber, i).join('\n') + ' - ' + lineNumber + ' - ' + i);
-	const comp = React.createElement(
-		'code',
-		{ key, className: '_code', ...(attrs ?? {}), style },
-		hilightFunctionMap.has(language)
+	const comp = {
+		type: 'code',
+		start: 0,
+		end: 0,
+		text: codeLines.join('\n'),
+		marker: '',
+		attributes: attrs,
+		lineNumber: i,
+		toLineNumber: j - 1,
+		children: hilightFunctionMap.has(language)
 			? hilightFunctionMap.get(language)?.(
-					language,
-					codeLines,
-					styles,
-					params.indentationLength,
-				)
-			: codeLines.join('\n'),
-	);
+				language,
+				codeLines,
+				styles,
+				params.indentationLength ?? 0,
+				i, j - 1
+			) : undefined
+	};
 
-	return { lineNumber, comp };
+
+	return { lineNumber, comp: [comp] };
 }
 
 interface KeywordMap {
@@ -104,8 +111,10 @@ const hilightFunctionMap = new Map<
 		langague: string,
 		lines: string[],
 		styles: any,
-		indentationLength?: number,
-	) => Array<React.JSX.Element>
+		indentationLength: number,
+		lineNumber: number,
+		toLineNumber: number,
+	) => Array<MDDef>
 >([
 	['javascript', highLightKeyWords],
 	['js', highLightKeyWords],
@@ -123,8 +132,10 @@ function highLightKeyWords(
 	langague: string,
 	lines: string[],
 	styles: any,
-	indentationLength?: number,
-): Array<React.JSX.Element> {
+	indentationLength: number,
+	lineNumber: number,
+	toLineNumber: number,
+): Array<MDDef> {
 	let keywordSet: Set<string> | undefined = sourceMap.get(langague)?.set;
 
 	if (!keywordSet) {
@@ -133,7 +144,7 @@ function highLightKeyWords(
 	}
 
 	let current = '';
-	const elements: Array<React.JSX.Element> = [];
+	const elements: Array<MDDef> = [];
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i].substring(indentationLength ?? 0);
@@ -144,23 +155,29 @@ function highLightKeyWords(
 			if (keywordSet.has(word.toLowerCase())) {
 				if (current)
 					elements.push(
-						React.createElement(
-							React.Fragment,
-							{ key: cyrb53(`${current}-${i}-${j}`) },
-							current,
-						),
-					);
-				elements.push(
-					React.createElement(
-						'span',
 						{
-							key: cyrb53(`${word}-${i}-${j}`),
-							className: '_codeBlockKeywords',
-							style: styles.codeBlockKeywords ?? {},
-						},
-						word,
-					),
-				);
+							type: 'fragment',
+							start: 0,
+							end: 0,
+							text: current,
+							marker: '',
+							attributes: undefined,
+							children: undefined,
+							lineNumber: lineNumber + i,
+						});
+
+
+				elements.push(
+					{
+						type: 'span',
+						start: 0,
+						end: 0,
+						text: word,
+						marker: '',
+						attributes: { 'className': '_codeBlockKeywords' },
+						children: undefined,
+						lineNumber: lineNumber + i,
+					});
 
 				current = '';
 			} else {
@@ -170,20 +187,38 @@ function highLightKeyWords(
 
 		if (current) {
 			elements.push(
-				React.createElement(React.Fragment, { key: cyrb53(`${current}-end`) }, current),
-			);
+				{
+					type: 'fragment',
+					start: 0,
+					end: 0,
+					text: current,
+					marker: '',
+					attributes: undefined,
+					children: undefined,
+					lineNumber: lineNumber + i,
+				});
 			current = '';
 		}
 
-		elements.push(React.createElement('br', { key: `br-${i}` }));
+		elements.push(
+			{
+				type: 'br',
+				start: 0,
+				end: 0,
+				text: '',
+				marker: '',
+				attributes: undefined,
+				children: undefined,
+				lineNumber: lineNumber + i,
+			});
 	}
 
 	return elements;
 }
 
-function highlightHTML(langauge: string, lines: string[], styles: any): Array<React.JSX.Element> {
+function highlightHTML(langauge: string, lines: string[], styles: any, indentationLength: number, lineNumber: number, toLineNumber: number): Array<MDDef> {
 	let current = '';
-	const elements: Array<React.JSX.Element> = [];
+	const elements: Array<MDDef> = [];
 
 	for (let i = 0; i < lines.length; i++) {
 		const line = lines[i];
@@ -193,28 +228,32 @@ function highlightHTML(langauge: string, lines: string[], styles: any): Array<Re
 			if (line[j] === '<') {
 				if (current)
 					elements.push(
-						React.createElement(
-							React.Fragment,
-							{ key: cyrb53(`${current}-${i}-${j}`) },
-							current,
-						),
-					);
+						{
+							type: 'fragment',
+							start: 0,
+							end: 0,
+							text: current,
+							marker: '',
+							attributes: undefined,
+							children: undefined,
+							lineNumber: lineNumber + i,
+						});
 				current = '';
 				start = j;
 				continue;
 			} else if (line[j] === '>') {
 				const keyword = line.substring(start, j + 1);
 				elements.push(
-					React.createElement(
-						'span',
-						{
-							key: cyrb53(`${keyword}-${i}-${j}`),
-							className: '_codeBlockKeywords',
-							style: styles.codeBlockKeywords ?? {},
-						},
-						keyword,
-					),
-				);
+					{
+						type: 'span',
+						start: 0,
+						end: 0,
+						text: keyword,
+						marker: '',
+						attributes: { 'className': '_codeBlockKeywords' },
+						children: undefined,
+						lineNumber: lineNumber + i,
+					});
 
 				current = '';
 				start = -1;
@@ -225,12 +264,30 @@ function highlightHTML(langauge: string, lines: string[], styles: any): Array<Re
 
 		if (current) {
 			elements.push(
-				React.createElement(React.Fragment, { key: cyrb53(`${current}-end`) }, current),
-			);
+				{
+					type: 'fragment',
+					start: 0,
+					end: 0,
+					text: current,
+					marker: '',
+					attributes: undefined,
+					children: undefined,
+					lineNumber: lineNumber + i,
+				});
 			current = '';
 		}
 
-		elements.push(React.createElement('br', { key: `br-${i}` }));
+		elements.push(
+			{
+				type: 'br',
+				start: 0,
+				end: 0,
+				text: '',
+				marker: '',
+				attributes: undefined,
+				children: undefined,
+				lineNumber: lineNumber + i,
+			});
 	}
 
 	return elements;
@@ -240,9 +297,11 @@ function highlightCSS(
 	langauge: string,
 	lines: string[],
 	styles: any,
-	indentationLength?: number,
-): Array<React.JSX.Element> {
-	const elements: Array<React.JSX.Element> = [];
+	indentationLength: number,
+	lineNumber: number,
+	toLineNumber: number,
+): Array<MDDef> {
+	const elements: Array<MDDef> = [];
 
 	const text = lines.join('\n');
 
@@ -252,42 +311,40 @@ function highlightCSS(
 
 	while ((ind = text.indexOf('{', start)) !== -1) {
 		const before = text.substring(start, ind + 1);
-		elements.push(
-			React.createElement(
-				'span',
-				{
-					key: cyrb53(`${before}-${ind}`),
-					className: '_codeBlockKeywords',
-					style: styles.codeBlockKeywords ?? {},
-				},
-				before,
-			),
-		);
+		elements.push({
+			type: 'span',
+			start: 0,
+			end: 0,
+			text: before,
+			marker: '',
+			attributes: { 'className': '_codeBlockKeywords' },
+			lineNumber, toLineNumber
+		});
 
 		let end = text.indexOf('}', ind);
 		if (end === -1) end = text.length;
 		const styleProps = text.substring(ind + 1, end);
-		elements.push(
-			React.createElement(
-				React.Fragment,
-				{
-					key: cyrb53(`${styleProps}-${ind}`),
-				},
-				styleProps,
-			),
-		);
 
-		elements.push(
-			React.createElement(
-				'span',
-				{
-					key: cyrb53(`${before}-${ind}`),
-					className: '_codeBlockKeywords',
-					style: styles.codeBlockKeywords ?? {},
-				},
-				'}',
-			),
-		);
+		elements.push({
+			type: 'fragment',
+			start: 0,
+			end: 0,
+			text: styleProps,
+			marker: '',
+			attributes: undefined,
+			children: undefined,
+			lineNumber, toLineNumber
+		});
+
+		elements.push({
+			type: 'span',
+			start: 0,
+			end: 0,
+			text: '}',
+			marker: '',
+			attributes: { 'className': '_codeBlockKeywords' },
+			lineNumber, toLineNumber
+		});
 		start = end + 1;
 	}
 

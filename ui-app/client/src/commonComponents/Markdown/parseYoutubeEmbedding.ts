@@ -28,18 +28,26 @@ export function parseYoutubeEmbedding(params: MarkdownParserParameters): Markdow
 		}
 	}
 
-	if (!url) return { lineNumber, comp: undefined };
+	if (!url) return { lineNumber, comp: [] };
 
 	return {
 		lineNumber,
-		comp: React.createElement('iframe', {
-			key: cyrb53(line),
-			width: '100%',
-			height: '315',
-			src: url,
-			allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
-			referrerPolicy: 'strict-origin-when-cross-origin',
-			allowFullScreen: true,
-		}),
+		comp: [{
+			type: 'iframe',
+			attributes: {
+				key: cyrb53(line),
+				width: '100%',
+				height: '315',
+				src: url,
+				allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+				referrerPolicy: 'strict-origin-when-cross-origin',
+				allowFullScreen: 'true',
+			},
+			start: 0,
+			end: 0,
+			text: '',
+			marker: '',
+			lineNumber: i,
+		}]
 	};
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { cyrb53 } from '../../util/cyrb53';
-import { MarkdowFootnotes, MarkdownParserParameters, MarkdownURLRef } from './common';
+import { MarkdowFootnotes, MarkdownParserParameters, MarkdownURLRef, MDDef } from './common';
 import { makeURLnTitle, parseAttributes } from './utils';
 
 const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'code' | 'span' } = {
@@ -12,8 +12,8 @@ const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'co
 	'==': 'mark',
 	'^': 'sup',
 	'~': 'sub',
-	'***': 'b',
 	'`': 'code',
+	'***': 'b'
 	// '!!': 'span',
 };
 
@@ -26,15 +26,15 @@ const TEMP_SPAN = document.createElement('span');
 
 export function parseInline(
 	params: MarkdownParserParameters & { parseNewline?: boolean },
-): Array<React.JSX.Element> {
+): Array<MDDef> {
 	const { lines, lineNumber, line, styles, parseNewline, footNotes } = params;
 	const actualLine = line ?? lines[lineNumber];
 
-	let lineParts: Array<React.JSX.Element> = [];
+	let lineParts: Array<MDDef> = [];
 	const spanParts: Array<{
 		start: number;
 		end: number;
-		parts: Array<React.JSX.Element>;
+		parts: Array<MDDef>;
 	}> = [{ start: 0, end: actualLine.length - 1, parts: lineParts }];
 
 	let current = '';
@@ -42,13 +42,11 @@ export function parseInline(
 	for (let i = 0; i < actualLine.length; i++) {
 		if (spanParts[0].end === i && spanParts.length > 1) {
 			if (current) {
-				lineParts.push(
-					React.createElement(
-						React.Fragment,
-						{ key: cyrb53(`${current}-${lineNumber}`) },
-						processForURLs(current, styles),
-					),
-				);
+				lineParts.push({
+					type: 'fragment', start: i - current.length, end: i - 1, text: current, marker: '', attributes: {}, lineNumber,
+					children: processForURLs(current, lineNumber)
+				});
+
 				current = '';
 			}
 			const spanPart = spanParts.shift()!;
@@ -56,13 +54,17 @@ export function parseInline(
 			const endIndex = actualLine.indexOf('}', index);
 			const attrs = parseAttributes(actualLine.substring(index, endIndex));
 			lineParts = spanParts[0].parts;
-			if (attrs) lineParts.push(React.createElement('span', { style: attrs.style }, spanPart.parts));
+			if (attrs)
+				lineParts.push({
+					type: 'span', start: spanPart.start, end: spanPart.end, text: actualLine.substring(spanPart.start, spanPart.end + 1),
+					marker: '!!', attributes: attrs, children: spanPart.parts, lineNumber
+				});
 			i = endIndex;
 			continue;
 		}
 		let found = false;
 		if (parseNewline && actualLine[i] === '\n') {
-			current = processNewLineWithBR(current, lineParts, lineNumber, i, actualLine, styles);
+			current = processNewLineWithBR(current, lineParts, i, lineNumber);
 		} else if (
 			(actualLine[i] === '[' && i + 1 < actualLine.length && actualLine[i + 1] === '^') ||
 			(actualLine[i] === '^' && i + 1 < actualLine.length && actualLine[i + 1] === '[')
@@ -74,7 +76,6 @@ export function parseInline(
 				current,
 				lineParts,
 				lineNumber,
-				styles,
 			));
 		} else if ((actualLine[i] === '!' && i + 1 < actualLine.length && actualLine[i + 1] === '!')) {
 			let newI: number, endsAt: number, newFound: boolean;
@@ -84,7 +85,6 @@ export function parseInline(
 				current,
 				lineParts,
 				lineNumber,
-				styles,
 			));
 			if (newFound) {
 				lineParts = [];
@@ -138,13 +138,16 @@ export function parseInline(
 	}
 
 	if (current)
-		lineParts.push(
-			React.createElement(
-				React.Fragment,
-				{ key: cyrb53(`${current}-${lineNumber}`) },
-				processForURLs(current, styles),
-			),
-		);
+		lineParts.push({
+			type: 'fragment',
+			start: actualLine?.length - current.length,
+			end: actualLine.length - 1,
+			text: current,
+			marker: '',
+			attributes: {},
+			children: processForURLs(current, lineNumber),
+			lineNumber,
+		});
 
 	return lineParts;
 }
@@ -153,9 +156,8 @@ function processSpan(
 	actualLine: string,
 	i: number,
 	current: string,
-	lineParts: React.JSX.Element[],
-	lineNumber: number,
-	styles: any,
+	lineParts: Array<MDDef>,
+	lineNumber: number
 ) {
 	if (actualLine[i] !== '!' || (i > 0 && actualLine[i - 1] === '\\') || i >= actualLine.length || actualLine[i + 1] !== '!') return { i, endsAt: i, current, found: false };
 
@@ -168,13 +170,16 @@ function processSpan(
 
 		if (found == 0 && actualLine[index + 2] === '{') {
 			if (current)
-				lineParts.push(
-					React.createElement(
-						React.Fragment,
-						{ key: cyrb53(`${current}-${lineNumber}`) },
-						processForURLs(current, styles),
-					),
-				);
+				lineParts.push({
+					type: 'fragment',
+					start: i - current.length,
+					end: i - 1,
+					text: current,
+					marker: '',
+					attributes: {},
+					children: processForURLs(current, lineNumber),
+					lineNumber,
+				});
 			current = '';
 			return { i: i + 2, endsAt: index, current, found: true };
 		} else if (actualLine[index + 2] === '{') {
@@ -194,9 +199,8 @@ function processFootnotes(
 	i: number,
 	footNotes: MarkdowFootnotes | undefined,
 	current: string,
-	lineParts: React.JSX.Element[],
+	lineParts: Array<MDDef>,
 	lineNumber: number,
-	styles: any,
 ) {
 	const refEnd = actualLine.indexOf(']', i + 1);
 	if (refEnd === -1 || !footNotes) return { i, current, found: false };
@@ -215,13 +219,16 @@ function processFootnotes(
 	}
 
 	if (current) {
-		lineParts.push(
-			React.createElement(
-				React.Fragment,
-				{ key: cyrb53(`${current}-${lineNumber}-${i}`) },
-				processForURLs(current, styles),
-			),
-		);
+		lineParts.push({
+			type: 'fragment',
+			start: i - current.length,
+			end: i - 1,
+			text: current,
+			marker: '',
+			attributes: {},
+			children: processForURLs(current, lineNumber),
+			lineNumber,
+		});
 		current = '';
 	}
 	if (!footNote.num) {
@@ -229,27 +236,22 @@ function processFootnotes(
 		footNote.num = footNotes.currentRefNumber;
 	}
 	footNote.refNum = (footNote.refNum ?? 0) + 1;
-	lineParts.push(
-		React.createElement(
-			'a',
-			{
-				key: cyrb53(`fnref-${footNote.num}-${footNote.refNum}-${lineNumber}`),
-				href: `#fn-${footNote.num}`,
-				className: '_footNoteLink',
-				id: `fnref-${footNote.num}-${footNote.refNum}`,
-				style: styles.footnote ?? {},
-			},
-			`[${footNote.num}]`,
-		),
-	);
-
+	lineParts.push({
+		type: 'a',
+		start: i,
+		end: refEnd,
+		text: `[${footNote.num}]`,
+		marker: '[',
+		attributes: { href: `#fn-${footNote.num}` },
+		lineNumber,
+	});
 	return { i: refEnd, current, found: true };
 }
 
 function processImageLink(
 	actualLine: string,
 	i: number,
-	lineParts: React.JSX.Element[],
+	lineParts: Array<MDDef>,
 	current: string,
 	lineNumber: number,
 	styles: any,
@@ -296,27 +298,29 @@ function processImageLink(
 	}
 
 	if (current)
-		lineParts.push(
-			React.createElement(
-				React.Fragment,
-				{ key: cyrb53(`${current}-${lineNumber}`) },
-				processForURLs(current, styles),
-			),
-		);
+		lineParts.push({
+			type: 'fragment',
+			start: i - current.length,
+			end: i - 1,
+			text: current,
+			marker: '',
+			attributes: {},
+			children: processForURLs(current, styles),
+			lineNumber,
+		});
 	current = '';
 	const lowerURL = linkParts.url.toLowerCase();
 	const isVideo =
 		lowerURL.endsWith('.mov') || lowerURL.endsWith('.mp4') || lowerURL.endsWith('.webm');
-	lineParts.push(
-		React.createElement(isVideo ? 'video' : 'img', {
-			key: cyrb53(`${actualLine}-${lineNumber}-${i}`),
-			src: linkParts.url,
-			className: isVideo ? '_video' : '_images',
-			alt: linkParts.title ?? altText,
-			...(attrs ?? {}),
-			style,
-		}),
-	);
+	lineParts.push({
+		type: isVideo ? 'video' : 'img',
+		start: i,
+		end: ind,
+		text: '',
+		marker: '',
+		attributes: { src: linkParts.url, alt: linkParts.title ?? altText, ...(attrs ?? {}), style },
+		lineNumber,
+	});
 
 	return { i, current, found: true };
 }
@@ -324,7 +328,7 @@ function processImageLink(
 function processLink(
 	actualLine: string,
 	i: number,
-	lineParts: React.JSX.Element[],
+	lineParts: Array<MDDef>,
 	current: string,
 	lineNumber: number,
 	styles: any,
@@ -370,28 +374,27 @@ function processLink(
 	}
 
 	if (current)
-		lineParts.push(
-			React.createElement(
-				React.Fragment,
-				{ key: cyrb53(`${current}-${lineNumber}`) },
-				processForURLs(current, styles),
-			),
-		);
+		lineParts.push({
+			type: 'fragment',
+			start: i - current.length,
+			end: i - 1,
+			text: current,
+			marker: '',
+			attributes: {},
+			children: processForURLs(current, lineNumber),
+			lineNumber,
+		});
+
 	current = '';
-	lineParts.push(
-		React.createElement(
-			'a',
-			{
-				key: cyrb53(`${actualLine}-${lineNumber}-${i}`),
-				href: linkParts.url,
-				className: '_links',
-				style,
-				title: linkParts.title,
-				...(attrs ?? {}),
-			},
-			linkText,
-		),
-	);
+	lineParts.push({
+		type: 'a',
+		start: i,
+		end: ind,
+		text: linkText,
+		marker: '[',
+		attributes: { href: linkParts.url, title: linkParts.title ?? '', style: style, ...(attrs ?? {}) },
+		lineNumber,
+	});
 
 	return { i, current, found: true };
 }
@@ -400,15 +403,15 @@ function processInlineMarkup(
 	actualLine: string,
 	i: number,
 	current: string,
-	lineParts: React.JSX.Element[],
+	lineParts: Array<MDDef>,
 	lineNumber: number,
 	styles: any,
 	params: MarkdownParserParameters & { parseNewline?: boolean },
 ) {
-	let count = 1;
+	let count = 3;
 	const ch = actualLine[i];
 	let j = i + 1;
-	for (; j < actualLine.length && count < 3; j++) {
+	for (; j < actualLine.length && count < 2; j++) {
 		if (actualLine[j] === ch) count++;
 		else break;
 	}
@@ -428,13 +431,16 @@ function processInlineMarkup(
 	if (ind === -1 || !TYPE_MAP[searchString]) return { i, current, found: false };
 
 	if (current) {
-		lineParts.push(
-			React.createElement(
-				React.Fragment,
-				{ key: cyrb53(`${current}-${lineNumber}-${i}`) },
-				processForURLs(current, styles),
-			),
-		);
+		lineParts.push({
+			type: 'fragment',
+			start: i - current.length,
+			end: i - 1,
+			text: current,
+			marker: '',
+			attributes: {},
+			children: processForURLs(current, styles),
+			lineNumber,
+		});
 		current = '';
 	}
 
@@ -459,28 +465,37 @@ function processInlineMarkup(
 	}
 	i = ind;
 
-	const innerComp = React.createElement(
-		TYPE_MAP[searchString] ?? 'span',
-		{
-			key: cyrb53(actualLine + '-' + text + '-' + lineNumber + '-' + i),
-			className: `_${subCompName}`,
-			...(attrs ?? {}),
-			style,
-		},
-		text ? parseInline({ ...params, line: text }) : undefined,
-	);
+	let children: Array<MDDef> | undefined = undefined;
+
+	if (text) {
+		children = parseInline({ ...params, line: text });
+	}
+
+	const innerComp: MDDef = {
+		type: TYPE_MAP[searchString] ?? 'span',
+		start: i,
+		end: ind,
+		text: text,
+		marker: searchString,
+		attributes: attrs,
+		lineNumber,
+	};
+
+	if (children?.length) {
+		innerComp.children = children;
+	}
 
 	if (searchString != '***') lineParts.push(innerComp);
 	else {
-		lineParts.push(
-			React.createElement(
-				'em',
-				{
-					key: cyrb53(actualLine + '-' + text + '-' + lineNumber + '-' + i + '-em'),
-				},
-				innerComp,
-			),
-		);
+		lineParts.push({
+			type: 'em',
+			start: i,
+			end: ind,
+			text: '',
+			marker: '*',
+			attributes: attrs,
+			lineNumber,
+		});
 	}
 
 	return { i, current, found: true };
@@ -488,33 +503,20 @@ function processInlineMarkup(
 
 function processNewLineWithBR(
 	current: string,
-	lineParts: React.JSX.Element[],
-	lineNumber: number,
+	lineParts: Array<MDDef>,
 	i: number,
-	actualLine: string,
-	styles: any,
+	lineNumber: number,
 ) {
 	if (current)
-		lineParts.push(
-			React.createElement(
-				React.Fragment,
-				{ key: cyrb53(`${current}-${lineNumber}-${i}`) },
-				current,
-			),
-		);
+		lineParts.push({ type: 'text', start: i - current.length, end: i - 1, text: current, marker: '', lineNumber })
 	current = '';
-	lineParts.push(
-		React.createElement('br', {
-			key: cyrb53(actualLine + '-' + lineNumber + '-' + i),
-			style: styles.br ?? {},
-		}),
-	);
+	lineParts.push({ type: 'br', start: i, end: i, text: '', marker: '', lineNumber })
 	return current;
 }
 
-function processForURLs(text: string, styles: any): Array<React.JSX.Element> | string {
+function processForURLs(text: string, lineNumber: number): Array<MDDef> {
 	const matches = text.matchAll(URL_REGEX);
-	const parts: Array<React.JSX.Element> = [];
+	const parts: Array<MDDef> = [];
 	let match;
 
 	let lastIndex = 0;
@@ -531,45 +533,25 @@ function processForURLs(text: string, styles: any): Array<React.JSX.Element> | s
 
 		if (index > lastIndex) {
 			TEMP_SPAN.innerHTML = text.substring(lastIndex, index);
-			parts.push(
-				React.createElement(
-					React.Fragment,
-					{ key: cyrb53(`${text}-${index}`) },
-					TEMP_SPAN.innerText,
-				),
-			);
+			const inText = TEMP_SPAN.innerText;
+			parts.push({ type: 'text', start: lastIndex, end: index - 1, text: inText, marker: '', lineNumber });
 		}
 
-		parts.push(
-			React.createElement(
-				'a',
-				{
-					key: cyrb53(`${text}-${index}-a`),
-					href: url,
-					className: '_links',
-					style: styles.links ?? {},
-				},
-				url,
-			),
-		);
+		parts.push({ type: 'link', start: index, end: index + actualLength - 1, text: url, marker: '<', attributes: { href: url }, lineNumber });
+
 
 		lastIndex = index + actualLength;
 	}
 
 	if (lastIndex == 0) {
 		TEMP_SPAN.innerHTML = text;
-		return TEMP_SPAN.innerText;
+		const inText = TEMP_SPAN.innerText;
+		return [{ type: 'text', start: 0, end: text.length - 1, text: inText, marker: '', lineNumber }];
 	}
 
 	if (lastIndex < text.length) {
 		TEMP_SPAN.innerHTML = text.substring(lastIndex);
-		parts.push(
-			React.createElement(
-				React.Fragment,
-				{ key: cyrb53(`${text}-${lastIndex}`) },
-				TEMP_SPAN.innerText,
-			),
-		);
+		parts.push({ type: 'text', start: lastIndex, end: text.length - 1, text: TEMP_SPAN.innerText, marker: '', lineNumber });
 	}
 	return parts;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
 import {
 	addListenerAndCallImmediately,
@@ -17,13 +17,12 @@ import useDefinition from '../util/useDefinition';
 import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
 import { styleDefaults } from './markdownEditorStyleProperties';
-import { FilterPanelButtons } from './components/FilterPanelButtons';
+import { StyleButtonsPanel } from './components/StyleButtonsPanel';
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
 import formatText from './utils/formatText';
-import { AddComponentPanelButtons } from './components/AddComponentPanel';
-import { useMarkdownHistory } from './hooks/useMarkdownHistory';
+import { TextModeEditor } from './components/TextModeEditor';
 
 function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -37,11 +36,10 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
 		properties: {
 			readOnly,
-			emptyStringValue,
 			onChange,
-			onBlur,
 			editType,
 			pathForPastedFiles,
+			onBlur,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -52,23 +50,25 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
+	const changeEventDefinition = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
+	const blurEvent = useCallback(() => {
+		if (!onBlur || !props.pageDefinition.eventFunctions?.[onBlur]) return undefined;
+
+		(async () =>
+			await runEvent(
+				props.pageDefinition.eventFunctions?.[onBlur],
+				onBlur,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [onBlur]);
+
 	const editTypes = !editType?.length ? ['editText', 'editDoc', 'preview'] : editType;
 	const [mode, setMode] = useState(editTypes[0]);
 	const [text, setText] = useState('');
-	const [selectedText, setSelectedText] = useState('');
-	const [finTextAreaWidth, setFinTextAreaWidth] = useState('100%');
-	const [isComponentPanelExpanded, setIsComponentPanelExpanded] = useState(false);
-	const [componentSearchTerm, setComponentSearchTerm] = useState('');
-	const { history, historyIndex, addToHistory, undo, redo } = useMarkdownHistory();
+	const [selectionRange, setSelectionRange] = useState<{ start: number; end: number } | null>(null);
 
-	const textAreaRef = useRef<HTMLTextAreaElement>(null);
-	const handleUndo = () => {
-		undo(setText, textAreaRef);
-	};
-
-	const handleRedo = () => {
-		redo(setText, textAreaRef);
-	};
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -88,7 +88,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, setText, textAreaRef.current]);
+	}, [bindingPathPath, setText]);
 
 	const onChangeText = (newText: string, callback?: () => void) => {
 		if (!bindingPathPath) return;
@@ -96,10 +96,10 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		setData(bindingPathPath, newText, context.pageName, true);
 		if (callback) callback();
 
-		if (!onChange) return;
+		if (!changeEventDefinition) return;
 		(async () =>
 			await runEvent(
-				onChange,
+				changeEventDefinition,
 				onChange,
 				props.context.pageName,
 				props.locationHistory,
@@ -107,110 +107,41 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			))();
 	};
 
+	// const handleRichTextCommand = (
+	// 	command: string,
+	// 	value?: string | { url: string; text: string },
+	// ) => {
+	// 	if (mode === 'editText' && textAreaRef.current) {
+	// 		const { selectionStart, selectionEnd } = textAreaRef.current;
+	// 		const { newText, newCursorPos } = formatText(
+	// 			text,
+	// 			command,
+	// 			{ start: selectionStart, end: selectionEnd },
+	// 			value,
+	// 		);
+
+	// 		onChangeText(newText, () => {
+	// 			textAreaRef.current?.setSelectionRange(newCursorPos, newCursorPos);
+	// 		});
+	// 	} else {
+	// 		const { newText } = formatText(
+	// 			text,
+	// 			command,
+	// 			{ start: 0, end: text.length }, // Default to selecting all text
+	// 			value,
+	// 		);
+
+	// 		onChangeText(newText);
+	// 	}
+	// };
+
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
 		stylePropertiesWithPseudoStates,
 	);
 
-	const handleRichTextCommand = (
-		command: string,
-		value?: string | { url: string; text: string },
-	) => {
-		if (mode === 'editText' && textAreaRef.current) {
-			const { selectionStart, selectionEnd } = textAreaRef.current;
-			const { newText, newCursorPos } = formatText(
-				text,
-				command,
-				{ start: selectionStart, end: selectionEnd },
-				value,
-			);
 
-			onChangeText(newText, () => {
-				textAreaRef.current?.setSelectionRange(newCursorPos, newCursorPos);
-			});
-		} else {
-			const { newText } = formatText(
-				text,
-				command,
-				{ start: 0, end: text.length }, // Default to selecting all text
-				value,
-			);
-
-			onChangeText(newText);
-		}
-	};
-
-	useEffect(() => {
-		const handleKeyboard = (e: KeyboardEvent) => {
-			if (!textAreaRef.current || document.activeElement !== textAreaRef.current) return;
-			const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-			const modifier = isMac ? e.metaKey : e.ctrlKey;
-
-			if (modifier) {
-				if (e.shiftKey && e.key.toLowerCase() === 'z') {
-					e.preventDefault();
-					handleRedo();
-				} else if (e.key.toLowerCase() === 'h') {
-					e.preventDefault();
-					setTimeout(() => {
-						const handleNumberKey = (numEvent: KeyboardEvent) => {
-							const num = parseInt(numEvent.key);
-							if (!isNaN(num) && num >= 1 && num <= 6) {
-								numEvent.preventDefault();
-								handleRichTextCommand(`heading${num}`);
-							}
-
-							document.removeEventListener('keydown', handleNumberKey);
-						};
-						document.addEventListener('keydown', handleNumberKey, { once: true });
-					}, 10);
-				} else {
-					switch (e.key.toLowerCase()) {
-						case 'z':
-							e.preventDefault();
-							handleUndo();
-							break;
-						case 'b':
-							e.preventDefault();
-							handleRichTextCommand('bold');
-							break;
-						case 'i':
-							e.preventDefault();
-							handleRichTextCommand('italic');
-							break;
-						case '/':
-							e.preventDefault();
-							setIsComponentPanelExpanded(prev => !prev);
-							break;
-						case '[':
-							e.preventDefault();
-							handleRichTextCommand('indent');
-							break;
-						case ']':
-							e.preventDefault();
-							handleRichTextCommand('unindent');
-							break;
-						case '1':
-						case '2':
-						case '3':
-						case '4':
-						case '5':
-						case '6':
-							if (e.shiftKey) {
-								e.preventDefault();
-								const headingLevel = parseInt(e.key);
-								handleRichTextCommand(`heading${headingLevel}`);
-							}
-							break;
-					}
-				}
-			}
-		};
-
-		document.addEventListener('keydown', handleKeyboard);
-		return () => document.removeEventListener('keydown', handleKeyboard);
-	}, [text, history, historyIndex]);
 
 	const writeTab = editTypes?.includes('editText') ? (
 		<div
@@ -346,33 +277,12 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const tabBar = (
 		<div className="_tabBar" style={styleProperties.tabBar ?? {}}>
 			{tabs}
-			{mode == 'editText' && (
-				<>
-					<AddComponentPanelButtons
-						onComponentAdd={(componentType: string) => {
-							if (mode === 'editText' && textAreaRef.current) {
-								const { selectionStart } = textAreaRef.current;
-								const newText = `${text.substring(0, selectionStart)}${componentType}${text.substring(selectionStart)}`;
-								onChangeText(newText);
-							} else {
-								const newText = `${text}${componentType}`;
-								onChangeText(newText);
-							}
-						}}
-						isExpanded={isComponentPanelExpanded}
-						onExpandChange={setIsComponentPanelExpanded}
-						searchTerm={componentSearchTerm}
-						onSearchChange={setComponentSearchTerm}
-						styleProperties={styleProperties}
-					/>
-					<FilterPanelButtons
-						onFormatClick={handleRichTextCommand}
-						isVisible={true}
-						styleProperties={styleProperties}
-						selectedText={selectedText}
-					/>
-				</>
-			)}
+			{mode == 'editText' && <StyleButtonsPanel
+				styleProperties={styleProperties}
+				text={text}
+				selectionRange={selectionRange}
+				onChangeText={onChangeText}
+			/>}
 		</div>
 	);
 
@@ -380,105 +290,13 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	switch (mode) {
 		case 'editText':
 			content = (
-				<textarea
-					ref={textAreaRef}
-					value={text}
-					style={{
-						...(styleProperties.textArea ?? {}),
-						width: finTextAreaWidth,
-					}}
-					onSelect={e => {
-						const { selectionStart, selectionEnd } = textAreaRef.current!;
-						setSelectedText(
-							selectionStart == selectionEnd
-								? ''
-								: text.substring(selectionStart, selectionEnd),
-						);
-					}}
-					onBlur={
-						onBlur
-							? () =>
-									runEvent(
-										undefined,
-										onBlur,
-										props.context.pageName,
-										props.locationHistory,
-										props.pageDefinition,
-									)
-							: undefined
-					}
-					onChange={ev => onChangeText(ev.target.value)}
-					onKeyDown={ev => {
-						if (ev.key === 'Tab') {
-							ev.preventDefault();
-							const { selectionStart, selectionEnd } = textAreaRef.current!;
-							const newText = `${text.substring(0, selectionStart)}    ${text.substring(
-								selectionEnd,
-							)}`;
-							onChangeText(newText, () =>
-								textAreaRef.current!.setSelectionRange(
-									selectionStart + 4,
-									selectionStart + 4,
-								),
-							);
-						}
-					}}
-					onPaste={ev => {
-						ev.preventDefault();
-
-						if (!textAreaRef.current) return;
-
-						if (ev.clipboardData.files.length) {
-							const file = ev.clipboardData.files[0];
-							const formData = new FormData();
-							formData.append('file', file);
-							const fileNamePrefix = `pasted_${shortUUID()}_`;
-							formData.append('name', fileNamePrefix);
-
-							const headers: any = {
-								Authorization: getDataFromPath(
-									`${LOCAL_STORE_PREFIX}.AuthToken`,
-									[],
-								),
-							};
-							if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
-
-							(async () => {
-								try {
-									let url = `/api/files/static/${pathForPastedFiles}`;
-									let data = await axios.post(url, formData, {
-										headers,
-									});
-									if (data.status === 200) {
-										const { selectionStart, selectionEnd } =
-											textAreaRef.current!;
-										const paste = data.data.url;
-										const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(
-											selectionEnd,
-										)}`;
-										onChangeText(newText, () =>
-											textAreaRef.current!.setSelectionRange(
-												selectionStart + paste.length + 4,
-												selectionStart + paste.length + 4,
-											),
-										);
-									}
-								} catch (e) {}
-							})();
-						} else {
-							const paste = ev.clipboardData.getData('text');
-							const { selectionStart, selectionEnd } = textAreaRef.current!;
-							const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(
-								selectionEnd,
-							)}`;
-							onChangeText(newText, () =>
-								textAreaRef.current!.setSelectionRange(
-									selectionStart + paste.length,
-									selectionStart + paste.length,
-								),
-							);
-						}
-					}}
+				<TextModeEditor
+					text={text}
+					onChangeText={onChangeText}
+					onSelectionChange={setSelectionRange}
+					styleProperties={styleProperties}
+					pathForPastedFiles={pathForPastedFiles}
+					onBlur={blurEvent}
 				/>
 			);
 			break;

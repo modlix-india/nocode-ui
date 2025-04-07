@@ -1,5 +1,5 @@
 import React from 'react';
-import { MarkdownParserParameters, MarkdownParserReturnValue } from './common';
+import { MarkdownParserParameters, MarkdownParserReturnValue, MDDef } from './common';
 import { parseInline } from './parseInline';
 import { cyrb53 } from '../../util/cyrb53';
 import { parseAttributes } from './utils';
@@ -8,7 +8,7 @@ import { parseTextLine } from './parseTextLine';
 export const BLOCK_QUOTE_MULTI_LEVEL_REGEX = /^>(\s{0,3}>){0,}\s/;
 
 export function parseBlockQuote(params: MarkdownParserParameters): MarkdownParserReturnValue {
-	const quoteElementsStack: Array<React.JSX.Element[]> = [];
+	const quoteElementsStack: Array<Array<MDDef>> = [];
 	const indentationStack: number[] = [];
 
 	const { lines, lineNumber, styles } = params;
@@ -35,7 +35,7 @@ export function parseBlockQuote(params: MarkdownParserParameters): MarkdownParse
 			indentationStack.pop();
 			const element = quoteElementsStack.pop();
 			if (quoteElementsStack.length === 0) {
-				return { lineNumber: i - 1, comp: element };
+				return { lineNumber: i - 1, comp: element ?? [] };
 			}
 
 			let attributes;
@@ -50,25 +50,42 @@ export function parseBlockQuote(params: MarkdownParserParameters): MarkdownParse
 				}
 			}
 			quoteElementsStack[quoteElementsStack.length - 1].push(
-				React.createElement(
-					'blockquote',
-					{
-						key: cyrb53(`blockQuote-${i}-line`),
-						className: '_blockQuotes',
-						...(attributes ?? {}),
-						style,
-					},
-					element,
-				),
+				{
+					type: 'blockquote',
+					start: 0,
+					end: 0,
+					text: '',
+					marker: '',
+					attributes: attributes,
+					children: element,
+					lineNumber: i,
+				},
 			);
+
 			quoteElementsStack[quoteElementsStack.length - 1].push(
-				React.createElement('br', { key: cyrb53(`blockQuote-${i}-line`) }),
+				{
+					type: 'br',
+					start: 0,
+					end: 0,
+					text: '',
+					marker: '',
+					lineNumber: i,
+				},
 			);
+
 			i = addToStack(params, line, actualIndentationLength, i, quoteElementsStack);
 		} else {
 			quoteElementsStack[quoteElementsStack.length - 1].push(
-				React.createElement('br', { key: cyrb53(`blockQuote-${i}-line`) }),
+				{
+					type: 'br',
+					start: 0,
+					end: 0,
+					text: '',
+					marker: '',
+					lineNumber: i,
+				},
 			);
+
 			i = addToStack(params, line, actualIndentationLength, i, quoteElementsStack);
 		}
 	}
@@ -89,32 +106,32 @@ export function parseBlockQuote(params: MarkdownParserParameters): MarkdownParse
 			}
 		}
 
-		const quote = React.createElement(
-			'blockquote',
-			{
-				key: cyrb53(`blockQuote-${i}-line`),
-				className: '_blockQuotes',
-				...(attributes ?? {}),
-				style,
-			},
-			...poppedElement!,
-		);
+		const quote = {
+			type: 'blockquote',
+			start: 0,
+			end: 0,
+			text: '',
+			marker: '',
+			attributes: attributes,
+			children: poppedElement!,
+			lineNumber: i,
+		};
 
 		if (!quoteElementsStack.length) {
-			return { lineNumber: i - 1, comp: quote };
+			return { lineNumber: i - 1, comp: [quote] };
 		}
 
 		quoteElementsStack[quoteElementsStack.length - 1].push(quote);
 	}
 
-	return { lineNumber: i, comp: undefined };
+	return { lineNumber: i, comp: [] };
 }
 function addToStack(
 	params: MarkdownParserParameters,
 	line: string,
 	actualIndentationLength: number,
 	i: number,
-	quoteElementsStack: React.JSX.Element[][],
+	quoteElementsStack: MDDef[][],
 ) {
 	const { lineNumber, comp } = parseTextLine({
 		...params,

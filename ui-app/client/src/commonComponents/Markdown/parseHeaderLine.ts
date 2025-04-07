@@ -55,11 +55,16 @@ export function parseHeaderLine(params: MarkdownParserParameters): MarkdownParse
 		key = `${cyrb53(line)}-${i}`;
 	}
 
-	const comp = React.createElement(
-		`h${hNumber}`,
-		{ key, className: `_h${hNumber}`, id: makeId(text), ...(attrs ?? {}), style },
-		parseInline({ ...params, line: text, indentationLength: undefined }),
-	);
+	const comp = [{
+		type: 'h' + hNumber,
+		start: 0,
+		end: 0,
+		marker: '',
+		attributes: { className: `_h${hNumber}`, id: makeId(text), ...(attrs ?? {}), style },
+		lineNumber: i,
+		text: '',
+		children: parseInline({ ...params, line: text, indentationLength: undefined }),
+	}];
 
 	return { lineNumber, comp };
 }

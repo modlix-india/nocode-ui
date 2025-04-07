@@ -1,6 +1,6 @@
 import { isNullValue } from '@fincity/kirun-js';
 import { cyrb53 } from '../../util/cyrb53';
-import { MarkdownParserParameters, MarkdownParserReturnValue } from './common';
+import { MarkdownParserParameters, MarkdownParserReturnValue, MDDef } from './common';
 import { parseInline } from './parseInline';
 import { parseAttributes } from './utils';
 import React from 'react';
@@ -41,7 +41,7 @@ export function parseLists(params: MarkdownParserParameters): MarkdownParserRetu
 	const { lines, lineNumber: i, styles } = params;
 	let lineNumber = i;
 
-	const lists: Array<React.JSX.Element> = [];
+	const lists: Array<MDDef> = [];
 	const listTypes: Array<ListTypeDepth> = [];
 	const inLines: Array<string> = [];
 	let j = i;
@@ -68,11 +68,11 @@ export function parseLists(params: MarkdownParserParameters): MarkdownParserRetu
 				indentation,
 				currentNumber:
 					type == 'ol' &&
-					number != '#' &&
-					number != 'a' &&
-					number != 'A' &&
-					number != 'i' &&
-					number != 'I'
+						number != '#' &&
+						number != 'a' &&
+						number != 'A' &&
+						number != 'i' &&
+						number != 'I'
 						? parseInt(number)
 						: 1,
 				startIndex: lists.length,
@@ -82,17 +82,16 @@ export function parseLists(params: MarkdownParserParameters): MarkdownParserRetu
 		} else if (listType.indentation.length > indentation.length || listType.type !== type) {
 			const closeList = listTypes.pop();
 			if (closeList) {
-				lists.push(
-					React.createElement(
-						closeList.type === 'ol' ? 'ol' : 'ul',
-						{
-							key: cyrb53(inLines.join('') + `-${content}-${lineNumber}-${j}`),
-							style: styles[`${closeList.type === 'ol' ? 'ol' : 'ul'}`] ?? {},
-							className: `_${closeList.type === 'ol' ? 'ol' : 'ul'}`,
-						},
-						lists.splice(closeList.startIndex),
-					),
-				);
+				lists.push({
+					type: closeList.type === 'ol' ? 'ol' : 'ul',
+					start: 0,
+					end: 0,
+					marker: '',
+					attributes: { 'className': `_${closeList.type === 'ol' ? 'ol' : 'ul'}` },
+					lineNumber: i,
+					text: '',
+					children: lists.splice(closeList.startIndex),
+				});
 			}
 			j--;
 			continue;
@@ -138,61 +137,65 @@ export function parseLists(params: MarkdownParserParameters): MarkdownParserRetu
 			listType.currentNumber = liNum + 1;
 		}
 
-		let listItemChild;
+		let listItemChild: Array<MDDef>;
 		let isTaskListItem = false;
 		if (content.startsWith('[ ]') || content.startsWith('[x]')) {
 			isTaskListItem = true;
-			listItemChild = [
-				React.createElement('input', {
-					key: cyrb53(content + `-checkbox-${lineNumber}-${j}`),
-					className: '_tlcheckbox',
-					type: 'checkbox',
-					checked: content.startsWith('[x]'),
-					onChange: () => {},
-				}),
-				parseInline({ ...params, line: content.substring(3).trim(), parseNewline: true }),
-			];
+			listItemChild = [{
+				type: 'input',
+				start: 0,
+				end: 0,
+				text: '',
+				marker: '',
+				attributes: { className: '_tlcheckbox', type: 'checkbox', checked: content.startsWith('[x]').toString() },
+				lineNumber: i,
+				children: parseInline({ ...params, line: content.substring(3).trim(), parseNewline: true }),
+			}];
+
 		} else {
 			listItemChild = parseInline({ ...params, line: content, parseNewline: true });
 		}
-		lists.push(
-			React.createElement(
-				'li',
-				{
-					key: cyrb53(content + `-${lineNumber}-${j}`),
-					className: isTaskListItem ? '_tlli' : `_${type}li`,
-					type: listType.listType,
-					...(attrs ?? {}),
-					style: listStyle,
-					value: liNum,
-				},
-				listItemChild,
-			),
-		);
+		lists.push({
+			type: 'li',
+			start: 0,
+			end: 0,
+			marker: '',
+			attributes: { className: isTaskListItem ? '_tlli' : `_${type}li`, type: listType.listType ?? '', ...(attrs ?? {}), style: listStyle, value: liNum?.toString() ?? '' },
+			lineNumber: i,
+			text: '',
+			children: listItemChild,
+		});
 		inLines.push(content);
 	}
 
 	while (listTypes.length) {
 		const closeList = listTypes.pop();
 		if (closeList) {
-			lists.push(
-				React.createElement(
-					closeList.type === 'ol' ? 'ol' : 'ul',
-					{
-						key: cyrb53(inLines.join('') + `-${lineNumber}-${j}`),
-						style: styles[`${closeList.type === 'ol' ? 'ol' : 'ul'}`] ?? {},
-						className: `_${closeList.type === 'ol' ? 'ol' : 'ul'}`,
-					},
-					lists.splice(closeList.startIndex),
-				),
-			);
+			lists.push({
+				type: closeList.type === 'ol' ? 'ol' : 'ul',
+				start: 0,
+				end: 0,
+				marker: '',
+				attributes: { className: `_${closeList.type === 'ol' ? 'ol' : 'ul'}` },
+				lineNumber: i,
+				text: '',
+				children: lists.splice(closeList.startIndex),
+			});
 		}
 	}
 
-	let comp = undefined;
+	let comp: Array<MDDef> = [];
 
 	if (lists.length) {
-		comp = React.createElement(React.Fragment, { key: cyrb53(inLines.join('')) }, lists);
+		comp = [{
+			type: 'fragment',
+			start: 0,
+			end: 0,
+			marker: '',
+			lineNumber: i,
+			text: '',
+			children: lists,
+		}];
 		lineNumber = j - 1;
 	}
 

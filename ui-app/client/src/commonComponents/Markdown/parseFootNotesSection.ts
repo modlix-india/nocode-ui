@@ -1,10 +1,10 @@
 import React from 'react';
-import { MarkdownParserParameters } from './common';
+import { MarkdownParserParameters, MDDef } from './common';
 import { parseInline } from './parseInline';
 
-export function parseFootNotesSection(params: MarkdownParserParameters): Array<React.JSX.Element> {
+export function parseFootNotesSection(params: MarkdownParserParameters): Array<MDDef> {
 	const { lineNumber, footNotes } = params;
-	let comps: Array<React.JSX.Element> = [];
+	let comps: Array<MDDef> = [];
 
 	if (!footNotes?.footNoteRefs.size) return comps;
 
@@ -13,37 +13,46 @@ export function parseFootNotesSection(params: MarkdownParserParameters): Array<R
 	let ref;
 
 	while (!(ref = iterator.next()).done) {
-		const anchors: Array<React.JSX.Element> = [];
+		const anchors: Array<MDDef> = [];
 
 		for (let i = 0; i < (ref.value.refNum ?? 0); i++) {
-			anchors.push(
-				React.createElement(
-					'a',
-					{
-						key: `#fnref-${ref.value.num}-${i + 1}`,
-						href: `#fnref-${ref.value.num}-${i + 1}`,
-					},
-					`[${ref.value.num}]`,
-				),
-			);
+			anchors.push({
+				type: 'a',
+				start: 0,
+				end: 0,
+				marker: '',
+				attributes: { href: `#fnref-${ref.value.num}-${i + 1}` },
+				children: undefined,
+				lineNumber: lineNumber + ref.value.num,
+				text: `[${ref.value.num}]`
+			})
 		}
 
-		const comp = React.createElement(
-			'p',
-			{ key: `footNote-${ref.value.num}`, className: '_footNote' },
-
-			...anchors,
-			React.createElement(
-				'span',
-				{ key: `footNote-${ref.value.num}-text`, id: `fn-${ref.value.num}` },
-				parseInline({
+		const comp = {
+			type: 'p',
+			start: 0,
+			end: 0,
+			marker: '',
+			attributes: { className: '_footNote' },
+			lineNumber: lineNumber + ref.value.num,
+			text: '',
+			children: [...anchors, {
+				type: 'span',
+				start: 0,
+				end: 0,
+				marker: '',
+				attributes: { id: `fn-${ref.value.num}` },
+				lineNumber: lineNumber + ref.value.num,
+				text: '',
+				children: parseInline({
 					...params,
 					line: ref.value.text,
 					lineNumber: lineNumber + ref.value.num,
 					parseNewline: true,
 				}),
-			),
-		);
+			}]
+		};
+
 
 		comps.push(comp);
 	}

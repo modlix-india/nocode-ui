@@ -13,7 +13,7 @@ export interface MarkdownParserParameters {
 
 export interface MarkdownParserReturnValue {
 	lineNumber: number;
-	comp: JSX.Element[] | JSX.Element | undefined;
+	comp: Array<MDDef>;
 }
 
 export interface MarkdowFootnotes {
@@ -31,4 +31,16 @@ export interface MarkdownFootnoteRef {
 export interface MarkdownURLRef {
 	title?: string;
 	url: string;
+}
+
+export interface MDDef {
+	type: string;
+	start: number;
+	end: number;
+	text: string;
+	marker: string;
+	attributes?: Record<string, string>;
+	children?: Array<MDDef>;
+	lineNumber: number;
+	toLineNumber?: number;
 }

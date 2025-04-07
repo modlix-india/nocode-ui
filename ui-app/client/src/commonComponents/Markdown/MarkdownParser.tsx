@@ -5,6 +5,7 @@ import { shortUUID } from '../../util/shortUUID';
 import { parseFootNotesSection } from './parseFootNotesSection';
 import { parseTextLine } from './parseTextLine';
 import { makeRefsAndRemove } from './utils';
+import { MDDef } from './common';
 
 export function MarkdownParser({
 	componentKey,
@@ -33,7 +34,7 @@ export function MarkdownParser({
 	}, [styles, setKey]);
 
 	const lines = text.split('\n');
-	let comps: Array<React.JSX.Element | undefined> = [];
+	let comps: Array<MDDef> = [];
 
 	const { footNoteRefs, urlRefs } = makeRefsAndRemove(lines);
 	const footNotes = { currentRefNumber: 0, footNoteRefs };
@@ -65,13 +66,15 @@ export function MarkdownParser({
 		}),
 	);
 
+	console.log(comps);
+
 	return (
 		<div
 			key={`${key}-${cyrb53(text)}`}
 			className={`_markdown ${className}`}
 			style={styles.markdownContainer ?? {}}
 		>
-			{comps}
+
 		</div>
 	);
 }
