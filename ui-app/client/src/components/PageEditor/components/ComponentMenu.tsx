@@ -570,7 +570,9 @@ export default function ComponentMenu({
 			{rightPart}
 			{activeTutorialComponentName &&
 				(() => {
-					const activeComp = compsList.find(e => e.name === activeTutorialComponentName);
+					const activeComp = compsList.find(
+						component => component.name === activeTutorialComponentName,
+					);
 					return (
 						<TutorialTooltip
 							componentName={activeComp?.displayName}
