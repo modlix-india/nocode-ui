@@ -3,7 +3,7 @@ import { PageDefinition } from '../../../../types/common';
 import { PageOperations } from '../../functions/PageOperations';
 
 interface TagsValueEditorProps {
-	value?: { value: { [key: string]: string } };
+	value?: { value: string[] | string | { [key: string]: string } };
 	onChange: (value: any) => void;
 	defaultValue?: { [key: string]: string };
 	appPath?: string;

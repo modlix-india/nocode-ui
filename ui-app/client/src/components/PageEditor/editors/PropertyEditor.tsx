@@ -59,7 +59,7 @@ function updatePropertyDefinition(
 	) as PageDefinition;
 
 	for (let component of componentList?.length > 0 ? componentList : [componentKey]) {
-		if (!pageDef) continue;
+		if (!pageDef || !pageDef.componentDefinition?.[component]) continue;
 		if (!pageDef.componentDefinition[component].properties)
 			pageDef.componentDefinition[component].properties = {};
 
@@ -423,7 +423,7 @@ export default function PropertyEditor({
 										className="_description _tooltip"
 										title="Tag to identify the component"
 									>
-										i
+										<i className="fa fa-info-circle" />
 									</span>
 								</div>
 
