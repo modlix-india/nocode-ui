@@ -168,7 +168,9 @@ export default function ComponentMenu({
 	const [originalCompType, setOriginalCompType] = useState('SECTIONS');
 	const [sectionsList, setSectionsList] = useState<any>(null);
 	const [pinnedComponents, setPinnedComponents] = useState(new Set());
-	const [activeTutorial, setActiveTutorial] = useState<string | null>(null);
+	const [activeTutorialComponentName, setActiveTutorialComponentName] = useState<string | null>(
+		null,
+	);
 
 	let compType = sectionsListConnectionName ? originalCompType : 'COMPONENTS';
 
@@ -386,7 +388,7 @@ export default function ComponentMenu({
 							/>
 							<TutorialIcons
 								tutorial={e.tutorial}
-								onInfoClick={() => setActiveTutorial(e.name)}
+								onInfoClick={() => setActiveTutorialComponentName(e.name)}
 							/>
 							{typeof e.subComponentDefinition?.[0].icon === 'string' ? (
 								<i className={`fa ${e.subComponentDefinition?.[0].icon}`} />
@@ -551,14 +553,14 @@ export default function ComponentMenu({
 				</div>
 			</div>
 			{rightPart}
-			{activeTutorial &&
+			{activeTutorialComponentName &&
 				(() => {
-					const activeComp = compsList.find(e => e.name === activeTutorial);
+					const activeComp = compsList.find(e => e.name === activeTutorialComponentName);
 					return (
 						<TutorialTooltip
 							componentName={activeComp?.displayName}
 							tutorial={activeComp?.tutorial}
-							onClose={() => setActiveTutorial(null)}
+							onClose={() => setActiveTutorialComponentName(null)}
 							style={{
 								position: 'absolute',
 								left: '320px',
