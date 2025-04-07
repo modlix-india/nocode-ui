@@ -265,132 +265,134 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		</div>
 	);
 
-	const renderContent = () => {
-		switch (mode) {
-			case 'editText':
-				return (
-					<textarea
-						ref={textAreaRef}
-						value={text}
-						style={{
-							...(styleProperties.textArea ?? {}),
-							width: finTextAreaWidth,
-						}}
-						onSelect={e => {
-							const { selectionStart, selectionEnd } = textAreaRef.current!;
-							setSelectedText(selectionStart == selectionEnd ? '' : text.substring(selectionStart, selectionEnd));
-						}}
-						onBlur={
-							onBlur
-								? () =>
-									runEvent(
-										undefined,
-										onBlur,
-										props.context.pageName,
-										props.locationHistory,
-										props.pageDefinition,
-									)
-								: undefined
-						}
-						onChange={ev => onChangeText(ev.target.value)}
-						onKeyDown={ev => {
-							if (ev.key === 'Tab') {
-								ev.preventDefault();
-								const { selectionStart, selectionEnd } = textAreaRef.current!;
-								const newText = `${text.substring(0, selectionStart)}    ${text.substring(
-									selectionEnd,
-								)}`;
-								onChangeText(newText, () =>
-									textAreaRef.current!.setSelectionRange(
-										selectionStart + 4,
-										selectionStart + 4,
-									),
-								);
-							}
-						}}
-						onPaste={ev => {
+	let content;
+	switch (mode) {
+		case 'editText':
+			content = (
+				<textarea
+					ref={textAreaRef}
+					value={text}
+					style={{
+						...(styleProperties.textArea ?? {}),
+						width: finTextAreaWidth,
+					}}
+					onSelect={e => {
+						const { selectionStart, selectionEnd } = textAreaRef.current!;
+						setSelectedText(selectionStart == selectionEnd ? '' : text.substring(selectionStart, selectionEnd));
+					}}
+					onBlur={
+						onBlur
+							? () =>
+								runEvent(
+									undefined,
+									onBlur,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								)
+							: undefined
+					}
+					onChange={ev => onChangeText(ev.target.value)}
+					onKeyDown={ev => {
+						if (ev.key === 'Tab') {
 							ev.preventDefault();
+							const { selectionStart, selectionEnd } = textAreaRef.current!;
+							const newText = `${text.substring(0, selectionStart)}    ${text.substring(
+								selectionEnd,
+							)}`;
+							onChangeText(newText, () =>
+								textAreaRef.current!.setSelectionRange(
+									selectionStart + 4,
+									selectionStart + 4,
+								),
+							);
+						}
+					}}
+					onPaste={ev => {
+						ev.preventDefault();
 
-							if (!textAreaRef.current) return;
+						if (!textAreaRef.current) return;
 
-							if (ev.clipboardData.files.length) {
-								const file = ev.clipboardData.files[0];
-								const formData = new FormData();
-								formData.append('file', file);
-								const fileNamePrefix = `pasted_${shortUUID()}_`;
-								formData.append('name', fileNamePrefix);
+						if (ev.clipboardData.files.length) {
+							const file = ev.clipboardData.files[0];
+							const formData = new FormData();
+							formData.append('file', file);
+							const fileNamePrefix = `pasted_${shortUUID()}_`;
+							formData.append('name', fileNamePrefix);
 
-								const headers: any = {
-									Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-								};
-								if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+							const headers: any = {
+								Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+							};
+							if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 
-								(async () => {
-									try {
-										let url = `/api/files/static/${pathForPastedFiles}`;
-										let data = await axios.post(url, formData, {
-											headers,
-										});
-										if (data.status === 200) {
-											const { selectionStart, selectionEnd } = textAreaRef.current!;
-											const paste = data.data.url;
-											const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(
-												selectionEnd,
-											)}`;
-											onChangeText(newText, () =>
-												textAreaRef.current!.setSelectionRange(
-													selectionStart + paste.length + 4,
-													selectionStart + paste.length + 4,
-												),
-											);
-										}
-									} catch (e) { }
-								})();
-							} else {
-								const paste = ev.clipboardData.getData('text');
-								const { selectionStart, selectionEnd } = textAreaRef.current!;
-								const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(
-									selectionEnd,
-								)}`;
-								onChangeText(newText, () =>
-									textAreaRef.current!.setSelectionRange(
-										selectionStart + paste.length,
-										selectionStart + paste.length,
-									),
-								);
-							}
-						}}
-					/>
-				);
-			case 'editDoc':
-				return (
+							(async () => {
+								try {
+									let url = `/api/files/static/${pathForPastedFiles}`;
+									let data = await axios.post(url, formData, {
+										headers,
+									});
+									if (data.status === 200) {
+										const { selectionStart, selectionEnd } = textAreaRef.current!;
+										const paste = data.data.url;
+										const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(
+											selectionEnd,
+										)}`;
+										onChangeText(newText, () =>
+											textAreaRef.current!.setSelectionRange(
+												selectionStart + paste.length + 4,
+												selectionStart + paste.length + 4,
+											),
+										);
+									}
+								} catch (e) { }
+							})();
+						} else {
+							const paste = ev.clipboardData.getData('text');
+							const { selectionStart, selectionEnd } = textAreaRef.current!;
+							const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(
+								selectionEnd,
+							)}`;
+							onChangeText(newText, () =>
+								textAreaRef.current!.setSelectionRange(
+									selectionStart + paste.length,
+									selectionStart + paste.length,
+								),
+							);
+						}
+					}}
+				/>
+			);
+			break;
+		case 'editDoc':
+			content = (
 
-					<MarkdownParser
-						componentKey={componentKey}
-						text={text}
-						styles={styleProperties}
-						editable={true}
-						onChange={onChangeText}
-					/>
-				);
-			case 'preview':
-				return (
-					<MarkdownParser
-						componentKey={componentKey}
-						text={text}
-						styles={styleProperties}
-					/>
-				);
-			default:
-				return null;
-		}
-	};
+				<MarkdownParser
+					componentKey={componentKey}
+					text={text}
+					styles={styleProperties}
+					editable={true}
+					onChange={onChangeText}
+				/>
+			);
+			break;
+		case 'preview':
+			content = (
+				<MarkdownParser
+					componentKey={componentKey}
+					text={text}
+					styles={styleProperties}
+				/>
+			);
+			break;
+		default:
+			content = null;
+	}
 
 	return (
 		<div key={mode} className={`comp compMarkdownEditor`} style={styleProperties.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
 			{tabBar}
-			{renderContent()}
+			{content}
 		</div>
 	);
 }
