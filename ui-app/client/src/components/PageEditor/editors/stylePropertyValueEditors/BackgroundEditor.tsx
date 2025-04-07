@@ -674,7 +674,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 							newImages[index].value = e.target.value;
 							updateBackgroundImages(newImages);
 						}}
-						placeholder={`Enter ${img.gradientType || 'Linear Gradient'} values...`}
+						placeholder={`Enter ${img.gradientType || 'linear-gradient'} values...`}
 					/>
 				</div>
 			)}
@@ -716,9 +716,6 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 	return (
 		<>
 			{backgroundImages.map((img, index) => renderBackgroundImageEditor(img, index))}
-			{/* (
-				<div key={`background_layer_${index}`} className="_backgroundLayerContainer">
-					{renderBackgroundImageEditor(img, index)} */}
 			<div className="_simpleEditorBackground">
 				<ManyValuesEditor
 					onChange={v =>
