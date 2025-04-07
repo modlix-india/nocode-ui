@@ -202,7 +202,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	const setFiles = async (files: FileList | null) => {
 		if (!files?.length) return;
 
-		if (maxFileSize && !isNaN(parseInt(maxFileSize, 10))) {
+		if (maxFileSize && !isNaN(parseInt(maxFileSize, 10)) && parseInt(maxFileSize, 10) > 0) {
 			const maxSizeInBytes = parseInt(maxFileSize, 10);
 			const oversizedFiles = Array.from(files).filter(file => file.size > maxSizeInBytes);
 
