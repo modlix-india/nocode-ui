@@ -14,8 +14,10 @@ const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'co
 	'~': 'sub',
 	'***': 'b',
 	'`': 'code',
-	'!!': 'span',
+	// '!!': 'span',
 };
+
+//Moved span processing outside.
 
 const URL_REGEX =
 	/<?(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})>?/g;
@@ -28,11 +30,36 @@ export function parseInline(
 	const { lines, lineNumber, line, styles, parseNewline, footNotes } = params;
 	const actualLine = line ?? lines[lineNumber];
 
-	const lineParts: Array<React.JSX.Element> = [];
+	let lineParts: Array<React.JSX.Element> = [];
+	const spanParts: Array<{
+		start: number;
+		end: number;
+		parts: Array<React.JSX.Element>;
+	}> = [{ start: 0, end: actualLine.length - 1, parts: lineParts }];
 
 	let current = '';
 
 	for (let i = 0; i < actualLine.length; i++) {
+		if (spanParts[0].end === i && spanParts.length > 1) {
+			if (current) {
+				lineParts.push(
+					React.createElement(
+						React.Fragment,
+						{ key: cyrb53(`${current}-${lineNumber}`) },
+						processForURLs(current, styles),
+					),
+				);
+				current = '';
+			}
+			const spanPart = spanParts.shift()!;
+			const index = actualLine.indexOf('{', spanPart.end);
+			const endIndex = actualLine.indexOf('}', index);
+			const attrs = parseAttributes(actualLine.substring(index, endIndex));
+			lineParts = spanParts[0].parts;
+			if (attrs) lineParts.push(React.createElement('span', { style: attrs.style }, spanPart.parts));
+			i = endIndex;
+			continue;
+		}
 		let found = false;
 		if (parseNewline && actualLine[i] === '\n') {
 			current = processNewLineWithBR(current, lineParts, lineNumber, i, actualLine, styles);
@@ -49,14 +76,28 @@ export function parseInline(
 				lineNumber,
 				styles,
 			));
+		} else if ((actualLine[i] === '!' && i + 1 < actualLine.length && actualLine[i + 1] === '!')) {
+			let newI: number, endsAt: number, newFound: boolean;
+			({ i: newI, endsAt, current, found: newFound } = processSpan(
+				actualLine,
+				i,
+				current,
+				lineParts,
+				lineNumber,
+				styles,
+			));
+			if (newFound) {
+				lineParts = [];
+				spanParts.unshift({ start: newI, end: endsAt, parts: lineParts });
+				i = newI;
+			}
 		} else if (
 			actualLine[i] === '*' ||
 			actualLine[i] === '_' ||
 			actualLine[i] === '~' ||
 			actualLine[i] === '=' ||
 			actualLine[i] === '^' ||
-			actualLine[i] === '`' ||
-			(actualLine[i] === '!' && i + 1 < actualLine.length && actualLine[i + 1] === '!')
+			actualLine[i] === '`'
 		) {
 			({ i, current, found } = processInlineMarkup(
 				actualLine,
@@ -106,6 +147,46 @@ export function parseInline(
 		);
 
 	return lineParts;
+}
+
+function processSpan(
+	actualLine: string,
+	i: number,
+	current: string,
+	lineParts: React.JSX.Element[],
+	lineNumber: number,
+	styles: any,
+) {
+	if (actualLine[i] !== '!' || (i > 0 && actualLine[i - 1] === '\\') || i >= actualLine.length || actualLine[i + 1] !== '!') return { i, endsAt: i, current, found: false };
+
+	let index = i + 2;
+	let found = 0;
+
+	while ((index = actualLine.indexOf("!!", index)) != -1) {
+
+		if (index + 2 >= actualLine.length) break;
+
+		if (found == 0 && actualLine[index + 2] === '{') {
+			if (current)
+				lineParts.push(
+					React.createElement(
+						React.Fragment,
+						{ key: cyrb53(`${current}-${lineNumber}`) },
+						processForURLs(current, styles),
+					),
+				);
+			current = '';
+			return { i: i + 2, endsAt: index, current, found: true };
+		} else if (actualLine[index + 2] === '{') {
+			index++;
+			found--;
+		} else if (actualLine[index + 2] !== '{') {
+			index += 2;
+			found++;
+		}
+	}
+
+	return { i, endsAt: i, current, found: found > 0 };
 }
 
 function processFootnotes(
