@@ -138,7 +138,7 @@ export interface Section {
 	pageName: string;
 }
 
-interface Tutorial {
+export interface Tutorial {
   demoVideo?: string;
   description?: string;
   youtubeLink?: string;
