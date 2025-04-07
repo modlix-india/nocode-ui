@@ -7175,5 +7175,398 @@
 		"dv":"visible",
 		"sel": ".comp.compDropdown ._dropdownContainer",
 		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Secondary Dropdown Container Default Design Border Radius",
+		"n": "secondaryDropdownContainerDefaultDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._default._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Tertiary Dropdown Container Default Design Border Radius",
+		"n": "tertiaryDropdownContainerDefaultDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._default._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quaternary Dropdown Container Default Design Border Radius",
+		"n": "quaternaryDropdownContainerDefaultDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._default._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quinary Dropdown Container Default Design Border Radius",
+		"n": "quinaryDropdownContainerDefaultDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._default._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Primary Dropdown Container Outline Design Border Radius",
+		"n": "primaryDropdownContainerOutlineDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._outlined._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Secondary Dropdown Container Outline Design Border Radius",
+		"n": "secondaryDropdownContainerOutlineDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._outlined._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Tertiary Dropdown Container Outline Design Border Radius",
+		"n": "tertiaryDropdownContainerOutlineDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._outlined._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quaternary Dropdown Container Outline Design Border Radius",
+		"n": "quaternaryDropdownContainerOutlineDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._outlined._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quinary Dropdown Container Outline Design Border Radius",
+		"n": "quinaryDropdownContainerOutlineDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._outlined._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Primary Dropdown Container Filled Design Border Radius",
+		"n": "primaryDropdownContainerFilledDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._filled._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Secondary Dropdown Container Filled Design Border Radius",
+		"n": "secondaryDropdownContainerFilledDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._filled._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Tertiary Dropdown Container Filled Design Border Radius",
+		"n": "tertiaryDropdownContainerFilledDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._filled._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quaternary Dropdown Container Filled Design Border Radius",
+		"n": "quaternaryDropdownContainerFilledDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._filled._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quinary Dropdown Container Filled Design Border Radius",
+		"n": "quinaryDropdownContainerFilledDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._filled._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Primary Dropdown Container Design One Design Border Radius",
+		"n": "primaryDropdownContainerDesignOneDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._bigDesign1._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Secondary Dropdown Container Design One Design Border Radius",
+		"n": "secondaryDropdownContainerDesignOneDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._bigDesign1._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Tertiary Dropdown Container Design One Design Border Radius",
+		"n": "tertiaryDropdownContainerDesignOneDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._bigDesign1._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quaternary Dropdown Container Design One Design Border Radius",
+		"n": "quaternaryDropdownContainerDesignOneDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._bigDesign1._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quinary Dropdown Container Design One Design Border Radius",
+		"n": "quinaryDropdownContainerDesignOneDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._bigDesign1._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Primary Dropdown Container Text Design Border Radius",
+		"n": "primaryDropdownContainerTextDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._text._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Secondary Dropdown Container Text Design Border Radius",
+		"n": "secondaryDropdownContainerTextDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._text._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Tertiary Dropdown Container Text Design Border Radius",
+		"n": "tertiaryDropdownContainerTextDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._text._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quaternary Dropdown Container Text Design Border Radius",
+		"n": "quaternaryDropdownContainerTextDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._text._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Border Radius",
+		"dn": "Quinary Dropdown Container Text Design Border Radius",
+		"n": "quinaryDropdownContainerTextDesignBorderRadius",
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown._text._quinary ._dropdownContainer",
+		"np": true
+	},
+
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Primary Dropdown Container Default Design Margin",
+		"n": "primaryDropdownContainerDefaultDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._default._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Secondary Dropdown Container Default Design Margin",
+		"n": "secondaryDropdownContainerDefaultDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._default._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Tertiary Dropdown Container Default Design Margin",
+		"n": "tertiaryDropdownContainerDefaultDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._default._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quaternary Dropdown Container Default Design Margin",
+		"n": "quaternaryDropdownContainerDefaultDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._default._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quinary Dropdown Container Default Design Margin",
+		"n": "quinaryDropdownContainerDefaultDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._default._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Primary Dropdown Container Outline Design Margin",
+		"n": "primaryDropdownContainerOutlineDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._outlined._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Secondary Dropdown Container Outline Design Margin",
+		"n": "secondaryDropdownContainerOutlineDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._outlined._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Tertiary Dropdown Container Outline Design Margin",
+		"n": "tertiaryDropdownContainerOutlineDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._outlined._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quaternary Dropdown Container Outline Design Margin",
+		"n": "quaternaryDropdownContainerOutlineDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._outlined._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quinary Dropdown Container Outline Design Margin",
+		"n": "quinaryDropdownContainerOutlineDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._outlined._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Primary Dropdown Container Filled Design Margin",
+		"n": "primaryDropdownContainerFilledDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._filled._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Secondary Dropdown Container Filled Design Margin",
+		"n": "secondaryDropdownContainerFilledDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._filled._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Tertiary Dropdown Container Filled Design Margin",
+		"n": "tertiaryDropdownContainerFilledDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._filled._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quaternary Dropdown Container Filled Design Margin",
+		"n": "quaternaryDropdownContainerFilledDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._filled._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quinary Dropdown Container Filled Design Margin",
+		"n": "quinaryDropdownContainerFilledDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._filled._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Primary Dropdown Container Design One Design Margin",
+		"n": "primaryDropdownContainerDesignOneDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._bigDesign1._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Secondary Dropdown Container Design One Design Margin",
+		"n": "secondaryDropdownContainerDesignOneDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._bigDesign1._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Tertiary Dropdown Container Design One Design Margin",
+		"n": "tertiaryDropdownContainerDesignOneDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._bigDesign1._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quaternary Dropdown Container Design One Design Margin",
+		"n": "quaternaryDropdownContainerDesignOneDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._bigDesign1._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quinary Dropdown Container Design One Design Margin",
+		"n": "quinaryDropdownContainerDesignOneDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._bigDesign1._quinary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Primary Dropdown Container Text Design Margin",
+		"n": "primaryDropdownContainerTextDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._text._primary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Secondary Dropdown Container Text Design Margin",
+		"n": "secondaryDropdownContainerTextDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._text._secondary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Tertiary Dropdown Container Text Design Margin",
+		"n": "tertiaryDropdownContainerTextDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._text._tertiary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quaternary Dropdown Container Text Design Margin",
+		"n": "quaternaryDropdownContainerTextDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._text._quaternary ._dropdownContainer",
+		"np": true
+	},
+	{
+		"gn": "Dropdown Container Margin",
+		"dn": "Quinary Dropdown Container Text Design Margin",
+		"n": "quinaryDropdownContainerTextDesignMargin",
+		"cp": "margin",
+		"sel": ".comp.compDropdown._text._quinary ._dropdownContainer",
+		"np": true
 	}
 ]
