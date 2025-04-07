@@ -88,7 +88,7 @@ function TutorialTooltip({ componentName, tutorial, onClose, style }: TutorialTo
 			onMouseDown={e => e.target === e.currentTarget && onClose()}
 			role="dialog"
 			aria-modal="true"
-			onKeyDown={e => (e.key === 'Escape' || e.key === 'tab') && onClose()}
+			onKeyDown={e => e.key === 'Escape' && onClose()}
 			tabIndex={0}
 		>
 			<div className="_tutorialTooltipPanel">
@@ -168,7 +168,6 @@ export default function ComponentMenu({
 	const [originalCompType, setOriginalCompType] = useState('SECTIONS');
 	const [sectionsList, setSectionsList] = useState<any>(null);
 	const [pinnedComponents, setPinnedComponents] = useState(new Set());
-	const [showTutorialHelp, setShowTutorialHelp] = useState(false);
 	const [activeTutorial, setActiveTutorial] = useState<string | null>(null);
 
 	let compType = sectionsListConnectionName ? originalCompType : 'COMPONENTS';
@@ -552,19 +551,23 @@ export default function ComponentMenu({
 				</div>
 			</div>
 			{rightPart}
-			{activeTutorial && (
-				<TutorialTooltip
-					componentName={compsList.find(e => e.name === activeTutorial)?.displayName}
-					tutorial={compsList.find(e => e.name === activeTutorial)?.tutorial}
-					onClose={() => setActiveTutorial(null)}
-					style={{
-						position: 'absolute',
-						left: '320px',
-						top: '50%',
-						transform: 'translateY(-50%)',
-					}}
-				/>
-			)}
+			{activeTutorial &&
+				(() => {
+					const activeComp = compsList.find(e => e.name === activeTutorial);
+					return (
+						<TutorialTooltip
+							componentName={activeComp?.displayName}
+							tutorial={activeComp?.tutorial}
+							onClose={() => setActiveTutorial(null)}
+							style={{
+								position: 'absolute',
+								left: '320px',
+								top: '50%',
+								transform: 'translateY(-50%)',
+							}}
+						/>
+					);
+				})()}
 		</div>
 	);
 }
