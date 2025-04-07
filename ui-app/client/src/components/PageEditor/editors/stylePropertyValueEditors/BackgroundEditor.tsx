@@ -10,6 +10,7 @@ import {
 } from './simpleEditors';
 import { IconsSimpleEditor } from './simpleEditors/IconsSimpleEditor';
 import { ManyValuesEditor } from './simpleEditors/ManyValuesEditor';
+import { FILTER_FUNCTIONS } from './EffectsEditor';
 import { FunctionDetail, ManyFunctionsEditor } from './simpleEditors/ManyFunctionsEditor';
 
 import { ButtonBar } from './simpleEditors/ButtonBar';
@@ -28,130 +29,6 @@ export interface RelatedProps {
 	props: string[];
 	logic: (values: Record<string, any>) => Record<string, any>;
 }
-
-const FILTER_FUNCTIONS: Array<FunctionDetail> = [
-	{
-		name: 'blur',
-		displayName: 'Blur',
-		params: [{ name: 'length', displayName: 'Length', type: 'pixel size' }],
-	},
-	{
-		name: 'brightness',
-		displayName: 'Brightness',
-		params: [
-			{
-				name: 'percentage',
-				displayName: 'Value',
-				type: 'number percentage',
-				optionOverride: [
-					{ name: '', displayName: 'Number', min: 0, max: 3, step: 0.01 },
-					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 200, step: 1 },
-				],
-			},
-		],
-	},
-	{
-		name: 'contrast',
-		displayName: 'Contrast',
-		params: [
-			{
-				name: 'percentage',
-				displayName: 'Value',
-				type: 'number percentage',
-				optionOverride: [
-					{ name: '', displayName: 'Number', min: 0, max: 3, step: 0.01 },
-					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 200, step: 1 },
-				],
-			},
-		],
-	},
-	{
-		name: 'grayScale',
-		displayName: 'Gray Scale',
-		params: [
-			{
-				name: 'percentage',
-				displayName: 'Value',
-				type: 'number percentage',
-				optionOverride: [
-					{ name: '', displayName: 'Number', min: 0, max: 1, step: 0.01 },
-					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 100, step: 1 },
-				],
-			},
-		],
-	},
-	{
-		name: 'hueRotate',
-		displayName: 'Hue Rotate',
-		params: [
-			{
-				name: 'angle',
-				displayName: 'Angle',
-				type: 'angle size',
-			},
-		],
-	},
-	{
-		name: 'invert',
-		displayName: 'Invert',
-		params: [
-			{
-				name: 'percentage',
-				displayName: 'Value',
-				type: 'number percentage',
-				optionOverride: [
-					{ name: '', displayName: 'Number', min: 0, max: 1, step: 0.01 },
-					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 100, step: 1 },
-				],
-			},
-		],
-	},
-	{
-		name: 'opacity',
-		displayName: 'Opacity',
-		params: [
-			{
-				name: 'percentage',
-				displayName: 'Value',
-				type: 'number percentage',
-				optionOverride: [
-					{ name: '', displayName: 'Number', min: 0, max: 1, step: 0.01 },
-					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 100, step: 1 },
-				],
-			},
-		],
-	},
-	{
-		name: 'saturate',
-		displayName: 'Saturate',
-		params: [
-			{
-				name: 'percentage',
-				displayName: 'Value',
-				type: 'number percentage',
-				optionOverride: [
-					{ name: '', displayName: 'Number', min: 0, max: 3, step: 0.01 },
-					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 200, step: 1 },
-				],
-			},
-		],
-	},
-	{
-		name: 'sepia',
-		displayName: 'Sepia',
-		params: [
-			{
-				name: 'percentage',
-				displayName: 'Value',
-				type: 'number percentage',
-				optionOverride: [
-					{ name: '', displayName: 'Number', min: 0, max: 1, step: 0.01 },
-					{ name: 'percentage', displayName: 'Percentage', min: 0, max: 100, step: 1 },
-				],
-			},
-		],
-	},
-];
 
 const BACKGROUND_PROPS = [
 	'backgroundColor',
@@ -226,26 +103,65 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 	useEffect(() => {
 		if (!props.selectedComponent) return;
 		const extractedImage = propAndValue.find(p => p.prop === 'backgroundImage')?.value ?? '';
-		const parsedImages = extractedImage
-			.split(/,(?![^(]*\))(?![^"']*["'])/g)
-			.map((v: string) => {
-				const trimmed = v.trim();
-				if (trimmed.startsWith('url(')) {
-					const urlValue = trimmed.slice(4, -1).replace(/^['"](.*)['"]$/, '$1');
-					return { type: 'URL', value: urlValue };
-				} else {
-					const gradientMatch = trimmed.match(/^(.*?)-gradient\((.*)\)$/);
-					if (gradientMatch) {
-						return {
-							type: 'Gradient',
-							gradientType:
-								`${gradientMatch[1]}-gradient` as BackgroundImage['gradientType'],
-							value: gradientMatch[2],
-						};
-					}
+
+		// Split background values while respecting nested structures
+		const splitBackgroundValues = (input: string): string[] => {
+			const results: string[] = [];
+			let current = '';
+			let depth = 0;
+			let inQuote: string | null = null;
+
+			for (let i = 0; i < input.length; i++) {
+				const char = input[i];
+
+				if (char === '(' && !inQuote) depth++;
+				else if (char === ')' && !inQuote) depth--;
+				else if ((char === '"' || char === "'") && !inQuote) inQuote = char;
+				else if (char === inQuote) inQuote = null;
+				else if (char === ',' && depth === 0 && !inQuote) {
+					results.push(current.trim());
+					current = '';
+					continue;
+				}
+
+				current += char;
+			}
+
+			if (current.trim()) results.push(current.trim());
+			return results;
+		};
+
+		const parsedImages = splitBackgroundValues(extractedImage).map((v: string) => {
+			const trimmedValue = v.trim();
+			if (trimmedValue.startsWith('url(')) {
+				const urlValue = trimmedValue.slice(4, -1).replace(/^['"](.*)['"]$/, '$1');
+				return { type: 'URL', value: urlValue };
+			} else {
+				// Validate gradient format
+				if (!trimmedValue.endsWith(')')) {
 					return { type: 'Gradient', gradientType: 'linear-gradient', value: '' };
 				}
-			});
+
+				const gradientMatch = trimmedValue.match(/^(.*?)-gradient\((.*)\)$/);
+				if (gradientMatch) {
+					const gradientType =
+						`${gradientMatch[1]}-gradient` as BackgroundImage['gradientType'];
+					if (
+						![
+							'linear-gradient',
+							'radial-gradient',
+							'conic-gradient',
+							'repeating-linear-gradient',
+							'repeating-radial-gradient',
+						].includes(gradientType as string)
+					) {
+						return { type: 'Gradient', gradientType: 'linear-gradient', value: '' };
+					}
+					return { type: 'Gradient', gradientType, value: gradientMatch[2] };
+				}
+				return { type: 'Gradient', gradientType: 'linear-gradient', value: '' };
+			}
+		});
 
 		setBackgroundImages(
 			parsedImages.length === 0
@@ -693,7 +609,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 						if (!directory) {
 							const newImages = duplicate(backgroundImages);
 							const currentIndex = backgroundImages.findIndex(
-								img => img.value === '',
+								img => img.type === 'URL' && img.value === '',
 							);
 							if (currentIndex !== -1) {
 								newImages[currentIndex].value = url;
