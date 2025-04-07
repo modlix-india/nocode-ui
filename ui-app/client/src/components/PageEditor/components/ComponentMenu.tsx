@@ -5,7 +5,13 @@ import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
 } from '../../../context/StoreContext';
-import { LocationHistory, PageDefinition, Section, Component } from '../../../types/common';
+import {
+	LocationHistory,
+	PageDefinition,
+	Section,
+	Component,
+	Tutorial,
+} from '../../../types/common';
 import ComponentDefinitions from '../../index';
 import { PageOperations } from '../functions/PageOperations';
 import axios from 'axios';
@@ -35,13 +41,8 @@ function PinIcon({ isPinned, onClick }: Readonly<PinIconProps>) {
 	);
 }
 
-// Add new tutorial icons component
 interface TutorialIconsProps {
-	tutorial?: {
-		demoVideo?: string;
-		description?: string;
-		youtubeLink?: string;
-	};
+	tutorial?: Tutorial;
 	onInfoClick: () => void;
 }
 
@@ -68,13 +69,27 @@ function TutorialIcons({ tutorial, onInfoClick }: TutorialIconsProps) {
 
 interface TutorialTooltipProps {
 	componentName?: string;
-	tutorial?: {
-		demoVideo?: string;
-		description?: string;
-		youtubeLink?: string;
-	};
+	tutorial?: Tutorial;
 	onClose: () => void;
 	style?: React.CSSProperties;
+}
+
+function getYoutubeEmbedUrl(url: string): string {
+	try {
+		const videoUrl = new URL(url);
+		if (videoUrl.hostname === 'youtu.be') {
+			return `https://www.youtube.com/embed${videoUrl.pathname}`;
+		}
+		if (videoUrl.hostname.includes('youtube.com')) {
+			const videoId = videoUrl.searchParams.get('v');
+			if (videoId) {
+				return `https://www.youtube.com/embed/${videoId}`;
+			}
+		}
+		return url;
+	} catch {
+		return url;
+	}
 }
 
 function TutorialTooltip({ componentName, tutorial, onClose, style }: TutorialTooltipProps) {
@@ -100,7 +115,7 @@ function TutorialTooltip({ componentName, tutorial, onClose, style }: TutorialTo
 					<div className="_videoContainer">
 						{isYoutubeVideo ? (
 							<iframe
-								src={tutorial.demoVideo.replace('watch?v=', 'embed/')}
+								src={getYoutubeEmbedUrl(tutorial.demoVideo)}
 								title="YouTube video player"
 								allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 								allowFullScreen
