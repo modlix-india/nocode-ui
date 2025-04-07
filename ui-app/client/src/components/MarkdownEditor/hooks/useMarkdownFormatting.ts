@@ -168,7 +168,8 @@ export function useMarkdownFormatting() {
                         const fontFamily = command.substring(10); 
                         handleStyleFormat(`font-family: ${fontFamily}`);
                     } else if (command.startsWith('fontSize-')) {
-                        const fontSize = command.substring(9); 
+                        const fontSize = command.substring(9);
+                        handleStyleFormat(`font-size: ${fontSize}`); // Add this line to handle font size
                     } 
                     break;
         }
