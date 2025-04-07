@@ -207,12 +207,14 @@ function FileUpload(props: Readonly<ComponentProps>) {
 			const oversizedFiles = Array.from(files).filter(file => file.size > maxSizeInBytes);
 
 			if (oversizedFiles.length > 0) {
-				addMessage(
-					MESSAGE_TYPE.ERROR,
-					`File size ${returnFileSize(oversizedFiles[0].size)} exceeds maximum allowed size of ${returnFileSize(maxSizeInBytes)}`,
-					true,
-					props.context.pageName,
-				);
+				oversizedFiles.forEach(file => {
+					addMessage(
+						MESSAGE_TYPE.ERROR,
+						`File "${file.name}" (${returnFileSize(file.size)}) exceeds maximum allowed size of ${returnFileSize(maxSizeInBytes)}`,
+						true,
+						props.context.pageName,
+					);
+				});
 				return;
 			}
 		}
