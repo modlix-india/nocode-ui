@@ -202,6 +202,21 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	const setFiles = async (files: FileList | null) => {
 		if (!files?.length) return;
 
+		if (maxFileSize) {
+			const maxSizeInBytes = parseInt(maxFileSize) * 1024 * 1024;
+			const oversizedFiles = Array.from(files).filter(file => file.size > maxSizeInBytes);
+
+			if (oversizedFiles.length > 0) {
+				addMessage(
+					MESSAGE_TYPE.ERROR,
+					`File size ${returnFileSize(oversizedFiles[0].size)} exceeds maximum allowed size of ${maxFileSize}MB`,
+					true,
+					props.context.pageName,
+				);
+				return;
+			}
+		}
+
 		if (uploadType === 'FILE_OBJECT') {
 			setData(bindingPathPath!, isMultiple ? Array.from(files) : files[0], context?.pageName);
 			return;
