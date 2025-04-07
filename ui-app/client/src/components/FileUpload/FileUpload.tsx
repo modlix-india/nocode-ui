@@ -202,14 +202,14 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	const setFiles = async (files: FileList | null) => {
 		if (!files?.length) return;
 
-		if (maxFileSize) {
-			const maxSizeInBytes = parseInt(maxFileSize) * 1024 * 1024;
+		if (maxFileSize && !isNaN(parseInt(maxFileSize))) {
+			const maxSizeInBytes = parseInt(maxFileSize);
 			const oversizedFiles = Array.from(files).filter(file => file.size > maxSizeInBytes);
 
 			if (oversizedFiles.length > 0) {
 				addMessage(
 					MESSAGE_TYPE.ERROR,
-					`File size ${returnFileSize(oversizedFiles[0].size)} exceeds maximum allowed size of ${maxFileSize}MB`,
+					`File size ${returnFileSize(oversizedFiles[0].size)} exceeds maximum allowed size of ${returnFileSize(maxSizeInBytes)}`,
 					true,
 					props.context.pageName,
 				);
