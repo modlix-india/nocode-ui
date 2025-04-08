@@ -18,7 +18,7 @@ function Audio(props: Readonly<ComponentProps>) {
 		properties: {
 			src,
 			type,
-			audioDesign,
+			designType: audioDesign,
 			colorScheme,
 			autoPlay,
 			loop,
@@ -81,7 +81,7 @@ function Audio(props: Readonly<ComponentProps>) {
 	const [manualSeek, setManualSeek] = useState<number | undefined>(undefined);
 	const playbackOptions = [0.5, 1, 1.5, 2];
 
-	
+
 
 	const changePlaybackSpeed = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const speed = parseFloat(event.target.value);
@@ -476,7 +476,7 @@ function Audio(props: Readonly<ComponentProps>) {
 		<div
 			className={`_volumeControls ${volumeSliderPosition}`}
 			style={resolvedStyles.volumeContainer ?? {}}
-			
+
 		>
 			<div
 				className={`_volumeSliderContainer ${volumeSliderPosition} ${onHoverVolumeControl ? '_onHoverVolumeControl' : ''}`}
