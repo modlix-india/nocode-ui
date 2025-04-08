@@ -90,12 +90,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
-		name: 'progressBarDesign',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Progress Bar Selection Type',
-		description: 'Type of the selection of a Progress Bar',
-		defaultValue: '_default',
-		group: ComponentPropertyGroup.BASIC,
+		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			{
 				name: '_default',
@@ -125,42 +120,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-	{
-		name: 'progressBarColorScheme',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Progress Bar Color Scheme',
-		description: 'Type of the color scheme for Progress Bar',
-		defaultValue: '_primary',
-		group: ComponentPropertyGroup.BASIC,
-		enumValues: [
-			{
-				name: '_primary',
-				displayName: 'Primary Color Scheme',
-				description: 'Default Color Scheme',
-			},
-			{
-				name: '_secondary',
-				displayName: 'Secondary Color Scheme',
-				description: 'Secondary Color Scheme',
-			},
-			{
-				name: '_tertiary',
-				displayName: 'Tertiary Color Scheme',
-				description: 'Tertiary Color Scheme',
-			},
-			{
-				name: '_quaternary',
-				displayName: 'Quaternary Color Scheme',
-				description: 'Quaternary Color Scheme',
-			},
-			{
-				name: '_quinary',
-				displayName: 'Quinary Color Scheme',
-				description: 'Quinary Color Scheme',
-			},
-		],
-	},
-
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

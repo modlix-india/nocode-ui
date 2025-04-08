@@ -24,8 +24,8 @@ function ProgressBar(props: Readonly<ComponentProps>) {
 			minprogressValue,
 			maxprogressValue,
 			progressLabel,
-			progressBarDesign,
-			progressBarColorScheme,
+			designType: progressBarDesign,
+			colorScheme: progressBarColorScheme,
 			progressLabelAlignment,
 			circularProgressBarIndicatorWidth,
 		} = {},
@@ -45,7 +45,7 @@ function ProgressBar(props: Readonly<ComponentProps>) {
 	);
 	const progressElapsed = Math.round(
 		(((progressValue ?? minprogressValue) - minprogressValue) * 100) /
-			(maxprogressValue - minprogressValue),
+		(maxprogressValue - minprogressValue),
 	);
 
 	const hasProgressLabelInside =
@@ -53,48 +53,48 @@ function ProgressBar(props: Readonly<ComponentProps>) {
 
 	const hProgressBar = !progressBarDesign.startsWith('_circular')
 		? [
-				!hasProgressLabelInside && progressLabelAlignment === '_top' ? (
-					<span
-						className="_top"
-						style={{ ...resolvedStyles.label, left: `${progressElapsed}%` }}
-						key="_top"
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="label"
-						/>
-						{getTranslations(progressLabel, pageDefinition.translations)}
-					</span>
-				) : null,
-				<div className="_track" key="_track" style={resolvedStyles.track ?? {}}>
-					<SubHelperComponent definition={props.definition} subComponentName="track" />
-					<span
-						className={`_progress ${progressLabelAlignment}`}
-						style={{ ...resolvedStyles.progress, width: `${progressElapsed}%` }}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="progress"
-						/>
-						{hasProgressLabelInside
-							? getTranslations(progressLabel, pageDefinition.translations)
-							: ''}
-					</span>
-				</div>,
-				!hasProgressLabelInside && progressLabelAlignment === '_bottom' ? (
-					<span
-						key="_bottom"
-						className="_bottom"
-						style={{ ...resolvedStyles.label, left: `${progressElapsed}%` }}
-					>
-						<SubHelperComponent
-							definition={props.definition}
-							subComponentName="label"
-						/>
-						{getTranslations(progressLabel, pageDefinition.translations)}
-					</span>
-				) : null,
-			]
+			!hasProgressLabelInside && progressLabelAlignment === '_top' ? (
+				<span
+					className="_top"
+					style={{ ...resolvedStyles.label, left: `${progressElapsed}%` }}
+					key="_top"
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="label"
+					/>
+					{getTranslations(progressLabel, pageDefinition.translations)}
+				</span>
+			) : null,
+			<div className="_track" key="_track" style={resolvedStyles.track ?? {}}>
+				<SubHelperComponent definition={props.definition} subComponentName="track" />
+				<span
+					className={`_progress ${progressLabelAlignment}`}
+					style={{ ...resolvedStyles.progress, width: `${progressElapsed}%` }}
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="progress"
+					/>
+					{hasProgressLabelInside
+						? getTranslations(progressLabel, pageDefinition.translations)
+						: ''}
+				</span>
+			</div>,
+			!hasProgressLabelInside && progressLabelAlignment === '_bottom' ? (
+				<span
+					key="_bottom"
+					className="_bottom"
+					style={{ ...resolvedStyles.label, left: `${progressElapsed}%` }}
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="label"
+					/>
+					{getTranslations(progressLabel, pageDefinition.translations)}
+				</span>
+			) : null,
+		]
 		: null;
 
 	const cProgressBar = () => {
@@ -118,7 +118,7 @@ function ProgressBar(props: Readonly<ComponentProps>) {
 					strokeDashoffset={`${strokeDashOffset}px`}
 				/>
 				{progressBarDesign === '_circular_text_background' ||
-				progressBarDesign === '_circular_text_background_outline' ? (
+					progressBarDesign === '_circular_text_background_outline' ? (
 					<circle className="_circular_progres_text_bg" />
 				) : null}
 			</svg>,
@@ -130,9 +130,8 @@ function ProgressBar(props: Readonly<ComponentProps>) {
 	};
 	return (
 		<div
-			className={`comp compProgressBar ${progressBarDesign} ${progressBarColorScheme} ${
-				hasProgressLabelInside ? '_hasLabel' : ''
-			}`}
+			className={`comp compProgressBar ${progressBarDesign} ${progressBarColorScheme} ${hasProgressLabelInside ? '_hasLabel' : ''
+				}`}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
 			onMouseLeave={
 				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined

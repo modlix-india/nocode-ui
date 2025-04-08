@@ -50,7 +50,7 @@ function Popup(props: Readonly<ComponentProps>) {
 			eventOnClose,
 			closeButtonPosition,
 			modelTitle,
-			popupDesign,
+			designType: popupDesign,
 			showInDesign,
 			modalPosition,
 			background,
@@ -185,9 +185,9 @@ function Popup(props: Readonly<ComponentProps>) {
 										/>
 										{modelTitle
 											? getTranslations(
-													modelTitle,
-													props.pageDefinition.translations,
-												)
+												modelTitle,
+												props.pageDefinition.translations,
+											)
 											: ''}
 									</div>
 									{showClose && closeButtonPosition === 'RIGHT' && (

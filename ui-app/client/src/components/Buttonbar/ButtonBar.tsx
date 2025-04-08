@@ -45,7 +45,7 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 			data,
 			isMultiSelect,
 			colorScheme,
-			buttonBarDesign,
+			designType: buttonBarDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -162,9 +162,8 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 						stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
 					}
 					onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
-					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
-						readOnly ? '_disabled' : ''
-					} ${i == 0 ? '_firstChild' : ''} ${i + 1 == arr.length ? '_lastChild' : ''}`}
+					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${readOnly ? '_disabled' : ''
+						} ${i == 0 ? '_firstChild' : ''} ${i + 1 == arr.length ? '_lastChild' : ''}`}
 				>
 					<SubHelperComponent definition={props.definition} subComponentName="button" />
 					{getTranslations(each?.label, translations)}

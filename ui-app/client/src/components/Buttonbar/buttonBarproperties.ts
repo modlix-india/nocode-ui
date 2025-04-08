@@ -18,12 +18,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{
-		name: 'buttonBarDesign',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Button Bar Design',
-		description: 'Color Scheme',
+		...COMMON_COMPONENT_PROPERTIES.designType,
 		defaultValue: '_buttonBarDesign1',
-		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
 				name: '_buttonBarDesign1',
