@@ -5861,5 +5861,545 @@
 		"cp": "padding",
 		"sel": ".comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 1 Header Height",
+		"n": "design1HeaderHeight",
+		"de": "Design 1 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 2 Header Height",
+		"n": "design2HeaderHeight",
+		"de": "Design 2 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 3 Header Height",
+		"n": "design3HeaderHeight",
+		"de": "Design 3 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 4 Header Height",
+		"n": "design4HeaderHeight",
+		"de": "Design 4 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 5 Header Height",
+		"n": "design5HeaderHeight",
+		"de": "Design 5 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 6 Header Height",
+		"n": "design6HeaderHeight",
+		"de": "Design 6 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 7 Header Height",
+		"n": "design7HeaderHeight",
+		"de": "Design 7 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 8 Header Height",
+		"n": "design8HeaderHeight",
+		"de": "Design 8 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 9 Header Height",
+		"n": "design9HeaderHeight",
+		"de": "Design 9 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Height",
+		"dn": "Design 10 Header Height",
+		"n": "design10HeaderHeight",
+		"de": "Design 10 Header Height",
+		"cp": "height",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 1 Header Line Height",
+		"n": "design1HeaderLineHeight",
+		"de": "Design 1 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 2 Header Line Height",
+		"n": "design2HeaderLineHeight",
+		"de": "Design 2 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 3 Header Line Height",
+		"n": "design3HeaderLineHeight",
+		"de": "Design 3 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 4 Header Line Height",
+		"n": "design4HeaderLineHeight",
+		"de": "Design 4 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 5 Header Line Height",
+		"n": "design5HeaderLineHeight",
+		"de": "Design 5 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 6 Header Line Height",
+		"n": "design6HeaderLineHeight",
+		"de": "Design 6 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 7 Header Line Height",
+		"n": "design7HeaderLineHeight",
+		"de": "Design 7 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 8 Header Line Height",
+		"n": "design8HeaderLineHeight",
+		"de": "Design 8 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 9 Header Line Height",
+		"n": "design9HeaderLineHeight",
+		"de": "Design 9 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Line Height",
+		"dn": "Design 10 Header Line Height",
+		"n": "design10HeaderLineHeight",
+		"de": "Design 10 Header Line Height",
+		"cp": "line-height",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 1 Header Left Icon Color",
+		"n": "design1HeaderLeftIconColor",
+		"de": "Design 1 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 2 Header Left Icon Color",
+		"n": "design2HeaderLeftIconColor",
+		"de": "Design 2 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 3 Header Left Icon Color",
+		"n": "design3HeaderLeftIconColor",
+		"de": "Design 3 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 4 Header Left Icon Color",
+		"n": "design4HeaderLeftIconColor",
+		"de": "Design 4 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 5 Header Left Icon Color",
+		"n": "design5HeaderLeftIconColor",
+		"de": "Design 5 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 6 Header Left Icon Color",
+		"n": "design6HeaderLeftIconColor",
+		"de": "Design 6 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 7 Header Left Icon Color",
+		"n": "design7HeaderLeftIconColor",
+		"de": "Design 7 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 8 Header Left Icon Color",
+		"n": "design8HeaderLeftIconColor",
+		"de": "Design 8 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 9 Header Left Icon Color",
+		"n": "design9HeaderLeftIconColor",
+		"de": "Design 9 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Left Icon Color",
+		"dn": "Design 10 Header Left Icon Color",
+		"n": "design10HeaderLeftIconColor",
+		"de": "Design 10 Header Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._leftIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 1 Header Hover Left Icon Color",
+		"n": "design1HeaderHoverLeftIconColor",
+		"de": "Design 1 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 2 Header Hover Left Icon Color",
+		"n": "design2HeaderHoverLeftIconColor",
+		"de": "Design 2 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 3 Header Hover Left Icon Color",
+		"n": "design3HeaderHoverLeftIconColor",
+		"de": "Design 3 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 4 Header Hover Left Icon Color",
+		"n": "design4HeaderHoverLeftIconColor",
+		"de": "Design 4 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 5 Header Hover Left Icon Color",
+		"n": "design5HeaderHoverLeftIconColor",
+		"de": "Design 5 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 6 Header Hover Left Icon Color",
+		"n": "design6HeaderHoverLeftIconColor",
+		"de": "Design 6 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 7 Header Hover Left Icon Color",
+		"n": "design7HeaderHoverLeftIconColor",
+		"de": "Design 7 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 8 Header Hover Left Icon Color",
+		"n": "design8HeaderHoverLeftIconColor",
+		"de": "Design 8 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 9 Header Hover Left Icon Color",
+		"n": "design9HeaderHoverLeftIconColor",
+		"de": "Design 9 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Left Icon Color",
+		"dn": "Design 10 Header Hover Left Icon Color",
+		"n": "design10HeaderHoverLeftIconColor",
+		"de": "Design 10 Header Hover Left Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 1 Header Right Icon Color",
+		"n": "design1HeaderRightIconColor",
+		"de": "Design 1 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 2 Header Right Icon Color",
+		"n": "design2HeaderRightIconColor",
+		"de": "Design 2 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 3 Header Right Icon Color",
+		"n": "design3HeaderRightIconColor",
+		"de": "Design 3 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 4 Header Right Icon Color",
+		"n": "design4HeaderRightIconColor",
+		"de": "Design 4 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 5 Header Right Icon Color",
+		"n": "design5HeaderRightIconColor",
+		"de": "Design 5 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 6 Header Right Icon Color",
+		"n": "design6HeaderRightIconColor",
+		"de": "Design 6 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 7 Header Right Icon Color",
+		"n": "design7HeaderRightIconColor",
+		"de": "Design 7 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 8 Header Right Icon Color",
+		"n": "design8HeaderRightIconColor",
+		"de": "Design 8 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 9 Header Right Icon Color",
+		"n": "design9HeaderRightIconColor",
+		"de": "Design 9 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Right Icon Color",
+		"dn": "Design 10 Header Right Icon Color",
+		"n": "design10HeaderRightIconColor",
+		"de": "Design 10 Header Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._rightIcon",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 1 Header Hover Right Icon Color",
+		"n": "design1HeaderHoverRightIconColor",
+		"de": "Design 1 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design1 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 2 Header Hover Right Icon Color",
+		"n": "design2HeaderHoverRightIconColor",
+		"de": "Design 2 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design2 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 3 Header Hover Right Icon Color",
+		"n": "design3HeaderHoverRightIconColor",
+		"de": "Design 3 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design3 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 4 Header Hover Right Icon Color",
+		"n": "design4HeaderHoverRightIconColor",
+		"de": "Design 4 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design4 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 5 Header Hover Right Icon Color",
+		"n": "design5HeaderHoverRightIconColor",
+		"de": "Design 5 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design5 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 6 Header Hover Right Icon Color",
+		"n": "design6HeaderHoverRightIconColor",
+		"de": "Design 6 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design6 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 7 Header Hover Right Icon Color",
+		"n": "design7HeaderHoverRightIconColor",
+		"de": "Design 7 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design7 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 8 Header Hover Right Icon Color",
+		"n": "design8HeaderHoverRightIconColor",
+		"de": "Design 8 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design8 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 9 Header Hover Right Icon Color",
+		"n": "design9HeaderHoverRightIconColor",
+		"de": "Design 9 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design9 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
+	},
+	{
+		"gn": "Header Hover Right Icon Color",
+		"dn": "Design 10 Header Hover Right Icon Color",
+		"n": "design10HeaderHoverRightIconColor",
+		"de": "Design 10 Header Hover Right Icon Color",
+		"cp": "color",
+		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"np": true
 	}
 ]

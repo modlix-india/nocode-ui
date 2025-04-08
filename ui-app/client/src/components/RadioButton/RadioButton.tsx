@@ -134,8 +134,9 @@ function RadioButton(props: Readonly<ComponentProps>) {
 				context?.pageName,
 			);
 		} else {
-			const index = (selected ?? []).findIndex((e: any) => deepEqual(e, each.value));
-			const newValue = [...(selected ?? [])];
+			const currentSelected = Array.isArray(selected) ? selected : [];
+			const index = (currentSelected).findIndex((e: any) => deepEqual(e, each.value));
+			const newValue = [...currentSelected];
 			if (index === -1) newValue.push(each.value);
 			else newValue.splice(index, 1);
 			setData(bindingPathPath, newValue, context?.pageName);
@@ -167,7 +168,7 @@ function RadioButton(props: Readonly<ComponentProps>) {
 				<label
 					className={`radioLabel ${
 						orientation === 'VERTICAL' ? 'vertical' : 'horizontal'
-					} ${readOnly ? '_disabled' : ''}`}
+					} ${readOnly ? '_disabled' : ''} ${getIsSelected(e.key) ? '_selected' : ''}`}
 					key={e.key}
 					htmlFor={e.key}
 					onMouseEnter={

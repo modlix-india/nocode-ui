@@ -219,7 +219,8 @@ function Stepper(props: Readonly<ComponentProps>) {
 			else lineKey = styleKey + (styleKey ? 'Line' : 'line');
 
 			line = (
-				<div className="_line" style={styleGroup[lineKey] ?? {}}>
+				<div className={`_line ${i+1 === value ? '_activeBeforeLine' : ''} ${i+1 < value ? '_done' : ''} ${i === value ? '_active' : ''}`} 
+				style={styleGroup[lineKey] ?? {}}>
 					<SubHelperComponent definition={props.definition} subComponentName="line" />
 				</div>
 			);
@@ -258,7 +259,9 @@ function Stepper(props: Readonly<ComponentProps>) {
 				</div>
 				{line}
 			</li>,
+			
 		);
+		
 	}
 	return (
 		<ul
@@ -277,6 +280,7 @@ function Stepper(props: Readonly<ComponentProps>) {
 			{steps}
 		</ul>
 	);
+	
 }
 
 const component: Component = {
