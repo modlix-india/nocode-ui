@@ -521,11 +521,6 @@ export default function DnDNavigationBar({
 								setFilterHandle(setTimeout(() => applyFilter(e.target.value), 300));
 							}}
 						/>
-						{filter && (
-							<span className="_matchCount" title="Number of matching components">
-								{matchingCount}
-							</span>
-						)}
 						{showMultiSelect && (
 							<i
 								className={`fa fa-solid ${allFilteredSelected ? 'fa-xmark-circle' : 'fa-check-circle'}`}
