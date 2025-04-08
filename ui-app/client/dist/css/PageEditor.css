@@ -199,6 +199,46 @@
 	margin-right: 6px;
 }
 
+.comp.compPageEditor ._compsTree ._matchCount {
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 0.8em;
+    margin: 0 5px;
+}
+
+.comp.compPageEditor ._compsTree ._filtered {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+.comp.compPageEditor ._compsTree ._batchOperations {
+    display: flex;
+    padding: 5px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+}
+
+.comp.compPageEditor ._compsTree ._batchButton {
+    margin-right: 5px;
+    padding: 3px 8px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+}
+
+.comp.compPageEditor ._compsTree ._batchButton i {
+    margin-right: 5px;
+}
+
+.comp.compPageEditor ._compsTree ._batchButton:hover {
+    background-color: #f0f0f0;
+}
+
 .comp.compPageEditor ._compsTree ._treeNodeName i.fa._nothing {
 	margin-right: 6px;
 }
