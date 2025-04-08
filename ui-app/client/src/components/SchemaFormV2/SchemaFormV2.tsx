@@ -1,12 +1,12 @@
 import React, { Suspense } from 'react';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { IconHelper } from '../util/IconHelper';
-import { propertiesDefinition, stylePropertiesDefinition } from './schemaForm2Properties';
-import SchemaFormStyle from './SchemaForm2Style';
-import { styleDefaults } from './schemaForm2StyleProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormV2Properties';
+import SchemaFormStyle from './SchemaFormV2Style';
+import { styleDefaults } from './schemaFormV2StyleProperties';
 
 const LazySchemaForm = React.lazy(
-	() => import(/* webpackChunkName: "SchemaForm" */ './LazySchemaForm2'),
+	() => import('./LazySchemaFormV2'),
 );
 function LoadLazySchemaForm2(props: Readonly<ComponentProps>) {
 	return (
@@ -17,9 +17,9 @@ function LoadLazySchemaForm2(props: Readonly<ComponentProps>) {
 }
 
 const component: Component = {
-	name: 'SchemaForm2',
-	displayName: 'Schema Form2',
-	description: 'Schema Form2 component',
+	name: 'SchemaFormV2',
+	displayName: 'Schema FormV2',
+	description: 'Schema FormV2 component',
 	component: LoadLazySchemaForm2,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
@@ -28,8 +28,8 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	defaultTemplate: {
 		key: '',
-		type: 'SchemaForm2',
-		name: 'SchemaForm2',
+		type: 'SchemaFormV2',
+		name: 'SchemaFormV2',
 		properties: {},
 	},
 	bindingPaths: {

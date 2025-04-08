@@ -36,9 +36,9 @@ export default function generateChildren({
 	useEffect(() => {
 		if (isNullValue(actualSchema.getRef())) {
 			setSchema(actualSchema);
+			
 			return;
 		}
-
 		const resolveSchema = async () => {
 			const resolvedSchema = await SchemaUtil.getSchemaFromRef(
 				actualSchema,
@@ -90,12 +90,10 @@ function generateSchemaForm(
 		}
 	}
 
-	console.log('comp', componentDefinitions);
-
 	return {
 		children,
 		pageDef: {
-			name: 'SchemaForm2',
+			name: 'SchemaFormV2',
 			baseClientCode: '',
 			permission: '',
 			isFromUndoRedoStack: false,
@@ -180,11 +178,10 @@ function processArraySchema(
 
 	const isTupleSchema = Array.isArray(tupleSchema);
 	const arrKey = `arrayRepeator${order.currentOrder}`;
-	const gridKey = `grid_${arrKey}`;
 
 	const showAdd: ComponentProperty<any> =
 		maxItems && !tupleSchema
-			? {
+			? { 
 					value: true,
 					location: {
 						type: 'EXPRESSION',
@@ -208,17 +205,7 @@ function processArraySchema(
 	componentDefinitions[arrayRepeatorComp.key] = arrayRepeatorComp;
 	children[arrayRepeatorComp.key] = true;
 	order.currentOrder++;
-
-	// const gridCompDef: ComponentDefinition = {
-	// 	key: gridKey,
-	// 	name: 'Grid',
-	// 	displayOrder: order.currentOrder,
-	// 	type: 'Grid',
-	// 	children: {},
-	// };
-
-	// componentDefinitions[gridCompDef.key] = gridCompDef;
-	// order.currentOrder++;
+	
 	const schemaFinal = isTupleSchema ? tupleSchema : [singleSchema];
 
 	schemaFinal.forEach((subSchema, index) => {
@@ -238,7 +225,7 @@ function processArraySchema(
 				);
 			} else {
 				const eachCompDef = compDefinitionGenerator(
-					`Item ${index}`,
+					`Item_${index}`,
 					subSchema as Schema,
 					eachBindingPath,
 					order.currentOrder++,

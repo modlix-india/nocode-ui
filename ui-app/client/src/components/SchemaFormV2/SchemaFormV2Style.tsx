@@ -1,5 +1,5 @@
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './schemaForm2StyleProperties';
+import { styleProperties, styleDefaults } from './schemaFormV2StyleProperties';
 
 const PREFIX = '.comp.compSchemaForm';
 export default function SchemaFormStyle({

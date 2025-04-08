@@ -6,7 +6,7 @@ import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './schemaForm2Properties';
+import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormV2Properties';
 import generateChildren from './components/generateChildren';
 import Children from '../Children';
 
@@ -43,7 +43,6 @@ export default function SchemaForm2(
 		: undefined;
 
 	const schema = React.useMemo(() => props.schema ?? Schema.from(jsonSchema), [jsonSchema]);
-
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
