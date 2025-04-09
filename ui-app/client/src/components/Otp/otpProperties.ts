@@ -22,7 +22,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-
+	{
+		name: 'maskValue',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Mask Value',
+		description: 'Mask the value of the otp.',
+		group: ComponentPropertyGroup.ADVANCED	,
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 
