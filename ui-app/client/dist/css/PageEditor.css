@@ -304,6 +304,34 @@
 	border: 1px solid #ccc;
 }
 
+.comp.compPageEditor ._moreOptionsDropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+	margin-left: auto;
+}
+
+.comp.compPageEditor ._moreOptionsDropdown ._dropdownContent {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 60px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    padding: 8px;
+
+}
+
+.comp.compPageEditor ._moreOptionsDropdown:hover ._dropdownContent {
+    display: block;
+}
+
+.comp.compPageEditor ._dropdownContent ._iconSelectionButton {
+    display: block;
+    padding: 4px;
+    width: 100%;
+}
+
 .comp.compPageEditor ._filterBar input,
 .comp.compPageEditor input._peInput,
 .comp.compPageEditor ._pvExpressionEditor,

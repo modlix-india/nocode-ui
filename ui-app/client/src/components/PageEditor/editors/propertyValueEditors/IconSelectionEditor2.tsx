@@ -135,6 +135,11 @@ function getPackData(pack: string): Promise<[{ n: string; d: string; k: string }
 	return data;
 }
 
+interface OptionGroup {
+	visibleOptions: Array<{ icon: string; className: string }>;
+	dropdownOptions: Array<{ icon: string; className: string }>;
+}
+
 export function IconSelectionEditor2({
 	value,
 	onChange,
@@ -146,6 +151,25 @@ export function IconSelectionEditor2({
 	const [selectedPack, setSelectedPack] = useState<string>('');
 
 	const [packJson, setPackJson] = useState<Array<{ n: string; d: string; k: string }>>([]);
+	const [styleOptions, setStyleOptions] = useState<OptionGroup>({
+		visibleOptions: OPTIONS[0].slice(0, 3),
+		dropdownOptions: OPTIONS[0].slice(3),
+	});
+
+	const [sizeOptions, setSizeOptions] = useState<OptionGroup>({
+		visibleOptions: OPTIONS[1].slice(0, 3),
+		dropdownOptions: OPTIONS[1].slice(3),
+	});
+
+	const [rotateOptions, setRotateOptions] = useState<OptionGroup>({
+		visibleOptions: OPTIONS[2].slice(0, 3),
+		dropdownOptions: OPTIONS[2].slice(3),
+	});
+
+	const [flipOptions, setFlipOptions] = useState<OptionGroup>({
+		visibleOptions: OPTIONS[3],
+		dropdownOptions: [],
+	});
 
 	// Checking if someone changed the app data
 	useEffect(() => {
@@ -178,6 +202,94 @@ export function IconSelectionEditor2({
 			getPackData(pack).then(x => setPackJson(x));
 		},
 		[setPackJson],
+	);
+
+	const handleOptionSelect = (
+		option: { icon: string; className: string },
+		groupOptions: OptionGroup,
+		setGroupOptions: React.Dispatch<React.SetStateAction<OptionGroup>>,
+		currentValue: string,
+		visibleIconCount: number,
+	) => {
+		if (groupOptions.dropdownOptions.find(opt => opt.className === option.className)) {
+			const newVisible = [
+				option,
+				...groupOptions.visibleOptions.slice(0, visibleIconCount - 1),
+			];
+
+			const lastVisible = groupOptions.visibleOptions[visibleIconCount - 1];
+			const newDropdown = lastVisible
+				? [
+						lastVisible,
+						...groupOptions.dropdownOptions.filter(
+							opt => opt.className !== option.className,
+						),
+					]
+				: groupOptions.dropdownOptions.filter(opt => opt.className !== option.className);
+
+			setGroupOptions({
+				visibleOptions: newVisible,
+				dropdownOptions: newDropdown,
+			});
+		}
+
+		let newValue = clean(
+			currentValue,
+			[...groupOptions.visibleOptions, ...groupOptions.dropdownOptions],
+			option.className,
+		);
+		onChange(newValue === '' || newValue === propDef.defaultValue ? undefined : newValue);
+	};
+
+	const renderOptionGroup = (
+		groupOptions: OptionGroup,
+		setGroupOptions: React.Dispatch<React.SetStateAction<OptionGroup>>,
+		label: string,
+	) => (
+		<div className="_iconSelectionButtons">
+			{label}:
+			{groupOptions.visibleOptions.map(option => (
+				<i
+					key={option.className}
+					className={`_iconSelectionButton ${option.icon} ${
+						chngValue.includes(option.className) ? 'active' : ''
+					}`}
+					onClick={() =>
+						handleOptionSelect(
+							option,
+							groupOptions,
+							setGroupOptions,
+							chngValue,
+							groupOptions.visibleOptions.length,
+						)
+					}
+				/>
+			))}
+			{groupOptions.dropdownOptions.length > 0 && (
+				<div className="_moreOptionsDropdown">
+					<i className="fa fa-ellipsis-h" />
+					<div className="_dropdownContent">
+						{groupOptions.dropdownOptions.map(option => (
+							<i
+								key={option.className}
+								className={`_iconSelectionButton ${option.icon} ${
+									chngValue.includes(option.className) ? 'active' : ''
+								}`}
+								onClick={() =>
+									handleOptionSelect(
+										option,
+										groupOptions,
+										setGroupOptions,
+										chngValue,
+										groupOptions.visibleOptions.length,
+									)
+								}
+							/>
+						))}
+					</div>
+				</div>
+			)}
+		</div>
 	);
 
 	let popup = <></>;
@@ -277,20 +389,16 @@ export function IconSelectionEditor2({
 				/>
 			</div>
 			<div className="_iconSelectionButtons">
-				Style:
-				{generateButtons(chngValue, OPTIONS[0], onChange)}
+				{renderOptionGroup(styleOptions, setStyleOptions, 'Style')}
 			</div>
 			<div className="_iconSelectionButtons">
-				Size:
-				{generateButtons(chngValue, OPTIONS[1], onChange)}
+				{renderOptionGroup(sizeOptions, setSizeOptions, 'Size')}
 			</div>
 			<div className="_iconSelectionButtons">
-				Rotate:
-				{generateButtons(chngValue, OPTIONS[2], onChange)}
+				{renderOptionGroup(rotateOptions, setRotateOptions, 'Rotate')}
 			</div>
 			<div className="_iconSelectionButtons">
-				Flip:
-				{generateButtons(chngValue, OPTIONS[3], onChange)}
+				{renderOptionGroup(flipOptions, setFlipOptions, 'Flip')}
 			</div>
 			{popup}
 		</div>
