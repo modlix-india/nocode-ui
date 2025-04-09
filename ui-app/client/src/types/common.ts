@@ -203,16 +203,34 @@ export enum StyleResolution {
 }
 
 export interface StylePropertyDefinition {
+	// Name
 	n: string;
+	// Display Name
 	dn: string;
+	// Group Name
 	gn?: string;
+	// Description
 	de?: string;
+	// Default Value is used when there is not value per select prop is given.
 	dv?: string;
+	// Color Palette
 	cp?: string;
+	// Selector
 	sel?: string;
+	// No Prefix
 	np?: boolean;
+	//Selector variable Props - For components with design and color schema
+	sp?: [{
+		// If component name is not provided it will search in the current component
+		cn?: string;
+		// Property Name like colorScheme or designType make sure there are no 
+		pn: string;
+	}],
+	// Property Values and combinations and variable names
+	spv?: {
+		[key: string]: string;
+	}
 }
-
 export interface StyleGroupDefinition {
 	name: string;
 	displayName: string;
@@ -278,10 +296,10 @@ export interface ComponentDefinition {
 	type: string;
 	properties?: {
 		[key: string]:
-			| ComponentProperty<any>
-			| ComponentMultiProperty<any>
-			| { [key: string]: ComponentProperty<any> }
-			| { [key: string]: Validation };
+		| ComponentProperty<any>
+		| ComponentMultiProperty<any>
+		| { [key: string]: ComponentProperty<any> }
+		| { [key: string]: Validation };
 	};
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
