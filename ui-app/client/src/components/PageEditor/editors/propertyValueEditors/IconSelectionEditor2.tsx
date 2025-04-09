@@ -247,48 +247,50 @@ export function IconSelectionEditor2({
 		label: string,
 	) => (
 		<div className="_iconSelectionButtons">
-			{label}:
-			{groupOptions.visibleOptions.map(option => (
-				<i
-					key={option.className}
-					className={`_iconSelectionButton ${option.icon} ${
-						chngValue.includes(option.className) ? 'active' : ''
-					}`}
-					onClick={() =>
-						handleOptionSelect(
-							option,
-							groupOptions,
-							setGroupOptions,
-							chngValue,
-							groupOptions.visibleOptions.length,
-						)
-					}
-				/>
-			))}
-			{groupOptions.dropdownOptions.length > 0 && (
-				<div className="_moreOptionsDropdown">
-					<i className="fa fa-ellipsis-h" />
-					<div className="_dropdownContent">
-						{groupOptions.dropdownOptions.map(option => (
-							<i
-								key={option.className}
-								className={`_iconSelectionButton ${option.icon} ${
-									chngValue.includes(option.className) ? 'active' : ''
-								}`}
-								onClick={() =>
-									handleOptionSelect(
-										option,
-										groupOptions,
-										setGroupOptions,
-										chngValue,
-										groupOptions.visibleOptions.length,
-									)
-								}
-							/>
-						))}
+			<span className="_optionLabel">{label}:</span>
+			<div className="_optionsContainer">
+				{groupOptions.visibleOptions.map(option => (
+					<i
+						key={option.className}
+						className={`_iconSelectionButton ${option.icon} ${
+							chngValue.includes(option.className) ? 'active' : ''
+						}`}
+						onClick={() =>
+							handleOptionSelect(
+								option,
+								groupOptions,
+								setGroupOptions,
+								chngValue,
+								groupOptions.visibleOptions.length,
+							)
+						}
+					/>
+				))}
+				{groupOptions.dropdownOptions.length > 0 && (
+					<div className="_moreOptionsDropdown">
+						<i className="fa fa-ellipsis-h" />
+						<div className="_dropdownContent">
+							{groupOptions.dropdownOptions.map(option => (
+								<i
+									key={option.className}
+									className={`_iconSelectionButton ${option.icon} ${
+										chngValue.includes(option.className) ? 'active' : ''
+									}`}
+									onClick={() =>
+										handleOptionSelect(
+											option,
+											groupOptions,
+											setGroupOptions,
+											chngValue,
+											groupOptions.visibleOptions.length,
+										)
+									}
+								/>
+							))}
+						</div>
 					</div>
-				</div>
-			)}
+				)}
+			</div>
 		</div>
 	);
 
