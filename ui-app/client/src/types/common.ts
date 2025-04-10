@@ -213,19 +213,14 @@ export interface StylePropertyDefinition {
 	de?: string;
 	// Default Value is used when there is not value per select prop is given.
 	dv?: string;
-	// Color Palette
+	// CSS Class Property Name
 	cp?: string;
 	// Selector
 	sel?: string;
 	// No Prefix
 	np?: boolean;
-	//Selector variable Props - For components with design and color schema
-	sp?: [{
-		// If component name is not provided it will search in the current component
-		cn?: string;
-		// Property Name like colorScheme or designType make sure there are no 
-		pn: string;
-	}],
+	// Enum Values used to make this property only used in computation not while defining.
+	evu?: Array<string>;
 	// Property Values and combinations and variable names
 	spv?: {
 		[key: string]: string;

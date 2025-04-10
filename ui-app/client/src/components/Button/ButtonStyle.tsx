@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { StylePropertyDefinition } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleDefaults } from './buttonStyleProperties';
+import { propertiesDefinition } from './buttonProperties';
 import { usedComponents } from '../../App/usedComponents';
-import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import { findPropertyDefinitions, lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
 const PREFIX = '.comp.compButton';
 const NAME = 'Button';
@@ -21,7 +22,8 @@ export default function ButtonStyle({
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+		const { designType, colorScheme } = findPropertyDefinitions(propertiesDefinition, 'designType', 'colorScheme');
+		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults, [designType, colorScheme]);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
