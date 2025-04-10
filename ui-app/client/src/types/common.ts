@@ -181,6 +181,8 @@ export interface Component {
 			pageExtractor: PageStoreExtractor,
 		) => Array<string>;
 	};
+	propertiesForTheme?: Array<ComponentPropertyDefinition>;
+	stylePropertiesForTheme: Array<StylePropertyDefinition>;
 }
 
 export enum StyleResolution {
