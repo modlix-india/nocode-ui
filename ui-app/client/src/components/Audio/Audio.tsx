@@ -9,7 +9,7 @@ import getSrcUrl from '../util/getSrcUrl';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import AudioStyle from './AudioStyle';
-import { styleDefaults } from './audioStyleProperties';
+import { styleProperties, styleDefaults } from './audioStyleProperties';
 
 function Audio(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -746,6 +746,7 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -17,7 +17,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './buttonBarStyleProperties';
+import { styleProperties, styleDefaults } from './buttonBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function ButtonBar(props: Readonly<ComponentProps>) {
@@ -256,6 +256,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

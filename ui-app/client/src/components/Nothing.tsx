@@ -30,6 +30,7 @@ const component: Component = {
 			mainComponent: true,
 		},
 	],
+	stylePropertiesForTheme: [],
 };
 
 export default component;
