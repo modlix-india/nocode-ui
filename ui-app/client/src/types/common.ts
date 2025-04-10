@@ -183,6 +183,7 @@ export interface Component {
 	};
 	propertiesForTheme?: Array<ComponentPropertyDefinition>;
 	stylePropertiesForTheme: Array<StylePropertyDefinition>;
+	externalStylePropsForThemeJson?: boolean;
 }
 
 export enum StyleResolution {

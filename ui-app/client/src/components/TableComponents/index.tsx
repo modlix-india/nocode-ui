@@ -256,6 +256,7 @@ export const Table: Component = {
 		},
 	],
 	stylePropertiesForTheme: tableStyleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 const LazyTableColumnComponent = React.lazy(
@@ -406,7 +407,8 @@ export const TableColumn: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: tableColumnStyleProperties
+	stylePropertiesForTheme: tableColumnStyleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 const LazyTableColumnHeaderComponent = React.lazy(
@@ -448,7 +450,8 @@ export const TableColumnHeader: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: tableColumnHeaderStyleProperties
+	stylePropertiesForTheme: tableColumnHeaderStyleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 const LazyTableColumnsComponent = React.lazy(
@@ -555,7 +558,8 @@ export const TableColumns: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: tableColumnsStyleProperties
+	stylePropertiesForTheme: tableColumnsStyleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 export const TableDynamicColumn: Component = {
@@ -780,7 +784,8 @@ export const TableEmptyGrid: Component = {
 			),
 		},
 	],
-	stylePropertiesForTheme: tableEmptyGridStyleProperties
+	stylePropertiesForTheme: tableEmptyGridStyleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 const LazyTableGridComponent = React.lazy(
@@ -874,7 +879,8 @@ export const TableGrid: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: tableGridStyleProperties
+	stylePropertiesForTheme: tableGridStyleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 const LazyTablePreviewGridComponent = React.lazy(
@@ -973,5 +979,6 @@ export const TablePreviewGrid: Component = {
 			),
 		},
 	],
-	stylePropertiesForTheme: tablePreviewGridStyleProperties
+	stylePropertiesForTheme: tablePreviewGridStyleProperties,
+	externalStylePropsForThemeJson: true,
 };

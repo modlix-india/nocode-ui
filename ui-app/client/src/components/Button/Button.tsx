@@ -138,10 +138,10 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			<i
 				style={styleProperties.rightIcon ?? {}}
 				className={`_rightButtonIcon _icon ${rightIcon
-						? !isLoading
-							? rightIcon
-							: 'fa fa-circle-notch fa-spin'
-						: 'fa fa-circle-notch hide'
+					? !isLoading
+						? rightIcon
+						: 'fa fa-circle-notch fa-spin'
+					: 'fa fa-circle-notch hide'
 					}`}
 			>
 				<SubHelperComponent
@@ -176,10 +176,10 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			<i
 				style={styleProperties.leftIcon ?? {}}
 				className={`_leftButtonIcon _icon ${leftIcon
-						? !isLoading
-							? leftIcon
-							: 'fa fa-circle-notch fa-spin'
-						: 'fa fa-circle-notch hide'
+					? !isLoading
+						? leftIcon
+						: 'fa fa-circle-notch fa-spin'
+					: 'fa fa-circle-notch hide'
 					}`}
 			>
 				<SubHelperComponent
@@ -524,6 +524,7 @@ const component: Component = {
 	],
 	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: styleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

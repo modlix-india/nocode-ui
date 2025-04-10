@@ -543,6 +543,7 @@ const component: Component = {
 		},
 	],
 	stylePropertiesForTheme: styleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;
