@@ -652,16 +652,17 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			if (e.key === 'Delete' || e.key === 'Backspace') {
 				e.preventDefault();
 				if (e.metaKey && e.shiftKey) {
+					// Cmd + Shift + Delete: Move children up and delete
 					operations.moveChildrenUpAndDelete(selectedComponent);
 				} else if (e.metaKey) {
-					// Cmd + Delete: Delete with events
-					operations.deleteComponent(selectedComponent, true);
-				} else if (e.altKey) {
-					// Alt + Delete: Delete children only
-					operations.deleteChildrenOnlyAndSetStore(selectedComponent);
-				} else {
-					// Delete: Normal delete
+					// Cmd + Delete: Normal delete without events
 					operations.deleteComponent(selectedComponent, false);
+				} else if (e.altKey) {
+					// Alt/Option + Delete: Delete children only
+					operations.deleteChildrenOnlyAndSetStore(selectedComponent);
+				} else if (e.ctrlKey) {
+					// Ctrl + Delete: Delete with events
+					operations.deleteComponent(selectedComponent, true);
 				}
 			}
 
