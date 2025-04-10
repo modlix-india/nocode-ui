@@ -47,6 +47,8 @@ function Otp(props: Readonly<ComponentProps>) {
 			otpLength,
 			valueType,
 			supportingText,
+			maskValue,
+			maskStyle,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -132,25 +134,23 @@ function Otp(props: Readonly<ComponentProps>) {
 	const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
 		e.preventDefault();
 		const pastedData = e.clipboardData.getData('text');
-		if(!isValidInputValue(pastedData, valueType)) return;
+		if (!isValidInputValue(pastedData, valueType)) return;
 		let newValueArray = value?.split('');
-		for(let i=0; i< Math.min(pastedData.length, otpLength-index); i++) {
-				newValueArray[index+i] = pastedData[i];
+		for (let i = 0; i < Math.min(pastedData.length, otpLength - index); i++) {
+			newValueArray[index + i] = pastedData[i];
 		}
-		const newValue = newValueArray.join('')
-		if(bindingPathPath !== undefined) {
+		const newValue = newValueArray.join('');
+		if (bindingPathPath !== undefined) {
 			setData(bindingPathPath, newValue, context?.pageName);
-		}
-		else {
+		} else {
 			setValue(newValue);
 		}
-		if(index + pastedData.length < otpLength) {
+		if (index + pastedData.length < otpLength) {
 			const target = e.target as HTMLInputElement;
 			if (target.nextSibling instanceof HTMLInputElement)
 				(target.nextSibling as HTMLInputElement).focus();
-	}
-	
-}
+		}
+	};
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: any) => {
 		setIsDirty(true);
@@ -199,18 +199,18 @@ function Otp(props: Readonly<ComponentProps>) {
 				if (nextSibling) {
 					nextSibling?.focus();
 				}
-			}else if (e.key === 'Backspace') {
+			} else if (e.key === 'Backspace') {
 				let newValueArray = value?.split('');
 				newValueArray[index] = ' ';
 				const allEmpty = newValueArray.every(char => char === ' ');
 				const newValue = allEmpty ? '' : newValueArray.join('');
-				
+
 				if (bindingPathPath !== undefined) {
 					setData(bindingPathPath, newValue, context?.pageName);
 				} else {
 					setValue(newValue);
 				}
-			
+
 				if (index > 0) {
 					e.preventDefault();
 					if (target.previousSibling instanceof HTMLInputElement) {
@@ -282,12 +282,22 @@ function Otp(props: Readonly<ComponentProps>) {
 					maxLength={1}
 					key={index}
 					disabled={readOnly}
-					value={index < value.length ? (value[index] == ' ' ? '' : value[index]) : ''}
+					value={
+						index < value.length
+							? value[index] == ' '
+								? ''
+								: maskValue
+									? maskStyle === 'DOT'
+										? '•'
+										: '*'
+									: value[index]
+							: ''
+					}
 					onChange={e => handleChange(e, index)}
 					onFocus={() => handleFocus(index)}
 					onBlur={handleBlur}
 					onKeyDown={handleKeyDown(index)}
-					onPaste={e => handlePaste(e,index)}
+					onPaste={e => handlePaste(e, index)}
 					style={focusBoxIndex === index ? activeStyles : inputStyle}
 					className={`_inputBox ${
 						focusBoxIndex === index && focusBoxIndex != -1 ? '_isActive' : ''
