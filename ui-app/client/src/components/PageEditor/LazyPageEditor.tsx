@@ -646,62 +646,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	);
 
 	useEffect(() => {
-		const handleKeyboardShortcuts = (e: KeyboardEvent) => {
-			if (!selectedComponent) return;
-
-			if (e.key === 'Delete' || e.key === 'Backspace') {
-				e.preventDefault();
-				if (e.metaKey && e.shiftKey) {
-					// Cmd + Shift + Delete: Move children up and delete
-					operations.moveChildrenUpAndDelete(selectedComponent);
-				} else if (e.metaKey) {
-					// Cmd + Delete: Normal delete without events
-					operations.deleteComponent(selectedComponent, false);
-				} else if (e.altKey) {
-					// Alt/Option + Delete: Delete children only
-					operations.deleteChildrenOnlyAndSetStore(selectedComponent);
-				} else if (e.ctrlKey) {
-					// Ctrl + Delete: Delete with events
-					operations.deleteComponent(selectedComponent, true);
-				}
-			}
-
-			// Copy
-			if (e.key === 'c' && e.metaKey && e.altKey) {
-				e.preventDefault();
-				if (e.shiftKey) {
-					// Cmd + Shift + alt + C: Copy with events
-					operations.copy(selectedComponent, true);
-				} else {
-					// Cmd + alt+ C: Copy without events
-					operations.copy(selectedComponent, false);
-				}
-			}
-
-			// Cut cmd + alt + x
-			if (e.key === 'x' && e.metaKey && e.altKey) {
-				e.preventDefault();
-				if (e.shiftKey) {
-					// Cmd + Shift + Alt+ X: Cut with events
-					operations.cut(selectedComponent, true);
-				} else {
-					// Cmd + X: Cut without events
-					operations.cut(selectedComponent, false);
-				}
-			}
-
-			// Paste cmd + alt + v
-			if (e.key === 'v' && e.metaKey && e.altKey) {
-				e.preventDefault();
-				operations.paste(selectedComponent);
-			}
-		};
-
-		document.addEventListener('keydown', handleKeyboardShortcuts);
-		return () => document.removeEventListener('keydown', handleKeyboardShortcuts);
-	}, [selectedComponent, operations]);
-
-	useEffect(() => {
 		if (!defPath) return;
 		const removeListener = addListenerAndCallImmediately(
 			(_, v) => {
