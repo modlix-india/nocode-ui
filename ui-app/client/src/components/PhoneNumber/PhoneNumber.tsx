@@ -129,7 +129,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 					return;
 				}
 				setCountryCode(value);
-				// Find and set the country based on country code
 				const country = SORTED_COUNTRY_LIST.find(c => c.C === value);
 				if (country) {
 					setSelected(country);
@@ -377,18 +376,26 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			tempList = duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
 				topCountries.includes(e.C),
 			);
-			tempList[tempList.length - 1].nextSeperator = true;
+
+			if (tempList.length > 0) {
+				tempList[tempList.length - 1].nextSeperator = true;
+			}
+
 			tempList = [
 				...tempList,
-				...duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
-					countries.includes(e.C),
+				...duplicate(SORTED_COUNTRY_LIST).filter(
+					(e: DropdownOption) => countries.includes(e.C) && !topCountries.includes(e.C),
 				),
 			];
 		} else if (Array.isArray(topCountries)) {
 			tempList = duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
 				topCountries.includes(e.C),
 			);
-			tempList[tempList.length - 1].nextSeperator = true;
+
+			if (tempList.length > 0) {
+				tempList[tempList.length - 1].nextSeperator = true;
+			}
+
 			tempList = [
 				...tempList,
 				...duplicate(SORTED_COUNTRY_LIST).filter(
@@ -404,11 +411,25 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		}
 		setCountryList(tempList);
 
-		if (isFirstRender.current && tempList.length > 0) {
-			setSelected(tempList[0]);
-			lastSelectedCountry.current = tempList[0];
-			if (bindingPathPath2) {
-				setData(bindingPathPath2, tempList[0].C, context?.pageName);
+		if ((isFirstRender.current || !selected) && tempList.length > 0) {
+			let defaultCountry;
+
+			if (tempList.length === 1) {
+				defaultCountry = tempList[0];
+			} else if (Array.isArray(topCountries) && topCountries.length > 0) {
+				defaultCountry = tempList.find(
+					(country: DropdownOption) => country.C === topCountries[0],
+				);
+			} else {
+				defaultCountry = tempList[0];
+			}
+
+			if (defaultCountry) {
+				setSelected(defaultCountry);
+				lastSelectedCountry.current = defaultCountry;
+				if (bindingPathPath2) {
+					setData(bindingPathPath2, defaultCountry.C, context?.pageName);
+				}
 			}
 			isFirstRender.current = false;
 		}
