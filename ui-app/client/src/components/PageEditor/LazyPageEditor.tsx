@@ -667,22 +667,22 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			}
 
 			// Copy
-			if (e.key === 'c' && e.metaKey) {
+			if (e.key === 'c' && e.metaKey && e.altKey) {
 				e.preventDefault();
 				if (e.shiftKey) {
-					// Cmd + Shift + C: Copy with events
+					// Cmd + Shift + alt + C: Copy with events
 					operations.copy(selectedComponent, true);
 				} else {
-					// Cmd + C: Copy without events
+					// Cmd + alt+ C: Copy without events
 					operations.copy(selectedComponent, false);
 				}
 			}
 
-			// Cut
-			if (e.key === 'x' && e.metaKey) {
+			// Cut cmd + alt + x
+			if (e.key === 'x' && e.metaKey && e.altKey) {
 				e.preventDefault();
 				if (e.shiftKey) {
-					// Cmd + Shift + X: Cut with events
+					// Cmd + Shift + Alt+ X: Cut with events
 					operations.cut(selectedComponent, true);
 				} else {
 					// Cmd + X: Cut without events
@@ -690,8 +690,8 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				}
 			}
 
-			// Paste
-			if (e.key === 'v' && e.metaKey) {
+			// Paste cmd + alt + v
+			if (e.key === 'v' && e.metaKey && e.altKey) {
 				e.preventDefault();
 				operations.paste(selectedComponent);
 			}
