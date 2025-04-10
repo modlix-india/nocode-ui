@@ -16,7 +16,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import ColorPickerStyle from './ColorPickerStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './colorPickerProperties';
-import { styleDefaults } from './colorPickerStyleProperties';
+import { styleProperties, styleDefaults } from './colorPickerStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { CommonColorPicker } from '../../commonComponents/CommonColorPicker';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -449,6 +449,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

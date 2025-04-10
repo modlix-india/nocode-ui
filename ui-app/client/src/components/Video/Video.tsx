@@ -8,7 +8,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './videoStyleProperties';
+import { styleProperties, styleDefaults } from './videoStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
 
@@ -756,6 +756,7 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

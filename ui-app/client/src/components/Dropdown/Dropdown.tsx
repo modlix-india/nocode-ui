@@ -26,7 +26,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
-import { styleDefaults } from './dropdownStyleProperties';
+import { styleProperties, styleDefaults } from './dropdownStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 
@@ -35,11 +35,11 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [searchDropdownData, setSearchDropdownData] = useState<
 		Array<
 			| {
-					label: any;
-					value: any;
-					key: any;
-					originalObjectKey: any;
-			  }
+				label: any;
+				value: any;
+				key: any;
+				originalObjectKey: any;
+			}
 			| undefined
 		>
 	>();
@@ -314,9 +314,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			return vals.join(', ');
 		}
 
-		return `${selectedDataKey?.length} Item${
-			(selectedDataKey?.length ?? 0) > 1 ? 's' : ''
-		}  selected`;
+		return `${selectedDataKey?.length} Item${(selectedDataKey?.length ?? 0) > 1 ? 's' : ''
+			}  selected`;
 	}, [selected, selectedDataKey, dropdownData, isMultiSelect, showMultipleSelectedValues]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -365,19 +364,19 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const scrollEndEvent =
 		onScrollReachedEnd && props.pageDefinition.eventFunctions?.[onScrollReachedEnd]
 			? async (e: UIEvent<HTMLDivElement>) => {
-					const target = e.target as HTMLDivElement;
+				const target = e.target as HTMLDivElement;
 
-					if (Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) > 2)
-						return;
+				if (Math.abs(target.scrollHeight - target.scrollTop - target.clientHeight) > 2)
+					return;
 
-					await runEvent(
-						props.pageDefinition.eventFunctions?.[onScrollReachedEnd],
-						key,
-						context.pageName,
-						locationHistory,
-						props.pageDefinition,
-					);
-				}
+				await runEvent(
+					props.pageDefinition.eventFunctions?.[onScrollReachedEnd],
+					key,
+					context.pageName,
+					locationHistory,
+					props.pageDefinition,
+				);
+			}
 			: undefined;
 
 	const [isAtBottom, setIsAtBottom] = useState(false);
@@ -479,9 +478,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 					return (
 						<div
-							className={`_dropdownItem ${
-								isOptionSelected ? '_selected' : ''
-							} ${each.key === hoverKey ? '_hover' : ''} ${selectedOptionTickPlace}`} // because of default className the background-color is not changing on hover to user defined.
+							className={`_dropdownItem ${isOptionSelected ? '_selected' : ''
+								} ${each.key === hoverKey ? '_hover' : ''} ${selectedOptionTickPlace}`} // because of default className the background-color is not changing on hover to user defined.
 							style={computedStyles.dropdownItem ?? {}}
 							key={each?.key}
 							onMouseEnter={() => setHoverKey(each?.key)}
@@ -765,6 +763,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -14,7 +14,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './linkPropertie
 import LinkStyle from './LinkStyle';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
-import { styleDefaults } from './linkStyleProperties';
+import { styleProperties, styleDefaults } from './linkStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function Link(props: Readonly<ComponentProps>) {
@@ -58,15 +58,15 @@ function Link(props: Readonly<ComponentProps>) {
 	);
 	const handleClick = clickEvent
 		? () => {
-				(async () =>
-					await runEvent(
-						clickEvent,
-						key,
-						props.context.pageName,
-						props.locationHistory,
-						props.pageDefinition,
-					))();
-			}
+			(async () =>
+				await runEvent(
+					clickEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		}
 		: undefined;
 
 	const visitedStyle = processComponentStylePseudoClasses(
@@ -108,9 +108,8 @@ function Link(props: Readonly<ComponentProps>) {
 		<></>
 	);
 
-	const styleKey = `${key}_${
-		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
-	}`;
+	const styleKey = `${key}_${locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+		}`;
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
@@ -140,9 +139,8 @@ function Link(props: Readonly<ComponentProps>) {
 			{styleComp}
 			<a
 				id={`_${styleKey}link_css`}
-				className={`comp compLink ${designType} ${colorScheme} ${
-					showLines ? '_showLines' : ''
-				}`}
+				className={`comp compLink ${designType} ${colorScheme} ${showLines ? '_showLines' : ''
+					}`}
 				href={resolvedLink}
 				target={target}
 				onClick={e => {
@@ -232,6 +230,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

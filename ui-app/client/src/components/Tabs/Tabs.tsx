@@ -16,7 +16,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import { runEvent } from '../util/runEvent';
 import TabsStyles from './TabsStyle';
-import { styleDefaults } from './tabsStyleProperties';
+import { styleProperties, styleDefaults } from './tabsStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { isNullValue } from '@fincity/kirun-js';
 
@@ -108,13 +108,13 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 
 	const handleOnChange = onChangeTabEvent
 		? async () =>
-				await runEvent(
-					onChangeTabEvent,
-					onTabChange,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				)
+			await runEvent(
+				onChangeTabEvent,
+				onTabChange,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			)
 		: undefined;
 
 	const handleClick = async (key: string) => {
@@ -135,8 +135,8 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0);
 			return v === 0
 				? (pageDefinition.componentDefinition[a[0]]?.key ?? '').localeCompare(
-						pageDefinition.componentDefinition[b[0]]?.key ?? '',
-					)
+					pageDefinition.componentDefinition[b[0]]?.key ?? '',
+				)
 				: v;
 		})[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
@@ -197,11 +197,10 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 							<div
 								key={e}
 								ref={el => (tabRefs.current[i] = el)}
-								className={`tabDiv ${tabNameOrientation} ${
-									hover === i || (hover === -1 && activeTab === e)
-										? '_active'
-										: ''
-								}`}
+								className={`tabDiv ${tabNameOrientation} ${hover === i || (hover === -1 && activeTab === e)
+									? '_active'
+									: ''
+									}`}
 								style={
 									hover === i || activeTab === e
 										? (resolvedStylesWithHover.tab ?? {})
@@ -402,6 +401,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

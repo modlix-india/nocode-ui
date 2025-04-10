@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
 import PageEditorStyle from './PageEditorStyle';
-import { styleDefaults } from './pageEditorStyleProperties';
+import { styleProperties, styleDefaults } from './pageEditorStyleProperties';
 
 const LazyPageEditor = React.lazy(
 	() => import(/* webpackChunkName: "PageEditor" */ './LazyPageEditor'),
@@ -82,6 +82,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -5,7 +5,7 @@ export function lazyStylePropertyLoadFunction(
 	name: string,
 	setStyleProperties: (styleProperties: Array<StylePropertyDefinition>) => void,
 	styleDefaults: Map<string, string>,
-	props: Array<ComponentPropertyDefinition>,
+	props?: Array<ComponentPropertyDefinition>,
 ) {
 	return () => {
 		if (styleDefaults.size > 0) return;
@@ -63,7 +63,7 @@ export function findPropertyDefinitions(propertiesDefinition: Array<ComponentPro
 	return defs;
 }
 
-export function inflateStyleProps(props: Array<StylePropertyDefinition>, valuesNames: Array<{ propName: string, enumValues: Array<{ sel: string, name: string }> }>): Array<StylePropertyDefinition> {
+export function inflateStyleProps(props: Array<StylePropertyDefinition>, valuesNames: Array<{ propName: string, enumValues: Array<{ sel: string, name: string }> }> | undefined): Array<StylePropertyDefinition> {
 
 	if (!valuesNames?.length) return props;
 

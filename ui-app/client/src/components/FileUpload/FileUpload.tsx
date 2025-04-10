@@ -24,7 +24,7 @@ import { returnFileSize } from '../util/getFileSize';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
 import { ToArray } from '../../util/csvUtil';
-import { styleDefaults } from './fileUploadStyleProperties';
+import { styleProperties, styleDefaults } from './fileUploadStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import binaryToBase64Encode from '../../util/binaryToBase64Encode';
 
@@ -68,7 +68,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	const {
 		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4, bindingPath5 },
 		definition,
-		pageDefinition: {},
+		pageDefinition: { },
 		locationHistory,
 		context,
 	} = props;
@@ -132,13 +132,13 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		const msgs = validation?.length
 			? validate(
-					props.definition,
-					props.pageDefinition,
-					validation,
-					fileValue,
-					locationHistory,
-					pageExtractor,
-				)
+				props.definition,
+				props.pageDefinition,
+				validation,
+				fileValue,
+				locationHistory,
+				pageExtractor,
+			)
 			: [];
 		if (msgs.length) {
 			setValidationMessages(msgs);
@@ -395,17 +395,17 @@ function FileUpload(props: Readonly<ComponentProps>) {
 				{!uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
 				{uploadViewType !== '_only_icon_design2'
 					? [
-							fileContainer ? (
-								fileContainer
-							) : (
-								<span className="_mainText" key="_mainText">
-									{mainText}
-								</span>
-							),
-							<span className="_subtext" key="_subText">
-								{subText}
-							</span>,
-						]
+						fileContainer ? (
+							fileContainer
+						) : (
+							<span className="_mainText" key="_mainText">
+								{mainText}
+							</span>
+						),
+						<span className="_subtext" key="_subText">
+							{subText}
+						</span>,
+					]
 					: null}
 				{uploadViewType?.startsWith('_only_icon') ? inputContainer : null}
 			</label>
@@ -422,9 +422,8 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	return [
 		<div
 			key={'fileUpload'}
-			className={`comp compFileUpload ${
-				hideSelectedFileName ? '_onlyButton' : ''
-			} ${uploadViewType} ${colorScheme}`}
+			className={`comp compFileUpload ${hideSelectedFileName ? '_onlyButton' : ''
+				} ${uploadViewType} ${colorScheme}`}
 			style={computedStyles?.comp ?? {}}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
 			onMouseLeave={
@@ -543,6 +542,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

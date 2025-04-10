@@ -23,7 +23,7 @@ import { useLocation } from 'react-router-dom';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
 import ImageBrowser from './ImageBrowser';
-import { styleDefaults } from './imageWithBrowserStyleProperties';
+import { styleProperties, styleDefaults } from './imageWithBrowserStyleProperties';
 import getSrcUrl from '../util/getSrcUrl';
 import { IconHelper } from '../util/IconHelper';
 
@@ -237,6 +237,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

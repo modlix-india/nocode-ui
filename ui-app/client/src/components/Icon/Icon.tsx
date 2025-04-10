@@ -6,7 +6,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './iconPropertie
 import IconStyle from './IconStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { styleDefaults } from './iconStyleProperies';
+import { styleProperties, styleDefaults } from './iconStyleProperies';
 import { IconHelper } from '../util/IconHelper';
 
 function Icon(props: Readonly<ComponentProps>) {
@@ -76,6 +76,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

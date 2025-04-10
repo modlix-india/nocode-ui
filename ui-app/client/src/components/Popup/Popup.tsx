@@ -17,7 +17,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import { styleDefaults } from './popupStyleProperties';
+import { styleProperties, styleDefaults } from './popupStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function Popup(props: Readonly<ComponentProps>) {
@@ -304,6 +304,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

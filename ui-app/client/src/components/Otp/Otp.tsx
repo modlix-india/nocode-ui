@@ -19,7 +19,7 @@ import { isNullValue } from '@fincity/kirun-js';
 import { validate } from '../../util/validationProcessor';
 import { flattenUUID } from '../util/uuid';
 import { IconHelper } from '../util/IconHelper';
-import { styleDefaults } from './otpStyleProperties';
+import { styleProperties, styleDefaults } from './otpStyleProperties';
 import OtpInputStyle from './OtpStyle';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
@@ -255,9 +255,8 @@ function Otp(props: Readonly<ComponentProps>) {
 		validationsOrSupportText = (
 			<span
 				style={computedStyles.supportText ?? {}}
-				className={`_supportText ${readOnly ? 'disabled' : ''} ${
-					focusBoxIndex != -1 ? '_supportTextActive' : ''
-				}`}
+				className={`_supportText ${readOnly ? 'disabled' : ''} ${focusBoxIndex != -1 ? '_supportTextActive' : ''
+					}`}
 			>
 				<SubHelperComponent definition={definition} subComponentName="supportText" />
 				{supportingText}
@@ -268,9 +267,8 @@ function Otp(props: Readonly<ComponentProps>) {
 	const activeStyles = computedStyles.activeInputBox ?? {};
 	return (
 		<div
-			className={`comp compOtp ${designType} ${colorScheme} ${readOnly ? '_disabled' : ''} ${
-				hasErrorMessages ? '_hasError' : ''
-			}`}
+			className={`comp compOtp ${designType} ${colorScheme} ${readOnly ? '_disabled' : ''} ${hasErrorMessages ? '_hasError' : ''
+				}`}
 			style={computedStyles.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
@@ -299,13 +297,11 @@ function Otp(props: Readonly<ComponentProps>) {
 					onKeyDown={handleKeyDown(index)}
 					onPaste={e => handlePaste(e, index)}
 					style={focusBoxIndex === index ? activeStyles : inputStyle}
-					className={`_inputBox ${
-						focusBoxIndex === index && focusBoxIndex != -1 ? '_isActive' : ''
-					}${
-						!(focusBoxIndex === index && focus) && value[index]?.trim()?.length
+					className={`_inputBox ${focusBoxIndex === index && focusBoxIndex != -1 ? '_isActive' : ''
+						}${!(focusBoxIndex === index && focus) && value[index]?.trim()?.length
 							? '_hasValue'
 							: ''
-					}`}
+						}`}
 				/>
 			))}
 
@@ -458,6 +454,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

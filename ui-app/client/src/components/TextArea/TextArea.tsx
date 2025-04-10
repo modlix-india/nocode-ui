@@ -16,7 +16,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
-import { styleDefaults } from './textAreaStyleProperties';
+import { styleProperties, styleDefaults } from './textAreaStyleProperties';
 
 interface mapType {
 	[key: string]: any;
@@ -357,6 +357,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

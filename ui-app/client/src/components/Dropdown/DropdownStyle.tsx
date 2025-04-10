@@ -3,33 +3,33 @@ import { usedComponents } from '../../App/usedComponents';
 import { StylePropertyDefinition } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
-import { styleDefaults } from './dropdownStyleProperties';
+import { styleProperties, styleDefaults } from './dropdownStyleProperties';
 
 const PREFIX = '.comp.compDropdown';
 const NAME = 'Dropdown';
 export default function DropdownStyle({
-	theme,
+    theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		globalThis.styleProperties[NAME] ?? [],
-	);
+    const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
+        globalThis.styleProperties[NAME] ?? [],
+    );
 
-	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
-		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
-	}
+    if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
+        globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
+            ({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
+        );
+    }
 
-	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+    useEffect(() => {
+        const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
 
-		if (usedComponents.used(NAME)) fn();
-		usedComponents.register(NAME, fn);
+        if (usedComponents.used(NAME)) fn();
+        usedComponents.register(NAME, fn);
 
-		return () => usedComponents.deRegister(NAME);
-	}, []);
-	const css =
-		`
+        return () => usedComponents.deRegister(NAME);
+    }, []);
+    const css =
+        `
         ${PREFIX} {
             display: flex;
             align-items: center;
@@ -191,5 +191,5 @@ export default function DropdownStyle({
         }
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return <style id="DropdownCss">{css}</style>;
+    return <style id="DropdownCss">{css}</style>;
 }

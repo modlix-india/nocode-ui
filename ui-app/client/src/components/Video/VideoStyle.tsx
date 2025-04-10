@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults } from './videoStyleProperties';
+import { styleDefaults, styleProperties } from './videoStyleProperties';
 import { StylePropertyDefinition } from '../../types/common';
 import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 import { usedComponents } from '../../App/usedComponents';
@@ -8,28 +8,30 @@ import { usedComponents } from '../../App/usedComponents';
 const PREFIX = '.comp.compVideo';
 const NAME = 'Video';
 export default function VideoStyle({
-	theme,
+    theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		globalThis.styleProperties[NAME] ?? [],
-	);
 
-	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
-		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
-	}
+    const [_, setReRender] = useState<number>(Date.now());
 
-	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+    if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
+        styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME])
+        styleProperties.filter((e: any) => !!e.dv)?.map(
+            ({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
+        );
+    }
 
-		if (usedComponents.used(NAME)) fn();
-		usedComponents.register(NAME, fn);
+    useEffect(() => {
+        const fn = lazyStylePropertyLoadFunction(NAME, (props) => { styleProperties.splice(0, 0, ...props); setReRender(Date.now()) }, styleDefaults);
 
-		return () => usedComponents.deRegister(NAME);
-	}, []);
-	const css =
-		` 
+        if (usedComponents.used(NAME)) fn();
+        usedComponents.register(NAME, fn);
+
+        return () => usedComponents.deRegister(NAME);
+    }, [setReRender]);
+
+
+    const css =
+        ` 
     ${PREFIX} {
       position:relative;
    }
@@ -98,5 +100,5 @@ export default function VideoStyle({
     border: none;
   }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
-	return <style id="VideoStyle">{css}</style>;
+    return <style id="VideoStyle">{css}</style>;
 }

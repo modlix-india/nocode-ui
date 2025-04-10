@@ -15,7 +15,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CheckBoxStyle from './CheckBoxStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
-import { styleDefaults } from './checkBoxStyleProperties';
+import { styleProperties, styleDefaults } from './checkBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function CheckBox(props: Readonly<ComponentProps>) {
@@ -41,7 +41,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			hideLabel,
-			
+
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -103,9 +103,8 @@ function CheckBox(props: Readonly<ComponentProps>) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 				}
 				style={resolvedStyles.label ?? {}}
-				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'} ${
-					readOnly ? '_disabled' : ''
-				}`}
+				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'} ${readOnly ? '_disabled' : ''
+					}`}
 				htmlFor={key}
 				onClick={() => handleChange(!checkBoxdata)}
 			>
@@ -203,6 +202,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

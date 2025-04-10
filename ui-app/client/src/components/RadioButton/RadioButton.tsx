@@ -18,7 +18,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonProperties';
 import RadioButtonStyle from './RadioButtonStyle';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './RadioButtonStyleProperties';
+import { styleProperties, styleDefaults } from './RadioButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function RadioButton(props: Readonly<ComponentProps>) {
@@ -166,9 +166,8 @@ function RadioButton(props: Readonly<ComponentProps>) {
 			<HelperComponent context={props.context} definition={definition} />
 			{radioButtonData?.map((e: any) => (
 				<label
-					className={`radioLabel ${
-						orientation === 'VERTICAL' ? 'vertical' : 'horizontal'
-					} ${readOnly ? '_disabled' : ''} ${getIsSelected(e.key) ? '_selected' : ''}`}
+					className={`radioLabel ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'
+						} ${readOnly ? '_disabled' : ''} ${getIsSelected(e.key) ? '_selected' : ''}`}
 					key={e.key}
 					htmlFor={e.key}
 					onMouseEnter={
@@ -301,6 +300,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

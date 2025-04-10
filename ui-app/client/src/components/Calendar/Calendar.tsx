@@ -12,7 +12,7 @@ import { IconHelper } from '../util/IconHelper';
 import { makePropertiesObject } from '../util/make';
 import CalendarStyle from './CalendarStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './calendarProperties';
-import { styleDefaults } from './calendarStyleProperties';
+import { styleProperties, styleDefaults } from './calendarStyleProperties';
 import { getValidDate, validateWithProps } from './components/calendarFunctions';
 import { CalendarValidationProps } from './components/calendarTypes';
 
@@ -312,6 +312,7 @@ const component: Component = {
 			return [];
 		},
 	},
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

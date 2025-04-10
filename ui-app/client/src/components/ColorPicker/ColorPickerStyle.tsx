@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults } from './colorPickerStyleProperties';
+import { styleProperties, styleDefaults } from './colorPickerStyleProperties';
 import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 import { usedComponents } from '../../App/usedComponents';
 import { StylePropertyDefinition } from '../../types/common';
@@ -8,28 +8,28 @@ import { StylePropertyDefinition } from '../../types/common';
 const PREFIX = '.comp.compColorPicker';
 const NAME = 'ColorPicker';
 export default function ColorPickerStyle({
-	theme,
+    theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		globalThis.styleProperties[NAME] ?? [],
-	);
+    const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
+        globalThis.styleProperties[NAME] ?? [],
+    );
 
-	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
-		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
-	}
+    if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
+        globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
+            ({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
+        );
+    }
 
-	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+    useEffect(() => {
+        const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
 
-		if (usedComponents.used(NAME)) fn();
-		usedComponents.register(NAME, fn);
+        if (usedComponents.used(NAME)) fn();
+        usedComponents.register(NAME, fn);
 
-		return () => usedComponents.deRegister(NAME);
-	}, []);
-	const css =
-		`
+        return () => usedComponents.deRegister(NAME);
+    }, []);
+    const css =
+        `
         ${PREFIX} {
             display: flex;
             align-items: center;
@@ -175,5 +175,5 @@ export default function ColorPickerStyle({
 
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return <style id="ColorPickerCss">{css}</style>;
+    return <style id="ColorPickerCss">{css}</style>;
 }
