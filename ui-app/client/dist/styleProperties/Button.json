@@ -102,7 +102,7 @@
 		"sel": ".comp.compButton<designType><colorScheme>._withLeftIcon",
 		"np": true,
 		"spv": {
-			"_decorative": "initial initial initial 37px"
+			"_decorative": "5px 5px 5px 37px"
 		}
 	},
 	{
@@ -113,7 +113,7 @@
 		"sel": ".comp.compButton<designType><colorScheme>._withRightIcon",
 		"np": true,
 		"spv": {
-			"_decorative": "initial 37px initial initial"
+			"_decorative": "5px 37px 5px 5px"
 		}
 	},
 	{
