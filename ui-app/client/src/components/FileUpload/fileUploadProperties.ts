@@ -181,6 +181,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Maximum file size (In bytes)',
 		description: 'You can set a maximum size for a file that the user can upload.',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '1000000',
 	},
 	{
 		name: 'options',
