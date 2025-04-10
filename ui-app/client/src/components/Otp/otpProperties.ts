@@ -30,6 +30,28 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED	,
 		defaultValue: false,
 	},
+	{
+		name: 'maskStyle',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Mask Style',
+		description: 'Style of the mask character',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'DOT',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: 'DOT',
+				displayName: 'Dot',
+				description: 'Mask with dot (•)',
+			},
+			{
+				name: 'ASTERISK',
+				displayName: 'Asterisk',
+				description: 'Mask with asterisk (*)',
+			}
+		],
+	},
+	
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 

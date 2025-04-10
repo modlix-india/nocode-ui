@@ -48,6 +48,7 @@ function Otp(props: Readonly<ComponentProps>) {
 			valueType,
 			supportingText,
 			maskValue,
+			maskStyle,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -286,7 +287,9 @@ function Otp(props: Readonly<ComponentProps>) {
 							? value[index] == ' '
 								? ''
 								: maskValue
-									? '*'
+									? maskStyle === 'DOT'
+										? '•'
+										: '*'
 									: value[index]
 							: ''
 					}
