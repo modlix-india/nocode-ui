@@ -45,6 +45,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'sandbox',
 		group: ComponentPropertyGroup.ADVANCED,
+		multiValued:true,
 		description: 'Applies extra restrictions to the content in the frame. ',
 		enumValues: [
 			{
