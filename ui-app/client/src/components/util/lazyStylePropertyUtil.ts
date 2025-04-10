@@ -32,9 +32,6 @@ export function lazyStylePropertyLoadFunction(
 			}));
 
 			const styleProps = inflateStyleProps(res.data, valuesNames);
-
-			if (props?.length) console.log(styleProps);
-
 			setStyleProperties(styleProps);
 
 			styleProps
