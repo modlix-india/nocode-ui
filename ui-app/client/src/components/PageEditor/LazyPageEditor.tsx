@@ -398,7 +398,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		],
 	);
 
-	// On changing the definition of the page, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
@@ -646,7 +645,61 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		[slaveStore],
 	);
 
-	// Use effect to see if editor is closed abruptly.
+	useEffect(() => {
+		const handleKeyboardShortcuts = (e: KeyboardEvent) => {
+			if (!selectedComponent) return;
+
+			if (e.key === 'Delete' || e.key === 'Backspace') {
+				e.preventDefault();
+				if (e.metaKey && e.shiftKey) {
+					operations.moveChildrenUpAndDelete(selectedComponent);
+				} else if (e.metaKey) {
+					// Cmd + Delete: Delete with events
+					operations.deleteComponent(selectedComponent, true);
+				} else if (e.altKey) {
+					// Alt + Delete: Delete children only
+					operations.deleteChildrenOnlyAndSetStore(selectedComponent);
+				} else {
+					// Delete: Normal delete
+					operations.deleteComponent(selectedComponent, false);
+				}
+			}
+
+			// Copy
+			if (e.key === 'c' && e.metaKey) {
+				e.preventDefault();
+				if (e.shiftKey) {
+					// Cmd + Shift + C: Copy with events
+					operations.copy(selectedComponent, true);
+				} else {
+					// Cmd + C: Copy without events
+					operations.copy(selectedComponent, false);
+				}
+			}
+
+			// Cut
+			if (e.key === 'x' && e.metaKey) {
+				e.preventDefault();
+				if (e.shiftKey) {
+					// Cmd + Shift + X: Cut with events
+					operations.cut(selectedComponent, true);
+				} else {
+					// Cmd + X: Cut without events
+					operations.cut(selectedComponent, false);
+				}
+			}
+
+			// Paste
+			if (e.key === 'v' && e.metaKey) {
+				e.preventDefault();
+				operations.paste(selectedComponent);
+			}
+		};
+
+		document.addEventListener('keydown', handleKeyboardShortcuts);
+		return () => document.removeEventListener('keydown', handleKeyboardShortcuts);
+	}, [selectedComponent, operations]);
+
 	useEffect(() => {
 		if (!defPath) return;
 		const removeListener = addListenerAndCallImmediately(
@@ -686,7 +739,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		return removeListener;
 	}, [defPath, setIssue]);
 
-	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
 
 	return (
