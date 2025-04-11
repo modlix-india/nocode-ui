@@ -57,7 +57,7 @@ function TutorialIcons({ tutorial, onInfoClick }: TutorialIconsProps) {
 				onInfoClick();
 			}}
 		>
-			<svg width="15" height="15">
+			<svg width="15" height="15" viewBox="0 0 15 15">
 				<path
 					d="M7.5 1.25C4.05 1.25 1.25 4.05 1.25 7.5C1.25 10.95 4.05 13.75 7.5 13.75C10.95 13.75 13.75 10.95 13.75 7.5C13.75 4.05 10.95 1.25 7.5 1.25ZM8.125 11.25H6.875V6.875H8.125V11.25ZM8.125 5.625H6.875V4.375H8.125V5.625Z"
 					fill="#999"
@@ -122,7 +122,7 @@ function TutorialTooltip({ componentName, tutorial, onClose, style }: TutorialTo
 								allowFullScreen
 							/>
 						) : (
-							<video autoPlay loop muted playsInline>
+							<video className="_video" autoPlay loop muted playsInline>
 								<source src={tutorial.demoVideo} type="video/mp4" />
 							</video>
 						)}
