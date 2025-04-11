@@ -268,7 +268,9 @@ export function IconSelectionEditor2({
 				))}
 				{groupOptions.dropdownOptions.length > 0 && (
 					<div className="_moreOptionsDropdown">
-						<i className="fa fa-ellipsis-h" />
+						<div className="_iconSelectionButton">
+							<i className="fa fa-ellipsis-h" />
+						</div>
 						<div className="_dropdownContent">
 							{groupOptions.dropdownOptions.map(option => (
 								<i
@@ -390,18 +392,10 @@ export function IconSelectionEditor2({
 					onClick={() => setShowIconBrowser(true)}
 				/>
 			</div>
-			<div className="_iconSelectionButtons">
-				{renderOptionGroup(styleOptions, setStyleOptions, 'Style')}
-			</div>
-			<div className="_iconSelectionButtons">
-				{renderOptionGroup(sizeOptions, setSizeOptions, 'Size')}
-			</div>
-			<div className="_iconSelectionButtons">
-				{renderOptionGroup(rotateOptions, setRotateOptions, 'Rotate')}
-			</div>
-			<div className="_iconSelectionButtons">
-				{renderOptionGroup(flipOptions, setFlipOptions, 'Flip')}
-			</div>
+			{renderOptionGroup(styleOptions, setStyleOptions, 'Style')}
+			{renderOptionGroup(sizeOptions, setSizeOptions, 'Size')}
+			{renderOptionGroup(rotateOptions, setRotateOptions, 'Rotate')}
+			{renderOptionGroup(flipOptions, setFlipOptions, 'Flip')}
 			{popup}
 		</div>
 	);

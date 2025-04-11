@@ -2499,7 +2499,7 @@ input._peInput[type='number'] {
 	gap: 10px;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 8px;
+	margin: 4px;
 }
 
 .comp.compPageEditor ._iconSelectionButtons ._optionLabel {
@@ -2528,11 +2528,12 @@ input._peInput[type='number'] {
     min-width: 60px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
-    padding: 8px;
+    padding: 4px;
 }
 
 .comp.compPageEditor ._moreOptionsDropdown:hover ._dropdownContent {
     display: block;
+	gap: 4px;
 }
 
 .comp.compPageEditor ._moreOptionsDropdown ._dropdownContent ._iconSelectionButton {
