@@ -105,6 +105,10 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 
 	const iframeComp = theme ? <iframe className={`_${device}`} ref={iFrameRef} src={`/${theme.appCode}/${theme.clientCode}/page/`} title="Theme Editor" /> : null;
 
+	const modlix = <svg className="_iconHelperSVG " viewBox="0 0 453 453" fill="none" xmlns="http://www.w3.org/2000/svg">
+		<path d="M363.87 0H88.63C39.681 0 0 39.681 0 88.63V363.87C0 412.819 39.681 452.5 88.63 452.5H363.87C412.819 452.5 452.5 412.819 452.5 363.87V88.63C452.5 39.681 412.819 0 363.87 0Z" fill="black" />
+		<path d="M247.72 160.248V133.658L226.25 113.648L204.78 133.658V160.248C115.66 170.918 45.3503 247.088 44.3203 338.858H44.3503C59.0403 333.638 73.7303 328.418 88.4203 323.198C96.0303 261.688 143.85 212.638 204.77 203.188V278.418L226.26 263.188L247.7 278.418V203.188C308.62 212.638 356.45 261.688 364.05 323.198C378.74 328.418 393.43 333.638 408.12 338.858H408.15C407.12 247.088 336.81 170.918 247.69 160.248H247.72Z" fill="white" />
+	</svg>;
 
 	return <div className="comp compThemeEditor" style={resolvedStyles.comp ?? {}}>
 		<HelperComponent context={context} definition={definition} />
@@ -138,10 +142,10 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 			<div className="_compsVariables">
 				<div className="_components">
 					<button onClick={() => setCurrentComponent('_app')} className={`_component ${currentComponent === '_app' ? '_active' : ''}`}>
-						<svg className="_iconHelperSVG " viewBox="0 0 453 453" fill="none" xmlns="http://www.w3.org/2000/svg">
-							<path d="M363.87 0H88.63C39.681 0 0 39.681 0 88.63V363.87C0 412.819 39.681 452.5 88.63 452.5H363.87C412.819 452.5 452.5 412.819 452.5 363.87V88.63C452.5 39.681 412.819 0 363.87 0Z" fill="black" />
-							<path d="M247.72 160.248V133.658L226.25 113.648L204.78 133.658V160.248C115.66 170.918 45.3503 247.088 44.3203 338.858H44.3503C59.0403 333.638 73.7303 328.418 88.4203 323.198C96.0303 261.688 143.85 212.638 204.77 203.188V278.418L226.26 263.188L247.7 278.418V203.188C308.62 212.638 356.45 261.688 364.05 323.198C378.74 328.418 393.43 333.638 408.12 338.858H408.15C407.12 247.088 336.81 170.918 247.69 160.248H247.72Z" fill="white" />
-						</svg> App
+						{modlix} App
+					</button>
+					<button onClick={() => setCurrentComponent('_message')} className={`_component ${currentComponent === '_message' ? '_active' : ''}`}>
+						{modlix} Messages
 					</button>
 					{Array.from(ComponentDefinitions.values()).filter(e => e.stylePropertiesForTheme.length).filter(e => !e.isHidden).map(comp => (
 						<button key={comp.name} onClick={() => setCurrentComponent(comp.name)} className={`_component ${comp.name === currentComponent ? '_active' : ''}`}>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './buttonStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './buttonStyleProperties';
 import { propertiesDefinition } from './buttonProperties';
 import { usedComponents } from '../../App/usedComponents';
 import { findPropertyDefinitions, lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
@@ -22,7 +22,11 @@ export default function ButtonStyle({
 
 	useEffect(() => {
 		const { designType, colorScheme } = findPropertyDefinitions(propertiesDefinition, 'designType', 'colorScheme');
-		const fn = lazyStylePropertyLoadFunction(NAME, (props) => { styleProperties.splice(0, 0, ...props); setReRender(Date.now()) }, styleDefaults, [designType, colorScheme]);
+		const fn = lazyStylePropertyLoadFunction(NAME, (props, originalStyleProps) => {
+			styleProperties.splice(0, 0, ...props);
+			if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+			setReRender(Date.now())
+		}, styleDefaults, [designType, colorScheme]);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);

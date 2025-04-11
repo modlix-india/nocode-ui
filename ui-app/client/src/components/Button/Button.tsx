@@ -14,7 +14,7 @@ import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
-import { styleProperties, styleDefaults } from './buttonStyleProperties';
+import { styleDefaults, stylePropertiesForTheme } from './buttonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
@@ -56,8 +56,8 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-			onClick,
-		)}.isRunning`
+				onClick,
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -137,12 +137,13 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		rightIconTag = (
 			<i
 				style={styleProperties.rightIcon ?? {}}
-				className={`_rightButtonIcon _icon ${rightIcon
-					? !isLoading
-						? rightIcon
-						: 'fa fa-circle-notch fa-spin'
-					: 'fa fa-circle-notch hide'
-					}`}
+				className={`_rightButtonIcon _icon ${
+					rightIcon
+						? !isLoading
+							? rightIcon
+							: 'fa fa-circle-notch fa-spin'
+						: 'fa fa-circle-notch hide'
+				}`}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -153,7 +154,6 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	}
 
 	const hasLeftIcon = leftIcon || leftImage || isLoading;
-
 
 	let leftIconTag = undefined;
 	if (leftImage) {
@@ -175,12 +175,13 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		leftIconTag = (
 			<i
 				style={styleProperties.leftIcon ?? {}}
-				className={`_leftButtonIcon _icon ${leftIcon
-					? !isLoading
-						? leftIcon
-						: 'fa fa-circle-notch fa-spin'
-					: 'fa fa-circle-notch hide'
-					}`}
+				className={`_leftButtonIcon _icon ${
+					leftIcon
+						? !isLoading
+							? leftIcon
+							: 'fa fa-circle-notch fa-spin'
+						: 'fa fa-circle-notch hide'
+				}`}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -409,8 +410,9 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 
 	return (
 		<button
-			className={`comp compButton button ${designType} ${colorScheme} ${hasLeftIcon ? '_withLeftIcon' : ''
-				} ${hasRightIcon ? '_withRightIcon' : ''}`}
+			className={`comp compButton button ${designType} ${colorScheme} ${
+				hasLeftIcon ? '_withLeftIcon' : ''
+			} ${hasRightIcon ? '_withRightIcon' : ''}`}
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
@@ -434,7 +436,11 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
-const { designType, colorScheme } = findPropertyDefinitions(propertiesDefinition, 'designType', 'colorScheme');
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 4,
@@ -523,7 +529,7 @@ const component: Component = {
 		},
 	],
 	propertiesForTheme: [designType, colorScheme],
-	stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 

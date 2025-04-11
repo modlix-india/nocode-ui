@@ -3,7 +3,7 @@ import { ComponentPropertyDefinition, StylePropertyDefinition } from '../../type
 
 export function lazyStylePropertyLoadFunction(
 	name: string,
-	setStyleProperties: (styleProperties: Array<StylePropertyDefinition>) => void,
+	setStyleProperties: (styleProperties: Array<StylePropertyDefinition>, originalStyleProps?: Array<StylePropertyDefinition>) => void,
 	styleDefaults: Map<string, string>,
 	props?: Array<ComponentPropertyDefinition>,
 ) {
@@ -32,7 +32,7 @@ export function lazyStylePropertyLoadFunction(
 			}));
 
 			const styleProps = inflateStyleProps(res.data, valuesNames);
-			setStyleProperties(styleProps);
+			setStyleProperties(styleProps, props?.length ? res.data : undefined);
 
 			styleProps
 				?.filter((e: any) => !!e.dv)
@@ -102,7 +102,7 @@ export function inflateStyleProps(props: Array<StylePropertyDefinition>, valuesN
 	});
 }
 
-function removeSpecialCharsAndMakeFirstLetterCap(name: string) {
+export function removeSpecialCharsAndMakeFirstLetterCap(name: string) {
 	const x = name.replace(/[^a-zA-Z0-9]/g, '');
 	return x[0].toUpperCase() + x.slice(1);
 }

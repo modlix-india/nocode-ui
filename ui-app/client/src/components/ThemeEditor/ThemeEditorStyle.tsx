@@ -212,6 +212,7 @@ export default function ThemeEditorStyle({
         gap: 10px;
         padding: 10px;
         border-bottom: 2px solid #EEE8;
+        flex-direction: column;
     }
 
     ${PREFIX} ._searchBar {
