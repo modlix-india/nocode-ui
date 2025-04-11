@@ -14,7 +14,7 @@ import ComponentDefinitions from '../index';
 import useDefinition from '../util/useDefinition';
 import { DesktopIcon, MobileIcon, TabletIcon } from './components/ThemeEditorIcons';
 import { propertiesDefinition, stylePropertiesDefinition } from './themeEditorProperties';
-import Variables from './components/Variables';
+import { Variables } from './components/Variables';
 
 export default function ThemeEditor(props: Readonly<ComponentProps>) {
 
@@ -59,11 +59,35 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
+
+		function onMessageFromSlave(e: any) {
+			const {
+				data: { type },
+			} = e;
+
+			if (!type?.startsWith('SLAVE_') || !iFrameRef.current) return;
+
+			if (type === 'SLAVE_STARTED') {
+				iFrameRef.current?.contentWindow?.postMessage({
+					type: 'EDITOR_TYPE',
+					payload: { type: 'THEME_EDITOR' },
+				});
+				const msg = {
+					type: 'EDITOR_APP_THEME',
+					payload: getDataFromPath(bindingPathPath, locationHistory, pageExtractor),
+				};
+				iFrameRef.current?.contentWindow?.postMessage(msg);
+			}
+		}
+
+		if (iFrameRef.current) {
+			window.addEventListener('message', onMessageFromSlave);
+		}
+
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
-				console.log('In here...')
 				const msg = {
-					type: 'EDITOR_THEME',
+					type: 'EDITOR_APP_THEME',
 					payload,
 				};
 				iFrameRef.current?.contentWindow?.postMessage(msg);
@@ -126,8 +150,11 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 						</button>
 					))}
 				</div>
-				<Variables theme={theme} device={device} themeGroup={themeGroup} component={currentComponent}
-					onThemeChange={th => setData('theme', th, context.pageName)} />
+				<Variables theme={theme} themeGroup={themeGroup} component={currentComponent}
+					onThemeChange={(props) => {
+						props.forEach(prop => setData(`${bindingPathPath}.variables.${prop.themeGroup}.${prop.variableName}`,
+							prop.value == '' ? undefined : prop.value, context.pageName, true))
+					}} />
 			</div>
 		</div>
 		<div className={`_iframeContainer _${device}`}>

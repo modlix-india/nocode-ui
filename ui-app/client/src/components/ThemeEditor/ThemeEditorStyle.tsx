@@ -132,10 +132,120 @@ export default function ThemeEditorStyle({
         overflow: hidden;
     }
 
+    ${PREFIX} ._variables {
+        flex: 1;
+        box-shadow: inset -3px -3px 4px 4px #EEE4;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    ${PREFIX} ._variableGroups {
+        flex: 1;
+        overflow: auto;
+        display: flex;
+        flex-direction: column;
+    }
+
+    ${PREFIX} ._variableGroup {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 0px;
+        font: 11px/14px Inter;
+    }
+
+    ${PREFIX} ._title {
+        font: 13px Inter;
+        font-weight: 600;
+        padding-bottom: 5px;
+        border-bottom: 2px solid #EEE8;
+        margin-bottom: 5px;
+        color: #555;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+    }
+
+    ${PREFIX} ._caret {
+        width: 12px;
+        height: 12px;
+        transition: transform 0.2s ease-in-out;
+    }
+
+    ${PREFIX} ._caret path {
+        stroke-width: 12px;
+        stroke: #555;
+    }
+
+    ${PREFIX} ._caret._open {
+        transform: rotate(90deg);
+    }
+
     ${PREFIX} ._variable {
         display: flex;
+        gap: 10px;
+        align-items: center;
+        border-radius: 3px;
+        padding: 4px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font: 11px Inter;
+        color: #555;
+    }
+
+     ${PREFIX} ._variable > * {
         flex: 1;
-        overflow: hidden;
+     }
+
+     ${PREFIX} input {
+        border: 2px solid #8e90a41a;
+        border-radius: 3px;
+        color: #333;
+        font: 12px inter;
+        padding: 5px;
+    }
+
+    ${PREFIX} ._filterContainer {
+        display: flex;
+        gap: 10px;
+        padding: 10px;
+        border-bottom: 2px solid #EEE8;
+    }
+
+    ${PREFIX} ._searchBar {
+        display: flex;
+        gap: 10px;
+        padding-top: 7px;
+        align-items: center;
+    }
+    
+    ${PREFIX} ._smallButton {
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0px;
+        border-radius: 2px;
+        width: 20px;
+        height: 20px;
+    }
+
+     ${PREFIX} ._smallButton:hover {
+        background-color: #8e90a41a;
+     }
+
+    ${PREFIX} ._smallButton svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    ${PREFIX} ._smallButton svg path {
+        stroke-width: 2px;
+        stroke: #555;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
     return <style id="ThemeEditorCss">{css}</style>;
