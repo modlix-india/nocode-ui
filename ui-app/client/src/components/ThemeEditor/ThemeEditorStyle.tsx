@@ -67,6 +67,8 @@ export default function ThemeEditorStyle({
         align-items: center;
         padding-top: 10px;
         gap: 5px;
+        padding-bottom: 8px;
+        box-shadow: 1px 1px 3px 3px #EEE4;
     }
 
     ${PREFIX} ._components {
@@ -75,6 +77,7 @@ export default function ThemeEditorStyle({
         overflow: auto;
         padding: 7px;
         flex-direction: column;
+        box-shadow: 1px 1px 3px 3px #EEE8;
     }
 
     ${PREFIX} ._component {
@@ -87,6 +90,8 @@ export default function ThemeEditorStyle({
         background: none;
         height: 30px;
         cursor: pointer;
+        font: 12px Inter;
+        color: #555;
     }
 
     ${PREFIX} ._component:hover, ${PREFIX} ._component._active {
@@ -113,9 +118,24 @@ export default function ThemeEditorStyle({
         background-color: #8e90a41a;
     }
 
+    ${PREFIX} select {
+        height: 24px;
+        border: 2px solid #EEE;
+        border-radius: 4px;
+        font: 12px Inter;
+        color: #777;
+    }
+
+    ${PREFIX} ._compsVariables {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+
     ${PREFIX} ._variable {
-
-
+        display: flex;
+        flex: 1;
+        overflow: hidden;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
     return <style id="ThemeEditorCss">{css}</style>;
