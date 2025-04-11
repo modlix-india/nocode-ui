@@ -36,10 +36,10 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 	[
 		'EDITOR_SELECTION',
 		p =>
-			(globalThis.pageEditor = {
-				...globalThis.pageEditor,
-				selectedComponents: p as string[],
-			}),
+		(globalThis.pageEditor = {
+			...globalThis.pageEditor,
+			selectedComponents: p as string[],
+		}),
 	],
 	[
 		'EDITOR_SUB_SELECTION',
@@ -85,6 +85,14 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 			setData(`${STORE_PREFIX}.theme`, p?.variables);
 		},
 	],
+	[
+		'EDITOR_THEME',
+		p => {
+			if (!p?.variables) return;
+
+			setData(`${STORE_PREFIX}.theme`, p.variables);
+		},
+	]
 ]);
 
 if (globalThis.isDesignMode) {
