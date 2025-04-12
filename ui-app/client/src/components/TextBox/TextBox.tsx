@@ -20,8 +20,9 @@ import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
 import CommonInputText from '../../commonComponents/CommonInputText';
-import { styleProperties, styleDefaults } from './textBoxStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './textBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 const REGEX_NUMBER = /^(?![.,])[0-9.,]+$/;
 
@@ -122,26 +123,26 @@ function TextBox(props: Readonly<ComponentProps>) {
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-			onEnter,
-		)}.isRunning`
+				onEnter,
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath2 = onClear
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-			onClear,
-		)}.isRunning`
+				onClear,
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath3 = onChange
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-			onChange,
-		)}.isRunning`
+				onChange,
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath4 = onLeftIconClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-			onLeftIconClick,
-		)}.isRunning`
+				onLeftIconClick,
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
@@ -149,7 +150,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 			getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor) ||
 			getDataFromPath(spinnerPath3, props.locationHistory, pageExtractor) ||
 			getDataFromPath(spinnerPath4, props.locationHistory, pageExtractor)) ??
-		false,
+			false,
 	);
 
 	useEffect(() => {
@@ -396,25 +397,25 @@ function TextBox(props: Readonly<ComponentProps>) {
 
 	const handleLeftIcon = onLeftIconEvent
 		? async () =>
-			await runEvent(
-				onLeftIconEvent,
-				onLeftIconClick,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			)
+				await runEvent(
+					onLeftIconEvent,
+					onLeftIconClick,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				)
 		: undefined;
 
 	const handleRightIcon = onRightIconEvent
 		? async () => {
-			await runEvent(
-				onRightIconEvent,
-				onRightIconClick,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			);
-		}
+				await runEvent(
+					onRightIconEvent,
+					onRightIconClick,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+			}
 		: undefined;
 
 	const finKey: string = 't_' + key;
@@ -465,9 +466,9 @@ function TextBox(props: Readonly<ComponentProps>) {
 				handleRightIcon={handleRightIcon}
 				showMandatoryAsterisk={
 					showMandatoryAsterisk &&
-						(validation ?? []).find(
-							(e: any) => e.type === undefined || e.type === 'MANDATORY',
-						)
+					(validation ?? []).find(
+						(e: any) => e.type === undefined || e.type === 'MANDATORY',
+					)
 						? true
 						: false
 				}
@@ -475,6 +476,12 @@ function TextBox(props: Readonly<ComponentProps>) {
 		</>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 5,
@@ -569,7 +576,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 
