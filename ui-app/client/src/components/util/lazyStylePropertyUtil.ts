@@ -86,8 +86,8 @@ export function inflateStyleProps(props: Array<StylePropertyDefinition>, valuesN
 
 				for (let k = 0; k < result.length; k++) {
 					const current = { ...result[k] };
-					current.n = current.n.replace(`<${usedEnumNames[i].propName}>`, usedEnumNames[i].enumValues[j].name);
-					current.sel = current.sel?.replace(`<${usedEnumNames[i].propName}>`, `.${usedEnumNames[i].enumValues[j].sel}`);
+					current.n = current.n.replaceAll(`<${usedEnumNames[i].propName}>`, usedEnumNames[i].enumValues[j].name);
+					current.sel = current.sel?.replaceAll(`<${usedEnumNames[i].propName}>`, `.${usedEnumNames[i].enumValues[j].sel}`);
 					current.evu = current.evu ? [...current.evu, usedEnumNames[i].enumValues[j].sel] : [usedEnumNames[i].enumValues[j].sel];
 
 					current.dv = spv?.[current.evu.join('-')] ?? (result[k].evu ? spv?.[result[k].evu!.join('-')] : undefined) ?? result[k].dv;
