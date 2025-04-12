@@ -1,10 +1,10 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import {
-    PageStoreExtractor,
-    addListenerAndCallImmediately,
-    getPathFromLocation,
-    setData,
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getPathFromLocation,
+	setData,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -19,67 +19,113 @@ import { styleProperties, styleDefaults } from './themeEditorStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 const LazyThemeEditor = React.lazy(
-    () => import(/* webpackChunkName: "ThemeEditor" */ './LazyThemeEditor'),
+	() => import(/* webpackChunkName: "ThemeEditor" */ './LazyThemeEditor'),
 );
 function LoadLazyThemeEditor(props: Readonly<ComponentProps>) {
-    return (
-        <Suspense fallback={<>...</>}>
-            <LazyThemeEditor {...props} />
-        </Suspense>
-    );
+	return (
+		<Suspense fallback={<>...</>}>
+			<LazyThemeEditor {...props} />
+		</Suspense>
+	);
 }
 
 const component: Component = {
-    name: 'ThemeEditor',
-    displayName: 'Theme Editor',
-    description: 'Theme component',
-    styleComponent: ThemeEditorStyle,
-    styleDefaults: styleDefaults,
-    component: LoadLazyThemeEditor,
-    propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
-    properties: propertiesDefinition,
-    styleProperties: stylePropertiesDefinition,
-    bindingPaths: {
-        bindingPath: { name: 'Theme Binding' }
-    },
-    stylePseudoStates: [],
-    defaultTemplate: {
-        key: '',
-        name: 'Theme Editor',
-        type: 'ThemeEditor',
-        properties: {},
-    },
-    subComponentDefinition: [
-        {
-            name: '',
-            displayName: 'Component',
-            description: 'Component',
-            icon: (
-                <IconHelper viewBox="0 0 30 30">
-                    <path
-                        d="M25.2667 0H4.76667C2.13333 0 0 2.13333 0 4.76667V25.2667C0 27.8667 2.13333 30 4.76667 30H25.2667C27.8667 30 30 27.8667 30 25.2667V4.76667C30 2.13333 27.8667 0 25.2667 0ZM23.7333 11.9667L14 21.7C13.6667 22.0333 13.2333 22.2 12.8333 22.2C12.4333 22.2 11.9667 22.0333 11.6667 21.7L6.26667 16.3C5.6 15.6333 5.6 22.1 6.26667 21.4333C6.93333 20.7667 7.96667 20.7667 8.63333 21.4333L12.8667 25.6667L26.25 10.3125C26.9167 9.64583 23.1333 8.93333 23.8 9.6C24.4 10.2667 24.4 11.3333 23.7333 11.9667Z"
-                        fill="#02B694"
-                    />
-                    <path
-                        d="M21.6216 12.1883L14.2559 19.6183C14.0288 19.8728 13.6757 20 13.373 20C13.0703 20 12.7423 19.8728 12.4901 19.6183L8.37838 15.5216C7.87387 15.0127 7.87387 14.2239 8.37838 13.715C8.88288 13.2061 9.66486 13.2061 10.1694 13.715L13.373 16.9211L19.8306 10.3817C20.3351 9.87277 21.1171 9.87277 21.6216 10.3817C22.1261 10.8906 22.1261 11.6794 21.6216 12.1883Z"
-                        fill="white"
-                        className="_checkboxTick"
-                    />
-                    <rect
-                        className="_checkboxbox"
-                        x={0}
-                        y={0}
-                        width="15"
-                        height="15"
-                        fill="#02B694"
-                        opacity="0"
-                    />
-                </IconHelper>
-            ),
-            mainComponent: true,
-        },
-    ],
-    stylePropertiesForTheme: styleProperties,
+	name: 'ThemeEditor',
+	displayName: 'Theme Editor',
+	description: 'Theme component',
+	styleComponent: ThemeEditorStyle,
+	styleDefaults: styleDefaults,
+	component: LoadLazyThemeEditor,
+	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	properties: propertiesDefinition,
+	styleProperties: stylePropertiesDefinition,
+	bindingPaths: {
+		bindingPath: { name: 'Theme Binding' },
+	},
+	stylePseudoStates: [],
+	defaultTemplate: {
+		key: '',
+		name: 'Theme Editor',
+		type: 'ThemeEditor',
+		properties: {},
+	},
+	subComponentDefinition: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 32 32">
+					<style type="text/css">
+						{`.cubies_zesentwintig{fill:#65C3AB;}
+	.cubies_acht{fill:#8E7866;}
+	.cubies_zeven{fill:#725A48;}
+	.cubies_eenentwintig{fill:#C9483A;}
+	.cubies_zevenentwintig{fill:#98D3BC;}
+	.cubies_tweeentwintig{fill:#D97360;}
+	.cubies_vijf{fill:#C9C6C0;}
+	.cubies_zes{fill:#EDEAE5;}
+	.st0{fill:#F2C99E;}
+	.st1{fill:#F9E0BD;}
+	.st2{fill:#725A48;}
+	.st3{fill:#CCE2CD;}
+	.st4{fill:#EDB57E;}
+	.st5{fill:#EC9B5A;}
+	.st6{fill:#4C4842;}
+	.st7{fill:#67625D;}
+	.st8{fill:#FFF2DF;}
+	.st9{fill:#A4C83F;}
+	.st10{fill:#BCD269;}
+	.st11{fill:#D1DE8B;}
+	.st12{fill:#E69D8A;}
+	.st13{fill:#E3D4C0;}
+	.st14{fill:#C6B5A2;}
+	.st15{fill:#837F79;}
+	.st16{fill:#A5A29C;}
+	.st17{fill:#2EB39A;}
+	.st18{fill:#AB9784;}`}
+					</style>
+					<g>
+						<path
+							className="cubies_vijf"
+							d="M1.244,21c1.125,0,2.203,0.447,2.998,1.242l1.76,1.76c1.656,1.656,4.34,1.656,5.996,0l0.004-0.004   c1.656-1.656,4.34-1.656,5.996,0l0.004,0.004c1.656,1.656,4.34,1.656,5.996,0l1.76-1.76C26.553,21.447,27.632,21,28.756,21H32v-3H0   v3H1.244z"
+						/>
+						<path
+							className="cubies_eenentwintig"
+							d="M28.756,21c-1.125,0-2.203,0.447-2.998,1.242l-1.76,1.76c-1.656,1.656-4.344,1.652-6-0.004   s-4.34-1.656-5.996,0s-4.344,1.66-6,0.004l-1.76-1.76C3.447,21.447,2.368,21,1.244,21H0v8c0,1.657,1.343,3,3,3h26   c1.657,0,3-1.343,3-3v-8H28.756z"
+						/>
+						<rect x="0" y="14" className="cubies_zesentwintig" width="32" height="4" />
+						<path
+							className="cubies_zeven"
+							d="M29,6h-8V3c0-1.657-1.343-3-3-3h-4c-1.657,0-3,1.343-3,3v3H3C1.343,6,0,7.343,0,9v5h32V9   C32,7.343,30.657,6,29,6z"
+						/>
+						<path
+							className="cubies_acht"
+							d="M27,6h-8V3c0-1.657-1.343-3-3-3h-2c-1.657,0-3,1.343-3,3v3H3C1.343,6,0,7.343,0,9v5h30V9   C30,7.343,28.657,6,27,6z"
+						/>
+						<rect
+							x="0"
+							y="14"
+							className="cubies_zevenentwintig"
+							width="30"
+							height="4"
+						/>
+						<path
+							className="cubies_tweeentwintig"
+							d="M28.756,21c-1.125,0-2.203,0.447-2.998,1.242l-1.76,1.76c-1.656,1.656-4.344,1.652-6-0.004   s-4.34-1.656-5.996,0s-4.344,1.66-6,0.004l-1.76-1.76C3.447,21.447,2.368,21,1.244,21H0v8c0,1.657,1.343,3,3,3h24   c1.657,0,3-1.343,3-3v-8H28.756z"
+						/>
+						<path
+							className="cubies_zes"
+							d="M1.244,21c1.125,0,2.203,0.447,2.998,1.242l1.76,1.76c1.656,1.656,4.34,1.656,5.996,0l0.004-0.004   c1.656-1.656,4.34-1.656,5.996,0l0.004,0.004c1.656,1.656,4.34,1.656,5.996,0l1.76-1.76C26.553,21.447,27.632,21,28.756,21H30v-3H0   v3H1.244z"
+						/>
+						<circle className="cubies_zeven" cx="15" cy="3" r="1" />
+					</g>
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

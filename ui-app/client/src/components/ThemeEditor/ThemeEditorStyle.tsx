@@ -4,10 +4,10 @@ import { styleDefaults, styleProperties } from './themeEditorStyleProperties';
 
 const PREFIX = '.comp.compThemeEditor';
 export default function ThemeEditorStyle({
-    theme,
+	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-    const css =
-        `
+	const css =
+		`
     ${PREFIX} {
         width: 100%;
         display: flex;
@@ -248,6 +248,26 @@ export default function ThemeEditorStyle({
         stroke-width: 2px;
         stroke: #555;
     }
+
+    ${PREFIX} ._editorContainer {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    ${PREFIX} ._editorWrapper {
+        flex: 1;
+        display: flex;
+
+    }
+
+    ${PREFIX} ._editorTopBar {
+        height: 36px;
+        border-bottom: 2px solid #EEE8;
+        display: flex;
+        align-items: center;
+        padding: 2px 20px;
+    }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
-    return <style id="ThemeEditorCss">{css}</style>;
+	return <style id="ThemeEditorCss">{css}</style>;
 }
