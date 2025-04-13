@@ -318,21 +318,6 @@
 		"n": "textBoxValueBoxShadow<designType><colorScheme>"
 	},
 	{
-		"cp": "border",
-		"sel": ".comp.compTextBox<designType>._hasValue<colorScheme>",
-		"np": true,
-		"spv": {
-			"_default-_primary": "1px solid",
-			"_default-_secondary": "1px solid",
-			"_default-_tertiary": "1px solid",
-			"_default-_quaternary": "1px solid",
-			"_default-_quinary": "1px solid"
-		},
-		"gn": "Border",
-		"dn": "Value Border",
-		"n": "textBoxValueBorder<designType><colorScheme>"
-	},
-	{
 		"cp": "font",
 		"sel": ".comp.compTextBox<designType>._hasValue<colorScheme>",
 		"np": true,
@@ -516,21 +501,6 @@
 		"n": "textBoxActiveBoxShadow<designType><colorScheme>"
 	},
 	{
-		"cp": "border",
-		"sel": ".comp.compTextBox<designType>._isActive<colorScheme>",
-		"np": true,
-		"spv": {
-			"_default-_primary": "1px solid",
-			"_default-_secondary": "1px solid",
-			"_default-_tertiary": "1px solid",
-			"_default-_quaternary": "1px solid",
-			"_default-_quinary": "1px solid"
-		},
-		"gn": "Border",
-		"dn": "Active Border",
-		"n": "textBoxActiveBorder<designType><colorScheme>"
-	},
-	{
 		"cp": "font",
 		"sel": ".comp.compTextBox<designType>._isActive<colorScheme>",
 		"np": true,
@@ -668,21 +638,6 @@
 		"n": "textBoxBoxShadow<designType><colorScheme>"
 	},
 	{
-		"cp": "border",
-		"sel": ".comp.compTextBox<designType><colorScheme>",
-		"np": true,
-		"spv": {
-			"_default-_primary": "1px solid",
-			"_default-_secondary": "1px solid",
-			"_default-_tertiary": "1px solid",
-			"_default-_quaternary": "1px solid",
-			"_default-_quinary": "1px solid"
-		},
-		"gn": "Border",
-		"dn": "Border",
-		"n": "textBoxBorder<designType><colorScheme>"
-	},
-	{
 		"cp": "color",
 		"sel": ".comp.compTextBox<designType><colorScheme> ._label",
 		"np": true,
@@ -702,16 +657,6 @@
 		"dn": "Label Color",
 		"n": "textBoxLabelColor<designType><colorScheme>",
 		"dv": "<fontColorEight>"
-	},
-	{
-		"cp": "font",
-		"sel": ".comp.compTextBox<designType><colorScheme> ._label",
-		"np": true,
-		"spv": {},
-		"gn": "Font",
-		"dn": "Label Font",
-		"n": "textBoxLabelFont<designType><colorScheme>",
-		"dv": "<quaternaryFont>"
 	},
 	{
 		"cp": "color",
