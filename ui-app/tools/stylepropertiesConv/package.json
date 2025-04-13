@@ -5,9 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "prestart": "npm run build",
-    "start": "node dist/index.js",
-    "dev": "ts-node src/index.ts"
+    "convert": "ts-node src/convert.ts",
+    "validate": "ts-node src/validate.ts"
   },
   "dependencies": {},
   "devDependencies": {
