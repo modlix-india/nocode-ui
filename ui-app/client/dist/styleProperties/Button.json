@@ -16,13 +16,13 @@
 		"sel": ".comp.compButton<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "32px",
-			"_outlined": "32px",
-			"_text": "32px",
-			"_fabButton": "48px",
-			"_fabButtonMini": "32px",
-			"_decorative": "32px",
-			"_bigDesign1": "60px"
+			"_default-": "32px",
+			"_outlined-": "32px",
+			"_text-": "32px",
+			"_fabButton-": "48px",
+			"_fabButtonMini-": "32px",
+			"_decorative-": "32px",
+			"_bigDesign1-": "60px"
 		}
 	},
 	{
@@ -33,8 +33,8 @@
 		"sel": ".comp.compButton<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_fabButton": "48px",
-			"_fabButtonMini": "32px"
+			"_fabButton-": "48px",
+			"_fabButtonMini-": "32px"
 		}
 	},
 	{
@@ -45,13 +45,13 @@
 		"sel": ".comp.compButton<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "5px 5px",
-			"_outlined": "5px 5px",
-			"_text": "5px 5px",
-			"_fabButton": "0px",
-			"_fabButtonMini": "0px",
-			"_decorative": "5px 5px",
-			"_bigDesign1": "5px 5px"
+			"_default-": "5px 5px",
+			"_outlined-": "5px 5px",
+			"_text-": "5px 5px",
+			"_fabButton-": "0px",
+			"_fabButtonMini-": "0px",
+			"_decorative-": "5px 5px",
+			"_bigDesign1-": "5px 5px"
 		}
 	},
 	{
@@ -62,15 +62,15 @@
 		"sel": ".comp.compButton<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "4px",
-			"_outlined": "16px",
-			"_text": "4px",
+			"_default-": "4px",
+			"_outlined-": "16px",
+			"_text-": "4px",
 			"_iconPrimaryButton": "2px",
 			"_iconButton": "2px",
-			"_fabButton": "50%",
-			"_fabButtonMini": "50%",
-			"_decorative": "4px",
-			"_bigDesign1": "4px"
+			"_fabButton-": "50%",
+			"_fabButtonMini-": "50%",
+			"_decorative-": "4px",
+			"_bigDesign1-": "4px"
 		}
 	},
 	{
@@ -82,7 +82,7 @@
 		"sel": ".comp.compButton<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_outlined": "1px solid"
+			"_outlined-": "1px solid"
 		}
 	},
 	{
@@ -102,7 +102,7 @@
 		"sel": ".comp.compButton<designType><colorScheme>._withLeftIcon",
 		"np": true,
 		"spv": {
-			"_decorative": "5px 5px 5px 37px"
+			"_decorative-": "5px 5px 5px 37px"
 		}
 	},
 	{
@@ -113,7 +113,7 @@
 		"sel": ".comp.compButton<designType><colorScheme>._withRightIcon",
 		"np": true,
 		"spv": {
-			"_decorative": "5px 37px 5px 5px"
+			"_decorative-": "5px 37px 5px 5px"
 		}
 	},
 	{
@@ -124,7 +124,7 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._leftButtonIcon",
 		"np": true,
 		"spv": {
-			"_decorative": "4px 0px 0px 4px"
+			"_decorative-": "4px 0px 0px 4px"
 		}
 	},
 	{
@@ -135,7 +135,7 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._rightButtonIcon",
 		"np": true,
 		"spv": {
-			"_decorative": "0px 4px 4px 0px"
+			"_decorative-": "0px 4px 4px 0px"
 		}
 	},
 	{
@@ -146,7 +146,7 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._leftButtonIcon",
 		"np": true,
 		"spv": {
-			"_decorative": "32px"
+			"_decorative-": "32px"
 		}
 	},
 	{
@@ -157,7 +157,7 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._rightButtonIcon",
 		"np": true,
 		"spv": {
-			"_decorative": "32px"
+			"_decorative-": "32px"
 		}
 	},
 	{
@@ -173,8 +173,8 @@
 			"_default-_tertiary": "<backgroundColorThree>",
 			"_default-_quaternary": "<backgroundColorFour>",
 			"_default-_quinary": "<backgroundColorFive>",
-			"_outlined": "transparent",
-			"_text": "transparent",
+			"_outlined-": "transparent",
+			"_text-": "transparent",
 			"_iconPrimaryButton": "transparent",
 			"_iconButton": "transparent",
 			"_fabButton-_primary": "<backgroundColorOne>",
@@ -252,7 +252,7 @@
 		"sel": ".comp.compButton<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "<fontColorTwo>",
+			"_default-": "<fontColorTwo>",
 			"_outlined-_primary": "<fontColorThree>",
 			"_outlined-_secondary": "<fontColorFour>",
 			"_outlined-_tertiary": "<fontColorFive>",
@@ -273,10 +273,10 @@
 			"_iconButton-_tertiary": "<fontColorFive>",
 			"_iconButton-_quaternary": "<fontColorNine>",
 			"_iconButton-_quinary": "<fontColorSeven>",
-			"_fabButton": "<fontColorTwo>",
-			"_fabButtonMini": "<fontColorTwo>",
-			"_decorative": "<fontColorTwo>",
-			"_bigDesign1": "<fontColorTwo>"
+			"_fabButton-": "<fontColorTwo>",
+			"_fabButtonMini-": "<fontColorTwo>",
+			"_decorative-": "<fontColorTwo>",
+			"_bigDesign1-": "<fontColorTwo>"
 		}
 	},
 	{
@@ -287,9 +287,9 @@
 		"sel": ".comp.compButton<designType><colorScheme>:hover",
 		"np": true,
 		"spv": {
-			"_default": "<fontColorOne>",
-			"_outlined": "<fontColorTwo>",
-			"_text": "<fontColorEight>",
+			"_default-": "<fontColorOne>",
+			"_outlined-": "<fontColorTwo>",
+			"_text-": "<fontColorEight>",
 			"_iconPrimaryButton-_primary": "<fontColorTwo>",
 			"_iconPrimaryButton-_secondary": "<fontColorTwo>",
 			"_iconPrimaryButton-_tertiary": "<fontColorTwo>",
@@ -300,10 +300,10 @@
 			"_iconButton-_tertiary": "<fontColorTwo>",
 			"_iconButton-_quaternary": "<fontColorTwo>",
 			"_iconButton-_quinary": "<fontColorTwo>",
-			"_fabButton": "<fontColorOne>",
-			"_fabButtonMini": "<fontColorOne>",
-			"_decorative": "<fontColorOne>",
-			"_bigDesign1": "<fontColorOne>"
+			"_fabButton-": "<fontColorOne>",
+			"_fabButtonMini-": "<fontColorOne>",
+			"_decorative-": "<fontColorOne>",
+			"_bigDesign1-": "<fontColorOne>"
 		}
 	},
 	{
@@ -314,15 +314,15 @@
 		"sel": ".comp.compButton<designType><colorScheme>:disabled",
 		"np": true,
 		"spv": {
-			"_default": "<backgroundColorNine>",
-			"_outlined": "<backgroundColorNine>",
-			"_text": "<backgroundColorNine>",
+			"_default-": "<backgroundColorNine>",
+			"_outlined-": "<backgroundColorNine>",
+			"_text-": "<backgroundColorNine>",
 			"_iconPrimaryButton": "<backgroundColorNine>",
 			"_iconButton": "<backgroundColorNine>",
-			"_fabButton": "<backgroundColorNine>",
-			"_fabButtonMini": "<backgroundColorNine>",
-			"_decorative": "<backgroundColorNine>",
-			"_bigDesign1": "<backgroundColorNine>"
+			"_fabButton-": "<backgroundColorNine>",
+			"_fabButtonMini-": "<backgroundColorNine>",
+			"_decorative-": "<backgroundColorNine>",
+			"_bigDesign1-": "<backgroundColorNine>"
 		}
 	},
 	{
@@ -333,15 +333,15 @@
 		"sel": ".comp.compButton<designType><colorScheme>:disabled:hover",
 		"np": true,
 		"spv": {
-			"_default": "<backgroundColorNine>",
-			"_outlined": "<backgroundColorNine>",
-			"_text": "<backgroundColorNine>",
+			"_default-": "<backgroundColorNine>",
+			"_outlined-": "<backgroundColorNine>",
+			"_text-": "<backgroundColorNine>",
 			"_iconPrimaryButton": "<backgroundColorNine>",
 			"_iconButton": "<backgroundColorNine>",
-			"_fabButton": "<backgroundColorNine>",
-			"_fabButtonMini": "<backgroundColorNine>",
-			"_decorative": "<backgroundColorNine>",
-			"_bigDesign1": "<backgroundColorNine>"
+			"_fabButton-": "<backgroundColorNine>",
+			"_fabButtonMini-": "<backgroundColorNine>",
+			"_decorative-": "<backgroundColorNine>",
+			"_bigDesign1-": "<backgroundColorNine>"
 		}
 	},
 	{
@@ -352,15 +352,15 @@
 		"sel": ".comp.compButton<designType><colorScheme>:disabled",
 		"np": true,
 		"spv": {
-			"_default": "<fontColorOne>",
-			"_outlined": "<fontColorOne>",
-			"_text": "<fontColorOne>",
+			"_default-": "<fontColorOne>",
+			"_outlined-": "<fontColorOne>",
+			"_text-": "<fontColorOne>",
 			"_iconPrimaryButton": "<fontColorOne>",
 			"_iconButton": "<fontColorOne>",
-			"_fabButton": "<fontColorOne>",
-			"_fabButtonMini": "<fontColorOne>",
-			"_decorative": "<fontColorOne>",
-			"_bigDesign1": "<fontColorOne>"
+			"_fabButton-": "<fontColorOne>",
+			"_fabButtonMini-": "<fontColorOne>",
+			"_decorative-": "<fontColorOne>",
+			"_bigDesign1-": "<fontColorOne>"
 		}
 	},
 	{
@@ -371,15 +371,15 @@
 		"sel": ".comp.compButton<designType><colorScheme>:disabled:hover",
 		"np": true,
 		"spv": {
-			"_default": "<fontColorOne>",
-			"_outlined": "<fontColorOne>",
-			"_text": "<fontColorOne>",
+			"_default-": "<fontColorOne>",
+			"_outlined-": "<fontColorOne>",
+			"_text-": "<fontColorOne>",
 			"_iconPrimaryButton": "<fontColorOne>",
 			"_iconButton": "<fontColorOne>",
-			"_fabButton": "<fontColorOne>",
-			"_fabButtonMini": "<fontColorOne>",
-			"_decorative": "<fontColorOne>",
-			"_bigDesign1": "<fontColorOne>"
+			"_fabButton-": "<fontColorOne>",
+			"_fabButtonMini-": "<fontColorOne>",
+			"_decorative-": "<fontColorOne>",
+			"_bigDesign1-": "<fontColorOne>"
 		}
 	},
 	{
@@ -390,15 +390,15 @@
 		"sel": ".comp.compButton<designType><colorScheme>:disabled",
 		"np": true,
 		"spv": {
-			"_default": "<fontColorEight>",
-			"_outlined": "<fontColorEight>",
-			"_text": "<fontColorEight>",
+			"_default-": "<fontColorEight>",
+			"_outlined-": "<fontColorEight>",
+			"_text-": "<fontColorEight>",
 			"_iconPrimaryButton": "<fontColorEight>",
 			"_iconButton": "<fontColorEight>",
-			"_fabButton": "<fontColorEight>",
-			"_fabButtonMini": "<fontColorEight>",
-			"_decorative": "<fontColorEight>",
-			"_bigDesign1": "<fontColorEight>"
+			"_fabButton-": "<fontColorEight>",
+			"_fabButtonMini-": "<fontColorEight>",
+			"_decorative-": "<fontColorEight>",
+			"_bigDesign1-": "<fontColorEight>"
 		}
 	},
 	{
@@ -507,10 +507,10 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._leftButtonIcon",
 		"np": true,
 		"spv": {
-			"_default": "0px 5px 0px 0px",
-			"_outlined": "0px 5px 0px 0px",
-			"_text": "0px 5px 0px 0px",
-			"_bigDesign1": "0px 10px 0px 0px"
+			"_default-": "0px 5px 0px 0px",
+			"_outlined-": "0px 5px 0px 0px",
+			"_text-": "0px 5px 0px 0px",
+			"_bigDesign1-": "0px 10px 0px 0px"
 		}
 	},
 	{
@@ -521,10 +521,10 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._rightButtonIcon",
 		"np": true,
 		"spv": {
-			"_default": "0px 0px 0px 5px",
-			"_outlined": "0px 0px 0px 5px",
-			"_text": "0px 0px 0px 5px",
-			"_bigDesign1": "0px 0px 0px 10px"
+			"_default-": "0px 0px 0px 5px",
+			"_outlined-": "0px 0px 0px 5px",
+			"_text-": "0px 0px 0px 5px",
+			"_bigDesign1-": "0px 0px 0px 10px"
 		}
 	},
 	{
@@ -605,10 +605,10 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._leftButtonImage",
 		"np": true,
 		"spv": {
-			"_default": "0px 5px 0px 0px",
-			"_outlined": "0px 5px 0px 0px",
-			"_text": "0px 5px 0px 0px",
-			"_bigDesign1": "0px 10px 0px 0px"
+			"_default-": "0px 5px 0px 0px",
+			"_outlined-": "0px 5px 0px 0px",
+			"_text-": "0px 5px 0px 0px",
+			"_bigDesign1-": "0px 10px 0px 0px"
 		}
 	},
 	{
@@ -619,10 +619,10 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._rightButtonImage",
 		"np": true,
 		"spv": {
-			"_default": "0px 0px 0px 5px",
-			"_outlined": "0px 0px 0px 5px",
-			"_text": "0px 0px 0px 5px",
-			"_bigDesign1": "0px 0px 0px 10px"
+			"_default-": "0px 0px 0px 5px",
+			"_outlined-": "0px 0px 0px 5px",
+			"_text-": "0px 0px 0px 5px",
+			"_bigDesign1-": "0px 0px 0px 10px"
 		}
 	},
 	{
@@ -633,10 +633,10 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._leftButtonActiveImage",
 		"np": true,
 		"spv": {
-			"_default": "0px 5px 0px 0px",
-			"_outlined": "0px 5px 0px 0px",
-			"_text": "0px 5px 0px 0px",
-			"_bigDesign1": "0px 10px 0px 0px"
+			"_default-": "0px 5px 0px 0px",
+			"_outlined-": "0px 5px 0px 0px",
+			"_text-": "0px 5px 0px 0px",
+			"_bigDesign1-": "0px 10px 0px 0px"
 		}
 	},
 	{
@@ -647,10 +647,10 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._rightButtonActiveImage",
 		"np": true,
 		"spv": {
-			"_default": "0px 0px 0px 5px",
-			"_outlined": "0px 0px 0px 5px",
-			"_text": "0px 0px 0px 5px",
-			"_bigDesign1": "0px 0px 0px 10px"
+			"_default-": "0px 0px 0px 5px",
+			"_outlined-": "0px 0px 0px 5px",
+			"_text-": "0px 0px 0px 5px",
+			"_bigDesign1-": "0px 0px 0px 10px"
 		}
 	},
 	{

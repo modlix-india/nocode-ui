@@ -13,10 +13,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "<primaryFont>",
-			"_outlined": "<primaryFont>",
-			"_filled": "<primaryFont>",
-			"_bigDesign1": "<primaryFont>"
+			"_default-": "<primaryFont>",
+			"_outlined-": "<primaryFont>",
+			"_filled-": "<primaryFont>",
+			"_bigDesign1-": "<primaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Font",
@@ -27,10 +27,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "32px",
-			"_outlined": "32px",
-			"_filled": "32px",
-			"_bigDesign1": "60px"
+			"_default-": "32px",
+			"_outlined-": "32px",
+			"_filled-": "32px",
+			"_bigDesign1-": "60px"
 		},
 		"gn": "Height",
 		"dn": "Height",
@@ -41,10 +41,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "0px 5px",
-			"_outlined": "0px 14px",
-			"_filled": "0px 5px",
-			"_bigDesign1": "0px 5px"
+			"_default-": "0px 5px",
+			"_outlined-": "0px 14px",
+			"_filled-": "0px 5px",
+			"_bigDesign1-": "0px 5px"
 		},
 		"gn": "Padding",
 		"dn": "Padding",
@@ -55,10 +55,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "4px",
-			"_outlined": "16px",
-			"_filled": "4px",
-			"_bigDesign1": "4px"
+			"_default-": "4px",
+			"_outlined-": "16px",
+			"_filled-": "4px",
+			"_bigDesign1-": "4px"
 		},
 		"gn": "Border Radius",
 		"dn": "Border Radius",
@@ -69,9 +69,9 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_default": "1px solid",
-			"_outlined": "1px solid",
-			"_bigDesign1": "1px solid"
+			"_default-": "1px solid",
+			"_outlined-": "1px solid",
+			"_bigDesign1-": "1px solid"
 		},
 		"gn": "Border",
 		"dn": "Border",
@@ -82,10 +82,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._errorIcon._rightIcon, .comp.compTextBox<designType><colorScheme>._isActive ._errorIcon._rightIcon, .comp.compTextBox<designType><colorScheme>._hasValue ._errorIcon._rightIcon",
 		"np": true,
 		"spv": {
-			"_default": "<errorColor>",
-			"_outlined": "<errorColor>",
-			"_filled": "<errorColor>",
-			"_bigDesign1": "<errorColor>"
+			"_default-": "<errorColor>",
+			"_outlined-": "<errorColor>",
+			"_filled-": "<errorColor>",
+			"_bigDesign1-": "<errorColor>"
 		},
 		"gn": "Color",
 		"dn": "Error Icon Right Icon Color",
@@ -96,10 +96,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._label",
 		"np": true,
 		"spv": {
-			"_default": "<quaternaryFont>",
-			"_outlined": "<quaternaryFont>",
-			"_filled": "<quaternaryFont>",
-			"_bigDesign1": "<quaternaryFont>"
+			"_default-": "<quaternaryFont>",
+			"_outlined-": "<quaternaryFont>",
+			"_filled-": "<quaternaryFont>",
+			"_bigDesign1-": "<quaternaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Label Font",
@@ -110,10 +110,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._label",
 		"np": true,
 		"spv": {
-			"_default": "0px 0px 0px 0px",
-			"_outlined": "0px 0px 0px 0px",
-			"_filled": "0px 0px 0px 0px",
-			"_bigDesign1": "-30px 0px 0px 0px"
+			"_default-": "0px 0px 0px 0px",
+			"_outlined-": "0px 0px 0px 0px",
+			"_filled-": "0px 0px 0px 0px",
+			"_bigDesign1-": "-30px 0px 0px 0px"
 		},
 		"gn": "Margin",
 		"dn": "MarginLabel",
@@ -124,10 +124,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._leftIcon",
 		"np": true,
 		"spv": {
-			"_default": "0px 8px",
-			"_outlined": "0px 8px",
-			"_filled": "0px 8px",
-			"_bigDesign1": "0px 18px 0px 8px"
+			"_default-": "0px 8px",
+			"_outlined-": "0px 8px",
+			"_filled-": "0px 8px",
+			"_bigDesign1-": "0px 18px 0px 8px"
 		},
 		"gn": "Padding",
 		"dn": "PaddingLeftIcon",
@@ -138,10 +138,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._rightIcon",
 		"np": true,
 		"spv": {
-			"_default": "0px 8px",
-			"_bigDesign1": "0px 8px",
-			"_outlined": "0px 8px",
-			"_filled": "0px 8px"
+			"_default-": "0px 8px",
+			"_bigDesign1-": "0px 8px",
+			"_outlined-": "0px 8px",
+			"_filled-": "0px 8px"
 		},
 		"gn": "Padding",
 		"dn": "PaddingRightIcon",
@@ -152,10 +152,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._successIcon._rightIcon, .comp.compTextBox<designType><colorScheme>._isActive ._successIcon._rightIcon, .comp.compTextBox<designType><colorScheme>._hasValue ._successIcon._rightIcon",
 		"np": true,
 		"spv": {
-			"_default": "<successColor>",
-			"_outlined": "<successColor>",
-			"_filled": "<successColor>",
-			"_bigDesign1": "<successColor>"
+			"_default-": "<successColor>",
+			"_outlined-": "<successColor>",
+			"_filled-": "<successColor>",
+			"_bigDesign1-": "<successColor>"
 		},
 		"gn": "Color",
 		"dn": "Success Icon Right Icon Color",
@@ -166,10 +166,10 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._supportText",
 		"np": true,
 		"spv": {
-			"_default": "<quaternaryFont>",
-			"_outlined": "<quaternaryFont>",
-			"_filled": "<quaternaryFont>",
-			"_bigDesign1": "<quaternaryFont>"
+			"_default-": "<quaternaryFont>",
+			"_outlined-": "<quaternaryFont>",
+			"_filled-": "<quaternaryFont>",
+			"_bigDesign1-": "<quaternaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Support Text Font",
@@ -180,7 +180,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasError",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Error Color",
@@ -191,7 +191,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasError ._leftIcon",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Error Left Icon Color",
@@ -202,7 +202,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasError ._rightIcon",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Error Right Icon Color",
@@ -214,8 +214,8 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasError, .comp.compTextBox<designType><colorScheme>._isActive._hasError, .comp.compTextBox<designType><colorScheme>._hasValue._hasError",
 		"np": true,
 		"spv": {
-			"_filled": "<errorColor>",
-			"_bigDesign1": "linear-gradient(90deg, <errorColor>19 0%, <backgroundColorSix>00 64.33%)"
+			"_filled-": "<errorColor>",
+			"_bigDesign1-": "linear-gradient(90deg, <errorColor>19 0%, <backgroundColorSix>00 64.33%)"
 		},
 		"gn": "Background",
 		"dn": "Error Background",
@@ -234,9 +234,9 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasValue",
 		"np": true,
 		"spv": {
-			"_default": "1px solid",
-			"_outlined": "1px solid",
-			"_bigDesign1": "1px solid"
+			"_default-": "1px solid",
+			"_outlined-": "1px solid",
+			"_bigDesign1-": "1px solid"
 		},
 		"gn": "Border",
 		"dn": "Value Border",
@@ -247,7 +247,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasValue._hasError",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Error Value Color",
@@ -258,7 +258,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasValue._hasError ._leftIcon",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Error Value Left Icon Color",
@@ -269,7 +269,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasValue._hasError ._rightIcon",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Error Value Right Icon Color",
@@ -416,9 +416,9 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._isActive",
 		"np": true,
 		"spv": {
-			"_default": "1px solid",
-			"_outlined": "1px solid",
-			"_bigDesign1": "1px solid"
+			"_default-": "1px solid",
+			"_outlined-": "1px solid",
+			"_bigDesign1-": "1px solid"
 		},
 		"gn": "Border",
 		"dn": "Active Border",
@@ -429,7 +429,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._isActive._hasError",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Active Error Color",
@@ -440,7 +440,7 @@
 		"sel": ".comp.compTextBox<designType>._isActive._hasError ._leftIcon",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Active Error Left Icon Color",
@@ -451,7 +451,7 @@
 		"sel": ".comp.compTextBox<designType>._isActive._hasError ._rightIcon",
 		"np": true,
 		"spv": {
-			"_filled": "<fontColorTwo>"
+			"_filled-": "<fontColorTwo>"
 		},
 		"gn": "Color",
 		"dn": "Active Error Right Icon Color",
@@ -600,8 +600,8 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._validationSuccess, .comp.compTextBox<designType><colorScheme>._isActive._validationSuccess, .comp.compTextBox<designType><colorScheme>._hasValue._validationSuccess",
 		"np": true,
 		"spv": {
-			"_filled": "<successColor>",
-			"_bigDesign1": "linear-gradient(90deg, <successColor>19 0%, <backgroundColorSix>00 64.33%)"
+			"_filled-": "<successColor>",
+			"_bigDesign1-": "linear-gradient(90deg, <successColor>19 0%, <backgroundColorSix>00 64.33%)"
 		},
 		"gn": "Background",
 		"dn": "Success Background",
@@ -798,9 +798,9 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasError, .comp.compTextBox<designType><colorScheme>._isActive._hasError, .comp.compTextBox<designType><colorScheme>._hasValue._hasError",
 		"np": true,
 		"spv": {
-			"_default": "<errorColor>",
-			"_outlined": "<errorColor>",
-			"_bigDesign1": "<errorColor>"
+			"_default-": "<errorColor>",
+			"_outlined-": "<errorColor>",
+			"_bigDesign1-": "<errorColor>"
 		},
 		"gn": "Border Color",
 		"dn": "Error Border Color",
@@ -811,9 +811,9 @@
 		"sel": ".comp.compTextBox<designType><colorScheme>._validationSuccess, .comp.compTextBox<designType><colorScheme>._isActive._validationSuccess, .comp.compTextBox<designType><colorScheme>._hasValue._validationSuccess",
 		"np": true,
 		"spv": {
-			"_default": "<successColor>",
-			"_outlined": "<successColor>",
-			"_bigDesign1": "<successColor>"
+			"_default-": "<successColor>",
+			"_outlined-": "<successColor>",
+			"_bigDesign1-": "<successColor>"
 		},
 		"gn": "Border Color",
 		"dn": "Success Border Color",
