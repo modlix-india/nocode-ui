@@ -1,4 +1,11 @@
+import { isNullValue } from '@fincity/kirun-js';
 import React, { useEffect } from 'react';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getPathFromLocation,
+	setData,
+} from '../../context/StoreContext';
 import {
 	Component,
 	ComponentDefinition,
@@ -6,24 +13,18 @@ import {
 	ComponentProps,
 	LocationHistory,
 } from '../../types/common';
-import {
-	PageStoreExtractor,
-	addListenerAndCallImmediately,
-	getPathFromLocation,
-	setData,
-} from '../../context/StoreContext';
-import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './otpProperties';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { isNullValue } from '@fincity/kirun-js';
 import { validate } from '../../util/validationProcessor';
-import { flattenUUID } from '../util/uuid';
-import { IconHelper } from '../util/IconHelper';
-import { styleProperties, styleDefaults } from './otpStyleProperties';
-import OtpInputStyle from './OtpStyle';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
 import { makePropertiesObject } from '../util/make';
+import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import { propertiesDefinition, stylePropertiesDefinition } from './otpProperties';
+import OtpInputStyle from './OtpStyle';
+import { styleDefaults, stylePropertiesForTheme } from './otpStyleProperties';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Otp(props: Readonly<ComponentProps>) {
 	const [focusBoxIndex, setFocusBoxIndex] = React.useState(0);
@@ -255,8 +256,9 @@ function Otp(props: Readonly<ComponentProps>) {
 		validationsOrSupportText = (
 			<span
 				style={computedStyles.supportText ?? {}}
-				className={`_supportText ${readOnly ? 'disabled' : ''} ${focusBoxIndex != -1 ? '_supportTextActive' : ''
-					}`}
+				className={`_supportText ${readOnly ? 'disabled' : ''} ${
+					focusBoxIndex != -1 ? '_supportTextActive' : ''
+				}`}
 			>
 				<SubHelperComponent definition={definition} subComponentName="supportText" />
 				{supportingText}
@@ -267,8 +269,9 @@ function Otp(props: Readonly<ComponentProps>) {
 	const activeStyles = computedStyles.activeInputBox ?? {};
 	return (
 		<div
-			className={`comp compOtp ${designType} ${colorScheme} ${readOnly ? '_disabled' : ''} ${hasErrorMessages ? '_hasError' : ''
-				}`}
+			className={`comp compOtp ${designType} ${colorScheme} ${readOnly ? '_disabled' : ''} ${
+				hasErrorMessages ? '_hasError' : ''
+			}`}
 			style={computedStyles.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
@@ -297,11 +300,13 @@ function Otp(props: Readonly<ComponentProps>) {
 					onKeyDown={handleKeyDown(index)}
 					onPaste={e => handlePaste(e, index)}
 					style={focusBoxIndex === index ? activeStyles : inputStyle}
-					className={`_inputBox ${focusBoxIndex === index && focusBoxIndex != -1 ? '_isActive' : ''
-						}${!(focusBoxIndex === index && focus) && value[index]?.trim()?.length
+					className={`_inputBox ${
+						focusBoxIndex === index && focusBoxIndex != -1 ? '_isActive' : ''
+					}${
+						!(focusBoxIndex === index && focus) && value[index]?.trim()?.length
 							? '_hasValue'
 							: ''
-						}`}
+					}`}
 				/>
 			))}
 
@@ -328,6 +333,12 @@ function MANDATORY(
 		return [validation.message];
 	return [];
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	name: 'Otp',
@@ -454,7 +465,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 
