@@ -96,7 +96,7 @@
 		"dv": "60px",
 		"de": "Design 10 Row Height",
 		"cp": "height",
-		"sel": ".comp.compTable._design10 ._row",
+		"sel": ".comp.compTable._design0 ._row",
 		"np": true
 	},
 
@@ -195,7 +195,7 @@
 		"dv": "<backgroundColorSeven>",
 		"de": "Design 10 Row Background Color",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._row",
+		"sel": ".comp.compTable._design0 ._row",
 		"np": true
 	},
 
@@ -289,7 +289,7 @@
 		"n": "design10EvenRowBackgroundColor",
 		"de": "Design 10 Even Row Background Color",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._row:nth-child(even)",
+		"sel": ".comp.compTable._design0 ._row:nth-child(even)",
 		"np": true
 	},
 
@@ -380,7 +380,7 @@
 		"n": "design10SecondRowBackgroundColor",
 		"de": "Design 10 Second Row Background Color",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._row:nth-child(3n+1)",
+		"sel": ".comp.compTable._design0 ._row:nth-child(3n+1)",
 		"np": true
 	},
 
@@ -471,7 +471,7 @@
 		"n": "design10ThirdRowBackgroundColor",
 		"de": "Design 10 Third Row Background Color",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._row:nth-child(3n+2)",
+		"sel": ".comp.compTable._design0 ._row:nth-child(3n+2)",
 		"np": true
 	},
 
@@ -568,7 +568,7 @@
 		"dv": "<backgroundHoverColorNine>",
 		"de": "Design 10 Row Hover Background Color",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._row._dataRow:hover, .comp.compTable._design10 ._row._dataRow._selected",
+		"sel": ".comp.compTable._design0 ._row._dataRow:hover, .comp.compTable._design0 ._row._dataRow._selected",
 		"np": true
 	},
 
@@ -664,7 +664,7 @@
 		"n": "design10RowBorder",
 		"de": "Design 10 Row Border ",
 		"cp": "border",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 
@@ -760,7 +760,7 @@
 		"n": "design10RowBorderRadius",
 		"de": "Design 10 Row  Border Radius",
 		"cp": "border-radius",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 	{
@@ -850,7 +850,7 @@
 		"n": "design10RowOverflow",
 		"de": "Design 10 Row Hover  Overflow",
 		"cp": "overflow",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 
@@ -942,7 +942,7 @@
 		"n": "design10RowSelectedBoxShadow",
 		"de": "Design 10 Row Selected Box Shadow",
 		"cp": "box-shadow",
-		"sel": ".comp.compTable._design10 ._row._dataRow:hover, .comp.compTable._design10 ._row._dataRow._selected",
+		"sel": ".comp.compTable._design0 ._row._dataRow:hover, .comp.compTable._design0 ._row._dataRow._selected",
 		"np": true
 	},
 
@@ -1087,7 +1087,7 @@
 		"n": "design10ColumnBackgroundColor",
 		"de": "Design 10 Column Background Color",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableColumn",
 		"np": true
 	},
 
@@ -1181,7 +1181,7 @@
 		"dv": "<backgroundColorNine>",
 		"de": "Design 10 Even Column Background Color",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 .comp.compTableColumn:nth-child(odd)",
+		"sel": ".comp.compTable._design0 .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 
@@ -1273,7 +1273,7 @@
 		"n": "design10ColumnHoverBackgroundColor",
 		"de": "Design 10 Column Hover Background Color",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10 ._row._dataRow._selected .comp.compTableColumn",
+		"sel": ".comp.compTable._design0 ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design0 ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
 
@@ -1417,7 +1417,7 @@
 		"n": "design10RowBorder-RightLastChild",
 		"de": "Design 10 Row Border-Right LastChild",
 		"cp": "border-right",
-		"sel": ".comp.compTable._design10 .comp.compTableColumn:last-child",
+		"sel": ".comp.compTable._design0 .comp.compTableColumn:last-child",
 		"np": true
 	},
 
@@ -1510,7 +1510,7 @@
 		"n": "design10ColumnBorderBottomLastChild",
 		"de": "Design 10 Column Border Bottom Last Child",
 		"cp": "border-bottom",
-		"sel": ".comp.compTable._design10 ._row:last-child .comp.compTableColumn",
+		"sel": ".comp.compTable._design0 ._row:last-child .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1671,7 +1671,7 @@
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Design 10 Column Hover Background Color Primary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._primary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._primary ._row._dataRow._selected .comp.compTableColumn",
+		"sel": ".comp.compTable._design0._primary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design0._primary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1681,7 +1681,7 @@
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Design 10 Column Hover Background Color Secondary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._secondary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._secondary ._row._dataRow._selected .comp.compTableColumn",
+		"sel": ".comp.compTable._design0._secondary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design0._secondary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1691,7 +1691,7 @@
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Design 10 Column Hover Background Color tertiary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._tertiary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._tertiary ._row._dataRow._selected .comp.compTableColumn",
+		"sel": ".comp.compTable._design0._tertiary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design0._tertiary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1701,7 +1701,7 @@
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Design 10 Column Hover Background Color Quaternary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._quaternary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._quaternary  ._row._dataRow._selected .comp.compTableColumn",
+		"sel": ".comp.compTable._design0._quaternary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design0._quaternary  ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1711,7 +1711,7 @@
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Design 10 Column Hover Background Color Quinary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._quinary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design10._quinary ._row._dataRow._selected .comp.compTableColumn",
+		"sel": ".comp.compTable._design0._quinary ._row._dataRow:hover .comp.compTableColumn, .comp.compTable._design0._quinary ._row._dataRow._selected .comp.compTableColumn",
 		"np": true
 	},
 	{
@@ -1721,7 +1721,7 @@
 		"dv": "<backgroundHoverColorOne>",
 		"de": "Design 9 Odd Column Background Color Primary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._primary .comp.compTableColumn:nth-child(odd)",
+		"sel": ".comp.compTable._design0._primary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1731,7 +1731,7 @@
 		"dv": "<backgroundHoverColorTwo>",
 		"de": "Design 9 Odd Column Background Color Secondary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._secondary .comp.compTableColumn:nth-child(odd)",
+		"sel": ".comp.compTable._design0._secondary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1741,7 +1741,7 @@
 		"dv": "<backgroundHoverColorThree>",
 		"de": "Design 9 Odd Column Background Color Tertiary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._tertiary .comp.compTableColumn:nth-child(odd)",
+		"sel": ".comp.compTable._design0._tertiary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1751,7 +1751,7 @@
 		"dv": "<backgroundHoverColorFour>",
 		"de": "Design 9 Odd Column Background Color Quaternary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._quaternary .comp.compTableColumn:nth-child(odd)",
+		"sel": ".comp.compTable._design0._quaternary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1761,7 +1761,7 @@
 		"dv": "<backgroundHoverColorFive>",
 		"de": "Design 9 Odd Column Background Color Quinary",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._quinary .comp.compTableColumn:nth-child(odd)",
+		"sel": ".comp.compTable._design0._quinary .comp.compTableColumn:nth-child(odd)",
 		"np": true
 	},
 	{
@@ -1907,7 +1907,7 @@
 		"n": "design10RowBorderRight",
 		"de": "Design 10 Row Border Right",
 		"cp": "border-right",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 	{
@@ -2002,7 +2002,7 @@
 		"n": "design10RowBorderLeft",
 		"de": "Design 10 Row Border Left",
 		"cp": "border-left",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 	{
@@ -2097,7 +2097,7 @@
 		"n": "design10RowBorderTop",
 		"de": "Design 10 Row Border Top",
 		"cp": "border-top",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 	{
@@ -2192,7 +2192,7 @@
 		"n": "design10RowBorderBottom",
 		"de": "Design 10 Row Border Bottom",
 		"cp": "border-bottom",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 	{
@@ -2282,7 +2282,7 @@
 		"n": "design10RowWidth",
 		"de": "Design 10 Row Width",
 		"cp": "width",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 	{
@@ -2372,7 +2372,7 @@
 		"n": "design10RowMinWidth",
 		"de": "Design 10 Row Min Width",
 		"cp": "min-width",
-		"sel": ".comp.compTable._design10 .comp.compTableColumns",
+		"sel": ".comp.compTable._design0 .comp.compTableColumns",
 		"np": true
 	},
 	{
@@ -2462,7 +2462,7 @@
 		"n": "design10RowHeaderHeight",
 		"de": "Design 10 Row Header Height",
 		"cp": "height",
-		"sel": ".comp.compTable._design10 ._row _header",
+		"sel": ".comp.compTable._design0 ._row _header",
 		"np": true
 	}
 ]

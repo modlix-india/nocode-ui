@@ -180,7 +180,7 @@
 		"n": "design10HeaderBorderBottom",
 		"de": "Design 10 Header Border Bottom",
 		"cp": "border-bottom",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 
@@ -457,7 +457,7 @@
 		"dv": "<fontColorTwo>",
 		"de": "Design 10 Header Font Color",
 		"cp": "color",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -467,7 +467,7 @@
 		"de": "Design 10 Default Sort Icon Color",
 		"dv": "<fontColorSix>",
 		"cp": "color",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._sortIconDefault",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn ._sortIconDefault",
 		"np": true
 	},
 	{
@@ -477,7 +477,7 @@
 		"de": "Design 10 Default Sort Icon Highlight Color",
 		"dv": "<fontColorOne>",
 		"cp": "color",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design10 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn ._sortIconDefault.ASC ._upIcon, .comp.compTable._design0 .comp.compTableHeaderColumn ._sortIconDefault.DESC ._downIcon",
 		"np": true
 	},
 	{
@@ -579,7 +579,7 @@
 		"n": "design10HeaderFontSize",
 		"de": "Design 10 Header Font Size",
 		"cp": "font-size",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 
@@ -671,7 +671,7 @@
 		"n": "design10HeaderFontFamily",
 		"de": "Design 10 Header Font Family",
 		"cp": "font-family",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 
@@ -763,7 +763,7 @@
 		"n": "design10HeaderFontWeight",
 		"de": "Design 10 Header Font Weight",
 		"cp": "font-weight",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 
@@ -854,7 +854,7 @@
 		"n": "design10HeaderBorderTop",
 		"de": "Design 10 Header Font Border Top",
 		"cp": "border-bottom",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 
@@ -946,7 +946,7 @@
 		"n": "design10HeaderBorderRight",
 		"de": "Design 10 Header Font Border Right",
 		"cp": "border-right",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 
@@ -1037,7 +1037,7 @@
 		"n": "design10HeaderBorderLeft",
 		"de": "Design 10 Header Font Border Left",
 		"cp": "border-left",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 
@@ -1487,7 +1487,7 @@
 		"dv": "<fontColorThree>",
 		"de": "Header Background Color Primary Design10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._primary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._primary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -1497,7 +1497,7 @@
 		"dv": "<fontColorFour>",
 		"de": "Header Background Color SecondaryDesign10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._secondary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._secondary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -1507,7 +1507,7 @@
 		"dv": "<fontColorFive>",
 		"de": "Header Background Color TertiaryDesign10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._tertiary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._tertiary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -1517,7 +1517,7 @@
 		"dv": "<fontColorNine>",
 		"de": "Header Background Color QuaternaryDesign10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._quaternary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._quaternary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -1527,7 +1527,7 @@
 		"dv": "<fontColorSeven>",
 		"de": "Header Background Color QuinaryDesign10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._quinary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._quinary .comp.compTableHeaderColumn",
 		"np": true
 	},
 
@@ -1977,7 +1977,7 @@
 		"dv": "1px solid <fontColorThree>",
 		"de": "Header Border Color Primary Design10",
 		"cp": "border",
-		"sel": ".comp.compTable._design10._primary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._primary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -1987,7 +1987,7 @@
 		"dv": "1px solid <fontColorFour>",
 		"de": "Header Border Color SecondaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._design10._secondary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._secondary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -1997,7 +1997,7 @@
 		"dv": "1px solid <fontColorFive>",
 		"de": "Header Border Color TertiaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._design10._tertiary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._tertiary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -2007,7 +2007,7 @@
 		"dv": "1px solid <fontColorNine>",
 		"de": "Header Border Color QuaternaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._design10._quaternary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._quaternary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -2017,7 +2017,7 @@
 		"dv": "1px solid <fontColorSeven>",
 		"de": "Header Border Color QuinaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._design10._quinary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._quinary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -2108,7 +2108,7 @@
 		"n": "design10HeaderBorder-RightLastChild",
 		"de": "Design 10 Header Border-Right LastChild",
 		"cp": "border-right",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn:last-child",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn:last-child",
 		"np": true
 	},
 	{
@@ -2320,7 +2320,7 @@
 		"dv": "<fontColorThree>",
 		"de": "Header Background Color Primary Design10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._primary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._primary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -2330,7 +2330,7 @@
 		"dv": "<fontColorFour>",
 		"de": "Header Background Color SecondaryDesign10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._secondary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._secondary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -2340,7 +2340,7 @@
 		"dv": "<fontColorFive>",
 		"de": "Header Background Color TertiaryDesign10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._tertiary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._tertiary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -2350,7 +2350,7 @@
 		"dv": "<fontColorNine>",
 		"de": "Header Background Color QuaternaryDesign10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._quaternary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._quaternary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -2360,7 +2360,7 @@
 		"dv": "<fontColorSeven>",
 		"de": "Header Background Color QuinaryDesign10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10._quinary .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0._quinary .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -2460,7 +2460,7 @@
 		"dv": "<backgroundColorSeven>",
 		"de": "Popup Menu Background Color Design10",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._popupMenu",
+		"sel": ".comp.compTable._design0 ._popupMenu",
 		"np": true
 	},
 	{
@@ -2560,7 +2560,7 @@
 		"dv": "0 0 10px rgba(0,0,0,0.5)",
 		"de": "Popup Menu Box Shadow Design10",
 		"cp": "box-shadow",
-		"sel": ".comp.compTable._design10 ._popupMenu",
+		"sel": ".comp.compTable._design0 ._popupMenu",
 		"np": true
 	},
 	{
@@ -2660,7 +2660,7 @@
 		"dv": "<fontColorOne>",
 		"de": "Popup Menu Font Color Design10",
 		"cp": "color",
-		"sel": ".comp.compTable._design10 ._popupMenu",
+		"sel": ".comp.compTable._design0 ._popupMenu",
 		"np": true
 	},
 	{
@@ -2750,7 +2750,7 @@
 		"n": "popupMenuItemHoverColorDesign10",
 		"dv": "<backgroundColorNine>",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItem:hover",
+		"sel": ".comp.compTable._design0 ._popupMenu ._popupMenuItem:hover",
 		"np": true
 	},
 	{
@@ -2840,7 +2840,7 @@
 		"n": "popupMenuItemFontDesign10",
 		"dv": "<quaternaryFont>",
 		"cp": "font",
-		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItem",
+		"sel": ".comp.compTable._design0 ._popupMenu ._popupMenuItem",
 		"np": true
 	},
 	{
@@ -3011,7 +3011,7 @@
 		"n": "popupMenuItemSeperatorHeightDesign10",
 		"dv": "1px",
 		"cp": "min-height",
-		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItemSeperator",
+		"sel": ".comp.compTable._design0 ._popupMenu ._popupMenuItemSeperator",
 		"np": true
 	},
 	{
@@ -3020,7 +3020,7 @@
 		"n": "popupMenuItemSeperatorColorDesign10",
 		"dv": "<backgroundColorNine>",
 		"cp": "background",
-		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItemSeperator",
+		"sel": ".comp.compTable._design0 ._popupMenu ._popupMenuItemSeperator",
 		"np": true
 	},
 	{
@@ -3110,7 +3110,7 @@
 		"n": "popupMenuItemPaddingDesign10",
 		"dv": "10px 20px",
 		"cp": "padding",
-		"sel": ".comp.compTable._design10 ._popupMenu ._popupMenuItem",
+		"sel": ".comp.compTable._design0 ._popupMenu ._popupMenuItem",
 		"np": true
 	},
 	{
@@ -3209,7 +3209,7 @@
 		"n": "iconTooltipFontDesign10",
 		"dv": "<quaternaryFont>",
 		"cp": "font",
-		"sel": ".comp.compTable._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -3623,7 +3623,7 @@
 		"n": "iconTooltipFontColorPrimaryDesign10",
 		"dv": "<fontColorTwo>",
 		"cp": "color",
-		"sel": ".comp.compTable._primary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._primary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -3632,7 +3632,7 @@
 		"n": "iconTooltipFontColorSecondaryDesign10",
 		"dv": "<fontColorTwo>",
 		"cp": "color",
-		"sel": ".comp.compTable._secondary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._secondary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -3641,7 +3641,7 @@
 		"n": "iconTooltipFontColorTertiaryDesign10",
 		"dv": "<fontColorTwo>",
 		"cp": "color",
-		"sel": ".comp.compTable._tertiary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._tertiary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -3650,7 +3650,7 @@
 		"n": "iconTooltipFontColorQuaternaryDesign10",
 		"dv": "<fontColorTwo>",
 		"cp": "color",
-		"sel": ".comp.compTable._quaternary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._quaternary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -3659,7 +3659,7 @@
 		"n": "iconTooltipFontColorQuinaryDesign10",
 		"dv": "<fontColorTwo>",
 		"cp": "color",
-		"sel": ".comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._quinary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -4073,7 +4073,7 @@
 		"n": "iconTooltipBackgroundPrimaryDesign10",
 		"dv": "<fontColorThree>",
 		"cp": "background",
-		"sel": ".comp.compTable._primary._design10 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._primary._design10 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._primary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._primary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._primary._design0 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._primary._design0 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._primary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._primary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4082,7 +4082,7 @@
 		"n": "iconTooltipBackgroundSecondaryDesign10",
 		"dv": "<fontColorFour>",
 		"cp": "background",
-		"sel": ".comp.compTable._secondary._design10 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._secondary._design10 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._secondary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._secondary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._secondary._design0 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._secondary._design0 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._secondary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._secondary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4091,7 +4091,7 @@
 		"n": "iconTooltipBackgroundTertiaryDesign10",
 		"dv": "<fontColorFive>",
 		"cp": "background",
-		"sel": ".comp.compTable._tertiary._design10 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._tertiary._design10 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._tertiary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._tertiary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._tertiary._design0 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._tertiary._design0 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._tertiary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._tertiary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4100,7 +4100,7 @@
 		"n": "iconTooltipBackgroundQuaternaryDesign10",
 		"dv": "<fontColorNine>",
 		"cp": "background",
-		"sel": ".comp.compTable._quaternary._design10 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._quaternary._design10 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._quaternary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._quaternary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._quaternary._design0 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._quaternary._design0 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._quaternary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._quaternary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4109,7 +4109,7 @@
 		"n": "iconTooltipBackgroundQuinaryDesign10",
 		"dv": "<fontColorSeven>",
 		"cp": "background",
-		"sel": ".comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._quinary._design0 ._headerContainer ._leftIcon:hover ._titleContainer,.comp.compTable._quinary._design0 ._headerContainer ._rightIcon:hover ._titleContainer,.comp.compTable._quinary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle,.comp.compTable._quinary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4523,7 +4523,7 @@
 		"n": "iconTooltipBorderRadiusPrimaryDesign10",
 		"dv": "4px",
 		"cp": "border-radius",
-		"sel": ".comp.compTable._primary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._primary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -4532,7 +4532,7 @@
 		"n": "iconTooltipBorderRadiusSecondaryDesign10",
 		"dv": "4px",
 		"cp": "border-radius",
-		"sel": ".comp.compTable._secondary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._secondary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -4541,7 +4541,7 @@
 		"n": "iconTooltipBorderRadiusTertiaryDesign10",
 		"dv": "4px",
 		"cp": "border-radius",
-		"sel": ".comp.compTable._tertiary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._tertiary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -4550,7 +4550,7 @@
 		"n": "iconTooltipBorderRadiusQuaternaryDesign10",
 		"dv": "4px",
 		"cp": "border-radius",
-		"sel": ".comp.compTable._quaternary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._quaternary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -4559,7 +4559,7 @@
 		"n": "iconTooltipBorderRadiusQuinaryDesign10",
 		"dv": "4px",
 		"cp": "border-radius",
-		"sel": ".comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._quinary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -4927,7 +4927,7 @@
 		"dn": "Icon Tooltip Border Primary Design10",
 		"n": "iconTooltipBorderPrimaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._primary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design10 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._primary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._primary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._primary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design0 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._primary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._primary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4935,7 +4935,7 @@
 		"dn": "Icon Tooltip Border Secondary Design10",
 		"n": "iconTooltipBorderSecondaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._secondary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design10 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._secondary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._secondary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._secondary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design0 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._secondary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._secondary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4943,7 +4943,7 @@
 		"dn": "Icon Tooltip Border Tertiary Design10",
 		"n": "iconTooltipBorderTertiaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._tertiary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design10 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._tertiary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._tertiary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._tertiary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design0 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._tertiary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._tertiary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4951,7 +4951,7 @@
 		"dn": "Icon Tooltip Border Quaternary Design10",
 		"n": "iconTooltipBorderQuaternaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._quaternary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design10 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._quaternary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._quaternary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._quaternary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design0 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._quaternary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._quaternary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -4959,7 +4959,7 @@
 		"dn": "Icon Tooltip Border Quinary Design10",
 		"n": "iconTooltipBorderQuinaryDesign10",
 		"cp": "border",
-		"sel": ".comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
+		"sel": ".comp.compTable._quinary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design0 ._headerContainer ._rightIcon:hover ._titleContainer, .comp.compTable._quinary._design0 ._headerContainer ._leftIcon:hover ._titleContainer ._titleTriangle, .comp.compTable._quinary._design0 ._headerContainer ._rightIcon:hover ._titleContainer ._titleTriangle",
 		"np": true
 	},
 	{
@@ -5373,7 +5373,7 @@
 		"n": "iconTooltipBoxShadowPrimaryDesign10",
 		"dv": "1px 1px 3px 3px #aaa2",
 		"cp": "box-shadow",
-		"sel": ".comp.compTable._primary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._primary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5382,7 +5382,7 @@
 		"n": "iconTooltipBoxShadowSecondaryDesign10",
 		"dv": "1px 1px 3px 3px #aaa2",
 		"cp": "box-shadow",
-		"sel": ".comp.compTable._secondary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._secondary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5391,7 +5391,7 @@
 		"n": "iconTooltipBoxShadowTertiaryDesign10",
 		"dv": "1px 1px 3px 3px #aaa2",
 		"cp": "box-shadow",
-		"sel": ".comp.compTable._tertiary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._tertiary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5400,7 +5400,7 @@
 		"n": "iconTooltipBoxShadowQuaternaryDesign10",
 		"dv": "1px 1px 3px 3px #aaa2",
 		"cp": "box-shadow",
-		"sel": ".comp.compTable._quaternary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._quaternary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5409,7 +5409,7 @@
 		"n": "iconTooltipBoxShadowQuinaryDesign10",
 		"dv": "1px 1px 3px 3px #aaa2",
 		"cp": "box-shadow",
-		"sel": ".comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._quinary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5823,7 +5823,7 @@
 		"n": "iconTooltipPaddingPrimaryDesign10",
 		"dv": "6px",
 		"cp": "padding",
-		"sel": ".comp.compTable._primary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._primary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._primary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5832,7 +5832,7 @@
 		"n": "iconTooltipPaddingSecondaryDesign10",
 		"dv": "6px",
 		"cp": "padding",
-		"sel": ".comp.compTable._secondary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._secondary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._secondary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5841,7 +5841,7 @@
 		"n": "iconTooltipPaddingTertiaryDesign10",
 		"dv": "6px",
 		"cp": "padding",
-		"sel": ".comp.compTable._tertiary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._tertiary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._tertiary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5850,7 +5850,7 @@
 		"n": "iconTooltipPaddingQuaternaryDesign10",
 		"dv": "6px",
 		"cp": "padding",
-		"sel": ".comp.compTable._quaternary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._quaternary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quaternary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5859,7 +5859,7 @@
 		"n": "iconTooltipPaddingQuinaryDesign10",
 		"dv": "6px",
 		"cp": "padding",
-		"sel": ".comp.compTable._quinary._design10 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design10 ._headerContainer ._rightIcon:hover ._titleContainer",
+		"sel": ".comp.compTable._quinary._design0 ._headerContainer ._leftIcon:hover ._titleContainer, .comp.compTable._quinary._design0 ._headerContainer ._rightIcon:hover ._titleContainer",
 		"np": true
 	},
 	{
@@ -5949,7 +5949,7 @@
 		"n": "design10HeaderHeight",
 		"de": "Design 10 Header Height",
 		"cp": "height",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -6039,7 +6039,7 @@
 		"n": "design10HeaderLineHeight",
 		"de": "Design 10 Header Line Height",
 		"cp": "line-height",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn",
 		"np": true
 	},
 	{
@@ -6129,7 +6129,7 @@
 		"n": "design10HeaderLeftIconColor",
 		"de": "Design 10 Header Left Icon Color",
 		"cp": "color",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._leftIcon",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn ._leftIcon",
 		"np": true
 	},
 	{
@@ -6219,7 +6219,7 @@
 		"n": "design10HeaderHoverLeftIconColor",
 		"de": "Design 10 Header Hover Left Icon Color",
 		"cp": "color",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._leftIcon:hover",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn ._leftIcon:hover",
 		"np": true
 	},
 	{
@@ -6309,7 +6309,7 @@
 		"n": "design10HeaderRightIconColor",
 		"de": "Design 10 Header Right Icon Color",
 		"cp": "color",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._rightIcon",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn ._rightIcon",
 		"np": true
 	},
 	{
@@ -6399,7 +6399,7 @@
 		"n": "design10HeaderHoverRightIconColor",
 		"de": "Design 10 Header Hover Right Icon Color",
 		"cp": "color",
-		"sel": ".comp.compTable._design10 .comp.compTableHeaderColumn ._rightIcon:hover",
+		"sel": ".comp.compTable._design0 .comp.compTableHeaderColumn ._rightIcon:hover",
 		"np": true
 	}
 ]

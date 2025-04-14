@@ -96,7 +96,7 @@
 		"dv": "0px",
 		"de": "Design 10 Column Padding",
 		"cp": "padding",
-		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableColumn",
 		"np": true
 	},
 
@@ -192,7 +192,7 @@
 		"n": "design10ColumnBorderBottom",
 		"de": "Design 10 Column Border Bottom",
 		"cp": "border-bottom",
-		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableColumn",
 		"np": true
 	},
 
@@ -283,7 +283,7 @@
 		"n": "design10ColumnBorderTop",
 		"de": "Design 10 Column Border Top",
 		"cp": "border-top",
-		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableColumn",
 		"np": true
 	},
 
@@ -376,7 +376,7 @@
 		"n": "design10ColumnBorderRight",
 		"de": "Design 10 Column Border Right",
 		"cp": "border-right",
-		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableColumn",
 		"np": true
 	},
 
@@ -467,7 +467,7 @@
 		"n": "design10ColumnBorderLeft",
 		"de": "Design 10 Column Border Left",
 		"cp": "border-left",
-		"sel": ".comp.compTable._design10 .comp.compTableColumn",
+		"sel": ".comp.compTable._design0 .comp.compTableColumn",
 		"np": true
 	}
 ]
