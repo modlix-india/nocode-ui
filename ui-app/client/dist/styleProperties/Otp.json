@@ -8,33 +8,6 @@
 		"n": "otpBoxShadowHasValueValue<designType><colorScheme>"
 	},
 	{
-		"cp": "border-color",
-		"sel": ".comp.compOtp<designType><colorScheme>  ._inputBox._isActive",
-		"np": true,
-		"spv": {
-			"_default-_secondary": "<fontColorFour>"
-		},
-		"gn": "Border Color",
-		"dn": "BorderColor IsActive Active",
-		"n": "otpBorderColorIsActiveActive<designType><colorScheme>"
-	},
-	{
-		"cp": "background",
-		"sel": ".comp.compOtp<designType><colorScheme>  ._inputBox._isActive",
-		"np": true,
-		"gn": "Background",
-		"dn": "Background IsActive Active",
-		"n": "otpBackgroundIsActiveActive<designType><colorScheme>"
-	},
-	{
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp<designType><colorScheme>  ._inputBox._isActive",
-		"np": true,
-		"gn": "Box Shadow",
-		"dn": "BoxShadow IsActive Active",
-		"n": "otpBoxShadowIsActiveActive<designType><colorScheme>"
-	},
-	{
 		"cp": "font",
 		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
 		"np": true,
@@ -277,14 +250,6 @@
 		"n": "otpBackgroundHasValueValue<designType><colorScheme>"
 	},
 	{
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._hasValue",
-		"np": true,
-		"gn": "Box Shadow",
-		"dn": "BoxShadow HasValue Value",
-		"n": "otpBoxShadowHasValueValue<designType><colorScheme>"
-	},
-	{
 		"cp": "color",
 		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._isActive",
 		"np": true,
@@ -358,6 +323,7 @@
 		"np": true,
 		"spv": {
 			"_default-_primary": "<fontColorThree>",
+			"_default-_secondary": "<fontColorFour>",
 			"_default-_tertiary": "<fontColorFive>",
 			"_default-_quaternary": "<fontColorNine>",
 			"_default-_quinary": "<fontColorSeven>",
@@ -452,17 +418,6 @@
 	},
 	{
 		"cp": "color",
-		"sel": ".comp.compOtp<designType><colorScheme>_secondary ._inputBox._isActive",
-		"np": true,
-		"spv": {
-			"_default-": "<fontColorOne>"
-		},
-		"gn": "Color",
-		"dn": "Color IsActive Active",
-		"n": "otpColorIsActiveActive<designType><colorScheme>"
-	},
-	{
-		"cp": "color",
 		"sel": ".comp.compOtp<designType><colorScheme>._disabled ._inputBox",
 		"np": true,
 		"spv": {
@@ -498,8 +453,8 @@
 			"_round-_quinary": "<fontColorSix>"
 		},
 		"gn": "Border Color",
-		"dn": "BorderColor InputBox",
-		"n": "otpBorderColorInputBox<designType><colorScheme>"
+		"dn": "BorderColor Disabled InputBox",
+		"n": "otpBorderColorInputBoxDisabled<designType><colorScheme>"
 	},
 	{
 		"cp": "border-bottom-color",
@@ -513,8 +468,8 @@
 			"_dashed-_quinary": "<fontColorSix>"
 		},
 		"gn": "Border Bottom Color",
-		"dn": "BorderBottomColor InputBox",
-		"n": "otpBorderBottomColorInputBox<designType><colorScheme>"
+		"dn": "BorderBottomColor Disabled InputBox",
+		"n": "otpBorderBottomColorInputBoxDisabled<designType><colorScheme>"
 	},
 	{
 		"cp": "background",
@@ -533,8 +488,8 @@
 			"_filled-_quinary": "<backgroundColorSeven>"
 		},
 		"gn": "Background",
-		"dn": "Background InputBox",
-		"n": "otpBackgroundInputBox<designType><colorScheme>"
+		"dn": "Background Disabled InputBox",
+		"n": "otpBackgroundInputBoxDisabled<designType><colorScheme>"
 	},
 	{
 		"cp": "border-color",
@@ -596,14 +551,6 @@
 		"gn": "Color",
 		"dn": "Color IsActive Active Error",
 		"n": "otpColorIsActiveActiveError<designType><colorScheme>"
-	},
-	{
-		"cp": "background",
-		"sel": ".comp.compOtp<designType><colorScheme>._isActive",
-		"np": true,
-		"gn": "Background",
-		"dn": "Background IsActive Active",
-		"n": "otpBackgroundIsActiveActive<designType><colorScheme>"
 	},
 	{
 		"cp": "color",
