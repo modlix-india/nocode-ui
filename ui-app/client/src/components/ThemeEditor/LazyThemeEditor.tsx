@@ -14,6 +14,7 @@ import ComponentDefinitions from '../index';
 import useDefinition from '../util/useDefinition';
 import {
 	DesktopIcon,
+	EditorToggleIcon,
 	JsonIcon,
 	MobileIcon,
 	ModlixIcon,
@@ -51,6 +52,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	const [themeGroup, setThemeGroup] = useState<StyleResolution>(StyleResolution.ALL);
 	const [showJSON, setShowJSON] = useState(false);
 	const [url, setUrl] = useState('');
+	const [close, setClose] = useState(false);
 
 	const iFrameRef = useRef<HTMLIFrameElement>(null);
 	const editorRef = useRef<any>(null);
@@ -126,6 +128,36 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 		theme && url ? (
 			<div className="_iframeWrapper">
 				<div className="_editorTopBar">
+					<button className="_smallButton" onClick={() => setClose(!close)}>
+						<EditorToggleIcon close={close} />
+					</button>
+					<div className="_separator" />
+					<div
+						className={`_icon ${device == 'DESKTOP' ? '_selected' : ''}`}
+						title="Desktop"
+						onClick={() => setDevice('DESKTOP')}
+					>
+						<DesktopIcon />
+					</div>
+					<div
+						className={`_icon ${device == 'TABLET' ? '_selected' : ''}`}
+						title="Tablet"
+						onClick={() => setDevice('TABLET')}
+					>
+						<TabletIcon />
+					</div>
+					<div
+						className={`_icon ${device == 'MOBILE' ? '_selected' : ''}`}
+						title="Mobile"
+						onClick={() => setDevice('MOBILE')}
+					>
+						<MobileIcon />
+					</div>
+					<div className="_separator" />
+					<button className="_smallButton" onClick={() => setShowJSON(!showJSON)}>
+						{showJSON ? <ThemeIcon /> : <JsonIcon />}
+					</button>
+					<div className="_separator" />
 					<URLInput value={url} onChange={setUrl} />
 				</div>
 				<div className={`_iframeContainer _${device}`}>
@@ -141,32 +173,11 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 
 	let editor;
 
-	if (!showJSON) {
-		editor = (
-			<>
+	if (!close) {
+		if (!showJSON) {
+			editor = (
 				<div className="_variableContainer">
 					<div className="_devices">
-						<div
-							className={`_icon ${device == 'DESKTOP' ? '_selected' : ''}`}
-							title="Desktop"
-							onClick={() => setDevice('DESKTOP')}
-						>
-							<DesktopIcon />
-						</div>
-						<div
-							className={`_icon ${device == 'TABLET' ? '_selected' : ''}`}
-							title="Tablet"
-							onClick={() => setDevice('TABLET')}
-						>
-							<TabletIcon />
-						</div>
-						<div
-							className={`_icon ${device == 'MOBILE' ? '_selected' : ''}`}
-							title="Mobile"
-							onClick={() => setDevice('MOBILE')}
-						>
-							<MobileIcon />
-						</div>
 						<select
 							value={themeGroup}
 							onChange={e => setThemeGroup(e.target.value as StyleResolution)}
@@ -177,9 +188,6 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 								</option>
 							))}
 						</select>
-						<button className="_smallButton" onClick={() => setShowJSON(true)}>
-							<JsonIcon />
-						</button>
 					</div>
 					<div className="_compsVariables">
 						<div className="_components">
@@ -229,18 +237,10 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 						/>
 					</div>
 				</div>
-				{iframeComp}
-			</>
-		);
-	} else {
-		editor = (
-			<>
+			);
+		} else {
+			editor = (
 				<div className="_editorContainer">
-					<div className="_editorTopBar">
-						<button className="_smallButton" onClick={() => setShowJSON(false)}>
-							<ThemeIcon />
-						</button>
-					</div>
 					<div className="_editorWrapper">
 						<Editor
 							width="600px"
@@ -263,15 +263,15 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 						/>
 					</div>
 				</div>
-				{iframeComp}
-			</>
-		);
+			);
+		}
 	}
 
 	return (
 		<div className="comp compThemeEditor" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={context} definition={definition} />
 			{editor}
+			{iframeComp}
 		</div>
 	);
 }

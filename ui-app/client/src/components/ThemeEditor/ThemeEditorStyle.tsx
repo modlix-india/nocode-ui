@@ -36,10 +36,10 @@ export default function ThemeEditorStyle({
     ${PREFIX} iframe._DESKTOP {
         min-width: 1280px;
         min-height: 1024px;
-        max-width: 1280px;
         max-height: 1024px;
+        width: 100%;
     }
-
+    
     ${PREFIX} iframe._TABLET {
         min-width: 1024px;
         min-height: 768px;
@@ -263,16 +263,29 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._editorTopBar {
         height: 46px;
-        border-bottom: 2px solid #EEE8;
+        border-bottom: 2px solid #8e90a41a;
         display: flex;
         align-items: center;
         padding: 2px 20px;
+        gap: 10px;
     }
     
     ${PREFIX} ._iframeWrapper {
         flex: 1;
         display:flex;
         flex-direction: column;
+        overflow: hidden;
+    }
+
+    ${PREFIX} ._urlInput {
+        flex: 1;
+    }
+
+    ${PREFIX} ._separator {
+        height: 50%;
+        border-left: 1px solid #EEE;
+        border-right: 1px solid #EEE;
+        border-radius: 2px;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="ThemeEditorCss">{css}</style>;

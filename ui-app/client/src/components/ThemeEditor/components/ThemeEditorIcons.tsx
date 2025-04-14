@@ -206,3 +206,20 @@ export function ThemeIcon() {
 		</svg>
 	);
 }
+
+export function EditorToggleIcon({ close }: { close: boolean }) {
+	return (
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+			<path
+				d="M21 6H13M9 6V18M21 10H13M21 14H13M21 18H13M5 10L3 12L5 14"
+				strokeWidth="2"
+				strokeLinecap="round"
+				strokeLinejoin="round"
+				style={{
+					transformOrigin: 'center center',
+					transform: close ? 'rotate(180deg)' : '',
+				}}
+			/>
+		</svg>
+	);
+}
