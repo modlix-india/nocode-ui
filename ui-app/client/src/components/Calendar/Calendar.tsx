@@ -15,6 +15,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './calendarPrope
 import { styleProperties, styleDefaults } from './calendarStyleProperties';
 import { getValidDate, validateWithProps } from './components/calendarFunctions';
 import { CalendarValidationProps } from './components/calendarTypes';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 const LazyCalendar = React.lazy(() => import(/* webpackChunkName: "Calendar" */ './LazyCalendar'));
 function LoadLazyCalendar(props: Readonly<ComponentProps>) {
@@ -24,6 +25,13 @@ function LoadLazyCalendar(props: Readonly<ComponentProps>) {
 		</Suspense>
 	);
 }
+
+const { designType, colorScheme, calendarDesignType } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+	'calendarDesignType',
+);
 
 const component: Component = {
 	order: 17,
@@ -314,6 +322,7 @@ const component: Component = {
 	},
 	stylePropertiesForTheme: styleProperties,
 	externalStylePropsForThemeJson: true,
+	propertiesForTheme: [calendarDesignType, designType, colorScheme],
 };
 
 export default component;
