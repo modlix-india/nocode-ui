@@ -1,22 +1,9 @@
-import React, { Suspense, useEffect, useState } from 'react';
-import CommonCheckbox from '../../commonComponents/CommonCheckbox';
-import {
-	PageStoreExtractor,
-	addListenerAndCallImmediately,
-	getPathFromLocation,
-	setData,
-} from '../../context/StoreContext';
+import React, { Suspense } from 'react';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { getTranslations } from '../util/getTranslations';
-import { runEvent } from '../util/runEvent';
-import useDefinition from '../util/useDefinition';
+import { IconHelper } from '../util/IconHelper';
 import ThemeEditorStyle from './ThemeEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './themeEditorProperties';
-import { styleProperties, styleDefaults } from './themeEditorStyleProperties';
-import { IconHelper } from '../util/IconHelper';
+import { styleDefaults, styleProperties } from './themeEditorStyleProperties';
 
 const LazyThemeEditor = React.lazy(
 	() => import(/* webpackChunkName: "ThemeEditor" */ './LazyThemeEditor'),

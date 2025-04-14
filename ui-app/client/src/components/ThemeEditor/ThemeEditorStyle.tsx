@@ -262,11 +262,17 @@ export default function ThemeEditorStyle({
     }
 
     ${PREFIX} ._editorTopBar {
-        height: 36px;
+        height: 46px;
         border-bottom: 2px solid #EEE8;
         display: flex;
         align-items: center;
         padding: 2px 20px;
+    }
+    
+    ${PREFIX} ._iframeWrapper {
+        flex: 1;
+        display:flex;
+        flex-direction: column;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="ThemeEditorCss">{css}</style>;

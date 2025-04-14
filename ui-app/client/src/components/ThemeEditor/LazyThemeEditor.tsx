@@ -50,6 +50,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	const [device, setDevice] = useState<string>('DESKTOP');
 	const [themeGroup, setThemeGroup] = useState<StyleResolution>(StyleResolution.ALL);
 	const [showJSON, setShowJSON] = useState(false);
+	const [url, setUrl] = useState('');
 
 	const iFrameRef = useRef<HTMLIFrameElement>(null);
 	const editorRef = useRef<any>(null);
@@ -117,14 +118,26 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 
 	const theme = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
 
-	const iframeComp = theme ? (
-		<iframe
-			className={`_${device}`}
-			ref={iFrameRef}
-			src={`/${theme.appCode}/${theme.clientCode}/page/`}
-			title="Theme Editor"
-		/>
-	) : null;
+	useEffect(
+		() => setUrl(`/${theme?.appCode}/${theme?.clientCode}/page/`),
+		[theme?.appCode, theme?.clientCode],
+	);
+	const iframeComp =
+		theme && url ? (
+			<div className="_iframeWrapper">
+				<div className="_editorTopBar">
+					<URLInput value={url} onChange={setUrl} />
+				</div>
+				<div className={`_iframeContainer _${device}`}>
+					<iframe
+						className={`_${device}`}
+						ref={iFrameRef}
+						src={url}
+						title="Theme Editor"
+					/>
+				</div>
+			</div>
+		) : null;
 
 	let editor;
 
@@ -216,7 +229,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 						/>
 					</div>
 				</div>
-				<div className={`_iframeContainer _${device}`}>{iframeComp}</div>
+				{iframeComp}
 			</>
 		);
 	} else {
@@ -230,7 +243,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 					</div>
 					<div className="_editorWrapper">
 						<Editor
-							width="400px"
+							width="600px"
 							language="json"
 							height="100%"
 							defaultValue={''}
@@ -250,7 +263,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 						/>
 					</div>
 				</div>
-				<div className={`_iframeContainer _${device}`}>{iframeComp}</div>
+				{iframeComp}
 			</>
 		);
 	}
@@ -260,5 +273,33 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 			<HelperComponent context={context} definition={definition} />
 			{editor}
 		</div>
+	);
+}
+
+function URLInput({
+	value,
+	onChange,
+}: {
+	value: string | undefined;
+	onChange: (value: string) => void;
+}) {
+	const [url, setUrl] = useState(value);
+
+	useEffect(() => setUrl(value), [value]);
+
+	return (
+		<input
+			type="url"
+			value={url ?? ''}
+			onChange={e => setUrl(e.target.value)}
+			onBlur={e => onChange(e.target.value)}
+			onKeyDown={e => {
+				if (e.key === 'Enter') {
+					e.preventDefault();
+					onChange(url ?? '');
+				}
+			}}
+			className="_urlInput"
+		/>
 	);
 }
