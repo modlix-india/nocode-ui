@@ -4,34 +4,53 @@ import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './tableStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './tableStyleProperties';
 import { usedComponents } from '../../../App/usedComponents';
-import { lazyCSSURL, lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
+import {
+	findPropertyDefinitions,
+	lazyCSSURL,
+	lazyStylePropertyLoadFunction,
+} from '../../util/lazyStylePropertyUtil';
+import { propertiesDefinition } from './tableProperties';
 
 const PREFIX = '.comp.compTable';
 const NAME = 'Table';
 export default function TableStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
-
 	const [_, setReRender] = useState<number>(Date.now());
 
 	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME])
-		styleProperties.filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, (props) => { styleProperties.splice(0, 0, ...props); setReRender(Date.now()) }, styleDefaults);
+		const { tableDesign, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'tableDesign',
+			'colorScheme',
+		);
+		const fn = lazyStylePropertyLoadFunction(
+			NAME,
+			(props, originalStyleProps) => {
+				styleProperties.splice(0, 0, ...props);
+				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+				setReRender(Date.now());
+			},
+			styleDefaults,
+			[tableDesign, colorScheme],
+		);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
 
 		return () => usedComponents.deRegister(NAME);
 	}, [setReRender]);
+
+	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 
 	const css =
 		`${PREFIX} ._tablePagination ._seperator {
