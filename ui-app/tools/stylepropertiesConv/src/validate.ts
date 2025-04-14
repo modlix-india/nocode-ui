@@ -1,30 +1,39 @@
+const componentName = process.argv[2];
+
 function validate(props: any) {
- 
-    const common: {[key: string]: string} = {};
+  const common: { [key: string]: string } = {};
 
-    let hasDuplicates = false;
+  let hasDuplicates = false;
 
-    for (const prop of props) {
-        if (!prop.sel || !prop.cp) continue;
-        const key = prop.n.trim().split('').sort().join('');
-        
-        if (common[`${prop.cp}-${key}`]) {
-            console.log(`${prop.cp}-${key}`,common[`${prop.cp}-${key}`], ' => ', prop.cp, prop.sel);
-            hasDuplicates = true;
-            continue;
-        }
+  for (const prop of props) {
+    if (!prop.sel || !prop.cp) continue;
+    const key = prop.n.trim().split("").sort().join("");
 
-        common[`${prop.cp}-${key}`] = prop.n;
+    if (common[`${prop.cp}-${key}`]) {
+      console.log(
+        `${prop.cp}-${key}`,
+        common[`${prop.cp}-${key}`],
+        " => ",
+        prop.cp,
+        prop.sel
+      );
+      console.log("-------------------------------\n");
+      hasDuplicates = true;
+      continue;
     }
 
-    // console.log(common);
+    common[`${prop.cp}-${key}`] = prop.n;
+  }
 
-    if (hasDuplicates) {
-        console.log('Duplicates found');
-    } else {
-        console.log('No duplicates found');
-    }
+  // console.log(common);
+
+  if (hasDuplicates) {
+    console.log("Duplicates found");
+  } else {
+    console.log("No duplicates found");
+  }
 }
 
-validate(require('../../../../ui-app/client/dist/styleProperties/TextBox.json'));
-
+validate(
+  require(`../../../../ui-app/client/dist/styleProperties/${componentName}.json`)
+);
