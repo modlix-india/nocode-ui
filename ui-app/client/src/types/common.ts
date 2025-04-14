@@ -227,7 +227,7 @@ export interface StylePropertyDefinition {
 	// Property Values and combinations and variable names
 	spv?: {
 		[key: string]: string;
-	}
+	};
 }
 export interface StyleGroupDefinition {
 	name: string;
@@ -294,10 +294,10 @@ export interface ComponentDefinition {
 	type: string;
 	properties?: {
 		[key: string]:
-		| ComponentProperty<any>
-		| ComponentMultiProperty<any>
-		| { [key: string]: ComponentProperty<any> }
-		| { [key: string]: Validation };
+			| ComponentProperty<any>
+			| ComponentMultiProperty<any>
+			| { [key: string]: ComponentProperty<any> }
+			| { [key: string]: Validation };
 	};
 	styleProperties?: ComponentStyle;
 	validations?: Array<Validation>;
