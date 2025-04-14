@@ -19,10 +19,15 @@ import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
 import CommonInputText from '../../commonComponents/CommonInputText';
-import { styleProperties, styleDefaults } from './phoneNumberStyleProperties';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+} from './phoneNumberStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { Dropdown, DropdownOption, DropdownOptions } from './components/Dropdown';
 import { COUNTRY_LIST } from './components/listOfCountries';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 interface mapType {
 	[key: string]: any;
@@ -142,27 +147,27 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-			onEnter,
-		)}.isRunning`
+				onEnter,
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath2 = onClear
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-			onClear,
-		)}.isRunning`
+				onClear,
+			)}.isRunning`
 		: undefined;
 
 	const spinnerPath3 = onChange
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
-			onChange,
-		)}.isRunning`
+				onChange,
+			)}.isRunning`
 		: undefined;
 
 	const [isLoading, setIsLoading] = useState(
 		(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
 			getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor) ||
 			getDataFromPath(spinnerPath3, props.locationHistory, pageExtractor)) ??
-		false,
+			false,
 	);
 
 	useEffect(() => {
@@ -505,7 +510,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		} else if (!updateStoreImmediately) {
 			let temp = format
 				? selected.D +
-				(storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
+					(storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
 				: selected.D + text;
 			updateBindingPathData(temp);
 		}
@@ -617,13 +622,19 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			leftChildren={leftChildren}
 			showMandatoryAsterisk={
 				showMandatoryAsterisk &&
-					(validation ?? []).find((e: any) => e.type === undefined || e.type === 'MANDATORY')
+				(validation ?? []).find((e: any) => e.type === undefined || e.type === 'MANDATORY')
 					? true
 					: false
 			}
 		/>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 16,
@@ -764,7 +775,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 
