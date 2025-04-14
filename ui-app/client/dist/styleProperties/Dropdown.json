@@ -1041,10 +1041,6 @@
 		"cp": "box-shadow",
 		"sel": ".comp.compDropdown<designType><colorScheme>._hasValue, .comp.compDropdown<designType><colorScheme>._isActive._hasValue",
 		"np": true,
-		"spv": {
-			"_default-": "0vw 0vw 0vw 0.278vw #4B43761A",
-			"_outlined-": "0vw 0vw 0vw 0.278vw #3F3A65"
-		},
 		"gn": "Box Shadow",
 		"dn": "BoxShadow HasValue Value Active",
 		"n": "dropdownBoxShadowHasValueValueActive<designType><colorScheme>"
