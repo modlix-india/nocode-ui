@@ -37,6 +37,8 @@ function Text(props: Readonly<ComponentProps>) {
 			processNewLine,
 			stringFormat,
 			textLength,
+			minFractionDigits,
+			maxFractionDigits,
 			textColor,
 			designType,
 			removeToolTip,
@@ -101,8 +103,20 @@ function Text(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	let numberFormattingOptions: any = {};
+
+	if (typeof minFractionDigits === 'number' || typeof maxFractionDigits === 'number') {
+		let min = minFractionDigits ?? maxFractionDigits!;
+		let max = maxFractionDigits ?? minFractionDigits!;
+		if (min > max) min = max;
+		numberFormattingOptions = {
+			minimumFractionDigits: min,
+			maximumFractionDigits: max,
+		};
+	}
+
 	if (stringFormat !== 'STRING' && translatedText) {
-		translatedText = formatString(translatedText, stringFormat);
+		translatedText = formatString(translatedText, stringFormat, numberFormattingOptions);
 	}
 
 	if (textLength && translatedText) {

@@ -337,6 +337,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Max text length',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'minFractionDigits',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Minimum Fraction Digits',
+		description: 'Minimum number of digits to display after the decimal point.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'maxFractionDigits',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Maximum Fraction Digits',
+		description: 'Maximum number of digits to display after the decimal point.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

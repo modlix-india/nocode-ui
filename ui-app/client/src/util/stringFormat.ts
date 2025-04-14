@@ -12,7 +12,7 @@ const MONTHS = [
 	'November',
 	'December',
 ];
-const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
+const FORMATTING_FUNCTIONS = new Map<string, (str: string, additionalProps?: any) => string>([
 	['STRING', str => str],
 	[
 		'UTC_TO_MM/DD/YYYY',
@@ -276,18 +276,18 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string) => string>([
 ]);
 
 function numberFormattingCurry(format: string) {
-	const formatter = new Intl.NumberFormat(format, { style: 'decimal' });
-
-	return (str: any) => {
+	return (str: any, additionalProps:any = {}) => {
 		let numb = typeof str === 'number' ? str : parseFloat(str);
 		if (isNaN(numb)) return str;
+		const formatter = new Intl.NumberFormat(format, { style: 'decimal', ...additionalProps });
 		return formatter.format(numb) ?? str;
 	};
 }
 
-export function formatString(str: string, format: string): string {
+export function formatString(str: string, format: string, additionalProps:any={}): string {
 	if (!format || !str) return str;
-	return FORMATTING_FUNCTIONS.get(format)?.(str) ?? str;
+	const formattingFunction = FORMATTING_FUNCTIONS.get(format);
+	return formattingFunction ? formattingFunction(str, additionalProps) : str;
 }
 
 function prependZero(num: number, size: number): string {
