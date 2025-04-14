@@ -16,7 +16,8 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
-import { styleProperties, styleDefaults } from './textAreaStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './textAreaStyleProperties';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 interface mapType {
 	[key: string]: any;
@@ -268,6 +269,12 @@ function TextArea(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 13,
 	name: 'TextArea',
@@ -357,7 +364,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 
