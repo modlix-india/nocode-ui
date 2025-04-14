@@ -8,9 +8,10 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleProperties, styleDefaults } from './videoStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './videoStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Video(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -501,9 +502,9 @@ function Video(props: Readonly<ComponentProps>) {
 				onChange={volumeIconHandle}
 				onClick={handlePlayPause}
 				style={resolvedStyles.player ?? {}}
-				onPause={() => setPlayPauseEnd("play")}
+				onPause={() => setPlayPauseEnd('play')}
 				onPlay={() => {
-					setPlayPauseEnd("pause");
+					setPlayPauseEnd('pause');
 					if (!isFirstTimePlay || !autoPlay || !autoUnMuteAfterPlaying) return;
 					setTimeout(() => {
 						setMuted(false);
@@ -546,7 +547,7 @@ function Video(props: Readonly<ComponentProps>) {
 									setManualSeek(undefined);
 								}}
 								ref={progressBarRef}
-								onChange={(ev) => {
+								onChange={ev => {
 									const value = parseInt(ev.target.value);
 									setManualSeek(value);
 									setProgressbarCurr(value);
@@ -564,8 +565,9 @@ function Video(props: Readonly<ComponentProps>) {
 										...(resolvedStyles.seekTimeTextOnHover ?? {}),
 									}}
 									className="_toolTip"
-								>{`${seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''}${seekToolTip.minutes
-									}:${seekToolTip.seconds}`}</div>
+								>{`${seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''}${
+									seekToolTip.minutes
+								}:${seekToolTip.seconds}`}</div>
 							)}
 						</div>
 					)}
@@ -575,20 +577,24 @@ function Video(props: Readonly<ComponentProps>) {
 								<time
 									className="_timeElapsed"
 									id="time-elapsed"
-									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${timElapsed.minutes != '00' ? timElapsed.minutes : ''
-										}${timElapsed.seconds}`}
+									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${
+										timElapsed.minutes != '00' ? timElapsed.minutes : ''
+									}${timElapsed.seconds}`}
 									style={resolvedStyles.timeText ?? {}}
-								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${timElapsed.minutes
-									}:${timElapsed.seconds}`}</time>
+								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
+									timElapsed.minutes
+								}:${timElapsed.seconds}`}</time>
 								<span className="_timeSplitter">/</span>
 								<time
 									className="_duration"
 									id="duration"
-									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${duration.minutes != '00' ? duration.minutes : ''
-										}:${duration.seconds}`}
+									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${
+										duration.minutes != '00' ? duration.minutes : ''
+									}:${duration.seconds}`}
 									style={resolvedStyles.timeText ?? {}}
-								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${duration.minutes
-									}:${duration.seconds}`}</time>
+								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
+									duration.minutes
+								}:${duration.seconds}`}</time>
 							</div>
 						)}
 						{videoDesign != '_videoDesign3' ? (
@@ -602,22 +608,28 @@ function Video(props: Readonly<ComponentProps>) {
 										<time
 											className="_timeElapsed"
 											id="time-elapsed"
-											dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''
-												}${timElapsed.minutes != '00' ? timElapsed.minutes : ''
-												}${timElapsed.seconds}`}
+											dateTime={`${
+												timElapsed.hours != '00' ? timElapsed.hours : ''
+											}${
+												timElapsed.minutes != '00' ? timElapsed.minutes : ''
+											}${timElapsed.seconds}`}
 											style={resolvedStyles.timeText ?? {}}
-										>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''
-											}${timElapsed.minutes}:${timElapsed.seconds}`}</time>
+										>{`${
+											timElapsed.hours != '00' ? timElapsed.hours + ':' : ''
+										}${timElapsed.minutes}:${timElapsed.seconds}`}</time>
 										<span className="_timeSplitter">/</span>
 										<time
 											className="_duration"
 											id="duration"
-											dateTime={`${duration.hours != '00' ? duration.hours : ''
-												}:${duration.minutes != '00' ? duration.minutes : ''}:${duration.seconds
-												}`}
+											dateTime={`${
+												duration.hours != '00' ? duration.hours : ''
+											}:${duration.minutes != '00' ? duration.minutes : ''}:${
+												duration.seconds
+											}`}
 											style={resolvedStyles.timeText ?? {}}
-										>{`${duration.hours != '00' ? duration.hours + ':' : ''}${duration.minutes
-											}:${duration.seconds}`}</time>
+										>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
+											duration.minutes
+										}:${duration.seconds}`}</time>
 									</div>
 								)}
 								{showAudioControls && (
@@ -649,6 +661,12 @@ function Video(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 19,
@@ -756,7 +774,8 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 

@@ -1,37 +1,53 @@
 import { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults, styleProperties } from './videoStyleProperties';
+import { styleDefaults, styleProperties, stylePropertiesForTheme } from './videoStyleProperties';
 import { StylePropertyDefinition } from '../../types/common';
-import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import {
+	findPropertyDefinitions,
+	lazyStylePropertyLoadFunction,
+} from '../util/lazyStylePropertyUtil';
 import { usedComponents } from '../../App/usedComponents';
+import { propertiesDefinition } from './videoProperties';
 
 const PREFIX = '.comp.compVideo';
 const NAME = 'Video';
 export default function VideoStyle({
-    theme,
+	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [_, setReRender] = useState<number>(Date.now());
 
-    const [_, setReRender] = useState<number>(Date.now());
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
+	}
 
-    if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-        styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME])
-        styleProperties.filter((e: any) => !!e.dv)?.map(
-            ({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-        );
-    }
+	useEffect(() => {
+		const { designType, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'designType',
+			'colorScheme',
+		);
+		const fn = lazyStylePropertyLoadFunction(
+			NAME,
+			(props, originalStyleProps) => {
+				styleProperties.splice(0, 0, ...props);
+				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+				setReRender(Date.now());
+			},
+			styleDefaults,
+			[designType, colorScheme],
+		);
 
-    useEffect(() => {
-        const fn = lazyStylePropertyLoadFunction(NAME, (props) => { styleProperties.splice(0, 0, ...props); setReRender(Date.now()) }, styleDefaults);
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
 
-        if (usedComponents.used(NAME)) fn();
-        usedComponents.register(NAME, fn);
+		return () => usedComponents.deRegister(NAME);
+	}, [setReRender]);
 
-        return () => usedComponents.deRegister(NAME);
-    }, [setReRender]);
-
-
-    const css =
-        ` 
+	const css =
+		` 
     ${PREFIX} {
       position:relative;
    }
@@ -100,5 +116,5 @@ export default function VideoStyle({
     border: none;
   }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
-    return <style id="VideoStyle">{css}</style>;
+	return <style id="VideoStyle">{css}</style>;
 }
