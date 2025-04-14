@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './menuStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './menuStyleProperties';
 import { StylePropertyDefinition } from '../../types/common';
 import { usedComponents } from '../../App/usedComponents';
-import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
+import {
+	findPropertyDefinitions,
+	lazyStylePropertyLoadFunction,
+} from '../util/lazyStylePropertyUtil';
+import { propertiesDefinition } from './menuProperties';
 
 const PREFIX = '.comp.compMenu';
 const NAME = 'Menu';
@@ -13,14 +17,28 @@ export default function MenuStyle({
 	const [_, setReRender] = useState<number>(Date.now());
 
 	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME])
-		styleProperties.filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, (props) => { styleProperties.splice(0, 0, ...props); setReRender(Date.now()) }, styleDefaults);
+		const { designType, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'designType',
+			'colorScheme',
+		);
+		const fn = lazyStylePropertyLoadFunction(
+			NAME,
+			(props, originalStyleProps) => {
+				styleProperties.splice(0, 0, ...props);
+				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+				setReRender(Date.now());
+			},
+			styleDefaults,
+			[designType, colorScheme],
+		);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);

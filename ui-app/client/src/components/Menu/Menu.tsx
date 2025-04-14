@@ -15,9 +15,10 @@ import useDefinition from '../util/useDefinition';
 import MenuStyle from './MenuStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import Children from '../Children';
-import { styleProperties, styleDefaults } from './menuStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './menuStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Menu(props: Readonly<ComponentProps>) {
 	const location = useLocation();
@@ -109,20 +110,20 @@ function Menu(props: Readonly<ComponentProps>) {
 				readOnly
 					? undefined
 					: e => {
-						e.stopPropagation();
-						e.preventDefault();
-						if (externalButtonTarget === '_self') {
-							window.history.pushState(undefined, '', resolvedLink);
-							window.history.back();
-							setTimeout(() => window.history.forward(), 100);
-						} else {
-							window.open(
-								resolvedLink,
-								externalButtonTarget,
-								externalButtonFeatures ?? features,
-							);
+							e.stopPropagation();
+							e.preventDefault();
+							if (externalButtonTarget === '_self') {
+								window.history.pushState(undefined, '', resolvedLink);
+								window.history.back();
+								setTimeout(() => window.history.forward(), 100);
+							} else {
+								window.open(
+									resolvedLink,
+									externalButtonTarget,
+									externalButtonFeatures ?? features,
+								);
+							}
 						}
-					}
 			}
 		>
 			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
@@ -199,8 +200,9 @@ function Menu(props: Readonly<ComponentProps>) {
 		<></>
 	);
 
-	const styleKey = `${key}_${locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
-		}`;
+	const styleKey = `${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
@@ -309,8 +311,9 @@ function Menu(props: Readonly<ComponentProps>) {
 		<>
 			{styleComp}
 			<a
-				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${isMenuActive ? '_isActive' : ''
-					} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
+				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${
+					isMenuActive ? '_isActive' : ''
+				} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
 				href={readOnly ? 'javascript:void(0)' : resolvedLink}
 				target={target}
 				onMouseEnter={() => setIsHovered(true)}
@@ -354,6 +357,12 @@ function Menu(props: Readonly<ComponentProps>) {
 		</>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 22,
@@ -459,7 +468,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 
