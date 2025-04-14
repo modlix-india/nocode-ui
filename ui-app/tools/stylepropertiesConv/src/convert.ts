@@ -1,17 +1,15 @@
-const props = require("../../../../ui-app/client/dist/styleProperties/Calendar_old.json");
+const props = require("../../../../ui-app/client/dist/styleProperties/Dropdown copy.json");
 
 const enums = [
-  [
-    "calendarDesignType",
-    ["_defaultCalendar", "_bigCalendar", "_smallCalendar"],
-  ],
   ["designType", ["_default", "_outlined", "_filled", "_bigDesign1", "_text"]],
   [
     "colorScheme",
     ["_primary", "_secondary", "_tertiary", "_quaternary", "_quinary"],
   ],
 ];
-const namePrefix = "calendar";
+const namePrefix = "dropdown";
+
+const stylePrefix = ".comp.compDropdown";
 
 const varSuffixs = enums.map(([enumName]) => `<${enumName}>`);
 
@@ -57,6 +55,9 @@ for (const prop of props) {
   let obj = processed.get(`${prop.cp}-${key}`);
 
   if (obj === undefined) {
+    if (!prop.np) {
+      key = `${stylePrefix}${varSuffixs.join("")} ${key}`;
+    }
     obj = { cp: prop.cp, sel: key, np: true, spv: {} };
     processed.set(`${prop.cp}-${key}`, obj);
   }
@@ -136,6 +137,15 @@ for (const prop of pArray) {
   );
 
   if (spvValues.length === 0 && prop.spv) delete prop["spv"];
+
+  if (spvValues.length == 1) {
+    const dv = prop.spv![varSuffixs.map((e) => "").join("-")];
+    if (dv) {
+      prop.dv = dv;
+      delete prop["spv"];
+      continue;
+    }
+  }
 
   if (spvValues.length !== uniqueCombos) continue;
 
