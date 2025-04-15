@@ -15,14 +15,15 @@ function validate(props: any) {
         common[`${prop.cp}-${key}`],
         " => ",
         prop.cp,
-        prop.sel
+        prop.sel,
+        prop.n
       );
       console.log("-------------------------------\n");
       hasDuplicates = true;
       continue;
     }
 
-    common[`${prop.cp}-${key}`] = prop.n;
+    common[`${prop.cp}-${key}`] = prop;
   }
 
   // console.log(common);
