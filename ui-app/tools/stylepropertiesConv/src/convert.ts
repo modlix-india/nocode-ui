@@ -1,15 +1,24 @@
-const props = require("../../../../ui-app/client/dist/styleProperties/Dropdown copy.json");
+const {
+  styleProperties: props,
+} = require("../../../../ui-app/client/src/components/ToggleButton/toggleButtonStyleProperties.ts");
 
 const enums = [
-  ["designType", ["_default", "_outlined", "_filled", "_bigDesign1", "_text"]],
+  ["designType", ["_default", "_outlined", "_squared", "_bigknob", "_small"]],
   [
     "colorScheme",
-    ["_primary", "_secondary", "_tertiary", "_quaternary", "_quinary"],
+    [
+      "_primary",
+      "_secondary",
+      "_tertiary",
+      "_quaternary",
+      "_quinary",
+      "_gradient1",
+    ],
   ],
 ];
-const namePrefix = "dropdown";
+const namePrefix = "toggleButton";
 
-const stylePrefix = ".comp.compDropdown";
+const stylePrefix = ".comp.compRadioButton";
 
 const varSuffixs = enums.map(([enumName]) => `<${enumName}>`);
 

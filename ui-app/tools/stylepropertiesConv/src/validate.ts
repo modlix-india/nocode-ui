@@ -26,8 +26,6 @@ function validate(props: any) {
     common[`${prop.cp}-${key}`] = prop;
   }
 
-  // console.log(common);
-
   if (hasDuplicates) {
     console.log("Duplicates found");
   } else {
@@ -36,5 +34,7 @@ function validate(props: any) {
 }
 
 validate(
-  require(`../../../../ui-app/client/dist/styleProperties/${componentName}.json`)
+  require(`../../../../ui-app/client/src/components/${componentName}/${componentName[0].toLowerCase()}${componentName.slice(
+    1
+  )}StyleProperties.ts`).stylePropertiesForTheme
 );
