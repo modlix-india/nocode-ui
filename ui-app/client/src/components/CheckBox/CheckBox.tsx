@@ -15,8 +15,9 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CheckBoxStyle from './CheckBoxStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
-import { styleProperties, styleDefaults } from './checkBoxStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './checkBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function CheckBox(props: Readonly<ComponentProps>) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -41,7 +42,6 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			hideLabel,
-
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -103,8 +103,9 @@ function CheckBox(props: Readonly<ComponentProps>) {
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 				}
 				style={resolvedStyles.label ?? {}}
-				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'} ${readOnly ? '_disabled' : ''
-					}`}
+				className={`checkbox ${orientation === 'VERTICAL' ? 'vertical' : 'horizontal'} ${
+					readOnly ? '_disabled' : ''
+				}`}
 				htmlFor={key}
 				onClick={() => handleChange(!checkBoxdata)}
 			>
@@ -129,6 +130,12 @@ function CheckBox(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 8,
@@ -202,7 +209,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [designType, colorScheme],
 };
 
 export default component;
