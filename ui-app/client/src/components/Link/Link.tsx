@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -7,15 +6,16 @@ import {
 	processStyleObjectToCSS,
 } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
+import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './linkProperties';
 import LinkStyle from './LinkStyle';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { runEvent } from '../util/runEvent';
-import { styleProperties, styleDefaults } from './linkStyleProperties';
-import { IconHelper } from '../util/IconHelper';
+import { styleDefaults, stylePropertiesForTheme } from './linkStyleProperties';
 
 function Link(props: Readonly<ComponentProps>) {
 	const location = useLocation();
@@ -58,15 +58,15 @@ function Link(props: Readonly<ComponentProps>) {
 	);
 	const handleClick = clickEvent
 		? () => {
-			(async () =>
-				await runEvent(
-					clickEvent,
-					key,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				))();
-		}
+				(async () =>
+					await runEvent(
+						clickEvent,
+						key,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					))();
+			}
 		: undefined;
 
 	const visitedStyle = processComponentStylePseudoClasses(
@@ -108,8 +108,9 @@ function Link(props: Readonly<ComponentProps>) {
 		<></>
 	);
 
-	const styleKey = `${key}_${locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
-		}`;
+	const styleKey = `${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
@@ -139,8 +140,9 @@ function Link(props: Readonly<ComponentProps>) {
 			{styleComp}
 			<a
 				id={`_${styleKey}link_css`}
-				className={`comp compLink ${designType} ${colorScheme} ${showLines ? '_showLines' : ''
-					}`}
+				className={`comp compLink ${designType} ${colorScheme} ${
+					showLines ? '_showLines' : ''
+				}`}
 				href={resolvedLink}
 				target={target}
 				onClick={e => {
@@ -167,6 +169,12 @@ function Link(props: Readonly<ComponentProps>) {
 		</>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 14,
@@ -230,7 +238,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [designType, colorScheme],
 };
 
 export default component;
