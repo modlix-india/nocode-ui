@@ -6,8 +6,9 @@ import { propertiesDefinition, stylePropertiesDefinition } from './iconPropertie
 import IconStyle from './IconStyle';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './iconStyleProperies';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './iconStyleProperies';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Icon(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
@@ -36,6 +37,12 @@ function Icon(props: Readonly<ComponentProps>) {
 		</i>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 15,
@@ -76,7 +83,8 @@ const component: Component = {
 			),
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [designType, colorScheme],
 };
 
 export default component;
