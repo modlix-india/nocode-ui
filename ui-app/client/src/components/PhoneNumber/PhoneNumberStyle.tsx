@@ -181,5 +181,5 @@ export default function PhoneNumberStyle({
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	return <style id="TextBoxCss">{css}</style>;
+	return <style id="PhoneNumbeCSS">{css}</style>;
 }
