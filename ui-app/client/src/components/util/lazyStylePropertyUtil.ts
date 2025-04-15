@@ -27,26 +27,36 @@ export function lazyStylePropertyLoadFunction(
 				return;
 			}
 
-			const valuesNames = props
-				?.filter(e => e.enumValues)
-				.map(e => ({
-					propName: e.name,
-					enumValues: e.enumValues!.map(x => ({
-						sel: x.name,
-						name: removeSpecialCharsAndMakeFirstLetterCap(x.name),
-					})),
-				}));
-
-			const styleProps = inflateStyleProps(res.data, valuesNames);
-			setStyleProperties(styleProps, props?.length ? res.data : undefined);
-
-			styleProps
-				?.filter((e: any) => !!e.dv)
-				?.map(({ n: name, dv: defaultValue }: any) =>
-					styleDefaults.set(name, defaultValue),
-				);
+			inflateAndSetStyleProps(props, res.data, setStyleProperties, styleDefaults);
 		});
 	};
+}
+
+export function inflateAndSetStyleProps(
+	props: ComponentPropertyDefinition[] | undefined,
+	srcStyleProps: StylePropertyDefinition[],
+	setStyleProperties: (
+		styleProperties: Array<StylePropertyDefinition>,
+		originalStyleProps?: Array<StylePropertyDefinition>,
+	) => void,
+	styleDefaults: Map<string, string>,
+) {
+	const valuesNames = props
+		?.filter(e => e.enumValues)
+		.map(e => ({
+			propName: e.name,
+			enumValues: e.enumValues!.map(x => ({
+				sel: x.name,
+				name: removeSpecialCharsAndMakeFirstLetterCap(x.name),
+			})),
+		}));
+
+	const styleProps = inflateStyleProps(srcStyleProps, valuesNames);
+	setStyleProperties(styleProps, props?.length ? srcStyleProps : undefined);
+
+	styleProps
+		?.filter((e: any) => !!e.dv)
+		?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
 }
 
 export function lazyStylePropURL(name: string) {
