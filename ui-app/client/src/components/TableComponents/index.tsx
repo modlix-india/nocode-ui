@@ -20,6 +20,7 @@ import {
 import {
 	styleProperties as tableColumnStyleProperties,
 	styleDefaults as tableColumnStyleDefaults,
+	stylePropertiesForTheme as tableColumnStylePropertiesForTheme,
 } from './TableColumn/tableColumnStyleProperties';
 import TableColumnHeaderStyle from './TableColumnHeader/TableColumnHeaderStyle';
 import {
@@ -437,8 +438,9 @@ export const TableColumn: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: tableColumnStyleProperties,
+	stylePropertiesForTheme: tableColumnStylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
+	propertiesForTheme: [tableDesign, colorScheme],
 };
 
 const LazyTableColumnHeaderComponent = React.lazy(
@@ -471,7 +473,67 @@ export const TableColumnHeader: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-diagram-next',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="2"
+						y="5"
+						width="9"
+						height="14"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="1.00195"
+						y="1.84766"
+						width="21.9967"
+						height="3.38411"
+						rx="1"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.00195"
+						y="10.3076"
+						width="21.9967"
+						height="3.38411"
+						rx="0.4"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.00195"
+						y="18.769"
+						width="21.9967"
+						height="3.38411"
+						rx="1"
+						fill="currentColor"
+					/>
+					<rect
+						x="4.38672"
+						y="3.53955"
+						width="16.9205"
+						height="3.38411"
+						transform="rotate(90 4.38672 3.53955)"
+						fill="currentColor"
+					/>
+					<rect
+						x="13.8594"
+						y="3.53955"
+						width="18.6126"
+						height="3.38411"
+						transform="rotate(90 13.8594 3.53955)"
+						fill="currentColor"
+					/>
+					<rect
+						x="23"
+						y="3.53955"
+						width="16.9205"
+						height="3.38411"
+						transform="rotate(90 23 3.53955)"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 		},
 		{
 			name: 'header',
@@ -480,7 +542,9 @@ export const TableColumnHeader: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: tableColumnHeaderStyleProperties,
+
+	// propertiesForTheme: [tableDesign, colorScheme],
+	stylePropertiesForTheme: tableColumnStylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 
