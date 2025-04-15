@@ -118,8 +118,8 @@ export function Variables({
 						<svg viewBox="0 0 24 24" fill="none">
 							<path
 								d="M6 12H18M12 6V18"
-								stroke-linecap="round"
-								stroke-linejoin="round"
+								strokeLinecap="round"
+								strokeLinejoin="round"
 							/>
 						</svg>
 					</button>
@@ -131,7 +131,7 @@ export function Variables({
 						}}
 					>
 						<svg viewBox="0 0 24 24" fill="none">
-							<path d="M6 12H18" stroke-linecap="round" stroke-linejoin="round" />
+							<path d="M6 12H18" strokeLinecap="round" strokeLinejoin="round" />
 						</svg>
 					</button>
 				</div>

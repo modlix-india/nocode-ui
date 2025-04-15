@@ -33,7 +33,6 @@ export default function TextBoxStyle({
 			(props, originalStyleProps) => {
 				styleProperties.splice(0, 0, ...props);
 				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
-				console.log(styleDefaults);
 				setReRender(Date.now());
 			},
 			styleDefaults,
