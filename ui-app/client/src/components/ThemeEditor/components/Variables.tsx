@@ -252,7 +252,7 @@ function VariableEdit({
 			</div>
 			<input
 				type="text"
-				value={value}
+				value={value ?? ''}
 				onChange={v => setValue(v.target.value)}
 				onBlur={e => {
 					if (e.target.value === '') setValue(defaultValue);
