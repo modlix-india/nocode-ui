@@ -205,7 +205,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 							</button>
 							{Array.from(ComponentDefinitions.values())
 								.filter(e => e.stylePropertiesForTheme.length)
-								.filter(e => !e.isHidden)
+								.filter(e => !e.isHidden || e.name === 'TableColumnHeader')
 								.map(comp => (
 									<button
 										key={comp.name}

@@ -33,7 +33,6 @@ export default function CalendarStyle({
 		const fn = lazyStylePropertyLoadFunction(
 			NAME,
 			(props, originalStyleProps) => {
-				console.log(props);
 				styleProperties.splice(0, 0, ...props);
 				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
 				setReRender(Date.now());
@@ -49,8 +48,6 @@ export default function CalendarStyle({
 	}, [setReRender]);
 
 	const css = processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
-
-	console.log(styleDefaults);
 
 	return (
 		<>
