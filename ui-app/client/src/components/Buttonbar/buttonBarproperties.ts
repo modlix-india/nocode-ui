@@ -1,13 +1,11 @@
-import { Schema } from '@fincity/kirun-js';
 import {
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
-	ComponentPropertyEditor,
-	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
+	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
@@ -18,8 +16,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{
-		...COMMON_COMPONENT_PROPERTIES.designType,
+		name: 'buttonBarDesign',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Button Bar Design',
+		description: 'Color Scheme',
 		defaultValue: '_buttonBarDesign1',
+		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
 				name: '_buttonBarDesign1',

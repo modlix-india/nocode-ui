@@ -19,6 +19,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleProperties, styleDefaults } from './buttonBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function ButtonBar(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -45,7 +46,7 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 			data,
 			isMultiSelect,
 			colorScheme,
-			designType: buttonBarDesign,
+			buttonBarDesign,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -162,8 +163,9 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 						stylePropertiesWithPseudoStates?.hover ? () => setHover('') : undefined
 					}
 					onClick={() => (!readOnly && each ? handleClick(each) : undefined)}
-					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${readOnly ? '_disabled' : ''
-						} ${i == 0 ? '_firstChild' : ''} ${i + 1 == arr.length ? '_lastChild' : ''}`}
+					className={`_button ${getIsSelected(each?.key) ? '_selected' : ''} ${
+						readOnly ? '_disabled' : ''
+					} ${i == 0 ? '_firstChild' : ''} ${i + 1 == arr.length ? '_lastChild' : ''}`}
 				>
 					<SubHelperComponent definition={props.definition} subComponentName="button" />
 					{getTranslations(each?.label, translations)}
@@ -172,6 +174,12 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
+
+const { buttonBarDesign, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'buttonBarDesign',
+	'colorScheme',
+);
 
 const component: Component = {
 	name: 'ButtonBar',
@@ -189,7 +197,7 @@ const component: Component = {
 	},
 	defaultTemplate: {
 		key: '',
-		name: 'buttonBar',
+		name: 'Button Bar',
 		type: 'ButtonBar',
 		properties: {
 			label: { value: 'ButtonBar' },
@@ -257,6 +265,7 @@ const component: Component = {
 		},
 	],
 	stylePropertiesForTheme: styleProperties,
+	propertiesForTheme: [buttonBarDesign, colorScheme],
 };
 
 export default component;
