@@ -26,13 +26,15 @@ export default function CheckBoxStyle({
 			'colorScheme',
 		);
 
-		const fn = () =>
+		const fn = () => {
 			inflateAndSetStyleProps(
 				[designType, colorScheme],
 				stylePropertiesForTheme,
 				(props, _) => styleProperties.splice(0, 0, ...props),
 				styleDefaults,
 			);
+			setReRender(Date.now());
+		};
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
