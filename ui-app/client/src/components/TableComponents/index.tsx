@@ -8,7 +8,6 @@ import {
 	stylePropertiesDefinition as tableStylePropertiesDefinition,
 } from './Table/tableProperties';
 import {
-	styleProperties as tableStyleProperties,
 	styleDefaults as tableStyleDefaults,
 	stylePropertiesForTheme as tableStylePropertiesForTheme,
 } from './Table/tableStyleProperties';
@@ -18,7 +17,6 @@ import {
 	stylePropertiesDefinition as tableColumnStylePropertiesDefinition,
 } from './TableColumn/tableCloumnProperties';
 import {
-	styleProperties as tableColumnStyleProperties,
 	styleDefaults as tableColumnStyleDefaults,
 	stylePropertiesForTheme as tableColumnStylePropertiesForTheme,
 } from './TableColumn/tableColumnStyleProperties';
@@ -27,10 +25,7 @@ import {
 	propertiesDefinition as tableColumnHeaderPropertiesDefinintion,
 	stylePropertiesDefinition as tableColumnHeaderStylePropertiesDefinition,
 } from './TableColumnHeader/tableCloumnHeaderProperties';
-import {
-	styleProperties as tableColumnHeaderStyleProperties,
-	styleDefaults as tableColumnHeaderStyleDefaults,
-} from './TableColumnHeader/tableColumnHeaderStyleProperties';
+import { styleDefaults as tableColumnHeaderStyleDefaults } from './TableColumnHeader/tableColumnHeaderStyleProperties';
 import TableColumnsStyle from './TableColumns/TableColumnsStyle';
 
 import {
@@ -39,8 +34,8 @@ import {
 } from './TableColumns/tableColumnsProperties';
 
 import {
-	styleProperties as tableColumnsStyleProperties,
 	styleDefaults as tableColumnsStyleDefaults,
+	stylePropertiesForTheme as tableColumnsStylePropertiesForTheme,
 } from './TableColumns/tableColumnsStyleProperties';
 import {
 	propertiesDefinition as tableDynamicColumnPropertiesDefinition,
@@ -53,8 +48,8 @@ import {
 } from './TableEmptyGrid/tableEmptyGridProperties';
 
 import {
-	styleProperties as tableEmptyGridStyleProperties,
 	styleDefaults as tableEmptyGridStyleDefaults,
+	styleProperties as tableEmptyGridStyleProperties,
 } from './TableEmptyGrid/tableEmptyGridStyleProperties';
 import TableGridStyle from './TableGrid/TableGridStyle';
 
@@ -64,8 +59,8 @@ import {
 } from './TableGrid/tableGridProperties';
 
 import {
-	styleProperties as tableGridStyleProperties,
 	styleDefaults as tableGridStyleDefaults,
+	styleProperties as tableGridStyleProperties,
 } from './TableGrid/tableGridStyleProperties';
 import TablePreviewGridStyle from './TablePreviewGrid/TablePreviewGridStyle';
 
@@ -74,11 +69,11 @@ import {
 	stylePropertiesDefinition as tablePreviewGridStylePropertiesDefinition,
 } from './TablePreviewGrid/tablePreviewGridProperties';
 
-import {
-	styleProperties as tablePreviewGridStyleProperties,
-	styleDefaults as tablePreviewGridStyleDefaults,
-} from './TablePreviewGrid/tablePreviewGridStyleProperties';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import {
+	styleDefaults as tablePreviewGridStyleDefaults,
+	styleProperties as tablePreviewGridStyleProperties,
+} from './TablePreviewGrid/tablePreviewGridStyleProperties';
 
 const LazyTableComponent = React.lazy(
 	() => import(/* webpackChunkName: "Table" */ './Table/Table'),
@@ -543,7 +538,7 @@ export const TableColumnHeader: Component = {
 		},
 	],
 
-	// propertiesForTheme: [tableDesign, colorScheme],
+	propertiesForTheme: [tableDesign, colorScheme],
 	stylePropertiesForTheme: tableColumnStylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
@@ -652,7 +647,8 @@ export const TableColumns: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: tableColumnsStyleProperties,
+	propertiesForTheme: [tableDesign, colorScheme],
+	stylePropertiesForTheme: tableColumnsStylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 

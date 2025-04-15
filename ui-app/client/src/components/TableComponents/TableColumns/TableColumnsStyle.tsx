@@ -5,8 +5,16 @@ import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
-import { styleProperties, styleDefaults } from './tableColumnsStyleProperties';
+import {
+	findPropertyDefinitions,
+	lazyStylePropertyLoadFunction,
+} from '../../util/lazyStylePropertyUtil';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+} from './tableColumnsStyleProperties';
+import { propertiesDefinition } from '../Table/tableProperties';
 
 const PREFIX = '.comp.compTableColumns';
 const NAME = 'TableColumns';
@@ -16,14 +24,28 @@ export default function TableColumnsStyle({
 	const [_, setReRender] = useState<number>(Date.now());
 
 	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME])
-		styleProperties.filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, (props) => { styleProperties.splice(0, 0, ...props); setReRender(Date.now()) }, styleDefaults);
+		const { tableDesign, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'tableDesign',
+			'colorScheme',
+		);
+		const fn = lazyStylePropertyLoadFunction(
+			NAME,
+			(props, originalStyleProps) => {
+				styleProperties.splice(0, 0, ...props);
+				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+				setReRender(Date.now());
+			},
+			styleDefaults,
+			[tableDesign, colorScheme],
+		);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
