@@ -3488,7 +3488,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._tutorialTooltipPanel {
 	background: #f9f9f9;
 	border-radius: 8px;
-	width: 100%;
+	width: 300px;
 	max-height: 80vh;
 	display: flex;
 	flex-direction: column;
