@@ -15,7 +15,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { isNullValue } from '@fincity/kirun-js';
-import { styleDefaults } from './galleryStyleProperties';
+import { styleProperties, styleDefaults } from './galleryStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
 import { getRenderData } from '../util/getRenderData';
@@ -175,26 +175,24 @@ function Gallery(props: Readonly<ComponentProps>) {
 		if (!currentSlide.current || isNullValue(transitionFrom)) return;
 		setTimeout(() => {
 			if (!currentSlide.current || isNullValue(transitionFrom)) return;
-			currentSlide.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${
-				slideNum - transitionFrom! + 1 == galleryData.length ||
+			currentSlide.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${slideNum - transitionFrom! + 1 == galleryData.length ||
 				(slideNum - transitionFrom! < 0 &&
 					slideNum - transitionFrom! - 1 != -galleryData.length)
-					? '_reverse'
-					: ''
-			}`;
+				? '_reverse'
+				: ''
+				}`;
 
 			if (
 				animationType == 'fadeoutin' ||
 				animationType == 'crossover' ||
 				animationType == 'slide'
 			) {
-				previousSlide.current!.className = `_eachSlide _previous _${animationType} _${animationType}Start ${
-					slideNum - transitionFrom! + 1 == galleryData.length ||
+				previousSlide.current!.className = `_eachSlide _previous _${animationType} _${animationType}Start ${slideNum - transitionFrom! + 1 == galleryData.length ||
 					(slideNum - transitionFrom! < 0 &&
 						slideNum - transitionFrom! - 1 != -galleryData.length)
-						? '_reverse'
-						: ''
-				}`;
+					? '_reverse'
+					: ''
+					}`;
 			}
 		}, 100);
 	}, [currentSlide.current, previousSlide.current, transitionFrom, animationType]);
@@ -222,13 +220,12 @@ function Gallery(props: Readonly<ComponentProps>) {
 		if (!isNullValue(transitionFrom)) {
 			showChildren = [
 				<div
-					className={`_eachSlide _previous _${animationType} ${
-						slideNum - transitionFrom! + 1 == galleryData.length ||
+					className={`_eachSlide _previous _${animationType} ${slideNum - transitionFrom! + 1 == galleryData.length ||
 						(slideNum - transitionFrom! < 0 &&
 							slideNum - transitionFrom! - 1 != -galleryData.length)
-							? '_reverse'
-							: ''
-					}`}
+						? '_reverse'
+						: ''
+						}`}
 					key={galleryData[transitionFrom!].key}
 					style={prevStyle}
 					ref={previousSlide}
@@ -247,13 +244,12 @@ function Gallery(props: Readonly<ComponentProps>) {
 					/>
 				</div>,
 				<div
-					className={`_eachSlide _current _${animationType} ${
-						slideNum - transitionFrom! + 1 == galleryData.length ||
+					className={`_eachSlide _current _${animationType} ${slideNum - transitionFrom! + 1 == galleryData.length ||
 						(slideNum - transitionFrom! < 0 &&
 							slideNum - transitionFrom! - 1 != -galleryData.length)
-							? '_reverse'
-							: ''
-					}`}
+						? '_reverse'
+						: ''
+						}`}
 					key={galleryData[slideNum].key}
 					style={style}
 					ref={currentSlide}
@@ -323,9 +319,9 @@ function Gallery(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (isActive) {
-			document.body.addEventListener('fullscreenchange', () => {});
+			document.body.addEventListener('fullscreenchange', () => { });
 		}
-		return () => document.body.removeEventListener('fullscreenchange', () => {});
+		return () => document.body.removeEventListener('fullscreenchange', () => { });
 	}, [isActive]);
 
 	const toogleFullscreen = () => {
@@ -504,9 +500,8 @@ function Gallery(props: Readonly<ComponentProps>) {
 	const thumbnailComp =
 		previewMode === 'Thumbnail' ? (
 			<div
-				className={`_thumbnailContainer _thumbnail${position} ${
-					!showThumbnail ? `_hide${position}` : ''
-				} ${isZoomed ? '_imageZoomed' : ''}`}
+				className={`_thumbnailContainer _thumbnail${position} ${!showThumbnail ? `_hide${position}` : ''
+					} ${isZoomed ? '_imageZoomed' : ''}`}
 				style={resolvedStyles?.thumbnailContainer ?? {}}
 				onClick={handleBubbling}
 			>
@@ -545,9 +540,8 @@ function Gallery(props: Readonly<ComponentProps>) {
 	const previewComp =
 		previewMode === 'Preview' ? (
 			<div
-				className={`_previewContainer _${position} ${
-					showPreivew ? `_show${position}` : ''
-				}`}
+				className={`_previewContainer _${position} ${showPreivew ? `_show${position}` : ''
+					}`}
 				style={resolvedStyles.previewContainer ?? {}}
 				onClick={handleBubbling}
 			>
@@ -559,9 +553,8 @@ function Gallery(props: Readonly<ComponentProps>) {
 					{previewCloseIcon}
 				</div>
 				<div
-					className={`_previewList _${position} ${
-						!showPreivew ? `_hide${position}` : ''
-					}`}
+					className={`_previewList _${position} ${!showPreivew ? `_hide${position}` : ''
+						}`}
 					style={resolvedStyles.previewList ?? {}}
 				>
 					<SubHelperComponent
@@ -570,9 +563,8 @@ function Gallery(props: Readonly<ComponentProps>) {
 					/>
 					{galleryData?.map((each: any, index: number) => (
 						<div
-							className={`_previewImageDiv _${position} ${
-								slideNum === index ? '_selected' : ''
-							}`}
+							className={`_previewImageDiv _${position} ${slideNum === index ? '_selected' : ''
+								}`}
 							style={resolvedStyles.previewImageDiv ?? {}}
 							onClick={() => selectedImage(index)}
 							key={each.key}
@@ -634,9 +626,8 @@ function Gallery(props: Readonly<ComponentProps>) {
 								</div>
 							</div>
 							<div
-								className={`_imageSliderContainer ${
-									isZoomed ? '_imageZoomed' : ''
-								}`}
+								className={`_imageSliderContainer ${isZoomed ? '_imageZoomed' : ''
+									}`}
 								style={resolvedStyles?.imageSliderContainer ?? {}}
 							>
 								{showArrowButtons && (
@@ -807,6 +798,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

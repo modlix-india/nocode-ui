@@ -10,7 +10,7 @@ import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRenderData } from '../util/getRenderData';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './textListStyleProperties';
+import { styleProperties, styleDefaults } from './textListStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function TextList(props: Readonly<ComponentProps>) {
@@ -75,8 +75,8 @@ function TextList(props: Readonly<ComponentProps>) {
 
 	let translatedText = dropdownData?.length
 		? dropdownData.map((e: any) => {
-				return { ...e, label: getTranslations(e.label, translations) };
-			})
+			return { ...e, label: getTranslations(e.label, translations) };
+		})
 		: text && text.length
 			? text.split(delimitter).map((e: string) => getTranslations(e, translations))
 			: [];
@@ -267,6 +267,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

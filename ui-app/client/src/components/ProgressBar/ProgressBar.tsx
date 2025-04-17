@@ -8,7 +8,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './progressBarProperties';
 import ProgressBarStyles from './ProgressBarStyles';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './progressBarStyleProperties';
+import { styleProperties, styleDefaults } from './progressBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function ProgressBar(props: Readonly<ComponentProps>) {
@@ -235,6 +235,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -6,7 +6,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './iframeProperties';
 import IframeStyle from './IframeStyle';
-import { styleDefaults } from './iframeStyleProperties';
+import { styleProperties, styleDefaults } from './iframeStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
@@ -62,7 +62,7 @@ function Iframe(props: Readonly<ComponentProps>) {
 				new URL(src, window.location.origin);
 				shouldRenderIframe = true;
 			}
-		} catch (err) {}
+		} catch (err) { }
 	} else shouldRenderIframe = true;
 
 	const [actualSrc, setActualSrc] = useState<string | undefined>();
@@ -155,6 +155,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

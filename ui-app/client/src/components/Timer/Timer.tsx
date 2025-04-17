@@ -5,7 +5,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import TimerStyle from './TimerStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './timerProperties';
-import { styleDefaults } from './timerStyleProperties';
+import { styleProperties, styleDefaults } from './timerStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
@@ -222,6 +222,7 @@ const component = {
 			mainComponent: true,
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

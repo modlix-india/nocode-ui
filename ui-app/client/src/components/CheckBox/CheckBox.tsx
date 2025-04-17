@@ -15,8 +15,9 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CheckBoxStyle from './CheckBoxStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './checkBoxProperties';
-import { styleDefaults } from './checkBoxStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './checkBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function CheckBox(props: Readonly<ComponentProps>) {
 	const [checkBoxdata, setCheckBoxData] = useState(false);
@@ -41,7 +42,6 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			hideLabel,
-			
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -131,6 +131,12 @@ function CheckBox(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 8,
 	name: 'CheckBox',
@@ -203,6 +209,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [designType, colorScheme],
 };
 
 export default component;
