@@ -3492,7 +3492,6 @@ input._peInput[type='number'] {
 	max-height: 80vh;
 	display: flex;
 	flex-direction: column;
-	color: #fff;
 	margin-left: 20px;
 
 }
