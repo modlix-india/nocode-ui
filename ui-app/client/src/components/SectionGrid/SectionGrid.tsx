@@ -8,7 +8,7 @@ import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import SectionGridStyle from './SectionGridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './sectionGridProperties';
-import { styleDefaults } from './sectionGridStyleProperties';
+import { styleProperties, styleDefaults } from './sectionGridStyleProperties';
 
 function SectionGrid(props: Readonly<ComponentProps>) {
 	const [hover, setHover] = React.useState(false);
@@ -140,6 +140,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -19,10 +19,15 @@ import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
 import CommonInputText from '../../commonComponents/CommonInputText';
-import { styleDefaults } from './phoneNumberStyleProperties';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+} from './phoneNumberStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { Dropdown, DropdownOption, DropdownOptions } from './components/Dropdown';
 import { COUNTRY_LIST } from './components/listOfCountries';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 interface mapType {
 	[key: string]: any;
@@ -625,6 +630,12 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 16,
 	name: 'PhoneNumber',
@@ -764,6 +775,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

@@ -1,13 +1,11 @@
-import { Schema } from '@fincity/kirun-js';
 import {
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
-	ComponentPropertyEditor,
-	ComponentPropertyGroup,
 	ComponentPropertyDefinition,
+	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';

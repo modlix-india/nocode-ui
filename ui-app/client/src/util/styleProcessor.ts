@@ -242,6 +242,7 @@ export function processEachResolution(
 	return (
 		mediaQuery +
 		Array.from(index.entries())
+			.filter(([key, style]) => !!style && !!key)
 			.map(([key, style]) => key + ' { ' + style + ' }')
 			.join('\n') +
 		(mediaQuery ? '}' : '')
@@ -453,7 +454,6 @@ export function processStyleFromString(str: string): { [key: string]: string } {
 export function processStyleObjectToCSS(styleObj: any, selector: string): string {
 	const x = processStyleObjectToString(styleObj, '\n');
 	if (x.trim() === '') return '';
-
 	return `${selector} { ${x} }`;
 }
 
