@@ -3492,7 +3492,6 @@ input._peInput[type='number'] {
 	max-height: 80vh;
 	display: flex;
 	flex-direction: column;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.24);
 	color: #fff;
 	margin-left: 20px;
 
@@ -3546,6 +3545,14 @@ input._peInput[type='number'] {
 	stroke: #4c7fee;
 }
 
+.comp.compPageEditor ._compMenuItem ._tutorialIcon {
+	opacity: 0;
+}
+
+.comp.compPageEditor ._compMenuItem:hover ._tutorialIcon {
+	opacity: 1;
+}
+
 .comp.compPageEditor ._youtubeButtonContainer {
 	padding: 20px 15px;
 	text-align: center;
@@ -3593,13 +3600,6 @@ input._peInput[type='number'] {
 	}
 }
 
-.comp.compPageEditor ._compMenuItem ._tutorialIcon {
-	opacity: 0;
-}
-
-.comp.compPageEditor ._compMenuItem:hover ._tutorialIcon {
-	opacity: 1;
-}
 
 .comp.compPageEditor ._videoContainer iframe,
 .comp.compPageEditor ._videoContainer video {
