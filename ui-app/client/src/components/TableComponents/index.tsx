@@ -25,7 +25,10 @@ import {
 	propertiesDefinition as tableColumnHeaderPropertiesDefinintion,
 	stylePropertiesDefinition as tableColumnHeaderStylePropertiesDefinition,
 } from './TableColumnHeader/tableCloumnHeaderProperties';
-import { styleDefaults as tableColumnHeaderStyleDefaults } from './TableColumnHeader/tableColumnHeaderStyleProperties';
+import {
+	styleDefaults as tableColumnHeaderStyleDefaults,
+	stylePropertiesForTheme as tableColumnHeaderStylePropertiesForTheme,
+} from './TableColumnHeader/tableColumnHeaderStyleProperties';
 import TableColumnsStyle from './TableColumns/TableColumnsStyle';
 
 import {
@@ -539,7 +542,7 @@ export const TableColumnHeader: Component = {
 	],
 
 	propertiesForTheme: [tableDesign, colorScheme],
-	stylePropertiesForTheme: tableColumnStylePropertiesForTheme,
+	stylePropertiesForTheme: tableColumnHeaderStylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
 
