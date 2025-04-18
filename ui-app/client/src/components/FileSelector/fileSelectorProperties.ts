@@ -14,15 +14,11 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'designType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Design Type',
-		defaultValue: 'button',
+		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			{ name: 'button', displayName: 'Button to open browser' },
-			{ name: 'browser', displayName: 'Full broswer' },
+			{ name: 'browser', displayName: 'Full browser' },
 		],
-		group: ComponentPropertyGroup.BASIC,
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{

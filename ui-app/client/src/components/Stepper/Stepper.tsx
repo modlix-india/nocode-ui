@@ -16,7 +16,7 @@ import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRoman, getAlphaNumeral } from '../util/numberConverter';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './StepperStyleProperties';
+import { styleProperties, styleDefaults } from './StepperStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 const COUNT_FUNCTIONS: Record<string, (num: number) => string> = {
@@ -107,13 +107,13 @@ function Stepper(props: Readonly<ComponentProps>) {
 
 	const handleOnClick = onClickEvent
 		? async () =>
-				await runEvent(
-					onClickEvent,
-					onClick,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				)
+			await runEvent(
+				onClickEvent,
+				onClick,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			)
 		: undefined;
 
 	const goToStep = async (stepNumber: number) => {
@@ -180,9 +180,8 @@ function Stepper(props: Readonly<ComponentProps>) {
 			icon = (
 				<i
 					style={styleGroup[styleKey + (styleKey ? 'Step' : 'step')] ?? {}}
-					className={`${iconClassName} _step ${i < value ? '_done' : ''} ${
-						i === value ? '_active' : ''
-					}`}
+					className={`${iconClassName} _step ${i < value ? '_done' : ''} ${i === value ? '_active' : ''
+						}`}
 				>
 					<SubHelperComponent definition={props.definition} subComponentName="step" />
 				</i>
@@ -219,8 +218,8 @@ function Stepper(props: Readonly<ComponentProps>) {
 			else lineKey = styleKey + (styleKey ? 'Line' : 'line');
 
 			line = (
-				<div className={`_line ${i+1 === value ? '_activeBeforeLine' : ''} ${i+1 < value ? '_done' : ''} ${i === value ? '_active' : ''}`} 
-				style={styleGroup[lineKey] ?? {}}>
+				<div className={`_line ${i + 1 === value ? '_activeBeforeLine' : ''} ${i + 1 < value ? '_done' : ''} ${i === value ? '_active' : ''}`}
+					style={styleGroup[lineKey] ?? {}}>
 					<SubHelperComponent definition={props.definition} subComponentName="line" />
 				</div>
 			);
@@ -236,11 +235,9 @@ function Stepper(props: Readonly<ComponentProps>) {
 						? () => goToStep(i)
 						: undefined
 				}
-				className={`_listItem ${showLines ? '_withLines' : ''} ${
-					i < value ? '_done' : ''
-				} ${i === value ? '_active' : ''} ${
-					i > value && moveToAnyFutureStep ? '_nextItem' : ''
-				} ${i < value && moveToAnyPreviousStep ? '_previousItem' : ''}`}
+				className={`_listItem ${showLines ? '_withLines' : ''} ${i < value ? '_done' : ''
+					} ${i === value ? '_active' : ''} ${i > value && moveToAnyFutureStep ? '_nextItem' : ''
+					} ${i < value && moveToAnyPreviousStep ? '_previousItem' : ''}`}
 				key={i}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="listItem" />
@@ -259,20 +256,18 @@ function Stepper(props: Readonly<ComponentProps>) {
 				</div>
 				{line}
 			</li>,
-			
+
 		);
-		
+
 	}
 	return (
 		<ul
 			style={resolvedStyles.comp ?? {}}
-			className={`comp compStepper ${stepperDesign} ${colorScheme} ${
-				stepperDesign !== '_rectangle_arrow' && isStepperVertical
-					? '_vertical'
-					: '_horizontal'
-			} ${
-				sepStyle ? `_${key}_grid_css` : ''
-			}
+			className={`comp compStepper ${stepperDesign} ${colorScheme} ${stepperDesign !== '_rectangle_arrow' && isStepperVertical
+				? '_vertical'
+				: '_horizontal'
+				} ${sepStyle ? `_${key}_grid_css` : ''
+				}
 			${getPositionStyle()} `}
 		>
 			<HelperComponent context={props.context} definition={definition} />
@@ -280,7 +275,7 @@ function Stepper(props: Readonly<ComponentProps>) {
 			{steps}
 		</ul>
 	);
-	
+
 }
 
 const component: Component = {
@@ -445,6 +440,8 @@ const component: Component = {
 			icon: 'fa-solid fa-list',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

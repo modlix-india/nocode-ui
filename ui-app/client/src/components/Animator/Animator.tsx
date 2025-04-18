@@ -8,7 +8,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import useDefinition from '../util/useDefinition';
 import AnimatorStyle from './AnimatorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './animatorProperties';
-import { styleDefaults } from './animatorStyleProperties';
+import { styleProperties, styleDefaults } from './animatorStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function makeAnimationString(animations: any[]): string {
@@ -22,13 +22,11 @@ function makeAnimationString(animations: any[]): string {
 
 function makeOneAnimationString(a: any): string {
 	if (!a.condition) return '';
-	return `${a.animationName} ${a.animationDuration}ms ${a.animationTimingFunction}${
-		a.animationTimingFunction === 'cubic-bezier' || a.animationTimingFunction === 'steps'
+	return `${a.animationName} ${a.animationDuration}ms ${a.animationTimingFunction}${a.animationTimingFunction === 'cubic-bezier' || a.animationTimingFunction === 'steps'
 			? `(${a.timingFunctionExtra})`
 			: ''
-	} ${a.animationDelay}ms ${a.animationIterationCount} ${a.animationDirection} ${
-		a.animationFillMode
-	}`;
+		} ${a.animationDelay}ms ${a.animationIterationCount} ${a.animationDirection} ${a.animationFillMode
+		}`;
 }
 
 function Animator(props: Readonly<ComponentProps>) {
@@ -131,7 +129,7 @@ function Animator(props: Readonly<ComponentProps>) {
 			);
 			io.observe(ref.current);
 			return () => (ref.current ? io.unobserve(ref.current!) : undefined);
-		} catch (e) {}
+		} catch (e) { }
 	}, [animation, ref.current, setObservations]);
 
 	return (
@@ -216,6 +214,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties
 };
 
 export default component;

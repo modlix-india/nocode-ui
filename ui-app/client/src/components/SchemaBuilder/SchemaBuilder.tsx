@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaBuilderProperties';
 import SchemaFormStyle from './SchemaBuilderStyle';
-import { styleDefaults } from './schemaBuilderStyleProperies';
+import { styleProperties, styleDefaults } from './schemaBuilderStyleProperies';
 
 const LazySchemaBuilder = React.lazy(
 	() => import(/* webpackChunkName: "SchemaBuilder" */ './LazySchemaBuilder'),
@@ -74,6 +74,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

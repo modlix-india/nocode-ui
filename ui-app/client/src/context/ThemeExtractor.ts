@@ -3,7 +3,7 @@ import { StyleResolution } from '../types/common';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import ComponentDefinitions from '../components';
 import { processStyleValueWithFunction } from '../util/styleProcessor';
-import { styleDefaults } from '../App/appStyleProperties';
+import { styleProperties, styleDefaults } from '../App/appStyleProperties';
 import { usedComponents } from '../App/usedComponents';
 
 const ORDER_OF_RESOLUTION = [

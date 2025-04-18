@@ -36,7 +36,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
-import { styleDefaults } from './arrayRepeaterStyleProperties';
+import { styleProperties, styleDefaults } from './arrayRepeaterStyleProperties';
 
 function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -246,9 +246,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		if (!updatableBindingPath && defaultData) {
 			updatableBindingPath = {
 				type: 'VALUE',
-				value: `Store.defaultData.${
-					pageExtractor?.getPageName() ?? '_global'
-				}.${flattenUUID(key)}`,
+				value: `Store.defaultData.${pageExtractor?.getPageName() ?? '_global'
+					}.${flattenUUID(key)}`,
 			};
 		}
 		let valuesMap: Map<string, TokenValueExtractor> | undefined = undefined;
@@ -338,24 +337,24 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			onDrop={
 				hasDrop
 					? e => {
-							e.preventDefault();
-							let data = e.dataTransfer.getData(dropDataType);
-							if (dropDataPrefix) {
-								if (!data.startsWith(dropDataPrefix)) return;
-								data = data.substring(dropDataPrefix.length);
-							}
-							if (dropDataType === 'application/json') data = JSON.parse(data);
-							if (bindingPathPath2) setData(bindingPathPath2, data, context.pageName);
-							if (!onDropData || !pageDefinition.eventFunctions[onDropData]) return;
-							(async () =>
-								await runEvent(
-									pageDefinition.eventFunctions[onDropData],
-									onDropData,
-									props.context.pageName,
-									props.locationHistory,
-									props.pageDefinition,
-								))();
+						e.preventDefault();
+						let data = e.dataTransfer.getData(dropDataType);
+						if (dropDataPrefix) {
+							if (!data.startsWith(dropDataPrefix)) return;
+							data = data.substring(dropDataPrefix.length);
 						}
+						if (dropDataType === 'application/json') data = JSON.parse(data);
+						if (bindingPathPath2) setData(bindingPathPath2, data, context.pageName);
+						if (!onDropData || !pageDefinition.eventFunctions[onDropData]) return;
+						(async () =>
+							await runEvent(
+								pageDefinition.eventFunctions[onDropData],
+								onDropData,
+								props.context.pageName,
+								props.locationHistory,
+								props.pageDefinition,
+							))();
+					}
 					: undefined
 			}
 		>
@@ -512,19 +511,18 @@ function createRepeaterItem({
 		firstMoveButton = (
 			<i
 				tabIndex={0}
-				className={`moveOne ${
-					index == arrayValue?.length - 1
+				className={`moveOne ${index == arrayValue?.length - 1
 						? (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
 						: (moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid')
-				}`}
+					}`}
 				style={styleProperties.move ?? {}}
 				onClick={
 					showMove
 						? () =>
-								handleMove(
-									index,
-									index == arrayValue?.length - 1 ? index - 1 : index + 1,
-								)
+							handleMove(
+								index,
+								index == arrayValue?.length - 1 ? index - 1 : index + 1,
+							)
 						: undefined
 				}
 			>
@@ -538,11 +536,10 @@ function createRepeaterItem({
 		secondMoveButton = (
 			<i
 				tabIndex={0}
-				className={`moveOne ${
-					index == 0 || index == arrayValue?.length - 1
+				className={`moveOne ${index == 0 || index == arrayValue?.length - 1
 						? ''
 						: (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
-				}`}
+					}`}
 				onClick={showMove ? () => handleMove(index, index - 1) : undefined}
 				style={styleProperties.move ?? {}}
 			>
@@ -567,7 +564,7 @@ function createRepeaterItem({
 			onDragLeave={dataType === 'object' ? undefined : handleDragLeave}
 			draggable={dataType !== 'object' && isItemDraggable && !readOnly}
 			style={styleProperties.repeaterProperties ?? {}}
-			onKeyDown={() => {}}
+			onKeyDown={() => { }}
 		>
 			<SubHelperComponent
 				definition={props.definition}
@@ -750,6 +747,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

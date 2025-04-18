@@ -181,6 +181,9 @@ export interface Component {
 			pageExtractor: PageStoreExtractor,
 		) => Array<string>;
 	};
+	propertiesForTheme?: Array<ComponentPropertyDefinition>;
+	stylePropertiesForTheme: Array<StylePropertyDefinition>;
+	externalStylePropsForThemeJson?: boolean;
 }
 
 export enum StyleResolution {
@@ -203,16 +206,29 @@ export enum StyleResolution {
 }
 
 export interface StylePropertyDefinition {
+	// Name
 	n: string;
+	// Display Name
 	dn: string;
+	// Group Name
 	gn?: string;
+	// Description
 	de?: string;
+	// Default Value is used when there is not value per select prop is given.
 	dv?: string;
+	// CSS Class Property Name
 	cp?: string;
+	// Selector
 	sel?: string;
+	// No Prefix
 	np?: boolean;
+	// Enum Values used to make this property only used in computation not while defining.
+	evu?: Array<string>;
+	// Property Values and combinations and variable names
+	spv?: {
+		[key: string]: string;
+	};
 }
-
 export interface StyleGroupDefinition {
 	name: string;
 	displayName: string;

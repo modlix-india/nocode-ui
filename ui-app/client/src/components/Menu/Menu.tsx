@@ -15,9 +15,10 @@ import useDefinition from '../util/useDefinition';
 import MenuStyle from './MenuStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './menuProperties';
 import Children from '../Children';
-import { styleDefaults } from './menuStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './menuStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Menu(props: Readonly<ComponentProps>) {
 	const location = useLocation();
@@ -357,6 +358,12 @@ function Menu(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 22,
 	name: 'Menu',
@@ -461,6 +468,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

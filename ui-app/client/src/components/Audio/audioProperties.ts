@@ -18,12 +18,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{
-		name: 'audioDesign',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Audio Player Design',
-		description: 'Choose a design layout for the audio player.',
+		...COMMON_COMPONENT_PROPERTIES.designType,
 		defaultValue: '_audioDesign1',
-		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{
 				name: '_audioDesign1',

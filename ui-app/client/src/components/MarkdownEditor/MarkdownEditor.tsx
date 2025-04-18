@@ -34,13 +34,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 
 	const {
-		properties: {
-			readOnly,
-			onChange,
-			editType,
-			pathForPastedFiles,
-			onBlur,
-		} = {},
+		properties: { readOnly, onChange, editType, pathForPastedFiles, onBlur } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -50,7 +44,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
-	const changeEventDefinition = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
+	const changeEventDefinition = onChange
+		? props.pageDefinition.eventFunctions?.[onChange]
+		: undefined;
 	const blurEvent = useCallback(() => {
 		if (!onBlur || !props.pageDefinition.eventFunctions?.[onBlur]) return undefined;
 
@@ -67,8 +63,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const editTypes = !editType?.length ? ['editText', 'editDoc', 'preview'] : editType;
 	const [mode, setMode] = useState(editTypes[0]);
 	const [text, setText] = useState('');
-	const [selectionRange, setSelectionRange] = useState<{ start: number; end: number } | null>(null);
-
+	const [selectionRange, setSelectionRange] = useState<{ start: number; end: number } | null>(
+		null,
+	);
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -140,8 +137,6 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		{},
 		stylePropertiesWithPseudoStates,
 	);
-
-
 
 	const writeTab = editTypes?.includes('editText') ? (
 		<div
@@ -277,12 +272,14 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const tabBar = (
 		<div className="_tabBar" style={styleProperties.tabBar ?? {}}>
 			{tabs}
-			{mode == 'editText' && <StyleButtonsPanel
-				styleProperties={styleProperties}
-				text={text}
-				selectionRange={selectionRange}
-				onChangeText={onChangeText}
-			/>}
+			{mode == 'editText' && (
+				<StyleButtonsPanel
+					styleProperties={styleProperties}
+					text={text}
+					selectionRange={selectionRange}
+					onChangeText={onChangeText}
+				/>
+			)}
 		</div>
 	);
 
@@ -618,6 +615,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

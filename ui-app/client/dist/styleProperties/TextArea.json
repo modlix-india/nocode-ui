@@ -1,4219 +1,818 @@
 [
-	{ "dn": "Text Area Font", "n": "textAreaFont", "dv": "<primaryFont>" },
-
 	{
-		"gn": "Text Area Font",
-		"dn": "Text Area Font Design Default",
-		"n": "textAreaFontDesignDefault",
-		"dv": "<textAreaFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font",
-		"dn": "Text Area Font Design Outline",
-		"n": "textAreaFontDesignOutline",
-		"dv": "<textAreaFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font",
-		"dn": "Text Area Font Design Filled",
-		"n": "textAreaFontDesignFilled",
-		"dv": "<textAreaFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Primary Text Area Placeholder Color Design Default",
-		"n": "primaryTextAreaPlaceholderColorDesignDefault",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._primary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Secondary Text Area Placeholder Color Design Default",
-		"n": "secondaryTextAreaPlaceholderColorDesignDefault",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._secondary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Tertiary Text Area Placeholder Color Design Default",
-		"n": "tertiaryTextAreaPlaceholderColorDesignDefault",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._tertiary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Quaternary Text Area Placeholder Color Design Default",
-		"n": "quaternaryTextAreaPlaceholderColorDesignDefault",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quaternary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Quinary Text Area Placeholder Color Design Default",
-		"n": "quinaryTextAreaPlaceholderColorDesignDefault",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quinary textarea::placeholder",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Primary Text Area Placeholder Color Design Outline",
-		"n": "primaryTextAreaPlaceholderColorDesignOutline",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._primary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Secondary Text Area Placeholder Color Design Outline",
-		"n": "secondaryTextAreaPlaceholderColorDesignOutline",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._secondary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Tertiary Text Area Placeholder Color Design Outline",
-		"n": "tertiaryTextAreaPlaceholderColorDesignOutline",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._tertiary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Quaternary Text Area Placeholder Color Design Outline",
-		"n": "quaternaryTextAreaPlaceholderColorDesignOutline",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quaternary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Quinary Text Area Placeholder Color Design Outline",
-		"n": "quinaryTextAreaPlaceholderColorDesignOutline",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quinary textarea::placeholder",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Primary Text Area Placeholder Color Design Filled",
-		"n": "primaryTextAreaPlaceholderColorDesignFilled",
-		"dv": "<colorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._primary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Secondary Text Area Placeholder Color Design Filled",
-		"n": "secondaryTextAreaPlaceholderColorDesignFilled",
-		"dv": "<colorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._secondary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Tertiary Text Area Placeholder Color Design Filled",
-		"n": "tertiaryTextAreaPlaceholderColorDesignFilled",
-		"dv": "<colorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._tertiary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Quaternary Text Area Placeholder Color Design Filled",
-		"n": "quaternaryTextAreaPlaceholderColorDesignFilled",
-		"dv": "<colorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quaternary textarea::placeholder",
-		"np": true
-	},
-	{
-		"gn": "Text Area Placeholder Color",
-		"dn": "Quinary Text Area Placeholder Color Design Filled",
-		"n": "quinaryTextAreaPlaceholderColorDesignFilled",
-		"dv": "<colorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quinary textarea::placeholder",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Primary Text Area Color Active Design Default",
-		"n": "primaryTextAreaColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Secondary Text Area Color Active Design Default",
-		"n": "secondaryTextAreaColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Tertiary Text Area Color Active Design Default",
-		"n": "tertiaryTextAreaColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Quaternary Text Area Color Active Design Default",
-		"n": "quaternaryTextAreaColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Quinary Text Area Color Active Design Default",
-		"n": "quinaryTextAreaColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Primary Text Area Color Active Design Outline",
-		"n": "primaryTextAreaColorActiveDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Secondary Text Area Color Active Design Outline",
-		"n": "secondaryTextAreaColorActiveDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Tertiary Text Area Color Active Design Outline",
-		"n": "tertiaryTextAreaColorActiveDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Quaternary Text Area Color Active Design Outline",
-		"n": "quaternaryTextAreaColorActiveDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Quinary Text Area Color Active Design Outline",
-		"n": "quinaryTextAreaColorActiveDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Primary Text Area Color Active Design Filled",
-		"n": "primaryTextAreaColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Secondary Text Area Color Active Design Filled",
-		"n": "secondaryTextAreaColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Tertiary Text Area Color Active Design Filled",
-		"n": "tertiaryTextAreaColorActiveDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Quaternary Text Area Color Active Design Filled",
-		"n": "quaternaryTextAreaColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Active",
-		"dn": "Quinary Text Area Color Active Design Filled",
-		"n": "quinaryTextAreaColorActiveDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Primary Text Area Color Has Value Design Default",
-		"n": "primaryTextAreaColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Secondary Text Area Color Has Value Design Default",
-		"n": "secondaryTextAreaColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Tertiary Text Area Color Has Value Design Default",
-		"n": "tertiaryTextAreaColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Quaternary Text Area Color Has Value Design Default",
-		"n": "quaternaryTextAreaColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Quinary Text Area Color Has Value Design Default",
-		"n": "quinaryTextAreaColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Primary Text Area Color Has Value Design Outline",
-		"n": "primaryTextAreaColorHasValueDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Secondary Text Area Color Has Value Design Outline",
-		"n": "secondaryTextAreaColorHasValueDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Tertiary Text Area Color Has Value Design Outline",
-		"n": "tertiaryTextAreaColorHasValueDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Quaternary Text Area Color Has Value Design Outline",
-		"n": "quaternaryTextAreaColorHasValueDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Quinary Text Area Color Has Value Design Outline",
-		"n": "quinaryTextAreaColorHasValueDesignOutline",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Primary Text Area Color Has Value Design Filled",
-		"n": "primaryTextAreaColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Secondary Text Area Color Has Value Design Filled",
-		"n": "secondaryTextAreaColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Tertiary Text Area Color Has Value Design Filled",
-		"n": "tertiaryTextAreaColorHasValueDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Quaternary Text Area Color Has Value Design Filled",
-		"n": "quaternaryTextAreaColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Color Has Value",
-		"dn": "Quinary Text Area Color Has Value Design Filled",
-		"n": "quinaryTextAreaColorHasValueDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Height",
-		"dn": "Text Area Height Design Default",
-		"n": "textAreaHeightDesignDefault",
-		"cp": "height",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Height",
-		"dn": "Text Area Height Design Outline",
-		"n": "textAreaHeightDesignOutline",
-		"cp": "height",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Height",
-		"dn": "Text Area Height Design Filled",
-		"n": "textAreaHeightDesignFilled",
-		"cp": "height",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Padding",
-		"dn": "Text Area Padding Design Default",
-		"n": "textAreaPaddingDesignDefault",
-		"dv": "0px 5px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Padding",
-		"dn": "Text Area Padding Design Outline",
-		"n": "textAreaPaddingDesignOutline",
-		"dv": "0px 5px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Padding",
-		"dn": "Text Area Padding Design Filled",
-		"n": "textAreaPaddingDesignFilled",
-		"dv": "0px 5px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Radius",
-		"dn": "Text Area Border Radius Design Default",
-		"n": "textAreaBorderRadiusDesignDefault",
-		"dv": "4px",
-		"cp": "border-radius",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Radius",
-		"dn": "Text Area Border Radius Design Outline",
-		"n": "textAreaBorderRadiusDesignOutline",
-		"dv": "4px",
-		"cp": "border-radius",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Radius",
-		"dn": "Text Area Border Radius Design Filled",
-		"n": "textAreaBorderRadiusDesignFilled",
-		"dv": "4px",
-		"cp": "border-radius",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Default",
-		"dn": "Text Area Border Default Design Default",
-		"n": "textAreaBorderDefaultDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Default",
-		"dn": "Text Area Border Default Design Outline",
-		"n": "textAreaBorderDefaultDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Default",
-		"dn": "Text Area Border Default Design Filled",
-		"n": "textAreaBorderDefaultDesignFilled",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Active",
-		"dn": "Text Area Border Active Design Default",
-		"n": "textAreaBorderActiveDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Active",
-		"dn": "Text Area Border Active Design Outline",
-		"n": "textAreaBorderActiveDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Active",
-		"dn": "Text Area Border Active Design Filled",
-		"n": "textAreaBorderActiveDesignFilled",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Text Area Border Has Value Design Default",
-		"n": "textAreaBorderHasValueDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Text Area Border Has Value Design Outline",
-		"n": "textAreaBorderHasValueDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Text Area Border Has Value Design Filled",
-		"n": "textAreaBorderHasValueDesignFilled",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Default",
-		"dn": "Primary Text Area Border Default Design Default",
-		"n": "primaryTextAreaBorderDefaultDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Default",
-		"dn": "Secondary Text Area Border Default Design Default",
-		"n": "secondaryTextAreaBorderDefaultDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Default",
-		"dn": "Tertiary Text Area Border Default Design Default",
-		"n": "tertiaryTextAreaBorderDefaultDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Default",
-		"dn": "Quaternary Text Area Border Default Design Default",
-		"n": "quaternaryTextAreaBorderDefaultDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Default",
-		"dn": "Quinary Text Area Border Default Design Default",
-		"n": "quinaryTextAreaBorderDefaultDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border  Default Outline",
-		"dn": "Primary Text Area Border  Default Outline Design Outline",
-		"n": "primaryTextAreaBorderDefaultOutlineDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Default Outline",
-		"dn": "Secondary Text Area Border  Default Outline Design Outline",
-		"n": "secondaryTextAreaBorderDefaultOutlineDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Default Outline",
-		"dn": "Tertiary Text Area Border  Default Outline Design Outline",
-		"n": "tertiaryTextAreaBorderDefaultOutlineDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Default Outline",
-		"dn": "Quaternary Text Area Border  Default Outline Design Outline",
-		"n": "quaternaryTextAreaBorderDefaultOutlineDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Default Outline",
-		"dn": "Quinary Text Area Border  Default Outline Design Outline",
-		"n": "quinaryTextAreaBorderDefaultOutlineDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border  Default Filled",
-		"dn": "Primary Text Area Border  Default Filled Design Filled",
-		"n": "primaryTextAreaBorderDefaultFilledDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Default Filled",
-		"dn": "Secondary Text Area Border  Default Filled Design Filled",
-		"n": "secondaryTextAreaBorderDefaultFilledDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Default Filled",
-		"dn": "Tertiary Text Area Border  Default Filled Design Filled",
-		"n": "tertiaryTextAreaBorderDefaultFilledDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Default Filled",
-		"dn": "Quaternary Text Area Border  Default Filled Design Filled",
-		"n": "quaternaryTextAreaBorderDefaultFilledDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Default Filled",
-		"dn": "Quinary Text Area Border  Default Filled Design Filled",
-		"n": "quinaryTextAreaBorderDefaultFilledDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Primary Text Area Border  Active Design Default",
-		"n": "primaryTextAreaBorderActiveDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Secondary Text Area Border  Active Design Default",
-		"n": "secondaryTextAreaBorderActiveDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Tertiary Text Area Border  Active Design Default",
-		"n": "tertiaryTextAreaBorderActiveDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Quaternary Text Area Border  Active Design Default",
-		"n": "quaternaryTextAreaBorderActiveDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Quinary Text Area Border  Active Design Default",
-		"n": "quinaryTextAreaBorderActiveDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Primary Text Area Border  Active Design Outline",
-		"n": "primaryTextAreaBorderActiveDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Secondary Text Area Border  Active Design Outline",
-		"n": "secondaryTextAreaBorderActiveDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Tertiary Text Area Border  Active Design Outline",
-		"n": "tertiaryTextAreaBorderActiveDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Quaternary Text Area Border  Active Design Outline",
-		"n": "quaternaryTextAreaBorderActiveDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Quinary Text Area Border  Active Design Outline",
-		"n": "quinaryTextAreaBorderActiveDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Primary Text Area Border  Active Design Filled",
-		"n": "primaryTextAreaBorderActiveDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Secondary Text Area Border  Active Design Filled",
-		"n": "secondaryTextAreaBorderActiveDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Tertiary Text Area Border  Active Design Filled",
-		"n": "tertiaryTextAreaBorderActiveDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Quaternary Text Area Border  Active Design Filled",
-		"n": "quaternaryTextAreaBorderActiveDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border  Active",
-		"dn": "Quinary Text Area Border  Active Design Filled",
-		"n": "quinaryTextAreaBorderActiveDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Primary Text Area Border Has Value Design Default",
-		"n": "primaryTextAreaBorderHasValueDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Secondary Text Area Border Has Value Design Default",
-		"n": "secondaryTextAreaBorderHasValueDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Tertiary Text Area Border Has Value Design Default",
-		"n": "tertiaryTextAreaBorderHasValueDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Quaternary Text Area Border Has Value Design Default",
-		"n": "quaternaryTextAreaBorderHasValueDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Quinary Text Area Border Has Value Design Default",
-		"n": "quinaryTextAreaBorderHasValueDesignDefault",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._default._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Primary Text Area Border Has Value Design Outline",
-		"n": "primaryTextAreaBorderHasValueDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Secondary Text Area Border Has Value Design Outline",
-		"n": "secondaryTextAreaBorderHasValueDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Tertiary Text Area Border Has Value Design Outline",
-		"n": "tertiaryTextAreaBorderHasValueDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Quaternary Text Area Border Has Value Design Outline",
-		"n": "quaternaryTextAreaBorderHasValueDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Quinary Text Area Border Has Value Design Outline",
-		"n": "quinaryTextAreaBorderHasValueDesignOutline",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._outlined._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Primary Text Area Border Has Value Design Filled",
-		"n": "primaryTextAreaBorderHasValueDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Secondary Text Area Border Has Value Design Filled",
-		"n": "secondaryTextAreaBorderHasValueDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Tertiary Text Area Border Has Value Design Filled",
-		"n": "tertiaryTextAreaBorderHasValueDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Quaternary Text Area Border Has Value Design Filled",
-		"n": "quaternaryTextAreaBorderHasValueDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Has Value",
-		"dn": "Quinary Text Area Border Has Value Design Filled",
-		"n": "quinaryTextAreaBorderHasValueDesignFilled",
-		"dv": "1px solid",
-		"cp": "border",
-		"sel": ".comp.compTextArea._filled._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Primary Text Area Background Default Design Default",
-		"n": "primaryTextAreaBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Secondary Text Area Background Default Design Default",
-		"n": "secondaryTextAreaBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Tertiary Text Area Background Default Design Default",
-		"n": "tertiaryTextAreaBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Quaternary Text Area Background Default Design Default",
-		"n": "quaternaryTextAreaBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Quinary Text Area Background Default Design Default",
-		"n": "quinaryTextAreaBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Primary Text Area Background Default Design Outline",
-		"n": "primaryTextAreaBackgroundDefaultDesignOutline",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Secondary Text Area Background Default Design Outline",
-		"n": "secondaryTextAreaBackgroundDefaultDesignOutline",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Tertiary Text Area Background Default Design Outline",
-		"n": "tertiaryTextAreaBackgroundDefaultDesignOutline",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Quaternary Text Area Background Default Design Outline",
-		"n": "quaternaryTextAreaBackgroundDefaultDesignOutline",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Quinary Text Area Background Default Design Outline",
-		"n": "quinaryTextAreaBackgroundDefaultDesignOutline",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Primary Text Area Background Default Design Filled",
-		"n": "primaryTextAreaBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorOne>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Secondary Text Area Background Default Design Filled",
-		"n": "secondaryTextAreaBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorTwo>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Tertiary Text Area Background Default Design Filled",
-		"n": "tertiaryTextAreaBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorThree>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Quaternary Text Area Background Default Design Filled",
-		"n": "quaternaryTextAreaBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorFour>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Default",
-		"dn": "Quinary Text Area Background Default Design Filled",
-		"n": "quinaryTextAreaBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorFive>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Primary Text Area Background Active Design Default",
-		"n": "primaryTextAreaBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Secondary Text Area Background Active Design Default",
-		"n": "secondaryTextAreaBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Tertiary Text Area Background Active Design Default",
-		"n": "tertiaryTextAreaBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Quaternary Text Area Background Active Design Default",
-		"n": "quaternaryTextAreaBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Quinary Text Area Background Active Design Default",
-		"n": "quinaryTextAreaBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Primary Text Area Background Active Design Outline",
-		"n": "primaryTextAreaBackgroundActiveDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Secondary Text Area Background Active Design Outline",
-		"n": "secondaryTextAreaBackgroundActiveDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Tertiary Text Area Background Active Design Outline",
-		"n": "tertiaryTextAreaBackgroundActiveDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Quaternary Text Area Background Active Design Outline",
-		"n": "quaternaryTextAreaBackgroundActiveDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Quinary Text Area Background Active Design Outline",
-		"n": "quinaryTextAreaBackgroundActiveDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Primary Text Area Background Active Design Filled",
-		"n": "primaryTextAreaBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorOne>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Secondary Text Area Background Active Design Filled",
-		"n": "secondaryTextAreaBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorTwo>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Tertiary Text Area Background Active Design Filled",
-		"n": "tertiaryTextAreaBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorThree>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Quaternary Text Area Background Active Design Filled",
-		"n": "quaternaryTextAreaBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorFour>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Active",
-		"dn": "Quinary Text Area Background Active Design Filled",
-		"n": "quinaryTextAreaBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorFive>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Primary Text Area Background Has Value Design Default",
-		"n": "primaryTextAreaBackgroundHasValueDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Secondary Text Area Background Has Value Design Default",
-		"n": "secondaryTextAreaBackgroundHasValueDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Tertiary Text Area Background Has Value Design Default",
-		"n": "tertiaryTextAreaBackgroundHasValueDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Quaternary Text Area Background Has Value Design Default",
-		"n": "quaternaryTextAreaBackgroundHasValueDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Quinary Text Area Background Has Value Design Default",
-		"n": "quinaryTextAreaBackgroundHasValueDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Primary Text Area Background Has Value Design Outline",
-		"n": "primaryTextAreaBackgroundHasValueDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Secondary Text Area Background Has Value Design Outline",
-		"n": "secondaryTextAreaBackgroundHasValueDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Tertiary Text Area Background Has Value Design Outline",
-		"n": "tertiaryTextAreaBackgroundHasValueDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Quaternary Text Area Background Has Value Design Outline",
-		"n": "quaternaryTextAreaBackgroundHasValueDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Quinary Text Area Background Has Value Design Outline",
-		"n": "quinaryTextAreaBackgroundHasValueDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Primary Text Area Background Has Value Design Filled",
-		"n": "primaryTextAreaBackgroundHasValueDesignFilled",
-		"dv": "<backgroundColorOne>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Secondary Text Area Background Has Value Design Filled",
-		"n": "secondaryTextAreaBackgroundHasValueDesignFilled",
-		"dv": "<backgroundColorTwo>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Tertiary Text Area Background Has Value Design Filled",
-		"n": "tertiaryTextAreaBackgroundHasValueDesignFilled",
-		"dv": "<backgroundColorThree>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Quaternary Text Area Background Has Value Design Filled",
-		"n": "quaternaryTextAreaBackgroundHasValueDesignFilled",
-		"dv": "<backgroundColorFour>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Background Has Value",
-		"dn": "Quinary Text Area Background Has Value Design Filled",
-		"n": "quinaryTextAreaBackgroundHasValueDesignFilled",
-		"dv": "<backgroundColorFive>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Text Area Label Font Design Default",
-		"n": "textAreaLabelFontDesignDefault",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Text Area Label Font Design Outline",
-		"n": "textAreaLabelFontDesignOutline",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Text Area Label Font Design Filled",
-		"n": "textAreaLabelFontDesignFilled",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Primary Text Area Label Color Default Design Default",
-		"n": "primaryTextAreaLabelColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Secondary Text Area Label Color Default Design Default",
-		"n": "secondaryTextAreaLabelColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Tertiary Text Area Label Color Default Design Default",
-		"n": "tertiaryTextAreaLabelColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Quaternary Text Area Label Color Default Design Default",
-		"n": "quaternaryTextAreaLabelColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Quinary Text Area Label Color Default Design Default",
-		"n": "quinaryTextAreaLabelColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Primary Text Area Label Color Default Design Outline",
-		"n": "primaryTextAreaLabelColorDefaultDesignOutline",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Secondary Text Area Label Color Default Design Outline",
-		"n": "secondaryTextAreaLabelColorDefaultDesignOutline",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Tertiary Text Area Label Color Default Design Outline",
-		"n": "tertiaryTextAreaLabelColorDefaultDesignOutline",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Quaternary Text Area Label Color Default Design Outline",
-		"n": "quaternaryTextAreaLabelColorDefaultDesignOutline",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Quinary Text Area Label Color Default Design Outline",
-		"n": "quinaryTextAreaLabelColorDefaultDesignOutline",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Primary Text Area Label Color Default Design Filled",
-		"n": "primaryTextAreaLabelColorDefaultDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Secondary Text Area Label Color Default Design Filled",
-		"n": "secondaryTextAreaLabelColorDefaultDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Tertiary Text Area Label Color Default Design Filled",
-		"n": "tertiaryTextAreaLabelColorDefaultDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Quaternary Text Area Label Color Default Design Filled",
-		"n": "quaternaryTextAreaLabelColorDefaultDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Default",
-		"dn": "Quinary Text Area Label Color Default Design Filled",
-		"n": "quinaryTextAreaLabelColorDefaultDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Primary Text Area Label Color Active Design Default",
-		"n": "primaryTextAreaLabelColorActiveDesignDefault",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Secondary Text Area Label Color Active Design Default",
-		"n": "secondaryTextAreaLabelColorActiveDesignDefault",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Tertiary Text Area Label Color Active Design Default",
-		"n": "tertiaryTextAreaLabelColorActiveDesignDefault",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Quaternary Text Area Label Color Active Design Default",
-		"n": "quaternaryTextAreaLabelColorActiveDesignDefault",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Quinary Text Area Label Color Active Design Default",
-		"n": "quinaryTextAreaLabelColorActiveDesignDefault",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Primary Text Area Label Color Active Design Outline",
-		"n": "primaryTextAreaLabelColorActiveDesignOutline",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Secondary Text Area Label Color Active Design Outline",
-		"n": "secondaryTextAreaLabelColorActiveDesignOutline",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Tertiary Text Area Label Color Active Design Outline",
-		"n": "tertiaryTextAreaLabelColorActiveDesignOutline",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Quaternary Text Area Label Color Active Design Outline",
-		"n": "quaternaryTextAreaLabelColorActiveDesignOutline",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Quinary Text Area Label Color Active Design Outline",
-		"n": "quinaryTextAreaLabelColorActiveDesignOutline",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Primary Text Area Label Color Active Design Filled",
-		"n": "primaryTextAreaLabelColorActiveDesignFilled",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Secondary Text Area Label Color Active Design Filled",
-		"n": "secondaryTextAreaLabelColorActiveDesignFilled",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Tertiary Text Area Label Color Active Design Filled",
-		"n": "tertiaryTextAreaLabelColorActiveDesignFilled",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Quaternary Text Area Label Color Active Design Filled",
-		"n": "quaternaryTextAreaLabelColorActiveDesignFilled",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Active",
-		"dn": "Quinary Text Area Label Color Active Design Filled",
-		"n": "quinaryTextAreaLabelColorActiveDesignFilled",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Primary Text Area Label Color Has Value Design Default",
-		"n": "primaryTextAreaLabelColorHasValueDesignDefault",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Secondary Text Area Label Color Has Value Design Default",
-		"n": "secondaryTextAreaLabelColorHasValueDesignDefault",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Tertiary Text Area Label Color Has Value Design Default",
-		"n": "tertiaryTextAreaLabelColorHasValueDesignDefault",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Quaternary Text Area Label Color Has Value Design Default",
-		"n": "quaternaryTextAreaLabelColorHasValueDesignDefault",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Quinary Text Area Label Color Has Value Design Default",
-		"n": "quinaryTextAreaLabelColorHasValueDesignDefault",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Primary Text Area Label Color Has Value Design Outline",
-		"n": "primaryTextAreaLabelColorHasValueDesignOutline",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Secondary Text Area Label Color Has Value Design Outline",
-		"n": "secondaryTextAreaLabelColorHasValueDesignOutline",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Tertiary Text Area Label Color Has Value Design Outline",
-		"n": "tertiaryTextAreaLabelColorHasValueDesignOutline",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Quaternary Text Area Label Color Has Value Design Outline",
-		"n": "quaternaryTextAreaLabelColorHasValueDesignOutline",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Quinary Text Area Label Color Has Value Design Outline",
-		"n": "quinaryTextAreaLabelColorHasValueDesignOutline",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Primary Text Area Label Color Has Value Design Filled",
-		"n": "primaryTextAreaLabelColorHasValueDesignFilled",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Secondary Text Area Label Color Has Value Design Filled",
-		"n": "secondaryTextAreaLabelColorHasValueDesignFilled",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Tertiary Text Area Label Color Has Value Design Filled",
-		"n": "tertiaryTextAreaLabelColorHasValueDesignFilled",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Quaternary Text Area Label Color Has Value Design Filled",
-		"n": "quaternaryTextAreaLabelColorHasValueDesignFilled",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Color Has Value",
-		"dn": "Quinary Text Area Label Color Has Value Design Filled",
-		"n": "quinaryTextAreaLabelColorHasValueDesignFilled",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quinary ._label",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Font",
-		"dn": "Text Area Support Text Font Design Default",
-		"n": "textAreaSupportTextFontDesignDefault",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Font",
-		"dn": "Text Area Support Text Font Design Outline",
-		"n": "textAreaSupportTextFontDesignOutline",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Font",
-		"dn": "Text Area Support Text Font Design Filled",
-		"n": "textAreaSupportTextFontDesignFilled",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Primary Text Area Support Text Color Default Design Default",
-		"n": "primaryTextAreaSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Secondary Text Area Support Text Color Default Design Default",
-		"n": "secondaryTextAreaSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Tertiary Text Area Support Text Color Default Design Default",
-		"n": "tertiaryTextAreaSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Quaternary Text Area Support Text Color Default Design Default",
-		"n": "quaternaryTextAreaSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Quinary Text Area Support Text Color Default Design Default",
-		"n": "quinaryTextAreaSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Primary Text Area Support Text Color Default Design Outline",
-		"n": "primaryTextAreaSupportTextColorDefaultDesignOutline",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Secondary Text Area Support Text Color Default Design Outline",
-		"n": "secondaryTextAreaSupportTextColorDefaultDesignOutline",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Tertiary Text Area Support Text Color Default Design Outline",
-		"n": "tertiaryTextAreaSupportTextColorDefaultDesignOutline",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Quaternary Text Area Support Text Color Default Design Outline",
-		"n": "quaternaryTextAreaSupportTextColorDefaultDesignOutline",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Quinary Text Area Support Text Color Default Design Outline",
-		"n": "quinaryTextAreaSupportTextColorDefaultDesignOutline",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Primary Text Area Support Text Color Default Design Filled",
-		"n": "primaryTextAreaSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Secondary Text Area Support Text Color Default Design Filled",
-		"n": "secondaryTextAreaSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Tertiary Text Area Support Text Color Default Design Filled",
-		"n": "tertiaryTextAreaSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Quaternary Text Area Support Text Color Default Design Filled",
-		"n": "quaternaryTextAreaSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Default",
-		"dn": "Quinary Text Area Support Text Color Default Design Filled",
-		"n": "quinaryTextAreaSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Primary Text Area Support Text Color Active Design Default",
-		"n": "primaryTextAreaSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Secondary Text Area Support Text Color Active Design Default",
-		"n": "secondaryTextAreaSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Tertiary Text Area Support Text Color Active Design Default",
-		"n": "tertiaryTextAreaSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Quaternary Text Area Support Text Color Active Design Default",
-		"n": "quaternaryTextAreaSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Quinary Text Area Support Text Color Active Design Default",
-		"n": "quinaryTextAreaSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Primary Text Area Support Text Color Active Design Outline",
-		"n": "primaryTextAreaSupportTextColorActiveDesignOutline",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Secondary Text Area Support Text Color Active Design Outline",
-		"n": "secondaryTextAreaSupportTextColorActiveDesignOutline",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Tertiary Text Area Support Text Color Active Design Outline",
-		"n": "tertiaryTextAreaSupportTextColorActiveDesignOutline",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Quaternary Text Area Support Text Color Active Design Outline",
-		"n": "quaternaryTextAreaSupportTextColorActiveDesignOutline",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Quinary Text Area Support Text Color Active Design Outline",
-		"n": "quinaryTextAreaSupportTextColorActiveDesignOutline",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Primary Text Area Support Text Color Active Design Filled",
-		"n": "primaryTextAreaSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Secondary Text Area Support Text Color Active Design Filled",
-		"n": "secondaryTextAreaSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Tertiary Text Area Support Text Color Active Design Filled",
-		"n": "tertiaryTextAreaSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Quaternary Text Area Support Text Color Active Design Filled",
-		"n": "quaternaryTextAreaSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Active",
-		"dn": "Quinary Text Area Support Text Color Active Design Filled",
-		"n": "quinaryTextAreaSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Primary Text Area Support Text Color Has Value Design Default",
-		"n": "primaryTextAreaSupportTextColorHasValueDesignDefault",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Secondary Text Area Support Text Color Has Value Design Default",
-		"n": "secondaryTextAreaSupportTextColorHasValueDesignDefault",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Tertiary Text Area Support Text Color Has Value Design Default",
-		"n": "tertiaryTextAreaSupportTextColorHasValueDesignDefault",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Quaternary Text Area Support Text Color Has Value Design Default",
-		"n": "quaternaryTextAreaSupportTextColorHasValueDesignDefault",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Quinary Text Area Support Text Color Has Value Design Default",
-		"n": "quinaryTextAreaSupportTextColorHasValueDesignDefault",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Primary Text Area Support Text Color Has Value Design Outline",
-		"n": "primaryTextAreaSupportTextColorHasValueDesignOutline",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Secondary Text Area Support Text Color Has Value Design Outline",
-		"n": "secondaryTextAreaSupportTextColorHasValueDesignOutline",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Tertiary Text Area Support Text Color Has Value Design Outline",
-		"n": "tertiaryTextAreaSupportTextColorHasValueDesignOutline",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Quaternary Text Area Support Text Color Has Value Design Outline",
-		"n": "quaternaryTextAreaSupportTextColorHasValueDesignOutline",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Quinary Text Area Support Text Color Has Value Design Outline",
-		"n": "quinaryTextAreaSupportTextColorHasValueDesignOutline",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Primary Text Area Support Text Color Has Value Design Filled",
-		"n": "primaryTextAreaSupportTextColorHasValueDesignFilled",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Secondary Text Area Support Text Color Has Value Design Filled",
-		"n": "secondaryTextAreaSupportTextColorHasValueDesignFilled",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Tertiary Text Area Support Text Color Has Value Design Filled",
-		"n": "tertiaryTextAreaSupportTextColorHasValueDesignFilled",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Quaternary Text Area Support Text Color Has Value Design Filled",
-		"n": "quaternaryTextAreaSupportTextColorHasValueDesignFilled",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Text Area Support Text Color Has Value",
-		"dn": "Quinary Text Area Support Text Color Has Value Design Filled",
-		"n": "quinaryTextAreaSupportTextColorHasValueDesignFilled",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Padding",
-		"dn": "Text Area Left Icon Padding Design Default",
-		"n": "textAreaLeftIconPaddingDesignDefault",
-		"dv": "0px 8px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._default ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Padding",
-		"dn": "Text Area Left Icon Padding Design Outline",
-		"n": "textAreaLeftIconPaddingDesignOutline",
-		"dv": "0px 8px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._outlined ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Padding",
-		"dn": "Text Area Left Icon Padding Design Filled",
-		"n": "textAreaLeftIconPaddingDesignFilled",
-		"dv": "0px 8px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._filled ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Rigth Icon Padding",
-		"dn": "Text Area Rigth Icon Padding Design Default",
-		"n": "textAreaRigthIconPaddingDesignDefault",
-		"dv": "0px 8px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._default ._rightIcon ",
-		"np": true
-	},
-	{
-		"gn": "Text Area Rigth Icon Padding",
-		"dn": "Text Area Rigth Icon Padding Design Outline",
-		"n": "textAreaRigthIconPaddingDesignOutline",
-		"dv": "0px 8px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._outlined ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Rigth Icon Padding",
-		"dn": "Text Area Rigth Icon Padding Design Filled",
-		"n": "textAreaRigthIconPaddingDesignFilled",
-		"dv": "0px 8px",
-		"cp": "padding",
-		"sel": ".comp.compTextArea._filled ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Primary Text Area Left Icon Color Default Design Default",
-		"n": "primaryTextAreaLeftIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Secondary Text Area Left Icon Color Default Design Default",
-		"n": "secondaryTextAreaLeftIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Tertiary Text Area Left Icon Color Default Design Default",
-		"n": "tertiaryTextAreaLeftIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Quaternary Text Area Left Icon Color Default Design Default",
-		"n": "quaternaryTextAreaLeftIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Quinary Text Area Left Icon Color Default Design Default",
-		"n": "quinaryTextAreaLeftIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Primary Text Area Left Icon Color Default Design Outline",
-		"n": "primaryTextAreaLeftIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Secondary Text Area Left Icon Color Default Design Outline",
-		"n": "secondaryTextAreaLeftIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Tertiary Text Area Left Icon Color Default Design Outline",
-		"n": "tertiaryTextAreaLeftIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Quaternary Text Area Left Icon Color Default Design Outline",
-		"n": "quaternaryTextAreaLeftIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Quinary Text Area Left Icon Color Default Design Outline",
-		"n": "quinaryTextAreaLeftIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Primary Text Area Left Icon Color Default Design Filled",
-		"n": "primaryTextAreaLeftIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Secondary Text Area Left Icon Color Default Design Filled",
-		"n": "secondaryTextAreaLeftIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Tertiary Text Area Left Icon Color Default Design Filled",
-		"n": "tertiaryTextAreaLeftIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Quaternary Text Area Left Icon Color Default Design Filled",
-		"n": "quaternaryTextAreaLeftIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Default",
-		"dn": "Quinary Text Area Left Icon Color Default Design Filled",
-		"n": "quinaryTextAreaLeftIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Primary Text Area Left Icon Color Active Design Default",
-		"n": "primaryTextAreaLeftIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Secondary Text Area Left Icon Color Active Design Default",
-		"n": "secondaryTextAreaLeftIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Tertiary Text Area Left Icon Color Active Design Default",
-		"n": "tertiaryTextAreaLeftIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Quaternary Text Area Left Icon Color Active Design Default",
-		"n": "quaternaryTextAreaLeftIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Quinary Text Area Left Icon Color Active Design Default",
-		"n": "quinaryTextAreaLeftIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Primary Text Area Left Icon Color Active Design Outline",
-		"n": "primaryTextAreaLeftIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Secondary Text Area Left Icon Color Active Design Outline",
-		"n": "secondaryTextAreaLeftIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Tertiary Text Area Left Icon Color Active Design Outline",
-		"n": "tertiaryTextAreaLeftIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Quaternary Text Area Left Icon Color Active Design Outline",
-		"n": "quaternaryTextAreaLeftIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Quinary Text Area Left Icon Color Active Design Outline",
-		"n": "quinaryTextAreaLeftIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Primary Text Area Left Icon Color Active Design Filled",
-		"n": "primaryTextAreaLeftIconColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Secondary Text Area Left Icon Color Active Design Filled",
-		"n": "secondaryTextAreaLeftIconColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Tertiary Text Area Left Icon Color Active Design Filled",
-		"n": "tertiaryTextAreaLeftIconColorActiveDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Quaternary Text Area Left Icon Color Active Design Filled",
-		"n": "quaternaryTextAreaLeftIconColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Active",
-		"dn": "Quinary Text Area Left Icon Color Active Design Filled",
-		"n": "quinaryTextAreaLeftIconColorActiveDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Primary Text Area Left Icon Color Has Value Design Default",
-		"n": "primaryTextAreaLeftIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Secondary Text Area Left Icon Color Has Value Design Default",
-		"n": "secondaryTextAreaLeftIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Tertiary Text Area Left Icon Color Has Value Design Default",
-		"n": "tertiaryTextAreaLeftIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Quaternary Text Area Left Icon Color Has Value Design Default",
-		"n": "quaternaryTextAreaLeftIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Quinary Text Area Left Icon Color Has Value Design Default",
-		"n": "quinaryTextAreaLeftIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Primary Text Area Left Icon Color Has Value Design Outline",
-		"n": "primaryTextAreaLeftIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Secondary Text Area Left Icon Color Has Value Design Outline",
-		"n": "secondaryTextAreaLeftIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Tertiary Text Area Left Icon Color Has Value Design Outline",
-		"n": "tertiaryTextAreaLeftIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Quaternary Text Area Left Icon Color Has Value Design Outline",
-		"n": "quaternaryTextAreaLeftIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Quinary Text Area Left Icon Color Has Value Design Outline",
-		"n": "quinaryTextAreaLeftIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Primary Text Area Left Icon Color Has Value Design Filled",
-		"n": "primaryTextAreaLeftIconColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._primary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Secondary Text Area Left Icon Color Has Value Design Filled",
-		"n": "secondaryTextAreaLeftIconColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._secondary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Tertiary Text Area Left Icon Color Has Value Design Filled",
-		"n": "tertiaryTextAreaLeftIconColorHasValueDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._tertiary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Quaternary Text Area Left Icon Color Has Value Design Filled",
-		"n": "quaternaryTextAreaLeftIconColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quaternary ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Color Has Value",
-		"dn": "Quinary Text Area Left Icon Color Has Value Design Filled",
-		"n": "quinaryTextAreaLeftIconColorHasValueDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quinary ._leftIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Primary Text Area Right Icon Color Default Design Default",
-		"n": "primaryTextAreaRightIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Secondary Text Area Right Icon Color Default Design Default",
-		"n": "secondaryTextAreaRightIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Tertiary Text Area Right Icon Color Default Design Default",
-		"n": "tertiaryTextAreaRightIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Quaternary Text Area Right Icon Color Default Design Default",
-		"n": "quaternaryTextAreaRightIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Quinary Text Area Right Icon Color Default Design Default",
-		"n": "quinaryTextAreaRightIconColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Primary Text Area Right Icon Color Default Design Outline",
-		"n": "primaryTextAreaRightIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Secondary Text Area Right Icon Color Default Design Outline",
-		"n": "secondaryTextAreaRightIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Tertiary Text Area Right Icon Color Default Design Outline",
-		"n": "tertiaryTextAreaRightIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Quaternary Text Area Right Icon Color Default Design Outline",
-		"n": "quaternaryTextAreaRightIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Quinary Text Area Right Icon Color Default Design Outline",
-		"n": "quinaryTextAreaRightIconColorDefaultDesignOutline",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Primary Text Area Right Icon Color Default Design Filled",
-		"n": "primaryTextAreaRightIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Secondary Text Area Right Icon Color Default Design Filled",
-		"n": "secondaryTextAreaRightIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Tertiary Text Area Right Icon Color Default Design Filled",
-		"n": "tertiaryTextAreaRightIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Quaternary Text Area Right Icon Color Default Design Filled",
-		"n": "quaternaryTextAreaRightIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Default",
-		"dn": "Quinary Text Area Right Icon Color Default Design Filled",
-		"n": "quinaryTextAreaRightIconColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Primary Text Area Right Icon Color Active Design Default",
-		"n": "primaryTextAreaRightIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Secondary Text Area Right Icon Color Active Design Default",
-		"n": "secondaryTextAreaRightIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Tertiary Text Area Right Icon Color Active Design Default",
-		"n": "tertiaryTextAreaRightIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Quaternary Text Area Right Icon Color Active Design Default",
-		"n": "quaternaryTextAreaRightIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Quinary Text Area Right Icon Color Active Design Default",
-		"n": "quinaryTextAreaRightIconColorActiveDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._isActive._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Primary Text Area Right Icon Color Active Design Outline",
-		"n": "primaryTextAreaRightIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Secondary Text Area Right Icon Color Active Design Outline",
-		"n": "secondaryTextAreaRightIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Tertiary Text Area Right Icon Color Active Design Outline",
-		"n": "tertiaryTextAreaRightIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Quaternary Text Area Right Icon Color Active Design Outline",
-		"n": "quaternaryTextAreaRightIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Quinary Text Area Right Icon Color Active Design Outline",
-		"n": "quinaryTextAreaRightIconColorActiveDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._isActive._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Primary Text Area Right Icon Color Active Design Filled",
-		"n": "primaryTextAreaRightIconColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Secondary Text Area Right Icon Color Active Design Filled",
-		"n": "secondaryTextAreaRightIconColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Tertiary Text Area Right Icon Color Active Design Filled",
-		"n": "tertiaryTextAreaRightIconColorActiveDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Quaternary Text Area Right Icon Color Active Design Filled",
-		"n": "quaternaryTextAreaRightIconColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Active",
-		"dn": "Quinary Text Area Right Icon Color Active Design Filled",
-		"n": "quinaryTextAreaRightIconColorActiveDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Primary Text Area Right Icon Color Has Value Design Default",
-		"n": "primaryTextAreaRightIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Secondary Text Area Right Icon Color Has Value Design Default",
-		"n": "secondaryTextAreaRightIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Tertiary Text Area Right Icon Color Has Value Design Default",
-		"n": "tertiaryTextAreaRightIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Quaternary Text Area Right Icon Color Has Value Design Default",
-		"n": "quaternaryTextAreaRightIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Quinary Text Area Right Icon Color Has Value Design Default",
-		"n": "quinaryTextAreaRightIconColorHasValueDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default._hasValue._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Primary Text Area Right Icon Color Has Value Design Outline",
-		"n": "primaryTextAreaRightIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Secondary Text Area Right Icon Color Has Value Design Outline",
-		"n": "secondaryTextAreaRightIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Tertiary Text Area Right Icon Color Has Value Design Outline",
-		"n": "tertiaryTextAreaRightIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Quaternary Text Area Right Icon Color Has Value Design Outline",
-		"n": "quaternaryTextAreaRightIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Quinary Text Area Right Icon Color Has Value Design Outline",
-		"n": "quinaryTextAreaRightIconColorHasValueDesignOutline",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined._hasValue._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Primary Text Area Right Icon Color Has Value Design Filled",
-		"n": "primaryTextAreaRightIconColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._primary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Secondary Text Area Right Icon Color Has Value Design Filled",
-		"n": "secondaryTextAreaRightIconColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._secondary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Tertiary Text Area Right Icon Color Has Value Design Filled",
-		"n": "tertiaryTextAreaRightIconColorHasValueDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._tertiary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Quaternary Text Area Right Icon Color Has Value Design Filled",
-		"n": "quaternaryTextAreaRightIconColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quaternary ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Color Has Value",
-		"dn": "Quinary Text Area Right Icon Color Has Value Design Filled",
-		"n": "quinaryTextAreaRightIconColorHasValueDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._quinary ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Success Icon Color",
-		"dn": "Text Area Success Icon Color Design Default",
-		"n": "textAreaSuccessIconColorDesignDefault",
-		"dv": "<successColor>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default ._successIcon._rightIcon, .comp.compTextArea._default._isActive ._successIcon._rightIcon, .comp.compTextArea._default._hasValue ._successIcon._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Success Icon Color",
-		"dn": "Text Area Success Icon Color Design Outline",
-		"n": "textAreaSuccessIconColorDesignOutline",
-		"dv": "<successColor>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined ._successIcon._rightIcon, .comp.compTextArea._outlined._isActive ._successIcon._rightIcon, .comp.compTextArea._outlined._hasValue ._successIcon._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Success Icon Color",
-		"dn": "Text Area Success Icon Color Design Filled",
-		"n": "textAreaSuccessIconColorDesignFilled",
-		"dv": "<successColor>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled ._successIcon._rightIcon, .comp.compTextArea._filled._isActive ._successIcon._rightIcon, .comp.compTextArea._filled._hasValue ._successIcon._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Error Icon Color",
-		"dn": "Text Area Error Icon Color Design Default",
-		"n": "textAreaErrorIconColorDesignDefault",
-		"dv": "<errorColor>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._default ._errorIcon._rightIcon, .comp.compTextArea._default._isActive ._errorIcon._rightIcon, .comp.compTextArea._default._hasValue ._errorIcon._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Icon Color",
-		"dn": "Text Area Error Icon Color Design Outline",
-		"n": "textAreaErrorIconColorDesignOutline",
-		"dv": "<errorColor>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._outlined ._errorIcon._rightIcon, .comp.compTextArea._outlined._isActive ._errorIcon._rightIcon, .comp.compTextArea._outlined._hasValue ._errorIcon._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Icon Color",
-		"dn": "Text Area Error Icon Color Design Filled",
-		"n": "textAreaErrorIconColorDesignFilled",
-		"dv": "<errorColor>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled ._errorIcon._rightIcon, .comp.compTextArea._filled._isActive ._errorIcon._rightIcon, .comp.compTextArea._filled._hasValue ._errorIcon._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Error Border Color",
-		"dn": "Text Area Error Border Color Design Default",
-		"n": "textAreaErrorBorderColorDesignDefault",
-		"dv": "<errorColor>",
-		"cp": "border-color",
-		"sel": ".comp.compTextArea._default._hasError, .comp.compTextArea._default._isActive._hasError, .comp.compTextArea._default._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Border Color",
-		"dn": "Text Area Error Border Color Design Outline",
-		"n": "textAreaErrorBorderColorDesignOutline",
-		"dv": "<errorColor>",
-		"cp": "border-color",
-		"sel": ".comp.compTextArea._outlined._hasError, .comp.compTextArea._outlined._isActive._hasError, .comp.compTextArea._outlined._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Border Color",
-		"dn": "Text Area Error Border Color Design Filled",
-		"n": "textAreaErrorBorderColorDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compTextArea._filled._hasError, .comp.compTextArea._filled._isActive._hasError, .comp.compTextArea._filled._hasValue._hasError",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Error Background",
-		"dn": "Text Area Error Background Design Default",
-		"n": "textAreaErrorBackgroundDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._hasError, .comp.compTextArea._default._isActive._hasError, .comp.compTextArea._default._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Background",
-		"dn": "Text Area Error Background Design Outline",
-		"n": "textAreaErrorBackgroundDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._hasError, .comp.compTextArea._outlined._isActive._hasError, .comp.compTextArea._outlined._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Background",
-		"dn": "Text Area Error Background Design Filled",
-		"n": "textAreaErrorBackgroundDesignFilled",
-		"dv": "<errorColor>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._hasError, .comp.compTextArea._filled._isActive._hasError, .comp.compTextArea._filled._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Box Shadow",
-		"dn": "Text Area Error Box Shadow Design Default",
-		"n": "textAreaErrorBoxShadowDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compTextArea._default._hasError, .comp.compTextArea._default._isActive._hasError, .comp.compTextArea._default._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Box Shadow",
-		"dn": "Text Area Error Box Shadow Design Outline",
-		"n": "textAreaErrorBoxShadowDesignOutline",
-		"cp": "box-shadow",
-		"sel": ".comp.compTextArea._outlined._hasError, .comp.compTextArea._outlined._isActive._hasError, .comp.compTextArea._outlined._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Box Shadow",
-		"dn": "Text Area Error Box Shadow Design Filled",
-		"n": "textAreaErrorBoxShadowDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compTextArea._filled._hasError, .comp.compTextArea._filled._isActive._hasError, .comp.compTextArea._filled._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Success Border Color",
-		"dn": "Text Area Success Border Color Design Default",
-		"n": "textAreaSuccessBorderColorDesignDefault",
-		"dv": "<successColor>",
-		"cp": "border-color",
-		"sel": ".comp.compTextArea._default._validationSuccess, .comp.compTextArea._default._isActive._validationSuccess, .comp.compTextArea._default._hasValue._validationSuccess",
-		"np": true
-	},
-	{
-		"gn": "Text Area Success Border Color",
-		"dn": "Text Area Success Border Color Design Outline",
-		"n": "textAreaSuccessBorderColorDesignOutline",
-		"dv": "<successColor>",
-		"cp": "border-color",
-		"sel": ".comp.compTextArea._outlined._validationSuccess, .comp.compTextArea._outlined._isActive._validationSuccess, .comp.compTextArea._outlined._hasValue._validationSuccess",
-		"np": true
-	},
-	{
-		"gn": "Text Area Success Border Color",
-		"dn": "Text Area Success Border Color Design Filled",
-		"n": "textAreaSuccessBorderColorDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compTextArea._filled._validationSuccess, .comp.compTextArea._filled._isActive._validationSuccess, .comp.compTextArea._filled._hasValue._validationSuccess",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Success Background",
-		"dn": "Text Area Success Background Design Default",
-		"n": "textAreaSuccessBackgroundDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compTextArea._default._validationSuccess, .comp.compTextArea._default._isActive._validationSuccess, .comp.compTextArea._default._hasValue._validationSuccess",
-		"np": true
-	},
-	{
-		"gn": "Text Area Success Background",
-		"dn": "Text Area Success Background Design Outline",
-		"n": "textAreaSuccessBackgroundDesignOutline",
-		"cp": "background",
-		"sel": ".comp.compTextArea._outlined._validationSuccess, .comp.compTextArea._outlined._isActive._validationSuccess, .comp.compTextArea._outlined._hasValue._validationSuccess",
-		"np": true
-	},
-	{
-		"gn": "Text Area Success Background",
-		"dn": "Text Area Success Background Design Filled",
-		"n": "textAreaSuccessBackgroundDesignFilled",
-		"dv": "<successColor>",
-		"cp": "background",
-		"sel": ".comp.compTextArea._filled._validationSuccess, .comp.compTextArea._filled._isActive._validationSuccess, .comp.compTextArea._filled._hasValue._validationSuccess",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Error Color",
-		"dn": "Text Area Error Color Design Filled",
-		"n": "textAreaErrorColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Color Active",
-		"dn": "Text Area Error Color Active Design Filled",
-		"n": "textAreaErrorColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Error Color Has Value",
-		"dn": "Text Area Error Color Has Value Design Filled",
-		"n": "textAreaErrorColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._hasError",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Error Color",
-		"dn": "Text Area Left Icon Error Color Design Filled",
-		"n": "textAreaLeftIconErrorColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasError ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Error Color",
-		"dn": "Text Area Left Icon Error Color Design Filled",
-		"n": "textAreaLeftIconErrorColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._hasError ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Left Icon Error Color",
-		"dn": "Text Area Left Icon Error Color Design Filled",
-		"n": "textAreaLeftIconErrorColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._hasError ._leftIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Error Color",
-		"dn": "Text Area Right Icon Error Color Design Filled",
-		"n": "textAreaRightIconErrorColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasError ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Error Color",
-		"dn": "Text Area Right Icon Error Color Design Filled",
-		"n": "textAreaRightIconErrorColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._isActive._hasError ._rightIcon",
-		"np": true
-	},
-	{
-		"gn": "Text Area Right Icon Error Color",
-		"dn": "Text Area Right Icon Error Color Design Filled",
-		"n": "textAreaRightIconErrorColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compTextArea._filled._hasValue._hasError ._rightIcon",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Top",
-		"dn": "Text Area Border Top Design Default",
-		"n": "textAreaBorderTopDesignDefault",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Top",
-		"dn": "Text Area Border Top Design Outline",
-		"n": "textAreaBorderTopDesignOutline",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Top",
-		"dn": "Text Area Border Top Design Filled",
-		"n": "textAreaBorderTopDesignFilled",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Right",
-		"dn": "Text Area Border Right Design Default",
-		"n": "textAreaBorderRightDesignDefault",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Right",
-		"dn": "Text Area Border Right Design Outline",
-		"n": "textAreaBorderRightDesignOutline",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Right",
-		"dn": "Text Area Border Right Design Filled",
-		"n": "textAreaBorderRightDesignFilled",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Bottom",
-		"dn": "Text Area Border Bottom Design Default",
-		"n": "textAreaBorderBottomDesignDefault",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Bottom",
-		"dn": "Text Area Border Bottom Design Outline",
-		"n": "textAreaBorderBottomDesignOutline",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Bottom",
-		"dn": "Text Area Border Bottom Design Filled",
-		"n": "textAreaBorderBottomDesignFilled",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Left",
-		"dn": "Text Area Border Left Design Default",
-		"n": "textAreaBorderLeftDesignDefault",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._default",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Left",
-		"dn": "Text Area Border Left Design Outline",
-		"n": "textAreaBorderLeftDesignOutline",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._outlined",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Left",
-		"dn": "Text Area Border Left Design Filled",
-		"n": "textAreaBorderLeftDesignFilled",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._filled",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Top Active",
-		"dn": "Text Area Border Top Active Design Default",
-		"n": "textAreaBorderTopActiveDesignDefault",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._default._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Top Active",
-		"dn": "Text Area Border Top Active Design Outline",
-		"n": "textAreaBorderTopActiveDesignOutline",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._outlined._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Top Active",
-		"dn": "Text Area Border Top Active Design Filled",
-		"n": "textAreaBorderTopActiveDesignFilled",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._filled._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Right Active",
-		"dn": "Text Area Border Right Active Design Default",
-		"n": "textAreaBorderRightActiveDesignDefault",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._default._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Right Active",
-		"dn": "Text Area Border Right Active Design Outline",
-		"n": "textAreaBorderRightActiveDesignOutline",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._outlined._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Right Active",
-		"dn": "Text Area Border Right Active Design Filled",
-		"n": "textAreaBorderRightActiveDesignFilled",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._filled._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Bottom Active",
-		"dn": "Text Area Border Bottom Active Design Default",
-		"n": "textAreaBorderBottomActiveDesignDefault",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._default._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Bottom Active",
-		"dn": "Text Area Border Bottom Active Design Outline",
-		"n": "textAreaBorderBottomActiveDesignOutline",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._outlined._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Bottom Active",
-		"dn": "Text Area Border Bottom Active Design Filled",
-		"n": "textAreaBorderBottomActiveDesignFilled",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._filled._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Left Active",
-		"dn": "Text Area Border Left Active Design Default",
-		"n": "textAreaBorderLeftActiveDesignDefault",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._default._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Left Active",
-		"dn": "Text Area Border Left Active Design Outline",
-		"n": "textAreaBorderLeftActiveDesignOutline",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._outlined._isActive",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Left Active",
-		"dn": "Text Area Border Left Active Design Filled",
-		"n": "textAreaBorderLeftActiveDesignFilled",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._filled._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Top Has Value",
-		"dn": "Text Area Border Top Has Value Design Default",
-		"n": "textAreaBorderTopHasValueDesignDefault",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._default._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Top Has Value",
-		"dn": "Text Area Border Top Has Value Design Outline",
-		"n": "textAreaBorderTopHasValueDesignOutline",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._outlined._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Top Has Value",
-		"dn": "Text Area Border Top Has Value Design Filled",
-		"n": "textAreaBorderTopHasValueDesignFilled",
-		"cp": "border-top",
-		"sel": ".comp.compTextArea._filled._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Right Has Value",
-		"dn": "Text Area Border Right Has Value Design Default",
-		"n": "textAreaBorderRightHasValueDesignDefault",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._default._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Right Has Value",
-		"dn": "Text Area Border Right Has Value Design Outline",
-		"n": "textAreaBorderRightHasValueDesignOutline",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._outlined._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Right Has Value",
-		"dn": "Text Area Border Right Has Value Design Filled",
-		"n": "textAreaBorderRightHasValueDesignFilled",
-		"cp": "border-right",
-		"sel": ".comp.compTextArea._filled._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Bottom Has Value",
-		"dn": "Text Area Border Bottom Has Value Design Default",
-		"n": "textAreaBorderBottomHasValueDesignDefault",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._default._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Bottom Has Value",
-		"dn": "Text Area Border Bottom Has Value Design Outline",
-		"n": "textAreaBorderBottomHasValueDesignOutline",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._outlined._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Bottom Has Value",
-		"dn": "Text Area Border Bottom Has Value Design Filled",
-		"n": "textAreaBorderBottomHasValueDesignFilled",
-		"cp": "border-bottom",
-		"sel": ".comp.compTextArea._filled._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Border Left Has Value",
-		"dn": "Text Area Border Left Has Value Design Default",
-		"n": "textAreaBorderLeftHasValueDesignDefault",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._default._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Left Has Value",
-		"dn": "Text Area Border Left Has Value Design Outline",
-		"n": "textAreaBorderLeftHasValueDesignOutline",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._outlined._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Text Area Border Left Has Value",
-		"dn": "Text Area Border Left Has Value Design Filled",
-		"n": "textAreaBorderLeftHasValueDesignFilled",
-		"cp": "border-left",
-		"sel": ".comp.compTextArea._filled._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Text Box Asterisk Text Color",
-		"dn": "Text Box Asterisk Text Color",
-		"n": "textBoxAsteriskTextColor",
-		"dv": "<colorTwelve>",
 		"cp": "color",
 		"sel": ".comp.compTextArea ._label ._asterisk",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Has Value Box Shadow",
-		"dn": "Text Area Has Value Box Shadow Design Default",
-		"n": "textAreaHasValueBoxShadowDesignDefault",
-		"cp": "box-shadow",
-		"dv": "0vw 0vw 0vw 0.278vw #4B43761A",
-		"sel": ".comp.compTextArea._default._hasValue",
-		"np": true
+		"np": true,
+		"gn": "Color",
+		"dn": "Color Asterisk",
+		"n": "textAreaColorAsterisk<designType><colorScheme>",
+		"dv": "<colorTwelve>"
 	},
 	{
-		"gn": "Text Area Has Value Box Shadow",
-		"dn": "Text Area Has Value Box Shadow Design Outline",
-		"n": "textAreaHasValueBoxShadowDesignOutline",
-		"cp": "box-shadow",
-		"dv": "0vw 0vw 0vw 0.278vw #3F3A65",
-		"sel": ".comp.compTextArea._outlined._hasValue",
-		"np": true
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._hasValue<colorScheme>",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color HasValuecolorScheme Value",
+		"n": "textAreaColorHasValuecolorSchemeValue<designType><colorScheme>",
+		"dv": "<fontColorOne>"
 	},
 	{
-		"gn": "Text Area Has Value Box Shadow",
-		"dn": "Text Area Has Value Box Shadow Design Filled",
-		"n": "textAreaHasValueBoxShadowDesignFilled",
-		"cp": "box-shadow",
-		"dv": "0vw 0vw 0vw 0.278vw #62589A",
-		"sel": ".comp.compTextArea._filled._hasValue",
-		"np": true
+		"cp": "border",
+		"sel": ".comp.compTextArea<designType>._hasValue<colorScheme>",
+		"np": true,
+		"spv": {},
+		"gn": "Border",
+		"dn": "Border HasValuecolorScheme Value",
+		"n": "textAreaBorderHasValuecolorSchemeValue<designType><colorScheme>",
+		"dv": "1px solid"
 	},
 	{
-		"gn": "Text Area Active Box Shadow",
-		"dn": "Text Area Active Box Shadow Design Default",
-		"n": "textAreaActiveBoxShadowDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compTextArea._default._isActive",
-		"dv": "0vw 0vw 0vw 0.278vw #4B43761A",
-		"np": true
+		"cp": "background",
+		"sel": ".comp.compTextArea<designType>._hasValue<colorScheme>",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<backgroundColorOne>",
+			"_filled-_secondary": "<backgroundColorTwo>",
+			"_filled-_tertiary": "<backgroundColorThree>",
+			"_filled-_quaternary": "<backgroundColorFour>",
+			"_filled-_quinary": "<backgroundColorFive>"
+		},
+		"gn": "Background",
+		"dn": "Background HasValuecolorScheme Value",
+		"n": "textAreaBackgroundHasValuecolorSchemeValue<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Active Box Shadow",
-		"dn": "Text Area Active Box Shadow Design Outline",
-		"n": "textAreaActiveBoxShadowDesignOutline",
-		"cp": "box-shadow",
-		"sel": ".comp.compTextArea._outlined._isActive",
-		"dv": "0vw 0vw 0vw 0.278vw #3F3A65",
-		"np": true
-	},
-	{
-		"gn": "Text Area Active Box Shadow",
-		"dn": "Text Area Active Box Shadow Design Filled",
-		"n": "textAreaActiveBoxShadowDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compTextArea._filled._isActive",
-		"dv": "0vw 0vw 0vw 0.278vw #62589A",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Primary Text Area Label Font Default Design Default",
-		"n": "primaryTextAreaLabelFontDefaultDesignDefault",
-		"dv": "<quaternaryFont>",
 		"cp": "font",
-		"sel": ".comp.compTextArea._default._primary ._label",
-		"np": true
+		"sel": ".comp.compTextArea<designType>._hasValue<colorScheme>",
+		"np": true,
+		"gn": "Font",
+		"dn": "Font HasValuecolorScheme Value",
+		"n": "textAreaFontHasValuecolorSchemeValue<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Label Font",
-		"dn": "Secondary Text Area Label Font Default Design Default",
-		"n": "secondaryTextAreaLabelFontDefaultDesignDefault",
-		"dv": "<quaternaryFont>",
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._hasValue<colorScheme> ._label",
+		"np": true,
+		"spv": {
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>",
+			"_filled-_secondary": "<fontColorFour>",
+			"_filled-_tertiary": "<fontColorFive>",
+			"_filled-_quaternary": "<fontColorNine>",
+			"_filled-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Color",
+		"dn": "Color Label Value",
+		"n": "textAreaColorLabelValue<designType><colorScheme>",
+		"dv": "<fontColorThree>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._hasValue<colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color LeftIcon Value",
+		"n": "textAreaColorLeftIconValue<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._hasValue<colorScheme> ._rightIcon",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color RightIcon Value",
+		"n": "textAreaColorRightIconValue<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._hasValue<colorScheme> ._supportText",
+		"np": true,
+		"spv": {
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>",
+			"_filled-_secondary": "<fontColorFour>",
+			"_filled-_tertiary": "<fontColorFive>",
+			"_filled-_quaternary": "<fontColorNine>",
+			"_filled-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Color",
+		"dn": "Color SupportText Value",
+		"n": "textAreaColorSupportTextValue<designType><colorScheme>",
+		"dv": "<fontColorThree>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._isActive<colorScheme>",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color IsActivecolorScheme Active",
+		"n": "textAreaColorIsActivecolorSchemeActive<designType><colorScheme>",
+		"dv": "<fontColorOne>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compTextArea<designType>._isActive<colorScheme>",
+		"np": true,
+		"spv": {},
+		"gn": "Border",
+		"dn": "Border IsActivecolorScheme Active",
+		"n": "textAreaBorderIsActivecolorSchemeActive<designType><colorScheme>",
+		"dv": "1px solid"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compTextArea<designType>._isActive<colorScheme>",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<backgroundColorOne>",
+			"_filled-_secondary": "<backgroundColorTwo>",
+			"_filled-_tertiary": "<backgroundColorThree>",
+			"_filled-_quaternary": "<backgroundColorFour>",
+			"_filled-_quinary": "<backgroundColorFive>"
+		},
+		"gn": "Background",
+		"dn": "Background IsActivecolorScheme Active",
+		"n": "textAreaBackgroundIsActivecolorSchemeActive<designType><colorScheme>"
+	},
+	{
 		"cp": "font",
-		"sel": ".comp.compTextArea._default._secondary ._label",
-		"np": true
+		"sel": ".comp.compTextArea<designType>._isActive<colorScheme>",
+		"np": true,
+		"gn": "Font",
+		"dn": "Font IsActivecolorScheme Active",
+		"n": "textAreaFontIsActivecolorSchemeActive<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Label Font",
-		"dn": "Tertiary Text Area Label Font Default Design Default",
-		"n": "tertiaryTextAreaLabelFontDefaultDesignDefault",
-		"dv": "<quaternaryFont>",
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._isActive<colorScheme> ._label",
+		"np": true,
+		"spv": {
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>",
+			"_filled-_secondary": "<fontColorFour>",
+			"_filled-_tertiary": "<fontColorFive>",
+			"_filled-_quaternary": "<fontColorNine>",
+			"_filled-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Color",
+		"dn": "Color Label Active",
+		"n": "textAreaColorLabelActive<designType><colorScheme>",
+		"dv": "<fontColorThree>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._isActive<colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color LeftIcon Active",
+		"n": "textAreaColorLeftIconActive<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._isActive<colorScheme> ._rightIcon",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color RightIcon Active",
+		"n": "textAreaColorRightIconActive<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType>._isActive<colorScheme> ._supportText",
+		"np": true,
+		"spv": {
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>",
+			"_filled-_secondary": "<fontColorFour>",
+			"_filled-_tertiary": "<fontColorFive>",
+			"_filled-_quaternary": "<fontColorNine>",
+			"_filled-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Color",
+		"dn": "Color SupportText Active",
+		"n": "textAreaColorSupportTextActive<designType><colorScheme>",
+		"dv": "<fontColorThree>"
+	},
+	{
 		"cp": "font",
-		"sel": ".comp.compTextArea._default._tertiary ._label",
-		"np": true
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_default-": "<primaryFont>",
+			"_outlined-": "<primaryFont>",
+			"_filled-": "<primaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font",
+		"n": "textAreaFont<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Label Font",
-		"dn": "Quaternary Text Area Label Font Default Design Default",
-		"n": "quaternaryTextAreaLabelFontDefaultDesignDefault",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Quinary Text Area Label Font Default Design Default",
-		"n": "quinaryTextAreaLabelFontDefaultDesignDefault",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._quinary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Primary Text Area Label Font Default Design Outline",
-		"n": "primaryTextAreaLabelFontDefaultDesignOutline",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Secondary Text Area Label Font Default Design Outline",
-		"n": "secondaryTextAreaLabelFontDefaultDesignOutline",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Tertiary Text Area Label Font Default Design Outline",
-		"n": "tertiaryTextAreaLabelFontDefaultDesignOutline",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Quaternary Text Area Label Font Default Design Outline",
-		"n": "quaternaryTextAreaLabelFontDefaultDesignOutline",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Quinary Text Area Label Font Default Design Outline",
-		"n": "quinaryTextAreaLabelFontDefaultDesignOutline",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._quinary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Primary Text Area Label Font Default Design Filled",
-		"n": "primaryTextAreaLabelFontDefaultDesignFilled",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._primary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Secondary Text Area Label Font Default Design Filled",
-		"n": "secondaryTextAreaLabelFontDefaultDesignFilled",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._secondary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Tertiary Text Area Label Font Default Design Filled",
-		"n": "tertiaryTextAreaLabelFontDefaultDesignFilled",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._tertiary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Quaternary Text Area Label Font Default Design Filled",
-		"n": "quaternaryTextAreaLabelFontDefaultDesignFilled",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._quaternary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Font",
-		"dn": "Quinary Text Area Label Font Default Design Filled",
-		"n": "quinaryTextAreaLabelFontDefaultDesignFilled",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._quinary ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Margin",
-		"dn": "Text Area Label Margin Design Default",
-		"n": "textAreaLabelMarginDesignDefault",
-		"dv": "0px 0px 0px 0px",
-		"cp": "margin",
-		"sel": ".comp.compTextArea._default ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Margin",
-		"dn": "Text Area Label Margin Design Outline",
-		"n": "textAreaLabelMarginDesignOutline",
-		"dv": "0px 0px 0px 0px",
-		"cp": "margin",
-		"sel": ".comp.compTextArea._outlined ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Label Margin",
-		"dn": "Text Area Label Margin Design Filled",
-		"n": "textAreaLabelMarginDesignFilled",
-		"dv": "0px 0px 0px 0px",
-		"cp": "margin",
-		"sel": ".comp.compTextArea._filled ._label",
-		"np": true
-	},
-	{
-		"gn": "Text Area Height",
-		"dn": "Text Area Height",
-		"n": "textAreaHeight",
 		"cp": "height",
-		"sel": ".comp.compTextArea textarea",
-		"np": true
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"gn": "Height",
+		"dn": "Height",
+		"n": "textAreaHeight<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Primary Text Area Font Active Design Default",
-		"n": "primaryTextAreaFontActiveDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._isActive._primary",
-		"np": true
+		"cp": "padding",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_default-": "0px 5px",
+			"_outlined-": "0px 5px",
+			"_filled-": "0px 5px"
+		},
+		"gn": "Padding",
+		"dn": "Padding",
+		"n": "textAreaPadding<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Secondary Text Area Font Active Design Default",
-		"n": "secondaryTextAreaFontActiveDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._isActive._secondary",
-		"np": true
+		"cp": "border-radius",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_default-": "4px",
+			"_outlined-": "4px",
+			"_filled-": "4px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius",
+		"n": "textAreaBorderRadius<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Tertiary Text Area Font Active Design Default",
-		"n": "tertiaryTextAreaFontActiveDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._isActive._tertiary",
-		"np": true
+		"cp": "border",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_default-": "1px solid",
+			"_outlined-": "1px solid",
+			"_filled-": "1px solid"
+		},
+		"gn": "Border",
+		"dn": "Border",
+		"n": "textAreaBorder<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Quaternary Text Area Font Active Design Default",
-		"n": "quaternaryTextAreaFontActiveDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._isActive._quaternary",
-		"np": true
+		"cp": "background",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<backgroundColorOne>",
+			"_filled-_secondary": "<backgroundColorTwo>",
+			"_filled-_tertiary": "<backgroundColorThree>",
+			"_filled-_quaternary": "<backgroundColorFour>",
+			"_filled-_quinary": "<backgroundColorFive>"
+		},
+		"gn": "Background",
+		"dn": "Background",
+		"n": "textAreaBackground<designType><colorScheme>",
+		"dv": "<backgroundColorSeven>"
 	},
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Quinary Text Area Font Active Design Default",
-		"n": "quinaryTextAreaFontActiveDesignDefault",
+		"cp": "border-top",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"gn": "Border Top",
+		"dn": "BorderTop",
+		"n": "textAreaBorderTop<designType><colorScheme>"
+	},
+	{
+		"cp": "border-right",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"gn": "Border Right",
+		"dn": "BorderRight",
+		"n": "textAreaBorderRight<designType><colorScheme>"
+	},
+	{
+		"cp": "border-bottom",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"gn": "Border Bottom",
+		"dn": "BorderBottom",
+		"n": "textAreaBorderBottom<designType><colorScheme>"
+	},
+	{
+		"cp": "border-left",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"gn": "Border Left",
+		"dn": "BorderLeft",
+		"n": "textAreaBorderLeft<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._errorIcon._rightIcon, .comp.compTextArea<designType><colorScheme>._isActive ._errorIcon._rightIcon, .comp.compTextArea<designType><colorScheme>._hasValue ._errorIcon._rightIcon",
+		"np": true,
+		"spv": {
+			"_default-": "<errorColor>",
+			"_outlined-": "<errorColor>",
+			"_filled-": "<errorColor>"
+		},
+		"gn": "Color",
+		"dn": "Color Error Right Icon",
+		"n": "textAreaColorErrorRightIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._label",
+		"np": true,
+		"spv": {
+			"_outlined-_primary": "<fontColorThree>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>",
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_tertiary": "<fontColorOne>",
+			"_filled-_quaternary": "<fontColorTwo>",
+			"_filled-_quinary": "<fontColorOne>"
+		},
+		"gn": "Color",
+		"dn": "Color Label",
+		"n": "textAreaColorLabel<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+	{
 		"cp": "font",
-		"sel": ".comp.compTextArea._default._isActive._quinary",
-		"np": true
+		"sel": ".comp.compTextArea<designType><colorScheme> ._label",
+		"np": true,
+		"spv": {},
+		"gn": "Font",
+		"dn": "Font Label",
+		"n": "textAreaFontLabel<designType><colorScheme>",
+		"dv": "<quaternaryFont>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._label",
+		"np": true,
+		"spv": {
+			"_default-": "0px 0px 0px 0px",
+			"_outlined-": "0px 0px 0px 0px",
+			"_filled-": "0px 0px 0px 0px"
+		},
+		"gn": "Margin",
+		"dn": "Margin Label",
+		"n": "textAreaMarginLabel<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {
+			"_default-": "0px 8px",
+			"_outlined-": "0px 8px",
+			"_filled-": "0px 8px"
+		},
+		"gn": "Padding",
+		"dn": "Padding LeftIcon",
+		"n": "textAreaPaddingLeftIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {},
+		"gn": "Color",
+		"dn": "Color LeftIcon",
+		"n": "textAreaColorLeftIcon<designType><colorScheme>",
+		"dv": "<fontColorSix>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._rightIcon",
+		"np": true,
+		"spv": {
+			"_default-": "0px 8px",
+			"_outlined-": "0px 8px",
+			"_filled-": "0px 8px"
+		},
+		"gn": "Padding",
+		"dn": "Padding RightIcon",
+		"n": "textAreaPaddingRightIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._rightIcon",
+		"np": true,
+		"spv": {},
+		"gn": "Color",
+		"dn": "Color RightIcon",
+		"n": "textAreaColorRightIcon<designType><colorScheme>",
+		"dv": "<fontColorSix>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._successIcon._rightIcon, .comp.compTextArea<designType><colorScheme>._isActive ._successIcon._rightIcon, .comp.compTextArea<designType><colorScheme>._hasValue ._successIcon._rightIcon",
+		"np": true,
+		"spv": {
+			"_default-": "<successColor>",
+			"_outlined-": "<successColor>",
+			"_filled-": "<successColor>"
+		},
+		"gn": "Color",
+		"dn": "Color Success Right Icon",
+		"n": "textAreaColorSuccessRight<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._supportText",
+		"np": true,
+		"spv": {
+			"_default-": "<quaternaryFont>",
+			"_outlined-": "<quaternaryFont>",
+			"_filled-": "<quaternaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font SupportText",
+		"n": "textAreaFontSupportText<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._supportText",
+		"np": true,
+		"spv": {
+			"_outlined-_primary": "<fontColorThree>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Color",
+		"dn": "Color SupportText",
+		"n": "textAreaColorSupportText<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme> textarea::placeholder",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<colorSeven>",
+			"_filled-_secondary": "<colorSeven>",
+			"_filled-_tertiary": "<colorSeven>",
+			"_filled-_quaternary": "<colorSeven>",
+			"_filled-_quinary": "<colorSeven>"
+		},
+		"gn": "Color",
+		"dn": "Color Placeholder",
+		"n": "textAreaColorPlaceholder<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasError",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color HasError Error",
+		"n": "textAreaColorHasErrorError<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasError ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color LeftIcon Error",
+		"n": "textAreaColorLeftIconError<designType><colorScheme>"
+	},
+	{
+		"cp": "border-color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasError, .comp.compTextArea<designType><colorScheme>._isActive._hasError, .comp.compTextArea<designType><colorScheme>._hasValue._hasError",
+		"np": true,
+		"spv": {
+			"_default-": "<errorColor>",
+			"_outlined-": "<errorColor>",
+			"_filled-": "<errorColor>"
+		},
+		"gn": "Border Color",
+		"dn": "BorderColor HasError Value Active Error",
+		"n": "textAreaBorderColorHasErrorValueActiveError<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasError, .comp.compTextArea<designType><colorScheme>._isActive._hasError, .comp.compTextArea<designType><colorScheme>._hasValue._hasError",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow HasError Value Active Error",
+		"n": "textAreaBoxShadowHasErrorValueActiveError<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue",
+		"np": true,
+		"spv": {
+			"_default-": "1px solid",
+			"_outlined-": "1px solid"
+		},
+		"gn": "Border",
+		"dn": "Border HasValue Value",
+		"n": "textAreaBorderHasValueValue<designType><colorScheme>"
+	},
+	{
+		"cp": "border-top",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue",
+		"np": true,
+		"gn": "Border Top",
+		"dn": "BorderTop HasValue Value",
+		"n": "textAreaBorderTopHasValueValue<designType><colorScheme>"
+	},
+	{
+		"cp": "border-right",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue",
+		"np": true,
+		"gn": "Border Right",
+		"dn": "BorderRight HasValue Value",
+		"n": "textAreaBorderRightHasValueValue<designType><colorScheme>"
+	},
+	{
+		"cp": "border-bottom",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue",
+		"np": true,
+		"gn": "Border Bottom",
+		"dn": "BorderBottom HasValue Value",
+		"n": "textAreaBorderBottomHasValueValue<designType><colorScheme>"
+	},
+	{
+		"cp": "border-left",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue",
+		"np": true,
+		"gn": "Border Left",
+		"dn": "BorderLeft HasValue Value",
+		"n": "textAreaBorderLeftHasValueValue<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow HasValue Value",
+		"n": "textAreaBoxShadowHasValueValue<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue._hasError",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color HasError Value Error",
+		"n": "textAreaColorHasErrorValueError<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue._hasError ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color LeftIcon Value Error",
+		"n": "textAreaColorLeftIconValueError<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue._hasError ._rightIcon",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color RightIcon Value Error",
+		"n": "textAreaColorRightIconValueError<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive",
+		"np": true,
+		"spv": {
+			"_default-": "1px solid",
+			"_outlined-": "1px solid"
+		},
+		"gn": "Border",
+		"dn": "Border IsActive Active",
+		"n": "textAreaBorderIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "border-top",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive",
+		"np": true,
+		"gn": "Border Top",
+		"dn": "BorderTop IsActive Active",
+		"n": "textAreaBorderTopIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "border-right",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive",
+		"np": true,
+		"gn": "Border Right",
+		"dn": "BorderRight IsActive Active",
+		"n": "textAreaBorderRightIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "border-bottom",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive",
+		"np": true,
+		"gn": "Border Bottom",
+		"dn": "BorderBottom IsActive Active",
+		"n": "textAreaBorderBottomIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "border-left",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive",
+		"np": true,
+		"gn": "Border Left",
+		"dn": "BorderLeft IsActive Active",
+		"n": "textAreaBorderLeftIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow IsActive Active",
+		"n": "textAreaBoxShadowIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive._hasError",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color HasError Active Error",
+		"n": "textAreaColorHasErrorActiveError<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive._hasError ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color LeftIcon Active Error",
+		"n": "textAreaColorLeftIconActiveError<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive._hasError ._rightIcon",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color RightIcon Active Error",
+		"n": "textAreaColorRightIconActiveError<designType><colorScheme>"
+	},
+	{
+		"cp": "border-color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._validationSuccess, .comp.compTextArea<designType><colorScheme>._isActive._validationSuccess, .comp.compTextArea<designType><colorScheme>._hasValue._validationSuccess",
+		"np": true,
+		"spv": {
+			"_default-": "<successColor>",
+			"_outlined-": "<successColor>"
+		},
+		"gn": "Border Color",
+		"dn": "BorderColor ValidationSuccess Value Active",
+		"n": "textAreaBorderColorValidationSuccessValueActive<designType><colorScheme>"
 	},
 
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Primary Text Area Font Active Design Outline",
-		"n": "primaryTextAreaFontActiveDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._isActive._primary",
-		"np": true
+		"cp": "border-color",
+		"sel": ".comp.compTextArea<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_default-_primary": "<fontColorEight>",
+			"_default-_secondary": "<fontColorEight>",
+			"_default-_tertiary": "<fontColorEight>",
+			"_default-_quaternary": "<fontColorEight>",
+			"_default-_quinary": "<fontColorEight>",
+			"_outlined-_primary": "<fontColorThree>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Border Color",
+		"dn": "Border Color",
+		"n": "textAreaBorderColor<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Secondary Text Area Font Active Design Outline",
-		"n": "secondaryTextAreaFontActiveDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._isActive._secondary",
-		"np": true
+		"cp": "border-color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._hasValue",
+		"np": true,
+		"spv": {
+			"_default-_primary": "<fontColorThree>",
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_outlined-_primary": "<fontColorThree>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Border Color",
+		"dn": "Value Border Color",
+		"n": "textAreaValueBorderColor<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Tertiary Text Area Font Active Design Outline",
-		"n": "tertiaryTextAreaFontActiveDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._isActive._tertiary",
-		"np": true
+		"cp": "border-color",
+		"sel": ".comp.compTextArea<designType><colorScheme>._isActive",
+		"np": true,
+		"spv": {
+			"_default-_primary": "<fontColorThree>",
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_outlined-_primary": "<fontColorThree>",
+			"_outlined-_secondary": "<fontColorFour>",
+			"_outlined-_tertiary": "<fontColorFive>",
+			"_outlined-_quaternary": "<fontColorNine>",
+			"_outlined-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Border Color",
+		"dn": "Active Border Color",
+		"n": "textAreaActiveBorderColor<designType><colorScheme>"
 	},
 	{
-		"gn": "Text Area Font Active",
-		"dn": "Quaternary Text Area Font Active Design Outline",
-		"n": "quaternaryTextAreaFontActiveDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Active",
-		"dn": "Quinary Text Area Font Active Design Outline",
-		"n": "quinaryTextAreaFontActiveDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Font Active",
-		"dn": "Primary Text Area Font Active Design Filled",
-		"n": "primaryTextAreaFontActiveDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._isActive._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Active",
-		"dn": "Secondary Text Area Font Active Design Filled",
-		"n": "secondaryTextAreaFontActiveDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._isActive._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Active",
-		"dn": "Tertiary Text Area Font Active Design Filled",
-		"n": "tertiaryTextAreaFontActiveDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._isActive._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Active",
-		"dn": "Quaternary Text Area Font Active Design Filled",
-		"n": "quaternaryTextAreaFontActiveDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._isActive._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Active",
-		"dn": "Quinary Text Area Font Active Design Filled",
-		"n": "quinaryTextAreaFontActiveDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._isActive._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Primary Text Area Font Has Value Design Default",
-		"n": "primaryTextAreaFontHasValueDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Secondary Text Area Font Has Value Design Default",
-		"n": "secondaryTextAreaFontHasValueDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Tertiary Text Area Font Has Value Design Default",
-		"n": "tertiaryTextAreaFontHasValueDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Quaternary Text Area Font Has Value Design Default",
-		"n": "quaternaryTextAreaFontHasValueDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Quinary Text Area Font Has Value Design Default",
-		"n": "quinaryTextAreaFontHasValueDesignDefault",
-		"cp": "font",
-		"sel": ".comp.compTextArea._default._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Primary Text Area Font Has Value Design Outline",
-		"n": "primaryTextAreaFontHasValueDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Secondary Text Area Font Has Value Design Outline",
-		"n": "secondaryTextAreaFontHasValueDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Tertiary Text Area Font Has Value Design Outline",
-		"n": "tertiaryTextAreaFontHasValueDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Quaternary Text Area Font Has Value Design Outline",
-		"n": "quaternaryTextAreaFontHasValueDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Quinary Text Area Font Has Value Design Outline",
-		"n": "quinaryTextAreaFontHasValueDesignOutline",
-		"cp": "font",
-		"sel": ".comp.compTextArea._outlined._hasValue._quinary",
-		"np": true
-	},
-
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Primary Text Area Font Has Value Design Filled",
-		"n": "primaryTextAreaFontHasValueDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._hasValue._primary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Secondary Text Area Font Has Value Design Filled",
-		"n": "secondaryTextAreaFontHasValueDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._hasValue._secondary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Tertiary Text Area Font Has Value Design Filled",
-		"n": "tertiaryTextAreaFontHasValueDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._hasValue._tertiary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Quaternary Text Area Font Has Value Design Filled",
-		"n": "quaternaryTextAreaFontHasValueDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._hasValue._quaternary",
-		"np": true
-	},
-	{
-		"gn": "Text Area Font Has Value",
-		"dn": "Quinary Text Area Font Has Value Design Filled",
-		"n": "quinaryTextAreaFontHasValueDesignFilled",
-		"cp": "font",
-		"sel": ".comp.compTextArea._filled._hasValue._quinary",
-		"np": true
+		"cp": "background",
+		"sel": ".comp.compTextArea<designType><colorScheme>._validationSuccess, .comp.compTextArea<designType><colorScheme>._isActive._validationSuccess, .comp.compTextArea<designType><colorScheme>._hasValue._validationSuccess",
+		"np": true,
+		"spv": {
+			"_filled-": "<successColor>"
+		},
+		"gn": "Background",
+		"dn": "Background ValidationSuccess Value Active",
+		"n": "textAreaBackgroundValidationSuccessValueActive<designType><colorScheme>"
 	}
 ]

@@ -20,7 +20,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import JotStyle from './JotStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './jotProperties';
-import { styleDefaults } from './jotStyleProperies';
+import { styleProperties, styleDefaults } from './jotStyleProperies';
 import { DEFAULT_DOCUMENT, LOCAL_STORAGE_PREFIX, savePersonalizationCurry } from './constants';
 import { IconHelper } from '../util/IconHelper';
 
@@ -80,7 +80,7 @@ function Jot(props: Readonly<ComponentProps>) {
 					let x = localStorage.getItem(LOCAL_STORAGE_PREFIX + key);
 					if (!isNullValue(x) && !x?.trim()) v = JSON.parse(x!);
 					if (v._id == null && v.id == null) v = duplicate(DEFAULT_DOCUMENT);
-				} catch (e) {}
+				} catch (e) { }
 
 				setJotDocument(v);
 			},
@@ -105,7 +105,7 @@ function Jot(props: Readonly<ComponentProps>) {
 	}, [bindingPath2Path]);
 
 	const savePersonalization = useMemo(() => {
-		if (!bindingPath2Path) return (key: string, value: any) => {};
+		if (!bindingPath2Path) return (key: string, value: any) => { };
 
 		return savePersonalizationCurry(
 			bindingPath2Path,
@@ -189,6 +189,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

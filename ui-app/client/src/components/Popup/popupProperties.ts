@@ -72,11 +72,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'popupDesign',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Popup Design',
-		description: 'Popup design selection',
-		group: ComponentPropertyGroup.ADVANCED,
+		...COMMON_COMPONENT_PROPERTIES.designType,
 		defaultValue: '_design1',
 		enumValues: [
 			{

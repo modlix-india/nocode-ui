@@ -19,7 +19,7 @@ import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import FillerValueEditorStyle from './FillerValueEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './fillerValueEditorProperties';
-import { styleDefaults } from './fillerValueEditorStyleProperties';
+import { styleProperties, styleDefaults } from './fillerValueEditorStyleProperties';
 import ValueEditor from './components/ValueEditor';
 import PageViewer from './components/PageViewer';
 import { runEvent } from '../util/runEvent';
@@ -37,7 +37,7 @@ function savePersonalizationCurry(
 	locationHistory: Array<LocationHistory>,
 	pageDefinition: PageDefinition,
 ) {
-	if (!onChangePersonalization) return (key: string, value: any) => {};
+	if (!onChangePersonalization) return (key: string, value: any) => { };
 	let handle: any = -1;
 
 	return (key: string, value: any) => {
@@ -107,7 +107,7 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 
 	// Function to save the personalization
 	const savePersonalization = useMemo(() => {
-		if (!personalizationPath) return (key: string, value: any) => {};
+		if (!personalizationPath) return (key: string, value: any) => { };
 
 		return savePersonalizationCurry(
 			personalizationPath,

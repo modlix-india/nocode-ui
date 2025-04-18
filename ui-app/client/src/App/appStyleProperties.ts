@@ -238,7 +238,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	// Global Theme
 	{
-		gn: 'Primary Font',
+		gn: 'Font',
 		dn: 'Primary Font',
 		n: 'primaryFont',
 		dv: '14px/16px Asap',
@@ -248,7 +248,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		np: true,
 	},
 	{
-		gn: 'Secodary Font',
+		gn: 'Font',
 		dn: 'Secondary Font',
 		n: 'secondaryFont',
 		dv: '18px/20px Asap',
@@ -258,7 +258,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		np: true,
 	},
 	{
-		gn: 'Tertiary Font',
+		gn: 'Font',
 		dn: 'Tertiary Font',
 		n: 'tertiaryFont',
 		dv: '16px/18px Asap',
@@ -268,7 +268,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		np: true,
 	},
 	{
-		gn: 'Quaternary Font',
+		gn: 'Font',
 		dn: 'Quaternary Font',
 		n: 'quaternaryFont',
 		dv: '12px/14px Asap',
@@ -278,7 +278,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		np: true,
 	},
 	{
-		gn: 'Quinary Font',
+		gn: 'Font',
 		dn: 'Quinary Font',
 		n: 'quinaryFont',
 		dv: '24px/26px Asap',
@@ -289,7 +289,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	{
-		gn: 'Senary Font',
+		gn: 'Font',
 		dn: 'Senary Font',
 		n: 'senaryFont',
 		dv: '30px/30px Asap',

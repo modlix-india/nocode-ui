@@ -17,8 +17,9 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './buttonBarStyleProperties';
+import { styleProperties, styleDefaults } from './buttonBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function ButtonBar(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -174,6 +175,12 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { buttonBarDesign, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'buttonBarDesign',
+	'colorScheme',
+);
+
 const component: Component = {
 	name: 'ButtonBar',
 	displayName: 'Button Bar',
@@ -190,7 +197,7 @@ const component: Component = {
 	},
 	defaultTemplate: {
 		key: '',
-		name: 'buttonBar',
+		name: 'Button Bar',
 		type: 'ButtonBar',
 		properties: {
 			label: { value: 'ButtonBar' },
@@ -257,6 +264,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
+	propertiesForTheme: [buttonBarDesign, colorScheme],
 };
 
 export default component;

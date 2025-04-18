@@ -87,6 +87,6 @@
 		"de": "Design 10 Grid Hover or Selected Background Color",
 		"dv": "<backgroundColorNine>",
 		"np": true,
-		"sel": ".comp.compTable._design10 ._eachTableGrid._dataGrid:hover, .comp.compTable._design10 ._eachTableGrid._dataGrid._selected"
+		"sel": ".comp.compTable._design0 ._eachTableGrid._dataGrid:hover, .comp.compTable._design0 ._eachTableGrid._dataGrid._selected"
 	}
 ]

@@ -6,7 +6,7 @@ import {
 	propertiesDefinition,
 	stylePropertiesDefinition,
 } from './fillerDefinitionEditorProperties';
-import { styleDefaults } from './fillerDefinitionEditorStyleProperties';
+import { styleProperties, styleDefaults } from './fillerDefinitionEditorStyleProperties';
 
 const LazyFillerDefinitionEditor = React.lazy(
 	() => import(/* webpackChunkName: "FillerDefinitionEditor" */ './LazyFillerDefinitionEditor'),
@@ -71,6 +71,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

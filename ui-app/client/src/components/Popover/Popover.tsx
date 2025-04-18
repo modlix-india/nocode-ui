@@ -11,7 +11,7 @@ import Portal from '../Portal';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import getPositions from '../util/getPositions';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './popoverStyleProperties';
+import { styleProperties, styleDefaults } from './popoverStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 export interface PortalCoordinates {
 	left?: number;
@@ -254,6 +254,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

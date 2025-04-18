@@ -26,9 +26,10 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
-import { styleDefaults } from './dropdownStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -604,6 +605,12 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 7,
 	name: 'Dropdown',
@@ -765,6 +772,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

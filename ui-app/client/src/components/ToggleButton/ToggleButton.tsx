@@ -14,7 +14,7 @@ import ToggleButtonStyle from './ToggleButtonStyle';
 import useDefinition from '../util/useDefinition';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { styleDefaults } from './toggleButtonStyleProperties';
+import { styleProperties, styleDefaults } from './toggleButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 
@@ -85,7 +85,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 				);
 			})();
 		},
-		[onClick, bindingPathPath, props.pageDefinition.eventFunctions?.[onClick],readOnly],
+		[onClick, bindingPathPath, props.pageDefinition.eventFunctions?.[onClick], readOnly],
 	);
 
 	const label = isToggled ? onLabel : (offLabel ?? onLabel);
@@ -101,9 +101,8 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 	) : null;
 	return (
 		<label
-			className={`comp compToggleButton ${designType} ${colorScheme} ${
-				isToggled ? '_on' : '_off'
-			} ${readOnly ? '_disabled':''}`}
+			className={`comp compToggleButton ${designType} ${colorScheme} ${isToggled ? '_on' : '_off'
+				} ${readOnly ? '_disabled' : ''}`}
 			style={resolvedStyles.comp ?? {}}
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
@@ -111,9 +110,8 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 			<HelperComponent context={props.context} definition={definition} />
 
 			<div
-				className={`_knob ${
-					toggleButtonLabelAlignment === '_onknob' && label?.length ? '_withText' : ''
-				}`}
+				className={`_knob ${toggleButtonLabelAlignment === '_onknob' && label?.length ? '_withText' : ''
+					}`}
 				style={resolvedStyles.knob ?? {}}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="knob" />
@@ -193,6 +191,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

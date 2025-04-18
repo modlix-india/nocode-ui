@@ -272,12 +272,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
-		name: 'designType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Deisgn Type',
-		description: 'Design Type',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.ADVANCED,
+		...COMMON_COMPONENT_PROPERTIES.designType,
 		defaultValue: '_horizontal',
 		enumValues: [
 			{ name: '_horizontal', displayName: 'Horizontal Slider' },

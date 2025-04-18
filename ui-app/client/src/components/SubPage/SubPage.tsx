@@ -20,7 +20,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './subPageProperties';
 import SubPageStyle from './SubPageStyle';
-import { styleDefaults } from './subPageStyleProperties';
+import { styleProperties, styleDefaults } from './subPageStyleProperties';
 
 function SubPage(props: Readonly<ComponentProps>) {
 	const {
@@ -142,6 +142,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

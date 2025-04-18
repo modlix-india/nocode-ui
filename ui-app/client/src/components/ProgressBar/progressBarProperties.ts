@@ -160,7 +160,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
-
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

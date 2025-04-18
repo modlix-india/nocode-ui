@@ -24,7 +24,7 @@ import { getRenderData } from '../util/getRenderData';
 import useDefinition from '../util/useDefinition';
 import SmallCarouselStyle from './SmallCarouselStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './smallCarouselProperties';
-import { styleDefaults } from './smallCarouselStyleProperties';
+import { styleProperties, styleDefaults } from './smallCarouselStyleProperties';
 import { flattenUUID } from '../util/uuid';
 import { shortUUID } from '../../util/shortUUID';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
@@ -115,9 +115,8 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 			return v === 0 ? (a[1]?.key ?? '').localeCompare(b[1]?.key ?? '') : v;
 		});
 
-	const bindingPathPath = `Store.defaultData.${
-		pageExtractor?.getPageName() ?? '_global'
-	}.${flattenUUID(key)}`;
+	const bindingPathPath = `Store.defaultData.${pageExtractor?.getPageName() ?? '_global'
+		}.${flattenUUID(key)}`;
 
 	useEffect(() => {
 		setFirstTime(true);
@@ -140,9 +139,9 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 					key,
 					dataProperty?.value
 						? {
-								type: 'VALUE',
-								value: bindingPathPath,
-							}
+							type: 'VALUE',
+							value: bindingPathPath,
+						}
 						: dataProperty.location!,
 					index,
 					locationHistory,
@@ -366,9 +365,8 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${
-				showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
-			} `}
+			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
+				} `}
 			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
 			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
 			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
@@ -671,6 +669,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

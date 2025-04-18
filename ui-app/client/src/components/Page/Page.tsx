@@ -18,7 +18,7 @@ import useDefinition from '../util/useDefinition';
 import PageStyle from './PageStyle';
 import pageHistory from './pageHistory';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
-import { styleDefaults } from './pageStyleProperties';
+import { styleProperties, styleDefaults } from './pageStyleProperties';
 
 const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
 
@@ -236,6 +236,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

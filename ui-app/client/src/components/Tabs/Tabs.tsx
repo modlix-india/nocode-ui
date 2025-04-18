@@ -16,9 +16,10 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import { runEvent } from '../util/runEvent';
 import TabsStyles from './TabsStyle';
-import { styleDefaults } from './tabsStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './tabsStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { isNullValue } from '@fincity/kirun-js';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function setHighlighter(
 	tabsOrientation: string,
@@ -274,6 +275,12 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	name: 'Tabs',
 	displayName: 'Tabs',
@@ -402,6 +409,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [designType, colorScheme],
 };
 
 export default component;

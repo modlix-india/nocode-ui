@@ -9,7 +9,7 @@ import Children from '../Children';
 import { isNullValue } from '@fincity/kirun-js';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './carouselStyleProperties';
+import { styleProperties, styleDefaults } from './carouselStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function Carousel(props: Readonly<ComponentProps>) {
@@ -51,20 +51,20 @@ function Carousel(props: Readonly<ComponentProps>) {
 		setChildrenDef(
 			props.definition.children
 				? Object.entries(props.definition.children)
-						.filter((e: any) => !!e[1])
-						.sort((a: any, b: any) => {
-							const v =
-								(pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
-								(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
-							return v === 0
-								? (
-										pageDefinition?.componentDefinition[a[0]]?.key ?? ''
-									).localeCompare(
-										pageDefinition?.componentDefinition[b[0]]?.key ?? '',
-									)
-								: v;
-						})
-						.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
+					.filter((e: any) => !!e[1])
+					.sort((a: any, b: any) => {
+						const v =
+							(pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
+							(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
+						return v === 0
+							? (
+								pageDefinition?.componentDefinition[a[0]]?.key ?? ''
+							).localeCompare(
+								pageDefinition?.componentDefinition[b[0]]?.key ?? '',
+							)
+							: v;
+					})
+					.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
 				: [],
 		);
 	}, [props.definition.children]);
@@ -97,26 +97,24 @@ function Carousel(props: Readonly<ComponentProps>) {
 		if (!currentSlide.current || isNullValue(transitionFrom)) return;
 		setTimeout(() => {
 			if (!currentSlide.current || isNullValue(transitionFrom)) return;
-			currentSlide.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${
-				slideNum - transitionFrom! + 1 == childrenDef.length ||
-				(slideNum - transitionFrom! < 0 &&
-					slideNum - transitionFrom! - 1 != -childrenDef.length)
+			currentSlide.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${slideNum - transitionFrom! + 1 == childrenDef.length ||
+					(slideNum - transitionFrom! < 0 &&
+						slideNum - transitionFrom! - 1 != -childrenDef.length)
 					? '_reverse'
 					: ''
-			}`;
+				}`;
 
 			if (
 				animationType == 'fadeoutin' ||
 				animationType == 'crossover' ||
 				animationType == 'slide'
 			) {
-				previousSlide.current!.className = `_eachSlide _previous _${animationType} _${animationType}Start ${
-					slideNum - transitionFrom! + 1 == childrenDef.length ||
-					(slideNum - transitionFrom! < 0 &&
-						slideNum - transitionFrom! - 1 != -childrenDef.length)
+				previousSlide.current!.className = `_eachSlide _previous _${animationType} _${animationType}Start ${slideNum - transitionFrom! + 1 == childrenDef.length ||
+						(slideNum - transitionFrom! < 0 &&
+							slideNum - transitionFrom! - 1 != -childrenDef.length)
 						? '_reverse'
 						: ''
-				}`;
+					}`;
 			}
 		}, 100);
 	}, [currentSlide.current, previousSlide.current, transitionFrom, animationType]);
@@ -144,13 +142,12 @@ function Carousel(props: Readonly<ComponentProps>) {
 		if (!isNullValue(transitionFrom)) {
 			showChildren = [
 				<div
-					className={`_eachSlide _previous _${animationType} ${
-						slideNum - transitionFrom! + 1 == childrenDef.length ||
-						(slideNum - transitionFrom! < 0 &&
-							slideNum - transitionFrom! - 1 != -childrenDef.length)
+					className={`_eachSlide _previous _${animationType} ${slideNum - transitionFrom! + 1 == childrenDef.length ||
+							(slideNum - transitionFrom! < 0 &&
+								slideNum - transitionFrom! - 1 != -childrenDef.length)
 							? '_reverse'
 							: ''
-					}`}
+						}`}
 					key={childrenDef[transitionFrom!].key}
 					style={prevStyle}
 					ref={previousSlide}
@@ -163,13 +160,12 @@ function Carousel(props: Readonly<ComponentProps>) {
 					/>
 				</div>,
 				<div
-					className={`_eachSlide _current _${animationType} ${
-						slideNum - transitionFrom! + 1 == childrenDef.length ||
-						(slideNum - transitionFrom! < 0 &&
-							slideNum - transitionFrom! - 1 != -childrenDef.length)
+					className={`_eachSlide _current _${animationType} ${slideNum - transitionFrom! + 1 == childrenDef.length ||
+							(slideNum - transitionFrom! < 0 &&
+								slideNum - transitionFrom! - 1 != -childrenDef.length)
 							? '_reverse'
 							: ''
-					}`}
+						}`}
 					ref={currentSlide}
 					key={childrenDef[slideNum].key}
 					style={style}
@@ -205,11 +201,10 @@ function Carousel(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compCarousel ${
-				arrowButtons !== 'OutsideBottomRight' && arrowButtons !== 'OutsideBottomLeft'
+			className={`comp compCarousel ${arrowButtons !== 'OutsideBottomRight' && arrowButtons !== 'OutsideBottomLeft'
 					? 'container'
 					: 'containerReverse'
-			}`}
+				}`}
 			style={resolvedStyles.comp ?? {}}
 			onMouseEnter={handleMouse}
 			onMouseLeave={handleMouseLeave}
@@ -217,11 +212,10 @@ function Carousel(props: Readonly<ComponentProps>) {
 			<HelperComponent context={props.context} definition={definition} />
 			{showArrowButtons && (
 				<div
-					className={`arrowButtonsContainer ${
-						showNavigationControlsOnHover
+					className={`arrowButtonsContainer ${showNavigationControlsOnHover
 							? `${hover ? `show  arrowButtons${arrowButtons}` : `hide`}`
 							: `arrowButtons${arrowButtons}`
-					}`}
+						}`}
 					style={resolvedStyles.arrowButtonsContainer ?? {}}
 				>
 					<SubHelperComponent
@@ -230,9 +224,8 @@ function Carousel(props: Readonly<ComponentProps>) {
 					></SubHelperComponent>
 
 					<i
-						className={` fa-solid fa-chevron-left button ${
-							arrowButtons === 'Middle' ? 'leftArrowButton' : ''
-						}`}
+						className={` fa-solid fa-chevron-left button ${arrowButtons === 'Middle' ? 'leftArrowButton' : ''
+							}`}
 						style={resolvedStyles.arrowButtons ?? {}}
 						onClick={() => {
 							if (!isNullValue(transitionFrom)) return;
@@ -248,9 +241,8 @@ function Carousel(props: Readonly<ComponentProps>) {
 						></SubHelperComponent>
 					</i>
 					<i
-						className={` fa-solid fa-chevron-right button ${
-							arrowButtons === 'Middle' ? 'rightArrowButton' : ''
-						}`}
+						className={` fa-solid fa-chevron-right button ${arrowButtons === 'Middle' ? 'rightArrowButton' : ''
+							}`}
 						style={resolvedStyles.arrowButtons ?? {}}
 						onClick={() => {
 							if (!isNullValue(transitionFrom)) return;
@@ -267,16 +259,14 @@ function Carousel(props: Readonly<ComponentProps>) {
 				</div>
 			)}
 			<div
-				className={`innerDivSlideNav ${`slideNavDiv${
-					slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : 'innerDivSlideNav'
-				}`}`}
+				className={`innerDivSlideNav ${`slideNavDiv${slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : 'innerDivSlideNav'
+					}`}`}
 			>
 				<div className="innerDiv">{showChildren}</div>
 
 				<div
-					className={`slideButtonsContainer slideNavDiv${slideNavButtonPosition} ${
-						slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
-					} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
+					className={`slideButtonsContainer slideNavDiv${slideNavButtonPosition} ${slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
+						} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
 					style={resolvedStyles.slideButtonsContainer ?? {}}
 				>
 					<SubHelperComponent
@@ -287,11 +277,10 @@ function Carousel(props: Readonly<ComponentProps>) {
 						(childrenDef ?? []).map((e: any, key: any) => (
 							<button
 								key={key}
-								className={` slideNav  ${
-									dotsButtonType !== 'none' && hasNumbersInSlideNav === false
+								className={` slideNav  ${dotsButtonType !== 'none' && hasNumbersInSlideNav === false
 										? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
 										: ` `
-								}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
+									}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
 								style={resolvedStyles.dotButtons ?? {}}
 								onClick={() => {
 									if (!isNullValue(transitionFrom)) return;
@@ -390,6 +379,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;
