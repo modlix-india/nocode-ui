@@ -11,7 +11,7 @@ export const MASTER_FUNCTIONS = new Map<
 		options => {
 			options.iframe.contentWindow?.postMessage({
 				type: 'EDITOR_TYPE',
-				payload: 'FILLER_VALUE_EDITOR',
+				payload: { type: 'FILLER_VALUE_EDITOR' },
 			});
 		},
 	],

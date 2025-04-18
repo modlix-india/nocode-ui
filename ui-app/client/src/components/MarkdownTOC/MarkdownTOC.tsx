@@ -14,7 +14,7 @@ import { getAlphaNumeral, getRoman } from '../util/numberConverter';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownTOCProperties';
 import MarkdownTOCStyle from './MarkdownTOCStyle';
-import { styleDefaults } from './markdownTOCStyleProperties';
+import { styleProperties, styleDefaults } from './markdownTOCStyleProperties';
 import getSrcUrl from '../util/getSrcUrl';
 
 interface BulletPoint {
@@ -203,9 +203,8 @@ function MarkdownTOC(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const styleKey = `${key}_${
-		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
-	}`;
+	const styleKey = `${key}_${locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+		}`;
 
 	const styleStrings: Array<string> = [];
 	const styleObjects = [undefined, regularStyle, visitedStyle, hoverStyle];
@@ -548,6 +547,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

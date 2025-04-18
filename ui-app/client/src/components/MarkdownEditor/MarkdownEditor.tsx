@@ -16,7 +16,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
-import { styleDefaults } from './markdownEditorStyleProperties';
+import { styleProperties, styleDefaults } from './markdownEditorStyleProperties';
 import { FilterPanelButtons } from './components/FilterPanelButtons';
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
@@ -398,13 +398,13 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 					onBlur={
 						onBlur
 							? () =>
-									runEvent(
-										undefined,
-										onBlur,
-										props.context.pageName,
-										props.locationHistory,
-										props.pageDefinition,
-									)
+								runEvent(
+									undefined,
+									onBlur,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								)
 							: undefined
 					}
 					onChange={ev => onChangeText(ev.target.value)}
@@ -463,7 +463,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 											),
 										);
 									}
-								} catch (e) {}
+								} catch (e) { }
 							})();
 						} else {
 							const paste = ev.clipboardData.getData('text');
@@ -800,6 +800,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

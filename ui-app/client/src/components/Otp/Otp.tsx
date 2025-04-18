@@ -1,4 +1,11 @@
+import { isNullValue } from '@fincity/kirun-js';
 import React, { useEffect } from 'react';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getPathFromLocation,
+	setData,
+} from '../../context/StoreContext';
 import {
 	Component,
 	ComponentDefinition,
@@ -6,24 +13,18 @@ import {
 	ComponentProps,
 	LocationHistory,
 } from '../../types/common';
-import {
-	PageStoreExtractor,
-	addListenerAndCallImmediately,
-	getPathFromLocation,
-	setData,
-} from '../../context/StoreContext';
-import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './otpProperties';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { isNullValue } from '@fincity/kirun-js';
 import { validate } from '../../util/validationProcessor';
-import { flattenUUID } from '../util/uuid';
-import { IconHelper } from '../util/IconHelper';
-import { styleDefaults } from './otpStyleProperties';
-import OtpInputStyle from './OtpStyle';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
 import { makePropertiesObject } from '../util/make';
+import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import { propertiesDefinition, stylePropertiesDefinition } from './otpProperties';
+import OtpInputStyle from './OtpStyle';
+import { styleDefaults, stylePropertiesForTheme } from './otpStyleProperties';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Otp(props: Readonly<ComponentProps>) {
 	const [focusBoxIndex, setFocusBoxIndex] = React.useState(0);
@@ -333,6 +334,12 @@ function MANDATORY(
 	return [];
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	name: 'Otp',
 	displayName: 'Otp',
@@ -458,6 +465,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

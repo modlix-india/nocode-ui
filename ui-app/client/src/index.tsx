@@ -183,11 +183,14 @@ if (!app) {
 
 			for (const eachcomp of comps) {
 				if (!externalStylePropertyJSONComponents.has(eachcomp)) continue;
-				try {
-					globalThis.styleProperties[eachcomp] = (
-						await axios.get(lazyStylePropURL(eachcomp))
-					)?.data;
-				} catch (err) {}
+
+				// This is required for server side rendering to load the needed components style props early on.
+
+				// try {
+				// 	globalThis.styleProperties[eachcomp] = (
+				// 		await axios.get(lazyStylePropURL(eachcomp))
+				// 	)?.data;
+				// } catch (err) {}
 			}
 		}
 
