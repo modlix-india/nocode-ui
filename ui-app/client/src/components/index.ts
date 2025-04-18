@@ -52,6 +52,7 @@ import Timer from './Timer/Timer';
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 import MarkdownTOC from './MarkdownTOC/MarkdownTOC';
 import Audio from './Audio/Audio';
+import ThemeEditor from './ThemeEditor/ThemeEditor';
 
 const componentMap = new Map<string, Component>([
 	[Button.name, Button],
@@ -131,5 +132,6 @@ componentMap.set(SchemaBuilder.name, SchemaBuilder);
 componentMap.set(SchemaForm.name, SchemaForm);
 componentMap.set(TemplateEditor.name, TemplateEditor);
 componentMap.set(TextEditor.name, TextEditor);
+componentMap.set(ThemeEditor.name, ThemeEditor);
 
 export default componentMap;

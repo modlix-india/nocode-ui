@@ -9,7 +9,8 @@ import getSrcUrl from '../util/getSrcUrl';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import AudioStyle from './AudioStyle';
-import { styleDefaults } from './audioStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './audioStyleProperties';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Audio(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -18,7 +19,7 @@ function Audio(props: Readonly<ComponentProps>) {
 		properties: {
 			src,
 			type,
-			audioDesign,
+			designType: audioDesign,
 			colorScheme,
 			autoPlay,
 			loop,
@@ -80,8 +81,6 @@ function Audio(props: Readonly<ComponentProps>) {
 	const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
 	const [manualSeek, setManualSeek] = useState<number | undefined>(undefined);
 	const playbackOptions = [0.5, 1, 1.5, 2];
-
-	
 
 	const changePlaybackSpeed = (event: React.ChangeEvent<HTMLSelectElement>) => {
 		const speed = parseFloat(event.target.value);
@@ -203,8 +202,7 @@ function Audio(props: Readonly<ComponentProps>) {
 	};
 
 	const fileName = (
-		<div className="_fileName"
-			style={resolvedStyles.fileName}>
+		<div className="_fileName" style={resolvedStyles.fileName}>
 			<span>{src?.substring(src.lastIndexOf('/') + 1)}</span>
 		</div>
 	);
@@ -476,7 +474,6 @@ function Audio(props: Readonly<ComponentProps>) {
 		<div
 			className={`_volumeControls ${volumeSliderPosition}`}
 			style={resolvedStyles.volumeContainer ?? {}}
-			
 		>
 			<div
 				className={`_volumeSliderContainer ${volumeSliderPosition} ${onHoverVolumeControl ? '_onHoverVolumeControl' : ''}`}
@@ -612,6 +609,12 @@ function Audio(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 19,
 	name: 'Audio',
@@ -746,6 +749,9 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import { propertiesDefinition, stylePropertiesDefinition } from './rangeSliderProperties';
 import RangeSliderStyle from './RangeSliderStyle';
-import { styleDefaults } from './rangeSliderStyleProperties';
+import { styleProperties, styleDefaults } from './rangeSliderStyleProperties';
 
 const LazyRangeSlider = React.lazy(
 	() => import(/* webpackChunkName: "RangeSlider" */ './LazyRangeSlider'),
@@ -186,6 +186,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

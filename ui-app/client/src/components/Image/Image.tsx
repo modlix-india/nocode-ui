@@ -15,7 +15,7 @@ import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './imageProperties';
-import { styleDefaults } from './imageStyleProperties';
+import { styleProperties, styleDefaults } from './imageStyleProperties';
 import ImageStyle from './ImageStyles';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
@@ -135,10 +135,10 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 				onClick={
 					onClickEvent
 						? ev => {
-								if (stopPropagation) ev.stopPropagation();
-								if (preventDefault) ev.preventDefault();
-								handleClick();
-							}
+							if (stopPropagation) ev.stopPropagation();
+							if (preventDefault) ev.preventDefault();
+							handleClick();
+						}
 						: undefined
 				}
 				className={onClickEvent ? '_onclicktrue' : ''}
@@ -223,6 +223,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

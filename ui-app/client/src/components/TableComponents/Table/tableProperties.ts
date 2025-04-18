@@ -222,7 +222,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{ name: '_design8', displayName: 'Design 8', description: 'Plain table 4' },
 			{ name: '_design9', displayName: 'Design 9', description: 'Alternative row color 3' },
-			{ name: '_design10', displayName: 'Design 10', description: 'Plain table 5' },
+			{ name: '_design0', displayName: 'Design 10', description: 'Plain table 5' },
 		],
 	},
 	{

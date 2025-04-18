@@ -1,0 +1,17 @@
+{
+  "name": "convertor",
+  "version": "1.0.0",
+  "description": "Style Properties Converter",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "convert": "ts-node src/convert.ts",
+    "validate": "ts-node src/validate.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}

@@ -1,11 +1,51 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults, styleProperties } from './tabsStyleProperties';
+import { styleDefaults, styleProperties, stylePropertiesForTheme } from './tabsStyleProperties';
+import {
+	findPropertyDefinitions,
+	inflateAndSetStyleProps,
+	lazyStylePropertyLoadFunction,
+} from '../util/lazyStylePropertyUtil';
+import { propertiesDefinition } from './tabsProperties';
+import { usedComponents } from '../../App/usedComponents';
 
 const PREFIX = '.comp.compTabs';
+const NAME = 'Tabs';
 export default function TabsStyles({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [_, setReRender] = useState<number>(Date.now());
+
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
+	}
+
+	useEffect(() => {
+		const { designType, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'designType',
+			'colorScheme',
+		);
+
+		const fn = () => {
+			inflateAndSetStyleProps(
+				[designType, colorScheme],
+				stylePropertiesForTheme,
+				(props, _) => styleProperties.splice(0, 0, ...props),
+				styleDefaults,
+			);
+			setReRender(Date.now());
+		};
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, [setReRender]);
+
 	const css =
 		`
 		${PREFIX} {

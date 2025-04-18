@@ -8,9 +8,10 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './videoStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './videoStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Video(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -31,7 +32,7 @@ function Video(props: Readonly<ComponentProps>) {
 			showPlaypause,
 			showTime,
 			colorScheme,
-			videoDesign,
+			designType: videoDesign,
 			autoUnMuteAfterPlaying,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -501,9 +502,9 @@ function Video(props: Readonly<ComponentProps>) {
 				onChange={volumeIconHandle}
 				onClick={handlePlayPause}
 				style={resolvedStyles.player ?? {}}
-				onPause={() => setPlayPauseEnd("play")}
+				onPause={() => setPlayPauseEnd('play')}
 				onPlay={() => {
-					setPlayPauseEnd("pause");
+					setPlayPauseEnd('pause');
 					if (!isFirstTimePlay || !autoPlay || !autoUnMuteAfterPlaying) return;
 					setTimeout(() => {
 						setMuted(false);
@@ -546,11 +547,11 @@ function Video(props: Readonly<ComponentProps>) {
 									setManualSeek(undefined);
 								}}
 								ref={progressBarRef}
-								onChange={(ev) => {
-									  const value = parseInt(ev.target.value);
-									  setManualSeek(value);
-									  setProgressbarCurr(value);
-								  }}
+								onChange={ev => {
+									const value = parseInt(ev.target.value);
+									setManualSeek(value);
+									setProgressbarCurr(value);
+								}}
 								style={resolvedStyles.seekSlider ?? {}}
 							/>
 							<SubHelperComponent
@@ -661,6 +662,12 @@ function Video(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 19,
 	name: 'Video',
@@ -767,6 +774,9 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

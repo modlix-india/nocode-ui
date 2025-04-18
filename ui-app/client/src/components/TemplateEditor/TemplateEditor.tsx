@@ -12,7 +12,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import TemplateEditorStyle from './TemplateEditorStyle';
-import { styleDefaults } from './TemplateEditorStyleProperties';
+import { styleProperties, styleDefaults } from './TemplateEditorStyleProperties';
 import EmailEditor from './email/EmailEditor';
 import { propertiesDefinition, stylePropertiesDefinition } from './templateEditorProperties';
 
@@ -135,6 +135,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

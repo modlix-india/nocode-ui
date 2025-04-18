@@ -1,13 +1,51 @@
-import React from 'react';
-
+import { useEffect, useState } from 'react';
+import { usedComponents } from '../../App/usedComponents';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleProperties, styleDefaults } from './buttonBarStyleProperties';
+import { findPropertyDefinitions, inflateAndSetStyleProps } from '../util/lazyStylePropertyUtil';
+import {
+	styleDefaults,
+	styleProperties,
+	stylePropertiesForTheme,
+} from './buttonBarStyleProperties';
+import { propertiesDefinition } from './buttonBarproperties';
 
 const PREFIX = '.comp.compButtonBar';
-
+const NAME = 'ButtonBar';
 export default function ButtonBarStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	const [_, setReRender] = useState<number>(Date.now());
+
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
+	}
+
+	useEffect(() => {
+		const { buttonBarDesign, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'buttonBarDesign',
+			'colorScheme',
+		);
+
+		const fn = () => {
+			inflateAndSetStyleProps(
+				[buttonBarDesign, colorScheme],
+				stylePropertiesForTheme,
+				(props, _) => styleProperties.splice(0, 0, ...props),
+				styleDefaults,
+			);
+			setReRender(Date.now());
+		};
+
+		if (usedComponents.used(NAME)) fn();
+		usedComponents.register(NAME, fn);
+
+		return () => usedComponents.deRegister(NAME);
+	}, [setReRender]);
+
 	const css =
 		`
         ${PREFIX} {

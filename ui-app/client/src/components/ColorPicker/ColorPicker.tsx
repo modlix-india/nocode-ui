@@ -16,7 +16,11 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import ColorPickerStyle from './ColorPickerStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './colorPickerProperties';
-import { styleDefaults } from './colorPickerStyleProperties';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+} from './colorPickerStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { CommonColorPicker } from '../../commonComponents/CommonColorPicker';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -26,6 +30,7 @@ import {
 	HSLA_RGBA_TO_RGBAString,
 	RGBA,
 } from '../util/colorUtil';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function getEmptyValue(emptyValue: string | undefined): string | null | undefined {
 	if (emptyValue === 'ENMPTYSTRING') return '';
@@ -322,6 +327,12 @@ function ColorPickerComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	name: 'ColorPicker',
 	displayName: 'Color Picker',
@@ -449,6 +460,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import KIRunEditorStyle from './KIRunEditorStyle';
-import { styleDefaults } from './KIRunEditorStyleProperties';
+import { styleProperties, styleDefaults } from './KIRunEditorStyleProperties';
 
 const LazyKIRunEditor = React.lazy(
 	() => import(/* webpackChunkName: "KIRunEditor" */ './LazyKIRunEditor'),
@@ -87,6 +87,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

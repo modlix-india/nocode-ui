@@ -14,7 +14,7 @@ import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import TextStyle from './FileSelectorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './fileSelectorProperties';
-import { styleDefaults } from './fileSelectorStyleProperties';
+import { styleProperties, styleDefaults } from './fileSelectorStyleProperties';
 import { validate } from '../../util/validationProcessor';
 import { flattenUUID } from '../util/uuid';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
@@ -558,6 +558,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;
