@@ -17,7 +17,7 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tagsProperties';
 import TagsStyle from './TagsStyles';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './TagsStyleProperties';
+import { styleProperties, styleDefaults } from './TagsStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function Tags(props: Readonly<ComponentProps>) {
@@ -393,6 +393,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

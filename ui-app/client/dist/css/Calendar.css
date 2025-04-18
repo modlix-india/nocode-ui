@@ -231,35 +231,30 @@
 }
 
 .comp.compCalendar ._date._dateInRange._dateSelectable,
-.comp.compCalendar._lowLightWeekend._defaultCalendar
-	._date._dateInRange._dateSelectable._dateWeekend,
+.comp.compCalendar._lowLightWeekend._defaultCalendar ._date._dateInRange._dateSelectable._dateWeekend,
 .comp.compCalendar._lowLightWeekend._bigCalendar ._date._dateInRange._dateSelectable._dateWeekend,
-.comp.compCalendar._lowLightWeekend._smallCalendar
-	._date._dateInRange._dateSelectable._dateWeekend {
-	border-radius: 0px;
+.comp.compCalendar._lowLightWeekend._smallCalendar ._date._dateInRange._dateSelectable._dateWeekend {
+	border-radius: 0px !important;
 }
 
 .comp.compCalendar ._date._dateSelected._dateEnd,
 .comp.compCalendar._lowLightWeekend._defaultCalendar ._date._dateEnd._dateWeekend._dateSelected,
 .comp.compCalendar._lowLightWeekend._bigCalendar ._date._dateEnd._dateWeekend._dateSelected,
 .comp.compCalendar._lowLightWeekend._smallCalendar ._date._dateEnd._dateWeekend._dateSelected {
-	border-radius: 0 50% 50% 0;
+	border-radius: 0 50% 50% 0 !important;
 }
 .comp.compCalendar ._date._dateSelected._dateStart,
 .comp.compCalendar._lowLightWeekend._defaultCalendar ._date._dateStart._dateWeekend._dateSelected,
 .comp.compCalendar._lowLightWeekend._bigCalendar ._date._dateStart._dateWeekend._dateSelected,
 .comp.compCalendar._lowLightWeekend._smallCalendar ._date._dateStart._dateWeekend._dateSelected {
-	border-radius: 50% 0 0 50%;
+	border-radius: 50% 0 0 50% !important;
 }
 
 .comp.compCalendar ._date._dateSelected._dateEnd._dateStart,
-.comp.compCalendar._lowLightWeekend._defaultCalendar
-	._date._dateEnd._dateWeekend._dateSelected._dateStart,
-.comp.compCalendar._lowLightWeekend._bigCalendar
-	._date._dateEnd._dateWeekend._dateSelected._dateStart,
-.comp.compCalendar._lowLightWeekend._smallCalendar
-	._date._dateEnd._dateWeekend._dateSelected._dateStart {
-	border-radius: 50%;
+.comp.compCalendar._lowLightWeekend._defaultCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart,
+.comp.compCalendar._lowLightWeekend._bigCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart,
+.comp.compCalendar._lowLightWeekend._smallCalendar ._date._dateEnd._dateWeekend._dateSelected._dateStart {
+	border-radius: 50% !important;
 }
 
 .comp.compCalendar ._calendarBodyBrowseYears,
@@ -284,4 +279,8 @@
 
 .comp.compCalendar ._date {
 	position: relative;
+}
+
+.comp.compCalendar.fullCalendar {
+	height: auto !important;
 }

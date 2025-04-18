@@ -17,7 +17,7 @@ import { IconHelper } from '../util/IconHelper';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import TextStyle from './TextStyle';
-import { styleDefaults } from './TextStyleProperties';
+import { styleProperties, styleDefaults } from './TextStyleProperties';
 import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
 
@@ -455,6 +455,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

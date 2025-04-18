@@ -14,9 +14,10 @@ import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
-import { styleDefaults } from './buttonStyleProperties';
+import { styleDefaults, stylePropertiesForTheme } from './buttonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function ButtonComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -132,7 +133,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
 			/>
 		);
-	} else if (hasLabel){
+	} else if (hasLabel) {
 		rightIconTag = (
 			<i
 				style={styleProperties.rightIcon ?? {}}
@@ -153,11 +154,10 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	}
 
 	const hasLeftIcon = leftIcon || leftImage || isLoading;
-	
 
 	let leftIconTag = undefined;
 	if (leftImage) {
-		leftIconTag =isLoading ? (
+		leftIconTag = isLoading ? (
 			<i className="fa fa-circle-notch fa-spin _leftButtonIcon _icon"></i>
 		) : (
 			<img
@@ -436,6 +436,12 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 4,
 	name: 'Button',
@@ -522,6 +528,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;
