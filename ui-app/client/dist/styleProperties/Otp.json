@@ -1,3333 +1,566 @@
 [
-	{ "dn": "Otp Font", "n": "OtpFont", "dv": "<primaryFont>" },
-
 	{
-		"gn": "Otp Font",
-		"dn": "Otp Font Design Default",
-		"n": "otpFontDesignDefault",
-		"dv": "<OtpFont>",
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp<designType><colorScheme>  ._inputBox._hasValue",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow HasValue Value",
+		"n": "otpBoxShadowHasValueValue<designType><colorScheme>"
+	},
+	{
 		"cp": "font",
-		"sel": ".comp.compOtp._default ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-": "<primaryFont>",
+			"_dashed-": "<primaryFont>",
+			"_filled-": "<primaryFont>",
+			"_round-": "<primaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font InputBox",
+		"n": "otpFontInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Font",
-		"dn": "Otp Font Design Dashed",
-		"n": "otpFontDesignDashed",
-		"dv": "<OtpFont>",
-		"cp": "font",
-		"sel": ".comp.compOtp._dashed ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Font",
-		"dn": "Otp Font Design Filled",
-		"n": "otpFontDesignFilled",
-		"dv": "<OtpFont>",
-		"cp": "font",
-		"sel": ".comp.compOtp._filled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Font",
-		"dn": "Otp Font Design Round",
-		"n": "otpFontDesignRound",
-		"dv": "<OtpFont>",
-		"cp": "font",
-		"sel": ".comp.compOtp._round ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color",
-		"dn": "Primary Otp Color  Design Default",
-		"n": "primaryOtpColorDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Secondary Otp Color  Design Default",
-		"n": "secondaryOtpColorDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default_secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Tertiary Otp Color Active Design Default",
-		"n": "tertiaryOtpColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Quaternary Otp Color Design Default",
-		"n": "quaternaryOtpColorDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Quinary Otp Color Design Default",
-		"n": "quinaryOtpColorDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color",
-		"dn": "Primary Otp Color Design Dashed",
-		"n": "primaryOtpColorDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Secondary Otp Color Design Dashed",
-		"n": "secondaryOtpColorDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Tertiary Otp Color Design Dashed",
-		"n": "tertiaryOtpColorDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Quaternary Otp Color Design Dashed",
-		"n": "quaternaryOtpColorDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Quinary Otp Color Design Dashed",
-		"n": "quinaryOtpColorDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color",
-		"dn": "Primary Otp Color Design Filled",
-		"n": "primaryOtpColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Secondary Otp Color Design Filled",
-		"n": "secondaryOtpColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Tertiary Otp Color Design Filled",
-		"n": "tertiaryOtpColorDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Quaternary Otp Color Design Filled",
-		"n": "quaternaryOtpColorDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Quinary Otp Color Design Filled",
-		"n": "quinaryOtpColorDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color",
-		"dn": "Primary Otp Color Design Round",
-		"n": "primaryOtpColorDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Secondary Otp Color Design Round",
-		"n": "secondaryOtpColorDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Tertiary Otp Color Design Round",
-		"n": "tertiaryOtpColorDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Quaternary Otp Color Design Round",
-		"n": "quaternaryOtpColorDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color",
-		"dn": "Quinary Otp Color Design Round",
-		"n": "quinaryOtpColorDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color Active",
-		"dn": "Primary Otp Color Active Design Default",
-		"n": "primaryOtpColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Secondary Otp Color Active Design Default",
-		"n": "secondaryOtpColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default_secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Tertiary Otp Color Active Design Default",
-		"n": "tertiaryOtpColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Quaternary Otp Color Active Design Default",
-		"n": "quaternaryOtpColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Quinary Otp Color Active Design Default",
-		"n": "quinaryOtpColorActiveDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color Active",
-		"dn": "Primary Otp Color Active Design Dashed",
-		"n": "primaryOtpColorActiveDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Secondary Otp Color Active Design Dashed",
-		"n": "secondaryOtpColorActiveDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Tertiary Otp Color Active Design Dashed",
-		"n": "tertiaryOtpColorActiveDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Quaternary Otp Color Active Design Dashed",
-		"n": "quaternaryOtpColorActiveDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Quinary Otp Color Active Design Dashed",
-		"n": "quinaryOtpColorActiveDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color Active",
-		"dn": "Primary Otp Color Active Design Filled",
-		"n": "primaryOtpColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Secondary Otp Color Active Design Filled",
-		"n": "secondaryOtpColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Tertiary Otp Color Active Design Filled",
-		"n": "tertiaryOtpColorActiveDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Quaternary Otp Color Active Design Filled",
-		"n": "quaternaryOtpColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Quinary Otp Color Active Design Filled",
-		"n": "quinaryOtpColorActiveDesignFilled",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color Active",
-		"dn": "Primary Otp Color Active Design Round",
-		"n": "primaryOtpColorActiveDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Secondary Otp Color Active Design Round",
-		"n": "secondaryOtpColorActiveDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Tertiary Otp Color Active Design Round",
-		"n": "tertiaryOtpColorActiveDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Quaternary Otp Color Active Design Round",
-		"n": "quaternaryOtpColorActiveDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Active",
-		"dn": "Quinary Otp Color Active Design Round",
-		"n": "quinaryOtpColorActiveDesignRound",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Primary Otp Color Has Value Design Default",
-		"n": "primaryOtpColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Secondary Otp Color Has Value Design Default",
-		"n": "secondaryOtpColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Tertiary Otp Color Has Value Design Default",
-		"n": "tertiaryOtpColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Quaternary Otp Color Has Value Design Default",
-		"n": "quaternaryOtpColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Quinary Otp Color Has Value Design Default",
-		"n": "quinaryOtpColorHasValueDesignDefault",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Primary Otp Color Has Value Design Dashed",
-		"n": "primaryOtpColorHasValueDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Secondary Otp Color Has Value Design Dashed",
-		"n": "secondaryOtpColorHasValueDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Tertiary Otp Color Has Value Design Dashed",
-		"n": "tertiaryOtpColorHasValueDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Quaternary Otp Color Has Value Design Dashed",
-		"n": "quaternaryOtpColorHasValueDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": "Quinary Otp Color Has Value Design Dashed",
-		"n": "quinaryOtpColorHasValueDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design Filled Primary",
-		"n": " OtpColorHasValueDesignFilledPrimary",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design FilledSecondary",
-		"n": " OtpColorHasValueDesignFilledSecondary",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design FilledTertiary",
-		"n": " OtpColorHasValueDesignFilledTertiary",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design FilledQuaternary",
-		"n": " OtpColorHasValueDesignFilledQuaternary",
-		"dv": "<fontColorTwo>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design FilledQuinary",
-		"n": " OtpColorHasValueDesignFilledQuinary",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design Round Primary",
-		"n": " OtpColorHasValueDesignRoundPrimary",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design RoundSecondary",
-		"n": " OtpColorHasValueDesignRoundSecondary",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design RoundTertiary",
-		"n": " OtpColorHasValueDesignRoundTertiary",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design RoundQuaternary",
-		"n": " OtpColorHasValueDesignRoundQuaternary",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Color Has Value",
-		"dn": " Otp Color Has Value Design RoundQuinary",
-		"n": " OtpColorHasValueDesignRoundQuinary",
-		"dv": "<fontColorOne>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Disabled  Color Default",
-		"dn": "Primary Otp Disabled text Color Default Design Filled",
-		"n": "primaryOtpDisabledtextColorDefaultDesignFilled",
-		"dv": "<colorSix>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._primary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled  Color Default",
-		"dn": "Secondary Otp Disabled text Color Default Design Filled",
-		"n": "secondaryOtpDisabledtextColorDefaultDesignFilled",
-		"dv": "<colorSix>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._secondary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled  Color Default",
-		"dn": "Tertiary Otp Disabled text Color Default Design Filled",
-		"n": "tertiaryOtpDisabledtextColorDefaultDesignFilled",
-		"dv": "<colorSix>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._tertiary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled  Color Default",
-		"dn": "Quaternary Otp Disabled text Color Default Design Filled",
-		"n": "quaternaryOtpDisabledtextColorDefaultDesignFilled",
-		"dv": "<colorSix>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quaternary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled  Color Default",
-		"dn": "Quinary Otp Disabled text Color Default Design Filled",
-		"n": "quinaryOtpDisabledtextColorDefaultDesignFilled",
-		"dv": "<colorSix>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quinary._disabled ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Input Width",
-		"dn": "Otp Input Width Design Default",
-		"n": "otpInputWidthDesignDefault",
-		"dv": "30px",
 		"cp": "width",
-		"sel": ".comp.compOtp._default ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-": "30px",
+			"_dashed-": "30px",
+			"_filled-": "30px",
+			"_round-": "30px"
+		},
+		"gn": "Width",
+		"dn": "Width InputBox",
+		"n": "otpWidthInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Input Width",
-		"dn": "Otp Input Width Design Dashed",
-		"n": "otpInputWidthDesignDashed",
-		"dv": "30px",
-		"cp": "width",
-		"sel": ".comp.compOtp._dashed ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Input Width",
-		"dn": "Otp Input Width Design Filled",
-		"n": "otpInputWidthDesignFilled",
-		"dv": "30px",
-		"cp": "width",
-		"sel": ".comp.compOtp._filled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Input Width",
-		"dn": "Otp Input Width Design Round",
-		"n": "otpInputWidthDesignRound",
-		"dv": "30px",
-		"cp": "width",
-		"sel": ".comp.compOtp._round ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Input Height",
-		"dn": "Otp Input Height Design Default",
-		"n": "otpInputHeightDesignDefault",
-		"dv": "30px",
 		"cp": "height",
-		"sel": ".comp.compOtp._default ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-": "30px",
+			"_dashed-": "30px",
+			"_filled-": "30px",
+			"_round-": "30px"
+		},
+		"gn": "Height",
+		"dn": "Height InputBox",
+		"n": "otpHeightInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Input Height",
-		"dn": "Otp Input Height Design Dashed",
-		"n": "otpInputHeightDesignDashed",
-		"dv": "30px",
-		"cp": "height",
-		"sel": ".comp.compOtp._dashed ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Input Height",
-		"dn": "Otp Input Height Design Filled",
-		"n": "otpInputHeightDesignFilled",
-		"dv": "30px",
-		"cp": "height",
-		"sel": ".comp.compOtp._filled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Input Height",
-		"dn": "Otp Input Height Design Round",
-		"n": "otpInputHeightDesignRound",
-		"dv": "30px",
-		"cp": "height",
-		"sel": ".comp.compOtp._round ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Input Margin",
-		"dn": "Otp Input Margin Design Default",
-		"n": "otpInputMarginDesignDefault",
-		"dv": "8px",
 		"cp": "margin",
-		"sel": ".comp.compOtp._default ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-": "8px",
+			"_dashed-": "8px",
+			"_filled-": "8px",
+			"_round-": "8px"
+		},
+		"gn": "Margin",
+		"dn": "Margin InputBox",
+		"n": "otpMarginInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Input Margin",
-		"dn": "Otp Input Margin Design Dashed",
-		"n": "otpInputMarginDesignDashed",
-		"dv": "8px",
-		"cp": "margin",
-		"sel": ".comp.compOtp._dashed ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Input Margin",
-		"dn": "Otp Input Margin Design Filled",
-		"n": "otpInputMarginDesignFilled",
-		"dv": "8px",
-		"cp": "margin",
-		"sel": ".comp.compOtp._filled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Input Margin",
-		"dn": "Otp Input Margin Design Round",
-		"n": "otpInputMarginDesignRound",
-		"dv": "8px",
-		"cp": "margin",
-		"sel": ".comp.compOtp._round ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Input Border Style",
-		"dn": "Otp Input Border Style Design Default",
-		"n": "otpInputBorderStyleDesignDefault",
-		"dv": "solid",
 		"cp": "border-style",
-		"sel": ".comp.compOtp._default ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-": "solid",
+			"_dashed-": "solid",
+			"_filled-": "solid",
+			"_round-": "solid"
+		},
+		"gn": "Border Style",
+		"dn": "BorderStyle InputBox",
+		"n": "otpBorderStyleInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Input Border Style",
-		"dn": "Otp Input Border Style Design Dashed",
-		"n": "otpInputBorderStyleDesignDashed",
-		"dv": "solid",
-		"cp": "border-style",
-		"sel": ".comp.compOtp._dashed ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Input Border Style",
-		"dn": "Otp Input Border Style Design Filled",
-		"n": "otpInputBorderStyleDesignFilled",
-		"dv": "solid",
-		"cp": "border-style",
-		"sel": ".comp.compOtp._filled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Input Border Style",
-		"dn": "Otp Input Border Style Design Round",
-		"n": "otpInputBorderStyleDesignRound",
-		"dv": "solid",
-		"cp": "border-style",
-		"sel": ".comp.compOtp._round ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border ",
-		"dn": "Otp Border  Design Default",
-		"n": "otpBorderDesignDefault",
-		"dv": "1 px solid",
 		"cp": "border",
-		"sel": ".comp.compOtp._default ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-": "1 px solid",
+			"_dashed-": "none",
+			"_filled-": "none",
+			"_round-": "1 px solid"
+		},
+		"gn": "Border",
+		"dn": "Border InputBox",
+		"n": "otpBorderInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Border ",
-		"dn": "Otp Border  Design Dashed",
-		"n": "otpBorderDesignDashed",
-		"dv": "none",
-		"cp": "border",
-		"sel": ".comp.compOtp._dashed ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border ",
-		"dn": "Otp Border  Design Filled",
-		"n": "otpBorderDesignFilled",
-		"dv": "none",
-		"cp": "border",
-		"sel": ".comp.compOtp._filled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border ",
-		"dn": "Otp Border  Design Round",
-		"n": "otpBorderDesignRound",
-		"dv": "1 px solid",
-		"cp": "border",
-		"sel": ".comp.compOtp._round ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Active",
-		"dn": "Otp Border Active Design Default",
-		"n": "otpBorderActiveDesignDefault",
-		"dv": "2 px solid",
-		"cp": "border",
-		"sel": ".comp.compOtp._default ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Active",
-		"dn": "Otp Border Active Design Dashed",
-		"n": "otpBorderActiveDesignDashed",
-		"dv": "none",
-		"cp": "border",
-		"sel": ".comp.compOtp._dashed ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Active",
-		"dn": "Otp Border Active Design Filled",
-		"n": "otpBorderActiveDesignFilled",
-		"cp": "border",
-		"sel": ".comp.compOtp._filled ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Active",
-		"dn": "Otp Border Active Design Round",
-		"n": "otpBorderActiveDesignRound",
-		"dv": "2 px solid",
-		"cp": "border",
-		"sel": ".comp.compOtp._round ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Bottom",
-		"dn": "Otp Border Bottom Design Default",
-		"n": "otpBorderBottomDesignDefault",
 		"cp": "border-bottom",
-		"sel": ".comp.compOtp._default ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_dashed-": "2px solid"
+		},
+		"gn": "Border Bottom",
+		"dn": "BorderBottom InputBox",
+		"n": "otpBorderBottomInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Border Bottom",
-		"dn": "Otp Border Bottom Design Dashed",
-		"n": "otpBorderBottomDesignDashed",
-		"dv": "2px solid",
-		"cp": "border-bottom",
-		"sel": ".comp.compOtp._dashed ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom",
-		"dn": "Otp Border Bottom Design Filled",
-		"n": "otpBorderBottomDesignFilled",
-		"cp": "border-bottom",
-		"sel": ".comp.compOtp._filled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom",
-		"dn": "Otp Border Bottom Design Round",
-		"n": "otpBorderBottomDesignRound",
-		"cp": "border-bottom",
-		"sel": ".comp.compOtp._round ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Bottom Active",
-		"dn": "Otp Border Bottom Active Design Default",
-		"n": "otpBorderBottomActiveDesignDefault",
-		"cp": "border-bottom",
-		"sel": ".comp.compOtp._default ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom Active",
-		"dn": "Otp Border Bottom Active Design Dashed",
-		"n": "otpBorderBottomActiveDesignDashed",
-		"dv": "2px solid",
-		"cp": "border-bottom",
-		"sel": ".comp.compOtp._dashed ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom Active",
-		"dn": "Otp Border Bottom Active Design Filled",
-		"n": "otpBorderBottomActiveDesignFilled",
-		"cp": "border-bottom",
-		"sel": ".comp.compOtp._filled ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom Active",
-		"dn": "Otp Border Bottom Active Design Round",
-		"n": "otpBorderBottomActiveDesignRound",
-		"cp": "border-bottom",
-		"sel": ".comp.compOtp._round ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Radius",
-		"dn": "Otp Border Radius Design Default",
-		"n": "otpBorderRadiusDesignDefault",
-		"dv": "4px",
 		"cp": "border-radius",
-		"sel": ".comp.compOtp._default ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-": "4px",
+			"_dashed-": "0px",
+			"_filled-": "4px",
+			"_round-": "50px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius InputBox",
+		"n": "otpBorderRadiusInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Border Radius",
-		"dn": "Otp Border Radius Design Dashed",
-		"n": "otpBorderRadiusDesignDashed",
-		"dv": "0px",
-		"cp": "border-radius",
-		"sel": ".comp.compOtp._dashed ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Radius",
-		"dn": "Otp Border Radius Design Filled",
-		"n": "otpBorderRadiusDesignFilled",
-		"dv": "4px",
-		"cp": "border-radius",
-		"sel": ".comp.compOtp._filled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Radius",
-		"dn": "Otp Border Radius Design Round",
-		"n": "otpBorderRadiusDesignRound",
-		"dv": "50px",
-		"cp": "border-radius",
-		"sel": ".comp.compOtp._round ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Bottom Color Default",
-		"dn": "Primary Otp Border Color Default Design Dashed",
-		"n": "primaryOtpBorderColorDefaultDesignDashed",
-		"dv": "<fontColorOne>",
 		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_dashed-_primary": "<fontColorOne>",
+			"_dashed-_secondary": "<fontColorOne>",
+			"_dashed-_tertiary": "<fontColorOne>",
+			"_dashed-_quaternary": "<fontColorOne>",
+			"_dashed-_quinary": "<fontColorOne>"
+		},
+		"gn": "Border Bottom Color",
+		"dn": "BorderBottomColor InputBox",
+		"n": "otpBorderBottomColorInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Border Bottom Color Default",
-		"dn": "Secondary Otp Border Color Default Design Dashed",
-		"n": "secondaryOtpBorderColorDefaultDesignDashed",
-		"dv": "<fontColorOne>",
+		"cp": "border-color",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-_primary": "<fontColorEight>",
+			"_default-_secondary": "<fontColorEight>",
+			"_default-_tertiary": "<fontColorEight>",
+			"_default-_quaternary": "<fontColorEight>",
+			"_default-_quinary": "<fontColorEight>",
+			"_round-_primary": "<fontColorEight>",
+			"_round-_secondary": "<fontColorEight>",
+			"_round-_tertiary": "<fontColorEight>",
+			"_round-_quaternary": "<fontColorEight>",
+			"_round-_quinary": "<fontColorEight>"
+		},
+		"gn": "Border Color",
+		"dn": "BorderColor InputBox",
+		"n": "otpBorderColorInputBox<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<backgroundColorOne>",
+			"_filled-_secondary": "<backgroundColorTwo>",
+			"_filled-_tertiary": "<backgroundColorThree>",
+			"_filled-_quaternary": "<backgroundColorFour>",
+			"_filled-_quinary": "<backgroundColorFive>",
+			"_round-_primary": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+			"_round-_secondary": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+			"_round-_tertiary": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+			"_round-_quaternary": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
+			"_round-_quinary": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white"
+		},
+		"gn": "Background",
+		"dn": "Background InputBox",
+		"n": "otpBackgroundInputBox<designType><colorScheme>",
+		"dv": "<backgroundColorSeven>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow InputBox",
+		"n": "otpBoxShadowInputBox<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._hasValue",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color HasValue Value",
+		"n": "otpColorHasValueValue<designType><colorScheme>",
+		"dv": "<fontColorOne>"
+	},
+	{
+		"cp": "border-color",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._hasValue",
+		"np": true,
+		"spv": {
+			"_default-_primary": "<fontColorThree>",
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_round-_primary": "<fontColorThree>",
+			"_round-_secondary": "<fontColorFour>",
+			"_round-_tertiary": "<fontColorFive>",
+			"_round-_quaternary": "<fontColorNine>",
+			"_round-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Border Color",
+		"dn": "BorderColor HasValue Value",
+		"n": "otpBorderColorHasValueValue<designType><colorScheme>"
+	},
+	{
 		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._hasValue",
+		"np": true,
+		"spv": {
+			"_dashed-_primary": "<fontColorThree>",
+			"_dashed-_secondary": "<fontColorFour>",
+			"_dashed-_tertiary": "<fontColorFive>",
+			"_dashed-_quaternary": "<fontColorNine>",
+			"_dashed-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Border Bottom Color",
+		"dn": "BorderBottomColor HasValue Value",
+		"n": "otpBorderBottomColorHasValueValue<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Border Bottom Color Default",
-		"dn": "Tertiary Otp Border Color Default Design Dashed",
-		"n": "tertiaryOtpBorderColorDefaultDesignDashed",
-		"dv": "<fontColorOne>",
+		"cp": "background",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._hasValue",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<backgroundColorOne>",
+			"_filled-_secondary": "<backgroundColorTwo>",
+			"_filled-_tertiary": "<backgroundColorThree>",
+			"_filled-_quaternary": "<backgroundColorFour>",
+			"_filled-_quinary": "<backgroundColorFive>",
+			"_round-_primary": "linear-gradient(90deg, <backgroundColorOne>19 0%, <backgroundColorSix>00 64.33%), white",
+			"_round-_secondary": "linear-gradient(90deg, <backgroundColorTwo>19 0%, <backgroundColorSix>00 64.33%), white",
+			"_round-_tertiary": "linear-gradient(90deg, <backgroundColorThree>19 0%, <backgroundColorSix>00 64.33%), white",
+			"_round-_quaternary": "linear-gradient(90deg, <backgroundColorFour>19 0%, <backgroundColorSix>00 64.33%), white",
+			"_round-_quinary": "linear-gradient(90deg, <backgroundColorFive>19 0%, <backgroundColorSix>00 64.33%), white"
+		},
+		"gn": "Background",
+		"dn": "Background HasValue Value",
+		"n": "otpBackgroundHasValueValue<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._isActive",
+		"np": true,
+		"spv": {
+			"_default-_primary": "<fontColorOne>",
+			"_default-_tertiary": "<fontColorOne>",
+			"_default-_quaternary": "<fontColorOne>",
+			"_default-_quinary": "<fontColorOne>",
+			"_dashed-_primary": "<fontColorOne>",
+			"_dashed-_secondary": "<fontColorOne>",
+			"_dashed-_tertiary": "<fontColorOne>",
+			"_dashed-_quaternary": "<fontColorOne>",
+			"_dashed-_quinary": "<fontColorOne>",
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_tertiary": "<fontColorOne>",
+			"_filled-_quaternary": "<fontColorTwo>",
+			"_filled-_quinary": "<fontColorOne>",
+			"_round-_primary": "<fontColorOne>",
+			"_round-_secondary": "<fontColorOne>",
+			"_round-_tertiary": "<fontColorOne>",
+			"_round-_quaternary": "<fontColorOne>",
+			"_round-_quinary": "<fontColorOne>"
+		},
+		"gn": "Color",
+		"dn": "Color IsActive Active",
+		"n": "otpColorIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._isActive",
+		"np": true,
+		"spv": {
+			"_default-": "2 px solid",
+			"_dashed-": "none",
+			"_round-": "2 px solid"
+		},
+		"gn": "Border",
+		"dn": "Border IsActive Active",
+		"n": "otpBorderIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "border-bottom",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._isActive",
+		"np": true,
+		"spv": {
+			"_dashed-": "2px solid"
+		},
+		"gn": "Border Bottom",
+		"dn": "BorderBottom IsActive Active",
+		"n": "otpBorderBottomIsActiveActive<designType><colorScheme>"
+	},
+	{
 		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._isActive",
+		"np": true,
+		"spv": {
+			"_dashed-_primary": "<fontColorThree>",
+			"_dashed-_secondary": "<fontColorFour>",
+			"_dashed-_tertiary": "<fontColorFive>",
+			"_dashed-_quaternary": "<fontColorNine>",
+			"_dashed-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Border Bottom Color",
+		"dn": "BorderBottomColor IsActive Active",
+		"n": "otpBorderBottomColorIsActiveActive<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Border Bottom Color Default",
-		"dn": "Quaternary Otp Border Color Default Design Dashed",
-		"n": "quaternaryOtpBorderColorDefaultDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom Color Default",
-		"dn": "Quinary Otp Border Color Default Design Dashed",
-		"n": "quinaryOtpBorderColorDefaultDesignDashed",
-		"dv": "<fontColorOne>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Bottom Color Active",
-		"dn": "Primary Otp Border Bottom Color Active Design Dashed",
-		"n": "primaryOtpBorderBottomColorActiveDesignDashed",
-		"dv": "<fontColorThree>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom Color Active",
-		"dn": "Secondary Otp Border Bottom Color Active Design Dashed",
-		"n": "secondaryOtpBorderBottomColorActiveDesignDashed",
-		"dv": "<fontColorFour>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom Color Active",
-		"dn": "Tertiary Otp Border Bottom Color Active Design Dashed",
-		"n": "tertiaryOtpBorderBottomColorActiveDesignDashed",
-		"dv": "<fontColorFive>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom Color Active",
-		"dn": "Quaternary Otp Border Bottom Color Active Design Dashed",
-		"n": "quaternaryOtpBorderBottomColorActiveDesignDashed",
-		"dv": "<fontColorNine>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Bottom Color Active",
-		"dn": "Quinary Otp Border Bottom Color Active Design Dashed",
-		"n": "quinaryOtpBorderBottomColorActiveDesignDashed",
-		"dv": "<fontColorSeven>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Primary Otp Border Color Default Design Default",
-		"n": "primaryOtpBorderColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
 		"cp": "border-color",
-		"sel": ".comp.compOtp._default._primary ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._isActive",
+		"np": true,
+		"spv": {
+			"_default-_primary": "<fontColorThree>",
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_round-_primary": "<fontColorThree>",
+			"_round-_secondary": "<fontColorFour>",
+			"_round-_tertiary": "<fontColorFive>",
+			"_round-_quaternary": "<fontColorNine>",
+			"_round-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Border Color",
+		"dn": "BorderColor IsActive Active",
+		"n": "otpBorderColorIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._isActive",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<backgroundColorOne>",
+			"_filled-_secondary": "<backgroundColorTwo>",
+			"_filled-_tertiary": "<backgroundColorThree>",
+			"_filled-_quaternary": "<backgroundColorFour>",
+			"_filled-_quinary": "<backgroundColorFive>",
+			"_round-_primary": "linear-gradient(90deg, <backgroundColorOne>19 0%, <backgroundColorSix>00 64.33%), white",
+			"_round-_secondary": "linear-gradient(90deg, <backgroundColorTwo>19 0%, <backgroundColorSix>00 64.33%), white",
+			"_round-_tertiary": "linear-gradient(90deg, <backgroundColorThree>19 0%, <backgroundColorSix>00 64.33%), white",
+			"_round-_quaternary": "linear-gradient(90deg, <backgroundColorFour>19 0%, <backgroundColorSix>00 64.33%), white",
+			"_round-_quinary": "linear-gradient(90deg, <backgroundColorFive>19 0%, <backgroundColorSix>00 64.33%), white"
+		},
+		"gn": "Background",
+		"dn": "Background IsActive Active",
+		"n": "otpBackgroundIsActiveActive<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp<designType><colorScheme> ._inputBox._isActive",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow IsActive Active",
+		"n": "otpBoxShadowIsActiveActive<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Border Color Default",
-		"dn": "Secondary Otp Border Color Default Design Default",
-		"n": "secondaryOtpBorderColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Tertiary Otp Border Color Default Design Default",
-		"n": "tertiaryOtpBorderColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Quaternary Otp Border Color Default Design Default",
-		"n": "quaternaryOtpBorderColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Quinary Otp Border Color Default Design Default",
-		"n": "quinaryOtpBorderColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Primary Otp Border Color Default Design Filled",
-		"n": "primaryOtpBorderColorDefaultDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Secondary Otp Border Color Default Design Filled",
-		"n": "secondaryOtpBorderColorDefaultDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Tertiary Otp Border Color Default Design Filled",
-		"n": "tertiaryOtpBorderColorDefaultDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Quaternary Otp Border Color Default Design Filled",
-		"n": "quaternaryOtpBorderColorDefaultDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Quinary Otp Border Color Default Design Filled",
-		"n": "quinaryOtpBorderColorDefaultDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Primary Otp Border Color Default Design Round",
-		"n": "primaryOtpBorderColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Secondary Otp Border Color Default Design Round",
-		"n": "secondaryOtpBorderColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Tertiary Otp Border Color Default Design Round",
-		"n": "tertiaryOtpBorderColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Quaternary Otp Border Color Default Design Round",
-		"n": "quaternaryOtpBorderColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Default",
-		"dn": "Quinary Otp Border Color Default Design Round",
-		"n": "quinaryOtpBorderColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Primary Otp Border Color Active Design Default",
-		"n": "primaryOtpBorderColorActiveDesignDefault",
-		"dv": "<fontColorThree>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Secondary Otp Border Color Active Design Default",
-		"n": "secondaryOtpBorderColorActiveDesignDefault",
-		"dv": "<fontColorFour>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._secondary  ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Tertiary Otp Border Color Active Design Default",
-		"n": "tertiaryOtpBorderColorActiveDesignDefault",
-		"dv": "<fontColorFive>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Quaternary Otp Border Color Active Design Default",
-		"n": "quaternaryOtpBorderColorActiveDesignDefault",
-		"dv": "<fontColorNine>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Quinary Otp Border Color Active Design Default",
-		"n": "quinaryOtpBorderColorActiveDesignDefault",
-		"dv": "<fontColorSeven>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Primary Otp Border Color Active Design Filled",
-		"n": "primaryOtpBorderColorActiveDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Secondary Otp Border Color Active Design Filled",
-		"n": "secondaryOtpBorderColorActiveDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Tertiary Otp Border Color Active Design Filled",
-		"n": "tertiaryOtpBorderColorActiveDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Quaternary Otp Border Color Active Design Filled",
-		"n": "quaternaryOtpBorderColorActiveDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Quinary Otp Border Color Active Design Filled",
-		"n": "quinaryOtpBorderColorActiveDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Primary Otp Border Color Active Design Round",
-		"n": "primaryOtpBorderColorActiveDesignRound",
-		"dv": "<fontColorThree>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Secondary Otp Border Color Active Design Round",
-		"n": "secondaryOtpBorderColorActiveDesignRound",
-		"dv": "<fontColorFour>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Tertiary Otp Border Color Active Design Round",
-		"n": "tertiaryOtpBorderColorActiveDesignRound",
-		"dv": "<fontColorFive>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Quaternary Otp Border Color Active Design Round",
-		"n": "quaternaryOtpBorderColorActiveDesignRound",
-		"dv": "<fontColorNine>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Active",
-		"dn": "Quinary Otp Border Color Active Design Round",
-		"n": "quinaryOtpBorderColorActiveDesignRound",
-		"dv": "<fontColorSeven>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Primary Otp Border Bottom Color Has Value Design Default",
-		"n": "primaryOtpBorderColorHasValueDefault",
-		"dv": "<fontColorThree>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Secondary Otp Border Bottom Color Has Value Design Default",
-		"n": "secondaryOtpBorderColorHasValueDefault",
-		"dv": "<fontColorFour>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Tertiary Otp Border Bottom Color Has Value Design Default",
-		"n": "tertiaryOtpBorderColorHasValueDefault",
-		"dv": "<fontColorFive>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Quaternary Otp Border Bottom Color Has Value Design Default",
-		"n": "quaternaryOtpBorderColorHasValueDefault",
-		"dv": "<fontColorNine>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Quinary Otp Border Bottom Color Has Value Design Dashed",
-		"n": "quinaryOtpBorderColorHasValueDefault",
-		"dv": "<fontColorSeven>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Primary Otp Border Bottom Color Has Value Design Dashed",
-		"n": "primaryOtpBorderBottomColorHasValueDesignDashed",
-		"dv": "<fontColorThree>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Secondary Otp Border Bottom Color Has Value Design Dashed",
-		"n": "secondaryOtpBorderBottomColorHasValueDesignDashed",
-		"dv": "<fontColorFour>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Tertiary Otp Border Bottom Color Has Value Design Dashed",
-		"n": "tertiaryOtpBorderBottomColorHasValueDesignDashed",
-		"dv": "<fontColorFive>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Quaternary Otp Border Bottom Color Has Value Design Dashed",
-		"n": "quaternaryOtpBorderBottomColorHasValueDesignDashed",
-		"dv": "<fontColorNine>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Quinary Otp Border Bottom Color Has Value Design Dashed",
-		"n": "quinaryOtpBorderBottomColorHasValueDesignDashed",
-		"dv": "<fontColorSeven>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Primary Otp Border Bottom Color Has Value Design Filled",
-		"n": "primaryOtpBorderColorHasValueDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Secondary Otp Border Bottom Color Has Value Design Filled",
-		"n": "secondaryOtpBorderColorHasValueDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Tertiary Otp Border Bottom Color Has Value Design Filled",
-		"n": "tertiaryOtpBorderColorHasValueDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Quaternary Otp Border Bottom Color Has Value Design Filled",
-		"n": "quaternaryOtpBorderColorHasValueDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Quinary Otp Border Bottom Color Has Value Design Filled",
-		"n": "quinaryOtpBorderColorHasValueDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Primary Otp Border Bottom Color Has Value Design Round",
-		"n": "primaryOtpBorderColorHasValueDesignRound",
-		"dv": "<fontColorThree>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Secondary Otp Border Bottom Color Has Value Design Round",
-		"n": "secondaryOtpBorderColorHasValueDesignRound",
-		"dv": "<fontColorFour>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Tertiary Otp Border Bottom Color Has Value Design Round",
-		"n": "tertiaryOtpBorderColorHasValueDesignRound",
-		"dv": "<fontColorFive>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Quaternary Otp Border Bottom Color Has Value Design Round",
-		"n": "quaternaryOtpBorderColorHasValueDesignRound",
-		"dv": "<fontColorNine>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Border Color Has Value",
-		"dn": "Quinary Otp Border Bottom Color Has Value Design Round",
-		"n": "quinaryOtpBorderColorHasValueDesignRound",
-		"dv": "<fontColorSeven>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Primary Otp Disabled Color Default Design Default",
-		"n": "primaryOtpDisabledColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._primary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Secondary Otp DisabledColor Default Design Default",
-		"n": "secondaryOtpDisabledColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._secondary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Tertiary Otp Disabled Color Default Design Default",
-		"n": "tertiaryOtpDisabledColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._tertiary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Quaternary Otp Disabled Color Default Design Default",
-		"n": "quaternaryOtpDisabledColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._quaternary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Quinary Otp Disabled Color Default Design Default",
-		"n": "quinaryOtpDisabledColorDefaultDesignDefault",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._default._quinary._disabled ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Primary Otp Disabled Color Default Design Dashed",
-		"n": "primaryOtpDisabledColorDefaultDesignDashed",
-		"dv": "<fontColorSix>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._primary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Secondary Otp Disabled Color Default Design Dashed",
-		"n": "secondaryOtpDisabledColorDefaultDesignDashed",
-		"dv": "<fontColorSix>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._secondary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Tertiary Otp Disabled Color Default Design Dashed",
-		"n": "tertiaryOtpDisabledColorDefaultDesignDashed",
-		"dv": "<fontColorSix>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._tertiary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Quaternary Otp Disabled Color Default Design Dashed",
-		"n": "quaternaryOtpDisabledColorDefaultDesignDashed",
-		"dv": "<fontColorSix>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._quaternary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Quinary Otp Disabled Color Default Design Dashed",
-		"n": "quinaryOtpDisabledColorDefaultDesignDashed",
-		"dv": "<fontColorSix>",
-		"cp": "border-bottom-color",
-		"sel": ".comp.compOtp._dashed._quinary._disabled ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Primary Otp Disabled Color Default Design Filled",
-		"n": "primaryOtpDisabledColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._primary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Secondary Otp Disabled Color Default Design Filled",
-		"n": "secondaryOtpDisabledColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._secondary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Tertiary Otp Disabled Color Default Design Filled",
-		"n": "tertiaryOtpDisabledColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._tertiary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Quaternary Otp Disabled Color Default Design Filled",
-		"n": "quaternaryOtpDisabledColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._quaternary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Quinary Otp Disabled Color Default Design Filled",
-		"n": "quinaryOtpDisabledColorDefaultDesignFilled",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._quinary._disabled ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Primary Otp Disabled Color Default Design Round",
-		"n": "primaryOtpDisabledColorDefaultDesignRound",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._primary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Secondary Otp Disabled Color Default Design Round",
-		"n": "secondaryOtpDisabledColorDefaultDesignRound",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._secondary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Tertiary Otp Disabled Color Default Design Round",
-		"n": "tertiaryOtpDisabledColorDefaultDesignRound",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._tertiary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Quaternary Otp Disabled Color Default Design Round",
-		"n": "quaternaryOtpDisabledColorDefaultDesignRound",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._quaternary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Color Default",
-		"dn": "Quinary Otp Disabled Color Default Design Round",
-		"n": "quinaryOtpDisabledColorDefaultDesignRound",
-		"dv": "<fontColorSix>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._quinary._disabled ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Default",
-		"dn": "Primary Otp Background Default Design Default",
-		"n": "primaryOtpBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Secondary Otp Background Default Design Default",
-		"n": "secondaryOtpBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Tertiary Otp Background Default Design Default",
-		"n": "tertiaryOtpBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Quaternary Otp Background Default Design Default",
-		"n": "quaternaryOtpBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Quinary Otp Background Default Design Default",
-		"n": "quinaryOtpBackgroundDefaultDesignDefault",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Default",
-		"dn": "Primary Otp Background Default Design Dashed",
-		"n": "primaryOtpBackgroundDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Secondary Otp Background Default Design Dashed",
-		"n": "secondaryOtpBackgroundDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Tertiary Otp Background Default Design Dashed",
-		"n": "tertiaryOtpBackgroundDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Quaternary Otp Background Default Design Dashed",
-		"n": "quaternaryOtpBackgroundDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Quinary Otp Background Default Design Dashed",
-		"n": "quinaryOtpBackgroundDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Default",
-		"dn": "Primary Otp Background Default Design Filled",
-		"n": "primaryOtpBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorOne>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Secondary Otp Background Default Design Filled",
-		"n": "secondaryOtpBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorTwo>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Tertiary Otp Background Default Design Filled",
-		"n": "tertiaryOtpBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorThree>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Quaternary Otp Background Default Design Filled",
-		"n": "quaternaryOtpBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorFour>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Quinary Otp Background Default Design Filled",
-		"n": "quinaryOtpBackgroundDefaultDesignFilled",
-		"dv": "<backgroundColorFive>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Default",
-		"dn": "Primary Otp Background Default Design Round",
-		"n": "primaryOtpBackgroundDefaultDesignRound",
-		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Secondary Otp Background Default Design Round",
-		"n": "secondaryOtpBackgroundDefaultDesignRound",
-		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Tertiary Otp Background Default Design Round",
-		"n": "tertiaryOtpBackgroundDefaultDesignRound",
-		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Quaternary Otp Background Default Design Round",
-		"n": "quaternaryOtpBackgroundDefaultDesignRound",
-		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Default",
-		"dn": "Quinary Otp Background Default Design Round",
-		"n": "quinaryOtpBackgroundDefaultDesignRound",
-		"dv": "linear-gradient(90deg, #96A1B41A 0%, #33333300 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Active",
-		"dn": "Primary Otp Background Active Design Default",
-		"n": "primaryOtpBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Secondary Otp Background Active Design Default",
-		"n": "secondaryOtpBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._secondary  ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Tertiary Otp Background Active Design Default",
-		"n": "tertiaryOtpBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Quaternary Otp Background Active Design Default",
-		"n": "quaternaryOtpBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Quinary Otp Background Active Design Default",
-		"n": "quinaryOtpBackgroundActiveDesignDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Active",
-		"dn": "Primary Otp Background Active Design Dashed",
-		"n": "primaryOtpBackgroundActiveDesignDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Secondary Otp Background Active Design Dashed",
-		"n": "secondaryOtpBackgroundActiveDesignDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Tertiary Otp Background Active Design Dashed",
-		"n": "tertiaryOtpBackgroundActiveDesignDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._tertiary._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Quaternary Otp Background Active Design Dashed",
-		"n": "quaternaryOtpBackgroundActiveDesignDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Quinary Otp Background Active Design Dashed",
-		"n": "quinaryOtpBackgroundActiveDesignDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Active",
-		"dn": "Primary Otp Background Active Design Filled",
-		"n": "primaryOtpBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorOne>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Secondary Otp Background Active Design Filled",
-		"n": "secondaryOtpBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorTwo>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Tertiary Otp Background Active Design Filled",
-		"n": "tertiaryOtpBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorThree>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Quaternary Otp Background Active Design Filled",
-		"n": "quaternaryOtpBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorFour>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Quinary Otp Background Active Design Filled",
-		"n": "quinaryOtpBackgroundActiveDesignFilled",
-		"dv": "<backgroundColorFive>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Active",
-		"dn": "Primary Otp Background Active Design Round",
-		"n": "primaryOtpBackgroundActiveDesignRound",
-		"dv": "linear-gradient(90deg, <backgroundColorOne>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Secondary Otp Background Active Design Round",
-		"n": "secondaryOtpBackgroundActiveDesignRound",
-		"dv": "linear-gradient(90deg, <backgroundColorTwo>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._secondary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Tertiary Otp Background Active Design Round",
-		"n": "tertiaryOtpBackgroundActiveDesignRound",
-		"dv": "linear-gradient(90deg, <backgroundColorThree>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Quaternary Otp Background Active Design Round",
-		"n": "quaternaryOtpBackgroundActiveDesignRound",
-		"dv": "linear-gradient(90deg, <backgroundColorFour>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Active",
-		"dn": "Quinary Otp Background Active Design Round",
-		"n": "quinaryOtpBackgroundActiveDesignRound",
-		"dv": "linear-gradient(90deg, <backgroundColorFive>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DefaultPrimary",
-		"n": "primaryOtpBackgroundHasValueDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DefaultSecondary",
-		"n": "secondaryOtpBackgroundHasValueDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DefaultTertiary",
-		"n": "tertiaryOtpBackgroundHasValueDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DefaultQuaternary",
-		"n": "quaternaryOtpBackgroundHasValueDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DefaultQuinary",
-		"n": "quinaryOtpBackgroundHasValueDefault",
-		"cp": "background",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DashedPrimary",
-		"n": "primaryOtpBackgroundHasValueDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DashedSecondary",
-		"n": "secondaryOtpBackgroundHasValueDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DashedTertiary",
-		"n": "tertiaryOtpBackgroundHasValueDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DashedQuaternary",
-		"n": "quaternaryOtpBackgroundHasValueDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design DashedQuinary",
-		"n": "quinaryOtpBackgroundHasValueDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design FilledPrimary",
-		"n": "primaryOtpBackgroundHasValueFilled",
-		"dv": "<backgroundColorOne>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design FilledSecondary",
-		"n": "secondaryOtpBackgroundHasValueFilled",
-		"dv": "<backgroundColorTwo>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design FilledTertiary",
-		"n": "tertiaryOtpBackgroundHasValueFilled",
-		"dv": "<backgroundColorThree>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design FilledQuaternary",
-		"n": "quaternaryOtpBackgroundHasValueFilled",
-		"dv": "<backgroundColorFour>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design FilledQuinary",
-		"n": "quinaryOtpBackgroundHasValueFilled",
-		"dv": "<backgroundColorFive>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design RoundPrimary",
-		"n": "primaryOtpBackgroundHasValueRound",
-		"dv": "linear-gradient(90deg, <backgroundColorOne>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design RoundSecondary",
-		"n": "secondaryOtpBackgroundHasValueRound",
-		"dv": "linear-gradient(90deg, <backgroundColorTwo>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._secondary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design RoundTertiary",
-		"n": "tertiaryOtpBackgroundHasValueRound",
-		"dv": "linear-gradient(90deg, <backgroundColorThree>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design RoundQuaternary",
-		"n": "quaternaryOtpBackgroundHasValueRound",
-		"dv": "linear-gradient(90deg, <backgroundColorFour>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Background Has Value",
-		"dn": " Otp Background Has Value Design RoundQuinary",
-		"n": "quinaryOtpBackgroundHasValueRound",
-		"dv": "linear-gradient(90deg, <backgroundColorFive>19 0%, <backgroundColorSix>00 64.33%), white",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Primary Otp Disabled Background Color Default Design Dashed",
-		"n": "primaryOtpDisabledBackgroundColorDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._primary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Secondary Otp Disabled Background Color Default Design Dashed",
-		"n": "secondaryOtpDisabledBackgroundColorDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._secondary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Tertiary Otp Disabled Background Color Default Design Dashed",
-		"n": "tertiaryOtpDisabledBackgroundColorDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._tertiary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Quaternary Otp Disabled Background Color Default Design Dashed",
-		"n": "quaternaryOtpDisabledBackgroundColorDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._quaternary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Quinary Otp Disabled Background Color Default Design Dashed",
-		"n": "quinaryOtpDisabledBackgroundColorDefaultDesignDashed",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._quinary._disabled ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Primary Otp Disabled Background Color Default Design Filled",
-		"n": "primaryOtpDisabledBackgroundColorDefaultDesignFilled",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._primary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Secondary Otp Disabled Background Color Default Design Filled",
-		"n": "secondaryOtpDisabledBackgroundColorDefaultDesignFilled",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._secondary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Tertiary Otp Disabled Background Color Default Design Filled",
-		"n": "tertiaryOtpDisabledBackgroundColorDefaultDesignFilled",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._tertiary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Quaternary Otp Disabled Background Color Default Design Filled",
-		"n": "quaternaryOtpDisabledBackgroundColorDefaultDesignFilled",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._quaternary._disabled ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Disabled Background Color Default",
-		"dn": "Quinary Otp Disabled Background Color Default Design Filled",
-		"n": "quinaryOtpDisabledBackgroundColorDefaultDesignFilled",
-		"dv": "<backgroundColorSeven>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._quinary._disabled ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Font",
-		"dn": "Otp Support Text Font Design Default",
-		"n": "otpSupportTextFontDesignDefault",
-		"dv": "<quaternaryFont>",
 		"cp": "font",
-		"sel": ".comp.compOtp._default ._supportText",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._supportText",
+		"np": true,
+		"spv": {
+			"_default-": "<quaternaryFont>",
+			"_dashed-": "<quaternaryFont>",
+			"_filled-": "<quaternaryFont>",
+			"_round-": "<quaternaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font SupportText",
+		"n": "otpFontSupportText<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Support Text Font",
-		"dn": "Otp Support Text Font Design Dashed",
-		"n": "otpSupportTextFontDesignDashed",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compOtp._dashed ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Font",
-		"dn": "Otp Support Text Font Design Filled",
-		"n": "otpSupportTextFontDesignFilled",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compOtp._filled ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Font",
-		"dn": "Otp Support Text Font Design Round",
-		"n": "otpSupportTextFontDesignRound",
-		"dv": "<quaternaryFont>",
-		"cp": "font",
-		"sel": ".comp.compOtp._round ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Primary Otp Support Text Color Default Design Default",
-		"n": "primaryOtpSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
 		"cp": "color",
-		"sel": ".comp.compOtp._default._primary ._supportText",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._supportText",
+		"np": true,
+		"spv": {},
+		"gn": "Color",
+		"dn": "Color SupportText",
+		"n": "otpColorSupportText<designType><colorScheme>",
+		"dv": "<fontColorEight>"
 	},
 	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Secondary Otp Support Text Color Default Design Default",
-		"n": "secondaryOtpSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
 		"cp": "color",
-		"sel": ".comp.compOtp._default._secondary ._supportText",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme> ._supportText._supportTextActive",
+		"np": true,
+		"spv": {
+			"_default-_secondary": "<fontColorFour>",
+			"_default-_tertiary": "<fontColorFive>",
+			"_default-_quaternary": "<fontColorNine>",
+			"_default-_quinary": "<fontColorSeven>",
+			"_dashed-_secondary": "<fontColorFour>",
+			"_dashed-_tertiary": "<fontColorFive>",
+			"_dashed-_quaternary": "<fontColorNine>",
+			"_dashed-_quinary": "<fontColorSeven>",
+			"_filled-_secondary": "<fontColorFour>",
+			"_filled-_tertiary": "<fontColorFive>",
+			"_filled-_quaternary": "<fontColorNine>",
+			"_filled-_quinary": "<fontColorSeven>",
+			"_round-_secondary": "<fontColorFour>",
+			"_round-_tertiary": "<fontColorFive>",
+			"_round-_quaternary": "<fontColorNine>",
+			"_round-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Color",
+		"dn": "Color SupportTextActive",
+		"n": "otpColorSupportTextActive<designType><colorScheme>",
+		"dv": "<fontColorThree>"
 	},
 	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Tertiary Otp Support Text Color Default Design Default",
-		"n": "tertiaryOtpSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
 		"cp": "color",
-		"sel": ".comp.compOtp._default._tertiary ._supportText",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme>._disabled ._inputBox",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<colorSix>",
+			"_filled-_secondary": "<colorSix>",
+			"_filled-_tertiary": "<colorSix>",
+			"_filled-_quaternary": "<colorSix>",
+			"_filled-_quinary": "<colorSix>"
+		},
+		"gn": "Color",
+		"dn": "Color InputBox",
+		"n": "otpColorInputBox<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Quaternary Otp Support Text Color Default Design Default",
-		"n": "quaternaryOtpSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Quinary Otp Support Text Color Default Design Default",
-		"n": "quinaryOtpSupportTextColorDefaultDesignDefault",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Primary Otp Support Text Color Default Design Dashed",
-		"n": "primaryOtpSupportTextColorDefaultDesignDashed",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Secondary Otp Support Text Color Default Design Dashed",
-		"n": "secondaryOtpSupportTextColorDefaultDesignDashed",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Tertiary Otp Support Text Color Default Design Dashed",
-		"n": "tertiaryOtpSupportTextColorDefaultDesignDashed",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Quaternary Otp Support Text Color Default Design Dashed",
-		"n": "quaternaryOtpSupportTextColorDefaultDesignDashed",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Quinary Otp Support Text Color Default Design Dashed",
-		"n": "quinaryOtpSupportTextColorDefaultDesignDashed",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Primary Otp Support Text Color Default Design Filled",
-		"n": "primaryOtpSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Secondary Otp Support Text Color Default Design Filled",
-		"n": "secondaryOtpSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Tertiary Otp Support Text Color Default Design Filled",
-		"n": "tertiaryOtpSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Quaternary Otp Support Text Color Default Design Filled",
-		"n": "quaternaryOtpSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Quinary Otp Support Text Color Default Design Filled",
-		"n": "quinaryOtpSupportTextColorDefaultDesignFilled",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Primary Otp Support Text Color Default Design Round",
-		"n": "primaryOtpSupportTextColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._primary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Secondary Otp Support Text Color Default Design Round",
-		"n": "secondaryOtpSupportTextColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._secondary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Tertiary Otp Support Text Color Default Design Round",
-		"n": "tertiaryOtpSupportTextColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._tertiary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Quaternary Otp Support Text Color Default Design Round",
-		"n": "quaternaryOtpSupportTextColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quaternary ._supportText",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Default",
-		"dn": "Quinary Otp Support Text Color Default Design Round",
-		"n": "quinaryOtpSupportTextColorDefaultDesignRound",
-		"dv": "<fontColorEight>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quinary ._supportText",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Primary Otp Support Text Color Active Design Default",
-		"n": "primaryOtpSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._primary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Secondary Otp Support Text Color Active Design Default",
-		"n": "secondaryOtpSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._secondary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Tertiary Otp Support Text Color Active Design Default",
-		"n": "tertiaryOtpSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._tertiary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Quaternary Otp Support Text Color Active Design Default",
-		"n": "quaternaryOtpSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quaternary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Quinary Otp Support Text Color Active Design Default",
-		"n": "quinaryOtpSupportTextColorActiveDesignDefault",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compOtp._default._quinary ._supportText._supportTextActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Primary Otp Support Text Color Active Design Dashed",
-		"n": "primaryOtpSupportTextColorActiveDesignDashed",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._primary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Secondary Otp Support Text Color Active Design Dashed",
-		"n": "secondaryOtpSupportTextColorActiveDesignDashed",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._secondary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Tertiary Otp Support Text Color Active Design Dashed",
-		"n": "tertiaryOtpSupportTextColorActiveDesignDashed",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._tertiary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Quaternary Otp Support Text Color Active Design Dashed",
-		"n": "quaternaryOtpSupportTextColorActiveDesignDashed",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quaternary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Quinary Otp Support Text Color Active Design Dashed",
-		"n": "quinaryOtpSupportTextColorActiveDesignDashed",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compOtp._dashed._quinary ._supportText._supportTextActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Primary Otp Support Text Color Active Design Filled",
-		"n": "primaryOtpSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._primary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Secondary Otp Support Text Color Active Design Filled",
-		"n": "secondaryOtpSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._secondary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Tertiary Otp Support Text Color Active Design Filled",
-		"n": "tertiaryOtpSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._tertiary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Quaternary Otp Support Text Color Active Design Filled",
-		"n": "quaternaryOtpSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quaternary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Quinary Otp Support Text Color Active Design Filled",
-		"n": "quinaryOtpSupportTextColorActiveDesignFilled",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compOtp._filled._quinary ._supportText._supportTextActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Primary Otp Support Text Color Active Design Round",
-		"n": "primaryOtpSupportTextColorActiveDesignRound",
-		"dv": "<fontColorThree>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._primary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Secondary Otp Support Text Color Active Design Round",
-		"n": "secondaryOtpSupportTextColorActiveDesignRound",
-		"dv": "<fontColorFour>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._secondary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Tertiary Otp Support Text Color Active Design Round",
-		"n": "tertiaryOtpSupportTextColorActiveDesignRound",
-		"dv": "<fontColorFive>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._tertiary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Quaternary Otp Support Text Color Active Design Round",
-		"n": "quaternaryOtpSupportTextColorActiveDesignRound",
-		"dv": "<fontColorNine>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quaternary ._supportText._supportTextActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Support Text Color Active",
-		"dn": "Quinary Otp Support Text Color Active Design Round",
-		"n": "quinaryOtpSupportTextColorActiveDesignRound",
-		"dv": "<fontColorSeven>",
-		"cp": "color",
-		"sel": ".comp.compOtp._round._quinary ._supportText._supportTextActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Error Border Color",
-		"dn": "Otp Error Border Color Design Default",
-		"n": "otpErrorBorderColorDesignDefault",
-		"dv": "<errorColor>",
 		"cp": "border-color",
-		"sel": ".comp.compOtp._default._hasError ._inputBox,.comp.compOtp._default._hasError ._inputBox._isActive, .comp.compOtp._default._hasError ._inputBox._hasValue",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme>._disabled ._inputBox",
+		"np": true,
+		"spv": {
+			"_default-_primary": "<fontColorSix>",
+			"_default-_secondary": "<fontColorSix>",
+			"_default-_tertiary": "<fontColorSix>",
+			"_default-_quaternary": "<fontColorSix>",
+			"_default-_quinary": "<fontColorSix>",
+			"_filled-_primary": "<fontColorSix>",
+			"_filled-_secondary": "<fontColorSix>",
+			"_filled-_tertiary": "<fontColorSix>",
+			"_filled-_quaternary": "<fontColorSix>",
+			"_filled-_quinary": "<fontColorSix>",
+			"_round-_primary": "<fontColorSix>",
+			"_round-_secondary": "<fontColorSix>",
+			"_round-_tertiary": "<fontColorSix>",
+			"_round-_quaternary": "<fontColorSix>",
+			"_round-_quinary": "<fontColorSix>"
+		},
+		"gn": "Border Color",
+		"dn": "BorderColor Disabled InputBox",
+		"n": "otpBorderColorInputBoxDisabled<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Error Border Color",
-		"dn": "Otp Error Border Color Design Dashed",
-		"n": "otpErrorBorderColorDesignDashed",
-		"dv": "<errorColor>",
+		"cp": "border-bottom-color",
+		"sel": ".comp.compOtp<designType><colorScheme>._disabled ._inputBox",
+		"np": true,
+		"spv": {
+			"_dashed-_primary": "<fontColorSix>",
+			"_dashed-_secondary": "<fontColorSix>",
+			"_dashed-_tertiary": "<fontColorSix>",
+			"_dashed-_quaternary": "<fontColorSix>",
+			"_dashed-_quinary": "<fontColorSix>"
+		},
+		"gn": "Border Bottom Color",
+		"dn": "BorderBottomColor Disabled InputBox",
+		"n": "otpBorderBottomColorInputBoxDisabled<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compOtp<designType><colorScheme>._disabled ._inputBox",
+		"np": true,
+		"spv": {
+			"_dashed-_primary": "<backgroundColorSeven>",
+			"_dashed-_secondary": "<backgroundColorSeven>",
+			"_dashed-_tertiary": "<backgroundColorSeven>",
+			"_dashed-_quaternary": "<backgroundColorSeven>",
+			"_dashed-_quinary": "<backgroundColorSeven>",
+			"_filled-_primary": "<backgroundColorSeven>",
+			"_filled-_secondary": "<backgroundColorSeven>",
+			"_filled-_tertiary": "<backgroundColorSeven>",
+			"_filled-_quaternary": "<backgroundColorSeven>",
+			"_filled-_quinary": "<backgroundColorSeven>"
+		},
+		"gn": "Background",
+		"dn": "Background Disabled InputBox",
+		"n": "otpBackgroundInputBoxDisabled<designType><colorScheme>"
+	},
+	{
 		"cp": "border-color",
-		"sel": ".comp.compOtp._dashed._hasError ._inputBox,.comp.compOtp._dashed._hasError ._inputBox._isActive, .comp.compOtp._dashed._hasError ._inputBox._hasValue",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme>._hasError ._inputBox,.comp.compOtp<designType><colorScheme>._hasError ._inputBox._isActive, .comp.compOtp<designType><colorScheme>._hasError ._inputBox._hasValue",
+		"np": true,
+		"spv": {
+			"_default-": "<errorColor>",
+			"_dashed-": "<errorColor>",
+			"_round-": "<errorColor>"
+		},
+		"gn": "Border Color",
+		"dn": "BorderColor HasValue Value Active Error",
+		"n": "otpBorderColorHasValueValueActiveError<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Error Border Color",
-		"dn": "Otp Error Border Color Design Filled",
-		"n": "otpErrorBorderColorDesignFilled",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._filled._hasError ._inputBox,.comp.compOtp._filled._hasError ._inputBox._isActive, .comp.compOtp._filled._hasError ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Error Border Color",
-		"dn": "Otp Error Border Color Design Round",
-		"n": "otpErrorBorderColorDesignRound",
-		"dv": "<errorColor>",
-		"cp": "border-color",
-		"sel": ".comp.compOtp._round._hasError ._inputBox,.comp.compOtp._round._hasError ._inputBox._isActive, .comp.compOtp._round._hasError ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Error Background",
-		"dn": "Otp Error Background Design Default",
-		"n": "otpErrorBackgroundDesignDefault",
 		"cp": "background",
-		"sel": ".comp.compOtp._default._hasError ._inputBox,.comp.compOtp._default._hasError ._inputBox._isActive, .comp.compOtp._default._hasError ._inputBox._hasValue",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme>._hasError ._inputBox,.comp.compOtp<designType><colorScheme>._hasError ._inputBox._isActive, .comp.compOtp<designType><colorScheme>._hasError ._inputBox._hasValue",
+		"np": true,
+		"spv": {
+			"_filled-": "<errorColor>",
+			"_round-": "linear-gradient(90deg, <errorColor>19 0%, <backgroundColorSix>00 64.33%)"
+		},
+		"gn": "Background",
+		"dn": "Background HasValue Value Active Error",
+		"n": "otpBackgroundHasValueValueActiveError<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Error Background",
-		"dn": "Otp Error Background Design Dashed",
-		"n": "otpErrorBackgroundDesignDashed",
-		"cp": "background",
-		"sel": ".comp.compOtp._dashed._hasError ._inputBox,.comp.compOtp._dashed._hasError ._inputBox._isActive, .comp.compOtp._dashed._hasError ._inputBox._hasValue",
-		"np": true
+		"cp": "box-shadow",
+		"sel": ".comp.compOtp<designType><colorScheme>._hasError ._inputBox,.comp.compOtp<designType><colorScheme>._hasError ._inputBox._isActive, .comp.compOtp<designType><colorScheme>._hasError ._inputBox._hasValue",
+		"np": true,
+		"spv": {
+			"_default-": "<errorColor>",
+			"_dashed-": "<errorColor>",
+			"_filled-": "<errorColor>",
+			"_round-": "<errorColor>"
+		},
+		"gn": "Box Shadow",
+		"dn": "BoxShadow HasValue Value Active Error",
+		"n": "otpBoxShadowHasValueValueActiveError<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Error Background",
-		"dn": "Otp Error Background Design Filled",
-		"n": "otpErrorBackgroundDesignFilled",
-		"dv": "<errorColor>",
-		"cp": "background",
-		"sel": ".comp.compOtp._filled._hasError ._inputBox,.comp.compOtp._filled._hasError ._inputBox._isActive, .comp.compOtp._filled._hasError ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Error Background",
-		"dn": "Otp Error Background Design Round",
-		"n": "otpErrorBackgroundDesignRound",
-		"dv": "linear-gradient(90deg, <errorColor>19 0%, <backgroundColorSix>00 64.33%)",
-		"cp": "background",
-		"sel": ".comp.compOtp._round._hasError ._inputBox,.comp.compOtp._round._hasError ._inputBox._isActive, .comp.compOtp._round._hasError ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Error Color",
-		"dn": "Otp Error Color Design Filled",
-		"n": "otpErrorColorDesignFilled",
-		"dv": "<fontColorTwo>",
 		"cp": "color",
-		"sel": ".comp.compTextBox._filled._hasError ._inputBox",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme>._hasError ._inputBox._hasValue",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color HasValue Value Error",
+		"n": "otpColorHasValueValueError<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Error Color Active",
-		"dn": "Otp Error Color Active Design Filled",
-		"n": "otpErrorColorActiveDesignFilled",
-		"dv": "<fontColorTwo>",
 		"cp": "color",
-		"sel": ".comp.compOtp._filled._hasError ._inputBox._isActive",
-		"np": true
+		"sel": ".comp.compOtp<designType><colorScheme>._hasError ._inputBox._isActive",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color IsActive Active Error",
+		"n": "otpColorIsActiveActiveError<designType><colorScheme>"
 	},
 	{
-		"gn": "Otp Error Color Has Value",
-		"dn": "Otp Error Color Has Value Design Filled",
-		"n": "otpErrorColorHasValueDesignFilled",
-		"dv": "<fontColorTwo>",
 		"cp": "color",
-		"sel": ".comp.compOtp._filled._hasError ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Primary Otp Box Shadow Default Design Default",
-		"n": "primaryOtpBoxShadowDefaultDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Secondary Otp Box Shadow Default Design Default",
-		"n": "secondaryOtpBoxShadowDefaultDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Tertiary Otp Box Shadow Default Design Default",
-		"n": "tertiaryOtpBoxShadowDefaultDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Quaternary Otp Box Shadow Default Design Default",
-		"n": "quaternaryOtpBoxShadowDefaultDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Quinary Otp Box Shadow Default Design Default",
-		"n": "quinaryOtpBoxShadowDefaultDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Primary Otp Box Shadow Default Design Dashed",
-		"n": "primaryOtpBoxShadowDefaultDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Secondary Otp Box Shadow Default Design Dashed",
-		"n": "secondaryOtpBoxShadowDefaultDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Tertiary Otp Box Shadow Default Design Dashed",
-		"n": "tertiaryOtpBoxShadowDefaultDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Quaternary Otp Box Shadow Default Design Dashed",
-		"n": "quaternaryOtpBoxShadowDefaultDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Quinary Otp Box Shadow Default Design Dashed",
-		"n": "quinaryOtpBoxShadowDefaultDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Primary Otp Box Shadow Default Design Filled",
-		"n": "primaryOtpBoxShadowDefaultDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Secondary Otp Box Shadow Default Design Filled",
-		"n": "secondaryOtpBoxShadowDefaultDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Tertiary Otp Box Shadow Default Design Filled",
-		"n": "tertiaryOtpBoxShadowDefaultDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Quaternary Otp Box Shadow Default Design Filled",
-		"n": "quaternaryOtpBoxShadowDefaultDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Quinary Otp Box Shadow Default Design Filled",
-		"n": "quinaryOtpBoxShadowDefaultDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Primary Otp Box Shadow Default Design Round",
-		"n": "primaryOtpBoxShadowDefaultDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._primary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Secondary Otp Box Shadow Default Design Round",
-		"n": "secondaryOtpBoxShadowDefaultDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._secondary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Tertiary Otp Box Shadow Default Design Round",
-		"n": "tertiaryOtpBoxShadowDefaultDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Quaternary Otp Box Shadow Default Design Round",
-		"n": "quaternaryOtpBoxShadowDefaultDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Default",
-		"dn": "Quinary Otp Box Shadow Default Design Round",
-		"n": "quinaryOtpBoxShadowDefaultDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._quinary ._inputBox",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Primary Otp Box Shadow Active Design Default",
-		"n": "primaryOtpBoxShadowActiveDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Secondary Otp Box Shadow Active Design Default",
-		"n": "secondaryOtpBoxShadowActiveDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._secondary  ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Tertiary Otp Box Shadow Active Design Default",
-		"n": "tertiaryOtpBoxShadowActiveDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Quaternary Otp Box Shadow Active Design Default",
-		"n": "quaternaryOtpBoxShadowActiveDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Quinary Otp Box Shadow Active Design Default",
-		"n": "quinaryOtpBoxShadowActiveDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Primary Otp Box Shadow Active Design Dashed",
-		"n": "primaryOtpBoxShadowActiveDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Secondary Otp Box Shadow Active Design Dashed",
-		"n": "secondaryOtpBoxShadowActiveDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._secondary  ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Tertiary Otp Box Shadow Active Design Dashed",
-		"n": "tertiaryOtpBoxShadowActiveDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Quaternary Otp Box Shadow Active Design Dashed",
-		"n": "quaternaryOtpBoxShadowActiveDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Quinary Otp Box Shadow Active Design Dashed",
-		"n": "quinaryOtpBoxShadowActiveDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Primary Otp Box Shadow Active Design Filled",
-		"n": "primaryOtpBoxShadowActiveDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Secondary Otp Box Shadow Active Design Filled",
-		"n": "secondaryOtpBoxShadowActiveDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._secondary  ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Tertiary Otp Box Shadow Active Design Filled",
-		"n": "tertiaryOtpBoxShadowActiveDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Quaternary Otp Box Shadow Active Design Filled",
-		"n": "quaternaryOtpBoxShadowActiveDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Quinary Otp Box Shadow Active Design Filled",
-		"n": "quinaryOtpBoxShadowActiveDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Primary Otp Box Shadow Active Design Round",
-		"n": "primaryOtpBoxShadowActiveDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._primary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Secondary Otp Box Shadow Active Design Round",
-		"n": "secondaryOtpBoxShadowActiveDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._secondary  ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Tertiary Otp Box Shadow Active Design Round",
-		"n": "tertiaryOtpBoxShadowActiveDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Quaternary Otp Box Shadow Active Design Round",
-		"n": "quaternaryOtpBoxShadowActiveDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._isActive",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Active",
-		"dn": "Quinary Otp Box Shadow Active Design Round",
-		"n": "quinaryOtpBoxShadowActiveDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._isActive",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Primary Otp Box Shadow Has Value Design Default",
-		"n": "primaryOtpBoxShadowHasValueDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Secondary Otp Box Shadow Has Value Design Default",
-		"n": "secondaryOtpBoxShadowHasValueDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._secondary  ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Tertiary Otp Box Shadow Has Value Design Default",
-		"n": "tertiaryOtpBoxShadowHasValueDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Quaternary Otp Box Shadow Has Value Design Default",
-		"n": "quaternaryOtpBoxShadowHasValueDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Quinary Otp Box Shadow Has Value Design Default",
-		"n": "quinaryOtpBoxShadowHasValueDesignDefault",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._quinary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Primary Otp Box Shadow Has Value Design Dashed",
-		"n": "primaryOtpBoxShadowHasValueDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Secondary Otp Box Shadow Has Value Design Dashed",
-		"n": "secondaryOtpBoxShadowHasValueDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._secondary  ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Tertiary Otp Box Shadow Has Value Design Dashed",
-		"n": "tertiaryOtpBoxShadowHasValueDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Quaternary Otp Box Shadow Has Value Design Dashed",
-		"n": "quaternaryOtpBoxShadowHasValueDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Quinary Otp Box Shadow Has Value Design Dashed",
-		"n": "quinaryOtpBoxShadowHasValueDesignDashed",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._quinary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Primary Otp Box Shadow Has Value Design Filled",
-		"n": "primaryOtpBoxShadowHasValueDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Secondary Otp Box Shadow Has Value Design Filled",
-		"n": "secondaryOtpBoxShadowHasValueDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._secondary  ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Tertiary Otp Box Shadow Has Value Design Filled",
-		"n": "tertiaryOtpBoxShadowHasValueDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Quaternary Otp Box Shadow Has Value Design Filled",
-		"n": "quaternaryOtpBoxShadowHasValueDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Quinary Otp Box Shadow Has Value Design Filled",
-		"n": "quinaryOtpBoxShadowHasValueDesignFilled",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._quinary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Primary Otp Box Shadow Has Value Design Round",
-		"n": "primaryOtpBoxShadowHasValueDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._primary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Secondary Otp Box Shadow Has Value Design Round",
-		"n": "secondaryOtpBoxShadowHasValueDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._secondary  ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Tertiary Otp Box Shadow Has Value Design Round",
-		"n": "tertiaryOtpBoxShadowHasValueDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._tertiary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Quaternary Otp Box Shadow Has Value Design Round",
-		"n": "quaternaryOtpBoxShadowHasValueDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._quaternary ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Box Shadow Has Value",
-		"dn": "Quinary Otp Box Shadow Has Value Design Round",
-		"n": "quinaryOtpBoxShadowHasValueDesignRound",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._quinary ._inputBox._hasValue",
-		"np": true
-	},
-
-	{
-		"gn": "Otp Error Box Shadow",
-		"dn": "Otp Error Box Shadow Design Default",
-		"n": "otpErrorBoxShadowDesignDefault",
-		"dv": "<errorColor>",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._default._hasError ._inputBox,.comp.compOtp._default._hasError ._inputBox._isActive, .comp.compOtp._default._hasError ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Error Box Shadow",
-		"dn": "Otp Error Box Shadow Design Dashed",
-		"n": "otpErrorBoxShadowDesignDashed",
-		"dv": "<errorColor>",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._dashed._hasError ._inputBox,.comp.compOtp._dashed._hasError ._inputBox._isActive, .comp.compOtp._dashed._hasError ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Error Box Shadow",
-		"dn": "Otp Error Box Shadow Design Filled",
-		"n": "otpErrorBoxShadowDesignFilled",
-		"dv": "<errorColor>",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._filled._hasError ._inputBox,.comp.compOtp._filled._hasError ._inputBox._isActive, .comp.compOtp._filled._hasError ._inputBox._hasValue",
-		"np": true
-	},
-	{
-		"gn": "Otp Error Box Shadow",
-		"dn": "Otp Error Box Shadow Design Round",
-		"n": "otpErrorBoxShadowDesignRound",
-		"dv": "<errorColor>",
-		"cp": "box-shadow",
-		"sel": ".comp.compOtp._round._hasError ._inputBox,.comp.compOtp._round._hasError ._inputBox._isActive, .comp.compOtp._round._hasError ._inputBox._hasValue",
-		"np": true
+		"sel": ".comp.compTextBox<designType><colorScheme>._hasError ._inputBox",
+		"np": true,
+		"spv": {
+			"_filled-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color InputBox Error",
+		"n": "otpColorInputBoxError<designType><colorScheme>"
 	}
 ]

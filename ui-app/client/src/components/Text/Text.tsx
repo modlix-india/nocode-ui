@@ -17,7 +17,7 @@ import { IconHelper } from '../util/IconHelper';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import TextStyle from './TextStyle';
-import { styleDefaults } from './TextStyleProperties';
+import { styleProperties, styleDefaults } from './TextStyleProperties';
 import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
 
@@ -37,6 +37,8 @@ function Text(props: Readonly<ComponentProps>) {
 			processNewLine,
 			stringFormat,
 			textLength,
+			minFractionDigits,
+			maxFractionDigits,
 			textColor,
 			designType,
 			removeToolTip,
@@ -101,8 +103,20 @@ function Text(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	let numberFormattingOptions: any = {};
+
+	if (typeof minFractionDigits === 'number' || typeof maxFractionDigits === 'number') {
+		let min = minFractionDigits ?? maxFractionDigits!;
+		let max = maxFractionDigits ?? minFractionDigits!;
+		if (min > max) min = max;
+		numberFormattingOptions = {
+			minimumFractionDigits: min,
+			maximumFractionDigits: max,
+		};
+	}
+
 	if (stringFormat !== 'STRING' && translatedText) {
-		translatedText = formatString(translatedText, stringFormat);
+		translatedText = formatString(translatedText, stringFormat, numberFormattingOptions);
 	}
 
 	if (textLength && translatedText) {
@@ -430,6 +444,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;
