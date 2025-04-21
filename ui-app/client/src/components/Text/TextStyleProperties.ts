@@ -31,7 +31,7 @@ export const stylePropertiesForTheme: Array<StylePropertyDefinition> = [
 		dn: 'Text Padding',
 		n: 'textPadding<textContainer><textColor>',
 		cp: 'padding',
-		sel: '.comp.compText<textContainer><textColor>',
+		sel: '.comp.compText<textContainer><textColor> ._textContainer',
 		np: true,
 		spv: {
 			'SPAN-': '0',
@@ -52,7 +52,7 @@ export const stylePropertiesForTheme: Array<StylePropertyDefinition> = [
 		dn: 'Text Margin',
 		n: 'textMargin<textContainer><textColor>',
 		cp: 'margin',
-		sel: '.comp.compText<textContainer><textColor>',
+		sel: '.comp.compText<textContainer><textColor> ._textContainer',
 		np: true,
 		spv: {
 			'SPAN-': '0',
