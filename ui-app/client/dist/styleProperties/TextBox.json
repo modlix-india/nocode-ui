@@ -230,6 +230,14 @@
 		"n": "textBoxErrorBoxShadow<designType><colorScheme>"
 	},
 	{
+		"cp": "box-shadow",
+		"sel": ".comp.compTextBox<designType><colorScheme>._validationSuccess, .comp.compTextBox<designType><colorScheme>._isActive._validationSuccess, .comp.compTextBox<designType><colorScheme>._hasValue._validationSuccess",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "Success Box Shadow",
+		"n": "textBoxSuccessBoxShadow<designType><colorScheme>"
+	},
+	{
 		"cp": "border",
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasValue",
 		"np": true,
