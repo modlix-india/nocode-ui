@@ -39,6 +39,10 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 			colorScheme,
 			onClick,
 			readOnly,
+			onIcon,
+			offIcon,
+			onImage,
+			offImage,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -90,6 +94,18 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 
 	const label = isToggled ? onLabel : (offLabel ?? onLabel);
 
+	const icon = isToggled ? (
+		onImage ? (
+			<img src={onImage} className="_toggleIcon" alt="on" style={resolvedStyles.icon} />
+		) : onIcon ? (
+			<i className={`${onIcon} _toggleIcon`} style={resolvedStyles.icon} />
+		) : null
+	) : offImage ? (
+		<img src={offImage} className="_toggleIcon" alt="off" style={resolvedStyles.icon} />
+	) : offIcon ? (
+		<i className={`${offIcon} _toggleIcon`} style={resolvedStyles.icon} />
+	) : null;
+
 	const labelComp = label ? (
 		<span
 			style={resolvedStyles.label ?? {}}
@@ -101,8 +117,9 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 	) : null;
 	return (
 		<label
-			className={`comp compToggleButton ${designType} ${colorScheme} ${isToggled ? '_on' : '_off'
-				} ${readOnly ? '_disabled' : ''}`}
+			className={`comp compToggleButton ${designType} ${colorScheme} ${
+				isToggled ? '_on' : '_off'
+			} ${readOnly ? '_disabled' : ''}`}
 			style={resolvedStyles.comp ?? {}}
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
@@ -110,12 +127,14 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 			<HelperComponent context={props.context} definition={definition} />
 
 			<div
-				className={`_knob ${toggleButtonLabelAlignment === '_onknob' && label?.length ? '_withText' : ''
-					}`}
+				className={`_knob ${
+					toggleButtonLabelAlignment === '_onknob' && label?.length ? '_withText' : ''
+				}`}
 				style={resolvedStyles.knob ?? {}}
 			>
 				<SubHelperComponent definition={props.definition} subComponentName="knob" />
 				{toggleButtonLabelAlignment === '_onknob' ? labelComp : null}
+				{icon}
 			</div>
 			<input
 				style={resolvedStyles.input ?? {}}
@@ -188,6 +207,12 @@ const component: Component = {
 			name: 'label',
 			displayName: 'Label',
 			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: 'Icon',
 			icon: 'fa-solid fa-box',
 		},
 	],
