@@ -17,9 +17,10 @@ import { IconHelper } from '../util/IconHelper';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import TextStyle from './TextStyle';
-import { styleProperties, styleDefaults } from './TextStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './TextStyleProperties';
 import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Text(props: Readonly<ComponentProps>) {
 	const {
@@ -165,7 +166,7 @@ function Text(props: Readonly<ComponentProps>) {
 	);
 	return (
 		<div
-			className={`comp compText ${textContainer.toLowerCase()} ${textColor}`}
+			className={`comp compText ${textContainer} ${textColor}`}
 			style={styleProperties.comp ?? {}}
 			title={removeToolTip ? undefined : originalText}
 		>
@@ -174,6 +175,12 @@ function Text(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
+
+const { textContainer, textColor } = findPropertyDefinitions(
+	propertiesDefinition,
+	'textContainer',
+	'textColor',
+);
 
 const component: Component = {
 	order: 2,
@@ -455,7 +462,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [textContainer, textColor],
 };
 
 export default component;

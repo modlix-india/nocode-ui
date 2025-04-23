@@ -23,6 +23,7 @@ function Video(props: Readonly<ComponentProps>) {
 			poster,
 			playsInline,
 			muted: mutedProperty,
+			playInViewport,
 			autoPlay,
 			loop,
 			showPipButton,
@@ -125,6 +126,29 @@ function Video(props: Readonly<ComponentProps>) {
 		if (typeof video.current.canPlayType === 'function') {
 			setVideoControls(false);
 		}
+		let observer: IntersectionObserver | null = null;
+
+		if (playInViewport) {
+		  observer = new IntersectionObserver(
+			([entry]) => {
+			  if (entry.isIntersecting) {
+				video.current?.play().catch(() => {});
+			  } else {
+				video.current?.pause();
+			  }
+			},
+			{ threshold: 0.5 }
+		  );
+	
+		  observer.observe(video.current);
+		}
+	
+		return () => {
+		  if (observer && video.current) {
+			observer.unobserve(video.current);
+			observer.disconnect();
+		  }
+		};
 	}, [video.current]);
 
 	const handlePlayPause = () => {

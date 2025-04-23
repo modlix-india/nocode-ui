@@ -105,6 +105,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'playInViewport',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Play in viewport',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		defaultValue: '_videoDesign1',
 		enumValues: [
