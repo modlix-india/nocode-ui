@@ -3486,13 +3486,16 @@ input._peInput[type='number'] {
 }
 
 .comp.compPageEditor ._tutorialTooltipPanel {
-	background: #f9f9f9;
 	border-radius: 8px;
 	width: 300px;
 	max-height: 80vh;
 	display: flex;
 	flex-direction: column;
 	margin-left: 20px;
+	border-radius: 10px;
+	border: 0.5px solid rgba(0, 0, 0, 0.04);
+	background: #F9F9F9;
+	box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.05);
 
 }
 
