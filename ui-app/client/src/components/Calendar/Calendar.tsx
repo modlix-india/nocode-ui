@@ -9,13 +9,13 @@ import {
 	LocationHistory,
 } from '../../types/common';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { makePropertiesObject } from '../util/make';
 import CalendarStyle from './CalendarStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './calendarProperties';
-import { styleProperties, styleDefaults } from './calendarStyleProperties';
+import { styleDefaults, stylePropertiesForTheme } from './calendarStyleProperties';
 import { getValidDate, validateWithProps } from './components/calendarFunctions';
 import { CalendarValidationProps } from './components/calendarTypes';
-import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 const LazyCalendar = React.lazy(() => import(/* webpackChunkName: "Calendar" */ './LazyCalendar'));
 function LoadLazyCalendar(props: Readonly<ComponentProps>) {
@@ -320,7 +320,7 @@ const component: Component = {
 			return [];
 		},
 	},
-	stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 	propertiesForTheme: [calendarDesignType, designType, colorScheme],
 };

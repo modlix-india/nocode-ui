@@ -65,6 +65,8 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			onTabChange,
+			image,
+			showLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -221,22 +223,30 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 									subComponentName="tab"
 									zIndex={8}
 								/>
-
-								<i
-									className={`icon ${icon[i]}`}
-									style={
-										e === hover
-											? (resolvedStylesWithHover.icon ?? {})
-											: (resolvedStyles.icon ?? {})
-									}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="icon"
-										zIndex={9}
-									/>
-								</i>
-								{getTranslations(e, pageDefinition.translations)}
+								{image[i] ? (
+									<img
+										src={image[i]}
+										className="icon"
+										alt="icon"
+										style={resolvedStyles.icon}
+									></img>
+								) : (
+									<i
+										className={`icon ${icon[i]}`}
+										style={
+											e === hover
+												? (resolvedStylesWithHover.icon ?? {})
+												: (resolvedStyles.icon ?? {})
+										}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="icon"
+											zIndex={9}
+										/>
+									</i>
+								)}
+								{showLabel && getTranslations(e, pageDefinition.translations)}
 							</div>
 						),
 				)}
