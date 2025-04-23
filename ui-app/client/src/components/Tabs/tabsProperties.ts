@@ -1,4 +1,4 @@
-import { SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -27,6 +27,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'showLabel',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Label',
+		description: 'Show Label',
+		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'icon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Icon list',
@@ -36,6 +44,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: [],
 	},
+	{
+		name: 'image',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Image list',
+		editor: ComponentPropertyEditor.IMAGE,
+		description: "Image's to be present on the component, comma seperated list of icons.",
+		multiValued: true,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: [],
+	},
+
 	{
 		name: 'tabsOrientation',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -171,8 +190,14 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	icon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	tabsSeperator: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,

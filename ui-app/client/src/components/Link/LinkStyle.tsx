@@ -56,7 +56,5 @@ export default function LinkStyle({
 	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
-	console.log(css);
-
 	return <style id="LinkCss">{css}</style>;
 }

@@ -1,6 +1,7 @@
 import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
@@ -22,6 +23,38 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: "CheckBox's display label when it is off.",
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
+	},
+	{
+		name: 'offIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Off Icon',
+		description: 'Off Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'onIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'On Icon',
+		description: 'On Icon',
+		editor: ComponentPropertyEditor.ICON,
+	},
+	{
+		name: 'offImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Off Image',
+		description: 'Off Image',
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'onImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'On Image',
+		description: 'On Image',
+		editor: ComponentPropertyEditor.IMAGE,
 	},
 	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
@@ -104,6 +137,17 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	label: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	icon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.accentColor.type,
 	],
 };
 

@@ -53,6 +53,10 @@ export default function ToggleButtonStyle({
         transform: translateX(-100%);
     }
 
+    ${PREFIX} ._toggleIcon{
+    width:100%;
+    }
+
 
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
