@@ -488,7 +488,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	if (componentDesignType === 'fullCalendar') {
 		return (
 			<div
-				className={`comp compCalendar fullCalendar ${calendarDesignType} ${colorScheme} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
+				className={`comp compCalendar fullCalendar ${calendarDesignType} ${designType} ${colorScheme} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
 				style={computedStyles?.comp ?? {}}
 			>
 				<HelperComponent context={context} definition={definition} />

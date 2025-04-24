@@ -105,12 +105,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'videoDesign',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'video Player Design',
-		description: 'Color Scheme',
-		defaultValue: '_videoDesign1',
+		name: 'playInViewport',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Play in viewport',
+		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+		defaultValue: '_videoDesign1',
 		enumValues: [
 			{
 				name: '_videoDesign1',

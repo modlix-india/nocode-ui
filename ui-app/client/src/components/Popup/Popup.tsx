@@ -17,7 +17,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
-import { styleDefaults } from './popupStyleProperties';
+import { styleProperties, styleDefaults } from './popupStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 function Popup(props: Readonly<ComponentProps>) {
@@ -50,7 +50,7 @@ function Popup(props: Readonly<ComponentProps>) {
 			eventOnClose,
 			closeButtonPosition,
 			modelTitle,
-			popupDesign,
+			designType: popupDesign,
 			showInDesign,
 			modalPosition,
 			background,
@@ -185,9 +185,9 @@ function Popup(props: Readonly<ComponentProps>) {
 										/>
 										{modelTitle
 											? getTranslations(
-													modelTitle,
-													props.pageDefinition.translations,
-												)
+												modelTitle,
+												props.pageDefinition.translations,
+											)
 											: ''}
 									</div>
 									{showClose && closeButtonPosition === 'RIGHT' && (
@@ -304,6 +304,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

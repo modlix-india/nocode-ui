@@ -285,7 +285,7 @@ export const RenderEngineContainer = () => {
 	);
 
 	useEffect(() => {
-		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR')
+		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR' && globalThis.designMode !== 'THEME_EDITOR')
 			return;
 
 		function onMessageRecieved(e: MessageEvent) {
@@ -300,7 +300,7 @@ export const RenderEngineContainer = () => {
 	}, [globalThis.designMode, setLastChanged]);
 
 	useEffect(() => {
-		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR')
+		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR' && globalThis.designMode !== 'THEME_EDITOR')
 			return;
 
 		return addListenerAndCallImmediately(

@@ -17,7 +17,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
 	},
-
 	{
 		name: 'icons',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -49,6 +48,39 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Next Icon',
 		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.ICON,
+		multiValued: false,
+	},
+	{
+		name: 'images',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Image',
+		description: 'Image',
+		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.IMAGE,
+		multiValued: true,
+	},
+	{
+		name: 'successImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Done Image',
+		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.IMAGE,
+		multiValued: false,
+	},
+	{
+		name: 'currentImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Active Image',
+		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.IMAGE,
+		multiValued: false,
+	},
+	{
+		name: 'nextImage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Next Image',
+		group: ComponentPropertyGroup.BASIC,
+		editor: ComponentPropertyEditor.IMAGE,
 		multiValued: false,
 	},
 	{

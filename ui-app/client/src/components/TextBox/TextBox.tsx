@@ -20,8 +20,9 @@ import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
 import CommonInputText from '../../commonComponents/CommonInputText';
-import { styleDefaults } from './textBoxStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './textBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 const REGEX_NUMBER = /^(?![.,])[0-9.,]+$/;
 
@@ -476,6 +477,12 @@ function TextBox(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 5,
 	name: 'TextBox',
@@ -569,6 +576,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;
