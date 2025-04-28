@@ -16,9 +16,10 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tabsProperties';
 import { runEvent } from '../util/runEvent';
 import TabsStyles from './TabsStyle';
-import { styleDefaults } from './tabsStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './tabsStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { isNullValue } from '@fincity/kirun-js';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function setHighlighter(
 	tabsOrientation: string,
@@ -64,6 +65,8 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			onTabChange,
+			image,
+			showLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -220,22 +223,30 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 									subComponentName="tab"
 									zIndex={8}
 								/>
-
-								<i
-									className={`icon ${icon[i]}`}
-									style={
-										e === hover
-											? (resolvedStylesWithHover.icon ?? {})
-											: (resolvedStyles.icon ?? {})
-									}
-								>
-									<SubHelperComponent
-										definition={props.definition}
-										subComponentName="icon"
-										zIndex={9}
-									/>
-								</i>
-								{getTranslations(e, pageDefinition.translations)}
+								{image[i] ? (
+									<img
+										src={image[i]}
+										className="icon"
+										alt="icon"
+										style={resolvedStyles.icon}
+									></img>
+								) : (
+									<i
+										className={`icon ${icon[i]}`}
+										style={
+											e === hover
+												? (resolvedStylesWithHover.icon ?? {})
+												: (resolvedStyles.icon ?? {})
+										}
+									>
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="icon"
+											zIndex={9}
+										/>
+									</i>
+								)}
+								{showLabel && getTranslations(e, pageDefinition.translations)}
 							</div>
 						),
 				)}
@@ -273,6 +284,12 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	name: 'Tabs',
@@ -402,6 +419,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [designType, colorScheme],
 };
 
 export default component;

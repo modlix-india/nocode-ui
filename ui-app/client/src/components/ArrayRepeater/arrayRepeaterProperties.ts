@@ -123,6 +123,62 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'orderKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Order Key',
+		description:
+			'Key to be used to order the items in the repeater, use "__index" to order by keys in the object',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'orderDirection',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Order Direction',
+		description: 'Direction to be used to order the items in the repeater',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'asc',
+		enumValues: [
+			{ name: 'asc', displayName: 'Ascending' },
+			{ name: 'desc', displayName: 'Descending' },
+		],
+	},
+	{
+		name: 'orderValue',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Order Value Type to update',
+		description: 'Type of value to be used to order the items in the repeater',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'index',
+		enumValues: [
+			{ name: 'index', displayName: 'From 0' },
+			{ name: 'index1', displayName: 'From 1' },
+			{ name: 'value', displayName: 'Value in the key be used' },
+		],
+	},
+	{
+		name: 'missingValueOrder',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Missing Value Order',
+		description: 'Order to be used for missing values in the order key',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: 'last',
+		enumValues: [
+			{ name: 'last', displayName: 'Last' },
+			{ name: 'first', displayName: 'First' },
+		],
+	},
+	{
+		name: 'newKeyStrategy',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'New Key Strategy For Object',
+		description: 'Strategy to be used to generate new keys for the items in the repeater',
+		group: ComponentPropertyGroup.DATA,
+		enumValues: [
+			{ name: 'index', displayName: 'Index' },
+			{ name: 'shortUUID', displayName: 'Short UUID' },
+		],
+	},
+	{
 		name: 'dropDataPrefix',
 		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,
@@ -148,7 +204,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Event to be triggered when data is dropped.',
 		group: ComponentPropertyGroup.EVENTS,
 	},
-
 	{
 		name: 'filterCondition',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -156,7 +211,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'Filter condition using "Data." to filter the array items. Eg: "Data.marks > 20" gives all the objects with marks greater than 20.',
 	},
-
+	{
+		name: 'minimizeReRender',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Minimize Re-Render',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			'When this option is set to true, the component will be re-rendered only when the data changes.',
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.layout,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,

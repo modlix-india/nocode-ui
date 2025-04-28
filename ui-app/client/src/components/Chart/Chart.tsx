@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import ChartStyle from './ChartStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './chartProperties';
-import { styleDefaults } from './chartStyleProperties';
+import { styleProperties, styleDefaults } from './chartStyleProperties';
 
 const LazyChart = React.lazy(() => import(/* webpackChunkName: "Chart" */ './LazyChart'));
 function LoadLazyChart(props: Readonly<ComponentProps>) {
@@ -147,6 +147,7 @@ const component: Component = {
 			icon: 'fa fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

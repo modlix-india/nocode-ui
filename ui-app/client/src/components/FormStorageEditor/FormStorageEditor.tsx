@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
 import StorageEditorStyle from './FormStorageEditorStyle';
-import { styleDefaults } from './formStorageEditorStyleProperties';
+import { styleProperties, styleDefaults } from './formStorageEditorStyleProperties';
 
 const LazyFormStorageEditor = React.lazy(
 	() => import(/* webpackChunkName: "FormStorageEditor" */ './LazyFormStorageEditor'),
@@ -56,6 +56,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

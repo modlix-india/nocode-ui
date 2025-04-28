@@ -36,7 +36,7 @@ function savePersonalizationCurry(
 	locationHistory: Array<LocationHistory>,
 	pageDefinition: PageDefinition,
 ) {
-	if (!onChangePersonalization) return (key: string, value: any) => {};
+	if (!onChangePersonalization) return (key: string, value: any) => { };
 	let handle: any = -1;
 
 	return (key: string, value: any) => {
@@ -224,7 +224,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 	// Function to save the personalization
 	const savePersonalization = useMemo(() => {
-		if (!personalizationPath) return (key: string, value: any) => {};
+		if (!personalizationPath) return (key: string, value: any) => { };
 
 		return savePersonalizationCurry(
 			personalizationPath,
@@ -266,10 +266,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 		setClientCode(appDefinition?.clientCode ?? editPageDefinition.clientCode);
 		setUrl(
-			`/${editPageDefinition.appCode}/${
-				clientCode === ''
-					? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
-					: clientCode
+			`/${editPageDefinition.appCode}/${clientCode === ''
+				? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
+				: clientCode
 			}/page/${editPageDefinition.name}`,
 		);
 		setClientCode(appDefinition?.clientCode ?? editPageDefinition.clientCode);
@@ -453,18 +452,18 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 		const unlisten2 = themePath
 			? addListenerAndCallImmediatelyWithChildrenActivity(
-					(_, payload) => {
-						if (!templateIFrame) return;
+				(_, payload) => {
+					if (!templateIFrame) return;
 
-						const msg = {
-							type: 'EDITOR_APP_THEME',
-							payload,
-						};
-						templateIFrame.contentWindow?.postMessage(msg);
-					},
-					pageExtractor,
-					themePath,
-				)
+					const msg = {
+						type: 'EDITOR_APP_THEME',
+						payload,
+					};
+					templateIFrame.contentWindow?.postMessage(msg);
+				},
+				pageExtractor,
+				themePath,
+			)
 			: undefined;
 
 		function onMessageFromSlave(e: any) {
@@ -477,7 +476,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			if (type === 'SLAVE_STARTED') {
 				templateIFrame.contentWindow?.postMessage({
 					type: 'EDITOR_TYPE',
-					payload: { type: 'THEME' },
+					payload: { type: 'THEME_EDITOR' },
 				});
 				const msg = {
 					type: 'EDITOR_APP_DEFINITION',
