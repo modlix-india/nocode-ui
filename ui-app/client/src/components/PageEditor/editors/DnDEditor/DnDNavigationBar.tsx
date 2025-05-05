@@ -64,6 +64,7 @@ export default function DnDNavigationBar({
 		value: '',
 		style: '',
 		prop: '',
+		key: '',
 	});
 	const [allFilteredSelected, setAllFilteredSelected] = useState(false);
 
@@ -145,6 +146,8 @@ export default function DnDNavigationBar({
 				.filter(e => {
 					const nameMatch = (e.name ?? '').toUpperCase().includes(f.toUpperCase());
 
+					const keyMatch = e.key.toUpperCase().includes(f.toUpperCase());
+
 					let tags: string[] = [];
 					if (e._tags) {
 						if (Array.isArray(e._tags)) {
@@ -178,7 +181,8 @@ export default function DnDNavigationBar({
 						prop.value?.toString().toUpperCase().includes(f.toUpperCase()),
 					);
 
-					const isMatch = nameMatch || tagMatch || typeMatch || styleMatch || propMatch;
+					const isMatch =
+						nameMatch || keyMatch || tagMatch || typeMatch || styleMatch || propMatch;
 
 					if (isMatch) {
 						matchingComponents.push(e.key);
@@ -219,6 +223,10 @@ export default function DnDNavigationBar({
 				if (isAdvancedSearch) {
 					const nameMatch = advancedFilters.name
 						? (e.name ?? '').toUpperCase().includes(advancedFilters.name.toUpperCase())
+						: true;
+
+					const keyMatch = advancedFilters.key
+						? e.key.toUpperCase().includes(advancedFilters.key.toUpperCase())
 						: true;
 
 					const typeMatch = advancedFilters.type
@@ -283,7 +291,13 @@ export default function DnDNavigationBar({
 						: true;
 
 					return (
-						nameMatch && typeMatch && tagMatch && valueMatch && styleMatch && propMatch
+						nameMatch &&
+						keyMatch &&
+						typeMatch &&
+						tagMatch &&
+						valueMatch &&
+						styleMatch &&
+						propMatch
 					);
 				} else {
 					const nameMatch = (e.name ?? '').toUpperCase().includes(filter.toUpperCase());
@@ -310,7 +324,7 @@ export default function DnDNavigationBar({
 					const tagMatch = tags.some(tag =>
 						tag.toUpperCase().includes(filter.toUpperCase()),
 					);
-
+					const keyMatch = e.key.toUpperCase().includes(filter.toUpperCase());
 					const typeMatch = (e.type ?? '').toUpperCase().includes(filter.toUpperCase());
 					const styleMatch = Object.values(e.styleProperties ?? {}).some(style =>
 						Object.values(style.resolutions?.ALL ?? {}).some(prop =>
@@ -320,7 +334,9 @@ export default function DnDNavigationBar({
 					const propMatch = Object.values(e.properties ?? {}).some(prop =>
 						prop.value?.toString().toUpperCase().includes(filter.toUpperCase()),
 					);
-					return nameMatch || tagMatch || typeMatch || styleMatch || propMatch;
+					return (
+						nameMatch || keyMatch || tagMatch || typeMatch || styleMatch || propMatch
+					);
 				}
 			})
 			.map(e => e.key);
@@ -556,6 +572,7 @@ export default function DnDNavigationBar({
 									value: '',
 									style: '',
 									prop: '',
+									key: '',
 								});
 							}}
 						/>
@@ -608,6 +625,7 @@ export default function DnDNavigationBar({
 										value: '',
 										style: '',
 										prop: '',
+										key: '',
 									});
 									applyAdvancedFilter();
 								}}
