@@ -13,6 +13,7 @@ import { LocalStoreExtractor } from './LocalStoreExtractor';
 import { ParentExtractorForRunEvent } from './ParentExtractor';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
+import { AuthoritiesExtractor } from './AuthoritiesExtractor';
 import { sample } from './sampleData';
 
 export class StoreExtractor extends SpecialTokenValueExtractor {
@@ -45,6 +46,7 @@ if (typeof window !== 'undefined') {
 }
 export const localStoreExtractor = new LocalStoreExtractor(localStore, `${LOCAL_STORE_PREFIX}.`);
 export const themeExtractor = new ThemeExtractor();
+export const authoritiesExtractor = new AuthoritiesExtractor();
 export const fillerExtractor = new FillerExtractor();
 
 let pathName = window.location?.pathname;
@@ -86,10 +88,13 @@ const {
 	STORE_PREFIX,
 	localStoreExtractor,
 	themeExtractor,
+	authoritiesExtractor,
 	fillerExtractor,
 	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}.`),
 );
+
 themeExtractor.setStore(_store);
+authoritiesExtractor.setStore(_store);
 fillerExtractor.setStore(_store);
 
 globalThis.getStore = () => duplicate(_store);
