@@ -650,7 +650,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			(_, v) => {
 				if (!v?.id) return;
 
-				removeListener();
+				try { removeListener(); } catch (e) { }
 
 				let i = 0,
 					key = null;
