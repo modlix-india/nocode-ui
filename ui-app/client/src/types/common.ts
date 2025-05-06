@@ -74,6 +74,7 @@ export enum ComponentPropertyEditor {
 	COLOR_PICKER,
 	SECTION_PROPERTIES_EDITOR,
 	TEXT_EDITOR,
+	TAGS_EDITOR,
 }
 
 export enum ComponentPropertyGroup {
@@ -279,6 +280,7 @@ export interface ComponentStyle {
 }
 
 export interface ComponentDefinition {
+	// tag?: any;
 	key: string;
 	name: string;
 	bindingPath?: DataLocation;
@@ -303,6 +305,7 @@ export interface ComponentDefinition {
 	validations?: Array<Validation>;
 	displayOrder?: number;
 	children?: { [key: string]: boolean };
+	_tags?: string[];
 }
 
 export interface ComponentDefinitionValues {

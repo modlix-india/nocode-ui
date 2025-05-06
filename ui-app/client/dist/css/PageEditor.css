@@ -104,22 +104,6 @@
 	fill: url(#greenPropBarGradient);
 }
 
-.comp.compPageEditor ._filterBar {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: center;
-	padding: 15px 10px;
-	gap: 5px;
-	width: 100%;
-}
-
-.comp.compPageEditor ._filterBar i.fa {
-	font-size: 22px;
-	cursor: pointer;
-	color: #52bd94;
-}
-
 .comp.compPageEditor ._compsTree {
 	display: flex;
 	flex-direction: column;
@@ -213,6 +197,46 @@
 .comp.compPageEditor ._compsTree ._treeNodeName i.fa.fa-caret-right {
 	font-size: 10px;
 	margin-right: 6px;
+}
+
+.comp.compPageEditor ._compsTree ._matchCount {
+    background-color: #4a90e2;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 0.8em;
+    margin: 0 5px;
+}
+
+.comp.compPageEditor ._compsTree ._filtered {
+    background-color: rgba(74, 144, 226, 0.1);
+}
+
+.comp.compPageEditor ._compsTree ._batchOperations {
+    display: flex;
+    padding: 5px;
+    background-color: #f5f5f5;
+    border-bottom: 1px solid #ddd;
+}
+
+.comp.compPageEditor ._compsTree ._batchButton {
+    margin-right: 5px;
+    padding: 3px 8px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+}
+
+.comp.compPageEditor ._compsTree ._batchButton i {
+    margin-right: 5px;
+}
+
+.comp.compPageEditor ._compsTree ._batchButton:hover {
+    background-color: #f0f0f0;
 }
 
 .comp.compPageEditor ._compsTree ._treeNodeName i.fa._nothing {
@@ -324,6 +348,90 @@ select._peInput {
 	height: 38px;
 	border: 0.8px solid #e9ecef;
 	border-radius: 2px;
+}
+
+.comp.compPageEditor ._tagsEditor input {
+	width: 100%;
+}
+
+.comp.compPageEditor ._tagInput input {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+	padding: 2px;
+	min-height: 32px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.comp.compPageEditor ._tagsList {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._filterBar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	padding: 15px 10px;
+	gap: 5px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._filterBar i.fa {
+	font-size: 22px;
+	cursor: pointer;
+	color: #52bd94;
+}
+
+.comp.compPageEditor ._advancedFilter {
+	display: flex;
+	flex-direction: row;
+	gap: 8px;
+	padding: 8px;
+	width: 100%;
+}
+
+.comp.compPageEditor ._advancedFilterBody {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	width: 80%;
+	/* max-width: 100px; */
+}
+
+.comp.compPageEditor ._advancedFilterHeader {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 8px;
+}
+
+.comp.compPageEditor ._advancedFilter input {
+	width: 100%;
+	padding: 4px 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+
+.comp.compPageEditor ._tag {
+	display: flex;
+	align-items: center;
+	background: #f0f0f0;
+	border-radius: 3px;
+	padding: 4px 4px;
+	margin: 2px;
+	font-size: 12px;
+}
+
+.comp.compPageEditor ._peInput {
+	border: none;
+	outline: none;
+	flex: 1;
+	min-width: 60px;
 }
 
 .comp.compPageEditor textarea._peInput {
@@ -3452,17 +3560,16 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon {
 	position: absolute;
-    opacity: 0;
-    transition: opacity 0.2s;
-    cursor: pointer;
-    width: 10px;
-    height: 10px;
-    padding: 0;
-    border: 0;
-    background: transparent;
+	opacity: 0;
+	transition: opacity 0.2s;
+	cursor: pointer;
+	width: 10px;
+	height: 10px;
+	padding: 0;
+	border: 0;
+	background: transparent;
 	top: 10%;
 	right: 10%;
-	
 }
 
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon.pinned {
