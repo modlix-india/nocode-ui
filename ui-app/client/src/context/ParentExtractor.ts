@@ -26,7 +26,7 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		if (token.endsWith('.__index') && value?.endsWith?.('Parent')) {
 			let count = 0;
 			let index = 0;
-			while ((index = value.indexOf('Parent', index)) !== -1) {
+			while ((index = token.indexOf('Parent', index)) !== -1) {
 				count++;
 				index++;
 			}
@@ -114,7 +114,8 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		if (token.endsWith('.__index') && value?.endsWith?.('Parent')) {
 			let count = 0;
 			let index = 0;
-			while ((index = value.indexOf('Parent', index)) !== -1) {
+
+			while ((index = token.indexOf('Parent', index)) !== -1) {
 				count++;
 				index++;
 			}
