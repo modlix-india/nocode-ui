@@ -73,7 +73,8 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			orderDirection,
 			orderValue,
 			missingValueOrder,
-			newKeyStrategy
+			newKeyStrategy,
+			minimizeReRender,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -106,20 +107,20 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	}>({ array: [], oldKeys: [] });
 
 	let valuesMap: Map<string, TokenValueExtractor> | undefined = undefined;
-		if (filterCondition || orderKey) {
-			valuesMap = new Map<string, TokenValueExtractor>([
-				[storeExtractor.getPrefix(), storeExtractor],
-				[localStoreExtractor.getPrefix(), localStoreExtractor],
-				[pageExtractor.getPrefix(), pageExtractor],
-				[themeExtractor.getPrefix(), themeExtractor],
-				[dvExtractor.getPrefix(), dvExtractor],
-			]);
-			if (locationHistory.length) {
-				const pse = new ParentExtractorForRunEvent(locationHistory, valuesMap);
-				valuesMap.set(pse.getPrefix(), pse);
-				valuesMap.set(pse.getPrefix(), pse);
-			}
+	if (filterCondition || orderKey) {
+		valuesMap = new Map<string, TokenValueExtractor>([
+			[storeExtractor.getPrefix(), storeExtractor],
+			[localStoreExtractor.getPrefix(), localStoreExtractor],
+			[pageExtractor.getPrefix(), pageExtractor],
+			[themeExtractor.getPrefix(), themeExtractor],
+			[dvExtractor.getPrefix(), dvExtractor],
+		]);
+		if (locationHistory.length) {
+			const pse = new ParentExtractorForRunEvent(locationHistory, valuesMap);
+			valuesMap.set(pse.getPrefix(), pse);
+			valuesMap.set(pse.getPrefix(), pse);
 		}
+	}
 
 	useEffect(() => {
 		if (!defaultData) return;
@@ -136,8 +137,14 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 					if (Array.isArray(_v)) repData = _v.map((e, i) => [i, e]);
 					else repData = Object.entries(_v);
 				} else if (Array.isArray(_v)) repData = _v.map((e, i) => [i, e]);
-				
-				processArrayValue(repData, setRepeaterData, indKeys.current, {valuesMap, orderKey, orderDirection, missingValueOrder});
+
+				processArrayValue(repData, setRepeaterData, indKeys.current, {
+					valuesMap,
+					orderKey,
+					orderDirection,
+					missingValueOrder,
+					minimizeReRender,
+				});
 			},
 			pageExtractor,
 			bindingPathPath,
@@ -150,34 +157,44 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const handleAdd = async (index: any) => {
-		if (dataType === 'object' && (orderValue === 'value' || !orderKey) && newKeyStrategy) return;
+		if (dataType === 'object' && (orderValue === 'value' || !orderKey) && newKeyStrategy)
+			return;
 
 		let newData = [...(repeaterData ?? [])];
-		
+
 		let newKey;
 		if (newKeyStrategy == 'index') newKey = index + 1;
 		else if (newKeyStrategy == 'shortUUID') newKey = shortUUID();
 
 		if (orderKey && orderValue != 'value') {
-			newData.splice(index + 1, 0, [newKey, orderKey == "__index" ? {}: {[orderKey]: newKey }]);
+			newData.splice(index + 1, 0, [
+				newKey,
+				orderKey == '__index' ? {} : { [orderKey]: newKey },
+			]);
 			newData = duplicate(newData);
-			
+
 			const add = orderValue == 'index' ? 0 : 1;
 			const isAssending = orderDirection == 'asc';
 			for (let i = 0; i < newData.length; i++) {
-				if (orderKey === "__index") {
-					newData[i][0] = (isAssending ? i : (newData.length - i - 1)) + add;
+				if (orderKey === '__index') {
+					newData[i][0] = (isAssending ? i : newData.length - i - 1) + add;
 				} else {
-					newData[i][1][orderKey] = (isAssending ? i : (newData.length - i - 1)) + add;
+					newData[i][1][orderKey] = (isAssending ? i : newData.length - i - 1) + add;
 				}
 			}
 		} else {
 			newData.splice(index + 1, 0, [undefined, undefined as unknown as never]);
 		}
-		setData(bindingPathPath!, dataType == 'object' ? newData.reduce((acc: { [x: string]: any; }, e: any[]) => {
-			acc[e[0]] = e[1];
-			return acc;
-		}, {} as any) : newData.map((e: any[]) => e[1]), context?.pageName);
+		setData(
+			bindingPathPath!,
+			dataType == 'object'
+				? newData.reduce((acc: { [x: string]: any }, e: any[]) => {
+						acc[e[0]] = e[1];
+						return acc;
+					}, {} as any)
+				: newData.map((e: any[]) => e[1]),
+			context?.pageName,
+		);
 
 		clickAdd &&
 			(await runEvent(
@@ -193,10 +210,12 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		let newData: any;
 
 		if (dataType === 'object') {
-			newData = repeaterData.filter((_, i) => i !== index).reduce((acc, e) => {
-				acc[e[0]] = e[1];
-				return acc;
-			}, {} as any);
+			newData = repeaterData
+				.filter((_, i) => i !== index)
+				.reduce((acc, e) => {
+					acc[e[0]] = e[1];
+					return acc;
+				}, {} as any);
 		} else {
 			newData = repeaterData.filter((_, i) => i !== index).map(e => e[1]);
 		}
@@ -222,7 +241,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			const temp = newData[from];
 			newData[from] = newData[to];
 			newData[to] = temp;
-		} else if (orderKey == "__index") {
+		} else if (orderKey == '__index') {
 			const tempIndex = newData[from][0];
 			newData[from][0] = newData[to][0];
 			newData[to][0] = tempIndex;
@@ -231,11 +250,17 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			newData[from][1][orderKey] = newData[to][1][orderKey];
 			newData[to][1][orderKey] = tempKey;
 		}
-		
-		setData(bindingPathPath!, dataType == 'object' ? newData.reduce((acc: { [x: string]: any; }, e: any[]) => {
-			acc[e[0]] = e[1];
-			return acc;
-		}, {} as any) : newData.map((e: any[]) => e[1]), context?.pageName);
+
+		setData(
+			bindingPathPath!,
+			dataType == 'object'
+				? newData.reduce((acc: { [x: string]: any }, e: any[]) => {
+						acc[e[0]] = e[1];
+						return acc;
+					}, {} as any)
+				: newData.map((e: any[]) => e[1]),
+			context?.pageName,
+		);
 
 		clickMove &&
 			(await runEvent(
@@ -283,32 +308,40 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		const newData = duplicate(repeaterData);
 		newData.splice(to, 0, newData.splice(from, 1)[0]);
 
-		if (orderValue === "value") {
+		if (orderValue === 'value') {
 			for (let i = 0; i < newData.length; i++) {
-				if (orderKey === "__index") {
+				if (orderKey === '__index') {
 					newData[i][0] = repeaterData[i][0];
 				} else if (orderKey) {
 					dvExtractor.setData(repeaterData[i][1]);
-					newData[i][1][orderKey] = new ExpressionEvaluator(`Data.${orderKey}`).evaluate(valuesMap!);
+					newData[i][1][orderKey] = new ExpressionEvaluator(`Data.${orderKey}`).evaluate(
+						valuesMap!,
+					);
 				}
 			}
 		} else if (orderKey) {
 			const add = orderValue == 'index' ? 0 : 1;
 			const isAssending = orderDirection == 'asc';
 			for (let i = 0; i < newData.length; i++) {
-				if (orderKey === "__index") {
-					newData[i][0] = (isAssending ? i : (newData.length - i - 1)) + add;
+				if (orderKey === '__index') {
+					newData[i][0] = (isAssending ? i : newData.length - i - 1) + add;
 				} else {
-					newData[i][1][orderKey] = (isAssending ? i : (newData.length - i - 1)) + add;
+					newData[i][1][orderKey] = (isAssending ? i : newData.length - i - 1) + add;
 				}
 			}
 			if (!isAssending) newData.reverse();
 		}
 
-		setData(bindingPathPath!, dataType == 'object' ? newData.reduce((acc: { [x: string]: any; }, e: any[]) => {
-			acc[e[0]] = e[1];
-			return acc;
-		}, {} as any) : newData.map((e: any[]) => e[1]), context?.pageName);
+		setData(
+			bindingPathPath!,
+			dataType == 'object'
+				? newData.reduce((acc: { [x: string]: any }, e: any[]) => {
+						acc[e[0]] = e[1];
+						return acc;
+					}, {} as any)
+				: newData.map((e: any[]) => e[1]),
+			context?.pageName,
+		);
 
 		if (!clickMove) return;
 		(async () => {
@@ -335,8 +368,9 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		if (!updatableBindingPath && defaultData) {
 			updatableBindingPath = {
 				type: 'VALUE',
-				value: `Store.defaultData.${pageExtractor?.getPageName() ?? '_global'
-					}.${flattenUUID(key)}`,
+				value: `Store.defaultData.${
+					pageExtractor?.getPageName() ?? '_global'
+				}.${flattenUUID(key)}`,
 			};
 		}
 
@@ -379,7 +413,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 						orderKey,
 						orderDirection,
 						orderValue,
-						newKeyStrategy
+						newKeyStrategy,
 					}),
 				)}
 			</>
@@ -416,24 +450,24 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			onDrop={
 				hasDrop
 					? e => {
-						e.preventDefault();
-						let data = e.dataTransfer.getData(dropDataType);
-						if (dropDataPrefix) {
-							if (!data.startsWith(dropDataPrefix)) return;
-							data = data.substring(dropDataPrefix.length);
+							e.preventDefault();
+							let data = e.dataTransfer.getData(dropDataType);
+							if (dropDataPrefix) {
+								if (!data.startsWith(dropDataPrefix)) return;
+								data = data.substring(dropDataPrefix.length);
+							}
+							if (dropDataType === 'application/json') data = JSON.parse(data);
+							if (bindingPathPath2) setData(bindingPathPath2, data, context.pageName);
+							if (!onDropData || !pageDefinition.eventFunctions[onDropData]) return;
+							(async () =>
+								await runEvent(
+									pageDefinition.eventFunctions[onDropData],
+									onDropData,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
 						}
-						if (dropDataType === 'application/json') data = JSON.parse(data);
-						if (bindingPathPath2) setData(bindingPathPath2, data, context.pageName);
-						if (!onDropData || !pageDefinition.eventFunctions[onDropData]) return;
-						(async () =>
-							await runEvent(
-								pageDefinition.eventFunctions[onDropData],
-								onDropData,
-								props.context.pageName,
-								props.locationHistory,
-								props.pageDefinition,
-							))();
-					}
 					: undefined
 			}
 		>
@@ -507,7 +541,7 @@ function createRepeaterItem({
 	valuesMap,
 	orderKey,
 	orderValue,
-	newKeyStrategy
+	newKeyStrategy,
 }: {
 	pageDefinition: PageDefinition;
 	firstchild: any;
@@ -549,17 +583,25 @@ function createRepeaterItem({
 	orderValue: string;
 	newKeyStrategy: string;
 }) {
-
 	if (valuesMap && filterCondition) {
 		dvExtractor.setData(repeaterData[index][1]);
 		const ev = new ExpressionEvaluator(filterCondition);
 		const value = ev.evaluate(valuesMap);
 
-		if (!value) return <Fragment key={`fragment_${indKeys.current.array[index]}`} />;
+		if (!value)
+			return (
+				<Fragment
+					key={
+						indKeys.current.array[index]
+							? undefined
+							: `fragment_${indKeys.current.array[index]}`
+					}
+				/>
+			);
 	}
 
 	const canDragToReSort = dataType !== 'object' || orderKey;
-	
+
 	const comp = (
 		<Children
 			pageDefinition={pageDefinition}
@@ -579,7 +621,10 @@ function createRepeaterItem({
 		/>
 	);
 	let addButton;
-	if (showAdd && (dataType !== 'object' || (orderValue != 'value' && orderKey && newKeyStrategy))) {
+	if (
+		showAdd &&
+		(dataType !== 'object' || (orderValue != 'value' && orderKey && newKeyStrategy))
+	) {
 		addButton = (
 			<i
 				tabIndex={0}
@@ -601,18 +646,19 @@ function createRepeaterItem({
 		firstMoveButton = (
 			<i
 				tabIndex={0}
-				className={`moveOne ${index == repeaterData?.length - 1
+				className={`moveOne ${
+					index == repeaterData?.length - 1
 						? (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
 						: (moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid')
-					}`}
+				}`}
 				style={styleProperties.move ?? {}}
 				onClick={
 					showMove
 						? () =>
-							handleMove(
-								index,
-								index == repeaterData?.length - 1 ? index - 1 : index + 1,
-							)
+								handleMove(
+									index,
+									index == repeaterData?.length - 1 ? index - 1 : index + 1,
+								)
 						: undefined
 				}
 			>
@@ -626,10 +672,11 @@ function createRepeaterItem({
 		secondMoveButton = (
 			<i
 				tabIndex={0}
-				className={`moveOne ${index == 0 || index == repeaterData?.length - 1
+				className={`moveOne ${
+					index == 0 || index == repeaterData?.length - 1
 						? ''
 						: (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
-					}`}
+				}`}
 				onClick={showMove ? () => handleMove(index, index - 1) : undefined}
 				style={styleProperties.move ?? {}}
 			>
@@ -645,7 +692,7 @@ function createRepeaterItem({
 		<div
 			tabIndex={0}
 			role="button"
-			key={`div_${indKeys.current.array[index]}`}
+			key={indKeys.current.array[index] ? undefined : `div_${indKeys.current.array[index]}`}
 			data-key={`${indKeys.current.array[index]}`}
 			className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
 			onDragStart={canDragToReSort ? e => handleDragStart(e, index) : undefined}
@@ -655,7 +702,7 @@ function createRepeaterItem({
 			onDragLeave={canDragToReSort ? handleDragLeave : undefined}
 			draggable={canDragToReSort && isItemDraggable && !readOnly}
 			style={styleProperties.repeaterProperties ?? {}}
-			onKeyDown={() => { }}
+			onKeyDown={() => {}}
 		>
 			<SubHelperComponent
 				definition={props.definition}
@@ -700,12 +747,19 @@ function processArrayValue(
 	repData: any[][],
 	setRepeaterData: (v: any[]) => void,
 	indKeysCurrent: { array: Array<string>; oldKeys: Array<{ object: any; key: string }> },
-	{valuesMap, orderKey, orderDirection, missingValueOrder}: {
-		valuesMap: Map<string, TokenValueExtractor> | undefined,
-		orderKey: string,
-		orderDirection: string,
-		missingValueOrder: string,
-	}
+	{
+		valuesMap,
+		orderKey,
+		orderDirection,
+		missingValueOrder,
+		minimizeReRender,
+	}: {
+		valuesMap: Map<string, TokenValueExtractor> | undefined;
+		orderKey: string;
+		orderDirection: string;
+		missingValueOrder: string;
+		minimizeReRender: boolean;
+	},
 ) {
 	if (!repData.length) {
 		setRepeaterData([]);
@@ -714,37 +768,42 @@ function processArrayValue(
 
 	if (orderKey && valuesMap) {
 		repData = repData
-		.map(e => {
-			if (orderKey === '__index') return [e[0], e];
-			dvExtractor.setData(e[1]);
-			const ev = new ExpressionEvaluator(`Data.${orderKey}`);
-			const value = ev.evaluate(valuesMap);
-			return [value, e];
-		})
-		.sort((a, b) => {
-			const aValue = a[0];
-			const bValue = b[0];
-			if (aValue === undefined || bValue === undefined) return missingValueOrder === 'last' ? 1 : -1;
-			if (typeof aValue === 'number' && typeof bValue === 'number') {
-				return orderDirection === 'asc' ? aValue - bValue : bValue - aValue;
-			} else if (typeof aValue === 'string' || typeof bValue === 'string') {
-				return orderDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-			}
-			return 0;
-		})
-		.map(e => e[1]);
+			.map(e => {
+				if (orderKey === '__index') return [e[0], e];
+				dvExtractor.setData(e[1]);
+				const ev = new ExpressionEvaluator(`Data.${orderKey}`);
+				const value = ev.evaluate(valuesMap);
+				return [value, e];
+			})
+			.sort((a, b) => {
+				const aValue = a[0];
+				const bValue = b[0];
+				if (aValue === undefined || bValue === undefined)
+					return missingValueOrder === 'last' ? 1 : -1;
+				if (typeof aValue === 'number' && typeof bValue === 'number') {
+					return orderDirection === 'asc' ? aValue - bValue : bValue - aValue;
+				} else if (typeof aValue === 'string' || typeof bValue === 'string') {
+					return orderDirection === 'asc'
+						? aValue.localeCompare(bValue)
+						: bValue.localeCompare(aValue);
+				}
+				return 0;
+			})
+			.map(e => e[1]);
 	}
 
 	setRepeaterData(repData);
+
+	if (minimizeReRender) return;
 
 	const duplicateCheck = new Array<{ object: any; occurance: number }>();
 	for (let i = 0; i < repData.length; i++) {
 		let oldIndex = -1;
 
-		let duplicateObject = duplicateCheck.find(e => deepEqual(e.object, repData[i]));
+		let duplicateObject = duplicateCheck.find(e => deepEqual(e.object, repData[i][1]));
 
 		if (!duplicateObject) {
-			duplicateObject = { object: repData[i], occurance: 1 };
+			duplicateObject = { object: repData[i][1], occurance: 1 };
 			duplicateCheck.push(duplicateObject);
 		} else {
 			duplicateObject.occurance++;
@@ -754,7 +813,7 @@ function processArrayValue(
 		let count = -1;
 		for (let oldIndexObject of indKeysCurrent.oldKeys) {
 			count++;
-			if (!deepEqual(oldIndexObject.object, repData[i])) continue;
+			if (!deepEqual(oldIndexObject.object, repData[i][1])) continue;
 			occurance--;
 			if (occurance !== 0) continue;
 			oldIndex = count;
@@ -765,7 +824,7 @@ function processArrayValue(
 			indKeysCurrent.array[i] = shortUUID();
 			if (repData[i][1] !== undefined && repData[i][1] !== null)
 				indKeysCurrent.oldKeys.push({
-					object: duplicate(repData[i]),
+					object: duplicate(repData[i][1]),
 					key: indKeysCurrent.array[i],
 				});
 		} else {

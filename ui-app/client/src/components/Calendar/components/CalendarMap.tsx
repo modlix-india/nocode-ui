@@ -49,11 +49,20 @@ export function CalendarMap(
 
 	if (browsingMonthYear) {
 		const [month, year] = browsingMonthYear.split('-').map(e => parseInt(e, 10));
+		currentDate.setDate(1);
 		currentDate.setMonth(month - 1);
 		currentDate.setFullYear(year);
 	} else if (thisDate || thatDate) {
 		currentDate =
 			getValidDate(isEndDate ? thatDate : thisDate, displayDateFormat) ?? new Date();
+
+		if (currentDate.getDate() > 28) {
+			const tempDate = new Date(currentDate);
+			tempDate.setMonth(currentDate.getMonth());
+			if (tempDate.getMonth() !== currentDate.getMonth()) {
+				currentDate.setDate(1);
+			}
+		}
 	}
 
 	const [browseMonths, setBrowseMonths] = React.useState<number | undefined>();
@@ -202,17 +211,11 @@ export function CalendarMap(
 		);
 
 		if (browseMonths) {
-			const from = new Date();
-			from.setFullYear(browseMonths);
-			from.setMonth(0);
 			const monthNames: React.JSX.Element[] = [];
 
 			for (let i = 0; i < 12; i++) {
-				const monthDate = new Date(from);
-				monthDate.setMonth(i);
-
+				const monthDate = new Date(browseMonths, i, 1);
 				let isDisabled = false;
-
 				if (minimumPossibleDate) {
 					const minYear = minimumPossibleDate.getFullYear();
 					if (
@@ -222,7 +225,6 @@ export function CalendarMap(
 						isDisabled = true;
 					}
 				}
-
 				if (maximumPossibleDate) {
 					const maxYear = maximumPossibleDate.getFullYear();
 					if (
@@ -235,7 +237,7 @@ export function CalendarMap(
 
 				monthNames.push(
 					<CalendarMonthTitle
-						key={monthDate.toDateString()}
+						key={`month-${browseMonths}-${i}`}
 						{...newProps}
 						month={monthDate.toLocaleDateString(props.language, {
 							month: props.monthLabels,
