@@ -1,4 +1,4 @@
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP, SCHEMA_NUM_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -71,8 +71,96 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Zoom Image',
 		description: 'High quality image for zoom functionality.',
-		notImplemented: true,
 		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.IMAGE,
+	},
+	{
+		name: 'zoomOrigin',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Zoom origin',
+		description: 'The origin point from which the image zooms.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'center',
+		enumValues: [
+			{
+				displayName: 'Center',
+				name: 'center',
+			},
+			{
+				displayName: 'Top',
+				name: 'top',
+			},
+			{
+				displayName: 'Bottom',
+				name: 'bottom',
+			},
+			{
+				displayName: 'Left',
+				name: 'left',
+			},
+			{
+				displayName: 'Right',
+				name: 'right',
+			},
+			{
+				displayName: 'Top Left',
+				name: 'top-left',
+			},
+			{
+				displayName: 'Top Right',
+				name: 'top-right',
+			},
+			{
+				displayName: 'Bottom Left',
+				name: 'bottom-left',
+			},
+			{
+				displayName: 'Bottom Right',
+				name: 'bottom-right',
+			}
+		]
+	},
+	{
+		name: 'constrainZoom',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Constrain zoom',
+		description: 'Whether to constrain the image within its container when zoomed',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'zoomControlPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Zoom control position',
+		description: 'The position of the zoom control.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'bottom-left',
+		enumValues: [
+			{
+				displayName: 'Top Left',
+				name: 'top-left',
+			},
+			{
+				displayName: 'Top Right',
+				name: 'top-right',
+			},
+			{
+				displayName: 'Bottom Left',
+				name: 'bottom-left',
+			},
+			{
+				displayName: 'Bottom Right',
+				name: 'bottom-right',
+			}
+		]
+	},
+	{
+		name: 'zoomStep',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Zoom step',
+		description: 'The step size for zooming in and out.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 10,	
 	},
 	{
 		name: 'fallBackImg',
@@ -90,7 +178,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-
 	{
 		name: 'stopPropagation',
 		schema: SCHEMA_BOOL_COMP_PROP,

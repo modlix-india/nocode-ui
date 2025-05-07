@@ -39,6 +39,9 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const [falledBack, setFalledBack] = useState(false);
 	const location = useLocation();
+	const [zoomLevel, setZoomLevel] = useState(100);
+	const [showZoomControls, setShowZoomControls] = useState(false);
+
 	const {
 		properties: {
 			alt,
@@ -53,6 +56,12 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			stopPropagation,
 			preventDefault,
 			useObjectToRender,
+			zoom,
+			zoomedImg,
+			zoomOrigin,
+			constrainZoom = false,
+			zoomControlPosition = 'bottom-left',
+			zoomStep = 10,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -111,6 +120,8 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 	const [actualSrc, setActualSrc] = useState<string | undefined>();
 	const computedUrl = getSrcUrl(getHref(src ?? defaultSrc, location)!);
+	const highQualityUrl = zoomedImg ? getSrcUrl(getHref(zoomedImg, location)!) : computedUrl;
+
 	useEffect(() => {
 		if (!computedUrl.includes('api/files/secured')) {
 			setActualSrc(computedUrl);
@@ -119,40 +130,111 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		(async () => setActualSrc(await secureImage(computedUrl)))();
 	}, [computedUrl]);
 
+	const handleZoomIn = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setZoomLevel(prev => prev + Number(zoomStep));
+	};
+
+	const handleZoomOut = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setZoomLevel(prev => Math.max(prev - Number(zoomStep), 10));
+	};
+
+	const handleZoomReset = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setZoomLevel(100);
+	};
+
 	let imageTag = undefined;
 
 	if (actualSrc) {
+		const displaySrc = zoomLevel > 100 && highQualityUrl ? highQualityUrl : actualSrc;
+
+		const zoomStyle = {
+			...(resolvedStyles.image ?? {}),
+			transform: `scale(${zoomLevel / 100})`,
+			transformOrigin: zoomOrigin,
+			transition: 'transform 0.2s ease-out',
+		};
+
+		const containerStyle = constrainZoom ? { overflow: 'hidden' } : {};
+
 		const actualImage = useObjectToRender ? (
-			<object type="image/svg+xml" data={actualSrc} style={resolvedStyles.image ?? {}} />
+			<object type="image/svg+xml" data={displaySrc} style={zoomStyle} />
 		) : (
 			<img
-				onMouseEnter={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
-				}
-				onMouseLeave={
-					stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
-				}
 				onClick={
 					onClickEvent
 						? ev => {
-							if (stopPropagation) ev.stopPropagation();
-							if (preventDefault) ev.preventDefault();
-							handleClick();
-						}
+								if (stopPropagation) ev.stopPropagation();
+								if (preventDefault) ev.preventDefault();
+								handleClick();
+							}
 						: undefined
 				}
 				className={onClickEvent ? '_onclicktrue' : ''}
-				style={resolvedStyles.image ?? {}}
-				src={actualSrc}
+				style={zoomStyle}
+				src={displaySrc}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
 				loading={imgLazyLoading ? 'lazy' : 'eager'}
 			/>
 		);
 
+		// Determine zoom controls position
+		const zoomControlsStyle: React.CSSProperties = {};
+		switch (zoomControlPosition) {
+			case 'top-left':
+				zoomControlsStyle.top = '10px';
+				zoomControlsStyle.left = '10px';
+				break;
+			case 'top-right':
+				zoomControlsStyle.top = '10px';
+				zoomControlsStyle.right = '10px';
+				break;
+			case 'bottom-right':
+				zoomControlsStyle.bottom = '10px';
+				zoomControlsStyle.right = '10px';
+				break;
+			case 'bottom-left':
+			default:
+				zoomControlsStyle.bottom = '10px';
+				zoomControlsStyle.left = '10px';
+				break;
+		}
+
+		let zoomControls =
+			zoom && showZoomControls ? (
+				<div className="_zoomControls" style={zoomControlsStyle}>
+					<button className="_zoomButton _zoomOut" onClick={handleZoomOut}>
+						-
+					</button>
+					<button className="_zoomButton _zoomReset" onClick={handleZoomReset}>
+						{zoomLevel}%
+					</button>
+					<button className="_zoomButton _zoomIn" onClick={handleZoomIn}>
+						+
+					</button>
+				</div>
+			) : null;
+
 		imageTag = (
 			<>
-				{actualImage}
+				<div
+					className="_imageContainer"
+					style={containerStyle}
+					onMouseEnter={() => {
+						if (stylePropertiesWithPseudoStates?.hover) setHover(true);
+						if (zoom) setShowZoomControls(true);
+					}}
+					onMouseLeave={() => {
+						if (stylePropertiesWithPseudoStates?.hover) setHover(false);
+						if (zoom) setShowZoomControls(false);
+					}}
+				>
+					{actualImage}
+					{zoomControls}
+				</div>
 				<SubHelperComponent
 					style={resolvedStyles.image ?? {}}
 					className={onClickEvent ? '_onclicktrue' : ''}
@@ -221,6 +303,12 @@ const component: Component = {
 			displayName: 'Image',
 			description: 'Image',
 			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'zoomControls',
+			displayName: 'Zoom Controls',
+			description: 'Zoom Controls Panel',
+			icon: 'fa-solid fa-magnifying-glass',
 		},
 	],
 	stylePropertiesForTheme: styleProperties,
