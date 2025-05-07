@@ -12,6 +12,9 @@ import { ComponentDefinition, ComponentProperty } from '../../../types/common';
 import TextBoxPropertyGenerator from './textBoxProperties';
 import CheckBoxPropertyGenerator from './checkBoxProperties';
 import DropdownPropertyGenerator from './dropDownProperties';
+import arrayRepeatorGenerator from './arrayRepeatorProperties';
+import ArrayRepeatorGenerator from './arrayRepeatorProperties';
+import { setData } from '../../../context/StoreContext';
 
 const NUMBER_TYPES = new Set([
 	SchemaType.INTEGER,
@@ -36,7 +39,7 @@ export default function generateChildren({
 	useEffect(() => {
 		if (isNullValue(actualSchema.getRef())) {
 			setSchema(actualSchema);
-			
+
 			return;
 		}
 		const resolveSchema = async () => {
@@ -173,82 +176,82 @@ function processArraySchema(
 
 	const singleSchema = itemSchemas.getSingleSchema();
 	const tupleSchema = itemSchemas.getTupleSchema();
-	const maxItems = schema.getMaxItems();
 	const minItems = schema.getMinItems();
 
-	const isTupleSchema = Array.isArray(tupleSchema);
-	const arrKey = `arrayRepeator${order.currentOrder}`;
-
-	const showAdd: ComponentProperty<any> =
-		maxItems && !tupleSchema
-			? { 
-					value: true,
-					location: {
-						type: 'EXPRESSION',
-						expression: `{{${bindingPathPath}.length?? 0}} < ${maxItems} ? true : false`,
-					},
-				}
-			: { value: !isTupleSchema };
-	const arrayRepeatorComp: ComponentDefinition = {
-		key: arrKey,
-		name: 'Repeator',
-		displayOrder: order.currentOrder,
-		type: 'ArrayRepeater',
-		bindingPath: bindingPathPath ? { type: 'VALUE', value: `${bindingPathPath}` } : undefined,
-		properties: {
-			showAdd: showAdd,
-			showDelete: { value: !isTupleSchema },
-			dataType: { value: 'array' },
-		},
-		children: {},
-	};
-	componentDefinitions[arrayRepeatorComp.key] = arrayRepeatorComp;
-	children[arrayRepeatorComp.key] = true;
-	order.currentOrder++;
-	
-	const schemaFinal = isTupleSchema ? tupleSchema : [singleSchema];
-
-	schemaFinal.forEach((subSchema, index) => {
-		const eachBindingPath = isTupleSchema ? `${bindingPathPath}[${index}]` : 'Parent';
-
-		if (schema instanceof Schema) {
-			if (subSchema!.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT)) {
-				const nestedSchema = generateSchemaForm(
-					subSchema as Schema,
-					eachBindingPath,
-					order,
-				);
-				Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
-				Object.assign(
-					!isTupleSchema ? arrayRepeatorComp.children! : children,
-					nestedSchema.children,
-				);
-			} else {
-				const eachCompDef = compDefinitionGenerator(
-					`Item_${index}`,
-					subSchema as Schema,
-					eachBindingPath,
-					order.currentOrder++,
-					[],
-					minItems,
-					bindingPathPath,
-				);
-				if (eachCompDef) {
-					componentDefinitions[eachCompDef.key] = eachCompDef;
-					!isTupleSchema
-						? (arrayRepeatorComp.children![eachCompDef.key] = true)
-						: (children[eachCompDef.key] = true);
-					order.currentOrder++;
+	if (tupleSchema)
+		tupleSchema.forEach((subSchema, index) => {
+			const eachBindingPath = `${bindingPathPath}[${index}]`;
+			if (schema instanceof Schema) {
+				if (
+					subSchema!.getType()?.getAllowedSchemaTypes()?.has(SchemaType.OBJECT) ||
+					subSchema!.getType()?.getAllowedSchemaTypes()?.has(SchemaType.ARRAY)
+				) {
+					const nestedSchema = generateSchemaForm(
+						subSchema as Schema,
+						eachBindingPath,
+						order,
+					);
+					Object.assign(componentDefinitions, nestedSchema.pageDef.componentDefinition);
+					Object.assign(children, nestedSchema.children);
+				} else {
+					const eachCompDef = compDefinitionGenerator(
+						`Item_${index}`,
+						subSchema as Schema,
+						eachBindingPath,
+						order.currentOrder++,
+						[],
+						minItems,
+						bindingPathPath,
+					);
+					if (eachCompDef) {
+						componentDefinitions[eachCompDef.key] = eachCompDef;
+						children[eachCompDef.key] = true;
+						order.currentOrder++;
+					}
 				}
 			}
+		});
+
+	if (singleSchema) {
+		const arrcompDef = compDefinitionGenerator(
+			order.currentOrder.toString(),
+			schema as Schema,
+			bindingPathPath,
+			order.currentOrder,
+			[],
+			minItems,
+			bindingPathPath,
+		);
+
+		if (arrcompDef) {
+			componentDefinitions[arrcompDef.key] = arrcompDef;
+			children[arrcompDef.key] = true;
+			order.currentOrder++;
 		}
-	});
+
+		const compDef = compDefinitionGenerator(
+			`Item_0`,
+			
+			singleSchema as Schema,
+			'Parent',
+			order.currentOrder,
+			[],
+			minItems,
+			bindingPathPath,
+		);
+		console.log('hh', singleSchema, compDef, bindingPathPath, order.currentOrder, minItems);
+		if (compDef) {
+			componentDefinitions[compDef.key] = compDef;
+			arrcompDef!.children![compDef.key] = true;
+			order.currentOrder++;
+		}
+	}
 }
 
 function compDefinitionGenerator(
 	label: string,
 	schema: Schema,
-	bindingPathPath?: string,
+	bindingPathPath: string | undefined,
 	displayOrder: number = 0,
 	required: string[] = [],
 	minItems?: number,
@@ -272,6 +275,7 @@ function compDefinitionGenerator(
 		displayOrder: displayOrder,
 		type: compName,
 		properties: properties,
+		children: {},
 		bindingPath: bindingPathPath ? { type: 'VALUE', value: `${bindingPathPath}` } : undefined,
 	};
 
@@ -280,6 +284,8 @@ function compDefinitionGenerator(
 
 function getComponentName(schema: Schema, types: Set<SchemaType>) {
 	if (!types || types.size === ALL_SET.size) return null;
+
+	if (types.has(SchemaType.ARRAY) && schema.getItems()?.getSingleSchema()) return 'ArrayRepeater';
 
 	if (schema.getEnums()?.length) return 'Dropdown';
 
@@ -300,12 +306,15 @@ interface ComponentPropertyGenerator {
 		isMandatory: boolean,
 		arrbindingPathPath?: string,
 		minItems?: number,
+		bindingPathPath?: string,
 	): {
 		[key: string]: ComponentProperty<any>;
 	};
 }
 
 const componentPropertyMap: { [key: string]: ComponentPropertyGenerator } = {
+	ArrayRepeater: ArrayRepeatorGenerator,
+
 	TextBox: TextBoxPropertyGenerator,
 
 	CheckBox: CheckBoxPropertyGenerator,
