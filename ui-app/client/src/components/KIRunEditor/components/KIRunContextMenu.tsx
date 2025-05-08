@@ -35,7 +35,9 @@ export default function KIRunContextMenu({
 				<>
 					<div
 						className="_menuItem"
-						onClick={() => {
+						onMouseDown={e => {
+							e.stopPropagation();
+							e.preventDefault();
 							if (isReadonly || !bindingPathPath) return;
 
 							const newDef = duplicate(rawDef);
@@ -56,7 +58,9 @@ export default function KIRunContextMenu({
 				<>
 					<div
 						className="_menuItem"
-						onClick={() => {
+						onMouseDown={e => {
+							e.stopPropagation();
+							e.preventDefault();
 							if (isReadonly || !bindingPathPath) return;
 							setShowAddSearch({
 								left: menu.position.left - 5,
