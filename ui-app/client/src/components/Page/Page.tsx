@@ -44,16 +44,20 @@ function PageComponent(props: Readonly<ComponentProps>) {
 
 	const [, setLastChanged] = useState<number>(Date.now());
 
-	const app = getDataFromPath(`Store.application`, []);
-	const shouldRedirect = app?.appCode === pageDefinition?.appCode &&
+	const auth = getDataFromPath(`Store.auth`, []);
+	let shouldRedirect = false;
+	if (!auth?.isAuthenticated && pageDefinition) {
+		const app = getDataFromPath(`Store.application`, []);
+		shouldRedirect = app?.appCode === pageDefinition?.appCode &&
 		app?.properties?.loginPage === pageDefinition.name &&
 		app?.properties?.sso?.redirectURL;
-
+	}
 
 	useEffect(() => {
 		if (!shouldRedirect) return;
 
 		(async () => {
+			const app = getDataFromPath(`Store.application`, []);
 			const redirectURL = app?.properties?.sso?.redirectURL;
 			const {appCode = "", clientCode = ""} = (await axios.get('api/ui/urlDetails')).data ?? {};
 
