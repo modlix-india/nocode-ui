@@ -4,6 +4,7 @@ import { STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
 	addListenerWithChildrenActivity,
+	getData,
 	getDataFromPath,
 	PageStoreExtractor,
 	setData,
@@ -19,6 +20,7 @@ import PageStyle from './PageStyle';
 import pageHistory from './pageHistory';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
 import { styleProperties, styleDefaults } from './pageStyleProperties';
+import axios from 'axios';
 
 const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
 
@@ -41,6 +43,26 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	);
 
 	const [, setLastChanged] = useState<number>(Date.now());
+
+	const app = getDataFromPath(`Store.application`, []);
+	const shouldRedirect = app?.appCode === pageDefinition?.appCode &&
+		app?.properties?.loginPage === pageDefinition.name &&
+		app?.properties?.sso?.redirectURL;
+
+
+	useEffect(() => {
+		if (!shouldRedirect) return;
+
+		(async () => {
+			const redirectURL = app?.properties?.sso?.redirectURL;
+			const {appCode = "", clientCode = ""} = (await axios.get('api/ui/urlDetails')).data ?? {};
+
+			window.location.href = redirectURL.replace('{appCode}', appCode)
+								.replace('{clientCode}', clientCode)
+								.replace('{redirectUrl}', window.location.href);
+		})();
+
+	}, [shouldRedirect]);
 
 	useEffect(
 		() =>
@@ -155,6 +177,8 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		}
 		return fullStyle;
 	}, [pageDefinition?.properties?.classes]);
+
+	if (shouldRedirect) return <></>;
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
