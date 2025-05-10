@@ -387,7 +387,7 @@ export default function LazyKIRunEditor(
 				Object.values(def.steps).forEach((s: any) => {
 					if (!s.dependentStatements) return;
 					const keysToDelete = Object.keys(s.dependentStatements).filter(e =>
-						e.startsWith(`Steps.${name}`),
+						e.startsWith(`Steps.${name}.`),
 					);
 					keysToDelete.forEach(e => delete s.dependentStatements[e]);
 				});

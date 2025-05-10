@@ -378,9 +378,6 @@ export default function CodeEditor({
 											}
 										});
 
-										console.log(changes);
-										console.log(newFun);
-
 										changeEventFunction(selectedFunction, newFun);
 									}
 								});
