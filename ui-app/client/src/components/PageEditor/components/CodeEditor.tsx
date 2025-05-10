@@ -344,25 +344,42 @@ export default function CodeEditor({
 									} else if (data.startsWith(COPY_STMT_KEY)) {
 										if (!selectedFunction) return;
 
-										const step = JSON.parse(
-											data.substring(COPY_STMT_KEY.length),
-										);
-
+										const steps = data.split(COPY_STMT_KEY).filter(e => e).map(e => JSON.parse(e));
+										if (!steps.length) return;
 										let newFun = duplicate(eventFunctions[selectedFunction]);
-
 										if (!newFun.steps) newFun.steps = {};
-										let name = step.statementName;
-										let i = 0;
-										while (newFun.steps[name]) {
-											i++;
-											name = step.statementName + '_Copy_' + i;
-										}
-										step.position = {
-											left: (step.position.left ?? 0) + 40 * i,
-											top: (step.position.top ?? 0) + 40 * i,
-										};
-										step.statementName = name;
-										newFun.steps[name] = step;
+										
+										const changes: Array<[string, string] | undefined> = steps.map(step => {
+											let name:string = step.statementName;
+											let i = 0;
+											const oldStatementName:string = step.statementName;
+											while (newFun.steps[name]) {
+												i++;
+												name = step.statementName + '_Copy_' + i;
+											}
+											step.position = {
+												left: (step.position.left ?? 0) + 40 * i,
+												top: (step.position.top ?? 0) + 40 * i,
+											};
+											step.statementName = name;
+											newFun.steps[name] = step;
+											if (oldStatementName == name) return undefined;
+											return [oldStatementName, name];
+										});
+										
+										changes.forEach((params) => {
+											if (!params) return;
+											const [oldName, newName] = params;
+
+											for (let step of steps) {
+												const str = JSON.stringify(step);
+												const newStr = str.replace(`Steps.${oldName}.`, `Steps.${newName}.`);
+												newFun.steps[step.statementName] = JSON.parse(newStr);
+											}
+										});
+
+										console.log(changes);
+										console.log(newFun);
 
 										changeEventFunction(selectedFunction, newFun);
 									}
