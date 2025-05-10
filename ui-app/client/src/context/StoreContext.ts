@@ -188,7 +188,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 
-		const key = globalThis.isDesignMode ? 'designmode_' + parts[1] : parts[1];
+		const key = globalThis.isDesignMode ? 'designMode_' + parts[1] : parts[1];
 		parts = parts.slice(2);
 		let store;
 		store = localStore.getItem(key);

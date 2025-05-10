@@ -77,9 +77,9 @@ const THREE_MINUTES = 3 * 60 * 1000;
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
 setInterval(async () => {
 	const AUTH_TOKEN_EXPIRY = globalThis.isDebugMode
-		? 'designmode_AuthTokenExpiry'
+		? 'designMode_AuthTokenExpiry'
 		: 'AuthTokenExpiry';
-	const AUTH_TOKEN = globalThis.isDebugMode ? 'designmode_AuthToken' : 'AuthToken';
+	const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
 	let authTokenExpiry = parseInt(window.localStorage.getItem(AUTH_TOKEN_EXPIRY) ?? '0');
 	if (isNaN(authTokenExpiry)) return;
 	authTokenExpiry *= 1000;
@@ -148,7 +148,7 @@ if (!app) {
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
 
-		const AUTH_TOKEN = globalThis.isDebugMode ? 'designmode_AuthToken' : 'AuthToken';
+		const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
 
 		const { App } = await import(/* webpackChunkName: "Application" */ './App/App');
 		const { AppStyle } = await import(

@@ -7,7 +7,7 @@ export default async function getPageDefinition(pageName: string, appCode?: stri
 	if (globalThis.isDebugMode) axiosConfig.headers!['x-debug'] = shortUUID();
 
 	const authToken = localStorage.getItem(
-		globalThis.isDesignMode ? 'designmode_AuthToken' : 'AuthToken',
+		globalThis.isDesignMode ? 'designMode_AuthToken' : 'AuthToken',
 	);
 
 	if (authToken) {
