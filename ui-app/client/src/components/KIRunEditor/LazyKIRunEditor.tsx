@@ -13,7 +13,7 @@ import {
 	StatementExecution,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
-import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
 import { RemoteRepository, REPO_SERVER } from '../../Engine/RemoteRepository';
 import {
@@ -39,6 +39,7 @@ import StatementNode from './components/StatementNode';
 import StatementParameters from './components/StatementParameters';
 import { StoreNode } from './components/StoreNode';
 import { correctStatementNames, savePersonalizationCurry } from './utils';
+import { COPY_STMT_KEY } from '../../constants';
 
 const gridSize = 20;
 
@@ -386,7 +387,7 @@ export default function LazyKIRunEditor(
 				Object.values(def.steps).forEach((s: any) => {
 					if (!s.dependentStatements) return;
 					const keysToDelete = Object.keys(s.dependentStatements).filter(e =>
-						e.startsWith(`Steps.${name}`),
+						e.startsWith(`Steps.${name}.`),
 					);
 					keysToDelete.forEach(e => delete s.dependentStatements[e]);
 				});
@@ -408,6 +409,30 @@ export default function LazyKIRunEditor(
 		[bindingPathPath, rawDef, isReadonly, setData, context.pageName],
 	);
 
+	const copyStatement = useCallback((statementName: string) => {
+		
+			let str:string = "";
+			if (!selectedStatements.get(statementName)) {
+				if (!rawDef?.steps[statementName]) return;
+				str = COPY_STMT_KEY + JSON.stringify(rawDef?.steps[statementName]);
+			}
+			else {
+				str = COPY_STMT_KEY + Array.from(selectedStatements.entries())
+					.filter(([name, selected]) => selected && rawDef?.steps[name])
+					.map(([name]) => JSON.stringify(rawDef?.steps[name]))
+					.join(COPY_STMT_KEY);
+			}
+			if (!str || str === COPY_STMT_KEY) return;
+
+			navigator.clipboard.write([
+				new ClipboardItem({
+					'text/plain': new Blob([str], {
+						type: 'text/plain',
+					}),
+				}),
+			]);
+	}, [selectedStatements, rawDef]);
+
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
 			.map(k => rawDef.steps[k])
@@ -424,6 +449,7 @@ export default function LazyKIRunEditor(
 						setDragNode(undefined);
 					}}
 					selected={selectedStatements.has(s.statementName)}
+					selectedStatements={selectedStatements}
 					onDragStart={(append, statementName, startPosition) => {
 						if (!selectedStatements.get(statementName))
 							selectStatement(append, statementName, true);
@@ -469,6 +495,7 @@ export default function LazyKIRunEditor(
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
 					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
+					onCopy={copyStatement}
 				/>
 			));
 	}
@@ -828,6 +855,7 @@ export default function LazyKIRunEditor(
 					schemaRepository={schemaRepository}
 					tokenValueExtractors={tokenValueExtractors}
 					selected={selectedStatements.has(s.statementName)}
+					selectedStatements={selectedStatements}
 					dragNode={dragNode}
 					container={container}
 					executionPlanMessage={kirunMessages.get(s.statementName)}
@@ -852,6 +880,7 @@ export default function LazyKIRunEditor(
 					pageDefinition={pageDefinition}
 					locationHistory={locationHistory}
 					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
+					onCopy={copyStatement}
 				/>
 			</StatementParameters>
 		);
@@ -924,12 +953,27 @@ export default function LazyKIRunEditor(
 
 	let containerContents: React.JSX.Element;
 
+	const designerStyle:CSSProperties = { transform: `scale(${magnification})` };
+	let width = 3000;
+	let height = 3000;
+
+	if (executionPlan) {
+		const steps = rawDef?.steps ? Object.values(rawDef.steps) : [];
+		const maxX = Math.max(...steps.map((e:any) => (e.position?.left ?? 0) as number));
+		const maxY = Math.max(...steps.map((e:any) => (e.position?.top ?? 0) as number));
+		width = maxX < 2500 ? width : maxX + 1000;
+		height = maxY < 2500 ? height : maxY + 1000;
+	}
+
+	designerStyle.minWidth = `${width}px`;
+	designerStyle.minHeight = `${height}px`;
+
 	if (!error) {
 		containerContents = (
 			<>
 				<div
 					className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
-					style={{ transform: `scale(${magnification})` }}
+					style={designerStyle}
 					onMouseDown={designerMouseDown}
 					onMouseMove={designerMouseMove}
 					onMouseUp={designerMouseUp}

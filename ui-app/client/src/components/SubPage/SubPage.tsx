@@ -21,6 +21,7 @@ import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './subPageProperties';
 import SubPageStyle from './SubPageStyle';
 import { styleProperties, styleDefaults } from './subPageStyleProperties';
+import axios, { AxiosHeaders } from 'axios';
 
 function SubPage(props: Readonly<ComponentProps>) {
 	const {
@@ -33,7 +34,7 @@ function SubPage(props: Readonly<ComponentProps>) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { pageName } = {},
+		properties: { pageName: originalPageName, appCode, clientCode, overrideThemeStyles } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -41,6 +42,12 @@ function SubPage(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
+
+	let pageName = originalPageName;
+	
+	if (pageName && appCode && clientCode) {
+		pageName = `${appCode}_${clientCode}_${pageName}`;
+	}
 
 	const [subPage, setSubPage] = useState<any>();
 
@@ -65,12 +72,31 @@ function SubPage(props: Readonly<ComponentProps>) {
 				)}.isRunning`,
 				locationHistory,
 			);
-			if (isRunning) return;
+			if (isRunning || !pageName) return;
 
-			(async () =>
-				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName)))();
+			(async () =>{
+				const pageDefinition = await getPageDefinition(originalPageName, appCode, clientCode);
+				if (pageDefinition.name != pageName) pageDefinition.name = pageName;
+				setData(`Store.pageDefinition.${pageName}`, pageDefinition);
+			})();
 		}, 10);
-	}, [subPage]);
+	}, [pageName, originalPageName, clientCode, appCode, subPage]);
+
+	useEffect(() => {
+		if (!overrideThemeStyles || (!appCode && !clientCode)) return;
+
+		(async () => {
+			const headers : AxiosHeaders = {} as AxiosHeaders;
+			if (appCode) headers['appCode'] = appCode;
+			if (clientCode) headers['clientCode'] = clientCode;
+			const theme = (await axios.get('api/ui/theme', { headers } ))?.data;
+
+			if (!theme) return;
+
+			setData(`Store.theme`, theme);
+		})();
+
+	}, [appCode, clientCode, overrideThemeStyles])
 
 	const locHist = bindingPath
 		? [...locationHistory, { location: bindingPath, index: -1, pageName, componentKey: key }]
