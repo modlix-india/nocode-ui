@@ -13,7 +13,7 @@ import {
 	StatementExecution,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
-import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
 import { RemoteRepository, REPO_SERVER } from '../../Engine/RemoteRepository';
 import {
@@ -953,12 +953,27 @@ export default function LazyKIRunEditor(
 
 	let containerContents: React.JSX.Element;
 
+	const designerStyle:CSSProperties = { transform: `scale(${magnification})` };
+	let width = 3000;
+	let height = 3000;
+
+	if (executionPlan) {
+		const steps = rawDef?.steps ? Object.values(rawDef.steps) : [];
+		const maxX = Math.max(...steps.map((e:any) => (e.position?.left ?? 0) as number));
+		const maxY = Math.max(...steps.map((e:any) => (e.position?.top ?? 0) as number));
+		width = maxX < 2500 ? width : maxX + 1000;
+		height = maxY < 2500 ? height : maxY + 1000;
+	}
+
+	designerStyle.minWidth = `${width}px`;
+	designerStyle.minHeight = `${height}px`;
+
 	if (!error) {
 		containerContents = (
 			<>
 				<div
 					className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
-					style={{ transform: `scale(${magnification})` }}
+					style={designerStyle}
 					onMouseDown={designerMouseDown}
 					onMouseMove={designerMouseMove}
 					onMouseUp={designerMouseUp}
