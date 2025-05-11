@@ -397,8 +397,8 @@ function lineFrom(
 
 	let dPath = `M ${sx} ${sy} `;
 	if (isNodeOnTop)
-		dPath += `C ${sx + (ex - sx) / 1.5} ${sy} ${ex} ${
-			ey - Math.abs(ey - sy) / 0.98
+		dPath += `C ${sx + Math.abs(ex - sx) / 1.5} ${sy} ${ex} ${
+			ey - Math.abs(ey - sy) / 1.2
 		} ${ex} ${ey}`;
 	else {
 		if (Math.abs(sy - ey) < 0.4) {
