@@ -84,6 +84,9 @@ export default function KIRunContextMenu({
 								let newFun = duplicate(rawDef);
 								if (!newFun.steps) newFun.steps = {};
 
+								const minLeft = menu.position.left - Math.min(...steps.map((e:any) => (e.position?.left ?? 0) as number));
+								const minTop = menu.position.top - Math.min(...steps.map((e:any) => (e.position?.top ?? 0) as number));
+
 								const changes: Array<[string, string] | undefined> = steps.map(step => {
 									let name:string = step.statementName;
 									let i = 0;
@@ -93,8 +96,8 @@ export default function KIRunContextMenu({
 										name = step.statementName + '_Copy_' + i;
 									}
 									step.position = {
-										left: (step.position.left ?? 0) + 40 * i,
-										top: (step.position.top ?? 0) + 40 * i,
+										left: (step.position?.left ?? 0) + minLeft,
+										top: (step.position?.top ?? 0) + minTop,
 									};
 									step.statementName = name;
 									newFun.steps[name] = step;
