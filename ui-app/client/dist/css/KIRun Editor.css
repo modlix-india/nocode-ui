@@ -72,6 +72,7 @@
 	transform-origin: left top;
 	transition: transform 1s ease-in;
 	overflow: hidden;
+	user-select: none;
 }
 
 .comp.compKIRunEditor ._designer._moving {

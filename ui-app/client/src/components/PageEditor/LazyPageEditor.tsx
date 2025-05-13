@@ -584,9 +584,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 						setSlaveStore({
 							store,
 							localStore: Object.entries(window.localStorage)
-								.filter((e: [string, string]) => e[0].startsWith('designmode_'))
+								.filter((e: [string, string]) => e[0].startsWith('designMode_'))
 								.reduce((a, c: [string, string]) => {
-									let key = c[0].substring('designmode_'.length);
+									let key = c[0].substring('designMode_'.length);
 									if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
 										try {
 											a[key] = JSON.parse(c[1]);

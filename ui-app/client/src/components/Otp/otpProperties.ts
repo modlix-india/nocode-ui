@@ -72,6 +72,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Text to be shown to help fill the otp.',
 		translatable: true,
 		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.LARGE_TEXT,
 	},
 	{
 		name: 'otpLength',

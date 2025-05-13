@@ -1,6 +1,7 @@
 import React from 'react';
 import { duplicate } from '@fincity/kirun-js';
 import { setData } from '../../../context/StoreContext';
+import { COPY_STMT_KEY } from '../../../constants';
 
 interface KIRunContextMenuProps {
 	menu: any;
@@ -35,7 +36,9 @@ export default function KIRunContextMenu({
 				<>
 					<div
 						className="_menuItem"
-						onClick={() => {
+						onMouseDown={e => {
+							e.stopPropagation();
+							e.preventDefault();
 							if (isReadonly || !bindingPathPath) return;
 
 							const newDef = duplicate(rawDef);
@@ -56,7 +59,9 @@ export default function KIRunContextMenu({
 				<>
 					<div
 						className="_menuItem"
-						onClick={() => {
+						onMouseDown={e => {
+							e.stopPropagation();
+							e.preventDefault();
 							if (isReadonly || !bindingPathPath) return;
 							setShowAddSearch({
 								left: menu.position.left - 5,
@@ -65,6 +70,58 @@ export default function KIRunContextMenu({
 						}}
 					>
 						<i className="fa fa-regular fa-square-plus" /> Add a Step
+					</div>
+					<div className="_menuItem"
+						onMouseDown={e =>{
+							e.stopPropagation();
+							e.preventDefault();
+							if (isReadonly || !bindingPathPath) return;
+							navigator.clipboard.readText().then(data => {
+								if (!data.startsWith(COPY_STMT_KEY)) return;
+								
+								const steps = data.split(COPY_STMT_KEY).filter(e => e).map(e => JSON.parse(e));
+								if (!steps.length) return;
+								let newFun = duplicate(rawDef);
+								if (!newFun.steps) newFun.steps = {};
+
+								const minLeft = menu.position.left - Math.min(...steps.map((e:any) => (e.position?.left ?? 0) as number));
+								const minTop = menu.position.top - Math.min(...steps.map((e:any) => (e.position?.top ?? 0) as number));
+
+								const changes: Array<[string, string] | undefined> = steps.map(step => {
+									let name:string = step.statementName;
+									let i = 0;
+									const oldStatementName:string = step.statementName;
+									while (newFun.steps[name]) {
+										i++;
+										name = step.statementName + '_Copy_' + i;
+									}
+									step.position = {
+										left: (step.position?.left ?? 0) + minLeft,
+										top: (step.position?.top ?? 0) + minTop,
+									};
+									step.statementName = name;
+									newFun.steps[name] = step;
+									if (oldStatementName == name) return undefined;
+									return [oldStatementName, name];
+								});
+								
+								changes.forEach((params) => {
+									if (!params) return;
+									const [oldName, newName] = params;
+
+									for (let step of steps) {
+										const str = JSON.stringify(step);
+										const newStr = str.replace(`Steps.${oldName}.`, `Steps.${newName}.`);
+										newFun.steps[step.statementName] = JSON.parse(newStr);
+									}
+								});
+
+								showMenu(undefined);
+								setData(bindingPathPath, newFun, pageName);
+							});
+						}}
+					>
+						<i className="fa fa-regular fa-paste" /> Paste
 					</div>
 				</>
 			)}

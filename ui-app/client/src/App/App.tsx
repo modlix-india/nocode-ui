@@ -196,13 +196,16 @@ export function App() {
 					}
 
 					const { properties } = appDef;
+					if (properties) {
+						processFontPacks(properties.fontPacks);
+						processIconPacks(properties.iconPacks);
+					}
+					
 					if (!properties || (!globalThis.nodeDev && !globalThis.isDesignMode)) return;
 
 					processTagType(properties.links, 'LINK');
 					processTagType(properties.scripts, 'SCRIPT');
 					processTagType(properties.metas, 'META');
-					processFontPacks(properties.fontPacks);
-					processIconPacks(properties.iconPacks);
 					processCodeParts(properties.codeParts);
 				},
 				undefined,
