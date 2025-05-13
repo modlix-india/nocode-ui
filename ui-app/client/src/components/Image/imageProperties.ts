@@ -179,6 +179,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Prevent default of click event.',
 		defaultValue: false,
 	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	{
 		name: 'useObjectToRender',
