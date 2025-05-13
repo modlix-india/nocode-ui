@@ -7,6 +7,7 @@ import Search from './Search';
 import StatementButtons from './StatementButtons';
 import ParamEditor from './ParamEditor';
 import { LocationHistory, PageDefinition, RenderContext } from '../../../types/common';
+import { COPY_STMT_KEY } from '../../../constants';
 
 interface StatementNodeProps {
 	position?: { left: number; top: number };
@@ -37,6 +38,8 @@ interface StatementNodeProps {
 	locationHistory: Array<LocationHistory>;
 	context: RenderContext;
 	onRemoveAllDependencies: () => void;
+	selectedStatements: Map<string, boolean>;
+	onCopy: (statementName: string) => void;
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -67,6 +70,8 @@ export default function StatementNode({
 	locationHistory,
 	context,
 	onRemoveAllDependencies,
+	selectedStatements,
+	onCopy,
 }: StatementNodeProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
@@ -532,8 +537,8 @@ export default function StatementNode({
 				showEditParameters={!!parameters.length}
 				editParameters={editParameters}
 				onRemoveAllDependencies={onRemoveAllDependencies}
+				onCopy={onCopy}
 			/>
-
 			{dependencyNode}
 		</div>
 	);
