@@ -80,6 +80,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Text to be shown to help fill the textArea.',
 		translatable: true,
 		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.LARGE_TEXT,
 	},
 
 	{

@@ -4,6 +4,7 @@ import { styleProperties, styleDefaults, stylePropertiesForTheme } from './otpSt
 import { usedComponents } from '../../App/usedComponents';
 import {
 	findPropertyDefinitions,
+	inflateAndSetStyleProps,
 	lazyStylePropertyLoadFunction,
 } from '../util/lazyStylePropertyUtil';
 import { StylePropertyDefinition } from '../../types/common';
@@ -27,16 +28,16 @@ export default function OtpStyle({ theme }: Readonly<{ theme: Map<string, Map<st
 			'designType',
 			'colorScheme',
 		);
-		const fn = lazyStylePropertyLoadFunction(
-			NAME,
-			(props, originalStyleProps) => {
-				styleProperties.splice(0, 0, ...props);
-				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
-				setReRender(Date.now());
-			},
-			styleDefaults,
-			[designType, colorScheme],
-		);
+
+		const fn = () => {
+			inflateAndSetStyleProps(
+				[designType, colorScheme],
+				stylePropertiesForTheme,
+				(props, _) => styleProperties.splice(0, 0, ...props),
+				styleDefaults,
+			);
+			setReRender(Date.now());
+		};
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
