@@ -57,6 +57,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Text to be shown to help fill the textbox.',
 		translatable: true,
 		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.LARGE_TEXT,
 	},
 	{
 		name: 'leftIcon',

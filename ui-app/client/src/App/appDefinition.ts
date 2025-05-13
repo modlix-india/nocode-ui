@@ -14,9 +14,9 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 	let TOKEN_LANGUAGE = 'currentLanguage';
 
 	if (globalThis.isDesignMode) {
-		TOKEN_NAME = 'designmode_AuthToken';
-		TOKEN_EXPIRY = 'designmode_AuthTokenExpiry';
-		TOKEN_LANGUAGE = 'designmode_currentLanguage';
+		TOKEN_NAME = 'designMode_AuthToken';
+		TOKEN_EXPIRY = 'designMode_AuthTokenExpiry';
+		TOKEN_LANGUAGE = 'designMode_currentLanguage';
 	}
 
 	const authToken = localStorage.getItem(TOKEN_NAME);
