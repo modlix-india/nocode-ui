@@ -101,23 +101,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				displayName: 'Right',
 				name: 'right',
-			},
-			{
-				displayName: 'Top Left',
-				name: 'top-left',
-			},
-			{
-				displayName: 'Top Right',
-				name: 'top-right',
-			},
-			{
-				displayName: 'Bottom Left',
-				name: 'bottom-left',
-			},
-			{
-				displayName: 'Bottom Right',
-				name: 'bottom-right',
-			}
+			} 
 		]
 	},
 	{
