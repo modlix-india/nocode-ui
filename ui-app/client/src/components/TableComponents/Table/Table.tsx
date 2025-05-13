@@ -616,6 +616,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 						</span>
 						<select
 							value={pageSize}
+							className="_tableSize"
 							style={getStyleObject('itemsPerPageDropdown', hovers)}
 							onMouseEnter={addToToggleSetCurry(
 								hovers,
