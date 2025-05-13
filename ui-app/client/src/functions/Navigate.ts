@@ -28,11 +28,13 @@ export class Navigate extends AbstractFunction {
 		const target = context.getArguments()?.get('target');
 		const force = context.getArguments()?.get('force');
 
-		if (target === '_self' && !force) {
-			window.history.pushState(undefined, '', getHref(linkPath, window.location));
+		const url = getHref(linkPath, window.location);
+
+		if (target === '_self' && !force && !url?.startsWith("http")) {			
+			window.history.pushState(undefined, '', url);
 			window.history.back();
 			setTimeout(() => window.history.forward(), 100);
-		} else window.open(getHref(linkPath, window.location), target);
+		} else window.open(url, target);
 
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
 	}

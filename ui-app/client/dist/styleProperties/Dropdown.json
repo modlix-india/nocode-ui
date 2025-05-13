@@ -298,7 +298,7 @@
 	},
 	{
 		"cp": "border-color",
-		"sel": ".comp.compDropdown<designType>._isActive<colorScheme>,",
+		"sel": ".comp.compDropdown<designType>._isActive<colorScheme>",
 		"np": true,
 		"spv": {
 			"_default-_primary": "<fontColorThree>",
@@ -328,7 +328,7 @@
 	},
 	{
 		"cp": "border-color",
-		"sel": ".comp.compDropdown<designType>._isActive<colorScheme> ._dropdownContainer,",
+		"sel": ".comp.compDropdown<designType>._isActive<colorScheme> ._dropdownContainer",
 		"np": true,
 		"spv": {
 			"_default-_primary": "<fontColorThree>",
@@ -358,7 +358,7 @@
 	},
 	{
 		"cp": "border-color",
-		"sel": " .comp.compDropdown<designType>._hasValue<colorScheme>,",
+		"sel": ".comp.compDropdown<designType>._hasValue<colorScheme>",
 		"np": true,
 		"spv": {
 			"_default-_primary": "<fontColorThree>",
@@ -490,7 +490,7 @@
 		"n": "dropdownBorderRadius<designType><colorScheme>"
 	},
 	{
-		"cp": "Border",
+		"cp": "border",
 		"sel": ".comp.compDropdown<designType><colorScheme>",
 		"np": true,
 		"spv": {

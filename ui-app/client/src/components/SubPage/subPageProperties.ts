@@ -1,4 +1,4 @@
-import { SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyGroup,
@@ -14,6 +14,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Sub page name',
 		group: ComponentPropertyGroup.BASIC,
 		translatable: false,
+	},
+	{
+		name: 'appCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'App Code',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'clientCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Client Code',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'overrideThemeStyles',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Override Themes and Styles',
+		group: ComponentPropertyGroup.BASIC,
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
