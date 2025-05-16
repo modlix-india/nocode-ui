@@ -50,6 +50,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		const app = getDataFromPath(`Store.application`, []);
 		shouldRedirect = app?.appCode === pageDefinition?.appCode &&
 		app?.properties?.loginPage === pageDefinition.name &&
+		app?.properties?.loginPage !== pageName && 
 		app?.properties?.sso?.redirectURL;
 	}
 
@@ -60,7 +61,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			const app = getDataFromPath(`Store.application`, []);
 			const redirectURL = app?.properties?.sso?.redirectURL;
 			const {appCode = "", clientCode = ""} = (await axios.get('api/ui/urlDetails')).data ?? {};
-
+			
 			window.location.href = redirectURL.replace('{appCode}', appCode)
 								.replace('{clientCode}', clientCode)
 								.replace('{redirectUrl}', window.location.href);
