@@ -373,7 +373,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			}
 		]
 	},
-	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 const stylePropertiesDefinition = {
