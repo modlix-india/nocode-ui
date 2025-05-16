@@ -1,6 +1,6 @@
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import { ComponentPropertyDefinition, ComponentPropertyGroup } from '../../types/common';
-import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -373,6 +373,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			}
 		]
 	},
+	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 const stylePropertiesDefinition = {
 	'': [
