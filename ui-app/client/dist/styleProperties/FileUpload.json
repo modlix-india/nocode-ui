@@ -1000,8 +1000,8 @@
 		"gn": "File Upload Support Text Font Size",
 		"dn": "File Upload Support Text Font Size",
 		"n": "fileUploadSupportTextFontSize",
-		"dv": "12px",
-		"cp": "font-size",
+		"dv": "400 12px/12px Inter",
+		"cp": "font",
 		"sel": ".comp.compFileUpload ._subtext",
 		"np": true
 	},

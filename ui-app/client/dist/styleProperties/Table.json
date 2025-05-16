@@ -473,6 +473,158 @@
 		"n": "tableBorderRadiusSelected<tableDesign><colorScheme>"
 	},
 	{
+		"cp": "background-color",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination  ._noclick",
+		"np": true,
+		"gn": "Background Color",
+		"dn": "Background Color No click",
+		"n": "tableBackgroundColorNoClick<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination  ._noclick",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border No click",
+		"n": "tableBorderNoClick<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination  ._noclick",
+		"np": true,
+		"gn": "Padding",
+		"dn": "Padding No click",
+		"n": "tablePaddingNoClick<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination",
+		"np": true,
+		"gn": "Gap",
+		"dn": "Table Pagination Gap",
+		"n": "tablePaginationGap<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "height",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination ._pageNumber, .comp.compTable ._tablePagination ._noclick",
+		"np": true,
+		"gn": "Height",
+		"dn": "Table Pagination Height",
+		"n": "tablePaginationHeight<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "min-width",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination ._pageNumber, .comp.compTable ._tablePagination ._noclick",
+		"np": true,
+		"gn": "Min Width",
+		"dn": "Table Pagination Min-Width",
+		"n": "tablePaginationMinimumWidth<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "height",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._leftArrow, .comp.compTable<tableDesign><colorScheme> ._rightArrow",
+		"np": true,
+		"gn": "Height",
+		"dn": "Left & Right Arrow text Height",
+		"n": "tablePaginationLeftANDRightHeight<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._leftArrow, .comp.compTable<tableDesign><colorScheme> ._rightArrow",
+		"np": true,
+		"gn": "Border",
+		"dn": "Left & Right Arrow border",
+		"n": "tablePaginationLeftANDRightBorder<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination ._prev, .comp.compTable<tableDesign><colorScheme> ._tablePagination ._next",
+		"np": true,
+		"gn": "Font",
+		"dn": "Previous & Next Text Font",
+		"n": "tablePaginationPreviousAndNextFont<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination ._pageNumber",
+		"np": true,
+		"gn": "Font",
+		"dn": "Page Number Font",
+		"n": "tablePaginationPageNumber<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "margin-right",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._rightArrow",
+		"np": true,
+		"gn": "Margin-Right",
+		"dn": "Right Arrow Margin Right",
+		"n": "tablePaginationRightArrowMarginRight<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._leftArrow",
+		"np": true,
+		"gn": "BorderRadius",
+		"dn": "Left Arrow BorderRadius",
+		"n": "tablePaginationLeftArrowBorderRadius<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._rightArrow",
+		"np": true,
+		"gn": "BorderRadius",
+		"dn": "Right Arrow BorderRadius",
+		"n": "tablePaginationRightArrowBorderRadius<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination  ._pageNumber._selected",
+		"np": true,
+		"gn": "Font",
+		"dn": "Selected Page Number font",
+		"n": "tableFontSelected<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tableSize",
+		"np": true,
+		"gn": "Font",
+		"dn": "Table Size font",
+		"n": "tableSizeFont<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tableSize",
+		"np": true,
+		"gn": "Color",
+		"dn": "Table Size Color",
+		"n": "tableSizeColor<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tableSize",
+		"np": true,
+		"gn": "Border",
+		"dn": "Table Size Border",
+		"n": "tableSizeBorder<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tableSize",
+		"np": true,
+		"gn": "BorderRadius",
+		"dn": "Table Size Border Radius",
+		"n": "tableSizeBorderRadius<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._tableSize",
+		"np": true,
+		"gn": "Padding",
+		"dn": "Table Size Padding",
+		"n": "tableSizePadding<tableDesign><colorScheme>"
+	},
+	{
 		"cp": "border",
 		"sel": ".comp.compTable<tableDesign><colorScheme> ._tablePagination  ._pageNumber._selected",
 		"np": true,

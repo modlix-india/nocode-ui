@@ -64,11 +64,12 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	const [fileValue, setFileValue] = useState<any>();
 	const inputRef = useRef<any>();
 	const [hover, setHover] = useState<boolean>(false);
+	const [active, setActive] = useState<boolean>(false);
 	const [validationMessages, setValidationMessages] = useState<Array<string>>([]);
 	const {
 		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4, bindingPath5 },
 		definition,
-		pageDefinition: { },
+		pageDefinition: { translations },
 		locationHistory,
 		context,
 	} = props;
@@ -91,6 +92,10 @@ function FileUpload(props: Readonly<ComponentProps>) {
 			colorScheme,
 			buttonText,
 			hideSelectedFileName,
+			label,
+			noFloat,
+			supportingText,
+			showMandatoryAsterisk,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -103,7 +108,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ disabled: readOnly, hover },
+		{ disabled: readOnly, hover, active },
 		stylePropertiesWithPseudoStates,
 	);
 	const bindingPathPath = bindingPath
@@ -132,13 +137,13 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		const msgs = validation?.length
 			? validate(
-				props.definition,
-				props.pageDefinition,
-				validation,
-				fileValue,
-				locationHistory,
-				pageExtractor,
-			)
+					props.definition,
+					props.pageDefinition,
+					validation,
+					fileValue,
+					locationHistory,
+					pageExtractor,
+				)
 			: [];
 		if (msgs.length) {
 			setValidationMessages(msgs);
@@ -310,6 +315,41 @@ function FileUpload(props: Readonly<ComponentProps>) {
 		event.stopPropagation();
 	};
 
+	let renderLabel;
+	if (label) {
+		renderLabel = (
+			<div
+				className={`_label ${noFloat ? '_noFloat' : ''}`}
+				style={computedStyles.label ?? {}}
+			>
+				<SubHelperComponent definition={definition} subComponentName="label" />
+				{label}
+				{showMandatoryAsterisk &&
+					(validationMessages.length > 0 || context.showValidationMessages) && (
+						<span className="_mandatory">*</span>
+					)}
+			</div>
+		);
+	}
+
+	let renderSupportingText;
+	if (supportingText) {
+		renderSupportingText = (
+			<div className="_supportText" style={computedStyles.supportText ?? {}}>
+				<SubHelperComponent definition={definition} subComponentName="supportText" />
+				{supportingText}
+			</div>
+		);
+	}
+
+	const handleFocus = () => {
+		setActive(true);
+	};
+
+	const handleBlur = () => {
+		setActive(false);
+	};
+
 	const validationMessagesComp =
 		validationMessages?.length && (fileValue || context.showValidationMessages) ? (
 			<div className="_validationMessages" key="validationMessage">
@@ -395,17 +435,25 @@ function FileUpload(props: Readonly<ComponentProps>) {
 				{!uploadViewType?.startsWith('_inline') ? uploadIconComp : null}
 				{uploadViewType !== '_only_icon_design2'
 					? [
-						fileContainer ? (
-							fileContainer
-						) : (
-							<span className="_mainText" key="_mainText">
-								{mainText}
-							</span>
-						),
-						<span className="_subtext" key="_subText">
-							{subText}
-						</span>,
-					]
+							fileContainer ? (
+								fileContainer
+							) : (
+								<span className="_mainText" key="_mainText">
+									{mainText}
+								</span>
+							),
+							<span
+								className="_subtext"
+								key="_subText"
+								style={computedStyles.subText ?? {}}
+							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="subText"
+								/>
+								{subText}
+							</span>,
+						]
 					: null}
 				{uploadViewType?.startsWith('_only_icon') ? inputContainer : null}
 			</label>
@@ -422,19 +470,21 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	return [
 		<div
 			key={'fileUpload'}
-			className={`comp compFileUpload ${hideSelectedFileName ? '_onlyButton' : ''
-				} ${uploadViewType} ${colorScheme}`}
+			className={`comp compFileUpload ${hideSelectedFileName ? '_onlyButton' : ''} 
+				${uploadViewType} ${colorScheme} ${fileValue ? '_hasValue' : ''} ${active ? '_isActive' : ''}`}
 			style={computedStyles?.comp ?? {}}
 			onMouseEnter={stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined}
 			onMouseLeave={
 				stylePropertiesWithPseudoStates?.hover ? () => setHover(false) : undefined
 			}
+			onFocus={handleFocus}
+			onBlur={handleBlur}
 			onDragEnter={preventDefault}
 			onDragOver={preventDefault}
 			onDrop={handleDrop}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-
+			{renderLabel}
 			{fileText}
 			{!uploadViewType?.startsWith('_only_icon') ? (
 				<label className="_fileUploadButton" style={computedStyles?.uploadButton}>
@@ -443,6 +493,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 					{inputContainer}
 				</label>
 			) : null}
+			{renderSupportingText}
 		</div>,
 		validationMessagesComp,
 	];
@@ -539,6 +590,24 @@ const component: Component = {
 			name: 'validationMessage',
 			displayName: 'Validation Message',
 			description: 'Validation Message',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'supportText',
+			displayName: 'Support Text',
+			description: 'Support Text',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'subText',
+			displayName: 'Sub Text',
+			description: 'Sub Text',
 			icon: 'fa-solid fa-box',
 		},
 	],

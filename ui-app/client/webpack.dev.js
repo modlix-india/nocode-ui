@@ -57,6 +57,7 @@ module.exports = {
   ],
   devServer: {
 
+    allowedHosts: "all",
     static: {
       directory: path.join(__dirname, 'dist') // If you have static files like index.html
     },
@@ -65,7 +66,7 @@ module.exports = {
     hot: true, 
     proxy: [
       {
-        context: ["**/api/**"],
+        context: ["**/api/**", "/sso/**"],
         target: "https://apps.dev.modlix.com/",
         changeOrigin: true,
         secure: false
