@@ -196,17 +196,20 @@ export function App() {
 					}
 
 					const { properties } = appDef;
-					if (properties) {
+					
+					if (!properties || (!globalThis.nodeDev && !globalThis.isDesignMode)){ 
+						
 						processFontPacks(properties.fontPacks);
 						processIconPacks(properties.iconPacks);
+						return;
 					}
-					
-					if (!properties || (!globalThis.nodeDev && !globalThis.isDesignMode)) return;
 
 					processTagType(properties.links, 'LINK');
 					processTagType(properties.scripts, 'SCRIPT');
 					processTagType(properties.metas, 'META');
 					processCodeParts(properties.codeParts);
+					processFontPacks(properties.fontPacks);
+					processIconPacks(properties.iconPacks);
 				},
 				undefined,
 				`${STORE_PREFIX}.application`,
