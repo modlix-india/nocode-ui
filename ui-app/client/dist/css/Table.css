@@ -98,7 +98,7 @@
 	flex-direction: column-reverse;
 }
 
-.comp.compTable ._tablePagination ._pageNumber {
+.comp.compTable ._tablePagination ._pageNumber, .comp.compTable ._tablePagination ._noclick {
 	min-width: 26px;
 	height: 26px;
 	display: flex;
@@ -156,6 +156,13 @@
 	position: relative;
 }
 
+.comp.compTable ._leftArrow, .comp.compTable ._rightArrow {
+	display:flex;
+	flex-direction:row;
+	justify-content: center;
+	align-items: center;
+}
+
 .comp.compTable ._rightArrow {
 	padding-right: 10px;
 	position: relative;
@@ -164,7 +171,6 @@
 .comp.compTable ._tablePagination ._pageNumber {
 	position: relative;
 }
-
 .comp.compTable ._popupBackground {
 	position: fixed;
 	top: 0;

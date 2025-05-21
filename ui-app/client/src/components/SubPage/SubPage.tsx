@@ -1,4 +1,4 @@
-import { isNullValue } from '@fincity/kirun-js';
+import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
@@ -22,6 +22,8 @@ import { propertiesDefinition, stylePropertiesDefinition } from './subPageProper
 import SubPageStyle from './SubPageStyle';
 import { styleProperties, styleDefaults } from './subPageStyleProperties';
 import axios, { AxiosHeaders } from 'axios';
+import pageHistory from '../Page/pageHistory';
+import { runEvent } from '../util/runEvent';
 
 function SubPage(props: Readonly<ComponentProps>) {
 	const {
@@ -61,6 +63,7 @@ function SubPage(props: Readonly<ComponentProps>) {
 		[pageName],
 	);
 
+
 	useEffect(() => {
 		if (!isNullValue(subPage)) return;
 
@@ -97,6 +100,34 @@ function SubPage(props: Readonly<ComponentProps>) {
 		})();
 
 	}, [appCode, clientCode, overrideThemeStyles])
+
+	useEffect(() => {
+
+	 if (!subPage) return;
+	
+	 const {
+		name,
+		eventFunctions = {},
+		properties: { onLoadEvent = undefined } = {},
+	} = subPage;
+
+	if (!onLoadEvent || !eventFunctions[onLoadEvent]) return;
+
+	 (async () =>
+		await runEvent(
+			eventFunctions[onLoadEvent!],
+			'subPageOnLoad',
+			pageExtractor.getPageName(),
+			locationHistory,
+			props.pageDefinition,
+			undefined,
+			true
+		))();
+	}, [
+		subPage !== undefined,
+		pageName,
+		locationHistory.length,
+	]);
 
 	const locHist = bindingPath
 		? [...locationHistory, { location: bindingPath, index: -1, pageName, componentKey: key }]
