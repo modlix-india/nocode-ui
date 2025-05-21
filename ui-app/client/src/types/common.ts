@@ -35,11 +35,8 @@ export interface RenderContext {
 	formKey?: Array<string>;
 	showValidationMessages?: boolean;
 	table?: any;
-	//In Section grid when in page editor edit mode we need to stop selecting children.
 	disableSelection?: boolean;
-	// Using to understand if we are in shellpage or not, To stop rendering deeper nested pages
 	level: number;
-	// Menu Level
 	menuLevel?: number;
 	shellPageName: string;
 }
@@ -142,6 +139,12 @@ export interface Section {
 	pageName: string;
 }
 
+export interface Tutorial {
+  demoVideo?: string;
+  description?: string;
+  youtubeLink?: string;
+}
+
 export interface Component {
 	name: string;
 	order?: number;
@@ -185,6 +188,7 @@ export interface Component {
 	propertiesForTheme?: Array<ComponentPropertyDefinition>;
 	stylePropertiesForTheme: Array<StylePropertyDefinition>;
 	externalStylePropsForThemeJson?: boolean;
+	tutorial?: Tutorial;  
 }
 
 export enum StyleResolution {
