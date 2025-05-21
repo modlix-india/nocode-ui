@@ -205,6 +205,14 @@ const component: Component = {
 		{ name: 'Decorative', pageName: 'textDecorative' },
 		{ name: 'Paragraph', pageName: 'textParagraph' },
 	],
+	tutorial: {
+		demoVideo: 'api/files/static/file/SYSTEM/WhatsApp Media/just try/vid1.mp4',
+		// demoVideo: 'https://www.youtube.com/watch?v=YSv3KNSUwWQ&ab_channel=FincityIndia',
+		description:
+			'The Text Component is used to display textual content within the webpage, like an html paragraph or heading tag. It supports formatting, color schemes, prefixes, suffixes, and SEO-friendly container types. ',
+		youtubeLink: 'https://www.youtube.com/watch?v=YSv3KNSUwWQ&ab_channel=FincityIndia',
+	},
+
 	subComponentDefinition: [
 		{
 			name: '',
