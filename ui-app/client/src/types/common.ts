@@ -280,7 +280,7 @@ export interface ComponentStyle {
 }
 
 export interface ComponentDefinition {
-	// tag?: any;
+	tag?: any;
 	key: string;
 	name: string;
 	bindingPath?: DataLocation;
