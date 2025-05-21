@@ -48,6 +48,7 @@ export const runEvent = async (
 	locationHistory: Array<LocationHistory>,
 	pageDefinition?: PageDefinition,
 	args?: Map<string, any>,
+	runSequentially?: boolean,
 ) => {
 	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
 
@@ -150,6 +151,12 @@ export const runEvent = async (
 		).setValuesMap(valuesMap);
 		if (args) {
 			fep.setArguments(args);
+		}
+		
+		if (runSequentially) {
+			while (getDataFromPath(isRunningPath, locationHistory)) {
+				await new Promise(resolve => setTimeout(resolve, 100));
+			}
 		}
 
 		setData(isRunningPath, true);
