@@ -202,7 +202,12 @@ export default function DnDNavigationBar({
 			setMatchingCount(matchingComponents.length);
 
 			if (matchingComponents.length > 0) {
+				matchingComponents.forEach(key => {
+					onSelectedComponentListChanged(key);
+				});
 				onSelectedComponentChanged(matchingComponents[0]);
+			} else {
+				onSelectedComponentChanged('');
 				onSelectedComponentListChanged('');
 			}
 		},
@@ -365,19 +370,6 @@ export default function DnDNavigationBar({
 	]);
 
 	useEffect(() => {
-		const handleKeyDown = (e: KeyboardEvent) => {
-			// Ctrl+A or Cmd+A to select all filtered components when multiselect is available
-			if ((e.ctrlKey || e.metaKey) && e.key === 'a' && showMultiSelect) {
-				e.preventDefault();
-				handleMultiSelect();
-			}
-		};
-
-		window.addEventListener('keydown', handleKeyDown);
-		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [showMultiSelect, handleMultiSelect]);
-
-	useEffect(() => {
 		if (!selectedComponent || selectedComponentsList?.length != 1) return;
 		const element = document.getElementById(`treeNode_${selectedComponent}`);
 		if (element) {
@@ -418,6 +410,10 @@ export default function DnDNavigationBar({
 
 				const typeMatch = advancedFilters.type
 					? (e.type ?? '').toUpperCase().includes(advancedFilters.type.toUpperCase())
+					: true;
+
+				const keyMatch = advancedFilters.key
+					? e.key.toUpperCase().includes(advancedFilters.key.toUpperCase())
 					: true;
 
 				let tags: string[] = [];
@@ -478,7 +474,13 @@ export default function DnDNavigationBar({
 					: true;
 
 				const isMatch =
-					nameMatch && typeMatch && tagMatch && valueMatch && styleMatch && propMatch;
+					nameMatch &&
+					keyMatch &&
+					typeMatch &&
+					tagMatch &&
+					valueMatch &&
+					styleMatch &&
+					propMatch;
 
 				if (isMatch) {
 					matchingComponents.push(e.key);
@@ -494,12 +496,14 @@ export default function DnDNavigationBar({
 			});
 
 		setOpenParents(set);
-		setShowMultiSelect(matchingComponents.length > 1);
+		setShowMultiSelect(matchingComponents.length > 0);
 		setMatchingCount(matchingComponents.length);
 
 		if (matchingComponents.length > 0) {
+			matchingComponents.forEach(key => {
+				onSelectedComponentListChanged(key);
+			});
 			onSelectedComponentChanged(matchingComponents[0]);
-			onSelectedComponentListChanged('');
 		} else {
 			onSelectedComponentChanged('');
 			onSelectedComponentListChanged('');
@@ -548,12 +552,22 @@ export default function DnDNavigationBar({
 								}
 							/>
 						)}
-						{filter && (
+						{(filter || Object.values(advancedFilters).some(f => f.trim() !== '')) && (
 							<i
 								className="fa fa-solid fa-times-circle"
 								onClick={() => {
 									setFilter('');
+									setAdvancedFilters({
+										name: '',
+										type: '',
+										tag: '',
+										value: '',
+										style: '',
+										prop: '',
+										key: '',
+									});
 									applyFilter('');
+									applyAdvancedFilter();
 								}}
 								title="Clear filter"
 							/>
@@ -574,7 +588,10 @@ export default function DnDNavigationBar({
 									prop: '',
 									key: '',
 								});
+								applyAdvancedFilter(); // Clear advanced filter results
+								applyFilter(filter); // Re-apply basic filter if it exists
 							}}
+							title="Basic Search"
 						/>
 
 						<span className="_advancedFilterBody">
@@ -582,7 +599,7 @@ export default function DnDNavigationBar({
 								<div key={key} className="_filterRow">
 									<input
 										type="text"
-										placeholder={`Search with ${key}`}
+										placeholder={`Search by ${key}`}
 										value={value}
 										onChange={e => {
 											setAdvancedFilters(prev => ({
@@ -598,14 +615,9 @@ export default function DnDNavigationBar({
 								</div>
 							))}
 						</span>
-						{Object.values(advancedFilters).some(v => v.trim() !== '') && (
-							<span className="_matchCount" title="Number of matching components">
-								{matchingCount}
-							</span>
-						)}
 						{showMultiSelect && (
 							<i
-								className={`fa ${allFilteredSelected ? 'fa-xmark-circle' : 'fa-check-circle'}`}
+								className={`fa fa-solid ${allFilteredSelected ? 'fa-xmark-circle' : 'fa-check-circle'}`}
 								onClick={handleMultiSelect}
 								title={
 									allFilteredSelected
@@ -614,10 +626,11 @@ export default function DnDNavigationBar({
 								}
 							/>
 						)}
-						{Object.values(advancedFilters).some(v => v.trim() !== '') && (
+						{(filter || Object.values(advancedFilters).some(f => f.trim() !== '')) && (
 							<i
 								className="fa fa-solid fa-times-circle"
 								onClick={() => {
+									setFilter('');
 									setAdvancedFilters({
 										name: '',
 										type: '',
@@ -627,9 +640,10 @@ export default function DnDNavigationBar({
 										prop: '',
 										key: '',
 									});
+									applyFilter('');
 									applyAdvancedFilter();
 								}}
-								title="Clear all filters"
+								title="Clear filter"
 							/>
 						)}
 					</>
