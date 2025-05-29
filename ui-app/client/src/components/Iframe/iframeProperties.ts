@@ -224,7 +224,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'allow',
 		group: ComponentPropertyGroup.ADVANCED,
 		description: 'allow of the iframe',
-
+		multiValued: true,
 		enumValues: [
 			{
 				name: 'accelerometer',
