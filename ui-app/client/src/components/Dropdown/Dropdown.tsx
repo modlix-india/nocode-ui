@@ -296,7 +296,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	const getLabel = useCallback(() => {
 		let label = '';
-		if (!selected || (Array.isArray(selected) && !selected.length)) {
+		if (selected == undefined || (Array.isArray(selected) && !selected.length)) {
 			return '';
 		}
 		if (!isMultiSelect) {
