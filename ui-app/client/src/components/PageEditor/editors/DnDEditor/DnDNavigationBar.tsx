@@ -200,6 +200,7 @@ export default function DnDNavigationBar({
 			setOpenParents(set);
 			setShowMultiSelect(matchingComponents.length > 1);
 			setMatchingCount(matchingComponents.length);
+			onSelectedComponentListChanged('');
 
 			if (matchingComponents.length > 0) {
 				matchingComponents.forEach(key => {
@@ -208,7 +209,7 @@ export default function DnDNavigationBar({
 				onSelectedComponentChanged(matchingComponents[0]);
 			} else {
 				onSelectedComponentChanged('');
-				onSelectedComponentListChanged('');
+				// onSelectedComponentListChanged('');
 			}
 		},
 		[
@@ -498,6 +499,7 @@ export default function DnDNavigationBar({
 		setOpenParents(set);
 		setShowMultiSelect(matchingComponents.length > 0);
 		setMatchingCount(matchingComponents.length);
+		onSelectedComponentListChanged('');
 
 		if (matchingComponents.length > 0) {
 			matchingComponents.forEach(key => {
@@ -506,7 +508,7 @@ export default function DnDNavigationBar({
 			onSelectedComponentChanged(matchingComponents[0]);
 		} else {
 			onSelectedComponentChanged('');
-			onSelectedComponentListChanged('');
+			// onSelectedComponentListChanged('');
 		}
 	}, [
 		advancedFilters,
@@ -588,8 +590,8 @@ export default function DnDNavigationBar({
 									prop: '',
 									key: '',
 								});
-								applyAdvancedFilter(); // Clear advanced filter results
-								applyFilter(filter); // Re-apply basic filter if it exists
+								applyAdvancedFilter();
+								applyFilter(filter);
 							}}
 							title="Basic Search"
 						/>
