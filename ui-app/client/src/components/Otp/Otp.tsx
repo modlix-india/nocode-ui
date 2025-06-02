@@ -202,19 +202,32 @@ function Otp(props: Readonly<ComponentProps>) {
 				}
 			} else if (e.key === 'Backspace') {
 				let newValueArray = value?.split('');
-				newValueArray[index] = ' ';
-				const allEmpty = newValueArray.every(char => char === ' ');
-				const newValue = allEmpty ? '' : newValueArray.join('');
+				const currentValue = newValueArray[index];
+				const isEmpty = currentValue === ' ';
 
-				if (bindingPathPath !== undefined) {
-					setData(bindingPathPath, newValue, context?.pageName);
-				} else {
-					setValue(newValue);
-				}
+				if (!isEmpty) {
+					newValueArray[index] = ' ';
+					const allEmpty = newValueArray.every(char => char === ' ');
+					const newValue = allEmpty ? '' : newValueArray.join('');
 
-				if (index > 0) {
+					if (bindingPathPath !== undefined) {
+						setData(bindingPathPath, newValue, context?.pageName);
+					} else {
+						setValue(newValue);
+					}
+				} else if (index > 0) {
 					e.preventDefault();
 					if (target.previousSibling instanceof HTMLInputElement) {
+						newValueArray[index - 1] = ' ';
+						const allEmpty = newValueArray.every(char => char === ' ');
+						const newValue = allEmpty ? '' : newValueArray.join('');
+
+						if (bindingPathPath !== undefined) {
+							setData(bindingPathPath, newValue, context?.pageName);
+						} else {
+							setValue(newValue);
+						}
+
 						target.previousSibling.focus();
 					}
 				}
@@ -257,7 +270,7 @@ function Otp(props: Readonly<ComponentProps>) {
 			<span
 				style={computedStyles.supportText ?? {}}
 				className={`_supportText ${readOnly ? 'disabled' : ''} ${
-					focusBoxIndex != -1 ? '_supportTextActive' : ''
+					focusBoxIndex != 0 ? '_supportTextActive' : ''
 				}`}
 			>
 				<SubHelperComponent definition={definition} subComponentName="supportText" />
