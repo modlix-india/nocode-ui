@@ -20,6 +20,20 @@ export default function FileSelector({
 		position: relative;
 	}
 
+    ${PREFIX} _iconStatusContainer {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+
+    ${PREFIX} ._rightSection1 {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
+}
 	${PREFIX} ._imageButton {
 		cursor: pointer;
 	}
@@ -83,6 +97,118 @@ export default function FileSelector({
 		width: 100%;
 		height: 100%;
 	}
+
+	${PREFIX} ._progressBarfileUpload {
+        background-color:#F9FAFB;
+        border : 1px solid #DFE8F0;
+        border-radius: 8px;
+        height: 50px;
+		width:100%;
+        padding: 0px 10px 0px 10px;
+        box-shadow: 0px 1px 3px 0px #0000001A;
+    }
+       ${PREFIX}  ._InnerProgressBarContainer{
+        display:flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items:center;
+        height: 50px;
+        padding:0px 5px 0px 21px;
+
+        }
+    ${PREFIX} ._fileUploadPlaceholderText {
+        font: 400 14px/14px Inter;
+        color:  #0000004D;                                
+    }
+      ${PREFIX} ._hidden {
+        visibility: hidden;
+        width: 100%;
+        position: absolute;
+        height: 100%;
+    }
+      ${PREFIX} ._leftSection {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        height:50px;
+        }
+
+    ${PREFIX} ._progressBarUploadButton {
+    border-radius: 4px;
+    border: 1px solid #DFE8F099;
+    background-color:  #FFFFFF;
+    padding: 0px 8px;
+	
+    height:40px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font: 600 14px/14px Inter;
+    color: #364359;
+    margin: 0px;
+	cursor: pointer;
+    }
+ 
+    ${PREFIX} ._ImagePreviewPlaceholder {
+        background-color:#DFE8F066;
+        border-radius: 4px;
+        width: 32px;
+        height: 32px;
+        margin: 0px 10px 0px 0px;
+    }
+    ${PREFIX} ._previewImageContainer, ._previewImage {
+       width: 32px;
+        height: 32px;
+      
+    }
+       ._previewImageContainer{
+       margin: 0px 10px 0px 0px;
+       }
+        ${PREFIX} ._uploadingFileContainer{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        }
+    ${PREFIX} ._progressBarFileUploadText{
+        font: 500 14px/14px Inter;
+        color: #364359;
+        width:130px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+    }
+    ${PREFIX} ._outerContainerUploadStatus {
+        height: 5px;
+        width: 100px;
+        background-color: #3333331A;
+        border-radius: 2px;
+        margin: 0px 15px 0px 0px;
+    }
+    ${PREFIX} ._InnerContainerUploadStatus {
+        height: 5px;
+        border-radius: 2px 0px 0px 2px;
+    }
+
+	${PREFIX} ._uploadingBackgroundColor {
+		background-color: #375EF9;
+	}
+
+	${PREFIX} ._doneBackgroundColor {
+		background-color: #1CBA79;
+	}
+	${PREFIX} ._downloadIcon {
+	stroke: #427EE4;
+	margin:0px 15px 0px 0px;
+}
+	${PREFIX} ._deleteIcon {
+	stroke: #FF5446;
+}
+ 
+   
 
 		@media screen and (max-width: ${TABLET_MIN_WIDTH}px) {®
 		${PREFIX} ._popupBackground ._popupContainer {
