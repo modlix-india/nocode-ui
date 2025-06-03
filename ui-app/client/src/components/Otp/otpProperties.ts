@@ -14,6 +14,58 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	COMMON_COMPONENT_PROPERTIES.label,
+	{
+		name: 'noFloat',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Do not float Label',
+		description: 'Otp without floating label.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'autoComplete',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Autocomplete type',
+		description:
+			'Autocomplete specifies what type or if any assistance that is provided to user while filling forms, uses same values as its html attribute.',
+		defaultValue: 'off',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: 'off', displayName: 'Off', description: 'Autocomplete off' },
+			{ name: 'on', displayName: 'On', description: 'Autocomplete on' },
+			{ name: 'none', displayName: 'None', description: 'No autocomplete' },
+		],
+	},
+
+	{
+		name: 'placeholder',
+		displayName: 'Placeholder',
+		description: 'Placeholder to be shown in input box.',
+		schema: SCHEMA_STRING_COMP_PROP,
+		defaultValue: '',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'showMandatoryAsterisk',
+		displayName: 'Show Mandatory Asterisk',
+		description: 'Show Mandatory Asterisk',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+
+	{
+		name: 'hideClearButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Hide Clear Button',
+		description: 'Hide Clear Button',
+		defaultValue: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
 	{
 		name: 'autoFocus',
 		displayName: 'Auto Focus',
@@ -27,7 +79,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Mask Value',
 		description: 'Mask the value of the otp.',
-		group: ComponentPropertyGroup.ADVANCED	,
+		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
 	{
@@ -48,10 +100,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: 'ASTERISK',
 				displayName: 'Asterisk',
 				description: 'Mask with asterisk (*)',
-			}
+			},
 		],
 	},
-	
+
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 
@@ -114,6 +166,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+
+	COMMON_COMPONENT_PROPERTIES.onEnter,
+	COMMON_COMPONENT_PROPERTIES.onChange,
+	COMMON_COMPONENT_PROPERTIES.onBlur,
+	COMMON_COMPONENT_PROPERTIES.onFocus,
+
+	{
+		name: 'onClear',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Clear',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when clear button is pressed.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+
 	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
@@ -168,6 +235,16 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	label: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	asterisk: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	supportText: [
