@@ -559,7 +559,7 @@ const component: Component = {
 		type: 'Otp',
 		name: 'Otp',
 		properties: {
-			label: { value: 'Otp' },
+			label: { value: '' },
 		},
 	},
 	validations: {
