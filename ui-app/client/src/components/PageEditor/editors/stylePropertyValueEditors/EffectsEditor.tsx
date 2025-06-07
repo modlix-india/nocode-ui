@@ -506,7 +506,7 @@ const TRANSITION_PROPERTIES: Array<PropertyDetail> = [
 	},
 ];
 
-const FILTER_FUNCTIONS: Array<FunctionDetail> = [
+export const FILTER_FUNCTIONS: Array<FunctionDetail> = [
 	{
 		name: 'blur',
 		displayName: 'Blur',
