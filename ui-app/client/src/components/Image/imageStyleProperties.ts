@@ -25,6 +25,38 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dv: '0 0 0 2px rgba(255, 255, 255, 0.5), 0 0 5px rgba(0, 0, 0, 0.2)',
 		sel: '._magnifier',
 	},
+	{
+		n: 'sliderLineColor',
+		cp: 'background-color',
+		dn: 'Slider Line Color',
+		de: 'Color of the comparison slider line',
+		dv: 'rgba(255, 255, 255, 0.7)',
+		sel: '._sliderLine',
+	},
+	{
+		n: 'sliderHandleBgColor',
+		cp: 'background-color',
+		dn: 'Slider Handle Background Color',
+		de: 'Background color of the comparison slider handle',
+		dv: 'rgba(255, 255, 255, 0.7)',
+		sel: '._sliderHandle',
+	},
+	{
+		n: 'sliderHandleBorder',
+		cp: 'border',
+		dn: 'Slider Handle Border',
+		de: 'Border style for the comparison slider handle',
+		dv: '2px solid rgba(0, 0, 0, 0.5)',
+		sel: '._sliderHandle',
+	},
+	{
+		n: 'sliderHandleBoxShadow',
+		cp: 'box-shadow',
+		dn: 'Slider Handle Shadow',
+		de: 'Box shadow for the comparison slider handle',
+		dv: '0 0 5px rgba(0, 0, 0, 0.3)',
+		sel: '._sliderHandle',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(
