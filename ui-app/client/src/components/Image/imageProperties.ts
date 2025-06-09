@@ -1,4 +1,8 @@
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -26,7 +30,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'sr3',
+		name: 'src3',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Image source for Tablet portrait screen',
 		description: 'source of the image for Tablet portrait screen.',
@@ -58,21 +62,49 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'zoom',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Toggle zoom',
-		description: 'Magnification functionality switch',
-		defaultValue: false,
+		name: 'enhancementType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Enhancement Type',
+		description: 'Type of image enhancement to apply',
 		group: ComponentPropertyGroup.ADVANCED,
-		notImplemented: true,
+		defaultValue: 'none',
+		enumValues: [
+			{ name: 'none', displayName: 'None' },
+			{ name: 'zoomPreview', displayName: 'Zoom Preview' },
+			{ name: 'magnification', displayName: 'Magnification' },
+		],
 	},
 	{
-		name: 'zoomedImg',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Zoom Image',
-		description: 'High quality image for zoom functionality.',
-		notImplemented: true,
+		name: 'zoomPreviewVisible',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Always Show Zoom Preview',
+		description: 'Whether to always show zoom preview or only on hover',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'zoomFactor',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Zoom Factor',
+		description: 'Magnification level for zoom preview',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 2,
+	},
+	{
+		name: 'magnifierSize',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Magnifier Size',
+		description: 'Size of the magnifier in pixels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 150,
+	},
+	{
+		name: 'magnificationFactor',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Magnification Factor',
+		description: 'Magnification level for the magnifier',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 2,
 	},
 	{
 		name: 'fallBackImg',
@@ -90,7 +122,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
-
 	{
 		name: 'stopPropagation',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -108,6 +139,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Prevent default of click event.',
 		defaultValue: false,
 	},
+	{
+		name: 'previewPlacement',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Preview Placement',
+		description: 'Position of the zoom preview window',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'right',
+		enumValues: [
+			{ name: 'right', displayName: 'Right' },
+			{ name: 'left', displayName: 'Left' },
+			{ name: 'top', displayName: 'Top' },
+			{ name: 'bottom', displayName: 'Bottom' },
+		],
+	},
+	{
+		name: 'previewWidth',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Preview Width',
+		description: 'Width of the zoom preview window in pixels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 300,
+	},
+	{
+		name: 'previewHeight',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Preview Height',
+		description: 'Height of the zoom preview window in pixels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 300,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	{
 		name: 'useObjectToRender',
@@ -117,6 +178,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 ];
+
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	'': [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
@@ -134,6 +196,18 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],
+	zoomPreview: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],
+	magnifier: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
 };

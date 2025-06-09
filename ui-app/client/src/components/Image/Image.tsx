@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
 	addListenerAndCallImmediately,
@@ -20,6 +20,7 @@ import ImageStyle from './ImageStyles';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
 import axios from 'axios';
+import { onMouseDownDragStartCurry } from '../../functions/utils';
 
 async function secureImage(src: string) {
 	const headers: any = {
@@ -39,6 +40,10 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const [falledBack, setFalledBack] = useState(false);
 	const location = useLocation();
+	const imageRef = useRef<HTMLImageElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
 	const {
 		properties: {
 			alt,
@@ -53,6 +58,14 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			stopPropagation,
 			preventDefault,
 			useObjectToRender,
+			enhancementType,
+			zoomPreviewVisible,
+			zoomFactor,
+			magnifierSize,
+			magnificationFactor,
+			previewPlacement,
+			previewWidth,
+			previewHeight,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -110,7 +123,10 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	);
 
 	const [actualSrc, setActualSrc] = useState<string | undefined>();
+	const [actualComparisonSrc, setActualComparisonSrc] = useState<string | undefined>();
 	const computedUrl = getSrcUrl(getHref(src ?? defaultSrc, location)!);
+	const computedComparisonUrl = getSrcUrl(getHref(src ?? defaultSrc, location)!);
+
 	useEffect(() => {
 		if (!computedUrl.includes('api/files/secured')) {
 			setActualSrc(computedUrl);
@@ -119,6 +135,29 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		(async () => setActualSrc(await secureImage(computedUrl)))();
 	}, [computedUrl]);
 
+	useEffect(() => {
+		if (!computedComparisonUrl || !computedComparisonUrl.includes('api/files/secured')) {
+			setActualComparisonSrc(computedComparisonUrl);
+			return;
+		}
+		(async () => setActualComparisonSrc(await secureImage(computedComparisonUrl)))();
+	}, [computedComparisonUrl]);
+
+	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (enhancementType !== 'zoomPreview' && enhancementType !== 'magnification') return;
+
+		const { left, top, width, height } = containerRef.current?.getBoundingClientRect() || {
+			left: 0,
+			top: 0,
+			width: 0,
+			height: 0,
+		};
+		const x = ((e.clientX - left) / width) * 100;
+		const y = ((e.clientY - top) / height) * 100;
+
+		setMousePosition({ x, y });
+	};
+
 	let imageTag = undefined;
 
 	if (actualSrc) {
@@ -126,6 +165,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			<object type="image/svg+xml" data={actualSrc} style={resolvedStyles.image ?? {}} />
 		) : (
 			<img
+				ref={imageRef}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 				}
@@ -135,10 +175,10 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 				onClick={
 					onClickEvent
 						? ev => {
-							if (stopPropagation) ev.stopPropagation();
-							if (preventDefault) ev.preventDefault();
-							handleClick();
-						}
+								if (stopPropagation) ev.stopPropagation();
+								if (preventDefault) ev.preventDefault();
+								handleClick();
+							}
 						: undefined
 				}
 				className={onClickEvent ? '_onclicktrue' : ''}
@@ -150,9 +190,47 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			/>
 		);
 
+		const zoomPreviewClass = `_zoomPreview _preview-${previewPlacement || 'right'}`;
+		const zoomPreviewStyle = {
+			...resolvedStyles.zoomPreview,
+			width: `${previewWidth || 300}px`,
+			height: `${previewHeight || 300}px`,
+			backgroundImage: `url(${actualSrc})`,
+			backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+			backgroundSize: `${(zoomFactor || 2) * 100}%`,
+		};
+
+		const zoomPreview = enhancementType === 'zoomPreview' && (
+			<div
+				className={`${zoomPreviewClass} ${zoomPreviewVisible || hover ? 'visible' : ''}`}
+				style={zoomPreviewStyle}
+			>
+				<SubHelperComponent definition={definition} subComponentName="zoomPreview" />
+			</div>
+		);
+
+		const magnifierStyle = {
+			...resolvedStyles.magnifier,
+			left: `${mousePosition.x}%`,
+			top: `${mousePosition.y}%`,
+			width: `${magnifierSize || 150}px`,
+			height: `${magnifierSize || 150}px`,
+			backgroundImage: `url(${actualSrc})`,
+			backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+			backgroundSize: `${(magnificationFactor || 2) * 100}%`,
+		};
+
+		const magnifier = enhancementType === 'magnification' && hover && (
+			<div className="_magnifier" style={magnifierStyle}>
+				<SubHelperComponent definition={definition} subComponentName="magnifier" />
+			</div>
+		);
+
 		imageTag = (
 			<>
 				{actualImage}
+				{zoomPreview}
+				{magnifier}
 				<SubHelperComponent
 					style={resolvedStyles.image ?? {}}
 					className={onClickEvent ? '_onclicktrue' : ''}
@@ -164,7 +242,14 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	}
 
 	return (
-		<div className="comp compImage" style={resolvedStyles.comp ?? {}}>
+		<div
+			className="comp compImage"
+			style={resolvedStyles.comp ?? {}}
+			ref={containerRef}
+			onMouseMove={handleMouseMove}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			{imageTag}
 		</div>
@@ -221,6 +306,18 @@ const component: Component = {
 			displayName: 'Image',
 			description: 'Image',
 			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'zoomPreview',
+			displayName: 'Zoom Preview',
+			description: 'Zoom Preview Window',
+			icon: 'fa-solid fa-magnifying-glass-plus',
+		},
+		{
+			name: 'magnifier',
+			displayName: 'Magnifier',
+			description: 'Magnification Lens',
+			icon: 'fa-solid fa-circle',
 		},
 	],
 	stylePropertiesForTheme: styleProperties,
