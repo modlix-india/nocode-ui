@@ -243,6 +243,44 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Use Object to render (SVG only)',
 		defaultValue: false,
 	},
+	{
+		name: 'tooltipText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tooltip Text',
+		description: 'Text to display in the tooltip when hovering over the image',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: '',
+	},
+	{
+		name: 'tooltipEnabled',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Enable Tooltip',
+		description: 'Whether to show a tooltip on hover',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'tooltipPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tooltip Position',
+		description: 'Position of the tooltip relative to the image',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'bottom',
+		enumValues: [
+			{ name: 'top', displayName: 'Top' },
+			{ name: 'bottom', displayName: 'Bottom' },
+			{ name: 'left', displayName: 'Left' },
+			{ name: 'right', displayName: 'Right' },
+		],
+	},
+	{
+		name: 'tooltipOffset',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Tooltip Offset',
+		description: 'Distance between the tooltip and the image in pixels',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 10,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
@@ -284,6 +322,13 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	sliderLine: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],
+	tooltip: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };
 

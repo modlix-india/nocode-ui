@@ -57,6 +57,46 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dv: '0 0 5px rgba(0, 0, 0, 0.3)',
 		sel: '._sliderHandle',
 	},
+	{
+		n: 'tooltipBackgroundColor',
+		cp: 'background-color',
+		dn: 'Tooltip Background Color',
+		de: 'Background color of the tooltip',
+		dv: 'rgba(0, 0, 0, 0.1)',
+		sel: '._tooltip',
+	},
+	{
+		n: 'tooltipTextColor',
+		cp: 'color',
+		dn: 'Tooltip Text Color',
+		de: 'Text color of the tooltip',
+		dv: '#333',
+		sel: '._tooltip',
+	},
+	{
+		n: 'tooltipBorderRadius',
+		cp: 'border-radius',
+		dn: 'Tooltip Border Radius',
+		de: 'Border radius of the tooltip',
+		dv: '4px',
+		sel: '._tooltip',
+	},
+	{
+		n: 'tooltipPadding',
+		cp: 'padding',
+		dn: 'Tooltip Padding',
+		de: 'Padding inside the tooltip',
+		dv: '6px 10px',
+		sel: '._tooltip',
+	},
+	{
+		n: 'tooltipBoxShadow',
+		cp: 'box-shadow',
+		dn: 'Tooltip Shadow',
+		de: 'Box shadow for the tooltip',
+		dv: '0 2px 5px rgba(0, 0, 0, 0.2)',
+		sel: '._tooltip',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

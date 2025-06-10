@@ -75,6 +75,10 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			sliderHandleSize,
 			sliderHandleType,
 			sliderHandleImage,
+			tooltipText,
+			tooltipEnabled,
+			tooltipPosition,
+			tooltipOffset,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -431,12 +435,54 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			</>
 		);
 
+		let tooltip;
+
+		tooltip = tooltipEnabled && tooltipText && hover && (
+			<div
+				className="_tooltip"
+				style={{
+					...resolvedStyles.tooltip,
+					position: 'absolute',
+					...(tooltipPosition === 'top' && {
+						bottom: '100%',
+						left: '50%',
+						transform: 'translateX(-50%)',
+						marginBottom: `${tooltipOffset || 10}px`,
+					}),
+					...(tooltipPosition === 'bottom' && {
+						top: '100%',
+						left: '50%',
+						transform: 'translateX(-50%)',
+						marginTop: `${tooltipOffset || 10}px`,
+					}),
+					...(tooltipPosition === 'left' && {
+						right: '100%',
+						top: '50%',
+						transform: 'translateY(-50%)',
+						marginRight: `${tooltipOffset || 10}px`,
+					}),
+					...(tooltipPosition === 'right' && {
+						left: '100%',
+						top: '50%',
+						transform: 'translateY(-50%)',
+						marginLeft: `${tooltipOffset || 10}px`,
+					}),
+					whiteSpace: 'nowrap',
+					zIndex: 30,
+				}}
+			>
+				{tooltipText}
+				<SubHelperComponent definition={definition} subComponentName="tooltip" />
+			</div>
+		);
+
 		imageTag = (
 			<>
 				{actualImage}
 				{zoomPreview}
 				{magnifier}
 				{comparisonSlider}
+				{tooltip}
 				<SubHelperComponent
 					style={resolvedStyles.image ?? {}}
 					className={onClickEvent ? '_onclicktrue' : ''}
@@ -538,6 +584,12 @@ const component: Component = {
 			displayName: 'Slider Line',
 			description: 'Image Comparison Slider Line',
 			icon: 'fa-solid fa-grip-lines-vertical',
+		},
+		{
+			name: 'tooltip',
+			displayName: 'Tooltip',
+			description: 'Image Tooltip',
+			icon: 'fa-solid fa-comment',
 		},
 	],
 	stylePropertiesForTheme: styleProperties,
