@@ -1,18 +1,72 @@
 [
 	{
 		"cp": "max-height",
-		"sel": ".comp.compDropdown ._dropdownContainer",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownContainer",
 		"np": true,
+		"spv": {
+			"_default-_primary": "",
+			"_default-_secondary": "",
+			"_default-_tertiary": "",
+			"_default-_quaternary": "",
+			"_default-_quinary": "",
+			"_outlined-_primary": "",
+			"_outlined-_secondary": "",
+			"_outlined-_tertiary": "",
+			"_outlined-_quaternary": "",
+			"_outlined-_quinary": "",
+			"_filled-_primary": "",
+			"_filled-_secondary": "",
+			"_filled-_tertiary": "",
+			"_filled-_quaternary": "",
+			"_filled-_quinary": "",
+			"_bigDesign1-_primary": "",
+			"_bigDesign1-_secondary": "",
+			"_bigDesign1-_tertiary": "",
+			"_bigDesign1-_quaternary": "",
+			"_bigDesign1-_quinary": "",
+			"_text-_primary": "",
+			"_text-_secondary": "",
+			"_text-_tertiary": "",
+			"_text-_quaternary": "",
+			"_text-_quinary": ""
+		},
 		"gn": "Max Height",
-		"dn": "MaxHeight DropdownContainer",
+		"dn": "DropdownContainer maxHeight",
 		"n": "dropdownMaxHeightDropdownContainer<designType><colorScheme>"
 	},
 	{
-		"cp": "overflow-y",
-		"sel": ".comp.compDropdown ._dropdownContainer",
+		"cp": "overflow",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownContainer",
 		"np": true,
-		"gn": "Overflow Y",
-		"dn": "OverflowY DropdownContainer",
+		"spv": {
+			"_default-_primary": "visible",
+			"_default-_secondary": "visible",
+			"_default-_tertiary": "visible",
+			"_default-_quaternary": "visible",
+			"_default-_quinary": "visible",
+			"_outlined-_primary": "visible",
+			"_outlined-_secondary": "visible",
+			"_outlined-_tertiary": "visible",
+			"_outlined-_quaternary": "visible",
+			"_outlined-_quinary": "visible",
+			"_filled-_primary": "visible",
+			"_filled-_secondary": "visible",
+			"_filled-_tertiary": "visible",
+			"_filled-_quaternary": "visible",
+			"_filled-_quinary": "visible",
+			"_bigDesign1-_primary": "visible",
+			"_bigDesign1-_secondary": "visible",
+			"_bigDesign1-_tertiary": "visible",
+			"_bigDesign1-_quaternary": "visible",
+			"_bigDesign1-_quinary": "visible",
+			"_text-_primary": "visible",
+			"_text-_secondary": "visible",
+			"_text-_tertiary": "visible",
+			"_text-_quaternary": "visible",
+			"_text-_quinary": "visible"
+		},
+		"gn": "Overflow",
+		"dn": "DropdownContainer Overflow",
 		"n": "dropdownOverflowYDropdownContainer<designType><colorScheme>",
 		"dv": "visible"
 	},
@@ -144,6 +198,21 @@
 		"gn": "Border Color",
 		"dn": "BorderColor CommonCheckbox",
 		"n": "dropdownBorderColorCommonCheckbox<designType><colorScheme>"
+	},
+	{
+		"cp": "border-color",
+		"sel": ".comp.compDropdown<colorScheme><designType> .commonCheckbox._checked",
+		"np": true,
+		"spv": {
+			"-_primary": "<fontColorThree>",
+			"-_secondary": "<fontColorFour>",
+			"-_tertiary": "<fontColorFive>",
+			"-_quaternary": "<fontColorNine>",
+			"-_quinary": "<fontColorSeven>"
+		},
+		"gn": "Border Color",
+		"dn": "BorderColor CommonCheckbox Checked",
+		"n": "dropdownBorderColorCommonCheckboxChecked<designType><colorScheme>"
 	},
 	{
 		"cp": "background",
@@ -298,7 +367,7 @@
 	},
 	{
 		"cp": "border-color",
-		"sel": ".comp.compDropdown<designType>._isActive<colorScheme>,",
+		"sel": ".comp.compDropdown<designType>._isActive<colorScheme>",
 		"np": true,
 		"spv": {
 			"_default-_primary": "<fontColorThree>",
@@ -328,7 +397,7 @@
 	},
 	{
 		"cp": "border-color",
-		"sel": ".comp.compDropdown<designType>._isActive<colorScheme> ._dropdownContainer,",
+		"sel": ".comp.compDropdown<designType>._isActive<colorScheme> ._dropdownContainer",
 		"np": true,
 		"spv": {
 			"_default-_primary": "<fontColorThree>",
@@ -358,7 +427,7 @@
 	},
 	{
 		"cp": "border-color",
-		"sel": " .comp.compDropdown<designType>._hasValue<colorScheme>,",
+		"sel": ".comp.compDropdown<designType>._hasValue<colorScheme>",
 		"np": true,
 		"spv": {
 			"_default-_primary": "<fontColorThree>",
@@ -490,7 +559,7 @@
 		"n": "dropdownBorderRadius<designType><colorScheme>"
 	},
 	{
-		"cp": "Border",
+		"cp": "border",
 		"sel": ".comp.compDropdown<designType><colorScheme>",
 		"np": true,
 		"spv": {
@@ -775,7 +844,7 @@
 		"gn": "Width",
 		"dn": "Width DropdownSearchBox",
 		"n": "dropdownWidthDropdownSearchBox<designType><colorScheme>",
-		"dv": "1"
+		"dv": "100%"
 	},
 	{
 		"cp": "border-radius",
@@ -839,6 +908,21 @@
 		"dv": "<fontColorThree>"
 	},
 	{
+		"cp": "border",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
+		"np": true,
+		"spv": {
+			"_default-": "none, none, 1px solid, none",
+			"_outlined-": "none, none, 1px solid, none",
+			"_filled-": "none, none, 1px solid, none",
+			"_bigDesign1-": "none, none, 1px solid, none",
+			"_text-": "none, none, 1px solid, none"
+		},
+		"gn": "Border",
+		"dn": "Border DropdownSearchBoxContainer",
+		"n": "dropdownBorderDropdownSearchBoxContainer<designType><colorScheme>"
+	},
+	{
 		"cp": "border-color",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
 		"np": true,
@@ -869,19 +953,116 @@
 		"n": "dropdownBorderColorDropdownSearchBoxContainer<designType><colorScheme>"
 	},
 	{
-		"cp": "border",
+		"cp": "background",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
 		"np": true,
 		"spv": {
-			"_default-": "none, none, 1px solid, none",
-			"_outlined-": "none, none, 1px solid, none",
-			"_filled-": "none, none, 1px solid, none",
-			"_bigDesign1-": "none, none, 1px solid, none",
-			"_text-": "none, none, 1px solid, none"
+			"_default-_primary": "<backgroundColorSeven>",
+			"_default-_secondary": "<backgroundColorSeven>",
+			"_default-_tertiary": "<backgroundColorSeven>",
+			"_default-_quaternary": "<backgroundColorSeven>",
+			"_default-_quinary": "<backgroundColorSeven>",
+			"_outlined-_primary": "<backgroundColorSeven>",
+			"_outlined-_secondary": "<backgroundColorSeven>",
+			"_outlined-_tertiary": "<backgroundColorSeven>",
+			"_outlined-_quaternary": "<backgroundColorSeven>",
+			"_outlined-_quinary": "<backgroundColorSeven>",
+			"_filled-_primary": "<backgroundColorSeven>",
+			"_filled-_secondary": "<backgroundColorSeven>",
+			"_filled-_tertiary": "<backgroundColorSeven>",
+			"_filled-_quaternary": "<backgroundColorSeven>",
+			"_filled-_quinary": "<backgroundColorSeven>",
+			"_bigDesign1-_primary": "<backgroundColorSeven>",
+			"_bigDesign1-_secondary": "<backgroundColorSeven>",
+			"_bigDesign1-_tertiary": "<backgroundColorSeven>",
+			"_bigDesign1-_quaternary": "<backgroundColorSeven>",
+			"_bigDesign1-_quinary": "<backgroundColorSeven>"
 		},
-		"gn": "Border",
-		"dn": "Border DropdownSearchBoxContainer",
-		"n": "dropdownBorderDropdownSearchBoxContainer<designType><colorScheme>"
+		"gn": "Background",
+		"dn": "Background DropdownSearchBoxContainer",
+		"n": "dropdownBackgroundDropdownSearchBoxContainer<designType><colorScheme>",
+		"dv": "<backgroundColorSeven>"
+	},
+
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
+		"np": true,
+		"spv": {
+			"_default-_primary": "",
+			"_default-_secondary": "",
+			"_default-_tertiary": "",
+			"_default-_quaternary": "",
+			"_default-_quinary": "",
+			"_outlined-_primary": "",
+			"_outlined-_secondary": "",
+			"_outlined-_tertiary": "",
+			"_outlined-_quaternary": "",
+			"_outlined-_quinary": "",
+			"_filled-_primary": "",
+			"_filled-_secondary": "",
+			"_filled-_tertiary": "",
+			"_filled-_quaternary": "",
+			"_filled-_quinary": "",
+			"_bigDesign1-_primary": "",
+			"_bigDesign1-_secondary": "",
+			"_bigDesign1-_tertiary": "",
+			"_bigDesign1-_quaternary": "",
+			"_bigDesign1-_quinary": ""
+		},
+		"gn": "Border Radius",
+		"dn": "Border Radius DropdownSearchBoxContainer",
+		"n": "dropdownBorderRadiusDropdownSearchBoxContainer<designType><colorScheme>"
+	},
+
+	{
+		"cp": "padding",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
+		"np": true,
+		"spv": {
+			"_default-": "8px",
+			"_outlined-": "8px",
+			"_filled-": "8px",
+			"_bigDesign1-": "10px",
+			"_text-": "8px"
+		},
+		"gn": "Padding",
+		"dn": "Padding DropdownSearchBoxContainer",
+		"n": "dropdownPaddingDropdownSearchBoxContainer<designType><colorScheme>"
+	},
+
+	{
+		"cp": "color",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
+		"np": true,
+		"spv": {
+			"_default-": "<fontColorEight>",
+			"_outlined-": "<fontColorEight>",
+			"_filled-": "<fontColorEight>",
+			"_bigDesign1-": "<fontColorEight>",
+			"_text-": "<fontColorEight>"
+		},
+		"gn": "Color",
+		"dn": "Color DropdownSearchBoxContainer",
+		"n": "dropdownColorDropdownSearchBoxContainer<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+
+	{
+		"cp": "color",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBox::placeholder",
+		"np": true,
+		"spv": {
+			"_default-": "<fontColorEight>",
+			"_outlined-": "<fontColorEight>",
+			"_filled-": "<fontColorEight>",
+			"_bigDesign1-": "<fontColorEight>",
+			"_text-": "<fontColorEight>"
+		},
+		"gn": "Color",
+		"dn": "Color DropdownSearchBox Placeholder",
+		"n": "dropdownColorDropdownSearchBoxPlaceholder<designType><colorScheme>",
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "font",

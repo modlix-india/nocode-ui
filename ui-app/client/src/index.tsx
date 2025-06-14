@@ -7,7 +7,7 @@ import { processLocation } from './util/locationProcessor';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 
 // TEST CDN CODE
-// globalThis.cdnPrefix = 'cdn-dev.modlix.com';
+// globalThis.cdnPrefix = 'cdn-local.modlix.com';
 // globalThis.cdnStripAPIPrefix = true;
 // globalThis.cdnReplacePlus = true;
 // globalThis.cdnResizeOptionsType = 'cloudflare';

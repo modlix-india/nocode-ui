@@ -18,7 +18,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{ name: 'button', displayName: 'Button to open browser' },
 			{ name: 'browser', displayName: 'Full browser' },
+			{ name: 'fileUploadWithProgressBar', displayName: 'File Upload With Progress Bar' },
 		],
+		defaultValue: 'button',
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{

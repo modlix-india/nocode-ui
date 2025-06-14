@@ -12,6 +12,7 @@ interface StatementButtonsProps {
 	showEditParameters: boolean;
 	editParameters?: boolean;
 	onRemoveAllDependencies: () => void;
+	onCopy: (statementName: string) => void;
 }
 
 export default function StatementButtons({
@@ -25,6 +26,7 @@ export default function StatementButtons({
 	showEditParameters,
 	editParameters,
 	onRemoveAllDependencies,
+	onCopy,
 }: StatementButtonsProps) {
 	if (!selected) return <></>;
 
@@ -74,16 +76,7 @@ export default function StatementButtons({
 				onMouseDown={e => {
 					e.stopPropagation();
 					e.preventDefault();
-
-					if (!navigator.clipboard) return;
-
-					navigator.clipboard.write([
-						new ClipboardItem({
-							'text/plain': new Blob([COPY_STMT_KEY + JSON.stringify(statement)], {
-								type: 'text/plain',
-							}),
-						}),
-					]);
+					onCopy(statementName);
 				}}
 			></i>
 			<div className="_buttonsGap"></div>
