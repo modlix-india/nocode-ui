@@ -1169,6 +1169,14 @@
 		"n": "phoneNumberBorderColorValidationSuccessValueActive<designType><colorScheme>"
 	},
 	{
+		"cp": "box-shadow",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme>._validationSuccess, .comp.compPhoneNumber<designType><colorScheme>._isActive._validationSuccess, .comp.compPhoneNumber<designType><colorScheme>._hasValue._validationSuccess",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow ValidationSuccess Value Active",
+		"n": "phoneNumberBoxShadowValidationSuccessValueActive<designType><colorScheme>"
+	},
+	{
 		"cp": "background",
 		"sel": ".comp.compPhoneNumber<designType><colorScheme>._validationSuccess, .comp.compPhoneNumber<designType><colorScheme>._isActive._validationSuccess, .comp.compPhoneNumber<designType><colorScheme>._hasValue._validationSuccess",
 		"np": true,

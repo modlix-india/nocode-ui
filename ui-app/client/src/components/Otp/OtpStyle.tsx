@@ -49,11 +49,35 @@ export default function OtpStyle({ theme }: Readonly<{ theme: Map<string, Map<st
 		`
 		${PREFIX} {
 			display: flex;
+			position: relative;
 		}
 
 		${PREFIX} ._inputBox {
 			text-align: center;
 			outline: none; 
+		}
+
+		${PREFIX} ._label {
+			position: absolute;
+			user-select: none;
+			pointer-events: none;
+			bottom: 50%;
+			transform: translateY(50%);
+			transition: transform 0.2s ease-in-out, left 0.2s ease-in-out, bottom 0.2s ease-in-out;
+		}
+
+		${PREFIX}._isActive ._label,
+		${PREFIX} ._label._noFloat {
+			transform: translateY(-50%);
+			bottom: 100%;
+		}
+
+		${PREFIX} ._clearText {
+			cursor: pointer;
+			position: absolute;
+			right: 0;
+			top: 50%;
+			transform: translateY(-50%);
 		}
 
 		${PREFIX} ._supportText {

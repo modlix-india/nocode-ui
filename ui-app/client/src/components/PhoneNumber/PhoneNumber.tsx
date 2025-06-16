@@ -48,7 +48,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	const isFirstRender = useRef(true);
 
 	const {
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 		definition,
 		pageDefinition: { translations },
 		locationHistory,
@@ -89,6 +89,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			clearSearchTextOnClose,
 			noCodeForFirstCountry,
 			showMandatoryAsterisk,
+			storeDialCodeWithNumber,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -108,6 +109,10 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 	const bindingPathPath2 = bindingPath2
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPathPath3 = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
 		: undefined;
 
 	React.useEffect(() => {
@@ -505,14 +510,15 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 				format && text !== phone
 					? dc + (storeFormatted ? seperator + getFormattedNumber(phone, dc) : phone)
 					: dc + phone;
-			bindingPathPath && setData(bindingPathPath, temp, context?.pageName);
+			bindingPathPath &&
+				setData(bindingPathPath, storeDialCodeWithNumber ? temp : phone, context?.pageName);
 			callChangeEvent();
 		} else if (!updateStoreImmediately) {
 			let temp = format
 				? selected.D +
 					(storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
 				: selected.D + text;
-			updateBindingPathData(temp);
+			updateBindingPathData(storeDialCodeWithNumber ? temp : text);
 		}
 		callBlurEvent();
 		setFocus(false);
@@ -538,7 +544,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			let temp = format
 				? selected.D + (storeFormatted ? seperator + formattedText : text)
 				: selected.D + text;
-			updateBindingPathData(temp);
+			updateBindingPathData(storeDialCodeWithNumber ? temp : text);
 		} else if (!text.startsWith('+') && !updateStoreImmediately) {
 			let temp = format ? formattedText : text;
 			setPhoneNumber(temp);
@@ -558,12 +564,19 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 					? seperator + getFormattedNumber(phoneNumber, v.D)
 					: phoneNumber
 				: phoneNumber;
-			const newValue = phoneNumber ? v.D + formattedPhone : '';
+			const newValue = phoneNumber
+				? (storeDialCodeWithNumber ? v.D : '') + formattedPhone
+				: '';
 			setData(bindingPathPath, newValue, context?.pageName);
 		}
 
 		if (bindingPathPath2) {
 			setData(bindingPathPath2, v.C, context?.pageName);
+			callChangeEvent();
+		}
+
+		if (bindingPathPath3) {
+			setData(bindingPathPath3, v.D, context?.pageName);
 			callChangeEvent();
 		}
 	};
@@ -651,6 +664,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Phone Number Binding' },
 		bindingPath2: { name: 'Country Code Binding' },
+		bindingPath3: { name: 'Dail Code Binding' },
 	},
 	defaultTemplate: {
 		key: '',
