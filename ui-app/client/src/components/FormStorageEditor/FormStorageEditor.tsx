@@ -27,6 +27,7 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: StorageEditorStyle,
 	styleDefaults: styleDefaults,
+	stylePseudoStates: ['hover'],
 	bindingPaths: {
 		bindingPath: { name: 'Storage Binding' },
 	},
@@ -54,6 +55,24 @@ const component: Component = {
 					/>
 				</IconHelper>
 			),
+		},
+		{
+			name: 'objectTypeEditor',
+			displayName: 'Object Type Editor',
+			description: 'Object Type Editor',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'addFieldButton',
+			displayName: 'Add Field Button',
+			description: 'Add Field Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'objectAddBar',
+			displayName: 'Object Add Bar',
+			description: 'Object Add Bar',
+			icon: 'fa-solid fa-box',
 		},
 	],
 	stylePropertiesForTheme: styleProperties,
