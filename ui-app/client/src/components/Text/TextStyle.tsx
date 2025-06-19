@@ -26,7 +26,7 @@ export default function LabelStyle({
 			'textColor',
 		);
 
-		const fn = () => {
+		const fn = () => setTimeout(() => {
 			inflateAndSetStyleProps(
 				[textContainer, textColor],
 				stylePropertiesForTheme,
@@ -34,7 +34,7 @@ export default function LabelStyle({
 				styleDefaults,
 			);
 			setReRender(Date.now());
-		};
+		}, 100);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
