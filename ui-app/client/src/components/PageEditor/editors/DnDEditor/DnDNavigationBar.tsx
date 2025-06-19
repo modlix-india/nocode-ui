@@ -422,7 +422,7 @@ function CompTree({
 					e.preventDefault();
 					onContextMenu({
 						componentKey: comp.key,
-						menuPosition: { x: e.clientX, y: e.clientY },
+						menuPosition: { x: e.clientX + 3, y: e.clientY}, // Adding 3px to just to avoid un necessary context menu triggers to close the context menu	
 					});
 				}}
 				onDoubleClick={() => setChangingName(comp.name ?? comp.key)}

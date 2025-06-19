@@ -30,7 +30,7 @@ export default function ButtonBarStyle({
 			'colorScheme',
 		);
 
-		const fn = () => {
+		const fn = () => setTimeout(() => {
 			inflateAndSetStyleProps(
 				[buttonBarDesign, colorScheme],
 				stylePropertiesForTheme,
@@ -38,7 +38,7 @@ export default function ButtonBarStyle({
 				styleDefaults,
 			);
 			setReRender(Date.now());
-		};
+		}, 100);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);

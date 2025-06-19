@@ -26,7 +26,7 @@ export default function IconStyle({
 			'colorScheme',
 		);
 
-		const fn = () => {
+		const fn = () => setTimeout(() => {
 			inflateAndSetStyleProps(
 				[designType, colorScheme],
 				stylePropertiesForTheme,
@@ -34,7 +34,7 @@ export default function IconStyle({
 				styleDefaults,
 			);
 			setReRender(Date.now());
-		};
+		}, 100);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
