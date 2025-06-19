@@ -14,7 +14,7 @@
 
 .comp.compFormStorageEditor ._propAdd {
 	display: flex;
-	align-items: center;
+	align-items: flex-end;
     justify-content: center;
 	gap: 5px;
     padding: 5px;
@@ -30,4 +30,9 @@
     display: flex;
     width: 100%;
     gap: 10px;
+}
+
+.comp.compFormStorageEditor ._propAdd svg {
+	width: 20px;
+	height: 20px;
 }

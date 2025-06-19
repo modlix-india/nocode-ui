@@ -71,8 +71,6 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 		);
 	}, [bindingPathPath, restrictToSchema]);
 
-	console.log(schema);
-
 	const onChangeOfSchema = useCallback(
 		(schema: any) => {
 			if (!bindingPathPath) return;
