@@ -19,7 +19,6 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CodeEditor from './components/CodeEditor';
 import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
-import FormEditor from './components/FormEditor';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
@@ -777,16 +776,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
 				onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 			/>
-			{generateFormOnComponentKey && (
-				<FormEditor
-					formStorageUrl={formStorageUrl}
-					defPath={defPath}
-					pageExtractor={pageExtractor}
-					locationHistory={locationHistory}
-					clickedComponent={generateFormOnComponentKey}
-					setClickedComponent={setGenerateFormOnComponentKey}
-				/>
-			)}
 			<IssuePopup
 				issue={issue}
 				personalizationPath={personalizationPath}
