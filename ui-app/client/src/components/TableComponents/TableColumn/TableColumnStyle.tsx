@@ -5,86 +5,58 @@ import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
-import { styleDefaults } from './tableColumnStyleProperties';
+import {
+	findPropertyDefinitions,
+	lazyStylePropertyLoadFunction,
+} from '../../util/lazyStylePropertyUtil';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+} from './tableColumnStyleProperties';
+import { propertiesDefinition } from '../Table/tableProperties';
 
 const PREFIX = '.comp.compTableColumn';
 const NAME = 'TableColumn';
 export default function TableColumnStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		globalThis.styleProperties[NAME] ?? [],
-	);
+	const [_, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
-		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+		const { tableDesign, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'tableDesign',
+			'colorScheme',
+		);
+		const fn = lazyStylePropertyLoadFunction(
+			NAME,
+			(props, originalStyleProps) => {
+				styleProperties.splice(0, 0, ...props);
+				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+				setReRender(Date.now());
+			},
+			styleDefaults,
+			[tableDesign, colorScheme],
+		);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
 
 		return () => usedComponents.deRegister(NAME);
-	}, []);
+	}, [setReRender]);
 
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`${PREFIX} { vertical-align: middle; text-align:center;}
 	
-		.comp.compTable._design1 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design1ColumnPadding'),
-			values,
-		)}; }
-		
-		.comp.compTable._design3 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design3ColumnPadding'),
-			values,
-		)}; }
-
-		.comp.compTable._design5 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design5ColumnPadding'),
-			values,
-		)}; }
-
-		.comp.compTable._design7 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design7ColumnPadding'),
-			values,
-		)}; }
-
-		.comp.compTable._design9 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design9ColumnPadding'),
-			values,
-		)}; }
-
-		.comp.compTable._design2 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design2ColumnPadding'),
-			values,
-		)}; }
-		
-		.comp.compTable._design4 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design4ColumnPadding'),
-			values,
-		)}; }
-
-		.comp.compTable._design6 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design6ColumnPadding'),
-			values,
-		)}; }
-
-		.comp.compTable._design8 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design8ColumnPadding'),
-			values,
-		)}; }
-
-		.comp.compTable._design10 ${PREFIX} { padding: ${processStyleValueWithFunction(
-			values.get('design10ColumnPadding'),
-			values,
-		)}; }
 		` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnCss">{css}</style>;

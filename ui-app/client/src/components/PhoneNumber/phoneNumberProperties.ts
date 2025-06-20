@@ -129,6 +129,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
+		name: 'storeDialCodeWithNumber',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Store Dial Code with Number',
+		description: 'Store Dial Code with Number.',
+		defaultValue: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Do not float Label',
@@ -159,6 +168,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Text to be shown to help fill the textbox.',
 		translatable: true,
 		group: ComponentPropertyGroup.ADVANCED,
+		editor: ComponentPropertyEditor.LARGE_TEXT,
 	},
 
 	{

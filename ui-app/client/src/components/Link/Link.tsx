@@ -1,4 +1,3 @@
-import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -7,15 +6,16 @@ import {
 	processStyleObjectToCSS,
 } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
+import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './linkProperties';
 import LinkStyle from './LinkStyle';
-import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { runEvent } from '../util/runEvent';
-import { styleDefaults } from './linkStyleProperties';
-import { IconHelper } from '../util/IconHelper';
+import { styleDefaults, stylePropertiesForTheme } from './linkStyleProperties';
 
 function Link(props: Readonly<ComponentProps>) {
 	const location = useLocation();
@@ -170,6 +170,12 @@ function Link(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 14,
 	name: 'Link',
@@ -232,6 +238,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [designType, colorScheme],
 };
 
 export default component;

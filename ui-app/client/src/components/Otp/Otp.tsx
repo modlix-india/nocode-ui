@@ -1,4 +1,12 @@
-import React, { useEffect } from 'react';
+import { isNullValue } from '@fincity/kirun-js';
+import React, { useCallback, useEffect } from 'react';
+import {
+	PageStoreExtractor,
+	addListenerAndCallImmediately,
+	getDataFromPath,
+	getPathFromLocation,
+	setData,
+} from '../../context/StoreContext';
 import {
 	Component,
 	ComponentDefinition,
@@ -6,24 +14,21 @@ import {
 	ComponentProps,
 	LocationHistory,
 } from '../../types/common';
-import {
-	PageStoreExtractor,
-	addListenerAndCallImmediately,
-	getPathFromLocation,
-	setData,
-} from '../../context/StoreContext';
-import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './otpProperties';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { isNullValue } from '@fincity/kirun-js';
 import { validate } from '../../util/validationProcessor';
-import { flattenUUID } from '../util/uuid';
-import { IconHelper } from '../util/IconHelper';
-import { styleDefaults } from './otpStyleProperties';
-import OtpInputStyle from './OtpStyle';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
 import { makePropertiesObject } from '../util/make';
+import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import { propertiesDefinition, stylePropertiesDefinition } from './otpProperties';
+import OtpInputStyle from './OtpStyle';
+import { styleDefaults, stylePropertiesForTheme } from './otpStyleProperties';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import { runEvent } from '../util/runEvent';
+import { getTranslations } from '../util/getTranslations';
 
 function Otp(props: Readonly<ComponentProps>) {
 	const [focusBoxIndex, setFocusBoxIndex] = React.useState(0);
@@ -47,6 +52,19 @@ function Otp(props: Readonly<ComponentProps>) {
 			otpLength,
 			valueType,
 			supportingText,
+			maskValue,
+			maskStyle,
+			label,
+			noFloat,
+			showMandatoryAsterisk,
+			placeholder,
+			autoComplete,
+			hideClearButton,
+			onEnter,
+			onChange,
+			onBlur,
+			onFocus,
+			onClear,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -116,6 +134,86 @@ function Otp(props: Readonly<ComponentProps>) {
 			);
 	}, [value, validation]);
 
+	// Event handlers setup
+	const spinnerPath1 = onEnter
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onEnter,
+			)}.isRunning`
+		: undefined;
+
+	const spinnerPath2 = onClear
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onClear,
+			)}.isRunning`
+		: undefined;
+
+	const spinnerPath3 = onChange
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onChange,
+			)}.isRunning`
+		: undefined;
+
+	const [isLoading, setIsLoading] = React.useState(
+		(getDataFromPath(spinnerPath1, props.locationHistory, pageExtractor) ||
+			getDataFromPath(spinnerPath2, props.locationHistory, pageExtractor) ||
+			getDataFromPath(spinnerPath3, props.locationHistory, pageExtractor)) ??
+			false,
+	);
+
+	useEffect(() => {
+		let paths = [];
+		if (spinnerPath1) paths.push(spinnerPath1);
+		if (spinnerPath2) paths.push(spinnerPath2);
+		if (spinnerPath3) paths.push(spinnerPath3);
+
+		if (!paths.length) return;
+		return addListenerAndCallImmediately(
+			(_, value) => setIsLoading(value),
+			pageExtractor,
+			...paths,
+		);
+	}, []);
+
+	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
+	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
+	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
+
+	const callChangeEvent = useCallback(() => {
+		if (!changeEvent) return;
+		(async () =>
+			await runEvent(
+				changeEvent,
+				onChange,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [changeEvent]);
+
+	const callBlurEvent = useCallback(() => {
+		if (!blurEvent) return;
+		(async () =>
+			await runEvent(
+				blurEvent,
+				onBlur,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [blurEvent]);
+
+	const callFocusEvent = useCallback(() => {
+		if (!focusEvent) return;
+		(async () =>
+			await runEvent(
+				focusEvent,
+				onFocus,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	}, [focusEvent]);
+
 	const isValidInputValue = (value: string, valueType: string) => {
 		if (valueType === 'NUMERIC') {
 			return /^(\d| )*$/.test(value);
@@ -129,6 +227,28 @@ function Otp(props: Readonly<ComponentProps>) {
 		return false;
 	};
 
+	const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
+		e.preventDefault();
+		const pastedData = e.clipboardData.getData('text');
+		if (!isValidInputValue(pastedData, valueType)) return;
+		let newValueArray = value?.split('');
+		for (let i = 0; i < Math.min(pastedData.length, otpLength - index); i++) {
+			newValueArray[index + i] = pastedData[i];
+		}
+		const newValue = newValueArray.join('');
+		if (bindingPathPath !== undefined) {
+			setData(bindingPathPath, newValue, context?.pageName);
+			callChangeEvent();
+		} else {
+			setValue(newValue);
+		}
+		if (index + pastedData.length < otpLength) {
+			const target = e.target as HTMLInputElement;
+			if (target.nextSibling instanceof HTMLInputElement)
+				(target.nextSibling as HTMLInputElement).focus();
+		}
+	};
+
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: any) => {
 		setIsDirty(true);
 
@@ -137,9 +257,14 @@ function Otp(props: Readonly<ComponentProps>) {
 		if (isValidInputValue(inputValue, valueType)) {
 			let newValueArray = value?.split('');
 			newValueArray[index] = inputValue === '' ? ' ' : inputValue;
-			bindingPathPath !== undefined
-				? setData(bindingPathPath, newValueArray.join(''), context?.pageName)
-				: setValue(newValueArray.join(''));
+			const allCleared = newValueArray.every(e => e === ' ');
+			const valueSet = allCleared ? '' : newValueArray.join('');
+			if (bindingPathPath !== undefined) {
+				setData(bindingPathPath, valueSet, context?.pageName);
+				callChangeEvent();
+			} else {
+				setValue(newValueArray.join(''));
+			}
 			if (inputValue === '' && index > 0 && target.previousSibling !== null) {
 				if (target.previousSibling instanceof HTMLInputElement)
 					(target.previousSibling as HTMLInputElement).focus();
@@ -153,8 +278,13 @@ function Otp(props: Readonly<ComponentProps>) {
 	const handleBlur = () => {
 		setIsDirty(true);
 		setFocusBoxIndex(-1);
+		callBlurEvent();
 	};
-	const handleFocus = (index: number) => setFocusBoxIndex(index);
+
+	const handleFocus = (index: number) => {
+		setFocusBoxIndex(index);
+		callFocusEvent();
+	};
 
 	const handleKeyDown = (index: number) => {
 		return (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -174,15 +304,74 @@ function Otp(props: Readonly<ComponentProps>) {
 				if (nextSibling) {
 					nextSibling?.focus();
 				}
-			} else if (e.key === 'Backspace' && (value === '' || value[index] === ' ')) {
-				e.preventDefault();
-				if (!(target.previousSibling instanceof HTMLInputElement)) return;
-				const prevSibling = target.previousSibling as HTMLInputElement;
-				if (prevSibling) {
-					prevSibling?.focus();
+			} else if (e.key === 'Backspace') {
+				let newValueArray = value?.split('');
+				const currentValue = newValueArray[index];
+				const isEmpty = currentValue === ' ';
+
+				if (!isEmpty) {
+					newValueArray[index] = ' ';
+					const allEmpty = newValueArray.every(char => char === ' ');
+					const newValue = allEmpty ? '' : newValueArray.join('');
+
+					if (bindingPathPath !== undefined) {
+						setData(bindingPathPath, newValue, context?.pageName);
+						callChangeEvent();
+					} else {
+						setValue(newValue);
+					}
+				} else if (index > 0) {
+					e.preventDefault();
+					if (target.previousSibling instanceof HTMLInputElement) {
+						newValueArray[index - 1] = ' ';
+						const allEmpty = newValueArray.every(char => char === ' ');
+						const newValue = allEmpty ? '' : newValueArray.join('');
+
+						if (bindingPathPath !== undefined) {
+							setData(bindingPathPath, newValue, context?.pageName);
+							callChangeEvent();
+						} else {
+							setValue(newValue);
+						}
+
+						target.previousSibling.focus();
+					}
 				}
+			} else if (e.key === 'Enter' && onEnter) {
+				const clickEvent = props.pageDefinition.eventFunctions?.[onEnter];
+				if (!clickEvent || isLoading) return;
+				(async () => {
+					await runEvent(
+						clickEvent,
+						onEnter,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+				})();
 			}
 		};
+	};
+
+	const handleClear = async () => {
+		const emptyValue = Array.from({ length: otpLength }, () => ' ').join('');
+		if (bindingPathPath !== undefined) {
+			setData(bindingPathPath, '', context?.pageName);
+			callChangeEvent();
+		} else {
+			setValue(emptyValue);
+		}
+
+		if (!onClear) return;
+		const clearEvent = props.pageDefinition.eventFunctions?.[onClear];
+		if (!clearEvent) return;
+		await runEvent(
+			clearEvent,
+			onClear,
+			props.context.pageName,
+			props.locationHistory,
+			props.pageDefinition,
+		);
 	};
 
 	let inputStyle = computedStyles.inputBox ?? {};
@@ -220,7 +409,7 @@ function Otp(props: Readonly<ComponentProps>) {
 			<span
 				style={computedStyles.supportText ?? {}}
 				className={`_supportText ${readOnly ? 'disabled' : ''} ${
-					focusBoxIndex != -1 ? '_supportTextActive' : ''
+					focusBoxIndex != 0 ? '_supportTextActive' : ''
 				}`}
 			>
 				<SubHelperComponent definition={definition} subComponentName="supportText" />
@@ -229,14 +418,45 @@ function Otp(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	let activeStyles = computedStyles.activeInputBox ?? {};
+	let hasValue = value.trim().length > 0;
+	let showClearButton = !hideClearButton && hasValue && !readOnly;
+
 	return (
 		<div
-			className={`comp compOtp ${designType} ${colorScheme} ${readOnly ? '_disabled' : ''} ${
-				hasErrorMessages ? '_hasError' : ''
+			className={`comp compOtp ${designType} ${colorScheme} ${
+				focusBoxIndex !== -1 ? '_isActive' : ''
+			} ${readOnly ? '_disabled' : ''} ${hasErrorMessages ? '_hasError' : ''} ${
+				hasValue ? '_hasValue' : ''
 			}`}
 			style={computedStyles.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			{label && (
+				<label
+					style={computedStyles.label ?? {}}
+					className={`_label ${noFloat || hasValue ? '_noFloat' : ''} ${
+						readOnly ? 'disabled' : ''
+					}${hasValue ? `hasText` : ``}`}
+				>
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="label"
+					></SubHelperComponent>
+					{getTranslations(label, translations)}
+					<span style={computedStyles.asterisk ?? {}} className="_asterisk">
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="asterisk"
+						></SubHelperComponent>
+						{showMandatoryAsterisk &&
+						validation?.find((e: any) => e.type === 'MANDATORY')
+							? '*'
+							: ''}
+					</span>
+				</label>
+			)}
+
 			{Array.from({ length: otpLength }).map((_, index) => (
 				<input
 					autoFocus={autoFocus === true && index === 0}
@@ -245,21 +465,50 @@ function Otp(props: Readonly<ComponentProps>) {
 					maxLength={1}
 					key={index}
 					disabled={readOnly}
-					value={index < value.length ? (value[index] == ' ' ? '' : value[index]) : ''}
+					value={
+						index < value.length
+							? value[index] == ' '
+								? ''
+								: maskValue
+									? maskStyle === 'DOT'
+										? '•'
+										: '*'
+									: value[index]
+							: ''
+					}
+					placeholder={
+						placeholder
+							? index < (getTranslations(placeholder, translations)?.length ?? 0)
+								? getTranslations(placeholder, translations)?.charAt(index)
+								: ''
+							: ''
+					}
+					autoComplete={autoComplete}
 					onChange={e => handleChange(e, index)}
 					onFocus={() => handleFocus(index)}
 					onBlur={handleBlur}
 					onKeyDown={handleKeyDown(index)}
-					style={inputStyle}
+					onPaste={e => handlePaste(e, index)}
+					style={focusBoxIndex === index ? activeStyles : inputStyle}
 					className={`_inputBox ${
 						focusBoxIndex === index && focusBoxIndex != -1 ? '_isActive' : ''
 					}${
-						!(focusBoxIndex === index && focus) && value[index]?.trim()?.length
+						!(focusBoxIndex === index) && value[index]?.trim()?.length
 							? '_hasValue'
 							: ''
 					}`}
 				/>
 			))}
+
+			{showClearButton && (
+				<i
+					style={computedStyles.rightIcon ?? {}}
+					onClick={handleClear}
+					className="_clearText fa fa-regular fa-circle-xmark fa-fw"
+				>
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+				</i>
+			)}
 
 			{validationsOrSupportText}
 		</div>
@@ -284,6 +533,12 @@ function MANDATORY(
 		return [validation.message];
 	return [];
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	name: 'Otp',
@@ -386,6 +641,30 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'activeInputBox',
+			displayName: 'Active Input Box',
+			description: 'Active Input Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'asterisk',
+			displayName: 'Asterisk',
+			description: 'Asterisk',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'rightIcon',
+			displayName: 'Right Icon',
+			description: 'Right Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'supportText',
 			displayName: 'Support Text',
 			description: 'Support Text',
@@ -404,6 +683,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

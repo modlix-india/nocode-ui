@@ -187,11 +187,6 @@ export default function DnDTopBar({
 	const changeUrl = useCallback(() => {
 		if (url === localUrl) return;
 
-		if (localUrl.indexOf(':') !== -1) {
-			setLocalUrl(url);
-			return;
-		}
-
 		onUrlChange(localUrl);
 	}, [localUrl]);
 

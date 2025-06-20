@@ -16,11 +16,14 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
-import { styleDefaults } from './markdownEditorStyleProperties';
-import { EditorMode, MEButtonBar } from './components/MEButtonBar';
+import { styleProperties, styleDefaults } from './markdownEditorStyleProperties';
+import { FilterPanelButtons } from './components/FilterPanelButtons';
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
+import formatText from './utils/formatText';
+import { AddComponentPanelButtons } from './components/AddComponentPanel';
+import { useMarkdownHistory } from './hooks/useMarkdownHistory';
 
 function MarkdownEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -30,6 +33,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+
 	const {
 		properties: {
 			readOnly,
@@ -48,27 +52,32 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
-	const styleProperties = processComponentStylePseudoClasses(
-		props.pageDefinition,
-		{},
-		stylePropertiesWithPseudoStates,
-	);
+	const editTypes = !editType?.length ? ['editText', 'editDoc', 'preview'] : editType;
+	const [mode, setMode] = useState(editTypes[0]);
+	const [text, setText] = useState('');
+	const [selectedText, setSelectedText] = useState('');
+	const [finTextAreaWidth, setFinTextAreaWidth] = useState('100%');
+	const [isComponentPanelExpanded, setIsComponentPanelExpanded] = useState(false);
+	const [componentSearchTerm, setComponentSearchTerm] = useState('');
+	const { history, historyIndex, addToHistory, undo, redo } = useMarkdownHistory();
 
-	const [mode, setMode] = useState<EditorMode>(editType ?? 'editText');
-	const [text, setText] = useStateCallback<string>('');
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+	const handleUndo = () => {
+		undo(setText, textAreaRef);
+	};
 
-	const textAreaRef = useRef<any>(null);
-	const wrapperRef = useRef<any>(null);
-	const resizerBarRef = useRef<any>(null);
-	const [textAreaWidth, setTextAreaWidth] = useState<number>(0);
+	const handleRedo = () => {
+		redo(setText, textAreaRef);
+	};
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
+	useEffect(() => setMode(editTypes[0]), [editTypes.join(',')]);
+
 	useEffect(() => {
 		if (!bindingPathPath) return;
-
 		return addListenerAndCallImmediately(
 			(_, fromStore) => {
 				setText((v: string) => {
@@ -79,43 +88,18 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, textAreaRef.current]);
+	}, [bindingPathPath, setText, textAreaRef.current]);
 
-	useEffect(() => setMode(editType), [editType]);
-
-	useEffect(() => {
-		if (!textAreaRef.current || !wrapperRef.current) return;
-
-		const func = () => {
-			if (!wrapperRef.current || !textAreaRef.current) return;
-			wrapperRef.current.style.height = '100px';
-			setTimeout(
-				() =>
-					(wrapperRef.current.style.height =
-						textAreaRef.current.getBoundingClientRect().height + 'px'),
-				600,
-			);
-		};
-		window.addEventListener('resize', func);
-		return () => window.removeEventListener('resize', func);
-	}, [mode, textAreaRef.current, wrapperRef.current]);
-
-	const onBlurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
-	const onChangeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
-
-	const onChangeText = (editedText: string, callBack?: () => void) => {
+	const onChangeText = (newText: string, callback?: () => void) => {
 		if (!bindingPathPath) return;
-		setText(editedText, callBack);
-		setData(
-			bindingPathPath,
-			editedText === '' && emptyStringValue === 'UNDEFINED' ? undefined : editedText,
-			context.pageName,
-			true,
-		);
-		if (!onChangeEvent) return;
+
+		setData(bindingPathPath, newText, context.pageName, true);
+		if (callback) callback();
+
+		if (!onChange) return;
 		(async () =>
 			await runEvent(
-				onChangeEvent,
+				onChange,
 				onChange,
 				props.context.pageName,
 				props.locationHistory,
@@ -123,275 +107,408 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 			))();
 	};
 
-	let renderingComponent = undefined;
+	const styleProperties = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{},
+		stylePropertiesWithPseudoStates,
+	);
 
-	let showBoth = false;
-	if (readOnly) {
-		renderingComponent = (
-			<MarkdownParser componentKey={componentKey} text={text} styles={styleProperties} />
-		);
-	} else {
-		const showText = mode.indexOf('Text') != -1;
-		const showDoc = mode.indexOf('Doc') != -1;
-		showBoth = showText && showDoc;
-		const finTextAreaWidth = showBoth ? `calc(50% + ${textAreaWidth}px)` : '100%';
-		const textComp = showText ? (
-			<textarea
-				ref={textAreaRef}
-				value={text}
-				style={
-					styleProperties.textArea
-						? {
-								...styleProperties.textArea,
-								width: finTextAreaWidth,
-							}
-						: { width: finTextAreaWidth }
-				}
-				onBlur={
-					onBlurEvent
-						? () =>
-								(async () =>
-									await runEvent(
-										onBlurEvent,
-										onBlur,
-										props.context.pageName,
-										props.locationHistory,
-										props.pageDefinition,
-									))()
-						: undefined
-				}
-				onChange={ev => onChangeText(ev.target.value)}
-				onKeyUp={() => scrollToCaret(textAreaRef, componentKey)}
-				onClick={() => scrollToCaret(textAreaRef, componentKey)}
-				onScroll={() => {
-					if (!textAreaRef.current) return;
-
-					scrollToCaret(
-						textAreaRef,
-						componentKey,
-						Math.round(
-							(textAreaRef.current.value.split('\n').length *
-								textAreaRef.current.scrollTop) /
-								textAreaRef.current.scrollHeight,
-						),
-					);
-				}}
-				onKeyDown={ev => {
-					if (ev.key === 'Tab') {
-						ev.preventDefault();
-						const { selectionStart, selectionEnd } = textAreaRef.current;
-						const newText = `${text.substring(0, selectionStart)}    ${text.substring(
-							selectionEnd,
-						)}`;
-
-						onChangeText(newText, () =>
-							textAreaRef.current.setSelectionRange(
-								selectionStart + 4,
-								selectionStart + 4,
-							),
-						);
-					}
-				}}
-				onPaste={ev => {
-					ev.preventDefault();
-
-					if (ev.clipboardData.files.length) {
-						const file = ev.clipboardData.files[0];
-						const formData = new FormData();
-						formData.append('file', file);
-						const fileNamePrefix = `pasted_${shortUUID()}_`;
-						formData.append('name', fileNamePrefix);
-
-						const headers: any = {
-							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-						};
-						if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
-						(async () => {
-							try {
-								let url = `/api/files/static/${pathForPastedFiles}`;
-								let data = await axios.post(url, formData, {
-									headers,
-								});
-								if (data.status === 200) {
-									const { selectionStart, selectionEnd } = textAreaRef.current;
-									const paste = data.data.url;
-									const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(
-										selectionEnd,
-									)}`;
-									onChangeText(newText, () =>
-										textAreaRef.current.setSelectionRange(
-											selectionStart + paste + 5,
-											selectionStart + paste + 5,
-										),
-									);
-								}
-							} catch (e) {}
-						})();
-					} else {
-						const paste = ev.clipboardData.getData('text');
-						const { selectionStart, selectionEnd } = textAreaRef.current;
-						const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(
-							selectionEnd,
-						)}`;
-
-						onChangeText(newText, () =>
-							textAreaRef.current.setSelectionRange(
-								selectionStart + paste.length,
-								selectionStart + paste.length,
-							),
-						);
-					}
-				}}
-			/>
-		) : undefined;
-
-		let docComp = showDoc ? (
-			<MarkdownParser
-				componentKey={componentKey}
-				text={text}
-				styles={styleProperties}
-				editable={true}
-				onChange={onChangeText}
-				className={showBoth ? '_both' : ''}
-			/>
-		) : undefined;
-
-		if (showBoth) {
-			docComp = (
-				<div
-					className="_wrapper"
-					ref={x => {
-						wrapperRef.current = x;
-						if (!x || !textAreaRef.current) return;
-						x.style.height = textAreaRef.current.getBoundingClientRect().height + 'px';
-					}}
-				>
-					{docComp}
-				</div>
+	const handleRichTextCommand = (
+		command: string,
+		value?: string | { url: string; text: string },
+	) => {
+		if (mode === 'editText' && textAreaRef.current) {
+			const { selectionStart, selectionEnd } = textAreaRef.current;
+			const { newText, newCursorPos } = formatText(
+				text,
+				command,
+				{ start: selectionStart, end: selectionEnd },
+				value,
 			);
+
+			onChangeText(newText, () => {
+				textAreaRef.current?.setSelectionRange(newCursorPos, newCursorPos);
+			});
+		} else {
+			const { newText } = formatText(
+				text,
+				command,
+				{ start: 0, end: text.length }, // Default to selecting all text
+				value,
+			);
+
+			onChangeText(newText);
 		}
+	};
 
-		const resizer = showBoth ? (
-			<div
-				className="_resizer"
-				style={{ left: finTextAreaWidth }}
-				ref={resizerBarRef}
-				onDoubleClick={() => setTextAreaWidth(0)}
-				onMouseDown={ev => {
-					if (ev.buttons !== 1 || !resizerBarRef.current) return;
-					const currentX = ev.clientX;
-					let newTAW = textAreaWidth;
-					const mouseMove = (ev: MouseEvent) => {
-						if (ev.buttons !== 1) return;
-						newTAW = textAreaWidth + ev.clientX - currentX;
-						textAreaRef.current.style.width = `calc(50% + ${newTAW}px)`;
-						resizerBarRef.current.style.left = `calc(50% + ${newTAW}px)`;
-					};
+	useEffect(() => {
+		const handleKeyboard = (e: KeyboardEvent) => {
+			if (!textAreaRef.current || document.activeElement !== textAreaRef.current) return;
+			const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+			const modifier = isMac ? e.metaKey : e.ctrlKey;
 
-					const mouseUp = () => {
-						setTextAreaWidth(newTAW);
-						document.removeEventListener('mousemove', mouseMove);
-						document.removeEventListener('mouseup', mouseUp);
-					};
+			if (modifier) {
+				if (e.shiftKey && e.key.toLowerCase() === 'z') {
+					e.preventDefault();
+					handleRedo();
+				} else if (e.key.toLowerCase() === 'h') {
+					e.preventDefault();
+					setTimeout(() => {
+						const handleNumberKey = (numEvent: KeyboardEvent) => {
+							const num = parseInt(numEvent.key);
+							if (!isNaN(num) && num >= 1 && num <= 6) {
+								numEvent.preventDefault();
+								handleRichTextCommand(`heading${num}`);
+							}
 
-					document.addEventListener('mousemove', mouseMove);
-					document.addEventListener('mouseup', mouseUp);
-				}}
-			/>
-		) : undefined;
+							document.removeEventListener('keydown', handleNumberKey);
+						};
+						document.addEventListener('keydown', handleNumberKey, { once: true });
+					}, 10);
+				} else {
+					switch (e.key.toLowerCase()) {
+						case 'z':
+							e.preventDefault();
+							handleUndo();
+							break;
+						case 'b':
+							e.preventDefault();
+							handleRichTextCommand('bold');
+							break;
+						case 'i':
+							e.preventDefault();
+							handleRichTextCommand('italic');
+							break;
+						case '/':
+							e.preventDefault();
+							setIsComponentPanelExpanded(prev => !prev);
+							break;
+						case '[':
+							e.preventDefault();
+							handleRichTextCommand('indent');
+							break;
+						case ']':
+							e.preventDefault();
+							handleRichTextCommand('unindent');
+							break;
+						case '1':
+						case '2':
+						case '3':
+						case '4':
+						case '5':
+						case '6':
+							if (e.shiftKey) {
+								e.preventDefault();
+								const headingLevel = parseInt(e.key);
+								handleRichTextCommand(`heading${headingLevel}`);
+							}
+							break;
+					}
+				}
+			}
+		};
 
-		renderingComponent = (
-			<>
-				{textComp}
-				{resizer}
-				{docComp}
-			</>
-		);
-	}
+		document.addEventListener('keydown', handleKeyboard);
+		return () => document.removeEventListener('keydown', handleKeyboard);
+	}, [text, history, historyIndex]);
 
-	if (textAreaRef.current)
-		textAreaRef.current.style.height = showBoth
-			? '100%'
-			: textAreaRef.current.scrollHeight + 'px';
+	const writeTab = editTypes?.includes('editText') ? (
+		<div
+			className={`_tab _write ${mode === 'editText' ? '_active' : ''}`}
+			onClick={() => setMode('editText')}
+			style={styleProperties.tabButton ?? {}}
+		>
+			<svg width="15" height="15" viewBox="0 0 19 17" fill="none">
+				<path
+					d="M9.04913 2.25697C9.54593 1.71872 9.79433 1.4496 10.0583 1.29262C10.6951 0.91384 11.4794 0.90206 12.1269 1.26155C12.3953 1.41053 12.6513 1.67208 13.1633 2.19517C13.6754 2.71827 13.9315 2.97981 14.0773 3.25395C14.4292 3.91541 14.4177 4.71653 14.0469 5.36713C13.8932 5.63677 13.6297 5.89052 13.1029 6.398L6.83373 12.4362C5.83525 13.3979 5.336 13.8788 4.71204 14.1225C4.08808 14.3662 3.40213 14.3483 2.03024 14.3124L1.84359 14.3075C1.42594 14.2966 1.21711 14.2911 1.09573 14.1533C0.974334 14.0156 0.990907 13.8029 1.02405 13.3775L1.04205 13.1465C1.13534 11.949 1.18198 11.3503 1.41581 10.8121C1.64963 10.2739 2.05296 9.837 2.85962 8.963L9.04913 2.25697Z"
+					fill="#016A70"
+					fillOpacity="0.2"
+					stroke="#016A70"
+					strokeWidth="1.2"
+					strokeLinejoin="round"
+				/>
+				<path d="M9 14.3335H14.3333H9Z" fill="black" />
+				<path
+					d="M9 14.3335H14.3333"
+					stroke="#016A70"
+					strokeWidth="1.2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				/>
+				<path d="M8.33301 2.3335L12.9997 7.00016L8.33301 2.3335Z" fill="white" />
+				<path
+					d="M8.33301 2.3335L12.9997 7.00016"
+					stroke="#016A70"
+					strokeWidth="1.2"
+					strokeLinejoin="round"
+				/>
+			</svg>
+			Write
+		</div>
+	) : null;
 
-	let buttonBar = undefined;
+	const docTab = editTypes?.includes('editDoc') ? (
+		<div
+			className={`_tab _doc ${mode === 'editDoc' ? '_active' : ''}`}
+			onClick={() => setMode('editDoc')}
+			style={styleProperties.tabButton ?? {}}
+		>
+			<svg width="17" height="17" viewBox="0 0 19 17" fill="none">
+				<path
+					d="M6.60102 14.6624H5.95523C3.61931 14.6624 2.45135 14.6624 1.72568 13.9253C1 13.1881 1 12.0017 1 9.62891V6.03352C1 3.66069 1 2.47428 1.72568 1.73715C2.45135 1 3.61931 1 5.95523 1H8.07887C10.4148 1 11.7794 1.03968 12.5052 1.77682C13.2309 2.51396 13.2243 3.66069 13.2243 6.03352V6.88664"
+					fill="#FF3E3E"
+					fillOpacity="0.2"
+				/>
+				<path
+					d="M6.60102 14.6624H5.95523C3.61931 14.6624 2.45135 14.6624 1.72568 13.9253C1 13.1881 1 12.0017 1 9.62891V6.03352C1 3.66069 1 2.47428 1.72568 1.73715C2.45135 1 3.61931 1 5.95523 1H8.07887C10.4148 1 11.7794 1.03968 12.5052 1.77682C13.2309 2.51396 13.2243 3.66069 13.2243 6.03352V6.88664"
+					stroke="#FF3E3E"
+					strokeWidth="1.2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				/>
+				<path
+					d="M4.23584 9.65666H7.11214M4.23584 6.06128H9.98844"
+					stroke="#FF3E3E"
+					strokeWidth="1.2"
+					strokeLinecap="round"
+				/>
+				<path
+					opacity="0.93"
+					d="M15.1305 10.5692C14.4795 9.83976 14.0889 9.88319 13.6548 10.0134C13.351 10.0569 12.3094 11.2727 11.8753 11.6598C11.1627 12.3639 10.4469 13.0887 10.3996 13.1832C10.2647 13.4026 10.1393 13.7912 10.0785 14.2253C9.96561 14.8767 9.80281 15.6099 10.009 15.6728C10.2152 15.7355 10.7902 15.6149 11.4413 15.5193C11.8753 15.4411 12.1791 15.3543 12.3962 15.2241C12.7 15.0417 13.2642 14.3991 14.2364 13.4438C14.8462 12.8018 15.4343 12.3582 15.608 11.924C15.7816 11.2727 15.5212 10.9253 15.1305 10.5692Z"
+					stroke="#FF3E3E"
+					strokeWidth="1.2"
+				/>
+			</svg>
+			Document
+		</div>
+	) : null;
 
-	if (!readOnly) {
-		buttonBar = (
-			<MEButtonBar
-				mode={mode}
-				onModeChange={m => setMode(m)}
-				styleProperties={styleProperties}
-				textAreaRef={textAreaRef.current}
-				onFileSelected={(s, e, file) => {
-					let newText = makeTextForImageSelection(text, s, e, file);
-					onChangeText(newText, () => {
-						textAreaRef.current.setSelectionRange(s, s + file.length);
-					});
-				}}
-			/>
-		);
+	const previewTab = editTypes?.includes('preview') ? (
+		<div
+			className={`_tab _preview ${mode === 'preview' ? '_active' : ''}`}
+			onClick={() => setMode('preview')}
+			style={styleProperties.tabButton ?? {}}
+		>
+			<svg width="18" height="16" viewBox="0 0 19 17" fill="none">
+				<path
+					d="M6.60412 14.67H5.95797C3.62076 14.67 2.45216 14.67 1.72608 13.9325C1 13.1949 1 12.0078 1 9.63369V6.03631C1 3.66217 1 2.4751 1.72608 1.73755C2.45216 1 3.62076 1 5.95797 1H8.08279C10.42 1 11.7854 1.0397 12.5116 1.77725C13.2377 2.5148 13.2311 3.66217 13.2311 6.03631V6.8899"
+					fill="#3F4CC0"
+					fillOpacity="0.2"
+				/>
+				<path
+					d="M6.60412 14.67H5.95797C3.62076 14.67 2.45216 14.67 1.72608 13.9325C1 13.1949 1 12.0078 1 9.63369V6.03631C1 3.66217 1 2.4751 1.72608 1.73755C2.45216 1 3.62076 1 5.95797 1H8.08279C10.42 1 11.7854 1.0397 12.5116 1.77725C13.2377 2.5148 13.2311 3.66217 13.2311 6.03631V6.8899"
+					stroke="#3F4CC0"
+					strokeWidth="1.2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				/>
+				<path
+					d="M4.23779 9.66133H7.11569M4.23779 6.06396H9.99358"
+					stroke="#3F4CC0"
+					strokeWidth="1.2"
+					strokeLinecap="round"
+				/>
+				<path
+					d="M13.8711 12.1794H13.8771"
+					stroke="#3F4CC0"
+					strokeWidth="1.2"
+					strokeLinecap="round"
+					strokeLinejoin="round"
+				/>
+				<path
+					d="M16.9614 11.8849C17.0598 12.0164 17.1091 12.0821 17.1091 12.1794C17.1091 12.2767 17.0598 12.3424 16.9614 12.4739C16.5192 13.0645 15.3896 14.3378 13.8714 14.3378C12.3533 14.3378 11.2237 13.0645 10.7814 12.4739C10.683 12.3424 10.6338 12.2767 10.6338 12.1794C10.6338 12.0821 10.683 12.0164 10.7814 11.8849C11.2237 11.2943 12.3533 10.021 13.8714 10.021C15.3896 10.021 16.5192 11.2943 16.9614 11.8849Z"
+					stroke="#3F4CC0"
+					strokeWidth="1.2"
+				/>
+			</svg>
+			Preview
+		</div>
+	) : null;
+
+	const tabsIndex = { editText: writeTab, editDoc: docTab, preview: previewTab };
+	const tabs =
+		editTypes?.map((type: string, index: number, arr: string[]) => {
+			const tab = tabsIndex[type as keyof typeof tabsIndex];
+			if (!tab) return null;
+			return (
+				<React.Fragment key={type}>
+					{tab}
+					{index < arr.length - 1 && (
+						<div
+							className="_tabSeparator"
+							style={styleProperties.tabSeparator ?? {}}
+						></div>
+					)}
+				</React.Fragment>
+			);
+		}) ?? [];
+
+	const tabBar = (
+		<div className="_tabBar" style={styleProperties.tabBar ?? {}}>
+			{tabs}
+			{mode == 'editText' && (
+				<>
+					<AddComponentPanelButtons
+						onComponentAdd={(componentType: string) => {
+							if (mode === 'editText' && textAreaRef.current) {
+								const { selectionStart } = textAreaRef.current;
+								const newText = `${text.substring(0, selectionStart)}${componentType}${text.substring(selectionStart)}`;
+								onChangeText(newText);
+							} else {
+								const newText = `${text}${componentType}`;
+								onChangeText(newText);
+							}
+						}}
+						isExpanded={isComponentPanelExpanded}
+						onExpandChange={setIsComponentPanelExpanded}
+						searchTerm={componentSearchTerm}
+						onSearchChange={setComponentSearchTerm}
+						styleProperties={styleProperties}
+					/>
+					<FilterPanelButtons
+						onFormatClick={handleRichTextCommand}
+						isVisible={true}
+						styleProperties={styleProperties}
+						selectedText={selectedText}
+					/>
+				</>
+			)}
+		</div>
+	);
+
+	let content;
+	switch (mode) {
+		case 'editText':
+			content = (
+				<textarea
+					ref={textAreaRef}
+					value={text}
+					style={{
+						...(styleProperties.textArea ?? {}),
+						width: finTextAreaWidth,
+					}}
+					onSelect={e => {
+						const { selectionStart, selectionEnd } = textAreaRef.current!;
+						setSelectedText(
+							selectionStart == selectionEnd
+								? ''
+								: text.substring(selectionStart, selectionEnd),
+						);
+					}}
+					onBlur={
+						onBlur
+							? () =>
+								runEvent(
+									undefined,
+									onBlur,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								)
+							: undefined
+					}
+					onChange={ev => onChangeText(ev.target.value)}
+					onKeyDown={ev => {
+						if (ev.key === 'Tab') {
+							ev.preventDefault();
+							const { selectionStart, selectionEnd } = textAreaRef.current!;
+							const newText = `${text.substring(0, selectionStart)}    ${text.substring(
+								selectionEnd,
+							)}`;
+							onChangeText(newText, () =>
+								textAreaRef.current!.setSelectionRange(
+									selectionStart + 4,
+									selectionStart + 4,
+								),
+							);
+						}
+					}}
+					onPaste={ev => {
+						ev.preventDefault();
+
+						if (!textAreaRef.current) return;
+
+						if (ev.clipboardData.files.length) {
+							const file = ev.clipboardData.files[0];
+							const formData = new FormData();
+							formData.append('file', file);
+							const fileNamePrefix = `pasted_${shortUUID()}_`;
+							formData.append('name', fileNamePrefix);
+
+							const headers: any = {
+								Authorization: getDataFromPath(
+									`${LOCAL_STORE_PREFIX}.AuthToken`,
+									[],
+								),
+							};
+							if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+
+							(async () => {
+								try {
+									let url = `/api/files/static/${pathForPastedFiles}`;
+									let data = await axios.post(url, formData, {
+										headers,
+									});
+									if (data.status === 200) {
+										const { selectionStart, selectionEnd } =
+											textAreaRef.current!;
+										const paste = data.data.url;
+										const newText = `${text.substring(0, selectionStart)}![](${paste})${text.substring(
+											selectionEnd,
+										)}`;
+										onChangeText(newText, () =>
+											textAreaRef.current!.setSelectionRange(
+												selectionStart + paste.length + 4,
+												selectionStart + paste.length + 4,
+											),
+										);
+									}
+								} catch (e) { }
+							})();
+						} else {
+							const paste = ev.clipboardData.getData('text');
+							const { selectionStart, selectionEnd } = textAreaRef.current!;
+							const newText = `${text.substring(0, selectionStart)}${paste}${text.substring(
+								selectionEnd,
+							)}`;
+							onChangeText(newText, () =>
+								textAreaRef.current!.setSelectionRange(
+									selectionStart + paste.length,
+									selectionStart + paste.length,
+								),
+							);
+						}
+					}}
+				/>
+			);
+			break;
+		case 'editDoc':
+			content = (
+				<MarkdownParser
+					componentKey={componentKey}
+					text={text}
+					styles={styleProperties}
+					editable={true}
+					onChange={onChangeText}
+				/>
+			);
+			break;
+		case 'preview':
+			content = (
+				<MarkdownParser componentKey={componentKey} text={text} styles={styleProperties} />
+			);
+			break;
+		default:
+			content = null;
 	}
 
 	return (
-		<div
-			key={mode}
-			className={`comp compMarkdownEditor ${showBoth ? '_both' : ''}`}
-			style={styleProperties.comp ?? {}}
-		>
+		<div key={mode} className={`comp compMarkdownEditor`} style={styleProperties.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-			{buttonBar}
-			<div className="_editorContainer">{renderingComponent}</div>
+			{tabBar}
+			{content}
 		</div>
 	);
-}
-
-function scrollToCaret(textAreaRef: any, componentKey: string, lineNumber?: number) {
-	const { selectionStart } = textAreaRef.current;
-	let block = 'center';
-	if (!lineNumber)
-		lineNumber = (textAreaRef.current.value ?? '')
-			.substring(0, selectionStart)
-			.split('\n').length;
-	else block = 'start';
-	let element;
-	while (lineNumber && lineNumber > 0) {
-		element = document.getElementById(`${componentKey}-div-${lineNumber}`);
-
-		if (!element) lineNumber--;
-		else break;
-	}
-	if (!element) return;
-	setTimeout(() => element.scrollIntoView({ block, inline: 'nearest', behavior: 'smooth' }), 10);
-}
-
-function makeTextForImageSelection(text: string, s: number, e: number, file: string): string {
-	if (s != e) {
-		const selection = text.substring(s, e);
-		if (selection.indexOf('![') != -1) file = `![](${file})`;
-		return text.substring(0, s) + file + text.substring(e);
-	}
-	let newStart = text.lastIndexOf('(', s);
-	let newLine = text.lastIndexOf('\n', s);
-	let found = false;
-	if (newStart == -1) newStart = s;
-	else found = true;
-	if (newLine > newStart) newStart = newLine;
-	let newEnd = text.indexOf(')', e);
-	let space = text.indexOf(' ', newStart);
-	newLine = text.indexOf('\n', e);
-
-	if (newEnd == -1) newEnd = e;
-	if (newLine < newEnd && newLine != -1) newEnd = newLine;
-	if (newEnd <= s) found = false;
-	if (space < newEnd && space != -1) newEnd = space;
-
-	if (found) {
-		return text.substring(0, newStart + 1) + file + text.substring(newEnd);
-	}
-
-	file = `![](${file})`;
-	return text.substring(0, s) + file + text.substring(e);
 }
 
 const component: Component = {
@@ -437,27 +554,27 @@ const component: Component = {
 			),
 		},
 		{
+			name: 'tabBar',
+			displayName: 'Tab Bar',
+			description: 'Tab Bar',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tabButton',
+			displayName: 'Tab Button',
+			description: 'Tab Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tabSeparator',
+			displayName: 'Tab Separator',
+			description: 'Tab Separator',
+			icon: 'fa-solid fa-box',
+		},
+		{
 			name: 'textArea',
 			displayName: 'Text Area',
 			description: 'Text Area',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'buttonBar',
-			displayName: 'Button Bar',
-			description: 'Button Bar',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'button',
-			displayName: 'Button',
-			description: 'Button',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'resizer',
-			displayName: 'Resizer',
-			description: 'Resizer',
 			icon: 'fa-solid fa-box',
 		},
 		{
@@ -683,6 +800,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

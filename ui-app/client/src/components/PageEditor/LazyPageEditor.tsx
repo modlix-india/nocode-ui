@@ -19,7 +19,6 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import CodeEditor from './components/CodeEditor';
 import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
-import FormEditor from './components/FormEditor';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
@@ -36,7 +35,7 @@ function savePersonalizationCurry(
 	locationHistory: Array<LocationHistory>,
 	pageDefinition: PageDefinition,
 ) {
-	if (!onChangePersonalization) return (key: string, value: any) => {};
+	if (!onChangePersonalization) return (key: string, value: any) => { };
 	let handle: any = -1;
 
 	return (key: string, value: any) => {
@@ -224,7 +223,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 	// Function to save the personalization
 	const savePersonalization = useMemo(() => {
-		if (!personalizationPath) return (key: string, value: any) => {};
+		if (!personalizationPath) return (key: string, value: any) => { };
 
 		return savePersonalizationCurry(
 			personalizationPath,
@@ -266,10 +265,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 		setClientCode(appDefinition?.clientCode ?? editPageDefinition.clientCode);
 		setUrl(
-			`/${editPageDefinition.appCode}/${
-				clientCode === ''
-					? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
-					: clientCode
+			`/${editPageDefinition.appCode}/${clientCode === ''
+				? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
+				: clientCode
 			}/page/${editPageDefinition.name}`,
 		);
 		setClientCode(appDefinition?.clientCode ?? editPageDefinition.clientCode);
@@ -398,7 +396,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		],
 	);
 
-	// On changing the definition of the page, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
@@ -454,18 +451,18 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 		const unlisten2 = themePath
 			? addListenerAndCallImmediatelyWithChildrenActivity(
-					(_, payload) => {
-						if (!templateIFrame) return;
+				(_, payload) => {
+					if (!templateIFrame) return;
 
-						const msg = {
-							type: 'EDITOR_APP_THEME',
-							payload,
-						};
-						templateIFrame.contentWindow?.postMessage(msg);
-					},
-					pageExtractor,
-					themePath,
-				)
+					const msg = {
+						type: 'EDITOR_APP_THEME',
+						payload,
+					};
+					templateIFrame.contentWindow?.postMessage(msg);
+				},
+				pageExtractor,
+				themePath,
+			)
 			: undefined;
 
 		function onMessageFromSlave(e: any) {
@@ -478,7 +475,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			if (type === 'SLAVE_STARTED') {
 				templateIFrame.contentWindow?.postMessage({
 					type: 'EDITOR_TYPE',
-					payload: { type: 'THEME' },
+					payload: { type: 'THEME_EDITOR' },
 				});
 				const msg = {
 					type: 'EDITOR_APP_DEFINITION',
@@ -586,9 +583,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 						setSlaveStore({
 							store,
 							localStore: Object.entries(window.localStorage)
-								.filter((e: [string, string]) => e[0].startsWith('designmode_'))
+								.filter((e: [string, string]) => e[0].startsWith('designMode_'))
 								.reduce((a, c: [string, string]) => {
-									let key = c[0].substring('designmode_'.length);
+									let key = c[0].substring('designMode_'.length);
 									if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
 										try {
 											a[key] = JSON.parse(c[1]);
@@ -646,14 +643,13 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		[slaveStore],
 	);
 
-	// Use effect to see if editor is closed abruptly.
 	useEffect(() => {
 		if (!defPath) return;
 		const removeListener = addListenerAndCallImmediately(
 			(_, v) => {
 				if (!v?.id) return;
 
-				removeListener();
+				try { removeListener(); } catch (e) { }
 
 				let i = 0,
 					key = null;
@@ -686,7 +682,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		return removeListener;
 	}, [defPath, setIssue]);
 
-	// If the personalization is not loaded, we don't load the view.
 	if (personalizationPath && !personalization) return <></>;
 
 	return (
@@ -781,16 +776,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				onSelectedSubComponentChanged={(key: string) => setSelectedSubComponent(key)}
 				onSelectedComponentChanged={(key: string) => setSelectedComponent(key)}
 			/>
-			{generateFormOnComponentKey && (
-				<FormEditor
-					formStorageUrl={formStorageUrl}
-					defPath={defPath}
-					pageExtractor={pageExtractor}
-					locationHistory={locationHistory}
-					clickedComponent={generateFormOnComponentKey}
-					setClickedComponent={setGenerateFormOnComponentKey}
-				/>
-			)}
 			<IssuePopup
 				issue={issue}
 				personalizationPath={personalizationPath}

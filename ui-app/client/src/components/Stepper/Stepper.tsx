@@ -16,7 +16,7 @@ import { runEvent } from '../util/runEvent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { getRoman, getAlphaNumeral } from '../util/numberConverter';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './StepperStyleProperties';
+import { styleProperties, styleDefaults } from './StepperStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
 const COUNT_FUNCTIONS: Record<string, (num: number) => string> = {
@@ -57,6 +57,10 @@ function Stepper(props: Readonly<ComponentProps>) {
 			stepperDesign,
 			showLines,
 			onClick,
+			images,
+			successImage,
+			currentImage,
+			nextImage,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -124,6 +128,7 @@ function Stepper(props: Readonly<ComponentProps>) {
 
 	const effectiveTitles = titles ?? [];
 	const iconList = icons ?? [];
+	const imageIconsList = images ?? [];
 
 	const getPositionStyle = () => {
 		let textStyle;
@@ -157,26 +162,43 @@ function Stepper(props: Readonly<ComponentProps>) {
 		let styleKey = '';
 
 		let iconClassName = undefined;
+		let imageSrc = imageIconsList[i];
 
 		if (iconList[i]) iconClassName = iconList[i];
 
 		if (i === value) {
-			if ((useActiveIconAlways || !iconClassName) && currentIcon) iconClassName = currentIcon;
+			if (useActiveIconAlways || (!iconClassName && !imageSrc)) {
+				if (currentImage) imageSrc = currentImage;
+				if (currentIcon) iconClassName = currentIcon;
+			}
 			styleKey = 'active';
 		}
 
 		if (i < value) {
-			if ((useSuccessIconAlways || !iconClassName) && successIcon)
-				iconClassName = successIcon;
+			if (useSuccessIconAlways || (!iconClassName && !imageSrc)) {
+				if (successImage) imageSrc = successImage;
+				if (successIcon) iconClassName = successIcon;
+			}
 			styleKey = 'done';
 		}
 
-		if (i > value && (useNextIconAlways || !iconClassName) && nextIcon)
-			iconClassName = nextIcon;
+		if (i > value && (useNextIconAlways || (!iconClassName && !imageSrc))) {
+			if (nextImage) imageSrc = nextImage;
+			if (nextIcon) iconClassName = nextIcon;
+		}
 
-		let icon = undefined;
+		let icon: JSX.Element | undefined;
 
-		if (iconClassName)
+		if (imageSrc) {
+			icon = (
+				<img
+					src={imageSrc}
+					style={styleGroup[styleKey + (styleKey ? 'Step' : 'step')] ?? {}}
+					className={`_step ${i < value ? '_done' : ''} ${i === value ? '_active' : ''}`}
+					alt={`step-${i}`}
+				/>
+			);
+		} else if (iconClassName) {
 			icon = (
 				<i
 					style={styleGroup[styleKey + (styleKey ? 'Step' : 'step')] ?? {}}
@@ -187,7 +209,7 @@ function Stepper(props: Readonly<ComponentProps>) {
 					<SubHelperComponent definition={props.definition} subComponentName="step" />
 				</i>
 			);
-
+		}
 		if (!icon)
 			icon = (
 				<span
@@ -219,7 +241,10 @@ function Stepper(props: Readonly<ComponentProps>) {
 			else lineKey = styleKey + (styleKey ? 'Line' : 'line');
 
 			line = (
-				<div className="_line" style={styleGroup[lineKey] ?? {}}>
+				<div
+					className={`_line ${i + 1 === value ? '_activeBeforeLine' : ''} ${i + 1 < value ? '_done' : ''} ${i === value ? '_active' : ''}`}
+					style={styleGroup[lineKey] ?? {}}
+				>
 					<SubHelperComponent definition={props.definition} subComponentName="line" />
 				</div>
 			);
@@ -267,9 +292,7 @@ function Stepper(props: Readonly<ComponentProps>) {
 				stepperDesign !== '_rectangle_arrow' && isStepperVertical
 					? '_vertical'
 					: '_horizontal'
-			} ${
-				sepStyle ? `_${key}_grid_css` : ''
-			}
+			} ${sepStyle ? `_${key}_grid_css` : ''}
 			${getPositionStyle()} `}
 		>
 			<HelperComponent context={props.context} definition={definition} />
@@ -441,6 +464,8 @@ const component: Component = {
 			icon: 'fa-solid fa-list',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

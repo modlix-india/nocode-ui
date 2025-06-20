@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import FillerValueEditorStyle from './FillerValueEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './fillerValueEditorProperties';
-import { styleDefaults } from './fillerValueEditorStyleProperties';
+import { styleProperties, styleDefaults } from './fillerValueEditorStyleProperties';
 
 const LazyFillerValueEditor = React.lazy(
 	() => import(/* webpackChunkName: "FillerValueEditor" */ './LazyFillerValueEditor'),
@@ -101,6 +101,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

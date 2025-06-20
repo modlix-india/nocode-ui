@@ -49,7 +49,10 @@ export default function Search({ value, options, style, onClose, onChange }: Sea
 							<div
 								className="_option"
 								key={option.value}
-								onClick={() => onChange(option.value)}
+								onMouseDown={e => {
+									e.stopPropagation();
+									e.preventDefault();
+									onChange(option.value);}}
 							>
 								{option.label ?? option.value}
 							</div>

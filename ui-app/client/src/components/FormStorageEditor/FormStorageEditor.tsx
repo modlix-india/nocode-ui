@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
 import StorageEditorStyle from './FormStorageEditorStyle';
-import { styleDefaults } from './formStorageEditorStyleProperties';
+import { styleProperties, styleDefaults } from './formStorageEditorStyleProperties';
 
 const LazyFormStorageEditor = React.lazy(
 	() => import(/* webpackChunkName: "FormStorageEditor" */ './LazyFormStorageEditor'),
@@ -27,6 +27,7 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	styleComponent: StorageEditorStyle,
 	styleDefaults: styleDefaults,
+	stylePseudoStates: ['hover'],
 	bindingPaths: {
 		bindingPath: { name: 'Storage Binding' },
 	},
@@ -55,7 +56,26 @@ const component: Component = {
 				</IconHelper>
 			),
 		},
+		{
+			name: 'objectTypeEditor',
+			displayName: 'Object Type Editor',
+			description: 'Object Type Editor',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'addFieldButton',
+			displayName: 'Add Field Button',
+			description: 'Add Field Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'objectAddBar',
+			displayName: 'Object Add Bar',
+			description: 'Object Add Bar',
+			icon: 'fa-solid fa-box',
+		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -161,9 +161,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'subText',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Helper text.',
+		displayName: 'Sub text.',
 		description:
-			'This is the etxt below main text, usually used to help user with instructions on how to upload.',
+			'This is the text below main text, usually used to help user with instructions on how to upload.',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -208,9 +208,42 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
+	{	
+		name: 'showMandatoryAsterisk',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Mandatory',
+		description: 'Indicates whether the user must select a file or not.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
+		name: 'label',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'File Upload Label text',
+		description: "Label text that's shown on top of file upload component.",
+		group: ComponentPropertyGroup.BASIC,
+	},
+	
+	{
+		name: 'noFloat',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Do not float Label',
+		description: 'File upload without floating label.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'supportingText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Supporting Text',
+		description: 'Text to be shown to help with file upload.',
+		translatable: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
 	COMMON_COMPONENT_PROPERTIES.validation,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
@@ -258,6 +291,36 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
+	label: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	supportText: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	subText: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,	
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,	
+	]
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

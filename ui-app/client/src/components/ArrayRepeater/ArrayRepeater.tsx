@@ -36,7 +36,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
-import { styleDefaults } from './arrayRepeaterStyleProperties';
+import { styleProperties, styleDefaults } from './arrayRepeaterStyleProperties';
 
 function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -69,6 +69,12 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 			dropDataType,
 			onDropData,
 			filterCondition,
+			orderKey,
+			orderDirection,
+			orderValue,
+			missingValueOrder,
+			newKeyStrategy,
+			minimizeReRender,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -79,8 +85,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
-	const [arrayValue, setArrayValue] = React.useState<any[]>([]);
-	const [objectValue, setObjectValue] = React.useState<any>(undefined);
+	const [repeaterData, setRepeaterData] = React.useState<any[]>([]);
 
 	const clickMove = moveEvent ? props.pageDefinition.eventFunctions?.[moveEvent] : undefined;
 	const clickRemove = removeEvent
@@ -101,6 +106,22 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		oldKeys: Array<{ object: any; key: string }>;
 	}>({ array: [], oldKeys: [] });
 
+	let valuesMap: Map<string, TokenValueExtractor> | undefined = undefined;
+	if (filterCondition || orderKey) {
+		valuesMap = new Map<string, TokenValueExtractor>([
+			[storeExtractor.getPrefix(), storeExtractor],
+			[localStoreExtractor.getPrefix(), localStoreExtractor],
+			[pageExtractor.getPrefix(), pageExtractor],
+			[themeExtractor.getPrefix(), themeExtractor],
+			[dvExtractor.getPrefix(), dvExtractor],
+		]);
+		if (locationHistory.length) {
+			const pse = new ParentExtractorForRunEvent(locationHistory, valuesMap);
+			valuesMap.set(pse.getPrefix(), pse);
+			valuesMap.set(pse.getPrefix(), pse);
+		}
+	}
+
 	useEffect(() => {
 		if (!defaultData) return;
 
@@ -111,14 +132,24 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		if (!bindingPathPath || !indKeys.current) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, _v) => {
-				if (dataType === 'object')
-					processObjectValue(_v, setArrayValue, setObjectValue, indKeys.current);
-				else processArrayValue(_v, setArrayValue, setObjectValue, indKeys.current);
+				let repData: any[][] = [];
+				if (dataType === 'object' && _v) {
+					if (Array.isArray(_v)) repData = _v.map((e, i) => [i, e]);
+					else repData = Object.entries(_v);
+				} else if (Array.isArray(_v)) repData = _v.map((e, i) => [i, e]);
+
+				processArrayValue(repData, setRepeaterData, indKeys.current, {
+					valuesMap,
+					orderKey,
+					orderDirection,
+					missingValueOrder,
+					minimizeReRender,
+				});
 			},
 			pageExtractor,
 			bindingPathPath,
 		);
-	}, [bindingPathPath, indKeys.current]);
+	}, [bindingPathPath, indKeys.current, orderKey, orderDirection, missingValueOrder]);
 
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
 
@@ -126,11 +157,44 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	if (entry) firstchild[entry[0]] = true;
 
 	const handleAdd = async (index: any) => {
-		if (dataType === 'object') return;
+		if (dataType === 'object' && (orderValue === 'value' || !orderKey) && newKeyStrategy)
+			return;
 
-		const newData = [...(arrayValue ?? [])];
-		newData.splice(index + 1, 0, undefined as unknown as never);
-		setData(bindingPathPath!, newData, context?.pageName);
+		let newData = [...(repeaterData ?? [])];
+
+		let newKey;
+		if (newKeyStrategy == 'index') newKey = index + 1;
+		else if (newKeyStrategy == 'shortUUID') newKey = shortUUID();
+
+		if (orderKey && orderValue != 'value') {
+			newData.splice(index + 1, 0, [
+				newKey,
+				orderKey == '__index' ? {} : { [orderKey]: newKey },
+			]);
+			newData = duplicate(newData);
+
+			const add = orderValue == 'index' ? 0 : 1;
+			const isAssending = orderDirection == 'asc';
+			for (let i = 0; i < newData.length; i++) {
+				if (orderKey === '__index') {
+					newData[i][0] = (isAssending ? i : newData.length - i - 1) + add;
+				} else {
+					newData[i][1][orderKey] = (isAssending ? i : newData.length - i - 1) + add;
+				}
+			}
+		} else {
+			newData.splice(index + 1, 0, [undefined, undefined as unknown as never]);
+		}
+		setData(
+			bindingPathPath!,
+			dataType == 'object'
+				? newData.reduce((acc: { [x: string]: any }, e: any[]) => {
+						acc[e[0]] = e[1];
+						return acc;
+					}, {} as any)
+				: newData.map((e: any[]) => e[1]),
+			context?.pageName,
+		);
 
 		clickAdd &&
 			(await runEvent(
@@ -146,11 +210,14 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		let newData: any;
 
 		if (dataType === 'object') {
-			newData = { ...objectValue };
-			delete newData[indKeys.current.array[index]];
+			newData = repeaterData
+				.filter((_, i) => i !== index)
+				.reduce((acc, e) => {
+					acc[e[0]] = e[1];
+					return acc;
+				}, {} as any);
 		} else {
-			newData = arrayValue.slice();
-			newData.splice(index, 1);
+			newData = repeaterData.filter((_, i) => i !== index).map(e => e[1]);
 		}
 
 		setData(bindingPathPath!, newData, context?.pageName);
@@ -165,14 +232,35 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	};
 
 	const handleMove = async (from: number, to: number) => {
-		if (dataType === 'object') return;
+		if (dataType === 'object' && !orderKey) return;
 
-		const newData = arrayValue.slice();
+		const newData = duplicate(repeaterData);
 		if (from >= newData?.length || from < 0 || to >= newData.length || to < 0) return;
-		const temp = newData[from];
-		newData[from] = newData[to];
-		newData[to] = temp;
-		setData(bindingPathPath!, newData, context?.pageName);
+
+		if (!orderKey) {
+			const temp = newData[from];
+			newData[from] = newData[to];
+			newData[to] = temp;
+		} else if (orderKey == '__index') {
+			const tempIndex = newData[from][0];
+			newData[from][0] = newData[to][0];
+			newData[to][0] = tempIndex;
+		} else {
+			const tempKey = newData[from][1][orderKey];
+			newData[from][1][orderKey] = newData[to][1][orderKey];
+			newData[to][1][orderKey] = tempKey;
+		}
+
+		setData(
+			bindingPathPath!,
+			dataType == 'object'
+				? newData.reduce((acc: { [x: string]: any }, e: any[]) => {
+						acc[e[0]] = e[1];
+						return acc;
+					}, {} as any)
+				: newData.map((e: any[]) => e[1]),
+			context?.pageName,
+		);
 
 		clickMove &&
 			(await runEvent(
@@ -199,7 +287,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	const handleDrop = (e: React.DragEvent<HTMLDivElement>, to: number) => {
 		e.preventDefault();
 
-		if (dataType === 'object') return;
+		if (dataType === 'object' && !orderKey) return;
 
 		const fromData = e.dataTransfer.getData('_array_repeater_drag');
 
@@ -217,9 +305,43 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		const from = Number(fromData.substring(lastIndex + 1));
 		if (from === to) return;
 
-		const newData = arrayValue.slice();
+		const newData = duplicate(repeaterData);
 		newData.splice(to, 0, newData.splice(from, 1)[0]);
-		setData(bindingPathPath!, newData, context?.pageName);
+
+		if (orderValue === 'value') {
+			for (let i = 0; i < newData.length; i++) {
+				if (orderKey === '__index') {
+					newData[i][0] = repeaterData[i][0];
+				} else if (orderKey) {
+					dvExtractor.setData(repeaterData[i][1]);
+					newData[i][1][orderKey] = new ExpressionEvaluator(`Data.${orderKey}`).evaluate(
+						valuesMap!,
+					);
+				}
+			}
+		} else if (orderKey) {
+			const add = orderValue == 'index' ? 0 : 1;
+			const isAssending = orderDirection == 'asc';
+			for (let i = 0; i < newData.length; i++) {
+				if (orderKey === '__index') {
+					newData[i][0] = (isAssending ? i : newData.length - i - 1) + add;
+				} else {
+					newData[i][1][orderKey] = (isAssending ? i : newData.length - i - 1) + add;
+				}
+			}
+			if (!isAssending) newData.reverse();
+		}
+
+		setData(
+			bindingPathPath!,
+			dataType == 'object'
+				? newData.reduce((acc: { [x: string]: any }, e: any[]) => {
+						acc[e[0]] = e[1];
+						return acc;
+					}, {} as any)
+				: newData.map((e: any[]) => e[1]),
+			context?.pageName,
+		);
 
 		if (!clickMove) return;
 		(async () => {
@@ -241,7 +363,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 
 	let items = <></>;
 
-	if (Array.isArray(arrayValue) && arrayValue.length) {
+	if (repeaterData.length) {
 		let updatableBindingPath = bindingPath;
 		if (!updatableBindingPath && defaultData) {
 			updatableBindingPath = {
@@ -251,24 +373,10 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 				}.${flattenUUID(key)}`,
 			};
 		}
-		let valuesMap: Map<string, TokenValueExtractor> | undefined = undefined;
-		if (filterCondition) {
-			valuesMap = new Map<string, TokenValueExtractor>([
-				[storeExtractor.getPrefix(), storeExtractor],
-				[localStoreExtractor.getPrefix(), localStoreExtractor],
-				[pageExtractor.getPrefix(), pageExtractor],
-				[themeExtractor.getPrefix(), themeExtractor],
-				[dvExtractor.getPrefix(), dvExtractor],
-			]);
-			if (locationHistory.length) {
-				const pse = new ParentExtractorForRunEvent(locationHistory, valuesMap);
-				valuesMap.set(pse.getPrefix(), pse);
-				valuesMap.set(pse.getPrefix(), pse);
-			}
-		}
+
 		items = (
 			<>
-				{arrayValue.map((_, index) =>
+				{repeaterData.map((_, index) =>
 					createRepeaterItem({
 						pageDefinition,
 						firstchild,
@@ -286,7 +394,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 						styleProperties,
 						props,
 						showMove,
-						arrayValue,
+						repeaterData,
 						moveUpIcon,
 						moveDownIcon,
 						handleMove,
@@ -302,11 +410,15 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 						handleDelete,
 						filterCondition,
 						valuesMap,
+						orderKey,
+						orderDirection,
+						orderValue,
+						newKeyStrategy,
 					}),
 				)}
 			</>
 		);
-	} else if (!arrayValue?.length && dataType !== 'object' && showAdd) {
+	} else if (!repeaterData.length && dataType !== 'object' && showAdd) {
 		items = (
 			<div className="iconGrid" style={styleProperties.iconGrid ?? {}}>
 				<SubHelperComponent
@@ -411,7 +523,7 @@ function createRepeaterItem({
 	styleProperties,
 	props,
 	showMove,
-	arrayValue,
+	repeaterData,
 	moveUpIcon,
 	moveDownIcon,
 	handleMove,
@@ -427,6 +539,9 @@ function createRepeaterItem({
 	handleDelete,
 	filterCondition,
 	valuesMap,
+	orderKey,
+	orderValue,
+	newKeyStrategy,
 }: {
 	pageDefinition: PageDefinition;
 	firstchild: any;
@@ -447,7 +562,7 @@ function createRepeaterItem({
 	styleProperties: any;
 	props: Readonly<ComponentProps>;
 	showMove: any;
-	arrayValue: any[];
+	repeaterData: any[][];
 	moveUpIcon: any;
 	moveDownIcon: any;
 	handleMove: (from: number, to: number) => Promise<void>;
@@ -463,14 +578,30 @@ function createRepeaterItem({
 	handleDelete: (index: any) => Promise<void>;
 	filterCondition: string | undefined;
 	valuesMap: Map<string, TokenValueExtractor> | undefined;
+	orderKey: string;
+	orderDirection: string;
+	orderValue: string;
+	newKeyStrategy: string;
 }) {
 	if (valuesMap && filterCondition) {
-		dvExtractor.setData(arrayValue[index]);
+		dvExtractor.setData(repeaterData[index][1]);
 		const ev = new ExpressionEvaluator(filterCondition);
 		const value = ev.evaluate(valuesMap);
 
-		if (!value) return <Fragment key={`fragment_${indKeys.current.array[index]}`} />;
+		if (!value)
+			return (
+				<Fragment
+					key={
+						indKeys.current.array[index]
+							? undefined
+							: `fragment_${indKeys.current.array[index]}`
+					}
+				/>
+			);
 	}
+
+	const canDragToReSort = dataType !== 'object' || orderKey;
+
 	const comp = (
 		<Children
 			pageDefinition={pageDefinition}
@@ -481,7 +612,7 @@ function createRepeaterItem({
 				updateLocationForChild(
 					key,
 					updatableBindingPath!,
-					dataType === 'object' ? indKeys.current.array[index] : index,
+					repeaterData[index][0],
 					locationHistory,
 					context.pageName,
 					pageExtractor,
@@ -490,7 +621,10 @@ function createRepeaterItem({
 		/>
 	);
 	let addButton;
-	if (showAdd && dataType !== 'object') {
+	if (
+		showAdd &&
+		(dataType !== 'object' || (orderValue != 'value' && orderKey && newKeyStrategy))
+	) {
 		addButton = (
 			<i
 				tabIndex={0}
@@ -508,12 +642,12 @@ function createRepeaterItem({
 	}
 	let firstMoveButton;
 	let secondMoveButton;
-	if (showMove && dataType !== 'object') {
+	if (showMove && canDragToReSort) {
 		firstMoveButton = (
 			<i
 				tabIndex={0}
 				className={`moveOne ${
-					index == arrayValue?.length - 1
+					index == repeaterData?.length - 1
 						? (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
 						: (moveDownIcon ?? 'fa fa-circle-arrow-down fa-solid')
 				}`}
@@ -523,7 +657,7 @@ function createRepeaterItem({
 						? () =>
 								handleMove(
 									index,
-									index == arrayValue?.length - 1 ? index - 1 : index + 1,
+									index == repeaterData?.length - 1 ? index - 1 : index + 1,
 								)
 						: undefined
 				}
@@ -539,7 +673,7 @@ function createRepeaterItem({
 			<i
 				tabIndex={0}
 				className={`moveOne ${
-					index == 0 || index == arrayValue?.length - 1
+					index == 0 || index == repeaterData?.length - 1
 						? ''
 						: (moveUpIcon ?? 'fa fa-circle-arrow-up fa-solid')
 				}`}
@@ -553,19 +687,20 @@ function createRepeaterItem({
 			</i>
 		);
 	}
+
 	return (
 		<div
 			tabIndex={0}
 			role="button"
-			key={`div_${indKeys.current.array[index]}`}
+			key={indKeys.current.array[index] ? undefined : `div_${indKeys.current.array[index]}`}
 			data-key={`${indKeys.current.array[index]}`}
 			className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
-			onDragStart={dataType === 'object' ? undefined : e => handleDragStart(e, index)}
-			onDragOver={dataType === 'object' ? undefined : handleDragOver}
-			onDrop={dataType === 'object' ? undefined : e => handleDrop(e, index)}
-			onDragEnter={dataType === 'object' ? undefined : handleDragEnter}
-			onDragLeave={dataType === 'object' ? undefined : handleDragLeave}
-			draggable={dataType !== 'object' && isItemDraggable && !readOnly}
+			onDragStart={canDragToReSort ? e => handleDragStart(e, index) : undefined}
+			onDragOver={canDragToReSort ? handleDragOver : undefined}
+			onDrop={canDragToReSort ? e => handleDrop(e, index) : undefined}
+			onDragEnter={canDragToReSort ? handleDragEnter : undefined}
+			onDragLeave={canDragToReSort ? handleDragLeave : undefined}
+			draggable={canDragToReSort && isItemDraggable && !readOnly}
 			style={styleProperties.repeaterProperties ?? {}}
 			onKeyDown={() => {}}
 		>
@@ -608,45 +743,67 @@ function createRepeaterItem({
 	);
 }
 
-function processObjectValue(
-	_v: any | undefined,
-	setArrayValue: (v: any[]) => void,
-	setObjectValue: (v: any) => void,
+function processArrayValue(
+	repData: any[][],
+	setRepeaterData: (v: any[]) => void,
 	indKeysCurrent: { array: Array<string>; oldKeys: Array<{ object: any; key: string }> },
+	{
+		valuesMap,
+		orderKey,
+		orderDirection,
+		missingValueOrder,
+		minimizeReRender,
+	}: {
+		valuesMap: Map<string, TokenValueExtractor> | undefined;
+		orderKey: string;
+		orderDirection: string;
+		missingValueOrder: string;
+		minimizeReRender: boolean;
+	},
 ) {
-	if (isNullValue(_v)) {
-		setArrayValue([]);
-		setObjectValue(undefined);
+	if (!repData.length) {
+		setRepeaterData([]);
 		return;
 	}
 
-	const entries = Object.entries(_v);
-	const keys = entries.map(([k]) => k);
-	const values = entries.map(([, v]) => v);
+	if (orderKey && valuesMap) {
+		repData = repData
+			.map(e => {
+				if (orderKey === '__index') return [e[0], e];
+				dvExtractor.setData(e[1]);
+				const ev = new ExpressionEvaluator(`Data.${orderKey}`);
+				const value = ev.evaluate(valuesMap);
+				return [value, e];
+			})
+			.sort((a, b) => {
+				const aValue = a[0];
+				const bValue = b[0];
+				if (aValue === undefined || bValue === undefined)
+					return missingValueOrder === 'last' ? 1 : -1;
+				if (typeof aValue === 'number' && typeof bValue === 'number') {
+					return orderDirection === 'asc' ? aValue - bValue : bValue - aValue;
+				} else if (typeof aValue === 'string' || typeof bValue === 'string') {
+					return orderDirection === 'asc'
+						? aValue.localeCompare(bValue)
+						: bValue.localeCompare(aValue);
+				}
+				return 0;
+			})
+			.map(e => e[1]);
+	}
 
-	setArrayValue(values);
-	setObjectValue(_v);
-	indKeysCurrent.array = keys;
-}
+	setRepeaterData(repData);
 
-function processArrayValue(
-	_v: any[] | undefined,
-	setArrayValue: (v: any[]) => void,
-	setObjectValue: (v: any) => void,
-	indKeysCurrent: { array: Array<string>; oldKeys: Array<{ object: any; key: string }> },
-) {
-	setArrayValue(_v ?? []);
-	setObjectValue(undefined);
-	if (!_v?.length) return;
+	if (minimizeReRender) return;
 
 	const duplicateCheck = new Array<{ object: any; occurance: number }>();
-	for (let i = 0; i < _v.length; i++) {
+	for (let i = 0; i < repData.length; i++) {
 		let oldIndex = -1;
 
-		let duplicateObject = duplicateCheck.find(e => deepEqual(e.object, _v[i]));
+		let duplicateObject = duplicateCheck.find(e => deepEqual(e.object, repData[i][1]));
 
 		if (!duplicateObject) {
-			duplicateObject = { object: _v[i], occurance: 1 };
+			duplicateObject = { object: repData[i][1], occurance: 1 };
 			duplicateCheck.push(duplicateObject);
 		} else {
 			duplicateObject.occurance++;
@@ -656,7 +813,7 @@ function processArrayValue(
 		let count = -1;
 		for (let oldIndexObject of indKeysCurrent.oldKeys) {
 			count++;
-			if (!deepEqual(oldIndexObject.object, _v[i])) continue;
+			if (!deepEqual(oldIndexObject.object, repData[i][1])) continue;
 			occurance--;
 			if (occurance !== 0) continue;
 			oldIndex = count;
@@ -665,9 +822,9 @@ function processArrayValue(
 
 		if (oldIndex === -1) {
 			indKeysCurrent.array[i] = shortUUID();
-			if (_v[i] !== undefined && _v[i] !== null)
+			if (repData[i][1] !== undefined && repData[i][1] !== null)
 				indKeysCurrent.oldKeys.push({
-					object: duplicate(_v[i]),
+					object: duplicate(repData[i][1]),
 					key: indKeysCurrent.array[i],
 				});
 		} else {
@@ -750,6 +907,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

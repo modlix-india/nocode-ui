@@ -1,0 +1,368 @@
+[
+	{
+		"cp": "padding",
+		"sel": ".comp.compAudio<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "10px",
+			"_audioDesign2-": "10px 10px 0px 10px",
+			"_audioDesign3-": "10px",
+			"_audioDesign4-": "10px"
+		},
+		"gn": "Padding",
+		"dn": "Padding",
+		"n": "audioPadding<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compAudio<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "10px",
+			"_audioDesign2-": "10px",
+			"_audioDesign3-": "10px",
+			"_audioDesign4-": "10px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius",
+		"n": "audioBorderRadius<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "<primaryFont>",
+			"_audioDesign2-": "<primaryFont>",
+			"_audioDesign3-": "<primaryFont>",
+			"_audioDesign4-": "<primaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font PlayBackSpeed",
+		"n": "audioFontPlayBackSpeed<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed ._singleSelect",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "40px",
+			"_audioDesign2-": "40px",
+			"_audioDesign3-": "40px",
+			"_audioDesign4-": "40px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius SingleSelect",
+		"n": "audioBorderRadiusSingleSelect<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed ._singleSelect",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "6px 10px 6px 10px",
+			"_audioDesign2-": "6px 10px 6px 10px",
+			"_audioDesign3-": "6px 10px 6px 10px",
+			"_audioDesign4-": "6px 10px 6px 10px"
+		},
+		"gn": "Padding",
+		"dn": "Padding SingleSelect",
+		"n": "audioPaddingSingleSelect<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed ._singleSelect",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "1px solid <backgroundDarkerColorOne>",
+			"_audioDesign1-_secondary": "1px solid <backgroundDarkerColorTwo>",
+			"_audioDesign1-_tertiary": "1px solid <backgroundDarkerColorThree>",
+			"_audioDesign1-_quaternary": "1px solid <backgroundDarkerColorFour>",
+			"_audioDesign1-_quinary": "1px solid <backgroundDarkerColorFive>"
+		},
+		"gn": "Border",
+		"dn": "Border SingleSelect",
+		"n": "audioBorderSingleSelect<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed ._singleSelect",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "<backgroundHoverColorOne>",
+			"_audioDesign1-_secondary": "<backgroundHoverColorTwo>",
+			"_audioDesign1-_tertiary": "<backgroundHoverColorThree>",
+			"_audioDesign1-_quaternary": "<backgroundHoverColorFour>",
+			"_audioDesign1-_quinary": "<backgroundHoverColorFive>"
+		},
+		"gn": "Background",
+		"dn": "Background SingleSelect",
+		"n": "audioBackgroundSingleSelect<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed select option",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "<primaryFont>",
+			"_audioDesign2-": "<primaryFont>",
+			"_audioDesign3-": "<primaryFont>",
+			"_audioDesign4-": "<primaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font PlayBackSpeedselectoption",
+		"n": "audioFontPlayBackSpeedselectoption<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed select option",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "<backgroundDarkerColorOne>",
+			"_audioDesign1-_secondary": "<backgroundDarkerColorTwo>",
+			"_audioDesign1-_tertiary": "<backgroundDarkerColorThree>",
+			"_audioDesign1-_quaternary": "<backgroundDarkerColorFour>",
+			"_audioDesign1-_quinary": "<backgroundDarkerColorFive>"
+		},
+		"gn": "Color",
+		"dn": "Color PlayBackSpeedselectoption",
+		"n": "audioColorPlayBackSpeedselectoption<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed select",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "<backgroundColorOne>",
+			"_audioDesign1-_secondary": "<backgroundColorTwo>",
+			"_audioDesign1-_tertiary": "<backgroundColorThree>",
+			"_audioDesign1-_quaternary": "<backgroundColorFour>",
+			"_audioDesign1-_quinary": "<backgroundColorFive>"
+		},
+		"gn": "Background",
+		"dn": "Background PlayBackSpeedselect",
+		"n": "audioBackgroundPlayBackSpeedselect<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed select",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "<backgroundDarkerColorOne>",
+			"_audioDesign1-_secondary": "<backgroundDarkerColorTwo>",
+			"_audioDesign1-_tertiary": "<backgroundDarkerColorThree>",
+			"_audioDesign1-_quaternary": "<backgroundDarkerColorFour>",
+			"_audioDesign1-_quinary": "<backgroundDarkerColorFive>"
+		},
+		"gn": "Color",
+		"dn": "Color PlayBackSpeedselect",
+		"n": "audioColorPlayBackSpeedselect<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed select",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border PlayBackSpeedselect",
+		"n": "audioBorderPlayBackSpeedselect<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeed select",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "8px",
+			"_audioDesign1-_secondary": "8px",
+			"_audioDesign1-_tertiary": "8px",
+			"_audioDesign1-_quaternary": "8px",
+			"_audioDesign1-_quinary": "8px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius PlayBackSpeedselect",
+		"n": "audioBorderRadiusPlayBackSpeedselect<designType><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeedGrid",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "5px",
+			"_audioDesign2-": "5px",
+			"_audioDesign3-": "5px",
+			"_audioDesign4-": "5px"
+		},
+		"gn": "Gap",
+		"dn": "Gap PlayBackSpeedGrid",
+		"n": "audioGapPlayBackSpeedGrid<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeedGrid",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "<primaryFont>",
+			"_audioDesign2-": "<primaryFont>",
+			"_audioDesign3-": "<primaryFont>",
+			"_audioDesign4-": "<primaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font PlayBackSpeedGrid",
+		"n": "audioFontPlayBackSpeedGrid<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeedGrid",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "40px",
+			"_audioDesign2-": "40px",
+			"_audioDesign3-": "40px",
+			"_audioDesign4-": "40px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius PlayBackSpeedGrid",
+		"n": "audioBorderRadiusPlayBackSpeedGrid<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeedGrid",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "8px",
+			"_audioDesign2-": "8px",
+			"_audioDesign3-": "8px",
+			"_audioDesign4-": "8px"
+		},
+		"gn": "Padding",
+		"dn": "Padding PlayBackSpeedGrid",
+		"n": "audioPaddingPlayBackSpeedGrid<designType><colorScheme>"
+	},
+	{
+		"cp": "font-weight",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeedGrid ._speedOption._active",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "600",
+			"_audioDesign1-_secondary": "600",
+			"_audioDesign1-_tertiary": "600",
+			"_audioDesign1-_quaternary": "600",
+			"_audioDesign1-_quinary": "600"
+		},
+		"gn": "Font Weight",
+		"dn": "FontWeight Active",
+		"n": "audioFontWeightActive<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeedGrid",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "1px solid <backgroundDarkerColorOne>",
+			"_audioDesign1-_secondary": "1px solid <backgroundDarkerColorTwo>",
+			"_audioDesign1-_tertiary": "1px solid <backgroundDarkerColorThree>",
+			"_audioDesign1-_quaternary": "1px solid <backgroundDarkerColorFour>",
+			"_audioDesign1-_quinary": "1px solid <backgroundDarkerColorFive>"
+		},
+		"gn": "Border",
+		"dn": "Border PlayBackSpeedGrid",
+		"n": "audioBorderPlayBackSpeedGrid<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compAudio<designType><colorScheme> ._playBackSpeedGrid",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "<backgroundDarkerColorOne>",
+			"_audioDesign1-_secondary": "<backgroundDarkerColorTwo>",
+			"_audioDesign1-_tertiary": "<backgroundDarkerColorThree>",
+			"_audioDesign1-_quaternary": "<backgroundDarkerColorFour>",
+			"_audioDesign1-_quinary": "<backgroundDarkerColorFive>"
+		},
+		"gn": "Color",
+		"dn": "Color PlayBackSpeedGrid",
+		"n": "audioColorPlayBackSpeedGrid<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compAudio<designType><colorScheme> ._time",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "<primaryFont>",
+			"_audioDesign2-": "<primaryFont>",
+			"_audioDesign3-": "<primaryFont>",
+			"_audioDesign4-": "<primaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font Time",
+		"n": "audioFontTime<designType><colorScheme>"
+	},
+	{
+		"cp": "height",
+		"sel": ".comp.compAudio<designType><colorScheme> ._volumeControls ._volumeSliderContainer svg",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "13px",
+			"_audioDesign2-": "13px",
+			"_audioDesign3-": "13px",
+			"_audioDesign4-": "13px"
+		},
+		"gn": "Height",
+		"dn": "Height VolumeSliderContainersvg",
+		"n": "audioHeightVolumeSliderContainersvg<designType><colorScheme>"
+	},
+	{
+		"cp": "height",
+		"sel": ".comp.compAudio<designType><colorScheme> input[type=\"range\"]",
+		"np": true,
+		"spv": {
+			"_audioDesign1-": "4px",
+			"_audioDesign2-": "4px",
+			"_audioDesign3-": "4px",
+			"_audioDesign4-": "4px"
+		},
+		"gn": "Height",
+		"dn": "Height",
+		"n": "audioHeight<designType><colorScheme>"
+	},
+	{
+		"cp": "accent-color",
+		"sel": ".comp.compAudio<designType><colorScheme> input[type=\"range\"]",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "<backgroundDarkerColorOne>",
+			"_audioDesign1-_secondary": "<backgroundDarkerColorTwo>",
+			"_audioDesign1-_tertiary": "<backgroundDarkerColorThree>",
+			"_audioDesign1-_quaternary": "<backgroundDarkerColorFour>",
+			"_audioDesign1-_quinary": "<backgroundDarkerColorFive>"
+		},
+		"gn": "Accent Color",
+		"dn": "AccentColor AudioDesign4colorSchemeinputtyperange",
+		"n": "audioAccentColorAudioDesign4colorSchemeinputtyperange<designType><colorScheme>"
+	},
+	{
+		"cp": "accent-color",
+		"sel": ".comp.compAudio<designType><colorScheme> input[type=\"range\"]:hover",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "<backgroundDarkerColorOne>"
+		},
+		"gn": "Accent Color",
+		"dn": "AccentColor AudioDesign4colorSchemeinputtyperangehover",
+		"n": "audioAccentColorAudioDesign4colorSchemeinputtyperangehover<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compAudio<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_audioDesign1-_primary": "<backgroundColorOne>",
+			"_audioDesign1-_secondary": "<backgroundColorTwo>",
+			"_audioDesign1-_tertiary": "<backgroundColorThree>",
+			"_audioDesign1-_quaternary": "<backgroundColorFour>",
+			"_audioDesign1-_quinary": "<backgroundColorFive>"
+		},
+		"gn": "Background",
+		"dn": "Background AudioDesign4colorScheme",
+		"n": "audioBackgroundAudioDesign4colorScheme<designType><colorScheme>"
+	}
+]

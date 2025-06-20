@@ -13,7 +13,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './textEditorProperties';
 import TextEditorStyle from './TextEditorStyle';
-import { styleDefaults } from './textEditorStyleProperies';
+import { styleProperties, styleDefaults } from './textEditorStyleProperies';
 import { IconHelper } from '../util/IconHelper';
 
 function TextEditor(props: Readonly<ComponentProps>) {
@@ -79,7 +79,7 @@ function TextEditor(props: Readonly<ComponentProps>) {
 				const toStore = JSON.parse(ev);
 				datInStoreRef.current = toStore;
 				setData(bindingPathPath, toStore, context.pageName);
-			} catch (err) {}
+			} catch (err) { }
 		} else {
 			setData(bindingPathPath, ev, context.pageName);
 		}
@@ -155,6 +155,7 @@ const component: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

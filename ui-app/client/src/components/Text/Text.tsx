@@ -17,9 +17,10 @@ import { IconHelper } from '../util/IconHelper';
 import { getTranslations } from '../util/getTranslations';
 import useDefinition from '../util/useDefinition';
 import TextStyle from './TextStyle';
-import { styleDefaults } from './TextStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './TextStyleProperties';
 import { propertiesDefinition, stylePropertiesDefinition } from './textProperties';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function Text(props: Readonly<ComponentProps>) {
 	const {
@@ -37,6 +38,8 @@ function Text(props: Readonly<ComponentProps>) {
 			processNewLine,
 			stringFormat,
 			textLength,
+			minFractionDigits,
+			maxFractionDigits,
 			textColor,
 			designType,
 			removeToolTip,
@@ -90,7 +93,10 @@ function Text(props: Readonly<ComponentProps>) {
 
 	if (textType === 'MD') {
 		return (
-			<div className={`comp compText _textMarkdown`} style={styleProperties.comp ?? {}}>
+			<div
+				className={`comp compText _textMarkdown  ${textColor}`}
+				style={styleProperties.comp ?? {}}
+			>
 				<HelperComponent context={props.context} definition={definition} />
 				<MarkdownParser
 					componentKey={definition.key}
@@ -101,8 +107,20 @@ function Text(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	let numberFormattingOptions: any = {};
+
+	if (typeof minFractionDigits === 'number' || typeof maxFractionDigits === 'number') {
+		let min = minFractionDigits ?? maxFractionDigits!;
+		let max = maxFractionDigits ?? minFractionDigits!;
+		if (min > max) min = max;
+		numberFormattingOptions = {
+			minimumFractionDigits: min,
+			maximumFractionDigits: max,
+		};
+	}
+
 	if (stringFormat !== 'STRING' && translatedText) {
-		translatedText = formatString(translatedText, stringFormat);
+		translatedText = formatString(translatedText, stringFormat, numberFormattingOptions);
 	}
 
 	if (textLength && translatedText) {
@@ -148,7 +166,7 @@ function Text(props: Readonly<ComponentProps>) {
 	);
 	return (
 		<div
-			className={`comp compText ${textContainer.toLowerCase()} ${textColor}`}
+			className={`comp compText ${textContainer} ${textColor}`}
 			style={styleProperties.comp ?? {}}
 			title={removeToolTip ? undefined : originalText}
 		>
@@ -157,6 +175,12 @@ function Text(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
+
+const { textContainer, textColor } = findPropertyDefinitions(
+	propertiesDefinition,
+	'textContainer',
+	'textColor',
+);
 
 const component: Component = {
 	order: 2,
@@ -181,6 +205,14 @@ const component: Component = {
 		{ name: 'Decorative', pageName: 'textDecorative' },
 		{ name: 'Paragraph', pageName: 'textParagraph' },
 	],
+	tutorial: {
+		demoVideo: 'api/files/static/file/SYSTEM/WhatsApp Media/just try/vid1.mp4',
+		// demoVideo: 'https://www.youtube.com/watch?v=YSv3KNSUwWQ&ab_channel=FincityIndia',
+		description:
+			'The Text Component is used to display textual content within the webpage, like an html paragraph or heading tag. It supports formatting, color schemes, prefixes, suffixes, and SEO-friendly container types. ',
+		youtubeLink: 'https://www.youtube.com/watch?v=YSv3KNSUwWQ&ab_channel=FincityIndia',
+	},
+
 	subComponentDefinition: [
 		{
 			name: '',
@@ -430,6 +462,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [textContainer, textColor],
 };
 
 export default component;

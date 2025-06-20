@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
 	addListenerAndCallImmediately,
@@ -15,11 +15,12 @@ import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './imageProperties';
-import { styleDefaults } from './imageStyleProperties';
+import { styleProperties, styleDefaults } from './imageStyleProperties';
 import ImageStyle from './ImageStyles';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
 import axios from 'axios';
+// import { onMouseDownDragStartCurry } from '../../functions/utils';
 
 async function secureImage(src: string) {
 	const headers: any = {
@@ -39,6 +40,12 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const [falledBack, setFalledBack] = useState(false);
 	const location = useLocation();
+	const imageRef = useRef<HTMLImageElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+	const [sliderPosition, setSliderPosition] = useState(50);
+	const [isDragging, setIsDragging] = useState(false);
+
 	const {
 		properties: {
 			alt,
@@ -53,6 +60,25 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			stopPropagation,
 			preventDefault,
 			useObjectToRender,
+			enhancementType,
+			zoomPreviewVisible,
+			zoomFactor,
+			magnifierSize,
+			magnificationFactor,
+			previewPlacement,
+			previewWidth,
+			previewHeight,
+			comparisonSrc,
+			sliderPosition: initialSliderPosition,
+			sliderOrientation,
+			sliderWidth,
+			sliderHandleSize,
+			sliderHandleType,
+			sliderHandleImage,
+			tooltipText,
+			tooltipEnabled,
+			tooltipPosition,
+			tooltipOffset,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -109,8 +135,19 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	useEffect(() => {
+		if (initialSliderPosition !== undefined) {
+			setSliderPosition(initialSliderPosition);
+		}
+	}, [initialSliderPosition]);
+
 	const [actualSrc, setActualSrc] = useState<string | undefined>();
+	const [actualComparisonSrc, setActualComparisonSrc] = useState<string | undefined>();
 	const computedUrl = getSrcUrl(getHref(src ?? defaultSrc, location)!);
+	const computedComparisonUrl = comparisonSrc
+		? getSrcUrl(getHref(comparisonSrc, location)!)
+		: undefined;
+
 	useEffect(() => {
 		if (!computedUrl.includes('api/files/secured')) {
 			setActualSrc(computedUrl);
@@ -119,6 +156,89 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		(async () => setActualSrc(await secureImage(computedUrl)))();
 	}, [computedUrl]);
 
+	useEffect(() => {
+		if (!computedComparisonUrl || !computedComparisonUrl.includes('api/files/secured')) {
+			setActualComparisonSrc(computedComparisonUrl);
+			return;
+		}
+		(async () => setActualComparisonSrc(await secureImage(computedComparisonUrl)))();
+	}, [computedComparisonUrl]);
+
+	const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (enhancementType !== 'comparison' || !actualComparisonSrc) return;
+		setIsDragging(true);
+		updateSliderPosition(e);
+	};
+
+	const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (enhancementType === 'zoomPreview' || enhancementType === 'magnification') {
+			const { left, top, width, height } = containerRef.current?.getBoundingClientRect() || {
+				left: 0,
+				top: 0,
+				width: 0,
+				height: 0,
+			};
+			const x = ((e.clientX - left) / width) * 100;
+			const y = ((e.clientY - top) / height) * 100;
+
+			setMousePosition({ x, y });
+		}
+
+		if (enhancementType === 'comparison' && isDragging && actualComparisonSrc) {
+			updateSliderPosition(e);
+		}
+	};
+
+	const handleMouseUp = () => {
+		setIsDragging(false);
+	};
+
+	const updateSliderPosition = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (!containerRef.current) return;
+
+		const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+		let newPosition;
+
+		if (sliderOrientation === 'vertical') {
+			newPosition = Math.min(100, Math.max(0, ((e.clientY - top) / height) * 100));
+		} else {
+			newPosition = Math.min(100, Math.max(0, ((e.clientX - left) / width) * 100));
+		}
+
+		setSliderPosition(newPosition);
+	};
+
+	useEffect(() => {
+		const handleGlobalMouseUp = () => setIsDragging(false);
+		const handleGlobalMouseMove = (e: MouseEvent) => {
+			if (
+				isDragging &&
+				enhancementType === 'comparison' &&
+				actualComparisonSrc &&
+				containerRef.current
+			) {
+				const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+				let newPosition;
+
+				if (sliderOrientation === 'vertical') {
+					newPosition = Math.min(100, Math.max(0, ((e.clientY - top) / height) * 100));
+				} else {
+					newPosition = Math.min(100, Math.max(0, ((e.clientX - left) / width) * 100));
+				}
+
+				setSliderPosition(newPosition);
+			}
+		};
+
+		document.addEventListener('mouseup', handleGlobalMouseUp);
+		document.addEventListener('mousemove', handleGlobalMouseMove);
+
+		return () => {
+			document.removeEventListener('mouseup', handleGlobalMouseUp);
+			document.removeEventListener('mousemove', handleGlobalMouseMove);
+		};
+	}, [isDragging, enhancementType, actualComparisonSrc, sliderOrientation]);
+
 	let imageTag = undefined;
 
 	if (actualSrc) {
@@ -126,6 +246,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			<object type="image/svg+xml" data={actualSrc} style={resolvedStyles.image ?? {}} />
 		) : (
 			<img
+				ref={imageRef}
 				onMouseEnter={
 					stylePropertiesWithPseudoStates?.hover ? () => setHover(true) : undefined
 				}
@@ -150,9 +271,218 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			/>
 		);
 
+		const zoomPreviewClass = `_zoomPreview _preview-${previewPlacement || 'right'}`;
+		const zoomPreviewStyle = {
+			...resolvedStyles.zoomPreview,
+			width: `${previewWidth || 300}px`,
+			height: `${previewHeight || 300}px`,
+			backgroundImage: `url(${actualSrc})`,
+			backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+			backgroundSize: `${(zoomFactor || 2) * 100}%`,
+		};
+
+		const zoomPreview = enhancementType === 'zoomPreview' && (
+			<div
+				className={`${zoomPreviewClass} ${zoomPreviewVisible || hover ? 'visible' : ''}`}
+				style={zoomPreviewStyle}
+			>
+				<SubHelperComponent definition={definition} subComponentName="zoomPreview" />
+			</div>
+		);
+
+		const magnifierStyle = {
+			...resolvedStyles.magnifier,
+			left: `${mousePosition.x}%`,
+			top: `${mousePosition.y}%`,
+			width: `${magnifierSize || 150}px`,
+			height: `${magnifierSize || 150}px`,
+			backgroundImage: `url(${actualSrc})`,
+			backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
+			backgroundSize: `${(magnificationFactor || 2) * 100}%`,
+		};
+
+		const magnifier = enhancementType === 'magnification' && hover && (
+			<div className="_magnifier" style={magnifierStyle}>
+				<SubHelperComponent definition={definition} subComponentName="magnifier" />
+			</div>
+		);
+
+		const comparisonSlider = enhancementType === 'comparison' && actualComparisonSrc && (
+			<>
+				<div
+					className="_comparisonContainer"
+					style={{
+						position: 'absolute',
+						top: 0,
+						left: 0,
+						width: '100%',
+						height: '100%',
+						overflow: 'hidden',
+					}}
+				>
+					<img
+						className="_comparisonImage"
+						src={actualComparisonSrc}
+						alt={`${alt} comparison`}
+						style={{
+							...resolvedStyles.image,
+							position: 'absolute',
+							top: 0,
+							left: 0,
+							width: '100%',
+							height: '100%',
+							objectFit: 'cover',
+							clipPath:
+								sliderOrientation === 'vertical'
+									? `polygon(0 0, 100% 0, 100% ${sliderPosition}%, 0 ${sliderPosition}%)`
+									: `polygon(0 0, ${sliderPosition}% 0, ${sliderPosition}% 100%, 0 100%)`,
+						}}
+					/>
+				</div>
+				<div
+					className="_sliderLine"
+					style={{
+						...resolvedStyles.sliderLine,
+						position: 'absolute',
+						...(sliderOrientation === 'vertical'
+							? {
+									left: 0,
+									width: '100%',
+									top: `calc(${sliderPosition}% - ${(sliderWidth || 2) / 2}px)`,
+									height: `${sliderWidth || 2}px`,
+								}
+							: {
+									top: 0,
+									height: '100%',
+									left: `calc(${sliderPosition}% - ${(sliderWidth || 2) / 2}px)`,
+									width: `${sliderWidth || 2}px`,
+								}),
+						cursor: sliderOrientation === 'vertical' ? 'row-resize' : 'col-resize',
+						zIndex: 10,
+					}}
+				>
+					<SubHelperComponent definition={definition} subComponentName="sliderLine" />
+				</div>
+
+				{sliderHandleType !== 'none' && (
+					<div
+						className="_sliderHandle"
+						style={{
+							...resolvedStyles.sliderHandle,
+							position: 'absolute',
+							...(sliderOrientation === 'vertical'
+								? {
+										left: `calc(50% - ${(sliderHandleSize || 40) / 2}px)`,
+										top: `calc(${sliderPosition}% - ${(sliderHandleSize || 40) / 2}px)`,
+									}
+								: {
+										top: `calc(50% - ${(sliderHandleSize || 40) / 2}px)`,
+										left: `calc(${sliderPosition}% - ${(sliderHandleSize || 40) / 2}px)`,
+									}),
+							width: `${sliderHandleSize || 40}px`,
+							height: `${sliderHandleSize || 40}px`,
+							borderRadius: '50%',
+							cursor: sliderOrientation === 'vertical' ? 'row-resize' : 'col-resize',
+							zIndex: 20,
+							display: 'flex',
+							justifyContent: 'center',
+							alignItems: 'center',
+							...(sliderHandleType === 'custom' && sliderHandleImage
+								? {
+										backgroundImage: `url(${getSrcUrl(getHref(sliderHandleImage, location)!)})`,
+										backgroundSize: 'contain',
+										backgroundPosition: 'center',
+										backgroundRepeat: 'no-repeat',
+									}
+								: {}),
+						}}
+					>
+						{sliderHandleType === 'default' && (
+							<div
+								style={{
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'center',
+									width: '100%',
+									height: '100%',
+								}}
+							>
+								{sliderOrientation === 'vertical' ? (
+									<span
+										style={{
+											fontSize: `${sliderHandleSize ? sliderHandleSize / 2 : 20}px`,
+										}}
+									>
+										⇅
+									</span>
+								) : (
+									<span
+										style={{
+											fontSize: `${sliderHandleSize ? sliderHandleSize / 2 : 20}px`,
+										}}
+									>
+										⇄
+									</span>
+								)}
+							</div>
+						)}
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="sliderHandle"
+						/>
+					</div>
+				)}
+			</>
+		);
+
+		let tooltip;
+
+		tooltip = tooltipEnabled && tooltipText && hover && (
+			<div
+				className="_tooltip"
+				style={{
+					...resolvedStyles.tooltip,
+					position: 'absolute',
+					...(tooltipPosition === 'top' && {
+						bottom: '100%',
+						left: '50%',
+						transform: 'translateX(-50%)',
+						marginBottom: `${tooltipOffset || 10}px`,
+					}),
+					...(tooltipPosition === 'bottom' && {
+						top: '100%',
+						left: '50%',
+						transform: 'translateX(-50%)',
+						marginTop: `${tooltipOffset || 10}px`,
+					}),
+					...(tooltipPosition === 'left' && {
+						right: '100%',
+						top: '50%',
+						transform: 'translateY(-50%)',
+						marginRight: `${tooltipOffset || 10}px`,
+					}),
+					...(tooltipPosition === 'right' && {
+						left: '100%',
+						top: '50%',
+						transform: 'translateY(-50%)',
+						marginLeft: `${tooltipOffset || 10}px`,
+					}),
+					whiteSpace: 'nowrap',
+					zIndex: 30,
+				}}
+			>
+				{tooltipText}
+				<SubHelperComponent definition={definition} subComponentName="tooltip" />
+			</div>
+		);
+
 		imageTag = (
 			<>
 				{actualImage}
+				{zoomPreview}
+				{magnifier}
+				{comparisonSlider}
+				{tooltip}
 				<SubHelperComponent
 					style={resolvedStyles.image ?? {}}
 					className={onClickEvent ? '_onclicktrue' : ''}
@@ -164,7 +494,16 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	}
 
 	return (
-		<div className="comp compImage" style={resolvedStyles.comp ?? {}}>
+		<div
+			className="comp compImage"
+			style={resolvedStyles.comp ?? {}}
+			ref={containerRef}
+			onMouseMove={handleMouseMove}
+			onMouseEnter={() => setHover(true)}
+			onMouseLeave={() => setHover(false)}
+			onMouseDown={handleMouseDown}
+			onMouseUp={handleMouseUp}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			{imageTag}
 		</div>
@@ -222,7 +561,38 @@ const component: Component = {
 			description: 'Image',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'zoomPreview',
+			displayName: 'Zoom Preview',
+			description: 'Zoom Preview Window',
+			icon: 'fa-solid fa-magnifying-glass-plus',
+		},
+		{
+			name: 'magnifier',
+			displayName: 'Magnifier',
+			description: 'Magnification Lens',
+			icon: 'fa-solid fa-circle',
+		},
+		{
+			name: 'sliderHandle',
+			displayName: 'Slider Handle',
+			description: 'Image Comparison Slider Handle',
+			icon: 'fa-solid fa-arrows-left-right',
+		},
+		{
+			name: 'sliderLine',
+			displayName: 'Slider Line',
+			description: 'Image Comparison Slider Line',
+			icon: 'fa-solid fa-grip-lines-vertical',
+		},
+		{
+			name: 'tooltip',
+			displayName: 'Tooltip',
+			description: 'Image Tooltip',
+			icon: 'fa-solid fa-comment',
+		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

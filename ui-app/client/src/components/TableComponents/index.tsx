@@ -7,19 +7,28 @@ import {
 	propertiesDefinition as tablePropertiesDefinintion,
 	stylePropertiesDefinition as tableStylePropertiesDefinition,
 } from './Table/tableProperties';
-import { styleDefaults as tableStyleDefaults } from './Table/tableStyleProperties';
+import {
+	styleDefaults as tableStyleDefaults,
+	stylePropertiesForTheme as tableStylePropertiesForTheme,
+} from './Table/tableStyleProperties';
 import TableColumnStyle from './TableColumn/TableColumnStyle';
 import {
 	propertiesDefinition as tableColumnPropertiesDefinintion,
 	stylePropertiesDefinition as tableColumnStylePropertiesDefinition,
 } from './TableColumn/tableCloumnProperties';
-import { styleDefaults as tableColumnStyleDefaults } from './TableColumn/tableColumnStyleProperties';
+import {
+	styleDefaults as tableColumnStyleDefaults,
+	stylePropertiesForTheme as tableColumnStylePropertiesForTheme,
+} from './TableColumn/tableColumnStyleProperties';
 import TableColumnHeaderStyle from './TableColumnHeader/TableColumnHeaderStyle';
 import {
 	propertiesDefinition as tableColumnHeaderPropertiesDefinintion,
 	stylePropertiesDefinition as tableColumnHeaderStylePropertiesDefinition,
 } from './TableColumnHeader/tableCloumnHeaderProperties';
-import { styleDefaults as tableColumnHeaderStyleDefaults } from './TableColumnHeader/tableColumnHeaderStyleProperties';
+import {
+	styleDefaults as tableColumnHeaderStyleDefaults,
+	stylePropertiesForTheme as tableColumnHeaderStylePropertiesForTheme,
+} from './TableColumnHeader/tableColumnHeaderStyleProperties';
 import TableColumnsStyle from './TableColumns/TableColumnsStyle';
 
 import {
@@ -27,7 +36,10 @@ import {
 	stylePropertiesDefinition as tableColumnsStylePropertiesDefinition,
 } from './TableColumns/tableColumnsProperties';
 
-import { styleDefaults as tableColumnsStyleDefaults } from './TableColumns/tableColumnsStyleProperties';
+import {
+	styleDefaults as tableColumnsStyleDefaults,
+	stylePropertiesForTheme as tableColumnsStylePropertiesForTheme,
+} from './TableColumns/tableColumnsStyleProperties';
 import {
 	propertiesDefinition as tableDynamicColumnPropertiesDefinition,
 	stylePropertiesDefinition as tableDynamicColumnStylePropertiesDefinition,
@@ -38,7 +50,10 @@ import {
 	stylePropertiesDefinition as tableEmptyGridStylePropertiesDefinition,
 } from './TableEmptyGrid/tableEmptyGridProperties';
 
-import { styleDefaults as tableEmptyGridStyleDefaults } from './TableEmptyGrid/tableEmptyGridStyleProperties';
+import {
+	styleDefaults as tableEmptyGridStyleDefaults,
+	styleProperties as tableEmptyGridStyleProperties,
+} from './TableEmptyGrid/tableEmptyGridStyleProperties';
 import TableGridStyle from './TableGrid/TableGridStyle';
 
 import {
@@ -46,7 +61,10 @@ import {
 	stylePropertiesDefinition as tableGridStylePropertiesDefinition,
 } from './TableGrid/tableGridProperties';
 
-import { styleDefaults as tableGridStyleDefaults } from './TableGrid/tableGridStyleProperties';
+import {
+	styleDefaults as tableGridStyleDefaults,
+	styleProperties as tableGridStyleProperties,
+} from './TableGrid/tableGridStyleProperties';
 import TablePreviewGridStyle from './TablePreviewGrid/TablePreviewGridStyle';
 
 import {
@@ -54,7 +72,11 @@ import {
 	stylePropertiesDefinition as tablePreviewGridStylePropertiesDefinition,
 } from './TablePreviewGrid/tablePreviewGridProperties';
 
-import { styleDefaults as tablePreviewGridStyleDefaults } from './TablePreviewGrid/tablePreviewGridStyleProperties';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import {
+	styleDefaults as tablePreviewGridStyleDefaults,
+	styleProperties as tablePreviewGridStyleProperties,
+} from './TablePreviewGrid/tablePreviewGridStyleProperties';
 
 const LazyTableComponent = React.lazy(
 	() => import(/* webpackChunkName: "Table" */ './Table/Table'),
@@ -67,6 +89,12 @@ function LoadLazyTableComponent(props: Readonly<ComponentProps>) {
 		</React.Suspense>
 	);
 }
+
+const { tableDesign, colorScheme } = findPropertyDefinitions(
+	tablePropertiesDefinintion,
+	'tableDesign',
+	'colorScheme',
+);
 
 export const Table: Component = {
 	name: 'Table',
@@ -255,6 +283,9 @@ export const Table: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	externalStylePropsForThemeJson: true,
+	stylePropertiesForTheme: tableStylePropertiesForTheme,
+	propertiesForTheme: [tableDesign, colorScheme],
 };
 
 const LazyTableColumnComponent = React.lazy(
@@ -392,7 +423,22 @@ export const TableColumn: Component = {
 			description: 'Header',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'tooltipContainer',
+			displayName: 'Tooltip Container',
+			description: 'Tooltip Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'tooltipTriangle',
+			displayName: 'Tooltip Triangle',
+			description: 'Tooltip Triangle',
+			icon: 'fa-solid fa-box',
+		},
 	],
+	stylePropertiesForTheme: tableColumnStylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
+	propertiesForTheme: [tableDesign, colorScheme],
 };
 
 const LazyTableColumnHeaderComponent = React.lazy(
@@ -425,7 +471,67 @@ export const TableColumnHeader: Component = {
 			displayName: 'Component',
 			description: 'Component',
 			mainComponent: true,
-			icon: 'fa-solid fa-diagram-next',
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					<rect
+						x="2"
+						y="5"
+						width="9"
+						height="14"
+						rx="2"
+						fill="currentColor"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="1.00195"
+						y="1.84766"
+						width="21.9967"
+						height="3.38411"
+						rx="1"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.00195"
+						y="10.3076"
+						width="21.9967"
+						height="3.38411"
+						rx="0.4"
+						fill="currentColor"
+					/>
+					<rect
+						x="1.00195"
+						y="18.769"
+						width="21.9967"
+						height="3.38411"
+						rx="1"
+						fill="currentColor"
+					/>
+					<rect
+						x="4.38672"
+						y="3.53955"
+						width="16.9205"
+						height="3.38411"
+						transform="rotate(90 4.38672 3.53955)"
+						fill="currentColor"
+					/>
+					<rect
+						x="13.8594"
+						y="3.53955"
+						width="18.6126"
+						height="3.38411"
+						transform="rotate(90 13.8594 3.53955)"
+						fill="currentColor"
+					/>
+					<rect
+						x="23"
+						y="3.53955"
+						width="16.9205"
+						height="3.38411"
+						transform="rotate(90 23 3.53955)"
+						fill="currentColor"
+					/>
+				</IconHelper>
+			),
 		},
 		{
 			name: 'header',
@@ -434,6 +540,10 @@ export const TableColumnHeader: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+
+	propertiesForTheme: [tableDesign, colorScheme],
+	stylePropertiesForTheme: tableColumnHeaderStylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 const LazyTableColumnsComponent = React.lazy(
@@ -540,6 +650,9 @@ export const TableColumns: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [tableDesign, colorScheme],
+	stylePropertiesForTheme: tableColumnsStylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export const TableDynamicColumn: Component = {
@@ -665,6 +778,7 @@ export const TableDynamicColumn: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: [],
 };
 
 const LazyTableEmptyGridComponent = React.lazy(
@@ -763,6 +877,8 @@ export const TableEmptyGrid: Component = {
 			),
 		},
 	],
+	stylePropertiesForTheme: tableEmptyGridStyleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 const LazyTableGridComponent = React.lazy(
@@ -856,6 +972,8 @@ export const TableGrid: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: tableGridStyleProperties,
+	externalStylePropsForThemeJson: true,
 };
 
 const LazyTablePreviewGridComponent = React.lazy(
@@ -870,7 +988,7 @@ function LoadLazyTablePreviewGridComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
-export const TablePreviewGrid = {
+export const TablePreviewGrid: Component = {
 	name: 'TablePreviewGrid',
 	displayName: 'Table Preview Grid',
 	description: 'Table Preview Grid component',
@@ -954,4 +1072,6 @@ export const TablePreviewGrid = {
 			),
 		},
 	],
+	stylePropertiesForTheme: tablePreviewGridStyleProperties,
+	externalStylePropsForThemeJson: true,
 };

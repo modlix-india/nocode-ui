@@ -14,15 +14,13 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
-		name: 'designType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Design Type',
-		defaultValue: 'button',
+		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			{ name: 'button', displayName: 'Button to open browser' },
-			{ name: 'browser', displayName: 'Full broswer' },
+			{ name: 'browser', displayName: 'Full browser' },
+			{ name: 'fileUploadWithProgressBar', displayName: 'File Upload With Progress Bar' },
 		],
-		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'button',
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
 	{
@@ -204,6 +202,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.onSelect,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	{
+		name: 'allowMultipleSelection',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Allow Multiple Selection',
+		description: 'Allow multiple files to be selected and if there is an edit option',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

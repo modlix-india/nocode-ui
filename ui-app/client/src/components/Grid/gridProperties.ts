@@ -1,9 +1,4 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_DATA_LOCATION,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
+import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -128,8 +123,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		enumValues: [
 			{ name: '_STRAIGHT', displayName: 'Straight', description: 'Straight' },
+			{ name: '_SLIGHTROUND', displayName: 'Slight Round', description: 'Slight Round' },
 			{ name: '_ROUND', displayName: 'Round', description: 'Round' },
-			{ name: '_VERYROUND', displayName: 'VeryRound', description: 'VeryRound' },
+			{ name: '_EXTRAROUND', displayName: 'Extra Round', description: 'Extra Round' },
+			{ name: '_VERYROUND', displayName: 'Very Round', description: 'Very Round' },
+			{ name: '_FULLROUND', displayName: 'Full Round', description: 'Full Round' },
 		],
 	},
 	{
@@ -144,6 +142,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: '_LIGHT', displayName: 'Light', description: 'Light' },
 			{ name: '_MEDIUM', displayName: 'Medium', description: 'Medium' },
 			{ name: '_HEAVY', displayName: 'Heavy', description: 'Heavy' },
+			{ name: '_EXTREME', displayName: 'Extreme', description: 'Extreme' },
+			{ name: '_ULTRA', displayName: 'Ultra', description: 'Ultra' },
+			{ name: '_MAXIMUM', displayName: 'Maximum', description: 'Maximum' },
 		],
 	},
 	{
@@ -184,6 +185,47 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: '_LIGHTHIGH',
 				displayName: 'LightHigh',
 				description: 'High shadow for light shadow',
+			},
+		],
+	},
+	{
+		name: 'padding',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Padding Type',
+		description: 'Padding Type',
+		defaultValue: '_NONE',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{ name: '_NONE', displayName: 'None', description: 'None' },
+			{
+				name: '_PADDINGONE',
+				displayName: 'Padding Design One',
+				description: 'Padding Design One',
+			},
+			{
+				name: '_PADDINGTWO',
+				displayName: 'Padding Design Two',
+				description: 'Padding Design Two',
+			},
+			{
+				name: '_PADDINGTHREE',
+				displayName: 'Padding Design Three',
+				description: 'Padding Design Three',
+			},
+			{
+				name: '_PADDINGFOUR',
+				displayName: 'Padding Design Four',
+				description: 'Padding Design Four',
+			},
+			{
+				name: '_PADDINGFIVE',
+				displayName: 'Padding Design Five',
+				description: 'Padding Design Five',
+			},
+			{
+				name: '_PADDINGSIX',
+				displayName: 'Padding Design Six',
+				description: 'Padding Design Six',
 			},
 		],
 	},

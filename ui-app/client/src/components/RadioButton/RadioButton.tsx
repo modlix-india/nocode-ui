@@ -18,8 +18,13 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './radioButtonProperties';
 import RadioButtonStyle from './RadioButtonStyle';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleDefaults } from './RadioButtonStyleProperties';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+} from './RadioButtonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function RadioButton(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -134,8 +139,9 @@ function RadioButton(props: Readonly<ComponentProps>) {
 				context?.pageName,
 			);
 		} else {
-			const index = (selected ?? []).findIndex((e: any) => deepEqual(e, each.value));
-			const newValue = [...(selected ?? [])];
+			const currentSelected = Array.isArray(selected) ? selected : [];
+			const index = currentSelected.findIndex((e: any) => deepEqual(e, each.value));
+			const newValue = [...currentSelected];
 			if (index === -1) newValue.push(each.value);
 			else newValue.splice(index, 1);
 			setData(bindingPathPath, newValue, context?.pageName);
@@ -167,7 +173,7 @@ function RadioButton(props: Readonly<ComponentProps>) {
 				<label
 					className={`radioLabel ${
 						orientation === 'VERTICAL' ? 'vertical' : 'horizontal'
-					} ${readOnly ? '_disabled' : ''}`}
+					} ${readOnly ? '_disabled' : ''} ${getIsSelected(e.key) ? '_selected' : ''}`}
 					key={e.key}
 					htmlFor={e.key}
 					onMouseEnter={
@@ -223,6 +229,12 @@ function RadioButton(props: Readonly<ComponentProps>) {
 		</div>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	name: 'RadioButton',
@@ -300,6 +312,8 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	propertiesForTheme: [designType, colorScheme],
 };
 
 export default component;

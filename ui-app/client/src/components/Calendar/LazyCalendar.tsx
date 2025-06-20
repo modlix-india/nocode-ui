@@ -266,17 +266,19 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 				: e?.target?.value
 			).toString() ?? '';
 
+		let validatedAndSet = false;
+		let shouldCloseDropdown = false;
+
 		if (value.trim() === '') {
 			if (!thisDate) return;
-			const validatedAndSet = validateRangesAndSetData(
+			validatedAndSet = validateRangesAndSetData(
 				currentBindingPath,
 				undefined,
 				context.pageName,
 				validationProps,
 			);
-			if (!validatedAndSet && close) {
-				setShowDropdown(false);
-				return;
+			if (validatedAndSet && close) {
+				shouldCloseDropdown = true;
 			}
 		} else {
 			if (isMultiSelect || bindingPathPath2) {
@@ -289,8 +291,6 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 					setThisDate(value);
 					return;
 				}
-
-				let validatedAndSet = false;
 				if (isMultiSelect) {
 					validatedAndSet = validateRangesAndSetData(
 						currentBindingPath,
@@ -353,8 +353,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 				}
 
 				if (validatedAndSet && close) {
-					setShowDropdown(false);
-					return;
+					shouldCloseDropdown = true;
 				}
 			} else {
 				const date = toFormat(value, displayDateFormat, storageFormat ?? displayDateFormat);
@@ -363,7 +362,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 					return;
 				}
 
-				const validatedAndSet = validateRangesAndSetData(
+				validatedAndSet = validateRangesAndSetData(
 					currentBindingPath,
 					date,
 					context.pageName,
@@ -371,21 +370,25 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 				);
 
 				if (validatedAndSet && close) {
-					setShowDropdown(false);
-					return;
+					shouldCloseDropdown = true;
 				}
 			}
 		}
 
-		if (!changeEvent) return;
-		(async () =>
-			await runEvent(
-				changeEvent,
-				key,
-				context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
+		if (validatedAndSet && changeEvent) {
+			(async () =>
+				await runEvent(
+					changeEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		}
+		if (shouldCloseDropdown) {
+			setShowDropdown(false);
+			setFocus(false);
+		}
 	};
 
 	const handleBlur = (e: FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -488,7 +491,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	if (componentDesignType === 'fullCalendar') {
 		return (
 			<div
-				className={`comp compCalendar fullCalendar ${calendarDesignType} ${colorScheme} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
+				className={`comp compCalendar fullCalendar ${calendarDesignType} ${designType} ${colorScheme} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
 				style={computedStyles?.comp ?? {}}
 			>
 				<HelperComponent context={context} definition={definition} />

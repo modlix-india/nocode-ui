@@ -5,220 +5,57 @@ import {
 	processStyleDefinition,
 	processStyleValueWithFunction,
 } from '../../../util/styleProcessor';
-import { lazyStylePropertyLoadFunction } from '../../util/lazyStylePropertyUtil';
-import { styleDefaults } from './tableColumnsStyleProperties';
+import {
+	findPropertyDefinitions,
+	lazyStylePropertyLoadFunction,
+} from '../../util/lazyStylePropertyUtil';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+} from './tableColumnsStyleProperties';
+import { propertiesDefinition } from '../Table/tableProperties';
 
 const PREFIX = '.comp.compTableColumns';
 const NAME = 'TableColumns';
 export default function TableColumnsStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		globalThis.styleProperties[NAME] ?? [],
-	);
+	const [_, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
-		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+		const { tableDesign, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'tableDesign',
+			'colorScheme',
+		);
+		const fn = lazyStylePropertyLoadFunction(
+			NAME,
+			(props, originalStyleProps) => {
+				styleProperties.splice(0, 0, ...props);
+				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+				setReRender(Date.now());
+			},
+			styleDefaults,
+			[tableDesign, colorScheme],
+		);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
 
 		return () => usedComponents.deRegister(NAME);
-	}, []);
+	}, [setReRender]);
 
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const css =
 		`${PREFIX} {flex-direction: column; flex: 1; border-spacing: 0; width: 100%; position: relative; }
-
-		.comp.compTable._design1 ._row { height: ${processStyleValueWithFunction(
-			values.get('design1RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design1RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design2 ._row { height: ${processStyleValueWithFunction(
-			values.get('design2RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design2RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design3 ._row { height: ${processStyleValueWithFunction(
-			values.get('design3RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design3RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design4 ._row { height: ${processStyleValueWithFunction(
-			values.get('design4RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design4RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design5 ._row { height: ${processStyleValueWithFunction(
-			values.get('design5RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design5RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design6 ._row { height: ${processStyleValueWithFunction(
-			values.get('design6RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design6RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design7 ._row { height: ${processStyleValueWithFunction(
-			values.get('design7RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design7RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design8 ._row { height: ${processStyleValueWithFunction(
-			values.get('design8RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design8RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design9 ._row { height: ${processStyleValueWithFunction(
-			values.get('design9RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design9RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design10 ._row { height: ${processStyleValueWithFunction(
-			values.get('design10RowHeight'),
-			values,
-		)};
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design10RowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design1 ._row:nth-child(even) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design1EvenRowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design2 ._row:nth-child(even) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design1EvenRowBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design3 ._row:nth-child(3n+1) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design3SecondBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design7 ._row:nth-child(3n+1) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design7SecondBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design3 ._row:nth-child(3n+2) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design3ThridBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design7 ._row:nth-child(3n+2) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design7ThridBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design5 .comp.compTableColumn:nth-child(odd) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design5EvenColumnBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design6 .comp.compTableColumn:nth-child(odd) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design6EvenColumnBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design10 .comp.compTableColumn:nth-child(odd) {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design10EvenColumnBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design5 .comp.compTableColumn {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design5ColumnBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design6 .comp.compTableColumn {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design6ColumnBackgroundColor'),
-				values,
-			)};
-		}
-
-		.comp.compTable._design10 .comp.compTableColumn {
-			background-color:  ${processStyleValueWithFunction(
-				values.get('design10ColumnBackgroundColor'),
-				values,
-			)};
-		}
 
 		.comp.compTable ._row:first-child .comp.compTableHeaderColumn,
 		.comp.compTable ._row:first-child .comp.compTableColumn {

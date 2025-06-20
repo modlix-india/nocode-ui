@@ -2,32 +2,50 @@ import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
 import { StylePropertyDefinition } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
-import { styleDefaults } from './dropdownStyleProperties';
+import {
+	findPropertyDefinitions,
+	lazyStylePropertyLoadFunction,
+} from '../util/lazyStylePropertyUtil';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
+import { propertiesDefinition } from './dropdownProperties';
 
 const PREFIX = '.comp.compDropdown';
 const NAME = 'Dropdown';
 export default function DropdownStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		globalThis.styleProperties[NAME] ?? [],
-	);
+	const [_, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
-		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+		const { designType, colorScheme } = findPropertyDefinitions(
+			propertiesDefinition,
+			'designType',
+			'colorScheme',
+		);
+		const fn = lazyStylePropertyLoadFunction(
+			NAME,
+			(props, originalStyleProps) => {
+				styleProperties.splice(0, 0, ...props);
+				if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+				setReRender(Date.now());
+			},
+			styleDefaults,
+			[designType, colorScheme],
+		);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
 
 		return () => usedComponents.deRegister(NAME);
-	}, []);
+	}, [setReRender]);
+
 	const css =
 		`
         ${PREFIX} {

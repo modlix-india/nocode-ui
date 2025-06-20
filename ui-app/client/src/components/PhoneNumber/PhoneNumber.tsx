@@ -19,10 +19,15 @@ import { flattenUUID } from '../util/uuid';
 import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
 import CommonInputText from '../../commonComponents/CommonInputText';
-import { styleDefaults } from './phoneNumberStyleProperties';
+import {
+	styleProperties,
+	styleDefaults,
+	stylePropertiesForTheme,
+} from './phoneNumberStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { Dropdown, DropdownOption, DropdownOptions } from './components/Dropdown';
 import { COUNTRY_LIST } from './components/listOfCountries';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 interface mapType {
 	[key: string]: any;
@@ -43,7 +48,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	const isFirstRender = useRef(true);
 
 	const {
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 		definition,
 		pageDefinition: { translations },
 		locationHistory,
@@ -84,6 +89,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			clearSearchTextOnClose,
 			noCodeForFirstCountry,
 			showMandatoryAsterisk,
+			storeDialCodeWithNumber,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -103,6 +109,10 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 	const bindingPathPath2 = bindingPath2
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
+
+	const bindingPathPath3 = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
 		: undefined;
 
 	React.useEffect(() => {
@@ -129,7 +139,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 					return;
 				}
 				setCountryCode(value);
-				// Find and set the country based on country code
 				const country = SORTED_COUNTRY_LIST.find(c => c.C === value);
 				if (country) {
 					setSelected(country);
@@ -377,18 +386,26 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			tempList = duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
 				topCountries.includes(e.C),
 			);
-			tempList[tempList.length - 1].nextSeperator = true;
+
+			if (tempList.length > 0) {
+				tempList[tempList.length - 1].nextSeperator = true;
+			}
+
 			tempList = [
 				...tempList,
-				...duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
-					countries.includes(e.C),
+				...duplicate(SORTED_COUNTRY_LIST).filter(
+					(e: DropdownOption) => countries.includes(e.C) && !topCountries.includes(e.C),
 				),
 			];
 		} else if (Array.isArray(topCountries)) {
 			tempList = duplicate(SORTED_COUNTRY_LIST).filter((e: DropdownOption) =>
 				topCountries.includes(e.C),
 			);
-			tempList[tempList.length - 1].nextSeperator = true;
+
+			if (tempList.length > 0) {
+				tempList[tempList.length - 1].nextSeperator = true;
+			}
+
 			tempList = [
 				...tempList,
 				...duplicate(SORTED_COUNTRY_LIST).filter(
@@ -404,11 +421,25 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		}
 		setCountryList(tempList);
 
-		if (isFirstRender.current && tempList.length > 0) {
-			setSelected(tempList[0]);
-			lastSelectedCountry.current = tempList[0];
-			if (bindingPathPath2) {
-				setData(bindingPathPath2, tempList[0].C, context?.pageName);
+		if ((isFirstRender.current || !selected) && tempList.length > 0) {
+			let defaultCountry;
+
+			if (tempList.length === 1) {
+				defaultCountry = tempList[0];
+			} else if (Array.isArray(topCountries) && topCountries.length > 0) {
+				defaultCountry = tempList.find(
+					(country: DropdownOption) => country.C === topCountries[0],
+				);
+			} else {
+				defaultCountry = tempList[0];
+			}
+
+			if (defaultCountry) {
+				setSelected(defaultCountry);
+				lastSelectedCountry.current = defaultCountry;
+				if (bindingPathPath2) {
+					setData(bindingPathPath2, defaultCountry.C, context?.pageName);
+				}
 			}
 			isFirstRender.current = false;
 		}
@@ -479,14 +510,15 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 				format && text !== phone
 					? dc + (storeFormatted ? seperator + getFormattedNumber(phone, dc) : phone)
 					: dc + phone;
-			bindingPathPath && setData(bindingPathPath, temp, context?.pageName);
+			bindingPathPath &&
+				setData(bindingPathPath, storeDialCodeWithNumber ? temp : phone, context?.pageName);
 			callChangeEvent();
 		} else if (!updateStoreImmediately) {
 			let temp = format
 				? selected.D +
 					(storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
 				: selected.D + text;
-			updateBindingPathData(temp);
+			updateBindingPathData(storeDialCodeWithNumber ? temp : text);
 		}
 		callBlurEvent();
 		setFocus(false);
@@ -512,7 +544,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			let temp = format
 				? selected.D + (storeFormatted ? seperator + formattedText : text)
 				: selected.D + text;
-			updateBindingPathData(temp);
+			updateBindingPathData(storeDialCodeWithNumber ? temp : text);
 		} else if (!text.startsWith('+') && !updateStoreImmediately) {
 			let temp = format ? formattedText : text;
 			setPhoneNumber(temp);
@@ -532,12 +564,19 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 					? seperator + getFormattedNumber(phoneNumber, v.D)
 					: phoneNumber
 				: phoneNumber;
-			const newValue = phoneNumber ? v.D + formattedPhone : '';
+			const newValue = phoneNumber
+				? (storeDialCodeWithNumber ? v.D : '') + formattedPhone
+				: '';
 			setData(bindingPathPath, newValue, context?.pageName);
 		}
 
 		if (bindingPathPath2) {
 			setData(bindingPathPath2, v.C, context?.pageName);
+			callChangeEvent();
+		}
+
+		if (bindingPathPath3) {
+			setData(bindingPathPath3, v.D, context?.pageName);
 			callChangeEvent();
 		}
 	};
@@ -604,6 +643,12 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 16,
 	name: 'PhoneNumber',
@@ -619,6 +664,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Phone Number Binding' },
 		bindingPath2: { name: 'Country Code Binding' },
+		bindingPath3: { name: 'Dail Code Binding' },
 	},
 	defaultTemplate: {
 		key: '',
@@ -743,6 +789,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

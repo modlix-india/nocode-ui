@@ -14,9 +14,10 @@ import { getHref } from '../util/getHref';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
-import { styleDefaults } from './buttonStyleProperties';
+import { styleDefaults, stylePropertiesForTheme } from './buttonStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function ButtonComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -118,7 +119,9 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	let rightIconTag = undefined;
 
 	if (rightImage) {
-		rightIconTag = (
+		rightIconTag = isLoading ? (
+			<i className="fa fa-circle-notch fa-spin _rightButtonIcon _icon"></i>
+		) : (
 			<img
 				src={getSrcUrl(hover && activeRightImage ? activeRightImage : rightImage)}
 				alt="right"
@@ -134,7 +137,13 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		rightIconTag = (
 			<i
 				style={styleProperties.rightIcon ?? {}}
-				className={`_rightButtonIcon _icon ${rightIcon ?? 'fa fa-circle-notch hide'}`}
+				className={`_rightButtonIcon _icon ${
+					rightIcon
+						? !isLoading
+							? rightIcon
+							: 'fa fa-circle-notch fa-spin'
+						: 'fa fa-circle-notch hide'
+				}`}
 			>
 				<SubHelperComponent
 					definition={props.definition}
@@ -148,7 +157,9 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 
 	let leftIconTag = undefined;
 	if (leftImage) {
-		leftIconTag = (
+		leftIconTag = isLoading ? (
+			<i className="fa fa-circle-notch fa-spin _leftButtonIcon _icon"></i>
+		) : (
 			<img
 				src={getSrcUrl(hover && activeLeftImage ? activeLeftImage : leftImage)}
 				alt="left"
@@ -401,7 +412,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		<button
 			className={`comp compButton button ${designType} ${colorScheme} ${
 				hasLeftIcon ? '_withLeftIcon' : ''
-			} ${hasRightIconClass ? '_withRightIcon' : ''}`}
+			} ${hasRightIcon ? '_withRightIcon' : ''}`}
 			disabled={isLoading || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
@@ -424,6 +435,12 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		</button>
 	);
 }
+
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
 
 const component: Component = {
 	order: 4,
@@ -511,6 +528,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

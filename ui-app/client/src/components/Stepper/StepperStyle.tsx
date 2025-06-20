@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StylePropertyDefinition } from '../../types/common';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { styleDefaults } from './StepperStyleProperties';
+import { styleProperties, styleDefaults } from './StepperStyleProperties';
 import { usedComponents } from '../../App/usedComponents';
 import { lazyStylePropertyLoadFunction } from '../util/lazyStylePropertyUtil';
 
@@ -10,24 +10,23 @@ const NAME = 'Stepper';
 export default function StepperStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
-	const [styleProperties, setStyleProperties] = useState<Array<StylePropertyDefinition>>(
-		globalThis.styleProperties[NAME] ?? [],
-	);
+	const [_, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleDefaults.size) {
-		globalThis.styleProperties[NAME].filter((e: any) => !!e.dv)?.map(
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME])
+		styleProperties.filter((e: any) => !!e.dv)?.map(
 			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
 		);
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, setStyleProperties, styleDefaults);
+		const fn = lazyStylePropertyLoadFunction(NAME, (props) => { styleProperties.splice(0, 0, ...props); setReRender(Date.now()) }, styleDefaults);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
 
 		return () => usedComponents.deRegister(NAME);
-	}, []);
+	}, [setReRender]);
 
 	const css =
 		`
@@ -152,6 +151,7 @@ export default function StepperStyle({
 		    white-space: nowrap;
 			position: relative;
 		}
+			
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

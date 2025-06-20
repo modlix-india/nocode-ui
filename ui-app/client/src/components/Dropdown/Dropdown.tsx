@@ -1,5 +1,13 @@
 import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import React, { ChangeEvent, UIEvent, useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+	ChangeEvent,
+	UIEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	addListenerAndCallImmediately,
@@ -18,9 +26,10 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
-import { styleDefaults } from './dropdownStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -287,7 +296,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	const getLabel = useCallback(() => {
 		let label = '';
-		if (!selected || (Array.isArray(selected) && !selected.length)) {
+		if (selected == undefined || (Array.isArray(selected) && !selected.length)) {
 			return '';
 		}
 		if (!isMultiSelect) {
@@ -373,6 +382,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			: undefined;
 
 	const [isAtBottom, setIsAtBottom] = useState(false);
+	const sortOrder = useMemo(() => {
+		if (!moveSelectedToTop) return undefined;
+		return Array.isArray(selectedDataKey) ? [...selectedDataKey] : [selectedDataKey];
+	}, [moveSelectedToTop, showDropdown]);
 
 	let dropdownContainer = null;
 	if (showDropdown) {
@@ -381,21 +394,16 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				? searchDropdownData
 				: dropdownData;
 
-		if (moveSelectedToTop && options?.length) {
-			if (Array.isArray(selectedDataKey)) {
-				const newOptions = [];
-				for (const each of options) {
-					if (selectedDataKey.includes(each?.key)) newOptions.unshift(each);
-					else newOptions.push(each);
-				}
-				options = newOptions;
-			} else {
-				options = [...options];
-				const index = options.findIndex(e => e?.key === selectedDataKey);
-				const option = options.splice(index, 1)[0];
-				options.unshift(option);
-			}
+		if (sortOrder && options?.length) {
+			options = [...options].sort((a, b) => {
+				let aIndex = sortOrder.indexOf(a.key);
+				let bIndex = sortOrder.indexOf(b.key);
+				if (aIndex === -1) aIndex = options!.length;
+				if (bIndex === -1) bIndex = options!.length;
+				return aIndex - bIndex;
+			});
 		}
+
 		dropdownContainer = (
 			<div
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
@@ -597,6 +605,12 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
+const { designType, colorScheme } = findPropertyDefinitions(
+	propertiesDefinition,
+	'designType',
+	'colorScheme',
+);
+
 const component: Component = {
 	order: 7,
 	name: 'Dropdown',
@@ -758,6 +772,9 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	propertiesForTheme: [designType, colorScheme],
+	stylePropertiesForTheme: stylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
 };
 
 export default component;

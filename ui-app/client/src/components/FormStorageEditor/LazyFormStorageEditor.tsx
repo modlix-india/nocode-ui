@@ -1,28 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
-	addListenerAndCallImmediately,
+	addListenerAndCallImmediatelyWithChildrenActivity,
+	addListenerWithChildrenActivity,
 	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
-import { FormStorageEditorDefinition } from './components/formCommons';
-import FormComponents from './components/FormComponents';
-import FormEditor from './components/FormEditor';
-import FormPreview from './components/FormPreview';
 import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
+import ObjectTypeEditor from './components/ObjectTypeEditor';
+import { deepEqual } from '@fincity/kirun-js';
+import { runEvent } from '../util/runEvent';
 
 export default function FormStorageEditor(props: Readonly<ComponentProps>) {
-	const [formStorage, setFormStorage] = useState<FormStorageEditorDefinition>({
-		name: 'form',
-		fieldDefinitionMap: {},
-		schema: { type: 'OBJECT', additionalProperties: false },
-		readAuth: 'Authorities.Logged_IN',
-		deleteAuth: 'Authorities.Logged_IN',
-		updateAuth: 'Authorities.Logged_IN',
-	});
 	const {
 		definition,
 		definition: { bindingPath },
@@ -34,7 +27,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly } = {},
+		properties: { readOnly, restrictToSchema, onChange, hideAddFieldButton } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -42,9 +35,10 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
-	const storagePath = bindingPath
-		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
-		: undefined;
+	const bindingPathPath =
+		bindingPath && !readOnly
+			? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+			: undefined;
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -52,63 +46,66 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const resolvedHoverStyles = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ hover: true },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const [schema, setSchema] = useState<any>(undefined);
+
 	useEffect(() => {
-		if (!storagePath) return;
-		addListenerAndCallImmediately(
-			(_, value) => {
-				setFormStorage(
-					value ?? {
-						name: 'form',
-						fieldDefinitionMap: {},
-						schema: { type: 'OBJECT', additionalProperties: false },
-						readAuth: 'Authorities.Logged_IN',
-						deleteAuth: 'Authorities.Logged_IN',
-						updateAuth: 'Authorities.Logged_IN',
-					},
-				);
-			},
+		if (!bindingPathPath) {
+			setSchema(restrictToSchema ?? { type: 'OBJECT' });
+			return;
+		}
+
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			(_, value) =>
+				setSchema((existing: any) => {
+					if (existing && deepEqual(existing, value)) return existing;
+					return value ?? { type: 'OBJECT' };
+				}),
 			pageExtractor,
-			storagePath,
+			bindingPathPath,
 		);
-	}, [storagePath]);
+	}, [bindingPathPath, restrictToSchema]);
+
+	const onChangeOfSchema = useCallback(
+		(schema: any) => {
+			if (!bindingPathPath) return;
+
+			setData(bindingPathPath, schema, pageExtractor.getPageName());
+
+			const clickEvent = onChange
+				? props.pageDefinition.eventFunctions?.[onChange]
+				: undefined;
+
+			if (!clickEvent) return;
+			(async () =>
+				await runEvent(
+					clickEvent,
+					onChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[onChange, bindingPathPath, pageExtractor.getPageName()],
+	);
 
 	return (
-		<div className={`comp compFormStorageEditor`} style={resolvedStyles.comp ?? {}}>
+		<div className="comp compFormStorageEditor" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} context={context} />
-			<div className="_main">
-				<div className="_compSection">
-					<div className="_sectionHeader">
-						<span>Components</span>
-						<p>Edit by dragging any component</p>
-					</div>
-					<FormComponents />
-				</div>
-				<div className="_editorSection">
-					<div className="_sectionHeader">
-						<span>Editor</span>
-						<p>Click on any field to edit</p>
-					</div>
-					<FormEditor
-						formStorage={formStorage}
-						storagePath={storagePath!}
-						pageExtractor={pageExtractor}
-						locationHistory={locationHistory}
-						readOnly={readOnly}
-					/>
-				</div>
-				<div className="_previewSection">
-					<div className="_sectionHeader">
-						<span>Preview</span>
-						<p>You can view a basic form and make edits in the editor</p>
-					</div>
-					<FormPreview
-						fieldDefinitionMap={formStorage.fieldDefinitionMap}
-						formName={formStorage.name}
-						context={context}
-						locationHistory={locationHistory}
-					/>
-				</div>
-			</div>
+			<ObjectTypeEditor
+				restrictToSchema={restrictToSchema}
+				schema={schema}
+				onChange={onChangeOfSchema}
+				readOnly={readOnly}
+				styles={{ regular: resolvedStyles, hover: resolvedHoverStyles }}
+				hideAddFieldButton={hideAddFieldButton}
+				path="Object"
+			/>
 		</div>
 	);
 }

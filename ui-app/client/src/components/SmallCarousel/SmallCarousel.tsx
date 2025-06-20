@@ -24,7 +24,7 @@ import { getRenderData } from '../util/getRenderData';
 import useDefinition from '../util/useDefinition';
 import SmallCarouselStyle from './SmallCarouselStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './smallCarouselProperties';
-import { styleDefaults } from './smallCarouselStyleProperties';
+import { styleProperties, styleDefaults } from './smallCarouselStyleProperties';
 import { flattenUUID } from '../util/uuid';
 import { shortUUID } from '../../util/shortUUID';
 import { updateLocationForChild } from '../util/updateLoactionForChild';
@@ -477,9 +477,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 		<div
 			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${
 				showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
-			} ${
-				showNavigationControlsOnHover ? '_showSlideNavOnHover' : ''
-			} ${slideNavOrientation} ${slideNavPlacement} ${isVertical ? '_vertical' : ''}`}
+			} `}
 			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
 			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
 			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
@@ -796,6 +794,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;
