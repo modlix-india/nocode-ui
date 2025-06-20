@@ -49,7 +49,6 @@ function Icon(props: Readonly<ComponentProps>) {
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 
-	// Add loading state tracking
 	const spinnerPath = onClick
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 				onClick,
@@ -68,7 +67,6 @@ function Icon(props: Readonly<ComponentProps>) {
 		}
 	}, []);
 
-	// Update handleClick to check loading state
 	const handleClick = async (e: React.MouseEvent) => {
 		if (stopPropagation) e.stopPropagation();
 		if (preventDefault) e.preventDefault();

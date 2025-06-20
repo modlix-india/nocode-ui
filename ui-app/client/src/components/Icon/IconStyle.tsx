@@ -66,11 +66,27 @@ export default function IconStyle({
 			--tooltip-offset: 10px;
 		}
 
+		${PREFIX}-container ._tooltip::after {
+			content: '';
+			position: absolute;
+			border-width: 5px;
+			border-style: solid;
+			border-color: transparent;
+		}
+
 		${PREFIX}-container ._tooltip-top {
 			bottom: 100%;
 			left: 50%;
 			transform: translateX(-50%);
 			margin-bottom: var(--tooltip-offset);
+		}
+
+		${PREFIX}-container ._tooltip-top::after {
+			top: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			border-top-color: rgba(0, 0, 0, 0.2);
+			border-bottom: 0;
 		}
 
 		${PREFIX}-container ._tooltip-bottom {
@@ -80,6 +96,14 @@ export default function IconStyle({
 			margin-top: var(--tooltip-offset);
 		}
 
+		${PREFIX}-container ._tooltip-bottom::after {
+			bottom: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			border-bottom-color: rgba(0, 0, 0, 0.2);
+			border-top: 0;
+		}
+
 		${PREFIX}-container ._tooltip-left {
 			right: 100%;
 			top: 50%;
@@ -87,11 +111,27 @@ export default function IconStyle({
 			margin-right: var(--tooltip-offset);
 		}
 
+		${PREFIX}-container ._tooltip-left::after {
+			left: 100%;
+			top: 50%;
+			transform: translateY(-50%);
+			border-left-color: rgba(0, 0, 0, 0.2);
+			border-right: 0;
+		}
+
 		${PREFIX}-container ._tooltip-right {
 			left: 100%;
 			top: 50%;
 			transform: translateY(-50%);
 			margin-left: var(--tooltip-offset);
+		}
+
+		${PREFIX}-container ._tooltip-right::after {
+			right: 100%;
+			top: 50%;
+			transform: translateY(-50%);
+			border-right-color: rgba(0, 0, 0, 0.2);
+			border-left: 0;
 		}
 
 		${PREFIX}-container ._tooltip-center {

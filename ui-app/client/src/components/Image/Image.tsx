@@ -439,32 +439,20 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 		tooltip = tooltipEnabled && tooltipText && hover && (
 			<div
-				className="_tooltip"
+				className={`_tooltip _tooltip-${tooltipPosition || 'bottom'}`}
 				style={{
 					...resolvedStyles.tooltip,
 					position: 'absolute',
 					...(tooltipPosition === 'top' && {
-						bottom: '100%',
-						left: '50%',
-						transform: 'translateX(-50%)',
 						marginBottom: `${tooltipOffset || 10}px`,
 					}),
 					...(tooltipPosition === 'bottom' && {
-						top: '100%',
-						left: '50%',
-						transform: 'translateX(-50%)',
 						marginTop: `${tooltipOffset || 10}px`,
 					}),
 					...(tooltipPosition === 'left' && {
-						right: '100%',
-						top: '50%',
-						transform: 'translateY(-50%)',
 						marginRight: `${tooltipOffset || 10}px`,
 					}),
 					...(tooltipPosition === 'right' && {
-						left: '100%',
-						top: '50%',
-						transform: 'translateY(-50%)',
 						marginLeft: `${tooltipOffset || 10}px`,
 					}),
 					whiteSpace: 'nowrap',
