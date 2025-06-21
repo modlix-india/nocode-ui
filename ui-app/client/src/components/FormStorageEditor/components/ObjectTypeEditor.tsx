@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { EditorProps } from './FSETypes';
+import { EditorProps, getKeysInOrder } from './FSECommons';
 import { duplicate } from '@fincity/kirun-js';
 
 export default function ObjectTypeEditor(props: EditorProps) {
-	const { restrictToSchema, schema, onChange, readOnly, styles } = props;
+	const { restrictToSchema, schema, onChange, readOnly, styles, detailType, path } = props;
 
 	const [hoverOn, setHoverOn] = useState<string | undefined>(undefined);
+	const [editingFields, setEditingFields] = useState<Set<string>>(new Set());
 
 	const addField = (type: 'primitive' | 'object' | 'array') => {
 		const nSchema = duplicate(schema);
@@ -15,25 +16,210 @@ export default function ObjectTypeEditor(props: EditorProps) {
 
 		while (nSchema.properties[propName]) propName = 'field' + count++;
 
+		const keysInOrder = getKeysInOrder(nSchema, detailType);
+		let order = 0;
+		for (const key of keysInOrder) {
+			if (nSchema.properties[key][detailType]?.order) {
+				order = Math.max(order, nSchema?.properties[key]?.[detailType]?.order);
+			}
+		}
+		order++;
+
 		nSchema.properties[propName] =
 			type === 'primitive'
-				? { type: 'STRING' }
+				? {
+						type: ['STRING'],
+						[detailType]: {
+							preferredComponent: detailType === 'details' ? 'TextBox' : 'Text',
+							order,
+						},
+					}
 				: type === 'object'
-					? { type: 'OBJECT' }
-					: { type: 'ARRAY' };
+					? {
+							type: ['OBJECT'],
+							[detailType]: { preferredComponent: 'Grid', order },
+						}
+					: {
+							type: ['ARRAY'],
+							[detailType]: { preferredComponent: 'ArrayRepeater', order },
+						};
+
+		keysInOrder.push(propName);
+
+		for (let i = 0; i < keysInOrder.length; i++) {
+			if (!nSchema.properties[keysInOrder[i]][detailType])
+				nSchema.properties[keysInOrder[i]][detailType] = {};
+
+			nSchema.properties[keysInOrder[i]][detailType].order = i;
+		}
 
 		onChange(nSchema);
 	};
 
-	const objectFields: Array<JSX.Element> = Object.entries(schema.properties ?? {}).map(
-		([key, value]) => {
-			return <div key={key} className="_objectField"></div>;
-		},
-	);
+	const arr = getKeysInOrder(schema, detailType);
 
-	return (
-		<div className="_objectEditor" style={styles.regular.objectTypeEditor ?? {}}>
-			{objectFields}
+	const objectFields: Array<JSX.Element> = [];
+
+	for (let index = 0; index < arr.length; index++) {
+		const key = arr[index];
+
+		let content;
+		if (editingFields.has(key)) {
+			content = (
+				<ObjectFieldEditor
+					objectKey={'' + key}
+					detailType={detailType}
+					schema={schema}
+					onChange={onChange}
+					readOnly={readOnly}
+					styles={styles}
+					path={path}
+					restrictToSchema={restrictToSchema}
+					onKeepOpenEditing={newKey => {
+						setEditingFields(prev =>
+							key == newKey ? prev : new Set([...prev, newKey].filter(e => e != key)),
+						);
+					}}
+				/>
+			);
+		}
+		objectFields.push(
+			<div key={key} className="_objectField" data-editing={`${path}:${key}`}>
+				<div
+					className="_objectFieldHeader"
+					draggable={true}
+					onDragStart={e => {
+						e.dataTransfer.setData('text/plain', `${path}:${key}`);
+						e.dataTransfer.dropEffect = 'move';
+					}}
+					onDragEnter={e => e.preventDefault()}
+					onDragOver={e => e.preventDefault()}
+					onDrop={e => {
+						const data = e.dataTransfer.getData('text/plain');
+						const [srcPath, srcKey] = data.split(':');
+						if (path != srcPath) return;
+						const newArr = [...arr];
+						const srcIndex = newArr.indexOf(srcKey);
+						if (srcIndex == index) return;
+						newArr.splice(srcIndex, 1);
+						newArr.splice(index, 0, srcKey);
+
+						const nSchema = duplicate(schema);
+						for (let i = 0; i < newArr.length; i++) {
+							if (!nSchema.properties[newArr[i]][detailType])
+								nSchema.properties[newArr[i]][detailType] = {};
+							nSchema.properties[newArr[i]][detailType].order = i;
+						}
+						onChange(nSchema);
+					}}
+				>
+					<svg
+						viewBox="0 0 6 14"
+						fill="none"
+						xmlns="http://www.w3.org/2000/svg"
+						className="_dragHandle"
+					>
+						<path d="M2 0H0V2H2V0Z" fill="currentColor" />
+						<path d="M6 0H4V2H6V0Z" fill="currentColor" />
+						<path d="M2 4H0V6H2V4Z" fill="currentColor" />
+						<path d="M6 4H4V6H6V4Z" fill="currentColor" />
+						<path d="M2 8H0V10H2V8Z" fill="currentColor" />
+						<path d="M6 8H4V10H6V8Z" fill="currentColor" />
+						<path d="M2 12H0V14H2V12Z" fill="currentColor" />
+						<path d="M6 12H4V14H6V12Z" fill="currentColor" />
+					</svg>
+					{schema?.properties?.[key]?.[detailType]?.label ??
+						schema?.properties?.[key]?.name ??
+						key}
+					<div className="_objectFieldActions">
+						<div className="_componentName">
+							{schema?.properties?.[key]?.[detailType]?.preferredComponent ?? ''}
+						</div>
+						<button
+							className="_fieldActionButton"
+							onClick={() =>
+								setEditingFields(prev =>
+									prev.has(key)
+										? new Set(Array.from(prev).filter(e => e != key))
+										: new Set([...prev, key]),
+								)
+							}
+						>
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 16 16"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M1 13.7526V15H2.24742C3.25727 15 3.7622 15 4.21622 14.8119C4.67025 14.6239 5.02728 14.2668 5.74135 13.5527L13.8646 5.4295C14.5915 4.70269 14.9548 4.33927 14.995 3.89327C15.0017 3.81953 15.0017 3.74535 14.995 3.67162C14.9548 3.22561 14.5915 2.8622 13.8646 2.13539C13.1378 1.40857 12.7743 1.04516 12.3284 1.00498C12.2546 0.998339 12.1805 0.998339 12.1067 1.00498C11.6607 1.04516 11.2974 1.40857 10.5705 2.13539L2.44724 10.2586C1.73316 10.9727 1.37613 11.3298 1.18806 11.7838C1 12.2378 1 12.7427 1 13.7526Z"
+									stroke="currentColor"
+									strokeWidth="1.3"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+								<path
+									d="M9.23438 3.46875L12.5285 6.76287"
+									stroke="currentColor"
+									strokeWidth="1.3"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+							</svg>
+						</button>
+						<button
+							className="_fieldActionButton"
+							onClick={() => {
+								if (readOnly) return;
+								const nSchema = duplicate(schema);
+								delete nSchema.properties[key];
+								if (restrictToSchema?.properties?.[key]) {
+									nSchema.properties[key] = restrictToSchema.properties[key];
+								}
+								onChange(nSchema);
+							}}
+						>
+							<svg
+								width="14"
+								height="16"
+								viewBox="0 0 14 16"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									d="M13.25 4.06406C10.975 3.71406 8.78751 3.53906 6.42501 3.53906C4.06251 3.53906 3.62501 3.53906 2.40001 3.88906L1 4.06406"
+									stroke="currentColor"
+									strokeWidth="1.3"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+								<path
+									d="M4.32812 3.45L4.50312 2.4C4.59062 1.6125 4.67813 1 6.16563 1H8.44062C9.92812 1 10.0156 1.6125 10.1031 2.4L10.2781 3.45"
+									stroke="currentColor"
+									strokeWidth="1.3"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+								<path
+									d="M11.9359 4.58594L11.4984 12.7234C11.4109 13.9484 11.4109 14.9984 9.39844 14.9984H4.93593C3.01093 14.9984 2.92344 14.0359 2.83594 12.7234L2.39844 4.58594"
+									stroke="currentColor"
+									strokeWidth="1.3"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+							</svg>
+						</button>
+					</div>
+				</div>
+				{content}
+			</div>,
+		);
+	}
+	let addButtons;
+
+	if (!readOnly) {
+		addButtons = (
 			<div className="_objectAddBar" style={styles.regular.objectAddBar ?? {}}>
 				<button
 					className="_propAdd"
@@ -70,8 +256,8 @@ export default function ObjectTypeEditor(props: EditorProps) {
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
 						<path
-							fill-rule="evenodd"
-							clip-rule="evenodd"
+							fillRule="evenodd"
+							clipRule="evenodd"
 							d="M6 2.984V2h-.09c-.313 0-.616.062-.909.185a2.33 2.33 0 0 0-.775.53 2.23 2.23 0 0 0-.493.753v.001a3.542 3.542 0 0 0-.198.83v.002a6.08 6.08 0 0 0-.024.863c.012.29.018.58.018.869 0 .203-.04.393-.117.572v.001a1.504 1.504 0 0 1-.765.787 1.376 1.376 0 0 1-.558.115H2v.984h.09c.195 0 .38.04.556.121l.001.001c.178.078.329.184.455.318l.002.002c.13.13.233.285.307.465l.001.002c.078.18.117.368.117.566 0 .29-.006.58-.018.869-.012.296-.004.585.024.87v.001c.033.283.099.558.197.824v.001c.106.273.271.524.494.753.223.23.482.407.775.53.293.123.596.185.91.185H6v-.984h-.09c-.2 0-.387-.038-.563-.115a1.613 1.613 0 0 1-.457-.32 1.659 1.659 0 0 1-.309-.467c-.074-.18-.11-.37-.11-.573 0-.228.003-.453.011-.672.008-.228.008-.45 0-.665a4.639 4.639 0 0 0-.055-.64 2.682 2.682 0 0 0-.168-.609A2.284 2.284 0 0 0 3.522 8a2.284 2.284 0 0 0 .738-.955c.08-.192.135-.393.168-.602.033-.21.051-.423.055-.64.008-.22.008-.442 0-.666-.008-.224-.012-.45-.012-.678a1.47 1.47 0 0 1 .877-1.354 1.33 1.33 0 0 1 .563-.121H6zm4 10.032V14h.09c.313 0 .616-.062.909-.185.293-.123.552-.3.775-.53.223-.23.388-.48.493-.753v-.001c.1-.266.165-.543.198-.83v-.002c.028-.28.036-.567.024-.863-.012-.29-.018-.58-.018-.869 0-.203.04-.393.117-.572v-.001a1.502 1.502 0 0 1 .765-.787 1.38 1.38 0 0 1 .558-.115H14v-.984h-.09c-.196 0-.381-.04-.557-.121l-.001-.001a1.376 1.376 0 0 1-.455-.318l-.002-.002a1.415 1.415 0 0 1-.307-.465v-.002a1.405 1.405 0 0 1-.118-.566c0-.29.006-.58.018-.869a6.174 6.174 0 0 0-.024-.87v-.001a3.537 3.537 0 0 0-.197-.824v-.001a2.23 2.23 0 0 0-.494-.753 2.331 2.331 0 0 0-.775-.53 2.325 2.325 0 0 0-.91-.185H10v.984h.09c.2 0 .387.038.562.115.174.082.326.188.457.32.127.134.23.29.309.467.074.18.11.37.11.573 0 .228-.003.452-.011.672-.008.228-.008.45 0 .665.004.222.022.435.055.64.033.214.089.416.168.609a2.285 2.285 0 0 0 .738.955 2.285 2.285 0 0 0-.738.955 2.689 2.689 0 0 0-.168.602c-.033.21-.051.423-.055.64a9.15 9.15 0 0 0 0 .666c.008.224.012.45.012.678a1.471 1.471 0 0 1-.877 1.354 1.33 1.33 0 0 1-.563.121H10z"
 						/>
 					</svg>
@@ -92,17 +278,128 @@ export default function ObjectTypeEditor(props: EditorProps) {
 						<path
 							d="M15 5H20V15C20 16.8856 20 17.8284 19.4142 18.4142C18.8284 19 17.8856 19 16 19H15"
 							stroke="currentColor"
-							stroke-width="2"
+							strokeWidth="2"
 						/>
 						<path
 							d="M9 5H6C4.89543 5 4 5.89543 4 7V19H9"
 							stroke="currentColor"
-							stroke-width="2"
+							strokeWidth="2"
 						/>
 					</svg>
 					Array
 				</button>
 			</div>
+		);
+	}
+
+	return (
+		<div className="_objectEditor" style={styles.regular.objectTypeEditor ?? {}}>
+			{objectFields}
+			{addButtons}
+		</div>
+	);
+}
+
+function ObjectFieldEditor(
+	props: EditorProps & {
+		objectKey: string;
+		onKeepOpenEditing: (key: string) => void;
+	},
+) {
+	const {
+		restrictToSchema,
+		schema,
+		onChange,
+		readOnly,
+		styles,
+		detailType,
+		onKeepOpenEditing,
+		objectKey,
+	} = props;
+
+	const [editableKey, setEditableKey] = useState<string>(objectKey);
+
+	console.log(props.path, objectKey, schema);
+
+	let detailLabel: string = Array.isArray(schema.properties[objectKey].type)
+		? schema.properties[objectKey].type[0]
+		: schema.properties[objectKey].type;
+
+	let content;
+
+	if (detailLabel === 'OBJECT') {
+		content = (
+			<ObjectTypeEditor
+				{...props}
+				restrictToSchema={restrictToSchema?.objectKey}
+				schema={schema.properties[objectKey]}
+				path={`${props.path}.${objectKey}`}
+				onChange={(s: any) => {
+					const nSchema = duplicate(schema);
+					delete nSchema.properties[objectKey];
+					nSchema.properties[objectKey] = s;
+					onChange(nSchema);
+				}}
+			/>
+		);
+	}
+
+	detailLabel = detailLabel[0].toUpperCase() + detailLabel.slice(1).toLowerCase();
+
+	return (
+		<div className="_objectFieldContent">
+			<div className="_fieldForm">
+				<label htmlFor={`${objectKey}-name`}>Field Name:</label>
+				<input
+					name={`${objectKey}-name`}
+					type="text"
+					value={editableKey}
+					onKeyDown={e => {
+						if (e.key === 'Enter') {
+							e.currentTarget.blur();
+							return;
+						}
+						if (e.key === 'Escape') {
+							setEditableKey(objectKey);
+							return;
+						}
+						if (!/^[a-zA-Z0-9_]+$/.test(e.key)) {
+							e.preventDefault();
+						}
+					}}
+					onChange={
+						readOnly || restrictToSchema?.properties?.[objectKey]
+							? undefined
+							: e => setEditableKey(e.target.value)
+					}
+					onBlur={
+						readOnly || restrictToSchema?.properties?.[objectKey]
+							? undefined
+							: () => {
+									const nSchema = duplicate(schema);
+									delete nSchema.properties[objectKey];
+									nSchema.properties[editableKey] = schema.properties[objectKey];
+									onChange(nSchema);
+									onKeepOpenEditing(editableKey);
+								}
+					}
+				/>
+				<label htmlFor={`${objectKey}-label`}>Field Label:</label>
+				<input
+					name={`${objectKey}-label`}
+					type="text"
+					value={schema?.properties?.[objectKey]?.[detailType]?.label ?? ''}
+					onChange={e => {
+						const nSchema = duplicate(schema);
+						if (!nSchema.properties[objectKey][detailType])
+							nSchema.properties[objectKey][detailType] = {};
+						nSchema.properties[objectKey][detailType].label = e.target.value;
+						onChange(nSchema);
+					}}
+				/>
+			</div>
+			<label>{detailLabel} :</label>
+			<div className="_fieldContent">{content}</div>
 		</div>
 	);
 }

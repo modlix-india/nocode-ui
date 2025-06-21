@@ -2,6 +2,7 @@
 	display: flex;
 	width: 100%;
 	height: 100%;
+	font-size: 14px;
 }
 
 .comp.compFormStorageEditor ._objectEditor {
@@ -35,4 +36,93 @@
 .comp.compFormStorageEditor ._propAdd svg {
 	width: 20px;
 	height: 20px;
+}
+
+.comp.compFormStorageEditor ._objectField {
+	display: flex;
+	flex-direction: column;	
+}
+
+.comp.compFormStorageEditor ._objectFieldHeader {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+	padding: 5px 20px;	
+	min-height: 40px;
+	border: 1px solid #11338912;
+	border-radius: 5px;	
+}
+
+.comp.compFormStorageEditor ._objectFieldHeader svg._dragHandle {
+	width: 6px;
+	height: 14px;
+	color: #BBBBBB;
+	margin-right: 20px;
+	cursor: grab;
+}
+
+.comp.compFormStorageEditor ._objectFieldActions {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 10px;
+	padding-right: 20px;
+	flex: 1;
+}
+
+.comp.compFormStorageEditor ._objectFieldActions svg {
+	color: #BBBBBB;
+	cursor: pointer;
+}
+
+.comp.compFormStorageEditor ._objectFieldActions svg:hover {
+	color: #1790E9;
+}
+
+.comp.compFormStorageEditor ._objectFieldActions ._componentName {
+	color:#00000066
+}
+
+.comp.compFormStorageEditor ._fieldActionButton {
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.comp.compFormStorageEditor ._objectFieldContent {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0px 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border: 1px solid #11338912;
+	border-top: none;
+	padding: 15px;
+	background-color: #f0f0f0;
+}
+
+.comp.compFormStorageEditor ._fieldForm {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.comp.compFormStorageEditor label {
+	font-size: 13px;
+	padding: 0px 10px;
+}
+
+.comp.compFormStorageEditor input {
+	height: 38px;
+	border-radius: 5px;
+	border: 1px solid #1A2B3B1A;
+	padding: 0px 10px;
+	font-size: 14px;
+}
+
+.comp.compFormStorageEditor ._fieldContent {
+    background: #FFF;
+    padding: 10px;
+    border-radius: 5px;
 }

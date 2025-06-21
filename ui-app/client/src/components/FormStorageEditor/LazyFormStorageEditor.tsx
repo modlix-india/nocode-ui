@@ -27,7 +27,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly, restrictToSchema, onChange, hideAddFieldButton } = {},
+		properties: { readOnly, restrictToSchema, onChange, hideAddFieldButton, detailType } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -71,29 +71,23 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 		);
 	}, [bindingPathPath, restrictToSchema]);
 
-	const onChangeOfSchema = useCallback(
-		(schema: any) => {
-			if (!bindingPathPath) return;
+	const onChangeOfSchema = (schema: any) => {
+		if (!bindingPathPath) return;
 
-			setData(bindingPathPath, schema, pageExtractor.getPageName());
+		setData(bindingPathPath, schema, pageExtractor.getPageName());
 
-			const clickEvent = onChange
-				? props.pageDefinition.eventFunctions?.[onChange]
-				: undefined;
+		const clickEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 
-			if (!clickEvent) return;
-			(async () =>
-				await runEvent(
-					clickEvent,
-					onChange,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				))();
-		},
-		[onChange, bindingPathPath, pageExtractor.getPageName()],
-	);
-
+		if (!clickEvent) return;
+		(async () =>
+			await runEvent(
+				clickEvent,
+				onChange,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	};
 	return (
 		<div className="comp compFormStorageEditor" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} context={context} />
@@ -105,6 +99,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 				styles={{ regular: resolvedStyles, hover: resolvedHoverStyles }}
 				hideAddFieldButton={hideAddFieldButton}
 				path="Object"
+				detailType={detailType}
 			/>
 		</div>
 	);
