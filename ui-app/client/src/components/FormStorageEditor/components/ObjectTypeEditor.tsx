@@ -57,6 +57,25 @@ export default function ObjectTypeEditor(props: EditorProps) {
 					onDragOver={e => e.preventDefault()}
 					onDrop={e => {
 						const data = e.dataTransfer.getData('text/plain');
+						if (data.startsWith('{')) {
+							try {
+								const srcSchema = JSON.parse(data);
+								e.stopPropagation();
+								const nSchema = duplicate(schema);
+								if (!nSchema.properties) nSchema.properties = {};
+								const newKey = srcSchema.name;
+								if (nSchema.properties[newKey]) return;
+								nSchema.properties[newKey] = srcSchema;
+								let newArr = [...arr];
+								newArr.splice(index, 0, newKey);
+								for (let i = 0; i < newArr.length; i++) {
+									if (!nSchema.properties[newArr[i]][detailType])
+										nSchema.properties[newArr[i]][detailType] = {};
+									nSchema.properties[newArr[i]][detailType].order = i;
+								}
+								onChange(nSchema);
+							} catch (e) {}
+						}
 						const [srcPath, srcKey] = data.split(':');
 						if (path != srcPath) return;
 						const newArr = [...arr];
@@ -291,8 +310,27 @@ export default function ObjectTypeEditor(props: EditorProps) {
 		<div
 			className="_eachEditor"
 			style={styles.regular.objectTypeEditor ?? {}}
+			onDragOver={e => e.preventDefault()}
 			onDrop={e => {
-				console.log(e.dataTransfer.getData('text/plain'));
+				const data = e.dataTransfer.getData('text/plain');
+				if (!data.startsWith('{')) return;
+				try {
+					const srcSchema = JSON.parse(data);
+					e.stopPropagation();
+					const nSchema = duplicate(schema);
+					if (!nSchema.properties) nSchema.properties = {};
+					const newKey = srcSchema.name;
+					if (nSchema.properties[newKey]) return;
+					nSchema.properties[newKey] = srcSchema;
+					let newArr = [...arr];
+					newArr.push(newKey);
+					for (let i = 0; i < newArr.length; i++) {
+						if (!nSchema.properties[newArr[i]][detailType])
+							nSchema.properties[newArr[i]][detailType] = {};
+						nSchema.properties[newArr[i]][detailType].order = i;
+					}
+					onChange(nSchema);
+				} catch (e) {}
 			}}
 		>
 			{objectFields}
@@ -598,7 +636,24 @@ function ArrayTypeEditor(props: Readonly<EditorProps>) {
 	}
 
 	return (
-		<div className="_eachEditor">
+		<div
+			className="_eachEditor"
+			style={styles.regular.arrayTypeEditor ?? {}}
+			onDragOver={e => e.preventDefault()}
+			onDrop={e => {
+				const data = e.dataTransfer.getData('text/plain');
+				if (!data.startsWith('{')) return;
+				try {
+					const srcSchema = JSON.parse(data);
+					e.stopPropagation();
+					const nSchema = duplicate(schema);
+					if (isTuple) {
+						nSchema.items.push(srcSchema);
+					} else nSchema.items = srcSchema;
+					onChange(nSchema);
+				} catch (e) {}
+			}}
+		>
 			{tupleSwitch}
 			{arrayFields}
 			{addButtons}
