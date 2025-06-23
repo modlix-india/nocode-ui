@@ -363,6 +363,34 @@ export default function CarouselStyle({
     ${PREFIX} .indicator-button.fill-solid:not(.active) {
         background: #eee;
     }
+
+    ${PREFIX} .indicator-nav-btn {
+        background: none !important;
+        border: none !important;
+        box-shadow: none;
+        color: #444;
+        font-size: 1.2em;
+        padding: 2px 8px;
+        margin: 0 2px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+    ${PREFIX} .indicator-nav-btn:focus {
+        outline: 2px solid #888;
+    }
+    ${PREFIX} .indicator-nav-btn:hover {
+        color: #111;
+        background: none;
+    }
+    ${PREFIX} .indicator-nav-btn:active {
+        color: #000;
+        background: none;
+    }
+    /* Subcomponent helper styling for indicatorContainer, indicatorButton, and indicator-nav-btn is supported via stylePropertiesDefinition. */
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="CarouselCss">{css}</style>;
 }

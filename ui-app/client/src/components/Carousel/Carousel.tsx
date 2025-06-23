@@ -18,25 +18,22 @@ function Carousel(props: Readonly<ComponentProps>) {
 	const {
 		stylePropertiesWithPseudoStates,
 		properties: {
-			showDotsButtons,
 			showArrowButtons,
 			slideSpeed,
 			autoPlay,
 			easing,
 			animationDuration,
 			animationType,
-			dotsButtonType,
-			dotsButtonIconType,
-			hasNumbersInSlideNav,
 			slideNavButtonPosition,
 			arrowButtons,
 			showNavigationControlsOnHover,
-			showIndicators ,
+			showIndicators: _showIndicators,
 			indicatorPosition,
 			indicatorVisibleCount,
 			indicatorShape,
 			indicatorFill,
 			indicatorShowNumbers,
+			showIndicatorArrows: _showIndicatorArrows,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -45,6 +42,16 @@ function Carousel(props: Readonly<ComponentProps>) {
 		locationHistory,
 		pageExtractor,
 	);
+
+	// Backward compatibility: if showIndicators is undefined but showDotsButtons is true, treat as true
+	const showIndicators =
+		typeof _showIndicators === 'boolean'
+			? _showIndicators
+			: (typeof props?.definition?.properties?.showDotsButtons === 'boolean'
+					? props?.definition?.properties?.showDotsButtons
+					: true);
+
+	const showIndicatorArrows = typeof _showIndicatorArrows === 'boolean' ? _showIndicatorArrows : true;
 
 	const ref = useRef<HTMLDivElement>(null);
 	const [childrenDef, setChildrenDef] = useState<any>();
@@ -294,12 +301,13 @@ function Carousel(props: Readonly<ComponentProps>) {
 				className={`carousel-indicators position-${indicatorPosition} indicator-container`}
 				role="tablist"
 				aria-label="Carousel indicators"
+				style={resolvedStyles.indicatorContainer ?? {}}
 			>
 				<SubHelperComponent
 					definition={props?.definition}
 					subComponentName="indicatorContainer"
 				/>
-				{canScrollPrev && (
+				{showIndicatorArrows && canScrollPrev && (
 					<button
 						className="indicator-nav-btn prev"
 						aria-label="Scroll indicators backward"
@@ -310,7 +318,12 @@ function Carousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							setSlideNum(newCurrent);
 						}}
+						style={resolvedStyles.indicatorNavBtn ?? {}}
 					>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtn"
+						/>
 						<i className="fa fa-caret-left" aria-hidden="true" />
 					</button>
 				)}
@@ -338,6 +351,7 @@ function Carousel(props: Readonly<ComponentProps>) {
 									setSlideNum(idx);
 								}
 							}}
+							style={resolvedStyles.indicatorButton ?? {}}
 						>
 							<SubHelperComponent
 								definition={props?.definition}
@@ -348,7 +362,7 @@ function Carousel(props: Readonly<ComponentProps>) {
 						</div>
 					);
 				})}
-				{canScrollNext && (
+				{showIndicatorArrows && canScrollNext && (
 					<button
 						className="indicator-nav-btn next"
 						aria-label="Scroll indicators forward"
@@ -362,7 +376,12 @@ function Carousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							setSlideNum(newCurrent);
 						}}
+						style={resolvedStyles.indicatorNavBtn ?? {}}
 					>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtn"
+						/>
 						<i className="fa fa-caret-right" aria-hidden="true" />
 					</button>
 				)}
@@ -447,33 +466,6 @@ function Carousel(props: Readonly<ComponentProps>) {
 						definition={props.definition}
 						subComponentName="slideButtonsContainer"
 					></SubHelperComponent>
-					{showDotsButtons && !showIndicators &&
-						(childrenDef ?? []).map((e: any, key: any) => (
-							<button
-								key={key}
-								className={` slideNav  ${dotsButtonType !== 'none' && hasNumbersInSlideNav === false
-										? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
-										: ` `
-									}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
-								style={resolvedStyles.dotButtons ?? {}}
-								onClick={() => {
-									if (!isNullValue(transitionFrom)) return;
-									setTransitionFrom(slideNum);
-									setSlideNum(key);
-									setTimeout(
-										() => setTransitionFrom(undefined),
-										animationDuration + 20,
-									);
-								}}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="dotButtons"
-									key={key}
-								></SubHelperComponent>
-								{hasNumbersInSlideNav ? key + 1 : ''}
-							</button>
-						))}
 				</div>
 			</div>
 		</div>
@@ -544,12 +536,6 @@ const component: Component = {
 			name: 'slideButtonsContainer',
 			displayName: 'Slide Buttons Container',
 			description: 'Slide Buttons Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'dotButtons',
-			displayName: 'Dot Buttons',
-			description: 'Dot Buttons',
 			icon: 'fa-solid fa-box',
 		},
 		{

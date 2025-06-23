@@ -447,6 +447,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 				className={`carousel-indicators position-${indicatorPosition} indicator-container`}
 				role="tablist"
 				aria-label="Carousel indicators"
+				style={resolvedStyles.indicatorContainer ?? {}}
 			>
 				<SubHelperComponent
 					definition={props?.definition}
@@ -463,7 +464,12 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							applyTransform(newCurrent);
 						}}
+						style={resolvedStyles.indicatorNavBtn ?? {}}
 					>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtn"
+						/>
 						{isVertical ? (
 							<i className="fa fa-caret-up" aria-hidden="true" />
 						) : (
@@ -495,6 +501,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 									applyTransform(idx);
 								}
 							}}
+							style={resolvedStyles.indicatorButton ?? {}}
 						>
 							<SubHelperComponent
 								definition={props?.definition}
@@ -519,7 +526,12 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							applyTransform(newCurrent);
 						}}
+						style={resolvedStyles.indicatorNavBtn ?? {}}
 					>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtn"
+						/>
 						{isVertical ? (
 							<i className="fa fa-caret-down" aria-hidden="true" />
 						) : (
