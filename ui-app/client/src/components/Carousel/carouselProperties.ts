@@ -12,6 +12,7 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	// BASIC
 	{
 		name: 'showArrowButtons',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -21,176 +22,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
-		name: 'slideSpeed',
-		schema: SCHEMA_NUM_COMP_PROP,
-		displayName: 'Carousel slide speed',
-		description: `Adjust the slide speed by giving the time in milliseconds.`,
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 2000,
-	},
-	{
-		name: 'animationType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Animation Type',
-		description: 'Animation Type',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'fadeover',
-		enumValues: [
-			{ name: 'slide', displayName: 'Slide', description: 'Slide' },
-			{ name: 'slideover', displayName: 'Slide Over', description: 'Slide Over' },
-			{ name: 'fadeover', displayName: 'Fade Over', description: 'Fade Over' },
-			{ name: 'fadeoutin', displayName: 'Fade Out In', description: 'Fade Out In' },
-			{ name: 'crossover', displayName: 'Cross Over', description: 'Cross Over' },
-		],
-	},
-	{
-		name: 'animationDuration',
-		schema: SCHEMA_NUM_COMP_PROP,
-		displayName: 'Animation Duration',
-		description: 'How long the animation should last.',
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 2000,
-	},
-	{
-		name: 'easing',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Easing',
-		description: 'Easing',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'ease',
-		enumValues: [
-			{ name: 'linear', displayName: 'Linear', description: 'Linear' },
-			{ name: 'ease', displayName: 'Ease', description: 'Ease' },
-			{ name: 'ease-in', displayName: 'Ease In', description: 'Ease In' },
-			{ name: 'ease-out', displayName: 'Ease Out', description: 'Ease Out' },
-			{ name: 'ease-in-out', displayName: 'Ease In Out', description: 'Ease In Out' },
-			{ name: 'crossover', displayName: 'Cross Over', description: 'Cross Over' },
-		],
-	},
-	{
-		name: 'autoPlay',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Auto Play',
-		description: 'Play automatically without interaction',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: true,
-	},
-	{
-		name: 'slideNavButtonPosition',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'slideNavButtonType',
-		description: 'Types of Dot buttons',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: 'Bottom',
-		enumValues: [
-			{
-				name: 'Top',
-				displayName: 'top',
-				description: 'slide navigations button positioned on top',
-			},
-			{
-				name: 'Right',
-				displayName: 'right',
-				description: 'slide navigations button positioned on right',
-			},
-			{
-				name: 'Bottom',
-				displayName: 'bottom',
-				description: 'slide navigations button positioned on bottom',
-			},
-			{
-				name: 'Left',
-				displayName: 'left',
-				description: 'slide navigations button positioned on left',
-			},
-			{
-				name: 'OutsideBottom',
-				displayName: 'OutsideBottom',
-				description: 'slide navigations button positioned on outside bottom',
-			},
-			{
-				name: 'OutsideTop',
-				displayName: 'OutsideTop',
-				description: 'slide navigations button positioned on outside Top',
-			},
-		],
-	},
-
-	{
-		name: 'arrowButtons',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'arrowButtons',
-		description: 'Position of arrow buttons',
-		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'Middle',
-		group: ComponentPropertyGroup.ADVANCED,
-		enumValues: [
-			{
-				name: 'Middle',
-				displayName: 'Center',
-				description: 'arrow navigations button positioned on middle',
-			},
-			{
-				name: 'LeftTop',
-				displayName: 'top left',
-				description: 'arrow navigations button positioned on top-Left',
-			},
-			{
-				name: 'RightTop',
-				displayName: 'top right',
-				description: 'arrow navigations button positioned on top-right ',
-			},
-			{
-				name: 'LeftBottom',
-				displayName: 'bottom left',
-				description: 'arrow navigations button positioned on bottom-left',
-			},
-			{
-				name: 'RightBottom',
-				displayName: 'bottom right',
-				description: 'arrow navigations button positioned on  Bottom-right',
-			},
-			{
-				name: 'OutsideBottomLeft',
-				displayName: 'Outside-Bottom-Left',
-				description: 'arrow navigations button positioned on outside-bottom-left',
-			},
-			{
-				name: 'OutsideBottomRight',
-				displayName: 'Outside-Bottom-Right',
-				description: 'arrow navigations button positioned on outside-bottom-right',
-			},
-			{
-				name: 'OutsideTopLeft',
-				displayName: 'Outside-Top-Left',
-				description: 'arrow navigations button positioned on outside-Top-left',
-			},
-			{
-				name: 'OutsideTopRight',
-				displayName: 'Outside-Top-Right',
-				description: 'arrow navigations button positioned on outside-Top-right',
-			},
-		],
-	},
-
-	{
-		name: 'showNavigationControlsOnHover',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show navigation controls on hover',
-		description:
-			'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
-		group: ComponentPropertyGroup.ADVANCED,
-		defaultValue: false,
-	},
-
-	{
 		name: 'showIndicators',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Indicators',
 		description: 'Show indicator buttons for slides',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: true,
+	},
+	{
+		name: 'showIndicatorArrows',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Indicator Arrows',
+		description: 'Show navigation arrows in the indicator bar',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
@@ -254,15 +97,163 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
-		name: 'showIndicatorArrows',
+		name: 'slideSpeed',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Carousel slide speed',
+		description: `Adjust the slide speed by giving the time in milliseconds.`,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 2000,
+	},
+	{
+		name: 'autoPlay',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Show Indicator Arrows',
-		description: 'Show navigation arrows in the indicator bar',
+		displayName: 'Auto Play',
+		description: 'Play automatically without interaction',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},
 
+	// ADVANCED
+	{
+		name: 'animationType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Animation Type',
+		description: 'Animation Type',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'fadeover',
+		enumValues: [
+			{ name: 'slide', displayName: 'Slide', description: 'Slide' },
+			{ name: 'slideover', displayName: 'Slide Over', description: 'Slide Over' },
+			{ name: 'fadeover', displayName: 'Fade Over', description: 'Fade Over' },
+			{ name: 'fadeoutin', displayName: 'Fade Out In', description: 'Fade Out In' },
+			{ name: 'crossover', displayName: 'Cross Over', description: 'Cross Over' },
+		],
+	},
+	{
+		name: 'animationDuration',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Animation Duration',
+		description: 'How long the animation should last.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 2000,
+	},
+	{
+		name: 'easing',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Easing',
+		description: 'Easing',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'ease',
+		enumValues: [
+			{ name: 'linear', displayName: 'Linear', description: 'Linear' },
+			{ name: 'ease', displayName: 'Ease', description: 'Ease' },
+			{ name: 'ease-in', displayName: 'Ease In', description: 'Ease In' },
+			{ name: 'ease-out', displayName: 'Ease Out', description: 'Ease Out' },
+			{ name: 'ease-in-out', displayName: 'Ease In Out', description: 'Ease In Out' },
+			{ name: 'crossover', displayName: 'Cross Over', description: 'Cross Over' },
+		],
+	},
+	{
+		name: 'slideNavButtonPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Slide Nav Button Position',
+		description: 'Position of slide navigation buttons',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'Bottom',
+		enumValues: [
+			{ name: 'Top', displayName: 'Top', description: 'slide navigations button positioned on top' },
+			{ name: 'Right', displayName: 'Right', description: 'slide navigations button positioned on right' },
+			{ name: 'Bottom', displayName: 'Bottom', description: 'slide navigations button positioned on bottom' },
+			{ name: 'Left', displayName: 'Left', description: 'slide navigations button positioned on left' },
+			{ name: 'OutsideBottom', displayName: 'OutsideBottom', description: 'slide navigations button positioned on outside bottom' },
+			{ name: 'OutsideTop', displayName: 'OutsideTop', description: 'slide navigations button positioned on outside Top' },
+		],
+	},
+	{
+		name: 'arrowButtons',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Arrow Buttons',
+		description: 'Position of arrow buttons',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'Middle',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: 'Middle', displayName: 'Center', description: 'arrow navigations button positioned on middle' },
+			{ name: 'LeftTop', displayName: 'top left', description: 'arrow navigations button positioned on top-Left' },
+			{ name: 'RightTop', displayName: 'top right', description: 'arrow navigations button positioned on top-right ' },
+			{ name: 'LeftBottom', displayName: 'bottom left', description: 'arrow navigations button positioned on bottom-left' },
+			{ name: 'RightBottom', displayName: 'bottom right', description: 'arrow navigations button positioned on  Bottom-right' },
+			{ name: 'OutsideBottomLeft', displayName: 'Outside-Bottom-Left', description: 'arrow navigations button positioned on outside-bottom-left' },
+			{ name: 'OutsideBottomRight', displayName: 'Outside-Bottom-Right', description: 'arrow navigations button positioned on outside-bottom-right' },
+			{ name: 'OutsideTopLeft', displayName: 'Outside-Top-Left', description: 'arrow navigations button positioned on outside-Top-left' },
+			{ name: 'OutsideTopRight', displayName: 'Outside-Top-Right', description: 'arrow navigations button positioned on outside-Top-right' },
+		],
+	},
+	{
+		name: 'showNavigationControlsOnHover',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show navigation controls on hover',
+		description: 'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+
+	// DATA
+	{
+		name: 'data',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data',
+		description: 'Data For Repeater',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.datatype,
+		enumValues: [
+			{ name: 'LIST_OF_STRINGS', displayName: 'List of strings', description: 'data has an array of strings' },
+			{ name: 'LIST_OF_OBJECTS', displayName: 'List of objects', description: 'data has an array of objects' },
+		],
+	},
+	{
+		name: 'selectionKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selection Key',
+		description: 'Selection Key',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'uniqueKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Unique Key',
+		description: 'Unique Key',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'selectionType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selection Type',
+		description: 'Selection Type',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'uniqueKeyType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Unique Key Type',
+		description: 'Unique Key Type',
+		group: ComponentPropertyGroup.DATA,
+	},
+
+	// COMMON
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+
+	// DESIGN & COLOR
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 
 const stylePropertiesDefinition = {
