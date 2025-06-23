@@ -191,23 +191,24 @@ export default function SmallCarouselStyle({
         display: flex;
         justify-content: center;
         align-items: center;
-        border: 1px solid #888;
-        color: #888;
+        border: 2px solid #E3E6EA;
+        color: #18398A;
         font-weight: normal;
         cursor: pointer;
         margin: 2px;
         box-sizing: border-box;
         outline: none;
-        background: transparent;
-        transition: background 0.2s, color 0.2s, border 0.2s;
+        background: #fff;
+        transition: background 0.25s, color 0.25s, border 0.25s, box-shadow 0.25s;
+        box-shadow: none;
     }
-        
     ${PREFIX} .indicator-button.active {
-        background: #888;
+        background: #18398A;
         color: #fff;
         font-weight: bold;
-        outline: 2px solid #333;
-        border-color: #888;
+        border-color: #18398A;
+        box-shadow: 0 4px 24px 0 #18398A22;
+        outline: none;
     }
     ${PREFIX} .indicator-button.shape-circle {
         border-radius: 50%;
@@ -227,10 +228,10 @@ export default function SmallCarouselStyle({
         height: 16px;
     }
     ${PREFIX} .indicator-button.fill-outline {
-        background: transparent;
+        background: #fff;
     }
     ${PREFIX} .indicator-button.fill-solid:not(.active) {
-        background: #eee;
+        background: #E3E6EA;
     }
 
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
