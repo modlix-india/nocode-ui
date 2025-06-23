@@ -464,11 +464,15 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							applyTransform(newCurrent);
 						}}
-						style={resolvedStyles.indicatorNavBtn ?? {}}
+						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
 					>
 						<SubHelperComponent
 							definition={props?.definition}
 							subComponentName="indicatorNavBtn"
+						/>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtnActive"
 						/>
 						{isVertical ? (
 							<i className="fa fa-caret-up" aria-hidden="true" />
@@ -501,13 +505,20 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 									applyTransform(idx);
 								}
 							}}
-							style={resolvedStyles.indicatorButton ?? {}}
+							style={isActive ? { ...(resolvedStyles.indicatorButton ?? {}), ...(resolvedStyles.indicatorButtonActive ?? {}) } : resolvedStyles.indicatorButton ?? {}}
 						>
 							<SubHelperComponent
 								definition={props?.definition}
 								subComponentName="indicatorButton"
 								key={idx}
 							/>
+							{isActive && (
+								<SubHelperComponent
+									definition={props?.definition}
+									subComponentName="indicatorButtonActive"
+									key={"active" + idx}
+								/>
+							)}
 							{indicatorShowNumbers ? idx + 1 : indicatorShape === 'dash' ? '' : ''}
 						</div>
 					);
@@ -526,11 +537,15 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							applyTransform(newCurrent);
 						}}
-						style={resolvedStyles.indicatorNavBtn ?? {}}
+						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
 					>
 						<SubHelperComponent
 							definition={props?.definition}
 							subComponentName="indicatorNavBtn"
+						/>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtnActive"
 						/>
 						{isVertical ? (
 							<i className="fa fa-caret-down" aria-hidden="true" />
@@ -846,6 +861,24 @@ const component: Component = {
 			displayName: 'Indicator Button',
 			description: 'Individual indicator button',
 			icon: 'fa-solid fa-circle',
+		},
+		{
+			name: 'indicatorButtonActive',
+			displayName: 'Active Indicator Button',
+			description: 'Active indicator button',
+			icon: 'fa-solid fa-circle-dot',
+		},
+		{
+			name: 'indicatorNavBtn',
+			displayName: 'Indicator Navigation Arrow',
+			description: 'Indicator navigation arrow button',
+			icon: 'fa-solid fa-arrow-right-arrow-left',
+		},
+		{
+			name: 'indicatorNavBtnActive',
+			displayName: 'Active Indicator Navigation Arrow',
+			description: 'Active indicator navigation arrow button',
+			icon: 'fa-solid fa-arrow-right-arrow-left',
 		},
 	],
 	stylePropertiesForTheme: styleProperties,
