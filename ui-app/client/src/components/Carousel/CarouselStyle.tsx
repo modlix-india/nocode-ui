@@ -310,7 +310,59 @@ export default function CarouselStyle({
         left: 100%;
     }
 
-
+    ${PREFIX} .indicator-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+    }
+    ${PREFIX} .indicator-button {
+        width: 16px;
+        height: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #888;
+        color: #888;
+        font-weight: normal;
+        cursor: pointer;
+        margin: 2px;
+        box-sizing: border-box;
+        outline: none;
+        background: transparent;
+        transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+    ${PREFIX} .indicator-button.active {
+        background: #888;
+        color: #fff;
+        font-weight: bold;
+        outline: 2px solid #333;
+        border-color: #888;
+    }
+    ${PREFIX} .indicator-button.shape-circle {
+        border-radius: 50%;
+    }
+    ${PREFIX} .indicator-button.shape-square {
+        border-radius: 4px;
+    }
+    ${PREFIX} .indicator-button.shape-dash {
+        border-radius: 2px;
+        width: 24px;
+        height: 6px;
+    }
+    ${PREFIX} .indicator-button.shape-none {
+        border: none;
+        background: none;
+        width: 24px;
+        height: 16px;
+    }
+    ${PREFIX} .indicator-button.fill-outline {
+        background: transparent;
+    }
+    ${PREFIX} .indicator-button.fill-solid:not(.active) {
+        background: #eee;
+    }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="CarouselCss">{css}</style>;
 }
