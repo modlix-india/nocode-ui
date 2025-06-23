@@ -288,7 +288,13 @@ export default function ObjectTypeEditor(props: EditorProps) {
 	}
 
 	return (
-		<div className="_eachEditor" style={styles.regular.objectTypeEditor ?? {}}>
+		<div
+			className="_eachEditor"
+			style={styles.regular.objectTypeEditor ?? {}}
+			onDrop={e => {
+				console.log(e.dataTransfer.getData('text/plain'));
+			}}
+		>
 			{objectFields}
 			{addButtons}
 		</div>
@@ -665,6 +671,34 @@ function ObjectFieldEditor(
 
 	detailLabel = detailLabel[0].toUpperCase() + detailLabel.slice(1).toLowerCase();
 
+	let mandatoryValidation;
+
+	if (schema.required?.includes(objectKey)) {
+		mandatoryValidation = (
+			<>
+				<label htmlFor={`${objectKey}-required`}>Mandatory Validation Message:</label>
+				<input
+					name={`${objectKey}-required`}
+					type="text"
+					value={
+						schema.properties[objectKey][detailType]?.validationMessages?.mandatory ??
+						''
+					}
+					onChange={e => {
+						const nSchema = duplicate(schema);
+						if (!nSchema.properties[objectKey][detailType])
+							nSchema.properties[objectKey][detailType] = {};
+						if (!nSchema.properties[objectKey][detailType].validationMessages)
+							nSchema.properties[objectKey][detailType].validationMessages = {};
+						nSchema.properties[objectKey][detailType].validationMessages.mandatory =
+							e.target.value;
+						onChange(nSchema);
+					}}
+				/>
+			</>
+		);
+	}
+
 	return (
 		<div className="_fieldContainer">
 			<div className="_fieldForm">
@@ -672,7 +706,7 @@ function ObjectFieldEditor(
 				<input
 					name={`${objectKey}-name`}
 					type="text"
-					value={editableKey}
+					value={editableKey ?? ''}
 					onKeyDown={e => {
 						if (e.key === 'Enter') {
 							e.currentTarget.blur();
@@ -732,6 +766,7 @@ function ObjectFieldEditor(
 						onChange(nSchema);
 					}}
 				/>
+				{mandatoryValidation}
 			</div>
 			<div className="_fieldContent">{content}</div>
 		</div>
@@ -921,7 +956,9 @@ function PrimitiveTypeEditor(props: Readonly<EditorProps>) {
 					PREFERED_COMPONENT_MAP[type as keyof typeof PREFERED_COMPONENT_MAP] ??
 					PREFERED_COMPONENT_MAP['NUMBER']
 				).map(component => (
-					<option value={component}>{component}</option>
+					<option key={component} value={component}>
+						{component}
+					</option>
 				))}
 			</select>
 			{eachTypeEditor}
