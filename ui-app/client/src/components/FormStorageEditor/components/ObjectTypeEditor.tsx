@@ -3,7 +3,16 @@ import { useState } from 'react';
 import { EditorProps, getKeysInOrder } from './FSECommons';
 
 export default function ObjectTypeEditor(props: EditorProps) {
-	const { restrictToSchema, schema, onChange, readOnly, styles, detailType, path } = props;
+	const {
+		restrictToSchema,
+		schema,
+		onChange,
+		readOnly,
+		styles,
+		detailType,
+		path,
+		hideAddFieldButton,
+	} = props;
 
 	const [hoverOn, setHoverOn] = useState<string | undefined>(undefined);
 	const [editingFields, setEditingFields] = useState<Set<string>>(new Set());
@@ -65,21 +74,7 @@ export default function ObjectTypeEditor(props: EditorProps) {
 						onChange(nSchema);
 					}}
 				>
-					<svg
-						viewBox="0 0 6 14"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-						className="_dragHandle"
-					>
-						<path d="M2 0H0V2H2V0Z" fill="currentColor" />
-						<path d="M6 0H4V2H6V0Z" fill="currentColor" />
-						<path d="M2 4H0V6H2V4Z" fill="currentColor" />
-						<path d="M6 4H4V6H6V4Z" fill="currentColor" />
-						<path d="M2 8H0V10H2V8Z" fill="currentColor" />
-						<path d="M6 8H4V10H6V8Z" fill="currentColor" />
-						<path d="M2 12H0V14H2V12Z" fill="currentColor" />
-						<path d="M6 12H4V14H6V12Z" fill="currentColor" />
-					</svg>
+					<DragHandle />
 					{schema?.properties?.[key]?.[detailType]?.label ??
 						schema?.properties?.[key]?.name ??
 						key}
@@ -170,7 +165,7 @@ export default function ObjectTypeEditor(props: EditorProps) {
 	}
 	let addButtons;
 
-	if (!readOnly) {
+	if (!readOnly && !hideAddFieldButton) {
 		const addField = (type: 'primitive' | 'object' | 'array') => {
 			const nSchema = duplicate(schema);
 			if (!nSchema.properties) nSchema.properties = {};
@@ -301,7 +296,16 @@ export default function ObjectTypeEditor(props: EditorProps) {
 }
 
 function ArrayTypeEditor(props: Readonly<EditorProps>) {
-	const { schema, onChange, path, detailType, readOnly, styles, restrictToSchema } = props;
+	const {
+		schema,
+		onChange,
+		path,
+		detailType,
+		readOnly,
+		styles,
+		restrictToSchema,
+		hideAddFieldButton,
+	} = props;
 
 	const [hoverOn, setHoverOn] = useState<string | undefined>();
 
@@ -334,7 +338,7 @@ function ArrayTypeEditor(props: Readonly<EditorProps>) {
 
 	let addButtons;
 
-	if (!readOnly) {
+	if (!readOnly && !hideAddFieldButton) {
 		const addField = (type: 'primitive' | 'object' | 'array') => {
 			const nSchema = duplicate(schema);
 
@@ -494,21 +498,7 @@ function ArrayTypeEditor(props: Readonly<EditorProps>) {
 						onChange(nSchema);
 					}}
 				>
-					<svg
-						viewBox="0 0 6 14"
-						fill="none"
-						xmlns="http://www.w3.org/2000/svg"
-						className="_dragHandle"
-					>
-						<path d="M2 0H0V2H2V0Z" fill="currentColor" />
-						<path d="M6 0H4V2H6V0Z" fill="currentColor" />
-						<path d="M2 4H0V6H2V4Z" fill="currentColor" />
-						<path d="M6 4H4V6H6V4Z" fill="currentColor" />
-						<path d="M2 8H0V10H2V8Z" fill="currentColor" />
-						<path d="M6 8H4V10H6V8Z" fill="currentColor" />
-						<path d="M2 12H0V14H2V12Z" fill="currentColor" />
-						<path d="M6 12H4V14H6V12Z" fill="currentColor" />
-					</svg>
+					<DragHandle />
 					{arr[index]?.[detailType]?.label ?? arr[index]?.name ?? index}
 					<div className="_eachFieldActions">
 						<div className="_componentName">
@@ -662,6 +652,15 @@ function ObjectFieldEditor(
 				onChange={onChangeOfPropSchema}
 			/>
 		);
+	} else {
+		content = (
+			<PrimitiveTypeEditor
+				{...props}
+				schema={schema.properties[objectKey]}
+				path={`${props.path}.${objectKey}`}
+				onChange={onChangeOfPropSchema}
+			/>
+		);
 	}
 
 	detailLabel = detailLabel[0].toUpperCase() + detailLabel.slice(1).toLowerCase();
@@ -734,7 +733,6 @@ function ObjectFieldEditor(
 					}}
 				/>
 			</div>
-			<label>{detailLabel} :</label>
 			<div className="_fieldContent">{content}</div>
 		</div>
 	);
@@ -814,6 +812,15 @@ function ArrayFieldEditor(props: Readonly<EditorProps & { index: number; isTuple
 				onChange={onChangeOfItemSchema}
 			/>
 		);
+	} else {
+		content = (
+			<PrimitiveTypeEditor
+				{...props}
+				schema={currSchema}
+				path={`${props.path}.items${isTuple ? `[${index}]` : ''}`}
+				onChange={onChangeOfItemSchema}
+			/>
+		);
 	}
 
 	return (
@@ -846,5 +853,478 @@ function ArrayFieldEditor(props: Readonly<EditorProps & { index: number; isTuple
 			</div>
 			<div className="_fieldContent">{content}</div>
 		</div>
+	);
+}
+
+const PREFERED_COMPONENT_MAP = {
+	STRING: [
+		'TextBox',
+		'TextArea',
+		'TextEditor',
+		'Calendar',
+		'Dropdown',
+		'FileSelector',
+		'Buttonbar',
+		'PhoneNumber',
+		'RadioButton',
+	],
+	BOOLEAN: ['Checkbox', 'ToggleButton'],
+	NUMBER: ['TextBox', 'RangeSlider'],
+};
+
+function PrimitiveTypeEditor(props: Readonly<EditorProps>) {
+	let eachTypeEditor;
+
+	const type = Array.isArray(props.schema.type) ? props.schema.type[0] : props.schema.type;
+
+	if (type === 'STRING') {
+		eachTypeEditor = <StringTypeEditor {...props} />;
+	} else if (type === 'BOOLEAN') {
+		eachTypeEditor = undefined;
+	} else {
+		eachTypeEditor = <NumberTypeEditor {...props} />;
+	}
+	return (
+		<div className="_eachEditor">
+			<label htmlFor="type">Type: </label>
+			<select
+				name="type"
+				id="type"
+				value={Array.isArray(props.schema.type) ? props.schema.type[0] : props.schema.type}
+				onChange={e => {
+					if (props.restrictToSchema?.type) return;
+					const nSchema = duplicate(props.schema);
+					nSchema.type = [e.target.value];
+					props.onChange(nSchema);
+				}}
+			>
+				<option value="STRING">String</option>
+				<option value="INTEGER">Integer</option>
+				<option value="LONG">Long</option>
+				<option value="FLOAT">Float</option>
+				<option value="DOUBLE">Double</option>
+				<option value="BOOLEAN">Boolean</option>
+			</select>
+			<label htmlFor="type">Preferred Component: </label>
+			<select
+				name="preferredComponent"
+				id="preferredComponent"
+				value={props.schema[props.detailType]?.preferredComponent ?? ''}
+				onChange={e => {
+					const nSchema = duplicate(props.schema);
+					if (!nSchema[props.detailType]) nSchema[props.detailType] = {};
+					nSchema[props.detailType].preferredComponent = e.target.value;
+					props.onChange(nSchema);
+				}}
+			>
+				{(
+					PREFERED_COMPONENT_MAP[type as keyof typeof PREFERED_COMPONENT_MAP] ??
+					PREFERED_COMPONENT_MAP['NUMBER']
+				).map(component => (
+					<option value={component}>{component}</option>
+				))}
+			</select>
+			{eachTypeEditor}
+		</div>
+	);
+}
+
+function onChangeValidationPropertyCurry(
+	detailType: 'details' | 'viewDetails',
+	propName: string,
+	schema: any,
+	onChange: (schema: any) => void,
+) {
+	return (e: React.ChangeEvent<HTMLInputElement>) => {
+		console.log(e.target.value);
+		const nSchema = duplicate(schema);
+		if (!nSchema[detailType]) nSchema[detailType] = {};
+		if (!nSchema[detailType].validationMessages) nSchema[detailType].validationMessages = {};
+		nSchema[detailType].validationMessages[propName] = e.target.value;
+		onChange(nSchema);
+	};
+}
+
+function onChangePropertyCurry(
+	propName: string,
+	schema: any,
+	onChange: (schema: any) => void,
+	isNumber: boolean = false,
+) {
+	return (e: React.ChangeEvent<HTMLInputElement>) => {
+		const nSchema = duplicate(schema);
+		if (isNumber)
+			nSchema[propName] = e.target.value !== '' ? Number(e.target.value) : undefined;
+		else nSchema[propName] = e.target.value;
+		if (nSchema[propName] === undefined) delete nSchema[propName];
+		onChange(nSchema);
+	};
+}
+
+function StringTypeEditor(props: Readonly<EditorProps>) {
+	const [newEnum, setNewEnum] = useState('');
+
+	let minLengthValidation;
+	if (props.schema.minLength !== undefined) {
+		minLengthValidation = (
+			<>
+				<label htmlFor="minLengthMessage">Minimum Length Validation Message: </label>
+				<input
+					name="minLengthMessage"
+					type="text"
+					value={props.schema[props.detailType]?.validationMessages?.minLength ?? ''}
+					onChange={onChangeValidationPropertyCurry(
+						props.detailType,
+						'minLength',
+						props.schema,
+						props.onChange,
+					)}
+				/>
+			</>
+		);
+	}
+
+	let maxLengthValidation;
+	if (props.schema.maxLength !== undefined) {
+		maxLengthValidation = (
+			<>
+				<label htmlFor="maxLengthMessage">Maximum Length Validation Message: </label>
+				<input
+					name="maxLengthMessage"
+					type="text"
+					value={props.schema[props.detailType]?.validationMessages?.maxLength ?? ''}
+					onChange={onChangeValidationPropertyCurry(
+						props.detailType,
+						'maxLength',
+						props.schema,
+						props.onChange,
+					)}
+				/>
+			</>
+		);
+	}
+
+	let patternValidation;
+	if (props.schema.pattern !== undefined) {
+		patternValidation = (
+			<>
+				<label htmlFor="patternMessage">Pattern Validation Message: </label>
+				<input
+					name="patternMessage"
+					type="text"
+					value={props.schema[props.detailType]?.validationMessages?.pattern ?? ''}
+					onChange={onChangeValidationPropertyCurry(
+						props.detailType,
+						'pattern',
+						props.schema,
+						props.onChange,
+					)}
+				/>
+			</>
+		);
+	}
+
+	return (
+		<>
+			<label htmlFor="stringType">Minimum Length: </label>
+			<input
+				name="stringType"
+				type="text"
+				value={props.schema.minLength ?? ''}
+				onChange={onChangePropertyCurry('minLength', props.schema, props.onChange, true)}
+			/>
+			{minLengthValidation}
+			<label htmlFor="stringType">Maximum Length: </label>
+			<input
+				name="stringType"
+				type="text"
+				value={props.schema.maxLength ?? ''}
+				onChange={onChangePropertyCurry('maxLength', props.schema, props.onChange, true)}
+			/>
+			{maxLengthValidation}
+			<label htmlFor="stringType">Pattern: </label>
+			<input
+				name="stringType"
+				type="text"
+				value={props.schema.pattern ?? ''}
+				onChange={onChangePropertyCurry('pattern', props.schema, props.onChange)}
+			/>
+			{patternValidation}
+			<label htmlFor="enumValues">Enum Values: </label>
+			<div className="_enumValues">
+				{props.schema.enums?.map((value: string, index: number) => (
+					<div
+						className="_enumValue"
+						key={value}
+						draggable={true}
+						onDragStart={e => {
+							e.dataTransfer.setData('text/plain', `ENUMS_${props.path}:${index}`);
+						}}
+						onDragOver={e => e.preventDefault()}
+						onDrop={e => {
+							const data = e.dataTransfer.getData('text/plain');
+							let colonIndex = data.indexOf(':');
+							if (colonIndex === -1) return;
+							let prefix = data.substring(0, colonIndex);
+							if (prefix != `ENUMS_${props.path}`) return;
+							let srcIndex = Number(data.substring(colonIndex + 1));
+							if (isNaN(srcIndex)) return;
+							const nSchema = duplicate(props.schema);
+							nSchema.enums.splice(srcIndex, 1);
+							nSchema.enums.splice(index, 0, props.schema.enums[srcIndex]);
+							props.onChange(nSchema);
+						}}
+					>
+						<DragHandle />
+						{value}
+						<div className="_eachFieldActions">
+							<button
+								className="_fieldActionButton"
+								onClick={() => {
+									const nSchema = duplicate(props.schema);
+									nSchema.enums = props.schema.enums.filter(
+										(v: string) => v !== value,
+									);
+									props.onChange(nSchema);
+								}}
+							>
+								<svg
+									width="14"
+									height="16"
+									viewBox="0 0 14 16"
+									fill="none"
+									xmlns="http://www.w3.org/2000/svg"
+								>
+									<path
+										d="M13.25 4.06406C10.975 3.71406 8.78751 3.53906 6.42501 3.53906C4.06251 3.53906 3.62501 3.53906 2.40001 3.88906L1 4.06406"
+										stroke="currentColor"
+										strokeWidth="1.3"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+									<path
+										d="M4.32812 3.45L4.50312 2.4C4.59062 1.6125 4.67813 1 6.16563 1H8.44062C9.92812 1 10.0156 1.6125 10.1031 2.4L10.2781 3.45"
+										stroke="currentColor"
+										strokeWidth="1.3"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+									<path
+										d="M11.9359 4.58594L11.4984 12.7234C11.4109 13.9484 11.4109 14.9984 9.39844 14.9984H4.93593C3.01093 14.9984 2.92344 14.0359 2.83594 12.7234L2.39844 4.58594"
+										stroke="currentColor"
+										strokeWidth="1.3"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+								</svg>
+							</button>
+						</div>
+					</div>
+				))}
+			</div>
+			<div className="_newEnum">
+				<input
+					name="newEnum"
+					type="text"
+					value={newEnum ?? ''}
+					onChange={e => setNewEnum(e.target.value)}
+				/>
+				<button
+					onClick={() => {
+						const nSchema = duplicate(props.schema);
+						if (!nSchema.enums) nSchema.enums = [];
+						if (nSchema.enums.includes(newEnum)) return;
+						nSchema.enums.push(newEnum);
+						props.onChange(nSchema);
+						setNewEnum('');
+					}}
+				>
+					+
+				</button>
+			</div>
+		</>
+	);
+}
+
+function NumberTypeEditor(props: Readonly<EditorProps>) {
+	let minValueValidation;
+	if (props.schema.minimum !== undefined) {
+		minValueValidation = (
+			<>
+				<label htmlFor="minValueMessage">Minimum Value Validation Message: </label>
+				<input
+					name="minValueMessage"
+					type="text"
+					value={props.schema[props.detailType]?.validationMessages?.minimum ?? ''}
+					onChange={onChangeValidationPropertyCurry(
+						props.detailType,
+						'minimum',
+						props.schema,
+						props.onChange,
+					)}
+				/>
+			</>
+		);
+	}
+	let maxValueValidation;
+	if (props.schema.maximum !== undefined) {
+		maxValueValidation = (
+			<>
+				<label htmlFor="maxValueMessage">Maximum Value Validation Message: </label>
+				<input
+					name="maxValueMessage"
+					type="text"
+					value={props.schema[props.detailType]?.validationMessages?.maximum ?? ''}
+					onChange={onChangeValidationPropertyCurry(
+						props.detailType,
+						'maximum',
+						props.schema,
+						props.onChange,
+					)}
+				/>
+			</>
+		);
+	}
+	let multipleOfValidation;
+	if (props.schema.multipleOf !== undefined) {
+		multipleOfValidation = (
+			<>
+				<label htmlFor="multipleOfMessage">Multiple Of Validation Message: </label>
+				<input
+					name="multipleOfMessage"
+					type="text"
+					value={props.schema[props.detailType]?.validationMessages?.multipleOf ?? ''}
+					onChange={onChangeValidationPropertyCurry(
+						props.detailType,
+						'multipleOf',
+						props.schema,
+						props.onChange,
+					)}
+				/>
+			</>
+		);
+	}
+	let exclusiveMinimumValidation;
+	if (props.schema.exclusiveMinimum !== undefined) {
+		exclusiveMinimumValidation = (
+			<>
+				<label htmlFor="exclusiveMinimumMessage">
+					Exclusive Minimum Validation Message:{' '}
+				</label>
+				<input
+					name="exclusiveMinimumMessage"
+					type="text"
+					value={
+						props.schema[props.detailType]?.validationMessages?.exclusiveMinimum ?? ''
+					}
+					onChange={onChangeValidationPropertyCurry(
+						props.detailType,
+						'exclusiveMinimum',
+						props.schema,
+						props.onChange,
+					)}
+				/>
+			</>
+		);
+	}
+	let exclusiveMaximumValidation;
+	if (props.schema.exclusiveMaximum !== undefined) {
+		exclusiveMaximumValidation = (
+			<>
+				<label htmlFor="exclusiveMaximumMessage">
+					Exclusive Maximum Validation Message:{' '}
+				</label>
+				<input
+					name="exclusiveMaximumMessage"
+					type="text"
+					value={
+						props.schema[props.detailType]?.validationMessages?.exclusiveMaximum ?? ''
+					}
+					onChange={onChangeValidationPropertyCurry(
+						props.detailType,
+						'exclusiveMaximum',
+						props.schema,
+						props.onChange,
+					)}
+				/>
+			</>
+		);
+	}
+
+	console.log(props.schema.minimum);
+
+	return (
+		<>
+			<label htmlFor="numberType">Minimum Value: </label>
+			<input
+				name="numberType"
+				type="text"
+				value={props.schema.minimum ?? ''}
+				onChange={onChangePropertyCurry('minimum', props.schema, props.onChange, true)}
+			/>
+			{minValueValidation}
+			<label htmlFor="numberType">Maximum Value: </label>
+			<input
+				name="numberType"
+				type="text"
+				value={props.schema.maximum ?? ''}
+				onChange={onChangePropertyCurry('maximum', props.schema, props.onChange, true)}
+			/>
+			{maxValueValidation}
+			<label htmlFor="numberType">Multiple Of: </label>
+			<input
+				name="numberType"
+				type="text"
+				value={props.schema.multipleOf ?? ''}
+				onChange={onChangePropertyCurry('multipleOf', props.schema, props.onChange, true)}
+			/>
+			{multipleOfValidation}
+			<label htmlFor="numberType">Exclusive Minimum: </label>
+			<input
+				name="numberType"
+				type="text"
+				value={props.schema.exclusiveMinimum ?? ''}
+				onChange={onChangePropertyCurry(
+					'exclusiveMinimum',
+					props.schema,
+					props.onChange,
+					true,
+				)}
+			/>
+			{exclusiveMinimumValidation}
+			<label htmlFor="numberType">Exclusive Maximum: </label>
+			<input
+				name="numberType"
+				type="text"
+				value={props.schema.exclusiveMaximum ?? ''}
+				onChange={onChangePropertyCurry(
+					'exclusiveMaximum',
+					props.schema,
+					props.onChange,
+					true,
+				)}
+			/>
+			{exclusiveMaximumValidation}
+		</>
+	);
+}
+
+function DragHandle() {
+	return (
+		<svg
+			viewBox="0 0 6 14"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+			className="_dragHandle"
+		>
+			<path d="M2 0H0V2H2V0Z" fill="currentColor" />
+			<path d="M6 0H4V2H6V0Z" fill="currentColor" />
+			<path d="M2 4H0V6H2V4Z" fill="currentColor" />
+			<path d="M6 4H4V6H6V4Z" fill="currentColor" />
+			<path d="M2 8H0V10H2V8Z" fill="currentColor" />
+			<path d="M6 8H4V10H6V8Z" fill="currentColor" />
+			<path d="M2 12H0V14H2V12Z" fill="currentColor" />
+			<path d="M6 12H4V14H6V12Z" fill="currentColor" />
+		</svg>
 	);
 }

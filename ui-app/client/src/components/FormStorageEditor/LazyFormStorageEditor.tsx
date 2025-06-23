@@ -64,7 +64,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 			(_, value) =>
 				setSchema((existing: any) => {
 					if (existing && deepEqual(existing, value)) return existing;
-					return value ?? { type: 'OBJECT' };
+					return value ?? restrictToSchema ?? { type: 'OBJECT' };
 				}),
 			pageExtractor,
 			bindingPathPath,
