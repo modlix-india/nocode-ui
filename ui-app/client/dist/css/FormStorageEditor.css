@@ -5,7 +5,7 @@
 	font-size: 14px;
 }
 
-.comp.compFormStorageEditor ._objectEditor {
+.comp.compFormStorageEditor ._eachEditor {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
@@ -38,12 +38,12 @@
 	height: 20px;
 }
 
-.comp.compFormStorageEditor ._objectField {
+.comp.compFormStorageEditor ._eachField {
 	display: flex;
 	flex-direction: column;	
 }
 
-.comp.compFormStorageEditor ._objectFieldHeader {
+.comp.compFormStorageEditor ._eachFieldHeader {
     display: flex;
     align-items: center;
     gap: 5px;
@@ -53,7 +53,7 @@
 	border-radius: 5px;	
 }
 
-.comp.compFormStorageEditor ._objectFieldHeader svg._dragHandle {
+.comp.compFormStorageEditor ._eachFieldHeader svg._dragHandle {
 	width: 6px;
 	height: 14px;
 	color: #BBBBBB;
@@ -61,25 +61,24 @@
 	cursor: grab;
 }
 
-.comp.compFormStorageEditor ._objectFieldActions {
+.comp.compFormStorageEditor ._eachFieldActions {
 	display: flex;
 	justify-content: flex-end;
 	align-items: center;
 	gap: 10px;
-	padding-right: 20px;
 	flex: 1;
 }
 
-.comp.compFormStorageEditor ._objectFieldActions svg {
+.comp.compFormStorageEditor ._eachFieldActions svg {
 	color: #BBBBBB;
 	cursor: pointer;
 }
 
-.comp.compFormStorageEditor ._objectFieldActions svg:hover {
+.comp.compFormStorageEditor ._eachFieldActions svg:hover {
 	color: #1790E9;
 }
 
-.comp.compFormStorageEditor ._objectFieldActions ._componentName {
+.comp.compFormStorageEditor ._eachFieldActions ._componentName {
 	color:#00000066
 }
 
@@ -89,7 +88,7 @@
 	cursor: pointer;
 }
 
-.comp.compFormStorageEditor ._objectFieldContent {
+.comp.compFormStorageEditor ._fieldContainer {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
@@ -113,7 +112,7 @@
 	padding: 0px 10px;
 }
 
-.comp.compFormStorageEditor input {
+.comp.compFormStorageEditor input[type="text"] {
 	height: 38px;
 	border-radius: 5px;
 	border: 1px solid #1A2B3B1A;
@@ -121,8 +120,73 @@
 	font-size: 14px;
 }
 
+.comp.compFormStorageEditor input[type="checkbox"] {
+	height: 20px;
+	width: 20px;
+}
+
 .comp.compFormStorageEditor ._fieldContent {
     background: #FFF;
     padding: 10px;
     border-radius: 5px;
 }
+
+.comp.compFormStorageEditor .switch {
+	position: relative;
+	display: inline-block;
+	width: 80px;
+	height: 24px;
+  }
+  
+  .comp.compFormStorageEditor .switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+  }
+  
+  .comp.compFormStorageEditor .slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+	border-radius: 24px;
+	justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+
+  .comp.compFormStorageEditor .switch.double input:not(:checked) + .slider {
+	background-color: #ffac00;
+  }
+  
+  .comp.compFormStorageEditor .slider:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+	border-radius: 50%;
+  }
+  
+  .comp.compFormStorageEditor input:checked + .slider {
+	background-color: #2196F3;
+  }
+  
+  .comp.compFormStorageEditor input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+  }
+  
+  .comp.compFormStorageEditor input:checked + .slider:before {
+	-webkit-transform: translateX(56px);
+	-ms-transform: translateX(56px);
+	transform: translateX(56px);
+  }
