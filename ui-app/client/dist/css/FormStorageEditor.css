@@ -2,14 +2,16 @@
 	display: flex;
 	width: 100%;
 	height: 100%;
+	font-size: 14px;
 }
 
-.comp.compFormStorageEditor ._objectEditor {
+.comp.compFormStorageEditor ._eachEditor {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
 	height: 100%;
 	gap: 10px;
+	min-height: 30px;
 }
 
 .comp.compFormStorageEditor ._propAdd {
@@ -36,3 +38,196 @@
 	width: 20px;
 	height: 20px;
 }
+
+.comp.compFormStorageEditor ._eachField {
+	display: flex;
+	flex-direction: column;	
+}
+
+.comp.compFormStorageEditor ._eachFieldHeader {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+	padding: 5px 20px;	
+	min-height: 40px;
+	border: 1px solid #11338912;
+	border-radius: 5px;	
+}
+
+.comp.compFormStorageEditor svg._dragHandle {
+	width: 6px;
+	height: 14px;
+	color: #BBBBBB;
+	margin-right: 20px;
+	cursor: grab;
+}
+
+.comp.compFormStorageEditor ._eachFieldActions {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+	gap: 10px;
+	flex: 1;
+}
+
+.comp.compFormStorageEditor ._eachFieldActions svg {
+	color: #BBBBBB;
+	cursor: pointer;
+}
+
+.comp.compFormStorageEditor ._eachFieldActions svg:hover {
+	color: #1790E9;
+}
+
+.comp.compFormStorageEditor ._eachFieldActions ._componentName {
+	color:#00000066
+}
+
+.comp.compFormStorageEditor ._fieldActionButton {
+	border: none;
+	background-color: transparent;
+	cursor: pointer;
+}
+
+.comp.compFormStorageEditor ._fieldContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	margin: 0px 5px;
+	border-bottom-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border: 1px solid #11338912;
+	border-top: none;
+	padding: 15px;
+	background-color: #f0f0f0;
+}
+
+.comp.compFormStorageEditor ._fieldForm {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.comp.compFormStorageEditor label {
+	font-size: 13px;
+	padding: 0px 10px;
+}
+
+.comp.compFormStorageEditor input[type="text"],
+.comp.compFormStorageEditor input[type="number"],
+.comp.compFormStorageEditor select {
+	height: 38px;
+	border-radius: 5px;
+	border: 1px solid #1A2B3B1A;
+	padding: 0px 10px;
+	font-size: 14px;
+	position: relative;
+}
+
+.comp.compFormStorageEditor select {
+	-webkit-appearance: none;
+  	-moz-appearance: none;
+  	appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M3.43496 4.75595C3.74733 5.08135 4.25462 5.08135 4.56699 4.75595L7.76565 1.42392C7.99556 1.18443 8.06303 0.827802 7.93808 0.515424C7.81313 0.203046 7.52325 0 7.19839 0L0.801058 0.00260331C0.478692 0.00260331 0.186314 0.205649 0.0613662 0.518027C-0.0635817 0.830405 0.00638908 1.18704 0.233794 1.42653L3.43246 4.75856L3.43496 4.75595Z' fill='black' fill-opacity='0.4'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 10px center;
+	background-size: 8px 5px;
+}
+
+.comp.compFormStorageEditor input[type="checkbox"] {
+	height: 20px;
+	width: 20px;
+}
+
+.comp.compFormStorageEditor ._fieldContent {
+    background: #FFF;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.comp.compFormStorageEditor .switch {
+	position: relative;
+	display: inline-block;
+	width: 80px;
+	height: 24px;
+  }
+  
+  .comp.compFormStorageEditor .switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+  }
+  
+  .comp.compFormStorageEditor .slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	-webkit-transition: .4s;
+	transition: .4s;
+	border-radius: 24px;
+	justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+
+  .comp.compFormStorageEditor .switch.double input:not(:checked) + .slider {
+	background-color: #ffac00;
+  }
+  
+  .comp.compFormStorageEditor .slider:before {
+	position: absolute;
+	content: "";
+	height: 16px;
+	width: 16px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	-webkit-transition: .4s;
+	transition: .4s;
+	border-radius: 50%;
+  }
+  
+  .comp.compFormStorageEditor input:checked + .slider {
+	background-color: #2196F3;
+  }
+  
+  .comp.compFormStorageEditor input:focus + .slider {
+	box-shadow: 0 0 1px #2196F3;
+  }
+  
+  .comp.compFormStorageEditor input:checked + .slider:before {
+	-webkit-transform: translateX(56px);
+	-ms-transform: translateX(56px);
+	transform: translateX(56px);
+  }
+
+  .comp.compFormStorageEditor ._enumValues {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+  }
+
+  .comp.compFormStorageEditor ._enumValue {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 5px 10px;
+	border-radius: 5px;
+	border: 1px solid #11338912;
+	background-color: #f0f0f0;
+	min-height: 40px;
+  }
+
+  .comp.compFormStorageEditor ._newEnum {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+  }
+
+  .comp.compFormStorageEditor ._newEnum input {
+	flex: 1;
+  }
