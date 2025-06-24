@@ -13,7 +13,7 @@ export default function RangeSliderStyle({
 	const [used, setUsed] = useState(usedComponents.used(NAME));
 
 	useEffect(() => {
-		const fn = () => setUsed(true);
+		const fn = () => setTimeout(() => setUsed(true), 100);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
