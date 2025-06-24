@@ -718,6 +718,7 @@ function ObjectFieldEditor(
 			<PrimitiveTypeEditor
 				{...props}
 				schema={schema.properties[objectKey]}
+				restrictToSchema={restrictToSchema?.properties?.[objectKey]}
 				path={`${props.path}.${objectKey}`}
 				onChange={onChangeOfPropSchema}
 			/>
@@ -980,7 +981,7 @@ function PrimitiveTypeEditor(props: Readonly<EditorProps>) {
 			<select
 				name="type"
 				id="type"
-				value={Array.isArray(props.schema.type) ? props.schema.type[0] : props.schema.type}
+				value={type}
 				onChange={e => {
 					if (props.restrictToSchema?.type) return;
 					const nSchema = duplicate(props.schema);
