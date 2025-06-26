@@ -2,11 +2,11 @@ import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
-import { styleDefaults, styleProperties } from './formStorageEditorStyleProperties';
+import { styleDefaults, styleProperties } from './formEditorStyleProperties';
 
-const PREFIX = '.comp.compFormStorageEditor';
-const NAME = 'FormStorageEditor';
-export default function FormStorageEditorStyle({
+const PREFIX = '.comp.compFormEditor';
+const NAME = 'FormEditor';
+export default function FormEditorStyle({
 	theme,
 }: Readonly<{
 	theme: Map<string, Map<string, string>>;
@@ -26,7 +26,7 @@ export default function FormStorageEditorStyle({
 	return (
 		<>
 			{used ? <link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} /> : <></>}
-			<style id="StorageEditorCss">{css}</style>{' '}
+			<style id="FormEditorCss">{css}</style>{' '}
 		</>
 	);
 }
