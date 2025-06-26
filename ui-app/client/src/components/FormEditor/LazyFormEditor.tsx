@@ -10,12 +10,12 @@ import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './formEditorProperties';
 import ObjectTypeEditor from './components/ObjectTypeEditor';
 import { deepEqual } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
 
-export default function FormStorageEditor(props: Readonly<ComponentProps>) {
+export default function FormEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { bindingPath },
@@ -89,7 +89,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 			))();
 	};
 	return (
-		<div className="comp compFormStorageEditor" style={resolvedStyles.comp ?? {}}>
+		<div className="comp compFormEditor" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} context={context} />
 			<ObjectTypeEditor
 				restrictToSchema={restrictToSchema}
