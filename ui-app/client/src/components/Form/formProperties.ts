@@ -1,14 +1,11 @@
-import { Schema } from '@fincity/kirun-js';
 import {
 	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
-	ComponentPropertyGroup,
-	ComponentStylePropertyDefinition,
+	ComponentStylePropertyDefinition
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -20,6 +17,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_ANY_COMP_PROP,
 		editor: ComponentPropertyEditor.SCHEMA
 	},
+	{
+		name: 'useServerSchemas',
+		displayName: 'Use Server Schemas',
+		description: 'Use server schemas',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		defaultValue: false,
+	},
+	COMMON_COMPONENT_PROPERTIES.onChange,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
