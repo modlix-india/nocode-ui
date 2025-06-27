@@ -1,35 +1,35 @@
 import React, { Suspense } from 'react';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { IconHelper } from '../util/IconHelper';
-import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
-import StorageEditorStyle from './FormStorageEditorStyle';
-import { styleProperties, styleDefaults } from './formStorageEditorStyleProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './formEditorProperties';
+import FormEditorStyle from './FormEditorStyle';
+import { styleProperties, styleDefaults } from './formEditorStyleProperties';
 
-const LazyFormStorageEditor = React.lazy(
-	() => import(/* webpackChunkName: "FormStorageEditor" */ './LazyFormStorageEditor'),
+const LazyFormEditor = React.lazy(
+	() => import(/* webpackChunkName: "FormEditor" */ './LazyFormEditor'),
 );
-function LoadLazyFormStorageEditor(props: Readonly<ComponentProps>) {
+function LoadLazyFormEditor(props: Readonly<ComponentProps>) {
 	return (
 		<Suspense fallback={<>...</>}>
-			<LazyFormStorageEditor {...props} />
+			<LazyFormEditor {...props} />
 		</Suspense>
 	);
 }
 
 const component: Component = {
-	name: 'FormStorageEditor',
-	displayName: 'Form Storage Editor',
-	description: 'Form Storage Editor component',
-	component: LoadLazyFormStorageEditor,
+	name: 'FormEditor',
+	displayName: 'Form Editor',
+	description: 'Form Editor component',
+	component: LoadLazyFormEditor,
 	isHidden: false,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
-	styleComponent: StorageEditorStyle,
+	styleComponent: FormEditorStyle,
 	styleDefaults: styleDefaults,
 	stylePseudoStates: ['hover'],
 	bindingPaths: {
-		bindingPath: { name: 'Storage Binding' },
+		bindingPath: { name: 'Form Schema Binding' },
 	},
 	subComponentDefinition: [
 		{

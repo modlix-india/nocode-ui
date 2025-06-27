@@ -1,4 +1,4 @@
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_BOOL_COMP_PROP } from '../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import { ComponentPropertyDefinition, ComponentPropertyEditor, ComponentStylePropertyDefinition } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -13,6 +13,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'hideAddFieldButton',
 		displayName: 'Hide Add Field Button',
 		schema: SCHEMA_BOOL_COMP_PROP,
+	},
+	{
+		name: 'detailType',
+		displayName: 'Form Type',
+		schema: SCHEMA_STRING_COMP_PROP,
+		defaultValue: 'details',
+		enumValues: [
+			{
+				name: 'details',
+				displayName: 'Edit',
+			},
+			{
+				name: 'viewDetails',
+				displayName: 'View',
+			},
+		],
 	},
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	COMMON_COMPONENT_PROPERTIES.readOnly,

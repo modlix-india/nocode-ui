@@ -10,12 +10,12 @@ import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
-import { propertiesDefinition, stylePropertiesDefinition } from './formStorageEditorProperties';
+import { propertiesDefinition, stylePropertiesDefinition } from './formEditorProperties';
 import ObjectTypeEditor from './components/ObjectTypeEditor';
 import { deepEqual } from '@fincity/kirun-js';
 import { runEvent } from '../util/runEvent';
 
-export default function FormStorageEditor(props: Readonly<ComponentProps>) {
+export default function FormEditor(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		definition: { bindingPath },
@@ -27,7 +27,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly, restrictToSchema, onChange, hideAddFieldButton } = {},
+		properties: { readOnly, restrictToSchema, onChange, hideAddFieldButton, detailType } = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -64,38 +64,32 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 			(_, value) =>
 				setSchema((existing: any) => {
 					if (existing && deepEqual(existing, value)) return existing;
-					return value ?? { type: 'OBJECT' };
+					return value ?? restrictToSchema ?? { type: 'OBJECT' };
 				}),
 			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, restrictToSchema]);
 
-	const onChangeOfSchema = useCallback(
-		(schema: any) => {
-			if (!bindingPathPath) return;
+	const onChangeOfSchema = (schema: any) => {
+		if (!bindingPathPath) return;
 
-			setData(bindingPathPath, schema, pageExtractor.getPageName());
+		setData(bindingPathPath, schema, pageExtractor.getPageName());
 
-			const clickEvent = onChange
-				? props.pageDefinition.eventFunctions?.[onChange]
-				: undefined;
+		const clickEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 
-			if (!clickEvent) return;
-			(async () =>
-				await runEvent(
-					clickEvent,
-					onChange,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				))();
-		},
-		[onChange, bindingPathPath, pageExtractor.getPageName()],
-	);
-
+		if (!clickEvent) return;
+		(async () =>
+			await runEvent(
+				clickEvent,
+				onChange,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	};
 	return (
-		<div className="comp compFormStorageEditor" style={resolvedStyles.comp ?? {}}>
+		<div className="comp compFormEditor" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent key={`${key}_hlp`} definition={definition} context={context} />
 			<ObjectTypeEditor
 				restrictToSchema={restrictToSchema}
@@ -105,6 +99,7 @@ export default function FormStorageEditor(props: Readonly<ComponentProps>) {
 				styles={{ regular: resolvedStyles, hover: resolvedHoverStyles }}
 				hideAddFieldButton={hideAddFieldButton}
 				path="Object"
+				detailType={detailType}
 			/>
 		</div>
 	);
