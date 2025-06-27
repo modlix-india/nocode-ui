@@ -33,6 +33,9 @@ import { getTranslations } from '../util/getTranslations';
 function Otp(props: Readonly<ComponentProps>) {
 	const [focusBoxIndex, setFocusBoxIndex] = React.useState(0);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
+	const [showValue, setShowValue] = React.useState(false);
+	const [isVisibilityButtonPressed, setIsVisibilityButtonPressed] = React.useState(false);
+
 	const {
 		definition: { bindingPath },
 		definition,
@@ -54,6 +57,10 @@ function Otp(props: Readonly<ComponentProps>) {
 			supportingText,
 			maskValue,
 			maskStyle,
+			showVisibilityToggle,
+			hideIcon,
+			showIcon,
+			temporaryVisibility,
 			label,
 			noFloat,
 			showMandatoryAsterisk,
@@ -225,6 +232,29 @@ function Otp(props: Readonly<ComponentProps>) {
 			return true;
 		}
 		return false;
+	};
+
+	const handleVisibilityToggleMouseDown = () => {
+		if (temporaryVisibility) {
+			setIsVisibilityButtonPressed(true);
+			setShowValue(true);
+		} else {
+			setShowValue(!showValue);
+		}
+	};
+
+	const handleVisibilityToggleMouseUp = () => {
+		if (temporaryVisibility && isVisibilityButtonPressed) {
+			setIsVisibilityButtonPressed(false);
+			setShowValue(false);
+		}
+	};
+
+	const handleVisibilityToggleMouseLeave = () => {
+		if (temporaryVisibility && isVisibilityButtonPressed) {
+			setIsVisibilityButtonPressed(false);
+			setShowValue(false);
+		}
 	};
 
 	const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>, index: number) => {
@@ -469,7 +499,7 @@ function Otp(props: Readonly<ComponentProps>) {
 						index < value.length
 							? value[index] == ' '
 								? ''
-								: maskValue
+								: maskValue && !showValue
 									? maskStyle === 'DOT'
 										? '•'
 										: '*'
@@ -499,6 +529,18 @@ function Otp(props: Readonly<ComponentProps>) {
 					}`}
 				/>
 			))}
+
+			{maskValue && showVisibilityToggle && !readOnly && (
+				<i
+					style={computedStyles.visibilityToggle ?? {}}
+					onMouseDown={handleVisibilityToggleMouseDown}
+					onMouseUp={handleVisibilityToggleMouseUp}
+					onMouseLeave={handleVisibilityToggleMouseLeave}
+					className={`_visibilityToggle ${showValue ? showIcon : hideIcon}`}
+				>
+					<SubHelperComponent definition={definition} subComponentName="visibilityToggle" />
+				</i>
+			)}
 
 			{showClearButton && (
 				<i
@@ -681,6 +723,12 @@ const component: Component = {
 			displayName: 'Error Text Container',
 			description: 'Error Text Container',
 			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'visibilityToggle',
+			displayName: 'Visibility Toggle Icon',
+			description: 'Visibility Toggle Icon',
+			icon: 'fa-solid fa-eye',
 		},
 	],
 	propertiesForTheme: [designType, colorScheme],
