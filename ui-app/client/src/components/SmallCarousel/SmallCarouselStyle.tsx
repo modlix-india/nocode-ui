@@ -45,8 +45,16 @@ export default function SmallCarouselStyle({
         display: flex;
         position: relative;
         color: #5555;
-        width: 2.5vw;  
-        height: 2.5vw; 
+        width: 2.5vw;
+        height: 2.5vw;
+        background: none;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
+        margin: 0;
+        min-width: 0;
+        min-height: 0;
     }
 
 
@@ -90,6 +98,141 @@ export default function SmallCarouselStyle({
 
     ${PREFIX}._showArrowsOnHover ._arrowButtons { visibility: hidden; }
     ${PREFIX}._showArrowsOnHover:hover ._arrowButtons { visibility: visible; }
+
+    ${PREFIX} .carousel-indicators {
+        z-index: 10;
+        gap: 8px;
+        user-select: none;
+    }
+    ${PREFIX} .carousel-indicators.position-bottom {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 8px;
+    }
+    ${PREFIX} .carousel-indicators.position-top {
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 8px;
+    }
+    ${PREFIX} .carousel-indicators.position-left {
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        position: absolute;
+        left: 8px;
+        top: 0;
+        bottom: 0;
+    }
+    ${PREFIX} .carousel-indicators.position-right {
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-end;
+        position: absolute;
+        right: 8px;
+        top: 0;
+        bottom: 0;
+    }
+    ${PREFIX} .carousel-indicators > div {
+        transition: background 0.2s, color 0.2s, border 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 0.2em;
+    }
+
+    ${PREFIX} .carousel-indicators > div[style*='background: #888'] {
+        box-shadow: 0 0 0 2px #8884, 0 2px 8px #0002;
+    }
+
+    ${PREFIX} .indicator-nav-btn {
+        background: none;
+        border: none;
+        color: #888;
+        border-radius: 0;
+        width: auto;
+        height: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1em;
+        margin: 0 2px;
+        cursor: pointer;
+        transition: color 0.2s;
+        outline: none;
+        box-shadow: none;
+        padding: 0;
+    }
+    ${PREFIX} .indicator-nav-btn:hover, ${PREFIX} .indicator-nav-btn:focus {
+        color: #333;
+    }
+    ${PREFIX} .carousel-indicators.position-left .indicator-nav-btn,
+    ${PREFIX} .carousel-indicators.position-right .indicator-nav-btn {
+        margin: 2px 0;
+    }
+
+    ${PREFIX} .indicator-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+    }
+    ${PREFIX} .indicator-button {
+        width: 16px;
+        height: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid #E3E6EA;
+        color: #18398A;
+        font-weight: normal;
+        cursor: pointer;
+        margin: 2px;
+        box-sizing: border-box;
+        outline: none;
+        background: #fff;
+        transition: background 0.25s, color 0.25s, border 0.25s, box-shadow 0.25s;
+        box-shadow: none;
+    }
+    ${PREFIX} .indicator-button.active {
+        background: #18398A;
+        color: #fff;
+        font-weight: bold;
+        border-color: #18398A;
+        box-shadow: 0 4px 24px 0 #18398A22;
+        outline: none;
+    }
+    ${PREFIX} .indicator-button.shape-circle {
+        border-radius: 50%;
+    }
+    ${PREFIX} .indicator-button.shape-square {
+        border-radius: 4px;
+    }
+    ${PREFIX} .indicator-button.shape-dash {
+        border-radius: 2px;
+        width: 24px;
+        height: 6px;
+    }
+    ${PREFIX} .indicator-button.shape-none {
+        border: none;
+        background: none;
+        width: 24px;
+        height: 16px;
+    }
+    ${PREFIX} .indicator-button.fill-outline {
+        background: #fff;
+    }
+    ${PREFIX} .indicator-button.fill-solid:not(.active) {
+        background: #E3E6EA;
+    }
 
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="SmallCarouselCss">{css}</style>;
