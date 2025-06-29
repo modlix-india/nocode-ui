@@ -955,7 +955,7 @@ const PREFERED_COMPONENT_MAP = {
 		'Calendar',
 		'Dropdown',
 		'FileSelector',
-		'Buttonbar',
+		'ButtonBar',
 		'PhoneNumber',
 		'RadioButton',
 	],

@@ -114,6 +114,7 @@ import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEdi
 import FillerValueEditor from './FillerValueEditor/FillerValueEditor';
 import KIRunEditor from './KIRunEditor/KIRunEditor';
 import FormEditor from './FormEditor/FormEditor';
+import Form from './Form/Form';
 import PageEditor from './PageEditor/PageEditor';
 import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
 import SchemaForm from './SchemaForm/SchemaForm';
@@ -133,5 +134,6 @@ componentMap.set(SchemaForm.name, SchemaForm);
 componentMap.set(TemplateEditor.name, TemplateEditor);
 componentMap.set(TextEditor.name, TextEditor);
 componentMap.set(ThemeEditor.name, ThemeEditor);
+componentMap.set(Form.name, Form);
 
 export default componentMap;
