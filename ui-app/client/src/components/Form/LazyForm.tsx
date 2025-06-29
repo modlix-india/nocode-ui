@@ -175,11 +175,64 @@ async function makeDefinition(
 		};
 		return { componentDefinitions, renderableChildren: { [key]: true } };
 	} else if (finSchema?.getType()?.contains(SchemaType.ARRAY)) {
-		// for (const [key, childSchema] of finSchema.getProperties()?.entries() ?? []) {
-		// 	if (!childSchema) continue;
-		// 	const childDefs = await makeDefinition(childSchema, schemaRepository, bindingPath);
-		// 	componentDefinitions = { ...componentDefinitions, ...childDefs.componentDefinitions };
-		// }
+		let renderableChildren: Record<string, boolean> = {};
+		if (!finSchema.getItems()) return { componentDefinitions: {}, renderableChildren: {} };
+		const items = finSchema.getItems();
+		if (items!.isSingleType()) {
+			const childDefs = await makeDefinition(
+				readOnly,
+				items!.getSingleSchema(),
+				schemaRepository,
+				`Parent`,
+				`${path}[]`,
+			);
+			componentDefinitions = { ...componentDefinitions, ...childDefs.componentDefinitions };
+			renderableChildren = { ...renderableChildren, ...childDefs.renderableChildren };
+			properties.showAdd = { value: true };
+			properties.showDelete = { value: true };
+			properties.showMove = { value: true };
+
+			componentDefinitions[key] = {
+				key,
+				name: schema.getName() ?? key,
+				type: detailObject?.getPreferredComponent() ?? 'ArrayRepeater',
+				properties,
+				styleProperties,
+				children: renderableChildren,
+				displayOrder: detailObject?.getOrder(),
+				bindingPath: { type: 'VALUE', value: bindingPath },
+			};
+			return { componentDefinitions, renderableChildren: { [key]: true } };
+		} else if (items!.getTupleSchema()?.length) {
+			const itemsList = items!.getTupleSchema()!;
+			for (let i = 0; i < itemsList.length; i++) {
+				const childDefs = await makeDefinition(
+					readOnly,
+					itemsList[i],
+					schemaRepository,
+					`${bindingPath}[${i}]`,
+					`${path}[${i}]`,
+				);
+				componentDefinitions = {
+					...componentDefinitions,
+					...childDefs.componentDefinitions,
+				};
+				renderableChildren = { ...renderableChildren, ...childDefs.renderableChildren };
+			}
+			componentDefinitions[key] = {
+				key,
+				name: schema.getName() ?? key,
+				type: detailObject?.getPreferredComponent() ?? 'ArrayRepeater',
+				properties,
+				styleProperties,
+				children: renderableChildren,
+				displayOrder: detailObject?.getOrder(),
+				bindingPath: { type: 'VALUE', value: bindingPath },
+			};
+			return { componentDefinitions, renderableChildren: { [key]: true } };
+		}
+
+		return { componentDefinitions: {}, renderableChildren: {} };
 	}
 
 	if (!properties.label && detailObject?.getLabel()) {
