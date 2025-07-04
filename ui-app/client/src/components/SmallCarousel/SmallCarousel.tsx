@@ -75,6 +75,13 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 			selectionType,
 			prevImage,
 			nextImage,
+			showIndicators,
+			indicatorPosition,
+			indicatorVisibleCount,
+			indicatorShape,
+			indicatorFill,
+			indicatorShowNumbers,
+			showIndicatorArrows,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -91,6 +98,51 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 	const [_, setChanged] = useState<number>(Date.now());
 	const transit = useRef<any>({});
 	const [firstTime, setFirstTime] = useState(true);
+	const [currentSlide, setCurrentSlide] = useState(0);
+
+	const touchStart = useRef<{ x: number; y: number } | null>(null);
+	const touchDelta = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
+
+	function handleTouchStart(e: React.TouchEvent) {
+		const t = e.touches[0];
+		touchStart.current = { x: t.clientX, y: t.clientY };
+		touchDelta.current = { x: 0, y: 0 };
+	}
+	function handleTouchMove(e: React.TouchEvent) {
+		if (!touchStart.current) return;
+		const t = e.touches[0];
+		touchDelta.current = {
+			x: t.clientX - touchStart.current.x,
+			y: t.clientY - touchStart.current.y,
+		};
+	}
+	function handleTouchEnd() {
+		if (!touchStart.current) return;
+		const threshold = 40; 
+		if (isVertical) {
+			if (touchDelta.current.y < -threshold && totalSlides > 1) {
+				const next = (currentSlide + 1) % totalSlides;
+				setCurrentSlide(next);
+				applyTransform(next, 1);
+			} else if (touchDelta.current.y > threshold && totalSlides > 1) {
+				const prev = (currentSlide - 1 + totalSlides) % totalSlides;
+				setCurrentSlide(prev);
+				applyTransform(prev, -1);
+			}
+		} else {
+			if (touchDelta.current.x < -threshold && totalSlides > 1) {
+				const next = (currentSlide + 1) % totalSlides;
+				setCurrentSlide(next);
+				applyTransform(next, 1);
+			} else if (touchDelta.current.x > threshold && totalSlides > 1) {
+				const prev = (currentSlide - 1 + totalSlides) % totalSlides;
+				setCurrentSlide(prev);
+				applyTransform(prev, -1);
+			}
+		}
+		touchStart.current = null;
+		touchDelta.current = { x: 0, y: 0 };
+	}
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -115,8 +167,9 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 			return v === 0 ? (a[1]?.key ?? '').localeCompare(b[1]?.key ?? '') : v;
 		});
 
-	const bindingPathPath = `Store.defaultData.${pageExtractor?.getPageName() ?? '_global'
-		}.${flattenUUID(key)}`;
+	const bindingPathPath = `Store.defaultData.${
+		pageExtractor?.getPageName() ?? '_global'
+	}.${flattenUUID(key)}`;
 
 	useEffect(() => {
 		setFirstTime(true);
@@ -139,9 +192,9 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 					key,
 					dataProperty?.value
 						? {
-							type: 'VALUE',
-							value: bindingPathPath,
-						}
+								type: 'VALUE',
+								value: bindingPathPath,
+							}
 						: dataProperty.location!,
 					index,
 					locationHistory,
@@ -154,9 +207,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 
 	const isVertical = designType === '_vertical';
 
-	// used for unobserving the div's
 	useEffect(() => {
-		// on load of the images we are attaching the resize observer to each elem, and then storing it in observableList so we can unobserve it.
 		innerSlideItems?.current?.forEach((elem: any, index: number) => {
 			if (elem) {
 				const observer = new ResizeObserver(() => {
@@ -243,6 +294,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 
 		const totalChildren = childrenComponents.length;
 		to = (to + totalChildren) % totalChildren;
+		setCurrentSlide(to);
 
 		for (let i = 0; i < childrenComponents.length; i++) {
 			innerSlideItemContainers.current[i].style.transition = undefined;
@@ -326,7 +378,10 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 					Date.now() - transit.current.executedAt >= slideSpeed + animationDuration)
 			) {
 				const factor = autoPlayDirection === 'backward' ? -1 : 1;
-				applyTransform(transit.current.to + slidesToScroll * factor, factor);
+				const nextSlide =
+					(transit.current.to + slidesToScroll * factor + totalSlides) % totalSlides;
+				setCurrentSlide(nextSlide);
+				applyTransform(nextSlide, factor);
 			}
 			transit.current.timerAt = Date.now();
 		}
@@ -359,25 +414,170 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 		props,
 		prevImage,
 		nextImage,
-		() => applyTransform(transit.current.to - slidesToScroll, -1),
-		() => applyTransform(transit.current.to + slidesToScroll, 1),
+		() => {
+			const prev = (transit.current.to - slidesToScroll + totalSlides) % totalSlides;
+			setCurrentSlide(prev);
+			applyTransform(prev, -1);
+		},
+		() => {
+			const next = (transit.current.to + slidesToScroll) % totalSlides;
+			setCurrentSlide(next);
+			applyTransform(next, 1);
+		},
 	);
+
+	const totalSlides = childrenEntries.length;
+	const visibleCount =
+		indicatorVisibleCount > 0 ? Math.min(indicatorVisibleCount, totalSlides) : totalSlides;
+	let startIdx = 0;
+	if (visibleCount < totalSlides) {
+		startIdx = Math.max(
+			0,
+			Math.min(currentSlide - Math.floor(visibleCount / 2), totalSlides - visibleCount),
+		);
+	}
+	const indicatorIndexes = Array.from({ length: visibleCount }, (_, i) => i + startIdx);
+
+	function IndicatorBar() {
+		if (!showIndicators || totalSlides <= 1) return null;
+		const canScrollPrev = visibleCount < totalSlides && startIdx > 0;
+		const canScrollNext = visibleCount < totalSlides && startIdx + visibleCount < totalSlides;
+		return (
+			<div
+				className={`carousel-indicators position-${indicatorPosition} indicator-container`}
+				role="tablist"
+				aria-label="Carousel indicators"
+				style={resolvedStyles.indicatorContainer ?? {}}
+			>
+				<SubHelperComponent
+					definition={props?.definition}
+					subComponentName="indicatorContainer"
+				/>
+				{showIndicatorArrows && canScrollPrev && (
+					<button
+						className="indicator-nav-btn prev"
+						aria-label="Scroll indicators backward"
+						onClick={e => {
+							e.stopPropagation();
+							const newStart = Math.max(0, startIdx - 1);
+							const newCurrent = Math.max(newStart, currentSlide - 1);
+							setCurrentSlide(newCurrent);
+							applyTransform(newCurrent);
+						}}
+						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
+					>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtn"
+						/>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtnActive"
+						/>
+						{isVertical ? (
+							<i className="fa fa-caret-up" aria-hidden="true" />
+						) : (
+							<i className="fa fa-caret-left" aria-hidden="true" />
+						)}
+					</button>
+				)}
+				{indicatorIndexes.map(idx => {
+					const isActive = idx === currentSlide;
+					let indicatorClass = 'indicator-button';
+					if (isActive) indicatorClass += ' active';
+					if (indicatorShape) indicatorClass += ` shape-${indicatorShape}`;
+					if (indicatorFill) indicatorClass += ` fill-${indicatorFill}`;
+					return (
+						<div
+							key={idx}
+							className={indicatorClass}
+							role="tab"
+							aria-selected={isActive}
+							aria-label={`Go to slide ${idx + 1}`}
+							tabIndex={0}
+							onClick={() => {
+								setCurrentSlide(idx);
+								applyTransform(idx);
+							}}
+							onKeyDown={e => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									setCurrentSlide(idx);
+									applyTransform(idx);
+								}
+							}}
+							style={isActive ? { ...(resolvedStyles.indicatorButton ?? {}), ...(resolvedStyles.indicatorButtonActive ?? {}) } : resolvedStyles.indicatorButton ?? {}}
+						>
+							<SubHelperComponent
+								definition={props?.definition}
+								subComponentName="indicatorButton"
+								key={idx}
+							/>
+							{isActive && (
+								<SubHelperComponent
+									definition={props?.definition}
+									subComponentName="indicatorButtonActive"
+									key={"active" + idx}
+								/>
+							)}
+							{indicatorShowNumbers ? idx + 1 : indicatorShape === 'dash' ? '' : ''}
+						</div>
+					);
+				})}
+				{showIndicatorArrows && canScrollNext && (
+					<button
+						className="indicator-nav-btn next"
+						aria-label="Scroll indicators forward"
+						onClick={e => {
+							e.stopPropagation();
+							const newStart = Math.min(totalSlides - visibleCount, startIdx + 1);
+							const newCurrent = Math.min(
+								newStart + visibleCount - 1,
+								currentSlide + 1,
+							);
+							setCurrentSlide(newCurrent);
+							applyTransform(newCurrent);
+						}}
+						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
+					>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtn"
+						/>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtnActive"
+						/>
+						{isVertical ? (
+							<i className="fa fa-caret-down" aria-hidden="true" />
+						) : (
+							<i className="fa fa-caret-right" aria-hidden="true" />
+						)}
+					</button>
+				)}
+			</div>
+		);
+	}
 
 	return (
 		<div
-			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
-				} `}
+			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${
+				showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
+			} `}
 			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
 			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
 			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
 		>
 			<HelperComponent context={props?.context} definition={definition} />
+			{(indicatorPosition === 'top' || indicatorPosition === 'left') && <IndicatorBar />}
 			{prevButton}
 			{buttonGroup}
 			<div
 				className={`_slidesContainer`}
 				style={{ ...containerDims, ...(resolvedStyles?.containerInnerDiv ?? {}) }}
 				ref={ref}
+				onTouchStart={handleTouchStart}
+				onTouchMove={handleTouchMove}
+				onTouchEnd={handleTouchEnd}
 			>
 				{childrenComponents}
 				<SubHelperComponent
@@ -385,6 +585,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 					subComponentName="slidesContainer"
 				></SubHelperComponent>
 			</div>
+			{(indicatorPosition === 'bottom' || indicatorPosition === 'right') && <IndicatorBar />}
 			{nextButton}
 		</div>
 	);
@@ -421,11 +622,7 @@ function makeArrowButtons(
 			arrowButtonsHorizontalPlacement === '_middleArrow')
 	) {
 		prevButton = (
-			<div
-				className="_arrowButtons _prev"
-				style={resolvedStyles?.prevButton ?? {}}
-				onClick={onPrevClick}
-			>
+			<div className="_arrowButtons _prev" onClick={onPrevClick}>
 				{prevImage ? (
 					<img src={getSrcUrl(prevImage)} alt="prev" />
 				) : isVertical ? (
@@ -440,11 +637,7 @@ function makeArrowButtons(
 			</div>
 		);
 		nextButton = (
-			<div
-				className="_arrowButtons _next"
-				style={resolvedStyles?.nextButton ?? {}}
-				onClick={onNextClick}
-			>
+			<div className="_arrowButtons _next" onClick={onNextClick}>
 				{nextImage ? (
 					<img src={getSrcUrl(nextImage)} alt="next" />
 				) : isVertical ? (
@@ -460,49 +653,38 @@ function makeArrowButtons(
 		);
 
 		return { prevButton, nextButton };
-	} else if (arrowButtonsPlacement === '_insideArrow') {
-		buttonGroup = (
-			<div className="_arrowButtonGroup">
-				<div
-					className="_arrowButtons _prev"
-					style={resolvedStyles?.prevButton ?? {}}
-					onClick={onPrevClick}
-				>
-					{prevImage ? (
-						<img src={getSrcUrl(prevImage)} alt="prev" />
-					) : isVertical ? (
-						<UpArrow />
-					) : (
-						<LeftArrow />
-					)}
-					<SubHelperComponent
-						definition={props?.definition}
-						subComponentName="prevButton"
-					></SubHelperComponent>
-				</div>
-				<div
-					className="_arrowButtons _next"
-					style={resolvedStyles?.nextButton ?? {}}
-					onClick={onNextClick}
-				>
-					{nextImage ? (
-						<img src={getSrcUrl(nextImage)} alt="next" />
-					) : isVertical ? (
-						<DownArrow />
-					) : (
-						<RightArrow />
-					)}
-					<SubHelperComponent
-						definition={props?.definition}
-						subComponentName="nextButton"
-					></SubHelperComponent>
-				</div>
-			</div>
-		);
-		return { buttonGroup };
 	}
-
-	return {};
+	buttonGroup = (
+		<div className="_arrowButtonGroup">
+			<div className="_arrowButtons _prev" onClick={onPrevClick}>
+				{prevImage ? (
+					<img src={getSrcUrl(prevImage)} alt="prev" />
+				) : isVertical ? (
+					<UpArrow />
+				) : (
+					<LeftArrow />
+				)}
+				<SubHelperComponent
+					definition={props?.definition}
+					subComponentName="prevButton"
+				></SubHelperComponent>
+			</div>
+			<div className="_arrowButtons _next" onClick={onNextClick}>
+				{nextImage ? (
+					<img src={getSrcUrl(nextImage)} alt="next" />
+				) : isVertical ? (
+					<DownArrow />
+				) : (
+					<RightArrow />
+				)}
+				<SubHelperComponent
+					definition={props?.definition}
+					subComponentName="nextButton"
+				></SubHelperComponent>
+			</div>
+		</div>
+	);
+	return { buttonGroup };
 }
 
 function calculateMinDimensions(
@@ -667,6 +849,36 @@ const component: Component = {
 			displayName: 'Slide Item',
 			description: 'Each Slides in the Slider',
 			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'indicatorContainer',
+			displayName: 'Indicator Container',
+			description: 'Container for slide indicators',
+			icon: 'fa-solid fa-circle',
+		},
+		{
+			name: 'indicatorButton',
+			displayName: 'Indicator Button',
+			description: 'Individual indicator button',
+			icon: 'fa-solid fa-circle',
+		},
+		{
+			name: 'indicatorButtonActive',
+			displayName: 'Active Indicator Button',
+			description: 'Active indicator button',
+			icon: 'fa-solid fa-circle-dot',
+		},
+		{
+			name: 'indicatorNavBtn',
+			displayName: 'Indicator Navigation Arrow',
+			description: 'Indicator navigation arrow button',
+			icon: 'fa-solid fa-arrow-right-arrow-left',
+		},
+		{
+			name: 'indicatorNavBtnActive',
+			displayName: 'Active Indicator Navigation Arrow',
+			description: 'Active indicator navigation arrow button',
+			icon: 'fa-solid fa-arrow-right-arrow-left',
 		},
 	],
 	stylePropertiesForTheme: styleProperties,

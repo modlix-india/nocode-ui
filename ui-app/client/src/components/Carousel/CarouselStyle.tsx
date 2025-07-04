@@ -310,7 +310,87 @@ export default function CarouselStyle({
         left: 100%;
     }
 
+    ${PREFIX} .indicator-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+        user-select: none;
+    }
+    ${PREFIX} .indicator-button {
+        width: 16px;
+        height: 16px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #888;
+        color: #888;
+        font-weight: normal;
+        cursor: pointer;
+        margin: 2px;
+        box-sizing: border-box;
+        outline: none;
+        background: transparent;
+        transition: background 0.2s, color 0.2s, border 0.2s;
+    }
+    ${PREFIX} .indicator-button.active {
+        background: #888;
+        color: #fff;
+        font-weight: bold;
+        outline: 2px solid #333;
+        border-color: #888;
+    }
+    ${PREFIX} .indicator-button.shape-circle {
+        border-radius: 50%;
+    }
+    ${PREFIX} .indicator-button.shape-square {
+        border-radius: 4px;
+    }
+    ${PREFIX} .indicator-button.shape-dash {
+        border-radius: 2px;
+        width: 24px;
+        height: 6px;
+    }
+    ${PREFIX} .indicator-button.shape-none {
+        border: none;
+        background: none;
+        width: 24px;
+        height: 16px;
+    }
+    ${PREFIX} .indicator-button.fill-outline {
+        background: transparent;
+    }
+    ${PREFIX} .indicator-button.fill-solid:not(.active) {
+        background: #eee;
+    }
 
+    ${PREFIX} .indicator-nav-btn {
+        background: none !important;
+        border: none !important;
+        box-shadow: none;
+        color: #444;
+        font-size: 1.2em;
+        padding: 2px 8px;
+        margin: 0 2px;
+        border-radius: 4px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.2s;
+    }
+    ${PREFIX} .indicator-nav-btn:focus {
+        outline: 2px solid #888;
+    }
+    ${PREFIX} .indicator-nav-btn:hover {
+        color: #111;
+        background: none;
+    }
+    ${PREFIX} .indicator-nav-btn:active {
+        color: #000;
+        background: none;
+    }
+    /* Subcomponent helper styling for indicatorContainer, indicatorButton, and indicator-nav-btn is supported via stylePropertiesDefinition. */
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="CarouselCss">{css}</style>;
 }
