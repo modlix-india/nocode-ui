@@ -1,6 +1,47 @@
 import { StylePropertyDefinition } from '../../types/common';
 
-export const styleProperties: Array<StylePropertyDefinition> = [];
+export const styleProperties: Array<StylePropertyDefinition> = [
+	{
+		n: 'tooltipBackgroundColor',
+		cp: 'background-color',
+		dn: 'Tooltip Background Color',
+		de: 'Background color of the tooltip',
+		dv: 'rgba(0, 0, 0, 0.8)',
+		sel: '._tooltip',
+	},
+	{
+		n: 'tooltipTextColor',
+		cp: 'color',
+		dn: 'Tooltip Text Color',
+		de: 'Text color of the tooltip',
+		dv: '#fff',
+		sel: '._tooltip',
+	},
+	{
+		n: 'tooltipBorderRadius',
+		cp: 'border-radius',
+		dn: 'Tooltip Border Radius',
+		de: 'Border radius of the tooltip',
+		dv: '4px',
+		sel: '._tooltip',
+	},
+	{
+		n: 'tooltipPadding',
+		cp: 'padding',
+		dn: 'Tooltip Padding',
+		de: 'Padding inside the tooltip',
+		dv: '6px 10px',
+		sel: '._tooltip',
+	},
+	{
+		n: 'tooltipBoxShadow',
+		cp: 'box-shadow',
+		dn: 'Tooltip Shadow',
+		de: 'Box shadow for the tooltip',
+		dv: '0 2px 5px rgba(0, 0, 0, 0.2)',
+		sel: '._tooltip',
+	},
+];
 export const styleDefaults = new Map<string, string>();
 
 export const stylePropertiesForTheme: Array<StylePropertyDefinition> = [
