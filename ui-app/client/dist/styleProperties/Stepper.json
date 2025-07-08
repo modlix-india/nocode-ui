@@ -343,7 +343,136 @@
 		"sel": ".comp.compStepper._big_circle ._step",
 		"np": true
 	},
-
+{
+  "gn": "Stepper Step Line Height",
+  "dn": "Stepper Step Line Height Design Default Primary",
+  "n": "stepperStepLineHeightDesignDefaultPrimary",
+  "dv": "2px",
+  "cp": "height",
+  "sel": ".comp.compStepper._default._primary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Height",
+  "dn": "Stepper Step Line Height Design Default Secondary",
+  "n": "stepperStepLineHeightDesignDefaultSecondary",
+  "dv": "5px",
+  "cp": "height",
+  "sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Height",
+  "dn": "Stepper Step Line Height Design Default Tertiary",
+  "n": "stepperStepLineHeightDesignDefaultTertiary",
+  "dv": "2px",
+  "cp": "height",
+  "sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Height",
+  "dn": "Stepper Step Line Height Design Default Quaternary",
+  "n": "stepperStepLineHeightDesignDefaultQuaternary",
+  "dv": "2px",
+  "cp": "height",
+  "sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Height",
+  "dn": "Stepper Step Line Height Design Default Quinary",
+  "n": "stepperStepLineHeightDesignDefaultQuinary",
+  "dv": "2px",
+  "cp": "height",
+  "sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Min Width",
+  "dn": "Stepper Step Line Min Width Design Default Primary",
+  "n": "stepperStepLineMinWidthDesignDefaultPrimary",
+  "dv": "30px",
+  "cp": "min-width",
+  "sel": ".comp.compStepper._default._primary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Min Width",
+  "dn": "Stepper Step Line Min Width Design Default Secondary",
+  "n": "stepperStepLineMinWidthDesignDefaultSecondary",
+  "dv": "30px",
+  "cp": "min-width",
+  "sel": ".comp.compStepper._default._secondary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Min Width",
+  "dn": "Stepper Step Line Min Width Design Default Tertiary",
+  "n": "stepperStepLineMinWidthDesignDefaultTertiary",
+  "dv": "30px",
+  "cp": "min-width",
+  "sel": ".comp.compStepper._default._tertiary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Min Width",
+  "dn": "Stepper Step Line Min Width Design Default Quaternary",
+  "n": "stepperStepLineMinWidthDesignDefaultQuaternary",
+  "dv": "30px",
+  "cp": "min-width",
+  "sel": ".comp.compStepper._default._quaternary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Line Min Width",
+  "dn": "Stepper Step Line Min Width Design Default Quinary",
+  "n": "stepperStepLineMinWidthDesignDefaultQuinary",
+  "dv": "30px",
+  "cp": "min-width",
+  "sel": ".comp.compStepper._default._quinary._horizontal ._listItem ._line",
+  "np": true
+ },
+ {
+  "gn":"Stepper Step Circle Box Shadow",
+  "dn": "Stepper Step Circle Box Shadow Design Default Primary",
+  "n": "stepperStepCircleBoxShadowDesignDefaultPrimary",
+  "cp": "box-shadow",
+  "sel": ".comp.compStepper._default._primary ._step",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Circle Box Shadow",
+  "dn": "Stepper Step Circle Box Shadow Design Default Secondary",
+  "n": "stepperStepCircleBoxShadowDesignDefaultSecondary",
+  "cp": "box-shadow",
+  "sel": ".comp.compStepper._default._secondary ._step",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Circle Box Shadow",
+  "dn": "Stepper Step Circle Box Shadow Design Default Tertiary",
+  "n": "stepperStepCircleBoxShadowDesignDefaultTertiary",
+  "cp": "box-shadow",
+  "sel": ".comp.compStepper._default._tertiary ._step",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Circle Box Shadow",
+  "dn": "Stepper Step Circle Box Shadow Design Default Quaternary",
+  "n": "stepperStepCircleBoxShadowDesignDefaultQuaternary",
+  "cp": "box-shadow",
+  "sel": ".comp.compStepper._default._quaternary ._step",
+  "np": true
+ },
+ {
+  "gn": "Stepper Step Circle Box Shadow",
+  "dn": "Stepper Step Circle Box Shadow Design Default Quinary",
+  "n": "stepperStepCircleBoxShadowDesignDefaultQuinary",
+  "cp": "box-shadow",
+  "sel": ".comp.compStepper._default._quinary ._step",
+  "np": true
+ },
 	{
 		"gn": "Stepper Step Line Min Width",
 		"dn": "Stepper Step Line Min Width Design Default",
