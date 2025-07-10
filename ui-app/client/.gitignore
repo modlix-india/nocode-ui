@@ -9,3 +9,4 @@ report/**
 reports/**
 stats.json
 dist/*.txt
+coverage/**
