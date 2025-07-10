@@ -37,6 +37,7 @@ import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import ArrayRepeaterStyle from './ArrayRepeaterStyle';
 import { styleProperties, styleDefaults } from './arrayRepeaterStyleProperties';
+import { putDataInObject } from '../util/putDataInObject';
 
 function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -314,9 +315,10 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 					newData[i][0] = repeaterData[i][0];
 				} else if (orderKey) {
 					dvExtractor.setData(repeaterData[i][1]);
-					newData[i][1][orderKey] = new ExpressionEvaluator(`Data.${orderKey}`).evaluate(
-						valuesMap!,
-					);
+					const value =
+						new ExpressionEvaluator(`Data.${orderKey}`).evaluate(valuesMap!) ?? i;
+					putDataInObject(newData[i][1], value, orderKey);
+					console.log(newData[i][1], orderKey, value);
 				}
 			}
 		} else if (orderKey) {
@@ -326,7 +328,9 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 				if (orderKey === '__index') {
 					newData[i][0] = (isAssending ? i : newData.length - i - 1) + add;
 				} else {
-					newData[i][1][orderKey] = (isAssending ? i : newData.length - i - 1) + add;
+					const value = (isAssending ? i : newData.length - i - 1) + add;
+					putDataInObject(newData[i][1], value, orderKey);
+					console.log(newData[i][1], orderKey, value);
 				}
 			}
 			if (!isAssending) newData.reverse();
@@ -773,6 +777,7 @@ function processArrayValue(
 				dvExtractor.setData(e[1]);
 				const ev = new ExpressionEvaluator(`Data.${orderKey}`);
 				const value = ev.evaluate(valuesMap);
+				console.log(value, e);
 				return [value, e];
 			})
 			.sort((a, b) => {
