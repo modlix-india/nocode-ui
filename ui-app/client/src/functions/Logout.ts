@@ -5,6 +5,7 @@ import {
 	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
+	Parameter,
 	Schema,
 } from '@fincity/kirun-js';
 import axios from 'axios';
@@ -12,7 +13,10 @@ import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
 
-const SIGNATURE = new FunctionSignature('Logout').setNamespace(NAMESPACE_UI_ENGINE).setEvents(
+const SIGNATURE = new FunctionSignature('Logout')
+	.setParameters(new Map([
+		Parameter.ofEntry('ssoLogout', Schema.ofBoolean('ssoLogout').setDefaultValue(false)),]))
+	.setNamespace(NAMESPACE_UI_ENGINE).setEvents(
 	new Map([
 		Event.eventMapEntry(Event.OUTPUT, new Map()),
 		Event.eventMapEntry(
@@ -44,8 +48,10 @@ export class Logout extends AbstractFunction {
 			const headers: any = { AUTHORIZATION: token };
 			if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 
+			const ssoLogout: boolean = context.getArguments()?.get('ssoLogout');
+
 			const response = await axios({
-				url: 'api/security/revoke',
+				url: `api/security/revoke?ssoLogout=${ssoLogout ? 'true' : 'false'}`,
 				method: 'GET',
 				headers,
 			});
