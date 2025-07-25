@@ -460,8 +460,9 @@ function Otp(props: Readonly<ComponentProps>) {
 			{Array.from({ length: otpLength }).map((_, index) => (
 				<input
 					autoFocus={autoFocus === true && index === 0}
-					type="text"
+					type={valueType == 'NUMERIC' ? 'tel' : 'text'}
 					name="otp"
+					inputMode={valueType == 'NUMERIC' ? 'numeric' : undefined}
 					maxLength={1}
 					key={index}
 					disabled={readOnly}
