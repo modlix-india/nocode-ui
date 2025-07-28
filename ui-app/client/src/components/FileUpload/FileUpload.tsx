@@ -154,16 +154,6 @@ function FileUpload(props: Readonly<ComponentProps>) {
 				true,
 			);
 		}
-		if (!msgs.length && fileValue && uploadImmediatelyEvent) {
-			(async () =>
-				await runEvent(
-					uploadImmediatelyEvent,
-					key,
-					props.context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				))();
-		}
 
 		return () =>
 			setData(
@@ -291,6 +281,16 @@ function FileUpload(props: Readonly<ComponentProps>) {
 
 	const onChangeFile = (event: ChangeEvent<HTMLInputElement>) => {
 		setOtherBindingPaths(event.target.files);
+		if (uploadImmediatelyEvent) {
+			(async () =>
+				await runEvent(
+					uploadImmediatelyEvent,
+					key,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		}
 		if (!event.target.files?.length || !bindingPathPath) return;
 		setFiles(event.target.files);
 	};
