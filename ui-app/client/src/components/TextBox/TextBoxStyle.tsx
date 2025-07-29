@@ -133,6 +133,16 @@ export default function TextBoxStyle({
 		margin-top: 5px;
 	}
 
+	${PREFIX} ._controlButtons {
+		display: none;
+		margin-right: 5px;
+	}
+
+	${PREFIX}:hover ._controlButtons,
+	${PREFIX}._editMode ._controlButtons {
+		display: flex;
+	}
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TextBoxCss">{css}</style>;
