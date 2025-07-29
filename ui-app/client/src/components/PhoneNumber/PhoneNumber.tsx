@@ -57,7 +57,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
-			updateStoreImmediately: upStoreImm,
 			removeKeyWhenEmpty,
 			emptyValue,
 			supportingText,
@@ -90,6 +89,9 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			noCodeForFirstCountry,
 			showMandatoryAsterisk,
 			storeDialCodeWithNumber,
+			editRequestIcon,
+			editConfirmIcon,
+			editCancelIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -226,7 +228,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
 	const enterEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
 	const clearEvent = onClear ? props.pageDefinition.eventFunctions?.[onClear] : undefined;
-	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
 	const callChangeEvent = useCallback(() => {
 		if (!changeEvent) return;
@@ -280,9 +281,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		if (!enterEvent || isLoading || e.key !== 'Enter') return;
-		if (!updateStoreImmediately) {
-			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
-		}
 		await runEvent(
 			enterEvent,
 			onEnter,
@@ -501,7 +499,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		if (event?.target.value === '' && removeKeyWhenEmpty) {
 			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(undefined, true);
-		} else if (!text && !updateStoreImmediately) {
+		} else if (!text) {
 			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(text);
 		} else if (text && text.startsWith('+')) {
@@ -513,7 +511,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			bindingPathPath &&
 				setData(bindingPathPath, storeDialCodeWithNumber ? temp : phone, context?.pageName);
 			callChangeEvent();
-		} else if (!updateStoreImmediately) {
+		} else {
 			let temp = format
 				? selected.D +
 					(storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
@@ -535,25 +533,47 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		text = text === '' && emptyValue ? mapValue[emptyValue] : getUnformattedNumber(text);
 		let formattedText = getFormattedNumber(text, selected.D);
 
-		if (!text && updateStoreImmediately) {
+		if (!text && editOn) {
 			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(text);
-		} else if (!text && !updateStoreImmediately) {
+		} else if (!text && !editOn) {
 			setPhoneNumber('');
-		} else if (!text.startsWith('+') && updateStoreImmediately) {
-			let temp = format
-				? selected.D + (storeFormatted ? seperator + formattedText : text)
-				: selected.D + text;
-			updateBindingPathData(storeDialCodeWithNumber ? temp : text);
-		} else if (!text.startsWith('+') && !updateStoreImmediately) {
+		} else if (editOn) {
+			if (text.startsWith('+')) {
+				let { dc, phone } = extractDCAndPhone(text);
+				let temp =
+					format && text !== phone
+						? dc + (storeFormatted ? seperator + getFormattedNumber(phone, dc) : phone)
+						: dc + phone;
+				bindingPathPath &&
+					setData(
+						bindingPathPath,
+						storeDialCodeWithNumber ? temp : phone,
+						context?.pageName,
+					);
+				callChangeEvent();
+			} else {
+				let temp = format
+					? selected.D + (storeFormatted ? seperator + formattedText : text)
+					: selected.D + text;
+				updateBindingPathData(storeDialCodeWithNumber ? temp : text);
+			}
+		} else if (!text.startsWith('+') && !editOn) {
 			let temp = format ? formattedText : text;
 			setPhoneNumber(temp);
 		} else {
 			setPhoneNumber(text);
 		}
 	};
+
+	const [editMode, setEditMode] = useState(false);
+	const [editModeSelectedCountry, setEditModeSelectedCountry] = useState(selected);
+	const editOn = designType === '_editOnReq';
+
 	const handleCountryChange = (v: DropdownOption) => {
 		setSelected(v);
+		if (editOn) return;
+
 		lastSelectedCountry.current = v;
 		countryMap.current.clear();
 		countryMap.current.set(v.D, v);
@@ -587,7 +607,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			onChange={handleCountryChange}
 			options={countryList}
 			isSearchable={isSearchable}
-			readOnly={readOnly}
+			readOnly={editOn ? !editMode : readOnly}
 			searchLabel={searchLabel}
 			clearSearchTextOnClose={clearSearchTextOnClose}
 			computedStyles={computedStyles}
@@ -608,7 +628,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			noFloat={noFloat}
 			readOnly={readOnly}
 			value={phoneNumber}
-			label={label}
+			label={editOn ? '' : label}
 			translations={translations}
 			valueType={'tel'}
 			placeholder={placeholder}
@@ -629,7 +649,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			autoComplete={autoComplete}
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
-			hideClearContentIcon={hideClearButton}
+			hideClearContentIcon={editOn ? true : hideClearButton}
 			maxChars={maxChars}
 			showDropdown={dropdownOpen}
 			leftChildren={leftChildren}
@@ -639,6 +659,18 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 					? true
 					: false
 			}
+			showEditRequest={editOn}
+			editRequestIcon={editRequestIcon}
+			editConfirmIcon={editConfirmIcon}
+			editCancelIcon={editCancelIcon}
+			onEditRequest={(editMode, canceled) => {
+				setEditMode(editMode);
+				if (editMode) {
+					setEditModeSelectedCountry(selected);
+				} else if (canceled) {
+					setSelected(editModeSelectedCountry);
+				}
+			}}
 		/>
 	);
 }
@@ -786,6 +818,30 @@ const component: Component = {
 			name: 'errorTextContainer',
 			displayName: 'Error Text Container',
 			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editRequestIcon',
+			displayName: 'Edit Request Icon',
+			description: 'Edit Request Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmIcon',
+			displayName: 'Edit Confirm Icon',
+			description: 'Edit Confirm Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editCancelIcon',
+			displayName: 'Edit Cancel Icon',
+			description: 'Edit Cancel Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmCancelContainer',
+			displayName: 'Edit Confirm Cancel Container',
+			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
 	],
