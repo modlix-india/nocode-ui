@@ -53,6 +53,7 @@ type CommonInputType = {
 	editRequestIcon?: any;
 	editConfirmIcon?: any;
 	editCancelIcon?: any;
+	onEditRequest?: (editMode: boolean, canceled: boolean) => void;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -105,6 +106,7 @@ function CommonInputText(props: CommonInputType) {
 		editRequestIcon,
 		editConfirmIcon,
 		editCancelIcon,
+		onEditRequest,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -172,9 +174,13 @@ function CommonInputText(props: CommonInputType) {
 			}
 		: undefined;
 
-	const [editMode, setEditMode] = useState(!showEditRequest);
+	const [editModeOriginal, setEditModeOriginal] = useState(!showEditRequest);
+	const setEditMode = (editMode: boolean, canceled: boolean) => {
+		setEditModeOriginal(editMode);
+		onEditRequest?.(editMode, canceled);
+	};
 	const [editModeValue, setEditModeValue] = useState(value);
-	const disabled = readOnly || !editMode;
+	const disabled = readOnly || (showEditRequest && !editModeOriginal);
 
 	const internalRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
@@ -186,9 +192,9 @@ function CommonInputText(props: CommonInputType) {
 					valueType === 'NUMBER' ? 'remove-spin-button' : ''
 				}`}
 				type={isPassword && !showPassword ? 'password' : valueType ? valueType : 'text'}
-				value={showEditRequest && editMode ? editModeValue : value}
+				value={showEditRequest && editModeOriginal ? editModeValue : value}
 				onChange={
-					showEditRequest && editMode
+					showEditRequest && editModeOriginal
 						? event => setEditModeValue(event.target.value)
 						: handleChangeEvent
 				}
@@ -199,14 +205,14 @@ function CommonInputText(props: CommonInputType) {
 					showEditRequest
 						? event => {
 								if (event.key === 'Enter') {
-									setEditMode(false);
+									setEditMode(false, false);
 									handleChangeEvent({
 										target: {
 											value: editModeValue,
 										},
 									} as any);
 								} else if (event.key === 'Escape') {
-									setEditMode(false);
+									setEditMode(false, true);
 									setEditModeValue(value);
 								}
 							}
@@ -226,9 +232,9 @@ function CommonInputText(props: CommonInputType) {
 				className={`_inputBox ${noFloat ? '' : 'float'} ${
 					valueType === 'NUMBER' ? 'remove-spin-button' : ''
 				}`}
-				value={showEditRequest && editMode ? editModeValue : value}
+				value={showEditRequest && editModeOriginal ? editModeValue : value}
 				onChange={
-					showEditRequest && editMode
+					showEditRequest && editModeOriginal
 						? event => setEditModeValue(event.target.value)
 						: handleChangeEvent
 				}
@@ -239,14 +245,14 @@ function CommonInputText(props: CommonInputType) {
 					showEditRequest
 						? event => {
 								if (event.key === 'Enter') {
-									setEditMode(false);
+									setEditMode(false, false);
 									handleChangeEvent({
 										target: {
 											value: editModeValue,
 										},
 									} as any);
 								} else if (event.key === 'Escape') {
-									setEditMode(false);
+									setEditMode(false, true);
 									setEditModeValue(value);
 								}
 							}
@@ -267,14 +273,14 @@ function CommonInputText(props: CommonInputType) {
 
 	if (showEditRequest && !readOnly) {
 		let internalButtons = undefined;
-		if (editMode) {
+		if (editModeOriginal) {
 			internalButtons = (
 				<>
 					<i
 						style={computedStyles.editConfirmIcon ?? {}}
 						className={`_editConfirmIcon _leftIcon ${editConfirmIcon} ${handleLeftIcon ? '_pointer' : ''}`}
 						onClick={() => {
-							setEditMode(false);
+							setEditMode(false, false);
 							handleChangeEvent?.({
 								target: {
 									value: editModeValue,
@@ -291,7 +297,7 @@ function CommonInputText(props: CommonInputType) {
 						style={computedStyles.editCancelIcon ?? {}}
 						className={`_editCancelIcon _leftIcon ${editCancelIcon} ${handleLeftIcon ? '_pointer' : ''}`}
 						onClick={() => {
-							setEditMode(false);
+							setEditMode(false, true);
 							setEditModeValue(value);
 						}}
 					>
@@ -308,7 +314,7 @@ function CommonInputText(props: CommonInputType) {
 					style={computedStyles.editRequestIcon ?? {}}
 					className={`_editRequestIcon _leftIcon ${editRequestIcon} ${handleLeftIcon ? '_pointer' : ''}`}
 					onClick={() => {
-						setEditMode(true);
+						setEditMode(true, false);
 						setEditModeValue(value);
 						setTimeout(() => {
 							inputRef?.current?.focus();
@@ -341,7 +347,7 @@ function CommonInputText(props: CommonInputType) {
 				!focus && value?.toString()?.length ? '_hasValue' : ''
 			} ${!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''} ${
 				hasErrorMessages ? '_hasError' : ''
-			} ${readOnly ? '_readOnly' : ''} ${showEditRequest && editMode ? '_editMode' : ''}`}
+			} ${readOnly ? '_readOnly' : ''} ${showEditRequest && editModeOriginal ? '_editMode' : ''}`}
 			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
 			onMouseEnter={onMouseEnter}

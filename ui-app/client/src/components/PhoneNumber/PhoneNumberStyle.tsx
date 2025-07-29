@@ -179,6 +179,17 @@ export default function PhoneNumberStyle({
 		
 	}
 
+	${PREFIX} ._controlButtons {
+		display: none;
+		margin-right: 5px;
+	}
+
+	${PREFIX}:hover ._controlButtons,
+	${PREFIX}._editMode ._controlButtons {
+		display: flex;
+	}
+
+
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PhoneNumbeCSS">{css}</style>;
