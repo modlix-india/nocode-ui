@@ -1,4 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { isNullValue } from '@fincity/kirun-js';
+import React, { useCallback, useEffect, useState } from 'react';
+import CommonInputText from '../../commonComponents/CommonInputText';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -7,22 +10,17 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
-import TextBoxStyle from './TextBoxStyle';
-import useDefinition from '../util/useDefinition';
-import { isNullValue } from '@fincity/kirun-js';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
-import { flattenUUID } from '../util/uuid';
-import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
-import CommonInputText from '../../commonComponents/CommonInputText';
-import { styleProperties, styleDefaults, stylePropertiesForTheme } from './textBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
+import TextBoxStyle from './TextBoxStyle';
+import { styleDefaults, stylePropertiesForTheme } from './textBoxStyleProperties';
 
 const REGEX_NUMBER = /^(?![.,])[0-9.,]+$/;
 
@@ -81,6 +79,9 @@ function TextBox(props: Readonly<ComponentProps>) {
 			onRightIconClick,
 			showMandatoryAsterisk,
 			numberFormat,
+			editRequestIcon,
+			editConfirmIcon,
+			editCancelIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -206,6 +207,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 	const onRightIconEvent = onRightIconClick
 		? props.pageDefinition.eventFunctions?.[onRightIconClick]
 		: undefined;
+
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
 	const callChangeEvent = useCallback(() => {
@@ -427,6 +429,8 @@ function TextBox(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	const editOn = designType === '_editOnReq';
+
 	return (
 		<>
 			{style}
@@ -436,7 +440,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 				noFloat={noFloat}
 				readOnly={readOnly}
 				value={value}
-				label={label}
+				label={editOn ? '' : label}
 				translations={translations}
 				leftIcon={leftIcon}
 				rightIcon={rightIcon}
@@ -460,7 +464,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 				autoComplete={autoComplete}
 				autoFocus={autoFocus}
 				hasValidationCheck={validation?.length > 0}
-				hideClearContentIcon={hideClearButton}
+				hideClearContentIcon={editOn ? true : hideClearButton}
 				maxChars={maxChars}
 				handleLeftIcon={handleLeftIcon}
 				handleRightIcon={handleRightIcon}
@@ -472,6 +476,10 @@ function TextBox(props: Readonly<ComponentProps>) {
 						? true
 						: false
 				}
+				showEditRequest={editOn}
+				editRequestIcon={editRequestIcon}
+				editConfirmIcon={editConfirmIcon}
+				editCancelIcon={editCancelIcon}
 			/>
 		</>
 	);
@@ -573,6 +581,30 @@ const component: Component = {
 			name: 'errorTextContainer',
 			displayName: 'Error Text Container',
 			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editRequestIcon',
+			displayName: 'Edit Request Icon',
+			description: 'Edit Request Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmIcon',
+			displayName: 'Edit Confirm Icon',
+			description: 'Edit Confirm Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editCancelIcon',
+			displayName: 'Edit Cancel Icon',
+			description: 'Edit Cancel Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmCancelContainer',
+			displayName: 'Edit Confirm Cancel Container',
+			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
 	],
