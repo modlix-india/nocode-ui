@@ -760,7 +760,7 @@
 	},
 	{
 		"cp": "color",
-		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._errorIcon._rightIcon, .comp.compPhoneNumber<designType><colorScheme>._isActive ._errorIcon._rightIcon, .comp.compPhoneNumber<designType><colorScheme>._hasValue ._errorIcon._rightIcon",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._errorIcon._leftIcon, .comp.compPhoneNumber<designType><colorScheme>._isActive ._errorIcon._leftIcon, .comp.compPhoneNumber<designType><colorScheme>._hasValue ._errorIcon._leftIcon",
 		"np": true,
 		"spv": {
 			"_default-": "<errorColor>",
@@ -771,7 +771,49 @@
 		},
 		"gn": "Color",
 		"dn": "Color Error Right Icon",
-		"n": "phoneNumberColorErrorRightIcon<designType><colorScheme>"
+		"n": "phoneNumberColorErrorLeftIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {},
+		"gn": "Color",
+		"dn": "Right Icon Color",
+		"n": "phoneNumberLeftIconColor<designType><colorScheme>",
+		"dv": "<fontColorSix>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compPhoneNumber<designType>._isActive<colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_tertiary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>",
+			"_filled-_quinary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Active Right Icon Color",
+		"n": "phoneNumberActiveLeftIconColor<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compPhoneNumber<designType>._hasValue<colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_tertiary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>",
+			"_filled-_quinary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Value Right Icon Color",
+		"n": "phoneNumberValueLeftIconColor<designType><colorScheme>",
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "border-left",
@@ -840,7 +882,7 @@
 	},
 	{
 		"cp": "color",
-		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._successIcon._rightIcon, .comp.compPhoneNumber<designType><colorScheme>._isActive ._successIcon._rightIcon, .comp.compPhoneNumber<designType><colorScheme>._hasValue ._successIcon._rightIcon",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._successIcon._leftIcon, .comp.compPhoneNumber<designType><colorScheme>._isActive ._successIcon._leftIcon, .comp.compPhoneNumber<designType><colorScheme>._hasValue ._successIcon._leftIcon",
 		"np": true,
 		"spv": {
 			"_default-": "<successColor>",
@@ -851,7 +893,7 @@
 		},
 		"gn": "Color",
 		"dn": "Color Success Right Icon",
-		"n": "phoneNumberColorSuccessRightIcon<designType><colorScheme>"
+		"n": "phoneNumberColorSuccessLeftIcon<designType><colorScheme>"
 	},
 	{
 		"cp": "font",
