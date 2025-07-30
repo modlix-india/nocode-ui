@@ -47,7 +47,19 @@ export default function CalendarStyle({
 		return () => usedComponents.deRegister(NAME);
 	}, [setReRender]);
 
-	const css = processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+	const css =
+		`
+	${PREFIX} ._controlButtons {
+		display: none;
+		margin-right: 5px;
+	}
+
+	${PREFIX}:hover ._controlButtons,
+	${PREFIX}._editMode ._controlButtons {
+		display: flex;
+	}
+
+	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return (
 		<>
