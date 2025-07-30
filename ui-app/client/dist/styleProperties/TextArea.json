@@ -144,7 +144,11 @@
 			"_filled-_secondary": "<fontColorFour>",
 			"_filled-_tertiary": "<fontColorFive>",
 			"_filled-_quaternary": "<fontColorNine>",
-			"_filled-_quinary": "<fontColorSeven>"
+			"_filled-_quinary": "<fontColorSeven>",
+			"_editOnReq-_secondary": "<fontColorFour>",
+			"_editOnReq-_tertiary": "<fontColorFive>",
+			"_editOnReq-_quaternary": "<fontColorNine>",
+			"_editOnReq-_quinary": "<fontColorSeven>"
 		},
 		"gn": "Color",
 		"dn": "Color SupportText Value",
@@ -265,7 +269,11 @@
 			"_filled-_secondary": "<fontColorFour>",
 			"_filled-_tertiary": "<fontColorFive>",
 			"_filled-_quaternary": "<fontColorNine>",
-			"_filled-_quinary": "<fontColorSeven>"
+			"_filled-_quinary": "<fontColorSeven>",
+			"_editOnReq-_secondary": "<fontColorFour>",
+			"_editOnReq-_tertiary": "<fontColorFive>",
+			"_editOnReq-_quaternary": "<fontColorNine>",
+			"_editOnReq-_quinary": "<fontColorSeven>"
 		},
 		"gn": "Color",
 		"dn": "Color SupportText Active",

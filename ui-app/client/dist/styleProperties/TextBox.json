@@ -422,7 +422,11 @@
 			"_bigDesign1-_secondary": "<fontColorFour>",
 			"_bigDesign1-_tertiary": "<fontColorFive>",
 			"_bigDesign1-_quaternary": "<fontColorNine>",
-			"_bigDesign1-_quinary": "<fontColorSeven>"
+			"_bigDesign1-_quinary": "<fontColorSeven>",
+			"_text-_secondary": "<fontColorFour>",
+			"_text-_tertiary": "<fontColorFive>",
+			"_text-_quaternary": "<fontColorNine>",
+			"_text-_quinary": "<fontColorSeven>"
 		},
 		"gn": "Color",
 		"dn": "Value Support Text Color",
