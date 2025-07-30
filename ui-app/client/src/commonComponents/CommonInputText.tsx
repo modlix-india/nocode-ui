@@ -244,14 +244,7 @@ function CommonInputText(props: CommonInputType) {
 				onKeyUp={
 					showEditRequest
 						? event => {
-								if (event.key === 'Enter') {
-									setEditMode(false, false);
-									handleChangeEvent({
-										target: {
-											value: editModeValue,
-										},
-									} as any);
-								} else if (event.key === 'Escape') {
+								if (event.key === 'Escape') {
 									setEditMode(false, true);
 									setEditModeValue(value);
 								}

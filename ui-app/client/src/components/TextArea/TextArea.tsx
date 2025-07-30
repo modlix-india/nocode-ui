@@ -11,13 +11,13 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { IconHelper } from '../util/IconHelper';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
-import { styleProperties, styleDefaults, stylePropertiesForTheme } from './textAreaStyleProperties';
-import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { styleDefaults, stylePropertiesForTheme } from './textAreaStyleProperties';
 
 interface mapType {
 	[key: string]: any;
@@ -66,6 +66,9 @@ function TextArea(props: Readonly<ComponentProps>) {
 			hideClearButton,
 			maxChars,
 			rows,
+			editRequestIcon,
+			editConfirmIcon,
+			editCancelIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -213,7 +216,10 @@ function TextArea(props: Readonly<ComponentProps>) {
 		callFocusEvent();
 	};
 
+	const editOn = designType === '_editOnReq';
+
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		const shouldUpdate = updateStoreImmediately || editOn;
 		const text = event.target.value;
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
@@ -221,7 +227,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		if (updateStoreImmediately && bindingPathPath) {
+		if (shouldUpdate && bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
 			callChangeEvent();
 		}
@@ -235,7 +241,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			noFloat={noFloat}
 			readOnly={readOnly}
 			value={value}
-			label={label}
+			label={editOn ? '' : label}
 			maxChars={maxChars}
 			translations={translations}
 			placeholder={placeholder}
@@ -255,7 +261,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			autoComplete={autoComplete}
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
-			hideClearContentIcon={hideClearButton}
+			hideClearContentIcon={editOn ? true : hideClearButton}
 			inputType="TextArea"
 			rows={rows}
 			showMandatoryAsterisk={
@@ -265,6 +271,10 @@ function TextArea(props: Readonly<ComponentProps>) {
 					? true
 					: false
 			}
+			showEditRequest={editOn}
+			editRequestIcon={editRequestIcon}
+			editConfirmIcon={editConfirmIcon}
+			editCancelIcon={editCancelIcon}
 		/>
 	);
 }
@@ -361,6 +371,30 @@ const component: Component = {
 			name: 'errorTextContainer',
 			displayName: 'Error Text Container',
 			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editRequestIcon',
+			displayName: 'Edit Request Icon',
+			description: 'Edit Request Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmIcon',
+			displayName: 'Edit Confirm Icon',
+			description: 'Edit Confirm Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editCancelIcon',
+			displayName: 'Edit Cancel Icon',
+			description: 'Edit Cancel Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmCancelContainer',
+			displayName: 'Edit Confirm Cancel Container',
+			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
 	],
