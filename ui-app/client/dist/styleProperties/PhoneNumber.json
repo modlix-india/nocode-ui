@@ -705,6 +705,31 @@
 		"dn": "Width ArrowIcon",
 		"n": "phoneNumberWidthArrowIcon<designType><colorScheme>"
 	},
+
+	{
+		"cp": "opacity",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._dropdownSelect ._arrowIcon",
+		"np": true,
+		"spv": {
+			"_editOnReq-": "0"
+		},
+		"gn": "Opacity",
+		"dn": "Opacity ArrowIcon",
+		"n": "phoneNumberOpacityArrowIcon<designType><colorScheme>"
+	},
+
+	{
+		"cp": "opacity",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme>._editMode ._dropdownSelect ._arrowIcon",
+		"np": true,
+		"spv": {
+			"_editOnReq-": "1"
+		},
+		"gn": "Opacity",
+		"dn": "Opacity ArrowIcon EditMode",
+		"n": "phoneNumberOpacityArrowIconEditMode<designType><colorScheme>"
+	},
+
 	{
 		"cp": "color",
 		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._dropdownSelect ._arrowIcon",

@@ -71,6 +71,10 @@ export default function PhoneNumberStyle({
 		min-width: 20px;
 		padding-left: 10px;
 	}
+	
+	${PREFIX}._editOnReq input._inputBox {
+		padding-left: 5px;
+	}
 
 	${PREFIX}._isActive ._label,
 	${PREFIX} ._label._noFloat {
@@ -121,7 +125,7 @@ export default function PhoneNumberStyle({
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 8px;
+		gap: 5px;
 	}
 
 	${PREFIX} ._dropdownSelect ._selectedOption {
@@ -187,6 +191,10 @@ export default function PhoneNumberStyle({
 	${PREFIX}:hover ._controlButtons,
 	${PREFIX}._editMode ._controlButtons {
 		display: flex;
+	}
+
+	${PREFIX} ._arrowIcon {
+		transition: transform 0.3s ease-in-out;
 	}
 
 
