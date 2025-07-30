@@ -228,6 +228,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'editRequestIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Request Icon',
+		description: 'Icon to be shown on the edit request.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'editConfirmIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Confirm Icon',
+		description: 'Icon to be shown on the edit confirm.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'editCancelIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Cancel Icon',
+		description: 'Icon to be shown on the edit cancel.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,
@@ -243,6 +268,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{ name: '_bigDesign1', displayName: 'Big Design 1', description: 'Big Design 1 type' },
 			{ name: '_text', displayName: 'Text Dropdown', description: 'Text Dropdown' },
+			{ name: '_editOnReq', displayName: 'Edit On Request', description: 'Edit On Request' },
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
@@ -421,6 +447,28 @@ const stylePropertiesDefinition = {
 	thumb: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	editRequestIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	editConfirmIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	editCancelIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	editConfirmCancelContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,

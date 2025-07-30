@@ -116,7 +116,15 @@
 			"_bigDesign1-_secondary": "<fontColorFour>",
 			"_bigDesign1-_tertiary": "<fontColorFive>",
 			"_bigDesign1-_quaternary": "<fontColorNine>",
-			"_bigDesign1-_quinary": "<fontColorSeven>"
+			"_bigDesign1-_quinary": "<fontColorSeven>",
+			"_text-_secondary": "<fontColorFour>",
+			"_text-_tertiary": "<fontColorFive>",
+			"_text-_quaternary": "<fontColorNine>",
+			"_text-_quinary": "<fontColorSeven>",
+			"_editOnReq-_secondary": "<fontColorFour>",
+			"_editOnReq-_tertiary": "<fontColorFive>",
+			"_editOnReq-_quaternary": "<fontColorNine>",
+			"_editOnReq-_quinary": "<fontColorSeven>"
 		},
 		"gn": "Color",
 		"dn": "Color SupportText Value",
@@ -350,7 +358,7 @@
 		},
 		"gn": "Background",
 		"dn": "Hover Background",
-		"n": "textBoxHoverBackground<designType><colorScheme>"
+		"n": "phoneNumberHoverBackground<designType><colorScheme>"
 	},
 	{
 		"cp": "background",
@@ -361,7 +369,7 @@
 		},
 		"gn": "Background",
 		"dn": "Hover Readonly Background",
-		"n": "textBoxHoverReadonlyBackground<designType><colorScheme>"
+		"n": "phoneNumberHoverReadonlyBackground<designType><colorScheme>"
 	},
 	{
 		"cp": "border-top",
@@ -760,7 +768,7 @@
 	},
 	{
 		"cp": "color",
-		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._errorIcon._rightIcon, .comp.compPhoneNumber<designType><colorScheme>._isActive ._errorIcon._rightIcon, .comp.compPhoneNumber<designType><colorScheme>._hasValue ._errorIcon._rightIcon",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._errorIcon._leftIcon, .comp.compPhoneNumber<designType><colorScheme>._isActive ._errorIcon._leftIcon, .comp.compPhoneNumber<designType><colorScheme>._hasValue ._errorIcon._leftIcon",
 		"np": true,
 		"spv": {
 			"_default-": "<errorColor>",
@@ -771,7 +779,49 @@
 		},
 		"gn": "Color",
 		"dn": "Color Error Right Icon",
-		"n": "phoneNumberColorErrorRightIcon<designType><colorScheme>"
+		"n": "phoneNumberColorErrorLeftIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {},
+		"gn": "Color",
+		"dn": "Right Icon Color",
+		"n": "phoneNumberLeftIconColor<designType><colorScheme>",
+		"dv": "<fontColorSix>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compPhoneNumber<designType>._isActive<colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_tertiary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>",
+			"_filled-_quinary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Active Right Icon Color",
+		"n": "phoneNumberActiveLeftIconColor<designType><colorScheme>",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compPhoneNumber<designType>._hasValue<colorScheme> ._leftIcon",
+		"np": true,
+		"spv": {
+			"_filled-_primary": "<fontColorTwo>",
+			"_filled-_secondary": "<fontColorTwo>",
+			"_filled-_tertiary": "<fontColorTwo>",
+			"_filled-_quaternary": "<fontColorTwo>",
+			"_filled-_quinary": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Value Right Icon Color",
+		"n": "phoneNumberValueLeftIconColor<designType><colorScheme>",
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "border-left",
@@ -840,7 +890,7 @@
 	},
 	{
 		"cp": "color",
-		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._successIcon._rightIcon, .comp.compPhoneNumber<designType><colorScheme>._isActive ._successIcon._rightIcon, .comp.compPhoneNumber<designType><colorScheme>._hasValue ._successIcon._rightIcon",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._successIcon._leftIcon, .comp.compPhoneNumber<designType><colorScheme>._isActive ._successIcon._leftIcon, .comp.compPhoneNumber<designType><colorScheme>._hasValue ._successIcon._leftIcon",
 		"np": true,
 		"spv": {
 			"_default-": "<successColor>",
@@ -851,7 +901,7 @@
 		},
 		"gn": "Color",
 		"dn": "Color Success Right Icon",
-		"n": "phoneNumberColorSuccessRightIcon<designType><colorScheme>"
+		"n": "phoneNumberColorSuccessLeftIcon<designType><colorScheme>"
 	},
 	{
 		"cp": "font",
