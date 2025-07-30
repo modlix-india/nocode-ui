@@ -350,7 +350,7 @@
 		},
 		"gn": "Background",
 		"dn": "Hover Background",
-		"n": "textBoxHoverBackground<designType><colorScheme>"
+		"n": "phoneNumberHoverBackground<designType><colorScheme>"
 	},
 	{
 		"cp": "background",
@@ -361,7 +361,7 @@
 		},
 		"gn": "Background",
 		"dn": "Hover Readonly Background",
-		"n": "textBoxHoverReadonlyBackground<designType><colorScheme>"
+		"n": "phoneNumberHoverReadonlyBackground<designType><colorScheme>"
 	},
 	{
 		"cp": "border-top",
