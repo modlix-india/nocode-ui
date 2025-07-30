@@ -54,6 +54,7 @@ type CommonInputType = {
 	editConfirmIcon?: any;
 	editCancelIcon?: any;
 	onEditRequest?: (editMode: boolean, canceled: boolean) => void;
+	editOnValueStoredInParent?: boolean;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -107,6 +108,7 @@ function CommonInputText(props: CommonInputType) {
 		editConfirmIcon,
 		editCancelIcon,
 		onEditRequest,
+		editOnValueStoredInParent,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -192,7 +194,11 @@ function CommonInputText(props: CommonInputType) {
 					valueType === 'NUMBER' ? 'remove-spin-button' : ''
 				}`}
 				type={isPassword && !showPassword ? 'password' : valueType ? valueType : 'text'}
-				value={showEditRequest && editModeOriginal ? editModeValue : value}
+				value={
+					showEditRequest && editModeOriginal && !editOnValueStoredInParent
+						? editModeValue
+						: value
+				}
 				onChange={
 					showEditRequest && editModeOriginal
 						? event => setEditModeValue(event.target.value)
@@ -232,7 +238,11 @@ function CommonInputText(props: CommonInputType) {
 				className={`_inputBox ${noFloat ? '' : 'float'} ${
 					valueType === 'NUMBER' ? 'remove-spin-button' : ''
 				}`}
-				value={showEditRequest && editModeOriginal ? editModeValue : value}
+				value={
+					showEditRequest && editModeOriginal && !editOnValueStoredInParent
+						? editModeValue
+						: value
+				}
 				onChange={
 					showEditRequest && editModeOriginal
 						? event => setEditModeValue(event.target.value)
@@ -244,14 +254,7 @@ function CommonInputText(props: CommonInputType) {
 				onKeyUp={
 					showEditRequest
 						? event => {
-								if (event.key === 'Enter') {
-									setEditMode(false, false);
-									handleChangeEvent({
-										target: {
-											value: editModeValue,
-										},
-									} as any);
-								} else if (event.key === 'Escape') {
+								if (event.key === 'Escape') {
 									setEditMode(false, true);
 									setEditModeValue(value);
 								}
