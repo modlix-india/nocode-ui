@@ -8,6 +8,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
+import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	addListenerAndCallImmediately,
@@ -19,17 +20,16 @@ import { Component, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
+import { IconHelper } from '../util/IconHelper';
 import { getRenderData } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
-import { styleProperties, styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
-import { IconHelper } from '../util/IconHelper';
-import CommonCheckbox from '../../commonComponents/CommonCheckbox';
-import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
 
 function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -45,6 +45,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		>
 	>();
 	const [selected, setSelected] = useState<any>();
+	const [editOnSelected, setEditOnSelected] = useState<any>();
 	const [searchText, setSearchText] = useState('');
 	const [focus, setFocus] = useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
@@ -99,6 +100,9 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			moveSelectedToTop,
 			selectedOptionTickPlace,
 			selectionOptionTickType,
+			editRequestIcon,
+			editConfirmIcon,
+			editCancelIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -112,6 +116,9 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const searchEvent = onSearch ? props.pageDefinition.eventFunctions?.[onSearch] : undefined;
 	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	const searchBindingPath = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
+
+	const editOn = designType === '_editOnReq';
+
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		addListenerAndCallImmediately(
@@ -196,17 +203,27 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				if (multiSelectNoSelectionValue === 'UNDEFINED') aValue = undefined;
 				else if (multiSelectNoSelectionValue === 'NULL') aValue = null;
 			}
-			setData(bindingPathPath, aValue, context.pageName, removeKeyWhenEmpty);
+			if (editOn) setSelected(aValue);
+			else {
+				setData(bindingPathPath, aValue, context.pageName, removeKeyWhenEmpty);
 
-			if (!runEventOnDropDownClose && clickEvent) {
-				await runEvent(
-					clickEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
+				if (!runEventOnDropDownClose && clickEvent) {
+					await runEvent(
+						clickEvent,
+						key,
+						context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+				}
 			}
+		} else if (editOn) {
+			setSelected(
+				deepEqual(selected, each.value) && clearOnSelectingSameValue
+					? undefined
+					: each.value,
+			);
+			handleClose();
 		} else {
 			setData(
 				bindingPathPath,
@@ -294,31 +311,34 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		runEventOnDropDownClose,
 	]);
 
-	const getLabel = useCallback(() => {
-		let label = '';
-		if (selected == undefined || (Array.isArray(selected) && !selected.length)) {
-			return '';
-		}
-		if (!isMultiSelect) {
-			label = dropdownData?.find((each: any) => each?.key === selectedDataKey)?.label;
-			if (!label && searchEvent) {
-				label = selected?.label;
+	const getLabel = useCallback(
+		(lSelected: any, lSelectedDataKey: any) => {
+			let label = '';
+			if (lSelected == undefined || (Array.isArray(lSelected) && !lSelected.length)) {
+				return '';
 			}
-			return label;
-		}
-
-		if (showMultipleSelectedValues) {
-			const vals = [];
-			for (const each of selectedDataKey ?? []) {
-				vals.push(dropdownData?.find((e: any) => e?.key === each)?.label);
+			if (!isMultiSelect) {
+				label = dropdownData?.find((each: any) => each?.key === lSelectedDataKey)?.label;
+				if (!label && searchEvent) {
+					label = lSelected?.label;
+				}
+				return label;
 			}
-			return vals.join(', ');
-		}
 
-		return `${selectedDataKey?.length} Item${
-			(selectedDataKey?.length ?? 0) > 1 ? 's' : ''
-		}  selected`;
-	}, [selected, selectedDataKey, dropdownData, isMultiSelect, showMultipleSelectedValues]);
+			if (showMultipleSelectedValues) {
+				const vals = [];
+				for (const each of lSelectedDataKey ?? []) {
+					vals.push(dropdownData?.find((e: any) => e?.key === each)?.label);
+				}
+				return vals.join(', ');
+			}
+
+			return `${lSelectedDataKey?.length} Item${
+				(lSelectedDataKey?.length ?? 0) > 1 ? 's' : ''
+			}  selected`;
+		},
+		[dropdownData, isMultiSelect, showMultipleSelectedValues],
+	);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, disabled: readOnly },
@@ -519,8 +539,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			cssPrefix="comp compDropdown"
 			noFloat={noFloat}
 			readOnly={readOnly}
-			value={getLabel()}
-			label={label}
+			value={getLabel(selected, selectedDataKey)}
+			label={editOn ? '' : label}
 			translations={translations}
 			rightIcon={
 				showDropdown
@@ -597,6 +617,32 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				} else if (e.key === 'Escape') {
 					setHoverKey(undefined);
 					setShowDropdown(false);
+				}
+			}}
+			showEditRequest={editOn}
+			editRequestIcon={editRequestIcon}
+			editConfirmIcon={editConfirmIcon}
+			editCancelIcon={editCancelIcon}
+			editOnValueStoredInParent={true}
+			onEditRequest={(editMode, canceled) => {
+				if (editMode) {
+					setEditOnSelected(selected);
+				} else {
+					if (canceled) {
+						setSelected(editOnSelected);
+					} else {
+						setData(bindingPathPath, selected, context.pageName, removeKeyWhenEmpty);
+						if (clickEvent) {
+							(async () =>
+								await runEvent(
+									clickEvent,
+									key,
+									context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+						}
+					}
 				}
 			}}
 		>
@@ -769,6 +815,30 @@ const component: Component = {
 			name: 'thumb',
 			displayName: 'Thumb',
 			description: 'Thumb',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editRequestIcon',
+			displayName: 'Edit Request Icon',
+			description: 'Edit Request Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmIcon',
+			displayName: 'Edit Confirm Icon',
+			description: 'Edit Confirm Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editCancelIcon',
+			displayName: 'Edit Cancel Icon',
+			description: 'Edit Cancel Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmCancelContainer',
+			displayName: 'Edit Confirm Cancel Container',
+			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
 	],

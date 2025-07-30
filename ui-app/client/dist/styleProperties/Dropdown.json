@@ -182,7 +182,7 @@
 		"gn": "Color",
 		"dn": "Color RightIcon",
 		"n": "dropdownColorRightIcon<designType><colorScheme>",
-		"dv": "<fontColorSix>"
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "border-color",
@@ -321,7 +321,17 @@
 			"_bigDesign1-_secondary": "<fontColorFour>",
 			"_bigDesign1-_tertiary": "<fontColorFive>",
 			"_bigDesign1-_quaternary": "<fontColorNine>",
-			"_bigDesign1-_quinary": "<fontColorSeven>"
+			"_bigDesign1-_quinary": "<fontColorSeven>",
+			"_text-_primary": "<fontColorThree>",
+			"_text-_secondary": "<fontColorFour>",
+			"_text-_tertiary": "<fontColorFive>",
+			"_text-_quaternary": "<fontColorNine>",
+			"_text-_quinary": "<fontColorSeven>",
+			"_editOnReq-_primary": "<fontColorThree>",
+			"_editOnReq-_secondary": "<fontColorFour>",
+			"_editOnReq-_tertiary": "<fontColorFive>",
+			"_editOnReq-_quaternary": "<fontColorNine>",
+			"_editOnReq-_quinary": "<fontColorSeven>"
 		},
 		"gn": "Color",
 		"dn": "Color SupportText Value",
@@ -509,7 +519,8 @@
 			"_outlined-": "<primaryFont>",
 			"_filled-": "<primaryFont>",
 			"_bigDesign1-": "<primaryFont>",
-			"_text-": "<primaryFont>"
+			"_text-": "<primaryFont>",
+			"_editOnReq-": "<primaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Font",
@@ -538,7 +549,8 @@
 			"_outlined-": "32px",
 			"_filled-": "32px",
 			"_bigDesign1-": "60px",
-			"_text-": "32px"
+			"_text-": "32px",
+			"_editOnReq-": "32px"
 		},
 		"gn": "Height",
 		"dn": "Height",
@@ -552,7 +564,8 @@
 			"_default-": "4px",
 			"_outlined-": "16px",
 			"_filled-": "4px",
-			"_bigDesign1-": "4px"
+			"_bigDesign1-": "4px",
+			"_editOnReq-": "4px"
 		},
 		"gn": "Border Radius",
 		"dn": "BorderRadius",
@@ -582,7 +595,8 @@
 			"_outlined-": "0px 14px",
 			"_filled-": "0px 5px",
 			"_bigDesign1-": "0px 5px",
-			"_text-": "0px 5px"
+			"_text-": "0px 5px",
+			"_editOnReq-": "0px 5px"
 		},
 		"gn": "Padding",
 		"dn": "Padding",
@@ -607,12 +621,35 @@
 			"_text-_secondary": "transparent",
 			"_text-_tertiary": "transparent",
 			"_text-_quaternary": "transparent",
-			"_text-_quinary": "transparent"
+			"_text-_quinary": "transparent",
+			"_editOnReq-": "transparent"
 		},
 		"gn": "Background",
 		"dn": "Background",
 		"n": "dropdownBackground<designType><colorScheme>",
 		"dv": "<backgroundColorSeven>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compDropdown<designType><colorScheme>:hover, .comp.compDropdown<designType><colorScheme>._isActive:hover, .comp.compDropdown<designType><colorScheme>._editMode",
+		"np": true,
+		"spv": {
+			"_editOnReq-": "<backgroundColorNine>"
+		},
+		"gn": "Background",
+		"dn": "Hover Background",
+		"n": "dropdownHoverBackground<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compDropdown<designType><colorScheme>._readOnly:hover",
+		"np": true,
+		"spv": {
+			"_editOnReq-": "transparent"
+		},
+		"gn": "Background",
+		"dn": "Hover Readonly Background",
+		"n": "dropdownHoverReadonlyBackground<designType><colorScheme>"
 	},
 	{
 		"cp": "box-shadow",
@@ -814,7 +851,8 @@
 			"_outlined-": "<primaryFont>",
 			"_filled-": "<primaryFont>",
 			"_bigDesign1-": "<primaryFont>",
-			"_text-": "<primaryFont>"
+			"_text-": "<primaryFont>",
+			"_editOnReq-": "<primaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Font Hover",
@@ -1114,7 +1152,8 @@
 			"_outlined-": "0px 0px 0px 0px",
 			"_filled-": "0px 0px 0px 0px",
 			"_bigDesign1-": "0px 0px 0px 0px",
-			"_text-": "0px 0px 0px 0px"
+			"_text-": "0px 0px 0px 0px",
+			"_editOnReq-": "0px 0px 0px 0px"
 		},
 		"gn": "Margin",
 		"dn": "Margin Label",
@@ -1129,7 +1168,8 @@
 			"_outlined-": "0px 8px",
 			"_filled-": "0px 8px",
 			"_bigDesign1-": "0px 18px 0px 8px",
-			"_text-": "0px 8px"
+			"_text-": "0px 8px",
+			"_editOnReq-": "0px 8px"
 		},
 		"gn": "Padding",
 		"dn": "Padding RightIcon",
@@ -1144,7 +1184,8 @@
 			"_outlined-": "<successColor>",
 			"_filled-": "<successColor>",
 			"_bigDesign1-": "<successColor>",
-			"_text-": "<successColor>"
+			"_text-": "<successColor>",
+			"_editOnReq-": "<successColor>"
 		},
 		"gn": "Color",
 		"dn": "Color Success Icon",
@@ -1158,7 +1199,9 @@
 			"_default-": "<quaternaryFont>",
 			"_outlined-": "<quaternaryFont>",
 			"_filled-": "<quaternaryFont>",
-			"_bigDesign1-": "<quaternaryFont>"
+			"_bigDesign1-": "<quaternaryFont>",
+			"_text-": "<quaternaryFont>",
+			"_editOnReq-": "<quaternaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Font SupportText",
@@ -1188,7 +1231,12 @@
 			"_bigDesign1-_secondary": "<fontColorEight>",
 			"_bigDesign1-_tertiary": "<fontColorEight>",
 			"_bigDesign1-_quaternary": "<fontColorEight>",
-			"_bigDesign1-_quinary": "<fontColorEight>"
+			"_bigDesign1-_quinary": "<fontColorEight>",
+			"_editOnReq-_primary": "<fontColorEight>",
+			"_editOnReq-_secondary": "<fontColorEight>",
+			"_editOnReq-_tertiary": "<fontColorEight>",
+			"_editOnReq-_quaternary": "<fontColorEight>",
+			"_editOnReq-_quinary": "<fontColorEight>"
 		},
 		"gn": "Color",
 		"dn": "Color SupportText",
@@ -1278,7 +1326,8 @@
 			"_outlined-_primary": "<errorColor>",
 			"_filled-_primary": "<errorColor>",
 			"_bigDesign1-_primary": "<errorColor>",
-			"_text-_primary": "<errorColor>"
+			"_text-_primary": "<errorColor>",
+			"_editOnReq-_primary": "<errorColor>"
 		},
 		"gn": "Color",
 		"dn": "Color RightIcon Active Error",
