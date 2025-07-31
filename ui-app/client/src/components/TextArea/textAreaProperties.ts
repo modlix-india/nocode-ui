@@ -222,9 +222,39 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Filled Text Area',
 				description: 'Filled Text Area type',
 			},
+			{
+				name: '_editOnReq',
+				displayName: 'Edit On Request',
+				description: 'Edit On Request type',
+			},
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
+	{
+		name: 'editRequestIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Request Icon',
+		description: 'Icon to be shown on the edit request.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'editConfirmIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Confirm Icon',
+		description: 'Icon to be shown on the edit confirm.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'editCancelIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Cancel Icon',
+		description: 'Icon to be shown on the edit cancel.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
