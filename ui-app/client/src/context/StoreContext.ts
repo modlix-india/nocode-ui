@@ -5,6 +5,7 @@ import {
 	PAGE_STORE_PREFIX,
 	SAMPLE_STORE_PREFIX,
 	STORE_PREFIX,
+	TEMP_STORE_PREFIX,
 } from '../constants';
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentProperty, DataLocation, LocationHistory } from '../types/common';
@@ -15,6 +16,7 @@ import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import { AuthoritiesExtractor } from './AuthoritiesExtractor';
 import { sample } from './sampleData';
+import { tempStoreExtractor } from './TempStore';
 
 export class StoreExtractor extends SpecialTokenValueExtractor {
 	private readonly store: any;
@@ -91,6 +93,7 @@ const {
 	authoritiesExtractor,
 	fillerExtractor,
 	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}.`),
+	tempStoreExtractor
 );
 
 themeExtractor.setStore(_store);
@@ -184,6 +187,9 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 
 	if (path.startsWith('SampleDataStore.') || path.startsWith('Filler.')) {
 		// Sample store is not editable so we are not changing the data
+		return;
+	} if (path.startsWith('Temp.')){
+		tempStoreExtractor.setValue(path, value);
 		return;
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
