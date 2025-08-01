@@ -114,7 +114,7 @@ export default function TextBoxStyle({
 	}
 
 	${PREFIX} ._rightIcon {
-		padding-right: 5px;
+		padding: 0px 5px;
 	}
 
 	${PREFIX} ._label._float {
