@@ -183,6 +183,7 @@ export function getDataFromPath(
 export const innerSetData = _setData;
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
+	// console.error('Data set : ', path, value);
 	if (path.endsWith('.')) path = path.substring(0, path.length - 1);
 
 	if (path.startsWith('SampleDataStore.') || path.startsWith('Filler.')) {
@@ -245,7 +246,6 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			}
 		}
 	} else if (path.startsWith('Temp.')) {
-		console.log('Setting temp store data : ', path, value);
 		tempStoreExtractor.setValue(path, value);
 		return;
 	} else {

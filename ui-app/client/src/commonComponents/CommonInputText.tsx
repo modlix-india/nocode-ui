@@ -195,7 +195,7 @@ function CommonInputText(props: CommonInputType) {
 				onChange={handleChangeEvent}
 				placeholder={getTranslations(placeholder, translations)}
 				onFocus={handleFocusEvent}
-				onBlur={showEditRequest ? undefined : event => handleBlurEvent(event)}
+				onBlur={handleBlurEvent}
 				onKeyUp={
 					showEditRequest
 						? event => {
