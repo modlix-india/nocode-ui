@@ -3,10 +3,12 @@ import React, { FocusEvent, useCallback, useEffect, useMemo, useRef, useState } 
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	addListenerAndCallImmediately,
+	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
+import { makeTempPath } from '../../context/TempStore';
 import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
@@ -93,24 +95,28 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 		? props.pageDefinition.eventFunctions?.[onMonthChange]
 		: undefined;
 
-	const bindingPathPath1 = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
-	const bindingPathPath2 = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
-	const bindingPathPath3 = getPathFromLocation(bindingPath3!, locationHistory, pageExtractor);
+	let bindingPathPath1 = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+	let bindingPathPath2 = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
+	let bindingPathPath3 = getPathFromLocation(bindingPath3!, locationHistory, pageExtractor);
+
+	const editOn = calendarDesignType === '_defaultCalendar' && designType === '_editOnReq';
+
+	const originalBindingPathPath1 = bindingPathPath1;
+	const originalBindingPathPath2 = bindingPathPath2;
+	const originalBindingPathPath3 = bindingPathPath3;
+
+	if (editOn) {
+		if (bindingPathPath1) bindingPathPath1 = makeTempPath(bindingPathPath1, context.pageName);
+		if (bindingPathPath2) bindingPathPath2 = makeTempPath(bindingPathPath2, context.pageName);
+		if (bindingPathPath3) bindingPathPath3 = makeTempPath(bindingPathPath3, context.pageName);
+	}
 
 	const isRangeType = !!bindingPathPath2;
 
 	// This date is from date if the date type is startDate and to date if the date type is endDate
-	const [thisDate, setThisDateOriginal] = useState<string | undefined>();
+	const [thisDate, setThisDate] = useState<string | undefined>();
 	// That date is from date if the date type is endDate and to date if the date type is startDate
 	const [thatDate, setThatDate] = useState<string | undefined>();
-
-	const setThisDate = useCallback(
-		(v: string | undefined) => {
-			// console.log('setThisDate', v);
-			setThisDateOriginal(v);
-		},
-		[setThisDateOriginal],
-	);
 
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [mouseIsInside, setMouseIsInside] = useState(false);
@@ -120,20 +126,16 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 
 	const [browsingMonthYear, setBrowsingMonthYear] = useState<string>('');
 
-	const editOn = calendarDesignType === '_defaultCalendar' && designType === '_editOnReq';
-	const [editOnThisDate, setEditOnThisDate] = useState<string | undefined>();
-	const [editOnThatDate, setEditOnThatDate] = useState<string | undefined>();
-
 	useEffect(() => {
-		if (!bindingPathPath3) return;
+		if (!originalBindingPathPath3) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				setBrowsingMonthYear(value);
 			},
 			pageExtractor,
-			bindingPathPath3,
+			originalBindingPathPath3,
 		);
-	}, [bindingPathPath3, setBrowsingMonthYear]);
+	}, [originalBindingPathPath3, setBrowsingMonthYear]);
 
 	const computedStyles = useMemo(
 		() =>
@@ -166,11 +168,10 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	);
 
 	useEffect(() => {
-		if (!bindingPathPath1) return;
+		if (!originalBindingPathPath1) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				const setFunction = dateType === 'startDate' ? setThisDate : setThatDate;
-				// console.log('bindingPathPath1', value);
 
 				if (!value) {
 					setFunction(undefined);
@@ -190,12 +191,19 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 				}
 			},
 			pageExtractor,
-			bindingPathPath1,
+			originalBindingPathPath1,
 		);
-	}, [bindingPathPath1, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
+	}, [
+		originalBindingPathPath1,
+		setThisDate,
+		storageFormat,
+		displayDateFormat,
+		setThatDate,
+		dateType,
+	]);
 
 	useEffect(() => {
-		if (!bindingPathPath2) return;
+		if (!originalBindingPathPath2) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				const setFunction = dateType === 'startDate' ? setThatDate : setThisDate;
@@ -218,9 +226,16 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 				}
 			},
 			pageExtractor,
-			bindingPathPath2,
+			originalBindingPathPath2,
 		);
-	}, [bindingPathPath2, setThisDate, storageFormat, displayDateFormat, setThatDate, dateType]);
+	}, [
+		originalBindingPathPath2,
+		setThisDate,
+		storageFormat,
+		displayDateFormat,
+		setThatDate,
+		dateType,
+	]);
 
 	const validationProps = useMemo(() => {
 		return {
@@ -272,6 +287,9 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	};
 
 	const handleChange = (e: any, close: boolean) => {
+		let currentBindingPath = dateType === 'startDate' ? bindingPathPath1 : bindingPathPath2;
+		if (!currentBindingPath) return;
+
 		const typeofE = typeof e;
 		const value: string =
 			(typeofE === 'string' || typeofE === 'number' || typeofE === 'undefined'
@@ -282,32 +300,52 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 		let validatedAndSet = false;
 		let shouldCloseDropdown = false;
 
-		if (editOn) {
-			if (value.trim() === '') {
-				setThisDate(undefined);
-				setThatDate(undefined);
-			} else {
-				if (isMultiSelect || bindingPathPath2) {
-					const values = value.split(multipleDateSeparator);
-					let dates = values
-						.map(e => e.trim())
-						.map(v =>
-							toFormat(v, displayDateFormat, storageFormat ?? displayDateFormat),
-						);
+		if (value.trim() === '') {
+			if (!thisDate) return;
+			validatedAndSet = validateRangesAndSetData(
+				currentBindingPath,
+				undefined,
+				context.pageName,
+				validationProps,
+			);
+			if (editOn) (dateType === 'startDate' ? setThisDate : setThatDate)(undefined);
+			if (validatedAndSet && close) {
+				shouldCloseDropdown = true;
+			}
+		} else {
+			if (isMultiSelect || bindingPathPath2) {
+				const values = value.split(multipleDateSeparator);
+				let dates = values
+					.map(e => e.trim())
+					.map(v => toFormat(v, displayDateFormat, storageFormat ?? displayDateFormat));
 
-					if (dates?.indexOf(undefined) != -1) {
-						setThisDate(value);
-						return;
-					}
-					if (isMultiSelect && dates.length === 1) {
-						setThisDate(dates[0]?.toString());
-						shouldCloseDropdown = true;
-					} else {
-						if (dates.length === 1) {
+				if (dates?.indexOf(undefined) != -1) {
+					setThisDate(value);
+					return;
+				}
+				if (isMultiSelect) {
+					const sValue = dates.length ? dates.join(multipleDateSeparator) : undefined;
+					validatedAndSet = validateRangesAndSetData(
+						currentBindingPath,
+						sValue,
+						context.pageName,
+						validationProps,
+					);
+					if (editOn) (dateType === 'startDate' ? setThisDate : setThatDate)(sValue);
+				} else {
+					if (dates.length === 1) {
+						validatedAndSet = validateRangesAndSetData(
+							currentBindingPath,
+							dates[0],
+							context.pageName,
+							validationProps,
+						);
+						if (editOn)
 							(dateType === 'startDate' ? setThisDate : setThatDate)(
 								dates[0]?.toString(),
 							);
-						} else if (dates.length > 1) {
+					} else if (dates.length > 1) {
+						if (minNumberOfDaysInRange || maxNumberOfDaysInRange) {
 							let start = zeroHourDate(
 								getValidDate(dates[0], storageFormat ?? displayDateFormat),
 							);
@@ -318,6 +356,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 							if (start > end) {
 								[start, end] = [end, start];
 							}
+
 							const diff = Math.abs(end.getTime() - start.getTime());
 							const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
 							if (minNumberOfDaysInRange && days < minNumberOfDaysInRange) {
@@ -335,141 +374,51 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 								toFormat(start, 'Date', storageFormat ?? displayDateFormat),
 								toFormat(end, 'Date', storageFormat ?? displayDateFormat),
 							];
+						}
+						validatedAndSet = validateRangesAndSetData(
+							dateType === 'startDate' ? bindingPathPath1 : bindingPathPath2,
+							dates[0],
+							context.pageName,
+							validationProps,
+						);
+						if (editOn)
 							(dateType === 'startDate' ? setThisDate : setThatDate)(
 								dates[0]?.toString(),
 							);
-							(dateType === 'startDate' ? setThatDate : setThisDate)(
+						validatedAndSet = validateRangesAndSetData(
+							dateType === 'startDate' ? bindingPathPath2 : bindingPathPath1,
+							dates[1],
+							context.pageName,
+							validationProps,
+						);
+						if (editOn)
+							(dateType === 'startDate' ? setThisDate : setThatDate)(
 								dates[1]?.toString(),
 							);
-						}
-						shouldCloseDropdown = true;
 					}
-				} else {
-					const date = toFormat(
-						value,
-						displayDateFormat,
-						storageFormat ?? displayDateFormat,
-					);
-
-					setThisDate(value);
-					shouldCloseDropdown = true;
 				}
-			}
-		} else {
-			let currentBindingPath = dateType === 'startDate' ? bindingPathPath1 : bindingPathPath2;
-			if (!currentBindingPath) return;
 
-			if (value.trim() === '') {
-				if (!thisDate) return;
-				validatedAndSet = validateRangesAndSetData(
-					currentBindingPath,
-					undefined,
-					context.pageName,
-					validationProps,
-				);
 				if (validatedAndSet && close) {
 					shouldCloseDropdown = true;
 				}
 			} else {
-				if (isMultiSelect || bindingPathPath2) {
-					const values = value.split(multipleDateSeparator);
-					let dates = values
-						.map(e => e.trim())
-						.map(v =>
-							toFormat(v, displayDateFormat, storageFormat ?? displayDateFormat),
-						);
+				const date = toFormat(value, displayDateFormat, storageFormat ?? displayDateFormat);
+				if (isNullValue(date)) {
+					setThisDate(value);
+					return;
+				}
 
-					if (dates?.indexOf(undefined) != -1) {
-						setThisDate(value);
-						return;
-					}
-					if (isMultiSelect) {
-						validatedAndSet = validateRangesAndSetData(
-							currentBindingPath,
-							dates.length ? dates.join(multipleDateSeparator) : undefined,
-							context.pageName,
-							validationProps,
-						);
-					} else {
-						if (dates.length === 1) {
-							validatedAndSet = validateRangesAndSetData(
-								currentBindingPath,
-								dates[0],
-								context.pageName,
-								validationProps,
-							);
-						} else if (dates.length > 1) {
-							if (minNumberOfDaysInRange || maxNumberOfDaysInRange) {
-								let start = zeroHourDate(
-									getValidDate(dates[0], storageFormat ?? displayDateFormat),
-								);
-								let end = zeroHourDate(
-									getValidDate(dates[1], storageFormat ?? displayDateFormat),
-								);
-								if (!start || !end) return;
-								if (start > end) {
-									[start, end] = [end, start];
-								}
+				validatedAndSet = validateRangesAndSetData(
+					currentBindingPath,
+					date,
+					context.pageName,
+					validationProps,
+				);
+				if (editOn)
+					(dateType === 'startDate' ? setThisDate : setThatDate)(date?.toString());
 
-								const diff = Math.abs(end.getTime() - start.getTime());
-								const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-								if (minNumberOfDaysInRange && days < minNumberOfDaysInRange) {
-									end = new Date(
-										start.getTime() +
-											minNumberOfDaysInRange * 24 * 60 * 60 * 1000,
-									);
-								}
-
-								if (maxNumberOfDaysInRange && days > maxNumberOfDaysInRange) {
-									end = new Date(
-										start.getTime() +
-											maxNumberOfDaysInRange * 24 * 60 * 60 * 1000,
-									);
-								}
-								dates = [
-									toFormat(start, 'Date', storageFormat ?? displayDateFormat),
-									toFormat(end, 'Date', storageFormat ?? displayDateFormat),
-								];
-							}
-							validatedAndSet = validateRangesAndSetData(
-								dateType === 'startDate' ? bindingPathPath1 : bindingPathPath2,
-								dates[0],
-								context.pageName,
-								validationProps,
-							);
-							validatedAndSet = validateRangesAndSetData(
-								dateType === 'startDate' ? bindingPathPath2 : bindingPathPath1,
-								dates[1],
-								context.pageName,
-								validationProps,
-							);
-						}
-					}
-
-					if (validatedAndSet && close) {
-						shouldCloseDropdown = true;
-					}
-				} else {
-					const date = toFormat(
-						value,
-						displayDateFormat,
-						storageFormat ?? displayDateFormat,
-					);
-					if (isNullValue(date)) {
-						setThisDate(value);
-						return;
-					}
-
-					validatedAndSet = validateRangesAndSetData(
-						currentBindingPath,
-						date,
-						context.pageName,
-						validationProps,
-					);
-
-					if (validatedAndSet && close) {
-						shouldCloseDropdown = true;
-					}
+				if (validatedAndSet && close) {
+					shouldCloseDropdown = true;
 				}
 			}
 		}
@@ -511,6 +460,8 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 				context.pageName,
 				validationProps,
 			);
+			if (editOn)
+				(dateType === 'startDate' ? setThisDate : setThatDate)(storable?.toString());
 			if (!changeEvent) return;
 			(async () =>
 				await runEvent(
@@ -599,9 +550,6 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 		);
 	}
 
-	// console.log(thisDate, thatDate);
-	// console.log(editOnThisDate, editOnThatDate);
-
 	return (
 		<CommonInputText
 			id={key}
@@ -632,9 +580,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			colorScheme={colorScheme}
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
-			handleChange={
-				disableTextEntry || readOnly || editOn ? undefined : e => handleChange(e, true)
-			}
+			handleChange={disableTextEntry || readOnly ? undefined : e => handleChange(e, true)}
 			onMouseEnter={() => setMouseIsInside(true)}
 			onMouseLeave={() => {
 				setMouseIsInside(false);
@@ -650,39 +596,57 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			editCancelIcon={editCancelIcon}
 			showEditRequest={editOn}
 			onEditRequest={(editMode, canceled) => {
-				if (editMode) {
-					setEditOnThisDate(thisDate);
-					setEditOnThatDate(thatDate);
+				if (editMode) return;
+				if (canceled) {
+					if (bindingPathPath1) {
+						(dateType === 'startDate' ? setThisDate : setThatDate)(
+							getDataFromPath(
+								originalBindingPathPath1,
+								locationHistory,
+								pageExtractor,
+							),
+						);
+					}
+					if (bindingPathPath2) {
+						(dateType === 'startDate' ? setThatDate : setThisDate)(
+							getDataFromPath(
+								originalBindingPathPath2,
+								locationHistory,
+								pageExtractor,
+							),
+						);
+					}
+					if (bindingPathPath3) {
+						setBrowsingMonthYear(
+							getDataFromPath(
+								originalBindingPathPath3,
+								locationHistory,
+								pageExtractor,
+							),
+						);
+					}
 				} else {
-					if (canceled) {
-						setThisDate(editOnThisDate);
-						setThatDate(editOnThatDate);
-					} else {
-						if (!bindingPathPath2 && bindingPathPath1) {
-							validateRangesAndSetData(
-								bindingPathPath1,
-								thisDate,
-								context.pageName,
-								validationProps,
-							);
-						} else if (bindingPathPath2 && bindingPathPath1) {
-							validateRangesAndSetData(
-								bindingPathPath1,
-								dateType === 'startDate' ? thisDate : thatDate,
-								context.pageName,
-								validationProps,
-							);
-							validateRangesAndSetData(
-								bindingPathPath2,
-								dateType === 'startDate' ? thatDate : thisDate,
-								context.pageName,
-								validationProps,
-							);
-						}
+					if (bindingPathPath1) {
+						validateRangesAndSetData(
+							originalBindingPathPath1,
+							dateType === 'startDate' ? thisDate : thatDate,
+							context.pageName,
+							validationProps,
+						);
+					}
+					if (bindingPathPath2) {
+						validateRangesAndSetData(
+							originalBindingPathPath2,
+							dateType === 'startDate' ? thatDate : thisDate,
+							context.pageName,
+							validationProps,
+						);
+					}
+					if (bindingPathPath3) {
+						setData(originalBindingPathPath3, browsingMonthYear, context.pageName);
 					}
 				}
 			}}
-			editOnValueStoredInParent={true}
 		>
 			{calendar && (
 				<div className="_dropdownContainer" style={computedStyles.dropDownContainer ?? {}}>
