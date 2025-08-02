@@ -28,6 +28,7 @@ import { IconHelper } from '../util/IconHelper';
 import { Dropdown, DropdownOption, DropdownOptions } from './components/Dropdown';
 import { COUNTRY_LIST } from './components/listOfCountries';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { makeTempPath } from '../../context/TempStore';
 
 interface mapType {
 	[key: string]: any;
@@ -57,6 +58,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
 		properties: {
+			updateStoreImmediately: upStoreImm,
 			removeKeyWhenEmpty,
 			emptyValue,
 			supportingText,
@@ -105,20 +107,40 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	const [value, setValue] = React.useState<string>('');
 	const [countryCode, setCountryCode] = React.useState<string>('');
 
-	const bindingPathPath = bindingPath
+	const editOn = designType === '_editOnReq';
+
+	let bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
-	const bindingPathPath2 = bindingPath2
+	const originalBindingPathPath = bindingPathPath;
+
+	let bindingPathPath2 = bindingPath2
 		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
 		: undefined;
 
-	const bindingPathPath3 = bindingPath3
+	const originalBindingPathPath2 = bindingPathPath2;
+
+	let bindingPathPath3 = bindingPath3
 		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
 		: undefined;
 
+	const originalBindingPathPath3 = bindingPathPath3;
+
+	if (editOn) {
+		bindingPathPath = bindingPathPath
+			? makeTempPath(bindingPathPath, context.pageName)
+			: undefined;
+		bindingPathPath2 = bindingPathPath2
+			? makeTempPath(bindingPathPath2, context.pageName)
+			: undefined;
+		bindingPathPath3 = bindingPathPath3
+			? makeTempPath(bindingPathPath3, context.pageName)
+			: undefined;
+	}
+
 	React.useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				if (isNullValue(value)) {
@@ -128,12 +150,12 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 				setValue(value);
 			},
 			pageExtractor,
-			bindingPathPath,
+			originalBindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [originalBindingPathPath]);
 
 	React.useEffect(() => {
-		if (!bindingPathPath2) return;
+		if (!originalBindingPathPath2) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				if (isNullValue(value)) {
@@ -148,9 +170,9 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 				}
 			},
 			pageExtractor,
-			bindingPathPath2,
+			originalBindingPathPath2,
 		);
-	}, [bindingPathPath2]);
+	}, [originalBindingPathPath2]);
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -229,6 +251,8 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	const enterEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
 	const clearEvent = onClear ? props.pageDefinition.eventFunctions?.[onClear] : undefined;
 
+	const updateStoreImmediately = editOn ? false : upStoreImm || autoComplete === 'on';
+
 	const callChangeEvent = useCallback(() => {
 		if (!changeEvent) return;
 		(async () =>
@@ -281,6 +305,9 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		if (!enterEvent || isLoading || e.key !== 'Enter') return;
+		if (!updateStoreImmediately) {
+			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
+		}
 		await runEvent(
 			enterEvent,
 			onEnter,
@@ -320,6 +347,9 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	const [countryList, setCountryList] = useState<DropdownOptions>(SORTED_COUNTRY_LIST);
 	const [selected, setSelected] = useState<DropdownOption>(SORTED_COUNTRY_LIST[0]);
 	const [phoneNumber, setPhoneNumber] = useState<string>('');
+	const [editMode, setEditMode] = useState(false);
+	const [editModeSelectedCountry, setEditModeSelectedCountry] =
+		useState<DropdownOption>(selected);
 	const VALIDATION_MSG = 'Dial code is not valid or not available in option list';
 
 	const getDialCode = (value: string) => {
@@ -499,7 +529,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		if (event?.target.value === '' && removeKeyWhenEmpty) {
 			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(undefined, true);
-		} else if (!text) {
+		} else if (!text && !updateStoreImmediately) {
 			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(text);
 		} else if (text && text.startsWith('+')) {
@@ -511,7 +541,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			bindingPathPath &&
 				setData(bindingPathPath, storeDialCodeWithNumber ? temp : phone, context?.pageName);
 			callChangeEvent();
-		} else {
+		} else if (!updateStoreImmediately) {
 			let temp = format
 				? selected.D +
 					(storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
@@ -533,47 +563,25 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		text = text === '' && emptyValue ? mapValue[emptyValue] : getUnformattedNumber(text);
 		let formattedText = getFormattedNumber(text, selected.D);
 
-		if (!text && editOn) {
+		if (!text && updateStoreImmediately) {
 			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
 			updateBindingPathData(text);
-		} else if (!text && !editOn) {
+		} else if (!text && !updateStoreImmediately) {
 			setPhoneNumber('');
-		} else if (editOn) {
-			if (text.startsWith('+')) {
-				let { dc, phone } = extractDCAndPhone(text);
-				let temp =
-					format && text !== phone
-						? dc + (storeFormatted ? seperator + getFormattedNumber(phone, dc) : phone)
-						: dc + phone;
-				bindingPathPath &&
-					setData(
-						bindingPathPath,
-						storeDialCodeWithNumber ? temp : phone,
-						context?.pageName,
-					);
-				callChangeEvent();
-			} else {
-				let temp = format
-					? selected.D + (storeFormatted ? seperator + formattedText : text)
-					: selected.D + text;
-				updateBindingPathData(storeDialCodeWithNumber ? temp : text);
-			}
-		} else if (!text.startsWith('+') && !editOn) {
+		} else if (!text.startsWith('+') && updateStoreImmediately) {
+			let temp = format
+				? selected.D + (storeFormatted ? seperator + formattedText : text)
+				: selected.D + text;
+			updateBindingPathData(storeDialCodeWithNumber ? temp : text);
+		} else if (!text.startsWith('+') && !updateStoreImmediately) {
 			let temp = format ? formattedText : text;
 			setPhoneNumber(temp);
 		} else {
 			setPhoneNumber(text);
 		}
 	};
-
-	const [editMode, setEditMode] = useState(false);
-	const [editModeSelectedCountry, setEditModeSelectedCountry] = useState(selected);
-	const editOn = designType === '_editOnReq';
-
 	const handleCountryChange = (v: DropdownOption) => {
 		setSelected(v);
-		if (editOn) return;
-
 		lastSelectedCountry.current = v;
 		countryMap.current.clear();
 		countryMap.current.set(v.D, v);
@@ -669,6 +677,50 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 					setEditModeSelectedCountry(selected);
 				} else if (canceled) {
 					setSelected(editModeSelectedCountry);
+					let originalValue = getDataFromPath(
+						originalBindingPathPath,
+						locationHistory,
+						pageExtractor,
+					);
+					let unformattedText = getUnformattedNumber(originalValue);
+					let selectedCountry = getSelectedCountry(unformattedText);
+
+					if (selectedCountry) {
+						setSelected(selectedCountry);
+						lastSelectedCountry.current = selectedCountry;
+					} else if (lastSelectedCountry.current) {
+						setSelected(lastSelectedCountry.current);
+					} else {
+						setSelected(countryList[0]);
+						lastSelectedCountry.current = countryList[0];
+					}
+
+					let dc = selectedCountry ? (selectedCountry.D ?? '') : '';
+					if (format)
+						setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
+					else setPhoneNumber(unformattedText.slice(dc.length));
+				} else {
+					if (originalBindingPathPath) {
+						setData(
+							originalBindingPathPath,
+							getDataFromPath(bindingPathPath, locationHistory, pageExtractor),
+							context?.pageName,
+						);
+					}
+					if (originalBindingPathPath2) {
+						setData(
+							originalBindingPathPath2,
+							getDataFromPath(bindingPathPath2, locationHistory, pageExtractor),
+							context?.pageName,
+						);
+					}
+					if (originalBindingPathPath3) {
+						setData(
+							originalBindingPathPath3,
+							getDataFromPath(bindingPathPath3, locationHistory, pageExtractor),
+							context?.pageName,
+						);
+					}
 				}
 			}}
 		/>

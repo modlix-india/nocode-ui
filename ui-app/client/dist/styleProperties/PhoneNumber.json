@@ -789,7 +789,7 @@
 		"gn": "Color",
 		"dn": "Right Icon Color",
 		"n": "phoneNumberLeftIconColor<designType><colorScheme>",
-		"dv": "<fontColorSix>"
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "color",
