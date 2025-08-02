@@ -496,9 +496,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 								pageExtractor,
 							),
 						);
-						return;
-					}
-					setData(originalBindingPathPath, value, context?.pageName);
+					} else setData(originalBindingPathPath, value, context?.pageName);
 				}}
 			/>
 		</>
