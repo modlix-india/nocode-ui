@@ -107,7 +107,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 	}
 
 	React.useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				if (isNullValue(value)) {
@@ -126,9 +126,9 @@ function TextBox(props: Readonly<ComponentProps>) {
 				}
 			},
 			pageExtractor,
-			bindingPathPath,
+			originalBindingPathPath,
 		);
-	}, [bindingPathPath, valueType, numberFormat, numberType]);
+	}, [originalBindingPathPath, valueType, numberFormat, numberType]);
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(

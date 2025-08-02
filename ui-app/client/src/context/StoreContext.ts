@@ -93,7 +93,7 @@ const {
 	authoritiesExtractor,
 	fillerExtractor,
 	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}.`),
-	tempStoreExtractor
+	tempStoreExtractor,
 );
 
 themeExtractor.setStore(_store);
@@ -188,9 +188,29 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 	if (path.startsWith('SampleDataStore.') || path.startsWith('Filler.')) {
 		// Sample store is not editable so we are not changing the data
 		return;
-	} if (path.startsWith('Temp.')){
-		tempStoreExtractor.setValue(path, value);
-		return;
+	}
+
+	if (path.startsWith(PAGE_STORE_PREFIX) && context) {
+		_setData(
+			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
+			value,
+			deleteKey,
+		);
+	} else if (path.startsWith(STORE_PREFIX)) {
+		if (
+			globalThis.isDesignMode &&
+			globalThis.designMode === 'PAGE' &&
+			globalThis.pageEditor?.editingPageDefinition?.name &&
+			path ===
+				`${STORE_PREFIX}.pageDefinition.${globalThis.pageEditor.editingPageDefinition.name}`
+		) {
+			_setData(
+				path,
+				globalThis.pageEditor.editingPageDefinition.name !== value.name
+					? value
+					: globalThis.pageEditor.editingPageDefinition,
+			);
+		} else _setData(path, value, deleteKey);
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 
@@ -224,26 +244,13 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 				localStore.setItem(key, value);
 			}
 		}
-	} else if (path.startsWith(PAGE_STORE_PREFIX) && context) {
-		_setData(
-			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
-			value,
-			deleteKey,
-		);
-	} else if (
-		globalThis.isDesignMode &&
-		globalThis.designMode === 'PAGE' &&
-		globalThis.pageEditor?.editingPageDefinition?.name &&
-		path ===
-			`${STORE_PREFIX}.pageDefinition.${globalThis.pageEditor.editingPageDefinition.name}`
-	) {
-		_setData(
-			path,
-			globalThis.pageEditor.editingPageDefinition.name !== value.name
-				? value
-				: globalThis.pageEditor.editingPageDefinition,
-		);
-	} else _setData(path, value, deleteKey);
+	} else if (path.startsWith('Temp.')) {
+		console.log('Setting temp store data : ', path, value);
+		tempStoreExtractor.setValue(path, value);
+		return;
+	} else {
+		console.error('Invalid path to store data : ', path);
+	}
 
 	if (globalThis.designMode !== 'PAGE') return;
 
