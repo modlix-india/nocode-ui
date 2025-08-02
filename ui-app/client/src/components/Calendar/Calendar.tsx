@@ -288,6 +288,30 @@ const component: Component = {
 			description: 'Error Text Container',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'editRequestIcon',
+			displayName: 'Edit Request Icon',
+			description: 'Edit Request Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmIcon',
+			displayName: 'Edit Confirm Icon',
+			description: 'Edit Confirm Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editCancelIcon',
+			displayName: 'Edit Cancel Icon',
+			description: 'Edit Cancel Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmCancelContainer',
+			displayName: 'Edit Confirm Cancel Container',
+			description: 'Edit Confirm Cancel Container',
+			icon: 'fa-solid fa-box',
+		},
 	],
 	validations: {
 		DATE: function (
