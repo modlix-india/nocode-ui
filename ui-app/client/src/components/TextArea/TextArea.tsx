@@ -4,6 +4,7 @@ import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
+	getDataFromPath,
 	getPathFromLocation,
 	setData,
 } from '../../context/StoreContext';
@@ -11,13 +12,14 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { IconHelper } from '../util/IconHelper';
-import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
-import { styleDefaults, stylePropertiesForTheme } from './textAreaStyleProperties';
+import { styleProperties, styleDefaults, stylePropertiesForTheme } from './textAreaStyleProperties';
+import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { makeTempPath } from '../../context/TempStore';
 
 interface mapType {
 	[key: string]: any;
@@ -84,14 +86,23 @@ function TextArea(props: Readonly<ComponentProps>) {
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
+
+	const editOn = designType === '_editOnReq';
+
 	const [value, setValue] = React.useState(defaultValue ?? '');
 
-	const bindingPathPath = bindingPath
+	let bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
+	const originalBindingPathPath = bindingPathPath;
+
+	if (editOn && bindingPathPath) {
+		bindingPathPath = makeTempPath(bindingPathPath, context.pageName);
+	}
+
 	React.useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				if (isNullValue(value)) {
@@ -101,9 +112,9 @@ function TextArea(props: Readonly<ComponentProps>) {
 				setValue(value);
 			},
 			pageExtractor,
-			bindingPathPath,
+			originalBindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [originalBindingPathPath]);
 
 	useEffect(() => {
 		if (!validation?.length) return;
@@ -216,10 +227,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 		callFocusEvent();
 	};
 
-	const editOn = designType === '_editOnReq';
-
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-		const shouldUpdate = updateStoreImmediately || editOn;
 		const text = event.target.value;
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
@@ -227,7 +235,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-		if (shouldUpdate && bindingPathPath) {
+		if (updateStoreImmediately && bindingPathPath) {
 			setData(bindingPathPath, temp, context?.pageName);
 			callChangeEvent();
 		}
@@ -275,6 +283,14 @@ function TextArea(props: Readonly<ComponentProps>) {
 			editRequestIcon={editRequestIcon}
 			editConfirmIcon={editConfirmIcon}
 			editCancelIcon={editCancelIcon}
+			onEditRequest={(_, cancel) => {
+				if (!originalBindingPathPath) return;
+				if (cancel) {
+					setValue(
+						getDataFromPath(originalBindingPathPath, locationHistory, pageExtractor),
+					);
+				} else setData(originalBindingPathPath, value, context?.pageName);
+			}}
 		/>
 	);
 }
