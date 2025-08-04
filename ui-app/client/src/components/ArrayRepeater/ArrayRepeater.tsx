@@ -318,7 +318,6 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 					const value =
 						new ExpressionEvaluator(`Data.${orderKey}`).evaluate(valuesMap!) ?? i;
 					putDataInObject(newData[i][1], value, orderKey);
-					console.log(newData[i][1], orderKey, value);
 				}
 			}
 		} else if (orderKey) {
@@ -330,7 +329,6 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 				} else {
 					const value = (isAssending ? i : newData.length - i - 1) + add;
 					putDataInObject(newData[i][1], value, orderKey);
-					console.log(newData[i][1], orderKey, value);
 				}
 			}
 			if (!isAssending) newData.reverse();
@@ -777,7 +775,6 @@ function processArrayValue(
 				dvExtractor.setData(e[1]);
 				const ev = new ExpressionEvaluator(`Data.${orderKey}`);
 				const value = ev.evaluate(valuesMap);
-				console.log(value, e);
 				return [value, e];
 			})
 			.sort((a, b) => {
