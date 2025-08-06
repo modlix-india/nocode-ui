@@ -218,29 +218,35 @@ function TextBox(props: Readonly<ComponentProps>) {
 
 	const updateStoreImmediately = editOn ? false : upStoreImm || autoComplete === 'on';
 
-	const callChangeEvent = useCallback(() => {
-		if (!changeEvent) return;
-		(async () =>
-			await runEvent(
-				changeEvent,
-				onChange,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [changeEvent]);
+	const callChangeEvent = useCallback(
+		(force: boolean = false) => {
+			if (!changeEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					changeEvent,
+					onChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[changeEvent, editOn],
+	);
 
-	const callBlurEvent = useCallback(() => {
-		if (!blurEvent) return;
-		(async () =>
-			await runEvent(
-				blurEvent,
-				onBlur,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [blurEvent]);
+	const callBlurEvent = useCallback(
+		(force: boolean = false) => {
+			if (!blurEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					blurEvent,
+					onBlur,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[blurEvent, editOn],
+	);
 
 	const callFocusEvent = useCallback(() => {
 		if (!focusEvent) return;
@@ -486,8 +492,8 @@ function TextBox(props: Readonly<ComponentProps>) {
 				editRequestIcon={editRequestIcon}
 				editConfirmIcon={editConfirmIcon}
 				editCancelIcon={editCancelIcon}
-				onEditRequest={(_, cancel) => {
-					if (!originalBindingPathPath) return;
+				onEditRequest={(editMode, cancel) => {
+					if (editMode || !originalBindingPathPath) return;
 					if (cancel) {
 						setValue(
 							getDataFromPath(
@@ -496,7 +502,11 @@ function TextBox(props: Readonly<ComponentProps>) {
 								pageExtractor,
 							),
 						);
-					} else setData(originalBindingPathPath, value, context?.pageName);
+					} else {
+						setData(originalBindingPathPath, value, context?.pageName);
+						callChangeEvent(true);
+						callBlurEvent(true);
+					}
 				}}
 			/>
 		</>
