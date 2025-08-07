@@ -289,8 +289,8 @@ function TextArea(props: Readonly<ComponentProps>) {
 			editRequestIcon={editRequestIcon}
 			editConfirmIcon={editConfirmIcon}
 			editCancelIcon={editCancelIcon}
-			onEditRequest={(_, cancel) => {
-				if (!originalBindingPathPath) return;
+			onEditRequest={(editMode, cancel) => {
+				if (!originalBindingPathPath || editMode) return;
 				if (cancel) {
 					setValue(
 						getDataFromPath(originalBindingPathPath, locationHistory, pageExtractor),
