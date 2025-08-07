@@ -126,6 +126,21 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 
 	const [browsingMonthYear, setBrowsingMonthYear] = useState<string>('');
 
+	const callChangeEvent = useCallback(
+		(force: boolean = false) => {
+			if (!changeEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					changeEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[changeEvent, editOn, key, context.pageName, props.locationHistory, props.pageDefinition],
+	);
+
 	useEffect(() => {
 		if (!originalBindingPathPath3) return;
 		addListenerAndCallImmediately(
@@ -423,15 +438,8 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			}
 		}
 
-		if (validatedAndSet && changeEvent) {
-			(async () =>
-				await runEvent(
-					changeEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				))();
+		if (validatedAndSet) {
+			callChangeEvent();
 		}
 		if (shouldCloseDropdown) {
 			setShowDropdown(false);
@@ -462,15 +470,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			);
 			if (editOn)
 				(dateType === 'startDate' ? setThisDate : setThatDate)(storable?.toString());
-			if (!changeEvent) return;
-			(async () =>
-				await runEvent(
-					changeEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				))();
+			callChangeEvent();
 		}
 	};
 
@@ -626,6 +626,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 						);
 					}
 				} else {
+					let changed = false;
 					if (bindingPathPath1) {
 						validateRangesAndSetData(
 							originalBindingPathPath1,
@@ -633,6 +634,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 							context.pageName,
 							validationProps,
 						);
+						changed = true;
 					}
 					if (bindingPathPath2) {
 						validateRangesAndSetData(
@@ -641,10 +643,13 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 							context.pageName,
 							validationProps,
 						);
+						changed = true;
 					}
 					if (bindingPathPath3) {
 						setData(originalBindingPathPath3, browsingMonthYear, context.pageName);
+						changed = true;
 					}
+					if (changed) callChangeEvent(true);
 				}
 			}}
 		>
