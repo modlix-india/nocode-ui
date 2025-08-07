@@ -175,9 +175,8 @@ function CommonInputText(props: CommonInputType) {
 		: undefined;
 
 	const [editModeOriginal, setEditModeOriginal] = useState(!showEditRequest);
-	console.log(cssPrefix, validationMessages);
+
 	const setEditMode = (editMode: boolean, canceled: boolean) => {
-		console.log(editMode, validationMessages);
 		if (!editMode && validationMessages?.length) return;
 		setEditModeOriginal(editMode);
 		onEditRequest?.(editMode, canceled);
