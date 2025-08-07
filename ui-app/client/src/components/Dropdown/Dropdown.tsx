@@ -120,6 +120,22 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	const editOn = designType === '_editOnReq';
 
+	const callClickEvent = useCallback(
+		(force: boolean = false) => {
+			if (!clickEvent || (editOn && !force)) return;
+			(async () => {
+				await runEvent(
+					clickEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+			})();
+		},
+		[clickEvent, editOn, key, context.pageName, props.locationHistory],
+	);
+
 	const originalBindingPathPath = bindingPathPath;
 
 	if (editOn && bindingPathPath) {
@@ -213,14 +229,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			setData(bindingPathPath, aValue, context.pageName, removeKeyWhenEmpty);
 			if (editOn) setSelected(aValue);
 
-			if (!runEventOnDropDownClose && clickEvent) {
-				await runEvent(
-					clickEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
+			if (!runEventOnDropDownClose) {
+				callClickEvent();
 			}
 		} else {
 			setData(
@@ -232,15 +242,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				removeKeyWhenEmpty,
 			);
 			if (editOn) setSelected(each.value);
-			if (clickEvent) {
-				await runEvent(
-					clickEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
-			}
+			callClickEvent();
 			handleClose();
 		}
 	};
@@ -282,16 +284,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
 
-		if (clickEvent && runEventOnDropDownClose && isMultiSelect && isChanged) {
-			(async () => {
-				await runEvent(
-					clickEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
-			})();
+		if (runEventOnDropDownClose && isMultiSelect && isChanged) {
+			callClickEvent();
 		}
 		setShowDropdown(false);
 		setFocus(false);
@@ -306,7 +300,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		inputRef,
 		clearSearchTextOnClose,
 		setSearchText,
-		clickEvent,
+		callClickEvent,
 		runEventOnDropDownClose,
 	]);
 
@@ -625,7 +619,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					setSelected(
 						getDataFromPath(originalBindingPathPath, locationHistory, pageExtractor),
 					);
-				} else setData(originalBindingPathPath, selected, context?.pageName);
+				} else {
+					setData(originalBindingPathPath, selected, context?.pageName);
+					callClickEvent(true);
+				}
 			}}
 		>
 			{dropdownContainer}
