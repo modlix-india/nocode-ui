@@ -395,15 +395,15 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!validation?.length) return;
-		console.log(selected, phoneNumber);
 		let text =
 			phoneNumber === '' && emptyValue
 				? mapValue[emptyValue]
-				: getUnformattedNumber(phoneNumber);
-		let formattedText = getFormattedNumber(SORTED_COUNTRY_LIST, seperator, text, selected.D);
+				: (getUnformattedNumber(phoneNumber) ?? '');
+		let formattedText =
+			getFormattedNumber(SORTED_COUNTRY_LIST, seperator, text, selected.D) ?? '';
 
 		let temp = format
-			? selected.D + (storeFormatted ? seperator + formattedText : text)
+			? selected.D + ((storeFormatted ? seperator + formattedText : text) ?? '')
 			: selected.D + text;
 
 		const msgs = validate(
