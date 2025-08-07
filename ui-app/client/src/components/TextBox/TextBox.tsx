@@ -21,6 +21,7 @@ import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
 import TextBoxStyle from './TextBoxStyle';
 import { styleDefaults, stylePropertiesForTheme } from './textBoxStyleProperties';
+import { makeTempPath } from '../../context/TempStore';
 
 const REGEX_NUMBER = /^(?![.,])[0-9.,]+$/;
 
@@ -94,12 +95,19 @@ function TextBox(props: Readonly<ComponentProps>) {
 	);
 	const [value, setValue] = React.useState(defaultValue ?? '');
 
-	const bindingPathPath = bindingPath
+	let bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
+	const originalBindingPathPath = bindingPathPath;
+
+	const editOn = designType === '_editOnReq';
+
+	if (editOn && bindingPathPath) {
+		bindingPathPath = makeTempPath(bindingPathPath, context.pageName);
+	}
 
 	React.useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				if (isNullValue(value)) {
@@ -118,9 +126,9 @@ function TextBox(props: Readonly<ComponentProps>) {
 				}
 			},
 			pageExtractor,
-			bindingPathPath,
+			originalBindingPathPath,
 		);
-	}, [bindingPathPath, valueType, numberFormat, numberType]);
+	}, [originalBindingPathPath, valueType, numberFormat, numberType]);
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -208,31 +216,37 @@ function TextBox(props: Readonly<ComponentProps>) {
 		? props.pageDefinition.eventFunctions?.[onRightIconClick]
 		: undefined;
 
-	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
+	const updateStoreImmediately = editOn ? false : upStoreImm || autoComplete === 'on';
 
-	const callChangeEvent = useCallback(() => {
-		if (!changeEvent) return;
-		(async () =>
-			await runEvent(
-				changeEvent,
-				onChange,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [changeEvent]);
+	const callChangeEvent = useCallback(
+		(force: boolean = false) => {
+			if (!changeEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					changeEvent,
+					onChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[changeEvent, editOn],
+	);
 
-	const callBlurEvent = useCallback(() => {
-		if (!blurEvent) return;
-		(async () =>
-			await runEvent(
-				blurEvent,
-				onBlur,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [blurEvent]);
+	const callBlurEvent = useCallback(
+		(force: boolean = false) => {
+			if (!blurEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					blurEvent,
+					onBlur,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[blurEvent, editOn],
+	);
 
 	const callFocusEvent = useCallback(() => {
 		if (!focusEvent) return;
@@ -429,8 +443,6 @@ function TextBox(props: Readonly<ComponentProps>) {
 		);
 	}
 
-	const editOn = designType === '_editOnReq';
-
 	return (
 		<>
 			{style}
@@ -480,6 +492,22 @@ function TextBox(props: Readonly<ComponentProps>) {
 				editRequestIcon={editRequestIcon}
 				editConfirmIcon={editConfirmIcon}
 				editCancelIcon={editCancelIcon}
+				onEditRequest={(editMode, cancel) => {
+					if (editMode || !originalBindingPathPath) return;
+					if (cancel) {
+						setValue(
+							getDataFromPath(
+								originalBindingPathPath,
+								locationHistory,
+								pageExtractor,
+							),
+						);
+					} else {
+						setData(originalBindingPathPath, value, context?.pageName);
+						callChangeEvent(true);
+						callBlurEvent(true);
+					}
+				}}
 			/>
 		</>
 	);

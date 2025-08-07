@@ -12,10 +12,12 @@ import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	addListenerAndCallImmediately,
+	getDataFromPath,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
+import { makeTempPath } from '../../context/TempStore';
 import { Component, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
@@ -45,7 +47,6 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		>
 	>();
 	const [selected, setSelected] = useState<any>();
-	const [editOnSelected, setEditOnSelected] = useState<any>();
 	const [searchText, setSearchText] = useState('');
 	const [focus, setFocus] = useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
@@ -114,21 +115,43 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 	const searchEvent = onSearch ? props.pageDefinition.eventFunctions?.[onSearch] : undefined;
-	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
+	let bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);
 	const searchBindingPath = getPathFromLocation(bindingPath2!, locationHistory, pageExtractor);
 
 	const editOn = designType === '_editOnReq';
 
+	const callClickEvent = useCallback(
+		(force: boolean = false) => {
+			if (!clickEvent || (editOn && !force)) return;
+			(async () => {
+				await runEvent(
+					clickEvent,
+					key,
+					context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+			})();
+		},
+		[clickEvent, editOn, key, context.pageName, props.locationHistory],
+	);
+
+	const originalBindingPathPath = bindingPathPath;
+
+	if (editOn && bindingPathPath) {
+		bindingPathPath = makeTempPath(bindingPathPath, context.pageName);
+	}
+
 	useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!originalBindingPathPath) return;
 		addListenerAndCallImmediately(
 			(_, value) => {
 				setSelected(value);
 			},
 			pageExtractor,
-			bindingPathPath,
+			originalBindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [originalBindingPathPath]);
 
 	useEffect(() => {
 		if (!searchBindingPath) return;
@@ -203,27 +226,12 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				if (multiSelectNoSelectionValue === 'UNDEFINED') aValue = undefined;
 				else if (multiSelectNoSelectionValue === 'NULL') aValue = null;
 			}
+			setData(bindingPathPath, aValue, context.pageName, removeKeyWhenEmpty);
 			if (editOn) setSelected(aValue);
-			else {
-				setData(bindingPathPath, aValue, context.pageName, removeKeyWhenEmpty);
 
-				if (!runEventOnDropDownClose && clickEvent) {
-					await runEvent(
-						clickEvent,
-						key,
-						context.pageName,
-						props.locationHistory,
-						props.pageDefinition,
-					);
-				}
+			if (!runEventOnDropDownClose) {
+				callClickEvent();
 			}
-		} else if (editOn) {
-			setSelected(
-				deepEqual(selected, each.value) && clearOnSelectingSameValue
-					? undefined
-					: each.value,
-			);
-			handleClose();
 		} else {
 			setData(
 				bindingPathPath,
@@ -233,15 +241,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				context?.pageName,
 				removeKeyWhenEmpty,
 			);
-			if (clickEvent) {
-				await runEvent(
-					clickEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
-			}
+			if (editOn) setSelected(each.value);
+			callClickEvent();
 			handleClose();
 		}
 	};
@@ -283,16 +284,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
 
-		if (clickEvent && runEventOnDropDownClose && isMultiSelect && isChanged) {
-			(async () => {
-				await runEvent(
-					clickEvent,
-					key,
-					context.pageName,
-					props.locationHistory,
-					props.pageDefinition,
-				);
-			})();
+		if (runEventOnDropDownClose && isMultiSelect && isChanged) {
+			callClickEvent();
 		}
 		setShowDropdown(false);
 		setFocus(false);
@@ -307,38 +300,35 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		inputRef,
 		clearSearchTextOnClose,
 		setSearchText,
-		clickEvent,
+		callClickEvent,
 		runEventOnDropDownClose,
 	]);
 
-	const getLabel = useCallback(
-		(lSelected: any, lSelectedDataKey: any) => {
-			let label = '';
-			if (lSelected == undefined || (Array.isArray(lSelected) && !lSelected.length)) {
-				return '';
+	const getLabel = useCallback(() => {
+		let label = '';
+		if (selected == undefined || (Array.isArray(selected) && !selected.length)) {
+			return '';
+		}
+		if (!isMultiSelect) {
+			label = dropdownData?.find((each: any) => each?.key === selectedDataKey)?.label;
+			if (!label && searchEvent) {
+				label = selected?.label;
 			}
-			if (!isMultiSelect) {
-				label = dropdownData?.find((each: any) => each?.key === lSelectedDataKey)?.label;
-				if (!label && searchEvent) {
-					label = lSelected?.label;
-				}
-				return label;
-			}
+			return label;
+		}
 
-			if (showMultipleSelectedValues) {
-				const vals = [];
-				for (const each of lSelectedDataKey ?? []) {
-					vals.push(dropdownData?.find((e: any) => e?.key === each)?.label);
-				}
-				return vals.join(', ');
+		if (showMultipleSelectedValues) {
+			const vals = [];
+			for (const each of selectedDataKey ?? []) {
+				vals.push(dropdownData?.find((e: any) => e?.key === each)?.label);
 			}
+			return vals.join(', ');
+		}
 
-			return `${lSelectedDataKey?.length} Item${
-				(lSelectedDataKey?.length ?? 0) > 1 ? 's' : ''
-			}  selected`;
-		},
-		[dropdownData, isMultiSelect, showMultipleSelectedValues],
-	);
+		return `${selectedDataKey?.length} Item${
+			(selectedDataKey?.length ?? 0) > 1 ? 's' : ''
+		}  selected`;
+	}, [selected, selectedDataKey, dropdownData, isMultiSelect, showMultipleSelectedValues]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, disabled: readOnly },
@@ -539,7 +529,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			cssPrefix="comp compDropdown"
 			noFloat={noFloat}
 			readOnly={readOnly}
-			value={getLabel(selected, selectedDataKey)}
+			value={getLabel()}
 			label={editOn ? '' : label}
 			translations={translations}
 			rightIcon={
@@ -623,26 +613,15 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			editRequestIcon={editRequestIcon}
 			editConfirmIcon={editConfirmIcon}
 			editCancelIcon={editCancelIcon}
-			editOnValueStoredInParent={true}
 			onEditRequest={(editMode, canceled) => {
-				if (editMode) {
-					setEditOnSelected(selected);
+				if (editMode || !originalBindingPathPath) return;
+				if (canceled) {
+					setSelected(
+						getDataFromPath(originalBindingPathPath, locationHistory, pageExtractor),
+					);
 				} else {
-					if (canceled) {
-						setSelected(editOnSelected);
-					} else {
-						setData(bindingPathPath, selected, context.pageName, removeKeyWhenEmpty);
-						if (clickEvent) {
-							(async () =>
-								await runEvent(
-									clickEvent,
-									key,
-									context.pageName,
-									props.locationHistory,
-									props.pageDefinition,
-								))();
-						}
-					}
+					setData(originalBindingPathPath, selected, context?.pageName);
+					callClickEvent(true);
 				}
 			}}
 		>

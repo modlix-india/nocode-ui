@@ -180,11 +180,35 @@ export function getDataFromPath(
 export const innerSetData = _setData;
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
+	// console.error('Data set : ', path, value);
 	if (path.endsWith('.')) path = path.substring(0, path.length - 1);
 
 	if (path.startsWith('SampleDataStore.') || path.startsWith('Filler.')) {
 		// Sample store is not editable so we are not changing the data
 		return;
+	}
+
+	if (path.startsWith(PAGE_STORE_PREFIX) && context) {
+		_setData(
+			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
+			value,
+			deleteKey,
+		);
+	} else if (path.startsWith(STORE_PREFIX)) {
+		if (
+			globalThis.isDesignMode &&
+			globalThis.designMode === 'PAGE' &&
+			globalThis.pageEditor?.editingPageDefinition?.name &&
+			path ===
+				`${STORE_PREFIX}.pageDefinition.${globalThis.pageEditor.editingPageDefinition.name}`
+		) {
+			_setData(
+				path,
+				globalThis.pageEditor.editingPageDefinition.name !== value.name
+					? value
+					: globalThis.pageEditor.editingPageDefinition,
+			);
+		} else _setData(path, value, deleteKey);
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 
@@ -218,26 +242,9 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 				localStore.setItem(key, value);
 			}
 		}
-	} else if (path.startsWith(PAGE_STORE_PREFIX) && context) {
-		_setData(
-			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
-			value,
-			deleteKey,
-		);
-	} else if (
-		globalThis.isDesignMode &&
-		globalThis.designMode === 'PAGE' &&
-		globalThis.pageEditor?.editingPageDefinition?.name &&
-		path ===
-			`${STORE_PREFIX}.pageDefinition.${globalThis.pageEditor.editingPageDefinition.name}`
-	) {
-		_setData(
-			path,
-			globalThis.pageEditor.editingPageDefinition.name !== value.name
-				? value
-				: globalThis.pageEditor.editingPageDefinition,
-		);
-	} else _setData(path, value, deleteKey);
+	} else {
+		console.error('Invalid path to store data : ', path);
+	}
 
 	if (globalThis.designMode !== 'PAGE') return;
 

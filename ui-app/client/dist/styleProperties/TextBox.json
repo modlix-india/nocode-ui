@@ -711,7 +711,7 @@
 		"gn": "Color",
 		"dn": "Left Icon Color",
 		"n": "textBoxLeftIconColor<designType><colorScheme>",
-		"dv": "<fontColorSix>"
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "color",
@@ -721,7 +721,7 @@
 		"gn": "Color",
 		"dn": "Right Icon Color",
 		"n": "textBoxRightIconColor<designType><colorScheme>",
-		"dv": "<fontColorSix>"
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "color",
