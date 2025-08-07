@@ -215,36 +215,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	useEffect(() => {
-		if (!validation?.length) return;
-		const msgs = validate(
-			props.definition,
-			props.pageDefinition,
-			validation,
-			value,
-			locationHistory,
-			pageExtractor,
-		);
-		setValidationMessages([
-			...(validationMessages.filter(e => e === VALIDATION_MSG) ?? []),
-			...msgs,
-		]);
-
-		setData(
-			`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
-			msgs.length ? msgs : undefined,
-			context.pageName,
-			true,
-		);
-		return () =>
-			setData(
-				`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
-				undefined,
-				context.pageName,
-				true,
-			);
-	}, [value, validation]);
-
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
 	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
@@ -253,29 +223,35 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 	const updateStoreImmediately = editOn ? false : upStoreImm || autoComplete === 'on';
 
-	const callChangeEvent = useCallback(() => {
-		if (!changeEvent) return;
-		(async () =>
-			await runEvent(
-				changeEvent,
-				onChange,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [changeEvent]);
+	const callChangeEvent = useCallback(
+		(force: boolean = false) => {
+			if (!changeEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					changeEvent,
+					onChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[changeEvent, editOn],
+	);
 
-	const callBlurEvent = useCallback(() => {
-		if (!blurEvent) return;
-		(async () =>
-			await runEvent(
-				blurEvent,
-				onBlur,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [blurEvent]);
+	const callBlurEvent = useCallback(
+		(force: boolean = false) => {
+			if (!blurEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					blurEvent,
+					onBlur,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[blurEvent, editOn],
+	);
 
 	const callFocusEvent = useCallback(() => {
 		if (!focusEvent) return;
@@ -352,62 +328,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		useState<DropdownOption>(selected);
 	const VALIDATION_MSG = 'Dial code is not valid or not available in option list';
 
-	const getDialCode = (value: string) => {
-		let dc = '';
-		if (value !== '' && value.startsWith('+')) {
-			dc = value.length > 8 ? value.substring(0, 8) : value;
-			while (dc.length > 0) {
-				if (!countryList.find(e => e.D === dc)) {
-					dc = dc.slice(0, dc.length - 1);
-				} else break;
-			}
-		}
-		return dc;
-	};
-
-	const getSelectedCountry = (value: string) => {
-		let dc = getDialCode(value);
-		let temp = countryList.filter(e => e.D === dc);
-		if (!temp.length) return undefined;
-		else if (temp.length == 1) return temp[0];
-		let text = value.slice(dc.length);
-		for (let i = 0; i < temp.length; i++) {
-			let areaCodes = temp[i]?.A ?? [];
-			for (let j = 0; j < areaCodes.length; j++) {
-				if (text.startsWith(`${areaCodes[j]}`)) {
-					return temp[i];
-				}
-			}
-		}
-		if (countryMap.current.has(dc)) return countryMap.current.get(dc);
-		return temp[0];
-	};
-	const getUnformattedNumber = (text: string | undefined) => {
-		if (!text) return '';
-		return text.replace(/[^+\d]/g, '');
-	};
-
-	const getFormattedNumber = (text: string, dc: string) => {
-		let format = SORTED_COUNTRY_LIST.find(e => e.D == dc)?.F ?? [];
-		if (format.length == 0) format = [5, 5];
-		let formatLength = format.reduce((acc, e) => acc + e, 0);
-		text = getUnformattedNumber(text);
-		if (text.length > formatLength) return text;
-		let formattedText = '';
-		let startInd = 0;
-		for (let i = 0; i < format.length; i++) {
-			let endInd = startInd + format[i];
-			let stext = text.slice(startInd, endInd);
-			if (stext.length < text.slice(startInd, endInd + 1).length) {
-				formattedText += stext + seperator;
-			} else {
-				formattedText += stext;
-			}
-			startInd = endInd;
-		}
-		return formattedText;
-	};
-
 	useEffect(() => {
 		let tempList = [];
 		if (Array.isArray(countries) && Array.isArray(topCountries)) {
@@ -474,8 +394,42 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	}, [countries, topCountries, SORTED_COUNTRY_LIST]);
 
 	useEffect(() => {
+		if (!validation?.length) return;
+		console.log(selected, phoneNumber);
+		let text =
+			phoneNumber === '' && emptyValue
+				? mapValue[emptyValue]
+				: getUnformattedNumber(phoneNumber);
+		let formattedText = getFormattedNumber(SORTED_COUNTRY_LIST, seperator, text, selected.D);
+
+		let temp = format
+			? selected.D + (storeFormatted ? seperator + formattedText : text)
+			: selected.D + text;
+
+		const msgs = validate(
+			props.definition,
+			props.pageDefinition,
+			validation,
+			storeFormatted ? temp : text,
+			locationHistory,
+			pageExtractor,
+		);
+		setValidationMessages([
+			...(validationMessages.filter(e => e === VALIDATION_MSG) ?? []),
+			...msgs,
+		]);
+
+		setData(
+			`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+			msgs.length ? msgs : undefined,
+			context.pageName,
+			true,
+		);
+	}, [selected.D, phoneNumber, validation, storeFormatted, seperator]);
+
+	useEffect(() => {
 		let unformattedText = getUnformattedNumber(value);
-		let selectedCountry = getSelectedCountry(unformattedText);
+		let selectedCountry = getSelectedCountry(countryList, countryMap.current, unformattedText);
 
 		if (selectedCountry) {
 			setSelected(selectedCountry);
@@ -488,16 +442,24 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		}
 
 		let dc = selectedCountry ? (selectedCountry.D ?? '') : '';
-		if (format) setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
+		if (format)
+			setPhoneNumber(
+				getFormattedNumber(
+					SORTED_COUNTRY_LIST,
+					seperator,
+					unformattedText.slice(dc.length),
+					dc,
+				),
+			);
 		else setPhoneNumber(unformattedText.slice(dc.length));
 	}, [value, countryList, seperator]);
 
 	const extractDCAndPhone = (text: string) => {
 		let phone = text;
-		let dc = getDialCode(phone);
+		let dc = getDialCode(countryList, phone);
 		if (dc) {
 			phone = phone.slice(dc.length);
-			setValidationMessages([]);
+			setValidationMessages(validationMessages.filter(e => e !== VALIDATION_MSG));
 		} else {
 			dc = selected.D;
 			if (
@@ -511,11 +473,11 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 	const updateBindingPathData = (text: string | undefined | null | 0, removeKey?: boolean) => {
 		if (bindingPathPath && removeKey) {
-			setValidationMessages([]);
+			setValidationMessages(validationMessages.filter(e => e !== VALIDATION_MSG));
 			setData(bindingPathPath, text, context?.pageName, true);
 			callChangeEvent();
 		} else if (bindingPathPath) {
-			setValidationMessages([]);
+			setValidationMessages(validationMessages.filter(e => e !== VALIDATION_MSG));
 			setData(bindingPathPath, text, context?.pageName);
 			callChangeEvent();
 		}
@@ -536,7 +498,11 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			let { dc, phone } = extractDCAndPhone(text);
 			let temp =
 				format && text !== phone
-					? dc + (storeFormatted ? seperator + getFormattedNumber(phone, dc) : phone)
+					? dc +
+						(storeFormatted
+							? seperator +
+								getFormattedNumber(SORTED_COUNTRY_LIST, seperator, phone, dc)
+							: phone)
 					: dc + phone;
 			bindingPathPath &&
 				setData(bindingPathPath, storeDialCodeWithNumber ? temp : phone, context?.pageName);
@@ -544,7 +510,10 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		} else if (!updateStoreImmediately) {
 			let temp = format
 				? selected.D +
-					(storeFormatted ? seperator + getFormattedNumber(text, selected.D) : text)
+					(storeFormatted
+						? seperator +
+							getFormattedNumber(SORTED_COUNTRY_LIST, seperator, text, selected.D)
+						: text)
 				: selected.D + text;
 			updateBindingPathData(storeDialCodeWithNumber ? temp : text);
 		}
@@ -561,7 +530,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			return;
 		}
 		text = text === '' && emptyValue ? mapValue[emptyValue] : getUnformattedNumber(text);
-		let formattedText = getFormattedNumber(text, selected.D);
+		let formattedText = getFormattedNumber(SORTED_COUNTRY_LIST, seperator, text, selected.D);
 
 		if (!text && updateStoreImmediately) {
 			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
@@ -589,7 +558,8 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		if (bindingPathPath) {
 			const formattedPhone = format
 				? storeFormatted
-					? seperator + getFormattedNumber(phoneNumber, v.D)
+					? seperator +
+						getFormattedNumber(SORTED_COUNTRY_LIST, seperator, phoneNumber, v.D)
 					: phoneNumber
 				: phoneNumber;
 			const newValue = phoneNumber
@@ -683,7 +653,11 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 						pageExtractor,
 					);
 					let unformattedText = getUnformattedNumber(originalValue);
-					let selectedCountry = getSelectedCountry(unformattedText);
+					let selectedCountry = getSelectedCountry(
+						countryList,
+						countryMap.current,
+						unformattedText,
+					);
 
 					if (selectedCountry) {
 						setSelected(selectedCountry);
@@ -697,15 +671,24 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 
 					let dc = selectedCountry ? (selectedCountry.D ?? '') : '';
 					if (format)
-						setPhoneNumber(getFormattedNumber(unformattedText.slice(dc.length), dc));
+						setPhoneNumber(
+							getFormattedNumber(
+								SORTED_COUNTRY_LIST,
+								seperator,
+								unformattedText.slice(dc.length),
+								dc,
+							),
+						);
 					else setPhoneNumber(unformattedText.slice(dc.length));
 				} else {
+					let dataChanged = false;
 					if (originalBindingPathPath) {
 						setData(
 							originalBindingPathPath,
 							getDataFromPath(bindingPathPath, locationHistory, pageExtractor),
 							context?.pageName,
 						);
+						dataChanged = true;
 					}
 					if (originalBindingPathPath2) {
 						setData(
@@ -713,6 +696,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 							getDataFromPath(bindingPathPath2, locationHistory, pageExtractor),
 							context?.pageName,
 						);
+						dataChanged = true;
 					}
 					if (originalBindingPathPath3) {
 						setData(
@@ -720,6 +704,11 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 							getDataFromPath(bindingPathPath3, locationHistory, pageExtractor),
 							context?.pageName,
 						);
+						dataChanged = true;
+					}
+					if (dataChanged) {
+						callChangeEvent(true);
+						callBlurEvent(true);
 					}
 				}
 			}}
@@ -903,3 +892,69 @@ const component: Component = {
 };
 
 export default component;
+
+function getDialCode(countryList: DropdownOptions, value: string) {
+	let dc = '';
+	if (value !== '' && value.startsWith('+')) {
+		dc = value.length > 8 ? value.substring(0, 8) : value;
+		while (dc.length > 0) {
+			if (!countryList.find(e => e.D === dc)) {
+				dc = dc.slice(0, dc.length - 1);
+			} else break;
+		}
+	}
+	return dc;
+}
+
+function getSelectedCountry(
+	countryList: DropdownOptions,
+	countryMap: Map<string, DropdownOption>,
+	value: string,
+) {
+	let dc = getDialCode(countryList, value);
+	let temp = countryList.filter(e => e.D === dc);
+	if (!temp.length) return undefined;
+	else if (temp.length == 1) return temp[0];
+	let text = value.slice(dc.length);
+	for (let i = 0; i < temp.length; i++) {
+		let areaCodes = temp[i]?.A ?? [];
+		for (let j = 0; j < areaCodes.length; j++) {
+			if (text.startsWith(`${areaCodes[j]}`)) {
+				return temp[i];
+			}
+		}
+	}
+	if (countryMap.has(dc)) return countryMap.get(dc);
+	return temp[0];
+}
+
+function getUnformattedNumber(text: string | undefined) {
+	if (!text) return '';
+	return text.replace(/[^+\d]/g, '');
+}
+
+function getFormattedNumber(
+	sortedCountryList: DropdownOptions,
+	seperator: string,
+	text: string,
+	dc: string,
+) {
+	let format = sortedCountryList.find(e => e.D == dc)?.F ?? [];
+	if (format.length == 0) format = [5, 5];
+	let formatLength = format.reduce((acc, e) => acc + e, 0);
+	text = getUnformattedNumber(text);
+	if (text.length > formatLength) return text;
+	let formattedText = '';
+	let startInd = 0;
+	for (let i = 0; i < format.length; i++) {
+		let endInd = startInd + format[i];
+		let stext = text.slice(startInd, endInd);
+		if (stext.length < text.slice(startInd, endInd + 1).length) {
+			formattedText += stext + seperator;
+		} else {
+			formattedText += stext;
+		}
+		startInd = endInd;
+	}
+	return formattedText;
+}
