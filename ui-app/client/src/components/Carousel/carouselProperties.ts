@@ -12,6 +12,7 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	// BASIC
 	{
 		name: 'showArrowButtons',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -21,12 +22,79 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
-		name: 'showDotsButtons',
+		name: 'showIndicators',
 		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Dot buttons in carousel',
-		description: `Dot buttons that will show on bottom of the carousel.`,
+		displayName: 'Show Indicators',
+		description: 'Show indicator buttons for slides',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
+	},
+	{
+		name: 'showIndicatorArrows',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Indicator Arrows',
+		description: 'Show navigation arrows in the indicator bar',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: true,
+	},
+	{
+		name: 'indicatorPosition',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Indicator Position',
+		description: 'Position of indicator buttons (bottom, top, left, right)',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'bottom',
+		enumValues: [
+			{ name: 'bottom', displayName: 'Bottom', description: 'Indicators at the bottom' },
+			{ name: 'top', displayName: 'Top', description: 'Indicators at the top' },
+			{ name: 'left', displayName: 'Left', description: 'Indicators on the left' },
+			{ name: 'right', displayName: 'Right', description: 'Indicators on the right' },
+		],
+	},
+	{
+		name: 'indicatorVisibleCount',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Visible Indicators Count',
+		description: 'Number of indicators to show at once (windowed view)',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: -1,
+	},
+	{
+		name: 'indicatorShape',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Indicator Shape',
+		description: 'Shape of the indicator (circle, square, dash, none)',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'circle',
+		enumValues: [
+			{ name: 'circle', displayName: 'Circle', description: 'Circle shape' },
+			{ name: 'square', displayName: 'Square', description: 'Square shape' },
+			{ name: 'dash', displayName: 'Dash', description: 'Dash shape' },
+			{ name: 'none', displayName: 'None', description: 'No shape (numbers only)' },
+		],
+	},
+	{
+		name: 'indicatorFill',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Indicator Fill',
+		description: 'Fill style of the indicator (outline, solid)',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'outline',
+		enumValues: [
+			{ name: 'outline', displayName: 'Outline', description: 'Outline style' },
+			{ name: 'solid', displayName: 'Solid', description: 'Solid style' },
+		],
+	},
+	{
+		name: 'indicatorShowNumbers',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Numbers in Indicators',
+		description: 'Show slide numbers inside indicators',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
 	},
 	{
 		name: 'slideSpeed',
@@ -36,6 +104,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 2000,
 	},
+	{
+		name: 'autoPlay',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Auto Play',
+		description: 'Play automatically without interaction',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: true,
+	},
+
+	// ADVANCED
 	{
 		name: 'animationType',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -78,158 +156,104 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
-		name: 'autoPlay',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Auto Play',
-		description: 'Play automatically without interaction',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: true,
-	},
-	{
-		name: 'dotsButtonType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'dotsButtonType',
-		description: 'Types of Dot buttons',
-		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'circle',
-		group: ComponentPropertyGroup.BASIC,
-		enumValues: [
-			{ name: 'circle', displayName: 'dots', description: 'dots' },
-			{ name: 'square', displayName: 'square', description: 'square buttons' },
-			{ name: 'none', displayName: 'none', description: 'none' },
-		],
-	},
-	{
-		name: 'dotsButtonIconType',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'dotsButtonType',
-		description: 'Position of Dot buttons',
-		editor: ComponentPropertyEditor.ENUM,
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'regular',
-		enumValues: [
-			{ name: 'regular', displayName: 'regular', description: 'hallo icon' },
-			{ name: 'solid', displayName: 'solid', description: 'solid icon' },
-		],
-	},
-	{
-		name: 'hasNumbersInSlideNav',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'hasNumbersInSlideNav',
-		description: 'has numbers in slide nav',
-		group: ComponentPropertyGroup.BASIC,
-		defaultValue: false,
-	},
-	{
 		name: 'slideNavButtonPosition',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'slideNavButtonType',
-		description: 'Types of Dot buttons',
+		displayName: 'Slide Nav Button Position',
+		description: 'Position of slide navigation buttons',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'Bottom',
 		enumValues: [
-			{
-				name: 'Top',
-				displayName: 'top',
-				description: 'slide navigations button positioned on top',
-			},
-			{
-				name: 'Right',
-				displayName: 'right',
-				description: 'slide navigations button positioned on right',
-			},
-			{
-				name: 'Bottom',
-				displayName: 'bottom',
-				description: 'slide navigations button positioned on bottom',
-			},
-			{
-				name: 'Left',
-				displayName: 'left',
-				description: 'slide navigations button positioned on left',
-			},
-			{
-				name: 'OutsideBottom',
-				displayName: 'OutsideBottom',
-				description: 'slide navigations button positioned on outside bottom',
-			},
-			{
-				name: 'OutsideTop',
-				displayName: 'OutsideTop',
-				description: 'slide navigations button positioned on outside Top',
-			},
+			{ name: 'Top', displayName: 'Top', description: 'slide navigations button positioned on top' },
+			{ name: 'Right', displayName: 'Right', description: 'slide navigations button positioned on right' },
+			{ name: 'Bottom', displayName: 'Bottom', description: 'slide navigations button positioned on bottom' },
+			{ name: 'Left', displayName: 'Left', description: 'slide navigations button positioned on left' },
+			{ name: 'OutsideBottom', displayName: 'OutsideBottom', description: 'slide navigations button positioned on outside bottom' },
+			{ name: 'OutsideTop', displayName: 'OutsideTop', description: 'slide navigations button positioned on outside Top' },
 		],
 	},
-
 	{
 		name: 'arrowButtons',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'arrowButtons',
+		displayName: 'Arrow Buttons',
 		description: 'Position of arrow buttons',
 		editor: ComponentPropertyEditor.ENUM,
 		defaultValue: 'Middle',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
-			{
-				name: 'Middle',
-				displayName: 'Center',
-				description: 'arrow navigations button positioned on middle',
-			},
-			{
-				name: 'LeftTop',
-				displayName: 'top left',
-				description: 'arrow navigations button positioned on top-Left',
-			},
-			{
-				name: 'RightTop',
-				displayName: 'top right',
-				description: 'arrow navigations button positioned on top-right ',
-			},
-			{
-				name: 'LeftBottom',
-				displayName: 'bottom left',
-				description: 'arrow navigations button positioned on bottom-left',
-			},
-			{
-				name: 'RightBottom',
-				displayName: 'bottom right',
-				description: 'arrow navigations button positioned on  Bottom-right',
-			},
-			{
-				name: 'OutsideBottomLeft',
-				displayName: 'Outside-Bottom-Left',
-				description: 'arrow navigations button positioned on outside-bottom-left',
-			},
-			{
-				name: 'OutsideBottomRight',
-				displayName: 'Outside-Bottom-Right',
-				description: 'arrow navigations button positioned on outside-bottom-right',
-			},
-			{
-				name: 'OutsideTopLeft',
-				displayName: 'Outside-Top-Left',
-				description: 'arrow navigations button positioned on outside-Top-left',
-			},
-			{
-				name: 'OutsideTopRight',
-				displayName: 'Outside-Top-Right',
-				description: 'arrow navigations button positioned on outside-Top-right',
-			},
+			{ name: 'Middle', displayName: 'Center', description: 'arrow navigations button positioned on middle' },
+			{ name: 'LeftTop', displayName: 'top left', description: 'arrow navigations button positioned on top-Left' },
+			{ name: 'RightTop', displayName: 'top right', description: 'arrow navigations button positioned on top-right ' },
+			{ name: 'LeftBottom', displayName: 'bottom left', description: 'arrow navigations button positioned on bottom-left' },
+			{ name: 'RightBottom', displayName: 'bottom right', description: 'arrow navigations button positioned on  Bottom-right' },
+			{ name: 'OutsideBottomLeft', displayName: 'Outside-Bottom-Left', description: 'arrow navigations button positioned on outside-bottom-left' },
+			{ name: 'OutsideBottomRight', displayName: 'Outside-Bottom-Right', description: 'arrow navigations button positioned on outside-bottom-right' },
+			{ name: 'OutsideTopLeft', displayName: 'Outside-Top-Left', description: 'arrow navigations button positioned on outside-Top-left' },
+			{ name: 'OutsideTopRight', displayName: 'Outside-Top-Right', description: 'arrow navigations button positioned on outside-Top-right' },
 		],
 	},
-
 	{
 		name: 'showNavigationControlsOnHover',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show navigation controls on hover',
-		description:
-			'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
+		description: 'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
 
+	// DATA
+	{
+		name: 'data',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data',
+		description: 'Data For Repeater',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		...COMMON_COMPONENT_PROPERTIES.datatype,
+		enumValues: [
+			{ name: 'LIST_OF_STRINGS', displayName: 'List of strings', description: 'data has an array of strings' },
+			{ name: 'LIST_OF_OBJECTS', displayName: 'List of objects', description: 'data has an array of objects' },
+		],
+	},
+	{
+		name: 'selectionKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selection Key',
+		description: 'Selection Key',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'uniqueKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Unique Key',
+		description: 'Unique Key',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'selectionType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selection Type',
+		description: 'Selection Type',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'uniqueKeyType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Unique Key Type',
+		description: 'Unique Key Type',
+		group: ComponentPropertyGroup.DATA,
+	},
+
+	// COMMON
 	COMMON_COMPONENT_PROPERTIES.visibility,
+	COMMON_COMPONENT_PROPERTIES.readOnly,
+
+	// DESIGN & COLOR
+	{
+		...COMMON_COMPONENT_PROPERTIES.designType,
+	},
+	COMMON_COMPONENT_PROPERTIES.colorScheme,
 ];
 
 const stylePropertiesDefinition = {
@@ -273,6 +297,37 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
+	indicatorContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],
+	indicatorButton: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],
+	indicatorButtonActive: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	indicatorNavBtn: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],
+	indicatorNavBtnActive: [	
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+	],	
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };
