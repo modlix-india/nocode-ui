@@ -110,7 +110,6 @@ export const Table: Component = {
 	allowedChildrenType: new Map([
 		['TableEmptyGrid', 1],
 		['TableColumns', -1],
-		['TableDynamicColumns', -1],
 		['TableGrid', 1],
 		['TablePreviewGrid', 1],
 	]),
