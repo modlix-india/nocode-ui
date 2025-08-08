@@ -29,7 +29,7 @@ interface DnDNavigationBarProps {
 }
 
 export default function DnDNavigationBar({
-	personalizationPath, // Page.personalization.editor
+	personalizationPath,
 	onChangePersonalization,
 	selectedComponent,
 	selectedComponentsList,
@@ -45,14 +45,28 @@ export default function DnDNavigationBar({
 	previewMode,
 	editorType,
 }: DnDNavigationBarProps) {
-	const [componentTree, setComponentTree] = React.useState(false); // component tree is open or not
-	const [pageDef, setPageDef] = useState<PageDefinition>(); // page def object
-	const [openParents, setOpenParents] = useState<Set<string>>(new Set()); // set object contains ids of all the parent components those are expand.
-	const [expandAll, setExpandAll] = useState(false); // to expand all our componets
-	const [filter, setFilter] = useState(''); // filter for components search in our page
-	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined); // which component expand last
-	const [dragStart, setDragStart] = useState<boolean>(false); // dragging any component or not
-	const [map, setMap] = useState(new Map<string, string>()); // contains all the components object ids
+	const [componentTree, setComponentTree] = React.useState(false);
+	const [pageDef, setPageDef] = useState<PageDefinition>();
+	const [openParents, setOpenParents] = useState<Set<string>>(new Set());
+	const [expandAll, setExpandAll] = useState(false);
+	const [filter, setFilter] = useState('');
+	const [lastOpened, setLastOpened] = useState<string | undefined>(undefined);
+	const [dragStart, setDragStart] = useState<boolean>(false);
+	const [map, setMap] = useState(new Map<string, string>());
+	const [oldSelected, setOldSelected] = useState<string>('');
+	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
+	const [showMultiSelect, setShowMultiSelect] = useState(false);
+	const [isAdvancedSearch, setIsAdvancedSearch] = useState(false);
+	const [advancedFilters, setAdvancedFilters] = useState({
+		name: '',
+		type: '',
+		tag: '',
+		value: '',
+		style: '',
+		prop: '',
+		key: '',
+	});
+	const [allFilteredSelected, setAllFilteredSelected] = useState(false);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -79,17 +93,17 @@ export default function DnDNavigationBar({
 			addListenerAndCallImmediatelyWithChildrenActivity(
 				(_, v) => {
 					setPageDef(v);
-					setMap(
-						new Map<string, string>(
-							Object.values(v?.componentDefinition ?? {})
-								.map((e: any) => ({
-									parentKey: e.key as string,
-									children: Object.keys(e.children ?? {}),
-								}))
-								.filter(e => !!e.children.length)
-								.flatMap(e => e.children.map(f => [f, e.parentKey])),
-						),
+					const componentMap = new Map<string, string>(
+						Object.values(v?.componentDefinition ?? {})
+							.filter(e => e && typeof e === 'object')
+							.map((e: any) => ({
+								parentKey: e.key as string,
+								children: Object.keys(e.children ?? {}),
+							}))
+							.filter(e => e.children && e.children.length > 0)
+							.flatMap(e => e.children.map(f => [f, e.parentKey])),
 					);
+					setMap(componentMap);
 				},
 				pageExtractor,
 				`${defPath}`,
@@ -97,40 +111,264 @@ export default function DnDNavigationBar({
 		[defPath, setPageDef],
 	);
 
-	const [oldSelected, setOldSelected] = useState<string>('');
-
 	useEffect(() => {
 		if (oldSelected === selectedComponent || !selectedComponent) return;
+
 		let current = map.get(selectedComponent);
 		let set = new Set(openParents);
+
 		while (current) {
-			if (expandAll) set.delete(current);
-			else set.add(current);
+			set.add(current);
 			current = map.get(current);
 		}
+
 		setOpenParents(set);
 		setOldSelected(selectedComponent);
-	}, [pageDef, expandAll, selectedComponent, openParents, map, setOpenParents, setOldSelected]);
+	}, [pageDef, selectedComponent, openParents, map, setOpenParents, setOldSelected]);
+
+	const [matchingCount, setMatchingCount] = useState(0);
 
 	const applyFilter = useCallback(
 		(f: string) => {
-			if (!f.trim()) return;
+			if (!f.trim()) {
+				setShowMultiSelect(false);
+				onSelectedComponentChanged('');
+				onSelectedComponentListChanged('');
+				setOpenParents(new Set());
+				setMatchingCount(0);
+				return;
+			}
 
 			const set = new Set(openParents);
+			const matchingComponents: string[] = [];
+
 			Object.values(pageDef?.componentDefinition ?? {})
-				.filter(e => (e.name ?? '').toUpperCase().includes(f.toUpperCase()))
-				.map(e => e.key)
+				.filter(e => {
+					const nameMatch = (e.name ?? '').toUpperCase().includes(f.toUpperCase());
+
+					const keyMatch = e.key.toUpperCase().includes(f.toUpperCase());
+
+					let tags: string[] = [];
+					if (e._tags) {
+						if (Array.isArray(e._tags)) {
+							tags = e._tags.filter(tag => tag != null).map(tag => String(tag));
+						} else if (e._tags != null) {
+							tags = [String(e._tags)];
+						}
+					} else if (e.properties?._tags?.value) {
+						const tagValue = e.properties._tags.value;
+						if (Array.isArray(tagValue)) {
+							tags = tagValue.filter(tag => tag != null).map(tag => String(tag));
+						} else if (typeof tagValue === 'string') {
+							tags = [tagValue];
+						} else if (typeof tagValue === 'object' && tagValue !== null) {
+							tags = Object.values(tagValue)
+								.filter(v => v != null)
+								.map(v => String(v));
+						}
+					}
+					const tagMatch = tags.some(tag => tag.toUpperCase().includes(f.toUpperCase()));
+
+					const typeMatch = (e.type ?? '').toUpperCase().includes(f.toUpperCase());
+
+					const styleMatch = Object.values(e.styleProperties ?? {}).some(style =>
+						Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+							prop.value?.toString().toUpperCase().includes(f.toUpperCase()),
+						),
+					);
+
+					const propMatch = Object.values(e.properties ?? {}).some(prop =>
+						prop.value?.toString().toUpperCase().includes(f.toUpperCase()),
+					);
+
+					const isMatch =
+						nameMatch || keyMatch || tagMatch || typeMatch || styleMatch || propMatch;
+
+					if (isMatch) {
+						matchingComponents.push(e.key);
+					}
+					return isMatch;
+				})
 				.forEach(e => {
-					let p: string | undefined = e;
+					let p: string | undefined = e.key;
 					while ((p = map.get(p))) {
 						if (expandAll) set.delete(p);
 						else set.add(p);
 					}
 				});
+
 			setOpenParents(set);
+			setShowMultiSelect(matchingComponents.length > 1);
+			setMatchingCount(matchingComponents.length);
+			onSelectedComponentListChanged('');
+
+			if (matchingComponents.length > 0) {
+				matchingComponents.forEach(key => {
+					onSelectedComponentListChanged(key);
+				});
+				onSelectedComponentChanged(matchingComponents[0]);
+			} else {
+				onSelectedComponentChanged('');
+				// onSelectedComponentListChanged('');
+			}
 		},
-		[openParents, setOpenParents, pageDef, expandAll, map],
+		[
+			openParents,
+			setOpenParents,
+			pageDef,
+			expandAll,
+			map,
+			onSelectedComponentChanged,
+			onSelectedComponentListChanged,
+		],
 	);
+
+	const handleMultiSelect = useCallback(() => {
+		const matchingComponents = Object.values(pageDef?.componentDefinition ?? {})
+			.filter(e => {
+				if (isAdvancedSearch) {
+					const nameMatch = advancedFilters.name
+						? (e.name ?? '').toUpperCase().includes(advancedFilters.name.toUpperCase())
+						: true;
+
+					const keyMatch = advancedFilters.key
+						? e.key.toUpperCase().includes(advancedFilters.key.toUpperCase())
+						: true;
+
+					const typeMatch = advancedFilters.type
+						? (e.type ?? '').toUpperCase().includes(advancedFilters.type.toUpperCase())
+						: true;
+
+					let tags: string[] = [];
+					if (e._tags) {
+						if (Array.isArray(e._tags)) {
+							tags = e._tags
+								.filter(tag => tag != null)
+								.map(tag => String(tag).toUpperCase());
+						} else if (e._tags != null) {
+							tags = [String(e._tags).toUpperCase()];
+						}
+					} else if (e.properties?._tags?.value) {
+						const tagValue = e.properties._tags.value;
+						if (Array.isArray(tagValue)) {
+							tags = tagValue
+								.filter(tag => tag != null)
+								.map(tag => String(tag).toUpperCase());
+						} else if (typeof tagValue === 'string') {
+							tags = [tagValue.toUpperCase()];
+						} else if (typeof tagValue === 'object') {
+							tags = Object.values(tagValue)
+								.filter(v => v != null)
+								.map(v => String(v).toUpperCase());
+						}
+					}
+
+					const tagMatch = advancedFilters.tag
+						? tags.some(tag => tag.includes(advancedFilters.tag.toUpperCase()))
+						: true;
+
+					const valueMatch = advancedFilters.value
+						? Object.values(e.properties ?? {}).some(prop =>
+								prop.value
+									?.toString()
+									.toUpperCase()
+									.includes(advancedFilters.value.toUpperCase()),
+							)
+						: true;
+
+					const styleMatch = advancedFilters.style
+						? Object.values(e.styleProperties ?? {}).some(style =>
+								Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+									prop.value
+										?.toString()
+										.toUpperCase()
+										.includes(advancedFilters.style.toUpperCase()),
+								),
+							)
+						: true;
+
+					const propMatch = advancedFilters.prop
+						? Object.values(e.properties ?? {}).some(prop =>
+								prop.value
+									?.toString()
+									.toUpperCase()
+									.includes(advancedFilters.prop.toUpperCase()),
+							)
+						: true;
+
+					return (
+						nameMatch &&
+						keyMatch &&
+						typeMatch &&
+						tagMatch &&
+						valueMatch &&
+						styleMatch &&
+						propMatch
+					);
+				} else {
+					const nameMatch = (e.name ?? '').toUpperCase().includes(filter.toUpperCase());
+
+					let tags: string[] = [];
+					if (e._tags) {
+						if (Array.isArray(e._tags)) {
+							tags = e._tags.filter(tag => tag != null).map(tag => String(tag));
+						} else if (e._tags != null) {
+							tags = [String(e._tags)];
+						}
+					} else if (e.properties?._tags?.value) {
+						const tagValue = e.properties._tags.value;
+						if (Array.isArray(tagValue)) {
+							tags = tagValue.filter(tag => tag != null).map(tag => String(tag));
+						} else if (typeof tagValue === 'string') {
+							tags = [tagValue];
+						} else if (typeof tagValue === 'object' && tagValue !== null) {
+							tags = Object.values(tagValue)
+								.filter(v => v != null)
+								.map(v => String(v));
+						}
+					}
+					const tagMatch = tags.some(tag =>
+						tag.toUpperCase().includes(filter.toUpperCase()),
+					);
+					const keyMatch = e.key.toUpperCase().includes(filter.toUpperCase());
+					const typeMatch = (e.type ?? '').toUpperCase().includes(filter.toUpperCase());
+					const styleMatch = Object.values(e.styleProperties ?? {}).some(style =>
+						Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+							prop.value?.toString().toUpperCase().includes(filter.toUpperCase()),
+						),
+					);
+					const propMatch = Object.values(e.properties ?? {}).some(prop =>
+						prop.value?.toString().toUpperCase().includes(filter.toUpperCase()),
+					);
+					return (
+						nameMatch || keyMatch || tagMatch || typeMatch || styleMatch || propMatch
+					);
+				}
+			})
+			.map(e => e.key);
+
+		if (matchingComponents.length > 0) {
+			if (allFilteredSelected) {
+				onSelectedComponentChanged('');
+				onSelectedComponentListChanged('');
+				setAllFilteredSelected(false);
+			} else {
+				onSelectedComponentChanged(matchingComponents[0]);
+				matchingComponents.forEach(key => {
+					onSelectedComponentListChanged(key);
+				});
+				setAllFilteredSelected(true);
+			}
+		}
+	}, [
+		filter,
+		advancedFilters,
+		isAdvancedSearch,
+		pageDef,
+		onSelectedComponentChanged,
+		onSelectedComponentListChanged,
+		allFilteredSelected,
+	]);
 
 	useEffect(() => {
 		if (!selectedComponent || selectedComponentsList?.length != 1) return;
@@ -146,11 +384,141 @@ export default function DnDNavigationBar({
 				const rect = element.getBoundingClientRect();
 				if (rect.top < 0 || rect.bottom > window.innerHeight)
 					element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-			}, 500);
+			}, 100);
 		}
 	}, [selectedComponent]);
 
-	const [filterHandle, setFilterHandle] = useState<NodeJS.Timeout | undefined>();
+	const applyAdvancedFilter = useCallback(() => {
+		const hasAnyFilter = Object.values(advancedFilters).some(f => f.trim() !== '');
+
+		if (!hasAnyFilter) {
+			setShowMultiSelect(false);
+			onSelectedComponentChanged('');
+			onSelectedComponentListChanged('');
+			setOpenParents(new Set());
+			setMatchingCount(0);
+			return;
+		}
+
+		const set = new Set(openParents);
+		const matchingComponents: string[] = [];
+
+		Object.values(pageDef?.componentDefinition ?? {})
+			.filter(e => {
+				const nameMatch = advancedFilters.name
+					? (e.name ?? '').toUpperCase().includes(advancedFilters.name.toUpperCase())
+					: true;
+
+				const typeMatch = advancedFilters.type
+					? (e.type ?? '').toUpperCase().includes(advancedFilters.type.toUpperCase())
+					: true;
+
+				const keyMatch = advancedFilters.key
+					? e.key.toUpperCase().includes(advancedFilters.key.toUpperCase())
+					: true;
+
+				let tags: string[] = [];
+				if (e._tags) {
+					if (Array.isArray(e._tags)) {
+						tags = e._tags
+							.filter(tag => tag != null)
+							.map(tag => String(tag).toUpperCase());
+					} else if (e._tags != null) {
+						tags = [String(e._tags).toUpperCase()];
+					}
+				} else if (e.properties?._tags?.value) {
+					const tagValue = e.properties._tags.value;
+					if (Array.isArray(tagValue)) {
+						tags = tagValue
+							.filter(tag => tag != null)
+							.map(tag => String(tag).toUpperCase());
+					} else if (typeof tagValue === 'string') {
+						tags = [tagValue.toUpperCase()];
+					} else if (typeof tagValue === 'object') {
+						tags = Object.values(tagValue)
+							.filter(v => v != null)
+							.map(v => String(v).toUpperCase());
+					}
+				}
+
+				const tagMatch = advancedFilters.tag
+					? tags.some(tag => tag.includes(advancedFilters.tag.toUpperCase()))
+					: true;
+
+				const valueMatch = advancedFilters.value
+					? Object.values(e.properties ?? {}).some(prop =>
+							prop.value
+								?.toString()
+								.toUpperCase()
+								.includes(advancedFilters.value.toUpperCase()),
+						)
+					: true;
+
+				const styleMatch = advancedFilters.style
+					? Object.values(e.styleProperties ?? {}).some(style =>
+							Object.values(style.resolutions?.ALL ?? {}).some(prop =>
+								prop.value
+									?.toString()
+									.toUpperCase()
+									.includes(advancedFilters.style.toUpperCase()),
+							),
+						)
+					: true;
+
+				const propMatch = advancedFilters.prop
+					? Object.values(e.properties ?? {}).some(prop =>
+							prop.value
+								?.toString()
+								.toUpperCase()
+								.includes(advancedFilters.prop.toUpperCase()),
+						)
+					: true;
+
+				const isMatch =
+					nameMatch &&
+					keyMatch &&
+					typeMatch &&
+					tagMatch &&
+					valueMatch &&
+					styleMatch &&
+					propMatch;
+
+				if (isMatch) {
+					matchingComponents.push(e.key);
+				}
+				return isMatch;
+			})
+			.forEach(e => {
+				let p: string | undefined = e.key;
+				while ((p = map.get(p))) {
+					if (expandAll) set.delete(p);
+					else set.add(p);
+				}
+			});
+
+		setOpenParents(set);
+		setShowMultiSelect(matchingComponents.length > 0);
+		setMatchingCount(matchingComponents.length);
+		onSelectedComponentListChanged('');
+
+		if (matchingComponents.length > 0) {
+			matchingComponents.forEach(key => {
+				onSelectedComponentListChanged(key);
+			});
+			onSelectedComponentChanged(matchingComponents[0]);
+		} else {
+			onSelectedComponentChanged('');
+			// onSelectedComponentListChanged('');
+		}
+	}, [
+		advancedFilters,
+		openParents,
+		pageDef,
+		expandAll,
+		map,
+		onSelectedComponentChanged,
+		onSelectedComponentListChanged,
+	]);
 
 	if (!componentTree || previewMode || !pageDef?.componentDefinition || !pageDef.rootComponent)
 		return <div className="_propBar"></div>;
@@ -158,23 +526,137 @@ export default function DnDNavigationBar({
 	return (
 		<div className="_propBar _compNavBarVisible _left">
 			<div className="_filterBar">
-				<input
-					type="text"
-					placeholder="Search filter"
-					value={filter}
-					onChange={e => {
-						setFilter(e.target.value);
-						if (filterHandle) clearTimeout(filterHandle);
-						setFilterHandle(setTimeout(() => applyFilter(e.target.value), 1000));
-					}}
-				/>
+				{!isAdvancedSearch ? (
+					<>
+						<i
+							className="fa fa-solid fa-chevron-circle-right"
+							onClick={() => setIsAdvancedSearch(true)}
+							title="Advanced Search"
+						/>
+						<input
+							type="text"
+							placeholder="Search filter"
+							value={filter}
+							onChange={e => {
+								setFilter(e.target.value);
+								if (filterHandle) clearTimeout(filterHandle);
+								setFilterHandle(setTimeout(() => applyFilter(e.target.value), 300));
+							}}
+						/>
+						{showMultiSelect && (
+							<i
+								className={`fa fa-solid ${allFilteredSelected ? 'fa-xmark-circle' : 'fa-check-circle'}`}
+								onClick={handleMultiSelect}
+								title={
+									allFilteredSelected
+										? 'Deselect All Matching Components'
+										: 'Select All Matching Components'
+								}
+							/>
+						)}
+						{(filter || Object.values(advancedFilters).some(f => f.trim() !== '')) && (
+							<i
+								className="fa fa-solid fa-times-circle"
+								onClick={() => {
+									setFilter('');
+									setAdvancedFilters({
+										name: '',
+										type: '',
+										tag: '',
+										value: '',
+										style: '',
+										prop: '',
+										key: '',
+									});
+									applyFilter('');
+									applyAdvancedFilter();
+								}}
+								title="Clear filter"
+							/>
+						)}
+					</>
+				) : (
+					<>
+						<i
+							className="fa fa-solid fa-chevron-circle-up"
+							onClick={() => {
+								setIsAdvancedSearch(false);
+								setAdvancedFilters({
+									name: '',
+									type: '',
+									tag: '',
+									value: '',
+									style: '',
+									prop: '',
+									key: '',
+								});
+								applyAdvancedFilter();
+								applyFilter(filter);
+							}}
+							title="Basic Search"
+						/>
+
+						<span className="_advancedFilterBody">
+							{Object.entries(advancedFilters).map(([key, value]) => (
+								<div key={key} className="_filterRow">
+									<input
+										type="text"
+										placeholder={`Search by ${key}`}
+										value={value}
+										onChange={e => {
+											setAdvancedFilters(prev => ({
+												...prev,
+												[key]: e.target.value,
+											}));
+											if (filterHandle) clearTimeout(filterHandle);
+											setFilterHandle(
+												setTimeout(() => applyAdvancedFilter(), 300),
+											);
+										}}
+									/>
+								</div>
+							))}
+						</span>
+						{showMultiSelect && (
+							<i
+								className={`fa fa-solid ${allFilteredSelected ? 'fa-xmark-circle' : 'fa-check-circle'}`}
+								onClick={handleMultiSelect}
+								title={
+									allFilteredSelected
+										? 'Deselect All Matching Components'
+										: 'Select All Matching Components'
+								}
+							/>
+						)}
+						{(filter || Object.values(advancedFilters).some(f => f.trim() !== '')) && (
+							<i
+								className="fa fa-solid fa-times-circle"
+								onClick={() => {
+									setFilter('');
+									setAdvancedFilters({
+										name: '',
+										type: '',
+										tag: '',
+										value: '',
+										style: '',
+										prop: '',
+										key: '',
+									});
+									applyFilter('');
+									applyAdvancedFilter();
+								}}
+								title="Clear filter"
+							/>
+						)}
+					</>
+				)}
 				<i
-					className={`fa fa-solid ${expandAll ? 'fa-circle-minus' : 'fa-circle-plus'}`}
+					className={`fa fa-solid fa-circle-${expandAll ? 'minus' : 'plus'}`}
 					onClick={() => {
 						setExpandAll(!expandAll);
 						setOpenParents(new Set());
 					}}
-				></i>
+				/>
 			</div>
 			<div className="_compsTree">
 				<CompTree
@@ -373,6 +855,54 @@ function CompTree({
 		</span>
 	);
 
+	const isComponentMatchingFilter = (comp: any, filterText: string) => {
+		if (!filterText) return false;
+
+		const upperFilter = filterText.toUpperCase();
+		if ((comp.name ?? '').toUpperCase().includes(upperFilter)) return true;
+		if ((comp.type ?? '').toUpperCase().includes(upperFilter)) return true;
+
+		let tags: string[] = [];
+		if (comp._tags) {
+			if (Array.isArray(comp._tags)) {
+				tags = comp._tags.filter((tag: any) => tag != null).map((tag: any) => String(tag));
+			} else if (comp._tags != null) {
+				tags = [String(comp._tags)];
+			}
+		} else if (comp.properties?._tags?.value) {
+			const tagValue = comp.properties._tags.value;
+			if (Array.isArray(tagValue)) {
+				tags = tagValue.filter(tag => tag != null).map(tag => String(tag));
+			} else if (typeof tagValue === 'string') {
+				tags = [tagValue];
+			} else if (typeof tagValue === 'object' && tagValue !== null) {
+				tags = Object.values(tagValue)
+					.filter(v => v != null)
+					.map(v => String(v));
+			}
+		}
+
+		if (tags.some(tag => tag.toUpperCase().includes(upperFilter))) return true;
+
+		if (
+			Object.values(comp.properties ?? {}).some(prop =>
+				(prop as any).value?.toString().toUpperCase().includes(upperFilter),
+			)
+		)
+			return true;
+
+		if (
+			Object.values(comp.styleProperties ?? {}).some(style =>
+				Object.values((style as any).resolutions?.ALL ?? {}).some(prop =>
+					(prop as any).value?.toString().toUpperCase().includes(upperFilter),
+				),
+			)
+		)
+			return true;
+
+		return false;
+	};
+
 	return (
 		<>
 			<div
@@ -383,10 +913,11 @@ function CompTree({
 						selectedComponentsList.includes(compKey))
 						? '_selected'
 						: ''
-				} ${dragStart ? '_dragStart' : ''}`}
-				title={`${comp.name ?? ''} - ${compKey}`} // it will be visible when we hover to the component tab in the tree
+				} ${dragStart ? '_dragStart' : ''} ${
+					filter && isComponentMatchingFilter(comp, filter) ? '_filtered' : ''
+				}`}
+				title={`${comp.name ?? ''} - ${compKey}`}
 				onClick={e => {
-					// selecting multiple components by clicking ctrl or meta keys(ios).
 					if (e.metaKey || e.ctrlKey) {
 						return onSelectedComponentListChanged(compKey);
 					}
@@ -498,14 +1029,10 @@ function SubCompTree({
 					? '_selected'
 					: ''
 			}`}
-			// it gets called when sub component gets selected
 			onClick={() => onSelectedSubComponentChanged(`${componentKey}:${subComp.name}`)}
 		>
 			{levels}
-			<div
-				className="_treeNodeName"
-				onClick={() => {}} // why we need this on click function ?
-			>
+			<div className="_treeNodeName">
 				<i className="fa _animateTransform" />
 				{typeof subComp.icon === 'string' ? (
 					<i className={`fa ${subComp.icon}`} />
