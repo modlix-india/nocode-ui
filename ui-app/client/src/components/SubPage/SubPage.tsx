@@ -1,5 +1,5 @@
 import { deepEqual, duplicate, isNullValue } from '@fincity/kirun-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
@@ -25,6 +25,8 @@ import axios, { AxiosHeaders } from 'axios';
 import pageHistory from '../Page/pageHistory';
 import { runEvent } from '../util/runEvent';
 
+const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
+
 function SubPage(props: Readonly<ComponentProps>) {
 	const {
 		definition,
@@ -46,7 +48,7 @@ function SubPage(props: Readonly<ComponentProps>) {
 	);
 
 	let pageName = originalPageName;
-	
+
 	if (pageName && appCode && clientCode) {
 		pageName = `${appCode}_${clientCode}_${pageName}`;
 	}
@@ -63,6 +65,37 @@ function SubPage(props: Readonly<ComponentProps>) {
 		[pageName],
 	);
 
+	const styleText = useMemo(() => {
+		if (!subPage?.properties?.classes) return '';
+
+		let fullStyle = Object.values(subPage?.properties?.classes)
+			.filter((e: any) => e.selector?.indexOf('@') !== -1)
+			.map((e: any) => {
+				const txt = `${e.selector} { ${e.style} }`;
+				if (!e.mediaQuery) return txt;
+				return `${e.mediaQuery} { ${txt} }`;
+			})
+			.join('\n');
+
+		if (!globalThis.cdnPrefix) return fullStyle;
+
+		const styleParts = fullStyle.split(STATIC_FILE_API_PREFIX);
+		fullStyle = '';
+
+		for (let i = 0; i < styleParts.length; i += 2) {
+			fullStyle += styleParts[i];
+			if (i + 1 == styleParts.length) break;
+			if (fullStyle.endsWith('/')) fullStyle = fullStyle.substring(0, fullStyle.length - 1);
+			fullStyle += `https://${globalThis.cdnPrefix}/`;
+			if (!globalThis.cdnStripAPIPrefix) fullStyle += STATIC_FILE_API_PREFIX;
+			const lastPartIndex = styleParts[i + 1].indexOf(')');
+			let lastPart = styleParts[i + 1].substring(0, lastPartIndex);
+			if (globalThis.cdnReplacePlus) lastPart = lastPart.replaceAll('+', '%20');
+			fullStyle += lastPart + ')';
+			fullStyle += styleParts[i + 1].substring(lastPartIndex + 2);
+		}
+		return fullStyle;
+	}, [subPage]);
 
 	useEffect(() => {
 		if (!isNullValue(subPage)) return;
@@ -77,8 +110,12 @@ function SubPage(props: Readonly<ComponentProps>) {
 			);
 			if (isRunning || !pageName) return;
 
-			(async () =>{
-				const pageDefinition = await getPageDefinition(originalPageName, appCode, clientCode);
+			(async () => {
+				const pageDefinition = await getPageDefinition(
+					originalPageName,
+					appCode,
+					clientCode,
+				);
 				if (pageDefinition.name != pageName) pageDefinition.name = pageName;
 				setData(`Store.pageDefinition.${pageName}`, pageDefinition);
 			})();
@@ -89,45 +126,35 @@ function SubPage(props: Readonly<ComponentProps>) {
 		if (!overrideThemeStyles || (!appCode && !clientCode)) return;
 
 		(async () => {
-			const headers : AxiosHeaders = {} as AxiosHeaders;
+			const headers: AxiosHeaders = {} as AxiosHeaders;
 			if (appCode) headers['appCode'] = appCode;
 			if (clientCode) headers['clientCode'] = clientCode;
-			const theme = (await axios.get('api/ui/theme', { headers } ))?.data;
+			const theme = (await axios.get('api/ui/theme', { headers }))?.data;
 
 			if (!theme) return;
 
 			setData(`Store.theme`, theme);
 		})();
-
-	}, [appCode, clientCode, overrideThemeStyles])
+	}, [appCode, clientCode, overrideThemeStyles]);
 
 	useEffect(() => {
+		if (!subPage) return;
 
-	 if (!subPage) return;
-	
-	 const {
-		name,
-		eventFunctions = {},
-		properties: { onLoadEvent = undefined } = {},
-	} = subPage;
+		const { name, eventFunctions = {}, properties: { onLoadEvent = undefined } = {} } = subPage;
 
-	if (!onLoadEvent || !eventFunctions[onLoadEvent]) return;
+		if (!onLoadEvent || !eventFunctions[onLoadEvent]) return;
 
-	 (async () =>
-		await runEvent(
-			eventFunctions[onLoadEvent!],
-			'subPageOnLoad',
-			pageExtractor.getPageName(),
-			locationHistory,
-			props.pageDefinition,
-			undefined,
-			true
-		))();
-	}, [
-		subPage !== undefined,
-		pageName,
-		locationHistory.length,
-	]);
+		(async () =>
+			await runEvent(
+				eventFunctions[onLoadEvent!],
+				'subPageOnLoad',
+				pageExtractor.getPageName(),
+				locationHistory,
+				props.pageDefinition,
+				undefined,
+				true,
+			))();
+	}, [subPage !== undefined, pageName, locationHistory.length]);
 
 	const locHist = bindingPath
 		? [...locationHistory, { location: bindingPath, index: -1, pageName, componentKey: key }]
@@ -153,6 +180,7 @@ function SubPage(props: Readonly<ComponentProps>) {
 
 	return (
 		<div className="comp compSubPage" style={resolvedStyles.comp ?? {}}>
+			<style>{styleText}</style>
 			<HelperComponent context={props.context} definition={definition} />
 			{childs}
 		</div>
