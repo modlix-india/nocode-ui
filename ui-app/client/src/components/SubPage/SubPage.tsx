@@ -150,7 +150,7 @@ function SubPage(props: Readonly<ComponentProps>) {
 				'subPageOnLoad',
 				pageExtractor.getPageName(),
 				locationHistory,
-				props.pageDefinition,
+				subPage,
 				undefined,
 				true,
 			))();
