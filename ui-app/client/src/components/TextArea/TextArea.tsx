@@ -4,6 +4,7 @@ import CommonInputText from '../../commonComponents/CommonInputText';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
+	getDataFromPath,
 	getPathFromLocation,
 	setData,
 } from '../../context/StoreContext';
@@ -18,6 +19,7 @@ import TextAreaStyle from './TextAreaStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './textAreaProperties';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './textAreaStyleProperties';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { makeTempPath } from '../../context/TempStore';
 
 interface mapType {
 	[key: string]: any;
@@ -66,6 +68,9 @@ function TextArea(props: Readonly<ComponentProps>) {
 			hideClearButton,
 			maxChars,
 			rows,
+			editRequestIcon,
+			editConfirmIcon,
+			editCancelIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -81,14 +86,23 @@ function TextArea(props: Readonly<ComponentProps>) {
 		{ focus, readOnly },
 		stylePropertiesWithPseudoStates,
 	);
+
+	const editOn = designType === '_editOnReq';
+
 	const [value, setValue] = React.useState(defaultValue ?? '');
 
-	const bindingPathPath = bindingPath
+	let bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
+	const originalBindingPathPath = bindingPathPath;
+
+	if (editOn && bindingPathPath) {
+		bindingPathPath = makeTempPath(bindingPathPath, context.pageName);
+	}
+
 	React.useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				if (isNullValue(value)) {
@@ -98,9 +112,9 @@ function TextArea(props: Readonly<ComponentProps>) {
 				setValue(value);
 			},
 			pageExtractor,
-			bindingPathPath,
+			originalBindingPathPath,
 		);
-	}, [bindingPathPath]);
+	}, [originalBindingPathPath]);
 
 	useEffect(() => {
 		if (!validation?.length) return;
@@ -136,29 +150,35 @@ function TextArea(props: Readonly<ComponentProps>) {
 	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
 	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
 
-	const callChangeEvent = useCallback(() => {
-		if (!changeEvent) return;
-		(async () =>
-			await runEvent(
-				changeEvent,
-				onChange,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [changeEvent]);
+	const callChangeEvent = useCallback(
+		(force: boolean = false) => {
+			if (!changeEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					changeEvent,
+					onChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[changeEvent, editOn],
+	);
 
-	const callBlurEvent = useCallback(() => {
-		if (!blurEvent) return;
-		(async () =>
-			await runEvent(
-				blurEvent,
-				onBlur,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [blurEvent]);
+	const callBlurEvent = useCallback(
+		(force: boolean = false) => {
+			if (!blurEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					blurEvent,
+					onBlur,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[blurEvent, editOn],
+	);
 
 	const callFocusEvent = useCallback(() => {
 		if (!focusEvent) return;
@@ -235,7 +255,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			noFloat={noFloat}
 			readOnly={readOnly}
 			value={value}
-			label={label}
+			label={editOn ? '' : label}
 			maxChars={maxChars}
 			translations={translations}
 			placeholder={placeholder}
@@ -255,7 +275,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			autoComplete={autoComplete}
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
-			hideClearContentIcon={hideClearButton}
+			hideClearContentIcon={editOn ? true : hideClearButton}
 			inputType="TextArea"
 			rows={rows}
 			showMandatoryAsterisk={
@@ -265,6 +285,22 @@ function TextArea(props: Readonly<ComponentProps>) {
 					? true
 					: false
 			}
+			showEditRequest={editOn}
+			editRequestIcon={editRequestIcon}
+			editConfirmIcon={editConfirmIcon}
+			editCancelIcon={editCancelIcon}
+			onEditRequest={(editMode, cancel) => {
+				if (!originalBindingPathPath || editMode) return;
+				if (cancel) {
+					setValue(
+						getDataFromPath(originalBindingPathPath, locationHistory, pageExtractor),
+					);
+				} else {
+					setData(originalBindingPathPath, value, context?.pageName);
+					callChangeEvent(true);
+					callBlurEvent(true);
+				}
+			}}
 		/>
 	);
 }
@@ -361,6 +397,30 @@ const component: Component = {
 			name: 'errorTextContainer',
 			displayName: 'Error Text Container',
 			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editRequestIcon',
+			displayName: 'Edit Request Icon',
+			description: 'Edit Request Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmIcon',
+			displayName: 'Edit Confirm Icon',
+			description: 'Edit Confirm Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editCancelIcon',
+			displayName: 'Edit Cancel Icon',
+			description: 'Edit Cancel Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmCancelContainer',
+			displayName: 'Edit Confirm Cancel Container',
+			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
 	],

@@ -1,4 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { isNullValue } from '@fincity/kirun-js';
+import React, { useCallback, useEffect, useState } from 'react';
+import CommonInputText from '../../commonComponents/CommonInputText';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -7,22 +10,18 @@ import {
 	PageStoreExtractor,
 	setData,
 } from '../../context/StoreContext';
-import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { Component } from '../../types/common';
-import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
-import TextBoxStyle from './TextBoxStyle';
-import useDefinition from '../util/useDefinition';
-import { isNullValue } from '@fincity/kirun-js';
+import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
-import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
-import { flattenUUID } from '../util/uuid';
-import { runEvent } from '../util/runEvent';
 import { validate } from '../../util/validationProcessor';
-import CommonInputText from '../../commonComponents/CommonInputText';
-import { styleProperties, styleDefaults, stylePropertiesForTheme } from './textBoxStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { runEvent } from '../util/runEvent';
+import useDefinition from '../util/useDefinition';
+import { flattenUUID } from '../util/uuid';
+import { propertiesDefinition, stylePropertiesDefinition } from './textBoxProperties';
+import TextBoxStyle from './TextBoxStyle';
+import { styleDefaults, stylePropertiesForTheme } from './textBoxStyleProperties';
+import { makeTempPath } from '../../context/TempStore';
 
 const REGEX_NUMBER = /^(?![.,])[0-9.,]+$/;
 
@@ -81,6 +80,9 @@ function TextBox(props: Readonly<ComponentProps>) {
 			onRightIconClick,
 			showMandatoryAsterisk,
 			numberFormat,
+			editRequestIcon,
+			editConfirmIcon,
+			editCancelIcon,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -93,12 +95,19 @@ function TextBox(props: Readonly<ComponentProps>) {
 	);
 	const [value, setValue] = React.useState(defaultValue ?? '');
 
-	const bindingPathPath = bindingPath
+	let bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
+	const originalBindingPathPath = bindingPathPath;
+
+	const editOn = designType === '_editOnReq';
+
+	if (editOn && bindingPathPath) {
+		bindingPathPath = makeTempPath(bindingPathPath, context.pageName);
+	}
 
 	React.useEffect(() => {
-		if (!bindingPathPath) return;
+		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
 			(_, value) => {
 				if (isNullValue(value)) {
@@ -117,9 +126,9 @@ function TextBox(props: Readonly<ComponentProps>) {
 				}
 			},
 			pageExtractor,
-			bindingPathPath,
+			originalBindingPathPath,
 		);
-	}, [bindingPathPath, valueType, numberFormat, numberType]);
+	}, [originalBindingPathPath, valueType, numberFormat, numberType]);
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -206,31 +215,38 @@ function TextBox(props: Readonly<ComponentProps>) {
 	const onRightIconEvent = onRightIconClick
 		? props.pageDefinition.eventFunctions?.[onRightIconClick]
 		: undefined;
-	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
 
-	const callChangeEvent = useCallback(() => {
-		if (!changeEvent) return;
-		(async () =>
-			await runEvent(
-				changeEvent,
-				onChange,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [changeEvent]);
+	const updateStoreImmediately = editOn ? false : upStoreImm || autoComplete === 'on';
 
-	const callBlurEvent = useCallback(() => {
-		if (!blurEvent) return;
-		(async () =>
-			await runEvent(
-				blurEvent,
-				onBlur,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			))();
-	}, [blurEvent]);
+	const callChangeEvent = useCallback(
+		(force: boolean = false) => {
+			if (!changeEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					changeEvent,
+					onChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[changeEvent, editOn],
+	);
+
+	const callBlurEvent = useCallback(
+		(force: boolean = false) => {
+			if (!blurEvent || (editOn && !force)) return;
+			(async () =>
+				await runEvent(
+					blurEvent,
+					onBlur,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				))();
+		},
+		[blurEvent, editOn],
+	);
 
 	const callFocusEvent = useCallback(() => {
 		if (!focusEvent) return;
@@ -436,7 +452,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 				noFloat={noFloat}
 				readOnly={readOnly}
 				value={value}
-				label={label}
+				label={editOn ? '' : label}
 				translations={translations}
 				leftIcon={leftIcon}
 				rightIcon={rightIcon}
@@ -460,7 +476,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 				autoComplete={autoComplete}
 				autoFocus={autoFocus}
 				hasValidationCheck={validation?.length > 0}
-				hideClearContentIcon={hideClearButton}
+				hideClearContentIcon={editOn ? true : hideClearButton}
 				maxChars={maxChars}
 				handleLeftIcon={handleLeftIcon}
 				handleRightIcon={handleRightIcon}
@@ -472,6 +488,26 @@ function TextBox(props: Readonly<ComponentProps>) {
 						? true
 						: false
 				}
+				showEditRequest={editOn}
+				editRequestIcon={editRequestIcon}
+				editConfirmIcon={editConfirmIcon}
+				editCancelIcon={editCancelIcon}
+				onEditRequest={(editMode, cancel) => {
+					if (editMode || !originalBindingPathPath) return;
+					if (cancel) {
+						setValue(
+							getDataFromPath(
+								originalBindingPathPath,
+								locationHistory,
+								pageExtractor,
+							),
+						);
+					} else {
+						setData(originalBindingPathPath, value, context?.pageName);
+						callChangeEvent(true);
+						callBlurEvent(true);
+					}
+				}}
 			/>
 		</>
 	);
@@ -573,6 +609,30 @@ const component: Component = {
 			name: 'errorTextContainer',
 			displayName: 'Error Text Container',
 			description: 'Error Text Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editRequestIcon',
+			displayName: 'Edit Request Icon',
+			description: 'Edit Request Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmIcon',
+			displayName: 'Edit Confirm Icon',
+			description: 'Edit Confirm Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editCancelIcon',
+			displayName: 'Edit Cancel Icon',
+			description: 'Edit Cancel Icon',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'editConfirmCancelContainer',
+			displayName: 'Edit Confirm Cancel Container',
+			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
 	],

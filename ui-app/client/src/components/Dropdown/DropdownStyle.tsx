@@ -207,6 +207,16 @@ export default function DropdownStyle({
         ${PREFIX} span.commonCheckbox.radio._checked ._thumb {
             transform: scale(0.7);
         }
+            
+        ${PREFIX} ._controlButtons {
+            display: none;
+            margin-right: 5px;
+        }
+    
+        ${PREFIX}:hover ._controlButtons,
+        ${PREFIX}._editMode ._controlButtons {
+            display: flex;
+        }
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="DropdownCss">{css}</style>;

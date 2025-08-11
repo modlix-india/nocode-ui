@@ -114,7 +114,7 @@ export default function TextBoxStyle({
 	}
 
 	${PREFIX} ._rightIcon {
-		padding-right: 5px;
+		padding: 0px 5px;
 	}
 
 	${PREFIX} ._label._float {
@@ -131,6 +131,16 @@ export default function TextBoxStyle({
 		left: 0;
 		top: 100%;
 		margin-top: 5px;
+	}
+
+	${PREFIX} ._controlButtons {
+		display: none;
+		margin-right: 5px;
+	}
+
+	${PREFIX}:hover ._controlButtons,
+	${PREFIX}._editMode ._controlButtons {
+		display: flex;
 	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

@@ -227,6 +227,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
+	{
+		name: 'fileUploadPlaceholderText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'File Upload Placeholder Text',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'Upload docx here',
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

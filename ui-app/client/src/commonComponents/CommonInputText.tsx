@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent } from 'react';
+import React, { ChangeEvent, KeyboardEvent, useRef, useState } from 'react';
 import { getTranslations } from '../components/util/getTranslations';
 import { ComponentDefinition, RenderContext, Translations } from '../types/common';
 import { SubHelperComponent } from '../components/HelperComponents/SubHelperComponent';
@@ -49,6 +49,11 @@ type CommonInputType = {
 	showMandatoryAsterisk?: boolean;
 	rows?: number;
 	title?: string;
+	showEditRequest?: boolean;
+	editRequestIcon?: any;
+	editConfirmIcon?: any;
+	editCancelIcon?: any;
+	onEditRequest?: (editMode: boolean, canceled: boolean) => void;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -97,6 +102,11 @@ function CommonInputText(props: CommonInputType) {
 		onMouseEnter,
 		rows,
 		title,
+		showEditRequest,
+		editRequestIcon,
+		editConfirmIcon,
+		editCancelIcon,
+		onEditRequest,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -164,6 +174,17 @@ function CommonInputText(props: CommonInputType) {
 			}
 		: undefined;
 
+	const [editModeOriginal, setEditModeOriginal] = useState(!showEditRequest);
+
+	const setEditMode = (editMode: boolean, canceled: boolean) => {
+		if (!editMode && !canceled && validationMessages?.length) return;
+		setEditModeOriginal(editMode);
+		onEditRequest?.(editMode, canceled);
+	};
+	const disabled = readOnly || (showEditRequest && !editModeOriginal);
+
+	const internalRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+
 	const inputControl =
 		inputType === 'Text' ? (
 			<input
@@ -173,15 +194,25 @@ function CommonInputText(props: CommonInputType) {
 				}`}
 				type={isPassword && !showPassword ? 'password' : valueType ? valueType : 'text'}
 				value={value}
-				onChange={event => handleChangeEvent(event)}
+				onChange={handleChangeEvent}
 				placeholder={getTranslations(placeholder, translations)}
 				onFocus={handleFocusEvent}
-				onBlur={event => handleBlurEvent(event)}
-				onKeyUp={keyUpHandler}
+				onBlur={handleBlurEvent}
+				onKeyUp={
+					showEditRequest
+						? event => {
+								if (event.key === 'Enter') {
+									setEditMode(false, false);
+								} else if (event.key === 'Escape') {
+									setEditMode(false, true);
+								} else keyUpHandler?.(event);
+							}
+						: keyUpHandler
+				}
 				name={id}
 				id={id}
-				disabled={readOnly}
-				ref={inputRef}
+				disabled={disabled}
+				ref={inputRef ?? internalRef}
 				autoFocus={autoFocus}
 				autoComplete={autoComplete}
 				onKeyDown={keyDownEvent}
@@ -193,21 +224,92 @@ function CommonInputText(props: CommonInputType) {
 					valueType === 'NUMBER' ? 'remove-spin-button' : ''
 				}`}
 				value={value}
-				onChange={event => handleChangeEvent(event)}
+				onChange={handleChangeEvent}
 				placeholder={getTranslations(placeholder, translations)}
 				onFocus={handleFocusEvent}
-				onBlur={event => handleBlurEvent(event)}
-				onKeyUp={keyUpHandler}
+				onBlur={showEditRequest ? undefined : event => handleBlurEvent(event)}
+				onKeyUp={
+					showEditRequest
+						? event => {
+								if (event.key === 'Escape') {
+									setEditMode(false, true);
+								}
+							}
+						: keyUpHandler
+				}
 				name={id}
 				id={id}
-				disabled={readOnly}
-				ref={inputRef}
+				disabled={disabled}
+				ref={inputRef ?? internalRef}
 				autoFocus={autoFocus}
 				autoComplete={autoComplete}
 				onKeyDown={keyDownEvent}
 				rows={rows}
 			/>
 		);
+
+	let controlButtons = undefined;
+
+	if (showEditRequest && !readOnly) {
+		let internalButtons = undefined;
+		if (editModeOriginal) {
+			internalButtons = (
+				<>
+					<i
+						style={computedStyles.editConfirmIcon ?? {}}
+						className={`_editConfirmIcon _leftIcon ${editConfirmIcon} ${handleLeftIcon ? '_pointer' : ''}`}
+						onClick={() => {
+							setEditMode(false, false);
+						}}
+					>
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="editConfirmIcon"
+						/>
+					</i>
+					<i
+						style={computedStyles.editCancelIcon ?? {}}
+						className={`_editCancelIcon _leftIcon ${editCancelIcon} ${handleLeftIcon ? '_pointer' : ''}`}
+						onClick={() => {
+							setEditMode(false, true);
+						}}
+					>
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="editCancelIcon"
+						/>
+					</i>
+				</>
+			);
+		} else {
+			internalButtons = (
+				<i
+					style={computedStyles.editRequestIcon ?? {}}
+					className={`_editRequestIcon _leftIcon ${editRequestIcon} ${handleLeftIcon ? '_pointer' : ''}`}
+					onClick={() => {
+						setEditMode(true, false);
+						setTimeout(() => {
+							inputRef?.current?.focus();
+							internalRef.current?.focus();
+						}, 100);
+					}}
+				>
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="editRequestIcon"
+					/>
+				</i>
+			);
+		}
+		controlButtons = (
+			<div
+				className="_controlButtons"
+				style={computedStyles.editConfirmCancelContainer ?? {}}
+			>
+				{internalButtons}
+			</div>
+		);
+	}
 
 	return (
 		<div
@@ -217,7 +319,7 @@ function CommonInputText(props: CommonInputType) {
 				!focus && value?.toString()?.length ? '_hasValue' : ''
 			} ${!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''} ${
 				hasErrorMessages ? '_hasError' : ''
-			}`}
+			} ${readOnly ? '_readOnly' : ''} ${showEditRequest && editModeOriginal ? '_editMode' : ''}`}
 			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
 			onMouseEnter={onMouseEnter}
@@ -260,6 +362,7 @@ function CommonInputText(props: CommonInputType) {
 					></SubHelperComponent>
 				</i>
 			) : undefined}
+			{controlButtons}
 			{isPassword && !readOnly ? (
 				<i
 					style={computedStyles.rightIcon ?? {}}

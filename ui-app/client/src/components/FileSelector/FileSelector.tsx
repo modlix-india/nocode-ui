@@ -242,7 +242,6 @@ const handleDownload = async () => {
 					Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 				},
 			};
-			
 
 			const response = await axios(options);
 			let fileName = 'default-filename.ext';
@@ -266,7 +265,7 @@ const handleDownload = async () => {
 			const aTag = document.createElement('a');
 			aTag.setAttribute('href', url);
 			aTag.setAttribute('target', '_blank');
-			aTag.setAttribute('download', fileName); 
+			aTag.setAttribute('download', fileName);
 			document.body.appendChild(aTag);
 			aTag.click();
 			document.body.removeChild(aTag);
@@ -465,17 +464,17 @@ const handleDownload = async () => {
 										setUploadProgress(0);
 										
 
-										const formData = new FormData();
-										formData.append('file', file);
+									const formData = new FormData();
+									formData.append('file', file);
 
-										abortController.current = new AbortController();
+									abortController.current = new AbortController();
 
-										try {
-											let url = `/api/files/${resourceType}/${path}/`;
-											url = url.replaceAll('//', '/');
-											if (clientCode) {
-												url += `?clientCode=${clientCode}`;
-											}
+									try {
+										let url = `/api/files/${resourceType}/${path}/`;
+										url = url.replaceAll('//', '/');
+										if (clientCode) {
+											url += `?clientCode=${clientCode}`;
+										}
 
 											const response = await axios.post(url, formData, {
 												headers: {
@@ -507,15 +506,15 @@ const handleDownload = async () => {
 											
 											setData(bindingPathPath!, response.data, context?.pageName);
 
-											const type = response.data.url
-												.split('.')
-												.pop()
-												?.toLowerCase();
-											const dataURL = await imageURLForFile(
-												response.data.url,
-												response.data.directory,
-												type,
-											);
+										const type = response.data.url
+											.split('.')
+											.pop()
+											?.toLowerCase();
+										const dataURL = await imageURLForFile(
+											response.data.url,
+											response.data.directory,
+											type,
+										);
 
 											setDataUrl(dataURL);
 											setSelectedFile(response.data);
@@ -543,33 +542,29 @@ const handleDownload = async () => {
 						</div>
 					)}
 
-					{showProgressBarContainer && (
-						<div className="_uploadingFileContainer">
-							<div className="_leftSection">
-								{!showDeleteAndDownload ? (
-									<div className="_ImagePreviewPlaceholder"></div>
-								) : (
-									<div className="_previewImageContainer">
-										<img
-											src={dataUrl}
-											alt="file name"
-											className="_previewImage"
-										/>
-									</div>
-								)}
-								<span className="_progressBarFileUploadText">{fileName}</span>
-							</div>
-							{showProgressBar && (
-								<div className="_rightSection1">
-									<div className="_outerContainerUploadStatus">
-										<div
-											className={`_InnerContainerUploadStatus ${uploadProgress < 100 ? '_uploadingBackgroundColor' : '_doneBackgroundColor'}`}
-											style={{ width: `${uploadProgress}%` }}
-										></div>
-									</div>
-									<div>
-										{uploadProgress >= 0 && uploadProgress < 100 ? (
-											<svg
+				{showProgressBarContainer && (
+					<div className="_uploadingFileContainer">
+						<div className="_leftSection">
+							{!showDeleteAndDownload ? (
+								<div className="_ImagePreviewPlaceholder"></div>
+							) : (
+								<div className="_previewImageContainer">
+									<img src={dataUrl} alt="file name" className="_previewImage" />
+								</div>
+							)}
+							<span className="_progressBarFileUploadText">{fileName}</span>
+						</div>
+						{showProgressBar && (
+							<div className="_rightSection1">
+								<div className="_outerContainerUploadStatus">
+									<div
+										className={`_InnerContainerUploadStatus ${uploadProgress < 100 ? '_uploadingBackgroundColor' : '_doneBackgroundColor'}`}
+										style={{ width: `${uploadProgress}%` }}
+									></div>
+								</div>
+								<div>
+									{uploadProgress >= 0 && uploadProgress < 100 ? (
+										<svg
 											onClick={() => {
 													if (abortController.current) {
 														abortController.current.abort();

@@ -208,6 +208,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{ name: '_bigDesign1', displayName: 'Big Design 1', description: 'Big Design 1 type' },
 			{ name: '_text', displayName: 'Text Calendar', description: 'Text Calendar' },
+			{ name: '_editOnReq', displayName: 'Edit on Request', description: 'Edit on Request type' },
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,
@@ -564,6 +565,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'editRequestIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Request Icon',
+		description: 'Icon to be shown on the edit request.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'editConfirmIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Confirm Icon',
+		description: 'Icon to be shown on the edit confirm.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'editCancelIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Edit Cancel Icon',
+		description: 'Icon to be shown on the edit cancel.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'leftArrowImage',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Left Arrow Image',
@@ -883,6 +909,28 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	errorTextContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	editRequestIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	editConfirmIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	editCancelIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	editConfirmCancelContainer: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

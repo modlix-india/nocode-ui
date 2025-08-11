@@ -16,7 +16,8 @@
 			"_default-": "<primaryFont>",
 			"_outlined-": "<primaryFont>",
 			"_filled-": "<primaryFont>",
-			"_bigDesign1-": "<primaryFont>"
+			"_bigDesign1-": "<primaryFont>",
+			"_editOnReq-": "<primaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Font",
@@ -30,7 +31,8 @@
 			"_default-": "32px",
 			"_outlined-": "32px",
 			"_filled-": "32px",
-			"_bigDesign1-": "60px"
+			"_bigDesign1-": "60px",
+			"_editOnReq-": "32px"
 		},
 		"gn": "Height",
 		"dn": "Height",
@@ -44,7 +46,8 @@
 			"_default-": "0px 5px",
 			"_outlined-": "0px 14px",
 			"_filled-": "0px 5px",
-			"_bigDesign1-": "0px 5px"
+			"_bigDesign1-": "0px 5px",
+			"_editOnReq-": "0px 5px"
 		},
 		"gn": "Padding",
 		"dn": "Padding",
@@ -58,7 +61,8 @@
 			"_default-": "4px",
 			"_outlined-": "16px",
 			"_filled-": "4px",
-			"_bigDesign1-": "4px"
+			"_bigDesign1-": "4px",
+			"_editOnReq-": "4px"
 		},
 		"gn": "Border Radius",
 		"dn": "Border Radius",
@@ -85,7 +89,8 @@
 			"_default-": "<errorColor>",
 			"_outlined-": "<errorColor>",
 			"_filled-": "<errorColor>",
-			"_bigDesign1-": "<errorColor>"
+			"_bigDesign1-": "<errorColor>",
+			"_editOnReq-": "<errorColor>"
 		},
 		"gn": "Color",
 		"dn": "Error Icon Right Icon Color",
@@ -99,7 +104,8 @@
 			"_default-": "<quaternaryFont>",
 			"_outlined-": "<quaternaryFont>",
 			"_filled-": "<quaternaryFont>",
-			"_bigDesign1-": "<quaternaryFont>"
+			"_bigDesign1-": "<quaternaryFont>",
+			"_editOnReq-": "<quaternaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Label Font",
@@ -113,7 +119,8 @@
 			"_default-": "0px 0px 0px 0px",
 			"_outlined-": "0px 0px 0px 0px",
 			"_filled-": "0px 0px 0px 0px",
-			"_bigDesign1-": "-30px 0px 0px 0px"
+			"_bigDesign1-": "-30px 0px 0px 0px",
+			"_editOnReq-": "0px 0px 0px 0px"
 		},
 		"gn": "Margin",
 		"dn": "MarginLabel",
@@ -127,7 +134,8 @@
 			"_default-": "0px 8px",
 			"_outlined-": "0px 8px",
 			"_filled-": "0px 8px",
-			"_bigDesign1-": "0px 18px 0px 8px"
+			"_bigDesign1-": "0px 18px 0px 8px",
+			"_editOnReq-": "0px 8px"
 		},
 		"gn": "Padding",
 		"dn": "PaddingLeftIcon",
@@ -155,7 +163,8 @@
 			"_default-": "<successColor>",
 			"_outlined-": "<successColor>",
 			"_filled-": "<successColor>",
-			"_bigDesign1-": "<successColor>"
+			"_bigDesign1-": "<successColor>",
+			"_editOnReq-": "<successColor>"
 		},
 		"gn": "Color",
 		"dn": "Success Icon Right Icon Color",
@@ -169,7 +178,8 @@
 			"_default-": "<quaternaryFont>",
 			"_outlined-": "<quaternaryFont>",
 			"_filled-": "<quaternaryFont>",
-			"_bigDesign1-": "<quaternaryFont>"
+			"_bigDesign1-": "<quaternaryFont>",
+			"_editOnReq-": "<quaternaryFont>"
 		},
 		"gn": "Font",
 		"dn": "Support Text Font",
@@ -412,7 +422,11 @@
 			"_bigDesign1-_secondary": "<fontColorFour>",
 			"_bigDesign1-_tertiary": "<fontColorFive>",
 			"_bigDesign1-_quaternary": "<fontColorNine>",
-			"_bigDesign1-_quinary": "<fontColorSeven>"
+			"_bigDesign1-_quinary": "<fontColorSeven>",
+			"_text-_secondary": "<fontColorFour>",
+			"_text-_tertiary": "<fontColorFive>",
+			"_text-_quaternary": "<fontColorNine>",
+			"_text-_quinary": "<fontColorSeven>"
 		},
 		"gn": "Color",
 		"dn": "Value Support Text Color",
@@ -637,6 +651,29 @@
 		"n": "textBoxBackground<designType><colorScheme>",
 		"dv": "<backgroundColorSeven>"
 	},
+
+	{
+		"cp": "background",
+		"sel": ".comp.compTextBox<designType><colorScheme>:hover, .comp.compTextBox<designType><colorScheme>._isActive:hover, .comp.compTextBox<designType><colorScheme>._editMode",
+		"np": true,
+		"spv": {
+			"_editOnReq-": "<backgroundColorNine>"
+		},
+		"gn": "Background",
+		"dn": "Hover Background",
+		"n": "textBoxHoverBackground<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compTextBox<designType><colorScheme>._readOnly:hover",
+		"np": true,
+		"spv": {
+			"_editOnReq-": "transparent"
+		},
+		"gn": "Background",
+		"dn": "Hover Readonly Background",
+		"n": "textBoxHoverReadonlyBackground<designType><colorScheme>"
+	},
 	{
 		"cp": "box-shadow",
 		"sel": ".comp.compTextBox<designType><colorScheme>",
@@ -674,7 +711,7 @@
 		"gn": "Color",
 		"dn": "Left Icon Color",
 		"n": "textBoxLeftIconColor<designType><colorScheme>",
-		"dv": "<fontColorSix>"
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "color",
@@ -684,7 +721,7 @@
 		"gn": "Color",
 		"dn": "Right Icon Color",
 		"n": "textBoxRightIconColor<designType><colorScheme>",
-		"dv": "<fontColorSix>"
+		"dv": "<fontColorEight>"
 	},
 	{
 		"cp": "color",
