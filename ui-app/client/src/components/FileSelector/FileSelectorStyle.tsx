@@ -107,6 +107,16 @@ export default function FileSelector({
         padding: 0px 10px 0px 10px;
         box-shadow: 0px 1px 3px 0px #0000001A;
     }
+   
+    ${PREFIX} ._label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333333CC;
+        font-family: Inter;
+        margin: 0px 0px 10px 0px;
+        line-height: 14px;
+        align-self:flex-start;
+    }
        ${PREFIX}  ._InnerProgressBarContainer{
         display:flex;
         flex-direction: row;
