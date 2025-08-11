@@ -67,7 +67,9 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			editOnUpload,
 			clientCode,
 			allowMultipleSelection,
-			fileUploadPlaceholderText,
+			uploadButtonText,
+			UploadPlaceholderText,
+			label
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -89,7 +91,8 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
-	const [selectedFile, setSelectedFile] = useState('');
+    type FileSelectorValue = string | { url: string; directory?: boolean };
+    const [selectedFile, setSelectedFile] = useState<FileSelectorValue>('');
 	const [showBrowser, setShowBrowser] = useState(false);
 	const [showFullScreen, setShowFullScreen] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
@@ -104,11 +107,61 @@ function FileSelector(props: Readonly<ComponentProps>) {
 	const [showDeleteAndDownload, setShowDeleteAndDownload] = useState(false);
 	const [fileName, setFileName] = useState<string | undefined>(undefined);
 	const fileSizeLimit = fileUploadSizeLimit * 1000 * 1000;
-	const [recentlySelected, setRecentlySelected] = useState<{
-		file: string;
-		type: string;
-		directory: boolean;
-	}>();
+
+const [recentlySelected, setRecentlySelected] = useState<{
+	   file: string;
+	   type: string;
+	   directory: boolean;
+   }>();
+
+   function getFileUrl(selectedFile: FileSelectorValue): string {
+    if (typeof selectedFile === 'object' && selectedFile !== null) {
+        return selectedFile.url || '';
+    } else if (typeof selectedFile === 'string') {
+		return selectedFile;
+    }
+    return '';
+}
+
+useEffect(() => {
+	async function updatePreviewFromSelectedFile() {
+
+		if (!selectedFile) {
+			setDataUrl(undefined);
+			setFileName(undefined);
+			setShowDeleteAndDownload(false);
+			setShowProgressBarContainer(false);
+			setShowFileUploadButton(true);
+			return;
+		}
+
+		let fileUrl = getFileUrl(selectedFile);
+        let directory = false;
+        let type = '';
+        let name = '';
+
+        if (typeof selectedFile === 'object' && selectedFile !== null) {
+            directory = !!selectedFile.directory;
+        } else {
+        	directory = false;
+        }
+		type = fileUrl.split('.').pop()?.toLowerCase() || '';
+		name = fileUrl.split('/').pop() || '';
+		setFileName(name);
+		try {
+			const dataURL = await imageURLForFile(fileUrl, directory, type);			
+			setDataUrl(dataURL);
+		} catch {
+			setDataUrl(undefined);
+		}
+		setShowProgressBarContainer(true);
+		setShowDeleteAndDownload(true);
+		setShowFileUploadButton(false);
+		setShowProgressBar(false);
+	}
+	updatePreviewFromSelectedFile();
+	
+}, [selectedFile]);
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
@@ -135,48 +188,59 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		);
 	};
 
-	const handleDelete = async () => {
-		try {
-			const headers: any = {
-				Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-			};
+const handleDelete = async () => {
+	try {
+		const headers: any = {
+			Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+		};
 
-			const fileData = selectedFile ? selectedFile : undefined;
-			if (!fileData) return;
+		let fileUrl = getFileUrl(selectedFile);
+		if (!fileUrl) return;
 
-			let deleteUrl = fileData.replace('//', '/');
-			deleteUrl = `/api/files/${resourceType}/${deleteUrl}`;
+		let deleteUrl = fileUrl.replace('//', '/');
+		deleteUrl = `/api/files/${resourceType}/${deleteUrl}`;
 
-			if (clientCode) {
-				deleteUrl += `?clientCode=${clientCode}`;
-			}
-
-			await axios.delete(deleteUrl, { headers });
-
-			if (bindingPathPath) {
-				setData(bindingPathPath, undefined, context.pageName, true);
-			}
-			setShowFileUploadButton(true);
-			setShowProgressBarContainer(false);
-			setShowProgressBar(false);
-			setShowDeleteAndDownload(false);
-			setFileName(undefined);
-			setDataUrl(undefined);
-			setSelectedFile('');
-			setUploadProgress(0);
-		} catch (error) {
-			console.error('Delete failed:', error);
+		if (clientCode) {
+			deleteUrl += `?clientCode=${clientCode}`;
 		}
-	};
 
-	const handleDownload = async () => {
-		if (!selectedFile) return;
-		const downloadUrl = selectedFile ? selectedFile : '';
+		await axios.delete(deleteUrl, { headers });
+
+		if (bindingPathPath) {
+			setData(bindingPathPath, undefined, context.pageName, true);
+		}
+		setShowFileUploadButton(true);
+		setShowProgressBarContainer(false);
+		setShowProgressBar(false);
+		setShowDeleteAndDownload(false);
+		setFileName(undefined);
+		setDataUrl(undefined);
+		setSelectedFile('');
+		setUploadProgress(0);
+	} catch (error) {
+		console.error('Delete failed:', error);
+	}
+};
+
+const handleDownload = async () => {
+	    let url = `/api/files/${resourceType}/${startLocation}?`;
+        if (clientCode) url += `&clientCode=${clientCode}`;
+        const headers: any = {
+            Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+        };
+        const response = await axios.get(url, { 
+            headers,
+        });
+        if(!selectedFile) return;
+		let downloadUrl = getFileUrl(selectedFile);
 		try {
 			const options: AxiosRequestConfig<any> = {
 				url: downloadUrl,
 				method: 'GET',
 				responseType: 'arraybuffer',
+				headers: {
+					Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+				},
 			};
 
 			const response = await axios(options);
@@ -225,22 +289,35 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			props.pageDefinition,
 		);
 	};
+	
+	let renderLabel;
+		if (label) {
+			renderLabel = (
+				<div
+					className="_label"
+					style={resolvedStyles.label ?? {}}
+				>
+					<SubHelperComponent definition={definition} subComponentName="label" />
+					{label}
+				</div>
+			);
+		}
+
+	
 
 	let content;
 	if (designType === 'button') {
 		if (selectedFile) {
+			let fileUrl = getFileUrl(selectedFile);
 			let directory = recentlySelected?.directory ?? false;
-			let type =
-				recentlySelected?.type ??
-				(selectedFile ? selectedFile.split('.').pop()?.toLowerCase() : '') ??
-				'';
+			let type = recentlySelected?.type ?? (fileUrl ? fileUrl.split('.').pop()?.toLowerCase() : '') ?? '';
 			content = (
 				<>
 					<img
-						key={selectedFile}
+						key={fileUrl}
 						ref={async e => {
 							if (!e || e.src) return;
-							const dataURL = await imageURLForFile(selectedFile, directory, type);
+							const dataURL = await imageURLForFile(fileUrl, directory, type);
 							e.src = dataURL;
 						}}
 						alt="Selected file"
@@ -262,7 +339,8 @@ function FileSelector(props: Readonly<ComponentProps>) {
 					/>
 				</>
 			);
-		if (showBrowser)
+		if (showBrowser) {
+			let fileUrl = getFileUrl(selectedFile);
 			content = (
 				<>
 					{content}
@@ -280,7 +358,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 								{showFullScreen ? <ToSmallScreen /> : <ToFullScreen />}
 							</div>
 							<FileBrowser
-								selectedFile={selectedFile}
+								selectedFile={fileUrl}
 								restrictNavigationToTopLevel={restrictNavigationToTopLevel}
 								startLocation={startLocation}
 								fileUploadSizeLimit={fileUploadSizeLimit}
@@ -310,10 +388,12 @@ function FileSelector(props: Readonly<ComponentProps>) {
 					</div>
 				</>
 			);
+		}
 	} else if (designType === 'browser') {
+		let fileUrl = getFileUrl(selectedFile);
 		content = (
 			<FileBrowser
-				selectedFile={selectedFile}
+				selectedFile={fileUrl}
 				restrictNavigationToTopLevel={restrictNavigationToTopLevel}
 				startLocation={startLocation}
 				fileUploadSizeLimit={fileUploadSizeLimit}
@@ -339,49 +419,50 @@ function FileSelector(props: Readonly<ComponentProps>) {
 				clientCode={clientCode}
 			/>
 		);
-	} else {
-		content = (
-			<div className="_progressBarfileUpload">
-				{showFileUploadButton && (
-					<div className="_InnerProgressBarContainer">
-						<span className="_fileUploadPlaceholderText">
-							{fileUploadPlaceholderText}
-						</span>
-						<label className="_progressBarUploadButton">
-							Upload File
-							<input
-								type="file"
-								className="_hidden"
-								disabled={readOnly}
-								max={fileSizeLimit}
-								onClick={e => (e.currentTarget.value = '')}
-								onChange={async e => {
-									if (!e.target.files?.length || !bindingPathPath) return;
-									const file = e.target.files?.[0];
-									if (
-										fileUploadSizeLimit &&
-										file.size > fileUploadSizeLimit * 1000 * 1000
-									) {
-										alert('File size exceeds the limit');
-										return;
-									}
-									const extension = file?.name?.split('.').pop()?.toLowerCase();
-									if (
-										restrictUploadType &&
-										!restrictUploadType.includes(extension ?? '')
-									) {
-										alert(
-											'File type not allowed, please upload only of type ' +
-												restrictUploadType,
-										);
-										return;
-									}
-									setFileName(file?.name);
-									if (!file) return;
-									setShowFileUploadButton(false);
-									setShowProgressBarContainer(true);
-									setShowProgressBar(true);
-									setUploadProgress(0);
+		} else {
+			content = (
+				<>
+				{renderLabel}
+				<div className="_progressBarfileUpload">					
+					{showFileUploadButton && (						
+						<div className="_InnerProgressBarContainer">
+							<span className="_fileUploadPlaceholderText">{UploadPlaceholderText}</span>
+							<label className="_progressBarUploadButton">
+								{uploadButtonText}
+								<input
+									type="file"
+									className="_hidden"
+									disabled={readOnly}
+									max={fileSizeLimit}
+									onClick={e => (e.currentTarget.value = '')}
+									onChange={async e => {
+										if (!e.target.files?.length || !bindingPathPath) return;
+										const file = e.target.files?.[0];
+										if (
+											fileUploadSizeLimit &&
+											file.size > fileUploadSizeLimit * 1000 * 1000
+										) {
+											alert('File size exceeds the limit');
+											return;
+										}
+										const extension = file?.name?.split('.').pop()?.toLowerCase();
+										if (
+											restrictUploadType &&
+											!restrictUploadType.includes(extension ?? '')
+										) {
+											alert(
+												'File type not allowed, please upload only of type ' +
+													restrictUploadType,
+											);
+											return;
+										}
+										setFileName(file?.name);
+										if (!file) return;
+										setShowFileUploadButton(false);
+										setShowProgressBarContainer(true);
+										setShowProgressBar(true);
+										setUploadProgress(0);
+										
 
 									const formData = new FormData();
 									formData.append('file', file);
@@ -395,33 +476,35 @@ function FileSelector(props: Readonly<ComponentProps>) {
 											url += `?clientCode=${clientCode}`;
 										}
 
-										const response = await axios.post(url, formData, {
-											headers: {
-												'Content-Type': 'multipart/form-data',
-												Authorization: getDataFromPath(
-													`${LOCAL_STORE_PREFIX}.AuthToken`,
-													[],
-												),
-											},
-											signal: abortController.current.signal,
-											onUploadProgress: progressEvent => {
-												const percent = progressEvent.total
-													? Math.round(
-															(progressEvent.loaded * 100) /
-																progressEvent.total,
-														)
-													: 0;
-												setUploadProgress(percent);
-												if (percent === 100) {
-													setTimeout(() => {
-														setShowProgressBar(false);
-														setShowDeleteAndDownload(true);
-													}, 2000); // 2000ms = 2 seconds
-												}
-											},
-										});
+											const response = await axios.post(url, formData, {
+												headers: {
+													'Content-Type': 'multipart/form-data',
+													Authorization: getDataFromPath(
+														`${LOCAL_STORE_PREFIX}.AuthToken`,
+														[],
+													),
+												},
+												signal: abortController.current.signal,
+												onUploadProgress: progressEvent => {
+													const percent = progressEvent.total
+														? Math.round(
+																(progressEvent.loaded * 100) /
+																	progressEvent.total,
+															)
+														: 0;
+													setUploadProgress(percent);
+													if (percent === 100) {
+														setTimeout(() => {
+															setShowProgressBar(false);
+															setShowProgressBarContainer(true);
+															setShowDeleteAndDownload(true);
+														}, 2000); // 2000ms = 2 seconds
+													}
+												},
+											});
 
-										setData(bindingPathPath!, response.data, context?.pageName);
+											
+											setData(bindingPathPath!, response.data, context?.pageName);
 
 										const type = response.data.url
 											.split('.')
@@ -433,32 +516,31 @@ function FileSelector(props: Readonly<ComponentProps>) {
 											type,
 										);
 
-										setDataUrl(dataURL);
-										setSelectedFile(response.data.url);
-										if (!onSelect || !pageDefinition.eventFunctions[onSelect])
-											return;
-										const selectEvent = onSelect
-											? pageDefinition.eventFunctions[onSelect]
-											: undefined;
-										await runEvent(
-											selectEvent,
-											onSelect,
-											props.context.pageName,
-											props.locationHistory,
-											props.pageDefinition,
-										);
-									} catch (err) {
-										if (axios.isCancel(err)) {
-											console.warn('Upload aborted by user');
-										} else {
-											console.error('Upload failed:', err);
-										}
-									}
-								}}
-							/>
-						</label>
-					</div>
-				)}
+											setDataUrl(dataURL);
+											setSelectedFile(response.data);
+											if (!onSelect || !pageDefinition.eventFunctions[onSelect]) return;
+											const selectEvent = onSelect
+												? pageDefinition.eventFunctions[onSelect]
+												: undefined;
+											await runEvent(
+												selectEvent,
+												onSelect,
+												props.context.pageName,
+												props.locationHistory,
+												props.pageDefinition,
+											);
+										} catch (err) {
+											if (axios.isCancel(err)) {
+												console.warn('Upload aborted by user');
+											} else {
+												console.error('Upload failed:', err);
+											}
+										} 
+									}}
+								/>
+							</label>
+						</div>
+					)}
 
 				{showProgressBarContainer && (
 					<div className="_uploadingFileContainer">
@@ -484,114 +566,111 @@ function FileSelector(props: Readonly<ComponentProps>) {
 									{uploadProgress >= 0 && uploadProgress < 100 ? (
 										<svg
 											onClick={() => {
-												if (abortController.current) {
-													abortController.current.abort();
-													setShowProgressBarContainer(false);
-													setShowFileUploadButton(true);
-												}
-											}}
-											width="14"
-											height="14"
-											viewBox="0 0 14 14"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-										>
-											<path
-												d="M13 1L1 13"
-												stroke="#7D88A4"
-												stroke-width="2"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-											/>
-											<path
-												d="M1 1L13 13"
-												stroke="#7D88A4"
-												stroke-width="2"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-											/>
-										</svg>
-									) : (
-										<svg
-											width="16"
-											height="16"
-											viewBox="0 0 16 16"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg"
-										>
-											<path
-												d="M8 16C10.1217 16 12.1566 15.1571 13.6569 13.6569C15.1571 12.1566 16 10.1217 16 8C16 5.87827 15.1571 3.84344 13.6569 2.34315C12.1566 0.842855 10.1217 0 8 0C5.87827 0 3.84344 0.842855 2.34315 2.34315C0.842855 3.84344 0 5.87827 0 8C0 10.1217 0.842855 12.1566 2.34315 13.6569C3.84344 15.1571 5.87827 16 8 16ZM11.5312 6.53125L7.53125 10.5312C7.2375 10.825 6.7625 10.825 6.47188 10.5312L4.47188 8.53125C4.17812 8.2375 4.17812 7.7625 4.47188 7.47188C4.76562 7.18125 5.24062 7.17812 5.53125 7.47188L7 8.94063L10.4688 5.46875C10.7625 5.175 11.2375 5.175 11.5281 5.46875C11.8188 5.7625 11.8219 6.2375 11.5281 6.52813L11.5312 6.53125Z"
-												fill="#34A853"
-											/>
-										</svg>
-									)}
+													if (abortController.current) {
+														abortController.current.abort();
+														setShowProgressBarContainer(false);
+														setShowFileUploadButton(true);
+													}
+												}}
+												width="14"
+												height="14"
+												viewBox="0 0 14 14"
+												fill="none"
+												xmlns="http://www.w3.org/2000/svg"
+											>
+												<path
+													d="M13 1L1 13"
+													stroke="#7D88A4"
+													strokeWidth="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+												/>
+												<path
+													d="M1 1L13 13"
+													stroke="#7D88A4"
+													strokeWidth="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+												/>
+											
+											</svg>
+										) : (
+											<svg
+												width="16"
+												height="16"
+												viewBox="0 0 16 16"
+												fill="none"
+												xmlns="http://www.w3.org/2000/svg"
+											>
+												<path
+													d="M8 16C10.1217 16 12.1566 15.1571 13.6569 13.6569C15.1571 12.1566 16 10.1217 16 8C16 5.87827 15.1571 3.84344 13.6569 2.34315C12.1566 0.842855 10.1217 0 8 0C5.87827 0 3.84344 0.842855 2.34315 2.34315C0.842855 3.84344 0 5.87827 0 8C0 10.1217 0.842855 12.1566 2.34315 13.6569C3.84344 15.1571 5.87827 16 8 16ZM11.5312 6.53125L7.53125 10.5312C7.2375 10.825 6.7625 10.825 6.47188 10.5312L4.47188 8.53125C4.17812 8.2375 4.17812 7.7625 4.47188 7.47188C4.76562 7.18125 5.24062 7.17812 5.53125 7.47188L7 8.94063L10.4688 5.46875C10.7625 5.175 11.2375 5.175 11.5281 5.46875C11.8188 5.7625 11.8219 6.2375 11.5281 6.52813L11.5312 6.53125Z"
+													fill="#34A853"
+												/>
+											</svg>
+										)}
+									</div>
 								</div>
-							</div>
-						)}
-						{showDeleteAndDownload && (
-							<div className="_rightSection2">
-								{
-									<svg
-										onClick={handleDownload}
+							)}
+							{showDeleteAndDownload && (
+								<div className="_rightSection2">
+									<svg onClick={handleDownload}
 										className="_downloadIcon"
 										width="16"
 										height="16"
 										viewBox="0 0 16 16"
 										fill="none"
 										xmlns="http://www.w3.org/2000/svg"
+										
 									>
 										<path
 											d="M7.99998 10.9999V1M7.99998 10.9999C7.29979 10.9999 5.99153 9.00564 5.5 8.49995M7.99998 10.9999C8.70018 10.9999 10.0085 9.00564 10.5 8.49995"
-											stroke-width="1.5"
-											stroke-linecap="round"
-											stroke-linejoin="round"
+											strokeWidth="1.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
 										/>
 										<path
 											d="M1 15H15"
-											stroke-width="1.5"
-											stroke-linecap="round"
-											stroke-linejoin="round"
+											strokeWidth="1.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
 										/>
 									</svg>
-								}
-
-								{
-									<svg
-										onClick={handleDelete}
+									<svg onClick={handleDelete}
 										className="_deleteIcon"
 										width="14"
 										height="16"
 										viewBox="0 0 14 16"
 										fill="none"
 										xmlns="http://www.w3.org/2000/svg"
+									
 									>
 										<path
 											d="M13.25 4.06212C10.975 3.71211 8.78751 3.53711 6.42501 3.53711C4.06251 3.53711 3.62501 3.53711 2.40001 3.88712L1 4.06212"
-											stroke-width="1.5"
-											stroke-linecap="round"
-											stroke-linejoin="round"
+											strokeWidth="1.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
 										/>
 										<path
 											d="M4.32422 3.45006L4.49922 2.40003C4.58672 1.61251 4.67422 1 6.16172 1H8.43672C9.92422 1 10.0117 1.61251 10.0992 2.40003L10.2742 3.45006"
-											stroke-width="1.5"
-											stroke-linecap="round"
-											stroke-linejoin="round"
+											strokeWidth="1.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
 										/>
 										<path
 											d="M11.9398 4.58594L11.5023 12.7236C11.4148 13.9487 11.4148 14.9987 9.40234 14.9987H4.93984C3.01484 14.9987 2.92734 14.0362 2.83984 12.7236L2.40234 4.58594"
-											stroke-width="1.5"
-											stroke-linecap="round"
-											stroke-linejoin="round"
+											strokeWidth="1.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
 										/>
 									</svg>
-								}
-							</div>
-						)}
-					</div>
-				)}
-			</div>
-		);
-	}
+								</div>
+							)}
+						</div>
+					)}
+				</div>
+				</>
+			);
+		}
 
 	useEffect(() => {
 		if (!validation) return;
@@ -897,6 +976,12 @@ const component: Component = {
 			description: 'Error Text Container',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		}
 	],
 	stylePropertiesForTheme: styleProperties,
 };
