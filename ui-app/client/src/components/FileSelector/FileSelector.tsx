@@ -69,6 +69,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			allowMultipleSelection,
 			uploadButtonText,
 			UploadPlaceholderText,
+			label
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -148,9 +149,7 @@ useEffect(() => {
 		name = fileUrl.split('/').pop() || '';
 		setFileName(name);
 		try {
-			console.log('fileURL',fileUrl)
-			const dataURL = await imageURLForFile(fileUrl, directory, type);
-			console.log('Dataurl',dataURL)
+			const dataURL = await imageURLForFile(fileUrl, directory, type);			
 			setDataUrl(dataURL);
 		} catch {
 			setDataUrl(undefined);
@@ -291,6 +290,21 @@ const handleDownload = async () => {
 			props.pageDefinition,
 		);
 	};
+	
+	let renderLabel;
+		if (label) {
+			renderLabel = (
+				<div
+					className="_label"
+					style={resolvedStyles.label ?? {}}
+				>
+					<SubHelperComponent definition={definition} subComponentName="label" />
+					{label}
+				</div>
+			);
+		}
+
+	
 
 	let content;
 	if (designType === 'button') {
@@ -408,8 +422,10 @@ const handleDownload = async () => {
 		);
 		} else {
 			content = (
-				<div className="_progressBarfileUpload">
-					{showFileUploadButton && (
+				<>
+				{renderLabel}
+				<div className="_progressBarfileUpload">					
+					{showFileUploadButton && (						
 						<div className="_InnerProgressBarContainer">
 							<span className="_fileUploadPlaceholderText">{UploadPlaceholderText}</span>
 							<label className="_progressBarUploadButton">
@@ -657,6 +673,7 @@ const handleDownload = async () => {
 						</div>
 					)}
 				</div>
+				</>
 			);
 		}
 
@@ -964,6 +981,12 @@ const component: Component = {
 			description: 'Error Text Container',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: 'Label',
+			icon: 'fa-solid fa-box',
+		}
 	],
 	stylePropertiesForTheme: styleProperties,
 };
