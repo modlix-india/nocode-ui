@@ -172,6 +172,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
   defaultValue: 'Upload documents or images',
   group: ComponentPropertyGroup.BASIC,
  },
+ 	{
+		name: 'label',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Label',
+		description: 'Text label displayed above the file selector',
+		defaultValue: 'Label',
+		group: ComponentPropertyGroup.BASIC,
+    },
 	{
 		name: 'removeImage',
 		schema: SCHEMA_STRING_COMP_PROP,
