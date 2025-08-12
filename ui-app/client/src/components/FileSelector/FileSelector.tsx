@@ -124,6 +124,10 @@ const [recentlySelected, setRecentlySelected] = useState<{
 }
 
 useEffect(() => {
+    if (startLocation) setPath(startLocation);
+}, [startLocation]);
+
+useEffect(() => {
 	async function updatePreviewFromSelectedFile() {
 
 		if (!selectedFile) {
