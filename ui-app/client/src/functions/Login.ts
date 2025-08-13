@@ -10,7 +10,7 @@ import {
 } from '@fincity/kirun-js';
 import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { setData } from '../context/StoreContext';
+import { getDataFromPath, setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
 import pageHistory from '../components/Page/pageHistory';
 
@@ -67,6 +67,8 @@ export class Login extends AbstractFunction {
 		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
 
 		try {
+			const sso2URLPrefix = getDataFromPath('Store.application.sso2.urlPrefix', []);
+
 			const response = await axios({
 				url: 'api/security/authenticate',
 				method: 'POST',
@@ -91,6 +93,10 @@ export class Login extends AbstractFunction {
 			setData('Store.validationTriggers', {});
 			setData('Store.application', undefined, undefined, true);
 			setData('Store.functionExecutions', {});
+
+			// if (sso2URLPrefix) {
+			// 	axios.
+			// }
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
 		} catch (err: any) {
