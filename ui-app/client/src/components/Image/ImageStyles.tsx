@@ -13,6 +13,81 @@ export default function ImageStyle({
             cursor: pointer;
         }
 
+        ${PREFIX} ._tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.2);
+            color: #333;
+            padding: 6px 10px;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 30;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        ${PREFIX} ._tooltip::after {
+            content: '';
+            position: absolute;
+            border-width: 5px;
+            border-style: solid;
+            border-color: transparent;
+        }
+
+        ${PREFIX} ._tooltip-top {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        ${PREFIX} ._tooltip-top::after {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: rgba(0, 0, 0, 0.2);
+            border-bottom: 0;
+        }
+
+        ${PREFIX} ._tooltip-bottom {
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        ${PREFIX} ._tooltip-bottom::after {
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: rgba(0, 0, 0, 0.2);
+            border-top: 0;
+        }
+
+        ${PREFIX} ._tooltip-left {
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        ${PREFIX} ._tooltip-left::after {
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: rgba(0, 0, 0, 0.2);
+            border-right: 0;
+        }
+
+        ${PREFIX} ._tooltip-right {
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        ${PREFIX} ._tooltip-right::after {
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: rgba(0, 0, 0, 0.2);
+            border-left: 0;
+        }
+
         ${PREFIX} img {
             width: inherit;
             height: inherit;
