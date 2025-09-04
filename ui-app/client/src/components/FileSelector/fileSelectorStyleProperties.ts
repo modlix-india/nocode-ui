@@ -426,6 +426,30 @@ export const styleProperties: Array<StylePropertyDefinition> = [
     sel: '.comp.compFileSelector._deleteIcon<colorScheme>',
     np: true,
 },
+{
+    gn: 'Progress Bar File Upload Label',
+    dn: 'Progress Bar File Upload Label Text',
+    n: 'progressBarFileUploadLabelTextFont',
+    cp: 'font',
+    sel: '.comp.compFileSelector._label',
+    np: true,
+},
+{
+    gn: 'Progress Bar File Upload Label',
+    dn: 'Progress Bar File Upload Label color',
+    n: 'progressBarFileUploadLabelTextColor',
+    cp: 'color',
+    sel: '.comp.compFileSelector._label',
+    np: true,
+},
+{
+    gn: 'Progress Bar File Upload Label',
+    dn: 'Progress Bar File Upload Label margin',
+    n: 'progressBarFileUploadLabelTextMargin',
+    cp: 'margin',
+    sel: '.comp.compFileSelector._label',
+    np: true,
+}
 
 ];
 
