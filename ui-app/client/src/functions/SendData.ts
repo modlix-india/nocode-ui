@@ -123,8 +123,8 @@ export class SendData extends AbstractFunction {
 
 		if (isFormData) {
 			const fd = Object.entries(payload).reduce((a, c) => {
-				if (Array.isArray(c[1])) c[1].forEach(e => a.append(c[0], e));
-				else a.append(c[0], c[1] as any);
+				if (Array.isArray(c[1])) c[1].forEach(e => a.append(c[0], getAsBlob(e)));
+				else a.append(c[0], getAsBlob(c[1]));
 				return a;
 			}, new FormData());
 
@@ -196,4 +196,10 @@ export class SendData extends AbstractFunction {
 	getSignature(): FunctionSignature {
 		return SIGNATURE;
 	}
+}
+
+function getAsBlob(data: any) {
+	if (data.constructor?.name === 'File') return data;
+	const jsonData = JSON.stringify(data);
+	return new Blob([jsonData], { type: 'application/json' });
 }
