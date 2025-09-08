@@ -155,6 +155,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.IMAGE,
 		group: ComponentPropertyGroup.BASIC,
 	},
+	 {
+  name: 'uploadButtonText',
+  schema: SCHEMA_STRING_COMP_PROP,
+  displayName: 'Upload Button Text',
+  description: 'Text to display on the upload button',
+  defaultValue: 'Upload File',
+  group: ComponentPropertyGroup.BASIC,
+ },
+
+ {
+  name: 'UploadPlaceholderText',
+  schema: SCHEMA_STRING_COMP_PROP,
+  displayName: 'Upload Placeholder Text',
+  description: 'Placeholder text for the upload area',
+  defaultValue: 'Upload documents or images',
+  group: ComponentPropertyGroup.BASIC,
+ },
+ 	{
+		name: 'label',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Label',
+		description: 'Text label displayed above the file selector',
+		defaultValue: 'Label',
+		group: ComponentPropertyGroup.BASIC,
+    },
 	{
 		name: 'removeImage',
 		schema: SCHEMA_STRING_COMP_PROP,
