@@ -17,6 +17,7 @@ export function getHref(linkPath: string = '', location: ReactLocation | Locatio
 	let midfix: string = '';
 	let url: string = '';
 	if (
+		linkPath?.startsWith('data:') ||
 		linkPath?.startsWith('http:') ||
 		linkPath?.startsWith('https:') ||
 		linkPath?.startsWith('//') ||
