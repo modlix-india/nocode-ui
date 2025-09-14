@@ -64,7 +64,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			
 			window.location.href = redirectURL.replace('{appCode}', appCode)
 								.replace('{clientCode}', clientCode)
-								.replace('{redirectUrl}', window.location.href);
+								.replace('{redirectUrl}', encodeURIComponent(window.location.href));
 		})();
 
 	}, [shouldRedirect]);
