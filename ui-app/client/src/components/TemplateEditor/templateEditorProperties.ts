@@ -1,16 +1,11 @@
-import { Schema } from '@fincity/kirun-js';
 import {
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_NUM_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
-	ComponentPropertyEditor,
-	ComponentPropertyGroup,
-	ComponentStylePropertyDefinition,
+	ComponentStylePropertyDefinition
 } from '../../types/common';
-import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
+import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -21,6 +16,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{ name: 'email', displayName: 'Email' },
 			{ name: 'whatsapp', displayName: 'WhatsApp' },
+			{ name: 'inapp', displayName: 'In App' },
 		],
 	},
 ];
