@@ -13,8 +13,9 @@ import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import TemplateEditorStyle from './TemplateEditorStyle';
 import { styleProperties, styleDefaults } from './TemplateEditorStyleProperties';
-import EmailEditor from './email/EmailEditor';
+import EmailEditor from './editors/EmailEditor';
 import { propertiesDefinition, stylePropertiesDefinition } from './templateEditorProperties';
+import InAppEditor from './editors/InAppEditor';
 
 function TemplateEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -71,6 +72,10 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 	let editorComponent: React.JSX.Element | undefined = undefined;
 	if (templateType === 'email') {
 		editorComponent = <EmailEditor template={template} onChange={onChange}></EmailEditor>;
+	} else if (templateType === 'whatsapp') {
+		editorComponent = <></>;
+	} else if (templateType === 'inapp') {
+		editorComponent = <InAppEditor template={template} onChange={onChange}></InAppEditor>;
 	}
 
 	return (
