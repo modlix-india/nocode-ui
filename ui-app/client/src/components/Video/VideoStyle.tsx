@@ -62,8 +62,8 @@ export default function VideoStyle({
     display:flex;
     flex-direction:column;
   }
-  ${PREFIX} ._progressBarContainer {
-    width:100%;
+  ${PREFIX} ._progressBarContainer, ${PREFIX}  ._playAndFullscreenGrid {
+    width:10px;
     position: relative;
    }
    ${PREFIX} ._progressBar {

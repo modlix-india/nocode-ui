@@ -9,6 +9,15 @@
 		"dv": "pointer"
 	},
 	{
+		"cp": "width",
+		"sel": ".comp.compVideo ._progressBarContainer, .comp.compVideo ._playAndFullscreenGrid",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width ProgressBarContainer",
+		"n": "videoWidthProgressBarContainer<designType><colorScheme>",
+		"dv": "100%"
+	},
+	{
 		"cp": "padding",
 		"sel": ".comp.compVideo ._progressBarContainer",
 		"np": true,
