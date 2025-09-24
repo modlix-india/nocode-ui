@@ -617,7 +617,8 @@ const handleDownload = async () => {
 							)}
 							{showDeleteAndDownload && (
 								<div className="_rightSection2">
-									<svg onClick={handleDownload}
+									<svg 
+										onClick={!readOnly ? handleDownload : undefined}
 										className="_downloadIcon"
 										width="16"
 										height="16"
@@ -639,7 +640,8 @@ const handleDownload = async () => {
 											strokeLinejoin="round"
 										/>
 									</svg>
-									<svg onClick={handleDelete}
+									<svg 
+										onClick={!readOnly ? handleDelete : undefined} 
 										className="_deleteIcon"
 										width="14"
 										height="16"
