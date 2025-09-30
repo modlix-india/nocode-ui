@@ -235,7 +235,12 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 		setBackgroundImages(
 			parsedImages.length === 0
 				? [{ type: 'URL', value: '' }]
-				: (parsedImages as BackgroundImage[]),
+				: (parsedImages as BackgroundImage[]).map(img => {
+					if (img.type === 'URL') {
+						img.value = img.value.replace(/^"|"$/g, '');
+					}
+					return img;
+				}),
 		);
 	}, [
 		props.selectedComponent,
@@ -281,7 +286,7 @@ function BackgroundStandardEditor(props: Readonly<StyleEditorsProps>) {
 	const updateBackgroundImages = (newImages: Array<BackgroundImage>) => {
 		const newValue = newImages
 			.map(img =>
-				img.type === 'URL' ? `url(${img.value})` : `linear-gradient(${img.value})`,
+				img.type === 'URL' ? `url("${img.value}")` : `linear-gradient(${img.value})`,
 			)
 			.join(', ');
 		valuesChangedOnlyValues({
