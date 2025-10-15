@@ -54,7 +54,7 @@ function SSEventListener(props: Readonly<ComponentProps>) {
 			setData(bindingPathPath!, value, pageExtractor.getPageName());
 		};
 
-		es.addEventListener('message', func);
+		es.onmessage = func;
 		es.onopen = () => console.log("SSE open");
 		es.onerror = (e) => console.warn("SSE error (auto-retrying)", e);
 
