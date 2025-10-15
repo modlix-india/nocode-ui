@@ -17,6 +17,7 @@ function SSEventListener(props: Readonly<ComponentProps>) {
 	const {
 		properties: {
 			url,
+			eventName,
 			onEvent,
 			left = 0,
 			top = 0,
@@ -37,14 +38,10 @@ function SSEventListener(props: Readonly<ComponentProps>) {
 		if (!bindingPath || !url || !onEvent || !pageDefinition.eventFunctions?.[onEvent]) return;
 
 		const eventFunction = pageDefinition.eventFunctions?.[onEvent];
-		if (!eventFunction) return;
-
 		const es = new EventSource(url,{ withCredentials: true });  
 
 		const func = (event: MessageEvent) => {
-			const data = JSON.parse(event.data);
-			
-			console.log(event,data);
+			const data = event
 
 			let value = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
 
@@ -52,14 +49,23 @@ function SSEventListener(props: Readonly<ComponentProps>) {
 			value.push(data);
 
 			setData(bindingPathPath!, value, pageExtractor.getPageName());
+
+			if (!eventFunction) return;
+			runEvent(eventFunction, onEvent, context.pageName, locationHistory, pageDefinition);
 		};
 
-		es.onmessage = func;
-		es.onopen = () => console.log("SSE open");
-		es.onerror = (e) => console.warn("SSE error (auto-retrying)", e);
+		if (Array.isArray(eventName)) {
+			eventName.forEach(name => {
+				es.addEventListener(name, func);
+			});
+		} else if (typeof eventName === 'string') {
+			es.addEventListener(eventName, func);
+		}
+		
+		es.onerror = (e) => console.error("SSE error (auto-retrying)", e);
 
 		return () => es.close();
-	}, [bindingPathPath, url, onEvent]);
+	}, [bindingPathPath, url, onEvent, eventName]);
 
 	const ref = useRef<HTMLDivElement>(null);
 
