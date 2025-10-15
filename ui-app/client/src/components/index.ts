@@ -53,6 +53,7 @@ import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 import MarkdownTOC from './MarkdownTOC/MarkdownTOC';
 import Audio from './Audio/Audio';
 import ThemeEditor from './ThemeEditor/ThemeEditor';
+import SSEventListener from './SSEventListener/SSEventListener';
 
 const componentMap = new Map<string, Component>([
 	[Button.name, Button],
@@ -105,6 +106,7 @@ const componentMap = new Map<string, Component>([
 	[MarkdownEditor.name, MarkdownEditor],
 	[MarkdownTOC.name, MarkdownTOC],
 	[Audio.name, Audio],
+	[SSEventListener.name, SSEventListener],
 ]);
 
 import Chart from './Chart/Chart';
