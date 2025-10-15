@@ -15,6 +15,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'eventName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Event Name',
+		description: 'Event name to listen to.',
+		group: ComponentPropertyGroup.BASIC,
+		multiValued: true,
+	},
+	{
 		name: 'onEvent',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Event',
