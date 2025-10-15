@@ -41,7 +41,7 @@ function SSEventListener(props: Readonly<ComponentProps>) {
 		const es = new EventSource(url,{ withCredentials: true });  
 
 		const func = (event: MessageEvent) => {
-			const data = event
+			const data = event.data;
 
 			let value = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
 
