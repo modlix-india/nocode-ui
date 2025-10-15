@@ -276,7 +276,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			...resolvedStyles.zoomPreview,
 			width: `${previewWidth || 300}px`,
 			height: `${previewHeight || 300}px`,
-			backgroundImage: `url(${actualSrc})`,
+			backgroundImage: `url('${actualSrc}')`,
 			backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
 			backgroundSize: `${(zoomFactor || 2) * 100}%`,
 		};
@@ -296,7 +296,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			top: `${mousePosition.y}%`,
 			width: `${magnifierSize || 150}px`,
 			height: `${magnifierSize || 150}px`,
-			backgroundImage: `url(${actualSrc})`,
+			backgroundImage: `url('${actualSrc}')`,
 			backgroundPosition: `${mousePosition.x}% ${mousePosition.y}%`,
 			backgroundSize: `${(magnificationFactor || 2) * 100}%`,
 		};
@@ -389,7 +389,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 							alignItems: 'center',
 							...(sliderHandleType === 'custom' && sliderHandleImage
 								? {
-										backgroundImage: `url(${getSrcUrl(getHref(sliderHandleImage, location)!)})`,
+										backgroundImage: `url('${getSrcUrl(getHref(sliderHandleImage, location)!)}')`,
 										backgroundSize: 'contain',
 										backgroundPosition: 'center',
 										backgroundRepeat: 'no-repeat',
@@ -496,7 +496,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	return (
 		<div
 			className="comp compImage"
-			style={resolvedStyles.comp ?? {}}
+			style={{ ...(resolvedStyles.comp ?? {}), userSelect: isDragging ? 'none' : 'auto' }}
 			ref={containerRef}
 			onMouseMove={handleMouseMove}
 			onMouseEnter={() => setHover(true)}
