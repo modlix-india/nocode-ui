@@ -36,6 +36,7 @@ async function secureImage(src: string) {
 function ImageComponent(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const [hover, setHover] = useState(false);
+	const [touchHover, setTouchHover] = useState(false);
 	const [src, setSrc] = useState('');
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const [falledBack, setFalledBack] = useState(false);
@@ -193,6 +194,47 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		setIsDragging(false);
 	};
 
+	// Touch event handlers for mobile support
+	const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+		if (enhancementType === 'comparison' && actualComparisonSrc) {
+			e.preventDefault();
+			setIsDragging(true);
+			updateSliderPositionFromTouch(e);
+		} else {
+			// For other enhancement types, show hover state on touch
+			setTouchHover(true);
+		}
+	};
+
+	const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+		if (enhancementType === 'zoomPreview' || enhancementType === 'magnification') {
+			const touch = e.touches[0];
+			if (!touch) return;
+			
+			const { left, top, width, height } = containerRef.current?.getBoundingClientRect() || {
+				left: 0,
+				top: 0,
+				width: 0,
+				height: 0,
+			};
+			const x = ((touch.clientX - left) / width) * 100;
+			const y = ((touch.clientY - top) / height) * 100;
+
+			setMousePosition({ x, y });
+		}
+
+		if (enhancementType === 'comparison' && isDragging && actualComparisonSrc) {
+			e.preventDefault();
+			updateSliderPositionFromTouch(e);
+		}
+	};
+
+	const handleTouchEnd = () => {
+		setIsDragging(false);
+		// Add a small delay before hiding touch hover to allow for tooltip display
+		setTimeout(() => setTouchHover(false), 2000);
+	};
+
 	const updateSliderPosition = (e: React.MouseEvent<HTMLDivElement>) => {
 		if (!containerRef.current) return;
 
@@ -203,6 +245,24 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			newPosition = Math.min(100, Math.max(0, ((e.clientY - top) / height) * 100));
 		} else {
 			newPosition = Math.min(100, Math.max(0, ((e.clientX - left) / width) * 100));
+		}
+
+		setSliderPosition(newPosition);
+	};
+
+	const updateSliderPositionFromTouch = (e: React.TouchEvent<HTMLDivElement>) => {
+		if (!containerRef.current) return;
+
+		const touch = e.touches[0];
+		if (!touch) return;
+
+		const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+		let newPosition;
+
+		if (sliderOrientation === 'vertical') {
+			newPosition = Math.min(100, Math.max(0, ((touch.clientY - top) / height) * 100));
+		} else {
+			newPosition = Math.min(100, Math.max(0, ((touch.clientX - left) / width) * 100));
 		}
 
 		setSliderPosition(newPosition);
@@ -230,12 +290,41 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			}
 		};
 
+		const handleGlobalTouchEnd = () => setIsDragging(false);
+		const handleGlobalTouchMove = (e: TouchEvent) => {
+			if (
+				isDragging &&
+				enhancementType === 'comparison' &&
+				actualComparisonSrc &&
+				containerRef.current
+			) {
+				e.preventDefault();
+				const touch = e.touches[0];
+				if (!touch) return;
+
+				const { left, top, width, height } = containerRef.current.getBoundingClientRect();
+				let newPosition;
+
+				if (sliderOrientation === 'vertical') {
+					newPosition = Math.min(100, Math.max(0, ((touch.clientY - top) / height) * 100));
+				} else {
+					newPosition = Math.min(100, Math.max(0, ((touch.clientX - left) / width) * 100));
+				}
+
+				setSliderPosition(newPosition);
+			}
+		};
+
 		document.addEventListener('mouseup', handleGlobalMouseUp);
 		document.addEventListener('mousemove', handleGlobalMouseMove);
+		document.addEventListener('touchend', handleGlobalTouchEnd);
+		document.addEventListener('touchmove', handleGlobalTouchMove, { passive: false });
 
 		return () => {
 			document.removeEventListener('mouseup', handleGlobalMouseUp);
 			document.removeEventListener('mousemove', handleGlobalMouseMove);
+			document.removeEventListener('touchend', handleGlobalTouchEnd);
+			document.removeEventListener('touchmove', handleGlobalTouchMove);
 		};
 	}, [isDragging, enhancementType, actualComparisonSrc, sliderOrientation]);
 
@@ -283,7 +372,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 		const zoomPreview = enhancementType === 'zoomPreview' && (
 			<div
-				className={`${zoomPreviewClass} ${zoomPreviewVisible || hover ? 'visible' : ''}`}
+				className={`${zoomPreviewClass} ${zoomPreviewVisible || hover || touchHover ? 'visible' : ''}`}
 				style={zoomPreviewStyle}
 			>
 				<SubHelperComponent definition={definition} subComponentName="zoomPreview" />
@@ -301,7 +390,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			backgroundSize: `${(magnificationFactor || 2) * 100}%`,
 		};
 
-		const magnifier = enhancementType === 'magnification' && hover && (
+		const magnifier = enhancementType === 'magnification' && (hover || touchHover) && (
 			<div className="_magnifier" style={magnifierStyle}>
 				<SubHelperComponent definition={definition} subComponentName="magnifier" />
 			</div>
@@ -437,7 +526,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 		let tooltip;
 
-		tooltip = tooltipEnabled && tooltipText && hover && (
+		tooltip = tooltipEnabled && tooltipText && (hover || touchHover) && (
 			<div
 				className="_tooltip"
 				style={{
@@ -503,6 +592,9 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			onMouseLeave={() => setHover(false)}
 			onMouseDown={handleMouseDown}
 			onMouseUp={handleMouseUp}
+			onTouchStart={handleTouchStart}
+			onTouchMove={handleTouchMove}
+			onTouchEnd={handleTouchEnd}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{imageTag}
