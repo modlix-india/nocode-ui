@@ -324,7 +324,7 @@ function CommonInputText(props: CommonInputType) {
 			onMouseLeave={onMouseLeave}
 			onMouseEnter={onMouseEnter}
 			onKeyUp={updDownHandler}
-			title={title ?? value}
+			title={isPassword ? undefined : (title ?? value)}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{leftChildren}
