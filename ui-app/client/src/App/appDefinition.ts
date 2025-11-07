@@ -48,7 +48,7 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 		axiosOptions,
 		language,
 	));
-	if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
+	if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 	try {
 		const response = await axios.get('api/ui/theme', axiosOptions);
 		if (response.status === 200) theme = response.data;
@@ -88,7 +88,7 @@ async function makeVerifyTokenCall(
 ) {
 	try {
 		axiosOptions.headers!.Authorization = JSON.parse(authToken);
-		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
+		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 		const response = await axios.get('api/security/verifyToken', axiosOptions);
 
 		if (response.status === 200) {
@@ -105,7 +105,7 @@ async function makeVerifyTokenCall(
 		// localStorage.removeItem(TOKEN_NAME);
 		// localStorage.removeItem(TOKEN_EXPIRY);
 		axiosOptions = { headers: {} };
-		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = shortUUID();
+		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 	}
 	return { axiosOptions, language };
 }
