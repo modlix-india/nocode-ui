@@ -77,7 +77,8 @@ export class RemoteRepository<T> implements Repository<T> {
 			const headers: any = {};
 			const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 			if (authToken) headers.Authorization = authToken;
-			if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+			if (globalThis.isDebugMode)
+				headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 			axios
 				.get(`${this.url}repositoryFind`, {
 					params: {
@@ -125,7 +126,8 @@ export class RemoteRepository<T> implements Repository<T> {
 			const headers: any = {};
 			const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 			if (authToken) headers.Authorization = authToken;
-			if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+			if (globalThis.isDebugMode)
+				headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 			axios
 				.get(`${this.url}repositoryFilter`, {
@@ -242,7 +244,8 @@ export class RemoteFunction extends AbstractFunction {
 
 		const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 		if (authToken) headers.Authorization = authToken;
-		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+		if (globalThis.isDebugMode)
+			headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 		let response = await axios.post(
 			`${URL_PREFIX}api/core/function/execute/${this.fd.getNamespace()}/${this.fd.getName()}`,

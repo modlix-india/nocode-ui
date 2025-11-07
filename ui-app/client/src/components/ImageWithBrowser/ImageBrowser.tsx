@@ -56,7 +56,8 @@ export default function ImageBrowser({
 	const headers: any = {
 		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 	};
-	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+	if (globalThis.isDebugMode)
+		headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 	const callForFiles = useCallback(() => {
 		setInProgress(true);

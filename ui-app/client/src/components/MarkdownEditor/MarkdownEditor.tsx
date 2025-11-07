@@ -398,13 +398,13 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 					onBlur={
 						onBlur
 							? () =>
-								runEvent(
-									undefined,
-									onBlur,
-									props.context.pageName,
-									props.locationHistory,
-									props.pageDefinition,
-								)
+									runEvent(
+										undefined,
+										onBlur,
+										props.context.pageName,
+										props.locationHistory,
+										props.pageDefinition,
+									)
 							: undefined
 					}
 					onChange={ev => onChangeText(ev.target.value)}
@@ -441,7 +441,9 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 									[],
 								),
 							};
-							if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+							if (globalThis.isDebugMode)
+								headers['x-debug'] =
+									(globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 							(async () => {
 								try {
@@ -463,7 +465,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 											),
 										);
 									}
-								} catch (e) { }
+								} catch (e) {}
 							})();
 						} else {
 							const paste = ev.clipboardData.getData('text');
