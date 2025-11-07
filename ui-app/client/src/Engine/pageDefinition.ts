@@ -4,7 +4,7 @@ import { shortUUID } from '../util/shortUUID';
 
 export default async function getPageDefinition(pageName: string, appCode?: string, clientCode?: string): Promise<PageDefinition> {
 	const axiosConfig: AxiosRequestConfig<any> = { headers: {} };
-	if (globalThis.isDebugMode) axiosConfig.headers!['x-debug'] = shortUUID();
+	if (globalThis.isDebugMode) axiosConfig.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 
 	const authToken = localStorage.getItem(
 		globalThis.isDesignMode ? 'designMode_AuthToken' : 'AuthToken',

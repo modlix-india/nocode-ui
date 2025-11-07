@@ -16,7 +16,8 @@ async function secureSource(src: string) {
 	const headers: any = {
 		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 	};
-	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+	if (globalThis.isDebugMode)
+		headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 	return await axios
 		.get(src, { responseType: 'blob', headers })
@@ -62,7 +63,7 @@ function Iframe(props: Readonly<ComponentProps>) {
 				new URL(src, window.location.origin);
 				shouldRenderIframe = true;
 			}
-		} catch (err) { }
+		} catch (err) {}
 	} else shouldRenderIframe = true;
 
 	const [actualSrc, setActualSrc] = useState<string | undefined>();

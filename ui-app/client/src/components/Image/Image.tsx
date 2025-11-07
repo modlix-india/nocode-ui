@@ -26,7 +26,8 @@ async function secureImage(src: string) {
 	const headers: any = {
 		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 	};
-	if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+	if (globalThis.isDebugMode)
+		headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 	return await axios
 		.get(src, { responseType: 'blob', headers })
@@ -210,7 +211,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		if (enhancementType === 'zoomPreview' || enhancementType === 'magnification') {
 			const touch = e.touches[0];
 			if (!touch) return;
-			
+
 			const { left, top, width, height } = containerRef.current?.getBoundingClientRect() || {
 				left: 0,
 				top: 0,
@@ -306,9 +307,15 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 				let newPosition;
 
 				if (sliderOrientation === 'vertical') {
-					newPosition = Math.min(100, Math.max(0, ((touch.clientY - top) / height) * 100));
+					newPosition = Math.min(
+						100,
+						Math.max(0, ((touch.clientY - top) / height) * 100),
+					);
 				} else {
-					newPosition = Math.min(100, Math.max(0, ((touch.clientX - left) / width) * 100));
+					newPosition = Math.min(
+						100,
+						Math.max(0, ((touch.clientX - left) / width) * 100),
+					);
 				}
 
 				setSliderPosition(newPosition);

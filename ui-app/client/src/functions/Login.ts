@@ -64,7 +64,7 @@ export class Login extends AbstractFunction {
 		if (pin) data.pin = pin;
 
 		const headers: any = {};
-		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+		if (globalThis.isDebugMode) headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 
 		try {
 			const response = await axios({

@@ -89,7 +89,7 @@ export class DeleteData extends AbstractFunction {
 				return a;
 			}, {});
 
-		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+		if (globalThis.isDebugMode) headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 		try {
 			const response = await axios({
 				url: pathFromParams(url, pathParams),

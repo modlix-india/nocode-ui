@@ -133,7 +133,7 @@ export class SendData extends AbstractFunction {
 			headers['content-type'] = 'multipart/form-data';
 		}
 
-		if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+		if (globalThis.isDebugMode) headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 
 		try {
 			const options: AxiosRequestConfig<any> = {
