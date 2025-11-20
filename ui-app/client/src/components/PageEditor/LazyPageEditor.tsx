@@ -28,6 +28,8 @@ import {
 } from './functions/PageOperations';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
 import { performanceMonitor } from './util/performanceMonitor';
+import { updateMultipleComponentsInPageDefinition } from './util/targetedPageUpdate';
+import { messageThrottler } from './util/messageThrottler';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -325,20 +327,49 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			const def = ComponentDefinitions.get(pageDef.componentDefinition[v].type);
 			if (!def?.needShowInDesginMode) return;
 
-			pageDef = duplicate(pageDef);
+			// Find components that need updates (those with showInDesign or the selected one)
+			const componentsToUpdate: Array<{
+				componentKey: string;
+				updater: (componentDef: any) => void;
+			}> = [];
 
+			// Find all components that currently have showInDesign
 			Object.values(pageDef.componentDefinition).forEach(e => {
 				if (e.key === v) {
-					if (!e.properties) e.properties = {};
-					e.properties.showInDesign = { value: true };
+					// Add selected component to set showInDesign
+					componentsToUpdate.push({
+						componentKey: e.key,
+						updater: componentDef => {
+							if (!componentDef.properties) componentDef.properties = {};
+							componentDef.properties.showInDesign = { value: true };
+						},
+					});
 				} else if (e.properties?.showInDesign) {
-					delete e.properties.showInDesign;
+					// Add components that need showInDesign removed
+					componentsToUpdate.push({
+						componentKey: e.key,
+						updater: componentDef => {
+							if (componentDef.properties?.showInDesign) {
+								delete componentDef.properties.showInDesign;
+							}
+						},
+					});
 				}
 			});
 
-			setData(defPath, pageDef, pageExtractor.getPageName());
+			// Use targeted update instead of full clone for better performance
+			if (componentsToUpdate.length > 0) {
+				pageDef = updateMultipleComponentsInPageDefinition(pageDef, componentsToUpdate);
+				setData(defPath, pageDef, pageExtractor.getPageName());
+			}
 		},
-		[setSelectedComponentOriginal, setSelectedSubComponentOriginal, defPath],
+		[
+			setSelectedComponentOriginal,
+			setSelectedSubComponentOriginal,
+			defPath,
+			locationHistory,
+			pageExtractor,
+		],
 	);
 
 	const setSelectedComponentList = useCallback(
@@ -406,22 +437,27 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
 				performanceMonitor.trackStoreUpdate();
-				const msg = {
-					type: 'EDITOR_DEFINITION',
-					payload,
-				};
 				// Measure postMessage payload size
 				performanceMonitor.measurePostMessage('EDITOR_DEFINITION', payload, 'desktop');
 				performanceMonitor.measurePostMessage('EDITOR_DEFINITION', payload, 'tablet');
 				performanceMonitor.measurePostMessage('EDITOR_DEFINITION', payload, 'mobile');
-				desktopRef.current?.contentWindow?.postMessage(msg);
-				tabletRef.current?.contentWindow?.postMessage(msg);
-				mobileRef.current?.contentWindow?.postMessage(msg);
+				// Use throttled message sending instead of direct postMessage
+				messageThrottler.scheduleMessage(
+					'EDITOR_DEFINITION',
+					'EDITOR_DEFINITION',
+					payload,
+					['desktop', 'tablet', 'mobile'],
+					() => ({
+						desktop: desktopRef.current,
+						tablet: tabletRef.current,
+						mobile: mobileRef.current,
+					}),
+				);
 			},
 			pageExtractor,
 			defPath,
 		);
-	}, [defPath, desktopRef.current, tabletRef.current, mobileRef.current]);
+	}, [defPath]);
 
 	// On changing the personalization, this effect sends to the iframe/slave.
 	useEffect(() => {
@@ -429,22 +465,27 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
 				performanceMonitor.trackStoreUpdate();
-				const msg = {
-					type: 'EDITOR_PERSONALIZATION',
-					payload,
-				};
 				// Measure postMessage payload size
 				performanceMonitor.measurePostMessage('EDITOR_PERSONALIZATION', payload, 'desktop');
 				performanceMonitor.measurePostMessage('EDITOR_PERSONALIZATION', payload, 'tablet');
 				performanceMonitor.measurePostMessage('EDITOR_PERSONALIZATION', payload, 'mobile');
-				desktopRef.current?.contentWindow?.postMessage(msg);
-				tabletRef.current?.contentWindow?.postMessage(msg);
-				mobileRef.current?.contentWindow?.postMessage(msg);
+				// Use throttled message sending instead of direct postMessage
+				messageThrottler.scheduleMessage(
+					'EDITOR_PERSONALIZATION',
+					'EDITOR_PERSONALIZATION',
+					payload,
+					['desktop', 'tablet', 'mobile'],
+					() => ({
+						desktop: desktopRef.current,
+						tablet: tabletRef.current,
+						mobile: mobileRef.current,
+					}),
+				);
 			},
 			pageExtractor,
 			personalizationPath,
 		);
-	}, [personalizationPath, desktopRef.current, tabletRef.current, mobileRef.current]);
+	}, [personalizationPath]);
 
 	// On app def change message to component template iframe.
 	useEffect(() => {
@@ -453,11 +494,16 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			(_, payload) => {
 				if (!templateIFrame) return;
 
-				const msg = {
-					type: 'EDITOR_APP_DEFINITION',
+				// Use throttled message sending for template iframe
+				messageThrottler.scheduleMessage(
+					'EDITOR_APP_DEFINITION',
+					'EDITOR_APP_DEFINITION',
 					payload,
-				};
-				templateIFrame.contentWindow?.postMessage(msg);
+					['template'],
+					() => ({
+						template: templateIFrame,
+					}),
+				);
 			},
 			pageExtractor,
 			appPath,
@@ -468,11 +514,16 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					(_, payload) => {
 						if (!templateIFrame) return;
 
-						const msg = {
-							type: 'EDITOR_APP_THEME',
+						// Use throttled message sending for template iframe
+						messageThrottler.scheduleMessage(
+							'EDITOR_APP_THEME',
+							'EDITOR_APP_THEME',
 							payload,
-						};
-						templateIFrame.contentWindow?.postMessage(msg);
+							['template'],
+							() => ({
+								template: templateIFrame,
+							}),
+						);
 					},
 					pageExtractor,
 					themePath,
@@ -522,21 +573,37 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!defPath) return;
 
-		const msg = { type: 'EDITOR_SELECTION', payload: selectedComponentsList };
-		desktopRef.current?.contentWindow?.postMessage(msg);
-		tabletRef.current?.contentWindow?.postMessage(msg);
-		mobileRef.current?.contentWindow?.postMessage(msg);
-	}, [selectedComponentsList, desktopRef.current, tabletRef.current, mobileRef.current]);
+		// Selection changes are small payloads, but still throttle for rapid updates
+		messageThrottler.scheduleMessage(
+			'EDITOR_SELECTION',
+			'EDITOR_SELECTION',
+			selectedComponentsList,
+			['desktop', 'tablet', 'mobile'],
+			() => ({
+				desktop: desktopRef.current,
+				tablet: tabletRef.current,
+				mobile: mobileRef.current,
+			}),
+		);
+	}, [selectedComponentsList]);
 
 	// On changing the sub selection, this effect sends to the iframe/slave.
 	useEffect(() => {
 		if (!defPath) return;
 
-		const msg = { type: 'EDITOR_SUB_SELECTION', payload: selectedSubComponent };
-		desktopRef.current?.contentWindow?.postMessage(msg);
-		tabletRef.current?.contentWindow?.postMessage(msg);
-		mobileRef.current?.contentWindow?.postMessage(msg);
-	}, [selectedSubComponent, desktopRef.current, tabletRef.current, mobileRef.current]);
+		// Sub-selection changes are small payloads, but still throttle for rapid updates
+		messageThrottler.scheduleMessage(
+			'EDITOR_SUB_SELECTION',
+			'EDITOR_SUB_SELECTION',
+			selectedSubComponent,
+			['desktop', 'tablet', 'mobile'],
+			() => ({
+				desktop: desktopRef.current,
+				tablet: tabletRef.current,
+				mobile: mobileRef.current,
+			}),
+		);
+	}, [selectedSubComponent]);
 
 	// The type of the editor should be sent to iframe/slave.
 	useEffect(() => {
@@ -648,6 +715,18 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		}, 5000); // Check every 5 seconds
 
 		return () => clearInterval(interval);
+	}, []);
+
+	// Cleanup: Flush all pending messages on unmount
+	useEffect(() => {
+		return () => {
+			messageThrottler.flushAll(() => ({
+				desktop: desktopRef.current,
+				tablet: tabletRef.current,
+				mobile: mobileRef.current,
+				template: templateIFrame,
+			}));
+		};
 	}, []);
 
 	const storePaths = useMemo<Set<string>>(
