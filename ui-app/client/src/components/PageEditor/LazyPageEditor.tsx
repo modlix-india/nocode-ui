@@ -406,10 +406,11 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 	const [styleSelectorPref, setStyleSelectorPref] = useState<any>({});
 
-	// Creating an object to manage the changes because of various operations like drag and drop.
-	const operations = useMemo(
-		() =>
-			new PageOperations(
+	// Create PageOperations once and update it via methods to avoid recreation
+	const operationsRef = useRef<PageOperations | null>(null);
+	const operations = useMemo(() => {
+		if (!operationsRef.current) {
+			operationsRef.current = new PageOperations(
 				defPath,
 				locationHistory,
 				pageExtractor,
@@ -419,18 +420,29 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				key => setSelectedComponent(key),
 				styleSelectorPref,
 				editorType,
-			),
-		[
-			defPath,
-			locationHistory,
-			pageExtractor,
-			selectedComponent,
-			setIssue,
-			setSelectedComponent,
-			styleSelectorPref,
-			selectedSubComponent,
-		],
-	);
+			);
+		}
+		return operationsRef.current;
+	}, [defPath, locationHistory, pageExtractor, setIssue, editorType]); // Only recreate if these change
+
+	// Update PageOperations when frequently changing values change
+	useEffect(() => {
+		if (operationsRef.current) {
+			operationsRef.current.updateSelectedComponent(selectedComponent);
+		}
+	}, [selectedComponent]);
+
+	useEffect(() => {
+		if (operationsRef.current) {
+			operationsRef.current.updateSelectedSubComponent(selectedSubComponent);
+		}
+	}, [selectedSubComponent]);
+
+	useEffect(() => {
+		if (operationsRef.current) {
+			operationsRef.current.updateStyleSelectorPref(styleSelectorPref);
+		}
+	}, [styleSelectorPref]);
 
 	useEffect(() => {
 		if (!defPath) return;
@@ -606,31 +618,56 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	}, [selectedSubComponent]);
 
 	// The type of the editor should be sent to iframe/slave.
+	// Use a single effect that runs when iframes are ready (refs don't need to be dependencies)
 	useEffect(() => {
-		desktopRef.current?.contentWindow?.postMessage({
-			type: 'EDITOR_TYPE',
-			payload: { type: 'PAGE', screenType: 'desktop' },
-		});
-	}, [desktopRef.current]);
+		// Small delay to ensure iframes are loaded
+		const timer = setTimeout(() => {
+			desktopRef.current?.contentWindow?.postMessage({
+				type: 'EDITOR_TYPE',
+				payload: { type: 'PAGE', screenType: 'desktop' },
+			});
+			tabletRef.current?.contentWindow?.postMessage({
+				type: 'EDITOR_TYPE',
+				payload: { type: 'PAGE', screenType: 'tablet' },
+			});
+			mobileRef.current?.contentWindow?.postMessage({
+				type: 'EDITOR_TYPE',
+				payload: { type: 'PAGE', screenType: 'mobile' },
+			});
+		}, 100);
 
-	useEffect(() => {
-		tabletRef.current?.contentWindow?.postMessage({
-			type: 'EDITOR_TYPE',
-			payload: { type: 'PAGE', screenType: 'tablet' },
-		});
-	}, [tabletRef.current]);
-
-	useEffect(() => {
-		mobileRef.current?.contentWindow?.postMessage({
-			type: 'EDITOR_TYPE',
-			payload: { type: 'PAGE', screenType: 'mobile' },
-		});
-	}, [mobileRef.current]);
+		return () => clearTimeout(timer);
+	}, []); // Empty deps - only run once on mount
 
 	// This will be used to store slave store.
 	const [slaveStore, setSlaveStore] = useState<any>(undefined);
 
 	// Effect to listen to all the messages from the iframe/slave of the page iframes.
+	// Use refs to avoid recreating listener on every render
+	const editPageDefinitionRef = useRef(editPageDefinition);
+	const defPathRef = useRef(defPath);
+	const personalizationRef = useRef(personalization);
+	const personalizationPathRef = useRef(personalizationPath);
+	const selectedComponentRef = useRef(selectedComponent);
+	const styleSelectorPrefRef = useRef(styleSelectorPref);
+
+	// Update refs when values change
+	useEffect(() => {
+		editPageDefinitionRef.current = editPageDefinition;
+		defPathRef.current = defPath;
+		personalizationRef.current = personalization;
+		personalizationPathRef.current = personalizationPath;
+		selectedComponentRef.current = selectedComponent;
+		styleSelectorPrefRef.current = styleSelectorPref;
+	}, [
+		editPageDefinition,
+		defPath,
+		personalization,
+		personalizationPath,
+		selectedComponent,
+		styleSelectorPref,
+	]);
+
 	useEffect(() => {
 		function onMessageFromSlave(e: any) {
 			const {
@@ -642,23 +679,24 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 			if (editorType && editorType !== 'PAGE') return;
 
+			// Use refs to get current values without recreating listener
 			MASTER_FUNCTIONS.get(type)?.(
 				{
 					screenType,
 					desktopIframe: desktopRef.current,
 					tabletIframe: tabletRef.current,
 					mobileIframe: mobileRef.current,
-					editPageDefinition,
-					defPath,
-					personalization,
-					personalizationPath,
-					selectedComponent,
-					styleSelectorPref,
+					editPageDefinition: editPageDefinitionRef.current,
+					defPath: defPathRef.current,
+					personalization: personalizationRef.current,
+					personalizationPath: personalizationPathRef.current,
+					selectedComponent: selectedComponentRef.current,
+					styleSelectorPref: styleSelectorPrefRef.current,
 					setStyleSelectorPref: setStyleSelectorPref,
 					onSelectedComponentChange: (key, multi) =>
 						multi ? setSelectedComponentList(key) : setSelectedComponent(key),
 					onSelectedSubComponentChange: key => setSelectedSubComponent(key),
-					operations,
+					operations: operationsRef.current!,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
 					onSlaveStore: (store: any) => {
 						setSlaveStore({
@@ -687,20 +725,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 		window.addEventListener('message', onMessageFromSlave);
 		return () => window.removeEventListener('message', onMessageFromSlave);
-	}, [
-		desktopRef.current,
-		tabletRef.current,
-		mobileRef.current,
-		editPageDefinition,
-		defPath,
-		personalization,
-		personalizationPath,
-		setSelectedComponent,
-		operations,
-		setSelectedSubComponent,
-		setContextMenu,
-		setSlaveStore,
-	]);
+	}, []); // Empty deps - listener uses refs for current values
 
 	const undoStackRef = useRef<Array<PageDefinition>>([]);
 	const redoStackRef = useRef<Array<PageDefinition>>([]);

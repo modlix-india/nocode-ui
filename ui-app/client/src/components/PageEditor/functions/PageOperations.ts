@@ -71,6 +71,27 @@ export class PageOperations {
 		this.setIssue(issue);
 	}
 
+	/**
+	 * Update selected component without recreating instance
+	 */
+	public updateSelectedComponent(selectedComponent: string | undefined): void {
+		this.selectedComponent = selectedComponent;
+	}
+
+	/**
+	 * Update selected sub component without recreating instance
+	 */
+	public updateSelectedSubComponent(selectedSubComponent: string | undefined): void {
+		this.selectedSubComponent = selectedSubComponent;
+	}
+
+	/**
+	 * Update style selector preferences without recreating instance
+	 */
+	public updateStyleSelectorPref(styleSelectorPref: any): void {
+		this.styleSelectorPref = styleSelectorPref;
+	}
+
 	public getComponentDefinition(componentKey: string): ComponentDefinition | undefined {
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
