@@ -86,6 +86,59 @@ function removeExcessPages(pid: string) {
 	if (remKeys.length > 10) remKeys.forEach(k => window.localStorage.removeItem(k));
 }
 
+// Debounce timers and pending values for pgdef_ localStorage writes
+const pgdefDebounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const pendingPgdefValues = new Map<string, { key: string; value: string }>();
+
+// Debounced localStorage.setItem for pgdef_ entries
+function debouncedPgdefSetItem(pageId: string, pageDef: PageDefinition) {
+	const timestamp = Date.now();
+	const key = `pgdef_${pageId}_${timestamp}`;
+	const value = JSON.stringify(pageDef);
+
+	// Store the latest value for this pageId (we only need the latest)
+	pendingPgdefValues.set(pageId, { key, value });
+
+	// Clear existing timer for this pageId
+	if (pgdefDebounceTimers.has(pageId)) {
+		clearTimeout(pgdefDebounceTimers.get(pageId)!);
+	}
+
+	// Set new timer to debounce the actual localStorage.setItem call
+	pgdefDebounceTimers.set(
+		pageId,
+		setTimeout(() => {
+			const pending = pendingPgdefValues.get(pageId);
+			if (pending) {
+				try {
+					window.localStorage.setItem(pending.key, pending.value);
+				} catch (error) {
+					// If quota exceeded, try to clear old entries and retry
+					if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+						console.warn(
+							'localStorage quota exceeded for pgdef, attempting cleanup...',
+						);
+						removeExcessPages(pageId);
+						// Retry after cleanup
+						try {
+							window.localStorage.setItem(pending.key, pending.value);
+						} catch (retryError) {
+							console.error(
+								'Failed to save pgdef to localStorage after cleanup:',
+								retryError,
+							);
+						}
+					} else {
+						throw error;
+					}
+				}
+				pendingPgdefValues.delete(pageId);
+			}
+			pgdefDebounceTimers.delete(pageId);
+		}, 300), // 300ms debounce for localStorage writes
+	);
+}
+
 export default function DnDTopBar({
 	theme,
 	personalizationPath,
@@ -133,7 +186,7 @@ export default function DnDTopBar({
 	const [selectedPage, setSelectedPage] = React.useState('');
 	const location = useLocation();
 	const svgLogo = logo ? <img className="_logo" alt="logo" src={getSrcUrl(logo)} /> : undefined;
-	
+
 	// Create undo/redo manager with size limits (persist across renders)
 	const undoRedoManagerRef = useRef<UndoRedoManager | null>(null);
 	if (!undoRedoManagerRef.current) {
@@ -170,7 +223,7 @@ export default function DnDTopBar({
 				const previousState =
 					undoStackRef.current.length > 0
 						? undoStackRef.current[undoStackRef.current.length - 1]
-						: firstTimeRef.current[0] ?? null;
+						: (firstTimeRef.current[0] ?? null);
 
 				if (previousState && deepEqual(v, previousState)) return;
 
@@ -189,31 +242,22 @@ export default function DnDTopBar({
 				removeExcessPages(v.id);
 
 				// Use manager to push state (with async persistence)
-				undoRedoManager.pushState(
-					v,
-					previousState ?? undefined,
-					entry => {
-						// Async persistence to localStorage
-						if ('requestIdleCallback' in window) {
-							requestIdleCallback(
-								() => {
-									window.localStorage.setItem(
-										`pgdef_${v.id}_${Date.now()}`,
-										JSON.stringify(v),
-									);
-								},
-								{ timeout: 2000 },
-							);
-						} else {
-							setTimeout(() => {
-								window.localStorage.setItem(
-									`pgdef_${v.id}_${Date.now()}`,
-									JSON.stringify(v),
-								);
-							}, 0);
-						}
-					},
-				);
+				undoRedoManager.pushState(v, previousState ?? undefined, entry => {
+					// Async persistence to localStorage with debouncing
+					// Use requestIdleCallback or setTimeout to defer, then debounce the actual write
+					if ('requestIdleCallback' in window) {
+						requestIdleCallback(
+							() => {
+								debouncedPgdefSetItem(v.id, v);
+							},
+							{ timeout: 2000 },
+						);
+					} else {
+						setTimeout(() => {
+							debouncedPgdefSetItem(v.id, v);
+						}, 0);
+					}
+				});
 
 				// Sync refs for backward compatibility (simplified - just track count)
 				// The actual state is in the manager
@@ -677,7 +721,7 @@ export default function DnDTopBar({
 
 	const handleUndo = () => {
 		if (!undoRedoManager.canUndo() || !defPath) return;
-		
+
 		const pg = undoRedoManager.undo();
 		if (!pg) return;
 
@@ -700,7 +744,7 @@ export default function DnDTopBar({
 
 	const handleRedo = () => {
 		if (!undoRedoManager.canRedo() || !defPath) return;
-		
+
 		const pg = undoRedoManager.redo();
 		if (!pg) return;
 

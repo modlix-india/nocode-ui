@@ -467,6 +467,7 @@ export function valuesChangedOnlyValues({
 		compDef.styleProperties = updatedStyle;
 	}
 
+	// setData is called immediately - localStorage.setItem is debounced at the StoreContext level
 	setData(defPath, pageDef, pageExtractor.getPageName());
 }
 
