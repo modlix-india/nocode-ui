@@ -46,7 +46,7 @@ export class Logout extends AbstractFunction {
 			setData('Store.functionExecutions', {});
 
 			const headers: any = { AUTHORIZATION: token };
-			if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+			if (globalThis.isDebugMode) headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 
 			const ssoLogout: boolean = context.getArguments()?.get('ssoLogout');
 
