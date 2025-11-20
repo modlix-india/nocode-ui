@@ -236,7 +236,12 @@ const FlexDirectionOptions = [
 		description: 'Row (left to right)',
 		icon: (
 			<g transform="translate(2 2)">
-				<path d="M4 12h16M4 12l4-4m-4 4l4 4" stroke="currentColor" strokeWidth="2" fill="none" />
+				<path
+					d="M4 12h16M4 12l4-4m-4 4l4 4"
+					stroke="currentColor"
+					strokeWidth="2"
+					fill="none"
+				/>
 			</g>
 		),
 	},
@@ -245,7 +250,12 @@ const FlexDirectionOptions = [
 		description: 'Row Reverse (right to left)',
 		icon: (
 			<g transform="translate(2 2)">
-				<path d="M20 12H4m16 0l-4-4m4 4l-6 6" stroke="currentColor" strokeWidth="2" fill="none" />
+				<path
+					d="M20 12H4m16 0l-4-4m4 4l-6 6"
+					stroke="currentColor"
+					strokeWidth="2"
+					fill="none"
+				/>
 			</g>
 		),
 	},
@@ -254,7 +264,12 @@ const FlexDirectionOptions = [
 		description: 'Column (top to bottom)',
 		icon: (
 			<g transform="translate(2 2)">
-				<path d="M12 4v16m0-16l-4 4m4-4l4 4" stroke="currentColor" strokeWidth="2" fill="none" />
+				<path
+					d="M12 4v16m0-16l-4 4m4-4l4 4"
+					stroke="currentColor"
+					strokeWidth="2"
+					fill="none"
+				/>
 			</g>
 		),
 	},
@@ -263,7 +278,12 @@ const FlexDirectionOptions = [
 		description: 'Column Reverse (bottom to top)',
 		icon: (
 			<g transform="translate(2 2)">
-				<path d="M12 20V4m0 16l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" fill="none" />
+				<path
+					d="M12 20V4m0 16l-4-4m4 4l4-4"
+					stroke="currentColor"
+					strokeWidth="2"
+					fill="none"
+				/>
 			</g>
 		),
 	},
@@ -275,8 +295,24 @@ const FlexWrapOptions = [
 		name: 'nowrap',
 		description: 'No Wrap: All flex items will be on one line',
 		icon: (
-			<g transform="translate(4 4)">
-				<path d="M3 5h18v2H3V5zm0 6h18v2H3v-2zm0 6h18v2H3v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g id="Group_77" data-name="Group 77" transform="translate(10 10)">
+				<path
+					id="Path_178"
+					data-name="Path 178"
+					d="M4.963,0a1,1,0,0,0,.029,2H7.005a3,3,0,1,1,0,6.006h-3l1.6-1.2a1,1,0,1,0-1.2-1.6L.4,8.207a1,1,0,0,0,0,1.6l4,3a1,1,0,0,0,1.2-1.6l-1.595-1.2h2.99A5,5,0,1,0,7.005,0H4.963Z"
+					fill="currentColor"
+					fillRule="evenodd"
+					strokeWidth={0}
+				/>
+				<path
+					id="Path_179"
+					data-name="Path 179"
+					d="M1,1,12,12"
+					fill="none"
+					stroke="#3a8bed"
+					strokeLinecap="round"
+					strokeWidth="2"
+				/>
 			</g>
 		),
 	},
@@ -284,8 +320,15 @@ const FlexWrapOptions = [
 		name: 'wrap',
 		description: 'Wrap: Flex items will wrap onto multiple lines, from top to bottom',
 		icon: (
-			<g transform="translate(4 4)">
-				<path d="M3 5h18v2H3V5zm0 6h10v2H3v-2zm12 0h6v2h-6v-2zm-12 6h8v2H3v-2zm10 0h8v2h-8v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g id="Group_77" data-name="Group 77" transform="translate(10 10)">
+				<path
+					id="Path_178"
+					data-name="Path 178"
+					d="M4.963,0a1,1,0,0,0,.029,2H7.005a3,3,0,1,1,0,6.006h-3l1.6-1.2a1,1,0,1,0-1.2-1.6L.4,8.207a1,1,0,0,0,0,1.6l4,3a1,1,0,0,0,1.2-1.6l-1.595-1.2h2.99A5,5,0,1,0,7.005,0H4.963Z"
+					fill="currentColor"
+					fillRule="evenodd"
+					strokeWidth={0}
+				/>
 			</g>
 		),
 	},
@@ -293,66 +336,16 @@ const FlexWrapOptions = [
 		name: 'wrap-reverse',
 		description: 'Wrap Reverse: Flex items will wrap onto multiple lines from bottom to top',
 		icon: (
-			<g transform="translate(4 4)">
-				<path d="M3 19h18v-2H3v2zm0-6h10v-2H3v2zm12 0h6v-2h-6v2zm-12-6h8V5H3v2zm10 0h8V5h-8v2z" stroke="currentColor" strokeWidth="2" fill="none" />
-			</g>
-		),
-	},
-];
-
-// Justify Content Options
-const JustifyContentOptions = [
-	{
-		name: 'flex-start',
-		description: 'Flex Start',
-		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 6h16v2H2V6zm0 6h10v2H2v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
-			</g>
-		),
-	},
-	{
-		name: 'flex-end',
-		description: 'Flex End',
-		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 6h16v2H2V6zm8 6h10v2H10v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
-			</g>
-		),
-	},
-	{
-		name: 'center',
-		description: 'Center',
-		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 6h16v2H2V6zm4 6h10v2H6v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
-			</g>
-		),
-	},
-	{
-		name: 'space-between',
-		description: 'Space Between',
-		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 6h6v2H2V6zm6 0h6v2H8V6zm6 0h6v2h-6V6zm-12 6h6v2H2v-2zm6 0h6v2H8v-2zm6 0h6v2h-6v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
-			</g>
-		),
-	},
-	{
-		name: 'space-around',
-		description: 'Space Around',
-		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 6h4v2H2V6zm6 0h4v2H8V6zm6 0h4v2h-4V6zm-12 6h4v2H2v-2zm6 0h4v2H8v-2zm6 0h4v2h-4v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
-			</g>
-		),
-	},
-	{
-		name: 'space-evenly',
-		description: 'Space Evenly',
-		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 6h3v2H2V6zm5 0h3v2H7V6zm5 0h3v2h-3V6zm5 0h3v2h-3V6zm-15 6h3v2H2v-2zm5 0h3v2H7v-2zm5 0h3v2h-3v-2zm5 0h3v2h-3v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g id="Group_77" data-name="Group 77" transform="translate(20 20)">
+				<path
+					id="Path_178"
+					data-name="Path 178"
+					d="M4.963,0a1,1,0,0,0,.029,2H7.005a3,3,0,1,1,0,6.006h-3l1.6-1.2a1,1,0,1,0-1.2-1.6L.4,8.207a1,1,0,0,0,0,1.6l4,3a1,1,0,0,0,1.2-1.6l-1.595-1.2h2.99A5,5,0,1,0,7.005,0H4.963Z"
+					fill="currentColor"
+					fillRule="evenodd"
+					strokeWidth={0}
+					transform="rotate(180)"
+				/>
 			</g>
 		),
 	},
@@ -361,29 +354,75 @@ const JustifyContentOptions = [
 // Align Items Options
 const AlignItemsOptions = [
 	{
-		name: 'flex-start',
-		description: 'Flex Start',
-		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 4h10v2H8V6zm0 6h10v2H8v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
-			</g>
-		),
-	},
-	{
-		name: 'flex-end',
-		description: 'Flex End',
-		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 10h10v2H8v-2zm0-6h10v2H8V6z" stroke="currentColor" strokeWidth="2" fill="none" />
-			</g>
-		),
-	},
-	{
 		name: 'center',
 		description: 'Center',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 5h10v2H8V7zm0 6h10v2H8v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect x="10" y="6" width="4" height="20" rx="2" fill="currentColor" />
+				<rect
+					x="26"
+					y="15"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(90 26 15)"
+					fill="currentColor"
+				/>
+				<rect x="18" y="9" width="4" height="14" rx="2" fill="currentColor" />
+			</g>
+		),
+	},
+	{
+		name: 'start',
+		description: 'Start',
+		icon: (
+			<g>
+				<rect x="10" y="12" width="4" height="14" rx="2" fill="currentColor" />
+				<rect
+					x="26"
+					y="7"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(90 26 7)"
+					fill="currentColor"
+				/>
+				<rect x="18" y="12" width="4" height="10" rx="2" fill="currentColor" />
+			</g>
+		),
+	},
+	{
+		name: 'end',
+		description: 'End',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="20"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 22 20)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="25"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="20"
+					width="4"
+					height="10"
+					rx="2"
+					transform="rotate(180 14 20)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
@@ -391,30 +430,88 @@ const AlignItemsOptions = [
 		name: 'stretch',
 		description: 'Stretch',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 4h10v10H8V6z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="22"
+					y="23"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 22 23)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="28"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 28)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="6"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 6)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="23"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 14 23)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
 	{
-		name: 'baseline',
-		description: 'Baseline',
+		name: 'normal',
+		description: 'Normal',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 7h10M8 7v2m10-2v2zm0 4h-10" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="22"
+					y="24"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 22 24)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="24"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 14 24)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
-];
-
-// Align Content Options (for flex wrap)
-const AlignContentOptions = [
 	{
 		name: 'flex-start',
 		description: 'Flex Start',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 2h10v2H8V4zm0 6h10v2H8v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect x="10" y="12" width="4" height="14" rx="2" fill="currentColor" />
+				<rect
+					x="26"
+					y="7"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(90 26 7)"
+					fill="currentColor"
+				/>
+				<rect x="18" y="12" width="4" height="10" rx="2" fill="currentColor" />
 			</g>
 		),
 	},
@@ -422,17 +519,245 @@ const AlignContentOptions = [
 		name: 'flex-end',
 		description: 'Flex End',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 10h10v2H8v-2zm0-6h10v2H8V4z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="22"
+					y="20"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 22 20)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="25"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="20"
+					width="4"
+					height="10"
+					rx="2"
+					transform="rotate(180 14 20)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
 	{
+		name: 'self-start',
+		description: 'Self Start',
+		icon: (
+			<g>
+				<rect x="10" y="12" width="4" height="14" rx="2" fill="currentColor" />
+				<rect
+					x="26"
+					y="7"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(90 26 7)"
+					fill="currentColor"
+				/>
+				<rect x="18" y="12" width="4" height="10" rx="2" fill="currentColor" />
+			</g>
+		),
+	},
+	{
+		name: 'self-end',
+		description: 'Self End',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="20"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 22 20)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="25"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="20"
+					width="4"
+					height="10"
+					rx="2"
+					transform="rotate(180 14 20)"
+					fill="currentColor"
+				/>
+			</g>
+		),
+	},
+
+	{
+		name: 'baseline',
+		description: 'Baseline',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 22 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="25"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="25"
+					width="4"
+					height="12"
+					rx="2"
+					transform="rotate(180 14 25)"
+					fill="currentColor"
+				/>
+			</g>
+		),
+	},
+];
+
+// Justify Content Options
+const JustifyContentOptions = [
+	{
 		name: 'center',
 		description: 'Center',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 4h10v2H8V6zm0 6h10v2H8v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect x="10" y="6" width="4" height="20" rx="2" fill="currentColor" />
+				<rect
+					x="26"
+					y="15"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(90 26 15)"
+					fill="currentColor"
+				/>
+				<rect x="18" y="9" width="4" height="14" rx="2" fill="currentColor" />
+			</g>
+		),
+	},
+	{
+		name: 'start',
+		description: 'Start',
+		icon: (
+			<g>
+				<rect x="10" y="12" width="4" height="14" rx="2" fill="currentColor" />
+				<rect
+					x="26"
+					y="7"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(90 26 7)"
+					fill="currentColor"
+				/>
+				<rect x="18" y="12" width="4" height="10" rx="2" fill="currentColor" />
+			</g>
+		),
+	},
+	{
+		name: 'end',
+		description: 'End',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="20"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 22 20)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="25"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="20"
+					width="4"
+					height="10"
+					rx="2"
+					transform="rotate(180 14 20)"
+					fill="currentColor"
+				/>
+			</g>
+		),
+	},
+	{
+		name: 'stretch',
+		description: 'Stretch',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="23"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 22 23)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="28"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 28)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="6"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 6)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="23"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 14 23)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
@@ -440,26 +765,259 @@ const AlignContentOptions = [
 		name: 'space-between',
 		description: 'Space Between',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 2h4v2H8V4zm6 0h4v2h-4V4zm-12 6h4v2H2v-2zm6 0h4v2H8v-2zm6 0h4v2h-4v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="26"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 26 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="10"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 10 25)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
+
 	{
 		name: 'space-around',
 		description: 'Space Around',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 2h3v2H8V4zm5 0h3v2h-3V4zm-11 6h3v2H2v-2zm5 0h3v2H7v-2zm5 0h3v2h-3v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="24"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 24 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="12"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 12 25)"
+					fill="currentColor"
+				/>
+			</g>
+		),
+	},
+
+	{
+		name: 'space-evenly',
+		description: 'Space Evenly',
+		icon: (
+			<g>
+				<rect
+					x="26"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 26 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="18"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 18 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="10"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 10 25)"
+					fill="currentColor"
+				/>
+			</g>
+		),
+	},
+
+	{
+		name: 'normal',
+		description: 'Normal',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="24"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 22 24)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="24"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 14 24)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
 	{
-		name: 'stretch',
-		description: 'Stretch',
+		name: 'flex-start',
+		description: 'Flex Start',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 2h10v10H8V4z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect x="10" y="12" width="4" height="14" rx="2" fill="currentColor" />
+				<rect
+					x="26"
+					y="7"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(90 26 7)"
+					fill="currentColor"
+				/>
+				<rect x="18" y="12" width="4" height="10" rx="2" fill="currentColor" />
+			</g>
+		),
+	},
+	{
+		name: 'flex-end',
+		description: 'Flex End',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="20"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 22 20)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="25"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="20"
+					width="4"
+					height="10"
+					rx="2"
+					transform="rotate(180 14 20)"
+					fill="currentColor"
+				/>
+			</g>
+		),
+	},
+	{
+		name: 'self-start',
+		description: 'Self Start',
+		icon: (
+			<g>
+				<rect x="10" y="12" width="4" height="14" rx="2" fill="currentColor" />
+				<rect
+					x="26"
+					y="7"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(90 26 7)"
+					fill="currentColor"
+				/>
+				<rect x="18" y="12" width="4" height="10" rx="2" fill="currentColor" />
+			</g>
+		),
+	},
+	{
+		name: 'self-end',
+		description: 'Self End',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="20"
+					width="4"
+					height="14"
+					rx="2"
+					transform="rotate(180 22 20)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="25"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="20"
+					width="4"
+					height="10"
+					rx="2"
+					transform="rotate(180 14 20)"
+					fill="currentColor"
+				/>
+			</g>
+		),
+	},
+
+	{
+		name: 'baseline',
+		description: 'Baseline',
+		icon: (
+			<g>
+				<rect
+					x="22"
+					y="25"
+					width="4"
+					height="16"
+					rx="2"
+					transform="rotate(180 22 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="6"
+					y="25"
+					width="2"
+					height="20"
+					rx="1"
+					transform="rotate(-90 6 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="14"
+					y="25"
+					width="4"
+					height="12"
+					rx="2"
+					transform="rotate(180 14 25)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
@@ -471,8 +1029,70 @@ const GridAutoFlowOptions = [
 		name: 'row',
 		description: 'Row',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2h16v2H2V2zm0 6h16v2H2V8zm0 6h16v2H2v-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="26"
+					y="11"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 26 11)"
+					fill="currentColor"
+				/>
+				<rect
+					x="18"
+					y="11"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 11)"
+					fill="currentColor"
+				/>
+				<rect
+					x="10"
+					y="11"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 10 11)"
+					fill="currentColor"
+				/>
+				<rect
+					x="10"
+					y="25"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 10 25)"
+					fill="currentColor"
+				/>
+				<rect
+					x="26"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 26 18)"
+					fill="currentColor"
+				/>
+				<rect
+					x="18"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 18)"
+					fill="currentColor"
+				/>
+				<rect
+					x="10"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 10 18)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
@@ -480,8 +1100,70 @@ const GridAutoFlowOptions = [
 		name: 'column',
 		description: 'Column',
 		icon: (
-			<g transform="translate(2 2)">
-				<path d="M2 2v16h2V2H2zm6 0v16h2V2H8zm6 0v16h2V2h-2z" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="26"
+					y="11"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 26 11)"
+					fill="black"
+				/>
+				<rect
+					x="18"
+					y="11"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 11)"
+					fill="black"
+				/>
+				<rect
+					x="10"
+					y="11"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 10 11)"
+					fill="black"
+				/>
+				<rect
+					x="10"
+					y="25"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 10 25)"
+					fill="black"
+				/>
+				<rect
+					x="18"
+					y="25"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 25)"
+					fill="black"
+				/>
+				<rect
+					x="18"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 18)"
+					fill="black"
+				/>
+				<rect
+					x="10"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 10 18)"
+					fill="black"
+				/>
 			</g>
 		),
 	},
@@ -489,11 +1171,88 @@ const GridAutoFlowOptions = [
 		name: 'dense',
 		description: 'Dense',
 		icon: (
-			<g transform="translate(2 2)">
-				<rect x="2" y="2" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="10" y="2" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="2" y="10" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="10" y="10" width="6" height="6" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="24"
+					y="24"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 24 24)"
+					fill="currentColor"
+				/>
+				<rect
+					x="24"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 24 18)"
+					fill="currentColor"
+				/>
+				<rect
+					x="24"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 24 12)"
+					fill="currentColor"
+				/>
+				<rect
+					x="12"
+					y="24"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 24)"
+					fill="currentColor"
+				/>
+				<rect
+					x="12"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 18)"
+					fill="currentColor"
+				/>
+				<rect
+					x="12"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 12)"
+					fill="currentColor"
+				/>
+				<rect
+					x="18"
+					y="24"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 24)"
+					fill="currentColor"
+				/>
+				<rect
+					x="18"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 18)"
+					fill="currentColor"
+				/>
+				<rect
+					x="18"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 12)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
@@ -501,11 +1260,70 @@ const GridAutoFlowOptions = [
 		name: 'row dense',
 		description: 'Row Dense',
 		icon: (
-			<g transform="translate(2 2)">
-				<rect x="2" y="2" width="5" height="5" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="9" y="2" width="5" height="5" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="2" y="9" width="5" height="5" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="9" y="9" width="5" height="5" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="24"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 24 18)"
+					fill="currentColor"
+				/>
+				<rect
+					x="24"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 24 12)"
+					fill="currentColor"
+				/>
+				<rect
+					x="12"
+					y="24"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 24)"
+					fill="currentColor"
+				/>
+				<rect
+					x="12"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 18)"
+					fill="currentColor"
+				/>
+				<rect
+					x="12"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 12)"
+					fill="currentColor"
+				/>
+				<rect
+					x="18"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 18)"
+					fill="currentColor"
+				/>
+				<rect
+					x="18"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 12)"
+					fill="currentColor"
+				/>
 			</g>
 		),
 	},
@@ -513,11 +1331,70 @@ const GridAutoFlowOptions = [
 		name: 'column dense',
 		description: 'Column Dense',
 		icon: (
-			<g transform="translate(2 2)">
-				<rect x="2" y="2" width="5" height="5" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="2" y="9" width="5" height="5" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="9" y="2" width="5" height="5" stroke="currentColor" strokeWidth="2" fill="none" />
-				<rect x="9" y="9" width="5" height="5" stroke="currentColor" strokeWidth="2" fill="none" />
+			<g>
+				<rect
+					x="24"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 24 12)"
+					fill="black"
+				/>
+				<rect
+					x="12"
+					y="24"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 24)"
+					fill="black"
+				/>
+				<rect
+					x="12"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 18)"
+					fill="black"
+				/>
+				<rect
+					x="12"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 12 12)"
+					fill="black"
+				/>
+				<rect
+					x="18"
+					y="24"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 24)"
+					fill="black"
+				/>
+				<rect
+					x="18"
+					y="18"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 18)"
+					fill="black"
+				/>
+				<rect
+					x="18"
+					y="12"
+					width="4"
+					height="4"
+					rx="2"
+					transform="rotate(180 18 12)"
+					fill="black"
+				/>
 			</g>
 		),
 	},
@@ -527,17 +1404,26 @@ const GridAutoFlowOptions = [
 const flexRelatedProps = {
 	props: ['flexGrow', 'flexShrink', 'flexBasis', 'flex'],
 	logic: ({ flexGrow, flexShrink, flexBasis, flex }: Record<string, any>) => {
+		if (flex === '1') {
+			return { flexGrow: '1', flexShrink: '1', flexBasis: 'auto', flex: '1' };
+		}
+		if (flex === '2') {
+			return { flexGrow: '2', flexShrink: '2', flexBasis: 'auto', flex: '2' };
+		}
 		if (flex === 'auto') {
 			return { flexGrow: '1', flexShrink: '1', flexBasis: 'auto', flex: 'auto' };
 		}
 		if (flex === 'none') {
 			return { flexGrow: '0', flexShrink: '0', flexBasis: 'auto', flex: 'none' };
 		}
+		if (flex === 'clear') {
+			return { flexGrow: '', flexShrink: '', flexBasis: '', flex: '' };
+		}
 		return {
 			flexGrow,
 			flexShrink,
 			flexBasis,
-			flex: `${flexGrow} ${flexShrink} ${flexBasis}`,
+			flex,
 		};
 	},
 };
@@ -581,7 +1467,8 @@ export function LayoutEditorV2({
 	// Determine if display is grid-based
 	const isGrid = displayValue === 'grid' || displayValue === 'inline-grid';
 	// Determine if display is block-based
-	const isBlock = displayValue === 'block' || displayValue === 'inline-block' || displayValue === 'inline';
+	const isBlock =
+		displayValue === 'block' || displayValue === 'inline-block' || displayValue === 'inline';
 
 	// Helper function to render EachSimpleEditor with common props
 	const renderEditor = (
@@ -634,42 +1521,57 @@ export function LayoutEditorV2({
 			{/* Flex-specific controls */}
 			{isFlex && (
 				<>
-					<div className="_simpleLabel">Flex Container</div>
+					<div className="_simpleLabel _withPadding">Flex Container</div>
 
 					{/* Flex Direction */}
 					<div className="_combineEditors">
 						<div className="_simpleLabel">Direction</div>
-						{renderEditor('flexDirection', {
-							type: SimpleEditorType.Icons,
-							withBackground: true,
-							visibleIconCount: 4,
-							Options: FlexDirectionOptions,
-						}, { relatedProps: flexFlowRelatedProps })}
+						{renderEditor(
+							'flexDirection',
+							{
+								type: SimpleEditorType.Icons,
+								withBackground: true,
+								visibleIconCount: 4,
+								Options: FlexDirectionOptions,
+							},
+							{ relatedProps: flexFlowRelatedProps },
+						)}
 					</div>
 
 					{/* Flex Wrap */}
 					<div className="_combineEditors">
 						<div className="_simpleLabel">Wrap</div>
-						{renderEditor('flexWrap', {
-							type: SimpleEditorType.Icons,
-							withBackground: true,
-							visibleIconCount: 3,
-							Options: FlexWrapOptions,
-						}, { relatedProps: flexFlowRelatedProps })}
+						{renderEditor(
+							'flexWrap',
+							{
+								type: SimpleEditorType.Icons,
+								withBackground: true,
+								visibleIconCount: 3,
+								Options: FlexWrapOptions,
+							},
+							{ relatedProps: flexFlowRelatedProps },
+						)}
 					</div>
 
-					<div className="_spacer" />
-
-					{/* Justify Content */}
+					{/* Justify Items */}
 					<div className="_combineEditors">
-						<div className="_simpleLabel">Justify Content</div>
-						{renderEditor('justifyContent', {
+						<div className="_simpleLabel">Justify Items</div>
+						{renderEditor('justifyItems', {
 							type: SimpleEditorType.Icons,
 							withBackground: true,
-							visibleIconCount: 6,
-							Options: JustifyContentOptions,
+							visibleIconCount: 5,
+							Options: AlignItemsOptions,
 						})}
 					</div>
+
+					{/* Justify Content */}
+					<div className="_simpleLabel _withPadding">Justify Content</div>
+					{renderEditor('justifyContent', {
+						type: SimpleEditorType.Icons,
+						withBackground: true,
+						visibleIconCount: 6,
+						Options: JustifyContentOptions,
+					})}
 
 					{/* Align Items */}
 					<div className="_combineEditors">
@@ -683,15 +1585,14 @@ export function LayoutEditorV2({
 					</div>
 
 					{/* Align Content (only relevant when wrap is enabled) */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Align Content</div>
-						{renderEditor('alignContent', {
-							type: SimpleEditorType.Icons,
-							withBackground: true,
-							visibleIconCount: 6,
-							Options: AlignContentOptions,
-						})}
-					</div>
+
+					<div className="_simpleLabel _withPadding">Align Content</div>
+					{renderEditor('alignContent', {
+						type: SimpleEditorType.Icons,
+						withBackground: true,
+						visibleIconCount: 6,
+						Options: JustifyContentOptions,
+					})}
 
 					<div className="_spacer" />
 
@@ -702,94 +1603,48 @@ export function LayoutEditorV2({
 							type: SimpleEditorType.PixelSize,
 						})}
 					</div>
-
-					<div className="_spacer" />
-
-					{/* Flex Item Properties */}
-					<div className="_simpleLabel">Flex Item</div>
-
-					{/* Flex Shorthand */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Flex</div>
-						{renderEditor('flex', {
-							type: SimpleEditorType.ButtonBar,
-							buttonBarOptions: [
-								{ name: 'none', displayName: 'None' },
-								{ name: 'auto', displayName: 'Auto' },
-								{ name: 'custom', displayName: 'Custom' },
-							],
-						}, { relatedProps: flexRelatedProps })}
-					</div>
-
-					{/* Flex Grow */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Grow</div>
-						{renderEditor('flexGrow', {
-							type: SimpleEditorType.Range,
-							rangeMin: 0,
-							rangeMax: 10,
-						}, { relatedProps: flexRelatedProps })}
-					</div>
-
-					{/* Flex Shrink */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Shrink</div>
-						{renderEditor('flexShrink', {
-							type: SimpleEditorType.Range,
-							rangeMin: 0,
-							rangeMax: 10,
-						}, { relatedProps: flexRelatedProps })}
-					</div>
-
-					{/* Flex Basis */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Basis</div>
-						{renderEditor('flexBasis', {
-							type: SimpleEditorType.PixelSize,
-						}, { relatedProps: flexRelatedProps })}
-					</div>
-
-					{/* Flex Basis Options */}
-					{renderEditor('flexBasis', {
-						type: SimpleEditorType.ButtonBar,
-						buttonBarOptions: [
-							{ name: 'auto', displayName: 'Auto' },
-							{ name: 'content', displayName: 'Content' },
-							{ name: 'max-content', displayName: 'Max Content' },
-							{ name: 'min-content', displayName: 'Min Content' },
-							{ name: 'fit-content', displayName: 'Fit Content' },
-						],
-					}, { relatedProps: flexRelatedProps })}
 				</>
 			)}
 
 			{/* Grid-specific controls */}
 			{isGrid && (
 				<>
-					<div className="_simpleLabel">Grid Container</div>
+					<div className="_simpleLabel _withPadding">Grid Container</div>
 
 					{/* Grid Template Columns */}
 					<div className="_combineEditors">
 						<div className="_simpleLabel">Template Columns</div>
-						{renderEditor('gridTemplateColumns', {
-							type: SimpleEditorType.Text,
-						}, { placeholder: 'e.g., 1fr 1fr 1fr or repeat(3, 1fr)' })}
+						{renderEditor(
+							'gridTemplateColumns',
+							{
+								type: SimpleEditorType.Text,
+							},
+							{ placeholder: 'e.g., 1fr 1fr 1fr or repeat(3, 1fr)' },
+						)}
 					</div>
 
 					{/* Grid Template Rows */}
 					<div className="_combineEditors">
 						<div className="_simpleLabel">Template Rows</div>
-						{renderEditor('gridTemplateRows', {
-							type: SimpleEditorType.Text,
-						}, { placeholder: 'e.g., auto 1fr auto' })}
+						{renderEditor(
+							'gridTemplateRows',
+							{
+								type: SimpleEditorType.Text,
+							},
+							{ placeholder: 'e.g., auto 1fr auto' },
+						)}
 					</div>
 
 					{/* Grid Template Areas */}
 					<div className="_combineEditors">
 						<div className="_simpleLabel">Template Areas</div>
-						{renderEditor('gridTemplateAreas', {
-							type: SimpleEditorType.Text,
-						}, { placeholder: 'e.g., "header header" "sidebar main"' })}
+						{renderEditor(
+							'gridTemplateAreas',
+							{
+								type: SimpleEditorType.Text,
+							},
+							{ placeholder: 'e.g., "header header" "sidebar main"' },
+						)}
 					</div>
 
 					<div className="_spacer" />
@@ -797,17 +1652,25 @@ export function LayoutEditorV2({
 					{/* Grid Auto Columns */}
 					<div className="_combineEditors">
 						<div className="_simpleLabel">Auto Columns</div>
-						{renderEditor('gridAutoColumns', {
-							type: SimpleEditorType.PixelSize,
-						}, { placeholder: 'Auto column size' })}
+						{renderEditor(
+							'gridAutoColumns',
+							{
+								type: SimpleEditorType.PixelSize,
+							},
+							{ placeholder: 'Auto column size' },
+						)}
 					</div>
 
 					{/* Grid Auto Rows */}
 					<div className="_combineEditors">
 						<div className="_simpleLabel">Auto Rows</div>
-						{renderEditor('gridAutoRows', {
-							type: SimpleEditorType.PixelSize,
-						}, { placeholder: 'Auto row size' })}
+						{renderEditor(
+							'gridAutoRows',
+							{
+								type: SimpleEditorType.PixelSize,
+							},
+							{ placeholder: 'Auto row size' },
+						)}
 					</div>
 
 					{/* Grid Auto Flow */}
@@ -824,7 +1687,7 @@ export function LayoutEditorV2({
 					<div className="_spacer" />
 
 					{/* Gap Controls */}
-					<div className="_simpleLabel">Gap</div>
+					<div className="_simpleLabel _withPadding">Gap</div>
 					<div className="_combineEditors">
 						<div className="_simpleLabel">Gap</div>
 						{renderEditor('gap', {
@@ -847,7 +1710,7 @@ export function LayoutEditorV2({
 					<div className="_spacer" />
 
 					{/* Grid Alignment */}
-					<div className="_simpleLabel">Grid Alignment</div>
+					<div className="_simpleLabel _withPadding">Grid Alignment</div>
 
 					{/* Justify Items */}
 					<div className="_combineEditors">
@@ -855,15 +1718,19 @@ export function LayoutEditorV2({
 						{renderEditor('justifyItems', {
 							type: SimpleEditorType.Icons,
 							withBackground: true,
-							visibleIconCount: 4,
-							Options: [
-								{ name: 'start', description: 'Start', icon: <g><path d="M2 2h16v2H2V2z" stroke="currentColor" strokeWidth="2" fill="none" /></g> },
-								{ name: 'end', description: 'End', icon: <g><path d="M2 2h16v2H2V2zm0 6h16v2H2V8z" stroke="currentColor" strokeWidth="2" fill="none" /></g> },
-								{ name: 'center', description: 'Center', icon: <g><path d="M2 2h16v2H2V2zm4 6h8v2H6V8z" stroke="currentColor" strokeWidth="2" fill="none" /></g> },
-								{ name: 'stretch', description: 'Stretch', icon: <g><path d="M2 2h16v14H2V2z" stroke="currentColor" strokeWidth="2" fill="none" /></g> },
-							],
+							visibleIconCount: 5,
+							Options: AlignItemsOptions,
 						})}
 					</div>
+					{/* Justify Content */}
+
+					<div className="_simpleLabel _withPadding">Justify Content</div>
+					{renderEditor('justifyContent', {
+						type: SimpleEditorType.Icons,
+						withBackground: true,
+						visibleIconCount: 6,
+						Options: JustifyContentOptions,
+					})}
 
 					{/* Align Items */}
 					<div className="_combineEditors">
@@ -871,61 +1738,19 @@ export function LayoutEditorV2({
 						{renderEditor('alignItems', {
 							type: SimpleEditorType.Icons,
 							withBackground: true,
-							visibleIconCount: 4,
+							visibleIconCount: 5,
 							Options: AlignItemsOptions,
 						})}
 					</div>
 
-					{/* Justify Content */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Justify Content</div>
-						{renderEditor('justifyContent', {
-							type: SimpleEditorType.Icons,
-							withBackground: true,
-							visibleIconCount: 6,
-							Options: JustifyContentOptions,
-						})}
-					</div>
-
 					{/* Align Content */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Align Content</div>
-						{renderEditor('alignContent', {
-							type: SimpleEditorType.Icons,
-							withBackground: true,
-							visibleIconCount: 6,
-							Options: AlignContentOptions,
-						})}
-					</div>
-
-					<div className="_spacer" />
-
-					{/* Grid Item Properties */}
-					<div className="_simpleLabel">Grid Item</div>
-
-					{/* Grid Column */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Column</div>
-						{renderEditor('gridColumn', {
-							type: SimpleEditorType.Text,
-						}, { placeholder: 'e.g., 1 / 3 or span 2' })}
-					</div>
-
-					{/* Grid Row */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Row</div>
-						{renderEditor('gridRow', {
-							type: SimpleEditorType.Text,
-						}, { placeholder: 'e.g., 1 / 3 or span 2' })}
-					</div>
-
-					{/* Grid Area */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Area</div>
-						{renderEditor('gridArea', {
-							type: SimpleEditorType.Text,
-						}, { placeholder: 'e.g., header or 1 / 1 / 2 / 3' })}
-					</div>
+					<div className="_simpleLabel _withPadding">Align Content</div>
+					{renderEditor('alignContent', {
+						type: SimpleEditorType.Icons,
+						withBackground: true,
+						visibleIconCount: 6,
+						Options: JustifyContentOptions,
+					})}
 				</>
 			)}
 
@@ -933,7 +1758,7 @@ export function LayoutEditorV2({
 			{(isFlex || isGrid) && (
 				<>
 					<div className="_spacer" />
-					<div className="_simpleLabel">Common Properties</div>
+					<div className="_simpleLabel _withPadding">Common Properties</div>
 
 					{/* Width */}
 					<div className="_combineEditors">
@@ -989,7 +1814,7 @@ export function LayoutEditorV2({
 			{isBlock && !isFlex && !isGrid && (
 				<>
 					<div className="_spacer" />
-					<div className="_simpleLabel">Layout Properties</div>
+					<div className="_simpleLabel _withPadding">Layout Properties</div>
 
 					{/* Width */}
 					<div className="_combineEditors">
@@ -1040,7 +1865,135 @@ export function LayoutEditorV2({
 					</div>
 				</>
 			)}
+			<div className="_spacer" />
+			{/* Flex Item Order */}
+
+			<div className="_simpleLabel _withPadding">Flex Item</div>
+
+			{/* Flex Shorthand */}
+
+			{renderEditor(
+				'flex',
+				{
+					type: SimpleEditorType.ButtonBar,
+					buttonBarOptions: [
+						{ name: '1', displayName: '1' },
+						{ name: '2', displayName: '2' },
+						{ name: 'none', displayName: 'None' },
+						{ name: 'auto', displayName: 'Auto' },
+						{ name: 'custom', displayName: 'Custom' },
+						{ name: 'clear', displayName: 'Clear' },
+					],
+				},
+				{ relatedProps: flexRelatedProps },
+			)}
+
+			{/* Flex Grow */}
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Grow</div>
+				{renderEditor(
+					'flexGrow',
+					{
+						type: SimpleEditorType.Range,
+						rangeMin: 0,
+						rangeMax: 10,
+					},
+					{ relatedProps: flexRelatedProps },
+				)}
+			</div>
+
+			{/* Flex Shrink */}
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Shrink</div>
+				{renderEditor(
+					'flexShrink',
+					{
+						type: SimpleEditorType.Range,
+						rangeMin: 0,
+						rangeMax: 10,
+					},
+					{ relatedProps: flexRelatedProps },
+				)}
+			</div>
+
+			{/* Flex Basis */}
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Basis</div>
+				{renderEditor(
+					'flexBasis',
+					{
+						type: SimpleEditorType.PixelSize,
+					},
+					{ relatedProps: flexRelatedProps },
+				)}
+			</div>
+
+			{/* Flex Basis Options */}
+			{renderEditor('flexBasis', {
+				type: SimpleEditorType.ButtonBar,
+				buttonBarOptions: [
+					{ name: 'auto', displayName: 'Auto' },
+					{ name: 'content', displayName: 'Content' },
+					{ name: 'max-content', displayName: 'Max' },
+					{ name: 'min-content', displayName: 'Min' },
+					{ name: 'fit-content', displayName: 'Fit' },
+				],
+				visibleIconCount: 2,
+			})}
+
+			<div className="_spacer" />
+
+			{/* Grid Item Properties */}
+			<div className="_simpleLabel _withPadding">Grid Item</div>
+
+			{/* Grid Column */}
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Column Start</div>
+				{renderEditor(
+					'gridColumnStart',
+					{
+						type: SimpleEditorType.Text,
+					},
+					{ placeholder: 'e.g., 1 / 3 or span 2' },
+				)}
+			</div>
+
+			{/* Grid Column End */}
+
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Column End</div>
+				{renderEditor(
+					'gridColumnEnd',
+					{
+						type: SimpleEditorType.Text,
+					},
+					{ placeholder: 'e.g., 1 / 3 or span 2' },
+				)}
+			</div>
+
+			{/* Grid Row */}
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Row Start</div>
+				{renderEditor(
+					'gridRowStart',
+					{
+						type: SimpleEditorType.Text,
+					},
+					{ placeholder: 'e.g., 1 / 3 or span 2' },
+				)}
+			</div>
+
+			{/* Grid Row End */}
+			<div className="_combineEditors">
+				<div className="_simpleLabel">Row End</div>
+				{renderEditor(
+					'gridRowEnd',
+					{
+						type: SimpleEditorType.Text,
+					},
+					{ placeholder: 'e.g., 1 / 3 or span 2' },
+				)}
+			</div>
 		</>
 	);
 }
-
