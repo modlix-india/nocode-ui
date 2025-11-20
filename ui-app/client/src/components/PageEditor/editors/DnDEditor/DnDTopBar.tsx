@@ -23,6 +23,7 @@ import { PageOperations } from '../../functions/PageOperations';
 import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { performanceMonitor } from '../../util/performanceMonitor';
+import { UndoRedoManager } from '../../util/undoRedoManager';
 
 interface TopBarProps {
 	theme: string;
@@ -132,6 +133,14 @@ export default function DnDTopBar({
 	const [selectedPage, setSelectedPage] = React.useState('');
 	const location = useLocation();
 	const svgLogo = logo ? <img className="_logo" alt="logo" src={getSrcUrl(logo)} /> : undefined;
+	
+	// Create undo/redo manager with size limits (persist across renders)
+	const undoRedoManagerRef = useRef<UndoRedoManager | null>(null);
+	if (!undoRedoManagerRef.current) {
+		undoRedoManagerRef.current = new UndoRedoManager({ maxStackSize: 20, maxTotalSizeMB: 100 });
+	}
+	const undoRedoManager = undoRedoManagerRef.current;
+
 	useEffect(() => setLocalUrl(url), [url]);
 	useEffect(
 		() =>
@@ -156,28 +165,63 @@ export default function DnDTopBar({
 				setProperties(v?.properties ?? {});
 				setPermission(v?.permission ?? '');
 				if (!v || v?.isFromUndoRedoStack) return;
-				if (
-					deepEqual(
-						v,
-						undoStackRef.current.length
-							? undoStackRef.current[undoStackRef.current.length - 1]
-							: firstTimeRef.current[0],
-					)
-				)
-					return;
 
+				// Get previous state for diff computation
+				const previousState =
+					undoStackRef.current.length > 0
+						? undoStackRef.current[undoStackRef.current.length - 1]
+						: firstTimeRef.current[0] ?? null;
+
+				if (previousState && deepEqual(v, previousState)) return;
+
+				// Initialize manager with first snapshot
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
+					undoRedoManager.initialize(v);
+					// Sync refs for backward compatibility
+					undoStackRef.current = [];
+					redoStackRef.current = [];
 					return;
 				}
 
 				if (latestVersion.current < v.version) latestVersion.current = v.version;
 
 				removeExcessPages(v.id);
-				window.localStorage.setItem(`pgdef_${v.id}_${Date.now()}`, JSON.stringify(v));
 
-				undoStackRef.current.push(duplicate(v));
-				redoStackRef.current.length = 0;
+				// Use manager to push state (with async persistence)
+				undoRedoManager.pushState(
+					v,
+					previousState ?? undefined,
+					entry => {
+						// Async persistence to localStorage
+						if ('requestIdleCallback' in window) {
+							requestIdleCallback(
+								() => {
+									window.localStorage.setItem(
+										`pgdef_${v.id}_${Date.now()}`,
+										JSON.stringify(v),
+									);
+								},
+								{ timeout: 2000 },
+							);
+						} else {
+							setTimeout(() => {
+								window.localStorage.setItem(
+									`pgdef_${v.id}_${Date.now()}`,
+									JSON.stringify(v),
+								);
+							}, 0);
+						}
+					},
+				);
+
+				// Sync refs for backward compatibility (simplified - just track count)
+				// The actual state is in the manager
+				const sizes = undoRedoManager.getStackSizes();
+				// Update refs to maintain array length for UI checks
+				undoStackRef.current = Array(sizes.undo).fill(null) as any;
+				redoStackRef.current = Array(sizes.redo).fill(null) as any;
+
 				// Monitor undo stack after update
 				performanceMonitor.measureUndoStack(undoStackRef.current, 'undo');
 				setChanged(Date.now());
@@ -632,17 +676,18 @@ export default function DnDTopBar({
 	}
 
 	const handleUndo = () => {
-		if (!undoStackRef.current.length || !defPath) return;
-		const x = undoStackRef.current[undoStackRef.current.length - 1];
-		undoStackRef.current.splice(undoStackRef.current.length - 1, 1);
-		redoStackRef.current.splice(0, 0, x);
-		const pg = duplicate(
-			undoStackRef.current.length
-				? undoStackRef.current[undoStackRef.current.length - 1]
-				: firstTimeRef.current[0],
-		) as PageDefinition;
+		if (!undoRedoManager.canUndo() || !defPath) return;
+		
+		const pg = undoRedoManager.undo();
+		if (!pg) return;
+
 		pg.version = latestVersion.current;
 		pg.isFromUndoRedoStack = true;
+
+		// Sync refs for backward compatibility
+		const sizes = undoRedoManager.getStackSizes();
+		undoStackRef.current = Array(sizes.undo).fill(null) as any;
+		redoStackRef.current = Array(sizes.redo).fill(null) as any;
 
 		if (selectedComponent && !pg.componentDefinition[selectedComponent]) {
 			onSelectedComponentChanged('');
@@ -654,17 +699,19 @@ export default function DnDTopBar({
 	};
 
 	const handleRedo = () => {
-		if (!redoStackRef.current.length || !defPath) return;
-		const x = redoStackRef.current[0];
-		undoStackRef.current.push(x);
-		redoStackRef.current.splice(0, 1);
-		const pg = duplicate(
-			undoStackRef.current.length
-				? undoStackRef.current[undoStackRef.current.length - 1]
-				: firstTimeRef.current[0],
-		) as PageDefinition;
+		if (!undoRedoManager.canRedo() || !defPath) return;
+		
+		const pg = undoRedoManager.redo();
+		if (!pg) return;
+
 		pg.version = latestVersion.current;
 		pg.isFromUndoRedoStack = true;
+
+		// Sync refs for backward compatibility
+		const sizes = undoRedoManager.getStackSizes();
+		undoStackRef.current = Array(sizes.undo).fill(null) as any;
+		redoStackRef.current = Array(sizes.redo).fill(null) as any;
+
 		if (selectedComponent && !pg.componentDefinition[selectedComponent]) {
 			onSelectedComponentChanged('');
 			onSelectedSubComponentChanged('');
