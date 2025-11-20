@@ -22,6 +22,10 @@ import { shortUUID } from '../../../util/shortUUID';
 import Grid from '../../Grid/Grid';
 import { Issue } from '../components/IssuePopup';
 import components from '../../';
+import {
+	updateComponentInPageDefinition,
+	updateMultipleComponentsInPageDefinition,
+} from '../util/targetedPageUpdate';
 
 interface ClipboardObject {
 	mainKey: string;
@@ -67,6 +71,27 @@ export class PageOperations {
 		this.setIssue(issue);
 	}
 
+	/**
+	 * Update selected component without recreating instance
+	 */
+	public updateSelectedComponent(selectedComponent: string | undefined): void {
+		this.selectedComponent = selectedComponent;
+	}
+
+	/**
+	 * Update selected sub component without recreating instance
+	 */
+	public updateSelectedSubComponent(selectedSubComponent: string | undefined): void {
+		this.selectedSubComponent = selectedSubComponent;
+	}
+
+	/**
+	 * Update style selector preferences without recreating instance
+	 */
+	public updateStyleSelectorPref(styleSelectorPref: any): void {
+		this.styleSelectorPref = styleSelectorPref;
+	}
+
 	public getComponentDefinition(componentKey: string): ComponentDefinition | undefined {
 		const pageDef: PageDefinition = getDataFromPath(
 			this.defPath,
@@ -98,9 +123,10 @@ export class PageOperations {
 
 		if (!pageDef) return;
 
-		const newPageDef = duplicate(pageDef);
-		if (!newPageDef.componentDefinition) newPageDef.componentDefinition = {};
-		newPageDef.componentDefinition[componentDef.key] = componentDef;
+		// Use targeted update instead of full clone for better performance
+		const newPageDef = updateComponentInPageDefinition(pageDef, componentDef.key, () => {
+			return componentDef;
+		});
 
 		setData(this.defPath, newPageDef, this.pageExtractor.getPageName());
 	}
@@ -158,54 +184,55 @@ export class PageOperations {
 			this.pageExtractor,
 		);
 		if (!pageDef || !pageDef.componentDefinition?.[componentKey]) return;
-		const newPageDef = duplicate(pageDef);
-		const componentDef = newPageDef.componentDefinition[componentKey] as ComponentDefinition;
 
-		if (properties?.length) {
-			if (!componentDef.properties) componentDef.properties = {};
-			for (let i = 0; i < properties.length; i++)
-				this.applyPropertyWithStrategy(componentDef.properties, properties[i]);
-		}
-		if (styleProperties?.length) {
-			if (!componentDef.styleProperties) componentDef.styleProperties = {};
-			let styleObj = Object.values(componentDef.styleProperties).find(e => {
-				if (!this.styleSelectorPref[componentKey]?.condition?.value && !e.condition)
-					return true;
-				if (
-					this.styleSelectorPref[componentKey]?.condition?.value &&
-					this.styleSelectorPref[componentKey]?.condition?.value === e.conditionName
-				)
-					return true;
-				return false;
-			});
-			if (!styleObj) {
-				styleObj = {};
-				componentDef.styleProperties[shortUUID()] = styleObj;
+		// Use targeted update instead of full clone for better performance
+		const newPageDef = updateComponentInPageDefinition(pageDef, componentKey, componentDef => {
+			if (properties?.length) {
+				if (!componentDef.properties) componentDef.properties = {};
+				for (let i = 0; i < properties.length; i++)
+					this.applyPropertyWithStrategy(componentDef.properties, properties[i]);
 			}
-
-			if (!styleObj.resolutions) styleObj.resolutions = {};
-
-			const selector = this.styleSelectorPref[componentKey];
-
-			let resolution: StyleResolution = selector?.screenSize?.value ?? StyleResolution.ALL;
-			if (!styleObj.resolutions[resolution]) styleObj.resolutions[resolution] = {};
-
-			let resolutionObj = styleObj.resolutions[resolution];
-
-			let subComp = undefined;
-			if (this.selectedSubComponent) {
-				const splits = this.selectedSubComponent?.split(':');
-				if (splits?.length === 2 && splits[0] === componentKey) subComp = splits[1];
-			}
-
-			for (let i = 0; i < styleProperties.length; i++) {
-				this.applyPropertyWithStrategy(resolutionObj, {
-					name: this.makePropName(subComp, selector, styleProperties[i].name),
-					value: styleProperties[i].value,
-					strategy: styleProperties[i].strategy,
+			if (styleProperties?.length) {
+				if (!componentDef.styleProperties) componentDef.styleProperties = {};
+				let styleObj = Object.values(componentDef.styleProperties).find(e => {
+					if (!this.styleSelectorPref[componentKey]?.condition?.value && !e.condition)
+						return true;
+					if (
+						this.styleSelectorPref[componentKey]?.condition?.value &&
+						this.styleSelectorPref[componentKey]?.condition?.value === e.conditionName
+					)
+						return true;
+					return false;
 				});
+				if (!styleObj) {
+					styleObj = {};
+					componentDef.styleProperties[shortUUID()] = styleObj;
+				}
+
+				if (!styleObj.resolutions) styleObj.resolutions = {};
+
+				const selector = this.styleSelectorPref[componentKey];
+
+				let resolution: StyleResolution = selector?.screenSize?.value ?? StyleResolution.ALL;
+				if (!styleObj.resolutions[resolution]) styleObj.resolutions[resolution] = {};
+
+				let resolutionObj = styleObj.resolutions[resolution];
+
+				let subComp = undefined;
+				if (this.selectedSubComponent) {
+					const splits = this.selectedSubComponent?.split(':');
+					if (splits?.length === 2 && splits[0] === componentKey) subComp = splits[1];
+				}
+
+				for (let i = 0; i < styleProperties.length; i++) {
+					this.applyPropertyWithStrategy(resolutionObj, {
+						name: this.makePropName(subComp, selector, styleProperties[i].name),
+						value: styleProperties[i].value,
+						strategy: styleProperties[i].strategy,
+					});
+				}
 			}
-		}
+		});
 
 		setData(this.defPath, newPageDef, this.pageExtractor.getPageName());
 	}

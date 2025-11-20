@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Dropdown } from './Dropdown';
 import { RangeSlider } from '../../../../../commonComponents/RangeSlider';
 import { AngleSlider } from './AngleSlider';

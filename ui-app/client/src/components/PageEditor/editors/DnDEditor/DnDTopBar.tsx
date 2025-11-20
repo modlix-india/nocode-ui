@@ -22,6 +22,8 @@ import { IconHelper } from '../../../util/IconHelper';
 import { PageOperations } from '../../functions/PageOperations';
 import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
+import { performanceMonitor } from '../../util/performanceMonitor';
+import { UndoRedoManager } from '../../util/undoRedoManager';
 
 interface TopBarProps {
 	theme: string;
@@ -84,6 +86,59 @@ function removeExcessPages(pid: string) {
 	if (remKeys.length > 10) remKeys.forEach(k => window.localStorage.removeItem(k));
 }
 
+// Debounce timers and pending values for pgdef_ localStorage writes
+const pgdefDebounceTimers = new Map<string, ReturnType<typeof setTimeout>>();
+const pendingPgdefValues = new Map<string, { key: string; value: string }>();
+
+// Debounced localStorage.setItem for pgdef_ entries
+function debouncedPgdefSetItem(pageId: string, pageDef: PageDefinition) {
+	const timestamp = Date.now();
+	const key = `pgdef_${pageId}_${timestamp}`;
+	const value = JSON.stringify(pageDef);
+
+	// Store the latest value for this pageId (we only need the latest)
+	pendingPgdefValues.set(pageId, { key, value });
+
+	// Clear existing timer for this pageId
+	if (pgdefDebounceTimers.has(pageId)) {
+		clearTimeout(pgdefDebounceTimers.get(pageId)!);
+	}
+
+	// Set new timer to debounce the actual localStorage.setItem call
+	pgdefDebounceTimers.set(
+		pageId,
+		setTimeout(() => {
+			const pending = pendingPgdefValues.get(pageId);
+			if (pending) {
+				try {
+					window.localStorage.setItem(pending.key, pending.value);
+				} catch (error) {
+					// If quota exceeded, try to clear old entries and retry
+					if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+						console.warn(
+							'localStorage quota exceeded for pgdef, attempting cleanup...',
+						);
+						removeExcessPages(pageId);
+						// Retry after cleanup
+						try {
+							window.localStorage.setItem(pending.key, pending.value);
+						} catch (retryError) {
+							console.error(
+								'Failed to save pgdef to localStorage after cleanup:',
+								retryError,
+							);
+						}
+					} else {
+						throw error;
+					}
+				}
+				pendingPgdefValues.delete(pageId);
+			}
+			pgdefDebounceTimers.delete(pageId);
+		}, 300), // 300ms debounce for localStorage writes
+	);
+}
+
 export default function DnDTopBar({
 	theme,
 	personalizationPath,
@@ -131,6 +186,14 @@ export default function DnDTopBar({
 	const [selectedPage, setSelectedPage] = React.useState('');
 	const location = useLocation();
 	const svgLogo = logo ? <img className="_logo" alt="logo" src={getSrcUrl(logo)} /> : undefined;
+
+	// Create undo/redo manager with size limits (persist across renders)
+	const undoRedoManagerRef = useRef<UndoRedoManager | null>(null);
+	if (!undoRedoManagerRef.current) {
+		undoRedoManagerRef.current = new UndoRedoManager({ maxStackSize: 20, maxTotalSizeMB: 100 });
+	}
+	const undoRedoManager = undoRedoManagerRef.current;
+
 	useEffect(() => setLocalUrl(url), [url]);
 	useEffect(
 		() =>
@@ -155,28 +218,56 @@ export default function DnDTopBar({
 				setProperties(v?.properties ?? {});
 				setPermission(v?.permission ?? '');
 				if (!v || v?.isFromUndoRedoStack) return;
-				if (
-					deepEqual(
-						v,
-						undoStackRef.current.length
-							? undoStackRef.current[undoStackRef.current.length - 1]
-							: firstTimeRef.current[0],
-					)
-				)
-					return;
 
+				// Get previous state for diff computation
+				const previousState =
+					undoStackRef.current.length > 0
+						? undoStackRef.current[undoStackRef.current.length - 1]
+						: (firstTimeRef.current[0] ?? null);
+
+				if (previousState && deepEqual(v, previousState)) return;
+
+				// Initialize manager with first snapshot
 				if (!firstTimeRef.current.length) {
 					firstTimeRef.current.push(duplicate(v));
+					undoRedoManager.initialize(v);
+					// Sync refs for backward compatibility
+					undoStackRef.current = [];
+					redoStackRef.current = [];
 					return;
 				}
 
 				if (latestVersion.current < v.version) latestVersion.current = v.version;
 
 				removeExcessPages(v.id);
-				window.localStorage.setItem(`pgdef_${v.id}_${Date.now()}`, JSON.stringify(v));
 
-				undoStackRef.current.push(duplicate(v));
-				redoStackRef.current.length = 0;
+				// Use manager to push state (with async persistence)
+				undoRedoManager.pushState(v, previousState ?? undefined, entry => {
+					// Async persistence to localStorage with debouncing
+					// Use requestIdleCallback or setTimeout to defer, then debounce the actual write
+					if ('requestIdleCallback' in window) {
+						requestIdleCallback(
+							() => {
+								debouncedPgdefSetItem(v.id, v);
+							},
+							{ timeout: 2000 },
+						);
+					} else {
+						setTimeout(() => {
+							debouncedPgdefSetItem(v.id, v);
+						}, 0);
+					}
+				});
+
+				// Sync refs for backward compatibility (simplified - just track count)
+				// The actual state is in the manager
+				const sizes = undoRedoManager.getStackSizes();
+				// Update refs to maintain array length for UI checks
+				undoStackRef.current = Array(sizes.undo).fill(null) as any;
+				redoStackRef.current = Array(sizes.redo).fill(null) as any;
+
+				// Monitor undo stack after update
+				performanceMonitor.measureUndoStack(undoStackRef.current, 'undo');
 				setChanged(Date.now());
 			},
 			pageExtractor,
@@ -629,17 +720,18 @@ export default function DnDTopBar({
 	}
 
 	const handleUndo = () => {
-		if (!undoStackRef.current.length || !defPath) return;
-		const x = undoStackRef.current[undoStackRef.current.length - 1];
-		undoStackRef.current.splice(undoStackRef.current.length - 1, 1);
-		redoStackRef.current.splice(0, 0, x);
-		const pg = duplicate(
-			undoStackRef.current.length
-				? undoStackRef.current[undoStackRef.current.length - 1]
-				: firstTimeRef.current[0],
-		) as PageDefinition;
+		if (!undoRedoManager.canUndo() || !defPath) return;
+
+		const pg = undoRedoManager.undo();
+		if (!pg) return;
+
 		pg.version = latestVersion.current;
 		pg.isFromUndoRedoStack = true;
+
+		// Sync refs for backward compatibility
+		const sizes = undoRedoManager.getStackSizes();
+		undoStackRef.current = Array(sizes.undo).fill(null) as any;
+		redoStackRef.current = Array(sizes.redo).fill(null) as any;
 
 		if (selectedComponent && !pg.componentDefinition[selectedComponent]) {
 			onSelectedComponentChanged('');
@@ -651,17 +743,19 @@ export default function DnDTopBar({
 	};
 
 	const handleRedo = () => {
-		if (!redoStackRef.current.length || !defPath) return;
-		const x = redoStackRef.current[0];
-		undoStackRef.current.push(x);
-		redoStackRef.current.splice(0, 1);
-		const pg = duplicate(
-			undoStackRef.current.length
-				? undoStackRef.current[undoStackRef.current.length - 1]
-				: firstTimeRef.current[0],
-		) as PageDefinition;
+		if (!undoRedoManager.canRedo() || !defPath) return;
+
+		const pg = undoRedoManager.redo();
+		if (!pg) return;
+
 		pg.version = latestVersion.current;
 		pg.isFromUndoRedoStack = true;
+
+		// Sync refs for backward compatibility
+		const sizes = undoRedoManager.getStackSizes();
+		undoStackRef.current = Array(sizes.undo).fill(null) as any;
+		redoStackRef.current = Array(sizes.redo).fill(null) as any;
+
 		if (selectedComponent && !pg.componentDefinition[selectedComponent]) {
 			onSelectedComponentChanged('');
 			onSelectedSubComponentChanged('');
