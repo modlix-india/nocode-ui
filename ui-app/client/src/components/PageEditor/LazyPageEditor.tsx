@@ -27,6 +27,7 @@ import {
 	removeUnreferenecedComponentDefinitions,
 } from './functions/PageOperations';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorProperties';
+import { performanceMonitor } from './util/performanceMonitor';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -35,7 +36,7 @@ function savePersonalizationCurry(
 	locationHistory: Array<LocationHistory>,
 	pageDefinition: PageDefinition,
 ) {
-	if (!onChangePersonalization) return (key: string, value: any) => { };
+	if (!onChangePersonalization) return (key: string, value: any) => {};
 	let handle: any = -1;
 
 	return (key: string, value: any) => {
@@ -56,6 +57,9 @@ function savePersonalizationCurry(
 }
 
 export default function LazyPageEditor(props: Readonly<ComponentProps>) {
+	// Performance monitoring: Start render measurement
+	const renderStartTime = performanceMonitor.startRenderMeasure();
+
 	const {
 		definition,
 		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4 },
@@ -223,7 +227,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 	// Function to save the personalization
 	const savePersonalization = useMemo(() => {
-		if (!personalizationPath) return (key: string, value: any) => { };
+		if (!personalizationPath) return (key: string, value: any) => {};
 
 		return savePersonalizationCurry(
 			personalizationPath,
@@ -265,9 +269,10 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 		setClientCode(appDefinition?.clientCode ?? editPageDefinition.clientCode);
 		setUrl(
-			`/${editPageDefinition.appCode}/${clientCode === ''
-				? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
-				: clientCode
+			`/${editPageDefinition.appCode}/${
+				clientCode === ''
+					? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
+					: clientCode
 			}/page/${editPageDefinition.name}`,
 		);
 		setClientCode(appDefinition?.clientCode ?? editPageDefinition.clientCode);
@@ -400,10 +405,15 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
+				performanceMonitor.trackStoreUpdate();
 				const msg = {
 					type: 'EDITOR_DEFINITION',
 					payload,
 				};
+				// Measure postMessage payload size
+				performanceMonitor.measurePostMessage('EDITOR_DEFINITION', payload, 'desktop');
+				performanceMonitor.measurePostMessage('EDITOR_DEFINITION', payload, 'tablet');
+				performanceMonitor.measurePostMessage('EDITOR_DEFINITION', payload, 'mobile');
 				desktopRef.current?.contentWindow?.postMessage(msg);
 				tabletRef.current?.contentWindow?.postMessage(msg);
 				mobileRef.current?.contentWindow?.postMessage(msg);
@@ -418,11 +428,15 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			(_, payload) => {
+				performanceMonitor.trackStoreUpdate();
 				const msg = {
 					type: 'EDITOR_PERSONALIZATION',
 					payload,
 				};
-
+				// Measure postMessage payload size
+				performanceMonitor.measurePostMessage('EDITOR_PERSONALIZATION', payload, 'desktop');
+				performanceMonitor.measurePostMessage('EDITOR_PERSONALIZATION', payload, 'tablet');
+				performanceMonitor.measurePostMessage('EDITOR_PERSONALIZATION', payload, 'mobile');
 				desktopRef.current?.contentWindow?.postMessage(msg);
 				tabletRef.current?.contentWindow?.postMessage(msg);
 				mobileRef.current?.contentWindow?.postMessage(msg);
@@ -451,18 +465,18 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 		const unlisten2 = themePath
 			? addListenerAndCallImmediatelyWithChildrenActivity(
-				(_, payload) => {
-					if (!templateIFrame) return;
+					(_, payload) => {
+						if (!templateIFrame) return;
 
-					const msg = {
-						type: 'EDITOR_APP_THEME',
-						payload,
-					};
-					templateIFrame.contentWindow?.postMessage(msg);
-				},
-				pageExtractor,
-				themePath,
-			)
+						const msg = {
+							type: 'EDITOR_APP_THEME',
+							payload,
+						};
+						templateIFrame.contentWindow?.postMessage(msg);
+					},
+					pageExtractor,
+					themePath,
+				)
 			: undefined;
 
 		function onMessageFromSlave(e: any) {
@@ -626,6 +640,16 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	const firstTimeRef = useRef<Array<PageDefinition>>([]);
 	const latestVersion = useRef<number>(0);
 
+	// Monitor undo/redo stack sizes periodically
+	useEffect(() => {
+		const interval = setInterval(() => {
+			performanceMonitor.measureUndoStack(undoStackRef.current, 'undo');
+			performanceMonitor.measureUndoStack(redoStackRef.current, 'redo');
+		}, 5000); // Check every 5 seconds
+
+		return () => clearInterval(interval);
+	}, []);
+
 	const storePaths = useMemo<Set<string>>(
 		() =>
 			allPaths(
@@ -649,7 +673,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			(_, v) => {
 				if (!v?.id) return;
 
-				try { removeListener(); } catch (e) { }
+				try {
+					removeListener();
+				} catch (e) {}
 
 				let i = 0,
 					key = null;
@@ -682,7 +708,13 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		return removeListener;
 	}, [defPath, setIssue]);
 
-	if (personalizationPath && !personalization) return <></>;
+	if (personalizationPath && !personalization) {
+		performanceMonitor.endRenderMeasure(renderStartTime, 'LazyPageEditor');
+		return <></>;
+	}
+
+	// Performance monitoring: End render measurement
+	performanceMonitor.endRenderMeasure(renderStartTime, 'LazyPageEditor');
 
 	return (
 		<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>

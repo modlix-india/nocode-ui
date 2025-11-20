@@ -22,6 +22,7 @@ import { IconHelper } from '../../../util/IconHelper';
 import { PageOperations } from '../../functions/PageOperations';
 import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
+import { performanceMonitor } from '../../util/performanceMonitor';
 
 interface TopBarProps {
 	theme: string;
@@ -177,6 +178,8 @@ export default function DnDTopBar({
 
 				undoStackRef.current.push(duplicate(v));
 				redoStackRef.current.length = 0;
+				// Monitor undo stack after update
+				performanceMonitor.measureUndoStack(undoStackRef.current, 'undo');
 				setChanged(Date.now());
 			},
 			pageExtractor,
