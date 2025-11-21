@@ -18,19 +18,22 @@ function Carousel(props: Readonly<ComponentProps>) {
 	const {
 		stylePropertiesWithPseudoStates,
 		properties: {
-			showDotsButtons,
 			showArrowButtons,
 			slideSpeed,
 			autoPlay,
 			easing,
 			animationDuration,
 			animationType,
-			dotsButtonType,
-			dotsButtonIconType,
-			hasNumbersInSlideNav,
 			slideNavButtonPosition,
 			arrowButtons,
 			showNavigationControlsOnHover,
+			showIndicators: _showIndicators,
+			indicatorPosition,
+			indicatorVisibleCount,
+			indicatorShape,
+			indicatorFill,
+			indicatorShowNumbers,
+			showIndicatorArrows: _showIndicatorArrows,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -40,12 +43,25 @@ function Carousel(props: Readonly<ComponentProps>) {
 		pageExtractor,
 	);
 
+	// Backward compatibility: if showIndicators is undefined but showDotsButtons is true, treat as true
+	const showIndicators =
+		typeof _showIndicators === 'boolean'
+			? _showIndicators
+			: (typeof props?.definition?.properties?.showDotsButtons === 'boolean'
+					? props?.definition?.properties?.showDotsButtons
+					: true);
+
+	const showIndicatorArrows = typeof _showIndicatorArrows === 'boolean' ? _showIndicatorArrows : true;
+
 	const ref = useRef<HTMLDivElement>(null);
 	const [childrenDef, setChildrenDef] = useState<any>();
 	const [transitionFrom, setTransitionFrom] = useState<number | undefined>(undefined);
 	const [slideNum, setSlideNum] = useState<number>(0);
 	const [firstTime, setFirstTime] = useState(true);
 	const [hover, setHover] = useState(false);
+	const [currentSlide, setCurrentSlide] = useState(0);
+	const touchStart = useRef<{ x: number; y: number } | null>(null);
+	const touchDelta = useRef<{ x: number; y: number }>({ x: 0, y: 0 });
 
 	useEffect(() => {
 		setChildrenDef(
@@ -90,14 +106,14 @@ function Carousel(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const currentSlide = useRef<HTMLDivElement>(null);
+	const currentSlideRef = useRef<HTMLDivElement>(null);
 	const previousSlide = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!currentSlide.current || isNullValue(transitionFrom)) return;
+		if (!currentSlideRef.current || isNullValue(transitionFrom)) return;
 		setTimeout(() => {
-			if (!currentSlide.current || isNullValue(transitionFrom)) return;
-			currentSlide.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${slideNum - transitionFrom! + 1 == childrenDef.length ||
+			if (!currentSlideRef.current || isNullValue(transitionFrom)) return;
+			currentSlideRef.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${slideNum - transitionFrom! + 1 == childrenDef.length ||
 					(slideNum - transitionFrom! < 0 &&
 						slideNum - transitionFrom! - 1 != -childrenDef.length)
 					? '_reverse'
@@ -117,7 +133,7 @@ function Carousel(props: Readonly<ComponentProps>) {
 					}`;
 			}
 		}, 100);
-	}, [currentSlide.current, previousSlide.current, transitionFrom, animationType]);
+	}, [currentSlideRef.current, previousSlide.current, transitionFrom, animationType]);
 
 	let showChildren: Array<ReactNode> = [];
 	const duration = animationDuration / 1000;
@@ -166,7 +182,7 @@ function Carousel(props: Readonly<ComponentProps>) {
 							? '_reverse'
 							: ''
 						}`}
-					ref={currentSlide}
+					ref={currentSlideRef}
 					key={childrenDef[slideNum].key}
 					style={style}
 				>
@@ -199,6 +215,195 @@ function Carousel(props: Readonly<ComponentProps>) {
 		if (showNavigationControlsOnHover) setHover(false);
 	};
 
+	function handleTouchStart(e: React.TouchEvent) {
+		const t = e.touches[0];
+		touchStart.current = { x: t.clientX, y: t.clientY };
+		touchDelta.current = { x: 0, y: 0 };
+	}
+	function handleTouchMove(e: React.TouchEvent) {
+		if (!touchStart.current) return;
+		const t = e.touches[0];
+		touchDelta.current = {
+			x: t.clientX - touchStart.current.x,
+			y: t.clientY - touchStart.current.y,
+		};
+	}
+	function handleTouchEnd() {
+		if (!touchStart.current) return;
+		const threshold = 40; 
+		if (touchDelta.current.x < -threshold && childrenDef?.length > 1) {
+			const next = (currentSlide + 1) % childrenDef.length;
+			setCurrentSlide(next);
+			setSlideNum(next);
+		} else if (touchDelta.current.x > threshold && childrenDef?.length > 1) {	
+			const prev = (currentSlide - 1 + childrenDef.length) % childrenDef.length;
+			setCurrentSlide(prev);
+			setSlideNum(prev);
+		}
+		touchStart.current = null;
+		touchDelta.current = { x: 0, y: 0 };
+	}
+
+	const totalSlides = childrenDef?.length ?? 0;
+	const visibleCount = indicatorVisibleCount > 0 ? Math.min(indicatorVisibleCount, totalSlides) : totalSlides;
+	let startIdx = 0;
+	if (visibleCount < totalSlides) {
+		startIdx = Math.max(0, Math.min(currentSlide - Math.floor(visibleCount / 2), totalSlides - visibleCount));
+	}
+	const indicatorIndexes = Array.from({ length: visibleCount }, (_, i) => i + startIdx);
+
+	function renderIndicatorNavButtons() {
+		if (visibleCount >= totalSlides) return null;
+		const canScrollPrev = startIdx > 0;
+		const canScrollNext = startIdx + visibleCount < totalSlides;
+		return (
+			<>
+				{canScrollPrev && (
+					<button
+						className="indicator-nav-btn prev"
+						aria-label="Scroll indicators backward"
+						onClick={e => {
+							e.stopPropagation();
+							const newStart = Math.max(0, startIdx - 1);
+							const newCurrent = Math.max(newStart, currentSlide - 1);
+							setCurrentSlide(newCurrent);
+							setSlideNum(newCurrent);
+						}}
+					>
+						{<i className="fa fa-caret-left" aria-hidden="true" />}
+					</button>
+				)}
+				{canScrollNext && (
+					<button
+						className="indicator-nav-btn next"
+						aria-label="Scroll indicators forward"
+						onClick={e => {
+							e.stopPropagation();
+							const newStart = Math.min(totalSlides - visibleCount, startIdx + 1);
+							const newCurrent = Math.min(newStart + visibleCount - 1, currentSlide + 1);
+							setCurrentSlide(newCurrent);
+							setSlideNum(newCurrent);
+						}}
+					>
+						{<i className="fa fa-caret-right" aria-hidden="true" />}
+					</button>
+				)}
+			</>
+		);
+	}
+
+	function IndicatorBar() {
+		if (!showIndicators || totalSlides <= 1) return null;
+		const canScrollPrev = visibleCount < totalSlides && startIdx > 0;
+		const canScrollNext = visibleCount < totalSlides && startIdx + visibleCount < totalSlides;
+		return (
+			<div
+				className={`carousel-indicators position-${indicatorPosition} indicator-container`}
+				role="tablist"
+				aria-label="Carousel indicators"
+				style={resolvedStyles.indicatorContainer ?? {}}
+			>
+				<SubHelperComponent
+					definition={props?.definition}
+					subComponentName="indicatorContainer"
+				/>
+				{showIndicatorArrows && canScrollPrev && (
+					<button
+						className="indicator-nav-btn prev"
+						aria-label="Scroll indicators backward"
+						onClick={e => {
+							e.stopPropagation();
+							const newStart = Math.max(0, startIdx - 1);
+							const newCurrent = Math.max(newStart, currentSlide - 1);
+							setCurrentSlide(newCurrent);
+							setSlideNum(newCurrent);
+						}}
+						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
+					>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtn"
+						/>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtnActive"
+						/>
+						<i className="fa fa-caret-left" aria-hidden="true" />
+					</button>
+				)}
+				{indicatorIndexes.map(idx => {
+					const isActive = idx === currentSlide;
+					let indicatorClass = 'indicator-button';
+					if (isActive) indicatorClass += ' active';
+					if (indicatorShape) indicatorClass += ` shape-${indicatorShape}`;
+					if (indicatorFill) indicatorClass += ` fill-${indicatorFill}`;
+					return (
+						<div
+							key={idx}
+							className={indicatorClass}
+							role="tab"
+							aria-selected={isActive}
+							aria-label={`Go to slide ${idx + 1}`}
+							tabIndex={0}
+							onClick={() => {
+								setCurrentSlide(idx);
+								setSlideNum(idx);
+							}}
+							onKeyDown={e => {
+								if (e.key === 'Enter' || e.key === ' ') {
+									setCurrentSlide(idx);
+									setSlideNum(idx);
+								}
+							}}
+							style={isActive ? { ...(resolvedStyles.indicatorButton ?? {}), ...(resolvedStyles.indicatorButtonActive ?? {}) } : resolvedStyles.indicatorButton ?? {}}
+						>
+							<SubHelperComponent
+								definition={props?.definition}
+								subComponentName="indicatorButton"
+								key={idx}
+							/>
+							{isActive && (
+								<SubHelperComponent
+									definition={props?.definition}
+									subComponentName="indicatorButtonActive"
+									key={"active" + idx}
+								/>
+							)}
+							{indicatorShowNumbers ? idx + 1 : indicatorShape === 'dash' ? '' : ''}
+						</div>
+					);
+				})}
+				{showIndicatorArrows && canScrollNext && (
+					<button
+						className="indicator-nav-btn next"
+						aria-label="Scroll indicators forward"
+						onClick={e => {
+							e.stopPropagation();
+							const newStart = Math.min(totalSlides - visibleCount, startIdx + 1);
+							const newCurrent = Math.min(
+								newStart + visibleCount - 1,
+								currentSlide + 1,
+							);
+							setCurrentSlide(newCurrent);
+							setSlideNum(newCurrent);
+						}}
+						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
+					>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtn"
+						/>
+						<SubHelperComponent
+							definition={props?.definition}
+							subComponentName="indicatorNavBtnActive"
+						/>
+						<i className="fa fa-caret-right" aria-hidden="true" />
+					</button>
+				)}
+			</div>
+		);
+	}
+
 	return (
 		<div
 			className={`comp compCarousel ${arrowButtons !== 'OutsideBottomRight' && arrowButtons !== 'OutsideBottomLeft'
@@ -210,6 +415,7 @@ function Carousel(props: Readonly<ComponentProps>) {
 			onMouseLeave={handleMouseLeave}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			{(indicatorPosition === 'top' || indicatorPosition === 'left') && <IndicatorBar />}
 			{showArrowButtons && (
 				<div
 					className={`arrowButtonsContainer ${showNavigationControlsOnHover
@@ -226,7 +432,6 @@ function Carousel(props: Readonly<ComponentProps>) {
 					<i
 						className={` fa-solid fa-chevron-left button ${arrowButtons === 'Middle' ? 'leftArrowButton' : ''
 							}`}
-						style={resolvedStyles.arrowButtons ?? {}}
 						onClick={() => {
 							if (!isNullValue(transitionFrom)) return;
 							setTransitionFrom(slideNum);
@@ -243,7 +448,6 @@ function Carousel(props: Readonly<ComponentProps>) {
 					<i
 						className={` fa-solid fa-chevron-right button ${arrowButtons === 'Middle' ? 'rightArrowButton' : ''
 							}`}
-						style={resolvedStyles.arrowButtons ?? {}}
 						onClick={() => {
 							if (!isNullValue(transitionFrom)) return;
 							setTransitionFrom(slideNum);
@@ -262,8 +466,12 @@ function Carousel(props: Readonly<ComponentProps>) {
 				className={`innerDivSlideNav ${`slideNavDiv${slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : 'innerDivSlideNav'
 					}`}`}
 			>
-				<div className="innerDiv">{showChildren}</div>
-
+				<div className="innerDiv"
+					onTouchStart={handleTouchStart}
+					onTouchMove={handleTouchMove}
+					onTouchEnd={handleTouchEnd}
+				>{showChildren}</div>
+				{(indicatorPosition === 'bottom' || indicatorPosition === 'right') && <IndicatorBar />}
 				<div
 					className={`slideButtonsContainer slideNavDiv${slideNavButtonPosition} ${slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
 						} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
@@ -273,33 +481,6 @@ function Carousel(props: Readonly<ComponentProps>) {
 						definition={props.definition}
 						subComponentName="slideButtonsContainer"
 					></SubHelperComponent>
-					{showDotsButtons &&
-						(childrenDef ?? []).map((e: any, key: any) => (
-							<button
-								key={key}
-								className={` slideNav  ${dotsButtonType !== 'none' && hasNumbersInSlideNav === false
-										? `fa-${dotsButtonIconType} fa-${dotsButtonType}`
-										: ` `
-									}  ${hasNumbersInSlideNav ? `${dotsButtonType}WithNumbers` : ''} `}
-								style={resolvedStyles.dotButtons ?? {}}
-								onClick={() => {
-									if (!isNullValue(transitionFrom)) return;
-									setTransitionFrom(slideNum);
-									setSlideNum(key);
-									setTimeout(
-										() => setTransitionFrom(undefined),
-										animationDuration + 20,
-									);
-								}}
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="dotButtons"
-									key={key}
-								></SubHelperComponent>
-								{hasNumbersInSlideNav ? key + 1 : ''}
-							</button>
-						))}
 				</div>
 			</div>
 		</div>
@@ -373,10 +554,34 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 		{
-			name: 'dotButtons',
-			displayName: 'Dot Buttons',
-			description: 'Dot Buttons',
-			icon: 'fa-solid fa-box',
+			name: 'indicatorContainer',
+			displayName: 'Indicator Container',
+			description: 'Container for slide indicators',
+			icon: 'fa-solid fa-circle',
+		},
+		{
+			name: 'indicatorButton',
+			displayName: 'Indicator Button',
+			description: 'Individual indicator button',
+			icon: 'fa-solid fa-circle',
+		},
+		{
+			name: 'indicatorButtonActive',
+			displayName: 'Indicator Button Active',
+			description: 'Active indicator button',
+			icon: 'fa-solid fa-circle',
+		},
+		{
+			name: 'indicatorNavBtn',
+			displayName: 'Indicator Navigation Arrow',
+			description: 'Indicator navigation arrow button',
+			icon: 'fa-solid fa-arrow-right-arrow-left',
+		},
+		{
+			name: 'indicatorNavBtnActive',
+			displayName: 'Active Indicator Navigation Arrow',
+			description: 'Active indicator navigation arrow button',
+			icon: 'fa-solid fa-arrow-right-arrow-left',
 		},
 	],
 	stylePropertiesForTheme: styleProperties,

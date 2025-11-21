@@ -523,7 +523,9 @@ export function ImageResizer2({
 										[],
 									),
 								};
-								if (globalThis.isDebugMode) headers['x-debug'] = shortUUID();
+								if (globalThis.isDebugMode)
+									headers['x-debug'] =
+										(globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 								r.src = await axios
 									.get(url, { responseType: 'blob', headers })

@@ -4,10 +4,11 @@ import {
 	Repository,
 	Schema,
 	TokenValueExtractor,
+	duplicate,
 	isNullValue,
 } from '@fincity/kirun-js';
 import { StoreExtractor } from '@fincity/path-reactive-state-management';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	COPY_FUNCTION_KEY,
 	COPY_STMT_KEY,
@@ -20,20 +21,19 @@ import {
 	getDataFromPath,
 	setData,
 } from '../../../context/StoreContext';
+import { ThemeExtractor } from '../../../context/ThemeExtractor';
+import { REPO_SERVER, RemoteRepository } from '../../../Engine/RemoteRepository';
+import { UIFunctionRepository } from '../../../functions';
+import { UISchemaRepository } from '../../../schemas/common';
 import {
 	ComponentDefinition,
 	LocationHistory,
 	PageDefinition,
 	RenderContext,
 } from '../../../types/common';
-import { duplicate } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
 import KIRunEditor from '../../KIRunEditor/KIRunEditor';
 import PageDefintionFunctionsRepository from '../../util/PageDefinitionFunctionsRepository';
-import { ThemeExtractor } from '../../../context/ThemeExtractor';
-import { UIFunctionRepository } from '../../../functions';
-import { REPO_SERVER, RemoteRepository } from '../../../Engine/RemoteRepository';
-import { UISchemaRepository } from '../../../schemas/common';
 
 interface CodeEditorProps {
 	showCodeEditor: string | undefined;
@@ -344,37 +344,45 @@ export default function CodeEditor({
 									} else if (data.startsWith(COPY_STMT_KEY)) {
 										if (!selectedFunction) return;
 
-										const steps = data.split(COPY_STMT_KEY).filter(e => e).map(e => JSON.parse(e));
+										const steps = data
+											.split(COPY_STMT_KEY)
+											.filter(e => e)
+											.map(e => JSON.parse(e));
 										if (!steps.length) return;
 										let newFun = duplicate(eventFunctions[selectedFunction]);
 										if (!newFun.steps) newFun.steps = {};
-										
-										const changes: Array<[string, string] | undefined> = steps.map(step => {
-											let name:string = step.statementName;
-											let i = 0;
-											const oldStatementName:string = step.statementName;
-											while (newFun.steps[name]) {
-												i++;
-												name = step.statementName + '_Copy_' + i;
-											}
-											step.position = {
-												left: (step.position.left ?? 0) + 40 * i,
-												top: (step.position.top ?? 0) + 40 * i,
-											};
-											step.statementName = name;
-											newFun.steps[name] = step;
-											if (oldStatementName == name) return undefined;
-											return [oldStatementName, name];
-										});
-										
-										changes.forEach((params) => {
+
+										const changes: Array<[string, string] | undefined> =
+											steps.map(step => {
+												let name: string = step.statementName;
+												let i = 0;
+												const oldStatementName: string = step.statementName;
+												while (newFun.steps[name]) {
+													i++;
+													name = step.statementName + '_Copy_' + i;
+												}
+												step.position = {
+													left: (step.position.left ?? 0) + 40 * i,
+													top: (step.position.top ?? 0) + 40 * i,
+												};
+												step.statementName = name;
+												newFun.steps[name] = step;
+												if (oldStatementName == name) return undefined;
+												return [oldStatementName, name];
+											});
+
+										changes.forEach(params => {
 											if (!params) return;
 											const [oldName, newName] = params;
 
 											for (let step of steps) {
 												const str = JSON.stringify(step);
-												const newStr = str.replace(`Steps.${oldName}.`, `Steps.${newName}.`);
-												newFun.steps[step.statementName] = JSON.parse(newStr);
+												const newStr = str.replace(
+													`Steps.${oldName}.`,
+													`Steps.${newName}.`,
+												);
+												newFun.steps[step.statementName] =
+													JSON.parse(newStr);
 											}
 										});
 

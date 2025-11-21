@@ -29,15 +29,16 @@ export default function OtpStyle({ theme }: Readonly<{ theme: Map<string, Map<st
 			'colorScheme',
 		);
 
-		const fn = () => setTimeout(() => {
-			inflateAndSetStyleProps(
-				[designType, colorScheme],
-				stylePropertiesForTheme,
-				(props, _) => styleProperties.splice(0, 0, ...props),
-				styleDefaults,
-			);
-			setReRender(Date.now());
-		}, 100);
+		const fn = () =>
+			setTimeout(() => {
+				inflateAndSetStyleProps(
+					[designType, colorScheme],
+					stylePropertiesForTheme,
+					(props, _) => styleProperties.splice(0, 0, ...props),
+					styleDefaults,
+				);
+				setReRender(Date.now());
+			}, 100);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);
@@ -94,6 +95,14 @@ export default function OtpStyle({ theme }: Readonly<{ theme: Map<string, Map<st
 			left: 0;
 			top: 100%;
 			margin-top: 10px;
+		}
+
+		${PREFIX} ._visibilityToggle{
+			position: relative;
+			z-index: 1;
+			left: 0;
+			top: 100%;
+			transform: translateY(30%);
 		}
 	
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

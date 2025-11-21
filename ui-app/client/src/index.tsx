@@ -15,6 +15,7 @@ import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 declare global {
 	var nodeDev: boolean;
 	var isDesignMode: boolean;
+	var isFullDebugMode: boolean;
 	var designMode: string;
 	var addDesignModeChangeListener: (fn: () => void) => () => void;
 	var removeDesignModeChangeListener: (fn: () => void) => void;
