@@ -836,6 +836,10 @@ input._peInput[type='number'] {
 	opacity: 0.3;
 }
 
+.comp.compPageEditor ._microToggle2:hover {
+	border: 1px solid #198a61;
+}
+
 .comp.compPageEditor ._microToggle2._withText {
 	height: auto;
 	width: auto;
@@ -870,6 +874,11 @@ input._peInput[type='number'] {
 	opacity: 0.8;
 	border: 1px solid #198a61;
 	color: #fff;
+}
+
+.comp.compPageEditor ._microToggle2:hover::before {
+	background-color: #52bd94;
+	border: 1px solid #198a61;
 }
 
 .comp.compPageEditor ._microToggle2._on::before {
@@ -1390,6 +1399,12 @@ input._peInput[type='number'] {
 	align-items: center;
 }
 
+.comp.compPageEditor ._layerControls._column {
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 5px;
+}
+
 .comp.compPageEditor ._iconDropdown {
 	position: relative;
 	display: inline-block;
@@ -1629,6 +1644,10 @@ input._peInput[type='number'] {
 	border-radius: 4px;
 	text-align: center;
 	justify-content: space-between;
+}
+
+.comp.compPageEditor ._simpleEditorButtonBar._auto {
+	width: auto;
 }
 
 .comp.compPageEditor ._simpleEditorButtonBar ._simpleButtonBarButton {
