@@ -4,15 +4,16 @@ import { EffectsEditor } from './EffectsEditor';
 import { PositionEditor } from './PositionEditor';
 import { SpacingEditor } from './SpacingEditor';
 import { TypographyEditor } from './TypographyEditor';
-import { BackgroundEditor } from './BackgroundEditor';
-import { LayoutEditor } from './LayoutEditor';
+import { BackgroundEditor } from './BackgroundEditorV2';
 import { LayoutEditorV2 } from './LayoutEditorV2';
+import { SizeEditor } from './SizeEditor';
 
 export const Style_Group_Editors = new Map([
 	['typography', { component: TypographyEditor, hasDetails: true, displayName: 'Typography' }],
 	['animation', { component: AnimationEditor, hasDetails: false, displayName: 'Animation' }],
 	['position', { component: PositionEditor, hasDetails: false, displayName: 'Position' }],
 	['spacing', { component: SpacingEditor, hasDetails: false, displayName: 'Sapcing' }],
+	['size', { component: SizeEditor, hasDetails: true, displayName: 'Size' }],
 	['effects', { component: EffectsEditor, hasDetails: true, displayName: 'Effects' }],
 	['border', { component: BorderEditor, hasDetails: true, displayName: 'Border' }],
 	['background', { component: BackgroundEditor, hasDetails: true, displayName: 'Background' }],
