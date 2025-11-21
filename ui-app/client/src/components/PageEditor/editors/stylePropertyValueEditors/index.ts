@@ -4,7 +4,7 @@ import { EffectsEditor } from './EffectsEditor';
 import { PositionEditor } from './PositionEditor';
 import { SpacingEditor } from './SpacingEditor';
 import { TypographyEditor } from './TypographyEditor';
-import { BackgroundEditor } from './BackgroundEditor';
+import { BackgroundEditor } from './BackgroundEditorV2';
 import { LayoutEditorV2 } from './LayoutEditorV2';
 
 export const Style_Group_Editors = new Map([

@@ -1559,7 +1559,7 @@ export function LayoutEditorV2({
 						{renderEditor('justifyItems', {
 							type: SimpleEditorType.Icons,
 							withBackground: true,
-							visibleIconCount: 5,
+							visibleIconCount: 4,
 							Options: AlignItemsOptions,
 						})}
 					</div>
@@ -1579,7 +1579,7 @@ export function LayoutEditorV2({
 						{renderEditor('alignItems', {
 							type: SimpleEditorType.Icons,
 							withBackground: true,
-							visibleIconCount: 5,
+							visibleIconCount: 4,
 							Options: AlignItemsOptions,
 						})}
 					</div>
@@ -1718,7 +1718,7 @@ export function LayoutEditorV2({
 						{renderEditor('justifyItems', {
 							type: SimpleEditorType.Icons,
 							withBackground: true,
-							visibleIconCount: 5,
+							visibleIconCount: 4,
 							Options: AlignItemsOptions,
 						})}
 					</div>
@@ -1738,7 +1738,7 @@ export function LayoutEditorV2({
 						{renderEditor('alignItems', {
 							type: SimpleEditorType.Icons,
 							withBackground: true,
-							visibleIconCount: 5,
+							visibleIconCount: 4,
 							Options: AlignItemsOptions,
 						})}
 					</div>
@@ -1751,62 +1751,6 @@ export function LayoutEditorV2({
 						visibleIconCount: 6,
 						Options: JustifyContentOptions,
 					})}
-				</>
-			)}
-
-			{/* Common layout properties - shown for flex and grid */}
-			{(isFlex || isGrid) && (
-				<>
-					<div className="_spacer" />
-					<div className="_simpleLabel _withPadding">Common Properties</div>
-
-					{/* Width */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Width</div>
-						{renderEditor('width', {
-							type: SimpleEditorType.PixelSize,
-						})}
-					</div>
-
-					{/* Height */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Height</div>
-						{renderEditor('height', {
-							type: SimpleEditorType.PixelSize,
-						})}
-					</div>
-
-					{/* Min Width */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Min Width</div>
-						{renderEditor('minWidth', {
-							type: SimpleEditorType.PixelSize,
-						})}
-					</div>
-
-					{/* Min Height */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Min Height</div>
-						{renderEditor('minHeight', {
-							type: SimpleEditorType.PixelSize,
-						})}
-					</div>
-
-					{/* Max Width */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Max Width</div>
-						{renderEditor('maxWidth', {
-							type: SimpleEditorType.PixelSize,
-						})}
-					</div>
-
-					{/* Max Height */}
-					<div className="_combineEditors">
-						<div className="_simpleLabel">Max Height</div>
-						{renderEditor('maxHeight', {
-							type: SimpleEditorType.PixelSize,
-						})}
-					</div>
 				</>
 			)}
 
