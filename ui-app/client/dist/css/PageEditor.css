@@ -54,7 +54,7 @@
 
 .comp.compPageEditor ._propBar._propBarVisible {
 	display: flex;
-	width: 300px;
+	width: 330px;
 }
 
 .comp.compPageEditor ._propBar._compNavBarVisible {
@@ -893,6 +893,7 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor ._combineEditors ._simpleEditor {
 	padding: 0px;
+	flex: 1;
 }
 
 .comp.compPageEditor ._combineEditors ._simpleEditor._expandWidth {
@@ -1429,6 +1430,7 @@ input._peInput[type='number'] {
 	left: 50%;
 	transform: translateX(-80%);
 	display: block;
+	border: none;
 }
 
 .comp.compPageEditor ._dropdownContent {
@@ -1482,6 +1484,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._dropdownContent ._iconName {
 	flex-grow: 1;
 	text-align: center;
+	white-space: nowrap;
 }
 
 .comp.compPageEditor ._simpleEditorGroupTitle ._controls {
@@ -1625,6 +1628,7 @@ input._peInput[type='number'] {
 	background-color: #f9f9f9;
 	border-radius: 4px;
 	text-align: center;
+	justify-content: space-between;
 }
 
 .comp.compPageEditor ._simpleEditorButtonBar ._simpleButtonBarButton {
