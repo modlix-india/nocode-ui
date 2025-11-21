@@ -5,7 +5,6 @@ import { PositionEditor } from './PositionEditor';
 import { SpacingEditor } from './SpacingEditor';
 import { TypographyEditor } from './TypographyEditor';
 import { BackgroundEditor } from './BackgroundEditor';
-import { LayoutEditor } from './LayoutEditor';
 import { LayoutEditorV2 } from './LayoutEditorV2';
 
 export const Style_Group_Editors = new Map([
