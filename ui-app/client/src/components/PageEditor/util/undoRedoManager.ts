@@ -237,7 +237,7 @@ class UndoRedoManager {
 		// Apply all diffs from snapshotIndex + 1 to targetIndex
 		for (let i = snapshotIndex + 1; i <= targetIndex; i++) {
 			const entry = stack[i];
-			if (entry.diff) {
+			if (entry.diff && state) {
 				state = this.applyDiffToState(state, entry);
 			} else if (entry.snapshot) {
 				state = duplicate(entry.snapshot);
