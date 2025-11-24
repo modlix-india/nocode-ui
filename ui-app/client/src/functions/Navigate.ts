@@ -18,6 +18,7 @@ const SIGNATURE = new FunctionSignature('Navigate')
 			Parameter.ofEntry('linkPath', Schema.ofString('linkPath')),
 			Parameter.ofEntry('target', Schema.ofString('target').setDefaultValue('_self')),
 			Parameter.ofEntry('force', Schema.ofBoolean('force').setDefaultValue(false)),
+			Parameter.ofEntry('removeThisPageFromHistory', Schema.ofBoolean('removeThisPageFromHistory').setDefaultValue(false)),
 		]),
 	)
 	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));
@@ -27,13 +28,19 @@ export class Navigate extends AbstractFunction {
 		const linkPath: string = context.getArguments()?.get('linkPath');
 		const target = context.getArguments()?.get('target');
 		const force = context.getArguments()?.get('force');
-
+		const removeThisPageFromHistory = context.getArguments()?.get('removeThisPageFromHistory');
 		const url = getHref(linkPath, window.location);
 
-		if (target === '_self' && !force && !url?.startsWith("http")) {			
-			window.history.pushState(undefined, '', url);
-			window.history.back();
-			setTimeout(() => window.history.forward(), 100);
+		if (target === '_self' && !force && !url?.startsWith("http")) {	
+			if (removeThisPageFromHistory) {
+				window.history.replaceState(undefined, '', url);
+				window.history.back();
+				setTimeout(() => window.history.forward(), 100);
+			} else {
+				window.history.pushState(undefined, '', url);
+				window.history.back();
+				setTimeout(() => window.history.forward(), 100);
+			}
 		} else window.open(url, target);
 
 		return new FunctionOutput([EventResult.outputOf(new Map())]);
