@@ -347,7 +347,7 @@ export function ContextMenu({
 							<div
 								className="_popupMenuItem"
 								title="Generate a Form"
-								onClick={() => setClickedComponent(menuDetails.componentKey)}
+								onClick={() => setClickedComponent(menuDetails?.componentKey)}
 							>
 								<IconHelper viewBox="0 0 17 17">
 									<path
