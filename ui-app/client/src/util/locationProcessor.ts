@@ -1,6 +1,8 @@
 import { Location as ReactLocation } from 'react-router-dom';
 
-export function processLocation(location: ReactLocation | Location) {
+type LocationLike = Pick<Location, 'pathname' | 'search'>;
+
+export function processLocation(location: ReactLocation | Location | LocationLike) {
 	const details: {
 		queryParameters: any;
 		pathParts?: Array<string> | undefined;

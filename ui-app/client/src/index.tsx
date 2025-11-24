@@ -122,6 +122,14 @@ setInterval(async () => {
 	});
 }, 60000);
 
+const bootstrapPayload = globalThis.__APP_BOOTSTRAP__;
+if (bootstrapPayload?.appDefinitionResponse)
+	globalThis.appDefinitionResponse = bootstrapPayload.appDefinitionResponse;
+if (bootstrapPayload?.pageDefinitionResponse)
+	globalThis.pageDefinitionResponse = bootstrapPayload.pageDefinitionResponse;
+if (bootstrapPayload?.pageDefinitionRequestPageName)
+	globalThis.pageDefinitionRequestPageName = bootstrapPayload.pageDefinitionRequestPageName;
+
 const app = document.getElementById('app');
 if (!app) {
 	const span = document.createElement('SPAN');
@@ -129,26 +137,46 @@ if (!app) {
 	document.body.appendChild(span);
 } else {
 	(async function () {
-		const pageName = processLocation(window.location)?.pageName;
+		const locationLike = bootstrapPayload?.location ?? window.location;
+		const pageName = processLocation(locationLike)?.pageName;
 
-		let appDefinitionResponse, pageDefinitionResponse;
-		if (pageName) {
-			globalThis.pageDefinitionRequestPageName = pageName;
-			[appDefinitionResponse, pageDefinitionResponse] = await Promise.all([
-				getAppDefinition(),
-				getPageDefinition(pageName),
-			]);
-		} else {
-			appDefinitionResponse = await getAppDefinition();
-			globalThis.pageDefinitionRequestPageName =
-				appDefinitionResponse?.application?.properties?.defaultPage;
-			pageDefinitionResponse = await getPageDefinition(
-				globalThis.pageDefinitionRequestPageName,
-			);
+		let appDefinitionResponse: AppDefinitionResponse | undefined =
+			bootstrapPayload?.appDefinitionResponse;
+		let pageDefinitionResponse: PageDefinition | undefined =
+			bootstrapPayload?.pageDefinitionResponse;
+		let requestedPageName: string | undefined =
+			bootstrapPayload?.pageDefinitionRequestPageName ?? pageName ?? undefined;
+
+		if (!appDefinitionResponse || !pageDefinitionResponse) {
+			if (pageName) {
+				globalThis.pageDefinitionRequestPageName = pageName;
+				if (!appDefinitionResponse && !pageDefinitionResponse) {
+					[appDefinitionResponse, pageDefinitionResponse] = await Promise.all([
+						getAppDefinition(),
+						getPageDefinition(pageName),
+					]);
+				} else {
+					if (!appDefinitionResponse) appDefinitionResponse = await getAppDefinition();
+					if (!pageDefinitionResponse)
+						pageDefinitionResponse = await getPageDefinition(pageName);
+				}
+				requestedPageName = pageName;
+			} else {
+				if (!appDefinitionResponse) appDefinitionResponse = await getAppDefinition();
+				requestedPageName =
+					requestedPageName ??
+					appDefinitionResponse?.application?.properties?.defaultPage;
+				if (requestedPageName && !pageDefinitionResponse)
+					pageDefinitionResponse = await getPageDefinition(requestedPageName);
+			}
 		}
+
+		if (!appDefinitionResponse || !pageDefinitionResponse || !requestedPageName)
+			throw new Error('Unable to resolve application or page definition for bootstrap');
 
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
+		globalThis.pageDefinitionRequestPageName = requestedPageName;
 
 		const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
 
@@ -202,7 +230,9 @@ if (!app) {
 				<App />
 			</>
 		);
-		if (window.localStorage.getItem(AUTH_TOKEN) || !rendered) createRoot(app).render(reactNode);
+		const shouldHydrate = !!(bootstrapPayload && rendered);
+		if (!shouldHydrate && (window.localStorage.getItem(AUTH_TOKEN) || !rendered))
+			createRoot(app).render(reactNode);
 		else
 			try {
 				hydrateRoot(app, reactNode);

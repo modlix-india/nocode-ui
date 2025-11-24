@@ -91,10 +91,18 @@ export function AppStyle() {
 		[],
 	);
 
+	const resolvedLocation =
+		(typeof window !== 'undefined' ? window.location : undefined) ??
+		globalThis.__APP_BOOTSTRAP__?.location ??
+		({ pathname: '/', search: '' } as Location);
+
 	let css =
 		`${globalThis.isDesignMode ? 'html { width: calc(100% - 6px) }' : ''}
 	._flag {
-		background: url('${getHref('api/files/static/file/SYSTEM/jslib/flags/flags.png', window.location)}') no-repeat;
+		background: url('${getHref(
+			'api/files/static/file/SYSTEM/jslib/flags/flags.png',
+			resolvedLocation,
+		)}') no-repeat;
 		background-size: 100%;
 	}
 

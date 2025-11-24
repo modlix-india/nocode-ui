@@ -1,5 +1,10 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import { shortUUID } from '../util/shortUUID';
+import {
+	fetchApplicationDefinition,
+	fetchThemeDefinition,
+	verifyAuthToken,
+} from '../shared/api/appData';
 
 export interface AppDefinitionResponse {
 	auth: any;
@@ -30,29 +35,24 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 			localStorage.removeItem(TOKEN_NAME);
 			localStorage.removeItem(TOKEN_EXPIRY);
 		} else {
-			({ axiosOptions, auth } = await makeVerifyTokenCall(
-				axiosOptions,
-				authToken,
-				language,
-				TOKEN_NAME,
-				TOKEN_EXPIRY,
-			));
+			applyDebugHeader(axiosOptions);
+			const verifyResult = await verifyAuthToken(authToken, axiosOptions);
+			axiosOptions = verifyResult.axiosOptions;
+			auth = verifyResult.auth;
+			language = verifyResult.language ?? language;
 		}
 	}
 
-	let application,
-		isApplicationLoadFailed = false,
-		theme;
+	const {
+		application,
+		isApplicationLoadFailed,
+		language: appLanguage,
+	} = await fetchApplicationDefinition(axiosOptions);
 
-	({ application, isApplicationLoadFailed, language } = await makeAppDefinitionCall(
-		axiosOptions,
-		language,
-	));
-	if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
-	try {
-		const response = await axios.get('api/ui/theme', axiosOptions);
-		if (response.status === 200) theme = response.data;
-	} catch (err) {}
+	if (!language) language = appLanguage;
+
+	applyDebugHeader(axiosOptions);
+	const theme = await fetchThemeDefinition(axiosOptions);
 
 	if (language) localStorage.setItem(TOKEN_LANGUAGE, language);
 	else localStorage.removeItem(TOKEN_LANGUAGE);
@@ -60,52 +60,9 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 	return { auth, application, isApplicationLoadFailed, theme };
 }
 
-async function makeAppDefinitionCall(
-	axiosOptions: AxiosRequestConfig<any>,
-	language: string | undefined,
-) {
-	let application = undefined;
-	let isApplicationLoadFailed = false;
-	try {
-		const response = await axios.get('api/ui/application', axiosOptions);
-		if (response.status === 200) {
-			application = response.data;
-			if (!language) language = response.data.defaultLanguage;
-		}
-	} catch (e) {
-		isApplicationLoadFailed = true;
-		console.error('Unable to load application definition:', e);
-	}
-	return { application, isApplicationLoadFailed, language };
-}
-
-async function makeVerifyTokenCall(
-	axiosOptions: AxiosRequestConfig<any>,
-	authToken: string,
-	language: string | undefined,
-	TOKEN_NAME: string,
-	TOKEN_EXPIRY: string,
-) {
-	try {
-		axiosOptions.headers!.Authorization = JSON.parse(authToken);
-		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
-		const response = await axios.get('api/security/verifyToken', axiosOptions);
-
-		if (response.status === 200) {
-			language = response.data.localeCode;
-			// localStorage.setItem(, language);
-		} else {
-			localStorage.removeItem(TOKEN_NAME);
-			localStorage.removeItem(TOKEN_EXPIRY);
-			axiosOptions = {};
-		}
-		return { auth: response?.data, axiosOptions, language };
-	} catch (e) {
-		console.error('Unable to verify token:', e);
-		// localStorage.removeItem(TOKEN_NAME);
-		// localStorage.removeItem(TOKEN_EXPIRY);
-		axiosOptions = { headers: {} };
-		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
-	}
-	return { axiosOptions, language };
+function applyDebugHeader(axiosOptions: AxiosRequestConfig<any>) {
+	if (!globalThis.isDebugMode) return;
+	if (!axiosOptions.headers) axiosOptions.headers = {};
+	axiosOptions.headers['x-debug'] =
+		(globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 }

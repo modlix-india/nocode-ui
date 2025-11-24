@@ -168,7 +168,12 @@ function processIconPacks(iconPacks: any) {
 	});
 }
 
-export function App() {
+type AppProps = {
+	RouterComponent?: React.ComponentType<any>;
+	routerProps?: Record<string, any>;
+};
+
+export function App({ RouterComponent = BrowserRouter, routerProps = {} }: AppProps = {}) {
 	const [isApplicationLoadFailed, setIsApplicationLoadFailed] = useState(false);
 
 	const [firstTime, setFirstTime] = useState(true);
@@ -239,9 +244,12 @@ export function App() {
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
+	const Router = RouterComponent;
+
 	return (
 		<>
-			<BrowserRouter
+			<Router
+				{...routerProps}
 				future={{
 					v7_startTransition: true,
 					v7_relativeSplatPath: true,
@@ -250,7 +258,7 @@ export function App() {
 				<Routes>
 					<Route path="/*" element={<RenderEngineContainer />} />
 				</Routes>
-			</BrowserRouter>
+			</Router>
 			<Messages />
 			<div id="_rendered" data-used-components={usedComps} />
 		</>
@@ -337,6 +345,7 @@ function setSmallDeviceTypes(size: number, newDevices: { [key: string]: boolean 
 }
 
 function setDeviceType() {
+	if (typeof document === 'undefined' || typeof window === 'undefined') return;
 	if (!document.body) return;
 	const size = document.body.offsetWidth;
 	const newDevices: { [key: string]: boolean } = {};
@@ -366,6 +375,8 @@ function setDeviceType() {
 }
 
 function setScrollDetails() {
+	if (typeof document === 'undefined' || typeof window === 'undefined' || !document.body)
+		return;
 	let size = document.body.scrollHeight - window.innerHeight;
 	setData(
 		'Store.window.scrollYPercentage',
@@ -382,6 +393,8 @@ function setScrollDetails() {
 	setData('Store.window.scrollX', window.scrollX);
 }
 
-setDeviceType();
-window.addEventListener('resize', setDeviceType);
-window.addEventListener('scroll', setScrollDetails);
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+	setDeviceType();
+	window.addEventListener('resize', setDeviceType);
+	window.addEventListener('scroll', setScrollDetails);
+}

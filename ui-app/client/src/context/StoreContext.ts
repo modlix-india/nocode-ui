@@ -40,7 +40,19 @@ export class StoreExtractor extends SpecialTokenValueExtractor {
 	}
 }
 
-let localStore: any = {};
+type LocalStore = {
+	getItem: (key: string) => string | null;
+	setItem: (key: string, value: string) => void;
+	removeItem: (key: string) => void;
+};
+
+const noopStore: LocalStore = {
+	getItem: () => null,
+	setItem: () => {},
+	removeItem: () => {},
+};
+
+let localStore: LocalStore = noopStore;
 if (typeof window !== 'undefined') {
 	localStore = window.localStorage;
 }
@@ -49,15 +61,16 @@ export const themeExtractor = new ThemeExtractor();
 export const authoritiesExtractor = new AuthoritiesExtractor();
 export const fillerExtractor = new FillerExtractor();
 
-let pathName = window.location?.pathname;
-let urlAppCode = undefined;
-let urlClientCode = undefined;
+let pathName: string | undefined =
+	typeof window !== 'undefined' ? window.location?.pathname ?? undefined : undefined;
+let urlAppCode: string | undefined = undefined;
+let urlClientCode: string | undefined = undefined;
 
-let index = pathName?.indexOf('/page');
+const pageIndex = pathName?.indexOf('/page') ?? -1;
 
-if (index != undefined && index != -1) {
-	pathName = pathName.substring(0, index);
-	const parts = pathName.split('/');
+if (pathName && pageIndex !== -1) {
+	const basePath = pathName.substring(0, pageIndex);
+	const parts = basePath.split('/');
 	if (parts.length > 1) {
 		urlAppCode = parts[1];
 	}
@@ -66,40 +79,65 @@ if (index != undefined && index != -1) {
 	}
 }
 
-let storeInitialObject: any = { url: { appCode: urlAppCode, clientCode: urlClientCode } };
-if (globalThis.appDefinitionResponse)
-	storeInitialObject = { ...storeInitialObject, ...globalThis.appDefinitionResponse };
-if (globalThis.pageDefinitionResponse)
-	storeInitialObject.pageDefinition = {
-		[globalThis.pageDefinitionRequestPageName]: globalThis.pageDefinitionResponse,
-	};
+type StoreAPI = ReturnType<typeof useStore>;
 
-const {
-	getData: _getData,
-	setData: _setData,
-	store: _store,
-	addListener: _addListener,
-	addListenerAndCallImmediately: _addListenerAndCallImmediately,
-	addListenerWithChildrenActivity: _addListenerWithChildrenActivity,
-	addListenerAndCallImmediatelyWithChildrenActivity:
-		_addListenerAndCallImmediatelyWithChildrenActivity,
-} = useStore(
-	storeInitialObject,
-	STORE_PREFIX,
-	localStoreExtractor,
-	themeExtractor,
-	authoritiesExtractor,
-	fillerExtractor,
-	new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}.`),
-);
+let storeApi: StoreAPI;
+export let store: any;
+export let storeExtractor: StoreExtractor;
 
-themeExtractor.setStore(_store);
-authoritiesExtractor.setStore(_store);
-fillerExtractor.setStore(_store);
+function buildInitialStoreObject(initialOverride?: any) {
+	if (initialOverride) return duplicate(initialOverride);
+	if (globalThis.__APP_BOOTSTRAP__?.store) return duplicate(globalThis.__APP_BOOTSTRAP__?.store);
 
-globalThis.getStore = () => duplicate(_store);
+	let initial: any = { url: { appCode: urlAppCode, clientCode: urlClientCode } };
+	if (globalThis.appDefinitionResponse)
+		initial = { ...initial, ...globalThis.appDefinitionResponse };
+	if (globalThis.pageDefinitionResponse)
+		initial.pageDefinition = {
+			[globalThis.pageDefinitionRequestPageName]: globalThis.pageDefinitionResponse,
+		};
+	if (globalThis.__APP_BOOTSTRAP__?.urlDetails)
+		initial.url = { ...initial.url, ...globalThis.__APP_BOOTSTRAP__?.urlDetails };
+	return initial;
+}
 
-export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
+function attachStoreReferences(api: StoreAPI) {
+	store = api.store;
+	themeExtractor.setStore(store);
+	authoritiesExtractor.setStore(store);
+	fillerExtractor.setStore(store);
+	globalThis.getStore = () => duplicate(store);
+	storeExtractor = new StoreExtractor(store, `${STORE_PREFIX}.`);
+	PageStoreExtractor.extractorMap.clear();
+}
+
+function initializeStore(initialOverride?: any): StoreAPI {
+	const initialObject = buildInitialStoreObject(initialOverride);
+	const api = useStore(
+		initialObject,
+		STORE_PREFIX,
+		localStoreExtractor,
+		themeExtractor,
+		authoritiesExtractor,
+		fillerExtractor,
+		new StoreExtractor(sample, `${SAMPLE_STORE_PREFIX}.`),
+	);
+	attachStoreReferences(api);
+	return api;
+}
+
+function ensureStore(initialOverride?: any): StoreAPI {
+	if (!storeApi) {
+		storeApi = initializeStore(initialOverride);
+	}
+	return storeApi;
+}
+
+storeApi = initializeStore();
+
+export function resetStore(initialOverride?: any) {
+	storeApi = initializeStore(initialOverride);
+}
 
 export function getData<T>(
 	prop: ComponentProperty<T> | undefined,
@@ -123,6 +161,7 @@ export function getDataFromLocation(
 	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): any {
+	const api = ensureStore();
 	if (locationHistory?.length)
 		tve = [
 			...tve,
@@ -132,9 +171,9 @@ export function getDataFromLocation(
 			),
 		];
 	if (loc?.type === 'VALUE' && loc.value) {
-		return _getData(loc.value || '', ...tve);
+		return api.getData(loc.value || '', ...tve);
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
-		return _getData(loc.expression || '', ...tve);
+		return api.getData(loc.expression || '', ...tve);
 	}
 }
 
@@ -166,6 +205,7 @@ export function getDataFromPath(
 	...tve: Array<TokenValueExtractor>
 ) {
 	if (!path) return undefined;
+	const api = ensureStore();
 	if (locationHistory?.length && !tve?.some(e => e.getPrefix() === 'Parent.'))
 		tve = [
 			...tve,
@@ -174,10 +214,11 @@ export function getDataFromPath(
 				new Map(tve.map(e => [e.getPrefix(), e])),
 			),
 		];
-	return _getData(path, ...tve);
+	return api.getData(path, ...tve);
 }
 
-export const innerSetData = _setData;
+export const innerSetData = (path: string, value: any, deleteKey?: boolean) =>
+	ensureStore().setData(path, value, deleteKey);
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
 	// console.error('Data set : ', path, value);
@@ -188,8 +229,10 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 		return;
 	}
 
+	const storeAPI = ensureStore();
+
 	if (path.startsWith(PAGE_STORE_PREFIX) && context) {
-		_setData(
+		storeAPI.setData(
 			`Store.pageData.${context}.${path.substring(PAGE_STORE_PREFIX.length + 1)}`,
 			value,
 			deleteKey,
@@ -202,13 +245,13 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			path ===
 				`${STORE_PREFIX}.pageDefinition.${globalThis.pageEditor.editingPageDefinition.name}`
 		) {
-			_setData(
+			storeAPI.setData(
 				path,
 				globalThis.pageEditor.editingPageDefinition.name !== value.name
 					? value
 					: globalThis.pageEditor.editingPageDefinition,
 			);
-		} else _setData(path, value, deleteKey);
+		} else storeAPI.setData(path, value, deleteKey);
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
 		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 
@@ -248,7 +291,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 
 	if (globalThis.designMode !== 'PAGE') return;
 
-	messageToMaster({ type: 'SLAVE_STORE', payload: _store });
+	messageToMaster({ type: 'SLAVE_STORE', payload: store });
 }
 
 export class PageStoreExtractor extends SpecialTokenValueExtractor {
@@ -257,7 +300,7 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 
 	static readonly extractorMap: Map<string, PageStoreExtractor> = new Map();
 
-	constructor(pageName: string, myStore: any = _store) {
+	constructor(pageName: string, myStore: any = store) {
 		super();
 		this.pageName = pageName;
 		this.myStore = myStore;
@@ -302,7 +345,7 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 			`Store.pageData.${this.pageName}`,
 			['pageData', this.pageName],
 			0,
-			_store,
+			store,
 		);
 	}
 }
@@ -320,7 +363,8 @@ export const addListener = (
 	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	return _addListener(callback, ...path.map(e => pathTransformer(e, pageExtractor)));
+	const api = ensureStore();
+	return api.addListener(callback, ...path.map(e => pathTransformer(e, pageExtractor)));
 };
 
 export const addListenerAndCallImmediately = (
@@ -328,7 +372,8 @@ export const addListenerAndCallImmediately = (
 	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	return _addListenerAndCallImmediately(
+	const api = ensureStore();
+	return api.addListenerAndCallImmediately(
 		true,
 		callback,
 		...path.map(e => pathTransformer(e, pageExtractor)),
@@ -340,7 +385,8 @@ export const addListenerWithChildrenActivity = (
 	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	return _addListenerWithChildrenActivity(
+	const api = ensureStore();
+	return api.addListenerWithChildrenActivity(
 		callback,
 		...path.map(e => pathTransformer(e, pageExtractor)),
 	);
@@ -351,11 +397,11 @@ export const addListenerAndCallImmediatelyWithChildrenActivity = (
 	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	return _addListenerAndCallImmediatelyWithChildrenActivity(
+	const api = ensureStore();
+	return api.addListenerAndCallImmediatelyWithChildrenActivity(
 		true,
 		callback,
 		...path.map(e => pathTransformer(e, pageExtractor)),
 	);
 };
 
-export const store = _store;

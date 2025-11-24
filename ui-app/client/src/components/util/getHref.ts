@@ -2,10 +2,12 @@ import { Location as ReactLocation } from 'react-router-dom';
 import { processLocation } from '../../util/locationProcessor';
 import { getDataFromPath } from '../../context/StoreContext';
 
+type LocationLike = Pick<Location, 'pathname' | 'search'>;
+
 globalThis.domainAppCode = 'appbuilder';
 globalThis.domainClientCode = 'SYSTEM';
 
-export function getHref(linkPath: string = '', location: ReactLocation | Location) {
+export function getHref(linkPath: string = '', location: ReactLocation | Location | LocationLike) {
 	if (typeof linkPath !== 'string') return undefined;
 
 	if (linkPath.startsWith('\\')) {

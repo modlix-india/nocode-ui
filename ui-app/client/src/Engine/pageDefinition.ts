@@ -1,10 +1,13 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import { PageDefinition } from '../types/common';
 import { shortUUID } from '../util/shortUUID';
+import { fetchPageDefinition } from '../shared/api/appData';
 
 export default async function getPageDefinition(pageName: string, appCode?: string, clientCode?: string): Promise<PageDefinition> {
 	const axiosConfig: AxiosRequestConfig<any> = { headers: {} };
-	if (globalThis.isDebugMode) axiosConfig.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
+	if (globalThis.isDebugMode)
+		axiosConfig.headers!['x-debug'] =
+			(globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 	const authToken = localStorage.getItem(
 		globalThis.isDesignMode ? 'designMode_AuthToken' : 'AuthToken',
@@ -17,5 +20,5 @@ export default async function getPageDefinition(pageName: string, appCode?: stri
 	if (appCode) axiosConfig.headers!['appCode'] = appCode;
 	if (clientCode) axiosConfig.headers!['clientCode'] = clientCode;
 
-	return (await axios.get(`api/ui/page/${pageName}`, axiosConfig)).data;
+	return fetchPageDefinition(pageName, axiosConfig);
 }
