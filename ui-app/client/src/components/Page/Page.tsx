@@ -48,10 +48,11 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	let shouldRedirect = false;
 	if (!auth?.isAuthenticated && pageDefinition) {
 		const app = getDataFromPath(`Store.application`, []);
-		shouldRedirect = app?.appCode === pageDefinition?.appCode &&
-		app?.properties?.loginPage === pageDefinition.name &&
-		app?.properties?.loginPage !== pageName && 
-		app?.properties?.sso?.redirectURL;
+		shouldRedirect =
+			app?.appCode === pageDefinition?.appCode &&
+			app?.properties?.loginPage === pageDefinition.name &&
+			app?.properties?.loginPage !== pageName &&
+			app?.properties?.sso?.redirectURL;
 	}
 
 	useEffect(() => {
@@ -60,13 +61,20 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		(async () => {
 			const app = getDataFromPath(`Store.application`, []);
 			const redirectURL = app?.properties?.sso?.redirectURL;
-			const {appCode = "", clientCode = ""} = (await axios.get('api/ui/urlDetails')).data ?? {};
-			
-			window.location.href = redirectURL.replace('{appCode}', appCode)
-								.replace('{clientCode}', clientCode)
-								.replace('{redirectUrl}', encodeURIComponent(window.location.href));
-		})();
+			const { appCode = '', clientCode = '' } =
+				(await axios.get('api/ui/urlDetails')).data ?? {};
 
+			window.history.replaceState(
+				undefined,
+				'',
+				redirectURL
+					.replace('{appCode}', appCode)
+					.replace('{clientCode}', clientCode)
+					.replace('{redirectUrl}', encodeURIComponent(window.location.href)),
+			);
+			window.history.back();
+			setTimeout(() => window.history.forward(), 100);
+		})();
 	}, [shouldRedirect]);
 
 	useEffect(
