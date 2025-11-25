@@ -64,16 +64,10 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			const { appCode = '', clientCode = '' } =
 				(await axios.get('api/ui/urlDetails')).data ?? {};
 
-			window.history.replaceState(
-				undefined,
-				'',
-				redirectURL
-					.replace('{appCode}', appCode)
-					.replace('{clientCode}', clientCode)
-					.replace('{redirectUrl}', encodeURIComponent(window.location.href)),
-			);
-			window.history.back();
-			setTimeout(() => window.history.forward(), 100);
+			window.location.href = redirectURL
+				.replace('{appCode}', appCode)
+				.replace('{clientCode}', clientCode)
+				.replace('{redirectUrl}', encodeURIComponent(window.location.href));
 		})();
 	}, [shouldRedirect]);
 
