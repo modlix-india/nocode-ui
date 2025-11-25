@@ -55,6 +55,12 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			app?.properties?.sso?.redirectURL;
 	}
 
+	if (window.isDebugMode) {
+		console.log('shouldRedirect', shouldRedirect);
+		console.log('pageDefinition', pageDefinition);
+		console.log('pageName', pageName);
+		console.log('auth', auth);
+	}
 	useEffect(() => {
 		if (!shouldRedirect) return;
 
@@ -64,10 +70,12 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			const { appCode = '', clientCode = '' } =
 				(await axios.get('api/ui/urlDetails')).data ?? {};
 
-			window.location.href = redirectURL
+			const finalURL = redirectURL
 				.replace('{appCode}', appCode)
 				.replace('{clientCode}', clientCode)
 				.replace('{redirectUrl}', encodeURIComponent(window.location.href));
+
+			window.location.replace(finalURL);
 		})();
 	}, [shouldRedirect]);
 
