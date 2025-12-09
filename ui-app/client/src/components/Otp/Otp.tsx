@@ -6,6 +6,7 @@ import {
 	getDataFromPath,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import {
 	Component,
@@ -44,6 +45,7 @@ function Otp(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			readOnly,
@@ -81,6 +83,7 @@ function Otp(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -539,7 +542,10 @@ function Otp(props: Readonly<ComponentProps>) {
 					onMouseLeave={handleVisibilityToggleMouseLeave}
 					className={`_visibilityToggle ${showValue ? showIcon : hideIcon}`}
 				>
-					<SubHelperComponent definition={definition} subComponentName="visibilityToggle" />
+					<SubHelperComponent
+						definition={definition}
+						subComponentName="visibilityToggle"
+					/>
 				</i>
 			)}
 

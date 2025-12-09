@@ -1,6 +1,6 @@
 import React, { CSSProperties, MouseEvent, ReactNode, useEffect, useState } from 'react';
 import { DRAG_CD_KEY } from '../../constants';
-import { getDataFromPath } from '../../context/StoreContext';
+import { getDataFromPath, UrlDetailsExtractor } from '../../context/StoreContext';
 import { messageToMaster } from '../../slaveFunctions';
 import { ComponentDefinition } from '../../types/common';
 import ComponentDefinitions from '..';

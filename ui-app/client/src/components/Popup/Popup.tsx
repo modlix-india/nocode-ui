@@ -4,6 +4,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { ComponentProps, ComponentPropertyDefinition } from '../../types/common';
 import { Component } from '../../types/common';
@@ -27,6 +28,7 @@ function Popup(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const bindingPathPath =
 		bindingPath && getPathFromLocation(bindingPath, props.locationHistory, pageExtractor);
 	React.useEffect(() => {
@@ -62,6 +64,7 @@ function Popup(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		props.locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -185,9 +188,9 @@ function Popup(props: Readonly<ComponentProps>) {
 										/>
 										{modelTitle
 											? getTranslations(
-												modelTitle,
-												props.pageDefinition.translations,
-											)
+													modelTitle,
+													props.pageDefinition.translations,
+												)
 											: ''}
 									</div>
 									{showClose && closeButtonPosition === 'RIGHT' && (

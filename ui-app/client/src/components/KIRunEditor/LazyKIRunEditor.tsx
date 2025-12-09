@@ -13,7 +13,15 @@ import {
 	StatementExecution,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
-import React, { CSSProperties, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+	CSSProperties,
+	ReactNode,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 import { usedComponents } from '../../App/usedComponents';
 import { RemoteRepository, REPO_SERVER } from '../../Engine/RemoteRepository';
 import {
@@ -21,6 +29,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { UIFunctionRepository } from '../../functions';
 import { UISchemaRepository } from '../../schemas/common';
@@ -155,6 +164,7 @@ export default function LazyKIRunEditor(
 		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
@@ -165,6 +175,7 @@ export default function LazyKIRunEditor(
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath!, locationHistory, pageExtractor)
@@ -409,18 +420,19 @@ export default function LazyKIRunEditor(
 		[bindingPathPath, rawDef, isReadonly, setData, context.pageName],
 	);
 
-	const copyStatement = useCallback((statementName: string) => {
-		
-			let str:string = "";
+	const copyStatement = useCallback(
+		(statementName: string) => {
+			let str: string = '';
 			if (!selectedStatements.get(statementName)) {
 				if (!rawDef?.steps[statementName]) return;
 				str = COPY_STMT_KEY + JSON.stringify(rawDef?.steps[statementName]);
-			}
-			else {
-				str = COPY_STMT_KEY + Array.from(selectedStatements.entries())
-					.filter(([name, selected]) => selected && rawDef?.steps[name])
-					.map(([name]) => JSON.stringify(rawDef?.steps[name]))
-					.join(COPY_STMT_KEY);
+			} else {
+				str =
+					COPY_STMT_KEY +
+					Array.from(selectedStatements.entries())
+						.filter(([name, selected]) => selected && rawDef?.steps[name])
+						.map(([name]) => JSON.stringify(rawDef?.steps[name]))
+						.join(COPY_STMT_KEY);
 			}
 			if (!str || str === COPY_STMT_KEY) return;
 
@@ -431,7 +443,9 @@ export default function LazyKIRunEditor(
 					}),
 				}),
 			]);
-	}, [selectedStatements, rawDef]);
+		},
+		[selectedStatements, rawDef],
+	);
 
 	if (executionPlan && !('message' in executionPlan) && rawDef?.steps) {
 		statements = Object.keys(rawDef.steps ?? {})
@@ -953,14 +967,14 @@ export default function LazyKIRunEditor(
 
 	let containerContents: React.JSX.Element;
 
-	const designerStyle:CSSProperties = { transform: `scale(${magnification})` };
+	const designerStyle: CSSProperties = { transform: `scale(${magnification})` };
 	let width = 3000;
 	let height = 3000;
 
 	if (executionPlan) {
 		const steps = rawDef?.steps ? Object.values(rawDef.steps) : [];
-		const maxX = Math.max(...steps.map((e:any) => (e.position?.left ?? 0) as number));
-		const maxY = Math.max(...steps.map((e:any) => (e.position?.top ?? 0) as number));
+		const maxX = Math.max(...steps.map((e: any) => (e.position?.left ?? 0) as number));
+		const maxY = Math.max(...steps.map((e: any) => (e.position?.top ?? 0) as number));
 		width = maxX < 2500 ? width : maxX + 1000;
 		height = maxY < 2500 ? height : maxY + 1000;
 	}

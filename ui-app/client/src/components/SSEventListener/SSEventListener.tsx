@@ -1,5 +1,11 @@
 import React, { useEffect, useRef } from 'react';
-import { getDataFromPath, getPathFromLocation, PageStoreExtractor, setData } from '../../context/StoreContext';
+import {
+	getDataFromPath,
+	getPathFromLocation,
+	PageStoreExtractor,
+	setData,
+	UrlDetailsExtractor,
+} from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -12,22 +18,22 @@ import { messageToMaster } from '../../slaveFunctions';
 import { duplicate } from '@fincity/kirun-js';
 
 function SSEventListener(props: Readonly<ComponentProps>) {
-	const { definition, pageDefinition, locationHistory, context, definition: { bindingPath }, } = props;
-	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const {
-		properties: {
-			url,
-			eventName,
-			onEvent,
-			left = 0,
-			top = 0,
-		} = {},
-	} = useDefinition(
+		definition,
+		pageDefinition,
+		locationHistory,
+		context,
+		definition: { bindingPath },
+	} = props;
+	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
+	const { properties: { url, eventName, onEvent, left = 0, top = 0 } = {} } = useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	let bindingPathPath = bindingPath
@@ -38,7 +44,7 @@ function SSEventListener(props: Readonly<ComponentProps>) {
 		if (!bindingPath || !url || !onEvent || !pageDefinition.eventFunctions?.[onEvent]) return;
 
 		const eventFunction = pageDefinition.eventFunctions?.[onEvent];
-		const es = new EventSource(url,{ withCredentials: true });  
+		const es = new EventSource(url, { withCredentials: true });
 
 		const func = (event: MessageEvent) => {
 			const data = event.data;
@@ -61,8 +67,8 @@ function SSEventListener(props: Readonly<ComponentProps>) {
 		} else if (typeof eventName === 'string') {
 			es.addEventListener(eventName, func);
 		}
-		
-		es.onerror = (e) => console.error("SSE error (auto-retrying)", e);
+
+		es.onerror = e => console.error('SSE error (auto-retrying)', e);
 
 		return () => es.close();
 	}, [bindingPathPath, url, onEvent, eventName]);

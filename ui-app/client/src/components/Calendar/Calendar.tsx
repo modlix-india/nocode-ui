@@ -1,6 +1,6 @@
 import { isNullValue } from '@fincity/kirun-js';
 import React, { Suspense } from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import {
 	Component,
 	ComponentDefinition,

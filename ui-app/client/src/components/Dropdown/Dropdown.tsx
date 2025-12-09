@@ -16,6 +16,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { makeTempPath } from '../../context/TempStore';
 import { Component, ComponentProps } from '../../types/common';
@@ -52,6 +53,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const [hoverKey, setHoverKey] = useState<string | undefined>();
 	const [isChanged, setIsChanged] = useState(false);
 	const {
@@ -112,6 +114,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 	const searchEvent = onSearch ? props.pageDefinition.eventFunctions?.[onSearch] : undefined;

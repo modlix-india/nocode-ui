@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
+import {
+	getDataFromPath,
+	PageStoreExtractor,
+	UrlDetailsExtractor,
+} from '../../context/StoreContext';
 import { Component, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -26,6 +30,7 @@ async function secureSource(src: string) {
 
 function Iframe(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const { locationHistory, definition } = props;
 	const {
 		stylePropertiesWithPseudoStates,
@@ -47,6 +52,7 @@ function Iframe(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(

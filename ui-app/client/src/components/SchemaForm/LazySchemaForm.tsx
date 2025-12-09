@@ -6,6 +6,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { UISchemaRepository } from '../../schemas/common';
 import { ComponentProps } from '../../types/common';
@@ -35,6 +36,7 @@ export default function SchemaForm(
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: { schema: jsonSchema, design, readOnly, showJSONEditorButton } = {},
 		stylePropertiesWithPseudoStates,
@@ -44,6 +46,7 @@ export default function SchemaForm(
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const bindingPathPath = bindingPath

@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
 	processComponentStylePseudoClasses,
@@ -26,6 +26,7 @@ function Link(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		properties: {
@@ -48,6 +49,7 @@ function Link(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 	const resolvedLink = getHref(linkPath, location);
