@@ -5,6 +5,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -32,6 +33,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		properties: {
@@ -50,6 +52,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const clickEvent = onClick ? pageDefinition.eventFunctions[onClick] : undefined;

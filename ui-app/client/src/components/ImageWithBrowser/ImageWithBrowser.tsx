@@ -13,6 +13,7 @@ import {
 	getData,
 	getDataFromPath,
 	getPathFromLocation,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { propertiesDefinition, stylePropertiesDefinition } from './imageWithBrowserProperties';
 import ImageStyle from './ImageWithBrowserStyles';
@@ -48,6 +49,7 @@ function ImageWithBrowser(props: Readonly<ComponentProps>) {
 	const [bindingPaths, setBindingPaths] = useState(new Map<string, string>());
 	const [showBrowser, setShowBrowser] = useState(false);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const location = useLocation();
 	const {
 		properties: { onClick: onClickEvent } = {},
@@ -59,6 +61,7 @@ function ImageWithBrowser(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const clickEvent = onClickEvent
 		? props.pageDefinition.eventFunctions?.[onClickEvent]

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './audioProperties';
@@ -15,6 +15,7 @@ import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 function Audio(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			src,
@@ -54,6 +55,7 @@ function Audio(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const [audioControls, setAudioControls] = useState<boolean>(true);

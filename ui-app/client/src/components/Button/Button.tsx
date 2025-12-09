@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
-import { addListener, getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
+import {
+	addListener,
+	getDataFromPath,
+	PageStoreExtractor,
+	UrlDetailsExtractor,
+} from '../../context/StoreContext';
 import { runEvent } from '../util/runEvent';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';
@@ -21,6 +26,7 @@ import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function ButtonComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const [focus, setFocus] = useState(false);
 	const [hover, setHover] = useState(false);
 	const location = useLocation();
@@ -51,6 +57,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		props.locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const clickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;

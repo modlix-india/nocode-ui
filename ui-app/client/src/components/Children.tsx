@@ -9,6 +9,7 @@ import {
 	localStoreExtractor,
 	PageStoreExtractor,
 	storeExtractor,
+	UrlDetailsExtractor,
 } from '../context/StoreContext';
 import {
 	ComponentDefinition,
@@ -62,10 +63,12 @@ function Children({
 	const [, setVisibilityPaths] = React.useState(Date.now());
 	const location = useLocation();
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
 		[localStoreExtractor.getPrefix(), localStoreExtractor],
 		[pageExtractor.getPrefix(), pageExtractor],
+		[urlExtractor.getPrefix(), urlExtractor],
 	]);
 
 	React.useEffect(() => {

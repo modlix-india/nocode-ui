@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
@@ -22,17 +22,20 @@ function makeAnimationString(animations: any[]): string {
 
 function makeOneAnimationString(a: any): string {
 	if (!a.condition) return '';
-	return `${a.animationName} ${a.animationDuration}ms ${a.animationTimingFunction}${a.animationTimingFunction === 'cubic-bezier' || a.animationTimingFunction === 'steps'
+	return `${a.animationName} ${a.animationDuration}ms ${a.animationTimingFunction}${
+		a.animationTimingFunction === 'cubic-bezier' || a.animationTimingFunction === 'steps'
 			? `(${a.timingFunctionExtra})`
 			: ''
-		} ${a.animationDelay}ms ${a.animationIterationCount} ${a.animationDirection} ${a.animationFillMode
-		}`;
+	} ${a.animationDelay}ms ${a.animationIterationCount} ${a.animationDirection} ${
+		a.animationFillMode
+	}`;
 }
 
 function Animator(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
@@ -43,6 +46,7 @@ function Animator(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const childs = (
@@ -129,7 +133,7 @@ function Animator(props: Readonly<ComponentProps>) {
 			);
 			io.observe(ref.current);
 			return () => (ref.current ? io.unobserve(ref.current!) : undefined);
-		} catch (e) { }
+		} catch (e) {}
 	}, [animation, ref.current, setObservations]);
 
 	return (
@@ -214,7 +218,7 @@ const component: Component = {
 			icon: 'fa-solid fa-box',
 		},
 	],
-	stylePropertiesForTheme: styleProperties
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

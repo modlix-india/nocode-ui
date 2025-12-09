@@ -5,6 +5,7 @@ import {
 	getDataFromPath,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import {
 	Component,
@@ -37,7 +38,7 @@ function savePersonalizationCurry(
 	locationHistory: Array<LocationHistory>,
 	pageDefinition: PageDefinition,
 ) {
-	if (!onChangePersonalization) return (key: string, value: any) => { };
+	if (!onChangePersonalization) return (key: string, value: any) => {};
 	let handle: any = -1;
 
 	return (key: string, value: any) => {
@@ -63,6 +64,7 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 		definition: { bindingPath, bindingPath3, bindingPath2, bindingPath4 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
@@ -80,6 +82,7 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -107,7 +110,7 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 
 	// Function to save the personalization
 	const savePersonalization = useMemo(() => {
-		if (!personalizationPath) return (key: string, value: any) => { };
+		if (!personalizationPath) return (key: string, value: any) => {};
 
 		return savePersonalizationCurry(
 			personalizationPath,

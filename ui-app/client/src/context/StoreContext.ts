@@ -15,6 +15,7 @@ import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
 import { AuthoritiesExtractor } from './AuthoritiesExtractor';
 import { sample } from './sampleData';
+import { URLDetails } from '../util/locationProcessor';
 
 export class StoreExtractor extends SpecialTokenValueExtractor {
 	private readonly store: any;
@@ -305,6 +306,56 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 			_store,
 		);
 	}
+}
+
+export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
+
+	static readonly extractorMap: Map<string, UrlDetailsExtractor> = new Map();
+	private details: URLDetails;
+
+	constructor(details: URLDetails) {
+		super();
+		this.details = details;
+	}
+
+	public setDetails(details: URLDetails) {
+		this.details = details;
+	}
+
+	protected getValueInternal(token: string) {
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		return this.retrieveElementFrom(
+			token,
+			parts.slice(1),
+			0,
+			this.details,
+		);
+	}
+
+	getPrefix(): string {
+		return 'Url.';
+	}
+	
+	public getStore(): any {
+		return this.details;
+	}
+
+	public static addDetails(details: URLDetails) {
+		console.log(details);
+		if (UrlDetailsExtractor.extractorMap.has(details.pageName!)) {
+			UrlDetailsExtractor.extractorMap.get(details.pageName!)!.setDetails(details);
+			return;
+		}
+		UrlDetailsExtractor.extractorMap.set(details.pageName!, new UrlDetailsExtractor(details));
+	}
+
+	public static getForContext(pageName: string): UrlDetailsExtractor {
+		if (UrlDetailsExtractor.extractorMap.has(pageName)) return UrlDetailsExtractor.extractorMap.get(pageName)!;
+		UrlDetailsExtractor.extractorMap.set(pageName, new UrlDetailsExtractor({ pageName, queryParameters: {}}));
+		return UrlDetailsExtractor.extractorMap.get(pageName)!;
+	}
+
+	
 }
 
 const pathTransformer = (e: string, pageExtractor?: PageStoreExtractor) => {

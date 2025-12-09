@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -13,6 +13,7 @@ import { IconHelper } from '../util/IconHelper';
 
 function ProgressBar(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const [hover, setHover] = React.useState(false);
 
 	const { definition, locationHistory, pageDefinition } = props;
@@ -36,6 +37,7 @@ function ProgressBar(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(

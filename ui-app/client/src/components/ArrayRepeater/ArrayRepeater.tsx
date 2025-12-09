@@ -15,6 +15,7 @@ import {
 	setData,
 	storeExtractor,
 	themeExtractor,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import {
 	Component,
@@ -48,6 +49,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 
 	const {
 		properties: {
@@ -84,6 +86,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const [repeaterData, setRepeaterData] = React.useState<any[]>([]);

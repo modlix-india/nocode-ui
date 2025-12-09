@@ -5,6 +5,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { shortUUID } from '../../util/shortUUID';
@@ -25,6 +26,7 @@ export default function FillerDefinitionEditor(props: Readonly<ComponentProps>) 
 		definition: { bindingPath },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
@@ -35,6 +37,7 @@ export default function FillerDefinitionEditor(props: Readonly<ComponentProps>) 
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(

@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
@@ -16,6 +16,7 @@ function SectionGrid(props: Readonly<ComponentProps>) {
 
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
@@ -26,6 +27,7 @@ function SectionGrid(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const childs = (

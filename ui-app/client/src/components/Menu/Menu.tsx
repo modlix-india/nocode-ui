@@ -1,6 +1,6 @@
 import React, { MouseEvent, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentProps } from '../../types/common';
 import {
 	processComponentStylePseudoClasses,
@@ -29,6 +29,7 @@ function Menu(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		properties: {
@@ -62,6 +63,7 @@ function Menu(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const resolvedLink = getHref(linkPath, location);
 	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen);

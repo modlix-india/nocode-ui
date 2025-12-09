@@ -14,6 +14,7 @@ import {
 	PageStoreExtractor,
 	setData,
 	storeExtractor,
+	UrlDetailsExtractor,
 } from '../context/StoreContext';
 import { ComponentProperty, PageDefinition } from '../types/common';
 import { processLocation } from '../util/locationProcessor';
@@ -39,6 +40,7 @@ export const RenderEngineContainer = () => {
 		const details = processLocation(window.location);
 		let { pageName } = details;
 		setData(`${STORE_PREFIX}.urlDetails`, details);
+		UrlDetailsExtractor.addDetails(details);
 		if (!pageName)
 			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
@@ -285,7 +287,11 @@ export const RenderEngineContainer = () => {
 	);
 
 	useEffect(() => {
-		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR' && globalThis.designMode !== 'THEME_EDITOR')
+		if (
+			globalThis.designMode !== 'PAGE' &&
+			globalThis.designMode !== 'FILLER_VALUE_EDITOR' &&
+			globalThis.designMode !== 'THEME_EDITOR'
+		)
 			return;
 
 		function onMessageRecieved(e: MessageEvent) {
@@ -300,7 +306,11 @@ export const RenderEngineContainer = () => {
 	}, [globalThis.designMode, setLastChanged]);
 
 	useEffect(() => {
-		if (globalThis.designMode !== 'PAGE' && globalThis.designMode !== 'FILLER_VALUE_EDITOR' && globalThis.designMode !== 'THEME_EDITOR')
+		if (
+			globalThis.designMode !== 'PAGE' &&
+			globalThis.designMode !== 'FILLER_VALUE_EDITOR' &&
+			globalThis.designMode !== 'THEME_EDITOR'
+		)
 			return;
 
 		return addListenerAndCallImmediately(
