@@ -1,5 +1,5 @@
 import React from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { Component, ComponentProps } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './iconProperties';
@@ -13,6 +13,7 @@ import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 function Icon(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const { properties: { icon, designType, colorScheme } = {}, stylePropertiesWithPseudoStates } =
 		useDefinition(
 			definition,
@@ -20,6 +21,7 @@ function Icon(props: Readonly<ComponentProps>) {
 			stylePropertiesDefinition,
 			locationHistory,
 			pageExtractor,
+			urlExtractor,
 		);
 
 	const styleProperties = processComponentStylePseudoClasses(

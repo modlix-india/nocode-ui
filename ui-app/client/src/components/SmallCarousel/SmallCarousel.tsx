@@ -5,6 +5,7 @@ import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import {
 	Component,
@@ -32,6 +33,7 @@ import getSrcUrl from '../util/getSrcUrl';
 
 function SmallCarousel(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const {
 		locationHistory = [],
 		definition: { children, key, properties },
@@ -89,6 +91,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const ref = useRef<HTMLDivElement>(null);
@@ -118,7 +121,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 	}
 	function handleTouchEnd() {
 		if (!touchStart.current) return;
-		const threshold = 40; 
+		const threshold = 40;
 		if (isVertical) {
 			if (touchDelta.current.y < -threshold && totalSlides > 1) {
 				const next = (currentSlide + 1) % totalSlides;
@@ -464,7 +467,10 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							applyTransform(newCurrent);
 						}}
-						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
+						style={{
+							...(resolvedStyles.indicatorNavBtn ?? {}),
+							...(resolvedStyles.indicatorNavBtnActive ?? {}),
+						}}
 					>
 						<SubHelperComponent
 							definition={props?.definition}
@@ -505,7 +511,14 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 									applyTransform(idx);
 								}
 							}}
-							style={isActive ? { ...(resolvedStyles.indicatorButton ?? {}), ...(resolvedStyles.indicatorButtonActive ?? {}) } : resolvedStyles.indicatorButton ?? {}}
+							style={
+								isActive
+									? {
+											...(resolvedStyles.indicatorButton ?? {}),
+											...(resolvedStyles.indicatorButtonActive ?? {}),
+										}
+									: (resolvedStyles.indicatorButton ?? {})
+							}
 						>
 							<SubHelperComponent
 								definition={props?.definition}
@@ -516,7 +529,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 								<SubHelperComponent
 									definition={props?.definition}
 									subComponentName="indicatorButtonActive"
-									key={"active" + idx}
+									key={'active' + idx}
 								/>
 							)}
 							{indicatorShowNumbers ? idx + 1 : indicatorShape === 'dash' ? '' : ''}
@@ -537,7 +550,10 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							applyTransform(newCurrent);
 						}}
-						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
+						style={{
+							...(resolvedStyles.indicatorNavBtn ?? {}),
+							...(resolvedStyles.indicatorNavBtnActive ?? {}),
+						}}
 					>
 						<SubHelperComponent
 							definition={props?.definition}

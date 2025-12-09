@@ -8,6 +8,7 @@ import {
 	getDataFromPath,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -34,12 +35,14 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	const { pageName } = context;
 
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const { stylePropertiesWithPseudoStates } = useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const [, setLastChanged] = useState<number>(Date.now());

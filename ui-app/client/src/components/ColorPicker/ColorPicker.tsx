@@ -6,6 +6,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -62,6 +63,7 @@ function ColorPickerComponent(props: Readonly<ComponentProps>) {
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath },
 		locationHistory,
@@ -102,6 +104,7 @@ function ColorPickerComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 	const bindingPathPath = getPathFromLocation(bindingPath!, locationHistory, pageExtractor);

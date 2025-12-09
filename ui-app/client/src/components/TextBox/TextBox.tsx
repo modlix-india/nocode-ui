@@ -9,6 +9,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -46,6 +47,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			updateStoreImmediately: upStoreImm,
@@ -92,6 +94,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const [value, setValue] = React.useState(defaultValue ?? '');
 

@@ -17,6 +17,7 @@ import {
 	PageStoreExtractor,
 	setData,
 	storeExtractor,
+	UrlDetailsExtractor,
 } from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
@@ -64,6 +65,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	} = props;
 
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: { showEmptyRows, showHeaders, fixedHeader } = {},
 		stylePropertiesWithPseudoStates,
@@ -73,6 +75,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const [updateColumnsAt, setUpdateColumnsAt] = useState(Date.now());

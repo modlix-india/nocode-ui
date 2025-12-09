@@ -7,6 +7,7 @@ import {
 	getDataFromPath,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -32,6 +33,7 @@ function Grid(props: Readonly<ComponentProps>) {
 		definition: { bindingPath, bindingPath2, bindingPath3 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
@@ -66,6 +68,7 @@ function Grid(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const childs = (
@@ -131,14 +134,14 @@ function Grid(props: Readonly<ComponentProps>) {
 		!clickEvent || isLoading
 			? undefined
 			: () =>
-				(async () =>
-					await runEvent(
-						clickEvent,
-						onClick,
-						props.context.pageName,
-						props.locationHistory,
-						props.pageDefinition,
-					))();
+					(async () =>
+						await runEvent(
+							clickEvent,
+							onClick,
+							props.context.pageName,
+							props.locationHistory,
+							props.pageDefinition,
+						))();
 
 	const sepStyle = resolvedStyles?.comp?.hideScrollBar;
 	const styleComp = sepStyle ? (
@@ -248,39 +251,40 @@ function Grid(props: Readonly<ComponentProps>) {
 				<Link
 					key={`${key}_Link`}
 					ref={ref}
-					className={`_anchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${sepStyle ? `_${key}_grid_css` : ''
-						}`}
+					className={`_anchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${
+						sepStyle ? `_${key}_grid_css` : ''
+					}`}
 					onMouseEnter={
 						stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
 							? () => {
-								setHover(true);
+									setHover(true);
 
-								if (!onMouseEnterEvent) return;
-								(async () =>
-									await runEvent(
-										onMouseEnterEvent,
-										onMouseEnter,
-										props.context.pageName,
-										props.locationHistory,
-										props.pageDefinition,
-									))();
-							}
+									if (!onMouseEnterEvent) return;
+									(async () =>
+										await runEvent(
+											onMouseEnterEvent,
+											onMouseEnter,
+											props.context.pageName,
+											props.locationHistory,
+											props.pageDefinition,
+										))();
+								}
 							: undefined
 					}
 					onMouseLeave={
 						stylePropertiesWithPseudoStates?.hover || onMouseLeaveEvent
 							? () => {
-								setHover(false);
-								if (!onMouseLeaveEvent) return;
-								(async () =>
-									await runEvent(
-										onMouseLeaveEvent,
-										onMouseLeave,
-										props.context.pageName,
-										props.locationHistory,
-										props.pageDefinition,
-									))();
-							}
+									setHover(false);
+									if (!onMouseLeaveEvent) return;
+									(async () =>
+										await runEvent(
+											onMouseLeaveEvent,
+											onMouseLeave,
+											props.context.pageName,
+											props.locationHistory,
+											props.pageDefinition,
+										))();
+								}
 							: undefined
 					}
 					onMouseDown={handleClick}
@@ -303,23 +307,23 @@ function Grid(props: Readonly<ComponentProps>) {
 	const onScrollFunction =
 		bindingPathPath || bindingPathPath2
 			? (e: any) => {
-				if (bindingPathPath) {
-					const w = e.target.scrollWidth - e.target.clientWidth;
-					setData(
-						bindingPathPath,
-						100 - Math.round(((w - e.target.scrollLeft) * 100) / w),
-						context.pageName,
-					);
+					if (bindingPathPath) {
+						const w = e.target.scrollWidth - e.target.clientWidth;
+						setData(
+							bindingPathPath,
+							100 - Math.round(((w - e.target.scrollLeft) * 100) / w),
+							context.pageName,
+						);
+					}
+					if (bindingPathPath2) {
+						const h = e.target.scrollHeight - e.target.clientHeight;
+						setData(
+							bindingPathPath2,
+							100 - Math.round(((h - e.target.scrollTop) * 100) / h),
+							context.pageName,
+						);
+					}
 				}
-				if (bindingPathPath2) {
-					const h = e.target.scrollHeight - e.target.clientHeight;
-					setData(
-						bindingPathPath2,
-						100 - Math.round(((h - e.target.scrollTop) * 100) / h),
-						context.pageName,
-					);
-				}
-			}
 			: undefined;
 
 	return React.createElement(
@@ -329,33 +333,33 @@ function Grid(props: Readonly<ComponentProps>) {
 			onMouseEnter:
 				stylePropertiesWithPseudoStates?.hover || onMouseEnterEvent
 					? () => {
-						setHover(true);
-						if (!onMouseEnterEvent) return;
-						(async () =>
-							await runEvent(
-								onMouseEnterEvent,
-								onMouseEnter,
-								props.context.pageName,
-								props.locationHistory,
-								props.pageDefinition,
-							))();
-					}
+							setHover(true);
+							if (!onMouseEnterEvent) return;
+							(async () =>
+								await runEvent(
+									onMouseEnterEvent,
+									onMouseEnter,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+						}
 					: undefined,
 
 			onMouseLeave:
 				stylePropertiesWithPseudoStates?.hover || onMouseLeaveEvent
 					? () => {
-						setHover(false);
-						if (!onMouseLeaveEvent) return;
-						(async () =>
-							await runEvent(
-								onMouseLeaveEvent,
-								onMouseLeave,
-								props.context.pageName,
-								props.locationHistory,
-								props.pageDefinition,
-							))();
-					}
+							setHover(false);
+							if (!onMouseLeaveEvent) return;
+							(async () =>
+								await runEvent(
+									onMouseLeaveEvent,
+									onMouseLeave,
+									props.context.pageName,
+									props.locationHistory,
+									props.pageDefinition,
+								))();
+						}
 					: undefined,
 			onDragStart: !!dragData ? dragstartHandler : undefined,
 			onDragOver: onDragOverFunction,
@@ -364,8 +368,9 @@ function Grid(props: Readonly<ComponentProps>) {
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
 			draggable: !!dragData,
-			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${sepStyle ? `_${key}_grid_css` : ''
-				}`,
+			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${
+				sepStyle ? `_${key}_grid_css` : ''
+			}`,
 			style: resolvedStyles.comp ?? {},
 
 			onClick: ev => {

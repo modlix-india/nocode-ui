@@ -6,6 +6,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -33,6 +34,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 
 	const {
 		properties: {
@@ -50,6 +52,7 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const editTypes = !editType?.length ? ['editText', 'editDoc', 'preview'] : editType;

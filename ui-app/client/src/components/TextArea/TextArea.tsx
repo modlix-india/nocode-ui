@@ -7,6 +7,7 @@ import {
 	getDataFromPath,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -43,6 +44,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			updateStoreImmediately: upStoreImm,
@@ -80,6 +82,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,

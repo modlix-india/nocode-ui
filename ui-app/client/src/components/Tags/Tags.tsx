@@ -6,6 +6,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { Component } from '../../types/common';
@@ -30,6 +31,7 @@ function Tags(props: Readonly<ComponentProps>) {
 	} = props;
 
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 
 	const {
 		properties: {
@@ -55,6 +57,7 @@ function Tags(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const bindingPathPath =

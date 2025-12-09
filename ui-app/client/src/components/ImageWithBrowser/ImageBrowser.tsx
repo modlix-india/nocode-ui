@@ -7,6 +7,7 @@ import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { LocationHistory } from '../../types/common';
 import { shortUUID } from '../../util/shortUUID';

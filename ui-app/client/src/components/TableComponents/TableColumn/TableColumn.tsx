@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { getDataFromPath, PageStoreExtractor } from '../../../context/StoreContext';
+import {
+	getDataFromPath,
+	PageStoreExtractor,
+	UrlDetailsExtractor,
+} from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
 import Children from '../../Children';
@@ -16,6 +20,7 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const { stylePropertiesWithPseudoStates, properties: { hideIfNotPersonalized } = {} } =
 		useDefinition(
 			definition,
@@ -23,6 +28,7 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 			stylePropertiesDefinition,
 			locationHistory,
 			pageExtractor,
+			urlExtractor,
 		);
 
 	const [hover, setHover] = useState(false);
