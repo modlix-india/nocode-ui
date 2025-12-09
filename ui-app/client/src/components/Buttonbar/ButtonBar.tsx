@@ -5,6 +5,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getRenderData } from '../util/getRenderData';
@@ -23,6 +24,7 @@ import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
 function ButtonBar(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath },
 		locationHistory,
@@ -55,6 +57,7 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const [hover, setHover] = React.useState('');

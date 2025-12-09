@@ -7,6 +7,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { makeTempPath } from '../../context/TempStore';
 import { ComponentProps } from '../../types/common';
@@ -29,6 +30,7 @@ import { CalendarValidationProps } from './components/calendarTypes';
 
 export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const {
 		definition: { bindingPath, bindingPath2, bindingPath3 },
 		locationHistory,
@@ -88,6 +90,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;

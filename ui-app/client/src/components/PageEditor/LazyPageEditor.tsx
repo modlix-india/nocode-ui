@@ -10,6 +10,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { ComponentProps, LocationHistory, PageDefinition } from '../../types/common';
 import { allPaths } from '../../util/allPaths';
@@ -70,6 +71,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
@@ -99,6 +101,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	// binding path for the page definition to load
 	const defPath = bindingPath

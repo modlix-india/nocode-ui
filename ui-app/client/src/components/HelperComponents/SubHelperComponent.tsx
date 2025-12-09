@@ -1,5 +1,5 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import { getDataFromPath } from '../../context/StoreContext';
+import { getDataFromPath, UrlDetailsExtractor } from '../../context/StoreContext';
 import { messageToMaster } from '../../slaveFunctions';
 import { ComponentDefinition } from '../../types/common';
 import { camelCaseToUpperSpaceCase } from '../../functions/utils';

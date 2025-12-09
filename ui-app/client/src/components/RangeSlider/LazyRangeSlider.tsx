@@ -5,6 +5,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { onMouseDownDragStartCurry } from '../../functions/utils';
 import { ComponentProps } from '../../types/common';
@@ -25,6 +26,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	} = props;
 
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 
 	const {
 		properties: {
@@ -82,6 +84,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const bindingPathPath = bindingPath

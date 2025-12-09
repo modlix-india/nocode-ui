@@ -4,6 +4,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	PageStoreExtractor,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { UISchemaRepository } from '../../schemas/common';
 import { ComponentDefinition, ComponentProps } from '../../types/common';
@@ -27,6 +28,7 @@ export default function Form(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: { schema, readOnly, useServerSchemas } = {},
 		stylePropertiesWithPseudoStates,
@@ -36,6 +38,7 @@ export default function Form(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const bindingPathPath =

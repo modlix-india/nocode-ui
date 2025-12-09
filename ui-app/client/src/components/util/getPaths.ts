@@ -12,7 +12,7 @@ import {
 } from '../../types/common';
 import { Validation } from '../../types/validation';
 import { ParentExtractor, ParentExtractorForRunEvent } from '../../context/ParentExtractor';
-import { getDataFromPath, PageStoreExtractor } from '../../context/StoreContext';
+import { getDataFromPath, PageStoreExtractor ,UrlDetailsExtractor} from '../../context/StoreContext';
 import { GLOBAL_CONTEXT_NAME } from '../../constants';
 
 export class PathExtractor extends TokenValueExtractor {

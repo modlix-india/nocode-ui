@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import {
 	Component,
@@ -30,6 +31,7 @@ function Text(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			text: originalTextObj,
@@ -53,6 +55,7 @@ function Text(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const [hover, setHover] = useState(false);
 	const styleProperties = processComponentStylePseudoClasses(

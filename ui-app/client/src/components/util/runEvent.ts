@@ -11,11 +11,12 @@ import { GLOBAL_CONTEXT_NAME } from '../../constants';
 import { ParentExtractorForRunEvent } from '../../context/ParentExtractor';
 import {
 	PageStoreExtractor,
+	UrlDetailsExtractor,
 	getDataFromPath,
 	localStoreExtractor,
 	setData,
 	storeExtractor,
-	themeExtractor,
+	themeExtractor
 } from '../../context/StoreContext';
 import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 import { UIFunctionRepository } from '../../functions';
@@ -58,7 +59,9 @@ export const runEvent = async (
 	const isRunningPath = `Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`;
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
+		console.log("Executing: ", functionDefinition.name, page);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
+		const urlExtractor = UrlDetailsExtractor.getForContext(page);
 		// if (locationHistory?.length)
 		// 	updateExpressionsWithLocationHistory(def, locationHistory, pageExtractor);
 
@@ -107,6 +110,7 @@ export const runEvent = async (
 			[localStoreExtractor.getPrefix(), localStoreExtractor],
 			[pageExtractor.getPrefix(), pageExtractor],
 			[themeExtractor.getPrefix(), themeExtractor],
+			[urlExtractor.getPrefix(), urlExtractor],
 		]);
 
 		if (locationHistory?.length) {

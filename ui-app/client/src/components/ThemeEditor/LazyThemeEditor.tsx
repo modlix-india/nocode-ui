@@ -6,6 +6,7 @@ import {
 	getDataFromPath,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { ComponentProps, StyleResolution } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -35,6 +36,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		properties: {} = {},
@@ -45,6 +47,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const [currentComponent, setCurrentComponent] = useState<string>('_app');

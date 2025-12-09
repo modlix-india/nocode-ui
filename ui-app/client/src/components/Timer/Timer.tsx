@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -13,6 +13,7 @@ import { messageToMaster } from '../../slaveFunctions';
 function Timer(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			timerType,
@@ -29,6 +30,7 @@ function Timer(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	useEffect(() => {

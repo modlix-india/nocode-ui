@@ -4,6 +4,7 @@ import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
 	getPathFromLocation,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -25,12 +26,14 @@ export default function Chart(props: Readonly<ComponentProps>) {
 		definition: { bindingPath },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const { stylePropertiesWithPseudoStates, properties } = useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const [value, setValue] = React.useState<any>(undefined);

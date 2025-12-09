@@ -11,6 +11,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData as setStoreData,
+	UrlDetailsExtractor,
 } from '../../../context/StoreContext';
 import { ComponentProps } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
@@ -46,6 +47,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			tableLayout,
@@ -101,6 +103,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	useEffect(() => {

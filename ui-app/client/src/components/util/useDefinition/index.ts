@@ -7,6 +7,7 @@ import {
 	localStoreExtractor,
 	PageStoreExtractor,
 	storeExtractor,
+	UrlDetailsExtractor,
 } from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
@@ -25,6 +26,7 @@ export default function useDefinition(
 	stylePropertiesDefinition: ComponentStylePropertyDefinition,
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
+	urlExtractor: UrlDetailsExtractor,
 ): ComponentDefinitionValues {
 	const evaluatorMaps = new Map<string, TokenValueExtractor>([
 		[storeExtractor.getPrefix(), storeExtractor],
@@ -36,6 +38,11 @@ export default function useDefinition(
 	if (pageExtractor) {
 		evaluatorMaps.set(pageExtractor.getPrefix(), pageExtractor);
 		tokenExtractors.push(pageExtractor);
+	}
+
+	if (urlExtractor) {
+		evaluatorMaps.set(urlExtractor.getPrefix(), urlExtractor);
+		tokenExtractors.push(urlExtractor);
 	}
 
 	let parentExtractor: ParentExtractor | undefined;

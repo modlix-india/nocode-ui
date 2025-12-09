@@ -7,6 +7,7 @@ import {
 	getPathFromLocation,
 	setData,
 	getDataFromPath,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -35,6 +36,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			colorScheme,
@@ -69,7 +71,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			allowMultipleSelection,
 			uploadButtonText,
 			UploadPlaceholderText,
-			label
+			label,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -78,6 +80,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const [hover, setHover] = useState(false);
 	const [isDirty, setIsDirty] = React.useState(false);
@@ -91,8 +94,8 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
-    type FileSelectorValue = string | { url: string; directory?: boolean };
-    const [selectedFile, setSelectedFile] = useState<FileSelectorValue>('');
+	type FileSelectorValue = string | { url: string; directory?: boolean };
+	const [selectedFile, setSelectedFile] = useState<FileSelectorValue>('');
 	const [showBrowser, setShowBrowser] = useState(false);
 	const [showFullScreen, setShowFullScreen] = useState(false);
 	const [uploadProgress, setUploadProgress] = useState(0);
@@ -108,64 +111,62 @@ function FileSelector(props: Readonly<ComponentProps>) {
 	const [fileName, setFileName] = useState<string | undefined>(undefined);
 	const fileSizeLimit = fileUploadSizeLimit * 1000 * 1000;
 
-const [recentlySelected, setRecentlySelected] = useState<{
-	   file: string;
-	   type: string;
-	   directory: boolean;
-   }>();
+	const [recentlySelected, setRecentlySelected] = useState<{
+		file: string;
+		type: string;
+		directory: boolean;
+	}>();
 
-   function getFileUrl(selectedFile: FileSelectorValue): string {
-    if (typeof selectedFile === 'object' && selectedFile !== null) {
-        return selectedFile.url || '';
-    } else if (typeof selectedFile === 'string') {
-		return selectedFile;
-    }
-    return '';
-}
-
-useEffect(() => {
-    if (startLocation) setPath(startLocation);
-}, [startLocation]);
-
-useEffect(() => {
-	async function updatePreviewFromSelectedFile() {
-
-		if (!selectedFile) {
-			setDataUrl(undefined);
-			setFileName(undefined);
-			setShowDeleteAndDownload(false);
-			setShowProgressBarContainer(false);
-			setShowFileUploadButton(true);
-			return;
+	function getFileUrl(selectedFile: FileSelectorValue): string {
+		if (typeof selectedFile === 'object' && selectedFile !== null) {
+			return selectedFile.url || '';
+		} else if (typeof selectedFile === 'string') {
+			return selectedFile;
 		}
-
-		let fileUrl = getFileUrl(selectedFile);
-        let directory = false;
-        let type = '';
-        let name = '';
-
-        if (typeof selectedFile === 'object' && selectedFile !== null) {
-            directory = !!selectedFile.directory;
-        } else {
-        	directory = false;
-        }
-		type = fileUrl.split('.').pop()?.toLowerCase() || '';
-		name = fileUrl.split('/').pop() || '';
-		setFileName(name);
-		try {
-			const dataURL = await imageURLForFile(fileUrl, directory, type);			
-			setDataUrl(dataURL);
-		} catch {
-			setDataUrl(undefined);
-		}
-		setShowProgressBarContainer(true);
-		setShowDeleteAndDownload(true);
-		setShowFileUploadButton(false);
-		setShowProgressBar(false);
+		return '';
 	}
-	updatePreviewFromSelectedFile();
-	
-}, [selectedFile]);
+
+	useEffect(() => {
+		if (startLocation) setPath(startLocation);
+	}, [startLocation]);
+
+	useEffect(() => {
+		async function updatePreviewFromSelectedFile() {
+			if (!selectedFile) {
+				setDataUrl(undefined);
+				setFileName(undefined);
+				setShowDeleteAndDownload(false);
+				setShowProgressBarContainer(false);
+				setShowFileUploadButton(true);
+				return;
+			}
+
+			let fileUrl = getFileUrl(selectedFile);
+			let directory = false;
+			let type = '';
+			let name = '';
+
+			if (typeof selectedFile === 'object' && selectedFile !== null) {
+				directory = !!selectedFile.directory;
+			} else {
+				directory = false;
+			}
+			type = fileUrl.split('.').pop()?.toLowerCase() || '';
+			name = fileUrl.split('/').pop() || '';
+			setFileName(name);
+			try {
+				const dataURL = await imageURLForFile(fileUrl, directory, type);
+				setDataUrl(dataURL);
+			} catch {
+				setDataUrl(undefined);
+			}
+			setShowProgressBarContainer(true);
+			setShowDeleteAndDownload(true);
+			setShowFileUploadButton(false);
+			setShowProgressBar(false);
+		}
+		updatePreviewFromSelectedFile();
+	}, [selectedFile]);
 
 	useEffect(() => {
 		if (!bindingPathPath) return;
@@ -192,50 +193,50 @@ useEffect(() => {
 		);
 	};
 
-const handleDelete = async () => {
-	try {
+	const handleDelete = async () => {
+		try {
+			const headers: any = {
+				Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+			};
+
+			let fileUrl = getFileUrl(selectedFile);
+			if (!fileUrl) return;
+
+			let deleteUrl = fileUrl.replace('//', '/');
+			deleteUrl = `/api/files/${resourceType}/${deleteUrl}`;
+
+			if (clientCode) {
+				deleteUrl += `?clientCode=${clientCode}`;
+			}
+
+			await axios.delete(deleteUrl, { headers });
+
+			if (bindingPathPath) {
+				setData(bindingPathPath, undefined, context.pageName, true);
+			}
+			setShowFileUploadButton(true);
+			setShowProgressBarContainer(false);
+			setShowProgressBar(false);
+			setShowDeleteAndDownload(false);
+			setFileName(undefined);
+			setDataUrl(undefined);
+			setSelectedFile('');
+			setUploadProgress(0);
+		} catch (error) {
+			console.error('Delete failed:', error);
+		}
+	};
+
+	const handleDownload = async () => {
+		let url = `/api/files/${resourceType}/${startLocation}?`;
+		if (clientCode) url += `&clientCode=${clientCode}`;
 		const headers: any = {
 			Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 		};
-
-		let fileUrl = getFileUrl(selectedFile);
-		if (!fileUrl) return;
-
-		let deleteUrl = fileUrl.replace('//', '/');
-		deleteUrl = `/api/files/${resourceType}/${deleteUrl}`;
-
-		if (clientCode) {
-			deleteUrl += `?clientCode=${clientCode}`;
-		}
-
-		await axios.delete(deleteUrl, { headers });
-
-		if (bindingPathPath) {
-			setData(bindingPathPath, undefined, context.pageName, true);
-		}
-		setShowFileUploadButton(true);
-		setShowProgressBarContainer(false);
-		setShowProgressBar(false);
-		setShowDeleteAndDownload(false);
-		setFileName(undefined);
-		setDataUrl(undefined);
-		setSelectedFile('');
-		setUploadProgress(0);
-	} catch (error) {
-		console.error('Delete failed:', error);
-	}
-};
-
-const handleDownload = async () => {
-	    let url = `/api/files/${resourceType}/${startLocation}?`;
-        if (clientCode) url += `&clientCode=${clientCode}`;
-        const headers: any = {
-            Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-        };
-        const response = await axios.get(url, { 
-            headers,
-        });
-        if(!selectedFile) return;
+		const response = await axios.get(url, {
+			headers,
+		});
+		if (!selectedFile) return;
 		let downloadUrl = getFileUrl(selectedFile);
 		try {
 			const options: AxiosRequestConfig<any> = {
@@ -293,28 +294,26 @@ const handleDownload = async () => {
 			props.pageDefinition,
 		);
 	};
-	
-	let renderLabel;
-		if (label) {
-			renderLabel = (
-				<div
-					className="_label"
-					style={resolvedStyles.label ?? {}}
-				>
-					<SubHelperComponent definition={definition} subComponentName="label" />
-					{label}
-				</div>
-			);
-		}
 
-	
+	let renderLabel;
+	if (label) {
+		renderLabel = (
+			<div className="_label" style={resolvedStyles.label ?? {}}>
+				<SubHelperComponent definition={definition} subComponentName="label" />
+				{label}
+			</div>
+		);
+	}
 
 	let content;
 	if (designType === 'button') {
 		if (selectedFile) {
 			let fileUrl = getFileUrl(selectedFile);
 			let directory = recentlySelected?.directory ?? false;
-			let type = recentlySelected?.type ?? (fileUrl ? fileUrl.split('.').pop()?.toLowerCase() : '') ?? '';
+			let type =
+				recentlySelected?.type ??
+				(fileUrl ? fileUrl.split('.').pop()?.toLowerCase() : '') ??
+				'';
 			content = (
 				<>
 					<img
@@ -423,14 +422,16 @@ const handleDownload = async () => {
 				clientCode={clientCode}
 			/>
 		);
-		} else {
-			content = (
-				<>
+	} else {
+		content = (
+			<>
 				{renderLabel}
-				<div className="_progressBarfileUpload">					
-					{showFileUploadButton && (						
+				<div className="_progressBarfileUpload">
+					{showFileUploadButton && (
 						<div className="_InnerProgressBarContainer">
-							<span className="_fileUploadPlaceholderText">{UploadPlaceholderText}</span>
+							<span className="_fileUploadPlaceholderText">
+								{UploadPlaceholderText}
+							</span>
 							<label className="_progressBarUploadButton">
 								{uploadButtonText}
 								<input
@@ -449,7 +450,10 @@ const handleDownload = async () => {
 											alert('File size exceeds the limit');
 											return;
 										}
-										const extension = file?.name?.split('.').pop()?.toLowerCase();
+										const extension = file?.name
+											?.split('.')
+											.pop()
+											?.toLowerCase();
 										if (
 											restrictUploadType &&
 											!restrictUploadType.includes(extension ?? '')
@@ -466,19 +470,18 @@ const handleDownload = async () => {
 										setShowProgressBarContainer(true);
 										setShowProgressBar(true);
 										setUploadProgress(0);
-										
 
-									const formData = new FormData();
-									formData.append('file', file);
+										const formData = new FormData();
+										formData.append('file', file);
 
-									abortController.current = new AbortController();
+										abortController.current = new AbortController();
 
-									try {
-										let url = `/api/files/${resourceType}/${path}/`;
-										url = url.replaceAll('//', '/');
-										if (clientCode) {
-											url += `?clientCode=${clientCode}`;
-										}
+										try {
+											let url = `/api/files/${resourceType}/${path}/`;
+											url = url.replaceAll('//', '/');
+											if (clientCode) {
+												url += `?clientCode=${clientCode}`;
+											}
 
 											const response = await axios.post(url, formData, {
 												headers: {
@@ -507,22 +510,29 @@ const handleDownload = async () => {
 												},
 											});
 
-											
-											setData(bindingPathPath!, response.data, context?.pageName);
+											setData(
+												bindingPathPath!,
+												response.data,
+												context?.pageName,
+											);
 
-										const type = response.data.url
-											.split('.')
-											.pop()
-											?.toLowerCase();
-										const dataURL = await imageURLForFile(
-											response.data.url,
-											response.data.directory,
-											type,
-										);
+											const type = response.data.url
+												.split('.')
+												.pop()
+												?.toLowerCase();
+											const dataURL = await imageURLForFile(
+												response.data.url,
+												response.data.directory,
+												type,
+											);
 
 											setDataUrl(dataURL);
 											setSelectedFile(response.data);
-											if (!onSelect || !pageDefinition.eventFunctions[onSelect]) return;
+											if (
+												!onSelect ||
+												!pageDefinition.eventFunctions[onSelect]
+											)
+												return;
 											const selectEvent = onSelect
 												? pageDefinition.eventFunctions[onSelect]
 												: undefined;
@@ -539,37 +549,41 @@ const handleDownload = async () => {
 											} else {
 												console.error('Upload failed:', err);
 											}
-										} 
+										}
 									}}
 								/>
 							</label>
 						</div>
 					)}
 
-				{showProgressBarContainer && (
-					<div className="_uploadingFileContainer">
-						<div className="_leftSection">
-							{!showDeleteAndDownload ? (
-								<div className="_ImagePreviewPlaceholder"></div>
-							) : (
-								<div className="_previewImageContainer">
-									<img src={dataUrl} alt="file name" className="_previewImage" />
-								</div>
-							)}
-							<span className="_progressBarFileUploadText">{fileName}</span>
-						</div>
-						{showProgressBar && (
-							<div className="_rightSection1">
-								<div className="_outerContainerUploadStatus">
-									<div
-										className={`_InnerContainerUploadStatus ${uploadProgress < 100 ? '_uploadingBackgroundColor' : '_doneBackgroundColor'}`}
-										style={{ width: `${uploadProgress}%` }}
-									></div>
-								</div>
-								<div>
-									{uploadProgress >= 0 && uploadProgress < 100 ? (
-										<svg
-											onClick={() => {
+					{showProgressBarContainer && (
+						<div className="_uploadingFileContainer">
+							<div className="_leftSection">
+								{!showDeleteAndDownload ? (
+									<div className="_ImagePreviewPlaceholder"></div>
+								) : (
+									<div className="_previewImageContainer">
+										<img
+											src={dataUrl}
+											alt="file name"
+											className="_previewImage"
+										/>
+									</div>
+								)}
+								<span className="_progressBarFileUploadText">{fileName}</span>
+							</div>
+							{showProgressBar && (
+								<div className="_rightSection1">
+									<div className="_outerContainerUploadStatus">
+										<div
+											className={`_InnerContainerUploadStatus ${uploadProgress < 100 ? '_uploadingBackgroundColor' : '_doneBackgroundColor'}`}
+											style={{ width: `${uploadProgress}%` }}
+										></div>
+									</div>
+									<div>
+										{uploadProgress >= 0 && uploadProgress < 100 ? (
+											<svg
+												onClick={() => {
 													if (abortController.current) {
 														abortController.current.abort();
 														setShowProgressBarContainer(false);
@@ -596,7 +610,6 @@ const handleDownload = async () => {
 													strokeLinecap="round"
 													strokeLinejoin="round"
 												/>
-											
 											</svg>
 										) : (
 											<svg
@@ -617,7 +630,7 @@ const handleDownload = async () => {
 							)}
 							{showDeleteAndDownload && (
 								<div className="_rightSection2">
-									<svg 
+									<svg
 										onClick={!readOnly ? handleDownload : undefined}
 										className="_downloadIcon"
 										width="16"
@@ -625,7 +638,6 @@ const handleDownload = async () => {
 										viewBox="0 0 16 16"
 										fill="none"
 										xmlns="http://www.w3.org/2000/svg"
-										
 									>
 										<path
 											d="M7.99998 10.9999V1M7.99998 10.9999C7.29979 10.9999 5.99153 9.00564 5.5 8.49995M7.99998 10.9999C8.70018 10.9999 10.0085 9.00564 10.5 8.49995"
@@ -640,15 +652,14 @@ const handleDownload = async () => {
 											strokeLinejoin="round"
 										/>
 									</svg>
-									<svg 
-										onClick={!readOnly ? handleDelete : undefined} 
+									<svg
+										onClick={!readOnly ? handleDelete : undefined}
 										className="_deleteIcon"
 										width="14"
 										height="16"
 										viewBox="0 0 14 16"
 										fill="none"
 										xmlns="http://www.w3.org/2000/svg"
-									
 									>
 										<path
 											d="M13.25 4.06212C10.975 3.71211 8.78751 3.53711 6.42501 3.53711C4.06251 3.53711 3.62501 3.53711 2.40001 3.88712L1 4.06212"
@@ -674,9 +685,9 @@ const handleDownload = async () => {
 						</div>
 					)}
 				</div>
-				</>
-			);
-		}
+			</>
+		);
+	}
 
 	useEffect(() => {
 		if (!validation) return;
@@ -987,7 +998,7 @@ const component: Component = {
 			displayName: 'Label',
 			description: 'Label',
 			icon: 'fa-solid fa-box',
-		}
+		},
 	],
 	stylePropertiesForTheme: styleProperties,
 };

@@ -4,6 +4,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -53,6 +54,7 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			tabs = [],
@@ -75,6 +77,7 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -111,13 +114,13 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 
 	const handleOnChange = onChangeTabEvent
 		? async () =>
-			await runEvent(
-				onChangeTabEvent,
-				onTabChange,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			)
+				await runEvent(
+					onChangeTabEvent,
+					onTabChange,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				)
 		: undefined;
 
 	const handleClick = async (key: string) => {
@@ -138,8 +141,8 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 				(pageDefinition.componentDefinition[b[0]]?.displayOrder ?? 0);
 			return v === 0
 				? (pageDefinition.componentDefinition[a[0]]?.key ?? '').localeCompare(
-					pageDefinition.componentDefinition[b[0]]?.key ?? '',
-				)
+						pageDefinition.componentDefinition[b[0]]?.key ?? '',
+					)
 				: v;
 		})[index == -1 ? 0 : index];
 	const selectedChild = entry ? { [entry[0]]: entry[1] } : {};
@@ -150,17 +153,26 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		const timeout = setTimeout(() => {
-			setHighlighter(tabsOrientation, tabRefs, hover, tabs, activeTab, setHighlighterPosition);
-		}, 100);	
+			setHighlighter(
+				tabsOrientation,
+				tabRefs,
+				hover,
+				tabs,
+				activeTab,
+				setHighlighterPosition,
+			);
+		}, 100);
 		return () => clearTimeout(timeout);
-	}, [hover,
+	}, [
+		hover,
 		activeTab,
 		tabs,
 		tabRefs,
 		tabsOrientation,
 		tabNameOrientation,
 		tabsPosition,
-		setHighlighterPosition,]);
+		setHighlighterPosition,
+	]);
 
 	useEffect(() => {
 		tabRefs.current = [...tabRefs.current.slice(0, tabs.length)];
@@ -201,10 +213,11 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 							<div
 								key={e}
 								ref={el => (tabRefs.current[i] = el)}
-								className={`tabDiv ${tabNameOrientation} ${hover === i || (hover === -1 && activeTab === e)
+								className={`tabDiv ${tabNameOrientation} ${
+									hover === i || (hover === -1 && activeTab === e)
 										? '_active'
 										: ''
-									}`}
+								}`}
 								style={
 									hover === i || activeTab === e
 										? (resolvedStylesWithHover.tab ?? {})
