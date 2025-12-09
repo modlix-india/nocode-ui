@@ -5,6 +5,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -26,12 +27,14 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const { properties: { templateType } = {}, stylePropertiesWithPseudoStates } = useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const styleProperties = processComponentStylePseudoClasses(

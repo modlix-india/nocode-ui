@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { getTranslations } from '../util/getTranslations';
@@ -21,6 +21,7 @@ function TextList(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			text,
@@ -44,6 +45,7 @@ function TextList(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	let dropdownData: any = React.useMemo(
 		() =>
@@ -75,8 +77,8 @@ function TextList(props: Readonly<ComponentProps>) {
 
 	let translatedText = dropdownData?.length
 		? dropdownData.map((e: any) => {
-			return { ...e, label: getTranslations(e.label, translations) };
-		})
+				return { ...e, label: getTranslations(e.label, translations) };
+			})
 		: text && text.length
 			? text.split(delimitter).map((e: string) => getTranslations(e, translations))
 			: [];

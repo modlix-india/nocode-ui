@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { parseInline } from '../../commonComponents/Markdown/parseInline';
 import { makeId } from '../../commonComponents/Markdown/utils';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
 	processComponentStylePseudoClasses,
@@ -155,6 +155,7 @@ function makeTOCBulletPoints(
 function MarkdownTOC(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		properties: {
@@ -183,6 +184,7 @@ function MarkdownTOC(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const hoverStyle = processComponentStylePseudoClasses(
@@ -203,8 +205,9 @@ function MarkdownTOC(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const styleKey = `${key}_${locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
-		}`;
+	const styleKey = `${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
 
 	const styleStrings: Array<string> = [];
 	const styleObjects = [undefined, regularStyle, visitedStyle, hoverStyle];

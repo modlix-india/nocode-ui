@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
-import { addListenerAndCallImmediately, PageStoreExtractor } from '../../context/StoreContext';
+import {
+	addListenerAndCallImmediately,
+	PageStoreExtractor,
+	UrlDetailsExtractor,
+} from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { propertiesDefinition, stylePropertiesDefinition } from './popoverProperties';
@@ -30,6 +34,7 @@ function Popover(props: Readonly<ComponentProps>) {
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			isReadonly,
@@ -47,6 +52,7 @@ function Popover(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,

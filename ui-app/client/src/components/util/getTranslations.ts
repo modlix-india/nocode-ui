@@ -1,5 +1,5 @@
 import { LOCAL_STORE_PREFIX } from '../../constants';
-import { getDataFromPath } from '../../context/StoreContext';
+import { getDataFromPath ,UrlDetailsExtractor} from '../../context/StoreContext';
 
 export function getTranslations(
 	key: string | undefined,

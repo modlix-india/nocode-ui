@@ -1,6 +1,6 @@
 import { Location as ReactLocation } from 'react-router-dom';
 import { processLocation } from '../../util/locationProcessor';
-import { getDataFromPath } from '../../context/StoreContext';
+import { getDataFromPath ,UrlDetailsExtractor} from '../../context/StoreContext';
 
 globalThis.domainAppCode = 'appbuilder';
 globalThis.domainClientCode = 'SYSTEM';

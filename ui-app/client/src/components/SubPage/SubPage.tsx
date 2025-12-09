@@ -6,6 +6,7 @@ import {
 	getDataFromPath,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import getPageDefinition from '../../Engine/pageDefinition';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -35,6 +36,7 @@ function SubPage(props: Readonly<ComponentProps>) {
 		definition: { bindingPath },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
@@ -45,6 +47,7 @@ function SubPage(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	let pageName = originalPageName;

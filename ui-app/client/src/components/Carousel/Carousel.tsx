@@ -1,5 +1,5 @@
 import React, { CSSProperties, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
-import { PageStoreExtractor } from '../../context/StoreContext';
+import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
@@ -14,6 +14,7 @@ import { IconHelper } from '../util/IconHelper';
 
 function Carousel(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const { locationHistory, definition, pageDefinition } = props;
 	const {
 		stylePropertiesWithPseudoStates,
@@ -41,17 +42,19 @@ function Carousel(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	// Backward compatibility: if showIndicators is undefined but showDotsButtons is true, treat as true
 	const showIndicators =
 		typeof _showIndicators === 'boolean'
 			? _showIndicators
-			: (typeof props?.definition?.properties?.showDotsButtons === 'boolean'
-					? props?.definition?.properties?.showDotsButtons
-					: true);
+			: typeof props?.definition?.properties?.showDotsButtons === 'boolean'
+				? props?.definition?.properties?.showDotsButtons
+				: true;
 
-	const showIndicatorArrows = typeof _showIndicatorArrows === 'boolean' ? _showIndicatorArrows : true;
+	const showIndicatorArrows =
+		typeof _showIndicatorArrows === 'boolean' ? _showIndicatorArrows : true;
 
 	const ref = useRef<HTMLDivElement>(null);
 	const [childrenDef, setChildrenDef] = useState<any>();
@@ -67,20 +70,20 @@ function Carousel(props: Readonly<ComponentProps>) {
 		setChildrenDef(
 			props.definition.children
 				? Object.entries(props.definition.children)
-					.filter((e: any) => !!e[1])
-					.sort((a: any, b: any) => {
-						const v =
-							(pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
-							(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
-						return v === 0
-							? (
-								pageDefinition?.componentDefinition[a[0]]?.key ?? ''
-							).localeCompare(
-								pageDefinition?.componentDefinition[b[0]]?.key ?? '',
-							)
-							: v;
-					})
-					.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
+						.filter((e: any) => !!e[1])
+						.sort((a: any, b: any) => {
+							const v =
+								(pageDefinition?.componentDefinition[a[0]]?.displayOrder ?? 0) -
+								(pageDefinition?.componentDefinition[b[0]]?.displayOrder ?? 0);
+							return v === 0
+								? (
+										pageDefinition?.componentDefinition[a[0]]?.key ?? ''
+									).localeCompare(
+										pageDefinition?.componentDefinition[b[0]]?.key ?? '',
+									)
+								: v;
+						})
+						.map(e => ({ key: e[0], children: { [e[0]]: e[1] } }))
 				: [],
 		);
 	}, [props.definition.children]);
@@ -113,24 +116,26 @@ function Carousel(props: Readonly<ComponentProps>) {
 		if (!currentSlideRef.current || isNullValue(transitionFrom)) return;
 		setTimeout(() => {
 			if (!currentSlideRef.current || isNullValue(transitionFrom)) return;
-			currentSlideRef.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${slideNum - transitionFrom! + 1 == childrenDef.length ||
-					(slideNum - transitionFrom! < 0 &&
-						slideNum - transitionFrom! - 1 != -childrenDef.length)
+			currentSlideRef.current!.className = `_eachSlide _current _${animationType} _${animationType}Start ${
+				slideNum - transitionFrom! + 1 == childrenDef.length ||
+				(slideNum - transitionFrom! < 0 &&
+					slideNum - transitionFrom! - 1 != -childrenDef.length)
 					? '_reverse'
 					: ''
-				}`;
+			}`;
 
 			if (
 				animationType == 'fadeoutin' ||
 				animationType == 'crossover' ||
 				animationType == 'slide'
 			) {
-				previousSlide.current!.className = `_eachSlide _previous _${animationType} _${animationType}Start ${slideNum - transitionFrom! + 1 == childrenDef.length ||
-						(slideNum - transitionFrom! < 0 &&
-							slideNum - transitionFrom! - 1 != -childrenDef.length)
+				previousSlide.current!.className = `_eachSlide _previous _${animationType} _${animationType}Start ${
+					slideNum - transitionFrom! + 1 == childrenDef.length ||
+					(slideNum - transitionFrom! < 0 &&
+						slideNum - transitionFrom! - 1 != -childrenDef.length)
 						? '_reverse'
 						: ''
-					}`;
+				}`;
 			}
 		}, 100);
 	}, [currentSlideRef.current, previousSlide.current, transitionFrom, animationType]);
@@ -158,12 +163,13 @@ function Carousel(props: Readonly<ComponentProps>) {
 		if (!isNullValue(transitionFrom)) {
 			showChildren = [
 				<div
-					className={`_eachSlide _previous _${animationType} ${slideNum - transitionFrom! + 1 == childrenDef.length ||
-							(slideNum - transitionFrom! < 0 &&
-								slideNum - transitionFrom! - 1 != -childrenDef.length)
+					className={`_eachSlide _previous _${animationType} ${
+						slideNum - transitionFrom! + 1 == childrenDef.length ||
+						(slideNum - transitionFrom! < 0 &&
+							slideNum - transitionFrom! - 1 != -childrenDef.length)
 							? '_reverse'
 							: ''
-						}`}
+					}`}
 					key={childrenDef[transitionFrom!].key}
 					style={prevStyle}
 					ref={previousSlide}
@@ -176,12 +182,13 @@ function Carousel(props: Readonly<ComponentProps>) {
 					/>
 				</div>,
 				<div
-					className={`_eachSlide _current _${animationType} ${slideNum - transitionFrom! + 1 == childrenDef.length ||
-							(slideNum - transitionFrom! < 0 &&
-								slideNum - transitionFrom! - 1 != -childrenDef.length)
+					className={`_eachSlide _current _${animationType} ${
+						slideNum - transitionFrom! + 1 == childrenDef.length ||
+						(slideNum - transitionFrom! < 0 &&
+							slideNum - transitionFrom! - 1 != -childrenDef.length)
 							? '_reverse'
 							: ''
-						}`}
+					}`}
 					ref={currentSlideRef}
 					key={childrenDef[slideNum].key}
 					style={style}
@@ -230,12 +237,12 @@ function Carousel(props: Readonly<ComponentProps>) {
 	}
 	function handleTouchEnd() {
 		if (!touchStart.current) return;
-		const threshold = 40; 
+		const threshold = 40;
 		if (touchDelta.current.x < -threshold && childrenDef?.length > 1) {
 			const next = (currentSlide + 1) % childrenDef.length;
 			setCurrentSlide(next);
 			setSlideNum(next);
-		} else if (touchDelta.current.x > threshold && childrenDef?.length > 1) {	
+		} else if (touchDelta.current.x > threshold && childrenDef?.length > 1) {
 			const prev = (currentSlide - 1 + childrenDef.length) % childrenDef.length;
 			setCurrentSlide(prev);
 			setSlideNum(prev);
@@ -245,10 +252,14 @@ function Carousel(props: Readonly<ComponentProps>) {
 	}
 
 	const totalSlides = childrenDef?.length ?? 0;
-	const visibleCount = indicatorVisibleCount > 0 ? Math.min(indicatorVisibleCount, totalSlides) : totalSlides;
+	const visibleCount =
+		indicatorVisibleCount > 0 ? Math.min(indicatorVisibleCount, totalSlides) : totalSlides;
 	let startIdx = 0;
 	if (visibleCount < totalSlides) {
-		startIdx = Math.max(0, Math.min(currentSlide - Math.floor(visibleCount / 2), totalSlides - visibleCount));
+		startIdx = Math.max(
+			0,
+			Math.min(currentSlide - Math.floor(visibleCount / 2), totalSlides - visibleCount),
+		);
 	}
 	const indicatorIndexes = Array.from({ length: visibleCount }, (_, i) => i + startIdx);
 
@@ -280,7 +291,10 @@ function Carousel(props: Readonly<ComponentProps>) {
 						onClick={e => {
 							e.stopPropagation();
 							const newStart = Math.min(totalSlides - visibleCount, startIdx + 1);
-							const newCurrent = Math.min(newStart + visibleCount - 1, currentSlide + 1);
+							const newCurrent = Math.min(
+								newStart + visibleCount - 1,
+								currentSlide + 1,
+							);
 							setCurrentSlide(newCurrent);
 							setSlideNum(newCurrent);
 						}}
@@ -318,7 +332,10 @@ function Carousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							setSlideNum(newCurrent);
 						}}
-						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
+						style={{
+							...(resolvedStyles.indicatorNavBtn ?? {}),
+							...(resolvedStyles.indicatorNavBtnActive ?? {}),
+						}}
 					>
 						<SubHelperComponent
 							definition={props?.definition}
@@ -355,7 +372,14 @@ function Carousel(props: Readonly<ComponentProps>) {
 									setSlideNum(idx);
 								}
 							}}
-							style={isActive ? { ...(resolvedStyles.indicatorButton ?? {}), ...(resolvedStyles.indicatorButtonActive ?? {}) } : resolvedStyles.indicatorButton ?? {}}
+							style={
+								isActive
+									? {
+											...(resolvedStyles.indicatorButton ?? {}),
+											...(resolvedStyles.indicatorButtonActive ?? {}),
+										}
+									: (resolvedStyles.indicatorButton ?? {})
+							}
 						>
 							<SubHelperComponent
 								definition={props?.definition}
@@ -366,7 +390,7 @@ function Carousel(props: Readonly<ComponentProps>) {
 								<SubHelperComponent
 									definition={props?.definition}
 									subComponentName="indicatorButtonActive"
-									key={"active" + idx}
+									key={'active' + idx}
 								/>
 							)}
 							{indicatorShowNumbers ? idx + 1 : indicatorShape === 'dash' ? '' : ''}
@@ -387,7 +411,10 @@ function Carousel(props: Readonly<ComponentProps>) {
 							setCurrentSlide(newCurrent);
 							setSlideNum(newCurrent);
 						}}
-						style={{ ...(resolvedStyles.indicatorNavBtn ?? {}), ...(resolvedStyles.indicatorNavBtnActive ?? {}) }}
+						style={{
+							...(resolvedStyles.indicatorNavBtn ?? {}),
+							...(resolvedStyles.indicatorNavBtnActive ?? {}),
+						}}
 					>
 						<SubHelperComponent
 							definition={props?.definition}
@@ -406,10 +433,11 @@ function Carousel(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compCarousel ${arrowButtons !== 'OutsideBottomRight' && arrowButtons !== 'OutsideBottomLeft'
+			className={`comp compCarousel ${
+				arrowButtons !== 'OutsideBottomRight' && arrowButtons !== 'OutsideBottomLeft'
 					? 'container'
 					: 'containerReverse'
-				}`}
+			}`}
 			style={resolvedStyles.comp ?? {}}
 			onMouseEnter={handleMouse}
 			onMouseLeave={handleMouseLeave}
@@ -418,10 +446,11 @@ function Carousel(props: Readonly<ComponentProps>) {
 			{(indicatorPosition === 'top' || indicatorPosition === 'left') && <IndicatorBar />}
 			{showArrowButtons && (
 				<div
-					className={`arrowButtonsContainer ${showNavigationControlsOnHover
+					className={`arrowButtonsContainer ${
+						showNavigationControlsOnHover
 							? `${hover ? `show  arrowButtons${arrowButtons}` : `hide`}`
 							: `arrowButtons${arrowButtons}`
-						}`}
+					}`}
 					style={resolvedStyles.arrowButtonsContainer ?? {}}
 				>
 					<SubHelperComponent
@@ -430,8 +459,9 @@ function Carousel(props: Readonly<ComponentProps>) {
 					></SubHelperComponent>
 
 					<i
-						className={` fa-solid fa-chevron-left button ${arrowButtons === 'Middle' ? 'leftArrowButton' : ''
-							}`}
+						className={` fa-solid fa-chevron-left button ${
+							arrowButtons === 'Middle' ? 'leftArrowButton' : ''
+						}`}
 						onClick={() => {
 							if (!isNullValue(transitionFrom)) return;
 							setTransitionFrom(slideNum);
@@ -446,8 +476,9 @@ function Carousel(props: Readonly<ComponentProps>) {
 						></SubHelperComponent>
 					</i>
 					<i
-						className={` fa-solid fa-chevron-right button ${arrowButtons === 'Middle' ? 'rightArrowButton' : ''
-							}`}
+						className={` fa-solid fa-chevron-right button ${
+							arrowButtons === 'Middle' ? 'rightArrowButton' : ''
+						}`}
 						onClick={() => {
 							if (!isNullValue(transitionFrom)) return;
 							setTransitionFrom(slideNum);
@@ -463,18 +494,25 @@ function Carousel(props: Readonly<ComponentProps>) {
 				</div>
 			)}
 			<div
-				className={`innerDivSlideNav ${`slideNavDiv${slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : 'innerDivSlideNav'
-					}`}`}
+				className={`innerDivSlideNav ${`slideNavDiv${
+					slideNavButtonPosition === 'OutsideTop' ? 'OutsideTop' : 'innerDivSlideNav'
+				}`}`}
 			>
-				<div className="innerDiv"
+				<div
+					className="innerDiv"
 					onTouchStart={handleTouchStart}
 					onTouchMove={handleTouchMove}
 					onTouchEnd={handleTouchEnd}
-				>{showChildren}</div>
-				{(indicatorPosition === 'bottom' || indicatorPosition === 'right') && <IndicatorBar />}
+				>
+					{showChildren}
+				</div>
+				{(indicatorPosition === 'bottom' || indicatorPosition === 'right') && (
+					<IndicatorBar />
+				)}
 				<div
-					className={`slideButtonsContainer slideNavDiv${slideNavButtonPosition} ${slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
-						} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
+					className={`slideButtonsContainer slideNavDiv${slideNavButtonPosition} ${
+						slideNavButtonPosition === 'OutsideTop' ? 'slideNavDiv' : ''
+					} ${showNavigationControlsOnHover ? (hover ? 'showFlex' : 'hide') : ''}`}
 					style={resolvedStyles.slideButtonsContainer ?? {}}
 				>
 					<SubHelperComponent

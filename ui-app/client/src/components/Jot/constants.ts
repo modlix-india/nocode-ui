@@ -1,5 +1,5 @@
 import { duplicate } from '@fincity/kirun-js';
-import { setData } from '../../context/StoreContext';
+import { setData ,UrlDetailsExtractor} from '../../context/StoreContext';
 import { LocationHistory, PageDefinition } from '../../types/common';
 import { shortUUID } from '../../util/shortUUID';
 import { runEvent } from '../util/runEvent';

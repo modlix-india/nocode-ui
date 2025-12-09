@@ -4,6 +4,7 @@ import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	PageStoreExtractor,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { Component, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -40,6 +41,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	const [touchHover, setTouchHover] = useState(false);
 	const [src, setSrc] = useState('');
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const [falledBack, setFalledBack] = useState(false);
 	const location = useLocation();
 	const imageRef = useRef<HTMLImageElement>(null);
@@ -90,6 +92,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const clickEvent = onClickEvent
 		? props.pageDefinition.eventFunctions?.[onClickEvent]

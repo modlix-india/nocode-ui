@@ -1,5 +1,5 @@
 import { TokenValueExtractor, isNullValue } from '@fincity/kirun-js';
-import { getData } from '../../context/StoreContext';
+import { getData ,UrlDetailsExtractor} from '../../context/StoreContext';
 import {
 	ComponentMultiProperty,
 	ComponentPropertyDefinition,

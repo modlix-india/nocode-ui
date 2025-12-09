@@ -4,6 +4,7 @@ import {
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
@@ -29,6 +30,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 	const [isToggled, setIsToggled] = React.useState(false);
 	const [hover, setHover] = React.useState(false);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
 		properties: {
@@ -51,6 +53,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,

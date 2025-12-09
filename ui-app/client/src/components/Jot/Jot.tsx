@@ -5,6 +5,7 @@ import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
 	setData,
+	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import {
 	Component,
@@ -33,6 +34,7 @@ function Jot(props: Readonly<ComponentProps>) {
 		pageDefinition,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			defaultDocument = DEFAULT_DOCUMENT,
@@ -46,6 +48,7 @@ function Jot(props: Readonly<ComponentProps>) {
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const styleProperties = processComponentStylePseudoClasses(
@@ -80,7 +83,7 @@ function Jot(props: Readonly<ComponentProps>) {
 					let x = localStorage.getItem(LOCAL_STORAGE_PREFIX + key);
 					if (!isNullValue(x) && !x?.trim()) v = JSON.parse(x!);
 					if (v._id == null && v.id == null) v = duplicate(DEFAULT_DOCUMENT);
-				} catch (e) { }
+				} catch (e) {}
 
 				setJotDocument(v);
 			},
@@ -105,7 +108,7 @@ function Jot(props: Readonly<ComponentProps>) {
 	}, [bindingPath2Path]);
 
 	const savePersonalization = useMemo(() => {
-		if (!bindingPath2Path) return (key: string, value: any) => { };
+		if (!bindingPath2Path) return (key: string, value: any) => {};
 
 		return savePersonalizationCurry(
 			bindingPath2Path,

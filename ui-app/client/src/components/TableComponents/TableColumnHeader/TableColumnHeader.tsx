@@ -4,6 +4,7 @@ import {
 	getDataFromPath,
 	PageStoreExtractor,
 	setData,
+	UrlDetailsExtractor,
 } from '../../../context/StoreContext';
 import { ComponentProps, LocationHistory } from '../../../types/common';
 import {
@@ -91,6 +92,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		definition: { key },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
+	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
 			label,
@@ -114,6 +116,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		stylePropertiesDefinition,
 		locationHistory,
 		pageExtractor,
+		urlExtractor,
 	);
 
 	const styleProperties = processComponentStylePseudoClasses(
