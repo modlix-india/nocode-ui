@@ -99,6 +99,14 @@ authoritiesExtractor.setStore(_store);
 fillerExtractor.setStore(_store);
 
 globalThis.getStore = () => duplicate(_store);
+globalThis.getUrlStore = () => {
+
+	return Array.from(UrlDetailsExtractor.extractorMap)
+		.reduce((a, [key, store]) => {
+			a[key] = duplicate(store.getStore());
+			return a;
+		}, {} as { [key: string]: any });
+}
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
@@ -310,7 +318,7 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 
 export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 
-	static readonly extractorMap: Map<string, UrlDetailsExtractor> = new Map();
+	public static readonly extractorMap: Map<string, UrlDetailsExtractor> = new Map();
 	private details: URLDetails;
 
 	constructor(details: URLDetails) {
