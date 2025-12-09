@@ -22,6 +22,7 @@ declare global {
 	var raiseDesignModeChangeEvent: () => void;
 	var screenType: string;
 	var getStore: () => any;
+	var getUrlStore: () => any;
 	var getTempStore: () => any;
 	var isDebugMode: boolean;
 	var pageEditor: {
