@@ -318,6 +318,7 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 		super();
 		this.details = details;
 		this.myStore = myStore;
+		setData(`Store.urlData.${details.pageName!}`, details, undefined, true);
 	}
 
 	public setDetails(details: URLDetails) {
