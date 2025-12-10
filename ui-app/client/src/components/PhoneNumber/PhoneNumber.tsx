@@ -533,6 +533,19 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			return;
 		}
 		text = text === '' && emptyValue ? mapValue[emptyValue] : getUnformattedNumber(text);
+		
+		if (text && !text.startsWith('+')) {
+			const format = selected.F;
+			let maxLen = 0;
+			if (format && format.length > 0) {
+				maxLen = format.reduce((acc:number, val:number) => acc + val, 0);
+			} else if (maxChars) {
+				maxLen = maxChars;
+			}
+			if (maxLen > 0 && text.length > maxLen) {
+				text = text.substring(0, maxLen);
+			}
+		}
 		let formattedText = getFormattedNumber(SORTED_COUNTRY_LIST, seperator, text, selected.D);
 
 		if (!text && updateStoreImmediately) {
@@ -631,7 +644,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			autoFocus={autoFocus}
 			hasValidationCheck={validation?.length > 0}
 			hideClearContentIcon={editOn ? true : hideClearButton}
-			maxChars={maxChars}
+			maxChars={selected.F && selected.F.length > 0 ? undefined : maxChars}
 			showDropdown={dropdownOpen}
 			leftChildren={leftChildren}
 			showMandatoryAsterisk={
