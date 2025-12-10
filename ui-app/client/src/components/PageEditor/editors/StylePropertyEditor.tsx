@@ -155,6 +155,7 @@ export default function StylePropertyEditor({
 	useEffect(
 		() =>
 			addListenerAndCallImmediatelyWithChildrenActivity(
+				pageExtractor.getPageName(),
 				(_, v: PageDefinition) => {
 					setPageDef(v);
 					if (!v) return;
@@ -176,7 +177,6 @@ export default function StylePropertyEditor({
 						),
 					);
 				},
-				pageExtractor,
 				defPath!,
 			),
 		[defPath, selectedComponent, selectorPref],
@@ -186,8 +186,8 @@ export default function StylePropertyEditor({
 		if (isNullValue(appPath)) return undefined;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v) => setAppDef(v),
-			pageExtractor,
 			appPath!,
 		);
 	}, [appPath, pageExtractor, setAppDef]);
@@ -196,8 +196,8 @@ export default function StylePropertyEditor({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setIsDragging(v ?? false),
-			pageExtractor,
 			`${personalizationPath}.propertyTabCurrentState`,
 		);
 	}, [personalizationPath]);

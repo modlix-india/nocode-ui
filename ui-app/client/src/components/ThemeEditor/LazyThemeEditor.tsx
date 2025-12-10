@@ -99,6 +99,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 		}
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, payload) => {
 				const msg = {
 					type: 'EDITOR_APP_THEME',
@@ -107,7 +108,6 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 				iFrameRef.current?.contentWindow?.postMessage(msg);
 				setChanged(Date.now());
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, iFrameRef.current, setChanged]);

@@ -63,10 +63,10 @@ function CheckBox(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setCheckBoxData(!!value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPath]);

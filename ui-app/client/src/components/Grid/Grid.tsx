@@ -129,7 +129,10 @@ function Grid(props: Readonly<ComponentProps>) {
 		getDataFromPath(spinnerPath, locationHistory, pageExtractor) ?? false,
 	);
 
-	useEffect(() => addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath), []);
+	useEffect(
+		() => addListener(props.context.pageName, (_, value) => setIsLoading(value), spinnerPath),
+		[],
+	);
 	const handleClick =
 		!clickEvent || isLoading
 			? undefined

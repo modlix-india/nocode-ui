@@ -45,6 +45,7 @@ export default function Chart(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, v) => {
 				if (isNullValue(v)) {
 					setValue(undefined);
@@ -52,7 +53,6 @@ export default function Chart(props: Readonly<ComponentProps>) {
 				}
 				setValue(v);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);

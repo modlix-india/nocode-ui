@@ -34,10 +34,10 @@ function Popup(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				setIsActive(!!value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, []);

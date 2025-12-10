@@ -110,12 +110,12 @@ export const RenderEngineContainer = () => {
 
 	useEffect(() => {
 		return addListener(
+			undefined,
 			() => {
 				setPageDefinition(undefined);
 				setCurrentPageName(undefined);
 				loadDefinition();
 			},
-			undefined,
 			'Store.pageDefinition',
 		);
 	}, []);
@@ -123,6 +123,7 @@ export const RenderEngineContainer = () => {
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
+				undefined,
 				async (_, value) => {
 					const sd = processClassesForPageDefinition(value);
 					setShellPageDefinition(sd);
@@ -138,7 +139,6 @@ export const RenderEngineContainer = () => {
 						sd,
 					);
 				},
-				undefined,
 				`${STORE_PREFIX}.application.properties.shellPageDefinition`,
 			),
 		[],
@@ -147,8 +147,8 @@ export const RenderEngineContainer = () => {
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
-				(_, v) => setAppTitle(v),
 				undefined,
+				(_, v) => setAppTitle(v),
 				`${STORE_PREFIX}.application.properties.title`,
 			),
 		[],
@@ -175,6 +175,7 @@ export const RenderEngineContainer = () => {
 
 			if (paths?.size) {
 				returnFunction = addListener(
+					pageExtractor?.getPageName() ?? undefined,
 					() => {
 						let title = appTitle ?? '';
 						const titleValue = getData(titleProp.name, [], ...tve) ?? '';
@@ -197,7 +198,6 @@ export const RenderEngineContainer = () => {
 							tag.innerHTML = title;
 						}
 					},
-					pageExtractor,
 					...Array.from(paths),
 				);
 			}
@@ -314,8 +314,8 @@ export const RenderEngineContainer = () => {
 			return;
 
 		return addListenerAndCallImmediately(
-			(_, v) => setPageDefinition(processClassesForPageDefinition(v)),
 			undefined,
+			(_, v) => setPageDefinition(processClassesForPageDefinition(v)),
 			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
 		);
 	}, [globalThis.designMode, currentPageName]);

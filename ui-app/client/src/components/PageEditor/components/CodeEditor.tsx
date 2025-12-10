@@ -112,6 +112,7 @@ export default function CodeEditor({
 	useEffect(() => {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				setEditPage(v);
 				setChanged(Date.now());
@@ -152,7 +153,6 @@ export default function CodeEditor({
 					),
 				);
 			},
-			pageExtractor,
 			defPath,
 		);
 	}, [defPath, setEditPage, pageExtractor]);

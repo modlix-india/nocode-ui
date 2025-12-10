@@ -184,8 +184,8 @@ export default function DnDIFrame({
 		if (!personalizationPath) return;
 
 		return addListener(
+			pageExtractor.getPageName(),
 			(_, v: string) => setTheme(v ?? '_light'),
-			pageExtractor,
 			`${personalizationPath}.theme`,
 		);
 	}, [personalizationPath]);
@@ -203,6 +203,7 @@ export default function DnDIFrame({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				setDesktop(v?.devices?.desktop ?? true);
 				setTablet(v?.devices?.tablet ?? true);
@@ -227,7 +228,6 @@ export default function DnDIFrame({
 					);
 				}
 			},
-			pageExtractor,
 			`${personalizationPath}`,
 		);
 	}, [personalizationPath]);

@@ -110,12 +110,12 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				if (isNullValue(v)) setValue1(undefined);
 				else if (storageDataType === 'value') setValue1(v);
 				else setValue1(getValue(v, storageDataType, min, max, step, precision));
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, storageDataType, min, max, step, precision]);
@@ -183,6 +183,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				if (isNullValue(v)) {
 					setValue1(min);
@@ -192,7 +193,6 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 					setValue1(getValue(v, 'percent', min, max, step, precision));
 				}
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, storageDataType, min, max, step, precision]);
@@ -200,6 +200,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath2) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				if (isNullValue(v)) {
 					setValue2(max);
@@ -209,7 +210,6 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 					setValue2(getValue(v, 'percent', min, max, step, precision));
 				}
 			},
-			pageExtractor,
 			bindingPathPath2,
 		);
 	}, [bindingPathPath2, storageDataType, min, max, step, precision]);

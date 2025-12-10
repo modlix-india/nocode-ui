@@ -103,10 +103,10 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setvalue(value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);

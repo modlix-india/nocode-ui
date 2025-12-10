@@ -186,8 +186,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		() =>
 			dataBindingPath
 				? addListenerAndCallImmediatelyWithChildrenActivity(
+						pageExtractor.getPageName(),
 						(_, v) => setData(v),
-						pageExtractor,
 						dataBindingPath,
 					)
 				: undefined,
@@ -217,7 +217,11 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 		if (!paths.length) return;
 
-		return addListenerAndCallImmediately((_, v) => setIsLoading(v), pageExtractor, ...paths);
+		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
+			(_, v) => setIsLoading(v),
+			...paths,
+		);
 	}, [onPagination, onSort, pageExtractor]);
 
 	const spinner =
@@ -239,8 +243,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		() =>
 			tableModeBindingPath
 				? addListenerAndCallImmediately(
+						pageExtractor.getPageName(),
 						(_, v) => setMode(v ?? displayMode),
-						pageExtractor,
 						tableModeBindingPath,
 					)
 				: undefined,
@@ -257,8 +261,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		() =>
 			pageSizeBindingPath
 				? addListenerAndCallImmediately(
+						pageExtractor.getPageName(),
 						(_, v) => setPageSize(v),
-						pageExtractor,
 						pageSizeBindingPath,
 					)
 				: undefined,
@@ -271,8 +275,8 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		() =>
 			pageNumberBindingPath
 				? addListenerAndCallImmediately(
+						pageExtractor.getPageName(),
 						(_, v) => setPageNumber(v),
-						pageExtractor,
 						pageNumberBindingPath,
 					)
 				: undefined,
@@ -302,10 +306,10 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		() =>
 			selectionBindingPath
 				? addListenerAndCallImmediatelyWithChildrenActivity(
+						pageExtractor.getPageName(),
 						(_, v) => {
 							setSelection(v);
 						},
-						pageExtractor,
 						selectionBindingPath,
 					)
 				: undefined,
@@ -1161,6 +1165,7 @@ function personalizationEvent({
 
 	let timeoutHandle: NodeJS.Timeout | undefined;
 	return addListenerAndCallImmediatelyWithChildrenActivity(
+		pageExtractor.getPageName(),
 		(_, v) => {
 			if (!timeoutHandle) clearTimeout(timeoutHandle);
 			if (deepEqual(currentObject, v) || currentObject === undefined) return;
@@ -1177,7 +1182,6 @@ function personalizationEvent({
 				})();
 			}, 2000);
 		},
-		pageExtractor,
 		personalizationBindingPath,
 	);
 }

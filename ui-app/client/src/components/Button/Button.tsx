@@ -75,7 +75,11 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (spinnerPath) {
-			return addListener((_, value) => setIsLoading(value), pageExtractor, spinnerPath);
+			return addListener(
+				props.context.pageName,
+				(_, value) => setIsLoading(value),
+				spinnerPath,
+			);
 		}
 	}, []);
 

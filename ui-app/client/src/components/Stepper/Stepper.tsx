@@ -102,10 +102,10 @@ function Stepper(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				setValue(value ?? 0);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);

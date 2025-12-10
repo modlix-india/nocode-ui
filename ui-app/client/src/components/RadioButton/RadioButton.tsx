@@ -124,10 +124,10 @@ function RadioButton(props: Readonly<ComponentProps>) {
 		if (!bindingPathPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				setSelected(value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);

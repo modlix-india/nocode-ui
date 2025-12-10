@@ -71,6 +71,7 @@ function Jot(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				if (!isNullValue(value)) {
 					setJotDocument(value);
@@ -87,7 +88,6 @@ function Jot(props: Readonly<ComponentProps>) {
 
 				setJotDocument(v);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
@@ -95,6 +95,7 @@ function Jot(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPath2Path) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				if (!isNullValue(value)) {
 					setPersonalizationObject(value);
@@ -102,7 +103,6 @@ function Jot(props: Readonly<ComponentProps>) {
 				}
 				setPersonalizationObject({});
 			},
-			pageExtractor,
 			bindingPath2Path,
 		);
 	}, [bindingPath2Path]);

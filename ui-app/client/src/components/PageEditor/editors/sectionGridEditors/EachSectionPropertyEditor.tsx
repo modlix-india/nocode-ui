@@ -41,8 +41,8 @@ export function EachSectionPropertyEditor({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setState(!isNullValue(v) ? v : true),
-			pageExtractor,
 			`${personalizationPath}.propertyEditor.sectionGridPropertyEditor.${property.key}`,
 		);
 	}, [personalizationPath]);

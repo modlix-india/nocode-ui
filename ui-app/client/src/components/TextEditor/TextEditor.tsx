@@ -52,6 +52,7 @@ function TextEditor(props: Readonly<ComponentProps>) {
 		if (!bindingPathPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, fromStore) => {
 				const editorModel = editorRef.current?.getModel().getValue();
 				if (documentType === 'json') {
@@ -68,7 +69,6 @@ function TextEditor(props: Readonly<ComponentProps>) {
 					}
 				}
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, editorRef.current, editorJSONTextRef, documentType, datInStoreRef]);

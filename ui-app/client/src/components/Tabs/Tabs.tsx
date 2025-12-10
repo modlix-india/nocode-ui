@@ -100,10 +100,10 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				setActiveTab(value ?? defaultActive ?? tabs[0]);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, defaultActive, tabs?.[0]]);
