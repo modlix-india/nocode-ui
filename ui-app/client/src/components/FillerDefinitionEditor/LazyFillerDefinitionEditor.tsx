@@ -55,8 +55,8 @@ export default function FillerDefinitionEditor(props: Readonly<ComponentProps>) 
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => setFiller(isNullValue(value) ? {} : value),
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);

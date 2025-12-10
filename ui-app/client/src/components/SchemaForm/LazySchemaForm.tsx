@@ -59,7 +59,11 @@ export default function SchemaForm(
 			setValue(props.value);
 			return;
 		}
-		return addListenerAndCallImmediately((_, v) => setValue(v), pageExtractor, bindingPathPath);
+		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
+			(_, v) => setValue(v),
+			bindingPathPath,
+		);
 	}, [bindingPathPath, props.value]);
 
 	const isReadonly = readOnly || (!bindingPathPath && !props.onChange);

@@ -100,6 +100,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				if (value?.TABLET_LANDSCAPE_SCREEN_ONLY && src2) {
 					setSrc(src2);
@@ -113,7 +114,6 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 					setSrc(defaultSrc);
 				}
 			},
-			pageExtractor,
 			'Store.devices',
 		);
 	}, [defaultSrc, src2, src3, src4, src5]);

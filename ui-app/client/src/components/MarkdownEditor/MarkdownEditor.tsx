@@ -82,13 +82,13 @@ function MarkdownEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, fromStore) => {
 				setText((v: string) => {
 					if (v === fromStore) return v;
 					return fromStore ?? '';
 				});
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, setText, textAreaRef.current]);

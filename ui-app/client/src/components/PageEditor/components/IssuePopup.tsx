@@ -27,8 +27,8 @@ export default function IssuePopup({
 		if (!personalizationPath) return;
 
 		return addListener(
+			pageExtractor.getPageName(),
 			(_, v) => setTheme(v ?? '_light'),
-			pageExtractor,
 			`${personalizationPath}.theme`,
 		);
 	}, [personalizationPath]);

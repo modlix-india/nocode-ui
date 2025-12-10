@@ -175,6 +175,7 @@ export function App() {
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
+				undefined,
 				async (_, appDef) => {
 					if (appDef === undefined) {
 						const { auth, application, isApplicationLoadFailed, theme } =
@@ -196,9 +197,8 @@ export function App() {
 					}
 
 					const { properties } = appDef;
-					
-					if (!properties || (!globalThis.nodeDev && !globalThis.isDesignMode)){ 
-						
+
+					if (!properties || (!globalThis.nodeDev && !globalThis.isDesignMode)) {
 						processFontPacks(properties.fontPacks);
 						processIconPacks(properties.iconPacks);
 						return;
@@ -211,7 +211,6 @@ export function App() {
 					processFontPacks(properties.fontPacks);
 					processIconPacks(properties.iconPacks);
 				},
-				undefined,
 				`${STORE_PREFIX}.application`,
 			),
 		[firstTime, setFirstTime],
@@ -220,8 +219,8 @@ export function App() {
 	useEffect(
 		() =>
 			addListener(
-				(_, value) => setIsApplicationLoadFailed(value),
 				undefined,
+				(_, value) => setIsApplicationLoadFailed(value),
 				`${STORE_PREFIX}.isApplicationLoadFailed`,
 			),
 		[],

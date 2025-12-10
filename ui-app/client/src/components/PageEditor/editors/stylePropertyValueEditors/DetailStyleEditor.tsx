@@ -43,8 +43,8 @@ export function DetailStyleEditor({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {},
-			pageExtractor,
 			`${personalizationPath}.detailStyleEditor`,
 		);
 	}, [personalizationPath]);

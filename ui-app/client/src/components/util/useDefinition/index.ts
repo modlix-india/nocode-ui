@@ -99,6 +99,7 @@ export default function useDefinition(
 		}
 
 		return addListener(
+			pageExtractor?.getPageName() ?? undefined,
 			(p, v) => {
 				const newState = createNewState(
 					definition,
@@ -124,7 +125,6 @@ export default function useDefinition(
 
 				setCompState(newState);
 			},
-			pageExtractor,
 			...paths,
 		);
 	}, [definition, pathsChangedAt, locationHistoryString]);

@@ -50,8 +50,8 @@ export default function DnDSideBar({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setNoSelection(v ?? false),
-			pageExtractor,
 			`${personalizationPath}.slave.noSelection`,
 		);
 	}, [personalizationPath]);
@@ -59,8 +59,8 @@ export default function DnDSideBar({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setNoShell(v ?? false),
-			pageExtractor,
 			`${personalizationPath}.slave.noShell`,
 		);
 	}, [personalizationPath]);
@@ -68,8 +68,8 @@ export default function DnDSideBar({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setComponentTree(v),
-			pageExtractor,
 			`${personalizationPath}.componentTree`,
 		);
 	}, [personalizationPath]);

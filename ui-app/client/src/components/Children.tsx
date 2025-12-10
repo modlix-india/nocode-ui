@@ -86,7 +86,11 @@ function Children({
 			}, new Set<string>());
 
 		if (set.size == 0) return undefined;
-		return addListener(() => setVisibilityPaths(Date.now()), pageExtractor, ...Array.from(set));
+		return addListener(
+			context.pageName,
+			() => setVisibilityPaths(Date.now()),
+			...Array.from(set),
+		);
 	}, []);
 
 	const validationTriggers =
@@ -100,7 +104,7 @@ function Children({
 		.map(e => {
 			if (!e?.properties?.visibility) return e;
 
-			return getData(e?.properties?.visibility, locationHistory, pageExtractor)
+			return getData(e?.properties?.visibility, locationHistory, pageExtractor, urlExtractor)
 				? e
 				: undefined;
 		})

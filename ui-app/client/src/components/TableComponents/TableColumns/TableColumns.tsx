@@ -83,8 +83,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!context.table.personalizationBindingPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			context.pageName,
 			() => setUpdateColumnsAt(Date.now()),
-			pageExtractor,
 			context.table.personalizationBindingPath,
 		);
 	}, [
@@ -136,7 +136,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!listenPaths.length) return;
-		addListener(() => setUpdateColumnsAt(Date.now()), pageExtractor, ...listenPaths);
+		addListener(context.pageName, () => setUpdateColumnsAt(Date.now()), ...listenPaths);
 	}, [setUpdateColumnsAt, pageExtractor, listenPaths]);
 
 	const {

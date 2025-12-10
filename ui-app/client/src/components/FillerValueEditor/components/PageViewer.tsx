@@ -21,8 +21,8 @@ export default function PageViewer({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v) => setPageMode(v?.pageMode ?? 'DESKTOP'),
-			pageExtractor,
 			personalizationPath,
 		);
 	}, [personalizationPath]);

@@ -36,6 +36,7 @@ export default function DnDBottomBar({
 	useEffect(
 		() =>
 			addListenerAndCallImmediatelyWithChildrenActivity(
+				pageExtractor.getPageName(),
 				(_, v) => {
 					setDefMap(v);
 					setMap(
@@ -50,7 +51,6 @@ export default function DnDBottomBar({
 						),
 					);
 				},
-				pageExtractor,
 				`${defPath}.componentDefinition`,
 			),
 		[defPath, setMap],

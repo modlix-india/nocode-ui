@@ -123,8 +123,8 @@ export default function DnDEditor({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setPreview(v ?? false),
-			pageExtractor,
 			`${personalizationPath}.preview`,
 		);
 	}, [personalizationPath]);

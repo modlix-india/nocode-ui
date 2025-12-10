@@ -99,14 +99,6 @@ authoritiesExtractor.setStore(_store);
 fillerExtractor.setStore(_store);
 
 globalThis.getStore = () => duplicate(_store);
-globalThis.getUrlStore = () => {
-
-	return Array.from(UrlDetailsExtractor.extractorMap)
-		.reduce((a, [key, store]) => {
-			a[key] = duplicate(store.getStore());
-			return a;
-		}, {} as { [key: string]: any });
-}
 
 export const storeExtractor = new StoreExtractor(_store, `${STORE_PREFIX}.`);
 
@@ -320,10 +312,13 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 
 	public static readonly extractorMap: Map<string, UrlDetailsExtractor> = new Map();
 	private details: URLDetails;
+	private readonly myStore: any;
 
-	constructor(details: URLDetails) {
+	constructor(details: URLDetails, myStore: any = _store) {
 		super();
 		this.details = details;
+		this.myStore = myStore;
+		setData(`Store.urlData.${details.pageName!}`, details, undefined, true);
 	}
 
 	public setDetails(details: URLDetails) {
@@ -334,9 +329,9 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		return this.retrieveElementFrom(
 			token,
-			parts.slice(1),
+			['urlData', this.details.pageName!, ...parts.slice(1)],
 			0,
-			this.details,
+			this.myStore,
 		);
 	}
 
@@ -345,7 +340,12 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 	}
 	
 	public getStore(): any {
-		return this.details;
+		return this.retrieveElementFrom(
+			`Store.urlData.${this.details.pageName!}`,
+			['urlData', this.details.pageName!],
+			0,
+			_store,
+		);
 	}
 
 	public static addDetails(details: URLDetails) {
@@ -363,57 +363,61 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 		return UrlDetailsExtractor.extractorMap.get(pageName)!;
 	}
 
-	
+	public getPageName(): string {
+		return this.details.pageName!;
+	}
 }
 
-const pathTransformer = (e: string, pageExtractor?: PageStoreExtractor) => {
-	if (pageExtractor && e.startsWith(pageExtractor.getPrefix()))
-		return 'Store.pageData.' + pageExtractor.getPageName() + e.substring(4);
-	else if (e.startsWith(fillerExtractor.getPrefix()))
+const pathTransformer = (e: string, pageName: string | undefined) => {
+	if (pageName && e.startsWith('Page.'))
+		return 'Store.pageData.' + pageName + e.substring(4);
+	else if (pageName && e.startsWith('Url.'))
+		return 'Store.urlData.' + pageName + e.substring(3);
+	if (e.startsWith(fillerExtractor.getPrefix()))
 		return 'Store.application.properties.fillerValues.' + e.substring(7);
 	return e;
 };
 
 export const addListener = (
+	pageName: string | undefined,
 	callback: (path: string, value: any) => void,
-	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
-	return _addListener(callback, ...path.map(e => pathTransformer(e, pageExtractor)));
+	return _addListener(callback, ...path.map(e => pathTransformer(e, pageName)));
 };
 
 export const addListenerAndCallImmediately = (
+	pageName: string | undefined,
 	callback: (path: string, value: any) => void,
-	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
 	return _addListenerAndCallImmediately(
 		true,
 		callback,
-		...path.map(e => pathTransformer(e, pageExtractor)),
+		...path.map(e => pathTransformer(e, pageName)),
 	);
 };
 
 export const addListenerWithChildrenActivity = (
+	pageName: string | undefined,
 	callback: (path: string, value: any) => void,
-	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
 	return _addListenerWithChildrenActivity(
 		callback,
-		...path.map(e => pathTransformer(e, pageExtractor)),
+		...path.map(e => pathTransformer(e, pageName)),
 	);
 };
 
 export const addListenerAndCallImmediatelyWithChildrenActivity = (
+	pageName: string | undefined,
 	callback: (path: string, value: any) => void,
-	pageExtractor?: PageStoreExtractor,
 	...path: Array<string>
 ): (() => void) => {
 	return _addListenerAndCallImmediatelyWithChildrenActivity(
 		true,
 		callback,
-		...path.map(e => pathTransformer(e, pageExtractor)),
+		...path.map(e => pathTransformer(e, pageName)),
 	);
 };
 

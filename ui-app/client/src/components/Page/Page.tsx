@@ -85,8 +85,8 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	useEffect(
 		() =>
 			addListenerWithChildrenActivity(
+				pageExtractor.getPageName(),
 				() => setLastChanged(Date.now()),
-				pageExtractor,
 				`Store.validationTriggers.${pageName}`,
 			),
 		[],
@@ -94,6 +94,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				const v = duplicate(value);
 				if (isNullValue(v?.pageName)) {
@@ -154,7 +155,6 @@ function PageComponent(props: Readonly<ComponentProps>) {
 					}
 				}
 			},
-			pageExtractor,
 			`${STORE_PREFIX}.urlDetails`,
 		);
 	}, [
