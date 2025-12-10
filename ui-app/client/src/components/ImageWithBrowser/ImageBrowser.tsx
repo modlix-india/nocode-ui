@@ -83,8 +83,8 @@ export default function ImageBrowser({
 		if (!bindingPaths.get('bindingPath7')) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setAltText(v),
-			pageExtractor,
 			bindingPaths.get('bindingPath7')!,
 		);
 	}, [bindingPaths.get('bindingPath7')]);

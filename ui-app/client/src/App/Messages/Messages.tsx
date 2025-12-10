@@ -14,8 +14,8 @@ export function Messages() {
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
-				(_, m) => setMsgs(m ?? []),
 				undefined,
+				(_, m) => setMsgs(m ?? []),
 				STORE_PATH_MESSAGES,
 			),
 		[],

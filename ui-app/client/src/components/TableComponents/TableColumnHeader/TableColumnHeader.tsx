@@ -293,8 +293,8 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		() =>
 			context.table.personalizationBindingPath
 				? addListenerAndCallImmediatelyWithChildrenActivity(
+						pageExtractor.getPageName(),
 						(_, v) => setPersonalizedObject(v),
-						pageExtractor,
 						context.table.personalizationBindingPath,
 					)
 				: undefined,

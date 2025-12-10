@@ -78,11 +78,11 @@ export default function ClassEditor({
 		if (!defPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v: PageDefinition) => {
 				setClasses(v.properties?.classes ?? {});
 				setPageDef(v);
 			},
-			pageExtractor,
 			defPath,
 		);
 	}, [defPath, selectedComponent]);
@@ -99,8 +99,8 @@ export default function ClassEditor({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setIsDragging(v ?? false),
-			pageExtractor,
 			`${personalizationPath}.propertyTabCurrentState`,
 		);
 	}, [personalizationPath]);

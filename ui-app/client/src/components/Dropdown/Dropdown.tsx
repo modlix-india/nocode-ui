@@ -148,10 +148,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!originalBindingPathPath) return;
 		addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setSelected(value);
 			},
-			pageExtractor,
 			originalBindingPathPath,
 		);
 	}, [originalBindingPathPath]);
@@ -159,10 +159,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!searchBindingPath) return;
 		addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setSearchText(value ?? '');
 			},
-			pageExtractor,
 			searchBindingPath,
 		);
 	}, [searchBindingPath]);

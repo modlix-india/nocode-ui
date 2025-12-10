@@ -141,8 +141,8 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setLocalTheme(v ?? theme),
-			pageExtractor,
 			`${personalizationPath}.theme`,
 		);
 	}, [personalizationPath]);
@@ -450,6 +450,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!defPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, payload) => {
 				performanceMonitor.trackStoreUpdate();
 				// Measure postMessage payload size
@@ -469,7 +470,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					}),
 				);
 			},
-			pageExtractor,
 			defPath,
 		);
 	}, [defPath]);
@@ -478,6 +478,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, payload) => {
 				performanceMonitor.trackStoreUpdate();
 				// Measure postMessage payload size
@@ -497,7 +498,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					}),
 				);
 			},
-			pageExtractor,
 			personalizationPath,
 		);
 	}, [personalizationPath]);
@@ -506,6 +506,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!appPath) return;
 		const unListen = addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, payload) => {
 				if (!templateIFrame) return;
 
@@ -520,12 +521,12 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					}),
 				);
 			},
-			pageExtractor,
 			appPath,
 		);
 
 		const unlisten2 = themePath
 			? addListenerAndCallImmediatelyWithChildrenActivity(
+					pageExtractor.getPageName(),
 					(_, payload) => {
 						if (!templateIFrame) return;
 
@@ -540,7 +541,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 							}),
 						);
 					},
-					pageExtractor,
 					themePath,
 				)
 			: undefined;
@@ -777,6 +777,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!defPath) return;
 		const removeListener = addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				if (!v?.id) return;
 
@@ -808,7 +809,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					},
 				});
 			},
-			pageExtractor,
 			defPath,
 		);
 

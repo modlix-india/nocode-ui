@@ -128,11 +128,11 @@ export default function PropertyEditor({
 		if (!defPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v: PageDefinition) => {
 				setDef(v.componentDefinition[selectedComponent]);
 				setPageDef(v);
 			},
-			pageExtractor,
 			defPath,
 		);
 	}, [defPath, selectedComponent]);
@@ -141,6 +141,7 @@ export default function PropertyEditor({
 		if (!defPath) return; // Page.pageDefinition
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v: PageDefinition) => {
 				// sets of sets of property names
 				const propertyNamesSets = selectedComponentsList.map(currentComponent => {
@@ -163,7 +164,6 @@ export default function PropertyEditor({
 
 				setAllCommonProperties(commonProps);
 			},
-			pageExtractor,
 			defPath,
 		);
 	}, [defPath, selectedComponentsList]);
@@ -172,8 +172,8 @@ export default function PropertyEditor({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setIsDragging(v ?? false),
-			pageExtractor,
 			`${personalizationPath}.propertyTabCurrentState`,
 		);
 	}, [personalizationPath]);

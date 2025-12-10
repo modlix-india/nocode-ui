@@ -170,6 +170,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				if (isNullValue(value)) {
 					setFileValue(value);
@@ -177,7 +178,6 @@ function FileUpload(props: Readonly<ComponentProps>) {
 				}
 				isMultiple && !Array.isArray(value) ? setFileValue([value]) : setFileValue(value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);

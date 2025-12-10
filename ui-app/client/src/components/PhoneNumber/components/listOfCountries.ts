@@ -561,7 +561,7 @@ export const COUNTRY_LIST = [
 		N: 'France',
 		D: '+33',
 		C: 'FR',
-		F: [1, 2, 2, 2],
+		F: [1, 2, 2, 2, 2],
 	},
 	{
 		N: 'Spain',
@@ -801,7 +801,7 @@ export const COUNTRY_LIST = [
 		N: 'United Kingdom',
 		D: '+44',
 		C: 'GB',
-		F: [],
+		F: [5, 5],
 	},
 	{
 		N: 'Guernsey',
@@ -1059,7 +1059,7 @@ export const COUNTRY_LIST = [
 		N: 'Australia',
 		D: '+61',
 		C: 'AU',
-		F: [],
+		F: [3, 3, 3],
 	},
 	{
 		N: 'Christmas Island',
@@ -1307,7 +1307,7 @@ export const COUNTRY_LIST = [
 		N: 'China',
 		D: '+86',
 		C: 'CN',
-		F: [],
+		F: [3, 4, 4],
 	},
 	{
 		N: 'Bangladesh',
@@ -1339,7 +1339,7 @@ export const COUNTRY_LIST = [
 		N: 'Pakistan',
 		D: '+92',
 		C: 'PK',
-		F: [],
+		F: [3, 7],
 	},
 	{
 		N: 'Afghanistan',

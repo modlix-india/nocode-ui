@@ -49,8 +49,12 @@ export default function Form(props: Readonly<ComponentProps>) {
 	const [value, setValue] = React.useState<any>(null);
 	useEffect(() => {
 		if (!bindingPathPath) return;
-		return addListenerAndCallImmediately((_, v) => setValue(v), pageExtractor, bindingPathPath);
-	}, [bindingPathPath]);
+		return addListenerAndCallImmediately(
+			props.context.pageName,
+			(_, v) => setValue(v),
+			bindingPathPath,
+		);
+	}, [bindingPathPath, props.context.pageName]);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,

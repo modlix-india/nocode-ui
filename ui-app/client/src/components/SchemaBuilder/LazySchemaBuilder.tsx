@@ -45,7 +45,11 @@ export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 	const [value, setValue] = React.useState<any>();
 	useEffect(() => {
 		if (!bindingPathPath) return;
-		return addListenerAndCallImmediately((_, v) => setValue(v), pageExtractor, bindingPathPath);
+		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
+			(_, v) => setValue(v),
+			bindingPathPath,
+		);
 	}, [bindingPathPath]);
 
 	const isReadonly = readOnly || !bindingPathPath;

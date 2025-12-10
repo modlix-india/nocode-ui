@@ -138,12 +138,12 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!uiDefPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				const isNull = isNullValue(value);
 				setUIFiller(isNull ? {} : value);
 				if (!isNull && !firstUIFiller) setFirstUIFiller(value);
 			},
-			pageExtractor,
 			uiDefPath,
 		);
 	}, [firstUIFiller, setFirstUIFiller, uiDefPath]);
@@ -151,12 +151,12 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!coreDefPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				const isNull = isNullValue(value);
 				setCoreFiller(isNull ? {} : value);
 				if (!isNull && !firstCoreFiller) setFirstCoreFiller(value);
 			},
-			pageExtractor,
 			coreDefPath,
 		);
 	}, [firstCoreFiller, setFirstCoreFiller, coreDefPath]);
@@ -295,10 +295,10 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!appDefPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setAppDefinition(value);
 			},
-			pageExtractor,
 			appDefPath,
 		);
 	}, [appDefPath]);

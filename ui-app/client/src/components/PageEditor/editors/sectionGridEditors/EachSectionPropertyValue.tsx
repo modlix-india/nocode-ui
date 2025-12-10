@@ -31,8 +31,8 @@ export default function EachSectionPropertyValue({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setState(!isNullValue(v) ? v : true),
-			pageExtractor,
 			`${personalizationPath}.propertyEditor.sectionPropertyValue.${property.key}`,
 		);
 	}, [personalizationPath]);

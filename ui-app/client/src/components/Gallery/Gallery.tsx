@@ -75,10 +75,10 @@ function Gallery(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setIsActive(!!value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, []);
@@ -86,10 +86,10 @@ function Gallery(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath2) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setStartingImageSrc(value);
 			},
-			pageExtractor,
 			bindingPathPath2,
 		);
 	}, []);

@@ -199,10 +199,10 @@ export default function DnDTopBar({
 		() =>
 			personalizationPath
 				? addListenerWithChildrenActivity(
+						pageExtractor.getPageName(),
 						(_, v) => {
 							setDeviceType(v?.deviceType);
 						},
-						pageExtractor,
 						personalizationPath,
 					)
 				: undefined,
@@ -213,6 +213,7 @@ export default function DnDTopBar({
 		if (!defPath) return;
 
 		return addListenerWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				setPage(v as PageDefinition);
 				setProperties(v?.properties ?? {});
@@ -270,7 +271,6 @@ export default function DnDTopBar({
 				performanceMonitor.measureUndoStack(undoStackRef.current, 'undo');
 				setChanged(Date.now());
 			},
-			pageExtractor,
 			defPath,
 		);
 	}, [defPath, pageExtractor]);

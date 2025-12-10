@@ -71,8 +71,8 @@ export default function DnDPropertyBar({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setOriginalCurrentTab(!isNullValue(v) ? v : 1),
-			pageExtractor,
 			`${personalizationPath}.currentPropertyTab`,
 		);
 	}, [personalizationPath]);
@@ -81,8 +81,8 @@ export default function DnDPropertyBar({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setIsDragging(v ?? false),
-			pageExtractor,
 			`${personalizationPath}.propertyTabCurrentState`,
 		);
 	}, [personalizationPath]);
@@ -91,8 +91,8 @@ export default function DnDPropertyBar({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setPosition(v ?? { x: 0, y: 0 }),
-			pageExtractor,
 			`${personalizationPath}.propertyTabPosition`,
 		);
 	}, [personalizationPath]);

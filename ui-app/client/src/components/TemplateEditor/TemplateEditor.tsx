@@ -52,6 +52,7 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				if (isNullValue(value)) {
 					setTemplate(undefined);
@@ -59,7 +60,6 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 				}
 				setTemplate(duplicate(value));
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
