@@ -112,6 +112,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				if (isNullValue(value)) {
 					setValue('');
@@ -128,7 +129,6 @@ function TextBox(props: Readonly<ComponentProps>) {
 					setValue(value);
 				}
 			},
-			pageExtractor,
 			originalBindingPathPath,
 		);
 	}, [originalBindingPathPath, valueType, numberFormat, numberType]);
@@ -173,7 +173,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 		if (spinnerPath4) paths.push(spinnerPath4);
 
 		if (!paths.length) return;
-		return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
+		return addListener(props.context.pageName, (_, value) => setIsLoading(value), ...paths);
 	}, []);
 
 	const computedStyles = processComponentStylePseudoClasses(

@@ -114,10 +114,10 @@ function ColorPickerComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setColor(value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);

@@ -64,12 +64,12 @@ export default function FormEditor(props: Readonly<ComponentProps>) {
 		}
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, value) =>
 				setSchema((existing: any) => {
 					if (existing && deepEqual(existing, value)) return existing;
 					return value ?? restrictToSchema ?? { type: 'OBJECT' };
 				}),
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, restrictToSchema]);

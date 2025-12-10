@@ -147,10 +147,10 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!originalBindingPathPath3) return;
 		addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				setBrowsingMonthYear(value);
 			},
-			pageExtractor,
 			originalBindingPathPath3,
 		);
 	}, [originalBindingPathPath3, setBrowsingMonthYear]);
@@ -188,6 +188,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!originalBindingPathPath1) return;
 		addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				const setFunction = dateType === 'startDate' ? setThisDate : setThatDate;
 
@@ -208,7 +209,6 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 					);
 				}
 			},
-			pageExtractor,
 			originalBindingPathPath1,
 		);
 	}, [
@@ -223,6 +223,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!originalBindingPathPath2) return;
 		addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				const setFunction = dateType === 'startDate' ? setThatDate : setThisDate;
 
@@ -243,7 +244,6 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 					);
 				}
 			},
-			pageExtractor,
 			originalBindingPathPath2,
 		);
 	}, [

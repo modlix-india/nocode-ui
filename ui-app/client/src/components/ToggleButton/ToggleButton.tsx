@@ -67,10 +67,10 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 		if (!bindingPathPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				setIsToggled(value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);

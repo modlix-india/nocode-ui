@@ -61,8 +61,8 @@ function SubPage(props: Readonly<ComponentProps>) {
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
+				pageExtractor.getPageName(),
 				(_, v) => setSubPage(processClassesForPageDefinition(v)),
-				pageExtractor,
 				`${STORE_PREFIX}.pageDefinition.${pageName}`,
 			),
 		[pageName],

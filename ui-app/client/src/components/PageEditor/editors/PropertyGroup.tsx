@@ -45,8 +45,8 @@ export function PropertyGroup({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setState(!isNullValue(v) ? v : (defaultStateOpen ?? true)),
-			pageExtractor,
 			`${personalizationPath}.propertyEditor.${tabName}.${name}`,
 		);
 	}, [personalizationPath, tabName, name]);

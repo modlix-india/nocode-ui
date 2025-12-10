@@ -85,6 +85,7 @@ function ImageWithBrowser(props: Readonly<ComponentProps>) {
 			.reduce((acc, e) => acc.set(e.key as string, e.path), new Map<string, string>());
 		setBindingPaths(bps);
 		addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				const imageMap = new Map<string, string>(
 					Array.from(bps.entries()).map(e => [
@@ -107,7 +108,6 @@ function ImageWithBrowser(props: Readonly<ComponentProps>) {
 
 				setAltText(imageMap.get('bindingPath7') ?? '');
 			},
-			pageExtractor,
 			'Store.devices',
 			...Array.from(bps.values()),
 		);

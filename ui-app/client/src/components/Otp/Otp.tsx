@@ -100,6 +100,7 @@ function Otp(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				if (
 					isNullValue(value) ||
@@ -111,7 +112,6 @@ function Otp(props: Readonly<ComponentProps>) {
 				}
 				setValue(value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, valueType]);
@@ -178,8 +178,8 @@ function Otp(props: Readonly<ComponentProps>) {
 
 		if (!paths.length) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => setIsLoading(value),
-			pageExtractor,
 			...paths,
 		);
 	}, []);

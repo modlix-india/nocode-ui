@@ -260,6 +260,7 @@ export default function LazyKIRunEditor(
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				const hereDef = correctStatementNames(v);
 				setRawDef(hereDef);
@@ -289,7 +290,6 @@ export default function LazyKIRunEditor(
 					setSelectedStatements(new Map());
 				}
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, setRawDef, pageExtractor, name, setName, setSelectedStatements]);
@@ -301,8 +301,8 @@ export default function LazyKIRunEditor(
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v) => setPreference({ ...(v ?? {}) }),
-			pageExtractor,
 			personalizationPath,
 		);
 	}, [personalizationPath, setPreference, pageExtractor]);

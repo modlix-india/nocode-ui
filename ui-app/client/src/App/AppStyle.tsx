@@ -55,6 +55,7 @@ export function AppStyle() {
 	useEffect(
 		() =>
 			addListener(
+				undefined,
 				(path, value) => {
 					if (path == STORE_PATH_THEME_PATH) {
 						if (!value) {
@@ -83,7 +84,6 @@ export function AppStyle() {
 					else if (path == STORE_PATH_APP)
 						setCompList(value?.components ?? new Set<string>());
 				},
-				undefined,
 				STORE_PATH_STYLE_PATH,
 				STORE_PATH_THEME_PATH,
 				STORE_PATH_APP,

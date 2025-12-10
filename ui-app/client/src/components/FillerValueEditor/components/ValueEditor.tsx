@@ -38,8 +38,8 @@ export default function ValueEditor({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v) => setCollapsed(!!v?.collapsed),
-			pageExtractor,
 			personalizationPath,
 		);
 	}, [personalizationPath]);

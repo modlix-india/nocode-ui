@@ -171,8 +171,8 @@ function FileSelector(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => setSelectedFile(isNullValue(value) ? '' : value),
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
