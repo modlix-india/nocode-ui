@@ -145,6 +145,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				if (isNullValue(value)) {
 					setValue('');
@@ -152,7 +153,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 				}
 				setValue(value);
 			},
-			pageExtractor,
 			originalBindingPathPath,
 		);
 	}, [originalBindingPathPath]);
@@ -160,6 +160,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!originalBindingPathPath2) return;
 		return addListenerAndCallImmediately(
+			props.context.pageName,
 			(_, value) => {
 				if (isNullValue(value)) {
 					setCountryCode('');
@@ -172,7 +173,6 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 					lastSelectedCountry.current = country;
 				}
 			},
-			pageExtractor,
 			originalBindingPathPath2,
 		);
 	}, [originalBindingPathPath2]);
@@ -209,7 +209,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		if (spinnerPath3) paths.push(spinnerPath3);
 
 		if (!paths.length) return;
-		return addListener((_, value) => setIsLoading(value), pageExtractor, ...paths);
+		return addListener(props.context.pageName, (_, value) => setIsLoading(value), ...paths);
 	}, []);
 
 	const computedStyles = processComponentStylePseudoClasses(
@@ -533,12 +533,12 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			return;
 		}
 		text = text === '' && emptyValue ? mapValue[emptyValue] : getUnformattedNumber(text);
-		
+
 		if (text && !text.startsWith('+')) {
 			const format = selected.F;
 			let maxLen = 0;
 			if (format && format.length > 0) {
-				maxLen = format.reduce((acc:number, val:number) => acc + val, 0);
+				maxLen = format.reduce((acc: number, val: number) => acc + val, 0);
 			} else if (maxChars) {
 				maxLen = maxChars;
 			}

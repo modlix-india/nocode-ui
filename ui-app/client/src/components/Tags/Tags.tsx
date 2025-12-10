@@ -67,10 +67,10 @@ function Tags(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				setvalue(value);
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, []);

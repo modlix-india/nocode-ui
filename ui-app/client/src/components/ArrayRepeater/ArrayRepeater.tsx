@@ -135,6 +135,7 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!bindingPathPath || !indKeys.current) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, _v) => {
 				let repData: any[][] = [];
 				if (dataType === 'object' && _v) {
@@ -150,7 +151,6 @@ function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 					minimizeReRender,
 				});
 			},
-			pageExtractor,
 			bindingPathPath,
 		);
 	}, [bindingPathPath, indKeys.current, orderKey, orderDirection, missingValueOrder]);

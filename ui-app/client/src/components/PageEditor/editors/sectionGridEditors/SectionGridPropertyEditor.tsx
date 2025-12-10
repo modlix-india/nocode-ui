@@ -44,11 +44,11 @@ export default function SectionGridPropertyEditor({
 		if (!defPath) return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			(_, v: PageDefinition) => {
 				setDef(v.componentDefinition[selectedComponent]);
 				setPageDef(v);
 			},
-			pageExtractor,
 			defPath,
 		);
 	}, [defPath, selectedComponent]);

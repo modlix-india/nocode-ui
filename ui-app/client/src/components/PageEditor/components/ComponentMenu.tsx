@@ -247,8 +247,8 @@ export default function ComponentMenu({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setOriginalCompType(v ?? 'SECTIONS'),
-			pageExtractor,
 			`${personalizationPath}.compMenuType`,
 		);
 	}, [personalizationPath]);
@@ -262,8 +262,8 @@ export default function ComponentMenu({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setTheme(v),
-			pageExtractor,
 			`${personalizationPath}.theme`,
 		);
 	}, [personalizationPath]);
@@ -271,6 +271,7 @@ export default function ComponentMenu({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				if (v) {
 					setPinnedComponents(new Set(v));
@@ -278,7 +279,6 @@ export default function ComponentMenu({
 					setPinnedComponents(new Set());
 				}
 			},
-			pageExtractor,
 			`${personalizationPath}.pinnedComponents`,
 		);
 	}, [personalizationPath]);
@@ -339,6 +339,7 @@ export default function ComponentMenu({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => {
 				const componentName = !v?.componentName
 					? Array.from(ComponentDefinitions.values()).filter(e => !e.isHidden)[0]?.name
@@ -353,7 +354,6 @@ export default function ComponentMenu({
 				setSelectedComponentType(componentName);
 				setSelectedTemplateSection(selectedSection);
 			},
-			pageExtractor,
 			`${personalizationPath}.selectedComponent`,
 		);
 	}, [personalizationPath]);
@@ -361,8 +361,8 @@ export default function ComponentMenu({
 	useEffect(() => {
 		if (!personalizationPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setSelectedSectionCategory(v ?? ''),
-			pageExtractor,
 			`${personalizationPath}.selectedSectionCategory`,
 		);
 	}, [personalizationPath]);

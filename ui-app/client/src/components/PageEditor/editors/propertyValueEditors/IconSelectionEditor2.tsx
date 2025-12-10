@@ -152,6 +152,7 @@ export function IconSelectionEditor2({
 		if (!appPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, p) => {
 				const ps = Object.values(p ?? {}).map((e: any) => e.name);
 				setPacks(ps);
@@ -160,7 +161,6 @@ export function IconSelectionEditor2({
 					getPackData(ps[0]).then(x => setPackJson(x));
 				}
 			},
-			pageExtractor,
 			`${appPath}.properties.iconPacks`,
 		);
 	}, [appPath, pageExtractor, setPacks, setSelectedPack, setPackJson, selectedPack]);

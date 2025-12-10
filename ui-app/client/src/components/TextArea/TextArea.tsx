@@ -107,6 +107,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		if (!originalBindingPathPath) return;
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, value) => {
 				if (isNullValue(value)) {
 					setValue('');
@@ -114,7 +115,6 @@ function TextArea(props: Readonly<ComponentProps>) {
 				}
 				setValue(value);
 			},
-			pageExtractor,
 			originalBindingPathPath,
 		);
 	}, [originalBindingPathPath]);

@@ -78,10 +78,10 @@ function Text(props: Readonly<ComponentProps>) {
 			return;
 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
 			() => {
 				setChanged(Date.now());
 			},
-			pageExtractor,
 			(textProp.location.value ?? textProp.location.expression)!,
 		);
 	}, [originalTextObj, textProp?.value, textProp?.location?.value]);

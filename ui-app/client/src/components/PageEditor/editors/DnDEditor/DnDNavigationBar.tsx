@@ -58,8 +58,8 @@ export default function DnDNavigationBar({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setComponentTree(v),
-			pageExtractor,
 			`${personalizationPath}.componentTree`,
 		);
 	}, [personalizationPath]);
@@ -68,8 +68,8 @@ export default function DnDNavigationBar({
 		if (!personalizationPath) return;
 
 		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
 			(_, v) => setExpandAll(v),
-			pageExtractor,
 			`${personalizationPath}.expandAll`,
 		);
 	}, [personalizationPath]);
@@ -77,6 +77,7 @@ export default function DnDNavigationBar({
 	useEffect(
 		() =>
 			addListenerAndCallImmediatelyWithChildrenActivity(
+				pageExtractor.getPageName(),
 				(_, v) => {
 					setPageDef(v);
 					setMap(
@@ -91,7 +92,6 @@ export default function DnDNavigationBar({
 						),
 					);
 				},
-				pageExtractor,
 				`${defPath}`,
 			),
 		[defPath, setPageDef],
@@ -422,7 +422,7 @@ function CompTree({
 					e.preventDefault();
 					onContextMenu({
 						componentKey: comp.key,
-						menuPosition: { x: e.clientX + 3, y: e.clientY}, // Adding 3px to just to avoid un necessary context menu triggers to close the context menu	
+						menuPosition: { x: e.clientX + 3, y: e.clientY }, // Adding 3px to just to avoid un necessary context menu triggers to close the context menu
 					});
 				}}
 				onDoubleClick={() => setChangingName(comp.name ?? comp.key)}
