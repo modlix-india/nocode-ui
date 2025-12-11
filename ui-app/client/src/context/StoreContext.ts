@@ -318,11 +318,15 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 		super();
 		this.details = details;
 		this.myStore = myStore;
-		setData(`Store.urlData.${details.pageName!}`, details, undefined, true);
+		this.setDetails(details);
 	}
 
 	public setDetails(details: URLDetails) {
 		this.details = details;
+		if (!details.pageName) {
+			details.pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+		}
+		setData(`Store.urlData.${details.pageName!}`, details, undefined, true);
 	}
 
 	protected getValueInternal(token: string) {
@@ -349,7 +353,6 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 	}
 
 	public static addDetails(details: URLDetails) {
-		console.log(details);
 		if (UrlDetailsExtractor.extractorMap.has(details.pageName!)) {
 			UrlDetailsExtractor.extractorMap.get(details.pageName!)!.setDetails(details);
 			return;
