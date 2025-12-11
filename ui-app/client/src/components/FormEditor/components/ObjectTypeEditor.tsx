@@ -1029,7 +1029,6 @@ function onChangeValidationPropertyCurry(
 	onChange: (schema: any) => void,
 ) {
 	return (e: React.ChangeEvent<HTMLInputElement>) => {
-		console.log(e.target.value);
 		const nSchema = duplicate(schema);
 		if (!nSchema[detailType]) nSchema[detailType] = {};
 		if (!nSchema[detailType].validationMessages) nSchema[detailType].validationMessages = {};
@@ -1343,8 +1342,6 @@ function NumberTypeEditor(props: Readonly<EditorProps>) {
 			</>
 		);
 	}
-
-	console.log(props.schema.minimum);
 
 	return (
 		<>
