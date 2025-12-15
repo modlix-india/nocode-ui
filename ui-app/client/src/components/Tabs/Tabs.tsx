@@ -37,8 +37,8 @@ function setHighlighter(
 	if (!tabsContainer || !tabsContainer.parentElement) return;
 	const tabsRect = tabsContainer.parentElement.getBoundingClientRect();
 	const hp: CSSProperties = {};
-	hp['left'] = tabRect.left - tabsRect.left;
-	hp['top'] = tabRect.top - tabsRect.top;
+	hp['left'] = tabRect.left - tabsRect.left + tabsContainer.parentElement.scrollLeft;
+	hp['top'] = tabRect.top - tabsRect.top + tabsContainer.parentElement.scrollTop;
 	hp['width'] = tabsOrientation === '_horizontal' ? tabRect.width : '100%';
 	hp['height'] = tabsOrientation === '_vertical' ? tabRect.height : '100%';
 
