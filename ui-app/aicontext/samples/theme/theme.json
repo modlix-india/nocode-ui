@@ -1,0 +1,41 @@
+{
+  "_id": "63cfab432288ff2273a8beac",
+  "variables": {
+    "ALL": {
+      "mainFontColor": "#474A50",
+      "mainFontSize": "13px",
+      "lightFontColor": "#FFFFFF",
+      "gapBetween": "8px",
+      "var1": "#eee",
+      "tableColumnValueBlueColor": "#1784E3",
+      "tableColumnValueGeneralColor": "#393a3c",
+      "tablecolumnvaluefontsize": "12px",
+      "design1HeaderPadding": "10px",
+      "design1HeaderFontWeight": "600",
+      "design1HeaderFontSize": "13px",
+      "design1HeaderFontColor": "#333333",
+      "paddingLeftTableColumnvalue": "13px",
+      "widthForGridWithDropdownAndTextBoxHasCombinedBorder": "25%",
+      "modalBackgroundColor": "#FFFFFF",
+      "labelColor": "#393A3C",
+      "closeIconColor": "#393A3C"
+    },
+    "MOBILE_POTRAIT_SCREEN_ONLY": {
+      "messageContainerWidth": "100vw"
+    },
+    "MOBILE_LANDSCAPE_SCREEN_ONLY": {
+      "messageContainerWidth": "100vw"
+    },
+    "TABLET_POTRAIT_SCREEN_ONLY": {
+      "messageContainerWidth": "100vw"
+    }
+  },
+  "name": "theme",
+  "clientCode": "SYSTEM",
+  "appCode": "markauto",
+  "version": 34,
+  "updatedAt": "2023-04-26T12:18:58.459Z",
+  "updatedBy": "1",
+  "createdAt": "2023-01-24T09:56:19.828Z",
+  "createdBy": "1"
+}

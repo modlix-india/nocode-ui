@@ -1,0 +1,12 @@
+{
+  "_id": "676e19f17a26015e433b7139",
+  "styleString": " * { transition: width 0.5s, height 0.5s, padding-left 0.5s, padding-right 0.5s, padding-top 0.5s, padding-bottom 0.5s, background-size 0.5s;} .comp.compTextArea ._label._noFloat{transform:translateY(calc(-150% - 10px))} span.commonCheckbox, span.commonTriStateCheckbox {border-radius: 4px;} span.commonCheckbox._checked ._thumb, span.commonTriStateCheckbox._true::before {transform: scale(0.75, 0.75) translate(21%, -20%);background-color: #FFFFFF;opacity: 1;}",
+  "name": "style",
+  "clientCode": "SYSTEM",
+  "appCode": "sitezump",
+  "version": 3,
+  "updatedAt": "2025-11-17T06:27:30.192Z",
+  "updatedBy": "225",
+  "createdAt": "2024-12-27T03:07:29.077Z",
+  "createdBy": "142"
+}

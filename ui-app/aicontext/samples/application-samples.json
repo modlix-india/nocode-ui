@@ -1,0 +1,200 @@
+[
+  {
+    "_id": "63bce182d071ab04c40babff",
+    "properties": {
+      "title": "Openbracket",
+      "defaultPage": "homeTwo",
+      "shellPage": "shellPage",
+      "forbiddenPage": "forbiddenPage",
+      "loginPage": "loginPage",
+      "csp": {
+        "defaultSrc": "'self' 'unsafe-inline' https://*.dev.modlix.com https://*.modlix.com https://*.stage.modlix.com https://*.stage.modlix.com https://stage.modlix.com https://modlix.com https://cdn.jsdelivr.net data: blob: http://localhost:8080 https://mrktplace.dev.modlix.com https://dev.authzump.ai https://stage.authzump.ai https://authzump.ai",
+        "scriptSrc": "'self' 'unsafe-inline' https://*.dev.modlix.com https://*.modlix.com https://*.stage.modlix.com https://*.stage.modlix.com https://stage.modlix.com https://modlix.com https://cdn.jsdelivr.net data: blob: http://localhost:8080 https://mrktplace.dev.modlix.com",
+        "styleSrc": "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+        "fontSrc": "'self' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com",
+        "frameSrc": "'self' 'unsafe-inline' * https://dev.authzump.ai https://stage.authzump.ai https://authzump.ai"
+      },
+      "cspReport": {
+        "defaultSrc": "'self' 'unsafe-inline' https://*.dev.modlix.com https://*.modlix.com https://*.stage.modlix.com https://stage.modlix.com https://modlix.com https://cdn.jsdelivr.net data: blob: http://localhost:8080 https://mrktplace.dev.modlix.com https://dev.authzump.ai https://stage.authzump.ai https://authzump.ai",
+        "scriptSrc": "'self' 'unsafe-inline' https://*.dev.modlix.com https://*.modlix.com https://*.stage.modlix.com https://*.stage.modlix.com https://stage.modlix.com https://modlix.com https://cdn.jsdelivr.net data: blob: http://localhost:8080 https://mrktplace.dev.modlix.com",
+        "styleSrc": "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+        "fontSrc": "'self' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com",
+        "frameSrc": "'self' 'unsafe-inline' * https://dev.authzump.ai https://stage.authzump.ai https://authzump.ai"
+      },
+      "iconPacks": {
+        "uuid1": {
+          "name": "FREE_FONT_AWESOME_ALL"
+        },
+        "uuid2": {
+          "name": "MATERIAL_SYMBOLS_OUTLINED"
+        },
+        "uuid3": {
+          "name": "MATERIAL_SYMBOLS_ROUNDED"
+        },
+        "uuid4": {
+          "name": "MATERIAL_SYMBOLS_SHARP"
+        },
+        "uuid5": {
+          "name": "MATERIAL_ICONS_FILLED"
+        },
+        "uuid6": {
+          "name": "MATERIAL_ICONS_OUTLINED"
+        },
+        "uuid7": {
+          "name": "MATERIAL_ICONS_ROUNDED"
+        },
+        "uuid8": {
+          "name": "MATERIAL_ICONS_SHARP"
+        },
+        "uuid9": {
+          "name": "MATERIAL_ICONS_TWO_TONE"
+        }
+      },
+      "fontPacks": {
+        "uuid1": {
+          "name": "ASAP",
+          "code": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,700;1,800;1,900&display=swap\" rel=\"stylesheet\">"
+        },
+        "uuid2": {
+          "name": "Inter",
+          "code": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap\" rel=\"stylesheet\">"
+        },
+        "uuid3": {
+          "name": "Sen",
+          "code": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Sen:wght@200;300;400;500;600;700;800&display=swap\" rel=\"stylesheet\">"
+        }
+      },
+      "links": {
+        "66c3ae46cd81": {
+          "rel": "icon",
+          "type": "image/png",
+          "href": "/api/files/static/file/SYSTEM/appbuilder/openbracket/favicon/favicon.ico"
+        }
+      },
+      "themes": {
+        "618a75b9e594": {
+          "name": "appbuildertheme"
+        }
+      },
+      "styles": {
+        "a522d5f666cf9": {
+          "name": "appbuilderstyle"
+        }
+      },
+      "manifest": {
+        "name": "openbracket",
+        "short_name": "openbracket",
+        "icons": [
+          {
+            "src": "/api/files/static/file/SYSTEM/appbuilder/openbracket/favicon/and-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+          },
+          {
+            "src": "/api/files/static/file/SYSTEM/appbuilder/openbracket/favicon/logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+          }
+        ],
+        "theme_color": "#ffffff",
+        "background_color": "#ffffff",
+        "display": "standalone"
+      }
+    },
+    "name": "appbuilder",
+    "message": "From transport : ZmkQyJJCgqVrTzwdL9vmoC",
+    "clientCode": "SYSTEM",
+    "appCode": "appbuilder",
+    "version": 86,
+    "updatedAt": "2025-09-30T10:00:40.299Z",
+    "updatedBy": "142",
+    "createdAt": "2023-01-10T03:54:42.137Z",
+    "createdBy": "1"
+  },
+  {
+    "_id": "63bd2d154d18a31536e81fa5",
+    "properties": {
+      "defaultPage": "home",
+      "notFoundPage": "home",
+      "links": {
+        "07f57e24-c919-4c3e-8846-98d16cb04f71": {
+          "rel": "stylesheet",
+          "href": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        }
+      },
+      "styles": {
+        "cf417b56-745f-46ef-a39f-5db9da69d32c": {
+          "name": "nothingstyle"
+        }
+      },
+      "themes": {
+        "47b6be53-3531-4c8d-9990-6f9ebd3a2cb4": {
+          "name": "nothingtheme"
+        }
+      }
+    },
+    "name": "nothing",
+    "message": "JUST CREATED",
+    "clientCode": "SYSTEM",
+    "appCode": "nothing",
+    "version": 9,
+    "updatedAt": "2024-03-06T11:50:15.688Z",
+    "updatedBy": "142",
+    "createdAt": "2023-01-10T09:17:09.657Z",
+    "createdBy": "1"
+  },
+  {
+    "_id": "63cfa7e32288ff2273a8bea8",
+    "properties": {
+      "title": "Marketing Automation",
+      "defaultPage": "home",
+      "shellPage": "shell",
+      "forbiddenPage": "forbidden",
+      "loginPage": "login",
+      "links": {
+        "07f57e24-c919-4c3e-8846-98d16cb04f72": {
+          "rel": "stylesheet",
+          "href": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+        },
+        "02684af2-9596-4631-8779-7932e2da6581": {
+          "rel": "preconnect",
+          "href": "https://fonts.googleapis.com"
+        },
+        "7feb9d0d-e32d-41a3-8fc7-fa0efc841e6e": {
+          "rel": "preconnect",
+          "href": "https://fonts.googleapis.com",
+          "crossorigin": true
+        },
+        "9054f179-efaf-4083-9cf8-795e0d4a8f8d": {
+          "rel": "stylesheet",
+          "href": "https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&display=swap"
+        },
+        "6dbd5bf5-c0e7-4bb5-a563-16c3ae46cd81": {
+          "rel": "icon",
+          "type": "svg",
+          "href": "/api/files/static/file/SYSTEM/markauto/favicon.svg"
+        }
+      },
+      "themes": {
+        "61344540-a132-406e-8eb4-328a75b9e594": {
+          "name": "theme"
+        }
+      },
+      "styles": {
+        "a5d6b5ff-86a6-4597-82f9-70545f666cf9": {
+          "name": "style"
+        }
+      },
+      "manifest": {}
+    },
+    "name": "markauto",
+    "message": "Added shell page definition",
+    "clientCode": "SYSTEM",
+    "appCode": "markauto",
+    "version": 6,
+    "updatedAt": "2023-02-06T09:22:15.457Z",
+    "updatedBy": "1",
+    "createdAt": "2023-01-24T09:41:55.177Z",
+    "createdBy": "1"
+  }
+]
