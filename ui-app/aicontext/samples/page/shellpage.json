@@ -1,0 +1,1358 @@
+{
+  "_id": "63d6884c578a7152a3bbc11c",
+  "properties": {
+    "wrapShell": false,
+    "title": {},
+    "onLoadEvent": "h7OPn5DncuXYvVYybtSTU"
+  },
+  "eventFunctions": {
+    "toggleMenu": {
+      "name": "toggleMenu",
+      "steps": {
+        "genOutput": {
+          "statementName": "genOutput",
+          "namespace": "System",
+          "name": "GenerateEvent",
+          "dependentStatements": {
+            "Steps__d-o-t__setStore__d-o-t__output": true
+          },
+          "position": {
+            "left": 832,
+            "top": 275
+          }
+        },
+        "setStore": {
+          "statementName": "setStore",
+          "name": "SetStore",
+          "namespace": "UIEngine",
+          "parameterMap": {
+            "path": {
+              "one": {
+                "key": "one",
+                "type": "VALUE",
+                "value": "Store.collapseMenu"
+              }
+            },
+            "value": {
+              "one": {
+                "key": "one",
+                "type": "EXPRESSION",
+                "expression": "not Store.collapseMenu"
+              }
+            }
+          },
+          "position": {
+            "left": 466,
+            "top": 107
+          }
+        }
+      }
+    },
+    "XKfJKhtgT0X8ChGswKjVI": {
+      "name": "logout",
+      "steps": {
+        "logout": {
+          "statementName": "logout",
+          "name": "Logout",
+          "namespace": "UIEngine",
+          "position": {
+            "left": 273.8046875,
+            "top": 179
+          },
+          "parameterMap": {
+            "ssoLogout": {
+              "5RMOF3oyHmcRzIgv38HGhn": {
+                "key": "5RMOF3oyHmcRzIgv38HGhn",
+                "type": "VALUE",
+                "expression": "",
+                "value": true
+              }
+            }
+          }
+        }
+      },
+      "namespace": ""
+    },
+    "h7OPn5DncuXYvVYybtSTU": {
+      "name": "OnLoad",
+      "steps": {
+        "setStore": {
+          "statementName": "setStore",
+          "name": "SetStore",
+          "namespace": "UIEngine",
+          "position": {
+            "left": 399.755859375,
+            "top": 204.00390625
+          },
+          "parameterMap": {
+            "path": {
+              "4uBTcSr3BriiLoPJc0EDBI": {
+                "key": "4uBTcSr3BriiLoPJc0EDBI",
+                "type": "VALUE",
+                "order": 1,
+                "value": "Store.collapseMenu"
+              }
+            },
+            "value": {
+              "2e9mDQqmKIqw8JAvVDJkWv": {
+                "key": "2e9mDQqmKIqw8JAvVDJkWv",
+                "type": "EXPRESSION",
+                "expression": "true",
+                "order": 1
+              }
+            }
+          }
+        }
+      },
+      "namespace": ""
+    }
+  },
+  "rootComponent": "a4c08300-127b-451f-986b-f644de7802d2",
+  "componentDefinition": {
+    "a4c08300-127b-451f-986b-f644de7802d2": {
+      "key": "a4c08300-127b-451f-986b-f644de7802d2",
+      "name": "Page Grid",
+      "type": "Grid",
+      "styleProperties": {
+        "dc00bdc1-88cb-4620-b7bb-744be2987e4b": {
+          "resolutions": {
+            "ALL": {
+              "width": {
+                "value": "100vw"
+              },
+              "height": {
+                "value": "100vh"
+              },
+              "flexDirection": {
+                "value": "row"
+              },
+              "gap": {
+                "value": "0px"
+              },
+              "backgroundColor": {
+                "value": "#EFEFEF"
+              },
+              "backgroundImage": {
+                "value": "radial-gradient(#0000001A 1.2px, transparent 0)"
+              },
+              "backgroundSize": {
+                "value": "20px 20px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "e62ee25b-80b6-424f-be99-711147bc4020": true,
+        "6RxB26jst7oQkxLmTW8RQQ": true
+      }
+    },
+    "a1d90e94-1506-4f05-957c-e90dc9b47b4e": {
+      "key": "a1d90e94-1506-4f05-957c-e90dc9b47b4e",
+      "name": "Navigation Grid",
+      "type": "Grid",
+      "properties": {
+        "background": {
+          "value": "_QUATERNARYBG"
+        },
+        "visibility": {
+          "value": true
+        }
+      },
+      "styleProperties": {
+        "6vomx57iIp2Z6dgQDupHI9": {
+          "resolutions": {
+            "ALL": {
+              "width": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? '100px' : '180px'"
+                }
+              },
+              "backgroundImage": {
+                "value": "linear-gradient(180deg, rgb(67, 178, 255) 0%, rgb(82, 189, 148) 150%)"
+              },
+              "height": {
+                "value": "100%"
+              },
+              "borderTopLeftRadius": {
+                "value": "15px"
+              },
+              "borderTopRightRadius": {
+                "value": "15px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "15px"
+              },
+              "borderBottomRightRadius": {
+                "value": "15px"
+              },
+              "boxShadow": {
+                "value": "7px 6px 18px 0px rgba(15, 15, 15, 0.28)"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "bbe2757e-ece8-44df-bcac-291f72967c21": true,
+        "3QxYsdmoZVUZOQQchJA6wA": true,
+        "6jHtgWCe1WeOWmfInKkxQp": true
+      },
+      "displayOrder": 0
+    },
+    "d1e3c8d4-f5aa-4f4a-af3a-547e7709a6f2": {
+      "key": "d1e3c8d4-f5aa-4f4a-af3a-547e7709a6f2",
+      "name": "logo",
+      "type": "Image",
+      "properties": {
+        "src": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "'/api/files/static/file/SYSTEM/appbuilder/openbracket/{{Store.collapseMenu ? 'logo' : 'openbracketcorrect'}}.svg'"
+          }
+        },
+        "onClick": {
+          "value": "toggleMenu"
+        }
+      },
+      "styleProperties": {
+        "4p8WiCrZA0PKT8SOJstYss": {
+          "resolutions": {
+            "ALL": {
+              "width": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? '100%' : '100%'"
+                }
+              },
+              "height": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "not Store.collapseMenu ? '100%' : '100%'"
+                }
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 0
+    },
+    "bbe2757e-ece8-44df-bcac-291f72967c21": {
+      "key": "bbe2757e-ece8-44df-bcac-291f72967c21",
+      "name": "Links",
+      "type": "Grid",
+      "styleProperties": {
+        "7LOntCqZ85to6PKMuYU0He": {
+          "resolutions": {
+            "ALL": {
+              "overflow": {
+                "value": "auto"
+              },
+              "gap": {
+                "value": "20px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "a5c1d28f-4f3a-4fc2-b5e1-06b98ec9d2ad": true,
+        "76d90e80-0caa-4adf-baa5-d7580224ef02": true,
+        "ccdb5fa7-4026-4e68-b1e2-bbf470200fa4": true,
+        "ee37037a-32c3-40cd-803d-78c403e845d1": true,
+        "efea3182-2e78-4ed6-9eb7-f9253d3552e2": true,
+        "cd8f1f45-c928-452f-8c74-acae955d1e1c": true,
+        "1WtsUZWeIplilDMF4RjLvG": true,
+        "5I8t1uFEAZE3mk8dxgY9Q4": true
+      },
+      "displayOrder": 2
+    },
+    "a5c1d28f-4f3a-4fc2-b5e1-06b98ec9d2ad": {
+      "key": "a5c1d28f-4f3a-4fc2-b5e1-06b98ec9d2ad",
+      "name": "appsLink",
+      "type": "Menu",
+      "properties": {
+        "label": {
+          "value": "Applications"
+        },
+        "onlyIconMenu": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.collapseMenu"
+          }
+        },
+        "icon": {
+          "value": "_light _size2 ms material-symbols-outlined mso-dashboard_customize"
+        },
+        "linkPath": {
+          "value": "/apps"
+        },
+        "pathsActiveFor": {
+          "value": "apps,appEdit"
+        }
+      },
+      "styleProperties": {
+        "4cP9eckYBda5EnbMe9pRbF": {
+          "resolutions": {
+            "ALL": {
+              "color": {
+                "value": "#FFFFFF"
+              },
+              "paddingBottom": {
+                "value": "5px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              },
+              "paddingRight": {
+                "value": "5px"
+              },
+              "paddingTop": {
+                "value": "5px"
+              },
+              "borderLeftColor": {
+                "value": "transparent"
+              },
+              "borderLeftStyle": {
+                "value": "solid"
+              },
+              "borderLeftWidth": {
+                "value": "5px"
+              },
+              "borderLeftColor:hover": {
+                "value": "#FFF"
+              },
+              "backgroundColor:hover": {
+                "value": "#FFF2"
+              },
+              "backgroundColor:active": {
+                "value": "#FFF2"
+              },
+              "borderLeftColor:active": {
+                "value": "#FFF"
+              },
+              "justifyContent": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? 'center' : ''"
+                }
+              },
+              "borderTopLeftRadius": {
+                "value": "0px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 1
+    },
+    "76d90e80-0caa-4adf-baa5-d7580224ef02": {
+      "key": "76d90e80-0caa-4adf-baa5-d7580224ef02",
+      "name": "filesLink",
+      "type": "Menu",
+      "properties": {
+        "label": {
+          "value": "Files"
+        },
+        "onlyIconMenu": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.collapseMenu"
+          }
+        },
+        "icon": {
+          "value": "_light _size1 ms material-symbols-outlined mso-smb_share"
+        },
+        "linkPath": {
+          "value": "/files"
+        },
+        "pathsActiveFor": {
+          "value": "files"
+        }
+      },
+      "styleProperties": {
+        "3d60pRz74UsgG0CgRyV2qV": {
+          "resolutions": {
+            "ALL": {
+              "color": {
+                "value": "#FFFFFF"
+              },
+              "paddingBottom": {
+                "value": "5px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              },
+              "paddingRight": {
+                "value": "5px"
+              },
+              "paddingTop": {
+                "value": "5px"
+              },
+              "borderLeftColor": {
+                "value": "transparent"
+              },
+              "borderLeftStyle": {
+                "value": "solid"
+              },
+              "borderLeftWidth": {
+                "value": "5px"
+              },
+              "borderLeftColor:hover": {
+                "value": "#FFF"
+              },
+              "backgroundColor:hover": {
+                "value": "#FFF2"
+              },
+              "backgroundColor:active": {
+                "value": "#FFF2"
+              },
+              "borderLeftColor:active": {
+                "value": "#FFF"
+              },
+              "justifyContent": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? 'center' : ''"
+                }
+              },
+              "borderTopLeftRadius": {
+                "value": "0px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 2
+    },
+    "ccdb5fa7-4026-4e68-b1e2-bbf470200fa4": {
+      "key": "ccdb5fa7-4026-4e68-b1e2-bbf470200fa4",
+      "name": "exportLink",
+      "type": "Menu",
+      "properties": {
+        "label": {
+          "value": "Export"
+        },
+        "onlyIconMenu": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.collapseMenu"
+          }
+        },
+        "icon": {
+          "value": "_light _size1 ms material-symbols-outlined mso-cloud_download"
+        },
+        "linkPath": {
+          "value": "/export"
+        },
+        "pathsActiveFor": {
+          "value": "export"
+        }
+      },
+      "styleProperties": {
+        "7fWsHGaUJtgxFkN9LtCT4W": {
+          "resolutions": {
+            "ALL": {
+              "color": {
+                "value": "#FFFFFF"
+              },
+              "paddingBottom": {
+                "value": "5px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              },
+              "paddingRight": {
+                "value": "5px"
+              },
+              "paddingTop": {
+                "value": "5px"
+              },
+              "borderLeftColor": {
+                "value": "transparent"
+              },
+              "borderLeftStyle": {
+                "value": "solid"
+              },
+              "borderLeftWidth": {
+                "value": "5px"
+              },
+              "borderLeftColor:hover": {
+                "value": "#FFF"
+              },
+              "backgroundColor:hover": {
+                "value": "#FFF2"
+              },
+              "backgroundColor:active": {
+                "value": "#FFF2"
+              },
+              "borderLeftColor:active": {
+                "value": "#FFF"
+              },
+              "justifyContent": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? 'center' : ''"
+                }
+              },
+              "borderTopLeftRadius": {
+                "value": "0px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 3
+    },
+    "ee37037a-32c3-40cd-803d-78c403e845d1": {
+      "key": "ee37037a-32c3-40cd-803d-78c403e845d1",
+      "name": "importLink",
+      "type": "Menu",
+      "properties": {
+        "label": {
+          "value": "Import"
+        },
+        "onlyIconMenu": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.collapseMenu"
+          }
+        },
+        "icon": {
+          "value": "_light _size1 ms material-symbols-outlined mso-cloud_upload"
+        },
+        "linkPath": {
+          "value": "/import"
+        }
+      },
+      "styleProperties": {
+        "5gIa9UD5Uu6emS5C6p66Zx": {
+          "resolutions": {
+            "ALL": {
+              "color": {
+                "value": "#FFFFFF"
+              },
+              "paddingBottom": {
+                "value": "5px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              },
+              "paddingRight": {
+                "value": "5px"
+              },
+              "paddingTop": {
+                "value": "5px"
+              },
+              "borderLeftColor": {
+                "value": "transparent"
+              },
+              "borderLeftStyle": {
+                "value": "solid"
+              },
+              "borderLeftWidth": {
+                "value": "5px"
+              },
+              "borderLeftColor:hover": {
+                "value": "#FFF"
+              },
+              "backgroundColor:hover": {
+                "value": "#FFF2"
+              },
+              "backgroundColor:active": {
+                "value": "#FFF2"
+              },
+              "borderLeftColor:active": {
+                "value": "#FFF"
+              },
+              "justifyContent": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? 'center' : ''"
+                }
+              },
+              "borderTopLeftRadius": {
+                "value": "0px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 4
+    },
+    "efea3182-2e78-4ed6-9eb7-f9253d3552e2": {
+      "key": "efea3182-2e78-4ed6-9eb7-f9253d3552e2",
+      "name": "clientsLink",
+      "type": "Menu",
+      "properties": {
+        "label": {
+          "value": "Clients"
+        },
+        "onlyIconMenu": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.collapseMenu"
+          }
+        },
+        "icon": {
+          "value": "_light _size1 ms material-symbols-outlined mso-supervised_user_circle"
+        },
+        "linkPath": {
+          "value": "/clients"
+        },
+        "pathsActiveFor": {
+          "value": "clients"
+        }
+      },
+      "styleProperties": {
+        "53gLs4p9dCleKv0GMBhlVF": {
+          "resolutions": {
+            "ALL": {
+              "color": {
+                "value": "#FFFFFF"
+              },
+              "paddingBottom": {
+                "value": "5px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              },
+              "paddingRight": {
+                "value": "5px"
+              },
+              "paddingTop": {
+                "value": "5px"
+              },
+              "borderLeftColor": {
+                "value": "transparent"
+              },
+              "borderLeftStyle": {
+                "value": "solid"
+              },
+              "borderLeftWidth": {
+                "value": "5px"
+              },
+              "borderLeftColor:hover": {
+                "value": "#FFF"
+              },
+              "backgroundColor:hover": {
+                "value": "#FFF2"
+              },
+              "backgroundColor:active": {
+                "value": "#FFF2"
+              },
+              "borderLeftColor:active": {
+                "value": "#FFF"
+              },
+              "justifyContent": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? 'center' : ''"
+                }
+              },
+              "borderTopLeftRadius": {
+                "value": "0px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 5
+    },
+    "cd8f1f45-c928-452f-8c74-acae955d1e1c": {
+      "key": "cd8f1f45-c928-452f-8c74-acae955d1e1c",
+      "name": "usersLink",
+      "type": "Menu",
+      "properties": {
+        "label": {
+          "value": "Users"
+        },
+        "icon": {
+          "value": "_light _size1 ms material-symbols-outlined mso-account_circle"
+        },
+        "linkPath": {
+          "value": "/users"
+        },
+        "pathsActiveFor": {
+          "value": "users"
+        },
+        "onlyIconMenu": {
+          "value": false,
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.collapseMenu"
+          }
+        }
+      },
+      "styleProperties": {
+        "2wCzXn35JxuIWiO0aNdYj7": {
+          "resolutions": {
+            "ALL": {
+              "color": {
+                "value": "#FFFFFF"
+              },
+              "paddingBottom": {
+                "value": "5px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              },
+              "paddingRight": {
+                "value": "5px"
+              },
+              "paddingTop": {
+                "value": "5px"
+              },
+              "borderLeftColor": {
+                "value": "transparent"
+              },
+              "borderLeftStyle": {
+                "value": "solid"
+              },
+              "borderLeftWidth": {
+                "value": "5px"
+              },
+              "borderLeftColor:hover": {
+                "value": "#FFF"
+              },
+              "backgroundColor:hover": {
+                "value": "#FFF2"
+              },
+              "backgroundColor:active": {
+                "value": "#FFF2"
+              },
+              "borderLeftColor:active": {
+                "value": "#FFF"
+              },
+              "justifyContent": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? 'center' : ''"
+                }
+              },
+              "borderTopLeftRadius": {
+                "value": "0px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 6
+    },
+    "e62ee25b-80b6-424f-be99-711147bc4020": {
+      "key": "e62ee25b-80b6-424f-be99-711147bc4020",
+      "name": "Page Container Grid",
+      "type": "Grid",
+      "styleProperties": {
+        "0c5687d6-7828-4f23-9ae1-a12d033432e3": {
+          "resolutions": {
+            "ALL": {
+              "flex": {
+                "value": "1"
+              },
+              "overflow": {
+                "value": "auto"
+              },
+              "paddingTop": {
+                "value": "10px"
+              },
+              "paddingBottom": {
+                "value": "18px"
+              },
+              "paddingRight": {
+                "value": "20px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "c9a99cc4-0840-4ad3-8338-c4a31aa55d79": true,
+        "7IEY6yy9KRgZvNot5h5b3e": true,
+        "5TSVajWKb485Yqhn1n2KVu": true,
+        "R9KbzkUkXhOCkCbETtzrh": true
+      }
+    },
+    "c9a99cc4-0840-4ad3-8338-c4a31aa55d79": {
+      "key": "c9a99cc4-0840-4ad3-8338-c4a31aa55d79",
+      "name": "Page",
+      "type": "Page",
+      "styleProperties": {
+        "310e9aba-2ec2-4b6b-89d2-2bf8ccac1727": {
+          "resolutions": {
+            "ALL": {
+              "height": {
+                "value": "100%"
+              },
+              "overflow": {
+                "value": "auto"
+              },
+              "flex": {
+                "value": "1"
+              },
+              "backgroundColor": {
+                "value": "#FFFFFF"
+              },
+              "borderTopLeftRadius": {
+                "value": "15px"
+              },
+              "borderTopRightRadius": {
+                "value": "15px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "15px"
+              },
+              "borderBottomRightRadius": {
+                "value": "15px"
+              },
+              "paddingTop": {
+                "value": "15px"
+              },
+              "paddingBottom": {
+                "value": "15px"
+              },
+              "paddingLeft": {
+                "value": "15px"
+              },
+              "paddingRight": {
+                "value": "15px"
+              },
+              "boxShadow": {
+                "value": "7px 6px 13px 0px rgba(15, 15, 15, 0.2)"
+              },
+              "opacity": {
+                "value": "0.9"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 3
+    },
+    "1WtsUZWeIplilDMF4RjLvG": {
+      "key": "1WtsUZWeIplilDMF4RjLvG",
+      "name": "packagesLink",
+      "type": "Menu",
+      "properties": {
+        "label": {
+          "value": "Packages"
+        },
+        "icon": {
+          "value": "_light _size1 ms material-symbols-outlined mso-inventory_2"
+        },
+        "linkPath": {
+          "value": "/packages"
+        },
+        "pathsActiveFor": {
+          "value": "packages"
+        },
+        "onlyIconMenu": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.collapseMenu"
+          }
+        }
+      },
+      "styleProperties": {
+        "1xNhynR5FoaJBamiSXqObf": {
+          "resolutions": {
+            "ALL": {
+              "color": {
+                "value": "#FFFFFF"
+              },
+              "paddingBottom": {
+                "value": "5px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              },
+              "paddingRight": {
+                "value": "5px"
+              },
+              "paddingTop": {
+                "value": "5px"
+              },
+              "borderLeftColor": {
+                "value": "transparent"
+              },
+              "borderLeftStyle": {
+                "value": "solid"
+              },
+              "borderLeftWidth": {
+                "value": "5px"
+              },
+              "borderLeftColor:hover": {
+                "value": "#FFF"
+              },
+              "backgroundColor:hover": {
+                "value": "#FFF2"
+              },
+              "backgroundColor:active": {
+                "value": "#FFF2"
+              },
+              "borderLeftColor:active": {
+                "value": "#FFF"
+              },
+              "justifyContent": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? 'center' : ''"
+                }
+              },
+              "borderTopLeftRadius": {
+                "value": "0px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 9
+    },
+    "3QxYsdmoZVUZOQQchJA6wA": {
+      "key": "3QxYsdmoZVUZOQQchJA6wA",
+      "name": "Logo Grid",
+      "type": "Grid",
+      "styleProperties": {
+        "DZyGfYiGaYMER4ft5o3iS": {
+          "resolutions": {
+            "ALL": {
+              "backgroundColor": {
+                "value": "#1582C6"
+              },
+              "height": {
+                "value": "72px"
+              },
+              "alignItems": {
+                "value": "center"
+              },
+              "justifyContent": {
+                "value": "center"
+              },
+              "borderTopLeftRadius": {
+                "value": "15px"
+              },
+              "borderTopRightRadius": {
+                "value": "15px"
+              },
+              "paddingTop": {
+                "value": "15px"
+              },
+              "paddingBottom": {
+                "value": "15px"
+              },
+              "paddingLeft": {
+                "value": "20px"
+              },
+              "paddingRight": {
+                "value": "20px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "d1e3c8d4-f5aa-4f4a-af3a-547e7709a6f2": true
+      },
+      "displayOrder": 1
+    },
+    "6jHtgWCe1WeOWmfInKkxQp": {
+      "key": "6jHtgWCe1WeOWmfInKkxQp",
+      "name": "Bottom Grid",
+      "type": "Grid",
+      "properties": {
+        "visibility": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.auth != undefined"
+          }
+        }
+      },
+      "styleProperties": {
+        "130RjjSw93fbYaEUdxf5UR": {
+          "resolutions": {
+            "ALL": {
+              "flex": {
+                "value": "1"
+              },
+              "alignItems": {
+                "value": "center"
+              },
+              "justifyContent": {
+                "value": "flex-end"
+              },
+              "marginBottom": {
+                "value": "40px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "oTqNF3nf8XZ4LJfrigrri": true
+      },
+      "displayOrder": 3
+    },
+    "oTqNF3nf8XZ4LJfrigrri": {
+      "key": "oTqNF3nf8XZ4LJfrigrri",
+      "name": "Sign Off",
+      "type": "Button",
+      "properties": {
+        "label": {
+          "value": "Logout"
+        },
+        "type": {
+          "value": "fabButton"
+        },
+        "leftIcon": {
+          "value": "_light _size1 ms material-symbols-outlined mso-power_rounded"
+        },
+        "onClick": {
+          "value": "XKfJKhtgT0X8ChGswKjVI"
+        },
+        "designType": {
+          "value": "_iconButton"
+        }
+      },
+      "styleProperties": {
+        "6VTu56EGFQ2fEPB0PHP2ja": {
+          "resolutions": {
+            "ALL": {
+              "backgroundColor": {
+                "value": "transparent"
+              },
+              "color": {
+                "value": "#464A50"
+              },
+              "width": {
+                "value": "20px"
+              },
+              "height": {
+                "value": "20px"
+              },
+              "leftIcon-color": {
+                "value": "#FFFFFF"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 0
+    },
+    "6RxB26jst7oQkxLmTW8RQQ": {
+      "key": "6RxB26jst7oQkxLmTW8RQQ",
+      "name": "Navigation Container Grid",
+      "type": "Grid",
+      "properties": {
+        "layout": {
+          "value": "ROWLAYOUT"
+        }
+      },
+      "styleProperties": {
+        "4brfaXul6C5RiJzsu2wbDY": {
+          "resolutions": {
+            "ALL": {
+              "height": {
+                "value": "100vh"
+              },
+              "paddingTop": {
+                "value": "10px"
+              },
+              "paddingBottom": {
+                "value": "15px"
+              },
+              "paddingLeft": {
+                "value": "10px"
+              },
+              "paddingRight": {
+                "value": "15px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "a1d90e94-1506-4f05-957c-e90dc9b47b4e": true
+      }
+    },
+    "7IEY6yy9KRgZvNot5h5b3e": {
+      "key": "7IEY6yy9KRgZvNot5h5b3e",
+      "name": "Title Grid",
+      "type": "Grid",
+      "styleProperties": {
+        "2G9isuIs079bb4cpPIWvJk": {
+          "resolutions": {
+            "ALL": {
+              "height": {
+                "value": "67px"
+              },
+              "borderTopLeftRadius": {
+                "value": "15px"
+              },
+              "borderTopRightRadius": {
+                "value": "15px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "15px"
+              },
+              "borderBottomRightRadius": {
+                "value": "15px"
+              },
+              "paddingLeft": {
+                "value": "0px"
+              },
+              "paddingRight": {
+                "value": "15px"
+              },
+              "justifyContent": {
+                "value": "center"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "1yRMMZkNpynxqWZvp6L0MS": true
+      },
+      "displayOrder": 2
+    },
+    "1yRMMZkNpynxqWZvp6L0MS": {
+      "key": "1yRMMZkNpynxqWZvp6L0MS",
+      "name": "Text",
+      "type": "Text",
+      "properties": {
+        "text": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.pageDefinition.{{Store.urlDetails.pageName}}.properties.title.name.value ?? {{Store.pageDefinition.{{Store.urlDetails.pageName}}.properties.title.name.location.expression}}"
+          }
+        },
+        "textContainer": {
+          "value": "H1"
+        }
+      },
+      "styleProperties": {
+        "fLpjZX6owP8EwlN3j87NP": {
+          "resolutions": {
+            "ALL": {
+              "fontSize": {
+                "value": "25px"
+              },
+              "fontWeight": {
+                "value": "400"
+              },
+              "textShadow": {
+                "value": "2px 2px 4px rgba(176, 176, 176, 0.4)"
+              },
+              "fontFamily": {
+                "value": "Inter"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 0
+    },
+    "5TSVajWKb485Yqhn1n2KVu": {
+      "key": "5TSVajWKb485Yqhn1n2KVu",
+      "name": "Drop 1",
+      "type": "Grid",
+      "styleProperties": {
+        "10jdpA8Xv2LsPrRVrdcZdH": {
+          "resolutions": {
+            "ALL": {
+              "position": {
+                "value": "fixed"
+              },
+              "right": {
+                "value": "15vw"
+              },
+              "height": {
+                "value": "100vh"
+              },
+              "width": {
+                "value": "10px"
+              },
+              "backgroundImage": {
+                "value": "linear-gradient(180deg, rgb(67, 178, 255) 0%, rgb(82, 189, 148) 150%)"
+              },
+              "top": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 1
+    },
+    "R9KbzkUkXhOCkCbETtzrh": {
+      "key": "R9KbzkUkXhOCkCbETtzrh",
+      "name": "Drop 2",
+      "type": "Grid",
+      "styleProperties": {
+        "10jdpA8Xv2LsPrRVrdcZdH": {
+          "resolutions": {
+            "ALL": {
+              "position": {
+                "value": "fixed"
+              },
+              "right": {
+                "value": "13vw"
+              },
+              "height": {
+                "value": "100vh"
+              },
+              "width": {
+                "value": "7px"
+              },
+              "backgroundImage": {
+                "value": "linear-gradient(180deg, rgb(67, 178, 255) 0%, rgb(82, 189, 148) 150%)"
+              },
+              "top": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 1
+    },
+    "5I8t1uFEAZE3mk8dxgY9Q4": {
+      "key": "5I8t1uFEAZE3mk8dxgY9Q4",
+      "name": "userInfo",
+      "type": "Menu",
+      "properties": {
+        "label": {
+          "value": "Packages"
+        },
+        "icon": {
+          "value": "_light _size1 ms material-symbols-outlined mso-settings_account_box"
+        },
+        "linkPath": {
+          "value": "/userInfo"
+        },
+        "pathsActiveFor": {
+          "value": "packages"
+        },
+        "onlyIconMenu": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Store.collapseMenu"
+          }
+        }
+      },
+      "styleProperties": {
+        "1xNhynR5FoaJBamiSXqObf": {
+          "resolutions": {
+            "ALL": {
+              "color": {
+                "value": "#FFFFFF"
+              },
+              "paddingBottom": {
+                "value": "5px"
+              },
+              "paddingLeft": {
+                "value": "5px"
+              },
+              "paddingRight": {
+                "value": "5px"
+              },
+              "paddingTop": {
+                "value": "5px"
+              },
+              "borderLeftColor": {
+                "value": "transparent"
+              },
+              "borderLeftStyle": {
+                "value": "solid"
+              },
+              "borderLeftWidth": {
+                "value": "5px"
+              },
+              "borderLeftColor:hover": {
+                "value": "#FFF"
+              },
+              "backgroundColor:hover": {
+                "value": "#FFF2"
+              },
+              "backgroundColor:active": {
+                "value": "#FFF2"
+              },
+              "borderLeftColor:active": {
+                "value": "#FFF"
+              },
+              "justifyContent": {
+                "location": {
+                  "type": "EXPRESSION",
+                  "expression": "Store.collapseMenu ? 'center' : ''"
+                }
+              },
+              "borderTopLeftRadius": {
+                "value": "0px"
+              },
+              "borderBottomLeftRadius": {
+                "value": "0px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 10
+    }
+  },
+  "name": "shellPage",
+  "message": "From transport : ZmkQyJJCgqVrTzwdL9vmoC",
+  "clientCode": "SYSTEM",
+  "appCode": "appbuilder",
+  "version": 134,
+  "updatedAt": "2025-09-30T10:00:40.334Z",
+  "updatedBy": "142",
+  "createdAt": "2023-01-29T14:53:00.381Z",
+  "createdBy": "1"
+}

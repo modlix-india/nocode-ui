@@ -30,7 +30,7 @@ export interface CalendarMapProps {
 	thatDate: string | number | undefined;
 	isRangeType: boolean;
 	dateType: 'startDate' | 'endDate';
-	componentDesignType: 'simpleCalendar' | 'fullCalendar';
+	componentDesignType: 'simpleCalendar' | 'fullCalendar' | 'dropDownCalendar';
 	calendarDesignType: '_defaultCalendar' | '_bigCalendar' | '_smallCalendar';
 	arrowButtonsHorizontalPlacement: '_left' | '_right' | '_either';
 	calendarFormat:

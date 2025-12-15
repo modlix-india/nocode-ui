@@ -1,0 +1,18 @@
+{
+  "_id": "63cbe6ec75d0ca292df3896a",
+  "variables": {
+    "ALL": {
+      "mainFontColor": "#555",
+      "bodyBackground": "#FFF"
+    }
+  },
+  "name": "nothingtheme",
+  "message": "theme for the nothing",
+  "clientCode": "SYSTEM",
+  "appCode": "nothing",
+  "version": 5,
+  "updatedAt": "2023-06-16T07:27:35.989Z",
+  "updatedBy": "1",
+  "createdAt": "2023-01-21T13:21:48.614Z",
+  "createdBy": "1"
+}
