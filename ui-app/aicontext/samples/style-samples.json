@@ -1,0 +1,62 @@
+[
+  {
+    "_id": "63c80243d439047078ec845c",
+    "styleString": "body { margin: 4px }",
+    "name": "nothingstyle",
+    "message": "JUST CREATED",
+    "clientCode": "SYSTEM",
+    "appCode": "nothing",
+    "version": 1,
+    "createdAt": "2023-01-18T14:29:23.467Z",
+    "createdBy": "1"
+  },
+  {
+    "_id": "63cd15a1f39ebe5626a5f2ee",
+    "styleString": " * { transition: width 1s, height 1s, padding-left 1s, padding-right 1s, padding-top 1s, padding-bottom 1s, background-size 1s;}",
+    "name": "appbuilderstyle",
+    "message": "From transport : ZmkQyJJCgqVrTzwdL9vmoC",
+    "clientCode": "SYSTEM",
+    "appCode": "appbuilder",
+    "version": 17,
+    "updatedAt": "2025-09-30T10:00:40.338Z",
+    "updatedBy": "142",
+    "createdAt": "2023-01-22T10:53:21.636Z",
+    "createdBy": "1"
+  },
+  {
+    "_id": "63cfac132288ff2273a8beaf",
+    "styleString": " * { transition: width 1s, height 1s, padding-left 1s, padding-right 1s, padding-top 1s, padding-bottom 1s, color 1s, background-size 1s;}",
+    "name": "style",
+    "message": "Style for the markauto",
+    "clientCode": "SYSTEM",
+    "appCode": "markauto",
+    "version": 1,
+    "createdAt": "2023-01-24T09:59:47.427Z",
+    "createdBy": "1"
+  },
+  {
+    "_id": "644a1ec03a353a0c45bf6862",
+    "styleString": " * { transition: width 0.5s, height 0.5s, padding-left 0.5s, padding-right 0.5s, padding-top 0.5s, padding-bottom 0.5s, background-size 0.5s;}",
+    "name": "style",
+    "message": "From transport : Y4cpPl8C56FkZxKvgJ4dkM",
+    "clientCode": "SYSTEM",
+    "appCode": "landingpages",
+    "version": 5,
+    "updatedAt": "2023-11-14T08:27:00.999Z",
+    "updatedBy": "149",
+    "createdAt": "2023-04-27T07:05:36.489Z",
+    "createdBy": "1"
+  },
+  {
+    "_id": "676e19f17a26015e433b7139",
+    "styleString": " * { transition: width 0.5s, height 0.5s, padding-left 0.5s, padding-right 0.5s, padding-top 0.5s, padding-bottom 0.5s, background-size 0.5s;} .comp.compTextArea ._label._noFloat{transform:translateY(calc(-150% - 10px))} span.commonCheckbox, span.commonTriStateCheckbox {border-radius: 4px;} span.commonCheckbox._checked ._thumb, span.commonTriStateCheckbox._true::before {transform: scale(0.75, 0.75) translate(21%, -20%);background-color: #FFFFFF;opacity: 1;}",
+    "name": "style",
+    "clientCode": "SYSTEM",
+    "appCode": "sitezump",
+    "version": 3,
+    "updatedAt": "2025-11-17T06:27:30.192Z",
+    "updatedBy": "225",
+    "createdAt": "2024-12-27T03:07:29.077Z",
+    "createdBy": "142"
+  }
+]

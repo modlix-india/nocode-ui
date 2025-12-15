@@ -1,0 +1,27 @@
+{
+  "_id": "63cbdfd8c07bf46af0e56cf5",
+  "variables": {
+    "ALL": {
+      "colorOne": "#50BC9B",
+      "colorFive": "#43B2FF"
+    },
+    "MOBILE_POTRAIT_SCREEN_ONLY": {
+      "messageContainerWidth": "100vw"
+    },
+    "MOBILE_LANDSCAPE_SCREEN_ONLY": {
+      "messageContainerWidth": "100vw"
+    },
+    "TABLET_POTRAIT_SCREEN_ONLY": {
+      "messageContainerWidth": "100vw"
+    }
+  },
+  "name": "appbuildertheme",
+  "message": "From transport : ZmkQyJJCgqVrTzwdL9vmoC",
+  "clientCode": "SYSTEM",
+  "appCode": "appbuilder",
+  "version": 36,
+  "updatedAt": "2025-09-30T10:00:40.331Z",
+  "updatedBy": "142",
+  "createdAt": "2023-01-21T13:20:39.873Z",
+  "createdBy": "1"
+}

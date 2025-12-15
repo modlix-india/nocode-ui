@@ -1,0 +1,112 @@
+{
+  "_id": "63bce182d071ab04c40babff",
+  "properties": {
+    "title": "Openbracket",
+    "defaultPage": "homeTwo",
+    "shellPage": "shellPage",
+    "forbiddenPage": "forbiddenPage",
+    "loginPage": "loginPage",
+    "csp": {
+      "defaultSrc": "'self' 'unsafe-inline' https://*.dev.modlix.com https://*.modlix.com https://*.stage.modlix.com https://*.stage.modlix.com https://stage.modlix.com https://modlix.com https://cdn.jsdelivr.net data: blob: http://localhost:8080 https://mrktplace.dev.modlix.com https://dev.authzump.ai https://stage.authzump.ai https://authzump.ai",
+      "scriptSrc": "'self' 'unsafe-inline' https://*.dev.modlix.com https://*.modlix.com https://*.stage.modlix.com https://*.stage.modlix.com https://stage.modlix.com https://modlix.com https://cdn.jsdelivr.net data: blob: http://localhost:8080 https://mrktplace.dev.modlix.com",
+      "styleSrc": "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+      "fontSrc": "'self' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com",
+      "frameSrc": "'self' 'unsafe-inline' * https://dev.authzump.ai https://stage.authzump.ai https://authzump.ai"
+    },
+    "cspReport": {
+      "defaultSrc": "'self' 'unsafe-inline' https://*.dev.modlix.com https://*.modlix.com https://*.stage.modlix.com https://stage.modlix.com https://modlix.com https://cdn.jsdelivr.net data: blob: http://localhost:8080 https://mrktplace.dev.modlix.com https://dev.authzump.ai https://stage.authzump.ai https://authzump.ai",
+      "scriptSrc": "'self' 'unsafe-inline' https://*.dev.modlix.com https://*.modlix.com https://*.stage.modlix.com https://*.stage.modlix.com https://stage.modlix.com https://modlix.com https://cdn.jsdelivr.net data: blob: http://localhost:8080 https://mrktplace.dev.modlix.com",
+      "styleSrc": "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com",
+      "fontSrc": "'self' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.gstatic.com",
+      "frameSrc": "'self' 'unsafe-inline' * https://dev.authzump.ai https://stage.authzump.ai https://authzump.ai"
+    },
+    "iconPacks": {
+      "uuid1": {
+        "name": "FREE_FONT_AWESOME_ALL"
+      },
+      "uuid2": {
+        "name": "MATERIAL_SYMBOLS_OUTLINED"
+      },
+      "uuid3": {
+        "name": "MATERIAL_SYMBOLS_ROUNDED"
+      },
+      "uuid4": {
+        "name": "MATERIAL_SYMBOLS_SHARP"
+      },
+      "uuid5": {
+        "name": "MATERIAL_ICONS_FILLED"
+      },
+      "uuid6": {
+        "name": "MATERIAL_ICONS_OUTLINED"
+      },
+      "uuid7": {
+        "name": "MATERIAL_ICONS_ROUNDED"
+      },
+      "uuid8": {
+        "name": "MATERIAL_ICONS_SHARP"
+      },
+      "uuid9": {
+        "name": "MATERIAL_ICONS_TWO_TONE"
+      }
+    },
+    "fontPacks": {
+      "uuid1": {
+        "name": "ASAP",
+        "code": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Asap:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,700;1,800;1,900&display=swap\" rel=\"stylesheet\">"
+      },
+      "uuid2": {
+        "name": "Inter",
+        "code": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap\" rel=\"stylesheet\">"
+      },
+      "uuid3": {
+        "name": "Sen",
+        "code": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Sen:wght@200;300;400;500;600;700;800&display=swap\" rel=\"stylesheet\">"
+      }
+    },
+    "links": {
+      "66c3ae46cd81": {
+        "rel": "icon",
+        "type": "image/png",
+        "href": "/api/files/static/file/SYSTEM/appbuilder/openbracket/favicon/favicon.ico"
+      }
+    },
+    "themes": {
+      "618a75b9e594": {
+        "name": "appbuildertheme"
+      }
+    },
+    "styles": {
+      "a522d5f666cf9": {
+        "name": "appbuilderstyle"
+      }
+    },
+    "manifest": {
+      "name": "openbracket",
+      "short_name": "openbracket",
+      "icons": [
+        {
+          "src": "/api/files/static/file/SYSTEM/appbuilder/openbracket/favicon/and-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "/api/files/static/file/SYSTEM/appbuilder/openbracket/favicon/logo.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "theme_color": "#ffffff",
+      "background_color": "#ffffff",
+      "display": "standalone"
+    }
+  },
+  "name": "appbuilder",
+  "message": "From transport : ZmkQyJJCgqVrTzwdL9vmoC",
+  "clientCode": "SYSTEM",
+  "appCode": "appbuilder",
+  "version": 86,
+  "updatedAt": "2025-09-30T10:00:40.299Z",
+  "updatedBy": "142",
+  "createdAt": "2023-01-10T03:54:42.137Z",
+  "createdBy": "1"
+}

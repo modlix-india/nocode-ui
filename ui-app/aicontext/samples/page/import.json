@@ -1,0 +1,459 @@
+{
+  "_id": "63da28d0578a7152a3bbc174",
+  "properties": {
+    "title": {
+      "name": {
+        "value": "Import"
+      },
+      "append": {
+        "value": true
+      }
+    },
+    "onLoadEvent": "7DTkH5DvXtsWwPEKjZikoZ"
+  },
+  "eventFunctions": {
+    "3TcHOJXCZz8iPH65etRh2l": {
+      "name": "Import",
+      "steps": {
+        "message": {
+          "statementName": "message",
+          "name": "Message",
+          "namespace": "UIEngine",
+          "position": {
+            "left": 525.5,
+            "top": 418.796875
+          },
+          "parameterMap": {
+            "msg": {
+              "5zCCIkWhc8TbgQqPXZ7M5R": {
+                "key": "5zCCIkWhc8TbgQqPXZ7M5R",
+                "type": "EXPRESSION",
+                "expression": "Steps.sendData.error.data",
+                "order": 1
+              }
+            }
+          }
+        },
+        "if": {
+          "statementName": "if",
+          "name": "If",
+          "namespace": "System",
+          "position": {
+            "left": 524.5,
+            "top": 115.796875
+          },
+          "parameterMap": {
+            "condition": {
+              "7ApLFzcNQL1PA5Zw6Q2l0a": {
+                "key": "7ApLFzcNQL1PA5Zw6Q2l0a",
+                "type": "EXPRESSION",
+                "expression": "Steps.sendData.output.data != undefined",
+                "order": 1
+              }
+            }
+          }
+        },
+        "message1": {
+          "statementName": "message1",
+          "name": "Message",
+          "namespace": "UIEngine",
+          "position": {
+            "left": 899,
+            "top": 350.796875
+          },
+          "parameterMap": {
+            "type": {
+              "ZztsM80jrvRLV6DXGzOJi": {
+                "key": "ZztsM80jrvRLV6DXGzOJi",
+                "type": "VALUE",
+                "expression": "",
+                "value": "SUCCESS"
+              }
+            },
+            "msg": {
+              "2n6vlLu4pk28Fk9bZXzCn4": {
+                "key": "2n6vlLu4pk28Fk9bZXzCn4",
+                "type": "VALUE",
+                "order": 1,
+                "value": "Imported Successfully"
+              }
+            }
+          },
+          "dependentStatements": {
+            "Steps__d-o-t__if__d-o-t__true": true
+          }
+        },
+        "sendData": {
+          "statementName": "sendData",
+          "name": "SendData",
+          "namespace": "UIEngine",
+          "position": {
+            "left": 168.5,
+            "top": 187.796875
+          },
+          "parameterMap": {
+            "url": {
+              "76NCFZkfGJNZEoemHWVGgJ": {
+                "key": "76NCFZkfGJNZEoemHWVGgJ",
+                "type": "EXPRESSION",
+                "order": 1,
+                "value": "",
+                "expression": "\"api/{{Page.serverType = 'UI' ? 'ui' : 'core'}}/transports/createAndApply\""
+              }
+            },
+            "method": {
+              "41dtbOnMH6uojRg2YYJw4D": {
+                "key": "41dtbOnMH6uojRg2YYJw4D",
+                "type": "VALUE",
+                "expression": "",
+                "order": 1,
+                "value": "POST"
+              }
+            },
+            "payload": {
+              "6lmprZjDDJeQgnWb0cL6Gz": {
+                "key": "6lmprZjDDJeQgnWb0cL6Gz",
+                "type": "EXPRESSION",
+                "expression": "Page.fileType = 'JSON' ? Page.json : Page.modl",
+                "order": 1
+              }
+            }
+          },
+          "dependentStatements": {}
+        }
+      },
+      "namespace": ""
+    },
+    "7DTkH5DvXtsWwPEKjZikoZ": {
+      "name": "OnLoad",
+      "steps": {
+        "setStore": {
+          "statementName": "setStore",
+          "name": "SetStore",
+          "namespace": "UIEngine",
+          "position": {
+            "left": 324.1953125,
+            "top": 197.9375
+          },
+          "parameterMap": {
+            "path": {
+              "4C7alUjlPrSOOWGa0RxnVq": {
+                "key": "4C7alUjlPrSOOWGa0RxnVq",
+                "type": "VALUE",
+                "order": 1,
+                "value": "Page.serverType"
+              }
+            },
+            "value": {
+              "5fAk0ayyHej2ucdVHim18g": {
+                "key": "5fAk0ayyHej2ucdVHim18g",
+                "type": "EXPRESSION",
+                "expression": "'UI'",
+                "order": 1
+              }
+            }
+          }
+        },
+        "setStore1": {
+          "statementName": "setStore1",
+          "name": "SetStore",
+          "namespace": "UIEngine",
+          "position": {
+            "left": 614.1953125,
+            "top": 180.9375
+          },
+          "parameterMap": {
+            "path": {
+              "5JuoDYInj7Ni6SLJo590b7": {
+                "key": "5JuoDYInj7Ni6SLJo590b7",
+                "type": "VALUE",
+                "expression": "",
+                "order": 1,
+                "value": "Page.fileType"
+              }
+            },
+            "value": {
+              "5t6RmlYbdRMBeVP0f0HzLH": {
+                "key": "5t6RmlYbdRMBeVP0f0HzLH",
+                "type": "EXPRESSION",
+                "expression": "'MODL'",
+                "order": 1
+              }
+            }
+          }
+        }
+      },
+      "namespace": ""
+    }
+  },
+  "rootComponent": "44CZQJ2Xj70uZhqa63Xkqq",
+  "componentDefinition": {
+    "44CZQJ2Xj70uZhqa63Xkqq": {
+      "key": "44CZQJ2Xj70uZhqa63Xkqq",
+      "name": "Page Grid",
+      "type": "Grid",
+      "override": false,
+      "children": {
+        "3ViXuxbR6XgT2XkrVvVxP2": true
+      }
+    },
+    "3ViXuxbR6XgT2XkrVvVxP2": {
+      "key": "3ViXuxbR6XgT2XkrVvVxP2",
+      "name": "Grid",
+      "type": "Grid",
+      "styleProperties": {
+        "5ydm3P2xFah6FL2z3Cpdf0": {
+          "resolutions": {
+            "ALL": {
+              "paddingBottom": {
+                "value": "10px"
+              },
+              "paddingLeft": {
+                "value": "10px"
+              },
+              "paddingRight": {
+                "value": "10px"
+              },
+              "paddingTop": {
+                "value": "10px"
+              },
+              "backgroundColor": {
+                "value": "#FFFFFF"
+              },
+              "width": {
+                "value": "450px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "5S3N7HFoPBhWHZQ4H9GlOG": true,
+        "Ppc6KRsUpwWtavtm91MF5": true,
+        "1Q7dkxCKWlsxWMJIlOo22h": true,
+        "4jqxDm6rgoSJ8DUuVA3PUZ": true
+      },
+      "displayOrder": 0
+    },
+    "5S3N7HFoPBhWHZQ4H9GlOG": {
+      "key": "5S3N7HFoPBhWHZQ4H9GlOG",
+      "name": "uploadModl",
+      "type": "FileUpload",
+      "properties": {
+        "uploadIcon": {
+          "value": "_size1 _bold _rotate-45 ms material-symbols-rounded mso-cloud_upload"
+        },
+        "options": {
+          "value": "json"
+        },
+        "buttonText": {
+          "value": "Select CModl/UModl file"
+        },
+        "uploadViewType": {
+          "value": "_inline_design3"
+        },
+        "colorScheme": {
+          "value": "_secondary"
+        },
+        "visibility": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Page.fileType = 'MODL'"
+          }
+        },
+        "maxFileSize": {
+          "value": 10000000
+        }
+      },
+      "override": false,
+      "displayOrder": 2,
+      "bindingPath": {
+        "type": "VALUE",
+        "value": "Page.modl.file"
+      }
+    },
+    "Ppc6KRsUpwWtavtm91MF5": {
+      "key": "Ppc6KRsUpwWtavtm91MF5",
+      "name": "Import button",
+      "type": "Button",
+      "properties": {
+        "onClick": {
+          "value": "3TcHOJXCZz8iPH65etRh2l"
+        },
+        "leftIcon": {
+          "value": "ms material-symbols-outlined mso-bubbles _rotate-45"
+        },
+        "colorScheme": {
+          "value": "_secondary"
+        },
+        "label": {
+          "value": "Import"
+        }
+      },
+      "override": false,
+      "displayOrder": 3
+    },
+    "1Q7dkxCKWlsxWMJIlOo22h": {
+      "key": "1Q7dkxCKWlsxWMJIlOo22h",
+      "name": "uploadJson",
+      "type": "FileUpload",
+      "properties": {
+        "uploadIcon": {
+          "value": "_size1 _bold _rotate-45 ms material-symbols-rounded mso-cloud_upload"
+        },
+        "options": {
+          "value": "json"
+        },
+        "buttonText": {
+          "value": "Select JSON"
+        },
+        "uploadViewType": {
+          "value": "_inline_design3"
+        },
+        "colorScheme": {
+          "value": "_secondary"
+        },
+        "visibility": {
+          "location": {
+            "type": "EXPRESSION",
+            "expression": "Page.fileType = 'JSON'"
+          }
+        },
+        "maxFileSize": {
+          "value": 10000000
+        }
+      },
+      "override": false,
+      "displayOrder": 1,
+      "bindingPath": {
+        "type": "VALUE",
+        "value": "Page.json.file"
+      }
+    },
+    "4jqxDm6rgoSJ8DUuVA3PUZ": {
+      "key": "4jqxDm6rgoSJ8DUuVA3PUZ",
+      "name": "Selection Grid",
+      "type": "Grid",
+      "override": false,
+      "children": {
+        "6nya41N78oTNjqBxt5MEOb": true,
+        "5X5YZdvSM15OXg1YV6HP68": true,
+        "2b9GVLFMYtPPArOnX2FrU9": true,
+        "3vfgOsQqpQkyEXNC1cN20l": true
+      }
+    },
+    "6nya41N78oTNjqBxt5MEOb": {
+      "key": "6nya41N78oTNjqBxt5MEOb",
+      "name": "File Type",
+      "type": "RadioButton",
+      "properties": {
+        "selectionType": {
+          "value": "OBJECT"
+        },
+        "data": {
+          "value": [
+            "JSON",
+            "MODL"
+          ]
+        },
+        "designType": {
+          "value": "_outlined"
+        }
+      },
+      "styleProperties": {
+        "4c43530094da-f5fd-4b9246-af84-9ebb9d41a49776": {
+          "resolutions": {
+            "ALL": {
+              "width": {
+                "value": "100%"
+              },
+              "height": {
+                "value": "50px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 4,
+      "bindingPath": {
+        "type": "VALUE",
+        "value": "Page.fileType"
+      }
+    },
+    "5X5YZdvSM15OXg1YV6HP68": {
+      "key": "5X5YZdvSM15OXg1YV6HP68",
+      "name": "Server Type",
+      "type": "RadioButton",
+      "properties": {
+        "selectionType": {
+          "value": "OBJECT"
+        },
+        "data": {
+          "value": [
+            "UI",
+            "CORE"
+          ]
+        },
+        "designType": {
+          "value": "_outlined"
+        }
+      },
+      "styleProperties": {
+        "4c43530094da-f5fd-4b9246-af84-9ebb9d41a49776": {
+          "resolutions": {
+            "ALL": {
+              "width": {
+                "value": "100%"
+              },
+              "height": {
+                "value": "50px"
+              }
+            }
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": 2,
+      "bindingPath": {
+        "type": "VALUE",
+        "value": "Page.serverType"
+      }
+    },
+    "2b9GVLFMYtPPArOnX2FrU9": {
+      "key": "2b9GVLFMYtPPArOnX2FrU9",
+      "name": "File Type",
+      "type": "Text",
+      "properties": {
+        "text": {
+          "value": "File Type"
+        }
+      },
+      "override": false,
+      "displayOrder": 3
+    },
+    "3vfgOsQqpQkyEXNC1cN20l": {
+      "key": "3vfgOsQqpQkyEXNC1cN20l",
+      "name": "Server Type",
+      "type": "Text",
+      "properties": {
+        "text": {
+          "value": "Server Type"
+        }
+      },
+      "override": false,
+      "displayOrder": 1
+    }
+  },
+  "name": "import",
+  "message": "From transport : ZmkQyJJCgqVrTzwdL9vmoC",
+  "clientCode": "SYSTEM",
+  "permission": "Authorities.Logged_IN",
+  "appCode": "appbuilder",
+  "version": 23,
+  "updatedAt": "2025-09-30T10:00:40.330Z",
+  "updatedBy": "142",
+  "createdAt": "2023-02-01T08:54:40.909Z",
+  "createdBy": "1"
+}

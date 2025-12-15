@@ -1,0 +1,304 @@
+{
+  "_id": "63d39c07578a7152a3bbc0e0",
+  "properties": {
+    "wrapShell": false,
+    "title": {
+      "name": {
+        "value": "ButtonBar"
+      },
+      "append": {
+        "value": true
+      }
+    }
+  },
+  "eventFunctions": {
+    "genData": {
+      "name": "genData",
+      "steps": {
+        "loginStep": {
+          "name": "SetStore",
+          "namespace": "UIEngine",
+          "statementName": "loginStep",
+          "parameterMap": {
+            "path": {
+              "value1": {
+                "key": "value1",
+                "type": "VALUE",
+                "value": "Store.buttonbarData"
+              }
+            },
+            "value": {
+              "value2": {
+                "key": "value2",
+                "type": "VALUE",
+                "value": [
+                  {
+                    "name": "Raja",
+                    "id": 1,
+                    "department": "IT",
+                    "links": {
+                      "a": {
+                        "b": "c"
+                      }
+                    },
+                    "originalObjectKey": 0
+                  },
+                  {
+                    "name": "Avinash",
+                    "id": 2,
+                    "department": "CS",
+                    "links": {
+                      "a": {
+                        "b": "c"
+                      }
+                    },
+                    "originalObjectKey": 1
+                  },
+                  {
+                    "name": "Alli",
+                    "id": 3,
+                    "department": "EE",
+                    "links": {
+                      "a": {
+                        "b": "c"
+                      }
+                    },
+                    "originalObjectKey": 2
+                  },
+                  {
+                    "name": "Akhilesh",
+                    "id": 4,
+                    "department": "EC",
+                    "links": {
+                      "a": {
+                        "b": "c"
+                      }
+                    },
+                    "originalObjectKey": 3
+                  },
+                  {
+                    "name": "Surendhar",
+                    "id": 5,
+                    "department": "IT",
+                    "links": {
+                      "a": {
+                        "b": "c"
+                      }
+                    },
+                    "originalObjectKey": 4
+                  },
+                  {
+                    "name": "Kiran",
+                    "id": 6,
+                    "department": "IT",
+                    "links": {
+                      "a": {
+                        "b": "c"
+                      }
+                    },
+                    "originalObjectKey": 5
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "genOutput": {
+          "statementName": "genOutput",
+          "namespace": "System",
+          "name": "GenerateEvent",
+          "dependentStatements": {
+            "Steps__d-o-t__loginStep__d-o-t__output": true
+          }
+        }
+      }
+    }
+  },
+  "rootComponent": "fbc35f6f-6100-49e4-9038-99a73207c537",
+  "componentDefinition": {
+    "fbc35f6f-6100-49e4-9038-99a73207c537": {
+      "key": "fbc35f6f-6100-49e4-9038-99a73207c537",
+      "name": "ButtonBarGrid",
+      "type": "Grid",
+      "properties": {
+        "layout": {
+          "value": "Column Layout"
+        }
+      },
+      "styleProperties": {
+        "3e27d183-9796-4e7c-a262-c9816604ad15": {
+          "resolutions": {
+            "ALL": {
+              "height": {
+                "value": "100vh"
+              },
+              "display": {
+                "value": "flex"
+              },
+              "overflow": {
+                "value": "hidden"
+              },
+              "backgroundColor": "red"
+            }
+          }
+        }
+      },
+      "override": false,
+      "children": {
+        "4a57979b-929c-4ae0-9710-85d78d8c23f1": true,
+        "a6ac59d1-6b15-46f2-ad05-8b8ab8cf7e0f": true,
+        "calendarcomp": true,
+        "calendarcompWithoutDateRange": true
+      }
+    },
+    "4a57979b-929c-4ae0-9710-85d78d8c23f1": {
+      "key": "4a57979b-929c-4ae0-9710-85d78d8c23f1",
+      "name": "buttonBar",
+      "type": "ButtonBar",
+      "properties": {
+        "data": {
+          "location": {
+            "type": "VALUE",
+            "value": "Store.buttonbarData"
+          }
+        },
+        "datatype": {
+          "value": "LIST_OF_OBJECTS"
+        },
+        "selectionType": {
+          "value": "OBJECT"
+        },
+        "uniqueKeyType": {
+          "value": "KEY"
+        },
+        "labelKeyType": {
+          "value": "KEY"
+        },
+        "uniqueKey": {
+          "value": "id"
+        },
+        "labelKey": {
+          "value": "name"
+        },
+        "readOnly": {
+          "value": false
+        }
+      },
+      "override": false,
+      "displayOrder": 2,
+      "bindingPath": {
+        "type": "VALUE",
+        "value": "Page.savedButtonBar"
+      }
+    },
+    "a6ac59d1-6b15-46f2-ad05-8b8ab8cf7e0f": {
+      "key": "a6ac59d1-6b15-46f2-ad05-8b8ab8cf7e0f",
+      "name": "genBUtton",
+      "type": "Button",
+      "properties": {
+        "label": {
+          "value": "Generate Data"
+        },
+        "onClick": {
+          "value": "genData"
+        }
+      },
+      "override": false,
+      "displayOrder": 1
+    },
+    "calendarcomp": {
+      "key": "calendarcomp",
+      "name": "calenadarcomponent",
+      "type": "Calendar",
+      "properties": {
+        "dateFormat": {
+          "value": "YYYY-MM-DD hh:mm:ss A"
+        },
+        "isDateRange": {
+          "value": true
+        },
+        "calendarIcon": {
+          "value": "fa fa-calendar-day fa-fw"
+        },
+        "calendarDateRangeIcon": {
+          "value": "fa fa-solid fa-arrow-right-long"
+        },
+        "closeOnMouseLeave": {
+          "value": true
+        },
+        "readOnly": {
+          "value": false
+        }
+      },
+      "override": false,
+      "displayOrder": -1,
+      "bindingPath": {
+        "type": "VALUE",
+        "value": "Page.time"
+      }
+    },
+    "calendarcompWithoutDateRange": {
+      "key": "calendarcompWithoutDateRange",
+      "name": "calenadarcomponentNoRange",
+      "type": "Calendar",
+      "properties": {
+        "defaultValue": {
+          "value": {
+            "from": "Thrusday, Aug 5 2021 01:15 PM"
+          }
+        },
+        "dateFormat": {
+          "value": "dddd, MMM D YYYY hh:mm A"
+        },
+        "maxDate": {
+          "value": "Monday, Jan 30 2023 01:15 PM"
+        },
+        "minDate": {
+          "value": "Sunday, Jan 01 2023 12:00 AM"
+        },
+        "isDateRange": {
+          "value": false
+        },
+        "is24hour": {
+          "value": false
+        },
+        "calendarIcon": {
+          "value": "fa fa-calendar-day fa-fw"
+        },
+        "startYear": {
+          "value": 1900
+        },
+        "endYear": {
+          "value": 2100
+        },
+        "yearAndMonthSelector": {
+          "value": true
+        },
+        "readOnly": {
+          "value": false
+        }
+      },
+      "styleProperties": {
+        "1781fe52-9cad-11ed-a8fc-0242ac120002": {
+          "resolutions": {
+            "ALL": {}
+          }
+        }
+      },
+      "override": false,
+      "displayOrder": -1,
+      "bindingPath": {
+        "type": "VALUE",
+        "value": "Page.time.noRange"
+      }
+    }
+  },
+  "name": "ButtonBar",
+  "clientCode": "SYSTEM",
+  "appCode": "markauto",
+  "version": 29,
+  "updatedAt": "2023-02-21T10:59:20.105Z",
+  "updatedBy": "1",
+  "createdAt": "2023-01-27T09:40:23.070Z",
+  "createdBy": "1"
+}
