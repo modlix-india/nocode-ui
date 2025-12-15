@@ -20,6 +20,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './calendarProperties';
 import { CalendarMap } from './components/CalendarMap';
+import { CalendarDropdown } from './components/CalendarDropdown';
 import {
 	getValidDate,
 	toFormat,
@@ -513,7 +514,33 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 	}, [thisDate, validation, validationProps]);
 
 	const calendar =
-		componentDesignType === 'fullCalendar' || showDropdown ? (
+		componentDesignType === 'dropDownCalendar' ? (
+			<CalendarDropdown
+				{...computedProperties}
+				thisDate={thisDate}
+				isRangeType={isRangeType}
+				thatDate={thatDate}
+				browsingMonthYear={browsingMonthYear}
+				onBrowsingMonthYearChange={async my => {
+					setBrowsingMonthYear(my);
+					if (bindingPathPath3) setData(bindingPathPath3, my, context.pageName);
+					if (!monthChangeEnvet) return;
+					await runEvent(
+						monthChangeEnvet,
+						key,
+						context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+				}}
+				onChange={readOnly ? undefined : handleChange}
+				onClearOtherDate={readOnly ? undefined : clearOtherDate}
+				styles={computedStyles}
+				hoverStyles={hoverComputedStyles}
+				disabledStyles={disabledComputedStyles}
+				definition={definition}
+			/>
+		) : componentDesignType === 'fullCalendar' || showDropdown ? (
 			<CalendarMap
 				{...computedProperties}
 				thisDate={thisDate}
@@ -541,10 +568,10 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			/>
 		) : undefined;
 
-	if (componentDesignType === 'fullCalendar') {
+	if (componentDesignType === 'fullCalendar' || componentDesignType === 'dropDownCalendar') {
 		return (
 			<div
-				className={`comp compCalendar fullCalendar ${calendarDesignType} ${designType} ${colorScheme} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
+				className={`comp compCalendar ${componentDesignType} ${calendarDesignType} ${designType} ${colorScheme} ${lowLightWeekEnd ? '_lowLightWeekend' : ''}`}
 				style={computedStyles?.comp ?? {}}
 			>
 				<HelperComponent context={context} definition={definition} />
