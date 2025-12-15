@@ -1,0 +1,32 @@
+{
+  "_id": "63bd2d154d18a31536e81fa5",
+  "properties": {
+    "defaultPage": "home",
+    "notFoundPage": "home",
+    "links": {
+      "07f57e24-c919-4c3e-8846-98d16cb04f71": {
+        "rel": "stylesheet",
+        "href": "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+      }
+    },
+    "styles": {
+      "cf417b56-745f-46ef-a39f-5db9da69d32c": {
+        "name": "nothingstyle"
+      }
+    },
+    "themes": {
+      "47b6be53-3531-4c8d-9990-6f9ebd3a2cb4": {
+        "name": "nothingtheme"
+      }
+    }
+  },
+  "name": "nothing",
+  "message": "JUST CREATED",
+  "clientCode": "SYSTEM",
+  "appCode": "nothing",
+  "version": 9,
+  "updatedAt": "2024-03-06T11:50:15.688Z",
+  "updatedBy": "142",
+  "createdAt": "2023-01-10T09:17:09.657Z",
+  "createdBy": "1"
+}
