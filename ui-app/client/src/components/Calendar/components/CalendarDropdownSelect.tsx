@@ -1,6 +1,7 @@
 import React, { CSSProperties, useMemo, useRef, useState, useEffect } from 'react';
 import { isNullValue } from '@fincity/kirun-js';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import { StyleCurryFunction } from '../utils/styleHelpers';
 
 export interface CalendarDropdownOption {
 	value: string | number;
@@ -9,7 +10,7 @@ export interface CalendarDropdownOption {
 }
 
 export interface CalendarDropdownSelectProps {
-	value: string | number;
+	value: string | number | '';
 	onChange: (value: string | number) => void;
 	options: CalendarDropdownOption[];
 	placeholder?: string;
@@ -18,7 +19,7 @@ export interface CalendarDropdownSelectProps {
 	style?: CSSProperties;
 	subComponentName?: string;
 	definition?: any;
-	curry?: (key: string, hovers: Set<string>, disableds: Set<string>) => CSSProperties;
+	curry?: StyleCurryFunction;
 }
 
 export function CalendarDropdownSelect({
@@ -33,10 +34,11 @@ export function CalendarDropdownSelect({
 	definition,
 	curry,
 }: CalendarDropdownSelectProps) {
+	// Filter out disabled options, but keep all enabled ones
 	const options = originalOptions.filter(opt => !opt.disabled);
 
 	const label = useMemo(() => {
-		if (!isNullValue(value)) {
+		if (!isNullValue(value) && value !== '') {
 			const selectedOption = options.find(opt => opt.value === value);
 			if (selectedOption) {
 				return <span className="_selectedOption">{selectedOption.label}</span>;
@@ -53,11 +55,15 @@ export function CalendarDropdownSelect({
 
 	// Find current option index when value changes
 	useEffect(() => {
-		if (!isNullValue(value)) {
+		if (!isNullValue(value) && value !== '') {
 			const index = options.findIndex(opt => opt.value === value);
 			if (index >= 0) {
 				setCurrentOption(index);
+			} else {
+				setCurrentOption(0);
 			}
+		} else {
+			setCurrentOption(0);
 		}
 	}, [value, options]);
 
@@ -119,7 +125,9 @@ export function CalendarDropdownSelect({
 
 	let body: React.ReactNode = null;
 	if (open && !readOnly) {
-		const dropdownBodyStyle: CSSProperties = {};
+		const dropdownBodyStyle: CSSProperties = {
+			position: 'fixed',
+		};
 		if (dropDown.current) {
 			const rect = dropDown.current.getBoundingClientRect();
 			if (rect.top + 300 > document.body.clientHeight) {
@@ -127,7 +135,7 @@ export function CalendarDropdownSelect({
 			} else {
 				dropdownBodyStyle.top = rect.top + rect.height;
 			}
-			dropdownBodyStyle.right = document.body.clientWidth - rect.right;
+			dropdownBodyStyle.left = rect.left;
 			dropdownBodyStyle.minWidth = rect.width;
 		}
 
@@ -147,32 +155,42 @@ export function CalendarDropdownSelect({
 						subComponentName="calendarDropdownBody"
 					/>
 				)}
-				{options.map((option, i) => {
-					const isSelected = !isNullValue(value) && option.value === value;
-					const isHovered = i === currentOption;
+				{options.length === 0 ? (
+					<div
+						className="_calendarDropdownOption _disabled"
+						style={{ padding: '5px 10px', color: 'rgba(0, 0, 0, 0.3)' }}
+					>
+						No options available
+					</div>
+				) : (
+					options.map((option, i) => {
+						const isSelected =
+							!isNullValue(value) && value !== '' && option.value === value;
+						const isHovered = i === currentOption;
 
-					const optionStyle = curry
-						? curry(
-								'calendarDropdownOption',
-								isHovered ? new Set(['calendarDropdownOption']) : new Set(),
-								new Set(),
-							)
-						: {};
+						const optionStyle = curry
+							? curry(
+									'calendarDropdownOption',
+									isHovered ? new Set(['calendarDropdownOption']) : new Set(),
+									new Set(),
+								)
+							: {};
 
-					return (
-						<div
-							key={`${option.value}-${i}`}
-							className={`_calendarDropdownOption ${
-								isHovered ? '_hovered' : ''
-							} ${isSelected ? '_selected' : ''} ${option.disabled ? '_disabled' : ''}`}
-							onClick={() => handleClick(option)}
-							onMouseOver={() => setCurrentOptionWithScroll(i)}
-							style={optionStyle}
-						>
-							{option.label}
-						</div>
-					);
-				})}
+						return (
+							<div
+								key={`${option.value}-${i}`}
+								className={`_calendarDropdownOption ${
+									isHovered ? '_hovered' : ''
+								} ${isSelected ? '_selected' : ''} ${option.disabled ? '_disabled' : ''}`}
+								onClick={() => handleClick(option)}
+								onMouseOver={() => setCurrentOptionWithScroll(i)}
+								style={optionStyle}
+							>
+								{option.label}
+							</div>
+						);
+					})
+				)}
 			</div>
 		);
 	}
