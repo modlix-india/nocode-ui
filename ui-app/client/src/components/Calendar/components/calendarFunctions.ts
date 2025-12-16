@@ -108,6 +108,63 @@ export function getValidDate(
 	return new Date(year, month - 1, day, hour, minute, second);
 }
 
+function parseDateWithFormatsFromProps(
+	value: string | number | undefined,
+	props: CalendarValidationProps,
+): Date | undefined {
+	if (value === undefined || value === null) return undefined;
+
+	const valueString = typeof value === 'string' ? value.trim() : undefined;
+
+	if (valueString && (valueString.startsWith('+') || valueString.startsWith('-'))) {
+		const relative = processRelativeOrAbsoluteDate(
+			valueString,
+			props.storageFormat ?? props.displayDateFormat,
+		);
+		if (relative && !isNaN(relative.getTime())) {
+			return relative;
+		}
+	}
+
+	const formatsToTry: string[] = [];
+
+	if (props.displayDateFormat) {
+		formatsToTry.push(props.displayDateFormat);
+	}
+
+	if (props.storageFormat && props.storageFormat !== props.displayDateFormat) {
+		formatsToTry.push(props.storageFormat);
+	}
+
+	for (const format of formatsToTry) {
+		if (
+			(format === 'x' || format === 'X') &&
+			typeof value === 'string' &&
+			/[^\d]/.test(valueString ?? '')
+		) {
+			// Skip epoch parsing when the value clearly contains non-digit characters
+			continue;
+		}
+
+		const parsed = getValidDate(value, format);
+		if (parsed && !isNaN(parsed.getTime())) {
+			return parsed;
+		}
+	}
+
+	if (typeof value === 'string') {
+		const fallback = processRelativeOrAbsoluteDate(
+			value,
+			props.storageFormat ?? props.displayDateFormat,
+		);
+		if (fallback && !isNaN(fallback.getTime())) {
+			return fallback;
+		}
+	}
+
+	return undefined;
+}
+
 export function validateRangesAndSetData(
 	path: string,
 	value: any,
@@ -149,27 +206,25 @@ export function validateWithProps(
 ): Date | undefined {
 	if (!date) return undefined;
 
-	const format = props.storageFormat ?? props.displayDateFormat;
-
 	if (props.minDate) {
-		const minDate = zeroHourDate(getValidDate(props.minDate, format));
+		const minDate = zeroHourDate(parseDateWithFormatsFromProps(props.minDate, props));
 		if (minDate && date < minDate) return undefined;
 	}
 
 	if (props.maxDate) {
-		const maxDate = getValidDate(props.maxDate, format);
+		const maxDate = parseDateWithFormatsFromProps(props.maxDate, props);
 		if (maxDate && date > maxDate) return undefined;
 	}
 
 	if (props.disableDates) {
-		const disableDates = props.disableDates.map(e => getValidDate(e, format)).map(zeroHourDate);
+		const disableDates = props.disableDates
+			.map(e => zeroHourDate(parseDateWithFormatsFromProps(e, props)))
+			.filter((e): e is Date => !!e);
 
 		const onlyDate = zeroHourDate(new Date(date.getTime()));
 
 		if (
-			disableDates.findIndex(
-				(e: Date | undefined) => e && e.getTime() === onlyDate!.getTime(),
-			) != -1
+			disableDates.findIndex((disable: Date) => disable.getTime() === onlyDate!.getTime()) != -1
 		)
 			return undefined;
 	}
@@ -273,23 +328,10 @@ export function removeFromToggleSetCurry(
 export function computeMinMaxDates(
 	props: CalendarMapProps & CalendarValidationProps,
 ): [Date, Date | undefined, Date | undefined] {
-	let currentDate = new Date();
-	let minimumPossibleDate = processRelativeOrAbsoluteDate(
-		props.minDate,
-		props.storageFormat ?? props.displayDateFormat,
-	);
-	let maximumPossibleDate = processRelativeOrAbsoluteDate(
-		props.maxDate,
-		props.storageFormat ?? props.displayDateFormat,
-	);
-	if (props.minDate) {
-		const minDate = getValidDate(props.minDate, props.storageFormat ?? props.displayDateFormat);
-		if (minDate) minimumPossibleDate = minDate;
-	}
-	if (props.maxDate) {
-		const maxDate = getValidDate(props.maxDate, props.storageFormat ?? props.displayDateFormat);
-		if (maxDate) maximumPossibleDate = maxDate;
-	}
+	const currentDate = new Date();
+
+	let minimumPossibleDate = parseDateWithFormatsFromProps(props.minDate, props);
+	let maximumPossibleDate = parseDateWithFormatsFromProps(props.maxDate, props);
 
 	if (props.disableTemporalRanges?.length) {
 		const today = zeroHourDate(new Date())!;
