@@ -20,6 +20,7 @@ export interface CalendarDropdownProps extends CalendarMapProps, CalendarValidat
 	hoverStyles: any;
 	disabledStyles: any;
 	definition: any;
+	dropdownLayout?: 'singleRow' | 'twoRows';
 }
 
 // Using CalendarDropdownOption from CalendarDropdownSelect
@@ -343,7 +344,9 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 
 	const curry = getStyleObjectCurry(props.styles, props.hoverStyles, props.disabledStyles);
 
-	const handleYearChange = (year: number) => {
+	const handleYearChange = (value: string | number) => {
+		const year = typeof value === 'string' ? parseInt(value, 10) : value;
+		if (isNaN(year)) return;
 		setSelectedYear(year);
 		// Reset month and day if they become invalid
 		const newDate = new Date(year, selectedMonth - 1, selectedDay);
@@ -354,7 +357,9 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		updateDate(year, selectedMonth, selectedDay, selectedHour, selectedMinute, selectedSecond);
 	};
 
-	const handleMonthChange = (month: number) => {
+	const handleMonthChange = (value: string | number) => {
+		const month = typeof value === 'string' ? parseInt(value, 10) : value;
+		if (isNaN(month)) return;
 		setSelectedMonth(month);
 		// Adjust day if it's invalid for the new month
 		const lastDay = new Date(selectedYear, month, 0).getDate();
@@ -373,12 +378,16 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		}
 	};
 
-	const handleDayChange = (day: number) => {
+	const handleDayChange = (value: string | number) => {
+		const day = typeof value === 'string' ? parseInt(value, 10) : value;
+		if (isNaN(day)) return;
 		setSelectedDay(day);
 		updateDate(selectedYear, selectedMonth, day, selectedHour, selectedMinute, selectedSecond);
 	};
 
-	const handleHourChange = (hour: number) => {
+	const handleHourChange = (value: string | number) => {
+		const hour = typeof value === 'string' ? parseInt(value, 10) : value;
+		if (isNaN(hour)) return;
 		// For 12hr format, hour is 1-12, need to combine with AM/PM
 		const is12Hr =
 			timeDesignType === 'comboBoxes12Hr' || timeDesignType === 'comboBoxes12HrAndSeconds';
@@ -405,17 +414,23 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		);
 	};
 
-	const handleMinuteChange = (minute: number) => {
+	const handleMinuteChange = (value: string | number) => {
+		const minute = typeof value === 'string' ? parseInt(value, 10) : value;
+		if (isNaN(minute)) return;
 		setSelectedMinute(minute);
 		updateDate(selectedYear, selectedMonth, selectedDay, selectedHour, minute, selectedSecond);
 	};
 
-	const handleSecondChange = (second: number) => {
+	const handleSecondChange = (value: string | number) => {
+		const second = typeof value === 'string' ? parseInt(value, 10) : value;
+		if (isNaN(second)) return;
 		setSelectedSecond(second);
 		updateDate(selectedYear, selectedMonth, selectedDay, selectedHour, selectedMinute, second);
 	};
 
-	const handleAmPmChange = (ampm: string) => {
+	const handleAmPmChange = (value: string | number) => {
+		const ampm = typeof value === 'string' ? value : String(value);
+		if (ampm !== 'AM' && ampm !== 'PM') return;
 		let newHour = selectedHour;
 		// Convert current hour to 12hr format first
 		const hour12 =
