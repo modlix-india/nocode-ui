@@ -329,7 +329,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: 'None',
+				name: 'none',
 				displayName: 'None',
 			},
 			{
@@ -351,6 +351,32 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'comboBoxes24HrAndSeconds',
 				displayName: 'Combo Boxes 24 Hr and Seconds',
+			},
+		],
+	},
+	{
+		name: 'defaultTimeWhenNone',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Default Time (when Time Type is None)',
+		description:
+			'When the storage format includes a time component but Time Type is set to None, this property determines the default time value to use.',
+		defaultValue: 'startOfDay',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: 'startOfDay',
+				displayName: 'Start of Day (00:00:00)',
+				description: 'Sets time to midnight (00:00:00)',
+			},
+			{
+				name: 'endOfDay',
+				displayName: 'End of Day (23:59:59)',
+				description: 'Sets time to end of day (23:59:59)',
+			},
+			{
+				name: 'now',
+				displayName: 'Current Time',
+				description: 'Uses the current time when the date is selected',
 			},
 		],
 	},
@@ -720,6 +746,69 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Date dropdowns in one row, time dropdowns in another',
 			},
 		],
+	},
+	{
+		name: 'yearLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Year Label',
+		description: 'Label text for year dropdown',
+		defaultValue: 'Year',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
+	},
+	{
+		name: 'monthLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Month Label',
+		description: 'Label text for month dropdown',
+		defaultValue: 'Month',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
+	},
+	{
+		name: 'dayLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Day Label',
+		description: 'Label text for day dropdown',
+		defaultValue: 'Day',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
+	},
+	{
+		name: 'hourLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Hour Label',
+		description: 'Label text for hour dropdown',
+		defaultValue: 'Hour',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
+	},
+	{
+		name: 'minuteLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Minute Label',
+		description: 'Label text for minute dropdown',
+		defaultValue: 'Minutes',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
+	},
+	{
+		name: 'secondLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Second Label',
+		description: 'Label text for second dropdown',
+		defaultValue: 'Seconds',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
+	},
+	{
+		name: 'ampmLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'AM/PM Label',
+		description: 'Label text for AM/PM dropdown',
+		defaultValue: 'AM/PM',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: true,
 	},
 ];
 

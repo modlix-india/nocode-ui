@@ -1,13 +1,13 @@
 import React from 'react';
 import { CalendarAllProps } from './calendarTypes';
 import { CalendarMonthTitle } from './CalendarHeader';
+import { getValidDate } from '../utils/dateFormatting';
+import { computeWeekNumberOfYear } from '../utils/dateComputation';
 import {
-	addToToggleSetCurry,
-	computeWeekNumberOfYear,
 	getStyleObjectCurry,
-	getValidDate,
+	addToToggleSetCurry,
 	removeFromToggleSetCurry,
-} from './calendarFunctions';
+} from '../utils/styleHelpers';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 
 export function CalendarMonth(
