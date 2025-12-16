@@ -1,6 +1,7 @@
 import React, { CSSProperties, useMemo, useRef, useState, useEffect } from 'react';
 import { isNullValue } from '@fincity/kirun-js';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import { StyleCurryFunction } from '../utils/styleHelpers';
 
 export interface CalendarDropdownOption {
 	value: string | number;
@@ -18,7 +19,7 @@ export interface CalendarDropdownSelectProps {
 	style?: CSSProperties;
 	subComponentName?: string;
 	definition?: any;
-	curry?: (key: string, hovers: Set<string>, disableds: Set<string>) => CSSProperties;
+	curry?: StyleCurryFunction;
 }
 
 export function CalendarDropdownSelect({
@@ -35,29 +36,6 @@ export function CalendarDropdownSelect({
 }: CalendarDropdownSelectProps) {
 	// Filter out disabled options, but keep all enabled ones
 	const options = originalOptions.filter(opt => !opt.disabled);
-
-	// Debug: Log options to help diagnose
-	if (options.length === 0 && originalOptions.length > 0) {
-		console.warn('CalendarDropdownSelect: All options are disabled', {
-			originalOptions,
-			subComponentName,
-			value,
-		});
-	} else if (options.length === 0 && originalOptions.length === 0) {
-		console.warn('CalendarDropdownSelect: No options provided', {
-			subComponentName,
-			value,
-			placeholder,
-		});
-	} else {
-		console.log('CalendarDropdownSelect: Options available', {
-			subComponentName,
-			optionsCount: options.length,
-			originalCount: originalOptions.length,
-			value,
-			firstOption: options[0],
-		});
-	}
 
 	const label = useMemo(() => {
 		if (!isNullValue(value) && value !== '') {

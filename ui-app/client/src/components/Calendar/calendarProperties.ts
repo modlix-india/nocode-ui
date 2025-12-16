@@ -355,6 +355,32 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'defaultTimeWhenNone',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Default Time (when Time Type is None)',
+		description:
+			'When the storage format includes a time component but Time Type is set to None, this property determines the default time value to use.',
+		defaultValue: 'startOfDay',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: 'startOfDay',
+				displayName: 'Start of Day (00:00:00)',
+				description: 'Sets time to midnight (00:00:00)',
+			},
+			{
+				name: 'endOfDay',
+				displayName: 'End of Day (23:59:59)',
+				description: 'Sets time to end of day (23:59:59)',
+			},
+			{
+				name: 'now',
+				displayName: 'Current Time',
+				description: 'Uses the current time when the date is selected',
+			},
+		],
+	},
+	{
 		name: 'hourIntervalFrom',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Hour Interval From (0-23)',
