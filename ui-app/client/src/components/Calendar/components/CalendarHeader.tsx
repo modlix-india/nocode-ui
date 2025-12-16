@@ -1,10 +1,10 @@
 import React, { useMemo } from 'react';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import {
-	addToToggleSetCurry,
 	getStyleObjectCurry,
+	addToToggleSetCurry,
 	removeFromToggleSetCurry,
-} from './calendarFunctions';
+} from '../utils/styleHelpers';
 import { CalendarAllProps } from './calendarTypes';
 import getSrcUrl from '../../util/getSrcUrl';
 

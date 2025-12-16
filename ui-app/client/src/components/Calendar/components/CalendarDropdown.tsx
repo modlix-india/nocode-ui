@@ -1,15 +1,28 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { CalendarMapProps, CalendarValidationProps } from './calendarTypes';
+import { computeMinMaxDates } from '../utils/dateComputation';
+import { getStyleObjectCurry } from '../utils/styleHelpers';
 import {
-	computeMinMaxDates,
-	getStyleObjectCurry,
-	getValidDate,
 	toFormat,
-	validateWithProps,
-	zeroHourDate,
-} from './calendarFunctions';
-import { CalendarDropdownSelect, CalendarDropdownOption } from './CalendarDropdownSelect';
+	applyDefaultTime,
+	formatHasTimeComponent,
+	DefaultTimeWhenNone,
+} from '../utils/dateFormatting';
+import { validateWithProps } from '../utils/dateValidation';
+import { useDateParsing } from '../hooks/useDateParsing';
+import {
+	useYearOptions,
+	useMonthOptions,
+	useDayOptions,
+	useHourOptions,
+	useMinuteOptions,
+	useSecondOptions,
+	useAmPmOptions,
+	TimeDesignType,
+} from '../hooks/useDropdownOptions';
+import { DateDropdowns } from './DateDropdowns';
+import { TimeDropdowns } from './TimeDropdowns';
 
 export interface CalendarDropdownProps extends CalendarMapProps, CalendarValidationProps {
 	browsingMonthYear: string;
@@ -21,9 +34,14 @@ export interface CalendarDropdownProps extends CalendarMapProps, CalendarValidat
 	disabledStyles: any;
 	definition: any;
 	dropdownLayout?: 'singleRow' | 'twoRows';
+	yearLabel?: string;
+	monthLabel?: string;
+	dayLabel?: string;
+	hourLabel?: string;
+	minuteLabel?: string;
+	secondLabel?: string;
+	ampmLabel?: string;
 }
-
-// Using CalendarDropdownOption from CalendarDropdownSelect
 
 export function CalendarDropdown(props: CalendarDropdownProps) {
 	const {
@@ -34,35 +52,58 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		isRangeType,
 		dateType,
 		definition,
-		timeDesignType,
-		language,
+		timeDesignType: rawTimeDesignType,
+		defaultTimeWhenNone = 'startOfDay',
 		readOnly,
 		dropdownLayout = 'singleRow',
+		yearLabel = 'Year',
+		monthLabel = 'Month',
+		dayLabel = 'Day',
+		hourLabel = 'Hour',
+		minuteLabel = 'Minutes',
+		secondLabel = 'Seconds',
+		ampmLabel = 'AM/PM',
 	} = props;
+
+	// Normalize timeDesignType
+	const timeDesignType: TimeDesignType =
+		rawTimeDesignType === undefined
+			? 'none'
+			: String(rawTimeDesignType) === 'None'
+				? 'none'
+				: (rawTimeDesignType as TimeDesignType);
+
+	// Use the date parsing hook
+	const parseIncomingDate = useDateParsing(displayDateFormat, storageFormat);
 
 	const isEndDate = isRangeType && dateType === 'endDate';
 	const currentDateValue = isEndDate ? thatDate : thisDate;
 
 	// Parse current date
-	const currentDate = useMemo(() => {
-		if (currentDateValue) {
-			const date = getValidDate(currentDateValue, displayDateFormat);
-			if (date) return date;
-		}
-		return new Date();
-	}, [currentDateValue, displayDateFormat]);
+	const currentDate = React.useMemo(() => {
+		return parseIncomingDate(currentDateValue);
+	}, [currentDateValue, parseIncomingDate]);
 
-	const [selectedYear, setSelectedYear] = useState<number>(currentDate.getFullYear());
-	const [selectedMonth, setSelectedMonth] = useState<number>(currentDate.getMonth() + 1);
-	const [selectedDay, setSelectedDay] = useState<number>(currentDate.getDate());
-	const [selectedHour, setSelectedHour] = useState<number>(currentDate.getHours());
-	const [selectedMinute, setSelectedMinute] = useState<number>(currentDate.getMinutes());
-	const [selectedSecond, setSelectedSecond] = useState<number>(currentDate.getSeconds());
+	// State for selected values
+	const [selectedYear, setSelectedYear] = useState<number | undefined>(
+		currentDate?.getFullYear(),
+	);
+	const [selectedMonth, setSelectedMonth] = useState<number | undefined>(
+		currentDate ? currentDate.getMonth() + 1 : undefined,
+	);
+	const [selectedDay, setSelectedDay] = useState<number | undefined>(currentDate?.getDate());
+	const [selectedHour, setSelectedHour] = useState<number | undefined>(currentDate?.getHours());
+	const [selectedMinute, setSelectedMinute] = useState<number | undefined>(
+		currentDate?.getMinutes(),
+	);
+	const [selectedSecond, setSelectedSecond] = useState<number | undefined>(
+		currentDate?.getSeconds(),
+	);
 
 	// Sync selected values when currentDateValue changes
 	useEffect(() => {
 		if (currentDateValue) {
-			const date = getValidDate(currentDateValue, displayDateFormat);
+			const date = parseIncomingDate(currentDateValue);
 			if (date) {
 				setSelectedYear(date.getFullYear());
 				setSelectedMonth(date.getMonth() + 1);
@@ -70,337 +111,295 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 				setSelectedHour(date.getHours());
 				setSelectedMinute(date.getMinutes());
 				setSelectedSecond(date.getSeconds());
-			}
-		}
-	}, [currentDateValue, displayDateFormat]);
-
-	// Compute min/max dates
-	const [_, minimumPossibleDate, maximumPossibleDate] = computeMinMaxDates(props);
-
-	// Generate available years
-	const availableYears = useMemo(() => {
-		const years: CalendarDropdownOption[] = [];
-		const minYear = minimumPossibleDate?.getFullYear() ?? 1900;
-		const maxYear = maximumPossibleDate?.getFullYear() ?? new Date().getFullYear() + 100;
-
-		for (let year = minYear; year <= maxYear; year++) {
-			years.push({
-				value: year,
-				label: year.toString(),
-			});
-		}
-		return years;
-	}, [minimumPossibleDate, maximumPossibleDate]);
-
-	// Generate available months for selected year
-	const availableMonths = useMemo(() => {
-		const months: CalendarDropdownOption[] = [];
-		const monthNames = new Intl.DateTimeFormat(language, { month: 'long' }).formatToParts;
-
-		for (let month = 1; month <= 12; month++) {
-			const testDate = new Date(selectedYear, month - 1, 1);
-
-			// Check if month is within allowed range
-			let isDisabled = false;
-			if (minimumPossibleDate) {
-				const minYear = minimumPossibleDate.getFullYear();
-				if (
-					selectedYear < minYear ||
-					(selectedYear === minYear && month < minimumPossibleDate.getMonth() + 1)
-				) {
-					isDisabled = true;
-				}
-			}
-			if (maximumPossibleDate) {
-				const maxYear = maximumPossibleDate.getFullYear();
-				if (
-					selectedYear > maxYear ||
-					(selectedYear === maxYear && month > maximumPossibleDate.getMonth() + 1)
-				) {
-					isDisabled = true;
-				}
-			}
-
-			// Check if any day in this month is valid
-			if (!isDisabled) {
-				const lastDay = new Date(selectedYear, month, 0).getDate();
-				let hasValidDay = false;
-				for (let day = 1; day <= lastDay; day++) {
-					const testDayDate = new Date(selectedYear, month - 1, day);
-					const validated = validateWithProps(testDayDate, props);
-					if (validated) {
-						hasValidDay = true;
-						break;
-					}
-				}
-				if (!hasValidDay) isDisabled = true;
-			}
-
-			const monthName = new Date(selectedYear, month - 1, 1).toLocaleDateString(language, {
-				month: props.monthLabels || 'long',
-			});
-
-			months.push({
-				value: month,
-				label: monthName,
-				disabled: isDisabled,
-			});
-		}
-		return months;
-	}, [selectedYear, minimumPossibleDate, maximumPossibleDate, props, language]);
-
-	// Generate available days for selected year/month
-	const availableDays = useMemo(() => {
-		const days: CalendarDropdownOption[] = [];
-		const lastDay = new Date(selectedYear, selectedMonth, 0).getDate();
-
-		for (let day = 1; day <= lastDay; day++) {
-			const testDate = new Date(selectedYear, selectedMonth - 1, day);
-			const validated = validateWithProps(testDate, props);
-
-			days.push({
-				value: day,
-				label: day.toString(),
-				disabled: !validated,
-			});
-		}
-		return days;
-	}, [selectedYear, selectedMonth, props]);
-
-	// Generate available hours
-	const availableHours = useMemo(() => {
-		if (timeDesignType === 'none') return [];
-
-		const hours: CalendarDropdownOption[] = [];
-		const is12Hr =
-			timeDesignType === 'comboBoxes12Hr' || timeDesignType === 'comboBoxes12HrAndSeconds';
-		const hourIntervalFrom = props.hourIntervalFrom ?? 0;
-		const hourInterval = props.hourInterval ?? 1;
-
-		if (is12Hr) {
-			// For 12hr format, show 1-12 and check both AM/PM versions
-			for (let hour12 = 1; hour12 <= 12; hour12++) {
-				// Check AM version (0-11, where 12AM = 0)
-				const amHour = hour12 === 12 ? 0 : hour12;
-				let isValidAm = false;
-				if (amHour >= hourIntervalFrom) {
-					if (hourInterval === 0 || (amHour - hourIntervalFrom) % hourInterval === 0) {
-						const testDate = new Date(
-							selectedYear,
-							selectedMonth - 1,
-							selectedDay,
-							amHour,
-							0,
-							0,
-						);
-						const validated = validateWithProps(testDate, props);
-						if (validated) isValidAm = true;
-					}
-				}
-
-				// Check PM version (12-23, where 12PM = 12)
-				const pmHour = hour12 === 12 ? 12 : hour12 + 12;
-				let isValidPm = false;
-				if (pmHour >= hourIntervalFrom) {
-					if (hourInterval === 0 || (pmHour - hourIntervalFrom) % hourInterval === 0) {
-						const testDate = new Date(
-							selectedYear,
-							selectedMonth - 1,
-							selectedDay,
-							pmHour,
-							0,
-							0,
-						);
-						const validated = validateWithProps(testDate, props);
-						if (validated) isValidPm = true;
-					}
-				}
-
-				// Add hour if either AM or PM version is valid
-				if (isValidAm || isValidPm) {
-					hours.push({
-						value: hour12,
-						label: hour12.toString(),
-					});
-				}
+			} else {
+				clearAllSelections();
 			}
 		} else {
-			// 24hr format
-			for (let hour = 0; hour <= 23; hour++) {
-				if (hour < hourIntervalFrom) continue;
-				if (hourInterval > 0 && (hour - hourIntervalFrom) % hourInterval !== 0) continue;
-
-				const testDate = new Date(selectedYear, selectedMonth - 1, selectedDay, hour, 0, 0);
-				const validated = validateWithProps(testDate, props);
-
-				if (validated) {
-					hours.push({
-						value: hour,
-						label: hour.toString().padStart(2, '0'),
-					});
-				}
-			}
+			clearAllSelections();
 		}
-		return hours;
-	}, [timeDesignType, selectedYear, selectedMonth, selectedDay, props]);
+	}, [currentDateValue, parseIncomingDate]);
 
-	// Generate available minutes
-	const availableMinutes = useMemo(() => {
-		if (timeDesignType === 'none' || timeDesignType === 'dial') return [];
+	const clearAllSelections = () => {
+		setSelectedYear(undefined);
+		setSelectedMonth(undefined);
+		setSelectedDay(undefined);
+		setSelectedHour(undefined);
+		setSelectedMinute(undefined);
+		setSelectedSecond(undefined);
+	};
 
-		const minutes: CalendarDropdownOption[] = [];
-		const minuteIntervalFrom = props.minuteIntervalFrom ?? 0;
-		const minuteInterval = props.minuteInterval ?? 1;
+	// Compute min/max dates
+	const [, minimumPossibleDate, maximumPossibleDate] = computeMinMaxDates(props);
 
-		for (let minute = 0; minute < 60; minute++) {
-			if (minute < minuteIntervalFrom) continue;
-			if (minuteInterval > 0 && (minute - minuteIntervalFrom) % minuteInterval !== 0)
-				continue;
+	// Validate dates
+	const validMinDate =
+		minimumPossibleDate && !isNaN(minimumPossibleDate.getTime())
+			? minimumPossibleDate
+			: undefined;
+	const validMaxDate =
+		maximumPossibleDate && !isNaN(maximumPossibleDate.getTime())
+			? maximumPossibleDate
+			: undefined;
 
-			// Check if this minute is valid with current date
-			const testDate = new Date(
-				selectedYear,
-				selectedMonth - 1,
-				selectedDay,
-				selectedHour,
-				minute,
-				0,
-			);
-			const validated = validateWithProps(testDate, props);
+	// Create validation props for hooks
+	const validationProps: CalendarValidationProps = React.useMemo(
+		() => ({
+			isMultiSelect: props.isMultiSelect,
+			minDate: props.minDate,
+			maxDate: props.maxDate,
+			disableDates: props.disableDates,
+			disableTemporalRanges: props.disableTemporalRanges,
+			disableDays: props.disableDays,
+			weekEndDays: props.weekEndDays,
+			hourIntervalFrom: props.hourIntervalFrom,
+			hourInterval: props.hourInterval,
+			secondIntervalFrom: props.secondIntervalFrom,
+			secondInterval: props.secondInterval,
+			minuteIntervalFrom: props.minuteIntervalFrom,
+			minuteInterval: props.minuteInterval,
+			storageFormat: props.storageFormat,
+			displayDateFormat: props.displayDateFormat,
+			multipleDateSeparator: props.multipleDateSeparator,
+		}),
+		[props],
+	);
 
-			if (validated) {
-				minutes.push({
-					value: minute,
-					label: minute.toString().padStart(2, '0'),
-				});
-			}
-		}
-		return minutes;
-	}, [timeDesignType, selectedYear, selectedMonth, selectedDay, selectedHour, props]);
+	// Use dropdown options hooks
+	const availableYears = useYearOptions({
+		validMinDate,
+		validMaxDate,
+		minDate: props.minDate,
+		maxDate: props.maxDate,
+		disableTemporalRanges: props.disableTemporalRanges,
+	});
 
-	// Generate available seconds
-	const availableSeconds = useMemo(() => {
-		if (
-			timeDesignType === 'none' ||
-			timeDesignType === 'dial' ||
-			timeDesignType === 'comboBoxes12Hr' ||
-			timeDesignType === 'comboBoxes24Hr'
-		)
-			return [];
+	const availableMonths = useMonthOptions({
+		selectedYear,
+		validMinDate,
+		validMaxDate,
+		language: props.language,
+		monthLabels: props.monthLabels,
+		validationProps,
+	});
 
-		const seconds: CalendarDropdownOption[] = [];
-		const secondIntervalFrom = props.secondIntervalFrom ?? 0;
-		const secondInterval = props.secondInterval ?? 1;
+	const availableDays = useDayOptions({
+		selectedYear,
+		selectedMonth,
+		validationProps,
+	});
 
-		for (let second = 0; second < 60; second++) {
-			if (second < secondIntervalFrom) continue;
-			if (secondInterval > 0 && (second - secondIntervalFrom) % secondInterval !== 0)
-				continue;
+	const availableHours = useHourOptions({
+		timeDesignType,
+		selectedYear,
+		selectedMonth,
+		selectedDay,
+		hourIntervalFrom: props.hourIntervalFrom,
+		hourInterval: props.hourInterval,
+		validationProps,
+	});
 
-			// Check if this second is valid with current date
-			const testDate = new Date(
-				selectedYear,
-				selectedMonth - 1,
-				selectedDay,
-				selectedHour,
-				selectedMinute,
-				second,
-			);
-			const validated = validateWithProps(testDate, props);
+	const availableMinutes = useMinuteOptions({
+		timeDesignType,
+		selectedYear,
+		selectedMonth,
+		selectedDay,
+		selectedHour,
+		minuteIntervalFrom: props.minuteIntervalFrom,
+		minuteInterval: props.minuteInterval,
+		validationProps,
+	});
 
-			if (validated) {
-				seconds.push({
-					value: second,
-					label: second.toString().padStart(2, '0'),
-				});
-			}
-		}
-		return seconds;
-	}, [
+	const availableSeconds = useSecondOptions({
 		timeDesignType,
 		selectedYear,
 		selectedMonth,
 		selectedDay,
 		selectedHour,
 		selectedMinute,
-		props,
-	]);
+		secondIntervalFrom: props.secondIntervalFrom,
+		secondInterval: props.secondInterval,
+		validationProps,
+	});
 
-	// Generate AM/PM options for 12hr format
-	const availableAmPm = useMemo(() => {
-		if (
-			timeDesignType === 'none' ||
-			timeDesignType === 'comboBoxes24Hr' ||
-			timeDesignType === 'comboBoxes24HrAndSeconds' ||
-			timeDesignType === 'dial'
-		)
-			return [];
+	const availableAmPm = useAmPmOptions(timeDesignType);
 
-		return [
-			{ value: 'AM', label: 'AM' },
-			{ value: 'PM', label: 'PM' },
-		];
-	}, [timeDesignType]);
-
+	// Style curry function
 	const curry = getStyleObjectCurry(props.styles, props.hoverStyles, props.disabledStyles);
 
-	const handleYearChange = (value: string | number) => {
-		const year = typeof value === 'string' ? parseInt(value, 10) : value;
-		if (isNaN(year)) return;
-		setSelectedYear(year);
-		// Reset month and day if they become invalid
-		const newDate = new Date(year, selectedMonth - 1, selectedDay);
-		if (newDate.getFullYear() !== year || newDate.getMonth() + 1 !== selectedMonth) {
-			setSelectedMonth(1);
-			setSelectedDay(1);
-		}
-		updateDate(year, selectedMonth, selectedDay, selectedHour, selectedMinute, selectedSecond);
-	};
+	// Check if we need to apply default time (when timeDesignType is 'none' but format has time)
+	const storageFormatToUse = storageFormat || displayDateFormat;
+	const needsDefaultTime =
+		timeDesignType === 'none' && formatHasTimeComponent(storageFormatToUse);
 
-	const handleMonthChange = (value: string | number) => {
-		const month = typeof value === 'string' ? parseInt(value, 10) : value;
-		if (isNaN(month)) return;
-		setSelectedMonth(month);
-		// Adjust day if it's invalid for the new month
-		const lastDay = new Date(selectedYear, month, 0).getDate();
-		if (selectedDay > lastDay) {
-			setSelectedDay(lastDay);
-			updateDate(selectedYear, month, lastDay, selectedHour, selectedMinute, selectedSecond);
-		} else {
+	// Update date and notify parent
+	const updateDate = useCallback(
+		(
+			year: number | undefined,
+			month: number | undefined,
+			day: number | undefined,
+			hour: number | undefined,
+			minute: number | undefined,
+			second: number | undefined,
+		) => {
+			if (year === undefined || month === undefined || day === undefined) {
+				return;
+			}
+
+			let newDate: Date;
+
+			if (needsDefaultTime) {
+				// When time dropdowns are hidden but format needs time, apply default time
+				const baseDate = new Date(year, month - 1, day, 0, 0, 0);
+				newDate = applyDefaultTime(baseDate, defaultTimeWhenNone as DefaultTimeWhenNone);
+			} else {
+				const finalHour = hour ?? 0;
+				const finalMinute = minute ?? 0;
+				const finalSecond = second ?? 0;
+				newDate = new Date(year, month - 1, day, finalHour, finalMinute, finalSecond);
+			}
+
+			const validated = validateWithProps(newDate, validationProps);
+
+			if (validated) {
+				const displayFormatted = toFormat(newDate, 'Date', displayDateFormat);
+				if (displayFormatted) {
+					props.onChange(displayFormatted, false);
+				}
+			}
+		},
+		[displayDateFormat, validationProps, props.onChange, needsDefaultTime, defaultTimeWhenNone],
+	);
+
+	// Change handlers
+	const handleYearChange = (value: string | number) => {
+		if (value === '' || value === undefined) {
+			setSelectedYear(undefined);
+			setSelectedMonth(undefined);
+			setSelectedDay(undefined);
 			updateDate(
-				selectedYear,
-				month,
-				selectedDay,
+				undefined,
+				undefined,
+				undefined,
 				selectedHour,
 				selectedMinute,
 				selectedSecond,
 			);
+			return;
+		}
+		const year = typeof value === 'string' ? parseInt(value, 10) : value;
+		if (isNaN(year)) return;
+		setSelectedYear(year);
+
+		if (selectedMonth !== undefined && selectedDay !== undefined) {
+			const newDate = new Date(year, selectedMonth - 1, selectedDay);
+			if (newDate.getFullYear() !== year || newDate.getMonth() + 1 !== selectedMonth) {
+				setSelectedMonth(1);
+				setSelectedDay(1);
+				updateDate(year, 1, 1, selectedHour, selectedMinute, selectedSecond);
+			} else {
+				updateDate(
+					year,
+					selectedMonth,
+					selectedDay,
+					selectedHour,
+					selectedMinute,
+					selectedSecond,
+				);
+			}
+		}
+	};
+
+	const handleMonthChange = (value: string | number) => {
+		if (value === '' || value === undefined) {
+			setSelectedMonth(undefined);
+			setSelectedDay(undefined);
+			updateDate(
+				selectedYear,
+				undefined,
+				undefined,
+				selectedHour,
+				selectedMinute,
+				selectedSecond,
+			);
+			return;
+		}
+		const month = typeof value === 'string' ? parseInt(value, 10) : value;
+		if (isNaN(month) || selectedYear === undefined) return;
+		setSelectedMonth(month);
+
+		if (selectedDay !== undefined) {
+			const lastDay = new Date(selectedYear, month, 0).getDate();
+			if (selectedDay > lastDay) {
+				setSelectedDay(lastDay);
+				updateDate(
+					selectedYear,
+					month,
+					lastDay,
+					selectedHour,
+					selectedMinute,
+					selectedSecond,
+				);
+			} else {
+				updateDate(
+					selectedYear,
+					month,
+					selectedDay,
+					selectedHour,
+					selectedMinute,
+					selectedSecond,
+				);
+			}
 		}
 	};
 
 	const handleDayChange = (value: string | number) => {
+		if (value === '' || value === undefined) {
+			setSelectedDay(undefined);
+			updateDate(
+				selectedYear,
+				selectedMonth,
+				undefined,
+				selectedHour,
+				selectedMinute,
+				selectedSecond,
+			);
+			return;
+		}
 		const day = typeof value === 'string' ? parseInt(value, 10) : value;
-		if (isNaN(day)) return;
+		if (isNaN(day) || selectedYear === undefined || selectedMonth === undefined) return;
 		setSelectedDay(day);
 		updateDate(selectedYear, selectedMonth, day, selectedHour, selectedMinute, selectedSecond);
 	};
 
 	const handleHourChange = (value: string | number) => {
+		if (value === '' || value === undefined) {
+			setSelectedHour(undefined);
+			updateDate(
+				selectedYear,
+				selectedMonth,
+				selectedDay,
+				undefined,
+				selectedMinute,
+				selectedSecond,
+			);
+			return;
+		}
 		const hour = typeof value === 'string' ? parseInt(value, 10) : value;
 		if (isNaN(hour)) return;
-		// For 12hr format, hour is 1-12, need to combine with AM/PM
+
 		const is12Hr =
 			timeDesignType === 'comboBoxes12Hr' || timeDesignType === 'comboBoxes12HrAndSeconds';
 		let actualHour = hour;
 
-		if (is12Hr) {
-			// Preserve AM/PM from current selectedHour
+		if (is12Hr && selectedHour !== undefined) {
 			const currentIsPM = selectedHour >= 12;
 			if (currentIsPM) {
 				actualHour = hour === 12 ? 12 : hour + 12;
 			} else {
 				actualHour = hour === 12 ? 0 : hour;
 			}
+		} else if (is12Hr) {
+			actualHour = hour === 12 ? 0 : hour;
 		}
 
 		setSelectedHour(actualHour);
@@ -415,6 +414,18 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	};
 
 	const handleMinuteChange = (value: string | number) => {
+		if (value === '' || value === undefined) {
+			setSelectedMinute(undefined);
+			updateDate(
+				selectedYear,
+				selectedMonth,
+				selectedDay,
+				selectedHour,
+				undefined,
+				selectedSecond,
+			);
+			return;
+		}
 		const minute = typeof value === 'string' ? parseInt(value, 10) : value;
 		if (isNaN(minute)) return;
 		setSelectedMinute(minute);
@@ -422,6 +433,18 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	};
 
 	const handleSecondChange = (value: string | number) => {
+		if (value === '' || value === undefined) {
+			setSelectedSecond(undefined);
+			updateDate(
+				selectedYear,
+				selectedMonth,
+				selectedDay,
+				selectedHour,
+				selectedMinute,
+				undefined,
+			);
+			return;
+		}
 		const second = typeof value === 'string' ? parseInt(value, 10) : value;
 		if (isNaN(second)) return;
 		setSelectedSecond(second);
@@ -429,17 +452,19 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	};
 
 	const handleAmPmChange = (value: string | number) => {
+		if (value === '' || value === undefined) {
+			return;
+		}
 		const ampm = typeof value === 'string' ? value : String(value);
 		if (ampm !== 'AM' && ampm !== 'PM') return;
-		let newHour = selectedHour;
-		// Convert current hour to 12hr format first
-		const hour12 =
-			selectedHour === 0 ? 12 : selectedHour > 12 ? selectedHour - 12 : selectedHour;
 
+		let currentHour = selectedHour ?? 12;
+		const hour12 = currentHour === 0 ? 12 : currentHour > 12 ? currentHour - 12 : currentHour;
+
+		let newHour: number;
 		if (ampm === 'AM') {
 			newHour = hour12 === 12 ? 0 : hour12;
 		} else {
-			// PM
 			newHour = hour12 === 12 ? 12 : hour12 + 12;
 		}
 		setSelectedHour(newHour);
@@ -453,47 +478,6 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		);
 	};
 
-	const updateDate = (
-		year: number,
-		month: number,
-		day: number,
-		hour: number,
-		minute: number,
-		second: number,
-	) => {
-		const newDate = new Date(year, month - 1, day, hour, minute, second);
-		const validated = validateWithProps(newDate, props);
-
-		if (validated) {
-			const formatted = toFormat(newDate, 'Date', storageFormat ?? displayDateFormat);
-			if (formatted) {
-				props.onChange(formatted, false);
-			}
-		}
-	};
-
-	const renderDropdown = (
-		value: string | number,
-		options: CalendarDropdownOption[],
-		onChange: (value: string | number) => void,
-		subComponentName: string,
-		placeholder?: string,
-	) => {
-		return (
-			<CalendarDropdownSelect
-				value={value}
-				onChange={onChange}
-				options={options}
-				placeholder={placeholder}
-				readOnly={readOnly}
-				className={`_${subComponentName}`}
-				subComponentName={subComponentName}
-				definition={definition}
-				curry={curry}
-			/>
-		);
-	};
-
 	const isTwoRows = dropdownLayout === 'twoRows';
 	const hasTimeDropdowns =
 		timeDesignType !== 'none' &&
@@ -502,6 +486,14 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 			availableMinutes.length > 0 ||
 			availableSeconds.length > 0 ||
 			availableAmPm.length > 0);
+
+	const dateLabels = { year: yearLabel, month: monthLabel, day: dayLabel };
+	const timeLabels = {
+		hour: hourLabel,
+		minute: minuteLabel,
+		second: secondLabel,
+		ampm: ampmLabel,
+	};
 
 	return (
 		<div
@@ -523,150 +515,42 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 					subComponentName="calendarDropdownRow"
 				/>
 
-				{/* Year Dropdown */}
-				<div
-					className="_yearDropdownWrapper"
-					style={curry('yearDropdownWrapper', new Set(), new Set())}
-				>
-					<SubHelperComponent
-						definition={definition}
-						subComponentName="yearDropdownWrapper"
-					/>
-					{renderDropdown(
-						selectedYear,
-						availableYears,
-						handleYearChange,
-						'yearDropdown',
-						'Year',
-					)}
-				</div>
-
-				{/* Month Dropdown */}
-				<div
-					className="_monthDropdownWrapper"
-					style={curry('monthDropdownWrapper', new Set(), new Set())}
-				>
-					<SubHelperComponent
-						definition={definition}
-						subComponentName="monthDropdownWrapper"
-					/>
-					{renderDropdown(
-						selectedMonth,
-						availableMonths,
-						handleMonthChange,
-						'monthDropdown',
-						'Month',
-					)}
-				</div>
-
-				{/* Day Dropdown */}
-				<div
-					className="_dayDropdownWrapper"
-					style={curry('dayDropdownWrapper', new Set(), new Set())}
-				>
-					<SubHelperComponent
-						definition={definition}
-						subComponentName="dayDropdownWrapper"
-					/>
-					{renderDropdown(
-						selectedDay,
-						availableDays,
-						handleDayChange,
-						'dayDropdown',
-						'Day',
-					)}
-				</div>
+				<DateDropdowns
+					selectedYear={selectedYear}
+					selectedMonth={selectedMonth}
+					selectedDay={selectedDay}
+					availableYears={availableYears}
+					availableMonths={availableMonths}
+					availableDays={availableDays}
+					onYearChange={handleYearChange}
+					onMonthChange={handleMonthChange}
+					onDayChange={handleDayChange}
+					curry={curry}
+					definition={definition}
+					readOnly={readOnly}
+					labels={dateLabels}
+				/>
 
 				{/* Time Dropdowns in same row if singleRow layout */}
-				{!isTwoRows && timeDesignType !== 'none' && timeDesignType !== 'dial' && (
-					<>
-						{/* Hour Dropdown */}
-						{availableHours.length > 0 && (
-							<div
-								className="_hourDropdownWrapper"
-								style={curry('hourDropdownWrapper', new Set(), new Set())}
-							>
-								<SubHelperComponent
-									definition={definition}
-									subComponentName="hourDropdownWrapper"
-								/>
-								{renderDropdown(
-									timeDesignType === 'comboBoxes12Hr' ||
-										timeDesignType === 'comboBoxes12HrAndSeconds'
-										? selectedHour === 0
-											? 12
-											: selectedHour > 12
-												? selectedHour - 12
-												: selectedHour
-										: selectedHour,
-									availableHours,
-									handleHourChange,
-									'hourDropdown',
-									'Hour',
-								)}
-							</div>
-						)}
-
-						{/* Minute Dropdown */}
-						{availableMinutes.length > 0 && (
-							<div
-								className="_minuteDropdownWrapper"
-								style={curry('minuteDropdownWrapper', new Set(), new Set())}
-							>
-								<SubHelperComponent
-									definition={definition}
-									subComponentName="minuteDropdownWrapper"
-								/>
-								{renderDropdown(
-									selectedMinute,
-									availableMinutes,
-									handleMinuteChange,
-									'minuteDropdown',
-									'Minute',
-								)}
-							</div>
-						)}
-
-						{/* Second Dropdown */}
-						{availableSeconds.length > 0 && (
-							<div
-								className="_secondDropdownWrapper"
-								style={curry('secondDropdownWrapper', new Set(), new Set())}
-							>
-								<SubHelperComponent
-									definition={definition}
-									subComponentName="secondDropdownWrapper"
-								/>
-								{renderDropdown(
-									selectedSecond,
-									availableSeconds,
-									handleSecondChange,
-									'secondDropdown',
-									'Second',
-								)}
-							</div>
-						)}
-
-						{/* AM/PM Dropdown */}
-						{availableAmPm.length > 0 && (
-							<div
-								className="_ampmDropdownWrapper"
-								style={curry('ampmDropdownWrapper', new Set(), new Set())}
-							>
-								<SubHelperComponent
-									definition={definition}
-									subComponentName="ampmDropdownWrapper"
-								/>
-								{renderDropdown(
-									selectedHour >= 12 ? 'PM' : 'AM',
-									availableAmPm,
-									handleAmPmChange,
-									'ampmDropdown',
-									'AM/PM',
-								)}
-							</div>
-						)}
-					</>
+				{!isTwoRows && (
+					<TimeDropdowns
+						selectedHour={selectedHour}
+						selectedMinute={selectedMinute}
+						selectedSecond={selectedSecond}
+						availableHours={availableHours}
+						availableMinutes={availableMinutes}
+						availableSeconds={availableSeconds}
+						availableAmPm={availableAmPm}
+						timeDesignType={timeDesignType}
+						onHourChange={handleHourChange}
+						onMinuteChange={handleMinuteChange}
+						onSecondChange={handleSecondChange}
+						onAmPmChange={handleAmPmChange}
+						curry={curry}
+						definition={definition}
+						readOnly={readOnly}
+						labels={timeLabels}
+					/>
 				)}
 			</div>
 
@@ -681,92 +565,24 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 						subComponentName="calendarDropdownRow"
 					/>
 
-					{/* Hour Dropdown */}
-					{availableHours.length > 0 && (
-						<div
-							className="_hourDropdownWrapper"
-							style={curry('hourDropdownWrapper', new Set(), new Set())}
-						>
-							<SubHelperComponent
-								definition={definition}
-								subComponentName="hourDropdownWrapper"
-							/>
-							{renderDropdown(
-								timeDesignType === 'comboBoxes12Hr' ||
-									timeDesignType === 'comboBoxes12HrAndSeconds'
-									? selectedHour === 0
-										? 12
-										: selectedHour > 12
-											? selectedHour - 12
-											: selectedHour
-									: selectedHour,
-								availableHours,
-								handleHourChange,
-								'hourDropdown',
-								'Hour',
-							)}
-						</div>
-					)}
-
-					{/* Minute Dropdown */}
-					{availableMinutes.length > 0 && (
-						<div
-							className="_minuteDropdownWrapper"
-							style={curry('minuteDropdownWrapper', new Set(), new Set())}
-						>
-							<SubHelperComponent
-								definition={definition}
-								subComponentName="minuteDropdownWrapper"
-							/>
-							{renderDropdown(
-								selectedMinute,
-								availableMinutes,
-								handleMinuteChange,
-								'minuteDropdown',
-								'Minute',
-							)}
-						</div>
-					)}
-
-					{/* Second Dropdown */}
-					{availableSeconds.length > 0 && (
-						<div
-							className="_secondDropdownWrapper"
-							style={curry('secondDropdownWrapper', new Set(), new Set())}
-						>
-							<SubHelperComponent
-								definition={definition}
-								subComponentName="secondDropdownWrapper"
-							/>
-							{renderDropdown(
-								selectedSecond,
-								availableSeconds,
-								handleSecondChange,
-								'secondDropdown',
-								'Second',
-							)}
-						</div>
-					)}
-
-					{/* AM/PM Dropdown */}
-					{availableAmPm.length > 0 && (
-						<div
-							className="_ampmDropdownWrapper"
-							style={curry('ampmDropdownWrapper', new Set(), new Set())}
-						>
-							<SubHelperComponent
-								definition={definition}
-								subComponentName="ampmDropdownWrapper"
-							/>
-							{renderDropdown(
-								selectedHour >= 12 ? 'PM' : 'AM',
-								availableAmPm,
-								handleAmPmChange,
-								'ampmDropdown',
-								'AM/PM',
-							)}
-						</div>
-					)}
+					<TimeDropdowns
+						selectedHour={selectedHour}
+						selectedMinute={selectedMinute}
+						selectedSecond={selectedSecond}
+						availableHours={availableHours}
+						availableMinutes={availableMinutes}
+						availableSeconds={availableSeconds}
+						availableAmPm={availableAmPm}
+						timeDesignType={timeDesignType}
+						onHourChange={handleHourChange}
+						onMinuteChange={handleMinuteChange}
+						onSecondChange={handleSecondChange}
+						onAmPmChange={handleAmPmChange}
+						curry={curry}
+						definition={definition}
+						readOnly={readOnly}
+						labels={timeLabels}
+					/>
 				</div>
 			)}
 		</div>

@@ -56,6 +56,7 @@ export interface CalendarMapProps {
 		| 'dial'
 		| 'comboBoxes12HrAndSeconds'
 		| 'comboBoxes24HrAndSeconds';
+	defaultTimeWhenNone: 'startOfDay' | 'endOfDay' | 'now';
 	monthLabels: LabelType;
 	weekDayLabels: LabelType;
 	styles: any;

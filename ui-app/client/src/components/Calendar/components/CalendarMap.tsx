@@ -7,13 +7,18 @@ import {
 	CalendarYearTitle,
 } from './CalendarHeader';
 import {
-	addToToggleSetCurry,
-	computeMinMaxDates,
-	getStyleObjectCurry,
 	getValidDate,
-	removeFromToggleSetCurry,
 	toFormat,
-} from './calendarFunctions';
+	applyDefaultTime,
+	formatHasTimeComponent,
+	DefaultTimeWhenNone,
+} from '../utils/dateFormatting';
+import { computeMinMaxDates } from '../utils/dateComputation';
+import {
+	getStyleObjectCurry,
+	addToToggleSetCurry,
+	removeFromToggleSetCurry,
+} from '../utils/styleHelpers';
 import {
 	CalendarAllProps,
 	CalendarIntermediateAllProps,
@@ -41,6 +46,8 @@ export function CalendarMap(
 		browsingMonthYear,
 		onBrowsingMonthYearChange,
 		definition,
+		timeDesignType = 'none',
+		defaultTimeWhenNone = 'startOfDay',
 	} = props;
 
 	const isEndDate = isRangeType && dateType === 'endDate';
@@ -131,9 +138,24 @@ export function CalendarMap(
 		onBrowsingMonthYearChange(value);
 	}
 
+	// Check if we need to apply default time (when timeDesignType is 'none' but format has time)
+	const storageFormatToUse = storageFormat || displayDateFormat;
+	const needsDefaultTime =
+		timeDesignType === 'none' && formatHasTimeComponent(storageFormatToUse);
+
+	// Helper to apply default time if needed
+	const prepareDate = (date: Date): Date => {
+		if (needsDefaultTime) {
+			return applyDefaultTime(date, defaultTimeWhenNone as DefaultTimeWhenNone);
+		}
+		return date;
+	};
+
 	const onDateSelection = (date: Date) => {
+		const processedDate = prepareDate(date);
+
 		if (props.isMultiSelect) {
-			let finDate = toFormat(date, 'Date', props.displayDateFormat)!.toString();
+			let finDate = toFormat(processedDate, 'Date', props.displayDateFormat)!.toString();
 			if (props.thisDate) {
 				const splits = props.thisDate.toString().split(props.multipleDateSeparator);
 				const index = splits.indexOf(finDate);
@@ -156,11 +178,11 @@ export function CalendarMap(
 			let start = getValidDate(startDate, displayDateFormat);
 			let end = getValidDate(endDate, displayDateFormat);
 			if (startDate || isEndDate) {
-				end = date;
-				endDate = toFormat(date, 'Date', displayDateFormat);
+				end = processedDate;
+				endDate = toFormat(processedDate, 'Date', displayDateFormat);
 			} else {
-				start = date;
-				startDate = toFormat(date, 'Date', displayDateFormat);
+				start = processedDate;
+				startDate = toFormat(processedDate, 'Date', displayDateFormat);
 			}
 
 			if (start && end && start > end) [startDate, endDate] = [endDate, startDate];
@@ -173,11 +195,11 @@ export function CalendarMap(
 					true,
 				);
 			else {
-				props.onChange(toFormat(date, 'Date', displayDateFormat), false);
+				props.onChange(toFormat(processedDate, 'Date', displayDateFormat), false);
 				if (wipeEndDate && props.onClearOtherDate) props.onClearOtherDate();
 			}
 		} else {
-			props.onChange(toFormat(date, 'Date', displayDateFormat), true);
+			props.onChange(toFormat(processedDate, 'Date', displayDateFormat), true);
 		}
 	};
 
