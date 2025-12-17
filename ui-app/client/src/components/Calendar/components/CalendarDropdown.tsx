@@ -77,14 +77,21 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	const parseIncomingDate = useDateParsing(displayDateFormat, storageFormat);
 
 	const isEndDate = isRangeType && dateType === 'endDate';
-	const currentDateValue = isEndDate ? thatDate : thisDate;
+	
+	// Memoize currentDateValue to ensure React detects changes properly
+	// When dateType is 'endDate', thisDate contains the end date value (from bindingPath2)
+	// When dateType is 'startDate', thisDate contains the start date value (from bindingPath1)
+	// So we always use thisDate regardless of dateType
+	const currentDateValue = React.useMemo(() => {
+		return thisDate;
+	}, [thisDate]);
 
 	// Parse current date
 	const currentDate = React.useMemo(() => {
 		return parseIncomingDate(currentDateValue);
 	}, [currentDateValue, parseIncomingDate]);
 
-	// State for selected values
+	// State for selected values - initialize from currentDate
 	const [selectedYear, setSelectedYear] = useState<number | undefined>(
 		currentDate?.getFullYear(),
 	);
@@ -101,6 +108,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	);
 
 	// Sync selected values when currentDateValue changes
+	// This effect handles both initial load and subsequent updates
 	useEffect(() => {
 		if (currentDateValue) {
 			const date = parseIncomingDate(currentDateValue);
