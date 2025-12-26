@@ -125,6 +125,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
+		name: 'showOpenCloseButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Open/Close Button',
+		description: 'Show the open and close button if there are sub-menus.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: true,
+	},
+	{
 		name: 'subMenuOrientation',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'SubMenu Orientation',
