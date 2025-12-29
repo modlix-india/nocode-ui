@@ -1,8 +1,8 @@
-# Functions and Actions
+# UIEngine Functions Reference
 
 ## Overview
 
-The nocode UI system includes built-in functions (actions) that can be executed in event functions. These functions are part of the `UIEngine` namespace and are executed via KIRun runtime.
+UIEngine functions are built-in actions that can be executed in event functions. They handle navigation, data operations, store management, authentication, and UI interactions. All functions are in the `UIEngine` namespace.
 
 ## Function Repository
 
@@ -16,22 +16,29 @@ export class UIFunctionRepository extends HybridRepository<Function> {
 }
 ```
 
-## Available Functions
+This combines UIEngine functions with KIRun System functions.
 
-### Navigation Functions
+---
 
-#### Navigate
+## Navigation Functions
 
-Navigate to a page.
+### Navigate
+
+Navigate to a page or URL.
 
 **Namespace**: `UIEngine`  
 **Name**: `Navigate`
 
 **Parameters**:
 
-- `pageName` (string): Page name to navigate to
-- `queryParameters` (object, optional): Query parameters
-- `pathParameters` (object, optional): Path parameters
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `linkPath` | string | Yes | - | Page name or URL path to navigate to |
+| `target` | string | No | `"_self"` | Window target (`_self`, `_blank`, `_parent`, `_top`) |
+| `force` | boolean | No | `false` | Force full page navigation (skip SPA routing) |
+| `removeThisPageFromHistory` | boolean | No | `false` | Replace current history entry instead of pushing |
+
+**Events**: `output`
 
 **Example**:
 
@@ -40,18 +47,33 @@ Navigate to a page.
   "name": "Navigate",
   "namespace": "UIEngine",
   "parameterMap": {
-    "pageName": {
-      "param1": {
-        "type": "VALUE",
-        "value": "home",
-        "order": 1
-      }
+    "linkPath": {
+      "p1": { "type": "VALUE", "value": "/dashboard", "order": 1 }
     }
   }
 }
 ```
 
-#### NavigateBack
+**Example - Navigate with target**:
+
+```json
+{
+  "name": "Navigate",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "linkPath": {
+      "p1": { "type": "VALUE", "value": "https://example.com", "order": 1 }
+    },
+    "target": {
+      "p2": { "type": "VALUE", "value": "_blank", "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+### NavigateBack
 
 Navigate back in browser history.
 
@@ -60,7 +82,21 @@ Navigate back in browser history.
 
 **Parameters**: None
 
-#### NavigateForward
+**Events**: `output`
+
+**Example**:
+
+```json
+{
+  "name": "NavigateBack",
+  "namespace": "UIEngine",
+  "parameterMap": {}
+}
+```
+
+---
+
+### NavigateForward
 
 Navigate forward in browser history.
 
@@ -69,23 +105,68 @@ Navigate forward in browser history.
 
 **Parameters**: None
 
-### Data Functions
+**Events**: `output`
 
-#### FetchData
+**Example**:
 
-Fetch data from an API endpoint.
+```json
+{
+  "name": "NavigateForward",
+  "namespace": "UIEngine",
+  "parameterMap": {}
+}
+```
+
+---
+
+### Refresh
+
+Refresh the current page.
+
+**Namespace**: `UIEngine`  
+**Name**: `Refresh`
+
+**Parameters**: None
+
+**Events**: `output`
+
+**Example**:
+
+```json
+{
+  "name": "Refresh",
+  "namespace": "UIEngine",
+  "parameterMap": {}
+}
+```
+
+---
+
+## Data Functions
+
+### FetchData
+
+Fetch data from an API endpoint using HTTP GET.
 
 **Namespace**: `UIEngine`  
 **Name**: `FetchData`
 
 **Parameters**:
 
-- `url` (string): API endpoint URL
-- `method` (string): HTTP method (GET, POST, PUT, DELETE, etc.)
-- `headers` (object, optional): Request headers
-- `body` (any, optional): Request body
-- `storePath` (string, optional): Store path to save response
-- `responseType` (string, optional): Response type
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `url` | string | Yes | - | API endpoint URL |
+| `queryParams` | object | No | `{}` | Query parameters as key-value pairs |
+| `pathParams` | object | No | `{}` | Path parameters for URL substitution |
+| `headers` | object | No | Auth headers | Request headers |
+
+**Default Headers**:
+- `Authorization`: From `LocalStore.AuthToken`
+- `clientCode`: From `Store.auth.loggedInClientCode`
+
+**Events**:
+- `output`: Success with `data` (response data)
+- `error`: Failure with `data`, `headers`, `status`
 
 **Example**:
 
@@ -95,23 +176,37 @@ Fetch data from an API endpoint.
   "namespace": "UIEngine",
   "parameterMap": {
     "url": {
-      "param1": {
-        "type": "VALUE",
-        "value": "/api/users",
-        "order": 1
+      "p1": { "type": "VALUE", "value": "/api/users", "order": 1 }
+    }
+  }
+}
+```
+
+**Example - With parameters**:
+
+```json
+{
+  "name": "FetchData",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "url": {
+      "p1": { "type": "VALUE", "value": "/api/users/{id}", "order": 1 }
+    },
+    "pathParams": {
+      "p2": { 
+        "type": "VALUE", 
+        "value": { 
+          "id": { "location": { "type": "EXPRESSION", "expression": "Page.userId" } }
+        }, 
+        "order": 1 
       }
     },
-    "method": {
-      "param2": {
+    "queryParams": {
+      "p3": {
         "type": "VALUE",
-        "value": "GET",
-        "order": 1
-      }
-    },
-    "storePath": {
-      "param3": {
-        "type": "VALUE",
-        "value": "Page.users",
+        "value": {
+          "include": { "value": "orders" }
+        },
         "order": 1
       }
     }
@@ -119,37 +214,163 @@ Fetch data from an API endpoint.
 }
 ```
 
-#### SendData
+**Using Result**:
 
-Send data to an API endpoint.
+```json
+{
+  "steps": {
+    "fetch": {
+      "name": "FetchData",
+      "namespace": "UIEngine",
+      "parameterMap": { "url": { "p1": { "type": "VALUE", "value": "/api/data" } } }
+    },
+    "saveData": {
+      "name": "SetStore",
+      "namespace": "UIEngine",
+      "parameterMap": {
+        "path": { "p1": { "type": "VALUE", "value": "Page.data" } },
+        "value": { "p2": { "type": "EXPRESSION", "expression": "Steps.fetch.output.data" } }
+      },
+      "dependentStatements": { "Steps.fetch.output": true }
+    }
+  }
+}
+```
+
+---
+
+### SendData
+
+Send data to an API endpoint (POST, PUT, PATCH, etc.).
 
 **Namespace**: `UIEngine`  
 **Name**: `SendData`
 
 **Parameters**:
 
-- `url` (string): API endpoint URL
-- `method` (string): HTTP method
-- `headers` (object, optional): Request headers
-- `body` (any): Request body
-- `storePath` (string, optional): Store path to save response
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `url` | string | Yes | - | API endpoint URL |
+| `method` | string | Yes | - | HTTP method (POST, PUT, PATCH, DELETE) |
+| `queryParams` | object | No | `{}` | Query parameters |
+| `pathParams` | object | No | `{}` | Path parameters |
+| `payload` | any | No | - | Request body data |
+| `headers` | object | No | Auth headers | Request headers |
+| `downloadAsAFile` | boolean | No | `false` | Download response as file |
+| `downloadFileName` | string | No | `""` | Custom filename for download |
 
-#### DeleteData
+**Events**:
+- `output`: Success with `data`
+- `error`: Failure with `data`, `headers`, `status`
 
-Delete data via API.
+**Example - POST**:
+
+```json
+{
+  "name": "SendData",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "url": {
+      "p1": { "type": "VALUE", "value": "/api/users", "order": 1 }
+    },
+    "method": {
+      "p2": { "type": "VALUE", "value": "POST", "order": 1 }
+    },
+    "payload": {
+      "p3": { 
+        "type": "EXPRESSION", 
+        "expression": "Page.formData", 
+        "order": 1 
+      }
+    }
+  }
+}
+```
+
+**Example - File Upload**:
+
+```json
+{
+  "name": "SendData",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "url": { "p1": { "type": "VALUE", "value": "/api/upload" } },
+    "method": { "p2": { "type": "VALUE", "value": "POST" } },
+    "payload": { "p3": { "type": "EXPRESSION", "expression": "Page.fileData" } },
+    "headers": {
+      "p4": {
+        "type": "VALUE",
+        "value": { "content-type": { "value": "multipart/form-data" } }
+      }
+    }
+  }
+}
+```
+
+**Example - Download File**:
+
+```json
+{
+  "name": "SendData",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "url": { "p1": { "type": "VALUE", "value": "/api/export" } },
+    "method": { "p2": { "type": "VALUE", "value": "POST" } },
+    "payload": { "p3": { "type": "EXPRESSION", "expression": "Page.exportConfig" } },
+    "downloadAsAFile": { "p4": { "type": "VALUE", "value": true } },
+    "downloadFileName": { "p5": { "type": "VALUE", "value": "export.xlsx" } }
+  }
+}
+```
+
+---
+
+### DeleteData
+
+Delete data via HTTP DELETE.
 
 **Namespace**: `UIEngine`  
 **Name**: `DeleteData`
 
 **Parameters**:
 
-- `url` (string): API endpoint URL
-- `headers` (object, optional): Request headers
-- `storePath` (string, optional): Store path to save response
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `url` | string | Yes | - | API endpoint URL |
+| `queryParams` | object | No | `{}` | Query parameters |
+| `pathParams` | object | No | `{}` | Path parameters |
+| `headers` | object | No | Auth headers | Request headers |
 
-### Store Functions
+**Events**:
+- `output`: Success with `data`
+- `error`: Failure with `data`, `headers`, `status`
 
-#### SetStore
+**Example**:
+
+```json
+{
+  "name": "DeleteData",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "url": {
+      "p1": { "type": "VALUE", "value": "/api/users/{id}", "order": 1 }
+    },
+    "pathParams": {
+      "p2": {
+        "type": "VALUE",
+        "value": { "id": { "location": { "type": "EXPRESSION", "expression": "Page.userId" } } },
+        "order": 1
+      }
+    }
+  }
+}
+```
+
+---
+
+## Store Functions
+
+### SetStore
 
 Set a value in the store.
 
@@ -158,10 +379,15 @@ Set a value in the store.
 
 **Parameters**:
 
-- `path` (string): Store path
-- `value` (any): Value to set
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `path` | string | Yes | - | Store path (e.g., `Page.counter`, `Store.user`) |
+| `value` | any | Yes | - | Value to set |
+| `deleteKey` | boolean | No | `false` | Delete the key instead of setting value |
 
-**Example**:
+**Events**: `output`
+
+**Example - Set value**:
 
 ```json
 {
@@ -169,24 +395,49 @@ Set a value in the store.
   "namespace": "UIEngine",
   "parameterMap": {
     "path": {
-      "param1": {
-        "type": "VALUE",
-        "value": "Page.counter",
-        "order": 1
-      }
+      "p1": { "type": "VALUE", "value": "Page.counter", "order": 1 }
     },
     "value": {
-      "param2": {
-        "type": "EXPRESSION",
-        "expression": "Page.counter + 1",
-        "order": 1
-      }
+      "p2": { "type": "VALUE", "value": 0, "order": 1 }
     }
   }
 }
 ```
 
-#### GetStoreData
+**Example - Increment**:
+
+```json
+{
+  "name": "SetStore",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "path": {
+      "p1": { "type": "VALUE", "value": "Page.counter", "order": 1 }
+    },
+    "value": {
+      "p2": { "type": "EXPRESSION", "expression": "Page.counter + 1", "order": 1 }
+    }
+  }
+}
+```
+
+**Example - Delete key**:
+
+```json
+{
+  "name": "SetStore",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "path": { "p1": { "type": "VALUE", "value": "Page.temporaryData" } },
+    "value": { "p2": { "type": "VALUE", "value": null } },
+    "deleteKey": { "p3": { "type": "VALUE", "value": true } }
+  }
+}
+```
+
+---
+
+### GetStoreData
 
 Get a value from the store.
 
@@ -195,264 +446,491 @@ Get a value from the store.
 
 **Parameters**:
 
-- `path` (string): Store path
-- `defaultValue` (any, optional): Default value if not found
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `path` | string | Yes | - | Store path to retrieve |
 
-### Authentication Functions
+**Events**: `output` with `data` (the retrieved value)
 
-#### Login
+**Example**:
 
-Login a user.
+```json
+{
+  "name": "GetStoreData",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "path": {
+      "p1": { "type": "VALUE", "value": "Store.user.name", "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+## Authentication Functions
+
+### Login
+
+Authenticate a user.
 
 **Namespace**: `UIEngine`  
 **Name**: `Login`
 
 **Parameters**:
 
-- `username` (string): Username
-- `password` (string): Password
-- `storePath` (string, optional): Store path to save auth data
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `userName` | string | Yes | - | Username or email |
+| `password` | string | No | `""` | Password |
+| `userId` | any | No | `null` | User ID for alternative auth |
+| `otp` | string | No | `""` | One-time password |
+| `pin` | string | No | `""` | PIN code |
+| `identifierType` | string | No | `""` | Type of identifier |
+| `rememberMe` | boolean | No | `false` | Remember login |
+| `cookie` | boolean | No | `false` | Use cookie-based auth |
 
-#### Logout
+**Events**:
+- `output`: Success with `data` (auth response)
+- `error`: Failure with `data`, `headers`, `status`
 
-Logout current user.
+**Side Effects**:
+- Sets `Store.auth` with authentication data
+- Sets `LocalStore.AuthToken` with access token
+- Sets `LocalStore.AuthTokenExpiry` with expiry time
+- Clears page state
+
+**Example**:
+
+```json
+{
+  "name": "Login",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "userName": {
+      "p1": { "type": "EXPRESSION", "expression": "Page.email", "order": 1 }
+    },
+    "password": {
+      "p2": { "type": "EXPRESSION", "expression": "Page.password", "order": 1 }
+    },
+    "rememberMe": {
+      "p3": { "type": "EXPRESSION", "expression": "Page.rememberMe", "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+### Logout
+
+Log out the current user.
 
 **Namespace**: `UIEngine`  
 **Name**: `Logout`
 
-**Parameters**: None
+**Parameters**:
 
-### UI Functions
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `ssoLogout` | boolean | No | `false` | Also logout from SSO provider |
 
-#### Message
+**Events**:
+- `output`: Success
+- `error`: Failure with `data`, `headers`, `status`
 
-Show a message to the user.
+**Side Effects**:
+- Clears `Store.auth`
+- Clears `LocalStore.AuthToken`
+- Clears page definitions and data
+- Calls `/api/security/revoke`
+
+**Example**:
+
+```json
+{
+  "name": "Logout",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "ssoLogout": {
+      "p1": { "type": "VALUE", "value": true, "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+## UI Functions
+
+### Message
+
+Show a message notification to the user.
 
 **Namespace**: `UIEngine`  
 **Name**: `Message`
 
 **Parameters**:
 
-- `message` (string): Message text
-- `type` (string): Message type (SUCCESS, ERROR, WARNING, INFO)
-- `duration` (number, optional): Display duration in milliseconds
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `msg` | any | Yes | - | Message content (string or object) |
+| `type` | string | No | `"ERROR"` | Message type: `ERROR`, `WARNING`, `INFO`, `SUCCESS` |
+| `isGlobalScope` | boolean | No | `true` | Show globally or page-scoped |
+| `pageName` | string | No | `"_global"` | Page context for message |
 
-**Example**:
+**Events**: `output`
+
+**Example - Success message**:
 
 ```json
 {
   "name": "Message",
   "namespace": "UIEngine",
   "parameterMap": {
-    "message": {
-      "param1": {
-        "type": "VALUE",
-        "value": "Operation successful",
-        "order": 1
-      }
+    "msg": {
+      "p1": { "type": "VALUE", "value": "Operation completed successfully!", "order": 1 }
     },
     "type": {
-      "param2": {
-        "type": "VALUE",
-        "value": "SUCCESS",
-        "order": 1
-      }
+      "p2": { "type": "VALUE", "value": "SUCCESS", "order": 1 }
     }
   }
 }
 ```
 
-#### ScrollTo
+**Example - Error message**:
 
-Scroll to an element.
+```json
+{
+  "name": "Message",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "msg": {
+      "p1": { "type": "EXPRESSION", "expression": "Steps.saveData.error.data.message", "order": 1 }
+    },
+    "type": {
+      "p2": { "type": "VALUE", "value": "ERROR", "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+### ScrollTo
+
+Scroll the window to a position.
 
 **Namespace**: `UIEngine`  
 **Name**: `ScrollTo`
 
 **Parameters**:
 
-- `elementId` (string): Element ID to scroll to
-- `block` (string, optional): Scroll block position
-- `inline` (string, optional): Scroll inline position
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `vertical` | string | No | `"top"` | Vertical position: `top`, `bottom`, or pixel value |
+| `horizontal` | string | No | `"left"` | Horizontal position: `left`, `right`, or pixel value |
+| `behaviour` | string | No | `"Instant"` | Scroll behavior: `Instant` or `Smooth` |
 
-#### ScrollToGrid
+**Events**: `output`
 
-Scroll to a grid component.
+**Example**:
+
+```json
+{
+  "name": "ScrollTo",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "vertical": { "p1": { "type": "VALUE", "value": "top", "order": 1 } },
+    "behaviour": { "p2": { "type": "VALUE", "value": "Smooth", "order": 1 } }
+  }
+}
+```
+
+---
+
+### ScrollToGrid
+
+Scroll to a specific component element.
 
 **Namespace**: `UIEngine`  
 **Name**: `ScrollToGrid`
 
 **Parameters**:
 
-- `componentKey` (string): Component key to scroll to
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `gridkey` | string | Yes | - | Component key (element ID) |
+| `behaviour` | string | No | `"Instant"` | Scroll behavior: `Instant` or `Smooth` |
 
-#### Refresh
+**Events**: `output`
 
-Refresh the page.
+**Example**:
 
-**Namespace**: `UIEngine`  
-**Name**: `Refresh`
+```json
+{
+  "name": "ScrollToGrid",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "gridkey": {
+      "p1": { "type": "VALUE", "value": "contact-section", "order": 1 }
+    },
+    "behaviour": {
+      "p2": { "type": "VALUE", "value": "Smooth", "order": 1 }
+    }
+  }
+}
+```
 
-**Parameters**: None
+---
 
-### Utility Functions
+## Utility Functions
 
-#### CopyTextToClipboard
+### CopyTextToClipboard
 
-Copy text to clipboard.
+Copy text to the system clipboard.
 
 **Namespace**: `UIEngine`  
 **Name**: `CopyTextToClipboard`
 
 **Parameters**:
 
-- `text` (string): Text to copy
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `text` | string | Yes | - | Text to copy |
 
-#### EncodeURIComponent
+**Events**:
+- `output`: Success
+- `error`: Failure with `data`
 
-Encode URI component.
+**Example**:
+
+```json
+{
+  "name": "CopyTextToClipboard",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "text": {
+      "p1": { "type": "EXPRESSION", "expression": "Page.shareLink", "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+### EncodeURIComponent
+
+Encode a string for use in a URL.
 
 **Namespace**: `UIEngine`  
 **Name**: `EncodeURIComponent`
 
 **Parameters**:
 
-- `text` (string): Text to encode
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `uriComponent` | string | Yes | - | String to encode |
 
-#### DecodeURIComponent
+**Events**: `output` with `encodedValue`
 
-Decode URI component.
+**Example**:
+
+```json
+{
+  "name": "EncodeURIComponent",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "uriComponent": {
+      "p1": { "type": "EXPRESSION", "expression": "Page.searchQuery", "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+### DecodeURIComponent
+
+Decode a URL-encoded string.
 
 **Namespace**: `UIEngine`  
 **Name**: `DecodeURIComponent`
 
 **Parameters**:
 
-- `text` (string): Text to decode
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `uriComponent` | string | Yes | - | URL-encoded string to decode |
 
-#### ShortUniqueId
+**Events**: `output` with `decodedValue`
 
-Generate a short unique ID.
+**Example**:
+
+```json
+{
+  "name": "DecodeURIComponent",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "uriComponent": {
+      "p1": { "type": "EXPRESSION", "expression": "Url.queryParameters.search", "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+### ShortUniqueId
+
+Generate a short unique identifier.
 
 **Namespace**: `UIEngine`  
 **Name**: `ShortUniqueId`
 
 **Parameters**: None
 
-**Returns**: Short unique ID string
+**Events**: `output` with `id` (unique string)
 
-#### ExecuteJSFunction
+**Example**:
 
-Execute a JavaScript function.
+```json
+{
+  "name": "ShortUniqueId",
+  "namespace": "UIEngine",
+  "parameterMap": {}
+}
+```
+
+**Using the result**:
+
+```json
+{
+  "steps": {
+    "generateId": {
+      "name": "ShortUniqueId",
+      "namespace": "UIEngine",
+      "parameterMap": {}
+    },
+    "setId": {
+      "name": "SetStore",
+      "namespace": "UIEngine",
+      "parameterMap": {
+        "path": { "p1": { "type": "VALUE", "value": "Page.newItemId" } },
+        "value": { "p2": { "type": "EXPRESSION", "expression": "Steps.generateId.output.id" } }
+      },
+      "dependentStatements": { "Steps.generateId.output": true }
+    }
+  }
+}
+```
+
+---
+
+### ExecuteJSFunction
+
+Execute a JavaScript function by name.
 
 **Namespace**: `UIEngine`  
 **Name**: `ExecuteJSFunction`
 
 **Parameters**:
 
-- `functionName` (string): Function name
-- `args` (array, optional): Function arguments
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `name` | string | Yes | - | Name of global JavaScript function |
+| `params` | array | No | `[]` | Array of parameters (variadic) |
 
-## Function Execution
+**Events**:
+- `output`: Success with `result`
+- `error`: Failure with `data`
 
-Functions are executed via KIRun runtime:
-
-```typescript
-const runtime = new KIRuntime(
-    functionDefinition,
-    UI_FUN_REPO,
-    UI_SCHEMA_REPO
-);
-
-const result = await runtime.execute(
-    new FunctionExecutionParameters()
-        .setArguments(args)
-        .setContext(...)
-);
-```
-
-## Function Signatures
-
-Functions follow KIRun function signature format:
-
-```typescript
-interface FunctionSignature {
-  name: string;
-  namespace: string;
-  parameters: Map<string, Schema>;
-  returnType: Schema;
-}
-```
-
-## Using Functions in Events
-
-Functions are used in event function steps:
+**Example**:
 
 ```json
 {
-  "name": "myEvent",
-  "steps": {
-    "step1": {
-      "name": "SetStore",
-      "namespace": "UIEngine",
-      "parameterMap": {
-        "path": { ... },
-        "value": { ... }
-      }
+  "name": "ExecuteJSFunction",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "name": {
+      "p1": { "type": "VALUE", "value": "customValidation", "order": 1 }
     },
-    "step2": {
-      "name": "Navigate",
-      "namespace": "UIEngine",
-      "parameterMap": {
-        "pageName": { ... }
-      }
+    "params": {
+      "p2": { "type": "EXPRESSION", "expression": "Page.formData", "order": 1 }
     }
   }
 }
 ```
 
-## Function Chaining
+---
+
+## Function Chaining Pattern
 
 Multiple functions can be chained in a single event:
 
 ```json
 {
-  "name": "submitForm",
+  "name": "submitAndNavigate",
   "steps": {
-    "validate": {
-      "name": "GetStoreData",
-      "namespace": "UIEngine",
-      "parameterMap": { ... }
-    },
-    "send": {
+    "submitData": {
       "name": "SendData",
       "namespace": "UIEngine",
-      "parameterMap": { ... }
+      "parameterMap": {
+        "url": { "p1": { "type": "VALUE", "value": "/api/submit" } },
+        "method": { "p2": { "type": "VALUE", "value": "POST" } },
+        "payload": { "p3": { "type": "EXPRESSION", "expression": "Page.formData" } }
+      }
+    },
+    "showSuccess": {
+      "name": "Message",
+      "namespace": "UIEngine",
+      "parameterMap": {
+        "msg": { "p1": { "type": "VALUE", "value": "Submitted successfully!" } },
+        "type": { "p2": { "type": "VALUE", "value": "SUCCESS" } }
+      },
+      "dependentStatements": { "Steps.submitData.output": true }
     },
     "navigate": {
       "name": "Navigate",
       "namespace": "UIEngine",
-      "parameterMap": { ... }
+      "parameterMap": {
+        "linkPath": { "p1": { "type": "VALUE", "value": "/dashboard" } }
+      },
+      "dependentStatements": { "Steps.showSuccess.output": true }
     }
   }
 }
 ```
 
-## Error Handling
+## Error Handling Pattern
 
-Functions can throw errors that are caught by the event system:
-
-```typescript
-try {
-    await runEvent(eventFunction, ...);
-} catch (error) {
-    // Error handling
-    addMessage(MESSAGE_TYPE.ERROR, error.message, false);
+```json
+{
+  "name": "handleErrors",
+  "steps": {
+    "fetchData": {
+      "name": "FetchData",
+      "namespace": "UIEngine",
+      "parameterMap": {
+        "url": { "p1": { "type": "VALUE", "value": "/api/data" } }
+      }
+    },
+    "handleError": {
+      "name": "Message",
+      "namespace": "UIEngine",
+      "parameterMap": {
+        "msg": { "p1": { "type": "EXPRESSION", "expression": "Steps.fetchData.error.data.message" } },
+        "type": { "p2": { "type": "VALUE", "value": "ERROR" } }
+      },
+      "dependentStatements": { "Steps.fetchData.error": true }
+    }
+  }
 }
 ```
 
 ## Related Documents
 
-- [07-event-system.md](07-event-system.md) - Event system
-- [06-state-management.md](06-state-management.md) - Store system
+- [07-event-system.md](07-event-system.md) - Event system overview
+- [06-state-management.md](06-state-management.md) - Store prefixes
+- [21-kirun-system-functions.md](21-kirun-system-functions.md) - KIRun System functions
 - [14-api-reference.md](14-api-reference.md) - API endpoints

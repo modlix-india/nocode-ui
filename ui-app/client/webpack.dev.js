@@ -67,7 +67,7 @@ module.exports = {
     proxy: [
       {
         context: ["**/api/**", "/sso/**"],
-        target: "https://apps.dev.modlix.com/",
+        target: "http://localhost:8080/",
         changeOrigin: true,
         secure: false
       }
