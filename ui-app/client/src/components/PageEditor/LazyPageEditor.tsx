@@ -1,4 +1,5 @@
 import { deepEqual, duplicate } from '@fincity/kirun-js';
+import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ComponentDefinitions from '..';
 import { usedComponents } from '../../App/usedComponents';
@@ -153,14 +154,120 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		usedComponents.using('KIRun Editor');
 	}, []);
 
+	// Utility function to recursively extract URLs matching the pattern
+	const extractAiGenUrls = useCallback((obj: any, urls: Set<string>): void => {
+		if (obj === null || obj === undefined) return;
+
+		if (typeof obj === 'string') {
+			// Match pattern: /api/files/static/file/SYSTEM/aiGen/<clientCode>/<fileName>
+			const pattern = /\/api\/files\/static\/file\/SYSTEM\/aiGen\/[^/]+\/[^/]+/g;
+			const matches = obj.match(pattern);
+			if (matches) {
+				matches.forEach(url => urls.add(url));
+			}
+			return;
+		}
+
+		if (Array.isArray(obj)) {
+			obj.forEach(item => extractAiGenUrls(item, urls));
+			return;
+		}
+
+		if (typeof obj === 'object') {
+			Object.values(obj).forEach(value => extractAiGenUrls(value, urls));
+		}
+	}, []);
+
+	// Function to replace URLs in the page definition
+	const replaceUrls = useCallback((obj: any, urlMap: Map<string, string>): any => {
+		if (obj === null || obj === undefined) return obj;
+
+		if (typeof obj === 'string') {
+			if (urlMap.has(obj)) {
+				return urlMap.get(obj);
+			}
+			// Handle URLs that might be part of a larger string
+			let result = obj;
+			urlMap.forEach((newUrl, oldUrl) => {
+				result = result.replace(oldUrl, newUrl);
+			});
+			return result;
+		}
+
+		if (Array.isArray(obj)) {
+			return obj.map(item => replaceUrls(item, urlMap));
+		}
+
+		if (typeof obj === 'object') {
+			const result: any = {};
+			Object.keys(obj).forEach(key => {
+				result[key] = replaceUrls(obj[key], urlMap);
+			});
+			return result;
+		}
+
+		return obj;
+	}, []);
+
 	// Function to save the page
-	const saveFunction = useCallback(() => {
+	const saveFunction = useCallback(async () => {
 		if (!onSave || !pageDefinition.eventFunctions?.[onSave]) return;
 
 		let def = getDataFromPath(defPath, locationHistory, pageExtractor) as PageDefinition;
 		if (!def) return;
 
 		def = removeUnreferenecedComponentDefinitions(def);
+
+		// Extract AI-generated image URLs
+		const aiGenUrls = new Set<string>();
+		extractAiGenUrls(def, aiGenUrls);
+
+		// If there are AI-generated images, copy them to the client's page folder
+		if (aiGenUrls.size > 0) {
+			try {
+				const currentPageDef = !defPath
+					? undefined
+					: (getDataFromPath(
+							`${defPath}`,
+							locationHistory,
+							pageExtractor,
+						) as PageDefinition);
+				const pageName = currentPageDef?.name || context.pageName;
+				const response = await axios.post<Array<{ url: string; name: string }>>(
+					'/api/files/static/copyToClientPage',
+					Array.from(aiGenUrls),
+					{
+						params: {
+							pageName: pageName,
+						},
+						headers: {
+							'Content-Type': 'application/json',
+							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+						},
+					},
+				);
+
+				// Create a map of old URLs to new URLs
+				const urlMap = new Map<string, string>();
+				aiGenUrls.forEach(oldUrl => {
+					// Extract fileName from old URL
+					const fileName = oldUrl.substring(oldUrl.lastIndexOf('/') + 1);
+					// Find the corresponding new file detail
+					const newFile = response.data.find(f => f.name === fileName);
+					if (newFile && newFile.url) {
+						urlMap.set(oldUrl, newFile.url);
+					}
+				});
+
+				// Replace URLs in the page definition
+				if (urlMap.size > 0) {
+					def = replaceUrls(def, urlMap) as PageDefinition;
+				}
+			} catch (error) {
+				console.error('Error copying AI-generated files:', error);
+				// Continue with save even if copy fails
+			}
+		}
 
 		setData(defPath!, def, pageExtractor.getPageName());
 
@@ -172,7 +279,16 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				locationHistory,
 				pageDefinition,
 			))();
-	}, [onSave]);
+	}, [
+		onSave,
+		extractAiGenUrls,
+		replaceUrls,
+		context.pageName,
+		defPath,
+		locationHistory,
+		pageExtractor,
+		pageDefinition,
+	]);
 
 	// Function to publish the page
 	const publishFunction = useCallback(() => {
@@ -950,12 +1066,18 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					pageDefinition={editPageDefinition}
 					appCode={editPageDefinition.appCode ?? ''}
 					desktopIframe={desktopRef}
+					tabletIframe={tabletRef}
+					mobileIframe={mobileRef}
+					appPath={appPath}
+					themePath={themePath}
+					pageExtractor={pageExtractor}
+					locationHistory={locationHistory}
 					onApply={aiResult => {
 						if (defPath && aiResult) {
 							// Merge AI result with existing page, preserving metadata
 							const mergedPage: PageDefinition = {
-								...editPageDefinition,  // Keep all existing metadata (id, clientCode, version, etc.)
-								...aiResult,            // Apply AI modifications
+								...editPageDefinition, // Keep all existing metadata (id, clientCode, version, etc.)
+								...aiResult, // Apply AI modifications
 								// Ensure critical fields from original are preserved
 								id: editPageDefinition.id,
 								clientCode: editPageDefinition.clientCode,

@@ -226,15 +226,41 @@ For a calculator with 10 number buttons, create 10 separate event functions:
 }
 ```
 
-### 7. Component Type Names
+### 7. Component Type Names - ONLY USE THESE
 
-Use exact component type names:
-- `Grid` (not GridLayout)
-- `Button` (not Btn)
-- `Text` (not Label, not Paragraph)
-- `TextBox` (not Input, not TextField)
-- `Icon` (not Image for icons)
-- `Image` (for actual images)
+**VALID COMPONENT TYPES (USE ONLY THESE):**
+- `Grid` - Container/layout (for ANY container, section, card, box, div, wrapper, header, footer, nav)
+- `Text` - Text display (for ANY text, label, heading, paragraph, span, h1-h6)
+- `Button` - Clickable button
+- `TextBox` - Text input (for ANY input, textfield, textarea)
+- `Checkbox` - Boolean input
+- `Dropdown` - Selection dropdown
+- `RadioButton` - Single selection
+- `Image` - Image display
+- `Icon` - Icon display (Font Awesome, Material icons)
+- `Link` - Navigation link
+
+**INVALID TYPES - NEVER USE THESE:**
+- ❌ `Box` → Use `Grid`
+- ❌ `Container` → Use `Grid`
+- ❌ `Div` → Use `Grid`
+- ❌ `Section` → Use `Grid`
+- ❌ `Card` → Use `Grid`
+- ❌ `Flex` → Use `Grid`
+- ❌ `Row` → Use `Grid`
+- ❌ `Column` → Use `Grid`
+- ❌ `Wrapper` → Use `Grid`
+- ❌ `Header` → Use `Grid`
+- ❌ `Footer` → Use `Grid`
+- ❌ `Nav` → Use `Grid`
+- ❌ `Span` → Use `Text`
+- ❌ `Paragraph` → Use `Text`
+- ❌ `Label` → Use `Text`
+- ❌ `Heading` → Use `Text`
+- ❌ `H1`/`H2`/`H3`/`H4`/`H5`/`H6` → Use `Text`
+- ❌ `Input` → Use `TextBox`
+- ❌ `TextField` → Use `TextBox`
+- ❌ `Anchor` → Use `Link` or `Button`
 
 ### 8. Style Properties Structure
 

@@ -6994,3 +6994,259 @@ input._peInput[type='number'] {
 .comp.compPageEditor._light ._aiProgress {
 	background: rgba(0, 0, 0, 0.05);
 }
+
+/* AI Dialog Styles for CodeEditor */
+.comp.compPageEditor ._aiDialogOverlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(4px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10001;
+	animation: _aiFadeIn 0.2s ease-out;
+}
+
+.comp.compPageEditor ._aiDialog {
+	background: var(--pageEditorBackground, #1e1e2e);
+	border-radius: 12px;
+	width: 90%;
+	max-width: 600px;
+	max-height: 80vh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+	border: 1px solid var(--pageEditorBorder, #45475a);
+}
+
+.comp.compPageEditor ._aiDialogHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--pageEditorBorder, #45475a);
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.comp.compPageEditor ._aiDialogTitle {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--pageEditorText, #cdd6f4);
+}
+
+.comp.compPageEditor ._aiDialogTitle i {
+	color: #fab387;
+}
+
+.comp.compPageEditor ._aiDialogContent {
+	padding: 20px;
+	overflow-y: auto;
+	flex: 1;
+}
+
+.comp.compPageEditor ._aiLoading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 40px;
+	color: var(--pageEditorTextMuted, #6c7086);
+	font-size: 14px;
+}
+
+.comp.compPageEditor ._aiLoading i {
+	font-size: 20px;
+	color: #89b4fa;
+}
+
+.comp.compPageEditor ._aiExplanation {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.comp.compPageEditor ._aiSummary {
+	padding: 12px 16px;
+	background: rgba(137, 180, 250, 0.1);
+	border-radius: 8px;
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.comp.compPageEditor ._aiSummary strong {
+	color: #89b4fa;
+}
+
+.comp.compPageEditor ._aiFullExplanation {
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	line-height: 1.6;
+	white-space: pre-wrap;
+}
+
+.comp.compPageEditor ._aiSteps {
+	margin-top: 8px;
+}
+
+.comp.compPageEditor ._aiSteps strong {
+	color: #89b4fa;
+	font-size: 14px;
+}
+
+.comp.compPageEditor ._aiSteps ul {
+	margin: 8px 0 0 0;
+	padding-left: 20px;
+	list-style-type: disc;
+}
+
+.comp.compPageEditor ._aiSteps li {
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 13px;
+	line-height: 1.6;
+	margin-bottom: 8px;
+}
+
+.comp.compPageEditor ._aiSteps li strong {
+	color: #a6e3a1;
+}
+
+.comp.compPageEditor ._aiModifyForm {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.comp.compPageEditor ._aiModifyForm label {
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.comp.compPageEditor ._aiModifyInput {
+	width: 100%;
+	padding: 12px 16px;
+	background: rgba(0, 0, 0, 0.3);
+	border: 1px solid var(--pageEditorBorder, #45475a);
+	border-radius: 8px;
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	font-family: inherit;
+	resize: vertical;
+	min-height: 100px;
+	transition: border-color 0.2s ease;
+}
+
+.comp.compPageEditor ._aiInputWrapper ._aiModifyInput {
+	border: none;
+	border-radius: 9px;
+	background: var(--pageEditorBackground, #1e1e2e);
+	padding: 14px 18px;
+}
+
+.comp.compPageEditor ._aiModifyInput:focus {
+	outline: none;
+	border-color: #89b4fa;
+}
+
+.comp.compPageEditor ._aiInputWrapper ._aiModifyInput:focus {
+	border: none;
+	outline: none;
+}
+
+.comp.compPageEditor ._aiModifyInput::placeholder {
+	color: var(--pageEditorTextMuted, #6c7086);
+}
+
+.comp.compPageEditor ._aiModifyActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 16px;
+}
+
+.comp.compPageEditor ._aiModifyButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 20px;
+	background: linear-gradient(135deg, #89b4fa, #b4befe);
+	border: none;
+	border-radius: 8px;
+	color: #1e1e2e;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.comp.compPageEditor ._aiModifyButton:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(137, 180, 250, 0.3);
+}
+
+.comp.compPageEditor ._aiModifyButton:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.comp.compPageEditor ._aiModifyCancelButton {
+	padding: 10px 20px;
+	background: transparent;
+	border: 1px solid var(--pageEditorBorder, #45475a);
+	border-radius: 8px;
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.comp.compPageEditor ._aiModifyCancelButton:hover:not(:disabled) {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: var(--pageEditorTextMuted, #6c7086);
+}
+
+.comp.compPageEditor ._iconMenu._loading {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* Light theme overrides for AI Dialog */
+.comp.compPageEditor._light ._aiDialog {
+	background: #ffffff;
+}
+
+.comp.compPageEditor._light ._aiDialogHeader {
+	background: #f5f5f5;
+}
+
+.comp.compPageEditor._light ._aiDialogTitle,
+.comp.compPageEditor._light ._aiModifyForm label,
+.comp.compPageEditor._light ._aiFullExplanation,
+.comp.compPageEditor._light ._aiSteps li {
+	color: #4c4f69;
+}
+
+.comp.compPageEditor._light ._aiModifyInput {
+	background: #ffffff;
+	color: #4c4f69;
+}
+
+.comp.compPageEditor._light ._aiInputWrapper ._aiModifyInput {
+	background: #ffffff;
+	color: #4c4f69;
+}
+
+.comp.compPageEditor._light ._aiSummary {
+	background: rgba(137, 180, 250, 0.15);
+}
+
+.comp.compPageEditor._light ._aiModifyCancelButton {
+	color: #4c4f69;
+}

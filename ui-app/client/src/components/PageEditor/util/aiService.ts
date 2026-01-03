@@ -38,12 +38,43 @@ export interface AIRequestOptions {
   mode: 'modify' | 'enhance';
 }
 
+/** Screenshots from different device viewports */
+export interface DeviceScreenshots {
+  desktop?: string;  // Base64 encoded desktop viewport screenshot
+  tablet?: string;   // Base64 encoded tablet viewport screenshot
+  mobile?: string;   // Base64 encoded mobile viewport screenshot
+}
+
+/** File data for AI requests */
+export interface AIRequestFile {
+  name: string;
+  type: string;
+  content: string;  // Base64 encoded file content
+}
+
+/** Theme information for AI requests */
+export interface AIRequestTheme {
+  themeName: string;
+}
+
+/** Font pack information */
+export interface AIRequestFontPack {
+  name: string;
+  code: string;  // HTML link tag code for font loading
+}
+
 /** Request payload for AI service */
 export interface AIRequest {
   instruction: string;
   page: PageDefinition;
   selectedComponentKey?: string;
-  componentScreenshot?: string;  // Base64 encoded image
+  componentScreenshot?: string;  // Base64 encoded image of selected component
+  pageScreenshot?: string;       // Base64 encoded image of full page viewport (deprecated, use deviceScreenshots)
+  deviceScreenshots?: DeviceScreenshots;  // Screenshots from all available device viewports
+  file?: AIRequestFile;  // Uploaded file (non-image) as base64
+  theme?: AIRequestTheme;  // Theme information
+  iconPacks?: string[];  // List of available icon pack names
+  fontPacks?: AIRequestFontPack[];  // List of available font packs with names and loading codes
   options: AIRequestOptions;
 }
 
@@ -114,6 +145,17 @@ export async function streamAIRequest(
   }
   
   try {
+    // Debug: log the request being sent
+    console.log('[AI Service] Sending request:', {
+      instruction: request.instruction,
+      selectedComponentKey: request.selectedComponentKey,
+      hasComponentScreenshot: !!request.componentScreenshot,
+      componentScreenshotLength: request.componentScreenshot?.length || 0,
+      hasPageScreenshot: !!request.pageScreenshot,
+      pageScreenshotLength: request.pageScreenshot?.length || 0,
+      options: request.options,
+    });
+
     const response = await fetch('/api/ai/agent/page', {
       method: 'POST',
       headers: {
@@ -274,6 +316,126 @@ export async function sendAIRequest(
   }
   
   const response = await fetch('/api/ai/agent/page/sync', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+      'appCode': appCode,
+    },
+    body: JSON.stringify(request),
+    signal: abortSignal,
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    let errorMessage = `AI service error: ${response.status}`;
+    try {
+      const errorJson = JSON.parse(errorText);
+      errorMessage = errorJson.detail || errorMessage;
+    } catch {
+      if (errorText) errorMessage = errorText;
+    }
+    throw new Error(errorMessage);
+  }
+  
+  return response.json();
+}
+
+// ============== Function AI APIs ==============
+
+/** Request payload for function explanation */
+export interface FunctionExplainRequest {
+  functionDefinition: any;  // KIRun function definition
+  functionName: string;
+}
+
+/** Response from function explanation */
+export interface FunctionExplainResponse {
+  success: boolean;
+  explanation: string;
+  summary: string;
+  steps: Array<{
+    name: string;
+    description: string;
+  }>;
+}
+
+/** Request payload for function modification */
+export interface FunctionModifyRequest {
+  instruction: string;
+  functionDefinition: any;
+  functionName: string;
+  pageContext?: {
+    componentDefinition?: Record<string, any>;
+    storePaths?: string[];
+  };
+}
+
+/** Response from function modification */
+export interface FunctionModifyResponse {
+  success: boolean;
+  functionDefinition: any;
+  reasoning: string;
+  changes: string[];
+}
+
+/**
+ * Explain a KIRun function using AI.
+ * Returns a human-readable explanation of what the function does.
+ */
+export async function explainFunction(
+  request: FunctionExplainRequest,
+  appCode: string,
+  abortSignal?: AbortSignal
+): Promise<FunctionExplainResponse> {
+  const token = getAuthToken();
+  
+  if (!token) {
+    throw new Error('Not authenticated. Please log in.');
+  }
+  
+  const response = await fetch('/api/ai/function/explain', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+      'appCode': appCode,
+    },
+    body: JSON.stringify(request),
+    signal: abortSignal,
+  });
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    let errorMessage = `AI service error: ${response.status}`;
+    try {
+      const errorJson = JSON.parse(errorText);
+      errorMessage = errorJson.detail || errorMessage;
+    } catch {
+      if (errorText) errorMessage = errorText;
+    }
+    throw new Error(errorMessage);
+  }
+  
+  return response.json();
+}
+
+/**
+ * Modify a KIRun function using AI.
+ * Takes a natural language instruction and returns a modified function.
+ */
+export async function modifyFunction(
+  request: FunctionModifyRequest,
+  appCode: string,
+  abortSignal?: AbortSignal
+): Promise<FunctionModifyResponse> {
+  const token = getAuthToken();
+  
+  if (!token) {
+    throw new Error('Not authenticated. Please log in.');
+  }
+  
+  const response = await fetch('/api/ai/function/modify', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

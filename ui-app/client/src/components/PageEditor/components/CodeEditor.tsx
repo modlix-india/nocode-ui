@@ -34,6 +34,7 @@ import {
 import { shortUUID } from '../../../util/shortUUID';
 import KIRunEditor from '../../KIRunEditor/KIRunEditor';
 import PageDefintionFunctionsRepository from '../../util/PageDefinitionFunctionsRepository';
+import { explainFunction, modifyFunction } from '../util/aiService';
 
 interface CodeEditorProps {
 	showCodeEditor: string | undefined;
@@ -87,6 +88,17 @@ export default function CodeEditor({
 	const [editPage, setEditPage] = useState<PageDefinition>();
 	const [primedToClose, setPrimedToClose] = useState(false);
 	const [changed, setChanged] = useState(Date.now());
+	
+	// AI functionality state
+	const [aiLoading, setAiLoading] = useState(false);
+	const [showAiDialog, setShowAiDialog] = useState<'explain' | 'modify' | null>(null);
+	const [aiExplanation, setAiExplanation] = useState<{
+		summary: string;
+		explanation: string;
+		steps: Array<{ name: string; description: string }>;
+	} | null>(null);
+	const [aiModifyPrompt, setAiModifyPrompt] = useState('');
+	const [aiError, setAiError] = useState<string | null>(null);
 
 	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
 	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
@@ -194,6 +206,84 @@ export default function CodeEditor({
 		[defPath, locationHistory, pageExtractor],
 	);
 
+	// AI Explain function handler
+	const handleExplainFunction = useCallback(async () => {
+		if (!selectedFunction || !eventFunctions[selectedFunction]) return;
+		
+		setAiLoading(true);
+		setAiError(null);
+		setShowAiDialog('explain');
+		setAiExplanation(null);
+		
+		try {
+			const result = await explainFunction(
+				{
+					functionDefinition: eventFunctions[selectedFunction],
+					functionName: selectedFunction,
+				},
+				editPage?.appCode ?? 'appbuilder',
+			);
+			
+			if (result.success) {
+				setAiExplanation({
+					summary: result.summary,
+					explanation: result.explanation,
+					steps: result.steps,
+				});
+			} else {
+				setAiError('Failed to explain function');
+			}
+		} catch (error: any) {
+			setAiError(error.message || 'Failed to explain function');
+		} finally {
+			setAiLoading(false);
+		}
+	}, [selectedFunction, eventFunctions, editPage?.appCode]);
+
+	// AI Modify function handler
+	const handleModifyFunction = useCallback(async () => {
+		if (!selectedFunction || !eventFunctions[selectedFunction] || !aiModifyPrompt.trim()) return;
+		
+		setAiLoading(true);
+		setAiError(null);
+		
+		try {
+			const result = await modifyFunction(
+				{
+					instruction: aiModifyPrompt,
+					functionDefinition: eventFunctions[selectedFunction],
+					functionName: selectedFunction,
+					pageContext: {
+						componentDefinition: editPage?.componentDefinition,
+						storePaths: Array.from(storePaths),
+					},
+				},
+				editPage?.appCode ?? 'appbuilder',
+			);
+			
+			if (result.success && result.functionDefinition) {
+				// Apply the modified function
+				changeEventFunction(selectedFunction, result.functionDefinition);
+				setShowAiDialog(null);
+				setAiModifyPrompt('');
+			} else {
+				setAiError('Failed to modify function');
+			}
+		} catch (error: any) {
+			setAiError(error.message || 'Failed to modify function');
+		} finally {
+			setAiLoading(false);
+		}
+	}, [selectedFunction, eventFunctions, aiModifyPrompt, editPage, storePaths, changeEventFunction]);
+
+	// Close AI dialog
+	const closeAiDialog = useCallback(() => {
+		setShowAiDialog(null);
+		setAiExplanation(null);
+		setAiModifyPrompt('');
+		setAiError(null);
+	}, []);
+
 	if (isNullValue(showCodeEditor))
 		return (
 			<div className="_codeEditor">
@@ -270,6 +360,31 @@ export default function CodeEditor({
 							</div>
 						)}
 						<div className="_iconMenuSeperator" />
+						{/* AI functionality buttons */}
+						{!selectedFunction ? (
+							<></>
+						) : (
+							<>
+								<div
+									title="AI: Explain this function"
+									className={`_iconMenu ${aiLoading ? '_loading' : ''}`}
+									onClick={handleExplainFunction}
+								>
+									<i className="fa-solid fa-lightbulb" />
+								</div>
+								<div
+									title="AI: Modify this function"
+									className={`_iconMenu ${aiLoading ? '_loading' : ''}`}
+									onClick={() => {
+										setShowAiDialog('modify');
+										setAiError(null);
+									}}
+								>
+									<i className="fa-solid fa-wand-magic-sparkles" />
+								</div>
+								<div className="_iconMenuSeperator" />
+							</>
+						)}
 						{!selectedFunction ? (
 							<></>
 						) : (
@@ -537,6 +652,109 @@ export default function CodeEditor({
 					hideArguments={true}
 				/>
 			</div>
+			
+			{/* AI Dialog */}
+			{showAiDialog && (
+				<div className="_aiDialogOverlay" onClick={closeAiDialog}>
+					<div className="_aiDialog" onClick={e => e.stopPropagation()}>
+						<div className="_aiDialogHeader">
+							<div className="_aiDialogTitle">
+								<svg width="20" height="12" viewBox="0 0 136 83" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ marginRight: '8px' }}>
+									<path d="M76.0314 17.1742V7.37459L68.0056 0L59.9801 7.37459V17.1742C26.667 21.1066 0.384999 49.1784 0 83H0.0111617C5.5023 81.0767 10.9934 79.1525 16.4846 77.2283C19.3292 54.5598 37.2044 36.4823 59.9764 32.9995V60.7251L68.0093 55.1126L76.0237 60.7251V32.9995C98.7957 36.4823 116.674 54.5598 119.516 77.2283C125.006 79.1525 130.498 81.0767 135.989 83H136C135.615 49.1784 109.333 21.1066 76.0203 17.1742H76.0314Z" fill="#D97757"/>
+								</svg>
+								<i className={showAiDialog === 'explain' ? 'fa-solid fa-lightbulb' : 'fa-solid fa-wand-magic-sparkles'} />
+								{showAiDialog === 'explain' ? 'AI Explanation' : 'AI Modify Function'}
+							</div>
+							<div className="_iconMenu" onClick={closeAiDialog}>
+								<i className="fa-solid fa-close" />
+							</div>
+						</div>
+						
+						<div className="_aiDialogContent">
+							{aiError && (
+								<div className="_aiError">
+									<i className="fa-solid fa-exclamation-circle" />
+									{aiError}
+								</div>
+							)}
+							
+							{showAiDialog === 'explain' && (
+								<>
+									{aiLoading ? (
+										<div className="_aiLoading">
+											<i className="fa-solid fa-spinner fa-spin" />
+											Analyzing function...
+										</div>
+									) : aiExplanation ? (
+										<div className="_aiExplanation">
+											<div className="_aiSummary">
+												<strong>Summary:</strong> {aiExplanation.summary}
+											</div>
+											<div className="_aiFullExplanation">
+												{aiExplanation.explanation}
+											</div>
+											{aiExplanation.steps && aiExplanation.steps.length > 0 && (
+												<div className="_aiSteps">
+													<strong>Steps:</strong>
+													<ul>
+														{aiExplanation.steps.map((step, idx) => (
+															<li key={idx}>
+																<strong>{step.name}:</strong> {step.description}
+															</li>
+														))}
+													</ul>
+												</div>
+											)}
+										</div>
+									) : null}
+								</>
+							)}
+							
+							{showAiDialog === 'modify' && (
+								<div className="_aiModifyForm">
+									<label>Describe what you want to change:</label>
+									<div className="_aiInputWrapper">
+									<textarea
+										className="_aiModifyInput"
+										value={aiModifyPrompt}
+										onChange={e => setAiModifyPrompt(e.target.value)}
+										placeholder="e.g., Add error handling, Log the result to console, Add a condition to check if value is empty..."
+										rows={4}
+										disabled={aiLoading}
+									/>
+									</div>
+									<div className="_aiModifyActions">
+										<button
+											className="_aiModifyButton"
+											onClick={handleModifyFunction}
+											disabled={aiLoading || !aiModifyPrompt.trim()}
+										>
+											{aiLoading ? (
+												<>
+													<i className="fa-solid fa-spinner fa-spin" />
+													Modifying...
+												</>
+											) : (
+												<>
+													<i className="fa-solid fa-wand-magic-sparkles" />
+													Apply Changes
+												</>
+											)}
+										</button>
+										<button
+											className="_aiModifyCancelButton"
+											onClick={closeAiDialog}
+											disabled={aiLoading}
+										>
+											Cancel
+										</button>
+									</div>
+								</div>
+							)}
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

@@ -68,8 +68,14 @@ module.exports = {
       {
         context: ["**/api/**", "/sso/**"],
         target: "http://localhost:8080/",
-        changeOrigin: true,
-        secure: false
+        changeOrigin: false,
+        secure: false,
+        onProxyRes: (proxyRes, _req, res) => {
+          // Disable buffering for SSE responses to enable real-time streaming
+          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+            res.flushHeaders();
+          }
+        },
       }
     ]
   }
