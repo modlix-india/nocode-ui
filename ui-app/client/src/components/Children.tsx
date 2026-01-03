@@ -28,6 +28,24 @@ import { usedComponents } from '../App/usedComponents';
 
 const Page = PageComponentDefinition.component;
 
+// Wrapper component to add data-key attribute in design mode for AI capture
+function ComponentWrapper({
+	definition,
+	children,
+}: Readonly<{
+	definition: ComponentDefinition;
+	children: React.ReactNode;
+}>) {
+	if (globalThis.designMode === 'PAGE') {
+		return (
+			<div data-key={definition.key} style={{ display: 'contents' }}>
+				{children}
+			</div>
+		);
+	}
+	return <>{children}</>;
+}
+
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
 	if (!pageName) {
@@ -144,14 +162,16 @@ function Children({
 					const ctx = validationTriggers[fKey]
 						? { ...context, showValidationMessages: true }
 						: context;
-					const rComp = React.createElement(Comp, {
-						definition: e,
-						key: e.key,
-						pageDefinition: pageDefinition,
-						context: { ...ctx },
-						locationHistory: locationHistory,
-					});
-					return rComp;
+					return (
+						<ComponentWrapper definition={e} key={e.key}>
+							{React.createElement(Comp, {
+								definition: e,
+								pageDefinition: pageDefinition,
+								context: { ...ctx },
+								locationHistory: locationHistory,
+							})}
+						</ComponentWrapper>
+					);
 				})
 				.filter(e => !!e)}
 		</>

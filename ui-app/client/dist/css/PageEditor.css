@@ -6725,3 +6725,528 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._popupMenuBackground._dark ._popupMenu {
 	border-color: #aaa;
 }
+
+/* AI Spotlight Styles */
+@property --ai-angle {
+	syntax: '<angle>';
+	initial-value: 0deg;
+	inherits: false;
+}
+
+@keyframes _aiSwirl {
+	from { --ai-angle: 0deg; }
+	to { --ai-angle: 360deg; }
+}
+
+.comp.compPageEditor ._aiSpotlightOverlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(4px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10000;
+	animation: _aiFadeIn 0.2s ease-out;
+}
+
+@keyframes _aiFadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.comp.compPageEditor ._aiSpotlightContainer {
+	background: var(--pageEditorBackground, #1e1e2e);
+	border-radius: 16px;
+	padding: 20px;
+	width: 100%;
+	max-width: 560px;
+	box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+	animation: _aiSlideUp 0.3s ease-out;
+}
+
+@keyframes _aiSlideUp {
+	from { transform: translateY(20px); opacity: 0; }
+	to { transform: translateY(0); opacity: 1; }
+}
+
+.comp.compPageEditor ._aiSpotlightHeader {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 16px;
+	color: var(--pageEditorText, #cdd6f4);
+}
+
+.comp.compPageEditor ._aiSpotlightIcon {
+	width: 24px;
+	height: 24px;
+	color: #89b4fa;
+}
+
+.comp.compPageEditor ._aiSpotlightTitle {
+	flex: 1;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.comp.compPageEditor ._aiSpotlightClose {
+	background: transparent;
+	border: none;
+	color: var(--pageEditorTextMuted, #6c7086);
+	font-size: 24px;
+	cursor: pointer;
+	padding: 0;
+	line-height: 1;
+}
+
+.comp.compPageEditor ._aiSpotlightClose:hover {
+	color: var(--pageEditorText, #cdd6f4);
+}
+
+.comp.compPageEditor ._aiScreenshotPreview {
+	margin-bottom: 16px;
+	border-radius: 8px;
+	overflow: hidden;
+	max-height: 200px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0, 0, 0, 0.3);
+}
+
+.comp.compPageEditor ._aiScreenshotPreview img {
+	max-width: 100%;
+	max-height: 200px;
+	object-fit: contain;
+}
+
+.comp.compPageEditor ._aiInputWrapper {
+	position: relative;
+	padding: 3px;
+	border-radius: 12px;
+	background: conic-gradient(from var(--ai-angle), #f38ba8, #fab387, #f9e2af, #a6e3a1, #89dceb, #b4befe, #cba6f7, #f38ba8);
+	animation: _aiSwirl 3s linear infinite;
+}
+
+.comp.compPageEditor ._aiInput {
+	width: 100%;
+	padding: 14px 18px;
+	border: none;
+	border-radius: 9px;
+	background: var(--pageEditorBackground, #1e1e2e);
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 16px;
+	outline: none;
+}
+
+.comp.compPageEditor ._aiInput::placeholder {
+	color: var(--pageEditorTextMuted, #6c7086);
+}
+
+.comp.compPageEditor ._aiInput:disabled {
+	opacity: 0.6;
+}
+
+.comp.compPageEditor textarea._aiInput {
+	resize: none;
+	font-family: inherit;
+	min-height: 80px;
+	line-height: 1.5;
+}
+
+.comp.compPageEditor ._aiProgress {
+	margin-top: 16px;
+	padding: 12px;
+	background: rgba(0, 0, 0, 0.2);
+	border-radius: 8px;
+}
+
+.comp.compPageEditor ._aiStatusMessage {
+	color: var(--pageEditorTextMuted, #6c7086);
+	font-size: 13px;
+	margin-bottom: 8px;
+}
+
+.comp.compPageEditor ._aiAgentList {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.comp.compPageEditor ._aiAgentItem {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 13px;
+	color: var(--pageEditorText, #cdd6f4);
+}
+
+.comp.compPageEditor ._aiAgentItem._working {
+	color: #fab387;
+}
+
+.comp.compPageEditor ._aiAgentItem._done {
+	color: #a6e3a1;
+}
+
+.comp.compPageEditor ._aiAgentItem._error {
+	color: #f38ba8;
+}
+
+.comp.compPageEditor ._aiAgentStatus {
+	width: 16px;
+	text-align: center;
+}
+
+.comp.compPageEditor ._aiAgentName {
+	font-weight: 500;
+	min-width: 80px;
+}
+
+.comp.compPageEditor ._aiAgentMessage {
+	color: var(--pageEditorTextMuted, #6c7086);
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.comp.compPageEditor ._aiError {
+	margin-top: 12px;
+	padding: 10px 14px;
+	background: rgba(243, 139, 168, 0.15);
+	border: 1px solid rgba(243, 139, 168, 0.3);
+	border-radius: 8px;
+	color: #f38ba8;
+	font-size: 13px;
+}
+
+.comp.compPageEditor ._aiActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 16px;
+}
+
+.comp.compPageEditor ._aiActionPrimary,
+.comp.compPageEditor ._aiActionSecondary {
+	padding: 10px 18px;
+	border-radius: 8px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.comp.compPageEditor ._aiActionPrimary {
+	background: linear-gradient(135deg, #89b4fa, #b4befe);
+	border: none;
+	color: #1e1e2e;
+}
+
+.comp.compPageEditor ._aiActionPrimary:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(137, 180, 250, 0.3);
+}
+
+.comp.compPageEditor ._aiActionPrimary:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.comp.compPageEditor ._aiActionSecondary {
+	background: transparent;
+	border: 1px solid var(--pageEditorBorder, #45475a);
+	color: var(--pageEditorText, #cdd6f4);
+}
+
+.comp.compPageEditor ._aiActionSecondary:hover {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: var(--pageEditorTextMuted, #6c7086);
+}
+
+.comp.compPageEditor ._aiHints {
+	display: flex;
+	justify-content: center;
+	gap: 20px;
+	margin-top: 14px;
+	font-size: 12px;
+	color: var(--pageEditorTextMuted, #6c7086);
+}
+
+/* Light theme overrides */
+.comp.compPageEditor._light ._aiSpotlightContainer {
+	background: #ffffff;
+}
+
+.comp.compPageEditor._light ._aiSpotlightHeader,
+.comp.compPageEditor._light ._aiAgentItem,
+.comp.compPageEditor._light ._aiActionSecondary {
+	color: #4c4f69;
+}
+
+.comp.compPageEditor._light ._aiInput {
+	background: #ffffff;
+	color: #4c4f69;
+}
+
+.comp.compPageEditor._light ._aiProgress {
+	background: rgba(0, 0, 0, 0.05);
+}
+
+/* AI Dialog Styles for CodeEditor */
+.comp.compPageEditor ._aiDialogOverlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.7);
+	backdrop-filter: blur(4px);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10001;
+	animation: _aiFadeIn 0.2s ease-out;
+}
+
+.comp.compPageEditor ._aiDialog {
+	background: var(--pageEditorBackground, #1e1e2e);
+	border-radius: 12px;
+	width: 90%;
+	max-width: 600px;
+	max-height: 80vh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+	border: 1px solid var(--pageEditorBorder, #45475a);
+}
+
+.comp.compPageEditor ._aiDialogHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--pageEditorBorder, #45475a);
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.comp.compPageEditor ._aiDialogTitle {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--pageEditorText, #cdd6f4);
+}
+
+.comp.compPageEditor ._aiDialogTitle i {
+	color: #fab387;
+}
+
+.comp.compPageEditor ._aiDialogContent {
+	padding: 20px;
+	overflow-y: auto;
+	flex: 1;
+}
+
+.comp.compPageEditor ._aiLoading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	padding: 40px;
+	color: var(--pageEditorTextMuted, #6c7086);
+	font-size: 14px;
+}
+
+.comp.compPageEditor ._aiLoading i {
+	font-size: 20px;
+	color: #89b4fa;
+}
+
+.comp.compPageEditor ._aiExplanation {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.comp.compPageEditor ._aiSummary {
+	padding: 12px 16px;
+	background: rgba(137, 180, 250, 0.1);
+	border-radius: 8px;
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.comp.compPageEditor ._aiSummary strong {
+	color: #89b4fa;
+}
+
+.comp.compPageEditor ._aiFullExplanation {
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	line-height: 1.6;
+	white-space: pre-wrap;
+}
+
+.comp.compPageEditor ._aiSteps {
+	margin-top: 8px;
+}
+
+.comp.compPageEditor ._aiSteps strong {
+	color: #89b4fa;
+	font-size: 14px;
+}
+
+.comp.compPageEditor ._aiSteps ul {
+	margin: 8px 0 0 0;
+	padding-left: 20px;
+	list-style-type: disc;
+}
+
+.comp.compPageEditor ._aiSteps li {
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 13px;
+	line-height: 1.6;
+	margin-bottom: 8px;
+}
+
+.comp.compPageEditor ._aiSteps li strong {
+	color: #a6e3a1;
+}
+
+.comp.compPageEditor ._aiModifyForm {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.comp.compPageEditor ._aiModifyForm label {
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.comp.compPageEditor ._aiModifyInput {
+	width: 100%;
+	padding: 12px 16px;
+	background: rgba(0, 0, 0, 0.3);
+	border: 1px solid var(--pageEditorBorder, #45475a);
+	border-radius: 8px;
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	font-family: inherit;
+	resize: vertical;
+	min-height: 100px;
+	transition: border-color 0.2s ease;
+}
+
+.comp.compPageEditor ._aiInputWrapper ._aiModifyInput {
+	border: none;
+	border-radius: 9px;
+	background: var(--pageEditorBackground, #1e1e2e);
+	padding: 14px 18px;
+}
+
+.comp.compPageEditor ._aiModifyInput:focus {
+	outline: none;
+	border-color: #89b4fa;
+}
+
+.comp.compPageEditor ._aiInputWrapper ._aiModifyInput:focus {
+	border: none;
+	outline: none;
+}
+
+.comp.compPageEditor ._aiModifyInput::placeholder {
+	color: var(--pageEditorTextMuted, #6c7086);
+}
+
+.comp.compPageEditor ._aiModifyActions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 16px;
+}
+
+.comp.compPageEditor ._aiModifyButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 10px 20px;
+	background: linear-gradient(135deg, #89b4fa, #b4befe);
+	border: none;
+	border-radius: 8px;
+	color: #1e1e2e;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.comp.compPageEditor ._aiModifyButton:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(137, 180, 250, 0.3);
+}
+
+.comp.compPageEditor ._aiModifyButton:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.comp.compPageEditor ._aiModifyCancelButton {
+	padding: 10px 20px;
+	background: transparent;
+	border: 1px solid var(--pageEditorBorder, #45475a);
+	border-radius: 8px;
+	color: var(--pageEditorText, #cdd6f4);
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.15s ease;
+}
+
+.comp.compPageEditor ._aiModifyCancelButton:hover:not(:disabled) {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: var(--pageEditorTextMuted, #6c7086);
+}
+
+.comp.compPageEditor ._iconMenu._loading {
+	opacity: 0.5;
+	pointer-events: none;
+}
+
+/* Light theme overrides for AI Dialog */
+.comp.compPageEditor._light ._aiDialog {
+	background: #ffffff;
+}
+
+.comp.compPageEditor._light ._aiDialogHeader {
+	background: #f5f5f5;
+}
+
+.comp.compPageEditor._light ._aiDialogTitle,
+.comp.compPageEditor._light ._aiModifyForm label,
+.comp.compPageEditor._light ._aiFullExplanation,
+.comp.compPageEditor._light ._aiSteps li {
+	color: #4c4f69;
+}
+
+.comp.compPageEditor._light ._aiModifyInput {
+	background: #ffffff;
+	color: #4c4f69;
+}
+
+.comp.compPageEditor._light ._aiInputWrapper ._aiModifyInput {
+	background: #ffffff;
+	color: #4c4f69;
+}
+
+.comp.compPageEditor._light ._aiSummary {
+	background: rgba(137, 180, 250, 0.15);
+}
+
+.comp.compPageEditor._light ._aiModifyCancelButton {
+	color: #4c4f69;
+}
