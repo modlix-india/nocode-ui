@@ -67,9 +67,15 @@ module.exports = {
     proxy: [
       {
         context: ["**/api/**", "/sso/**"],
-        target: "https://apps.dev.modlix.com/",
-        changeOrigin: true,
-        secure: false
+        target: "http://localhost:8080/",
+        changeOrigin: false,
+        secure: false,
+        onProxyRes: (proxyRes, _req, res) => {
+          // Disable buffering for SSE responses to enable real-time streaming
+          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+            res.flushHeaders();
+          }
+        },
       }
     ]
   }
