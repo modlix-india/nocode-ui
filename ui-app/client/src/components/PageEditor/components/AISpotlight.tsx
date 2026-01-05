@@ -45,6 +45,30 @@ interface AISpotlightProps {
 
 type SpotlightState = 'input' | 'generating' | 'complete' | 'error';
 
+// Fun waiting messages shown during keepalive pings
+const WAITING_MESSAGES = [
+	'Brewing your changes...',
+	'AI is thinking hard...',
+	'Crafting something beautiful...',
+	'Almost there, hang tight...',
+	'Working some magic...',
+	'Polishing the pixels...',
+	'Teaching components new tricks...',
+	'Mixing colors and layouts...',
+	'Fine-tuning the details...',
+	'Making it pixel perfect...',
+	'Consulting the design oracle...',
+	'Arranging the building blocks...',
+	'Sprinkling some AI dust...',
+	'Connecting the dots...',
+	'Turning ideas into reality...',
+	'Generating awesomeness...',
+	'Cooking up your design...',
+	'Weaving the code together...',
+	'Creating digital magic...',
+	'Processing at the speed of thought...',
+];
+
 interface AgentProgress {
 	name: string;
 	status: 'pending' | 'working' | 'done' | 'error';
@@ -392,10 +416,14 @@ export default function AISpotlight({
 				setStatusMessage(msg || 'Merging agent outputs...');
 				break;
 
-			case 'keepalive':
-				// Update status to show we're still connected
-				setStatusMessage(msg || 'Working...');
+			case 'keepalive': {
+				// Always show a random fun waiting message during keepalive pings
+				// (ignore the server's ping timestamp message)
+				const randomMessage =
+					WAITING_MESSAGES[Math.floor(Math.random() * WAITING_MESSAGES.length)];
+				setStatusMessage(randomMessage);
 				break;
+			}
 
 			default:
 				// For any unhandled event, show its message if available
