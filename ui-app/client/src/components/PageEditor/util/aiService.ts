@@ -105,17 +105,23 @@ function getAuthToken(): string | null {
 
 /**
  * Parse an SSE line into event name and data
+ * Returns 'comment' field for SSE comments (lines starting with :)
  */
 function parseSSELine(line: string): { field: string; value: string } | null {
-  if (!line || line.startsWith(':')) return null;  // Comment or empty
-  
+  if (!line) return null;
+
+  // SSE comments start with ':' - these are keepalive/ping messages
+  if (line.startsWith(':')) {
+    return { field: 'comment', value: line.slice(1).trim() };
+  }
+
   const colonIndex = line.indexOf(':');
   if (colonIndex === -1) return { field: line, value: '' };
-  
+
   const field = line.slice(0, colonIndex);
   let value = line.slice(colonIndex + 1);
   if (value.startsWith(' ')) value = value.slice(1);  // Remove leading space
-  
+
   return { field, value };
 }
 
@@ -270,7 +276,14 @@ export async function streamAIRequest(
           continue;
         }
         
-        if (parsed.field === 'event') {
+        if (parsed.field === 'comment') {
+          // SSE comment - treat as keepalive/ping
+          console.log('[SSE] Keepalive comment:', parsed.value);
+          onEvent({
+            event: 'keepalive',
+            data: { message: parsed.value }
+          });
+        } else if (parsed.field === 'event') {
           // New event starting - process previous event first if we have data
           if (currentData) {
             console.log('[SSE] Event ready (new event):', currentEvent);
