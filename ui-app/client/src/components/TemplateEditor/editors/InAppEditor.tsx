@@ -38,6 +38,19 @@ export default function EmailEditor({
                         })
                     }
                 />
+                <span className="label">URL :</span>
+                <input
+                    value={template[currentLanguage]?.url ?? ''}
+                    onChange={v =>
+                        onChange({
+                            ...template,
+                            [currentLanguage]: {
+                                body: template?.[currentLanguage]?.body ?? '',
+                                url: v.target.value,
+                            },
+                        })
+                    }
+                />
                 <span className="label">Description :</span>
                 <textarea
                     value={template[currentLanguage]?.description ?? ''}
