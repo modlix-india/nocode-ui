@@ -182,20 +182,20 @@ function TabsComponent(props: Readonly<ComponentProps>) {
 		<div
 			className={`comp compTabs ${tabsOrientation} ${designType} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
-			onResize={() =>
-				setTimeout(
-					() =>
-						setHighlighter(
-							tabsOrientation,
-							tabRefs,
-							hover,
-							tabs,
-							activeTab,
-							setHighlighterPosition,
-						),
-					800,
-				)
-			}
+			// onResize={() =>
+			// 	setTimeout(
+			// 		() =>
+			// 			setHighlighter(
+			// 				tabsOrientation,
+			// 				tabRefs,
+			// 				hover,
+			// 				tabs,
+			// 				activeTab,
+			// 				setHighlighterPosition,
+			// 			),
+			// 		800,
+			// 	)
+			// }
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			<div
