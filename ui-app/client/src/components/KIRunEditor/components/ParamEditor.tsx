@@ -62,7 +62,7 @@ export default function ParamEditor({
 			}
 
 			arr.sort((a: any, b: any) => {
-				let v = a.order ?? 0 - b.order ?? 0;
+				let v = (a.order ?? 0) - (b.order ?? 0);
 				if (v === 0) v = a.key.localeCompare(b.key);
 				return v;
 			});
