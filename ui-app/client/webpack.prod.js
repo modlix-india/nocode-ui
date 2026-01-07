@@ -39,8 +39,24 @@ module.exports = (env = {}) => {
       rules: [
         {
           test: /\.tsx?$/,
-          use: 'ts-loader',
-          exclude: /node_modules/
+          use: {
+            loader: 'ts-loader',
+            options: {
+              // Allow ts-loader to process files from the @modlix/ui-components package
+              allowTsInNodeModules: true,
+            }
+          },
+          // Include @modlix packages in the build (they use file: reference)
+          // Exclude node_modules (except @modlix) and test files
+          exclude: (filePath) => {
+            // Always exclude __tests__ folders
+            if (filePath.includes('__tests__')) return true;
+            // Include @modlix packages
+            if (filePath.includes('node_modules/@modlix')) return false;
+            // Exclude other node_modules
+            if (filePath.includes('node_modules')) return true;
+            return false;
+          }
         },
         {
           test: /\.css$/,

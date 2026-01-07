@@ -1,0 +1,26 @@
+{
+	"name": "@modlix/ui-ssr",
+	"version": "1.0.0",
+	"description": "SSR service for Modlix no-code platform",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev --port 3080",
+		"build": "vite build",
+		"start": "node dist/server/server.js"
+	},
+	"dependencies": {
+		"@tanstack/react-router": "^1.120.0",
+		"@tanstack/react-start": "^1.120.0",
+		"ioredis": "^5.4.1",
+		"react": "^18.3.1",
+		"react-dom": "^18.3.1"
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.2",
+		"@types/react": "^18.3.13",
+		"@types/react-dom": "^18.3.1",
+		"@vitejs/plugin-react": "^4.3.4",
+		"typescript": "^5.7.2",
+		"vite": "^7.0.0"
+	}
+}

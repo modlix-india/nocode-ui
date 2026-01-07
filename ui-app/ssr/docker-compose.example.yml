@@ -1,0 +1,85 @@
+# Example docker-compose for SSR service deployment
+# Copy and modify for each environment (dev, stage, prod)
+
+version: '3.8'
+
+services:
+  ssr-server-blue:
+    container_name: ssr-server-blue
+    image: ocir.us-ashburn-1.oci.oraclecloud.com/idfmutpuhiky/dev-ssr-server:latest
+    pull_policy: always
+    environment:
+      # Spring Cloud Config integration
+      CLOUD_CONFIG_SERVER: config-server
+      CLOUD_CONFIG_SERVER_PORT: '8888'
+      SPRING_PROFILE: ocidev  # Use: ocidev, ocistage, ociprod
+
+      # Instance identification
+      INSTANCE_ID: blue
+      INSTANCE_ENVIRONMENT: Development  # Use: Development, Stage, Production
+
+      # Direct configuration (can override config server)
+      SERVER_PORT: '3080'
+      GATEWAY_URL: http://gateway:8080
+      REDIS_URL: redis://:password@redis:6379
+
+      # CDN configuration (optional - leave empty for local serving)
+      CDN_HOST_NAME: ''  # e.g., cdn-dev.modlix.com
+      CDN_STRIP_API_PREFIX: 'true'
+      CDN_REPLACE_PLUS: 'false'
+      CDN_RESIZE_OPTIONS_TYPE: 'none'
+
+      # Cache configuration
+      CACHE_TTL_SECONDS: '1800'
+      CACHE_INVALIDATION_SECRET: '${CACHE_INVALIDATION_SECRET}'
+    ports:
+      - '3080:3080'
+    volumes:
+      - '/var/log/apps/:/logs'
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:3080/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      config-server:
+        condition: service_healthy
+    restart: unless-stopped
+
+  ssr-server-green:
+    container_name: ssr-server-green
+    image: ocir.us-ashburn-1.oci.oraclecloud.com/idfmutpuhiky/dev-ssr-server:latest
+    pull_policy: always
+    environment:
+      CLOUD_CONFIG_SERVER: config-server
+      CLOUD_CONFIG_SERVER_PORT: '8888'
+      SPRING_PROFILE: ocidev
+      INSTANCE_ID: green
+      INSTANCE_ENVIRONMENT: Development
+      SERVER_PORT: '3080'
+      GATEWAY_URL: http://gateway:8080
+      REDIS_URL: redis://:password@redis:6379
+      CDN_HOST_NAME: ''
+      CDN_STRIP_API_PREFIX: 'true'
+      CDN_REPLACE_PLUS: 'false'
+      CDN_RESIZE_OPTIONS_TYPE: 'none'
+      CACHE_TTL_SECONDS: '1800'
+      CACHE_INVALIDATION_SECRET: '${CACHE_INVALIDATION_SECRET}'
+    ports:
+      - '3081:3080'  # Alternate port for green instance
+    volumes:
+      - '/var/log/apps/:/logs'
+    healthcheck:
+      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:3080/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    depends_on:
+      config-server:
+        condition: service_healthy
+    restart: unless-stopped
+
+# Networks and external services would be defined at the infrastructure level
+# This example assumes config-server, gateway, and redis are available

@@ -17,7 +17,8 @@ module.exports = {
     rules: [
       {
         test: /\.[jt]sx?$/,
-        exclude: /node_modules/,
+        // Include @modlix packages in the build (they use file: reference)
+        exclude: /node_modules\/(?!@modlix)/,
         use: [
           {
             loader: require.resolve('ts-loader'),
@@ -26,6 +27,8 @@ module.exports = {
                 before: [ReactRefreshTypeScript()],
               }),
               transpileOnly: true,
+              // Allow ts-loader to process files from the @modlix/ui-components package
+              allowTsInNodeModules: true,
             },
           },
         ],
