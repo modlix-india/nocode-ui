@@ -35,7 +35,7 @@ export function CalendarDropdownSelect({
 	curry,
 }: CalendarDropdownSelectProps) {
 	// Filter out disabled options, but keep all enabled ones
-	const options = originalOptions.filter(opt => !opt.disabled);
+	const options = useMemo(() => originalOptions.filter(opt => !opt.disabled), [originalOptions]);
 
 	const label = useMemo(() => {
 		if (!isNullValue(value) && value !== '') {
@@ -65,7 +65,23 @@ export function CalendarDropdownSelect({
 		} else {
 			setCurrentOption(0);
 		}
-	}, [value, options]);
+	}, [value, options, open]);
+
+	const hasScrolledRef = useRef(false);
+
+	React.useLayoutEffect(() => {
+		if (open) {
+			if (!hasScrolledRef.current && ddBody.current) {
+				const optionElements = ddBody.current.querySelectorAll('._calendarDropdownOption');
+				if (optionElements[currentOption]) {
+					optionElements[currentOption].scrollIntoView({ block: 'center' });
+					hasScrolledRef.current = true;
+				}
+			}
+		} else {
+			hasScrolledRef.current = false;
+		}
+	}, [open, currentOption]);
 
 	const setCurrentOptionWithScroll = (num: number) => {
 		setCurrentOption(num);
@@ -148,7 +164,12 @@ export function CalendarDropdownSelect({
 			: dropdownBodyStyle;
 
 		body = (
-			<div className={dropdownBodyClassName} ref={ddBody} style={bodyStyle}>
+			<div
+				className={dropdownBodyClassName}
+				ref={ddBody}
+				style={bodyStyle}
+				onMouseLeave={() => setCurrentOption(-1)}
+			>
 				{definition && (
 					<SubHelperComponent
 						definition={definition}
@@ -183,7 +204,7 @@ export function CalendarDropdownSelect({
 									isHovered ? '_hovered' : ''
 								} ${isSelected ? '_selected' : ''} ${option.disabled ? '_disabled' : ''}`}
 								onClick={() => handleClick(option)}
-								onMouseOver={() => setCurrentOptionWithScroll(i)}
+								onMouseOver={() => setCurrentOption(i)}
 								style={optionStyle}
 							>
 								{option.label}
