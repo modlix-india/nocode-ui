@@ -74,7 +74,16 @@ module.exports = (env = {}) => {
       ]
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.js']
+      extensions: ['.ts', '.tsx', '.js'],
+      alias: {
+        // Ensure React and react-router are always resolved from client's node_modules
+        // This prevents multiple copies when using linked packages
+        'react': path.resolve(__dirname, 'node_modules/react'),
+        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+        'react-router-dom': path.resolve(__dirname, 'node_modules/react-router-dom'),
+        'react-router': path.resolve(__dirname, 'node_modules/react-router'),
+        '@remix-run/router': path.resolve(__dirname, 'node_modules/@remix-run/router'),
+      }
     },
     plugins,
     optimization: {

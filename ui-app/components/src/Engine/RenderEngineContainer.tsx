@@ -49,7 +49,9 @@ export const RenderEngineContainer = () => {
 				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName!));
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
-				if (appCode !== pDef?.appCode) {
+				// Only check app code mismatch if application has been loaded (appCode is defined)
+				// If appCode is undefined, the application definition hasn't loaded yet
+				if (appCode !== undefined && appCode !== pDef?.appCode) {
 					console.error(
 						"Trying to load a page that doesn't belong to the app. Host app code:",
 						appCode,

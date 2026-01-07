@@ -7,6 +7,8 @@ WORKDIR /app
 COPY ui-app/ssr/package*.json ./ssr/
 
 # Copy client dist (pre-built client bundle)
+# Note: Client must be built first with npm run cf-dev/cf-stage/cf-prod
+# The build bundles @modlix/ui-components into the output files
 COPY ui-app/client/dist/ ./client/dist/
 
 # Install SSR dependencies
