@@ -1,6 +1,6 @@
-import Redis from 'ioredis';
-import { getConfig } from '../config/configLoader';
-import logger from '../config/logger';
+import { Redis } from 'ioredis';
+import { getConfig } from '../config/configLoader.js';
+import logger from '../config/logger.js';
 
 const CACHE_PREFIX = 'ssr:';
 const SSR_CACHE_INVALIDATION_CHANNEL = 'ssr:cache:invalidation';

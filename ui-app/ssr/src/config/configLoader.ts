@@ -21,7 +21,7 @@
  * - CACHE_TTL_SECONDS: Cache TTL in seconds (default: 1800)
  */
 
-import logger from './logger';
+import logger from './logger.js';
 
 interface SSRConfig {
 	// Cloud Config Server configuration

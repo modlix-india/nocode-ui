@@ -11,14 +11,14 @@ COPY ui-app/ssr/package*.json ./ssr/
 # The build bundles @modlix/ui-components into the output files
 COPY ui-app/client/dist/ ./client/dist/
 
-# Install SSR dependencies
+# Install SSR dependencies (need all deps for build including devDependencies)
 WORKDIR /app/ssr
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy SSR source code
 COPY ui-app/ssr/ ./
 
-# Build SSR application
+# Build SSR application (includes TanStack Start build + entry server compilation)
 RUN npm run build
 
 # Stage 2: Production
@@ -63,4 +63,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3080/health || exit 1
 
 # Start the server
-CMD ["node", "dist/server/server.js"]
+CMD ["node", "dist/entry-server.js"]
