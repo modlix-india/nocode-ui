@@ -1,5 +1,5 @@
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition } from '@modlix/ui-components';
 import { styleProperties, styleDefaults } from './messageStyleProperies';
 
 const PREFIX = '.comp.compMessages';

@@ -1,4 +1,4 @@
-import { StylePropertyDefinition } from '../../types/common';
+import { StylePropertyDefinition } from '@modlix/ui-components';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
