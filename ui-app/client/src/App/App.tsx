@@ -178,6 +178,18 @@ export function App() {
 				undefined,
 				async (_, appDef) => {
 					if (appDef === undefined) {
+						// Check if app definition was already fetched by index.tsx bootstrap
+						// to avoid duplicate API calls
+						if (globalThis.appDefinitionResponse?.application) {
+							const { auth, application, isApplicationLoadFailed, theme } =
+								globalThis.appDefinitionResponse;
+							setData(`${STORE_PREFIX}.application`, application);
+							setData(`${STORE_PREFIX}.auth`, auth);
+							setData(`${STORE_PREFIX}.isApplicationLoadFailed`, isApplicationLoadFailed ?? false);
+							setData(`${STORE_PREFIX}.theme`, theme);
+							return;
+						}
+
 						const { auth, application, isApplicationLoadFailed, theme } =
 							await getAppDefinition();
 						setData(`${STORE_PREFIX}.application`, application);
