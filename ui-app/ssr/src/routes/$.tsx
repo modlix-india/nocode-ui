@@ -12,7 +12,7 @@ import {
 	type ApplicationDefinition,
 	type ThemeDefinition,
 } from '~/api/client';
-import { getCachedData, setCachedData, generateCacheKey, initCacheInvalidationSubscriber } from '~/cache/redis';
+import { getCachedData, setCachedData, generateCacheKey } from '~/cache/redis';
 import { loadConfig, getConfig } from '~/config/configLoader';
 import logger from '~/config/logger';
 import { createHash } from 'node:crypto';
@@ -87,7 +87,7 @@ function setCacheHeaders(
 const getPageData = createServerFn().handler(async (): Promise<PageDataResult> => {
 	// Ensure config is loaded (may not be if running in worker context)
 	await loadConfig();
-	await initCacheInvalidationSubscriber();
+	// Note: Cache invalidation subscriber is initialized once in vite.config.ts middleware
 
 	const request = getRequest();
 	const url = new URL(request.url);
