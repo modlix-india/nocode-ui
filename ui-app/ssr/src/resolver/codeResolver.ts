@@ -83,19 +83,40 @@ async function resolveFromSecurityService(
 			return { clientCode: DEFAULT_CLIENT, appCode: DEFAULT_APP };
 		}
 
-		// Response is [clientCode, appCode] array (Tuple2 from Java)
+		// Response is Tuple2 from Java which serializes as {"t1": clientCode, "t2": appCode}
 		const data = await response.json();
-		const codes: Codes = {
-			clientCode: Array.isArray(data) ? data[0] : (data.clientCode || DEFAULT_CLIENT),
-			appCode: Array.isArray(data) ? data[1] : (data.appCode || DEFAULT_APP),
-		};
+		logger.info('Security service response', { data });
+
+		let clientCode: string;
+		let appCode: string;
+
+		if (Array.isArray(data)) {
+			// Array format [clientCode, appCode]
+			clientCode = data[0] || DEFAULT_CLIENT;
+			appCode = data[1] || DEFAULT_APP;
+		} else if (data.t1 !== undefined && data.t2 !== undefined) {
+			// Reactor Tuple2 format {t1: clientCode, t2: appCode}
+			clientCode = data.t1 || DEFAULT_CLIENT;
+			appCode = data.t2 || DEFAULT_APP;
+		} else {
+			// Object format {clientCode, appCode}
+			clientCode = data.clientCode || DEFAULT_CLIENT;
+			appCode = data.appCode || DEFAULT_APP;
+		}
+
+		const codes: Codes = { clientCode, appCode };
 
 		// Cache for 10 minutes
 		await redis.setex(cacheKey, 600, JSON.stringify(codes));
 
 		return codes;
 	} catch (error) {
-		logger.error('Failed to resolve codes from security service', { error: String(error) });
+		logger.error('Failed to resolve codes from security service', {
+			error: String(error),
+			scheme,
+			host,
+			port,
+		});
 		return { clientCode: DEFAULT_CLIENT, appCode: DEFAULT_APP };
 	}
 }

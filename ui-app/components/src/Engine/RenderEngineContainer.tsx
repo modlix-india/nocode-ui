@@ -43,13 +43,31 @@ export const RenderEngineContainer = () => {
 		UrlDetailsExtractor.addDetails(details);
 		if (!pageName)
 			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+		// If we still don't have a pageName (e.g., store not populated yet), skip loading
+		if (!pageName) return;
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
+			// Check if page definition was already fetched by index.tsx bootstrap
+			// to avoid duplicate API calls
+			if (
+				globalThis.pageDefinitionResponse?.name === pageName ||
+				globalThis.pageDefinitionRequestPageName === pageName
+			) {
+				pDef = globalThis.pageDefinitionResponse;
+				if (pDef) {
+					setData(`Store.pageDefinition.${pageName}`, pDef);
+					setPageDefinition(processClassesForPageDefinition(pDef));
+					setCurrentPageName(pageName);
+					return;
+				}
+			}
 			(async () => {
 				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName!));
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
-				if (appCode !== pDef?.appCode) {
+				// Only check app code mismatch if application has been loaded (appCode is defined)
+				// If appCode is undefined, the application definition hasn't loaded yet
+				if (appCode !== undefined && appCode !== pDef?.appCode) {
 					console.error(
 						"Trying to load a page that doesn't belong to the app. Host app code:",
 						appCode,
@@ -111,7 +129,10 @@ export const RenderEngineContainer = () => {
 	useEffect(() => {
 		return addListener(
 			undefined,
-			() => {
+			(_, value) => {
+				// Only reload if the page definition store was cleared/reset
+				// Don't trigger reload when a page definition is being added
+				if (value !== undefined && Object.keys(value).length > 0) return;
 				setPageDefinition(undefined);
 				setCurrentPageName(undefined);
 				loadDefinition();
@@ -119,6 +140,23 @@ export const RenderEngineContainer = () => {
 			'Store.pageDefinition',
 		);
 	}, []);
+
+	// Re-trigger loadDefinition when application data becomes available
+	// This handles the case where the initial load had no pageName because
+	// the URL was '/' and the application's defaultPage wasn't loaded yet
+	useEffect(() => {
+		return addListener(
+			undefined,
+			() => {
+				// Only trigger if we don't already have a page loaded
+				// and there's no page definition in the store yet
+				if (!currentPageName && !pageDefinition) {
+					loadDefinition();
+				}
+			},
+			'Store.application',
+		);
+	}, [currentPageName, pageDefinition, loadDefinition]);
 
 	useEffect(
 		() =>
@@ -282,7 +320,7 @@ export const RenderEngineContainer = () => {
 	const [, setLastChanged] = useState(Date.now());
 
 	useEffect(
-		() => window.addDesignModeChangeListener?.(() => setLastChanged(Date.now())),
+		() => window.addDesignModeChangeListener(() => setLastChanged(Date.now())),
 		[setLastChanged],
 	);
 
