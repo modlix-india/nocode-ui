@@ -328,6 +328,7 @@ function PageComponent() {
 	}
 
 	// Bootstrap data for client hydration
+	// urlDetails.pageName is used by index.tsx to set globalThis.pageDefinitionRequestPageName
 	const bootstrapData = {
 		application,
 		pageDefinition: { [pageName]: page },
