@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
-import { FileBrowserStyles } from '../commonComponents/FileBrowser/FileBrowserStyles';
-import ComponentDefinitions from '../components';
-import { getHref } from '../components/util/getHref';
-import { lazyCSSURL } from '../components/util/lazyStylePropertyUtil';
-import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
-import { addListener, getDataFromPath } from '../context/StoreContext';
-import { StyleResolution } from '../types/common';
-import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
-import { styleDefaults, styleProperties } from './appStyleProperties';
+import ComponentDefinitions, {
+	FileBrowserStyles,
+	getHref,
+	lazyCSSURL,
+	STORE_PATH_APP,
+	STORE_PATH_STYLE_PATH,
+	STORE_PATH_THEME_PATH,
+	addListener,
+	getDataFromPath,
+	StyleResolution,
+	processStyleDefinition,
+	StyleResolutionDefinition,
+	styleDefaults,
+	styleProperties,
+} from '@modlix/ui-components';
 import MessageStyle from './Messages/MessageStyle';
 
 export function AppStyle() {

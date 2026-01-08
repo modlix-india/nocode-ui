@@ -1,21 +1,21 @@
 import { isNullValue } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
-import { STORE_PREFIX } from '../constants';
 import {
+	RenderEngineContainer,
+	STORE_PREFIX,
 	addListener,
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	innerSetData,
 	setData,
-} from '../context/StoreContext';
+	StyleResolution,
+	StyleResolutionDefinition,
+	usedComponents,
+} from '@modlix/ui-components';
 import { messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
-import { StyleResolution } from '../types/common';
-import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
 import { getAppDefinition } from './appDefinition';
-import { usedComponents } from './usedComponents';
 
 // In design mode we are listening to the messages from editor
 

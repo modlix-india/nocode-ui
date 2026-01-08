@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { createRoot, hydrateRoot } from 'react-dom/client';
+import {
+	PageDefinition,
+	getPageDefinition,
+	processLocation,
+} from '@modlix/ui-components';
 import { AppDefinitionResponse, getAppDefinition } from './App/appDefinition';
-import { PageDefinition } from './types/common';
-import getPageDefinition from './Engine/pageDefinition';
-import { processLocation } from './util/locationProcessor';
-import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
@@ -47,6 +48,20 @@ declare global {
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;
 	var styleProperties: any;
+	// SSR bootstrap data injected by server
+	var __APP_BOOTSTRAP__: {
+		application: any;
+		pageDefinition: { [key: string]: PageDefinition };
+		theme: any;
+		styles: any;
+		urlDetails: {
+			pageName: string;
+			appCode: string;
+			clientCode: string;
+		};
+	} | undefined;
+	// SSR sets this for local static file paths when no CDN is configured
+	var __LOCAL_STATIC_PREFIX__: string | null;
 	// var d3: typeof import('d3/index');
 }
 
@@ -130,27 +145,46 @@ if (!app) {
 } else {
 	(async function () {
 		const pageName = processLocation(window.location)?.pageName;
+		const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
+		const hasAuthToken = !!window.localStorage.getItem(AUTH_TOKEN);
 
-		let appDefinitionResponse, pageDefinitionResponse;
-		if (pageName) {
-			globalThis.pageDefinitionRequestPageName = pageName;
-			[appDefinitionResponse, pageDefinitionResponse] = await Promise.all([
-				getAppDefinition(),
-				getPageDefinition(pageName),
-			]);
+		let appDefinitionResponse: AppDefinitionResponse;
+		let pageDefinitionResponse: PageDefinition;
+
+		// Check for SSR bootstrap data - use it to avoid network requests during hydration
+		const bootstrap = window.__APP_BOOTSTRAP__;
+		if (bootstrap && !hasAuthToken) {
+			// Use SSR-provided data for faster hydration
+			const bootstrapPageName = bootstrap.urlDetails?.pageName;
+			globalThis.pageDefinitionRequestPageName = bootstrapPageName;
+
+			appDefinitionResponse = {
+				auth: undefined,
+				application: bootstrap.application,
+				isApplicationLoadFailed: false,
+				theme: bootstrap.theme,
+			};
+			pageDefinitionResponse = bootstrap.pageDefinition[bootstrapPageName];
 		} else {
-			appDefinitionResponse = await getAppDefinition();
-			globalThis.pageDefinitionRequestPageName =
-				appDefinitionResponse?.application?.properties?.defaultPage;
-			pageDefinitionResponse = await getPageDefinition(
-				globalThis.pageDefinitionRequestPageName,
-			);
+			// No SSR data or user is authenticated - fetch from API
+			if (pageName) {
+				globalThis.pageDefinitionRequestPageName = pageName;
+				[appDefinitionResponse, pageDefinitionResponse] = await Promise.all([
+					getAppDefinition(),
+					getPageDefinition(pageName),
+				]);
+			} else {
+				appDefinitionResponse = await getAppDefinition();
+				globalThis.pageDefinitionRequestPageName =
+					appDefinitionResponse?.application?.properties?.defaultPage;
+				pageDefinitionResponse = await getPageDefinition(
+					globalThis.pageDefinitionRequestPageName,
+				);
+			}
 		}
 
 		globalThis.appDefinitionResponse = appDefinitionResponse;
 		globalThis.pageDefinitionResponse = pageDefinitionResponse;
-
-		const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
 
 		const { App } = await import(/* webpackChunkName: "Application" */ './App/App');
 		const { AppStyle } = await import(
@@ -202,13 +236,20 @@ if (!app) {
 				<App />
 			</>
 		);
-		if (window.localStorage.getItem(AUTH_TOKEN) || !rendered) createRoot(app).render(reactNode);
-		else
+
+		// Hydration decision:
+		// - If user has auth token: always use createRoot (authenticated pages aren't SSR'd)
+		// - If no _rendered marker: no SSR, use createRoot
+		// - Otherwise: attempt hydration
+		if (hasAuthToken || !rendered) {
+			createRoot(app).render(reactNode);
+		} else {
 			try {
 				hydrateRoot(app, reactNode);
 			} catch (err) {
-				console.error('Hydration failed...', err);
+				console.error('Hydration failed, falling back to createRoot:', err);
 				createRoot(app).render(reactNode);
 			}
+		}
 	})();
 }
