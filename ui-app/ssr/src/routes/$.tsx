@@ -12,8 +12,17 @@ import {
 	type ApplicationDefinition,
 	type ThemeDefinition,
 } from '~/api/client';
-import { getCachedData, setCachedData, generateCacheKey } from '~/cache/redis';
+import { getCachedData, setCachedData, generateCacheKey, initCacheInvalidationSubscriber } from '~/cache/redis';
+import { loadConfig, getConfig } from '~/config/configLoader';
+import logger from '~/config/logger';
 import { createHash } from 'node:crypto';
+
+interface CDNConfig {
+	hostName: string;
+	stripAPIPrefix: boolean;
+	replacePlus: boolean;
+	resizeOptionsType: string;
+}
 
 interface CachedPageData {
 	application: ApplicationDefinition;
@@ -25,8 +34,8 @@ interface CachedPageData {
 }
 
 type PageDataResult =
-	| (CachedPageData & { fromCache: boolean; isAuthenticated: boolean; error?: never })
-	| { error: string; codes: { appCode: string; clientCode: string }; pageName: string };
+	| (CachedPageData & { fromCache: boolean; isAuthenticated: boolean; cdn: CDNConfig; error?: never })
+	| { error: string; codes: { appCode: string; clientCode: string }; pageName: string; cdn: CDNConfig };
 
 /**
  * Generate ETag from page data
@@ -76,11 +85,33 @@ function setCacheHeaders(
 
 // Server function to fetch page data
 const getPageData = createServerFn().handler(async (): Promise<PageDataResult> => {
+	// Ensure config is loaded (may not be if running in worker context)
+	await loadConfig();
+	await initCacheInvalidationSubscriber();
+
 	const request = getRequest();
+	const url = new URL(request.url);
 	const codes = await resolveCodesFromRequest(request);
-	const urlPageName = extractPageName(new URL(request.url).pathname);
+	const urlPageName = extractPageName(url.pathname);
 	const authToken = getAuthToken(request);
 	const isAuthenticated = !!authToken;
+
+	logger.info('SSR page request', {
+		url: url.pathname,
+		appCode: codes.appCode,
+		clientCode: codes.clientCode,
+		pageName: urlPageName,
+		isAuthenticated,
+	});
+
+	// Get CDN config from Spring Cloud Config Server
+	const config = getConfig();
+	const cdn: CDNConfig = {
+		hostName: config.cdn.hostName,
+		stripAPIPrefix: config.cdn.stripAPIPrefix,
+		replacePlus: config.cdn.replacePlus,
+		resizeOptionsType: config.cdn.resizeOptionsType,
+	};
 
 	// For 'index' fallback, we need to fetch application first to get defaultPage
 	// For explicit page names, we can check cache immediately
@@ -88,13 +119,15 @@ const getPageData = createServerFn().handler(async (): Promise<PageDataResult> =
 		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName);
 		const cached = await getCachedData<CachedPageData>(cacheKey);
 		if (cached) {
+			logger.info('Cache hit', { cacheKey, pageName: urlPageName });
 			const etag = generateETag(cached);
 			setCacheHeaders(isAuthenticated, true, etag);
-			return { ...cached, fromCache: true, isAuthenticated };
+			return { ...cached, fromCache: true, isAuthenticated, cdn };
 		}
 	}
 
 	// Fetch from backend (will resolve 'index' to defaultPage)
+	logger.info('Fetching page data from backend', { pageName: urlPageName });
 	const data = await fetchAllPageData(urlPageName, {
 		appCode: codes.appCode,
 		clientCode: codes.clientCode,
@@ -109,19 +142,22 @@ const getPageData = createServerFn().handler(async (): Promise<PageDataResult> =
 		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
 		const cached = await getCachedData<CachedPageData>(cacheKey);
 		if (cached) {
+			logger.info('Cache hit (resolved page)', { cacheKey, pageName: actualPageName });
 			const etag = generateETag(cached);
 			setCacheHeaders(isAuthenticated, true, etag);
-			return { ...cached, fromCache: true, isAuthenticated };
+			return { ...cached, fromCache: true, isAuthenticated, cdn };
 		}
 	}
 
 	if (!data.application || !data.page) {
+		logger.warn('Page not found', { pageName: actualPageName, appCode: codes.appCode });
 		// Set no-cache headers for error responses
 		setCacheHeaders(true, false);
 		return {
 			error: 'Page not found',
 			codes,
 			pageName: actualPageName,
+			cdn,
 		};
 	}
 
@@ -138,13 +174,21 @@ const getPageData = createServerFn().handler(async (): Promise<PageDataResult> =
 	const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
 	if (!isAuthenticated) {
 		await setCachedData(cacheKey, result, 1800);
+		logger.info('Cached page data', { cacheKey, pageName: actualPageName, ttl: 1800 });
 	}
 
 	// Set cache headers
 	const etag = generateETag(result);
 	setCacheHeaders(isAuthenticated, false, etag);
 
-	return { ...result, fromCache: false, isAuthenticated };
+	logger.info('SSR page rendered', {
+		pageName: actualPageName,
+		appCode: codes.appCode,
+		fromCache: false,
+		cdnHostName: cdn.hostName,
+	});
+
+	return { ...result, fromCache: false, isAuthenticated, cdn };
 });
 
 export const Route = createFileRoute('/$')({
@@ -234,10 +278,11 @@ const CRITICAL_CSS = `
 function PageComponent() {
 	const data = Route.useLoaderData();
 
-	// CDN configuration - CDN_HOST_NAME is required for serving static assets
-	const cdnHostName = process.env.CDN_HOST_NAME;
+	// CDN config comes from the loader (fetched from Spring Cloud Config Server)
+	const cdn = data?.cdn;
+	const cdnHostName = cdn?.hostName || '';
 	if (!cdnHostName) {
-		throw new Error('CDN_HOST_NAME environment variable is required');
+		throw new Error('CDN hostName not configured. Check ssr.cdn.hostName in config server.');
 	}
 	const cdnUrl = `https://${cdnHostName}/js/dist/`;
 
@@ -277,6 +322,11 @@ function PageComponent() {
 
 	const { application, page, theme, codes, pageName } = data;
 
+	// Defensive check for codes - should never happen but handle gracefully
+	if (!codes) {
+		throw new Error('codes is undefined in loader data - this should not happen');
+	}
+
 	// Bootstrap data for client hydration
 	const bootstrapData = {
 		application,
@@ -289,10 +339,10 @@ function PageComponent() {
 		},
 	};
 
-	// Additional CDN configuration for success case
-	const cdnStripAPIPrefix = process.env.CDN_STRIP_API_PREFIX || 'true';
-	const cdnReplacePlus = process.env.CDN_REPLACE_PLUS === 'true';
-	const cdnResizeOptionsType = process.env.CDN_RESIZE_OPTIONS_TYPE || '';
+	// Additional CDN configuration from loader data
+	const cdnStripAPIPrefix = cdn.stripAPIPrefix;
+	const cdnReplacePlus = cdn.replacePlus;
+	const cdnResizeOptionsType = cdn.resizeOptionsType;
 
 	// External links from application (fonts, stylesheets, etc.)
 	const externalLinks = application?.properties?.links || {};
