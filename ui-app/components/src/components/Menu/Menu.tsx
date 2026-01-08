@@ -55,6 +55,7 @@ function Menu(props: Readonly<ComponentProps>) {
 			colorScheme: menuColorScheme,
 			subMenuOrientation,
 			readOnly,
+			showOpenCloseButton,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -189,18 +190,20 @@ function Menu(props: Readonly<ComponentProps>) {
 		setIsMenuOpenState(!isMenuOpenState);
 	};
 
-	const caretIcon = Object.entries(definition?.children ?? {}).filter(e => e[1]).length ? (
-		<div className="_caretIconContainer">
-			<i
-				className={`_caretIcon ${isMenuOpenState ? caretIconOpen : caretIconClose}`}
-				onClick={menuToggle}
-			>
-				<SubHelperComponent definition={definition} subComponentName="caretIcon" />
-			</i>
-		</div>
-	) : (
-		<></>
-	);
+	const caretIcon =
+		showOpenCloseButton &&
+		Object.entries(definition?.children ?? {}).filter(e => e[1]).length ? (
+			<div className="_caretIconContainer">
+				<i
+					className={`_caretIcon ${isMenuOpenState ? caretIconOpen : caretIconClose}`}
+					onClick={menuToggle}
+				>
+					<SubHelperComponent definition={definition} subComponentName="caretIcon" />
+				</i>
+			</div>
+		) : (
+			<></>
+		);
 
 	const styleKey = `${key}_${
 		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
