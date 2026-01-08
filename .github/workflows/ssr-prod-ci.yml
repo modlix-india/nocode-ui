@@ -6,7 +6,8 @@ on:
       - oci-production
     paths:
       - 'ui-app/ssr/**'
-      - 'ui-app/client/dist/**'
+      - 'ui-app/client/**'
+      - 'ui-app/components/**'
       - '.github/workflows/ssr-prod-ci.yml'
   workflow_dispatch:
 
