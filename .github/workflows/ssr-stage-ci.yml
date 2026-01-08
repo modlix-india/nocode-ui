@@ -6,7 +6,8 @@ on:
       - oci-stage
     paths:
       - 'ui-app/ssr/**'
-      - 'ui-app/client/dist/**'
+      - 'ui-app/client/**'
+      - 'ui-app/components/**'
       - '.github/workflows/ssr-stage-ci.yml'
   workflow_dispatch:
 
