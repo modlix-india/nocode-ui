@@ -43,10 +43,12 @@ export const RenderEngineContainer = () => {
 		UrlDetailsExtractor.addDetails(details);
 		if (!pageName)
 			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+		// If we still don't have a pageName (e.g., store not populated yet), skip loading
+		if (!pageName) return;
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName!));
+				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName));
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
 				// Only check app code mismatch if application has been loaded (appCode is defined)
@@ -121,6 +123,21 @@ export const RenderEngineContainer = () => {
 			'Store.pageDefinition',
 		);
 	}, []);
+
+	// Re-trigger loadDefinition when application data becomes available
+	// This handles the case where the initial load had no pageName because
+	// the URL was '/' and the application's defaultPage wasn't loaded yet
+	useEffect(() => {
+		return addListener(
+			undefined,
+			() => {
+				if (!currentPageName) {
+					loadDefinition();
+				}
+			},
+			'Store.application',
+		);
+	}, [currentPageName, loadDefinition]);
 
 	useEffect(
 		() =>

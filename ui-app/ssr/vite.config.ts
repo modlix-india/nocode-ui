@@ -3,8 +3,8 @@ import path from 'path';
 import fs from 'node:fs';
 
 /**
- * SSR middleware plugin that handles all page requests
- * Returns pure HTML without any framework client-side code
+ * SSR middleware plugin for development mode
+ * Handles all page requests and returns pure HTML
  */
 function ssrMiddlewarePlugin(): PluginOption {
 	// Path to client dist directory for serving static files
@@ -13,6 +13,7 @@ function ssrMiddlewarePlugin(): PluginOption {
 
 	return {
 		name: 'ssr-middleware',
+		apply: 'serve', // Only apply in dev mode
 		configureServer(server) {
 			server.middlewares.use(async (req, res, next) => {
 				// Initialize configuration and Redis on first request
@@ -101,13 +102,33 @@ function ssrMiddlewarePlugin(): PluginOption {
 export default defineConfig({
 	server: {
 		port: 3080,
-		host: '0.0.0.0', // Bind to all interfaces for Docker access
-		allowedHosts: true, // Allow all hosts - SSR service can be accessed from any domain
+		host: '0.0.0.0',
+		allowedHosts: true,
 	},
 	plugins: [ssrMiddlewarePlugin()],
 	resolve: {
 		alias: {
 			'~': path.resolve(__dirname, './src'),
+		},
+	},
+	build: {
+		ssr: true,
+		target: 'node18',
+		outDir: 'dist',
+		rollupOptions: {
+			input: path.resolve(__dirname, 'src/server.ts'),
+			output: {
+				entryFileNames: 'server.js',
+				format: 'esm',
+			},
+			external: [
+				'ioredis',
+				'node:http',
+				'node:fs',
+				'node:path',
+				'node:url',
+				'node:crypto',
+			],
 		},
 	},
 });
