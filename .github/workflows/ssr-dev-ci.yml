@@ -6,7 +6,8 @@ on:
       - oci-development
     paths:
       - 'ui-app/ssr/**'
-      - 'ui-app/client/dist/**'
+      - 'ui-app/client/**'
+      - 'ui-app/components/**'
       - '.github/workflows/ssr-dev-ci.yml'
   workflow_dispatch:
 
