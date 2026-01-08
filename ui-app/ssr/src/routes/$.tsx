@@ -17,6 +17,44 @@ import { loadConfig, getConfig } from '~/config/configLoader';
 import logger from '~/config/logger';
 import { createHash } from 'node:crypto';
 
+/**
+ * Process CSP value (can be string or object with directives)
+ * Returns a properly formatted CSP header string
+ */
+function processCSP(csp: string | Record<string, string> | undefined): string | null {
+	if (!csp) return null;
+
+	if (typeof csp === 'string') {
+		return csp;
+	}
+
+	// Convert object format to CSP string
+	// e.g., { "default-src": "'self'", "script-src": "'self' 'unsafe-inline'" }
+	// becomes "default-src 'self'; script-src 'self' 'unsafe-inline'"
+	return Object.entries(csp)
+		.map(([directive, value]) => `${directive} ${value}`)
+		.join('; ');
+}
+
+/**
+ * Set CSP headers from application properties
+ */
+function setCSPHeaders(application: ApplicationDefinition | null): void {
+	if (!application?.properties) return;
+
+	const csp = processCSP(application.properties.csp);
+	if (csp) {
+		setResponseHeader('Content-Security-Policy', csp);
+		logger.debug('Set CSP header', { csp });
+	}
+
+	const cspReport = processCSP(application.properties.cspReport);
+	if (cspReport) {
+		setResponseHeader('Content-Security-Policy-Report-Only', cspReport);
+		logger.debug('Set CSP-Report-Only header', { cspReport });
+	}
+}
+
 interface CDNConfig {
 	hostName: string;
 	stripAPIPrefix: boolean;
@@ -122,6 +160,7 @@ const getPageData = createServerFn().handler(async (): Promise<PageDataResult> =
 			logger.info('Cache hit', { cacheKey, pageName: urlPageName });
 			const etag = generateETag(cached);
 			setCacheHeaders(isAuthenticated, true, etag);
+			setCSPHeaders(cached.application);
 			return { ...cached, fromCache: true, isAuthenticated, cdn };
 		}
 	}
@@ -145,6 +184,7 @@ const getPageData = createServerFn().handler(async (): Promise<PageDataResult> =
 			logger.info('Cache hit (resolved page)', { cacheKey, pageName: actualPageName });
 			const etag = generateETag(cached);
 			setCacheHeaders(isAuthenticated, true, etag);
+			setCSPHeaders(cached.application);
 			return { ...cached, fromCache: true, isAuthenticated, cdn };
 		}
 	}
@@ -177,9 +217,10 @@ const getPageData = createServerFn().handler(async (): Promise<PageDataResult> =
 		logger.info('Cached page data', { cacheKey, pageName: actualPageName, ttl: 1800 });
 	}
 
-	// Set cache headers
+	// Set cache headers and CSP headers
 	const etag = generateETag(result);
 	setCacheHeaders(isAuthenticated, false, etag);
+	setCSPHeaders(data.application);
 
 	logger.info('SSR page rendered', {
 		pageName: actualPageName,
@@ -347,6 +388,10 @@ function PageComponent() {
 
 	// External links from application (fonts, stylesheets, etc.)
 	const externalLinks = application?.properties?.links || {};
+	// Meta tags from application properties
+	const externalMetas = application?.properties?.metas || [];
+	// External scripts from application properties
+	const externalScripts = application?.properties?.scripts || [];
 
 	return (
 		<>
@@ -374,6 +419,17 @@ function PageComponent() {
 				/>
 			))}
 
+			{/* Meta tags from application properties */}
+			{externalMetas.map((meta, index) => (
+				<meta
+					key={`app-meta-${index}`}
+					{...(meta.name && { name: meta.name })}
+					{...(meta.property && { property: meta.property })}
+					{...(meta.httpEquiv && { httpEquiv: meta.httpEquiv })}
+					{...(meta.content && { content: meta.content })}
+				/>
+			))}
+
 			{/* Bootstrap data for client hydration */}
 			<script
 				dangerouslySetInnerHTML={{
@@ -394,6 +450,11 @@ function PageComponent() {
 			    hydration errors when the client bundle has its own React instance.
 			    Instead, we let the client render everything using the bootstrap data above. */}
 			<div id="app"></div>
+
+			{/* External scripts from application properties */}
+			{externalScripts.map((script, index) => (
+				<script key={`app-script-${index}`} src={script.src} defer />
+			))}
 
 			{/* Client JS bundles - defer for non-blocking load */}
 			<script src={`${cdnUrl}vendors.js`} defer />

@@ -73,9 +73,10 @@ export interface ApplicationDefinition {
 		};
 		links?: Record<string, { rel: string; href: string }>;
 		scripts?: Array<{ src: string }>;
-		metas?: Array<{ name: string; content: string }>;
+		metas?: Array<{ name?: string; content?: string; property?: string; httpEquiv?: string }>;
 		notFoundPage?: string;
-		csp?: string;
+		csp?: string | Record<string, string>;
+		cspReport?: string | Record<string, string>;
 	};
 }
 
