@@ -13,14 +13,12 @@ import {
 	type ThemeDefinition,
 } from '~/api/client';
 import { getCachedData, setCachedData, generateCacheKey } from '~/cache/redis';
-import { SSRPageRenderer } from '~/render/pageRenderer';
 import { createHash } from 'node:crypto';
 
 interface CachedPageData {
 	application: ApplicationDefinition;
 	page: PageDefinition;
 	theme: ThemeDefinition | null;
-	styles: unknown;
 	codes: { appCode: string; clientCode: string };
 	pageName: string;
 	cachedAt: number; // Timestamp for ETag generation
@@ -131,7 +129,6 @@ const getPageData = createServerFn().handler(async (): Promise<PageDataResult> =
 		application: data.application,
 		page: data.page,
 		theme: data.theme as ThemeDefinition | null,
-		styles: data.styles,
 		codes,
 		pageName: actualPageName,
 		cachedAt: Date.now(),
@@ -234,21 +231,6 @@ const CRITICAL_CSS = `
 	}
 `;
 
-/**
- * Collect used component types from page definition
- */
-function collectUsedComponents(pageDefinition: PageDefinition): string[] {
-	const components = new Set<string>();
-	if (pageDefinition?.componentDefinition) {
-		for (const comp of Object.values(pageDefinition.componentDefinition)) {
-			if (comp?.type) {
-				components.add(comp.type);
-			}
-		}
-	}
-	return Array.from(components);
-}
-
 function PageComponent() {
 	const data = Route.useLoaderData();
 
@@ -291,17 +273,13 @@ function PageComponent() {
 		);
 	}
 
-	const { application, page, theme, styles, codes, pageName } = data;
-
-	// Collect used components for the marker div
-	const usedComponents = collectUsedComponents(page);
+	const { application, page, theme, codes, pageName } = data;
 
 	// Bootstrap data for client hydration
 	const bootstrapData = {
 		application,
 		pageDefinition: { [pageName]: page },
 		theme,
-		styles,
 		urlDetails: {
 			pageName,
 			appCode: codes.appCode,
@@ -365,22 +343,11 @@ function PageComponent() {
 				}}
 			/>
 
-			{/* Main app container - structure must match client's App.tsx output */}
-			<div id="app">
-				{/* Page content - SSRPageRenderer outputs <div className="comp compPage">...</div> */}
-				<SSRPageRenderer
-					pageDefinition={page}
-					application={application}
-					theme={theme || undefined}
-					styles={styles}
-				/>
-
-				{/* Messages placeholder - matches client's Messages component (empty initially) */}
-				<div className="comp compMessages"></div>
-
-				{/* Hydration marker at END - client checks for this to decide hydrate vs createRoot */}
-				<div id="_rendered" data-used-components={usedComponents.join(',')} />
-			</div>
+			{/* Main app container - client will render content */}
+			{/* Note: We don't use SSRPageRenderer here because it uses React hooks which causes
+			    hydration errors when the client bundle has its own React instance.
+			    Instead, we let the client render everything using the bootstrap data above. */}
+			<div id="app"></div>
 
 			{/* Client JS bundles - defer for non-blocking load */}
 			<script src={`${cdnUrl}vendors.js`} defer />

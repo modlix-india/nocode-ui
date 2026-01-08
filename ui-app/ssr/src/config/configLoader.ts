@@ -1,9 +1,36 @@
 /**
  * Configuration loader for SSR service
  * Loads configuration from Spring Boot Cloud Config Server
+ *
+ * Configuration Priority (highest to lowest):
+ * 1. Environment variables
+ * 2. Spring Cloud Config Server
+ * 3. Default configuration
+ *
+ * Environment Variables:
+ * - CLOUD_CONFIG_SERVER: Config server host (default: localhost)
+ * - CLOUD_CONFIG_SERVER_PORT: Config server port (default: 8888)
+ * - SPRING_PROFILE / SPRING_PROFILES_ACTIVE: Active profile (default: default)
+ * - SERVER_PORT: SSR server port (default: 3080)
+ * - REDIS_URL: Redis connection URL
+ * - GATEWAY_URL: Backend gateway URL
+ * - CDN_HOST_NAME: CDN hostname
+ * - CDN_STRIP_API_PREFIX: Strip API prefix from CDN URLs (default: true)
+ * - CDN_REPLACE_PLUS: Replace + in query params (default: false)
+ * - CDN_RESIZE_OPTIONS_TYPE: Image resize options type (default: none)
+ * - CACHE_TTL_SECONDS: Cache TTL in seconds (default: 1800)
  */
 
+import logger from './logger';
+
 interface SSRConfig {
+	// Cloud Config Server configuration
+	configServer: {
+		host: string;
+		port: number;
+		profile: string;
+		appName: string;
+	};
 	// Server configuration
 	server: {
 		port: number;
@@ -26,12 +53,17 @@ interface SSRConfig {
 	// Cache configuration
 	cache: {
 		ttlSeconds: number;
-		invalidationSecret: string;
 	};
 }
 
 // Default configuration (used in development or if config server is unavailable)
 const defaultConfig: SSRConfig = {
+	configServer: {
+		host: process.env.CLOUD_CONFIG_SERVER || 'localhost',
+		port: Number.parseInt(process.env.CLOUD_CONFIG_SERVER_PORT || '8888', 10),
+		profile: process.env.SPRING_PROFILE || process.env.SPRING_PROFILES_ACTIVE || 'default',
+		appName: process.env.SSR_APP_NAME || 'ssr',
+	},
 	server: {
 		port: 3080,
 	},
@@ -49,7 +81,6 @@ const defaultConfig: SSRConfig = {
 	},
 	cache: {
 		ttlSeconds: 1800, // 30 minutes
-		invalidationSecret: 'dev-secret',
 	},
 };
 
@@ -59,14 +90,11 @@ let loadedConfig: SSRConfig | null = null;
  * Fetch configuration from Spring Boot Cloud Config Server
  */
 async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
-	const configServerUrl = process.env.CLOUD_CONFIG_SERVER || 'localhost';
-	const configServerPort = process.env.CLOUD_CONFIG_SERVER_PORT || '8888';
-	const profile = process.env.SPRING_PROFILE || process.env.SPRING_PROFILES_ACTIVE || 'default';
-	const appName = 'ssr';
+	const { host, port, profile, appName } = defaultConfig.configServer;
 
-	const url = `http://${configServerUrl}:${configServerPort}/${appName}/${profile}`;
+	const url = `http://${host}:${port}/${appName}/${profile}`;
 
-	console.log(`Fetching configuration from: ${url}`);
+	logger.info('Fetching configuration from config server', { url });
 
 	try {
 		const response = await fetch(url, {
@@ -77,7 +105,7 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 		});
 
 		if (!response.ok) {
-			console.warn(`Config server returned ${response.status}, using defaults`);
+			logger.warn('Config server returned error, using defaults', { status: response.status });
 			return null;
 		}
 
@@ -86,30 +114,29 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 		// Spring Cloud Config returns format: { name, profiles, propertySources: [{ source: {...} }] }
 		const source = data.propertySources?.[0]?.source || {};
 
+		// SSR-specific config takes priority, fallback to shared config
 		return {
 			server: {
-				port: source['server.port'] || defaultConfig.server.port,
+				port: source['ssr.server.port'] || source['server.port'] || defaultConfig.server.port,
 			},
 			redis: {
-				url: source['redis.url'] || defaultConfig.redis.url,
+				url: source['ssr.redis.url'] || defaultConfig.redis.url,
 			},
 			gateway: {
-				url: source['gateway.url'] || defaultConfig.gateway.url,
+				url: source['ssr.gateway.url'] || source['gateway.url'] || defaultConfig.gateway.url,
 			},
 			cdn: {
-				hostName: source['ui.cdnHostName'] || defaultConfig.cdn.hostName,
-				stripAPIPrefix: source['ui.cdnStripAPIPrefix'] ?? defaultConfig.cdn.stripAPIPrefix,
-				replacePlus: source['ui.cdnReplacePlus'] ?? defaultConfig.cdn.replacePlus,
-				resizeOptionsType: source['ui.cdnResizeOptionsType'] || defaultConfig.cdn.resizeOptionsType,
+				hostName: source['ssr.cdn.hostName'] || source['ui.cdnHostName'] || defaultConfig.cdn.hostName,
+				stripAPIPrefix: source['ssr.cdn.stripAPIPrefix'] ?? source['ui.cdnStripAPIPrefix'] ?? defaultConfig.cdn.stripAPIPrefix,
+				replacePlus: source['ssr.cdn.replacePlus'] ?? source['ui.cdnReplacePlus'] ?? defaultConfig.cdn.replacePlus,
+				resizeOptionsType: source['ssr.cdn.resizeOptionsType'] || source['ui.cdnResizeOptionsType'] || defaultConfig.cdn.resizeOptionsType,
 			},
 			cache: {
 				ttlSeconds: source['ssr.cache.ttlSeconds'] || defaultConfig.cache.ttlSeconds,
-				invalidationSecret:
-					source['ssr.cache.invalidationSecret'] || defaultConfig.cache.invalidationSecret,
 			},
 		};
 	} catch (error) {
-		console.warn('Failed to fetch from config server:', error);
+		logger.warn('Failed to fetch from config server, using defaults', { error: String(error) });
 		return null;
 	}
 }
@@ -120,7 +147,9 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 function loadFromEnvironment(): Partial<SSRConfig> {
 	return {
 		server: {
-			port: process.env.SERVER_PORT ? parseInt(process.env.SERVER_PORT, 10) : defaultConfig.server.port,
+			port: process.env.SERVER_PORT
+				? Number.parseInt(process.env.SERVER_PORT, 10)
+				: defaultConfig.server.port,
 		},
 		redis: {
 			url: process.env.REDIS_URL || defaultConfig.redis.url,
@@ -136,10 +165,8 @@ function loadFromEnvironment(): Partial<SSRConfig> {
 		},
 		cache: {
 			ttlSeconds: process.env.CACHE_TTL_SECONDS
-				? parseInt(process.env.CACHE_TTL_SECONDS, 10)
+				? Number.parseInt(process.env.CACHE_TTL_SECONDS, 10)
 				: defaultConfig.cache.ttlSeconds,
-			invalidationSecret:
-				process.env.CACHE_INVALIDATION_SECRET || defaultConfig.cache.invalidationSecret,
 		},
 	};
 }
@@ -153,6 +180,9 @@ function mergeConfigs(...configs: Array<Partial<SSRConfig> | null>): SSRConfig {
 	for (const config of configs) {
 		if (!config) continue;
 
+		if (config.configServer) {
+			result.configServer = { ...result.configServer, ...config.configServer };
+		}
 		if (config.server) {
 			result.server = { ...result.server, ...config.server };
 		}
@@ -181,7 +211,13 @@ export async function loadConfig(): Promise<SSRConfig> {
 		return loadedConfig;
 	}
 
-	console.log('Loading SSR configuration...');
+	logger.info('Loading SSR configuration...');
+	logger.info('Config server settings', {
+		host: defaultConfig.configServer.host,
+		port: defaultConfig.configServer.port,
+		profile: defaultConfig.configServer.profile,
+		appName: defaultConfig.configServer.appName,
+	});
 
 	// Try to load from config server first
 	const configServerConfig = await fetchFromConfigServer();
@@ -192,11 +228,15 @@ export async function loadConfig(): Promise<SSRConfig> {
 	// Merge: defaults < configServer < environment
 	loadedConfig = mergeConfigs(defaultConfig, configServerConfig, envConfig);
 
-	console.log('Configuration loaded:', {
+	logger.info('Configuration loaded', {
 		serverPort: loadedConfig.server.port,
 		gatewayUrl: loadedConfig.gateway.url,
-		redisConfigured: !!loadedConfig.redis.url,
+		redisUrl: loadedConfig.redis.url ? '(configured)' : '(not configured)',
 		cdnHostName: loadedConfig.cdn.hostName || '(none)',
+		cdnStripAPIPrefix: loadedConfig.cdn.stripAPIPrefix,
+		cdnReplacePlus: loadedConfig.cdn.replacePlus,
+		cdnResizeOptionsType: loadedConfig.cdn.resizeOptionsType,
+		cacheTtlSeconds: loadedConfig.cache.ttlSeconds,
 	});
 
 	return loadedConfig;

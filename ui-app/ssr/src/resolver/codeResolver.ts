@@ -1,6 +1,16 @@
 import { getRedisClient } from '../cache/redis';
+import logger from '../config/logger';
+import { getConfig } from '../config/configLoader';
 
-const GATEWAY_URL = process.env.GATEWAY_URL || 'http://localhost:8080';
+function getGatewayUrl(): string {
+	try {
+		return getConfig().gateway.url;
+	} catch {
+		// Config not loaded yet, use env variable or default
+		return process.env.GATEWAY_URL || 'http://localhost:8080';
+	}
+}
+
 const DEFAULT_CLIENT = 'SYSTEM';
 const DEFAULT_APP = 'nothing';
 
@@ -63,12 +73,13 @@ async function resolveFromSecurityService(
 		}
 
 		// Call security service internal endpoint (same as GatewayFilter.java uses)
+		const gatewayUrl = getGatewayUrl();
 		const response = await fetch(
-			`${GATEWAY_URL}/api/security/clients/internal/getClientNAppCode?scheme=${scheme}&host=${host}&port=${port}`
+			`${gatewayUrl}/api/security/clients/internal/getClientNAppCode?scheme=${scheme}&host=${host}&port=${port}`
 		);
 
 		if (!response.ok) {
-			console.warn(`Security service returned ${response.status}, using defaults`);
+			logger.warn('Security service returned error, using defaults', { status: response.status });
 			return { clientCode: DEFAULT_CLIENT, appCode: DEFAULT_APP };
 		}
 
@@ -84,7 +95,7 @@ async function resolveFromSecurityService(
 
 		return codes;
 	} catch (error) {
-		console.error('Failed to resolve codes from security service:', error);
+		logger.error('Failed to resolve codes from security service', { error: String(error) });
 		return { clientCode: DEFAULT_CLIENT, appCode: DEFAULT_APP };
 	}
 }

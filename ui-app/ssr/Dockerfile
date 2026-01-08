@@ -38,8 +38,8 @@ COPY --from=builder /app/ssr/package.json ./
 # Copy client dist for serving static files
 COPY --from=builder /app/client/dist ./client/dist
 
-# Set ownership
-RUN chown -R nodejs:nodejs /app
+# Create logs directory and set ownership
+RUN mkdir -p /logs && chown -R nodejs:nodejs /app /logs
 
 USER nodejs
 

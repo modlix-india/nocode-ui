@@ -1,4 +1,14 @@
-const GATEWAY_URL = process.env.GATEWAY_URL || 'http://localhost:8080';
+import logger from '../config/logger';
+import { getConfig } from '../config/configLoader';
+
+function getGatewayUrl(): string {
+	try {
+		return getConfig().gateway.url;
+	} catch {
+		// Config not loaded yet, use env variable or default
+		return process.env.GATEWAY_URL || 'http://localhost:8080';
+	}
+}
 
 interface FetchOptions {
 	appCode: string;
@@ -24,16 +34,17 @@ async function fetchApi<T>(
 	}
 
 	try {
-		const response = await fetch(`${GATEWAY_URL}${endpoint}`, { headers });
+		const gatewayUrl = getGatewayUrl();
+		const response = await fetch(`${gatewayUrl}${endpoint}`, { headers });
 
 		if (!response.ok) {
-			console.error(`API error ${response.status} for ${endpoint}`);
+			logger.error('API error', { status: response.status, endpoint });
 			return null;
 		}
 
 		return response.json();
 	} catch (error) {
-		console.error(`Failed to fetch ${endpoint}:`, error);
+		logger.error('Failed to fetch endpoint', { endpoint, error: String(error) });
 		return null;
 	}
 }
@@ -123,16 +134,6 @@ export interface ThemeDefinition {
 }
 
 /**
- * Style definition
- */
-export interface StyleDefinition {
-	name: string;
-	appCode: string;
-	clientCode: string;
-	definition?: Record<string, unknown>;
-}
-
-/**
  * Fetch application definition
  */
 export async function fetchApplication(
@@ -161,15 +162,6 @@ export async function fetchTheme(
 }
 
 /**
- * Fetch styles
- */
-export async function fetchStyles(
-	options: FetchOptions
-): Promise<StyleDefinition[] | null> {
-	return fetchApi<StyleDefinition[]>('/api/ui/styles', options);
-}
-
-/**
  * Fetch all data needed for SSR
  * If pageName is 'index' (fallback), uses application's defaultPage
  */
@@ -180,7 +172,6 @@ export async function fetchAllPageData(
 	application: ApplicationDefinition | null;
 	page: PageDefinition | null;
 	theme: ThemeDefinition | null;
-	styles: StyleDefinition[] | null;
 	resolvedPageName: string;
 }> {
 	// First fetch application (need it for defaultPage and it's always needed)
@@ -192,12 +183,11 @@ export async function fetchAllPageData(
 		actualPageName = application.properties.defaultPage;
 	}
 
-	// Now fetch page, theme, and styles in parallel
-	const [page, theme, styles] = await Promise.all([
+	// Now fetch page and theme in parallel
+	const [page, theme] = await Promise.all([
 		fetchPage(actualPageName, options),
 		fetchTheme(options),
-		fetchStyles(options),
 	]);
 
-	return { application, page, theme, styles, resolvedPageName: actualPageName };
+	return { application, page, theme, resolvedPageName: actualPageName };
 }

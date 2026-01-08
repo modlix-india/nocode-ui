@@ -18,7 +18,6 @@ interface PageRendererProps {
 	pageDefinition: PageDefinition;
 	application: ApplicationDefinition;
 	theme?: ThemeDefinition;
-	styles?: unknown;
 }
 
 /**
