@@ -6,6 +6,8 @@ export function getRouter() {
 		routeTree,
 		defaultPreload: 'intent',
 		scrollRestoration: true,
+		// Preserve trailing slashes - important for URL patterns like /app/client/page/
+		trailingSlash: 'preserve',
 	});
 
 	return router;

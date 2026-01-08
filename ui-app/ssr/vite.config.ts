@@ -47,14 +47,18 @@ function apiMiddlewarePlugin(): PluginOption {
 
 				// Handle /api/cache/invalidate endpoint
 				if (req.method === 'POST' && req.url === '/api/cache/invalidate') {
+					const { default: logger } = await import('./src/config/logger');
 					const INVALIDATION_SECRET =
 						process.env.CACHE_INVALIDATION_SECRET || 'dev-secret';
 
 					res.setHeader('Content-Type', 'application/json');
 
+					logger.info('Received HTTP cache invalidation request');
+
 					// Verify authorization
 					const authHeader = req.headers.authorization;
 					if (authHeader !== `Bearer ${INVALIDATION_SECRET}`) {
+						logger.warn('Cache invalidation request unauthorized');
 						res.statusCode = 401;
 						res.end(JSON.stringify({ error: 'Unauthorized' }));
 						return;
@@ -77,7 +81,14 @@ function apiMiddlewarePlugin(): PluginOption {
 							}
 						);
 
+						logger.info('Cache invalidation request body', {
+							appCode: body.appCode,
+							clientCode: body.clientCode,
+							pageName: body.pageName,
+						});
+
 						if (!body.appCode) {
+							logger.warn('Cache invalidation request missing appCode');
 							res.statusCode = 400;
 							res.end(JSON.stringify({ error: 'appCode is required' }));
 							return;
@@ -100,6 +111,11 @@ function apiMiddlewarePlugin(): PluginOption {
 
 						const invalidated = await invalidateCache(pattern);
 
+						logger.info('HTTP cache invalidation completed', {
+							pattern,
+							keysRemoved: invalidated,
+						});
+
 						res.statusCode = 200;
 						res.end(
 							JSON.stringify({
@@ -111,7 +127,7 @@ function apiMiddlewarePlugin(): PluginOption {
 						);
 						return;
 					} catch (error) {
-						console.error('Cache invalidation error:', error);
+						logger.error('Cache invalidation error', { error: String(error) });
 						res.statusCode = 500;
 						res.end(JSON.stringify({ error: 'Internal server error' }));
 						return;
