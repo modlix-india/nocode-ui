@@ -2,8 +2,7 @@ name: ssr-dev-ci
 
 on:
   push:
-    branches:
-      - oci-development
+    branches: [cf-development]
     paths:
       - 'ui-app/ssr/**'
       - 'ui-app/client/**'
