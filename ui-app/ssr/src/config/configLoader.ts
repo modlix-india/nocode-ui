@@ -145,30 +145,44 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
  * Load configuration from environment variables (overrides)
  */
 function loadFromEnvironment(): Partial<SSRConfig> {
-	return {
-		server: {
-			port: process.env.SERVER_PORT
-				? Number.parseInt(process.env.SERVER_PORT, 10)
-				: defaultConfig.server.port,
-		},
-		redis: {
-			url: process.env.REDIS_URL || defaultConfig.redis.url,
-		},
-		gateway: {
-			url: process.env.GATEWAY_URL || defaultConfig.gateway.url,
-		},
-		cdn: {
-			hostName: process.env.CDN_HOST_NAME || defaultConfig.cdn.hostName,
-			stripAPIPrefix: process.env.CDN_STRIP_API_PREFIX === 'true' || defaultConfig.cdn.stripAPIPrefix,
-			replacePlus: process.env.CDN_REPLACE_PLUS === 'true' || defaultConfig.cdn.replacePlus,
-			resizeOptionsType: process.env.CDN_RESIZE_OPTIONS_TYPE || defaultConfig.cdn.resizeOptionsType,
-		},
-		cache: {
-			ttlSeconds: process.env.CACHE_TTL_SECONDS
-				? Number.parseInt(process.env.CACHE_TTL_SECONDS, 10)
-				: defaultConfig.cache.ttlSeconds,
-		},
-	};
+	const config: Partial<SSRConfig> = {};
+
+	// Only set values if environment variables are explicitly provided
+	if (process.env.SERVER_PORT) {
+		config.server = { port: Number.parseInt(process.env.SERVER_PORT, 10) };
+	}
+
+	if (process.env.REDIS_URL) {
+		config.redis = { url: process.env.REDIS_URL };
+	}
+
+	if (process.env.GATEWAY_URL) {
+		config.gateway = { url: process.env.GATEWAY_URL };
+	}
+
+	// CDN config - only include if env vars are set
+	const cdnConfig: Partial<SSRConfig['cdn']> = {};
+	if (process.env.CDN_HOST_NAME) {
+		cdnConfig.hostName = process.env.CDN_HOST_NAME;
+	}
+	if (process.env.CDN_STRIP_API_PREFIX !== undefined) {
+		cdnConfig.stripAPIPrefix = process.env.CDN_STRIP_API_PREFIX === 'true';
+	}
+	if (process.env.CDN_REPLACE_PLUS !== undefined) {
+		cdnConfig.replacePlus = process.env.CDN_REPLACE_PLUS === 'true';
+	}
+	if (process.env.CDN_RESIZE_OPTIONS_TYPE) {
+		cdnConfig.resizeOptionsType = process.env.CDN_RESIZE_OPTIONS_TYPE;
+	}
+	if (Object.keys(cdnConfig).length > 0) {
+		config.cdn = cdnConfig as SSRConfig['cdn'];
+	}
+
+	if (process.env.CACHE_TTL_SECONDS) {
+		config.cache = { ttlSeconds: Number.parseInt(process.env.CACHE_TTL_SECONDS, 10) };
+	}
+
+	return config;
 }
 
 /**

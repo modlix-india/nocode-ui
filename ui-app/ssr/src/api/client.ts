@@ -163,7 +163,7 @@ export async function fetchTheme(
 
 /**
  * Fetch all data needed for SSR
- * If pageName is 'index' (fallback), uses application's defaultPage
+ * If pageName is 'index' or empty (fallback), uses application's defaultPage
  */
 export async function fetchAllPageData(
 	pageName: string,
@@ -177,10 +177,16 @@ export async function fetchAllPageData(
 	// First fetch application (need it for defaultPage and it's always needed)
 	const application = await fetchApplication(options);
 
-	// Resolve actual page name - use defaultPage if pageName is 'index' (the fallback)
+	// Resolve actual page name - use defaultPage if pageName is empty or 'index'
 	let actualPageName = pageName;
-	if (pageName === 'index' && application?.properties?.defaultPage) {
+	const needsDefaultPage = !pageName || pageName === 'index';
+
+	if (needsDefaultPage && application?.properties?.defaultPage) {
 		actualPageName = application.properties.defaultPage;
+		logger.debug('Using default page from application', {
+			requestedPage: pageName,
+			defaultPage: actualPageName,
+		});
 	}
 
 	// Now fetch page and theme in parallel
@@ -188,6 +194,14 @@ export async function fetchAllPageData(
 		fetchPage(actualPageName, options),
 		fetchTheme(options),
 	]);
+
+	logger.debug('Fetched page data', {
+		requestedPage: pageName,
+		resolvedPage: actualPageName,
+		hasApplication: !!application,
+		hasPage: !!page,
+		hasTheme: !!theme,
+	});
 
 	return { application, page, theme, resolvedPageName: actualPageName };
 }
