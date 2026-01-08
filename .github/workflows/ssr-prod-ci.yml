@@ -2,8 +2,7 @@ name: ssr-prod-ci
 
 on:
   push:
-    branches:
-      - oci-production
+    branches: [cf-production]
     paths:
       - 'ui-app/ssr/**'
       - 'ui-app/client/**'
