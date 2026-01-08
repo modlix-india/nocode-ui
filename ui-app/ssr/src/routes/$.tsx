@@ -239,7 +239,7 @@ export const Route = createFileRoute('/$')({
 	head: ({ loaderData }) => {
 		if (!loaderData || 'error' in loaderData) {
 			return {
-				meta: [{ title: 'Page Not Found' }],
+				meta: [],
 			};
 		}
 
