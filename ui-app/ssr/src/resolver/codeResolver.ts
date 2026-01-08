@@ -23,7 +23,8 @@ export interface Codes {
  * Resolves appCode and clientCode from the request.
  *
  * Two resolution strategies:
- * 1. From URL path: /{clientCode}/{appCode}/page/{pageName}
+ * 1. From URL path: /{appCode}/{clientCode}/page/{pageName}
+ *    Example: /monkeytwo/SYSTEM/page/home
  * 2. From scheme/host/port via security API (when codes not in URL)
  *
  * Based on GatewayFilter.java logic
@@ -33,15 +34,17 @@ export async function resolveCodesFromRequest(request: Request): Promise<Codes> 
 	const pathParts = url.pathname.split('/').filter(Boolean);
 
 	// Try to extract from URL path first
-	// Pattern: /{clientCode}/{appCode}/page/{pageName}
+	// Pattern: /{appCode}/{clientCode}/page/{pageName}
 	const pageIndex = pathParts.indexOf('page');
 
 	if (pageIndex >= 2) {
-		// Codes are in URL: parts[0] = clientCode, parts[1] = appCode
-		return {
-			clientCode: pathParts[0],
-			appCode: pathParts[1],
+		// Codes are in URL: parts[0] = appCode, parts[1] = clientCode
+		const codes = {
+			appCode: pathParts[0],
+			clientCode: pathParts[1],
 		};
+		logger.info('Resolved codes from URL path', { codes, pathname: url.pathname });
+		return codes;
 	}
 
 	// Fallback: resolve from scheme/host/port via security API
@@ -123,18 +126,29 @@ async function resolveFromSecurityService(
 
 /**
  * Extracts the page name from the URL path.
- * Handles both /page/{pageName} and /{clientCode}/{appCode}/page/{pageName}
+ * Handles:
+ * - /{appCode}/{clientCode}/page/{pageName} -> pageName
+ * - /{appCode}/{clientCode}/page/ -> index (default page)
+ * - /page/{pageName} -> pageName
+ * - /{pageName} -> pageName (when no 'page' in path)
+ * - / -> index
  */
 export function extractPageName(pathname: string): string {
 	const pathParts = pathname.split('/').filter(Boolean);
 	const pageIndex = pathParts.indexOf('page');
 
-	if (pageIndex !== -1 && pageIndex + 1 < pathParts.length) {
-		// Everything after 'page' is the page name (can include slashes)
-		return pathParts.slice(pageIndex + 1).join('/');
+	if (pageIndex !== -1) {
+		// Found 'page' in path
+		if (pageIndex + 1 < pathParts.length) {
+			// Everything after 'page' is the page name (can include slashes)
+			return pathParts.slice(pageIndex + 1).join('/');
+		}
+		// 'page' is at the end (e.g., /app/client/page/ or /app/client/page)
+		// Return 'index' to use the default page
+		return 'index';
 	}
 
-	// No 'page' in path - treat first part as page name
+	// No 'page' in path - treat first part as page name (or 'index' if empty)
 	return pathParts[0] || 'index';
 }
 
