@@ -2,8 +2,7 @@ name: ssr-stage-ci
 
 on:
   push:
-    branches:
-      - oci-stage
+    branches: [cf-stage]
     paths:
       - 'ui-app/ssr/**'
       - 'ui-app/client/**'
