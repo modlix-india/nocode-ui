@@ -1,17 +1,32 @@
 import axios from 'axios';
 import { createRoot, hydrateRoot } from 'react-dom/client';
-import {
-	PageDefinition,
-	getPageDefinition,
-	processLocation,
-} from '@modlix/ui-components';
-import { AppDefinitionResponse, getAppDefinition } from './App/appDefinition';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
 // globalThis.cdnStripAPIPrefix = true;
 // globalThis.cdnReplacePlus = true;
 // globalThis.cdnResizeOptionsType = 'cloudflare';
+
+// PageDefinition type - inline to avoid importing from @modlix/ui-components before bootstrap
+interface PageDefinitionType {
+	id?: string;
+	name: string;
+	appCode?: string;
+	clientCode?: string;
+	rootComponent: string;
+	componentDefinition: Record<string, any>;
+	eventFunctions?: Record<string, unknown>;
+	translations?: Record<string, Record<string, string>>;
+	properties?: Record<string, any>;
+}
+
+// AppDefinitionResponse type - inline to avoid importing before bootstrap
+interface AppDefinitionResponseType {
+	auth: any;
+	application: any;
+	isApplicationLoadFailed: boolean;
+	theme: any;
+}
 
 declare global {
 	var nodeDev: boolean;
@@ -28,7 +43,7 @@ declare global {
 	var pageEditor: {
 		selectedComponents: string[];
 		selectedSubComponent: string;
-		editingPageDefinition: PageDefinition;
+		editingPageDefinition: PageDefinitionType;
 		personalization: any;
 	};
 	var fillerValueEditor: {
@@ -44,14 +59,14 @@ declare global {
 	var domainClientCode: string;
 	var domainAppCode: string;
 	var lastInteracted: number;
-	var appDefinitionResponse: AppDefinitionResponse;
-	var pageDefinitionResponse: PageDefinition;
+	var appDefinitionResponse: AppDefinitionResponseType;
+	var pageDefinitionResponse: PageDefinitionType;
 	var pageDefinitionRequestPageName: string;
 	var styleProperties: any;
 	// SSR bootstrap data injected by server
 	var __APP_BOOTSTRAP__: {
 		application: any;
-		pageDefinition: { [key: string]: PageDefinition };
+		pageDefinition: { [key: string]: PageDefinitionType };
 		theme: any;
 		styles: any;
 		urlDetails: {
@@ -66,6 +81,24 @@ declare global {
 }
 
 globalThis.styleProperties = {};
+
+// CRITICAL: Set bootstrap data BEFORE any imports from @modlix/ui-components
+// This ensures StoreContext.ts gets the data when it initializes
+const bootstrap = window.__APP_BOOTSTRAP__;
+const AUTH_TOKEN_KEY = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
+const hasAuthTokenEarly = typeof window !== 'undefined' && !!window.localStorage?.getItem(AUTH_TOKEN_KEY);
+
+if (bootstrap && !hasAuthTokenEarly) {
+	const bootstrapPageName = bootstrap.urlDetails?.pageName;
+	globalThis.pageDefinitionRequestPageName = bootstrapPageName;
+	globalThis.appDefinitionResponse = {
+		auth: undefined,
+		application: bootstrap.application,
+		isApplicationLoadFailed: false,
+		theme: bootstrap.theme,
+	};
+	globalThis.pageDefinitionResponse = bootstrap.pageDefinition[bootstrapPageName];
+}
 
 let listeners: Set<() => void> = new Set();
 globalThis.removeDesignModeChangeListener = (fn: () => void) => listeners.delete(fn);
@@ -144,47 +177,44 @@ if (!app) {
 	document.body.appendChild(span);
 } else {
 	(async function () {
+		// Import functions dynamically - this triggers StoreContext initialization
+		// which will now have access to globalThis.appDefinitionResponse set above
+		const { processLocation, getPageDefinition } = await import('@modlix/ui-components');
+		const { getAppDefinition } = await import('./App/appDefinition');
+
 		const pageName = processLocation(window.location)?.pageName;
 		const AUTH_TOKEN = globalThis.isDebugMode ? 'designMode_AuthToken' : 'AuthToken';
 		const hasAuthToken = !!window.localStorage.getItem(AUTH_TOKEN);
 
-		let appDefinitionResponse: AppDefinitionResponse;
-		let pageDefinitionResponse: PageDefinition;
+		let appDefResponse: AppDefinitionResponseType;
+		let pageDefResponse: PageDefinitionType;
 
 		// Check for SSR bootstrap data - use it to avoid network requests during hydration
-		const bootstrap = window.__APP_BOOTSTRAP__;
-		if (bootstrap && !hasAuthToken) {
-			// Use SSR-provided data for faster hydration
-			const bootstrapPageName = bootstrap.urlDetails?.pageName;
-			globalThis.pageDefinitionRequestPageName = bootstrapPageName;
-
-			appDefinitionResponse = {
-				auth: undefined,
-				application: bootstrap.application,
-				isApplicationLoadFailed: false,
-				theme: bootstrap.theme,
-			};
-			pageDefinitionResponse = bootstrap.pageDefinition[bootstrapPageName];
+		// Note: Bootstrap data was already set synchronously at module load time above
+		if (globalThis.appDefinitionResponse && globalThis.pageDefinitionResponse && !hasAuthToken) {
+			// Use pre-set SSR data
+			appDefResponse = globalThis.appDefinitionResponse;
+			pageDefResponse = globalThis.pageDefinitionResponse;
 		} else {
 			// No SSR data or user is authenticated - fetch from API
 			if (pageName) {
 				globalThis.pageDefinitionRequestPageName = pageName;
-				[appDefinitionResponse, pageDefinitionResponse] = await Promise.all([
+				[appDefResponse, pageDefResponse] = await Promise.all([
 					getAppDefinition(),
 					getPageDefinition(pageName),
 				]);
 			} else {
-				appDefinitionResponse = await getAppDefinition();
+				appDefResponse = await getAppDefinition();
 				globalThis.pageDefinitionRequestPageName =
-					appDefinitionResponse?.application?.properties?.defaultPage;
-				pageDefinitionResponse = await getPageDefinition(
+					appDefResponse?.application?.properties?.defaultPage;
+				pageDefResponse = await getPageDefinition(
 					globalThis.pageDefinitionRequestPageName,
 				);
 			}
+			// Update globals for non-SSR case
+			globalThis.appDefinitionResponse = appDefResponse;
+			globalThis.pageDefinitionResponse = pageDefResponse;
 		}
-
-		globalThis.appDefinitionResponse = appDefinitionResponse;
-		globalThis.pageDefinitionResponse = pageDefinitionResponse;
 
 		const { App } = await import(/* webpackChunkName: "Application" */ './App/App');
 		const { AppStyle } = await import(

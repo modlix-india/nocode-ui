@@ -1,14 +1,23 @@
 /**
  * Pure HTML renderer for SSR
  * Renders pages as HTML without any React/framework client-side code
- * The client bundle (vendors.js, index.js) handles hydration
+ * The client bundle (vendors.js, index.js) handles rendering
  */
 
 import type { IncomingMessage } from 'http';
 import logger from '../config/logger';
 import { getConfig } from '../config/configLoader';
-import { resolveCodesFromRequest, extractPageName, getAuthToken } from '../resolver/codeResolver';
-import { fetchAllPageData, type ApplicationDefinition, type PageDefinition, type ThemeDefinition } from '../api/client';
+import {
+	resolveCodesFromRequest,
+	extractPageName,
+	getAuthToken,
+} from '../resolver/codeResolver';
+import {
+	fetchAllPageData,
+	type ApplicationDefinition,
+	type PageDefinition,
+	type ThemeDefinition,
+} from '../api/client';
 import { getCachedData, setCachedData, generateCacheKey } from '../cache/redis';
 
 interface CachedPageData {
@@ -16,6 +25,8 @@ interface CachedPageData {
 	page: PageDefinition | null;
 	theme: ThemeDefinition | null;
 	resolvedPageName: string;
+	appCode: string;
+	clientCode: string;
 	cachedAt: number;
 }
 
@@ -24,7 +35,8 @@ interface CachedPageData {
  */
 function createRequestFromIncoming(req: IncomingMessage): Request {
 	const protocol = (req.headers['x-forwarded-proto'] as string) || 'http';
-	const host = (req.headers['x-forwarded-host'] as string) || req.headers.host || 'localhost';
+	const host =
+		(req.headers['x-forwarded-host'] as string) || req.headers.host || 'localhost';
 	const url = `${protocol}://${host}${req.url || '/'}`;
 
 	const headers = new Headers();
@@ -41,36 +53,43 @@ function createRequestFromIncoming(req: IncomingMessage): Request {
 }
 
 /**
- * Get CDN URL for static assets
+ * Get CDN configuration
  */
-function getCdnUrl(): string {
+function getCdnConfig(): {
+	hostName: string;
+	stripAPIPrefix: boolean;
+	replacePlus: boolean;
+	resizeOptionsType: string;
+} {
 	try {
 		const config = getConfig();
-		if (config.cdn.hostName) {
-			return `https://${config.cdn.hostName}`;
-		}
+		return {
+			hostName: config.cdn.hostName || '',
+			stripAPIPrefix: config.cdn.stripAPIPrefix,
+			replacePlus: config.cdn.replacePlus,
+			resizeOptionsType: config.cdn.resizeOptionsType || '',
+		};
 	} catch {
-		// Config not loaded yet
+		return {
+			hostName: '',
+			stripAPIPrefix: true,
+			replacePlus: false,
+			resizeOptionsType: '',
+		};
 	}
-	// Default to relative paths for local development
-	return '';
 }
 
 /**
  * Generate HTML for the page
+ * Follows the same structure as the client's index.html
  */
-function generateHtml(
-	application: ApplicationDefinition | null,
-	page: PageDefinition | null,
-	theme: ThemeDefinition | null,
-	pageName: string
-): string {
-	const cdnUrl = getCdnUrl();
+function generateHtml(pageData: CachedPageData): string {
+	const { application, page, theme, resolvedPageName, appCode, clientCode } = pageData;
 	const appProps = application?.properties || {};
 	const pageProps = page?.properties || {};
 
 	// Build title
-	let title = appProps.title || 'Application';
+	let title = appProps.title || 'Loading...';
 	if (pageProps.title?.name?.value) {
 		if (pageProps.title?.append?.value) {
 			title = `${pageProps.title.name.value} - ${title}`;
@@ -85,7 +104,9 @@ function generateHtml(
 	// SEO meta tags from page
 	const seo = pageProps.seo;
 	if (seo?.description?.value) {
-		metaTags.push(`<meta name="description" content="${escapeHtml(seo.description.value)}">`);
+		metaTags.push(
+			`<meta name="description" content="${escapeHtml(seo.description.value)}">`
+		);
 	}
 	if (seo?.keywords?.value) {
 		metaTags.push(`<meta name="keywords" content="${escapeHtml(seo.keywords.value)}">`);
@@ -93,80 +114,110 @@ function generateHtml(
 
 	// Open Graph meta tags
 	if (seo?.ogTitle?.value) {
-		metaTags.push(`<meta property="og:title" content="${escapeHtml(seo.ogTitle.value)}">`);
+		metaTags.push(
+			`<meta property="og:title" content="${escapeHtml(seo.ogTitle.value)}">`
+		);
 	}
 	if (seo?.ogDescription?.value) {
-		metaTags.push(`<meta property="og:description" content="${escapeHtml(seo.ogDescription.value)}">`);
+		metaTags.push(
+			`<meta property="og:description" content="${escapeHtml(seo.ogDescription.value)}">`
+		);
 	}
 	if (seo?.ogImage?.value) {
-		metaTags.push(`<meta property="og:image" content="${escapeHtml(seo.ogImage.value)}">`);
+		metaTags.push(
+			`<meta property="og:image" content="${escapeHtml(seo.ogImage.value)}">`
+		);
 	}
 
 	// Application-level meta tags
-	if (appProps.metas) {
+	if (appProps.metas && Array.isArray(appProps.metas)) {
 		for (const meta of appProps.metas) {
 			if (meta.name && meta.content) {
-				metaTags.push(`<meta name="${escapeHtml(meta.name)}" content="${escapeHtml(meta.content)}">`);
+				metaTags.push(
+					`<meta name="${escapeHtml(meta.name)}" content="${escapeHtml(meta.content)}">`
+				);
 			}
 		}
 	}
 
-	// Build link tags
-	const linkTags: string[] = [];
-	if (appProps.links) {
-		for (const [_key, link] of Object.entries(appProps.links)) {
-			if (link.rel && link.href) {
-				linkTags.push(`<link rel="${escapeHtml(link.rel)}" href="${escapeHtml(link.href)}">`);
-			}
-		}
-	}
+	// CDN configuration
+	const cdn = getCdnConfig();
+	logger.debug('CDN config for HTML generation', { cdnHostName: cdn.hostName });
+	const jsPath = cdn.hostName ? `https://${cdn.hostName}/js/dist` : '/js/dist';
 
-	// Build script tags
-	const scriptTags: string[] = [];
-	if (appProps.scripts) {
-		for (const script of appProps.scripts) {
-			if (script.src) {
-				scriptTags.push(`<script src="${escapeHtml(script.src)}"></script>`);
-			}
-		}
-	}
+	// Use the actual page name from the returned page definition
+	// This handles cases where a secured page returns a login page instead
+	const actualPageName = page?.name || resolvedPageName;
 
-	// CDN prefix for JS files
-	const cdnPrefix = appProps.codeParts?.cdnPrefix || cdnUrl;
-	const jsPath = cdnPrefix ? `${cdnPrefix}/js/dist` : '/js/dist';
-
-	// Build initial state for client hydration
-	const initialState = {
+	// Build __APP_BOOTSTRAP__ data in the format the client expects
+	const bootstrapData = {
 		application,
-		page,
+		pageDefinition: { [actualPageName]: page },
 		theme,
-		pageName,
+		styles: null, // Styles are loaded via api/ui/style
+		urlDetails: {
+			pageName: actualPageName,
+			appCode,
+			clientCode,
+		},
 	};
 
-	// CSP header if configured
-	const cspMeta = appProps.csp
-		? `<meta http-equiv="Content-Security-Policy" content="${escapeHtml(appProps.csp)}">`
-		: '';
+	// Build global variable assignments
+	const globalVars: string[] = [
+		'globalThis.nodeDev = true;',
+		`window.__APP_BOOTSTRAP__ = ${JSON.stringify(bootstrapData)};`,
+	];
+
+	// CDN globals (if configured)
+	if (cdn.hostName) {
+		globalVars.push(`globalThis.cdnPrefix = '${cdn.hostName}';`);
+		globalVars.push(`globalThis.cdnStripAPIPrefix = ${cdn.stripAPIPrefix};`);
+		globalVars.push(`globalThis.cdnReplacePlus = ${cdn.replacePlus};`);
+		if (cdn.resizeOptionsType) {
+			globalVars.push(`globalThis.cdnResizeOptionsType = '${cdn.resizeOptionsType}';`);
+		}
+	}
+
+	// Domain codes
+	if (appCode) {
+		globalVars.push(`globalThis.domainAppCode = '${appCode}';`);
+	}
+	if (clientCode) {
+		globalVars.push(`globalThis.domainClientCode = '${clientCode}';`);
+	}
+
+	// Local static prefix (when no CDN)
+	globalVars.push(
+		`globalThis.__LOCAL_STATIC_PREFIX__ = ${cdn.hostName ? 'null' : "'/js/dist'"};`
+	);
+
+	// Loading animation styles (same as original index.html)
+	const loaderStyles = `@keyframes loaderAnimation {
+	0% { background-position: 0% 0%; }
+	50% { background-position: 90% 0%; }
+	100% { background-position: 0% 0%; }
+}`;
+
+	const loaderDiv = `<div style="position: fixed; top: 0px; left: 0px; width: 100%; height: 3px; opacity: 0.5; background: linear-gradient(90deg, rgba(36, 36, 36, 1) 0%, rgba(117, 117, 117, 1) 20%, rgba(144, 144, 144, 1) 40%, rgba(175, 175, 175, 1) 60%, rgba(36, 36, 36, 1) 80%, rgba(117, 117, 112, 1) 100%); display: block; animation: loaderAnimation 1s ease-in-out infinite; background-size: 200%;"></div>`;
 
 	return `<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    ${cspMeta}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>${globalVars.join('\n        ')}</script>
     <title>${escapeHtml(title)}</title>
     ${metaTags.join('\n    ')}
-    ${linkTags.join('\n    ')}
-    <link rel="stylesheet" href="${jsPath}/index.css">
+    <script defer src="${jsPath}/vendors.js"></script>
+    <script defer src="${jsPath}/index.js"></script>
 </head>
 <body>
-    <div id="app"></div>
-    <script>
-        window.__SSR_DATA__ = ${JSON.stringify(initialState)};
-    </script>
-    <script src="${jsPath}/vendors.js"></script>
-    <script src="${jsPath}/index.js"></script>
-    ${scriptTags.join('\n    ')}
+    <div id="app">
+        <style>${loaderStyles}</style>
+        ${loaderDiv}
+    </div>
+    <link rel="stylesheet" id="serviceStyle">
+    <script>document.getElementById('serviceStyle').setAttribute('href', 'api/ui/style');</script>
 </body>
 </html>`;
 }
@@ -174,13 +225,50 @@ function generateHtml(
 /**
  * Escape HTML special characters
  */
-function escapeHtml(text: string): string {
-	return text
+function escapeHtml(text: unknown): string {
+	if (text === null || text === undefined) {
+		return '';
+	}
+	let str: string;
+	if (typeof text === 'string') {
+		str = text;
+	} else if (typeof text === 'number' || typeof text === 'boolean') {
+		str = String(text);
+	} else {
+		// For objects/arrays, return empty string (don't render [object Object])
+		return '';
+	}
+	return str
 		.replace(/&/g, '&amp;')
 		.replace(/</g, '&lt;')
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;')
 		.replace(/'/g, '&#039;');
+}
+
+/**
+ * Generate minimal fallback HTML when SSR fails
+ */
+function generateFallbackHtml(): string {
+	const cdn = getCdnConfig();
+	const jsPath = cdn.hostName ? `https://${cdn.hostName}/js/dist` : '/js/dist';
+
+	return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>globalThis.nodeDev = true;</script>
+    <title>Loading...</title>
+    <script defer src="${jsPath}/vendors.js"></script>
+    <script defer src="${jsPath}/index.js"></script>
+</head>
+<body>
+    <div id="app"></div>
+    <link rel="stylesheet" id="serviceStyle">
+    <script>document.getElementById('serviceStyle').setAttribute('href', 'api/ui/style');</script>
+</body>
+</html>`;
 }
 
 /**
@@ -235,6 +323,8 @@ export async function renderPage(req: IncomingMessage): Promise<string> {
 				page,
 				theme,
 				resolvedPageName,
+				appCode: codes.appCode,
+				clientCode: codes.clientCode,
 				cachedAt: Date.now(),
 			};
 
@@ -251,12 +341,7 @@ export async function renderPage(req: IncomingMessage): Promise<string> {
 		}
 
 		// Generate HTML
-		const html = generateHtml(
-			pageData.application,
-			pageData.page,
-			pageData.theme,
-			pageData.resolvedPageName
-		);
+		const html = generateHtml(pageData);
 
 		const duration = Date.now() - startTime;
 		logger.info('Page rendered', {
@@ -264,29 +349,14 @@ export async function renderPage(req: IncomingMessage): Promise<string> {
 			appCode: codes.appCode,
 			clientCode: codes.clientCode,
 			durationMs: duration,
-			cached: !!pageData.cachedAt && pageData.cachedAt < startTime,
+			cached: pageData.cachedAt < startTime,
 		});
 
 		return html;
 	} catch (error) {
 		logger.error('Error rendering page', { error: String(error), url: req.url });
 
-		// Return a minimal error page
-		return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error</title>
-</head>
-<body>
-    <div id="app"></div>
-    <script>
-        window.__SSR_DATA__ = { error: true };
-    </script>
-    <script src="/js/dist/vendors.js"></script>
-    <script src="/js/dist/index.js"></script>
-</body>
-</html>`;
+		// Return fallback HTML that lets the client handle everything
+		return generateFallbackHtml();
 	}
 }

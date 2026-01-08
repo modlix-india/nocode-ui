@@ -11,6 +11,6 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"types": ["d3", "node", "jest"],
-		"sourceMap": true
+		"noEmit": true
 	}
 }
