@@ -1,5 +1,6 @@
 import { duplicate } from '@fincity/kirun-js';
-import { STORE_PREFIX, getDataFromPath, setData } from '@modlix/ui-components';
+import { STORE_PREFIX } from './constants';
+import { getDataFromPath, setData } from './context/StoreContext';
 
 const _parent = window.parent !== window.top ? window.parent : window.top;
 

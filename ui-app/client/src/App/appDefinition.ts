@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { shortUUID } from '@modlix/ui-components';
+import { shortUUID } from '../util/shortUUID';
 
 export interface AppDefinitionResponse {
 	auth: any;
