@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { duplicate } from '@fincity/kirun-js';
+import { STORE_PATH_APP_MESSAGE_TIMEOUT, STORE_PATH_MESSAGES } from '../../constants';
 import {
-	STORE_PATH_APP_MESSAGE_TIMEOUT,
-	STORE_PATH_MESSAGES,
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	setData,
-} from '@modlix/ui-components';
+} from '../../context/StoreContext';
+import { duplicate } from '@fincity/kirun-js';
 
 export function Messages() {
 	const [msgs, setMsgs] = useState<any[]>([]);

@@ -1,21 +1,21 @@
 import { isNullValue } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
+import { STORE_PREFIX } from '../constants';
 import {
-	RenderEngineContainer,
-	STORE_PREFIX,
 	addListener,
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	innerSetData,
 	setData,
-	StyleResolution,
-	StyleResolutionDefinition,
-	usedComponents,
-} from '@modlix/ui-components';
+} from '../context/StoreContext';
 import { messageToMaster, SLAVE_FUNCTIONS } from '../slaveFunctions';
+import { StyleResolution } from '../types/common';
+import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
 import { getAppDefinition } from './appDefinition';
+import { usedComponents } from './usedComponents';
 
 // In design mode we are listening to the messages from editor
 
@@ -178,18 +178,6 @@ export function App() {
 				undefined,
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						// Check if app definition was already fetched by index.tsx bootstrap
-						// to avoid duplicate API calls
-						if (globalThis.appDefinitionResponse?.application) {
-							const { auth, application, isApplicationLoadFailed, theme } =
-								globalThis.appDefinitionResponse;
-							setData(`${STORE_PREFIX}.application`, application);
-							setData(`${STORE_PREFIX}.auth`, auth);
-							setData(`${STORE_PREFIX}.isApplicationLoadFailed`, isApplicationLoadFailed ?? false);
-							setData(`${STORE_PREFIX}.theme`, theme);
-							return;
-						}
-
 						const { auth, application, isApplicationLoadFailed, theme } =
 							await getAppDefinition();
 						setData(`${STORE_PREFIX}.application`, application);
