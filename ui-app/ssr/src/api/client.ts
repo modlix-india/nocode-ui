@@ -1,5 +1,5 @@
-import logger from '../config/logger';
-import { getConfig } from '../config/configLoader';
+import logger from '../config/logger.js';
+import { getConfig } from '../config/configLoader.js';
 
 function getGatewayUrl(): string {
 	try {
@@ -42,7 +42,7 @@ async function fetchApi<T>(
 			return null;
 		}
 
-		return response.json();
+		return response.json() as Promise<T>;
 	} catch (error) {
 		logger.error('Failed to fetch endpoint', { endpoint, error: String(error) });
 		return null;

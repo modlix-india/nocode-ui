@@ -109,7 +109,9 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 			return null;
 		}
 
-		const data = await response.json();
+		const data = await response.json() as {
+			propertySources?: Array<{ source?: Record<string, unknown> }>;
+		};
 
 		// Spring Cloud Config returns format: { name, profiles, propertySources: [{ source: {...} }] }
 		const source = data.propertySources?.[0]?.source || {};
@@ -117,22 +119,22 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 		// SSR-specific config takes priority, fallback to shared config
 		return {
 			server: {
-				port: source['ssr.server.port'] || source['server.port'] || defaultConfig.server.port,
+				port: (source['ssr.server.port'] as number) || (source['server.port'] as number) || defaultConfig.server.port,
 			},
 			redis: {
-				url: source['ssr.redis.url'] || defaultConfig.redis.url,
+				url: (source['ssr.redis.url'] as string) || defaultConfig.redis.url,
 			},
 			gateway: {
-				url: source['ssr.gateway.url'] || source['gateway.url'] || defaultConfig.gateway.url,
+				url: (source['ssr.gateway.url'] as string) || (source['gateway.url'] as string) || defaultConfig.gateway.url,
 			},
 			cdn: {
-				hostName: source['ssr.cdn.hostName'] || source['ui.cdnHostName'] || defaultConfig.cdn.hostName,
-				stripAPIPrefix: source['ssr.cdn.stripAPIPrefix'] ?? source['ui.cdnStripAPIPrefix'] ?? defaultConfig.cdn.stripAPIPrefix,
-				replacePlus: source['ssr.cdn.replacePlus'] ?? source['ui.cdnReplacePlus'] ?? defaultConfig.cdn.replacePlus,
-				resizeOptionsType: source['ssr.cdn.resizeOptionsType'] || source['ui.cdnResizeOptionsType'] || defaultConfig.cdn.resizeOptionsType,
+				hostName: (source['ssr.cdn.hostName'] as string) || (source['ui.cdnHostName'] as string) || defaultConfig.cdn.hostName,
+				stripAPIPrefix: (source['ssr.cdn.stripAPIPrefix'] as boolean) ?? (source['ui.cdnStripAPIPrefix'] as boolean) ?? defaultConfig.cdn.stripAPIPrefix,
+				replacePlus: (source['ssr.cdn.replacePlus'] as boolean) ?? (source['ui.cdnReplacePlus'] as boolean) ?? defaultConfig.cdn.replacePlus,
+				resizeOptionsType: (source['ssr.cdn.resizeOptionsType'] as string) || (source['ui.cdnResizeOptionsType'] as string) || defaultConfig.cdn.resizeOptionsType,
 			},
 			cache: {
-				ttlSeconds: source['ssr.cache.ttlSeconds'] || defaultConfig.cache.ttlSeconds,
+				ttlSeconds: (source['ssr.cache.ttlSeconds'] as number) || defaultConfig.cache.ttlSeconds,
 			},
 		};
 	} catch (error) {

@@ -93,9 +93,8 @@
 		"webpack-dev-server": "^5.2.0"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^2.16.1",
+		"@fincity/kirun-js": "^2.16.0",
 		"@fincity/path-reactive-state-management": "^1.7.3",
-		"@modlix/ui-components": "file:../components",
 		"@monaco-editor/react": "^4.6.0",
 		"axios": "^1.7.9",
 		"monaco-editor": "^0.51.0",
