@@ -43,10 +43,16 @@ declare global {
 	var domainClientCode: string;
 	var domainAppCode: string;
 	var lastInteracted: number;
+	var styleProperties: any;
+	var __APP_BOOTSTRAP__: {
+		application: any;
+		pageDefinition: any;
+		theme: any;
+		urlDetails: any;
+	}
 	var appDefinitionResponse: AppDefinitionResponse;
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;
-	var styleProperties: any;
 	// var d3: typeof import('d3/index');
 }
 
