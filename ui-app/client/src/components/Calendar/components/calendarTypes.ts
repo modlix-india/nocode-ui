@@ -74,6 +74,12 @@ export interface CalendarMapProps {
 	headerMonthsCount: number;
 	browseYears: boolean;
 	browseMonths: boolean;
+	reverseYearOrder?: boolean;
+	reverseMonthOrder?: boolean;
+	reverseDayOrder?: boolean;
+	reverseHourOrder?: boolean;
+	reverseMinuteOrder?: boolean;
+	reverseSecondOrder?: boolean;
 }
 
 export interface CalendarIntermediateAllProps extends CalendarMapProps, CalendarValidationProps {

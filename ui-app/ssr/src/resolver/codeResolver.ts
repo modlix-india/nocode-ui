@@ -1,6 +1,6 @@
-import { getRedisClient } from '../cache/redis';
-import logger from '../config/logger';
-import { getConfig } from '../config/configLoader';
+import { getRedisClient } from '../cache/redis.js';
+import logger from '../config/logger.js';
+import { getConfig } from '../config/configLoader.js';
 
 function getGatewayUrl(): string {
 	try {
@@ -87,7 +87,7 @@ async function resolveFromSecurityService(
 		}
 
 		// Response is Tuple2 from Java which serializes as {"t1": clientCode, "t2": appCode}
-		const data = await response.json();
+		const data = await response.json() as Record<string, unknown>;
 		logger.info('Security service response', { data });
 
 		let clientCode: string;
@@ -95,16 +95,16 @@ async function resolveFromSecurityService(
 
 		if (Array.isArray(data)) {
 			// Array format [clientCode, appCode]
-			clientCode = data[0] || DEFAULT_CLIENT;
-			appCode = data[1] || DEFAULT_APP;
-		} else if (data.t1 !== undefined && data.t2 !== undefined) {
+			clientCode = (data[0] as string) || DEFAULT_CLIENT;
+			appCode = (data[1] as string) || DEFAULT_APP;
+		} else if ('t1' in data && 't2' in data) {
 			// Reactor Tuple2 format {t1: clientCode, t2: appCode}
-			clientCode = data.t1 || DEFAULT_CLIENT;
-			appCode = data.t2 || DEFAULT_APP;
+			clientCode = (data.t1 as string) || DEFAULT_CLIENT;
+			appCode = (data.t2 as string) || DEFAULT_APP;
 		} else {
 			// Object format {clientCode, appCode}
-			clientCode = data.clientCode || DEFAULT_CLIENT;
-			appCode = data.appCode || DEFAULT_APP;
+			clientCode = (data.clientCode as string) || DEFAULT_CLIENT;
+			appCode = (data.appCode as string) || DEFAULT_APP;
 		}
 
 		const codes: Codes = { clientCode, appCode };
