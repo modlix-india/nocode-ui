@@ -50,8 +50,13 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 	));
 	if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 	try {
-		const response = await axios.get('api/ui/theme', axiosOptions);
-		if (response.status === 200) theme = response.data;
+
+		if (globalThis.__APP_BOOTSTRAP__)
+			theme = globalThis.__APP_BOOTSTRAP__.theme;
+		else {
+			const response = await axios.get('api/ui/theme', axiosOptions);
+			if (response.status === 200) theme = response.data;
+		}
 	} catch (err) {}
 
 	if (language) localStorage.setItem(TOKEN_LANGUAGE, language);
@@ -67,11 +72,15 @@ async function makeAppDefinitionCall(
 	let application = undefined;
 	let isApplicationLoadFailed = false;
 	try {
+		if (globalThis.__APP_BOOTSTRAP__?.application)
+			application = globalThis.__APP_BOOTSTRAP__?.application;
+		else {
 		const response = await axios.get('api/ui/application', axiosOptions);
 		if (response.status === 200) {
 			application = response.data;
-			if (!language) language = response.data.defaultLanguage;
-		}
+			
+		}}
+		if (application  && !language) language = application.defaultLanguage;
 	} catch (e) {
 		isApplicationLoadFailed = true;
 		console.error('Unable to load application definition:', e);

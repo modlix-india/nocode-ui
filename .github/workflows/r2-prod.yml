@@ -17,9 +17,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 21.7.3
-      - name: Install Components Dependencies
-        working-directory: ./ui-app/components
-        run: npm i
       - name: Install Client Dependencies
         working-directory: ./ui-app/client
         run: npm i

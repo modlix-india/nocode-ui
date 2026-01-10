@@ -28,17 +28,57 @@ interface CachedPageData {
 }
 
 /**
- * Process CSP value (can be string or object with directives)
+ * Convert camelCase to kebab-case (e.g., defaultSrc -> default-src)
  */
-function processCSP(csp: string | Record<string, string> | undefined): string | null {
+function camelToKebab(str: string): string {
+	return str.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+}
+
+/**
+ * CSP directives that should include the CDN URL
+ */
+const CSP_DIRECTIVES_FOR_CDN = [
+	'default-src',
+	'script-src',
+	'style-src',
+	'img-src',
+	'font-src',
+	'connect-src',
+	'media-src',
+];
+
+/**
+ * Process CSP value (can be string or object with directives)
+ * Handles both formats:
+ * - Already kebab-case: { "default-src": "'self'" }
+ * - camelCase: { "defaultSrc": "'self'" } -> converts to "default-src"
+ * Also adds CDN URL to relevant directives
+ */
+function processCSP(csp: string | Record<string, string> | undefined, cdnHostName?: string): string | null {
 	if (!csp) return null;
 
+	const cdnUrl = cdnHostName ? `https://${cdnHostName}` : null;
+
 	if (typeof csp === 'string') {
+		// For string CSP, we can't easily inject CDN - return as-is
 		return csp;
 	}
 
 	return Object.entries(csp)
-		.map(([directive, value]) => `${directive} ${value}`)
+		.map(([directive, value]) => {
+			// Convert camelCase to kebab-case if needed
+			const kebabDirective = directive.includes('-') ? directive : camelToKebab(directive);
+
+			// Add CDN URL to relevant directives if not already present
+			let finalValue = value;
+			if (cdnUrl && CSP_DIRECTIVES_FOR_CDN.includes(kebabDirective)) {
+				if (!value.includes(cdnHostName!)) {
+					finalValue = `${value} ${cdnUrl}`;
+				}
+			}
+
+			return `${kebabDirective} ${finalValue}`;
+		})
 		.join('; ');
 }
 
@@ -271,7 +311,8 @@ function setResponseHeaders(
 	isAuthenticated: boolean,
 	fromCache: boolean,
 	etag: string | null,
-	application: ApplicationDefinition | null
+	application: ApplicationDefinition | null,
+	cdnHostName?: string
 ): void {
 	res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
@@ -298,12 +339,12 @@ function setResponseHeaders(
 
 	// CSP headers
 	if (application?.properties) {
-		const csp = processCSP(application.properties.csp);
+		const csp = processCSP(application.properties.csp, cdnHostName);
 		if (csp) {
 			res.setHeader('Content-Security-Policy', csp);
 		}
 
-		const cspReport = processCSP(application.properties.cspReport);
+		const cspReport = processCSP(application.properties.cspReport, cdnHostName);
 		if (cspReport) {
 			res.setHeader('Content-Security-Policy-Report-Only', cspReport);
 		}
@@ -381,7 +422,7 @@ export async function handlePageRequest(
 				return;
 			}
 
-			setResponseHeaders(res, isAuthenticated, true, etag, cached.application);
+			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName);
 			res.writeHead(200);
 			res.end(generateHtml(cached, codes, cached.pageName, cdn));
 			return;
@@ -413,7 +454,7 @@ export async function handlePageRequest(
 				return;
 			}
 
-			setResponseHeaders(res, isAuthenticated, true, etag, cached.application);
+			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName);
 			res.writeHead(200);
 			res.end(generateHtml(cached, codes, cached.pageName, cdn));
 			return;
@@ -423,7 +464,7 @@ export async function handlePageRequest(
 	// Handle not found
 	if (!data.application || !data.page) {
 		logger.warn('Page not found', { pageName: actualPageName, appCode: codes.appCode });
-		setResponseHeaders(res, true, false, null, null);
+		setResponseHeaders(res, true, false, null, null, cdn.hostName);
 		res.writeHead(404);
 		res.end(generateHtml(null, codes, actualPageName, cdn, `Page "${actualPageName}" not found`));
 		return;
@@ -448,7 +489,7 @@ export async function handlePageRequest(
 
 	// Generate response
 	const etag = generateETag(result);
-	setResponseHeaders(res, isAuthenticated, false, etag, data.application);
+	setResponseHeaders(res, isAuthenticated, false, etag, data.application, cdn.hostName);
 
 	logger.info('SSR page rendered', {
 		pageName: actualPageName,
