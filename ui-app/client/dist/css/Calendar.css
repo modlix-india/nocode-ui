@@ -288,8 +288,10 @@
 /* Calendar Dropdown Select Styles */
 
 .comp.compCalendar.dropDownCalendar {
+	height: auto !important;
 	border: none !important;
 }
+
 .comp.compCalendar ._calendarDropdownContainer {
 	display: flex;
 	flex-direction: column;
