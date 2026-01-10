@@ -4,14 +4,14 @@ import { shortUUID } from '../util/shortUUID';
 
 export default async function getPageDefinition(pageName: string, appCode?: string, clientCode?: string): Promise<PageDefinition> {
 
-	if (globalThis.__APP_BOOTSTRAP__?.pageDefinition[pageName]) return globalThis.__APP_BOOTSTRAP__?.pageDefinition[pageName];
-	
-	const axiosConfig: AxiosRequestConfig<any> = { headers: {} };
-	if (globalThis.isDebugMode) axiosConfig.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
-
 	const authToken = localStorage.getItem(
 		globalThis.isDesignMode ? 'designMode_AuthToken' : 'AuthToken',
 	);
+
+	if (!authToken && globalThis.__APP_BOOTSTRAP__?.pageDefinition[pageName]) return globalThis.__APP_BOOTSTRAP__?.pageDefinition[pageName];
+	
+	const axiosConfig: AxiosRequestConfig<any> = { headers: {} };
+	if (globalThis.isDebugMode) axiosConfig.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 
 	if (authToken) {
 		axiosConfig.headers!['Authorization'] = JSON.parse(authToken);
