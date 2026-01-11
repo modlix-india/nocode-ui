@@ -30,7 +30,7 @@ const LOG_LEVELS: Record<LogLevel, number> = {
 // Default configuration
 const config: LogConfig = {
 	logDirectory: process.env.LOG_DIRECTORY || '/logs',
-	logFileName: `ssr-${process.env.SPRING_PROFILE || process.env.SPRING_PROFILES_ACTIVE || 'default'}-${process.env.INSTANCE_ID || 'default'}.log`,
+	logFileName: `ssr-${process.env.INSTANCE_ID || 'default'}.log`,
 	maxFileSizeMB: 50,
 	enableFileLogging: process.env.NODE_ENV === 'production',
 	enableConsoleLogging: true,
