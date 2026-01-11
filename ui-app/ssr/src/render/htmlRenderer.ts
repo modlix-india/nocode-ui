@@ -281,7 +281,7 @@ function generateHtml(
 	<body>
 		<!-- Bootstrap data for client hydration -->
 		<script>
-			${bootstrapData ? `window.__APP_BOOTSTRAP__ = ${escapeEndScript(JSON.stringify(bootstrapData))};` : ''}
+			${bootstrapData ? `window.__APP_BOOTSTRAP__ = ${JSON.stringify(removeCodeParts(bootstrapData))};` : ''}
 			window.domainAppCode = '${escapeHtml(codes.appCode)}';
 			window.domainClientCode = '${escapeHtml(codes.clientCode)}';
 			window.cdnPrefix = '${escapeHtml(cdn.hostName)}';
@@ -303,14 +303,13 @@ function generateHtml(
 </html>`;
 }
 
-function escapeEndScript(str: string) : string {
+function removeCodeParts(def: any) : any {
 
-	let index = -1;
-	while ((index = str.indexOf("</script>", index + 1)) != -1) {
-		str = str.substring(0, index) + "</scri\"+\"pt>" + str.substring(index + 9);
-	}
+	if (!def.application?.codeParts) return def;
 
-	return str;
+	delete def.application.codeParts;
+
+	return def;
 }
 
 /**

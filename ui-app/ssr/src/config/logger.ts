@@ -44,18 +44,32 @@ let currentLogFile: string = '';
  * Initialize log stream for file-based logging
  */
 function initLogStream(): void {
-	if (!config.enableFileLogging) return;
+	if (!config.enableFileLogging) {
+		console.log(`File logging disabled (NODE_ENV=${process.env.NODE_ENV})`);
+		return;
+	}
 
 	try {
 		// Check if log directory exists
 		if (!fs.existsSync(config.logDirectory)) {
-			// In development, don't try to create /logs
-			if (config.logDirectory === '/logs') {
+			// Try to create the directory
+			try {
+				fs.mkdirSync(config.logDirectory, { recursive: true });
+				console.log(`Created log directory: ${config.logDirectory}`);
+			} catch (mkdirError) {
+				console.error(`Failed to create log directory ${config.logDirectory}:`, mkdirError);
 				config.enableFileLogging = false;
-				console.log('File logging disabled: /logs directory not available');
 				return;
 			}
-			fs.mkdirSync(config.logDirectory, { recursive: true });
+		}
+
+		// Check if directory is writable
+		try {
+			fs.accessSync(config.logDirectory, fs.constants.W_OK);
+		} catch {
+			console.error(`Log directory ${config.logDirectory} is not writable`);
+			config.enableFileLogging = false;
+			return;
 		}
 
 		currentLogFile = path.join(config.logDirectory, config.logFileName);
@@ -64,6 +78,10 @@ function initLogStream(): void {
 		logStream.on('error', (err) => {
 			console.error('Log stream error:', err);
 			config.enableFileLogging = false;
+		});
+
+		logStream.on('open', () => {
+			console.log(`File logging initialized: ${currentLogFile}`);
 		});
 	} catch (error) {
 		console.error('Failed to initialize log stream:', error);

@@ -45,9 +45,10 @@ export function getRedisClient(): Redis {
  * Interface for cache invalidation messages
  */
 interface CacheInvalidationMessage {
-	appCode: string;
+	appCode?: string;
 	clientCode?: string;
 	pageName?: string;
+	evictAll?: boolean;
 	timestamp: number;
 }
 
@@ -89,6 +90,7 @@ export async function initCacheInvalidationSubscriber(): Promise<void> {
 		try {
 			const data: CacheInvalidationMessage = JSON.parse(message);
 			logger.info('Received cache invalidation message', {
+				evictAll: data.evictAll,
 				appCode: data.appCode,
 				clientCode: data.clientCode,
 				pageName: data.pageName,
@@ -96,7 +98,9 @@ export async function initCacheInvalidationSubscriber(): Promise<void> {
 
 			// Build pattern based on the message
 			let pattern: string;
-			if (data.pageName && data.clientCode) {
+			if (data.evictAll) {
+				pattern = '*';
+			} else if (data.pageName && data.clientCode) {
 				pattern = `${data.appCode}:${data.clientCode}:${data.pageName}`;
 			} else if (data.clientCode) {
 				pattern = `${data.appCode}:${data.clientCode}:*`;
