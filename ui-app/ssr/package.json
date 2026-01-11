@@ -1,0 +1,19 @@
+{
+	"name": "@modlix/ui-ssr",
+	"version": "1.0.0",
+	"description": "SSR service for Modlix no-code platform",
+	"type": "module",
+	"scripts": {
+		"dev": "tsx watch src/server.ts",
+		"build": "tsc",
+		"start": "node dist/server.js"
+	},
+	"dependencies": {
+		"ioredis": "^5.4.1"
+	},
+	"devDependencies": {
+		"@types/node": "^22.10.2",
+		"tsx": "^4.7.0",
+		"typescript": "^5.7.2"
+	}
+}

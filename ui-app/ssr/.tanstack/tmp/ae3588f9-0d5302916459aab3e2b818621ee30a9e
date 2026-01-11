@@ -1,0 +1,79 @@
+import { createFileRoute } from '@tanstack/react-router'
+import { createAPIFileRoute } from '@tanstack/react-start/api';
+import { invalidateCache } from '~/cache/redis';
+
+const INVALIDATION_SECRET = process.env.CACHE_INVALIDATION_SECRET || 'dev-secret';
+
+interface InvalidationRequest {
+	appCode: string; // Required
+	clientCode?: string; // Optional - if omitted, invalidate all clients
+	pageName?: string; // Optional - if omitted, invalidate all pages
+}
+
+export const Route = createAPIFileRoute('/api/cache/invalidate')({
+	POST: async ({ request }) => {
+		// Verify authorization
+		const authHeader = request.headers.get('Authorization');
+		if (authHeader !== `Bearer ${INVALIDATION_SECRET}`) {
+			return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' },
+			})
+		}
+
+		try {
+			const body: InvalidationRequest = await request.json();
+
+			if (!body.appCode) {
+				return new Response(
+					JSON.stringify({ error: 'appCode is required' }),
+					{
+						status: 400,
+						headers: { 'Content-Type': 'application/json' },
+					}
+				)
+			}
+
+			// Build invalidation pattern based on provided parameters
+			let pattern: string;
+
+			if (body.pageName && body.clientCode) {
+				// Specific page for specific client
+				pattern = `${body.appCode}:${body.clientCode}:${body.pageName}`;
+			} else if (body.clientCode) {
+				// All pages for specific client
+				pattern = `${body.appCode}:${body.clientCode}:*`;
+			} else if (body.pageName) {
+				// Specific page across all clients
+				pattern = `${body.appCode}:*:${body.pageName}`;
+			} else {
+				// All pages for all clients of this app
+				pattern = `${body.appCode}:*`;
+			}
+
+			const invalidated = await invalidateCache(pattern);
+
+			return new Response(
+				JSON.stringify({
+					success: true,
+					pattern,
+					invalidated,
+					timestamp: new Date().toISOString(),
+				}),
+				{
+					status: 200,
+					headers: { 'Content-Type': 'application/json' },
+				}
+			)
+		} catch (error) {
+			console.error('Cache invalidation error:', error);
+			return new Response(
+				JSON.stringify({ error: 'Internal server error' }),
+				{
+					status: 500,
+					headers: { 'Content-Type': 'application/json' },
+				}
+			)
+		}
+	},
+});
