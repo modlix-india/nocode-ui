@@ -305,9 +305,11 @@ function generateHtml(
 
 function removeCodeParts(def: any) : any {
 
+	console.log(def.application?.properties?.codeParts);
+
 	if (!def.application?.properties?.codeParts) return def;
 
-	delete def.application.codeParts;
+	delete def.application.properties.codeParts;
 
 	return def;
 }
