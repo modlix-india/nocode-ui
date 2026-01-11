@@ -63,6 +63,12 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		minuteLabel = 'Minutes',
 		secondLabel = 'Seconds',
 		ampmLabel = 'AM/PM',
+		reverseYearOrder,
+		reverseMonthOrder,
+		reverseDayOrder,
+		reverseHourOrder,
+		reverseMinuteOrder,
+		reverseSecondOrder,
 	} = props;
 
 	// Normalize timeDesignType
@@ -179,6 +185,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		minDate: props.minDate,
 		maxDate: props.maxDate,
 		disableTemporalRanges: props.disableTemporalRanges,
+		reverseYearOrder,
 	});
 
 	const availableMonths = useMonthOptions({
@@ -188,12 +195,14 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		language: props.language,
 		monthLabels: props.monthLabels,
 		validationProps,
+		reverseMonthOrder,
 	});
 
 	const availableDays = useDayOptions({
 		selectedYear,
 		selectedMonth,
 		validationProps,
+		reverseDayOrder
 	});
 
 	const availableHours = useHourOptions({
@@ -204,6 +213,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		hourIntervalFrom: props.hourIntervalFrom,
 		hourInterval: props.hourInterval,
 		validationProps,
+		reverseHourOrder,
 	});
 
 	const availableMinutes = useMinuteOptions({
@@ -215,6 +225,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		minuteIntervalFrom: props.minuteIntervalFrom,
 		minuteInterval: props.minuteInterval,
 		validationProps,
+		reverseMinuteOrder,
 	});
 
 	const availableSeconds = useSecondOptions({
@@ -227,6 +238,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		secondIntervalFrom: props.secondIntervalFrom,
 		secondInterval: props.secondInterval,
 		validationProps,
+		reverseSecondOrder,
 	});
 
 	const availableAmPm = useAmPmOptions(timeDesignType);

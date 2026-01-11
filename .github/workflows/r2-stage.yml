@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 21.7.3
-      - name: Install Dependencies
+      - name: Install Client Dependencies
         working-directory: ./ui-app/client
         run: npm i
       - name: Setup rClone

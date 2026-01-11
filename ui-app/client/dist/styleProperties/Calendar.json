@@ -1686,5 +1686,676 @@
 		"gn": "Background",
 		"dn": "Background HasError Active Error",
 		"n": "calendarBackgroundHasErrorActiveError<calendarDesignType><designType><colorScheme>"
+	},
+
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownRow",
+		"np": true,
+		"gn": "Padding",
+		"dn": "Padding CalendarDropdownRow",
+		"n": "calendarPaddingCalendarDropdownRow<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownRow",
+		"np": true,
+		"gn": "Gap",
+		"dn": "Gap CalendarDropdownRow",
+		"n": "calendarGapCalendarDropdownRow<calendarDesignType><designType><colorScheme>"
+	},
+		{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownBody",
+		"np": true,
+		"spv": {
+			"_defaultCalendar--_primary": "#FFFFFF",
+			"_defaultCalendar--_secondary": "#FFFFFF",
+			"_defaultCalendar--_tertiary": "#FFFFFF",
+			"_defaultCalendar--_quaternary": "#FFFFFF",
+			"_defaultCalendar--_quinary": "#FFFFFF",
+			"_bigCalendar--_primary": "#FFFFFF",
+			"_bigCalendar--_secondary": "#FFFFFF",
+			"_bigCalendar--_tertiary": "#FFFFFF",
+			"_bigCalendar--_quaternary": "#FFFFFF",
+			"_bigCalendar--_quinary": "#FFFFFF",
+			"_smallCalendar--_primary": "#FFFFFF",
+			"_smallCalendar--_secondary": "#FFFFFF",
+			"_smallCalendar--_tertiary": "#FFFFFF",
+			"_smallCalendar--_quaternary": "#FFFFFF",
+			"_smallCalendar--_quinary": "#FFFFFF"
+		},
+		"gn": "Background",
+		"dn": "Background CalendarDropdownBody",
+		"n": "calendarBackgroundCalendarDropdownBody<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownBody",
+		"np": true,
+		"dv": "1px solid <borderColorSix>",
+		"gn": "Border",
+		"dn": "Border CalendarDropdownBody",
+		"n": "calendarBorderCalendarDropdownBody<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownBody",
+		"np": true,
+		"dv": "4px",
+		"gn": "Border Radius",
+		"dn": "BorderRadius CalendarDropdownBody",
+		"n": "calendarBorderRadiusCalendarDropdownBody<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownBody",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow CalendarDropdownBody",
+		"n": "calendarBoxShadowCalendarDropdownBody<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownBody",
+		"np": true,
+		"dv": "5px",
+		"gn": "Padding",
+		"dn": "Padding CalendarDropdownBody",
+		"n": "calendarPaddingCalendarDropdownBody<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption",
+		"np": true,
+		"dv": "5px 10px",
+		"gn": "Padding",
+		"dn": "Padding CalendarDropdownOption",
+		"n": "calendarPaddingCalendarDropdownOption<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background CalendarDropdownOption",
+		"n": "calendarBackgroundCalendarDropdownOption<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption",
+		"np": true,
+		"dv": "<fontColorOne>",
+		"gn": "Color",
+		"dn": "Color CalendarDropdownOption",
+		"n": "calendarColorCalendarDropdownOption<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption",
+		"np": true,
+		"dv": "<primaryFont>",
+		"gn": "Font",
+		"dn": "Font CalendarDropdownOption",
+		"n": "calendarFontCalendarDropdownOption<calendarDesignType><designType><colorScheme>"
+	},
+		{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption._hovered",
+		"np": true,
+		"spv": {
+			"_defaultCalendar--_primary": "<backgroundHoverColorOne>",
+			"_defaultCalendar--_secondary": "<backgroundHoverColorTwo>",
+			"_defaultCalendar--_tertiary": "<backgroundHoverColorThree>",
+			"_defaultCalendar--_quaternary": "<backgroundHoverColorFour>",
+			"_defaultCalendar--_quinary": "<backgroundHoverColorFive>",
+			"_bigCalendar--_primary": "<backgroundHoverColorOne>",
+			"_bigCalendar--_secondary": "<backgroundHoverColorTwo>",
+			"_bigCalendar--_tertiary": "<backgroundHoverColorThree>",
+			"_bigCalendar--_quaternary": "<backgroundHoverColorFour>",
+			"_bigCalendar--_quinary": "<backgroundHoverColorFive>",
+			"_smallCalendar--_primary": "<backgroundHoverColorOne>",
+			"_smallCalendar--_secondary": "<backgroundHoverColorTwo>",
+			"_smallCalendar--_tertiary": "<backgroundHoverColorThree>",
+			"_smallCalendar--_quaternary": "<backgroundHoverColorFour>",
+			"_smallCalendar--_quinary": "<backgroundHoverColorFive>"
+		},
+		"gn": "Background",
+		"dn": "Background CalendarDropdownOption Hovered",
+		"n": "calendarBackgroundCalendarDropdownOptionHovered<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption._hovered",
+		"np": true,
+		"dv": "<fontColorOne>",
+		"gn": "Color",
+		"dn": "Color CalendarDropdownOption Hovered",
+		"n": "calendarColorCalendarDropdownOptionHovered<calendarDesignType><designType><colorScheme>"
+	},
+		{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption._selected",
+		"np": true,
+		"spv": {
+			"_defaultCalendar--_primary": "<backgroundColorOne>",
+			"_defaultCalendar--_secondary": "<backgroundColorTwo>",
+			"_defaultCalendar--_tertiary": "<backgroundColorThree>",
+			"_defaultCalendar--_quaternary": "<backgroundColorFour>",
+			"_defaultCalendar--_quinary": "<backgroundColorFive>",
+			"_bigCalendar--_primary": "<backgroundColorOne>",
+			"_bigCalendar--_secondary": "<backgroundColorTwo>",
+			"_bigCalendar--_tertiary": "<backgroundColorThree>",
+			"_bigCalendar--_quaternary": "<backgroundColorFour>",
+			"_bigCalendar--_quinary": "<backgroundColorFive>",
+			"_smallCalendar--_primary": "<backgroundColorOne>",
+			"_smallCalendar--_secondary": "<backgroundColorTwo>",
+			"_smallCalendar--_tertiary": "<backgroundColorThree>",
+			"_smallCalendar--_quaternary": "<backgroundColorFour>",
+			"_smallCalendar--_quinary": "<backgroundColorFive>"
+		},
+		"gn": "Background",
+		"dn": "Background CalendarDropdownOption Selected",
+		"n": "calendarBackgroundCalendarDropdownOptionSelected<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption._selected",
+		"np": true,
+		"dv": "<fontColorTwo>",
+		"gn": "Color",
+		"dn": "Color CalendarDropdownOption Selected",
+		"n": "calendarColorCalendarDropdownOptionSelected<calendarDesignType><designType><colorScheme>"
+	},
+		{
+		"cp": "margin",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdownWrapper",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin YearDropdownWrapper",
+		"n": "calendarMarginYearDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdownWrapper",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width YearDropdownWrapper",
+		"n": "calendarWidthYearDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+		{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdown",
+		"np": true,
+		"dv": "<backgroundColorSeven>",
+		"gn": "Background",
+		"dn": "Background YearDropdown",
+		"n": "calendarBackgroundYearDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdown",
+		"np": true,
+		"dv": "1px solid <borderColorSix>",
+		"gn": "Border",
+		"dn": "Border YearDropdown",
+		"n": "calendarBorderYearDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdown",
+		"np": true,
+		"dv": "4px",
+		"gn": "Border Radius",
+		"dn": "BorderRadius YearDropdown",
+		"n": "calendarBorderRadiusYearDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdown",
+		"np": true,
+		"dv": "0px 8px",
+		"gn": "Padding",
+		"dn": "Padding YearDropdown",
+		"n": "calendarPaddingYearDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdown",
+		"np": true,
+		"dv": "<primaryFont>",
+		"gn": "Font",
+		"dn": "Font YearDropdown",
+		"n": "calendarFontYearDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdown",
+		"np": true,
+		"dv": "<fontColorOne>",
+		"gn": "Color",
+		"dn": "Color YearDropdown",
+		"n": "calendarColorYearDropdown<calendarDesignType><designType><colorScheme>"
+	},
+		{
+		"cp": "margin",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdownWrapper",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin MonthDropdownWrapper",
+		"n": "calendarMarginMonthDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdownWrapper",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width MonthDropdownWrapper",
+		"n": "calendarWidthMonthDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdown",
+		"np": true,
+		"dv": "<backgroundColorSeven>",
+		"gn": "Background",
+		"dn": "Background MonthDropdown",
+		"n": "calendarBackgroundMonthDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdown",
+		"np": true,
+		"dv": "1px solid <borderColorSix>",
+		"gn": "Border",
+		"dn": "Border MonthDropdown",
+		"n": "calendarBorderMonthDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdown",
+		"np": true,
+		"dv": "4px",
+		"gn": "Border Radius",
+		"dn": "BorderRadius MonthDropdown",
+		"n": "calendarBorderRadiusMonthDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdown",
+		"np": true,
+		"dv": "0px 8px",
+		"gn": "Padding",
+		"dn": "Padding MonthDropdown",
+		"n": "calendarPaddingMonthDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdown",
+		"np": true,
+		"dv": "<primaryFont>",
+		"gn": "Font",
+		"dn": "Font MonthDropdown",
+		"n": "calendarFontMonthDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdown",
+		"np": true,
+		"dv": "<fontColorOne>",
+		"gn": "Color",
+		"dn": "Color MonthDropdown",
+		"n": "calendarColorMonthDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._dayDropdownWrapper",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin DayDropdownWrapper",
+		"n": "calendarMarginDayDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._dayDropdownWrapper",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width DayDropdownWrapper",
+		"n": "calendarWidthDayDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._dayDropdown",
+		"np": true,
+		"dv": "<backgroundColorSeven>",
+		"gn": "Background",
+		"dn": "Background DayDropdown",
+		"n": "calendarBackgroundDayDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._dayDropdown",
+		"np": true,
+		"dv": "1px solid <borderColorSix>",
+		"gn": "Border",
+		"dn": "Border DayDropdown",
+		"n": "calendarBorderDayDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._dayDropdown",
+		"np": true,
+		"dv": "4px",
+		"gn": "Border Radius",
+		"dn": "BorderRadius DayDropdown",
+		"n": "calendarBorderRadiusDayDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._dayDropdown",
+		"np": true,
+		"dv": "0px 8px",
+		"gn": "Padding",
+		"dn": "Padding DayDropdown",
+		"n": "calendarPaddingDayDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._dayDropdown",
+		"np": true,
+		"dv": "<primaryFont>",
+		"gn": "Font",
+		"dn": "Font DayDropdown",
+		"n": "calendarFontDayDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._dayDropdown",
+		"np": true,
+		"gn": "Color",
+		"dv": "<fontColorOne>",
+		"dn": "Color DayDropdown",
+		"n": "calendarColorDayDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdownWrapper",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin HourDropdownWrapper",
+		"n": "calendarMarginHourDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdownWrapper",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width HourDropdownWrapper",
+		"n": "calendarWidthHourDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+		{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdown",
+		"np": true,
+		"dv": "<backgroundColorSeven>",
+		"gn": "Background",
+		"dn": "Background HourDropdown",
+		"n": "calendarBackgroundHourDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdown",
+		"np": true,
+		"dv": "1px solid <borderColorSix>",
+		"gn": "Border",
+		"dn": "Border HourDropdown",
+		"n": "calendarBorderHourDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdown",
+		"np": true,
+		"dv": "4px",
+		"gn": "Border Radius",
+		"dn": "BorderRadius HourDropdown",
+		"n": "calendarBorderRadiusHourDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdown",
+		"np": true,
+		"dv": "0px 8px",
+		"gn": "Padding",
+		"dn": "Padding HourDropdown",
+		"n": "calendarPaddingHourDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdown",
+		"np": true,
+		"dv": "<primaryFont>",
+		"gn": "Font",
+		"dn": "Font HourDropdown",
+		"n": "calendarFontHourDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdown",
+		"np": true,
+		"dv": "<fontColorOne>",
+		"gn": "Color",
+		"dn": "Color HourDropdown",
+		"n": "calendarColorHourDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdownWrapper",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin MinuteDropdownWrapper",
+		"n": "calendarMarginMinuteDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdownWrapper",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width MinuteDropdownWrapper",
+		"n": "calendarWidthMinuteDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+		{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdown",
+		"np": true,
+		"dv": "<backgroundColorSeven>",
+		"gn": "Background",
+		"dn": "Background MinuteDropdown",
+		"n": "calendarBackgroundMinuteDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdown",
+		"np": true,
+		"dv": "1px solid <borderColorSix>",
+		"gn": "Border",
+		"dn": "Border MinuteDropdown",
+		"n": "calendarBorderMinuteDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdown",
+		"np": true,
+		"dv": "4px",
+		"gn": "Border Radius",
+		"dn": "BorderRadius MinuteDropdown",
+		"n": "calendarBorderRadiusMinuteDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdown",
+		"np": true,
+		"dv": "0px 8px",
+		"gn": "Padding",
+		"dn": "Padding MinuteDropdown",
+		"n": "calendarPaddingMinuteDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdown",
+		"np": true,
+		"dv": "<primaryFont>",
+		"gn": "Font",
+		"dn": "Font MinuteDropdown",
+		"n": "calendarFontMinuteDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdown",
+		"np": true,
+		"dv": "<fontColorOne>",
+		"gn": "Color",
+		"dn": "Color MinuteDropdown",
+		"n": "calendarColorMinuteDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._secondDropdownWrapper",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin SecondDropdownWrapper",
+		"n": "calendarMarginSecondDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._secondDropdownWrapper",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width SecondDropdownWrapper",
+		"n": "calendarWidthSecondDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._secondDropdown",
+		"np": true,
+		"dv": "<backgroundColorSeven>",
+		"gn": "Background",
+		"dn": "Background SecondDropdown",
+		"n": "calendarBackgroundSecondDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._secondDropdown",
+		"np": true,
+		"dv": "1px solid <borderColorSix>",
+		"gn": "Border",
+		"dn": "Border SecondDropdown",
+		"n": "calendarBorderSecondDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._secondDropdown",
+		"np": true,
+		"dv": "4px",
+		"gn": "Border Radius",
+		"dn": "BorderRadius SecondDropdown",
+		"n": "calendarBorderRadiusSecondDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._secondDropdown",
+		"np": true,
+		"dv": "0px 8px",
+		"gn": "Padding",
+		"dn": "Padding SecondDropdown",
+		"n": "calendarPaddingSecondDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._secondDropdown",
+		"np": true,
+		"dv": "<primaryFont>",
+		"gn": "Font",
+		"dn": "Font SecondDropdown",
+		"n": "calendarFontSecondDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._secondDropdown",
+		"np": true,
+		"dv": "<fontColorOne>",
+		"gn": "Color",
+		"dn": "Color SecondDropdown",
+		"n": "calendarColorSecondDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._ampmDropdownWrapper",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin AmPmDropdownWrapper",
+		"n": "calendarMarginAmPmDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._ampmDropdownWrapper",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width AmPmDropdownWrapper",
+		"n": "calendarWidthAmPmDropdownWrapper<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._ampmDropdown",
+		"np": true,
+		"dv": "<backgroundColorSeven>",
+		"gn": "Background",
+		"dn": "Background AmPmDropdown",
+		"n": "calendarBackgroundAmPmDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._ampmDropdown",
+		"np": true,
+		"dv": "1px solid <borderColorSix>",
+		"gn": "Border",
+		"dn": "Border AmPmDropdown",
+		"n": "calendarBorderAmPmDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._ampmDropdown",
+		"np": true,
+		"dv": "4px",
+		"gn": "Border Radius",
+		"dn": "BorderRadius AmPmDropdown",
+		"n": "calendarBorderRadiusAmPmDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._ampmDropdown",
+		"np": true,
+		"dv": "0px 8px",
+		"gn": "Padding",
+		"dn": "Padding AmPmDropdown",
+		"n": "calendarPaddingAmPmDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._ampmDropdown",
+		"np": true,
+		"dv": "<primaryFont>",
+		"gn": "Font",
+		"dn": "Font AmPmDropdown",
+		"n": "calendarFontAmPmDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._ampmDropdown",
+		"np": true,
+		"dv": "<fontColorOne>",
+		"gn": "Color",
+		"dn": "Color AmPmDropdown",
+		"n": "calendarColorAmPmDropdown<calendarDesignType><designType><colorScheme>"
 	}
+
 ]

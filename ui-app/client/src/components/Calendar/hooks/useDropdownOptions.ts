@@ -14,13 +14,21 @@ export interface UseYearOptionsParams {
 	minDate?: string;
 	maxDate?: string;
 	disableTemporalRanges?: string[];
+	reverseYearOrder?: boolean;
 }
 
 /**
  * Hook to generate available year options for dropdown.
  */
 export function useYearOptions(params: UseYearOptionsParams): DropdownOption[] {
-	const { validMinDate, validMaxDate, minDate, maxDate, disableTemporalRanges } = params;
+	const {
+		validMinDate,
+		validMaxDate,
+		minDate,
+		maxDate,
+		disableTemporalRanges,
+		reverseYearOrder,
+	} = params;
 
 	return useMemo(() => {
 		const years: DropdownOption[] = [];
@@ -86,8 +94,12 @@ export function useYearOptions(params: UseYearOptionsParams): DropdownOption[] {
 			}
 		}
 
+		if (reverseYearOrder) {
+			years.reverse();
+		}
+
 		return years;
-	}, [validMinDate, validMaxDate, minDate, maxDate, disableTemporalRanges]);
+	}, [validMinDate, validMaxDate, minDate, maxDate, disableTemporalRanges, reverseYearOrder]);
 }
 
 export interface UseMonthOptionsParams {
@@ -97,14 +109,22 @@ export interface UseMonthOptionsParams {
 	language?: string;
 	monthLabels?: 'long' | 'short' | 'narrow';
 	validationProps: CalendarValidationProps;
+	reverseMonthOrder?: boolean;
 }
 
 /**
  * Hook to generate available month options for dropdown.
  */
 export function useMonthOptions(params: UseMonthOptionsParams): DropdownOption[] {
-	const { selectedYear, validMinDate, validMaxDate, language, monthLabels, validationProps } =
-		params;
+	const {
+		selectedYear,
+		validMinDate,
+		validMaxDate,
+		language,
+		monthLabels,
+		validationProps,
+		reverseMonthOrder,
+	} = params;
 
 	return useMemo(() => {
 		const months: DropdownOption[] = [];
@@ -156,21 +176,35 @@ export function useMonthOptions(params: UseMonthOptionsParams): DropdownOption[]
 				disabled: isDisabled,
 			});
 		}
+
+		if (reverseMonthOrder) {
+			months.reverse();
+		}
+
 		return months;
-	}, [selectedYear, validMinDate, validMaxDate, language, monthLabels, validationProps]);
+	}, [
+		selectedYear,
+		validMinDate,
+		validMaxDate,
+		language,
+		monthLabels,
+		validationProps,
+		reverseMonthOrder,
+	]);
 }
 
 export interface UseDayOptionsParams {
 	selectedYear: number | undefined;
 	selectedMonth: number | undefined;
 	validationProps: CalendarValidationProps;
+	reverseDayOrder?: boolean;
 }
 
 /**
  * Hook to generate available day options for dropdown.
  */
 export function useDayOptions(params: UseDayOptionsParams): DropdownOption[] {
-	const { selectedYear, selectedMonth, validationProps } = params;
+	const { selectedYear, selectedMonth, validationProps, reverseDayOrder } = params;
 
 	return useMemo(() => {
 		const days: DropdownOption[] = [];
@@ -188,8 +222,13 @@ export function useDayOptions(params: UseDayOptionsParams): DropdownOption[] {
 				disabled: !validated,
 			});
 		}
+
+		if (reverseDayOrder) {
+			days.reverse();
+		}
+
 		return days;
-	}, [selectedYear, selectedMonth, validationProps]);
+	}, [selectedYear, selectedMonth, validationProps, reverseDayOrder]);
 }
 
 export type TimeDesignType =
@@ -208,6 +247,7 @@ export interface UseHourOptionsParams {
 	hourIntervalFrom?: number;
 	hourInterval?: number;
 	validationProps?: CalendarValidationProps;
+	reverseHourOrder?: boolean;
 }
 
 /**
@@ -223,6 +263,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 		hourIntervalFrom = 0,
 		hourInterval = 1,
 		validationProps,
+		reverseHourOrder,
 	} = params;
 
 	return useMemo(() => {
@@ -232,9 +273,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 		const is12Hr =
 			timeDesignType === 'comboBoxes12Hr' || timeDesignType === 'comboBoxes12HrAndSeconds';
 		const hasDateParts =
-			selectedYear !== undefined &&
-			selectedMonth !== undefined &&
-			selectedDay !== undefined;
+			selectedYear !== undefined && selectedMonth !== undefined && selectedDay !== undefined;
 
 		if (is12Hr) {
 			for (let hour12 = 1; hour12 <= 12; hour12++) {
@@ -336,6 +375,11 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 				}
 			}
 		}
+
+		if (reverseHourOrder) {
+			hours.reverse();
+		}
+
 		return hours;
 	}, [
 		timeDesignType,
@@ -345,6 +389,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 		hourIntervalFrom,
 		hourInterval,
 		validationProps,
+		reverseHourOrder,
 	]);
 }
 
@@ -357,6 +402,7 @@ export interface UseMinuteOptionsParams {
 	minuteIntervalFrom?: number;
 	minuteInterval?: number;
 	validationProps?: CalendarValidationProps;
+	reverseMinuteOrder?: boolean;
 }
 
 /**
@@ -373,6 +419,7 @@ export function useMinuteOptions(params: UseMinuteOptionsParams): DropdownOption
 		minuteIntervalFrom = 0,
 		minuteInterval = 1,
 		validationProps,
+		reverseMinuteOrder,
 	} = params;
 
 	return useMemo(() => {
@@ -413,6 +460,11 @@ export function useMinuteOptions(params: UseMinuteOptionsParams): DropdownOption
 				});
 			}
 		}
+
+		if (reverseMinuteOrder) {
+			minutes.reverse();
+		}
+
 		return minutes;
 	}, [
 		timeDesignType,
@@ -423,6 +475,7 @@ export function useMinuteOptions(params: UseMinuteOptionsParams): DropdownOption
 		minuteIntervalFrom,
 		minuteInterval,
 		validationProps,
+		reverseMinuteOrder,
 	]);
 }
 
@@ -436,6 +489,7 @@ export interface UseSecondOptionsParams {
 	secondIntervalFrom?: number;
 	secondInterval?: number;
 	validationProps?: CalendarValidationProps;
+	reverseSecondOrder?: boolean;
 }
 
 /**
@@ -453,6 +507,7 @@ export function useSecondOptions(params: UseSecondOptionsParams): DropdownOption
 		secondIntervalFrom = 0,
 		secondInterval = 1,
 		validationProps,
+		reverseSecondOrder,
 	} = params;
 
 	return useMemo(() => {
@@ -500,6 +555,11 @@ export function useSecondOptions(params: UseSecondOptionsParams): DropdownOption
 				});
 			}
 		}
+
+		if (reverseSecondOrder) {
+			seconds.reverse();
+		}
+
 		return seconds;
 	}, [
 		timeDesignType,
@@ -511,6 +571,7 @@ export function useSecondOptions(params: UseSecondOptionsParams): DropdownOption
 		secondIntervalFrom,
 		secondInterval,
 		validationProps,
+		reverseSecondOrder,
 	]);
 }
 
