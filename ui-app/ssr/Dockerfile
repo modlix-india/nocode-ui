@@ -21,40 +21,33 @@ FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
 # Copy built SSR application
 COPY --from=builder /app/ssr/dist ./dist
 COPY --from=builder /app/ssr/node_modules ./node_modules
 COPY --from=builder /app/ssr/package.json ./
 
-# Create logs directory and set ownership
-RUN mkdir -p /logs && chown -R nodejs:nodejs /app /logs
-
-USER nodejs
+# Create logs directory
+RUN mkdir -p /logs
 
 # Expose port
 EXPOSE 3080
 
+VOLUME [ "/logs" ]
+
 # Environment variables with defaults
 ENV NODE_ENV=production \
     SERVER_PORT=3080 \
-    # Logging configuration
     LOG_DIRECTORY=/logs \
     LOG_LEVEL=DEBUG \
-    # Config server settings (for Spring Cloud Config integration)
     CLOUD_CONFIG_SERVER=config-server \
     CLOUD_CONFIG_SERVER_PORT=8888 \
     SPRING_PROFILE=default \
-    # Instance identification
     INSTANCE_ID=default \
     INSTANCE_ENVIRONMENT=Local
 
-# Health check
+# Health check - use node instead of wget
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:3080/health || exit 1
+    CMD node -e "require('http').get('http://localhost:3080/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"
 
 # Start the server
 CMD ["node", "dist/server.js"]
