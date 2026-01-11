@@ -41,6 +41,9 @@ EXPOSE 3080
 # Environment variables with defaults
 ENV NODE_ENV=production \
     SERVER_PORT=3080 \
+    # Logging configuration
+    LOG_DIRECTORY=/logs \
+    LOG_LEVEL=DEBUG \
     # Config server settings (for Spring Cloud Config integration)
     CLOUD_CONFIG_SERVER=config-server \
     CLOUD_CONFIG_SERVER_PORT=8888 \
