@@ -98,7 +98,10 @@ function generateETag(data: CachedPageData): string {
 /**
  * Escape HTML special characters
  */
-function escapeHtml(str: string): string {
+function escapeHtml(str: string | undefined | null): string {
+	if (!str || typeof str !== 'string') {
+		return '';
+	}
 	return str
 		.replace(/&/g, '&amp;')
 		.replace(/</g, '&lt;')
@@ -194,6 +197,10 @@ function generateExternalLinks(application: ApplicationDefinition | null): strin
 	const externalLinks = application?.properties?.links || {};
 
 	for (const [, link] of Object.entries(externalLinks)) {
+		// Skip links without href
+		if (!link.href || typeof link.href !== 'string') {
+			continue;
+		}
 		const rel = link.rel || 'stylesheet';
 		links.push(`<link rel="${escapeHtml(rel)}" href="${escapeHtml(link.href)}">`);
 	}
@@ -209,6 +216,10 @@ function generateExternalScripts(application: ApplicationDefinition | null): str
 	const externalScripts = application?.properties?.scripts || [];
 
 	for (const script of externalScripts) {
+		// Skip scripts without src
+		if (!script.src || typeof script.src !== 'string') {
+			continue;
+		}
 		scripts.push(`<script src="${escapeHtml(script.src)}" defer></script>`);
 	}
 
