@@ -1,10 +1,10 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
-import { loadConfig, getConfig } from './config/configLoader.js';
-import { initCacheInvalidationSubscriber, invalidateCache, closeRedis } from './cache/redis.js';
+import { loadConfig } from './config/configLoader.js';
+import { initCacheInvalidationSubscriber, invalidateCache, closeRedis, getRedisClient } from './cache/redis.js';
 import { handlePageRequest } from './render/htmlRenderer.js';
 import logger from './config/logger.js';
 
-const PORT = parseInt(process.env.SERVER_PORT || '3080', 10);
+const PORT = Number.parseInt(process.env.SERVER_PORT || '3080', 10);
 const HOST = process.env.SERVER_HOST || '0.0.0.0';
 
 /**
@@ -35,12 +35,45 @@ function sendJson(res: ServerResponse, status: number, data: unknown): void {
 
 /**
  * Handle health check endpoint
+ * Returns 200 if server and Redis are operational, 503 otherwise
  */
-function handleHealth(res: ServerResponse): void {
-	sendJson(res, 200, {
+async function handleHealth(res: ServerResponse): Promise<void> {
+	const healthData: {
+		status: string;
+		timestamp: string;
+		redis?: string;
+		memory?: {
+			heapUsed: string;
+			heapTotal: string;
+			rss: string;
+		};
+	} = {
 		status: 'healthy',
 		timestamp: new Date().toISOString(),
-	});
+	};
+
+	// Check Redis connectivity
+	try {
+		const redis = getRedisClient();
+		await redis.ping();
+		healthData.redis = 'connected';
+	} catch (error) {
+		logger.warn('Health check: Redis not available', { error: String(error) });
+		healthData.redis = 'disconnected';
+		healthData.status = 'degraded';
+	}
+
+	// Add memory info
+	const usage = process.memoryUsage();
+	healthData.memory = {
+		heapUsed: `${Math.round(usage.heapUsed / 1024 / 1024)}MB`,
+		heapTotal: `${Math.round(usage.heapTotal / 1024 / 1024)}MB`,
+		rss: `${Math.round(usage.rss / 1024 / 1024)}MB`,
+	};
+
+	// Return 200 even if degraded (Redis down shouldn't fail health check)
+	// This allows server to stay up and serve uncached requests
+	sendJson(res, 200, healthData);
 }
 
 /**
@@ -113,58 +146,132 @@ async function handleCacheInvalidation(req: IncomingMessage, res: ServerResponse
  * Main server entry point
  */
 async function startServer(): Promise<void> {
-	// Initialize configuration from Spring Cloud Config Server
-	await loadConfig();
-	logger.info('Configuration loaded');
+	try {
+		// Initialize configuration from Spring Cloud Config Server
+		await loadConfig();
+		logger.info('Configuration loaded');
 
-	// Initialize Redis cache invalidation subscriber
-	await initCacheInvalidationSubscriber();
-	logger.info('Cache invalidation subscriber initialized');
-
-	const server = createServer(async (req, res) => {
-		const url = new URL(req.url || '/', `http://${req.headers.host}`);
-
-		// Health check endpoint
-		if (req.method === 'GET' && url.pathname === '/health') {
-			handleHealth(res);
-			return;
-		}
-
-		// Cache invalidation endpoint
-		if (req.method === 'POST' && url.pathname === '/api/cache/invalidate') {
-			await handleCacheInvalidation(req, res);
-			return;
-		}
-
-		// All other requests are page requests
+		// Initialize Redis cache invalidation subscriber (non-blocking)
 		try {
-			await handlePageRequest(req, res);
+			await initCacheInvalidationSubscriber();
+			logger.info('Cache invalidation subscriber initialized');
 		} catch (error) {
-			logger.error('Request handling error', { error: String(error), url: url.pathname });
-			res.writeHead(500, { 'Content-Type': 'text/html' });
-			res.end('<!DOCTYPE html><html><head><title>Error</title></head><body><h1>Internal Server Error</h1></body></html>');
+			logger.error('Failed to initialize cache subscriber (continuing anyway)', { error: String(error) });
 		}
-	});
 
-	server.listen(PORT, HOST, () => {
-		logger.info(`SSR server listening on http://${HOST}:${PORT}`);
-	});
+		const server = createServer(async (req, res) => {
+			try {
+				const url = new URL(req.url || '/', `http://${req.headers.host}`);
 
-	// Graceful shutdown
-	const shutdown = async () => {
-		logger.info('Shutdown signal received, shutting down gracefully');
-		server.close(async () => {
-			await closeRedis();
-			logger.info('Server closed');
-			process.exit(0);
+				// Health check endpoint
+				if (req.method === 'GET' && url.pathname === '/health') {
+					await handleHealth(res);
+					return;
+				}
+
+				// Cache invalidation endpoint
+				if (req.method === 'POST' && url.pathname === '/api/cache/invalidate') {
+					await handleCacheInvalidation(req, res);
+					return;
+				}
+
+				// All other requests are page requests
+				await handlePageRequest(req, res);
+			} catch (error) {
+				logger.error('Request handling error', {
+					error: error instanceof Error ? error.message : String(error),
+					stack: error instanceof Error ? error.stack : undefined,
+					url: req.url
+				});
+				if (!res.headersSent) {
+					res.writeHead(500, { 'Content-Type': 'text/html' });
+					res.end('<!DOCTYPE html><html><head><title>Error</title></head><body><h1>Internal Server Error</h1></body></html>');
+				}
+			}
 		});
-	};
 
-	process.on('SIGTERM', shutdown);
-	process.on('SIGINT', shutdown);
+		// Handle server errors
+		server.on('error', (error) => {
+			logger.error('Server error', { error: String(error) });
+		});
+
+		server.on('clientError', (err, socket) => {
+			logger.warn('Client error', { error: String(err) });
+			if (!socket.destroyed) {
+				socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
+			}
+		});
+
+		server.listen(PORT, HOST, () => {
+			logger.info(`SSR server listening on http://${HOST}:${PORT}`, {
+				nodeVersion: process.version,
+				pid: process.pid,
+				memory: process.memoryUsage(),
+			});
+		});
+
+		// Graceful shutdown
+		const shutdown = async () => {
+			logger.info('Shutdown signal received, shutting down gracefully');
+			server.close(async () => {
+				try {
+					await closeRedis();
+					logger.info('Server closed');
+					process.exit(0);
+				} catch (error) {
+					logger.error('Error during shutdown', { error: String(error) });
+					process.exit(1);
+				}
+			});
+
+			// Force exit after 30 seconds
+			setTimeout(() => {
+				logger.error('Forced shutdown after timeout');
+				process.exit(1);
+			}, 30000);
+		};
+
+		process.on('SIGTERM', shutdown);
+		process.on('SIGINT', shutdown);
+
+		// Handle uncaught exceptions and rejections
+		process.on('uncaughtException', (error) => {
+			logger.error('Uncaught exception - process will exit', {
+				error: error.message,
+				stack: error.stack
+			});
+			// Don't exit immediately - let the process crash naturally
+			// This ensures Docker healthcheck detects the failure
+		});
+
+		process.on('unhandledRejection', (reason) => {
+			logger.error('Unhandled promise rejection - process may exit', {
+				reason: String(reason),
+				reasonType: typeof reason
+			});
+		});
+
+		// Log memory usage periodically
+		setInterval(() => {
+			const usage = process.memoryUsage();
+			logger.debug('Memory usage', {
+				heapUsed: `${Math.round(usage.heapUsed / 1024 / 1024)}MB`,
+				heapTotal: `${Math.round(usage.heapTotal / 1024 / 1024)}MB`,
+				rss: `${Math.round(usage.rss / 1024 / 1024)}MB`,
+			});
+		}, 60000); // Every minute
+
+	} catch (error) {
+		logger.error('Failed to initialize server', {
+			error: error instanceof Error ? error.message : String(error),
+			stack: error instanceof Error ? error.stack : undefined
+		});
+		throw error;
+	}
 }
 
 startServer().catch((error) => {
 	console.error('Failed to start server:', error);
+	logger.error('Fatal server startup error', { error: String(error) });
 	process.exit(1);
 });
