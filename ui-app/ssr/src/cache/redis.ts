@@ -88,7 +88,7 @@ export async function initCacheInvalidationSubscriber(): Promise<void> {
 		const redisUrl = getRedisUrl();
 		subscriberClient = new Redis(redisUrl, {
 			maxRetriesPerRequest: 10,
-			enableOfflineQueue: false,
+			enableOfflineQueue: true, // Allow queuing during brief disconnections for pub/sub reliability
 			retryStrategy: (times) => {
 				if (times > 20) {
 					logger.error('Redis subscriber max retries exceeded', { times });
@@ -117,9 +117,22 @@ export async function initCacheInvalidationSubscriber(): Promise<void> {
 			logger.info('Redis subscriber reconnecting...');
 		});
 
+		subscriberClient.on('ready', () => {
+			logger.info('Redis subscriber ready and connected');
+			// Resubscribe after reconnection
+			if (subscriberClient) {
+				subscriberClient.subscribe(SSR_CACHE_INVALIDATION_CHANNEL).catch((err) => {
+					logger.error('Failed to resubscribe after reconnection', { error: String(err) });
+				});
+			}
+		});
+
 		// Subscribe to cache invalidation channel
 		await subscriberClient.subscribe(SSR_CACHE_INVALIDATION_CHANNEL);
-		logger.info('Subscribed to cache invalidation channel', { channel: SSR_CACHE_INVALIDATION_CHANNEL });
+		logger.info('✅ Subscribed to cache invalidation channel', {
+			channel: SSR_CACHE_INVALIDATION_CHANNEL,
+			offlineQueueEnabled: true
+		});
 
 		// Handle incoming messages
 		subscriberClient.on('message', async (channel, message) => {
