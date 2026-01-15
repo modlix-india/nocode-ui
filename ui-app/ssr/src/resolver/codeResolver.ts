@@ -128,6 +128,7 @@ async function resolveFromSecurityService(
  * Extracts the page name from the URL path.
  * Handles:
  * - /{appCode}/{clientCode}/page/{pageName} -> pageName
+ * - /{appCode}/{clientCode}/page/{pageName}/param -> pageName (ignores path params)
  * - /{appCode}/{clientCode}/page/ -> index (default page)
  * - /page/{pageName} -> pageName
  * - /{pageName} -> pageName (when no 'page' in path)
@@ -140,8 +141,10 @@ export function extractPageName(pathname: string): string {
 	if (pageIndex !== -1) {
 		// Found 'page' in path
 		if (pageIndex + 1 < pathParts.length) {
-			// Everything after 'page' is the page name (can include slashes)
-			return pathParts.slice(pageIndex + 1).join('/');
+			// Only take the first segment after 'page' as the page name
+			// This allows URLs like /page/walkInForm/3tioupvup1xsqSlDaWjdbU
+			// to resolve to page 'walkInForm' (path params are handled by client-side routing)
+			return pathParts[pageIndex + 1];
 		}
 		// 'page' is at the end (e.g., /app/client/page/ or /app/client/page)
 		// Return 'index' to use the default page
