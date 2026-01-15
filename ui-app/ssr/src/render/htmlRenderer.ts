@@ -227,6 +227,30 @@ function generateExternalScripts(application: ApplicationDefinition | null): str
 }
 
 /**
+ * Extract and sort code parts by placement
+ */
+interface CodePart {
+	place: 'BEFORE_HEAD' | 'AFTER_HEAD' | 'BEFORE_BODY' | 'AFTER_BODY';
+	order: number;
+	part: string;
+}
+
+function extractCodeParts(
+	application: ApplicationDefinition | null,
+	place: CodePart['place']
+): string {
+	const codeParts = application?.properties?.codeParts || {};
+
+	// Filter and sort code parts for the specified placement
+	const parts = Object.values(codeParts)
+		.filter((part: any) => part.place === place)
+		.sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+		.map((part: any) => part.part || '');
+
+	return parts.join('\n\t\t');
+}
+
+/**
  * Generate the complete HTML page
  */
 function generateHtml(
@@ -265,10 +289,16 @@ function generateHtml(
 	const externalLinks = generateExternalLinks(application);
 	const externalScripts = generateExternalScripts(application);
 
+	// Extract code parts for different placements
+	const beforeHeadParts = extractCodeParts(application, 'BEFORE_HEAD');
+	const afterHeadParts = extractCodeParts(application, 'AFTER_HEAD');
+	const beforeBodyParts = extractCodeParts(application, 'BEFORE_BODY');
+	const afterBodyParts = extractCodeParts(application, 'AFTER_BODY');
+
 	return `<!DOCTYPE html>
 <html lang="en">
 	<head>
-		${metaTags}
+		${beforeHeadParts ? `${beforeHeadParts}\n\t\t` : ''}${metaTags}
 		<title>${escapeHtml(pageTitle)}</title>
 
 		<!-- Resource hints -->
@@ -288,9 +318,10 @@ function generateHtml(
 
 		<!-- External stylesheets (fonts, etc.) -->
 		${externalLinks}
+		${afterHeadParts ? `\n\t\t${afterHeadParts}` : ''}
 	</head>
 	<body>
-		<!-- Bootstrap data for client hydration -->
+		${beforeBodyParts ? `${beforeBodyParts}\n\t\t` : ''}<!-- Bootstrap data for client hydration -->
 		<script>
 			${bootstrapData ? `window.__APP_BOOTSTRAP__ = ${JSON.stringify(removeCodeParts(bootstrapData))};` : ''}
 			window.domainAppCode = '${escapeHtml(codes.appCode)}';
@@ -310,6 +341,7 @@ function generateHtml(
 		<!-- Client JS bundles -->
 		<script src="${cdnUrl}vendors.js" defer></script>
 		<script src="${cdnUrl}index.js" defer></script>
+		${afterBodyParts ? `\n\t\t${afterBodyParts}` : ''}
 	</body>
 </html>`;
 }
