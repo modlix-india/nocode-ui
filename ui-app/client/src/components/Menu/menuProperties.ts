@@ -138,13 +138,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'SubMenu Orientation',
 		description: 'SubMenu Orientation',
 		editor: ComponentPropertyEditor.LAYOUT,
-		defaultValue: '_default_orientation',
+		defaultValue: '_bottom_orientation',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
 			{
-				name: '_default_orientation',
-				displayName: 'Default Orientation',
-				description: 'Default Orientation',
+				name: '_bottom_orientation',
+				displayName: 'Bottom Orientation',
+				description: 'Bottom Orientation',
 			},
 			{
 				name: '_right_orientation',
@@ -152,9 +152,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Right Orientation',
 			},
 			{
-				name: '_bottom_orientation',
-				displayName: 'Bottom Orientation',
-				description: 'Bottom Orientation',
+				name: '_top_orientation',
+				displayName: 'Top Orientation',
+				description: 'Opens submenu above the parent menu',
+			},
+			{
+				name: '_left_orientation',
+				displayName: 'Left Orientation',
+				description: 'Opens submenu to the left of the parent menu',
 			},
 		],
 	},
@@ -205,11 +210,17 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	],
 	imageIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	activeImageIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	caretIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

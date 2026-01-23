@@ -147,6 +147,202 @@
 		"n": "menuColorIconActive<designType><colorScheme>"
 	},
 	{
+		"cp": "font-size",
+		"sel": ".comp.compMenu<designType><colorScheme> ._icon, .comp.compMenu<designType><colorScheme>:visited ._icon",
+		"np": true,
+		"gn": "Font Size",
+		"dn": "FontSize Icon",
+		"n": "menuFontSizeIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "font-size",
+		"sel": ".comp.compMenu<designType><colorScheme>:hover ._icon, .comp.compMenu<designType><colorScheme>._isActive ._icon",
+		"np": true,
+		"gn": "Font Size",
+		"dn": "FontSize Icon Active",
+		"n": "menuFontSizeIconActive<designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compMenu<designType><colorScheme> ._imageIcon, .comp.compMenu<designType><colorScheme>:visited ._imageIcon",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin ImageIcon",
+		"n": "menuMarginImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compMenu<designType><colorScheme> ._imageIcon, .comp.compMenu<designType><colorScheme>:visited ._imageIcon",
+		"np": true,
+		"gn": "Padding",
+		"dn": "Padding ImageIcon",
+		"n": "menuPaddingImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compMenu<designType><colorScheme> ._imageIcon img, .comp.compMenu<designType><colorScheme>:visited ._imageIcon img",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width ImageIcon",
+		"n": "menuWidthImageIcon<designType><colorScheme>",
+		"dv": "20px"
+	},
+	{
+		"cp": "height",
+		"sel": ".comp.compMenu<designType><colorScheme> ._imageIcon img, .comp.compMenu<designType><colorScheme>:visited ._imageIcon img",
+		"np": true,
+		"gn": "Height",
+		"dn": "Height ImageIcon",
+		"n": "menuHeightImageIcon<designType><colorScheme>",
+		"dv": "20px"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compMenu<designType><colorScheme> ._imageIcon img, .comp.compMenu<designType><colorScheme>:visited ._imageIcon img",
+		"np": true,
+		"gn": "Border Radius",
+		"dn": "BorderRadius ImageIcon",
+		"n": "menuBorderRadiusImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "opacity",
+		"sel": ".comp.compMenu<designType><colorScheme> ._imageIcon, .comp.compMenu<designType><colorScheme>:visited ._imageIcon",
+		"np": true,
+		"gn": "Opacity",
+		"dn": "Opacity ImageIcon",
+		"n": "menuOpacityImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compMenu<designType><colorScheme> ._imageIcon, .comp.compMenu<designType><colorScheme>:visited ._imageIcon",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow ImageIcon",
+		"n": "menuBoxShadowImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "background-color",
+		"sel": ".comp.compMenu<designType><colorScheme> ._imageIcon, .comp.compMenu<designType><colorScheme>:visited ._imageIcon",
+		"np": true,
+		"gn": "Background Color",
+		"dn": "BackgroundColor ImageIcon",
+		"n": "menuBackgroundColorImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "opacity",
+		"sel": ".comp.compMenu<designType><colorScheme>:hover ._imageIcon, .comp.compMenu<designType><colorScheme>._isActive ._imageIcon",
+		"np": true,
+		"gn": "Opacity",
+		"dn": "Opacity ImageIcon Active",
+		"n": "menuOpacityImageIconActive<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compMenu<designType><colorScheme>:hover ._imageIcon, .comp.compMenu<designType><colorScheme>._isActive ._imageIcon",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow ImageIcon Active",
+		"n": "menuBoxShadowImageIconActive<designType><colorScheme>"
+	},
+	{
+		"cp": "background-color",
+		"sel": ".comp.compMenu<designType><colorScheme>:hover ._imageIcon, .comp.compMenu<designType><colorScheme>._isActive ._imageIcon",
+		"np": true,
+		"gn": "Background Color",
+		"dn": "BackgroundColor ImageIcon Active",
+		"n": "menuBackgroundColorImageIconActive<designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compMenu<designType><colorScheme> ._activeImageIcon, .comp.compMenu<designType><colorScheme>:visited ._activeImageIcon",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin ActiveImageIcon",
+		"n": "menuMarginActiveImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compMenu<designType><colorScheme> ._activeImageIcon, .comp.compMenu<designType><colorScheme>:visited ._activeImageIcon",
+		"np": true,
+		"gn": "Padding",
+		"dn": "Padding ActiveImageIcon",
+		"n": "menuPaddingActiveImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compMenu<designType><colorScheme> ._activeImageIcon img, .comp.compMenu<designType><colorScheme>:visited ._activeImageIcon img",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width ActiveImageIcon",
+		"n": "menuWidthActiveImageIcon<designType><colorScheme>",
+		"dv": "20px"
+	},
+	{
+		"cp": "height",
+		"sel": ".comp.compMenu<designType><colorScheme> ._activeImageIcon img, .comp.compMenu<designType><colorScheme>:visited ._activeImageIcon img",
+		"np": true,
+		"gn": "Height",
+		"dn": "Height ActiveImageIcon",
+		"n": "menuHeightActiveImageIcon<designType><colorScheme>",
+		"dv": "20px"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compMenu<designType><colorScheme> ._activeImageIcon img, .comp.compMenu<designType><colorScheme>:visited ._activeImageIcon img",
+		"np": true,
+		"gn": "Border Radius",
+		"dn": "BorderRadius ActiveImageIcon",
+		"n": "menuBorderRadiusActiveImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "opacity",
+		"sel": ".comp.compMenu<designType><colorScheme> ._activeImageIcon, .comp.compMenu<designType><colorScheme>:visited ._activeImageIcon",
+		"np": true,
+		"gn": "Opacity",
+		"dn": "Opacity ActiveImageIcon",
+		"n": "menuOpacityActiveImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compMenu<designType><colorScheme> ._activeImageIcon, .comp.compMenu<designType><colorScheme>:visited ._activeImageIcon",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow ActiveImageIcon",
+		"n": "menuBoxShadowActiveImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "background-color",
+		"sel": ".comp.compMenu<designType><colorScheme> ._activeImageIcon, .comp.compMenu<designType><colorScheme>:visited ._activeImageIcon",
+		"np": true,
+		"gn": "Background Color",
+		"dn": "BackgroundColor ActiveImageIcon",
+		"n": "menuBackgroundColorActiveImageIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "opacity",
+		"sel": ".comp.compMenu<designType><colorScheme>:hover ._activeImageIcon, .comp.compMenu<designType><colorScheme>._isActive ._activeImageIcon",
+		"np": true,
+		"gn": "Opacity",
+		"dn": "Opacity ActiveImageIcon Active",
+		"n": "menuOpacityActiveImageIconActive<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compMenu<designType><colorScheme>:hover ._activeImageIcon, .comp.compMenu<designType><colorScheme>._isActive ._activeImageIcon",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow ActiveImageIcon Active",
+		"n": "menuBoxShadowActiveImageIconActive<designType><colorScheme>"
+	},
+	{
+		"cp": "background-color",
+		"sel": ".comp.compMenu<designType><colorScheme>:hover ._activeImageIcon, .comp.compMenu<designType><colorScheme>._isActive ._activeImageIcon",
+		"np": true,
+		"gn": "Background Color",
+		"dn": "BackgroundColor ActiveImageIcon Active",
+		"n": "menuBackgroundColorActiveImageIconActive<designType><colorScheme>"
+	},
+	{
 		"cp": "font",
 		"sel": ".comp.compMenu<designType><colorScheme>:hover, .comp.compMenu<designType><colorScheme>._isActive",
 		"np": true,

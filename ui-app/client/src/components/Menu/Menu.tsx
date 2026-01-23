@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState } from 'react';
+import React, { MouseEvent, useState, useRef, useLayoutEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentProps } from '../../types/common';
@@ -72,6 +72,58 @@ function Menu(props: Readonly<ComponentProps>) {
 	const { pathname } = useLocation();
 	const [containerHover, setContainerHover] = useState(false);
 	const [isHovered, setIsHovered] = useState(false);
+	const anchorRef = useRef<HTMLAnchorElement>(null);
+	const submenuRef = useRef<HTMLDivElement>(null);
+
+	useLayoutEffect(() => {
+		if (!isMenuOpenState || !anchorRef.current || !submenuRef.current) return;
+
+		const anchor = anchorRef.current.getBoundingClientRect();
+		const submenu = submenuRef.current.getBoundingClientRect();
+		const windowWidth = window.innerWidth;
+		const windowHeight = window.innerHeight;
+
+		let top = 0;
+		let left = 0;
+		let orientation = subMenuOrientation === '_default_orientation' || !subMenuOrientation ? '_bottom_orientation' : subMenuOrientation;
+
+		if (orientation === '_right_orientation' && anchor.right + submenu.width > windowWidth) {
+			orientation = '_left_orientation';
+		} else if (orientation === '_left_orientation' && anchor.left - submenu.width < 0) {
+			orientation = '_right_orientation';
+		} else if (
+			orientation === '_bottom_orientation' &&
+			anchor.bottom + submenu.height > windowHeight
+		) {
+			orientation = '_top_orientation';
+		} else if (orientation === '_top_orientation' && anchor.top - submenu.height < 0) {
+			orientation = '_bottom_orientation';
+		}
+
+		const offsetParent = anchorRef.current.offsetParent || document.body;
+		const parentRect = offsetParent.getBoundingClientRect();
+
+		const relativeAnchorTop = anchor.top - parentRect.top;
+		const relativeAnchorLeft = anchor.left - parentRect.left;
+		const gap = 2;
+
+		if (orientation === '_right_orientation') {
+			top = relativeAnchorTop;
+			left = relativeAnchorLeft + anchor.width + gap;
+		} else if (orientation === '_left_orientation') {
+			top = relativeAnchorTop;
+			left = relativeAnchorLeft - submenu.width - gap;
+		} else if (orientation === '_top_orientation') {
+			top = relativeAnchorTop - submenu.height - gap;
+			left = relativeAnchorLeft;
+		} else {
+			top = relativeAnchorTop + anchor.height + gap;
+			left = relativeAnchorLeft;
+		}
+
+		submenuRef.current.style.top = `${top}px`;
+		submenuRef.current.style.left = `${left}px`;
+	}, [isMenuOpenState, subMenuOrientation]);
 
 	React.useEffect(() => {
 		if (!pathsActiveFor?.length) return;
@@ -113,20 +165,20 @@ function Menu(props: Readonly<ComponentProps>) {
 				readOnly
 					? undefined
 					: e => {
-							e.stopPropagation();
-							e.preventDefault();
-							if (externalButtonTarget === '_self') {
-								window.history.pushState(undefined, '', resolvedLink);
-								window.history.back();
-								setTimeout(() => window.history.forward(), 100);
-							} else {
-								window.open(
-									resolvedLink,
-									externalButtonTarget,
-									externalButtonFeatures ?? features,
-								);
-							}
+						e.stopPropagation();
+						e.preventDefault();
+						if (externalButtonTarget === '_self') {
+							window.history.pushState(undefined, '', resolvedLink);
+							window.history.back();
+							setTimeout(() => window.history.forward(), 100);
+						} else {
+							window.open(
+								resolvedLink,
+								externalButtonTarget,
+								externalButtonFeatures ?? features,
+							);
 						}
+					}
 			}
 		>
 			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
@@ -140,33 +192,25 @@ function Menu(props: Readonly<ComponentProps>) {
 			<SubHelperComponent definition={definition} subComponentName="icon" />
 		</i>
 	) : imageIcon && !activeImageIcon ? (
-		<>
-			<img className={`_imageIcon ${imageIcon}`} src={getSrcUrl(imageIcon)} alt="imageIcon" />
+		<span className="_imageIcon">
+			<img src={getSrcUrl(imageIcon)} alt="imageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
-		</>
+		</span>
 	) : !imageIcon && activeImageIcon ? (
-		<>
-			<img
-				className={`_activeImageIcon ${activeImageIcon}`}
-				src={getSrcUrl(activeImageIcon)}
-				alt="activeImageIcon"
-			/>
+		<span className="_activeImageIcon">
+			<img src={getSrcUrl(activeImageIcon)} alt="activeImageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
-		</>
+		</span>
 	) : imageIcon && activeImageIcon && (isHovered || isMenuActive) ? (
-		<>
-			<img
-				className={`_activeImageIcon ${activeImageIcon}`}
-				src={getSrcUrl(activeImageIcon)}
-				alt="activeImageIcon"
-			/>
+		<span className="_activeImageIcon">
+			<img src={getSrcUrl(activeImageIcon)} alt="activeImageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
-		</>
+		</span>
 	) : imageIcon && activeImageIcon && (!isHovered || !isMenuActive) ? (
-		<>
-			<img className={`_imageIcon ${imageIcon}`} src={getSrcUrl(imageIcon)} alt="imageIcon" />
+		<span className="_imageIcon">
+			<img src={getSrcUrl(imageIcon)} alt="imageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
-		</>
+		</span>
 	) : (
 		<></>
 	);
@@ -192,7 +236,7 @@ function Menu(props: Readonly<ComponentProps>) {
 
 	const caretIcon =
 		showOpenCloseButton &&
-		Object.entries(definition?.children ?? {}).filter(e => e[1]).length ? (
+			Object.entries(definition?.children ?? {}).filter(e => e[1]).length ? (
 			<div className="_caretIconContainer">
 				<i
 					className={`_caretIcon ${isMenuOpenState ? caretIconOpen : caretIconClose}`}
@@ -205,9 +249,8 @@ function Menu(props: Readonly<ComponentProps>) {
 			<></>
 		);
 
-	const styleKey = `${key}_${
-		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
-	}`;
+	const styleKey = `${key}_${locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+		}`;
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
@@ -251,27 +294,27 @@ function Menu(props: Readonly<ComponentProps>) {
 
 			{processStyleObjectToCSS(
 				regularStyle?.imageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon img`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.imageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._imageIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._imageIcon img`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.imageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._imageIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._imageIcon img, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon img`,
 			)}
 			{processStyleObjectToCSS(
 				regularStyle?.activeImageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon img`,
 			)}
 			{processStyleObjectToCSS(
 				visitedStyle?.activeImageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._activeImageIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._activeImageIcon img`,
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.activeImageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._activeImageIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._activeImageIcon img, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon img`,
 			)}
 
 			{processStyleObjectToCSS(
@@ -292,6 +335,7 @@ function Menu(props: Readonly<ComponentProps>) {
 	const children =
 		definition.children && isMenuOpenState ? (
 			<div
+				ref={submenuRef}
 				className={`${subMenuOrientation}`}
 				style={(containerHover ? hoverStyle : regularStyle)?.subMenuContainer}
 				onMouseOver={() => setContainerHover(true)}
@@ -304,7 +348,10 @@ function Menu(props: Readonly<ComponentProps>) {
 				<Children
 					pageDefinition={props.pageDefinition}
 					renderableChildren={definition.children}
-					context={{ ...context, menuLevel: (context.menuLevel ?? 0) + 1 }}
+					context={{
+						...context,
+						menuLevel: (context.menuLevel ?? 0) + 1,
+					}}
 					locationHistory={locationHistory}
 				/>
 			</div>
@@ -316,9 +363,9 @@ function Menu(props: Readonly<ComponentProps>) {
 		<>
 			{styleComp}
 			<a
-				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${
-					isMenuActive ? '_isActive' : ''
-				} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
+				ref={anchorRef}
+				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${isMenuActive ? '_isActive' : ''
+					} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
 				href={readOnly ? 'javascript:void(0)' : resolvedLink}
 				target={target}
 				onMouseEnter={() => setIsHovered(true)}

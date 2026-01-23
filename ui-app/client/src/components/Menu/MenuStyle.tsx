@@ -61,9 +61,17 @@ export default function MenuStyle({
 	}
 
 	${PREFIX} ._icon,
-	${PREFIX}._imageIcon,
-	${PREFIX}._activeImageIcon {
+	${PREFIX} ._imageIcon,
+	${PREFIX} ._activeImageIcon {
 		position: relative;
+		display: inline-flex;
+		align-items: center;
+	}
+
+	${PREFIX} ._imageIcon img,
+	${PREFIX} ._activeImageIcon img {
+		display: block;
+		object-fit: contain;
 	}
 
 	${PREFIX} ._caretIcon {
@@ -76,17 +84,12 @@ export default function MenuStyle({
 		text-align: right;
  	}
 
-	${PREFIX} + ._right_orientation {
-		position: absolute;
-		left: 100%;
-		z-index: 1;
-	}
-
+	${PREFIX} + ._right_orientation,
+	${PREFIX} + ._left_orientation,
+	${PREFIX} + ._top_orientation,
 	${PREFIX} + ._bottom_orientation {
 		position: absolute;
-		left: 0;
 		z-index: 1;
-		top: 100%;
 	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
