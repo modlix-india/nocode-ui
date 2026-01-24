@@ -111,7 +111,7 @@ const componentMap = new Map<string, Component>([
 
 import Chart from './Chart/Chart';
 import FileSelector from './FileSelector/FileSelector';
-import Jot from './Jot/Jot';
+// import Jot from './Jot/Jot';
 import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEditor';
 import FillerValueEditor from './FillerValueEditor/FillerValueEditor';
 import KIRunEditor from './KIRunEditor/KIRunEditor';
@@ -125,7 +125,7 @@ import TextEditor from './TextEditor/TextEditor';
 
 componentMap.set(Chart.name, Chart);
 componentMap.set(FileSelector.name, FileSelector);
-componentMap.set(Jot.name, Jot);
+// componentMap.set(Jot.name, Jot);
 componentMap.set(FillerDefinitionEditor.name, FillerDefinitionEditor);
 componentMap.set(FillerValueEditor.name, FillerValueEditor);
 componentMap.set(KIRunEditor.name, KIRunEditor);

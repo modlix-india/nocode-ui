@@ -129,7 +129,7 @@ export interface ComponentStyleSubComponentDefinition {
 	name: string;
 	displayName: string;
 	description: string;
-	icon: string | React.ReactNode;
+	icon?: string | React.ReactNode;
 	mainComponent?: boolean;
 }
 

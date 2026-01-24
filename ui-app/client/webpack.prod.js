@@ -30,7 +30,10 @@ module.exports = (env = {}) => {
     },
     output: {
       filename: '[name].js',
-      chunkFilename: '[name].js',
+      chunkFilename: (pathData) => {
+        // Use explicit name for named chunks, ID for auto-generated ones
+        return pathData.chunk.name ? '[name].js' : 'chunk.[id].[contenthash:8].js';
+      },
       path: path.resolve(__dirname, 'dist'),
       publicPath: publicUrl
     },
@@ -62,6 +65,8 @@ module.exports = (env = {}) => {
     },
     plugins,
     optimization: {
+      chunkIds: 'deterministic',
+      moduleIds: 'deterministic',
       splitChunks: {
         chunks: "all",
         minSize: 20000,
@@ -71,11 +76,41 @@ module.exports = (env = {}) => {
         maxInitialRequests: 30,
         enforceSizeThreshold: 50000,
         cacheGroups: {
-          defaultVendors: {
-            test: /[\\/]node_modules[\\/]/,
-            priority: -10,
+          // React (stable, rarely changes - good for caching)
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
+            name: 'react-vendors',
+            priority: 20,
             reuseExistingChunk: true,
+          },
+          // Monaco Editor (huge, only for lazy-loaded editors)
+          monaco: {
+            test: /[\\/]node_modules[\\/](monaco-editor|@monaco-editor)[\\/]/,
+            name: 'monaco',
+            priority: 15,
+            reuseExistingChunk: true,
+            chunks: 'async',  // Only include in async chunks
+          },
+          // KIRun runtime (large, only for lazy-loaded components)
+          kirun: {
+            test: /[\\/]node_modules[\\/]@fincity[\\/]kirun/,
+            name: 'kirun',
+            priority: 14,
+            reuseExistingChunk: true,
+          },
+          // Path reactive state management
+          pathReactive: {
+            test: /[\\/]node_modules[\\/]@fincity[\\/]path-reactive/,
+            name: 'path-reactive',
+            priority: 13,
+            reuseExistingChunk: true,
+          },
+          // Remaining node_modules
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
+            priority: 10,
+            reuseExistingChunk: true,
           },
           default: {
             minChunks: 3,
