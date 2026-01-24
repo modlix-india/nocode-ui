@@ -4,7 +4,7 @@ import { getDataFromPath, UrlDetailsExtractor } from '../../context/StoreContext
 import { messageToMaster } from '../../slaveFunctions';
 import { ComponentDefinition } from '../../types/common';
 import ComponentDefinitions from '..';
-import { SubComponentDefinitions } from '../PageEditor/subComponentDefinition';
+import { SubComponentDefinitions } from '../PageEditor/SubCompInfo';
 
 export function PageEditorHelperComponent({
 	definition,

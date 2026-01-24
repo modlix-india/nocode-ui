@@ -25,6 +25,7 @@ import {
 import { propertiesDefinition, stylePropertiesDefinition } from './themeEditorProperties';
 import { Variables } from './components/Variables';
 import Editor from '@monaco-editor/react';
+import { SubComponentDefinitions } from '../PageEditor/SubCompInfo';
 
 export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -216,7 +217,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 										className={`_component ${comp.name === currentComponent ? '_active' : ''}`}
 									>
 										{
-											comp.subComponentDefinition.find(e => e.mainComponent)
+											SubComponentDefinitions[comp.name]?.find(e => e.mainComponent)
 												?.icon
 										}
 										{comp.displayName}

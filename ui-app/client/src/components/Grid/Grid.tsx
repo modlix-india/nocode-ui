@@ -420,37 +420,7 @@ const component: Component = {
 			pageName: 'grid',
 		},
 	],
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<path
-						className="_scaleBottomTop"
-						d="M11 0H1C0.447715 0 0 0.447715 0 1V18C0 18.5523 0.447715 19 1 19H11C11.5523 19 12 18.5523 12 18V1C12 0.447715 11.5523 0 11 0Z"
-						fill="#7743DB"
-					/>
-					<path
-						className="_scaleTopBottom"
-						d="M26 11H16C15.4477 11 15 11.4477 15 12V29C15 29.5523 15.4477 30 16 30H26C26.5523 30 27 29.5523 27 29V12C27 11.4477 26.5523 11 26 11Z"
-						fill="#7743DB"
-					/>
-					<path
-						d="M11 22H1C0.447715 22 0 22.4477 0 23V29C0 29.5523 0.447715 30 1 30H11C11.5523 30 12 29.5523 12 29V23C12 22.4477 11.5523 22 11 22Z"
-						fill="#EDEAEA"
-					/>
-					<path
-						d="M26 0H16C15.4477 0 15 0.447715 15 1V7C15 7.55229 15.4477 8 16 8H26C26.5523 8 27 7.55229 27 7V1C27 0.447715 26.5523 0 26 0Z"
-						fill="#EDEAEA"
-					/>
-				</IconHelper>
-			),
-		},
-	],
-	stylePropertiesForTheme: styleProperties,
+		stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

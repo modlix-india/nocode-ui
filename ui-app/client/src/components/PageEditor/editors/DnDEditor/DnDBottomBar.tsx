@@ -7,7 +7,7 @@ import { DRAG_CD_KEY } from '../../../../constants';
 import { PageOperations } from '../../functions/PageOperations';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import ComponentDefinitions from '../../..';
-import { SubComponentDefinitions } from '../../subComponentDefinition';
+import { SubComponentDefinitions } from '../../SubCompInfo';
 
 interface SelectionBarProps {
 	defPath: string | undefined;

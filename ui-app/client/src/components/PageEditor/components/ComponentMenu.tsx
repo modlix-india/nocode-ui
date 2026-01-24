@@ -16,7 +16,7 @@ import ComponentDefinitions from '../../index';
 import { PageOperations } from '../functions/PageOperations';
 import axios from 'axios';
 import getSrcUrl from '../../util/getSrcUrl';
-import { SubComponentDefinitions } from '../subComponentDefinition';
+import { SubComponentDefinitions } from '../SubCompInfo';
 
 interface PinIconProps {
 	isPinned: boolean;

@@ -35,21 +35,7 @@ const component = {
 		name: 'SSEventListener',
 		properties: {},
 	},
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<path d="M15 0L5 10V20L15 30L25 20V10L15 0Z" fill="#FF7599" />
-				</IconHelper>
-			),
-			mainComponent: true,
-		},
-	],
-	stylePropertiesForTheme: styleProperties,
+		stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

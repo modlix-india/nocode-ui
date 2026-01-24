@@ -9,7 +9,7 @@ import {
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import { PageOperations } from '../../functions/PageOperations';
-import { SubComponentDefinitions } from '../../subComponentDefinition';
+import { SubComponentDefinitions } from '../../SubCompInfo';
 
 interface DnDNavigationBarProps {
 	personalizationPath: string | undefined;
