@@ -2,7 +2,7 @@ import { Redis } from 'ioredis';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 
-const CACHE_PREFIX = 'ssr:';
+const CACHE_PREFIX = 'ssr2:';
 const SSR_CACHE_INVALIDATION_CHANNEL = 'ssr:cache:invalidation';
 
 let redisClient: Redis | null = null;
@@ -241,6 +241,38 @@ export function generateCacheKey(
 	pageName: string
 ): string {
 	return `${appCode}:${clientCode}:${pageName}`;
+}
+
+/**
+ * Get cached HTML string (for rendered HTML caching)
+ * Returns null if Redis is unavailable or HTML not found
+ */
+export async function getCachedHtml(key: string): Promise<string | null> {
+	try {
+		const redis = getRedisClient();
+		const html = await redis.get(`${CACHE_PREFIX}html:${key}`);
+		return html;
+	} catch (error) {
+		logger.warn('Redis get HTML error (degraded mode)', { key, error: String(error) });
+		return null;
+	}
+}
+
+/**
+ * Set cached HTML string with TTL
+ * Stores raw HTML for faster serving (no JSON parsing needed)
+ */
+export async function setCachedHtml(
+	key: string,
+	html: string,
+	ttlSeconds: number = 1800 // 30 minutes default
+): Promise<void> {
+	try {
+		const redis = getRedisClient();
+		await redis.setex(`${CACHE_PREFIX}html:${key}`, ttlSeconds, html);
+	} catch (error) {
+		logger.warn('Redis set HTML error (degraded mode)', { key, ttlSeconds, error: String(error) });
+	}
 }
 
 /**
