@@ -7,7 +7,7 @@ import {
 	type ApplicationDefinition,
 	type ThemeDefinition,
 } from '../api/client.js';
-import { getCachedData, setCachedData, generateCacheKey, getCachedHtml, setCachedHtml } from '../cache/redis.js';
+import { getCachedData, setCachedData, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 // Key compression removed - doesn't help gzipped transfer size (only 14% savings)
@@ -465,6 +465,35 @@ export async function handlePageRequest(
 	// Check HTML cache first for non-authenticated requests (fastest path)
 	if (!isAuthenticated) {
 		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName);
+
+		// Check if client accepts gzip
+		const acceptEncoding = req.headers['accept-encoding'] || '';
+		const supportsGzip = acceptEncoding.includes('gzip');
+
+		if (supportsGzip) {
+			// Try to serve pre-compressed content (fastest TTFB!)
+			const cachedGzipped = await getCachedGzippedHtml(htmlCacheKey);
+			if (cachedGzipped) {
+				logger.info('HTML cache hit (pre-compressed)', {
+					cacheKey: htmlCacheKey,
+					pageName: urlPageName,
+					size: cachedGzipped.length
+				});
+
+				// Set headers for pre-compressed response
+				res.setHeader('Content-Type', 'text/html; charset=utf-8');
+				res.setHeader('Content-Encoding', 'gzip');
+				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
+				res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
+
+				res.writeHead(200);
+				res.end(cachedGzipped);
+				return;
+			}
+		}
+
+		// Fallback: serve uncompressed HTML (let Nginx compress)
 		const cachedHtml = await getCachedHtml(htmlCacheKey);
 		if (cachedHtml) {
 			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: urlPageName });
@@ -517,6 +546,34 @@ export async function handlePageRequest(
 	// Check HTML cache for resolved page name (when index was resolved to default page)
 	if (urlPageName === 'index' && !isAuthenticated) {
 		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
+
+		// Check if client accepts gzip
+		const acceptEncoding = req.headers['accept-encoding'] || '';
+		const supportsGzip = acceptEncoding.includes('gzip');
+
+		if (supportsGzip) {
+			// Try to serve pre-compressed content (fastest!)
+			const cachedGzipped = await getCachedGzippedHtml(resolvedHtmlCacheKey);
+			if (cachedGzipped) {
+				logger.info('HTML cache hit (resolved, pre-compressed)', {
+					cacheKey: resolvedHtmlCacheKey,
+					pageName: actualPageName,
+					size: cachedGzipped.length
+				});
+
+				res.setHeader('Content-Type', 'text/html; charset=utf-8');
+				res.setHeader('Content-Encoding', 'gzip');
+				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
+				res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED-GZIP');
+
+				res.writeHead(200);
+				res.end(cachedGzipped);
+				return;
+			}
+		}
+
+		// Fallback: serve uncompressed HTML
 		const cachedResolvedHtml = await getCachedHtml(resolvedHtmlCacheKey);
 		if (cachedResolvedHtml) {
 			logger.info('HTML cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
