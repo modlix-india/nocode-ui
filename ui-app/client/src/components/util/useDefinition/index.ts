@@ -122,7 +122,6 @@ export default function useDefinition(
 						setPathsChangedAt(Date.now());
 					}
 				}
-
 				setCompState(newState);
 			},
 			...paths,

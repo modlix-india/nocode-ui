@@ -8,14 +8,15 @@ import {
 } from '../constants';
 import { messageToMaster } from '../slaveFunctions';
 import { ComponentProperty, DataLocation, LocationHistory } from '../types/common';
+import { URLDetails } from '../util/locationProcessor';
+import { AuthoritiesExtractor } from './AuthoritiesExtractor';
 import { FillerExtractor } from './FillerExtractor';
 import { LocalStoreExtractor } from './LocalStoreExtractor';
 import { ParentExtractorForRunEvent } from './ParentExtractor';
+import { sample } from './sampleData';
 import { SpecialTokenValueExtractor } from './SpecialTokenValueExtractor';
 import { ThemeExtractor } from './ThemeExtractor';
-import { AuthoritiesExtractor } from './AuthoritiesExtractor';
-import { sample } from './sampleData';
-import { URLDetails } from '../util/locationProcessor';
+import { normalizePath } from '../components/util/getPaths';
 
 export class StoreExtractor extends SpecialTokenValueExtractor {
 	private readonly store: any;
@@ -28,7 +29,7 @@ export class StoreExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 		return this.retrieveElementFrom(token, parts, 1, this.store);
 	}
 
@@ -181,8 +182,9 @@ export function getDataFromPath(
 export const innerSetData = _setData;
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
-	// console.error('Data set : ', path, value);
 	if (path.endsWith('.')) path = path.substring(0, path.length - 1);
+
+	path = normalizePath(path);
 
 	if (path.startsWith('SampleDataStore.') || path.startsWith('Filler.')) {
 		// Sample store is not editable so we are not changing the data
@@ -211,7 +213,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			);
 		} else _setData(path, value, deleteKey);
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
-		let parts = path.split(TokenValueExtractor.REGEX_DOT);
+		let parts = TokenValueExtractor.splitPath(path);
 
 		const key = globalThis.isDesignMode ? 'designMode_' + parts[1] : parts[1];
 		parts = parts.slice(2);
@@ -265,7 +267,7 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 		return this.retrieveElementFrom(
 			token,
 			['pageData', this.pageName, ...parts.slice(1)],
@@ -330,7 +332,7 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 		return this.retrieveElementFrom(
 			token,
 			['urlData', this.details.pageName!, ...parts.slice(1)],

@@ -28,8 +28,69 @@ export class PathExtractor extends TokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		this.paths.add(token);
+		// Reconstruct path with proper bracket notation and quotes
+		const reconstructedPath = this.reconstructPath(token);
+		this.paths.add(reconstructedPath);
 		return this.orig.getValue(token);
+	}
+
+	private reconstructPath(token: string): string {
+		// Split the path using the enhanced splitPath that understands bracket notation
+		const parts = TokenValueExtractor.splitPath(token);
+
+		if (parts.length === 0) return token;
+		if (parts.length === 1) return parts[0];
+
+		// Reconstruct with proper separators
+		let result = parts[0];
+		for (let i = 1; i < parts.length; i++) {
+			const part = parts[i];
+
+			// Check if part contains bracket notation (e.g., "obj[key]")
+			const bracketIndex = part.indexOf('[');
+			if (bracketIndex > 0) {
+				// Part like "obj[mail.smtp.otp]" - split into property and bracket parts
+				const propName = part.substring(0, bracketIndex);
+				const bracketPart = part.substring(bracketIndex);
+
+				// Add property with dot
+				result += '.' + propName;
+
+				// Process bracket part
+				const key = bracketPart.substring(1, bracketPart.length - 1);
+				if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+					// Has quotes - normalize to double quotes
+					const unquotedKey = key.substring(1, key.length - 1);
+					result += `["${unquotedKey}"]`;
+				} else if (key.includes('.') || !key.match(/^\d+$/)) {
+					// Key contains dots or is not a pure number, wrap in quotes
+					result += `["${key}"]`;
+				} else {
+					result += bracketPart; // Pure number, keep as-is
+				}
+			} else if (part.startsWith('[')) {
+				// Pure bracket notation at start
+				const key = part.substring(1, part.length - 1);
+				if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+					// Has quotes - normalize to double quotes
+					const unquotedKey = key.substring(1, key.length - 1);
+					result += `["${unquotedKey}"]`;
+				} else if (key.includes('.') || !key.match(/^\d+$/)) {
+					// Key contains dots or is not a pure number, wrap in quotes
+					result += `["${key}"]`;
+				} else {
+					result += part; // Pure number, keep as-is
+				}
+			} else if ((part.startsWith('"') && part.endsWith('"')) || (part.startsWith("'") && part.endsWith("'"))) {
+				// Part has quotes, so it needs bracket notation - normalize to double quotes
+				const unquotedPart = part.substring(1, part.length - 1);
+				result += `["${unquotedPart}"]`;
+			} else {
+				// Regular property access with dot
+				result += '.' + part;
+			}
+		}
+		return result;
 	}
 
 	public getPaths() {
@@ -99,7 +160,7 @@ export class ParentPathExtractor extends TokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory } {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
@@ -107,14 +168,32 @@ export class ParentPathExtractor extends TokenValueExtractor {
 		const lastHistory = locationHistory[locationHistory.length - pNum];
 		let path = '';
 
-		if (typeof lastHistory.location === 'string')
-			path = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
-		else
-			path = `${
+		// Reconstruct path preserving bracket notation
+		const remainingParts = parts.slice(pNum);
+		let pathSuffix: string = '';
+		for (let i = 0; i < remainingParts.length; i++) {
+			const part = remainingParts[i];
+			if (part.startsWith('[') || part.startsWith('["') || part.startsWith("['")) {
+				// Already has bracket notation
+				pathSuffix += part;
+			} else if (i === 0) {
+				// First part, no separator needed
+				pathSuffix = part;
+			} else {
+				// Add dot separator for regular property access
+				pathSuffix += '.' + part;
+			}
+		}
+
+		if (typeof lastHistory.location === 'string') {
+			path = pathSuffix ? `${lastHistory.location}.${pathSuffix}` : lastHistory.location;
+		} else {
+			const baseLocation =
 				lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value
-					: lastHistory.location.expression
-			}.${parts.slice(pNum).join('.')}`;
+					: lastHistory.location.expression;
+			path = pathSuffix ? `${baseLocation}.${pathSuffix}` : (baseLocation ?? '');
+		}
 
 		return { path, lastHistory };
 	}
@@ -132,6 +211,12 @@ export class ParentPathExtractor extends TokenValueExtractor {
 	}
 }
 
+// Normalize path quotes to double quotes
+export function normalizePath(path: string): string {
+	// Replace single-quoted bracket notation with double-quoted
+	return path.replaceAll(/\['([^']+)'\]/g, '["$1"]');
+}
+
 export function getPathsFrom<T>(
 	anything: string | DataLocation | ComponentProperty<T>,
 	evaluatorMaps: Map<string, TokenValueExtractor>,
@@ -144,14 +229,14 @@ export function getPathsFrom<T>(
 	else if ('type' in anything) {
 		const dl = anything as DataLocation;
 		if (dl.type === 'VALUE')
-			return isNullValue(dl.value) ? new Set() : new Set<string>([dl.value!]);
+			return isNullValue(dl.value) ? new Set() : new Set<string>([normalizePath(dl.value!)]);
 		expression = dl.expression;
 	} else {
 		const cp = anything as ComponentProperty<T>;
 		if (isNullValue(cp.location)) return new Set();
 		const loc = cp.location!;
 		if (loc.type === 'VALUE')
-			return isNullValue(loc.value) ? new Set() : new Set<string>([loc.value!]);
+			return isNullValue(loc.value) ? new Set() : new Set<string>([normalizePath(loc.value!)]);
 		expression = loc.expression;
 	}
 
