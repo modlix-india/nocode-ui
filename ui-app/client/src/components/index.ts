@@ -54,6 +54,19 @@ import MarkdownTOC from './MarkdownTOC/MarkdownTOC';
 import Audio from './Audio/Audio';
 import ThemeEditor from './ThemeEditor/ThemeEditor';
 import SSEventListener from './SSEventListener/SSEventListener';
+import Chart from './Chart/Chart';
+import FileSelector from './FileSelector/FileSelector';
+// import Jot from './Jot/Jot';
+import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEditor';
+import FillerValueEditor from './FillerValueEditor/FillerValueEditor';
+import KIRunEditor from './KIRunEditor/KIRunEditor';
+import FormEditor from './FormEditor/FormEditor';
+import Form from './Form/Form';
+import PageEditor from './PageEditor/PageEditor';
+import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
+import SchemaForm from './SchemaForm/SchemaForm';
+import TemplateEditor from './TemplateEditor/TemplateEditor';
+import TextEditor from './TextEditor/TextEditor';
 
 const componentMap = new Map<string, Component>([
 	[Button.name, Button],
@@ -107,35 +120,19 @@ const componentMap = new Map<string, Component>([
 	[MarkdownTOC.name, MarkdownTOC],
 	[Audio.name, Audio],
 	[SSEventListener.name, SSEventListener],
+	[Chart.name, Chart],
+	[FileSelector.name, FileSelector],
+	[FillerDefinitionEditor.name, FillerDefinitionEditor],
+	[FillerValueEditor.name, FillerValueEditor],
+	[KIRunEditor.name, KIRunEditor],
+	[FormEditor.name, FormEditor],
+	[PageEditor.name, PageEditor],
+	[SchemaBuilder.name, SchemaBuilder],
+	[SchemaForm.name, SchemaForm],
+	[TemplateEditor.name, TemplateEditor],
+	[TextEditor.name, TextEditor],
+	[ThemeEditor.name, ThemeEditor],
+	[Form.name, Form]
 ]);
-
-import Chart from './Chart/Chart';
-import FileSelector from './FileSelector/FileSelector';
-// import Jot from './Jot/Jot';
-import FillerDefinitionEditor from './FillerDefinitionEditor/FillerDefinitionEditor';
-import FillerValueEditor from './FillerValueEditor/FillerValueEditor';
-import KIRunEditor from './KIRunEditor/KIRunEditor';
-import FormEditor from './FormEditor/FormEditor';
-import Form from './Form/Form';
-import PageEditor from './PageEditor/PageEditor';
-import SchemaBuilder from './SchemaBuilder/SchemaBuilder';
-import SchemaForm from './SchemaForm/SchemaForm';
-import TemplateEditor from './TemplateEditor/TemplateEditor';
-import TextEditor from './TextEditor/TextEditor';
-
-componentMap.set(Chart.name, Chart);
-componentMap.set(FileSelector.name, FileSelector);
-// componentMap.set(Jot.name, Jot);
-componentMap.set(FillerDefinitionEditor.name, FillerDefinitionEditor);
-componentMap.set(FillerValueEditor.name, FillerValueEditor);
-componentMap.set(KIRunEditor.name, KIRunEditor);
-componentMap.set(FormEditor.name, FormEditor);
-componentMap.set(PageEditor.name, PageEditor);
-componentMap.set(SchemaBuilder.name, SchemaBuilder);
-componentMap.set(SchemaForm.name, SchemaForm);
-componentMap.set(TemplateEditor.name, TemplateEditor);
-componentMap.set(TextEditor.name, TextEditor);
-componentMap.set(ThemeEditor.name, ThemeEditor);
-componentMap.set(Form.name, Form);
 
 export default componentMap;

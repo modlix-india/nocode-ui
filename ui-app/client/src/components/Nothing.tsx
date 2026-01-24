@@ -21,15 +21,6 @@ const component: Component = {
 	properties: [],
 	isHidden: true,
 	styleDefaults: new Map<string, string>(),
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			icon: 'fa-solid fa-skull-crossbones',
-			mainComponent: true,
-		},
-	],
 	stylePropertiesForTheme: []
 };
 
