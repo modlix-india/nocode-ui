@@ -16,6 +16,7 @@ import ComponentDefinitions from '../../index';
 import { PageOperations } from '../functions/PageOperations';
 import axios from 'axios';
 import getSrcUrl from '../../util/getSrcUrl';
+import { SubComponentDefinitions } from '../subComponentDefinition';
 
 interface PinIconProps {
 	isPinned: boolean;
@@ -460,10 +461,10 @@ export default function ComponentMenu({
 								tutorial={e.tutorial}
 								onInfoClick={() => setActiveTutorialComponentName(e.name)}
 							/>
-							{typeof e.subComponentDefinition?.[0].icon === 'string' ? (
-								<i className={`fa ${e.subComponentDefinition?.[0].icon}`} />
+							{typeof SubComponentDefinitions[e.name]?.[0].icon === 'string' ? (
+								<i className={`fa ${SubComponentDefinitions[e.name]?.[0].icon}`} />
 							) : (
-								e.subComponentDefinition?.[0].icon
+								SubComponentDefinitions[e.name]?.[0].icon
 							)}
 							{e.displayName}
 						</div>

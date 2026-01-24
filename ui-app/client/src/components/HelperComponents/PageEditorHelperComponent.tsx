@@ -4,6 +4,7 @@ import { getDataFromPath, UrlDetailsExtractor } from '../../context/StoreContext
 import { messageToMaster } from '../../slaveFunctions';
 import { ComponentDefinition } from '../../types/common';
 import ComponentDefinitions from '..';
+import { SubComponentDefinitions } from '../PageEditor/subComponentDefinition';
 
 export function PageEditorHelperComponent({
 	definition,
@@ -205,16 +206,16 @@ export function PageEditorHelperComponent({
 					});
 				}}
 			>
-				{typeof ComponentDefinitions.get(definition.type)?.subComponentDefinition?.[0]
+				{typeof SubComponentDefinitions[definition.type]?.[0]
 					.icon === 'string' ? (
 					<i
 						className={`fa ${
-							ComponentDefinitions.get(definition.type)?.subComponentDefinition?.[0]
+							SubComponentDefinitions[definition.type]?.[0]
 								.icon
 						}`}
 					/>
 				) : (
-					ComponentDefinitions.get(definition.type)?.subComponentDefinition?.[0].icon
+					SubComponentDefinitions[definition.type]?.[0].icon
 				)}
 				{ComponentDefinitions.get(definition.type)?.displayName}
 			</div>

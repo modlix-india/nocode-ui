@@ -7,6 +7,7 @@ import { DRAG_CD_KEY } from '../../../../constants';
 import { PageOperations } from '../../functions/PageOperations';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import ComponentDefinitions from '../../..';
+import { SubComponentDefinitions } from '../../subComponentDefinition';
 
 interface SelectionBarProps {
 	defPath: string | undefined;
@@ -156,17 +157,14 @@ export default function DnDBottomBar({
 											});
 										}}
 									>
-										{typeof ComponentDefinitions.get(defMap[f].type)
-											?.subComponentDefinition?.[0].icon === 'string' ? (
+										{typeof SubComponentDefinitions[defMap[f].type]?.[0].icon === 'string' ? (
 											<i
 												className={`fa ${
-													ComponentDefinitions.get(defMap[f].type)
-														?.subComponentDefinition?.[0].icon
+													SubComponentDefinitions[defMap[f].type]?.[0].icon
 												}`}
 											/>
 										) : (
-											ComponentDefinitions.get(defMap[f].type)
-												?.subComponentDefinition?.[0].icon
+											SubComponentDefinitions[defMap[f].type]?.[0].icon
 										)}
 										{defMap[f].name}
 									</div>
