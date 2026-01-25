@@ -474,72 +474,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Buttons', pageName: 'buttons' }],
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" fill="none" />
-					<rect
-						width="24.286"
-						height="24.286"
-						rx="2"
-						transform="translate(4.786 4.795)"
-						fill="#edeaea"
-					/>
-					<g className="_updownAnimation _leftrightAnimation">
-						<rect
-							width="24.286"
-							height="24.286"
-							rx="2"
-							transform="translate(0.929 0.92)"
-							fill="#1893E9"
-						/>
-					</g>
-				</IconHelper>
-			),
-			mainComponent: true,
-		},
-		{
-			name: 'leftIcon',
-			displayName: 'Left Icon',
-			description: 'Left Icon',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'rightIcon',
-			displayName: 'Right Icon',
-			description: 'Right Icon',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'leftImage',
-			displayName: 'Left Image',
-			description: 'Left Image',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'activeLeftImage',
-			displayName: 'Active Left Image',
-			description: 'Active Left Image',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'rightImage',
-			displayName: 'Right Image',
-			description: 'Right Image',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'activeRightImage',
-			displayName: 'Active Right Image',
-			description: 'Active Right Image',
-			icon: 'fa-solid fa-box',
-		},
-	],
-	propertiesForTheme: [designType, colorScheme],
+		propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

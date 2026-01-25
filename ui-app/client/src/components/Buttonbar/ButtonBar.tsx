@@ -213,61 +213,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'ButtonBar', pageName: 'buttonbar' }],
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<rect
-						x="19.4116"
-						y="17.6454"
-						width="10.5884"
-						height="10.5884"
-						rx="2"
-						fill="#EDEAEA"
-					/>
-					<rect
-						className="_buttonBar2"
-						x="10.5889"
-						y="10.5917"
-						width="14.1179"
-						height="14.1179"
-						rx="2"
-						fill="#EDEAEA"
-					/>
-					<rect
-						className="_buttonBar1"
-						width="21.1768"
-						height="21.1768"
-						rx="2"
-						fill="#FFB534"
-					/>
-				</IconHelper>
-			),
-			mainComponent: true,
-		},
-		{
-			name: 'label',
-			displayName: 'Label',
-			description: 'Label',
-			icon: 'fa-solid fa-font',
-		},
-		{
-			name: 'container',
-			displayName: 'Container',
-			description: 'Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'button',
-			displayName: 'Button',
-			description: 'Button',
-			icon: 'fa-solid fa-box',
-		},
-	],
-	stylePropertiesForTheme: styleProperties,
+		stylePropertiesForTheme: styleProperties,
 	propertiesForTheme: [buttonBarDesign, colorScheme],
 };
 

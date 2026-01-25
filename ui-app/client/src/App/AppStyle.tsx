@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react';
 import { FileBrowserStyles } from '../commonComponents/FileBrowser/FileBrowserStyles';
-import ComponentDefinitions from '../components';
 import { getHref } from '../components/util/getHref';
 import { lazyCSSURL } from '../components/util/lazyStylePropertyUtil';
-import { STORE_PATH_APP, STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
+import { STORE_PATH_STYLE_PATH, STORE_PATH_THEME_PATH } from '../constants';
 import { addListener, getDataFromPath } from '../context/StoreContext';
 import { StyleResolution } from '../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
 import MessageStyle from './Messages/MessageStyle';
+import ComponentDefinitions from '../components';
 
 export function AppStyle() {
 	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
 		new Map([[StyleResolution.ALL, styleDefaults]]),
 	);
 	const [style, setStyle] = useState('');
-	const [compList, setCompList] = useState(new Set<string>());
 
 	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
 		StyleResolution.TABLET_POTRAIT_SCREEN,
@@ -81,12 +80,9 @@ export function AppStyle() {
 							setTheme(thm);
 						}
 					} else if (path == STORE_PATH_STYLE_PATH) setStyle(value ?? '');
-					else if (path == STORE_PATH_APP)
-						setCompList(value?.components ?? new Set<string>());
 				},
 				STORE_PATH_STYLE_PATH,
 				STORE_PATH_THEME_PATH,
-				STORE_PATH_APP,
 			),
 		[],
 	);
@@ -139,17 +135,14 @@ export function AppStyle() {
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
-	if (ComponentDefinitions) {
-		const comps = ComponentDefinitions.values();
-		for (let comp = comps.next(); !comp.done; comp = comps.next()) {
-			if (!comp.value.styleComponent) continue;
-			if (compList.size != 0 && !compList.has(comp.value.name)) continue;
+	// Render style components for all statically imported components
+	for (const [, comp] of ComponentDefinitions.entries()) {
+		if (!comp.styleComponent) continue;
 
-			const StyleComp = comp.value.styleComponent;
-			styleComps.push(
-				<StyleComp key={comp.value.displayName + '_stylcomps'} theme={theme} />,
-			);
-		}
+		const StyleComp = comp.styleComponent;
+		styleComps.push(
+			<StyleComp key={comp.displayName + '_stylcomps'} theme={theme} />,
+		);
 	}
 
 	return (

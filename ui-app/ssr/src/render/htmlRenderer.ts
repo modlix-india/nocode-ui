@@ -7,9 +7,23 @@ import {
 	type ApplicationDefinition,
 	type ThemeDefinition,
 } from '../api/client.js';
-import { getCachedData, setCachedData, generateCacheKey } from '../cache/redis.js';
+import { getCachedData, setCachedData, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
+import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
+// Key compression removed - doesn't help gzipped transfer size (only 14% savings)
+// and adds 10-20ms CPU overhead that hurts TTFB/FBBT
+
+// Load manifest at startup
+const assetManifest = loadManifest();
+if (assetManifest) {
+	logger.info('Asset manifest loaded successfully', {
+		applicationChunks: assetManifest.preload.application.length,
+		styleChunks: assetManifest.preload.applicationStyle.length,
+	});
+} else {
+	logger.warn('Asset manifest not found or invalid - preload optimization disabled');
+}
 
 interface CDNConfig {
 	hostName: string;
@@ -295,6 +309,31 @@ function generateHtml(
 	const beforeBodyParts = extractCodeParts(application, 'BEFORE_BODY');
 	const afterBodyParts = extractCodeParts(application, 'AFTER_BODY');
 
+	// Get critical chunks from manifest for preloading
+	const criticalChunks = getCriticalChunks(assetManifest, 3);
+
+	// Get entrypoint scripts from manifest (with fallback to legacy bundles)
+	const entrypointScripts = assetManifest?.entrypoints?.index || ['vendors.js', 'index.js'];
+
+	// Generate preload tags for entrypoint scripts
+	const entrypointPreloadTags = entrypointScripts
+		.map(script => `<link rel="preload" href="${cdnUrl}${script}" as="script">`)
+		.join('\n\t\t');
+
+	// Helper to extract filename from full URL or return as-is if already a filename
+	const extractFilename = (path: string) => {
+		if (path.startsWith('http')) {
+			return path.split('/').pop() || path;
+		}
+		return path;
+	};
+
+	// Generate preload tags for critical chunks (strip CDN URL if present)
+	const chunkPreloadTags = [
+		...criticalChunks.application.map(chunk => `<link rel="preload" href="${cdnUrl}${extractFilename(chunk)}" as="script">`),
+		...criticalChunks.applicationStyle.map(chunk => `<link rel="preload" href="${cdnUrl}${extractFilename(chunk)}" as="script">`)
+	].join('\n\t\t');
+
 	return `<!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -305,10 +344,10 @@ function generateHtml(
 		<link rel="dns-prefetch" href="https://${cdn.hostName}">
 		<link rel="preconnect" href="https://${cdn.hostName}" crossorigin="anonymous">
 
-		<!-- Preload critical resources -->
-		<link rel="preload" href="${cdnUrl}vendors.js" as="script">
-		<link rel="preload" href="${cdnUrl}index.js" as="script">
+		<!-- Preload entrypoint scripts -->
+		${entrypointPreloadTags}
 		<link rel="preload" href="${cdnUrl}css/App.css" as="style">
+		${chunkPreloadTags ? `${chunkPreloadTags}\n\t\t` : ''}<!-- Preload critical Application chunks -->
 
 		<!-- Critical CSS -->
 		<style id="criticalCss">${CRITICAL_CSS}</style>
@@ -339,8 +378,7 @@ function generateHtml(
 		${externalScripts}
 
 		<!-- Client JS bundles -->
-		<script src="${cdnUrl}vendors.js" defer></script>
-		<script src="${cdnUrl}index.js" defer></script>
+		${entrypointScripts.map(script => `<script src="${cdnUrl}${script}" defer></script>`).join('\n\t\t')}
 		${afterBodyParts ? `\n\t\t${afterBodyParts}` : ''}
 	</body>
 </html>`;
@@ -460,7 +498,55 @@ export async function handlePageRequest(
 		return;
 	}
 
-	// Check cache for non-authenticated, non-index requests
+	// Check HTML cache first for non-authenticated requests (fastest path)
+	if (!isAuthenticated) {
+		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName);
+
+		// Check if client accepts gzip
+		const acceptEncoding = req.headers['accept-encoding'] || '';
+		const supportsGzip = acceptEncoding.includes('gzip');
+
+		if (supportsGzip) {
+			// Try to serve pre-compressed content (fastest TTFB!)
+			const cachedGzipped = await getCachedGzippedHtml(htmlCacheKey);
+			if (cachedGzipped) {
+				logger.info('HTML cache hit (pre-compressed)', {
+					cacheKey: htmlCacheKey,
+					pageName: urlPageName,
+					size: cachedGzipped.length
+				});
+
+				// Set headers for pre-compressed response
+				res.setHeader('Content-Type', 'text/html; charset=utf-8');
+				res.setHeader('Content-Encoding', 'gzip');
+				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
+				res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
+
+				res.writeHead(200);
+				res.end(cachedGzipped);
+				return;
+			}
+		}
+
+		// Fallback: serve uncompressed HTML (let Nginx compress)
+		const cachedHtml = await getCachedHtml(htmlCacheKey);
+		if (cachedHtml) {
+			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: urlPageName });
+
+			// Set headers for cached response
+			res.setHeader('Content-Type', 'text/html; charset=utf-8');
+			res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+			res.setHeader('Vary', 'Authorization, Cookie');
+			res.setHeader('X-Cache-Status', 'HIT-HTML');
+
+			res.writeHead(200);
+			res.end(cachedHtml);
+			return;
+		}
+	}
+
+	// Check cache for non-authenticated, non-index requests (legacy object cache)
 	if (urlPageName !== 'index' && !isAuthenticated) {
 		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName);
 		const cached = await getCachedData<CachedPageData>(cacheKey);
@@ -493,12 +579,55 @@ export async function handlePageRequest(
 
 	const actualPageName = data.resolvedPageName;
 
-	// Check cache for resolved page name (when index was resolved to default page)
+	// Check HTML cache for resolved page name (when index was resolved to default page)
 	if (urlPageName === 'index' && !isAuthenticated) {
-		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
-		const cached = await getCachedData<CachedPageData>(cacheKey);
+		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
+
+		// Check if client accepts gzip
+		const acceptEncoding = req.headers['accept-encoding'] || '';
+		const supportsGzip = acceptEncoding.includes('gzip');
+
+		if (supportsGzip) {
+			// Try to serve pre-compressed content (fastest!)
+			const cachedGzipped = await getCachedGzippedHtml(resolvedHtmlCacheKey);
+			if (cachedGzipped) {
+				logger.info('HTML cache hit (resolved, pre-compressed)', {
+					cacheKey: resolvedHtmlCacheKey,
+					pageName: actualPageName,
+					size: cachedGzipped.length
+				});
+
+				res.setHeader('Content-Type', 'text/html; charset=utf-8');
+				res.setHeader('Content-Encoding', 'gzip');
+				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
+				res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED-GZIP');
+
+				res.writeHead(200);
+				res.end(cachedGzipped);
+				return;
+			}
+		}
+
+		// Fallback: serve uncompressed HTML
+		const cachedResolvedHtml = await getCachedHtml(resolvedHtmlCacheKey);
+		if (cachedResolvedHtml) {
+			logger.info('HTML cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
+
+			res.setHeader('Content-Type', 'text/html; charset=utf-8');
+			res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+			res.setHeader('Vary', 'Authorization, Cookie');
+			res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED');
+
+			res.writeHead(200);
+			res.end(cachedResolvedHtml);
+			return;
+		}
+
+		// Fallback: check legacy object cache
+		const cached = await getCachedData<CachedPageData>(resolvedHtmlCacheKey);
 		if (cached) {
-			logger.info('Cache hit (resolved page)', { cacheKey, pageName: actualPageName });
+			logger.info('Object cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
 			const etag = generateETag(cached);
 
 			const ifNoneMatch = req.headers['if-none-match'];
@@ -534,11 +663,28 @@ export async function handlePageRequest(
 		cachedAt: Date.now(),
 	};
 
-	// Cache for unauthenticated requests
-	const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
+	// Generate HTML once
+	const generatedHtml = generateHtml(result, codes, actualPageName, cdn);
+
+	// Cache HTML for unauthenticated requests (primary cache)
+	const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
 	if (!isAuthenticated) {
-		await setCachedData(cacheKey, result, config.cache.ttlSeconds);
-		logger.info('Cached page data', { cacheKey, pageName: actualPageName, ttl: config.cache.ttlSeconds });
+		// Cache the rendered HTML (fast serving)
+		await setCachedHtml(htmlCacheKey, generatedHtml, config.cache.ttlSeconds);
+		logger.info('Cached HTML', {
+			cacheKey: htmlCacheKey,
+			pageName: actualPageName,
+			htmlSize: generatedHtml.length,
+			ttl: config.cache.ttlSeconds
+		});
+
+		// Also cache the object data (for cache warming and debugging)
+		await setCachedData(htmlCacheKey + ':data', result, config.cache.ttlSeconds);
+	}
+
+	// Analyze key frequencies (debug mode only - set ANALYZE_KEYS=true in env)
+	if (process.env.ANALYZE_KEYS === 'true') {
+		analyzeKeyFrequencies(data);
 	}
 
 	// Generate response
@@ -549,9 +695,56 @@ export async function handlePageRequest(
 		pageName: actualPageName,
 		appCode: codes.appCode,
 		fromCache: false,
+		htmlSize: generatedHtml.length,
 		cdnHostName: cdn.hostName,
 	});
 
 	res.writeHead(200);
-	res.end(generateHtml(result, codes, actualPageName, cdn));
+	res.end(generatedHtml);
+}
+
+/**
+ * Analyze key frequencies in the data structure
+ */
+function analyzeKeyFrequencies(data: any): void {
+	const keyFrequency = new Map<string, number>();
+
+	function traverse(obj: any): void {
+		if (!obj || typeof obj !== 'object') return;
+
+		if (Array.isArray(obj)) {
+			for (const item of obj) {
+				traverse(item);
+			}
+			return;
+		}
+
+		for (const key of Object.keys(obj)) {
+			keyFrequency.set(key, (keyFrequency.get(key) || 0) + 1);
+			traverse(obj[key]);
+		}
+	}
+
+	traverse({ application: data.application, page: data.page, theme: data.theme });
+
+	// Sort by frequency
+	const sorted = Array.from(keyFrequency.entries())
+		.sort((a, b) => b[1] - a[1])
+		.slice(0, 50); // Top 50 keys
+
+	logger.info('Key frequency analysis (top 50)', {
+		totalUniqueKeys: keyFrequency.size,
+		topKeys: sorted.map(([key, count]) => `${key}: ${count}`).join(', ')
+	});
+
+	// Check user's hypothesis
+	const highFreqKeys = ['statementName', 'name', 'namespace', 'position', 'parameterMap',
+		'expression', 'type', 'value', 'key', 'order', 'top', 'left', 'steps', 'dependentStatements'];
+	const mediumFreqKeys = ['createdAt', 'updatedAt', 'createdBy', 'updatedBy', 'id',
+		'version', 'clientCode', 'appCode', 'properties', 'eventFunctions', 'message'];
+
+	logger.info('Hypothesis validation', {
+		highFrequency: highFreqKeys.map(k => `${k}: ${keyFrequency.get(k) || 0}`).join(', '),
+		mediumFrequency: mediumFreqKeys.map(k => `${k}: ${keyFrequency.get(k) || 0}`).join(', ')
+	});
 }

@@ -61,7 +61,7 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory; removeHistory: number } {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
@@ -69,16 +69,34 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		const lastHistory = locationHistory[locationHistory.length - pNum];
 		let path;
 
+		const remainingSuffix = this.reconstructPath(parts.slice(pNum));
+
 		if (typeof lastHistory.location === 'string')
-			path = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
+			path = `${lastHistory.location}.${remainingSuffix}`;
 		else
 			path = `${
 				lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value
 					: lastHistory.location.expression
-			}.${parts.slice(pNum).join('.')}`;
+			}.${remainingSuffix}`;
 
 		return { path, lastHistory, removeHistory: pNum };
+	}
+
+	private reconstructPath(parts: string[]): string {
+		if (parts.length === 0) return '';
+		if (parts.length === 1) return parts[0];
+
+		let result = parts[0];
+		for (let i = 1; i < parts.length; i++) {
+			const part = parts[i];
+			if (part.startsWith('[')) {
+				result += part;
+			} else {
+				result += '.' + part;
+			}
+		}
+		return result;
 	}
 
 	public getStore(): any {
@@ -147,24 +165,25 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		token: string,
 		history: LocationHistory[],
 	): { path: string; removeHistory: number } {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
 
-		let path = parts.slice(pNum).join('.');
+		const remainingSuffix = this.reconstructPath(parts.slice(pNum));
 
 		let lastHistory;
 
 		lastHistory = history[history.length - pNum];
 
-		if (typeof lastHistory?.location === 'string') path = `${lastHistory.location}.${path}`;
+		let path = remainingSuffix;
+		if (typeof lastHistory?.location === 'string') path = `${lastHistory.location}.${remainingSuffix}`;
 		else if (lastHistory?.location)
 			path = `${
 				lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value
 					: lastHistory.location.expression
-			}.${path}`;
+			}.${remainingSuffix}`;
 
 		return { path, removeHistory: pNum };
 	}
@@ -184,7 +203,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory } {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
@@ -192,16 +211,34 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		const lastHistory = locationHistory[locationHistory.length - pNum];
 		let path;
 
+		const remainingSuffix = this.reconstructPath(parts.slice(pNum));
+
 		if (typeof lastHistory.location === 'string')
-			path = `${lastHistory.location}.${parts.slice(pNum).join('.')}`;
+			path = `${lastHistory.location}.${remainingSuffix}`;
 		else
 			path = `${
 				lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value
 					: lastHistory.location.expression
-			}.${parts.slice(pNum).join('.')}`;
+			}.${remainingSuffix}`;
 
 		return { path, lastHistory };
+	}
+
+	private reconstructPath(parts: string[]): string {
+		if (parts.length === 0) return '';
+		if (parts.length === 1) return parts[0];
+
+		let result = parts[0];
+		for (let i = 1; i < parts.length; i++) {
+			const part = parts[i];
+			if (part.startsWith('[')) {
+				result += part;
+			} else {
+				result += '.' + part;
+			}
+		}
+		return result;
 	}
 
 	public getStore(): any {

@@ -1,8 +1,13 @@
 import { Redis } from 'ioredis';
+import { gzip, gunzip } from 'node:zlib';
+import { promisify } from 'node:util';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 
-const CACHE_PREFIX = 'ssr:';
+const gzipAsync = promisify(gzip);
+const gunzipAsync = promisify(gunzip);
+
+const CACHE_PREFIX = 'ssr3:';
 const SSR_CACHE_INVALIDATION_CHANNEL = 'ssr:cache:invalidation';
 
 let redisClient: Redis | null = null;
@@ -241,6 +246,78 @@ export function generateCacheKey(
 	pageName: string
 ): string {
 	return `${appCode}:${clientCode}:${pageName}`;
+}
+
+/**
+ * Get cached HTML string (for rendered HTML caching)
+ * Returns null if Redis is unavailable or HTML not found
+ * Supports both raw HTML and gzipped HTML (for faster serving)
+ */
+export async function getCachedHtml(key: string): Promise<string | null> {
+	try {
+		const redis = getRedisClient();
+
+		// Try to get gzipped version first (faster TTFB)
+		const gzippedBuffer = await redis.getBuffer(`${CACHE_PREFIX}html:gz:${key}`);
+		if (gzippedBuffer) {
+			const html = await gunzipAsync(gzippedBuffer);
+			return html.toString('utf-8');
+		}
+
+		// Fallback to raw HTML
+		const html = await redis.get(`${CACHE_PREFIX}html:${key}`);
+		return html;
+	} catch (error) {
+		logger.warn('Redis get HTML error (degraded mode)', { key, error: String(error) });
+		return null;
+	}
+}
+
+/**
+ * Get cached gzipped HTML buffer (for direct serving to client)
+ * This avoids decompression on the server side
+ */
+export async function getCachedGzippedHtml(key: string): Promise<Buffer | null> {
+	try {
+		const redis = getRedisClient();
+		const gzippedBuffer = await redis.getBuffer(`${CACHE_PREFIX}html:gz:${key}`);
+		return gzippedBuffer;
+	} catch (error) {
+		logger.warn('Redis get gzipped HTML error (degraded mode)', { key, error: String(error) });
+		return null;
+	}
+}
+
+/**
+ * Set cached HTML string with TTL
+ * Stores both raw HTML and pre-gzipped version for faster serving
+ */
+export async function setCachedHtml(
+	key: string,
+	html: string,
+	ttlSeconds: number = 1800 // 30 minutes default
+): Promise<void> {
+	try {
+		const redis = getRedisClient();
+
+		// Store raw HTML (for debugging and fallback)
+		await redis.setex(`${CACHE_PREFIX}html:${key}`, ttlSeconds, html);
+
+		// Pre-compress and store gzipped version (much faster TTFB!)
+		const gzipped = await gzipAsync(html, { level: 6 });
+		await redis.setex(`${CACHE_PREFIX}html:gz:${key}`, ttlSeconds, gzipped);
+
+		const compressionRatio = ((1 - gzipped.length / html.length) * 100).toFixed(1);
+		logger.info('Cached HTML (pre-compressed)', {
+			key,
+			rawSize: html.length,
+			gzipSize: gzipped.length,
+			compressionRatio: `${compressionRatio}%`,
+			ttl: ttlSeconds
+		});
+	} catch (error) {
+		logger.warn('Redis set HTML error (degraded mode)', { key, ttlSeconds, error: String(error) });
+	}
 }
 
 /**

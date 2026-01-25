@@ -90,11 +90,12 @@
 		"webpack": "^5.97.1",
 		"webpack-bundle-analyzer": "^4.10.2",
 		"webpack-cli": "^5.1.4",
-		"webpack-dev-server": "^5.2.0"
+		"webpack-dev-server": "^5.2.0",
+		"webpack-manifest-plugin": "^6.0.1"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^2.16.0",
-		"@fincity/path-reactive-state-management": "^1.7.3",
+		"@fincity/kirun-js": "^2.16.3",
+		"@fincity/path-reactive-state-management": "^1.9.0",
 		"@monaco-editor/react": "^4.6.0",
 		"axios": "^1.7.9",
 		"monaco-editor": "^0.51.0",

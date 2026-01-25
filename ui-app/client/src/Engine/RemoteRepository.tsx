@@ -32,22 +32,44 @@ const schemaRepoCache = new Map<string, RemoteRepository<Schema>>();
 
 const HALF_A_MINUTE = 60 * 1000;
 
-const url = getDataFromPath(`${STORE_PREFIX}.url`, []);
-const URL_PREFIX =
-	url.appCode && url.clientCode ? `/${url.appCode}/${url.clientCode}/page/repos/` : '';
+let URL_PREFIX: string | undefined = undefined;
+
+function getUrlPrefix(): string {
+	// Only use cached value if it's not empty
+	if (URL_PREFIX !== undefined && URL_PREFIX !== '') return URL_PREFIX;
+
+	const url = getDataFromPath(`${STORE_PREFIX}.url`, []);
+
+	if (globalThis.isDebugMode) {
+		console.log('[RemoteRepository] getUrlPrefix - url from store:', url);
+	}
+
+	const prefix = url?.appCode && url?.clientCode ? `/${url.appCode}/${url.clientCode}/page/repos/` : '';
+
+	// Only cache if we have a valid (non-empty) prefix
+	if (prefix !== '') {
+		URL_PREFIX = prefix;
+		if (globalThis.isDebugMode) {
+			console.log('[RemoteRepository] Cached URL prefix:', URL_PREFIX);
+		}
+	}
+
+	return prefix;
+}
 
 export class RemoteRepository<T> implements Repository<T> {
-	private url: string;
+	private readonly repoType: REPO_TYPE;
+	private readonly repoServer: REPO_SERVER;
 
-	private internalCache: Map<string, Tuple2<number, T>> = new Map();
+	private readonly internalCache: Map<string, Tuple2<number, T>> = new Map();
 	private internalFilterCache: Array<string> | undefined = undefined;
-	private promiseCache: Map<string, Promise<T | undefined>> = new Map();
+	private readonly promiseCache: Map<string, Promise<T | undefined>> = new Map();
 	private filterCachedAt: number = 0;
 
-	private jsonConversion: (json: any) => T | undefined;
-	private appCode: string | undefined;
-	private clientCode: string | undefined;
-	private includeKIRunRepos: boolean;
+	private readonly jsonConversion: (json: any) => T | undefined;
+	private readonly appCode: string | undefined;
+	private readonly clientCode: string | undefined;
+	private readonly includeKIRunRepos: boolean;
 
 	constructor(
 		appCode: string | undefined,
@@ -57,11 +79,16 @@ export class RemoteRepository<T> implements Repository<T> {
 		repoType = REPO_TYPE.FUNCTION,
 		repoServer = REPO_SERVER.CORE,
 	) {
-		this.url = `${URL_PREFIX}api/${repoServer.toLowerCase()}/${repoType}/`;
+		this.repoType = repoType;
+		this.repoServer = repoServer;
 		this.jsonConversion = jsonConversion;
 		this.appCode = appCode;
 		this.clientCode = clientCode;
 		this.includeKIRunRepos = includeKIRunRepos;
+	}
+
+	private get url(): string {
+		return `${getUrlPrefix()}api/${this.repoServer.toLowerCase()}/${this.repoType}/`;
 	}
 
 	public emptyCache() {
@@ -248,7 +275,7 @@ export class RemoteFunction extends AbstractFunction {
 			headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 		let response = await axios.post(
-			`${URL_PREFIX}api/core/function/execute/${this.fd.getNamespace()}/${this.fd.getName()}`,
+			`${getUrlPrefix()}api/core/function/execute/${this.fd.getNamespace()}/${this.fd.getName()}`,
 			Array.from((context.getArguments() ?? new Map()).entries()).reduce((a, [k, v]) => {
 				a[k] = v;
 				return a;

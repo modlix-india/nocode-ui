@@ -9,6 +9,7 @@ import {
 import { LocationHistory, PageDefinition } from '../../../../types/common';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import { PageOperations } from '../../functions/PageOperations';
+import { SubComponentDefinitions } from '../../SubCompInfo';
 
 interface DnDNavigationBarProps {
 	personalizationPath: string | undefined;
@@ -263,7 +264,7 @@ function CompTree({
 			? Object.keys(comp.children!)
 			: undefined;
 
-	const subCompDef = ComponenstDefinition.get(comp.type)?.subComponentDefinition;
+	const subCompDef = SubComponentDefinitions[comp.type];
 
 	const isOpen =
 		(children?.length || (subCompDef?.length ?? 0) > 1) &&
