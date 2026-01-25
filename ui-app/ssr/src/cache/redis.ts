@@ -3,11 +3,12 @@ import { gzip, gunzip } from 'node:zlib';
 import { promisify } from 'node:util';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
+import { BUILD_ID } from '../config/buildInfo.js';
 
 const gzipAsync = promisify(gzip);
 const gunzipAsync = promisify(gunzip);
 
-const CACHE_PREFIX = 'ssr3:';
+const CACHE_PREFIX = `ssr:${BUILD_ID}:`;
 const SSR_CACHE_INVALIDATION_CHANNEL = 'ssr:cache:invalidation';
 
 let redisClient: Redis | null = null;

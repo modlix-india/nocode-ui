@@ -1,1 +1,8 @@
+# Build output
 dist/
+
+# Auto-generated build info (regenerated on each build)
+src/config/buildInfo.ts
+
+# Node modules
+node_modules/
