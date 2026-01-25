@@ -29,7 +29,7 @@ export class StoreExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		const parts: string[] = TokenValueExtractor.splitPath(token);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		return this.retrieveElementFrom(token, parts, 1, this.store);
 	}
 
@@ -213,7 +213,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 			);
 		} else _setData(path, value, deleteKey);
 	} else if (path.startsWith(LOCAL_STORE_PREFIX)) {
-		let parts = TokenValueExtractor.splitPath(path);
+		let parts = path.split(TokenValueExtractor.REGEX_DOT);
 
 		const key = globalThis.isDesignMode ? 'designMode_' + parts[1] : parts[1];
 		parts = parts.slice(2);
@@ -267,7 +267,7 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		const parts: string[] = TokenValueExtractor.splitPath(token);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		return this.retrieveElementFrom(
 			token,
 			['pageData', this.pageName, ...parts.slice(1)],
@@ -332,7 +332,7 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		const parts: string[] = TokenValueExtractor.splitPath(token);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		return this.retrieveElementFrom(
 			token,
 			['urlData', this.details.pageName!, ...parts.slice(1)],

@@ -494,7 +494,7 @@ class DataValueExtractor extends TokenValueExtractor {
 
 		return this.retrieveElementFrom(
 			token,
-			TokenValueExtractor.splitPath(token),
+			token.split(TokenValueExtractor.REGEX_DOT),
 			1,
 			this.data,
 		);

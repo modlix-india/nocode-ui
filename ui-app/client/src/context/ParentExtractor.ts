@@ -61,7 +61,7 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory; removeHistory: number } {
-		const parts: string[] = TokenValueExtractor.splitPath(token);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
@@ -165,7 +165,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		token: string,
 		history: LocationHistory[],
 	): { path: string; removeHistory: number } {
-		const parts: string[] = TokenValueExtractor.splitPath(token);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
@@ -203,7 +203,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory } {
-		const parts: string[] = TokenValueExtractor.splitPath(token);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
