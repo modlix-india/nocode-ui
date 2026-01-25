@@ -228,9 +228,36 @@ export async function setCachedData<T>(
 export async function invalidateCache(pattern: string): Promise<number> {
 	try {
 		const redis = getRedisClient();
-		const keys = await redis.keys(`${CACHE_PREFIX}${pattern}`);
-		if (keys.length === 0) return 0;
-		return await redis.del(...keys);
+
+		// Build patterns for all cache key types
+		// 1. html:gz:{pattern} - Pre-compressed HTML
+		// 2. html:{pattern} - Raw HTML
+		// 3. {pattern}:data - Object data cache
+		// 4. {pattern} - Legacy object cache
+		const patterns = [
+			`${CACHE_PREFIX}html:gz:${pattern}`,
+			`${CACHE_PREFIX}html:${pattern}`,
+			`${CACHE_PREFIX}${pattern}:data`,
+			`${CACHE_PREFIX}${pattern}`
+		];
+
+		let totalKeysRemoved = 0;
+
+		// Find and delete keys for each pattern
+		for (const searchPattern of patterns) {
+			const keys = await redis.keys(searchPattern);
+			if (keys.length > 0) {
+				const deleted = await redis.del(...keys);
+				totalKeysRemoved += deleted;
+				logger.info('Invalidated cache keys', {
+					pattern: searchPattern,
+					keysFound: keys.length,
+					keysDeleted: deleted
+				});
+			}
+		}
+
+		return totalKeysRemoved;
 	} catch (error) {
 		logger.warn('Redis invalidate error (degraded mode)', { pattern, error: String(error) });
 		return 0; // Fail silently - no cache to invalidate
