@@ -130,35 +130,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Text binding' },
 	},
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<rect width="28" height="30" rx="3" fill="#9B82F3" />
-					<path
-						d="M22.5 14H5.5C5.22386 14 5 14.2239 5 14.5V15.5C5 15.7761 5.22386 16 5.5 16H22.5C22.7761 16 23 15.7761 23 15.5V14.5C23 14.2239 22.7761 14 22.5 14Z"
-						fill="white"
-						className="_TextEditorLine2"
-					/>
-					<path
-						d="M22.5 8H11.5C11.2239 8 11 8.22386 11 8.5V9.5C11 9.77614 11.2239 10 11.5 10H22.5C22.7761 10 23 9.77614 23 9.5V8.5C23 8.22386 22.7761 8 22.5 8Z"
-						fill="white"
-						className="_TextEditorLine1"
-					/>
-					<path
-						d="M22.5 20H11.5C11.2239 20 11 20.2239 11 20.5V21.5C11 21.7761 11.2239 22 11.5 22H22.5C22.7761 22 23 21.7761 23 21.5V20.5C23 20.2239 22.7761 20 22.5 20Z"
-						fill="white"
-						className="_TextEditorLine3"
-					/>
-				</IconHelper>
-			),
-		},
-	],
-	stylePropertiesForTheme: styleProperties,
+		stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

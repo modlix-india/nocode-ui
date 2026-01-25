@@ -87,62 +87,7 @@ const component: Component = {
 		name: 'Section Grid',
 		type: 'SectionGrid',
 	},
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<rect
-						x="0"
-						y="0"
-						rx={1}
-						ry={1}
-						width="14"
-						height="14"
-						className="_SectionGridBlock1"
-						fill="#FF557E"
-					/>
-
-					<rect
-						x="16"
-						y="0"
-						rx={1}
-						ry={1}
-						width="14"
-						height="14"
-						className="_SectionGridBlock2"
-						fill="#FF557E"
-					/>
-
-					<rect
-						x="0"
-						y="16"
-						rx={1}
-						ry={1}
-						width="14"
-						height="14"
-						className="_SectionGridBlock3"
-						fill="#FF557E"
-					/>
-
-					<rect
-						x="16"
-						y="16"
-						rx={1}
-						ry={1}
-						width="14"
-						height="14"
-						className="_SectionGridBlock4"
-						fill="#FF557E"
-					/>
-				</IconHelper>
-			),
-		},
-	],
-	stylePropertiesForTheme: styleProperties,
+		stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

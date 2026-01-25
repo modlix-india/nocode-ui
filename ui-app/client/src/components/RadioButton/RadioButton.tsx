@@ -274,48 +274,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Radio Button', pageName: 'radioButton' }],
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<circle
-						className="_radioButtonArc"
-						cx="15"
-						cy="15"
-						r="13.5"
-						stroke="#EDEAEA"
-						strokeWidth={3}
-						fill="white"
-						fillOpacity={1}
-					/>
-					<circle className="_RadioButtonCircle" cx="15" cy="15" r="10" fill="#36d593" />
-				</IconHelper>
-			),
-		},
-		{
-			name: 'label',
-			displayName: 'Label',
-			description: 'Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'checkbox',
-			displayName: 'Radio / Checkbox',
-			description: 'Radio / Chedckbox',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'thumb',
-			displayName: 'Circle / Tick',
-			description: 'Circle / Tick',
-			icon: 'fa-solid fa-box',
-		},
-	],
-	stylePropertiesForTheme: stylePropertiesForTheme,
+		stylePropertiesForTheme: stylePropertiesForTheme,
 	propertiesForTheme: [designType, colorScheme],
 };
 

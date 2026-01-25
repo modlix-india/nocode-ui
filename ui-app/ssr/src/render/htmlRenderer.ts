@@ -10,8 +10,20 @@ import {
 import { getCachedData, setCachedData, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
+import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
 // Key compression removed - doesn't help gzipped transfer size (only 14% savings)
 // and adds 10-20ms CPU overhead that hurts TTFB/FBBT
+
+// Load manifest at startup
+const assetManifest = loadManifest();
+if (assetManifest) {
+	logger.info('Asset manifest loaded successfully', {
+		applicationChunks: assetManifest.preload.application.length,
+		styleChunks: assetManifest.preload.applicationStyle.length,
+	});
+} else {
+	logger.warn('Asset manifest not found or invalid - preload optimization disabled');
+}
 
 interface CDNConfig {
 	hostName: string;
@@ -297,6 +309,15 @@ function generateHtml(
 	const beforeBodyParts = extractCodeParts(application, 'BEFORE_BODY');
 	const afterBodyParts = extractCodeParts(application, 'AFTER_BODY');
 
+	// Get critical chunks from manifest for preloading
+	const criticalChunks = getCriticalChunks(assetManifest, 3);
+
+	// Generate preload tags for critical chunks
+	const chunkPreloadTags = [
+		...criticalChunks.application.map(chunk => `<link rel="preload" href="${chunk}" as="script">`),
+		...criticalChunks.applicationStyle.map(chunk => `<link rel="preload" href="${chunk}" as="script">`)
+	].join('\n\t\t');
+
 	return `<!DOCTYPE html>
 <html lang="en">
 	<head>
@@ -311,6 +332,7 @@ function generateHtml(
 		<link rel="preload" href="${cdnUrl}vendors.js" as="script">
 		<link rel="preload" href="${cdnUrl}index.js" as="script">
 		<link rel="preload" href="${cdnUrl}css/App.css" as="style">
+		${chunkPreloadTags ? `${chunkPreloadTags}\n\t\t` : ''}<!-- Preload critical Application chunks -->
 
 		<!-- Critical CSS -->
 		<style id="criticalCss">${CRITICAL_CSS}</style>
