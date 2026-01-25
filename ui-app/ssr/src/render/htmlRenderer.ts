@@ -312,10 +312,26 @@ function generateHtml(
 	// Get critical chunks from manifest for preloading
 	const criticalChunks = getCriticalChunks(assetManifest, 3);
 
-	// Generate preload tags for critical chunks
+	// Get entrypoint scripts from manifest (with fallback to legacy bundles)
+	const entrypointScripts = assetManifest?.entrypoints?.index || ['vendors.js', 'index.js'];
+
+	// Generate preload tags for entrypoint scripts
+	const entrypointPreloadTags = entrypointScripts
+		.map(script => `<link rel="preload" href="${cdnUrl}${script}" as="script">`)
+		.join('\n\t\t');
+
+	// Helper to extract filename from full URL or return as-is if already a filename
+	const extractFilename = (path: string) => {
+		if (path.startsWith('http')) {
+			return path.split('/').pop() || path;
+		}
+		return path;
+	};
+
+	// Generate preload tags for critical chunks (strip CDN URL if present)
 	const chunkPreloadTags = [
-		...criticalChunks.application.map(chunk => `<link rel="preload" href="${chunk}" as="script">`),
-		...criticalChunks.applicationStyle.map(chunk => `<link rel="preload" href="${chunk}" as="script">`)
+		...criticalChunks.application.map(chunk => `<link rel="preload" href="${cdnUrl}${extractFilename(chunk)}" as="script">`),
+		...criticalChunks.applicationStyle.map(chunk => `<link rel="preload" href="${cdnUrl}${extractFilename(chunk)}" as="script">`)
 	].join('\n\t\t');
 
 	return `<!DOCTYPE html>
@@ -328,9 +344,8 @@ function generateHtml(
 		<link rel="dns-prefetch" href="https://${cdn.hostName}">
 		<link rel="preconnect" href="https://${cdn.hostName}" crossorigin="anonymous">
 
-		<!-- Preload critical resources -->
-		<link rel="preload" href="${cdnUrl}vendors.js" as="script">
-		<link rel="preload" href="${cdnUrl}index.js" as="script">
+		<!-- Preload entrypoint scripts -->
+		${entrypointPreloadTags}
 		<link rel="preload" href="${cdnUrl}css/App.css" as="style">
 		${chunkPreloadTags ? `${chunkPreloadTags}\n\t\t` : ''}<!-- Preload critical Application chunks -->
 
@@ -363,8 +378,7 @@ function generateHtml(
 		${externalScripts}
 
 		<!-- Client JS bundles -->
-		<script src="${cdnUrl}vendors.js" defer></script>
-		<script src="${cdnUrl}index.js" defer></script>
+		${entrypointScripts.map(script => `<script src="${cdnUrl}${script}" defer></script>`).join('\n\t\t')}
 		${afterBodyParts ? `\n\t\t${afterBodyParts}` : ''}
 	</body>
 </html>`;
