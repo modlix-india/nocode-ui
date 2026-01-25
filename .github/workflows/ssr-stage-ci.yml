@@ -5,6 +5,7 @@ on:
     branches: [cf-stage]
     paths:
       - 'ui-app/ssr/**'
+      - 'ui-app/client/**'
       - '.github/workflows/ssr-stage-ci.yml'
   workflow_dispatch:
 
@@ -21,6 +22,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Download asset manifest from CDN
+        run: |
+          mkdir -p ui-app/ssr/manifests
+          curl -f https://cdn-stage.modlix.com/js/dist/asset-manifest.json \
+            -o ui-app/ssr/manifests/asset-manifest.json \
+            || echo '{"files":{},"entrypoints":{},"preload":{"application":[],"applicationStyle":[]}}' \
+            > ui-app/ssr/manifests/asset-manifest.json
 
       - name: Login to OCIR
         run: |

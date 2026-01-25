@@ -1,10 +1,10 @@
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import ComponentDefinitions from '../components';
 import { getPathsFrom } from '../components/util/getPaths';
 import { runEvent } from '../components/util/runEvent';
 import { GLOBAL_CONTEXT_NAME, STORE_PREFIX } from '../constants';
+import PageComponentDefinition from '../components/Page/Page';
 import {
 	addListener,
 	addListenerAndCallImmediately,
@@ -320,9 +320,9 @@ export const RenderEngineContainer = () => {
 		);
 	}, [globalThis.designMode, currentPageName]);
 
-	const Page = ComponentDefinitions.get('Page')?.component as React.ComponentType<any>;
-
 	if (isNullValue(pageDefinition)) return <></>;
+
+	const Page = PageComponentDefinition.component;
 
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;

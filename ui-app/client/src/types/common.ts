@@ -128,8 +128,8 @@ export interface ComponentStylePropertyDefinition {
 export interface ComponentStyleSubComponentDefinition {
 	name: string;
 	displayName: string;
-	description: string;
-	icon: string | React.ReactNode;
+	description?: string;
+	icon?: string | React.ReactNode;
 	mainComponent?: boolean;
 }
 
@@ -159,7 +159,6 @@ export interface Component {
 	allowedChildrenType?: Map<string, number>;
 	parentType?: string;
 	isHidden?: boolean;
-	subComponentDefinition: ComponentStyleSubComponentDefinition[];
 	defaultTemplate?: ComponentDefinition;
 	bindingPaths?: {
 		bindingPath?: { name: string };

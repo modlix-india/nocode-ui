@@ -950,57 +950,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Selected File URL Binding' },
 	},
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<path d="M15.5 2H2L1.5 23.5L5.5 27H19L22 23.5V8.5L15.5 2Z" fill="#5CCEFE" />
-					<path
-						d="M18.0371 27C21.3241 27 24 24.3506 24 21.0968V10.1701C24 9.09012 23.5739 8.07482 22.804 7.31123L16.6149 1.18407C15.8436 0.420477 14.8181 0 13.7272 0H5.96286C2.67594 0 0 2.64937 0 5.90324V21.0962C0 24.3503 2.67612 26.9995 5.96286 26.9995C6.56657 26.9995 7.05376 26.5171 7.05376 25.9195C7.05376 25.3218 6.56657 24.8395 5.96286 24.8395C3.87622 24.8395 2.1818 23.1576 2.1818 21.0962V5.90324C2.1818 3.83747 3.88066 2.15999 5.96286 2.15999H13.4544V5.46185C13.4544 7.90871 15.4658 9.8999 17.9373 9.8999H21.7882C21.8024 9.9899 21.8138 10.0799 21.8138 10.1699V21.0965C21.8138 23.1623 20.1149 24.8398 18.0327 24.8398C17.429 24.8398 16.9418 25.3221 16.9418 25.9198C16.9418 26.5175 17.4335 27 18.0371 27ZM17.9377 7.74013C16.6692 7.74013 15.6366 6.71781 15.6366 5.46203V3.27393L20.1537 7.74006L17.9377 7.74013Z"
-						fill="#5CCEFE"
-					/>
-					<path
-						d="M17.9377 7.74013C16.6692 7.74013 15.6366 6.71781 15.6366 5.46203V3.27393L20.1537 7.74006L17.9377 7.74013Z"
-						fill="white"
-					/>
-					<path
-						className="_FileSelectorArrow"
-						d="M17.6316 17.9337C18.1228 17.5096 18.1228 16.8224 17.6316 16.3997L12.8914 12.3065C12.4182 11.8978 11.5832 11.8978 11.1149 12.3065L6.3684 16.3997C5.8772 16.8239 5.8772 17.511 6.3684 17.9337C6.85961 18.3579 7.65533 18.3579 8.1449 17.9337L10.745 15.6942V20.9142C10.745 21.5151 11.3065 22 12.0024 22C12.6983 22 13.2599 21.5151 13.2599 20.9142V15.6942L15.855 17.9351C16.1022 18.1486 16.4215 18.2533 16.7441 18.2533C17.065 18.2533 17.3893 18.1486 17.6316 17.9337Z"
-						fill="white"
-					/>
-				</IconHelper>
-			),
-		},
-		{
-			name: 'image',
-			displayName: 'Image',
-			description: 'Image',
-			icon: 'fa fa-solid fa-box',
-		},
-		{
-			name: 'errorText',
-			displayName: 'Error Text',
-			description: 'Error Text',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'errorTextContainer',
-			displayName: 'Error Text Container',
-			description: 'Error Text Container',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'label',
-			displayName: 'Label',
-			description: 'Label',
-			icon: 'fa-solid fa-box',
-		},
-	],
-	stylePropertiesForTheme: styleProperties,
+		stylePropertiesForTheme: styleProperties,
 };
 
 export default component;
