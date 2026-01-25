@@ -33,13 +33,14 @@ module.exports = async (env = {}) => {
         });
 
         // Extract Application/ApplicationStyle chunks for preloading
+        // Use filenames only (not full paths) since HTML renderers will prepend CDN URL
         const applicationChunks = files
           .filter(f => /^Application.*\.js$/.test(f.name))
-          .map(f => f.path);
+          .map(f => f.name);
 
         const applicationStyleChunks = files
           .filter(f => /^ApplicationStyle.*\.js$/.test(f.name))
-          .map(f => f.path);
+          .map(f => f.name);
 
         return {
           files: manifestFiles,

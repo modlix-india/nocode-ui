@@ -1,29 +1,40 @@
-name: Cloudflare R2 - Stage
+name: Deploy Stage
 
 on:
-  #To trigger manually
   workflow_dispatch:
   push:
     branches: [cf-stage]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+
+    env:
+      OCIR_HOST: ocir.us-ashburn-1.oci.oraclecloud.com
+      OCIR_REPO: ocir.us-ashburn-1.oci.oraclecloud.com/idfmutpuhiky/stage-ssr-server
+
+    outputs:
+      image_tag: ${{ github.sha }}
+
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: cf-stage
+
       - name: Setting up node
         uses: actions/setup-node@v4
         with:
           node-version: 21.7.3
+
       - name: Install Client Dependencies
         working-directory: ./ui-app/client
         run: npm i
+
       - name: Setup rClone
         uses: AnimMouse/setup-rclone@v1
         with:
           rclone_config: ${{ secrets.CLOUDFLARE_RCLONE_CONFIG }}
+
       - uses: cloudposse/github-action-jq@main
         name: Installing jq
         with:
@@ -31,9 +42,16 @@ jobs:
           input: '["test", "test2", "test3"]'
           script: |-
             map(select(. == "test"))
+
       - name: Building to JS
         working-directory: ./ui-app/client
         run: npm run cf-stage
+
+      - name: Copy manifest for SSR
+        run: |
+          mkdir -p ui-app/ssr/manifests
+          cp ./ui-app/client/dist/asset-manifest.json ui-app/ssr/manifests/asset-manifest.json
+
       - name: Pushing Stage to Cloudflare
         working-directory: ./ui-app/client
         run: |
@@ -49,3 +67,27 @@ jobs:
       - name: Invalidating Application Server cache
         run: |
           curl -s --header "Authorization: ${{ secrets.NOCODE_TOKEN }}" https://apps.stage.modlix.com/api/ui/newdeployment
+
+      - name: Login to OCIR
+        run: |
+          echo "${{ secrets.OCI_NON_PROD_CLI_AUTH_TOKEN }}" | docker login $OCIR_HOST \
+            -u "${{ secrets.OCI_NON_PROD_DOCKER_USER_NAME }}" \
+            --password-stdin
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t $OCIR_REPO:${{ github.sha }} \
+                       -t $OCIR_REPO:latest \
+                       -f ui-app/ssr/Dockerfile .
+          docker push $OCIR_REPO:${{ github.sha }}
+          docker push $OCIR_REPO:latest
+
+  deploy-ssr:
+    needs: build-and-deploy
+    runs-on: self-hosted
+
+    steps:
+      - name: Deploy to staging server
+        run: |
+          ssh -i /home/ubuntu/keys/dev-internal.key opc@${{ secrets.STAGE_SERVER_IP }} \
+            "bash /home/opc/scripts/keepup.sh deploy ssr-server ocir.us-ashburn-1.oci.oraclecloud.com/idfmutpuhiky/stage-ssr-server:${{ needs.build-and-deploy.outputs.image_tag }} 2>&1 | tee -a /var/log/keepup.log"
