@@ -46,7 +46,7 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 
 		const allTheme = this.store.theme?.[StyleResolution.ALL] ?? {};
 
-		const parts: string[] = TokenValueExtractor.splitPath(token);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 		if (parts.length != 2) return undefined;
 
 		const devices = this.store.devices;

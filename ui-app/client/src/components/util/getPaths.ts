@@ -36,7 +36,7 @@ export class PathExtractor extends TokenValueExtractor {
 
 	private reconstructPath(token: string): string {
 		// Split the path using the enhanced splitPath that understands bracket notation
-		const parts = TokenValueExtractor.splitPath(token);
+		const parts = token.split(TokenValueExtractor.REGEX_DOT);
 
 		if (parts.length === 0) return token;
 		if (parts.length === 1) return parts[0];
@@ -160,7 +160,7 @@ export class ParentPathExtractor extends TokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory } {
-		const parts: string[] = TokenValueExtractor.splitPath(token);
+		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
