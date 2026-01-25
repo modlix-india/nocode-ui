@@ -166,78 +166,7 @@ const component: Component = {
 		name: 'ProgressBar',
 	},
 	sections: [{ name: 'Default Progress Bar', pageName: 'progressBar' }],
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: (
-				<IconHelper viewBox="0 0 30 30">
-					<rect width="30" height="30" fill="#F9F9F9" />
-					<rect
-						className="_progressBarInner1"
-						x="5.625"
-						y="8.75781"
-						width="12.5"
-						height="4.6875"
-						rx="0.2"
-						transform="rotate(90 5.625 8.75781)"
-						fill="#7B66FF"
-					/>
-					<rect
-						className="_progressBarInner2"
-						x="13.4379"
-						y="8.75781"
-						width="12.5"
-						height="4.6875"
-						rx="0.2"
-						transform="rotate(90 13.4379 8.75781)"
-						fill="#7B66FF"
-					/>
-					<rect
-						className="_progressBarInner3"
-						x="21.2496"
-						y="8.75781"
-						width="12.5"
-						height="4.6875"
-						rx="0.2"
-						transform="rotate(90 21.2496 8.75781)"
-						fill="#7B66FF"
-					/>
-					<rect
-						className="_progressBarInner4"
-						x="29.0625"
-						y="8.75781"
-						width="12.5"
-						height="4.6875"
-						rx="0.2"
-						transform="rotate(90 29.0625 8.75781)"
-						fill="#EDEAEA"
-					/>
-				</IconHelper>
-			),
-		},
-		{
-			name: 'track',
-			displayName: 'Track',
-			description: 'Track',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'progress',
-			displayName: 'Progress',
-			description: 'Progress',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'label',
-			displayName: 'Label',
-			description: 'Label',
-			icon: 'fa-solid fa-box',
-		},
-	],
-	stylePropertiesForTheme: styleProperties,
+		stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -175,51 +175,7 @@ const component: Component = {
 	},
 	stylePseudoStates: ['hover'],
 	sections: [{ name: 'Toggle Buttons', pageName: 'togglebuttons' }],
-	subComponentDefinition: [
-		{
-			name: '',
-			displayName: 'Component',
-			description: 'Component',
-			mainComponent: true,
-			icon: (
-				<IconHelper viewBox="0 0 30 15">
-					<rect
-						className="_toggleButtonTrack"
-						width="30"
-						height="15"
-						rx="7.5"
-						fill="#02B694"
-					/>
-					<circle
-						className="_toggleButtonKnob"
-						cx="22.498"
-						cy="7.50781"
-						r="4.5"
-						fill="white"
-					/>
-				</IconHelper>
-			),
-		},
-		{
-			name: 'knob',
-			displayName: 'Knob',
-			description: 'Knob',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'label',
-			displayName: 'Label',
-			description: 'Label',
-			icon: 'fa-solid fa-box',
-		},
-		{
-			name: 'icon',
-			displayName: 'Icon',
-			description: 'Icon',
-			icon: 'fa-solid fa-box',
-		},
-	],
-	stylePropertiesForTheme: styleProperties,
+		stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

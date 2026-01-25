@@ -26,6 +26,9 @@ COPY --from=builder /app/ssr/dist ./dist
 COPY --from=builder /app/ssr/node_modules ./node_modules
 COPY --from=builder /app/ssr/package.json ./
 
+# Copy asset manifest (generated from client build and downloaded from CDN in CI)
+COPY ui-app/ssr/manifests ./manifests
+
 # Create logs directory
 RUN mkdir -p /logs
 
