@@ -1,10 +1,12 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 
-module.exports = (env = {}) => {
+module.exports = async (env = {}) => {
   const publicUrl = env.publicUrl || '/';
+
+  // Dynamically import ES module
+  const { WebpackManifestPlugin } = await import('webpack-manifest-plugin');
 
   const plugins =  [
     new CleanWebpackPlugin({
