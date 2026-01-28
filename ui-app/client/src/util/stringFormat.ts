@@ -54,6 +54,81 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string, additionalProps?: any
 		},
 	],
 	[
+		'UTC_TO_MM/DD/YYYY_HH:MM_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${prependZero(date.getMonth() + 1, 2)}/${prependZero(
+					date.getDate(),
+					2,
+				)}/${date.getFullYear()} ${prependZero(h12, 2)}:${prependZero(
+					date.getMinutes(),
+					2,
+				)} ${ampm}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
+		'UTC_TO_MM/DD/YYYY_HH:MM:SS_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${prependZero(date.getMonth() + 1, 2)}/${prependZero(
+					date.getDate(),
+					2,
+				)}/${date.getFullYear()} ${prependZero(h12, 2)}:${prependZero(
+					date.getMinutes(),
+					2,
+				)}:${prependZero(date.getSeconds(), 2)} ${ampm}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
+		'UTC_TO_MM/DD/YYYY_HH:MM:SS.SSS_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${prependZero(date.getMonth() + 1, 2)}/${prependZero(
+					date.getDate(),
+					2,
+				)}/${date.getFullYear()} ${prependZero(h12, 2)}:${prependZero(
+					date.getMinutes(),
+					2,
+				)}:${prependZero(date.getSeconds(), 2)}.${prependZero(
+					date.getMilliseconds(),
+					3,
+				)} ${ampm}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
 		'UTC_TO_MM/DD/YYYY_HH:MM:SS',
 		str => {
 			try {
@@ -132,6 +207,75 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string, additionalProps?: any
 		},
 	],
 	[
+		'UTC_TO_YYYY-MM-DD_HH:MM_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${date.getFullYear()}-${prependZero(date.getMonth() + 1, 2)}-${prependZero(
+					date.getDate(),
+					2,
+				)} ${prependZero(h12, 2)}:${prependZero(date.getMinutes(), 2)} ${ampm}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
+		'UTC_TO_YYYY-MM-DD_HH:MM:SS_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${date.getFullYear()}-${prependZero(date.getMonth() + 1, 2)}-${prependZero(
+					date.getDate(),
+					2,
+				)} ${prependZero(h12, 2)}:${prependZero(date.getMinutes(), 2)}:${prependZero(
+					date.getSeconds(),
+					2,
+				)} ${ampm}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
+		'UTC_TO_YYYY-MM-DD_HH:MM:SS.SSS_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${date.getFullYear()}-${prependZero(date.getMonth() + 1, 2)}-${prependZero(
+					date.getDate(),
+					2,
+				)} ${prependZero(h12, 2)}:${prependZero(date.getMinutes(), 2)}:${prependZero(
+					date.getSeconds(),
+					2,
+				)}.${prependZero(date.getMilliseconds(), 3)} ${ampm}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
 		'UTC_TO_YYYY-MM-DD_HH:MM:SS',
 		str => {
 			try {
@@ -202,6 +346,78 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string, additionalProps?: any
 					date.getHours(),
 					2,
 				)}:${prependZero(date.getMinutes(), 2)}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
+		'UTC_TO_MONTH_DD,YYYY_HH:MM_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${
+					MONTHS[date.getMonth()]
+				} ${date.getDate()}, ${date.getFullYear()} ${prependZero(
+					h12,
+					2,
+				)}:${prependZero(date.getMinutes(), 2)} ${ampm}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
+		'UTC_TO_MONTH_DD,YYYY_HH:MM:SS_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${
+					MONTHS[date.getMonth()]
+				} ${date.getDate()}, ${date.getFullYear()} ${prependZero(
+					h12,
+					2,
+				)}:${prependZero(date.getMinutes(), 2)}:${prependZero(date.getSeconds(), 2)} ${ampm}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
+		'UTC_TO_MONTH_DD,YYYY_HH:MM:SS.SSS_12H',
+		str => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const date = new Date();
+				date.setTime(pi * 1000);
+				const hours = date.getHours();
+				const ampm = hours >= 12 ? 'PM' : 'AM';
+				const h12 = hours % 12 || 12;
+				return `${
+					MONTHS[date.getMonth()]
+				} ${date.getDate()}, ${date.getFullYear()} ${prependZero(
+					h12,
+					2,
+				)}:${prependZero(date.getMinutes(), 2)}:${prependZero(
+					date.getSeconds(),
+					2,
+				)}.${prependZero(date.getMilliseconds(), 3)} ${ampm}`;
 			} catch (e) {
 				console.error(e);
 			}

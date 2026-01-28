@@ -372,7 +372,11 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		}
 		setCountryList(tempList);
 
-		if ((isFirstRender.current || !selected) && tempList.length > 0) {
+		const existingCountryCode = bindingPathPath2
+			? getDataFromPath(bindingPathPath2, locationHistory, pageExtractor)
+			: undefined;
+
+		if ((isFirstRender.current || !selected) && tempList.length > 0 && !existingCountryCode) {
 			let defaultCountry;
 
 			if (tempList.length === 1) {
