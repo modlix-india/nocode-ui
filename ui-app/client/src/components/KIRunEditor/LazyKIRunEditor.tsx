@@ -47,7 +47,7 @@ import Search from './components/Search';
 import StatementNode from './components/StatementNode';
 import StatementParameters from './components/StatementParameters';
 import { StoreNode } from './components/StoreNode';
-import { correctStatementNames, savePersonalizationCurry } from './utils';
+import { autoLayoutFunctionDefinition, correctStatementNames, savePersonalizationCurry } from './utils';
 import { COPY_STMT_KEY } from '../../constants';
 
 const gridSize = 20;
@@ -1084,6 +1084,34 @@ export default function LazyKIRunEditor(
 		containerContents = <div className="_error">{error?.message ?? error}</div>;
 	}
 
+	const autoLayoutIcon = isReadonly ? (
+		<></>
+	) : (
+		<i
+			className="fa fa-solid fa-diagram-project"
+			role="button"
+			title="Auto Layout"
+			onClick={() => {
+				if (isReadonly) return;
+				if (!rawDef?.steps) return;
+
+				const def = duplicate(rawDef);
+				const newPositions = autoLayoutFunctionDefinition(
+					FunctionDefinition.from(def),
+					280,
+					180,
+					80,
+				);
+
+				for (const [name, pos] of Array.from(newPositions.entries())) {
+					if (def.steps[name]) def.steps[name].position = pos;
+				}
+
+				setData(bindingPathPath, def, context.pageName);
+			}}
+		/>
+	);	
+
 	// Here it is an exception for the style properties, we add comp page editor when used standalone.
 	return (
 		<div
@@ -1149,6 +1177,8 @@ export default function LazyKIRunEditor(
 					/>
 					<div className="_separator" />
 					{editPencilIcon}
+					<div className="_separator" />
+					{autoLayoutIcon}
 				</div>
 				<div className="_right">
 					<i

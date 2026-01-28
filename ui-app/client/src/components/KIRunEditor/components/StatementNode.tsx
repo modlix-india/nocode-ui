@@ -1,5 +1,6 @@
 import { Event, Function, Repository, Schema, TokenValueExtractor } from '@fincity/kirun-js';
 import React, { RefObject, useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { duplicate } from '@fincity/kirun-js';
 import { generateColor } from '../colors';
 import { stringValue } from '../utils';
@@ -106,15 +107,8 @@ export default function StatementNode({
 	const [mouseMove, setMouseMove] = useState(false);
 	const alwaysColor =
 		validationMessages.size > 0 || executionPlanMessage?.length
-			? '#f25332'
+			? '#DC2626'
 			: `#${generateColor(statement.namespace, statement.name)}`;
-
-	const highlightColor =
-		validationMessages.size > 0 || executionPlanMessage?.length
-			? '#f25332'
-			: selected
-				? alwaysColor
-				: '';
 
 	const [editComment, setEditComment] = useState(false);
 
@@ -138,7 +132,15 @@ export default function StatementNode({
 
 	const events = Array.from(eventsMap.values());
 
-	const params = parameters.length ? (
+	// Filter parameters to only show filled ones when not in edit mode
+	const filledParameters = editParameters
+		? parameters
+		: parameters.filter(e => {
+				const paramValue = statement.parameterMap?.[e.getParameterName()];
+				return paramValue && Object.values(paramValue).length > 0;
+		  });
+
+	const params = filledParameters.length ? (
 		<div
 			className="_paramsContainer"
 			onDoubleClick={ev => {
@@ -150,7 +152,9 @@ export default function StatementNode({
 			}}
 		>
 			<div className="_paramHeader">Parameters</div>
-			{parameters.map(e => {
+			{filledParameters
+			.sort((a, b) => a.getParameterName().localeCompare(b.getParameterName()))
+			.map(e => {
 				const paramValue = statement.parameterMap?.[e.getParameterName()];
 				const hasValue = paramValue && Object.values(paramValue).length;
 				const title = stringValue(paramValue);
@@ -180,7 +184,6 @@ export default function StatementNode({
 						<div
 							id={`paramNode_${statement.statementName}_${e.getParameterName()}`}
 							className="_paramNode _hideInEdit"
-							style={{ borderColor: alwaysColor }}
 						></div>
 						<div
 							className={`_paramName ${hasValue ? '_hasValue' : ''}`}
@@ -201,21 +204,48 @@ export default function StatementNode({
 		<div
 			className="_dependencyNode _hideInEdit"
 			id={`eventNode_dependentNode_${statement.statementName}`}
-			style={{ borderColor: alwaysColor }}
 			title="Depends on"
 		></div>
 	);
 
+	// State for copy feedback toast
+	const [copiedPath, setCopiedPath] = useState<string | null>(null);
+
+	// Helper function to copy path to clipboard with visual feedback
+	const copyToClipboard = (path: string) => {
+		navigator.clipboard.writeText(path);
+		setCopiedPath(path);
+		setTimeout(() => setCopiedPath(null), 1800);
+	};
+
 	const eventsDiv = events.length ? (
-		events.map(e => {
+		events
+		.sort((a, b) => {
+			// Put OUTPUT at the top, then sort alphabetically
+			const aName = a.getName();
+			const bName = b.getName();
+			if (aName === 'output') return -1;
+			if (bName === 'output') return 1;
+			return aName.localeCompare(bName);
+		})
+		.map(e => {
 			const eventParams = Array.from(e.getParameters()?.entries() ?? []);
+			const eventPath = `Steps.${statement.statementName}.${e.getName()}`;
 			return (
 				<div className="_paramsContainer _event" key={e.getName()}>
-					<div className="_paramHeader">{e.getName()}</div>
+					<div
+						className="_paramHeader"
+						title={`Click to copy: ${eventPath}`}
+						onClick={ev => {
+							ev.stopPropagation();
+							copyToClipboard(eventPath);
+						}}
+					>
+						{e.getName()}
+					</div>
 					<div
 						id={`eventNode_${statement.statementName}_${e.getName()}`}
 						className="_paramNode _eventNode"
-						style={{ borderColor: alwaysColor }}
 						onMouseDown={ev => {
 							ev.stopPropagation();
 							ev.preventDefault();
@@ -230,19 +260,21 @@ export default function StatementNode({
 							onDependencyDragStart?.({
 								left,
 								top,
-								dependency: `Steps.${statement.statementName}.${e.getName()}`,
+								dependency: eventPath,
 							});
 						}}
 					></div>
-					{eventParams.map(([pname]) => {
+					{eventParams
+					.sort((a, b) => a[0].localeCompare(b[0]))
+					.map(([pname]) => {
+						const paramPath = `Steps.${statement.statementName}.${e.getName()}.${pname}`;
 						return (
 							<div className="_param" key={pname}>
 								<div
 									id={`eventParameter_${
 										statement.statementName
 									}_${e.getName()}_${pname}`}
-									className="_paramNode"
-									style={{ borderColor: alwaysColor }}
+									className="_paramNode _paramNameNode"
 									onMouseDown={ev => {
 										ev.stopPropagation();
 										ev.preventDefault();
@@ -257,13 +289,20 @@ export default function StatementNode({
 										onDependencyDragStart?.({
 											left,
 											top,
-											dependency: `Steps.${
-												statement.statementName
-											}.${e.getName()}.${pname}`,
+											dependency: paramPath,
 										});
 									}}
 								></div>
-								<div className="_paramName">{pname}</div>
+								<div
+									className="_paramName"
+									title={`Click to copy: ${paramPath}`}
+									onClick={ev => {
+										ev.stopPropagation();
+										copyToClipboard(paramPath);
+									}}
+								>
+									{pname}
+								</div>
 							</div>
 						);
 					})}
@@ -327,6 +366,8 @@ export default function StatementNode({
 			<></>
 		);
 
+	const categoryLabel = getCategoryLabel(statement.namespace ?? '_');
+
 	return (
 		<div
 			className={`_statement ${selected ? '_selected' : ''} ${
@@ -335,16 +376,14 @@ export default function StatementNode({
 			style={{
 				left: position.left + (selected && dragNode ? dragNode.dLeft : 0) + 'px',
 				top: position.top + (selected && dragNode ? dragNode.dTop : 0) + 'px',
-				borderColor: selected ? highlightColor : '',
 				zIndex: selected ? '3' : '',
 			}}
 			id={`statement_${statement.statementName}`}
 			onClick={e => {
 				e.preventDefault();
 				e.stopPropagation();
-				// onClick(e.ctrlKey || e.metaKey, statement.statementName);
 			}}
-			onMouseUp={e => {
+			onMouseUp={() => {
 				onDependencyDrop?.(statement.statementName);
 			}}
 			onContextMenu={e => {
@@ -357,12 +396,8 @@ export default function StatementNode({
 			}}
 		>
 			{comments}
-			<div
-				className="_namesContainer"
-				style={{
-					backgroundColor: highlightColor ? highlightColor : alwaysColor,
-				}}
-			>
+			<div className="_namesContainer">
+				<div className="_categoryLabel">{categoryLabel}</div>
 				<div
 					className="_nameContainer"
 					onMouseDown={e => {
@@ -381,7 +416,7 @@ export default function StatementNode({
 							top,
 						});
 					}}
-					onMouseMove={e => {
+					onMouseMove={() => {
 						if (!mouseMove && dragNode) setMouseMove(true);
 					}}
 					onMouseUp={e => {
@@ -405,13 +440,9 @@ export default function StatementNode({
 						className={`_icon fa fa-solid ${
 							ICONS_GROUPS.get(statement.namespace) ?? 'fa-microchip'
 						}`}
+						style={{ backgroundColor: `#${alwaysColor.replace('#', '')}` }}
 					></i>
-					<div
-						className="_statementContanier"
-						style={{
-							borderColor: highlightColor ? highlightColor : alwaysColor,
-						}}
-					>
+					<div className="_statementContanier">
 						<div
 							className={`_statementName`}
 							onDoubleClick={e => {
@@ -451,16 +482,19 @@ export default function StatementNode({
 									/>
 								</>
 							) : (
-								statementName
+								<>
+									{statementName}
+									<i
+										className="_editIcon fa fa-1x fa-solid fa-pencil _hideInEdit"
+										style={{ opacity: editStatementName ? 1 : undefined }}
+										onClick={e => {
+											e.stopPropagation();
+											setEditStatementName(true);
+										}}
+									/>
+								</>
 							)}
 						</div>
-						<i
-							className="_editIcon fa fa-1x fa-solid fa-pencil _hideInEdit"
-							style={{ visibility: editStatementName ? 'visible' : undefined }}
-							onClick={() => {
-								setEditStatementName(true);
-							}}
-						/>
 					</div>
 				</div>
 				<div className={`_nameNamespaceContainer`}>
@@ -480,9 +514,6 @@ export default function StatementNode({
 								options={functionNames.map(e => ({
 									value: e,
 								}))}
-								style={{
-									backgroundColor: highlightColor ? highlightColor : alwaysColor,
-								}}
 								onChange={value => {
 									const index = value.lastIndexOf('.');
 
@@ -528,7 +559,6 @@ export default function StatementNode({
 			</div>
 			<StatementButtons
 				selected={selected}
-				highlightColor={highlightColor}
 				onEditParameters={onEditParameters}
 				onEditComment={() => setEditComment(true)}
 				statementName={statement.statementName}
@@ -540,6 +570,10 @@ export default function StatementNode({
 				onCopy={onCopy}
 			/>
 			{dependencyNode}
+			{copiedPath && ReactDOM.createPortal(
+				<div className="_copiedToast">Copied to clipboard</div>,
+				document.body
+			)}
 		</div>
 	);
 }
@@ -547,10 +581,26 @@ export default function StatementNode({
 const ICONS_GROUPS = new Map<string, string>([
 	['System', 'fa-cube'],
 	['System.Context', 'fa-hard-drive'],
-	['System.Loop', 'fa-ring'],
+	['System.Loop', 'fa-repeat'],
 	['System.Math', 'fa-calculator'],
-	['System.String', 'fa-candy-cane'],
+	['System.String', 'fa-font'],
 	['System.Array', 'fa-layer-group'],
 	['System.Object', 'fa-circle-dot'],
-	['UIEngine', 'fa-snowflake'],
+	['UIEngine', 'fa-wand-magic-sparkles'],
 ]);
+
+const CATEGORY_LABELS = new Map<string, string>([
+	['System', 'SYSTEM'],
+	['System.Context', 'CONTEXT'],
+	['System.Loop', 'LOOP'],
+	['System.Math', 'MATH'],
+	['System.String', 'STRING'],
+	['System.Array', 'ARRAY'],
+	['System.Object', 'OBJECT'],
+	['UIEngine', 'UI ENGINE'],
+	['_', 'FUNCTION'],
+]);
+
+function getCategoryLabel(namespace: string): string {
+	return CATEGORY_LABELS.get(namespace) ?? CATEGORY_LABELS.get('_') ?? 'FUNCTION';
+}
