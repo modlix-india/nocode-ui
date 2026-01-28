@@ -1,6 +1,7 @@
 import {
 	FunctionDefinition,
 	FunctionExecutionParameters,
+	GlobalDebugCollector,
 	HybridRepository,
 	KIRuntime,
 	LinkedList,
@@ -24,6 +25,7 @@ import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory, PageDefinition } from '../../types/common';
 import PageDefintionFunctionsRepository from './PageDefinitionFunctionsRepository';
 import UUID, { flattenUUID } from './uuid';
+import { shortUUID } from '../../util/shortUUID';
 
 function addValidationTriggers(
 	flatId: string,
@@ -42,6 +44,11 @@ function addValidationTriggers(
 let UI_FUN_REPO: UIFunctionRepository;
 let UI_SCHEMA_REPO: UISchemaRepository;
 
+// Expose GlobalDebugCollector to console for debugging
+if (typeof globalThis !== 'undefined') {
+	(globalThis as any).GlobalDebugCollector = GlobalDebugCollector;
+}
+
 export const runEvent = async (
 	functionDefinition: any,
 	key: string = UUID(),
@@ -59,7 +66,6 @@ export const runEvent = async (
 	const isRunningPath = `Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`;
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
-		console.log("Executing: ", functionDefinition.name, page);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
 		const urlExtractor = UrlDetailsExtractor.getForContext(page);
 		// if (locationHistory?.length)
@@ -151,7 +157,7 @@ export const runEvent = async (
 					REPO_SERVER.UI,
 				),
 			),
-			key,
+			`${key}_${shortUUID()}`,
 		).setValuesMap(valuesMap);
 		if (args) {
 			fep.setArguments(args);
