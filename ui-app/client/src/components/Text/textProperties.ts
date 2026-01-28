@@ -74,6 +74,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'UTC to MM/DD/YYYY HH:MM',
 			},
 			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM_12H',
+				displayName: 'UTC to MM/DD/YYYY HH:MM (12H)',
+				description: 'UTC to MM/DD/YYYY HH:MM (12H)',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS_12H',
+				displayName: 'UTC to MM/DD/YYYY HH:MM:SS (12H)',
+				description: 'UTC to MM/DD/YYYY HH:MM:SS (12H)',
+			},
+			{
+				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS.SSS_12H',
+				displayName: 'UTC to MM/DD/YYYY HH:MM:SS.SSS (12H)',
+				description: 'UTC to MM/DD/YYYY HH:MM:SS.SSS (12H)',
+			},
+			{
 				name: 'UTC_TO_MM/DD/YYYY_HH:MM:SS',
 				displayName: 'UTC to MM/DD/YYYY HH:MM:SS',
 				description: 'UTC to MM/DD/YYYY HH:MM:SS',
@@ -94,6 +109,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'UTC to YYYY-MM-DD HH:MM',
 			},
 			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM_12H',
+				displayName: 'UTC to YYYY-MM-DD HH:MM (12H)',
+				description: 'UTC to YYYY-MM-DD HH:MM (12H)',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS_12H',
+				displayName: 'UTC to YYYY-MM-DD HH:MM:SS (12H)',
+				description: 'UTC to YYYY-MM-DD HH:MM:SS (12H)',
+			},
+			{
+				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS.SSS_12H',
+				displayName: 'UTC to YYYY-MM-DD HH:MM:SS.SSS (12H)',
+				description: 'UTC to YYYY-MM-DD HH:MM:SS.SSS (12H)',
+			},
+			{
 				name: 'UTC_TO_YYYY-MM-DD_HH:MM:SS',
 				displayName: 'UTC to YYYY-MM-DD HH:MM:SS',
 				description: 'UTC to YYYY-MM-DD HH:MM:SS',
@@ -112,6 +142,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM',
 				displayName: 'UTC to Month DD, YYYY HH:MM',
 				description: 'UTC to Month DD, YYYY HH:MM',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM_12H',
+				displayName: 'UTC to Month DD, YYYY HH:MM (12H)',
+				description: 'UTC to Month DD, YYYY HH:MM (12H)',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS_12H',
+				displayName: 'UTC to Month DD, YYYY HH:MM:SS (12H)',
+				description: 'UTC to Month DD, YYYY HH:MM:SS (12H)',
+			},
+			{
+				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS.SSS_12H',
+				displayName: 'UTC to Month DD, YYYY HH:MM:SS.SSS (12H)',
+				description: 'UTC to Month DD, YYYY HH:MM:SS.SSS (12H)',
 			},
 			{
 				name: 'UTC_TO_MONTH_DD,YYYY_HH:MM:SS',
