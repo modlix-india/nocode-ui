@@ -16,6 +16,7 @@ import { StyleResolutionDefinition } from '../util/styleProcessor';
 import { Messages } from './Messages/Messages';
 import { getAppDefinition } from './appDefinition';
 import { usedComponents } from './usedComponents';
+import DebugWindow from '../debug/DebugWindow';
 
 // In design mode we are listening to the messages from editor
 
@@ -252,6 +253,7 @@ export function App() {
 			</BrowserRouter>
 			<Messages />
 			<div id="_rendered" data-used-components={usedComps} />
+			<DebugWindow />	
 		</>
 	);
 }

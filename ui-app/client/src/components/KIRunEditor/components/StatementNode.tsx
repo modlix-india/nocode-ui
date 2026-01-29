@@ -1,4 +1,4 @@
-import { Event, Function, Repository, Schema, TokenValueExtractor } from '@fincity/kirun-js';
+import { Event, Function, LogEntry, Repository, Schema, TokenValueExtractor } from '@fincity/kirun-js';
 import React, { RefObject, useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { duplicate } from '@fincity/kirun-js';
@@ -41,6 +41,9 @@ interface StatementNodeProps {
 	onRemoveAllDependencies: () => void;
 	selectedStatements: Map<string, boolean>;
 	onCopy: (statementName: string) => void;
+	// Debug mode props
+	debugViewMode?: boolean;
+	debugLogs?: LogEntry[];
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -73,6 +76,8 @@ export default function StatementNode({
 	onRemoveAllDependencies,
 	selectedStatements,
 	onCopy,
+	debugViewMode = false,
+	debugLogs,
 }: StatementNodeProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
@@ -368,11 +373,27 @@ export default function StatementNode({
 
 	const categoryLabel = getCategoryLabel(statement.namespace ?? '_');
 
+	// Build debug info section when in debug view mode
+	const debugInfoSection = debugViewMode && debugLogs && debugLogs.length > 0 ? (
+		<DebugInfoSection logs={debugLogs} />
+	) : null;
+
+	// Determine debug status for styling
+	const hasDebugError = debugLogs?.some(log => log.error);
+	const wasExecuted = debugViewMode && debugLogs && debugLogs.length > 0;
+	const debugStatusClass = debugViewMode
+		? wasExecuted
+			? hasDebugError
+				? '_executedWithError'
+				: '_executed'
+			: '_notExecuted'
+		: '';
+
 	return (
 		<div
 			className={`_statement ${selected ? '_selected' : ''} ${
 				editParameters ? '_editParameters' : ''
-			}`}
+			} ${debugStatusClass}`}
 			style={{
 				left: position.left + (selected && dragNode ? dragNode.dLeft : 0) + 'px',
 				top: position.top + (selected && dragNode ? dragNode.dTop : 0) + 'px',
@@ -484,14 +505,16 @@ export default function StatementNode({
 							) : (
 								<>
 									{statementName}
-									<i
-										className="_editIcon fa fa-1x fa-solid fa-pencil _hideInEdit"
-										style={{ opacity: editStatementName ? 1 : undefined }}
-										onClick={e => {
-											e.stopPropagation();
-											setEditStatementName(true);
-										}}
-									/>
+									{!debugViewMode && (
+										<i
+											className="_editIcon fa fa-1x fa-solid fa-pencil _hideInEdit"
+											style={{ opacity: editStatementName ? 1 : undefined }}
+											onClick={e => {
+												e.stopPropagation();
+												setEditStatementName(true);
+											}}
+										/>
+									)}
 								</>
 							)}
 						</div>
@@ -503,7 +526,7 @@ export default function StatementNode({
 						onDoubleClick={e => {
 							e.stopPropagation();
 							e.preventDefault();
-							if (editParameters) return;
+							if (editParameters || debugViewMode) return;
 							setEditNameNamespace(true);
 							onClick?.(false, statement.statementName);
 						}}
@@ -543,6 +566,7 @@ export default function StatementNode({
 				{params}
 				<div className="_eventsContainer _hideInEdit">{eventsDiv}</div>
 			</div>
+			{debugInfoSection}
 			<div className="_messages">
 				{executionPlanMessage &&
 					executionPlanMessage.map(value => (
@@ -603,4 +627,122 @@ const CATEGORY_LABELS = new Map<string, string>([
 
 function getCategoryLabel(namespace: string): string {
 	return CATEGORY_LABELS.get(namespace) ?? CATEGORY_LABELS.get('_') ?? 'FUNCTION';
+}
+
+// Helper to format duration for display
+function formatDuration(ms: number | undefined): string {
+	if (ms === undefined) return '';
+	if (ms < 1) return '<1ms';
+	if (ms < 1000) return `${Math.round(ms)}ms`;
+	return `${(ms / 1000).toFixed(2)}s`;
+}
+
+// Component to display debug information for a statement
+function DebugInfoSection({ logs }: { logs: LogEntry[] }) {
+	const [expanded, setExpanded] = useState(false);
+
+	// Calculate total duration from all logs
+	const totalDuration = logs.reduce((sum, log) => sum + (log.duration ?? 0), 0);
+	const hasError = logs.some(log => log.error);
+	const executionCount = logs.length;
+
+	// Determine badge class based on duration
+	let badgeClass = '';
+	if (hasError) {
+		badgeClass = '_errored';
+	} else if (totalDuration > 1000) {
+		badgeClass = '_verySlow';
+	} else if (totalDuration > 100) {
+		badgeClass = '_slow';
+	}
+
+	// Check if there's content to expand
+	const hasExpandableContent = logs.some(
+		log =>
+			(log.arguments && Object.keys(log.arguments).length > 0) ||
+			(log.result && Object.keys(log.result).length > 0),
+	);
+
+	return (
+		<div className={`_statementDebugInfo ${hasError ? '_errored' : ''}`}>
+			<div
+				className="_debugHeader"
+				role={hasExpandableContent ? 'button' : undefined}
+				tabIndex={hasExpandableContent ? 0 : undefined}
+				onClick={e => {
+					e.stopPropagation();
+					if (hasExpandableContent) setExpanded(!expanded);
+				}}
+				onKeyDown={e => {
+					if (hasExpandableContent && (e.key === 'Enter' || e.key === ' ')) {
+						e.stopPropagation();
+						setExpanded(!expanded);
+					}
+				}}
+			>
+				<span className={`_debugBadge ${badgeClass}`}>{formatDuration(totalDuration)}</span>
+				{executionCount > 1 && (
+					<span className="_debugExecutionCount">×{executionCount}</span>
+				)}
+				{logs.at(-1)?.eventName && (
+					<span className="_debugEvent">{logs.at(-1)?.eventName}</span>
+				)}
+				{hasExpandableContent && (
+					<i className={`fa fa-chevron-${expanded ? 'up' : 'down'} _expandIcon`} />
+				)}
+			</div>
+
+			{hasError &&
+				logs
+					.filter(log => log.error)
+					.map((log, idx) => (
+						<div key={log.stepId || `error-${idx}`} className="_debugInfoRow _errorRow">
+							<span className="_debugInfoLabel">
+								Error{executionCount > 1 ? ` #${idx + 1}` : ''}:
+							</span>
+							<span className="_debugInfoValue _error">{log.error}</span>
+						</div>
+					))}
+
+			{expanded && (
+				<div className="_debugExpandedContent">
+					{logs.map((log, idx) => (
+						<div key={log.stepId || idx} className="_debugLogEntry">
+							{executionCount > 1 && (
+								<div className="_debugLogEntryHeader">
+									<span className="_debugLogEntryIndex">
+										Execution #{idx + 1}
+									</span>
+									{log.duration !== undefined && (
+										<span className="_debugLogEntryDuration">
+											{formatDuration(log.duration)}
+										</span>
+									)}
+									{log.eventName && (
+										<span className="_debugLogEntryEvent">{log.eventName}</span>
+									)}
+								</div>
+							)}
+							{log.arguments && Object.keys(log.arguments).length > 0 && (
+								<div className="_debugInfoRow">
+									<span className="_debugInfoLabel">Arguments:</span>
+									<pre className="_debugInfoValue _json">
+										{JSON.stringify(log.arguments, null, 2)}
+									</pre>
+								</div>
+							)}
+							{log.result && Object.keys(log.result).length > 0 && (
+								<div className="_debugInfoRow">
+									<span className="_debugInfoLabel">Result:</span>
+									<pre className="_debugInfoValue _json">
+										{JSON.stringify(log.result, null, 2)}
+									</pre>
+								</div>
+							)}
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	);
 }
