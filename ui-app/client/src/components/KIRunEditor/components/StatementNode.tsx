@@ -426,7 +426,7 @@ export default function StatementNode({
 						e.preventDefault();
 						e.stopPropagation();
 
-						if (e.button !== 0) return;
+						if (e.button !== 0 || debugViewMode) return;
 
 						const rect = container.current!.getBoundingClientRect();
 						const left = Math.round(
@@ -470,7 +470,7 @@ export default function StatementNode({
 							onDoubleClick={e => {
 								e.stopPropagation();
 								e.preventDefault();
-								if (editParameters) return;
+								if (editParameters || debugViewMode) return;
 								setEditStatementName(true);
 							}}
 						>
@@ -553,14 +553,14 @@ export default function StatementNode({
 							name
 						)}
 					</div>
-					<i
+					{!debugViewMode && <i
 						className="_editIcon fa fa-1x fa-solid fa-bars-staggered _hideInEdit"
 						style={{ visibility: editNameNamespace ? 'visible' : undefined }}
 						onClick={() => {
 							setEditNameNamespace(true);
 							onClick?.(false, statement.statementName);
 						}}
-					/>
+					/>}
 				</div>
 			</div>
 			<div className="_otherContainer">
