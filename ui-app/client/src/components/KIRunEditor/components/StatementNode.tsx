@@ -88,6 +88,11 @@ export default function StatementNode({
 	);
 	const [debugExpanded, setDebugExpanded] = useState(false);
 
+	// Reset debug expanded state when logs change (e.g., switching between functions)
+	useEffect(() => {
+		setDebugExpanded(false);
+	}, [debugLogs]);
+
 	useEffect(() => {
 		setStatementName(statement.statementName);
 		setName(
@@ -641,6 +646,12 @@ function formatDuration(ms: number | undefined): string {
 // Component to display debug information for a statement
 function DebugInfoSection({ logs, onExpandChange }: { logs: LogEntry[]; onExpandChange?: (expanded: boolean) => void }) {
 	const [expanded, setExpanded] = useState(false);
+
+	// Reset expanded state when logs change (e.g., switching between functions)
+	useEffect(() => {
+		setExpanded(false);
+		onExpandChange?.(false);
+	}, [logs]);
 
 	const handleExpandToggle = () => {
 		const newExpanded = !expanded;
