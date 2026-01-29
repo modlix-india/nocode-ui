@@ -661,3 +661,258 @@
 	color: #6B7280;
 	font-weight: 500;
 }
+
+/* Store button in debug header */
+._debugStoreBtn {
+	width: 32px;
+	height: 32px;
+	border: none;
+	background-color: transparent;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s ease;
+	padding: 0;
+}
+
+._debugStoreBtn:hover {
+	background-color: #F3F4F6;
+}
+
+._debugStoreBtn i.fa {
+	font-size: 14px;
+	color: #9CA3AF;
+	transition: color 0.15s ease;
+}
+
+._debugStoreBtn:hover i.fa {
+	color: #6366F1;
+}
+
+._debugStoreBtn._active {
+	background-color: #EEF2FF;
+}
+
+._debugStoreBtn._active i.fa {
+	color: #6366F1;
+}
+
+/* Store Panel */
+._debugStorePanel {
+	position: absolute;
+	top: 60px;
+	right: 16px;
+	width: 400px;
+	max-height: calc(100% - 80px);
+	background-color: #fff;
+	border-radius: 12px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.05),
+		0 4px 16px rgba(0, 0, 0, 0.1),
+		0 12px 40px rgba(0, 0, 0, 0.15);
+	z-index: 100;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+._debugStorePanelHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	border-bottom: 1px solid #E5E7EB;
+	background-color: #F9FAFB;
+}
+
+._debugStorePanelTitle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1F2937;
+}
+
+._debugStorePanelTitle i.fa {
+	color: #6366F1;
+}
+
+._debugStorePanelClose {
+	width: 28px;
+	height: 28px;
+	border: none;
+	background-color: transparent;
+	border-radius: 6px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s ease;
+	padding: 0;
+}
+
+._debugStorePanelClose:hover {
+	background-color: #E5E7EB;
+}
+
+._debugStorePanelClose i.fa {
+	font-size: 12px;
+	color: #6B7280;
+}
+
+._debugStoreFilter {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-bottom: 1px solid #E5E7EB;
+	background-color: #fff;
+}
+
+._debugStoreFilter i.fa-search {
+	font-size: 12px;
+	color: #9CA3AF;
+}
+
+._debugStoreFilter input {
+	flex: 1;
+	border: none;
+	outline: none;
+	font-size: 13px;
+	color: #1F2937;
+	background: transparent;
+}
+
+._debugStoreFilter input::placeholder {
+	color: #9CA3AF;
+}
+
+._debugStoreFilterClear {
+	width: 20px;
+	height: 20px;
+	border: none;
+	background-color: #E5E7EB;
+	border-radius: 50%;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0;
+	transition: all 0.15s ease;
+}
+
+._debugStoreFilterClear:hover {
+	background-color: #D1D5DB;
+}
+
+._debugStoreFilterClear i.fa {
+	font-size: 10px;
+	color: #6B7280;
+}
+
+._debugStorePanelContent {
+	flex: 1;
+	overflow-y: auto;
+	padding: 12px;
+	font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+._debugStoreEmpty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+	color: #9CA3AF;
+	text-align: center;
+	gap: 12px;
+}
+
+._debugStoreEmpty i.fa {
+	font-size: 32px;
+	color: #E5E7EB;
+}
+
+/* JSON Tree Viewer */
+._jsonTreeNode {
+	user-select: text;
+}
+
+._jsonTreeHeader {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	cursor: pointer;
+	padding: 2px 4px;
+	border-radius: 4px;
+	transition: background-color 0.1s ease;
+}
+
+._jsonTreeHeader:hover {
+	background-color: #F3F4F6;
+}
+
+._jsonTreeHeader ._expandIcon {
+	font-size: 10px;
+	color: #9CA3AF;
+	width: 12px;
+	flex-shrink: 0;
+}
+
+._jsonTreeLeaf {
+	display: flex;
+	align-items: baseline;
+	gap: 4px;
+	padding: 2px 4px 2px 20px;
+}
+
+._jsonKey {
+	color: #7C3AED;
+	font-weight: 500;
+}
+
+._jsonValue {
+	color: #1F2937;
+}
+
+._jsonValue._string {
+	color: #059669;
+}
+
+._jsonValue._number {
+	color: #2563EB;
+}
+
+._jsonValue._boolean {
+	color: #DC2626;
+}
+
+._jsonValue._null {
+	color: #9CA3AF;
+	font-style: italic;
+}
+
+._jsonBracket {
+	color: #6B7280;
+}
+
+._jsonPreview {
+	color: #9CA3AF;
+	font-style: italic;
+	margin-left: 4px;
+}
+
+._jsonCloseBracket {
+	color: #6B7280;
+	padding-left: 20px;
+}
+
+._jsonTreeChildren {
+	border-left: 1px dashed #E5E7EB;
+	margin-left: 8px;
+}

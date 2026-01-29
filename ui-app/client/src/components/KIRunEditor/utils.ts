@@ -49,6 +49,12 @@ export function savePersonalizationCurry(
 
 		setData(`${personalizationPath}.${key}`, value, pageName);
 		handle = setTimeout(() => {
+
+			if (typeof onChangePersonalization == 'function') { 
+				onChangePersonalization(); 
+				return; 
+			}
+
 			(async () =>
 				await runEvent(
 					onChangePersonalization,

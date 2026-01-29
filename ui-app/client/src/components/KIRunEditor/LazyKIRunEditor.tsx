@@ -193,6 +193,7 @@ export default function LazyKIRunEditor(
 		debugViewMode?: boolean;
 		executionLog?: ExecutionLog;
 		functionDefinition?: FunctionDefinition;
+		onChangePersonalizationFunction?: () => void;
 	},
 ) {
 	const {
@@ -208,6 +209,7 @@ export default function LazyKIRunEditor(
 		debugViewMode = false,
 		executionLog,
 		functionDefinition,
+		onChangePersonalizationFunction
 	} = props;
 
 	// Build debug info map when in debug view mode
@@ -467,7 +469,7 @@ export default function LazyKIRunEditor(
 		return savePersonalizationCurry(
 			personalizationPath,
 			context.pageName,
-			pageDefinition.eventFunctions?.[onChangePersonalization],
+			onChangePersonalizationFunction ??pageDefinition.eventFunctions?.[onChangePersonalization],
 			locationHistory,
 			pageDefinition,
 		);
@@ -478,6 +480,7 @@ export default function LazyKIRunEditor(
 		onChangePersonalization,
 		locationHistory,
 		pageDefinition,
+		onChangePersonalizationFunction
 	]);
 
 	const [functionNames, setFunctionNames] = useState<string[]>([]);

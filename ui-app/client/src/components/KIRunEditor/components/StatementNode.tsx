@@ -86,6 +86,7 @@ export default function StatementNode({
 	const [name, setName] = useState(
 		((statement.namespace ?? '_') === '_' ? '' : statement.namespace + '.') + statement.name,
 	);
+	const [debugExpanded, setDebugExpanded] = useState(false);
 
 	useEffect(() => {
 		setStatementName(statement.statementName);
@@ -375,7 +376,7 @@ export default function StatementNode({
 
 	// Build debug info section when in debug view mode
 	const debugInfoSection = debugViewMode && debugLogs && debugLogs.length > 0 ? (
-		<DebugInfoSection logs={debugLogs} />
+		<DebugInfoSection logs={debugLogs} onExpandChange={setDebugExpanded} />
 	) : null;
 
 	// Determine debug status for styling
@@ -397,7 +398,7 @@ export default function StatementNode({
 			style={{
 				left: position.left + (selected && dragNode ? dragNode.dLeft : 0) + 'px',
 				top: position.top + (selected && dragNode ? dragNode.dTop : 0) + 'px',
-				zIndex: selected ? '3' : '',
+				zIndex: selected || debugExpanded ? '3' : '',
 			}}
 			id={`statement_${statement.statementName}`}
 			onClick={e => {
@@ -581,7 +582,7 @@ export default function StatementNode({
 						</div>
 					))}
 			</div>
-			<StatementButtons
+			{debugViewMode ? <></> : <StatementButtons
 				selected={selected}
 				onEditParameters={onEditParameters}
 				onEditComment={() => setEditComment(true)}
@@ -592,7 +593,7 @@ export default function StatementNode({
 				editParameters={editParameters}
 				onRemoveAllDependencies={onRemoveAllDependencies}
 				onCopy={onCopy}
-			/>
+			/>}
 			{dependencyNode}
 			{copiedPath && ReactDOM.createPortal(
 				<div className="_copiedToast">Copied to clipboard</div>,
@@ -638,8 +639,14 @@ function formatDuration(ms: number | undefined): string {
 }
 
 // Component to display debug information for a statement
-function DebugInfoSection({ logs }: { logs: LogEntry[] }) {
+function DebugInfoSection({ logs, onExpandChange }: { logs: LogEntry[]; onExpandChange?: (expanded: boolean) => void }) {
 	const [expanded, setExpanded] = useState(false);
+
+	const handleExpandToggle = () => {
+		const newExpanded = !expanded;
+		setExpanded(newExpanded);
+		onExpandChange?.(newExpanded);
+	};
 
 	// Calculate total duration from all logs
 	const totalDuration = logs.reduce((sum, log) => sum + (log.duration ?? 0), 0);
@@ -671,12 +678,12 @@ function DebugInfoSection({ logs }: { logs: LogEntry[] }) {
 				tabIndex={hasExpandableContent ? 0 : undefined}
 				onClick={e => {
 					e.stopPropagation();
-					if (hasExpandableContent) setExpanded(!expanded);
+					if (hasExpandableContent) handleExpandToggle();
 				}}
 				onKeyDown={e => {
 					if (hasExpandableContent && (e.key === 'Enter' || e.key === ' ')) {
 						e.stopPropagation();
-						setExpanded(!expanded);
+						handleExpandToggle();
 					}
 				}}
 			>
