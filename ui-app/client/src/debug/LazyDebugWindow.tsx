@@ -9,11 +9,12 @@ import {
 } from '@fincity/kirun-js';
 import React, { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import PageDefintionFunctionsRepository from '../components/util/PageDefinitionFunctionsRepository';
-import { getDataFromPath } from '../context/StoreContext';
+import { getData, getDataFromPath, setData } from '../context/StoreContext';
 import DebugWindowStyle from './DebugWindowStyle';
 import { UIFunctionRepository } from '../functions';
 import { UISchemaRepository } from '../schemas/common';
 import { shortUUID } from '../util/shortUUID';
+import axios from 'axios';
 
 const LazyKIRunEditor = React.lazy(
 	() => import(/* webpackChunkName: "KIRunEditor" */ '../components/KIRunEditor/LazyKIRunEditor'),
@@ -162,6 +163,34 @@ function getRootFunctionName(execution: ExecutionLog): string {
 	return firstLog?.kirunFunctionName || firstLog?.functionName || 'Unknown';
 }
 
+let handle: NodeJS.Timeout | null = null;
+function savePersonalization() {
+    if (!getDataFromPath('Store.auth', [])) return;
+
+    if (handle) clearTimeout(handle);
+    const appName = getDataFromPath('Store.application.appCode', []);
+    const token = getDataFromPath('Store.auth.accessToken', []);
+
+    handle = setTimeout(() => axios.post(`api/ui/personalization/${appName}/debugger`,
+        getDataFromPath('Store.debug.personalization', []),
+        { headers: { Authorization: token } }
+    ), 3000);
+}
+
+function loadPersonalization() {
+    console.log('Loading personalization');
+    if (!getDataFromPath('Store.auth', [])) return;
+
+    const appName = getDataFromPath('Store.application.appCode', []);
+    const token = getDataFromPath('Store.auth.accessToken', []);
+
+    axios.get(`api/ui/personalization/${appName}/debugger`, {headers : {
+        Authorization: token
+    }}).then(response => 
+        setData('Store.debug.personalization', response.data),
+    ).catch(() => {});
+}
+
 export default function LazyDebugWindow() {
 	const uuid = useMemo(() => shortUUID(), []);
 	const [executions, setExecutions] = useState<ExecutionSummary[]>([]);
@@ -174,7 +203,14 @@ export default function LazyDebugWindow() {
 	const [selectedFunctionName, setSelectedFunctionName] = useState<string | undefined>(undefined);
 	const [showEditor, setShowEditor] = useState(false);
     const [showStore, setShowStore] = useState(false);
-    const [storeKeyFilter, setStoreKeyFilter] = useState('');
+    const [storeKeyFilter, setStoreKeyFilter] = useState(
+		() => getDataFromPath('Store.debug.preferences.storeKeyFilter', []) || ''
+	);
+
+	const handleStoreKeyFilterChange = useCallback((value: string) => {
+		setStoreKeyFilter(value);
+		setData('Store.debug.preferences.storeKeyFilter', value);
+	}, []);
 
 	// Build execution summaries from DebugCollector
 	const refreshExecutions = useCallback(() => {
@@ -323,6 +359,8 @@ export default function LazyDebugWindow() {
 		}
 	}, [showStore]);
 
+    useEffect(() => loadPersonalization(), [getDataFromPath('Store.auth', [])]);
+
 	if (isCollapsed) {
 		return (
 			<>
@@ -358,13 +396,13 @@ export default function LazyDebugWindow() {
 					type="text"
 					placeholder="Filter keys..."
 					value={storeKeyFilter}
-					onChange={e => setStoreKeyFilter(e.target.value)}
+					onChange={e => handleStoreKeyFilterChange(e.target.value)}
 					autoFocus
 				/>
 				{storeKeyFilter && (
 					<button
 						className="_debugStoreFilterClear"
-						onClick={() => setStoreKeyFilter('')}
+						onClick={() => handleStoreKeyFilterChange('')}
 						title="Clear filter"
 					>
 						<i className="fa fa-times" />
@@ -485,9 +523,7 @@ export default function LazyDebugWindow() {
 									}
 									stores={['Store', 'Page', 'Theme', 'LocalStore']}
                                     functionDefinition = {selectedDefinition}
-                                    onChangePersonalizationFunction={() => {
-                                        
-                                    }}
+                                    onChangePersonalizationFunction={savePersonalization}
 								/>
 							) : (
 								<div className="_debugNoDefinition">

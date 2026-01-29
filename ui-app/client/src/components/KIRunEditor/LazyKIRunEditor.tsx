@@ -209,7 +209,7 @@ export default function LazyKIRunEditor(
 		debugViewMode = false,
 		executionLog,
 		functionDefinition,
-		onChangePersonalizationFunction
+		onChangePersonalizationFunction,
 	} = props;
 
 	// Build debug info map when in debug view mode
@@ -469,7 +469,8 @@ export default function LazyKIRunEditor(
 		return savePersonalizationCurry(
 			personalizationPath,
 			context.pageName,
-			onChangePersonalizationFunction ??pageDefinition.eventFunctions?.[onChangePersonalization],
+			onChangePersonalizationFunction ??
+				pageDefinition.eventFunctions?.[onChangePersonalization],
 			locationHistory,
 			pageDefinition,
 		);
@@ -480,7 +481,7 @@ export default function LazyKIRunEditor(
 		onChangePersonalization,
 		locationHistory,
 		pageDefinition,
-		onChangePersonalizationFunction
+		onChangePersonalizationFunction,
 	]);
 
 	const [functionNames, setFunctionNames] = useState<string[]>([]);
@@ -1033,6 +1034,21 @@ export default function LazyKIRunEditor(
 	) : (
 		<>
 			<i
+				className="fa fa-solid fa-object-group"
+				role="button"
+				title="Select all"
+				onClick={() => {
+					const entries = Object.entries(rawDef.steps);
+
+					setSelectedStatements(
+						entries.length === selectedStatements.size
+							? new Map()
+							: new Map<string, boolean>(entries.map(([k]) => [k, true])),
+					);
+				}}
+			/>
+			<div className="_separator" />
+			<i
 				className="fa fa-solid fa-square-plus"
 				role="button"
 				title="Add Step"
@@ -1063,12 +1079,15 @@ export default function LazyKIRunEditor(
 	const editPencilIcon = isReadonly ? (
 		<></>
 	) : (
-		<i
-			className="fa fa-solid fa-pencil"
-			role="button"
-			title="Edit Function"
-			onClick={() => setEditFunction(true)}
-		/>
+		<>
+			<div className="_separator" />
+			<i
+				className="fa fa-solid fa-pencil"
+				role="button"
+				title="Edit Function"
+				onClick={() => setEditFunction(true)}
+			/>
+		</>
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -1201,29 +1220,32 @@ export default function LazyKIRunEditor(
 	const autoLayoutIcon = isReadonly ? (
 		<></>
 	) : (
-		<i
-			className="fa fa-solid fa-diagram-project"
-			role="button"
-			title="Auto Layout"
-			onClick={() => {
-				if (isReadonly) return;
-				if (!rawDef?.steps) return;
+		<>
+			<div className="_separator" />
+			<i
+				className="fa fa-solid fa-diagram-project"
+				role="button"
+				title="Auto Layout"
+				onClick={() => {
+					if (isReadonly) return;
+					if (!rawDef?.steps) return;
 
-				const def = duplicate(rawDef);
-				const newPositions = autoLayoutFunctionDefinition(
-					FunctionDefinition.from(def),
-					280,
-					180,
-					80,
-				);
+					const def = duplicate(rawDef);
+					const newPositions = autoLayoutFunctionDefinition(
+						FunctionDefinition.from(def),
+						280,
+						180,
+						80,
+					);
 
-				for (const [name, pos] of Array.from(newPositions.entries())) {
-					if (def.steps[name]) def.steps[name].position = pos;
-				}
+					for (const [name, pos] of Array.from(newPositions.entries())) {
+						if (def.steps[name]) def.steps[name].position = pos;
+					}
 
-				setData(bindingPathPath, def, context.pageName);
-			}}
-		/>
+					setData(bindingPathPath, def, context.pageName);
+				}}
+			/>
+		</>
 	);
 
 	// Here it is an exception for the style properties, we add comp page editor when used standalone.
@@ -1235,21 +1257,6 @@ export default function LazyKIRunEditor(
 			<HelperComponent context={props.context} definition={definition} />
 			<div className="_header">
 				<div className="_left">
-					<i
-						className="fa fa-solid fa-object-group"
-						role="button"
-						title="Select all"
-						onClick={() => {
-							const entries = Object.entries(rawDef.steps);
-
-							setSelectedStatements(
-								entries.length === selectedStatements.size
-									? new Map()
-									: new Map<string, boolean>(entries.map(([k]) => [k, true])),
-							);
-						}}
-					/>
-					<div className="_separator" />
 					{editableIcons}
 					<i
 						className="fa fa-solid fa-square-root-variable"
@@ -1289,9 +1296,7 @@ export default function LazyKIRunEditor(
 							);
 						}}
 					/>
-					<div className="_separator" />
 					{editPencilIcon}
-					<div className="_separator" />
 					{autoLayoutIcon}
 				</div>
 				<div className="_right">
