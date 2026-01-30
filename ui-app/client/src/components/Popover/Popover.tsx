@@ -97,7 +97,7 @@ function Popover(props: Readonly<ComponentProps>) {
 	};
 
 	React.useEffect(() => {
-		if (isDesignMode && showInDesign === true) return;
+		if (globalThis.designMode == 'PAGE' && showInDesign === true) return;
 		const closePopover = () => setShow(false);
 		if (show && closeOnOutsideClick) {
 			document.body.addEventListener('click', closePopover);
@@ -123,7 +123,7 @@ function Popover(props: Readonly<ComponentProps>) {
 					onClick={showPopover}
 					onMouseEnter={showOnHover ? showPopover : undefined}
 					onMouseLeave={
-						!(isDesignMode && showInDesign === true) && closeOnLeave
+						!(globalThis.designMode == 'PAGE' && showInDesign === true) && closeOnLeave
 							? handleMouseLeave
 							: undefined
 					}
@@ -139,7 +139,7 @@ function Popover(props: Readonly<ComponentProps>) {
 						context={{ ...context, isReadonly }}
 						locationHistory={locationHistory}
 					/>
-					{(isDesignMode && showInDesign === true) || show ? (
+					{(globalThis.designMode == 'PAGE' && showInDesign === true) || show ? (
 						<Portal>
 							<div
 								ref={popoverRef}
