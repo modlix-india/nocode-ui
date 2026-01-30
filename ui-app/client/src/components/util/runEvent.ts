@@ -1,6 +1,7 @@
 import {
 	FunctionDefinition,
 	FunctionExecutionParameters,
+	DebugCollector,
 	HybridRepository,
 	KIRuntime,
 	LinkedList,
@@ -24,6 +25,7 @@ import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory, PageDefinition } from '../../types/common';
 import PageDefintionFunctionsRepository from './PageDefinitionFunctionsRepository';
 import UUID, { flattenUUID } from './uuid';
+import { shortUUID } from '../../util/shortUUID';
 
 function addValidationTriggers(
 	flatId: string,
@@ -42,6 +44,11 @@ function addValidationTriggers(
 let UI_FUN_REPO: UIFunctionRepository;
 let UI_SCHEMA_REPO: UISchemaRepository;
 
+// Expose DebugCollector to console for debugging
+if (typeof globalThis !== 'undefined') {
+	(globalThis as any).DebugCollector = DebugCollector;
+}
+
 export const runEvent = async (
 	functionDefinition: any,
 	key: string = UUID(),
@@ -59,7 +66,6 @@ export const runEvent = async (
 	const isRunningPath = `Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`;
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
-		console.log("Executing: ", functionDefinition.name, page);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
 		const urlExtractor = UrlDetailsExtractor.getForContext(page);
 		// if (locationHistory?.length)
@@ -118,9 +124,8 @@ export const runEvent = async (
 			valuesMap.set(pse.getPrefix(), pse);
 		}
 
-		const runtime = new KIRuntime(def, isDesignMode || isDebugMode);
-		const fep = new FunctionExecutionParameters(
-			new HybridRepository(
+		const eid = `${key}_${shortUUID()}`;
+		const functionRepository = new HybridRepository(
 				UI_FUN_REPO,
 				new PageDefintionFunctionsRepository(pageDefinition),
 				RemoteRepository.getRemoteFunctionRepository(
@@ -135,8 +140,9 @@ export const runEvent = async (
 					false,
 					REPO_SERVER.UI,
 				),
-			),
-			new HybridRepository(
+			);
+
+		const schemaRepository = new HybridRepository(
 				UI_SCHEMA_REPO,
 				RemoteRepository.getRemoteSchemaRepository(
 					undefined,
@@ -150,8 +156,13 @@ export const runEvent = async (
 					false,
 					REPO_SERVER.UI,
 				),
-			),
-			key,
+			);
+
+		const runtime = new KIRuntime(def, isDesignMode || isDebugMode);
+		const fep = new FunctionExecutionParameters(
+			functionRepository,
+			schemaRepository,
+			eid,
 		).setValuesMap(valuesMap);
 		if (args) {
 			fep.setArguments(args);
@@ -160,6 +171,16 @@ export const runEvent = async (
 		if (runSequentially) {
 			while (getDataFromPath(isRunningPath, locationHistory)) {
 				await new Promise(resolve => setTimeout(resolve, 100));
+			}
+		}
+
+		if (isDebugMode){
+			globalThis.debugContext[eid] = {
+				pageDefinition,
+				functionRepository,
+				schemaRepository,
+				locationHistory,
+				tokenValueExtractors: valuesMap,
 			}
 		}
 

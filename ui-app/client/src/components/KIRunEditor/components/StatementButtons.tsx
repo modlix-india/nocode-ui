@@ -3,7 +3,6 @@ import { COPY_STMT_KEY } from '../../../constants';
 
 interface StatementButtonsProps {
 	selected: boolean;
-	highlightColor: string;
 	onEditParameters?: (name: string) => void;
 	onEditComment: () => void;
 	statementName: string;
@@ -17,7 +16,6 @@ interface StatementButtonsProps {
 
 export default function StatementButtons({
 	selected,
-	highlightColor,
 	onEditComment,
 	onEditParameters,
 	statementName,
@@ -49,7 +47,7 @@ export default function StatementButtons({
 		);
 
 	return (
-		<div className="_buttons" style={{ color: highlightColor }}>
+		<div className="_buttons">
 			{editParamsButton}
 			<i
 				className="fa fa-regular fa-comment-dots"

@@ -1,6 +1,7 @@
 import {
 	duplicate,
 	ExecutionGraph,
+	ExecutionLog,
 	Function,
 	FunctionDefinition,
 	FunctionExecutionParameters,
@@ -8,6 +9,7 @@ import {
 	isNullValue,
 	KIRuntime,
 	LinkedList,
+	LogEntry,
 	Repository,
 	Schema,
 	StatementExecution,
@@ -47,7 +49,11 @@ import Search from './components/Search';
 import StatementNode from './components/StatementNode';
 import StatementParameters from './components/StatementParameters';
 import { StoreNode } from './components/StoreNode';
-import { correctStatementNames, savePersonalizationCurry } from './utils';
+import {
+	autoLayoutFunctionDefinition,
+	correctStatementNames,
+	savePersonalizationCurry,
+} from './utils';
 import { COPY_STMT_KEY } from '../../constants';
 
 const gridSize = 20;
@@ -141,6 +147,39 @@ function makeUpdates(
 let UI_FUN_REPO: Repository<Function>;
 let UI_SCHEMA_REPO: Repository<Schema>;
 
+// Helper to build debug info map from execution log (handles hierarchical logs)
+// Filters logs by currentFunctionName to only show logs belonging to the viewed function
+function buildDebugInfoMap(
+	executionLog: ExecutionLog | undefined,
+	currentFunctionName: string | undefined,
+): Map<string, LogEntry[]> {
+	const map = new Map<string, LogEntry[]>();
+	if (!executionLog || !currentFunctionName) return map;
+
+	// Flatten hierarchical logs
+	const flattenLogs = (logs: LogEntry[]): LogEntry[] => {
+		const result: LogEntry[] = [];
+		for (const log of logs) {
+			result.push(log);
+			if (log.children?.length) {
+				result.push(...flattenLogs(log.children));
+			}
+		}
+		return result;
+	};
+
+	const allLogs = flattenLogs(executionLog.logs);
+	for (const log of allLogs) {
+		if (!log.statementName) continue;
+		// Only include logs that belong to the current function being viewed
+		if (log.kirunFunctionName !== currentFunctionName) continue;
+		const existing = map.get(log.statementName) || [];
+		existing.push(log);
+		map.set(log.statementName, existing);
+	}
+	return map;
+}
+
 export default function LazyKIRunEditor(
 	props: ComponentProps & {
 		functionRepository?: Repository<Function>;
@@ -150,6 +189,11 @@ export default function LazyKIRunEditor(
 		storePaths?: Set<string>;
 		hideArguments?: boolean;
 		functionKey?: string;
+		// Debug mode props
+		debugViewMode?: boolean;
+		executionLog?: ExecutionLog;
+		functionDefinition?: FunctionDefinition;
+		onChangePersonalizationFunction?: () => void;
 	},
 ) {
 	const {
@@ -162,7 +206,36 @@ export default function LazyKIRunEditor(
 		tokenValueExtractors = new Map(),
 		storePaths = new Set(),
 		pageDefinition,
+		debugViewMode = false,
+		executionLog,
+		functionDefinition,
+		onChangePersonalizationFunction,
 	} = props;
+
+	// Build debug info map when in debug view mode
+	// Get current function name from functionDefinition for filtering logs
+	// Handle both FunctionDefinition instances and plain objects
+	// Match the format used in KIRuntime: namespace ? `${namespace}.${name}` : name
+	const currentFunctionName = useMemo(() => {
+		if (!functionDefinition) return undefined;
+		const ns =
+			typeof functionDefinition.getNamespace === 'function'
+				? functionDefinition.getNamespace()
+				: (functionDefinition as any).namespace;
+		const name =
+			typeof functionDefinition.getName === 'function'
+				? functionDefinition.getName()
+				: (functionDefinition as any).name;
+		// Match KIRuntime format: if namespace exists use namespace.name, otherwise just name
+		return ns ? `${ns}.${name}` : name;
+	}, [functionDefinition]);
+	const debugInfoMap = useMemo(
+		() =>
+			debugViewMode
+				? buildDebugInfoMap(executionLog, currentFunctionName)
+				: new Map<string, LogEntry[]>(),
+		[debugViewMode, executionLog, currentFunctionName],
+	);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
@@ -181,7 +254,7 @@ export default function LazyKIRunEditor(
 		? getPathFromLocation(bindingPath!, locationHistory, pageExtractor)
 		: undefined;
 
-	const isReadonly = readOnly || !bindingPathPath;
+	const isReadonly = readOnly || !bindingPathPath || debugViewMode;
 
 	// Getting function definition.
 	const [rawDef, setRawDef] = useState<any>();
@@ -258,6 +331,31 @@ export default function LazyKIRunEditor(
 	useEffect(() => usedComponents.using('PageEditor'), []);
 
 	useEffect(() => {
+		if (functionDefinition) {
+			const hereDef = correctStatementNames(functionDefinition);
+			setRawDef(hereDef);
+
+			const inFunDef = FunctionDefinition.from(hereDef);
+			setFunDef(inFunDef);
+			makeUpdates(
+				inFunDef,
+				setExecutionPlan,
+				setKirunMessages,
+				functionRepository,
+				schemaRepository,
+				key,
+				tokenValueExtractors,
+				setPositions,
+			);
+			setError(undefined);
+
+			const finName = `${hereDef.namespace ?? '_'}.${hereDef.name}`;
+			if (name !== finName) {
+				setName(finName);
+				setEditParameters('');
+				setSelectedStatements(new Map());
+			}
+		}
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			pageExtractor.getPageName(),
@@ -292,7 +390,15 @@ export default function LazyKIRunEditor(
 			},
 			bindingPathPath,
 		);
-	}, [bindingPathPath, setRawDef, pageExtractor, name, setName, setSelectedStatements]);
+	}, [
+		bindingPathPath,
+		setRawDef,
+		pageExtractor,
+		name,
+		setName,
+		setSelectedStatements,
+		functionDefinition,
+	]);
 
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2!, locationHistory, pageExtractor)
@@ -363,7 +469,8 @@ export default function LazyKIRunEditor(
 		return savePersonalizationCurry(
 			personalizationPath,
 			context.pageName,
-			pageDefinition.eventFunctions?.[onChangePersonalization],
+			onChangePersonalizationFunction ??
+				pageDefinition.eventFunctions?.[onChangePersonalization],
 			locationHistory,
 			pageDefinition,
 		);
@@ -374,6 +481,7 @@ export default function LazyKIRunEditor(
 		onChangePersonalization,
 		locationHistory,
 		pageDefinition,
+		onChangePersonalizationFunction,
 	]);
 
 	const [functionNames, setFunctionNames] = useState<string[]>([]);
@@ -510,6 +618,8 @@ export default function LazyKIRunEditor(
 					locationHistory={locationHistory}
 					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
 					onCopy={copyStatement}
+					debugViewMode={debugViewMode}
+					debugLogs={debugInfoMap.get(s.statementName)}
 				/>
 			));
 	}
@@ -549,14 +659,15 @@ export default function LazyKIRunEditor(
 					oldLeft: container.current!.scrollLeft,
 					oldTop: container.current!.scrollTop,
 				});
-			} else {
+			} else if (!debugViewMode) {
+				// Disable selection box in debug view mode
 				const rect = container.current!.getBoundingClientRect();
 				const left = e.clientX - rect.left + container.current!.scrollLeft;
 				const top = e.clientY - rect.top + container.current!.scrollTop;
 				setSelectionBox({ selectionStart: true, left, top });
 			}
 		},
-		[setSelectionBox, setScrMove],
+		[setSelectionBox, setScrMove, debugViewMode],
 	);
 
 	const designerMouseMove = useCallback(
@@ -872,7 +983,9 @@ export default function LazyKIRunEditor(
 					selectedStatements={selectedStatements}
 					dragNode={dragNode}
 					container={container}
-					executionPlanMessage={kirunMessages.get(s.statementName)}
+					executionPlanMessage={
+						debugViewMode ? undefined : kirunMessages.get(s.statementName)
+					}
 					onChange={stmt => {
 						if (isReadonly) return;
 
@@ -921,6 +1034,21 @@ export default function LazyKIRunEditor(
 	) : (
 		<>
 			<i
+				className="fa fa-solid fa-object-group"
+				role="button"
+				title="Select all"
+				onClick={() => {
+					const entries = Object.entries(rawDef.steps);
+
+					setSelectedStatements(
+						entries.length === selectedStatements.size
+							? new Map()
+							: new Map<string, boolean>(entries.map(([k]) => [k, true])),
+					);
+				}}
+			/>
+			<div className="_separator" />
+			<i
 				className="fa fa-solid fa-square-plus"
 				role="button"
 				title="Add Step"
@@ -951,12 +1079,15 @@ export default function LazyKIRunEditor(
 	const editPencilIcon = isReadonly ? (
 		<></>
 	) : (
-		<i
-			className="fa fa-solid fa-pencil"
-			role="button"
-			title="Edit Function"
-			onClick={() => setEditFunction(true)}
-		/>
+		<>
+			<div className="_separator" />
+			<i
+				className="fa fa-solid fa-pencil"
+				role="button"
+				title="Edit Function"
+				onClick={() => setEditFunction(true)}
+			/>
+		</>
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -1036,6 +1167,8 @@ export default function LazyKIRunEditor(
 					onContextMenu={ev => {
 						ev.preventDefault();
 						ev.stopPropagation();
+						// Disable context menu in debug view mode
+						if (debugViewMode) return;
 						const parentRect = designerRef.current!.getBoundingClientRect();
 						showMenu({
 							position: {
@@ -1084,30 +1217,46 @@ export default function LazyKIRunEditor(
 		containerContents = <div className="_error">{error?.message ?? error}</div>;
 	}
 
+	const autoLayoutIcon = isReadonly ? (
+		<></>
+	) : (
+		<>
+			<div className="_separator" />
+			<i
+				className="fa fa-solid fa-diagram-project"
+				role="button"
+				title="Auto Layout"
+				onClick={() => {
+					if (isReadonly) return;
+					if (!rawDef?.steps) return;
+
+					const def = duplicate(rawDef);
+					const newPositions = autoLayoutFunctionDefinition(
+						FunctionDefinition.from(def),
+						280,
+						180,
+						80,
+					);
+
+					for (const [name, pos] of Array.from(newPositions.entries())) {
+						if (def.steps[name]) def.steps[name].position = pos;
+					}
+
+					setData(bindingPathPath, def, context.pageName);
+				}}
+			/>
+		</>
+	);
+
 	// Here it is an exception for the style properties, we add comp page editor when used standalone.
 	return (
 		<div
-			className={`comp compKIRunEditor ${!props.functionKey ? 'compPageEditor' : ''}`}
+			className={`comp compKIRunEditor ${!props.functionKey ? 'compPageEditor' : ''} ${debugViewMode ? '_debugView' : ''}`}
 			style={resolvedStyles?.comp ?? {}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			<div className="_header">
 				<div className="_left">
-					<i
-						className="fa fa-solid fa-object-group"
-						role="button"
-						title="Select all"
-						onClick={() => {
-							const entries = Object.entries(rawDef.steps);
-
-							setSelectedStatements(
-								entries.length === selectedStatements.size
-									? new Map()
-									: new Map<string, boolean>(entries.map(([k]) => [k, true])),
-							);
-						}}
-					/>
-					<div className="_separator" />
 					{editableIcons}
 					<i
 						className="fa fa-solid fa-square-root-variable"
@@ -1147,8 +1296,8 @@ export default function LazyKIRunEditor(
 							);
 						}}
 					/>
-					<div className="_separator" />
 					{editPencilIcon}
+					{autoLayoutIcon}
 				</div>
 				<div className="_right">
 					<i
