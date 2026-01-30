@@ -48,6 +48,8 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js'], // Resolve these extensions
     symlinks: true, // Follow symlinks to resolve modules
+    // Prefer "source" (Parcel field) so linked @fincity/kirun-js uses src/ in dev for live edits
+    mainFields: ['source', 'module', 'main'],
   },
   watchOptions: {
     followSymlinks: true, // Watch changes in symlinked directories
