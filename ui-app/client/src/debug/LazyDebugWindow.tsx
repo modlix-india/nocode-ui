@@ -178,7 +178,6 @@ function savePersonalization() {
 }
 
 function loadPersonalization() {
-    console.log('Loading personalization');
     if (!getDataFromPath('Store.auth', [])) return;
 
     const appName = getDataFromPath('Store.application.appCode', []);
@@ -333,13 +332,6 @@ export default function LazyDebugWindow() {
 	const selectedDefinition = useMemo(() => {
 		if (!selectedExecutionLog || !selectedFunctionName) 
             return undefined;
-        if (globalThis.debugContext?.[selectedExecutionId!]?.pageDefinition) {
-            const pageDef = globalThis.debugContext[selectedExecutionId!].pageDefinition;
-            const funDef = Array.from(Object.values(pageDef?.eventFunctions)).find((fd: any) => fd.name === selectedFunctionName);
-            if (funDef) {
-                return funDef;
-            }
-        }
 		return selectedExecutionLog.definitions.get(selectedFunctionName);
 	}, [selectedExecutionId, selectedExecutionLog, selectedFunctionName]);
 
