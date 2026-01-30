@@ -592,11 +592,7 @@ function createRepeaterItem({
 		if (!value)
 			return (
 				<Fragment
-					key={
-						indKeys.current.array[index]
-							? undefined
-							: `fragment_${indKeys.current.array[index]}`
-					}
+					key={indKeys.current.array[index] || `fragment_${index}`}
 				/>
 			);
 	}
@@ -693,7 +689,7 @@ function createRepeaterItem({
 		<div
 			tabIndex={0}
 			role="button"
-			key={indKeys.current.array[index] ? undefined : `div_${indKeys.current.array[index]}`}
+			key={indKeys.current.array[index] || `repeater_${index}`}
 			data-key={`${indKeys.current.array[index]}`}
 			className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
 			onDragStart={canDragToReSort ? e => handleDragStart(e, index) : undefined}
