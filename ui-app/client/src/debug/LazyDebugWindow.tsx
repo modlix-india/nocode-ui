@@ -156,7 +156,21 @@ function getRootFunctionName(execution: ExecutionLog): string {
 	// Get from definitions - the first definition is typically the root function
 	const definitionKeys = Array.from(execution.definitions.keys());
 	if (definitionKeys.length > 0) {
-		return definitionKeys[0];
+		const key = definitionKeys[0];
+		const definition = execution.definitions.get(key);
+
+		// If definition exists, construct name with namespace
+		if (definition) {
+			const namespace = definition.namespace;
+			const name = definition.name;
+			// Only include namespace if it exists
+			if (namespace) {
+				return `${namespace}.${name}`;
+			}
+			return name;
+		}
+
+		return key;
 	}
 	// Fallback to first log entry
 	const firstLog = execution.logs[0];
@@ -462,7 +476,7 @@ export default function LazyDebugWindow() {
 									className={`_debugFunctionTab ${funcName === selectedFunctionName ? '_selected' : ''}`}
 									onClick={() => handleSelectFunction(funcName)}
 								>
-									{funcName.split('.').pop()}
+									{funcName}
 								</button>
 							))}
 						</div>
