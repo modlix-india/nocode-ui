@@ -30,6 +30,7 @@ import {
 	TableEmptyGrid,
 	TableGrid,
 	TablePreviewGrid,
+	TableRow,
 } from './TableComponents';
 
 import Tabs from './Tabs/Tabs';
@@ -132,7 +133,8 @@ const componentMap = new Map<string, Component>([
 	[TemplateEditor.name, TemplateEditor],
 	[TextEditor.name, TextEditor],
 	[ThemeEditor.name, ThemeEditor],
-	[Form.name, Form]
+	[Form.name, Form],
+	[TableRow.name, TableRow],
 ]);
 
 export default componentMap;
