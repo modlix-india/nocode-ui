@@ -138,16 +138,21 @@ function extractStepDependencies(value: any, stepNames: Set<string>, deps: Set<s
  *
  * @param funcDef - The function definition to layout
  * @param nodeWidth - Width of each node for horizontal spacing
- * @param nodeHeight - Height of each node for vertical spacing
+ * @param nodeHeights - Map of statement names to their measured heights (or a single default height)
  * @param gap - Gap between nodes
  * @returns Map of statement names to their new positions
  */
 export function autoLayoutFunctionDefinition(
 	funcDef: FunctionDefinition,
 	nodeWidth: number,
-	nodeHeight: number,
+	nodeHeights: Map<string, number> | number,
 	gap: number,
 ): Map<string, { left: number; top: number }> {
+	// Helper to get height for a specific node
+	const getNodeHeight = (name: string): number => {
+		if (typeof nodeHeights === 'number') return nodeHeights;
+		return nodeHeights.get(name) ?? 180; // fallback to 180
+	};
 	const steps = funcDef.getSteps();
 	const positions = new Map<string, { left: number; top: number }>();
 
@@ -265,10 +270,11 @@ export function autoLayoutFunctionDefinition(
 
 		if (layerIdx === 0) {
 			// First layer: just stack vertically
+			let currentY = startY;
 			for (let nodeIdx = 0; nodeIdx < layer.length; nodeIdx++) {
 				const name = layer[nodeIdx];
-				const y = startY + nodeIdx * (nodeHeight + gap);
-				positions.set(name, { left: x, top: y });
+				positions.set(name, { left: x, top: currentY });
+				currentY += getNodeHeight(name) + gap;
 			}
 		} else {
 			// For subsequent layers: position nodes near their dependencies
@@ -301,13 +307,15 @@ export function autoLayoutFunctionDefinition(
 			nodeYPositions.sort((a, b) => a.targetY - b.targetY);
 
 			// Assign positions ensuring no overlap
-			let lastY = startY - (nodeHeight + gap);
+			let lastY = startY;
+			let lastNodeName: string | null = null;
 			for (const { name, targetY } of nodeYPositions) {
 				// Ensure minimum spacing from previous node
-				const minY = lastY + nodeHeight + gap;
+				const minY = lastNodeName ? lastY + getNodeHeight(lastNodeName) + gap : lastY;
 				const y = Math.max(targetY, minY);
 				positions.set(name, { left: x, top: y });
 				lastY = y;
+				lastNodeName = name;
 			}
 		}
 	}

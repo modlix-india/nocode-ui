@@ -14,6 +14,7 @@ import {
 	Schema,
 	StatementExecution,
 	TokenValueExtractor,
+	DSLCompiler,
 } from '@fincity/kirun-js';
 import React, {
 	CSSProperties,
@@ -55,6 +56,8 @@ import {
 	savePersonalizationCurry,
 } from './utils';
 import { COPY_STMT_KEY } from '../../constants';
+import { KIRunTextEditor, EditorTheme } from './components/TextEditor/KIRunTextEditor';
+import './KIRunEditorThemes.css';
 
 const gridSize = 20;
 
@@ -264,6 +267,131 @@ export default function LazyKIRunEditor(
 	const [error, setError] = useState<any>();
 	const [funDef, setFunDef] = useState<FunctionDefinition | undefined>();
 
+	// Editor mode state
+	const [editorMode, setEditorMode] = useState<'visual' | 'text'>('visual');
+	const [textContent, setTextContent] = useState<string>('');
+	const [syncError, setSyncError] = useState<string>();
+
+	/**
+	 * Measures actual heights of rendered statement nodes from the DOM.
+	 * Returns a Map of statement names to their measured heights.
+	 * Falls back to default height of 180 for nodes not found in DOM.
+	 */
+	const measureStatementNodeHeights = useCallback((stepNames: string[]): Map<string, number> => {
+		const heights = new Map<string, number>();
+		const defaultHeight = 180;
+
+		for (const name of stepNames) {
+			const element = document.getElementById(`statement_${name}`);
+			if (element) {
+				// Get the actual rendered height
+				const height = element.offsetHeight;
+				heights.set(name, height > 0 ? height : defaultHeight);
+			} else {
+				// Node not yet rendered, use default
+				heights.set(name, defaultHeight);
+			}
+		}
+
+		return heights;
+	}, []);
+
+	// Handle editor mode toggle with bidirectional sync
+	const handleModeToggle = useCallback(async () => {
+		if (editorMode === 'visual') {
+			// Visual → Text: Convert rawDef to DSL text
+			try {
+				if (!rawDef) {
+					setTextContent('');
+					setEditorMode('text');
+					return;
+				}
+				const dslText = await DSLCompiler.decompile(rawDef);
+				setTextContent(dslText);
+				setEditorMode('text');
+				setSyncError(undefined);
+			} catch (err: any) {
+				setSyncError(`Failed to convert to text: ${err.message || err}`);
+			}
+		} else {
+			// Text → Visual: Parse DSL text to JSON
+			try {
+				if (!textContent.trim()) {
+					setEditorMode('visual');
+					return;
+				}
+				if (!bindingPathPath) {
+					setSyncError('No binding path available');
+					return;
+				}
+				const json = DSLCompiler.compile(textContent);
+
+				// First, set data without positions to let React render nodes
+				setData(bindingPathPath, json, context.pageName);
+				setEditorMode('visual');
+				setSyncError(undefined);
+
+				// Auto-layout after nodes are rendered (next tick)
+				setTimeout(() => {
+					const funcDef = FunctionDefinition.from(json);
+					const stepNames = Array.from(funcDef.getSteps().keys());
+
+					// Measure actual node heights from DOM
+					const nodeHeights = measureStatementNodeHeights(stepNames);
+					const newPositions = autoLayoutFunctionDefinition(funcDef, 280, nodeHeights, 100);
+
+					// Apply positions to steps
+					const updatedJson = duplicate(json);
+					if (updatedJson.steps) {
+						for (const [name, pos] of Array.from(newPositions.entries())) {
+							if (updatedJson.steps[name]) {
+								updatedJson.steps[name].position = pos;
+							}
+						}
+					}
+
+					setData(bindingPathPath, updatedJson, context.pageName);
+				}, 100);
+			} catch (err: any) {
+				setSyncError(`Failed to parse text: ${err.message || err}`);
+			}
+		}
+	}, [editorMode, rawDef, textContent, bindingPathPath, context.pageName]);
+
+	// Handle text editor changes
+	const handleTextChange = useCallback((newText: string) => {
+		setTextContent(newText);
+		// Clear sync errors when user starts editing
+		if (syncError) setSyncError(undefined);
+	}, [syncError]);
+
+	// Format the DSL code by compiling and decompiling
+	const handleFormatCode = useCallback(async () => {
+		try {
+			const json = DSLCompiler.compile(textContent);
+			const formatted = await DSLCompiler.decompile(json);
+			setTextContent(formatted);
+			setSyncError(undefined);
+		} catch (err: any) {
+			setSyncError(`Format error: ${err.message}`);
+		}
+	}, [textContent, syncError]);
+
+	// Update text content when rawDef changes (e.g., function dropdown change)
+	useEffect(() => {
+		if (editorMode === 'text' && rawDef) {
+			(async () => {
+				try {
+					const dslText = await DSLCompiler.decompile(rawDef);
+					setTextContent(dslText);
+					setSyncError(undefined);
+				} catch (err: any) {
+					setSyncError(`Failed to convert to text: ${err.message || err}`);
+				}
+			})();
+		}
+	}, [rawDef, editorMode]);
+
 	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
 	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
 
@@ -412,6 +540,11 @@ export default function LazyKIRunEditor(
 			personalizationPath,
 		);
 	}, [personalizationPath, setPreference, pageExtractor]);
+
+	// Text editor preferences and state
+	const [textEditorRef, setTextEditorRef] = useState<any>(null);
+	const textEditorTheme: EditorTheme = (preference?.textEditorTheme as EditorTheme) ?? 'light';
+	const textEditorWordWrap = preference?.textEditorWordWrap ?? 'on';
 
 	// Making an executionPlan to show the execution graph.
 	const [executionPlan, setExecutionPlan] = useState<
@@ -1113,12 +1246,53 @@ export default function LazyKIRunEditor(
 	designerStyle.minWidth = `${width}px`;
 	designerStyle.minHeight = `${height}px`;
 
-	if (!error) {
+	// Render text editor if in text mode
+	if (editorMode === 'text') {
+		containerContents = (
+			<div style={{
+				width: '100%',
+				height: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+				position: 'absolute',
+				top: 0,
+				left: 0,
+				right: 0,
+				bottom: 0,
+			}}>
+				{syncError && (
+					<div style={{
+						padding: '10px',
+						backgroundColor: '#f44336',
+						color: 'white',
+						margin: '10px',
+						borderRadius: '4px',
+						flexShrink: 0,
+					}}>
+						{syncError}
+					</div>
+				)}
+				<div style={{ flex: 1, overflow: 'hidden' }}>
+					<KIRunTextEditor
+						value={textContent}
+						onChange={handleTextChange}
+						theme={textEditorTheme}
+						wordWrap={textEditorWordWrap}
+						readOnly={isReadonly}
+						functionRepository={functionRepository}
+						schemaRepository={schemaRepository}
+						onEditorReady={setTextEditorRef}
+					/>
+				</div>
+			</div>
+		);
+	} else if (!error) {
 		containerContents = (
 			<>
 				<div
-					className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
+					className={`_designer ${scrMove.dragStart ? '_moving' : ''} _theme-${textEditorTheme}`}
 					style={designerStyle}
+					data-theme={textEditorTheme}
 					onMouseDown={designerMouseDown}
 					onMouseMove={designerMouseMove}
 					onMouseUp={designerMouseUp}
@@ -1231,11 +1405,16 @@ export default function LazyKIRunEditor(
 					if (!rawDef?.steps) return;
 
 					const def = duplicate(rawDef);
+					const funcDef = FunctionDefinition.from(def);
+					const stepNames = Array.from(funcDef.getSteps().keys());
+
+					// Measure actual node heights from DOM (two-phase rendering)
+					const nodeHeights = measureStatementNodeHeights(stepNames);
 					const newPositions = autoLayoutFunctionDefinition(
-						FunctionDefinition.from(def),
+						funcDef,
 						280,
-						180,
-						80,
+						nodeHeights,
+						100,
 					);
 
 					for (const [name, pos] of Array.from(newPositions.entries())) {
@@ -1251,73 +1430,169 @@ export default function LazyKIRunEditor(
 	// Here it is an exception for the style properties, we add comp page editor when used standalone.
 	return (
 		<div
-			className={`comp compKIRunEditor ${!props.functionKey ? 'compPageEditor' : ''} ${debugViewMode ? '_debugView' : ''}`}
-			style={resolvedStyles?.comp ?? {}}
+			className={`comp compKIRunEditor ${!props.functionKey ? 'compPageEditor' : ''} ${debugViewMode ? '_debugView' : ''} _theme-${textEditorTheme}`}
+			style={{
+				...(resolvedStyles?.comp ?? {}),
+				display: 'flex',
+				flexDirection: 'column',
+				height: '100%',
+				overflow: 'hidden',
+			}}
+			data-theme={textEditorTheme}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-			<div className="_header">
+			<div className="_header" style={{
+				minHeight: '40px',
+				display: 'flex',
+				alignItems: 'center',
+				flexShrink: 0,
+				zIndex: 10,
+			}}>
 				<div className="_left">
-					{editableIcons}
-					<i
-						className="fa fa-solid fa-square-root-variable"
-						role="button"
-						title={
-							!preference?.showParamValues
-								? 'Show Parameter Values'
-								: 'Hide Parameter Values'
-						}
-						onClick={() => {
-							savePersonalization('showParamValues', !preference?.showParamValues);
+					{editorMode === 'visual' && (
+						<>
+							{editableIcons}
+							<i
+								className="fa fa-solid fa-square-root-variable"
+								role="button"
+								title={
+									!preference?.showParamValues
+										? 'Show Parameter Values'
+										: 'Hide Parameter Values'
+								}
+								onClick={() => {
+									savePersonalization('showParamValues', !preference?.showParamValues);
+								}}
+							/>
+							<i
+								className="fa fa-regular fa-comment-dots"
+								role="button"
+								title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
+								onClick={() => {
+									savePersonalization(
+										'showComments',
+										preference?.showComments === undefined
+											? true
+											: !preference.showComments,
+									);
+								}}
+							/>
+							<i
+								className="fa fa-solid fa-database"
+								role="button"
+								title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
+								onClick={() => {
+									savePersonalization(
+										'showStores',
+										preference?.showStores === undefined
+											? true
+											: !preference.showStores,
+									);
+								}}
+							/>
+							{editPencilIcon}
+							{autoLayoutIcon}
+						</>
+					)}
+					{editorMode === 'text' && (
+						<>
+							<i
+								className="fa fa-solid fa-text-width"
+								role="button"
+								title={textEditorWordWrap === 'on' ? 'Disable Word Wrap' : 'Enable Word Wrap'}
+								onClick={() => {
+									savePersonalization('textEditorWordWrap', textEditorWordWrap === 'on' ? 'off' : 'on');
+								}}
+								style={{ fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+							/>
+							<i
+								className="fa fa-solid fa-indent"
+								role="button"
+								title="Format Code"
+								onClick={handleFormatCode}
+								style={{ fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+							/>
+							<i
+								className="fa fa-solid fa-search"
+								role="button"
+								title="Find"
+								onClick={() => {
+									if (textEditorRef) {
+										textEditorRef.getAction('actions.find')?.run();
+									}
+								}}
+								style={{ fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+							/>
+							<i
+								className="fa fa-solid fa-magnifying-glass"
+								role="button"
+								title="Find and Replace"
+								onClick={() => {
+									if (textEditorRef) {
+										textEditorRef.getAction('editor.action.startFindReplaceAction')?.run();
+									}
+								}}
+								style={{ fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+							/>
+						</>
+					)}
+					<div className="_separator" />
+					<select
+						value={textEditorTheme}
+						onChange={(e) => savePersonalization('textEditorTheme', e.target.value)}
+						title="Editor Theme"
+						style={{
+							padding: '4px 8px',
+							marginLeft: '8px',
+							borderRadius: '4px',
+							border: '1px solid #ccc',
+							backgroundColor: 'var(--background-color, white)',
+							color: 'var(--font-color, black)',
+							cursor: 'pointer',
 						}}
-					/>
-					<i
-						className="fa fa-regular fa-comment-dots"
-						role="button"
-						title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
-						onClick={() => {
-							savePersonalization(
-								'showComments',
-								preference?.showComments === undefined
-									? true
-									: !preference.showComments,
-							);
-						}}
-					/>
-					<i
-						className="fa fa-solid fa-database"
-						role="button"
-						title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
-						onClick={() => {
-							savePersonalization(
-								'showStores',
-								preference?.showStores === undefined
-									? true
-									: !preference.showStores,
-							);
-						}}
-					/>
-					{editPencilIcon}
-					{autoLayoutIcon}
+					>
+						<option value="light">Light</option>
+						<option value="dark">Dark</option>
+						<option value="high-contrast">High Contrast</option>
+						<option value="easy-on-eyes">Easy on Eyes</option>
+						<option value="flared-up">Flared Up</option>
+					</select>
+					{!debugViewMode && (
+						<>
+							<div className="_separator" />
+							<i
+								className={`fa fa-solid ${editorMode === 'text' ? 'fa-diagram-project' : 'fa-code'}`}
+								role="button"
+								title={editorMode === 'text' ? 'Switch to Visual Mode' : 'Switch to Text Mode'}
+								onClick={handleModeToggle}
+								style={{ fontSize: '18px', cursor: 'pointer', padding: '8px' }}
+							/>
+						</>
+					)}
 				</div>
 				<div className="_right">
-					<i
-						className="fa fa-solid fa-magnifying-glass-plus"
-						role="button"
-						title="Zoom in"
-						onClick={() => savePersonalization('magnification', magnification + 0.1)}
-					/>
-					<i
-						className="fa fa-solid fa-magnifying-glass"
-						role="button"
-						title="Reset zoom"
-						onClick={() => savePersonalization('magnification', 1)}
-					/>
-					<i
-						className="fa fa-solid fa-magnifying-glass-minus"
-						role="button"
-						title="Zoom out"
-						onClick={() => savePersonalization('magnification', magnification - 0.1)}
-					/>
+					{editorMode === 'visual' && (
+						<>
+							<i
+								className="fa fa-solid fa-magnifying-glass-plus"
+								role="button"
+								title="Zoom in"
+								onClick={() => savePersonalization('magnification', magnification + 0.1)}
+							/>
+							<i
+								className="fa fa-solid fa-magnifying-glass"
+								role="button"
+								title="Reset zoom"
+								onClick={() => savePersonalization('magnification', 1)}
+							/>
+							<i
+								className="fa fa-solid fa-magnifying-glass-minus"
+								role="button"
+								title="Zoom out"
+								onClick={() => savePersonalization('magnification', magnification - 0.1)}
+							/>
+						</>
+					)}
 				</div>
 			</div>
 			<div className="_container" ref={container}>

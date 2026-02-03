@@ -64,6 +64,7 @@
 		radial-gradient(circle, #E5E7EB 1px, transparent 1px);
 	background-size: 24px 24px;
 	background-color: #FAFAFA;
+	position: relative;
 }
 
 .comp.compKIRunEditor ._designer {
