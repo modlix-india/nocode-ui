@@ -381,10 +381,6 @@
 	color: #e4e4e7 !important;
 }
 
-.comp.compKIRunEditor._theme-dark ._statement ._paramsContainer ._param ._paramValue {
-	color: #f4f4f5 !important;
-}
-
 /* High Contrast Theme - Statement Nodes */
 .comp.compKIRunEditor._theme-high-contrast ._statement {
 	background-color: #1a1a1a;
@@ -436,7 +432,6 @@
 }
 
 .comp.compKIRunEditor._theme-high-contrast ._statement ._paramsContainer ._param ._paramValue {
-	color: #ffffff !important;
 	font-weight: 500;
 }
 
@@ -537,10 +532,6 @@
 
 .comp.compKIRunEditor._theme-flared-up ._statement ._paramsContainer ._param ._paramName {
 	color: #f0e7ff !important;
-}
-
-.comp.compKIRunEditor._theme-flared-up ._statement ._paramsContainer ._param ._paramValue {
-	color: #f8f4ff !important;
 }
 
 /* Container background */
