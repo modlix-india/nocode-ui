@@ -57,6 +57,7 @@ import {
 } from './utils';
 import { COPY_STMT_KEY } from '../../constants';
 import { KIRunTextEditor, EditorTheme } from './components/TextEditor/KIRunTextEditor';
+import { DSLHelpWindow } from './components/TextEditor/DSLHelpWindow';
 import './KIRunEditorThemes.css';
 
 const gridSize = 20;
@@ -268,7 +269,7 @@ export default function LazyKIRunEditor(
 	const [funDef, setFunDef] = useState<FunctionDefinition | undefined>();
 
 	// Editor mode state
-	const [editorMode, setEditorMode] = useState<'visual' | 'text'>('visual');
+	const [editorMode, setEditorMode] = useState<'visual' | 'text' | 'help'>('visual');
 	const [textContent, setTextContent] = useState<string>('');
 	const [syncError, setSyncError] = useState<string>();
 
@@ -1246,8 +1247,16 @@ export default function LazyKIRunEditor(
 	designerStyle.minWidth = `${width}px`;
 	designerStyle.minHeight = `${height}px`;
 
-	// Render text editor if in text mode
-	if (editorMode === 'text') {
+	// Render help if in help mode
+	if (editorMode === 'help') {
+		containerContents = (
+			<DSLHelpWindow
+				isVisible={true}
+				onClose={() => setEditorMode('text')}
+				theme={textEditorTheme}
+			/>
+		);
+	} else if (editorMode === 'text') {
 		containerContents = (
 			<div style={{
 				width: '100%',
@@ -1494,8 +1503,25 @@ export default function LazyKIRunEditor(
 							{autoLayoutIcon}
 						</>
 					)}
+					{editorMode === 'help' && (
+						<i
+							className="fa fa-solid fa-arrow-left"
+							role="button"
+							title="Back to Text Editor"
+							onClick={() => setEditorMode('text')}
+							style={{ fontSize: '18px', cursor: 'pointer', padding: '8px' }}
+						/>
+					)}
 					{editorMode === 'text' && (
 						<>
+							<i
+								className="fa fa-solid fa-circle-question"
+								role="button"
+								title="Show Language Help"
+								onClick={() => setEditorMode('help')}
+								style={{ fontSize: '18px', cursor: 'pointer', padding: '8px' }}
+							/>
+							<div className="_separator" />
 							<i
 								className="fa fa-solid fa-text-width"
 								role="button"
@@ -1557,7 +1583,7 @@ export default function LazyKIRunEditor(
 						<option value="easy-on-eyes">Easy on Eyes</option>
 						<option value="flared-up">Flared Up</option>
 					</select>
-					{!debugViewMode && (
+					{!debugViewMode && editorMode !== 'help' && (
 						<>
 							<div className="_separator" />
 							<i
