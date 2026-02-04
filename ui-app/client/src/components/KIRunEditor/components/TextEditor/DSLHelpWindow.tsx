@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import './DSLHelpWindow.css';
 import { EditorTheme } from './KIRunTextEditor';
 
 interface DSLHelpWindowProps {
