@@ -7606,3 +7606,13 @@ input._peInput[type='number'] {
 	background-color: transparent;
 	border: none;
 }
+
+.comp.compPageEditor ._sideBar ._debugBarIcon {
+	background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+}
+
+.comp.compPageEditor ._sideBar ._debugBarIcon svg._iconHelperSVG  {
+	color: white;
+	height: 20px;
+	width: 20px;
+} 

@@ -226,7 +226,7 @@ export default function DnDSideBar({
 						</IconHelper>
 					</button>
 					<button
-						className={`_iconMenu ${debugMessageCount > 0 ? '_hasMessages' : ''}`}
+						className={`_iconMenu _debugBarIcon ${debugMessageCount > 0 ? '_hasMessages' : ''}`}
 						onClick={onDebugButtonClick}
 						title="Debug Executions"
 					>
