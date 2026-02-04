@@ -8,6 +8,7 @@ import { LocationHistory } from '../../../../types/common';
 import { IconHelper } from '../../../util/IconHelper';
 import ComponentMenu from '../../components/ComponentMenu';
 import { PageOperations } from '../../functions/PageOperations';
+import DebugWindowStyle from '../../../../debug/DebugWindowStyle';
 
 interface DnDSideBarProps {
 	personalizationPath: string | undefined;
@@ -24,6 +25,8 @@ interface DnDSideBarProps {
 	sectionsListConnectionName: string | undefined;
 	sectionsCategoryList: any;
 	helpURL: string | undefined;
+	onDebugButtonClick: () => void;
+	debugMessageCount: number;
 }
 
 export default function DnDSideBar({
@@ -41,6 +44,8 @@ export default function DnDSideBar({
 	sectionsListConnectionName,
 	sectionsCategoryList,
 	helpURL,
+	onDebugButtonClick,
+	debugMessageCount,
 }: Readonly<DnDSideBarProps>) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [componentTree, setComponentTree] = useState<boolean>(false);
@@ -149,6 +154,7 @@ export default function DnDSideBar({
 
 	return (
 		<>
+			<DebugWindowStyle />
 			<div className="_sideBar">
 				<div className="_top">
 					<button
@@ -218,6 +224,26 @@ export default function DnDSideBar({
 								fillOpacity={0.5}
 							/>
 						</IconHelper>
+					</button>
+					<button
+						className={`_iconMenu ${debugMessageCount > 0 ? '_hasMessages' : ''}`}
+						onClick={onDebugButtonClick}
+						title="Debug Executions"
+					>
+						<IconHelper viewBox="0 0 24 24">
+							<path d="M12 20v-9" fill='none' stroke='currentColor' strokeWidth={2} ></path>
+							<path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="M14.12 3.88 16 2" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="M21 21a4 4 0 0 0-3.81-4" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="M21 5a4 4 0 0 1-3.55 3.97" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="M22 13h-4" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="M3 21a4 4 0 0 1 3.81-4" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="M3 5a4 4 0 0 0 3.55 3.97" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="M6 13H2" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="m8 2 1.88 1.88" fill='none' stroke='currentColor' strokeWidth={2}></path>
+							<path d="M9 7.13V6a3 3 0 1 1 6 0v1.13" fill='none' stroke='currentColor' strokeWidth={2}></path>
+						</IconHelper>
+						{debugMessageCount > 0 && <span className="_executionCount">{debugMessageCount}</span>}
 					</button>
 					<button
 						className="_iconMenu"

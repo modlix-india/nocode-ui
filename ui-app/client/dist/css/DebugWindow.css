@@ -52,7 +52,7 @@
 	font-size: 20px;
 }
 
-._debugWindowCollapsed ._executionCount {
+._executionCount {
 	position: absolute;
 	top: -2px;
 	right: -2px;
@@ -738,7 +738,7 @@
 }
 
 ._debugStorePanelTitle i.fa {
-	color: #6366F1;
+	color: #6366F1 !important;
 }
 
 ._debugStorePanelClose {
@@ -794,24 +794,24 @@
 ._debugStoreFilterClear {
 	width: 20px;
 	height: 20px;
-	border: none;
-	background-color: #E5E7EB;
-	border-radius: 50%;
+	border: none !important;
+	background-color: #E5E7EB !important;
+	border-radius: 50% !important;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	padding: 0;
+	padding: 0 !important;
 	transition: all 0.15s ease;
 }
 
 ._debugStoreFilterClear:hover {
-	background-color: #D1D5DB;
+	background-color: #D1D5DB !important;
 }
 
 ._debugStoreFilterClear i.fa {
-	font-size: 10px;
-	color: #6B7280;
+	font-size: 10px !important;
+	color: #6B7280 !important;
 }
 
 ._debugStorePanelContent {
@@ -859,8 +859,8 @@
 }
 
 ._jsonTreeHeader ._expandIcon {
-	font-size: 10px;
-	color: #9CA3AF;
+	font-size: 10px !important;
+	color: #9CA3AF !important;
 	width: 12px;
 	flex-shrink: 0;
 }
@@ -916,4 +916,363 @@
 ._jsonTreeChildren {
 	border-left: 1px dashed #E5E7EB;
 	margin-left: 8px;
+}
+/* PageEditor Debug Window Styles */
+
+._popupMenuBackground {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+._executionListMenu {
+	width: 500px;
+	max-height: 600px;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.03),
+		0 4px 16px rgba(0, 0, 0, 0.08),
+		0 12px 40px rgba(0, 0, 0, 0.12);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+._executionListHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid #E5E7EB;
+	background: linear-gradient(135deg, #F9FAFB 0%, #fff 100%);
+	flex-shrink: 0;
+}
+
+._executionListHeader h3 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 16px;
+	font-weight: 600;
+	color: #1F2937;
+	margin: 0;
+}
+
+._executionListHeader svg {
+	color: #6366F1;
+}
+
+._executionListActions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+._iconButton {
+	width: 36px;
+	height: 36px;
+	border: 1px solid #E5E7EB;
+	background-color: #fff;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+	padding: 0;
+}
+
+._iconButton:hover {
+	background-color: #F3F4F6;
+	border-color: #D1D5DB;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+._iconButton:active {
+	transform: translateY(0);
+}
+
+._iconButton i.fa {
+	font-size: 14px !important;
+	color: #6B7280 !important;
+	transition: color 0.2s ease;
+}
+
+._iconButton:hover i.fa {
+	color: #1F2937;
+}
+
+._iconButton._active {
+	background-color: #EEF2FF;
+	border-color: #6366F1;
+}
+
+._iconButton._active i.fa {
+	color: #6366F1;
+}
+
+/* Trash button - red hover */
+._iconButton:hover i.fa-trash {
+	color: #EF4444;
+}
+
+._closeButton {
+	width: 36px;
+	height: 36px;
+	border: 1px solid #E5E7EB;
+	background-color: #fff;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+	padding: 0;
+	font-size: 24px;
+	font-weight: 300;
+	color: #9CA3AF;
+	line-height: 1;
+}
+
+._closeButton:hover {
+	background-color: #FEE2E2;
+	border-color: #FECACA;
+	color: #EF4444;
+	transform: scale(1.05);
+}
+
+._closeButton:active {
+	transform: scale(0.95);
+}
+
+._executionListContent {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+._emptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 60px 20px;
+	color: #9CA3AF;
+	text-align: center;
+	gap: 12px;
+}
+
+._emptyState i.fa {
+	color: #D1D5DB;
+}
+
+._executionListItem {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 14px 16px;
+	background-color: #fff;
+	border: 1px solid #E5E7EB;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+._executionListItem:hover {
+	background-color: #F9FAFB;
+	border-color: #6366F1;
+	box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+	transform: translateY(-1px);
+}
+
+._executionListItem:active {
+	transform: translateY(0);
+}
+
+._status {
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	border-radius: 50%;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+._status._success {
+	background-color: #D1FAE5;
+	color: #059669;
+}
+
+._status._error {
+	background-color: #FEE2E2;
+	color: #DC2626;
+}
+
+._executionInfo {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+._functionName {
+	font-size: 14px;
+	font-weight: 600;
+	color: #1F2937;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+._eventName {
+	font-size: 12px;
+	color: #6B7280;
+}
+
+._screenType {
+	font-size: 11px;
+	color: #9CA3AF;
+	font-weight: 500;
+	text-transform: capitalize;
+}
+
+._executionMeta {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+._timestamp {
+	font-size: 11px;
+	color: #9CA3AF;
+	font-weight: 500;
+}
+
+._duration {
+	font-size: 12px;
+	font-weight: 600;
+	color: #6366F1;
+	background-color: #EEF2FF;
+	padding: 3px 8px;
+	border-radius: 6px;
+}
+
+._steps {
+	font-size: 11px;
+	color: #6B7280;
+	background-color: #F3F4F6;
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+
+/* Code Editor Content - for execution detail view */
+._codeEditorContent {
+	width: 900px;
+	max-width: 90vw;
+	height: 700px;
+	max-height: 85vh;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.03),
+		0 4px 16px rgba(0, 0, 0, 0.08),
+		0 12px 40px rgba(0, 0, 0, 0.12);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transition: all 0.3s ease;
+}
+
+._codeEditorContent._fullScreen {
+	width: calc(100vw - 40px);
+	height: calc(100vh - 40px);
+	max-width: none;
+	max-height: none;
+}
+
+/* Maximize button special styling */
+._iconButton i.fa-up-right-and-down-left-from-center,
+._iconButton i.fa-down-left-and-up-right-to-center {
+	font-size: 13px;
+}
+
+._iconButton:hover i.fa-up-right-and-down-left-from-center,
+._iconButton:hover i.fa-down-left-and-up-right-to-center {
+	color: #6366F1;
+}
+
+/* Device Group Styles */
+._deviceGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+._deviceGroup:not(:last-child) {
+	margin-bottom: 8px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid #E5E7EB;
+}
+
+._deviceHeader {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 12px;
+	background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+	border-radius: 10px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #4B5563;
+}
+
+._deviceHeader i.fa {
+	font-size: 16px;
+	color: #6366F1;
+	width: 20px;
+	text-align: center;
+}
+
+._deviceHeader i.fa-desktop {
+	color: #3B82F6;
+}
+
+._deviceHeader i.fa-tablet {
+	color: #8B5CF6;
+}
+
+._deviceHeader i.fa-mobile {
+	color: #10B981;
+}
+
+._deviceCount {
+	margin-left: auto;
+	font-size: 11px;
+	font-weight: 600;
+	color: #6B7280;
+	background-color: #fff;
+	padding: 3px 10px;
+	border-radius: 12px;
+	border: 1px solid #E5E7EB;
 }
