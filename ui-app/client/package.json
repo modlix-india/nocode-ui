@@ -9,6 +9,7 @@
 	],
 	"scripts": {
 		"start": "webpack serve --config webpack.dev.js",
+		"dev": "./dev-with-watch.sh",
 		"build": "webpack --config webpack.prod.js",
 		"cf-local": "webpack --config webpack.prod.js --env publicUrl=https://cdn-local.modlix.com/js/dist/ ",
 		"cf-dev": "webpack --config webpack.prod.js --env publicUrl=https://cdn-dev.modlix.com/js/dist/",
@@ -94,8 +95,8 @@
 		"webpack-manifest-plugin": "^6.0.1"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "2.16.1",
-		"@fincity/path-reactive-state-management": "1.7.3",
+		"@fincity/kirun-js": "^3.2.0",
+		"@fincity/path-reactive-state-management": "^2.0.9",
 		"@monaco-editor/react": "^4.6.0",
 		"axios": "^1.7.9",
 		"monaco-editor": "^0.51.0",

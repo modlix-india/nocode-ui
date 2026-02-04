@@ -1,5 +1,6 @@
-import { Event, Function, Repository, Schema, TokenValueExtractor } from '@fincity/kirun-js';
+import { Event, Function, LogEntry, Repository, Schema, TokenValueExtractor } from '@fincity/kirun-js';
 import React, { RefObject, useEffect, useState } from 'react';
+import ReactDOM from 'react-dom';
 import { duplicate } from '@fincity/kirun-js';
 import { generateColor } from '../colors';
 import { stringValue } from '../utils';
@@ -40,6 +41,9 @@ interface StatementNodeProps {
 	onRemoveAllDependencies: () => void;
 	selectedStatements: Map<string, boolean>;
 	onCopy: (statementName: string) => void;
+	// Debug mode props
+	debugViewMode?: boolean;
+	debugLogs?: LogEntry[];
 }
 
 const DEFAULT_POSITION = { left: 0, top: 0 };
@@ -72,6 +76,8 @@ export default function StatementNode({
 	onRemoveAllDependencies,
 	selectedStatements,
 	onCopy,
+	debugViewMode = false,
+	debugLogs,
 }: StatementNodeProps) {
 	const [statementName, setStatementName] = useState(statement.statementName);
 	const [editStatementName, setEditStatementName] = useState(false);
@@ -80,6 +86,12 @@ export default function StatementNode({
 	const [name, setName] = useState(
 		((statement.namespace ?? '_') === '_' ? '' : statement.namespace + '.') + statement.name,
 	);
+	const [debugExpanded, setDebugExpanded] = useState(false);
+
+	// Reset debug expanded state when logs change (e.g., switching between functions)
+	useEffect(() => {
+		setDebugExpanded(false);
+	}, [debugLogs]);
 
 	useEffect(() => {
 		setStatementName(statement.statementName);
@@ -106,15 +118,8 @@ export default function StatementNode({
 	const [mouseMove, setMouseMove] = useState(false);
 	const alwaysColor =
 		validationMessages.size > 0 || executionPlanMessage?.length
-			? '#f25332'
+			? '#DC2626'
 			: `#${generateColor(statement.namespace, statement.name)}`;
-
-	const highlightColor =
-		validationMessages.size > 0 || executionPlanMessage?.length
-			? '#f25332'
-			: selected
-				? alwaysColor
-				: '';
 
 	const [editComment, setEditComment] = useState(false);
 
@@ -138,7 +143,15 @@ export default function StatementNode({
 
 	const events = Array.from(eventsMap.values());
 
-	const params = parameters.length ? (
+	// Filter parameters to only show filled ones when not in edit mode
+	const filledParameters = editParameters
+		? parameters
+		: parameters.filter(e => {
+				const paramValue = statement.parameterMap?.[e.getParameterName()];
+				return paramValue && Object.values(paramValue).length > 0;
+		  });
+
+	const params = filledParameters.length ? (
 		<div
 			className="_paramsContainer"
 			onDoubleClick={ev => {
@@ -150,7 +163,9 @@ export default function StatementNode({
 			}}
 		>
 			<div className="_paramHeader">Parameters</div>
-			{parameters.map(e => {
+			{filledParameters
+			.sort((a, b) => a.getParameterName().localeCompare(b.getParameterName()))
+			.map(e => {
 				const paramValue = statement.parameterMap?.[e.getParameterName()];
 				const hasValue = paramValue && Object.values(paramValue).length;
 				const title = stringValue(paramValue);
@@ -180,7 +195,6 @@ export default function StatementNode({
 						<div
 							id={`paramNode_${statement.statementName}_${e.getParameterName()}`}
 							className="_paramNode _hideInEdit"
-							style={{ borderColor: alwaysColor }}
 						></div>
 						<div
 							className={`_paramName ${hasValue ? '_hasValue' : ''}`}
@@ -201,21 +215,48 @@ export default function StatementNode({
 		<div
 			className="_dependencyNode _hideInEdit"
 			id={`eventNode_dependentNode_${statement.statementName}`}
-			style={{ borderColor: alwaysColor }}
 			title="Depends on"
 		></div>
 	);
 
+	// State for copy feedback toast
+	const [copiedPath, setCopiedPath] = useState<string | null>(null);
+
+	// Helper function to copy path to clipboard with visual feedback
+	const copyToClipboard = (path: string) => {
+		navigator.clipboard.writeText(path);
+		setCopiedPath(path);
+		setTimeout(() => setCopiedPath(null), 1800);
+	};
+
 	const eventsDiv = events.length ? (
-		events.map(e => {
+		events
+		.sort((a, b) => {
+			// Put OUTPUT at the top, then sort alphabetically
+			const aName = a.getName();
+			const bName = b.getName();
+			if (aName === 'output') return -1;
+			if (bName === 'output') return 1;
+			return aName.localeCompare(bName);
+		})
+		.map(e => {
 			const eventParams = Array.from(e.getParameters()?.entries() ?? []);
+			const eventPath = `Steps.${statement.statementName}.${e.getName()}`;
 			return (
 				<div className="_paramsContainer _event" key={e.getName()}>
-					<div className="_paramHeader">{e.getName()}</div>
+					<div
+						className="_paramHeader"
+						title={`Click to copy: ${eventPath}`}
+						onClick={ev => {
+							ev.stopPropagation();
+							copyToClipboard(eventPath);
+						}}
+					>
+						{e.getName()}
+					</div>
 					<div
 						id={`eventNode_${statement.statementName}_${e.getName()}`}
 						className="_paramNode _eventNode"
-						style={{ borderColor: alwaysColor }}
 						onMouseDown={ev => {
 							ev.stopPropagation();
 							ev.preventDefault();
@@ -230,19 +271,21 @@ export default function StatementNode({
 							onDependencyDragStart?.({
 								left,
 								top,
-								dependency: `Steps.${statement.statementName}.${e.getName()}`,
+								dependency: eventPath,
 							});
 						}}
 					></div>
-					{eventParams.map(([pname]) => {
+					{eventParams
+					.sort((a, b) => a[0].localeCompare(b[0]))
+					.map(([pname]) => {
+						const paramPath = `Steps.${statement.statementName}.${e.getName()}.${pname}`;
 						return (
 							<div className="_param" key={pname}>
 								<div
 									id={`eventParameter_${
 										statement.statementName
 									}_${e.getName()}_${pname}`}
-									className="_paramNode"
-									style={{ borderColor: alwaysColor }}
+									className="_paramNode _paramNameNode"
 									onMouseDown={ev => {
 										ev.stopPropagation();
 										ev.preventDefault();
@@ -257,13 +300,20 @@ export default function StatementNode({
 										onDependencyDragStart?.({
 											left,
 											top,
-											dependency: `Steps.${
-												statement.statementName
-											}.${e.getName()}.${pname}`,
+											dependency: paramPath,
 										});
 									}}
 								></div>
-								<div className="_paramName">{pname}</div>
+								<div
+									className="_paramName"
+									title={`Click to copy: ${paramPath}`}
+									onClick={ev => {
+										ev.stopPropagation();
+										copyToClipboard(paramPath);
+									}}
+								>
+									{pname}
+								</div>
 							</div>
 						);
 					})}
@@ -327,24 +377,40 @@ export default function StatementNode({
 			<></>
 		);
 
+	const categoryLabel = getCategoryLabel(statement.namespace ?? '_');
+
+	// Build debug info section when in debug view mode
+	const debugInfoSection = debugViewMode && debugLogs && debugLogs.length > 0 ? (
+		<DebugInfoSection logs={debugLogs} onExpandChange={setDebugExpanded} />
+	) : null;
+
+	// Determine debug status for styling
+	const hasDebugError = debugLogs?.some(log => log.error);
+	const wasExecuted = debugViewMode && debugLogs && debugLogs.length > 0;
+	const debugStatusClass = debugViewMode
+		? wasExecuted
+			? hasDebugError
+				? '_executedWithError'
+				: '_executed'
+			: '_notExecuted'
+		: '';
+
 	return (
 		<div
 			className={`_statement ${selected ? '_selected' : ''} ${
 				editParameters ? '_editParameters' : ''
-			}`}
+			} ${debugStatusClass}`}
 			style={{
 				left: position.left + (selected && dragNode ? dragNode.dLeft : 0) + 'px',
 				top: position.top + (selected && dragNode ? dragNode.dTop : 0) + 'px',
-				borderColor: selected ? highlightColor : '',
-				zIndex: selected ? '3' : '',
+				zIndex: selected || debugExpanded ? '3' : '',
 			}}
 			id={`statement_${statement.statementName}`}
 			onClick={e => {
 				e.preventDefault();
 				e.stopPropagation();
-				// onClick(e.ctrlKey || e.metaKey, statement.statementName);
 			}}
-			onMouseUp={e => {
+			onMouseUp={() => {
 				onDependencyDrop?.(statement.statementName);
 			}}
 			onContextMenu={e => {
@@ -357,19 +423,15 @@ export default function StatementNode({
 			}}
 		>
 			{comments}
-			<div
-				className="_namesContainer"
-				style={{
-					backgroundColor: highlightColor ? highlightColor : alwaysColor,
-				}}
-			>
+			<div className="_namesContainer">
+				<div className="_categoryLabel">{categoryLabel}</div>
 				<div
 					className="_nameContainer"
 					onMouseDown={e => {
 						e.preventDefault();
 						e.stopPropagation();
 
-						if (e.button !== 0) return;
+						if (e.button !== 0 || debugViewMode) return;
 
 						const rect = container.current!.getBoundingClientRect();
 						const left = Math.round(
@@ -381,7 +443,7 @@ export default function StatementNode({
 							top,
 						});
 					}}
-					onMouseMove={e => {
+					onMouseMove={() => {
 						if (!mouseMove && dragNode) setMouseMove(true);
 					}}
 					onMouseUp={e => {
@@ -405,19 +467,15 @@ export default function StatementNode({
 						className={`_icon fa fa-solid ${
 							ICONS_GROUPS.get(statement.namespace) ?? 'fa-microchip'
 						}`}
+						style={{ backgroundColor: `#${alwaysColor.replace('#', '')}` }}
 					></i>
-					<div
-						className="_statementContanier"
-						style={{
-							borderColor: highlightColor ? highlightColor : alwaysColor,
-						}}
-					>
+					<div className="_statementContanier">
 						<div
 							className={`_statementName`}
 							onDoubleClick={e => {
 								e.stopPropagation();
 								e.preventDefault();
-								if (editParameters) return;
+								if (editParameters || debugViewMode) return;
 								setEditStatementName(true);
 							}}
 						>
@@ -451,16 +509,21 @@ export default function StatementNode({
 									/>
 								</>
 							) : (
-								statementName
+								<>
+									{statementName}
+									{!debugViewMode && (
+										<i
+											className="_editIcon fa fa-1x fa-solid fa-pencil _hideInEdit"
+											style={{ opacity: editStatementName ? 1 : undefined }}
+											onClick={e => {
+												e.stopPropagation();
+												setEditStatementName(true);
+											}}
+										/>
+									)}
+								</>
 							)}
 						</div>
-						<i
-							className="_editIcon fa fa-1x fa-solid fa-pencil _hideInEdit"
-							style={{ visibility: editStatementName ? 'visible' : undefined }}
-							onClick={() => {
-								setEditStatementName(true);
-							}}
-						/>
 					</div>
 				</div>
 				<div className={`_nameNamespaceContainer`}>
@@ -469,7 +532,7 @@ export default function StatementNode({
 						onDoubleClick={e => {
 							e.stopPropagation();
 							e.preventDefault();
-							if (editParameters) return;
+							if (editParameters || debugViewMode) return;
 							setEditNameNamespace(true);
 							onClick?.(false, statement.statementName);
 						}}
@@ -480,9 +543,6 @@ export default function StatementNode({
 								options={functionNames.map(e => ({
 									value: e,
 								}))}
-								style={{
-									backgroundColor: highlightColor ? highlightColor : alwaysColor,
-								}}
 								onChange={value => {
 									const index = value.lastIndexOf('.');
 
@@ -498,20 +558,21 @@ export default function StatementNode({
 							name
 						)}
 					</div>
-					<i
+					{!debugViewMode && <i
 						className="_editIcon fa fa-1x fa-solid fa-bars-staggered _hideInEdit"
 						style={{ visibility: editNameNamespace ? 'visible' : undefined }}
 						onClick={() => {
 							setEditNameNamespace(true);
 							onClick?.(false, statement.statementName);
 						}}
-					/>
+					/>}
 				</div>
 			</div>
 			<div className="_otherContainer">
 				{params}
 				<div className="_eventsContainer _hideInEdit">{eventsDiv}</div>
 			</div>
+			{debugInfoSection}
 			<div className="_messages">
 				{executionPlanMessage &&
 					executionPlanMessage.map(value => (
@@ -526,9 +587,8 @@ export default function StatementNode({
 						</div>
 					))}
 			</div>
-			<StatementButtons
+			{debugViewMode ? <></> : <StatementButtons
 				selected={selected}
-				highlightColor={highlightColor}
 				onEditParameters={onEditParameters}
 				onEditComment={() => setEditComment(true)}
 				statementName={statement.statementName}
@@ -538,8 +598,12 @@ export default function StatementNode({
 				editParameters={editParameters}
 				onRemoveAllDependencies={onRemoveAllDependencies}
 				onCopy={onCopy}
-			/>
+			/>}
 			{dependencyNode}
+			{copiedPath && ReactDOM.createPortal(
+				<div className="_copiedToast">Copied to clipboard</div>,
+				document.body
+			)}
 		</div>
 	);
 }
@@ -547,10 +611,156 @@ export default function StatementNode({
 const ICONS_GROUPS = new Map<string, string>([
 	['System', 'fa-cube'],
 	['System.Context', 'fa-hard-drive'],
-	['System.Loop', 'fa-ring'],
+	['System.Loop', 'fa-repeat'],
 	['System.Math', 'fa-calculator'],
-	['System.String', 'fa-candy-cane'],
+	['System.String', 'fa-font'],
 	['System.Array', 'fa-layer-group'],
 	['System.Object', 'fa-circle-dot'],
-	['UIEngine', 'fa-snowflake'],
+	['UIEngine', 'fa-wand-magic-sparkles'],
 ]);
+
+const CATEGORY_LABELS = new Map<string, string>([
+	['System', 'SYSTEM'],
+	['System.Context', 'CONTEXT'],
+	['System.Loop', 'LOOP'],
+	['System.Math', 'MATH'],
+	['System.String', 'STRING'],
+	['System.Array', 'ARRAY'],
+	['System.Object', 'OBJECT'],
+	['UIEngine', 'UI ENGINE'],
+	['_', 'FUNCTION'],
+]);
+
+function getCategoryLabel(namespace: string): string {
+	return CATEGORY_LABELS.get(namespace) ?? CATEGORY_LABELS.get('_') ?? 'FUNCTION';
+}
+
+// Helper to format duration for display
+function formatDuration(ms: number | undefined): string {
+	if (ms === undefined) return '';
+	if (ms < 1) return '<1ms';
+	if (ms < 1000) return `${Math.round(ms)}ms`;
+	return `${(ms / 1000).toFixed(2)}s`;
+}
+
+// Component to display debug information for a statement
+function DebugInfoSection({ logs, onExpandChange }: { logs: LogEntry[]; onExpandChange?: (expanded: boolean) => void }) {
+	const [expanded, setExpanded] = useState(false);
+
+	// Reset expanded state when logs change (e.g., switching between functions)
+	useEffect(() => {
+		setExpanded(false);
+		onExpandChange?.(false);
+	}, [logs]);
+
+	const handleExpandToggle = () => {
+		const newExpanded = !expanded;
+		setExpanded(newExpanded);
+		onExpandChange?.(newExpanded);
+	};
+
+	// Calculate total duration from all logs
+	const totalDuration = logs.reduce((sum, log) => sum + (log.duration ?? 0), 0);
+	const hasError = logs.some(log => log.error);
+	const executionCount = logs.length;
+
+	// Determine badge class based on duration
+	let badgeClass = '';
+	if (hasError) {
+		badgeClass = '_errored';
+	} else if (totalDuration > 1000) {
+		badgeClass = '_verySlow';
+	} else if (totalDuration > 100) {
+		badgeClass = '_slow';
+	}
+
+	// Check if there's content to expand
+	const hasExpandableContent = logs.some(
+		log =>
+			(log.arguments && Object.keys(log.arguments).length > 0) ||
+			(log.result && Object.keys(log.result).length > 0),
+	);
+
+	return (
+		<div className={`_statementDebugInfo ${hasError ? '_errored' : ''}`}>
+			<div
+				className="_debugHeader"
+				role={hasExpandableContent ? 'button' : undefined}
+				tabIndex={hasExpandableContent ? 0 : undefined}
+				onClick={e => {
+					e.stopPropagation();
+					if (hasExpandableContent) handleExpandToggle();
+				}}
+				onKeyDown={e => {
+					if (hasExpandableContent && (e.key === 'Enter' || e.key === ' ')) {
+						e.stopPropagation();
+						handleExpandToggle();
+					}
+				}}
+			>
+				<span className={`_debugBadge ${badgeClass}`}>{formatDuration(totalDuration)}</span>
+				{executionCount > 1 && (
+					<span className="_debugExecutionCount">×{executionCount}</span>
+				)}
+				{logs.at(-1)?.eventName && (
+					<span className="_debugEvent">{logs.at(-1)?.eventName}</span>
+				)}
+				{hasExpandableContent && (
+					<i className={`fa fa-chevron-${expanded ? 'up' : 'down'} _expandIcon`} />
+				)}
+			</div>
+
+			{hasError &&
+				logs
+					.filter(log => log.error)
+					.map((log, idx) => (
+						<div key={log.stepId || `error-${idx}`} className="_debugInfoRow _errorRow">
+							<span className="_debugInfoLabel">
+								Error{executionCount > 1 ? ` #${idx + 1}` : ''}:
+							</span>
+							<span className="_debugInfoValue _error">{log.error}</span>
+						</div>
+					))}
+
+			{expanded && (
+				<div className="_debugExpandedContent">
+					{logs.map((log, idx) => (
+						<div key={log.stepId || idx} className="_debugLogEntry">
+							{executionCount > 1 && (
+								<div className="_debugLogEntryHeader">
+									<span className="_debugLogEntryIndex">
+										Execution #{idx + 1}
+									</span>
+									{log.duration !== undefined && (
+										<span className="_debugLogEntryDuration">
+											{formatDuration(log.duration)}
+										</span>
+									)}
+									{log.eventName && (
+										<span className="_debugLogEntryEvent">{log.eventName}</span>
+									)}
+								</div>
+							)}
+							{log.arguments && Object.keys(log.arguments).length > 0 && (
+								<div className="_debugInfoRow">
+									<span className="_debugInfoLabel">Arguments:</span>
+									<pre className="_debugInfoValue _json">
+										{JSON.stringify(log.arguments, null, 2)}
+									</pre>
+								</div>
+							)}
+							{log.result && Object.keys(log.result).length > 0 && (
+								<div className="_debugInfoRow">
+									<span className="_debugInfoLabel">Result:</span>
+									<pre className="_debugInfoValue _json">
+										{JSON.stringify(log.result, null, 2)}
+									</pre>
+								</div>
+							)}
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	);
+}

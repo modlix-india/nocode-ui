@@ -1,0 +1,89 @@
+[
+	{
+		"cp": "padding",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableRow._rowContainer",
+		"np": true,
+		"spv": {
+			"_design1-": "10px 20px",
+			"_design2-": "10px 20px",
+			"_design3-": "10px 20px",
+			"_design4-": "10px 20px",
+			"_design5-": "10px 20px",
+			"_design6-": "10px 20px",
+			"_design7-": "10px 20px",
+			"_design8-": "0px",
+			"_design9-": "10px 20px",
+			"_design0-": "0px"
+		},
+		"gn": "Spacing",
+		"dn": "Padding",
+		"n": "tableRowContainerPadding<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "background-color",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableRow._rowContainer",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background Color",
+		"n": "tableRowContainerBackground<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border-bottom",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableRow._rowContainer",
+		"np": true,
+		"spv": {
+			"_design3-": "1px solid #E5E7EB",
+			"_design4-": "1px solid #3333330D",
+			"_design6-": "1px solid #3333330D",
+			"_design7-": "1px solid #DBDBDB",
+			"_design8-": "1px solid #DBDBDB"
+		},
+		"gn": "Border",
+		"dn": "Border Bottom",
+		"n": "tableRowContainerBorderBottom<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border-top",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableRow._rowContainer",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border Top",
+		"n": "tableRowContainerBorderTop<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border-left",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableRow._rowContainer",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border Left",
+		"n": "tableRowContainerBorderLeft<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "border-right",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableRow._rowContainer",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border Right",
+		"n": "tableRowContainerBorderRight<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "background-color",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableRow._rowContainer:hover, .comp.compTable<tableDesign><colorScheme> .comp.compTableRow._rowContainer._selected",
+		"np": true,
+		"spv": {
+			"_design1-": "<backgroundColorNine>",
+			"_design2-": "<backgroundColorNine>",
+			"_design3-": "<backgroundColorNine>",
+			"_design4-": "<backgroundColorNine>",
+			"_design5-": "<backgroundColorNine>",
+			"_design6-": "<backgroundColorNine>",
+			"_design7-": "<backgroundColorNine>",
+			"_design8-": "<backgroundColorNine>",
+			"_design9-": "<backgroundColorNine>",
+			"_design0-": "<backgroundColorNine>"
+		},
+		"gn": "Background",
+		"dn": "Hover & Selected Background",
+		"n": "tableRowHoverSelectedBackground<tableDesign><colorScheme>"
+	}
+]

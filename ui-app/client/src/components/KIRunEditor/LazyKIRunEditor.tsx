@@ -1,6 +1,7 @@
 import {
 	duplicate,
 	ExecutionGraph,
+	ExecutionLog,
 	Function,
 	FunctionDefinition,
 	FunctionExecutionParameters,
@@ -8,10 +9,12 @@ import {
 	isNullValue,
 	KIRuntime,
 	LinkedList,
+	LogEntry,
 	Repository,
 	Schema,
 	StatementExecution,
 	TokenValueExtractor,
+	DSLCompiler,
 } from '@fincity/kirun-js';
 import React, {
 	CSSProperties,
@@ -47,8 +50,15 @@ import Search from './components/Search';
 import StatementNode from './components/StatementNode';
 import StatementParameters from './components/StatementParameters';
 import { StoreNode } from './components/StoreNode';
-import { correctStatementNames, savePersonalizationCurry } from './utils';
+import {
+	autoLayoutFunctionDefinition,
+	correctStatementNames,
+	savePersonalizationCurry,
+} from './utils';
 import { COPY_STMT_KEY } from '../../constants';
+import { KIRunTextEditor, EditorTheme } from './components/TextEditor/KIRunTextEditor';
+import { DSLHelpWindow } from './components/TextEditor/DSLHelpWindow';
+import './KIRunEditorThemes.css';
 
 const gridSize = 20;
 
@@ -141,6 +151,39 @@ function makeUpdates(
 let UI_FUN_REPO: Repository<Function>;
 let UI_SCHEMA_REPO: Repository<Schema>;
 
+// Helper to build debug info map from execution log (handles hierarchical logs)
+// Filters logs by currentFunctionName to only show logs belonging to the viewed function
+function buildDebugInfoMap(
+	executionLog: ExecutionLog | undefined,
+	currentFunctionName: string | undefined,
+): Map<string, LogEntry[]> {
+	const map = new Map<string, LogEntry[]>();
+	if (!executionLog || !currentFunctionName) return map;
+
+	// Flatten hierarchical logs
+	const flattenLogs = (logs: LogEntry[]): LogEntry[] => {
+		const result: LogEntry[] = [];
+		for (const log of logs) {
+			result.push(log);
+			if (log.children?.length) {
+				result.push(...flattenLogs(log.children));
+			}
+		}
+		return result;
+	};
+
+	const allLogs = flattenLogs(executionLog.logs);
+	for (const log of allLogs) {
+		if (!log.statementName) continue;
+		// Only include logs that belong to the current function being viewed
+		if (log.kirunFunctionName !== currentFunctionName) continue;
+		const existing = map.get(log.statementName) || [];
+		existing.push(log);
+		map.set(log.statementName, existing);
+	}
+	return map;
+}
+
 export default function LazyKIRunEditor(
 	props: ComponentProps & {
 		functionRepository?: Repository<Function>;
@@ -150,6 +193,11 @@ export default function LazyKIRunEditor(
 		storePaths?: Set<string>;
 		hideArguments?: boolean;
 		functionKey?: string;
+		// Debug mode props
+		debugViewMode?: boolean;
+		executionLog?: ExecutionLog;
+		functionDefinition?: FunctionDefinition;
+		onChangePersonalizationFunction?: () => void;
 	},
 ) {
 	const {
@@ -162,7 +210,36 @@ export default function LazyKIRunEditor(
 		tokenValueExtractors = new Map(),
 		storePaths = new Set(),
 		pageDefinition,
+		debugViewMode = false,
+		executionLog,
+		functionDefinition,
+		onChangePersonalizationFunction,
 	} = props;
+
+	// Build debug info map when in debug view mode
+	// Get current function name from functionDefinition for filtering logs
+	// Handle both FunctionDefinition instances and plain objects
+	// Match the format used in KIRuntime: namespace ? `${namespace}.${name}` : name
+	const currentFunctionName = useMemo(() => {
+		if (!functionDefinition) return undefined;
+		const ns =
+			typeof functionDefinition.getNamespace === 'function'
+				? functionDefinition.getNamespace()
+				: (functionDefinition as any).namespace;
+		const name =
+			typeof functionDefinition.getName === 'function'
+				? functionDefinition.getName()
+				: (functionDefinition as any).name;
+		// Match KIRuntime format: if namespace exists use namespace.name, otherwise just name
+		return ns ? `${ns}.${name}` : name;
+	}, [functionDefinition]);
+	const debugInfoMap = useMemo(
+		() =>
+			debugViewMode
+				? buildDebugInfoMap(executionLog, currentFunctionName)
+				: new Map<string, LogEntry[]>(),
+		[debugViewMode, executionLog, currentFunctionName],
+	);
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
@@ -181,7 +258,7 @@ export default function LazyKIRunEditor(
 		? getPathFromLocation(bindingPath!, locationHistory, pageExtractor)
 		: undefined;
 
-	const isReadonly = readOnly || !bindingPathPath;
+	const isReadonly = readOnly || !bindingPathPath || debugViewMode;
 
 	// Getting function definition.
 	const [rawDef, setRawDef] = useState<any>();
@@ -190,6 +267,131 @@ export default function LazyKIRunEditor(
 	const [editParameters, setEditParameters] = useState<string>('');
 	const [error, setError] = useState<any>();
 	const [funDef, setFunDef] = useState<FunctionDefinition | undefined>();
+
+	// Editor mode state
+	const [editorMode, setEditorMode] = useState<'visual' | 'text' | 'help'>('visual');
+	const [textContent, setTextContent] = useState<string>('');
+	const [syncError, setSyncError] = useState<string>();
+
+	/**
+	 * Measures actual heights of rendered statement nodes from the DOM.
+	 * Returns a Map of statement names to their measured heights.
+	 * Falls back to default height of 180 for nodes not found in DOM.
+	 */
+	const measureStatementNodeHeights = useCallback((stepNames: string[]): Map<string, number> => {
+		const heights = new Map<string, number>();
+		const defaultHeight = 180;
+
+		for (const name of stepNames) {
+			const element = document.getElementById(`statement_${name}`);
+			if (element) {
+				// Get the actual rendered height
+				const height = element.offsetHeight;
+				heights.set(name, height > 0 ? height : defaultHeight);
+			} else {
+				// Node not yet rendered, use default
+				heights.set(name, defaultHeight);
+			}
+		}
+
+		return heights;
+	}, []);
+
+	// Handle editor mode toggle with bidirectional sync
+	const handleModeToggle = useCallback(async () => {
+		if (editorMode === 'visual') {
+			// Visual → Text: Convert rawDef to DSL text
+			try {
+				if (!rawDef) {
+					setTextContent('');
+					setEditorMode('text');
+					return;
+				}
+				const dslText = await DSLCompiler.decompile(rawDef);
+				setTextContent(dslText);
+				setEditorMode('text');
+				setSyncError(undefined);
+			} catch (err: any) {
+				setSyncError(`Failed to convert to text: ${err.message || err}`);
+			}
+		} else {
+			// Text → Visual: Parse DSL text to JSON
+			try {
+				if (!textContent.trim()) {
+					setEditorMode('visual');
+					return;
+				}
+				if (!bindingPathPath) {
+					setSyncError('No binding path available');
+					return;
+				}
+				const json = DSLCompiler.compile(textContent);
+
+				// First, set data without positions to let React render nodes
+				setData(bindingPathPath, json, context.pageName);
+				setEditorMode('visual');
+				setSyncError(undefined);
+
+				// Auto-layout after nodes are rendered (next tick)
+				setTimeout(() => {
+					const funcDef = FunctionDefinition.from(json);
+					const stepNames = Array.from(funcDef.getSteps().keys());
+
+					// Measure actual node heights from DOM
+					const nodeHeights = measureStatementNodeHeights(stepNames);
+					const newPositions = autoLayoutFunctionDefinition(funcDef, 280, nodeHeights, 100);
+
+					// Apply positions to steps
+					const updatedJson = duplicate(json);
+					if (updatedJson.steps) {
+						for (const [name, pos] of Array.from(newPositions.entries())) {
+							if (updatedJson.steps[name]) {
+								updatedJson.steps[name].position = pos;
+							}
+						}
+					}
+
+					setData(bindingPathPath, updatedJson, context.pageName);
+				}, 100);
+			} catch (err: any) {
+				setSyncError(`Failed to parse text: ${err.message || err}`);
+			}
+		}
+	}, [editorMode, rawDef, textContent, bindingPathPath, context.pageName]);
+
+	// Handle text editor changes
+	const handleTextChange = useCallback((newText: string) => {
+		setTextContent(newText);
+		// Clear sync errors when user starts editing
+		if (syncError) setSyncError(undefined);
+	}, [syncError]);
+
+	// Format the DSL code by compiling and decompiling
+	const handleFormatCode = useCallback(async () => {
+		try {
+			const json = DSLCompiler.compile(textContent);
+			const formatted = await DSLCompiler.decompile(json);
+			setTextContent(formatted);
+			setSyncError(undefined);
+		} catch (err: any) {
+			setSyncError(`Format error: ${err.message}`);
+		}
+	}, [textContent, syncError]);
+
+	// Update text content when rawDef changes (e.g., function dropdown change)
+	useEffect(() => {
+		if (editorMode === 'text' && rawDef) {
+			(async () => {
+				try {
+					const dslText = await DSLCompiler.decompile(rawDef);
+					setTextContent(dslText);
+					setSyncError(undefined);
+				} catch (err: any) {
+					setSyncError(`Failed to convert to text: ${err.message || err}`);
+				}
+			})();
+		}
+	}, [rawDef, editorMode]);
 
 	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
 	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
@@ -258,6 +460,31 @@ export default function LazyKIRunEditor(
 	useEffect(() => usedComponents.using('PageEditor'), []);
 
 	useEffect(() => {
+		if (functionDefinition) {
+			const hereDef = correctStatementNames(functionDefinition);
+			setRawDef(hereDef);
+
+			const inFunDef = FunctionDefinition.from(hereDef);
+			setFunDef(inFunDef);
+			makeUpdates(
+				inFunDef,
+				setExecutionPlan,
+				setKirunMessages,
+				functionRepository,
+				schemaRepository,
+				key,
+				tokenValueExtractors,
+				setPositions,
+			);
+			setError(undefined);
+
+			const finName = `${hereDef.namespace ?? '_'}.${hereDef.name}`;
+			if (name !== finName) {
+				setName(finName);
+				setEditParameters('');
+				setSelectedStatements(new Map());
+			}
+		}
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			pageExtractor.getPageName(),
@@ -292,7 +519,15 @@ export default function LazyKIRunEditor(
 			},
 			bindingPathPath,
 		);
-	}, [bindingPathPath, setRawDef, pageExtractor, name, setName, setSelectedStatements]);
+	}, [
+		bindingPathPath,
+		setRawDef,
+		pageExtractor,
+		name,
+		setName,
+		setSelectedStatements,
+		functionDefinition,
+	]);
 
 	const personalizationPath = bindingPath2
 		? getPathFromLocation(bindingPath2!, locationHistory, pageExtractor)
@@ -306,6 +541,11 @@ export default function LazyKIRunEditor(
 			personalizationPath,
 		);
 	}, [personalizationPath, setPreference, pageExtractor]);
+
+	// Text editor preferences and state
+	const [textEditorRef, setTextEditorRef] = useState<any>(null);
+	const textEditorTheme: EditorTheme = (preference?.textEditorTheme as EditorTheme) ?? 'light';
+	const textEditorWordWrap = preference?.textEditorWordWrap ?? 'on';
 
 	// Making an executionPlan to show the execution graph.
 	const [executionPlan, setExecutionPlan] = useState<
@@ -363,7 +603,8 @@ export default function LazyKIRunEditor(
 		return savePersonalizationCurry(
 			personalizationPath,
 			context.pageName,
-			pageDefinition.eventFunctions?.[onChangePersonalization],
+			onChangePersonalizationFunction ??
+				pageDefinition.eventFunctions?.[onChangePersonalization],
 			locationHistory,
 			pageDefinition,
 		);
@@ -374,6 +615,7 @@ export default function LazyKIRunEditor(
 		onChangePersonalization,
 		locationHistory,
 		pageDefinition,
+		onChangePersonalizationFunction,
 	]);
 
 	const [functionNames, setFunctionNames] = useState<string[]>([]);
@@ -510,6 +752,8 @@ export default function LazyKIRunEditor(
 					locationHistory={locationHistory}
 					onRemoveAllDependencies={() => removeAllDependencies(s.statementName)}
 					onCopy={copyStatement}
+					debugViewMode={debugViewMode}
+					debugLogs={debugInfoMap.get(s.statementName)}
 				/>
 			));
 	}
@@ -549,14 +793,15 @@ export default function LazyKIRunEditor(
 					oldLeft: container.current!.scrollLeft,
 					oldTop: container.current!.scrollTop,
 				});
-			} else {
+			} else if (!debugViewMode) {
+				// Disable selection box in debug view mode
 				const rect = container.current!.getBoundingClientRect();
 				const left = e.clientX - rect.left + container.current!.scrollLeft;
 				const top = e.clientY - rect.top + container.current!.scrollTop;
 				setSelectionBox({ selectionStart: true, left, top });
 			}
 		},
-		[setSelectionBox, setScrMove],
+		[setSelectionBox, setScrMove, debugViewMode],
 	);
 
 	const designerMouseMove = useCallback(
@@ -872,7 +1117,9 @@ export default function LazyKIRunEditor(
 					selectedStatements={selectedStatements}
 					dragNode={dragNode}
 					container={container}
-					executionPlanMessage={kirunMessages.get(s.statementName)}
+					executionPlanMessage={
+						debugViewMode ? undefined : kirunMessages.get(s.statementName)
+					}
 					onChange={stmt => {
 						if (isReadonly) return;
 
@@ -921,6 +1168,21 @@ export default function LazyKIRunEditor(
 	) : (
 		<>
 			<i
+				className="fa fa-solid fa-object-group"
+				role="button"
+				title="Select all"
+				onClick={() => {
+					const entries = Object.entries(rawDef.steps);
+
+					setSelectedStatements(
+						entries.length === selectedStatements.size
+							? new Map()
+							: new Map<string, boolean>(entries.map(([k]) => [k, true])),
+					);
+				}}
+			/>
+			<div className="_separator" />
+			<i
 				className="fa fa-solid fa-square-plus"
 				role="button"
 				title="Add Step"
@@ -951,12 +1213,15 @@ export default function LazyKIRunEditor(
 	const editPencilIcon = isReadonly ? (
 		<></>
 	) : (
-		<i
-			className="fa fa-solid fa-pencil"
-			role="button"
-			title="Edit Function"
-			onClick={() => setEditFunction(true)}
-		/>
+		<>
+			<div className="_separator" />
+			<i
+				className="fa fa-solid fa-pencil"
+				role="button"
+				title="Edit Function"
+				onClick={() => setEditFunction(true)}
+			/>
+		</>
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -982,12 +1247,61 @@ export default function LazyKIRunEditor(
 	designerStyle.minWidth = `${width}px`;
 	designerStyle.minHeight = `${height}px`;
 
-	if (!error) {
+	// Render help if in help mode
+	if (editorMode === 'help') {
+		containerContents = (
+			<DSLHelpWindow
+				isVisible={true}
+				onClose={() => setEditorMode('text')}
+				theme={textEditorTheme}
+			/>
+		);
+	} else if (editorMode === 'text') {
+		containerContents = (
+			<div style={{
+				width: '100%',
+				height: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+				position: 'absolute',
+				top: 0,
+				left: 0,
+				right: 0,
+				bottom: 0,
+			}}>
+				{syncError && (
+					<div style={{
+						padding: '10px',
+						backgroundColor: '#f44336',
+						color: 'white',
+						margin: '10px',
+						borderRadius: '4px',
+						flexShrink: 0,
+					}}>
+						{syncError}
+					</div>
+				)}
+				<div style={{ flex: 1, overflow: 'hidden' }}>
+					<KIRunTextEditor
+						value={textContent}
+						onChange={handleTextChange}
+						theme={textEditorTheme}
+						wordWrap={textEditorWordWrap}
+						readOnly={isReadonly}
+						functionRepository={functionRepository}
+						schemaRepository={schemaRepository}
+						onEditorReady={setTextEditorRef}
+					/>
+				</div>
+			</div>
+		);
+	} else if (!error) {
 		containerContents = (
 			<>
 				<div
-					className={`_designer ${scrMove.dragStart ? '_moving' : ''}`}
+					className={`_designer ${scrMove.dragStart ? '_moving' : ''} _theme-${textEditorTheme}`}
 					style={designerStyle}
+					data-theme={textEditorTheme}
 					onMouseDown={designerMouseDown}
 					onMouseMove={designerMouseMove}
 					onMouseUp={designerMouseUp}
@@ -1036,6 +1350,8 @@ export default function LazyKIRunEditor(
 					onContextMenu={ev => {
 						ev.preventDefault();
 						ev.stopPropagation();
+						// Disable context menu in debug view mode
+						if (debugViewMode) return;
 						const parentRect = designerRef.current!.getBoundingClientRect();
 						showMenu({
 							position: {
@@ -1084,91 +1400,225 @@ export default function LazyKIRunEditor(
 		containerContents = <div className="_error">{error?.message ?? error}</div>;
 	}
 
+	const autoLayoutIcon = isReadonly ? (
+		<></>
+	) : (
+		<>
+			<div className="_separator" />
+			<i
+				className="fa fa-solid fa-diagram-project"
+				role="button"
+				title="Auto Layout"
+				onClick={() => {
+					if (isReadonly) return;
+					if (!rawDef?.steps) return;
+
+					const def = duplicate(rawDef);
+					const funcDef = FunctionDefinition.from(def);
+					const stepNames = Array.from(funcDef.getSteps().keys());
+
+					// Measure actual node heights from DOM (two-phase rendering)
+					const nodeHeights = measureStatementNodeHeights(stepNames);
+					const newPositions = autoLayoutFunctionDefinition(
+						funcDef,
+						280,
+						nodeHeights,
+						100,
+					);
+
+					for (const [name, pos] of Array.from(newPositions.entries())) {
+						if (def.steps[name]) def.steps[name].position = pos;
+					}
+
+					setData(bindingPathPath, def, context.pageName);
+				}}
+			/>
+		</>
+	);
+
 	// Here it is an exception for the style properties, we add comp page editor when used standalone.
 	return (
 		<div
-			className={`comp compKIRunEditor ${!props.functionKey ? 'compPageEditor' : ''}`}
-			style={resolvedStyles?.comp ?? {}}
+			className={`comp compKIRunEditor ${!props.functionKey ? 'compPageEditor' : ''} ${debugViewMode ? '_debugView' : ''} _theme-${textEditorTheme}`}
+			style={{
+				...(resolvedStyles?.comp ?? {}),
+				display: 'flex',
+				flexDirection: 'column',
+				height: '100%',
+				overflow: 'hidden',
+			}}
+			data-theme={textEditorTheme}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-			<div className="_header">
+			<div className="_header" style={{
+				minHeight: '40px',
+				display: 'flex',
+				alignItems: 'center',
+				flexShrink: 0,
+				zIndex: 10,
+			}}>
 				<div className="_left">
-					<i
-						className="fa fa-solid fa-object-group"
-						role="button"
-						title="Select all"
-						onClick={() => {
-							const entries = Object.entries(rawDef.steps);
-
-							setSelectedStatements(
-								entries.length === selectedStatements.size
-									? new Map()
-									: new Map<string, boolean>(entries.map(([k]) => [k, true])),
-							);
-						}}
-					/>
+					{editorMode === 'visual' && (
+						<>
+							{editableIcons}
+							<i
+								className="fa fa-solid fa-square-root-variable"
+								role="button"
+								title={
+									!preference?.showParamValues
+										? 'Show Parameter Values'
+										: 'Hide Parameter Values'
+								}
+								onClick={() => {
+									savePersonalization('showParamValues', !preference?.showParamValues);
+								}}
+							/>
+							<i
+								className="fa fa-regular fa-comment-dots"
+								role="button"
+								title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
+								onClick={() => {
+									savePersonalization(
+										'showComments',
+										preference?.showComments === undefined
+											? true
+											: !preference.showComments,
+									);
+								}}
+							/>
+							<i
+								className="fa fa-solid fa-database"
+								role="button"
+								title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
+								onClick={() => {
+									savePersonalization(
+										'showStores',
+										preference?.showStores === undefined
+											? true
+											: !preference.showStores,
+									);
+								}}
+							/>
+							{editPencilIcon}
+							{autoLayoutIcon}
+						</>
+					)}
+					{editorMode === 'help' && (
+						<i
+							className="fa fa-solid fa-arrow-left"
+							role="button"
+							title="Back to Text Editor"
+							onClick={() => setEditorMode('text')}
+							style={{ fontSize: '18px', cursor: 'pointer', padding: '8px' }}
+						/>
+					)}
+					{editorMode === 'text' && (
+						<>
+							<i
+								className="fa fa-solid fa-circle-question"
+								role="button"
+								title="Show Language Help"
+								onClick={() => setEditorMode('help')}
+								style={{ fontSize: '18px', cursor: 'pointer', padding: '8px' }}
+							/>
+							<div className="_separator" />
+							<i
+								className="fa fa-solid fa-text-width"
+								role="button"
+								title={textEditorWordWrap === 'on' ? 'Disable Word Wrap' : 'Enable Word Wrap'}
+								onClick={() => {
+									savePersonalization('textEditorWordWrap', textEditorWordWrap === 'on' ? 'off' : 'on');
+								}}
+								style={{ fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+							/>
+							<i
+								className="fa fa-solid fa-indent"
+								role="button"
+								title="Format Code"
+								onClick={handleFormatCode}
+								style={{ fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+							/>
+							<i
+								className="fa fa-solid fa-search"
+								role="button"
+								title="Find"
+								onClick={() => {
+									if (textEditorRef) {
+										textEditorRef.getAction('actions.find')?.run();
+									}
+								}}
+								style={{ fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+							/>
+							<i
+								className="fa fa-solid fa-magnifying-glass"
+								role="button"
+								title="Find and Replace"
+								onClick={() => {
+									if (textEditorRef) {
+										textEditorRef.getAction('editor.action.startFindReplaceAction')?.run();
+									}
+								}}
+								style={{ fontSize: '16px', cursor: 'pointer', padding: '8px' }}
+							/>
+						</>
+					)}
 					<div className="_separator" />
-					{editableIcons}
-					<i
-						className="fa fa-solid fa-square-root-variable"
-						role="button"
-						title={
-							!preference?.showParamValues
-								? 'Show Parameter Values'
-								: 'Hide Parameter Values'
-						}
-						onClick={() => {
-							savePersonalization('showParamValues', !preference?.showParamValues);
+					<select
+						value={textEditorTheme}
+						onChange={(e) => savePersonalization('textEditorTheme', e.target.value)}
+						title="Editor Theme"
+						style={{
+							padding: '4px 8px',
+							marginLeft: '8px',
+							borderRadius: '4px',
+							border: '1px solid #ccc',
+							backgroundColor: 'var(--background-color, white)',
+							color: 'var(--font-color, black)',
+							cursor: 'pointer',
 						}}
-					/>
-					<i
-						className="fa fa-regular fa-comment-dots"
-						role="button"
-						title={preference?.showComments ? 'Show Comments' : 'Hide Comments'}
-						onClick={() => {
-							savePersonalization(
-								'showComments',
-								preference?.showComments === undefined
-									? true
-									: !preference.showComments,
-							);
-						}}
-					/>
-					<i
-						className="fa fa-solid fa-database"
-						role="button"
-						title={preference?.showStores ? 'Show Stores' : 'Hide Stores'}
-						onClick={() => {
-							savePersonalization(
-								'showStores',
-								preference?.showStores === undefined
-									? true
-									: !preference.showStores,
-							);
-						}}
-					/>
-					<div className="_separator" />
-					{editPencilIcon}
+					>
+						<option value="light">Light</option>
+						<option value="dark">Dark</option>
+						<option value="high-contrast">High Contrast</option>
+						<option value="easy-on-eyes">Easy on Eyes</option>
+						<option value="flared-up">Flared Up</option>
+					</select>
+					{!debugViewMode && editorMode !== 'help' && (
+						<>
+							<div className="_separator" />
+							<i
+								className={`fa fa-solid ${editorMode === 'text' ? 'fa-diagram-project' : 'fa-code'}`}
+								role="button"
+								title={editorMode === 'text' ? 'Switch to Visual Mode' : 'Switch to Text Mode'}
+								onClick={handleModeToggle}
+								style={{ fontSize: '18px', cursor: 'pointer', padding: '8px' }}
+							/>
+						</>
+					)}
 				</div>
 				<div className="_right">
-					<i
-						className="fa fa-solid fa-magnifying-glass-plus"
-						role="button"
-						title="Zoom in"
-						onClick={() => savePersonalization('magnification', magnification + 0.1)}
-					/>
-					<i
-						className="fa fa-solid fa-magnifying-glass"
-						role="button"
-						title="Reset zoom"
-						onClick={() => savePersonalization('magnification', 1)}
-					/>
-					<i
-						className="fa fa-solid fa-magnifying-glass-minus"
-						role="button"
-						title="Zoom out"
-						onClick={() => savePersonalization('magnification', magnification - 0.1)}
-					/>
+					{editorMode === 'visual' && (
+						<>
+							<i
+								className="fa fa-solid fa-magnifying-glass-plus"
+								role="button"
+								title="Zoom in"
+								onClick={() => savePersonalization('magnification', magnification + 0.1)}
+							/>
+							<i
+								className="fa fa-solid fa-magnifying-glass"
+								role="button"
+								title="Reset zoom"
+								onClick={() => savePersonalization('magnification', 1)}
+							/>
+							<i
+								className="fa fa-solid fa-magnifying-glass-minus"
+								role="button"
+								title="Zoom out"
+								onClick={() => savePersonalization('magnification', magnification - 0.1)}
+							/>
+						</>
+					)}
 				</div>
 			</div>
 			<div className="_container" ref={container}>

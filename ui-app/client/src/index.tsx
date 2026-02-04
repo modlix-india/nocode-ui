@@ -53,9 +53,11 @@ declare global {
 	var appDefinitionResponse: AppDefinitionResponse;
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;
+	var debugContext: any;
 	// var d3: typeof import('d3/index');
 }
 
+globalThis.debugContext = {};
 globalThis.styleProperties = {};
 
 let listeners: Set<() => void> = new Set();

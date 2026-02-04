@@ -1,0 +1,1279 @@
+/* Debug Window Styles */
+
+._debugWindow {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 320px;
+	max-height: 420px;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.03),
+		0 4px 16px rgba(0, 0, 0, 0.08),
+		0 12px 40px rgba(0, 0, 0, 0.12);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	z-index: 9998;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+._debugWindowCollapsed {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	width: 52px;
+	height: 52px;
+	background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+	border-radius: 50%;
+	box-shadow:
+		0 4px 14px rgba(99, 102, 241, 0.4),
+		0 8px 24px rgba(0, 0, 0, 0.1);
+	cursor: pointer;
+	z-index: 9998;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+	border: none;
+	padding: 0;
+}
+
+._debugWindowCollapsed:hover {
+	transform: scale(1.08);
+	box-shadow:
+		0 6px 20px rgba(99, 102, 241, 0.5),
+		0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+._debugWindowCollapsed i.fa {
+	color: #fff;
+	font-size: 20px;
+}
+
+._executionCount {
+	position: absolute;
+	top: -8px;
+	right: -8px;
+	background-color: #EF4444;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 700;
+	min-width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 5px;
+	border: 2px solid #fff;
+	box-shadow: 0px 1px 7px 0px #00000070
+}
+
+._debugHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 14px 16px;
+	border-bottom: 1px solid #F3F4F6;
+	background: #fff;
+}
+
+._debugTitle {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1F2937;
+}
+
+._debugTitle i.fa {
+	color: #6366F1;
+	font-size: 16px;
+}
+
+._debugActions {
+	display: flex;
+	align-items: center;
+	gap: 2px;
+}
+
+._debugActions button {
+	width: 32px;
+	height: 32px;
+	border: none;
+	background-color: transparent;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s ease;
+	padding: 0;
+}
+
+._debugActions button:hover {
+	background-color: #F3F4F6;
+}
+
+._debugActions button i.fa {
+	font-size: 14px;
+	color: #9CA3AF;
+	transition: color 0.15s ease;
+}
+
+._debugActions button:hover i.fa {
+	color: #6B7280;
+}
+
+._debugToggle._enabled i.fa {
+	color: #10B981 !important;
+}
+
+._debugToggle._disabled i.fa {
+	color: #D1D5DB !important;
+}
+
+._debugClear:hover i.fa {
+	color: #EF4444 !important;
+}
+
+._debugExecutionList {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	max-height: 340px;
+}
+
+._debugEmptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+	color: #9CA3AF;
+	text-align: center;
+	gap: 12px;
+}
+
+._debugEmptyState i.fa {
+	font-size: 32px;
+	color: #E5E7EB;
+}
+
+._debugEmptyState span {
+	font-size: 13px;
+	color: #6B7280;
+}
+
+._debugHint {
+	font-size: 11px !important;
+	color: #9CA3AF !important;
+	margin-top: 4px;
+}
+
+._debugExecutionItem {
+	display: block;
+	padding: 12px 14px;
+	background-color: #fff;
+	border: 1px solid #E5E7EB;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	width: 100%;
+	text-align: left;
+}
+
+._debugExecutionItem:hover {
+	background-color: #F9FAFB;
+	border-color: #D1D5DB;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+._debugExecutionItem._selected {
+	background-color: #EEF2FF;
+	border-color: #6366F1;
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+._debugExecutionItem._errored {
+	background-color: #FEF2F2;
+	border-color: #FECACA;
+}
+
+._debugExecutionItem._errored:hover {
+	border-color: #F87171;
+}
+
+._debugExecutionItem._errored._selected {
+	border-color: #EF4444;
+	box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+._executionMain {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	width: 100%;
+}
+
+._executionIcon {
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	background-color: #F3F4F6;
+	border-radius: 8px;
+}
+
+._executionIcon i.fa {
+	font-size: 14px;
+}
+
+._executionIcon i.fa-check-circle {
+	color: #10B981;
+}
+
+._executionIcon i.fa-exclamation-circle {
+	color: #EF4444;
+}
+
+._executionIcon i.fa-spinner {
+	color: #6366F1;
+}
+
+._debugExecutionItem._errored ._executionIcon {
+	background-color: #FEE2E2;
+}
+
+._debugExecutionItem._selected ._executionIcon {
+	background-color: #E0E7FF;
+}
+
+._executionDetails {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+._executionFunctionName {
+	font-size: 13px;
+	font-weight: 600;
+	color: #1F2937;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	line-height: 1.3;
+}
+
+._executionMeta {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	font-size: 11px;
+	color: #6B7280;
+}
+
+._executionMeta span {
+	display: inline-flex;
+	align-items: center;
+	white-space: nowrap;
+}
+
+._executionTime {
+	color: #9CA3AF;
+}
+
+._executionDuration {
+	font-weight: 600;
+	color: #6366F1;
+	background-color: #EEF2FF;
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+
+._executionSteps {
+	color: #9CA3AF;
+}
+
+/* Separator dot between meta items */
+._executionMeta span:not(:last-child)::after {
+	content: '·';
+	margin-left: 6px;
+	color: #D1D5DB;
+}
+
+/* Debug info on StatementNode */
+._statementDebugInfo {
+	padding: 8px 12px;
+	background-color: #F0FDF4;
+	border-top: 1px solid #BBF7D0;
+	font-size: 11px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	border-radius: 0px 0px 6px 6px;
+}
+
+._statementDebugInfo._errored {
+	background-color: #FEF2F2;
+	border-top-color: #FECACA;
+}
+
+._debugInfoRow {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+._debugInfoLabel {
+	font-weight: 500;
+	color: #6B7280;
+	min-width: 60px;
+}
+
+._debugInfoValue {
+	color: #1F2937;
+	font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+}
+
+._debugInfoValue._duration {
+	color: #059669;
+	font-weight: 600;
+}
+
+._debugInfoValue._error {
+	color: #DC2626;
+}
+
+/* Expandable debug info in StatementNode */
+._statementDebugInfo ._debugHeader {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 0;
+	border: none;
+	background: transparent;
+}
+
+._statementDebugInfo ._debugHeader[role='button'] {
+	cursor: pointer;
+}
+
+._statementDebugInfo ._debugHeader[role='button']:hover {
+	opacity: 0.8;
+}
+
+._statementDebugInfo ._debugBadge {
+	position: static;
+	font-size: 10px;
+	padding: 2px 8px;
+	border-radius: 4px;
+}
+
+._statementDebugInfo ._debugEvent {
+	font-size: 10px;
+	color: #6B7280;
+	font-weight: 500;
+}
+
+._statementDebugInfo ._expandIcon {
+	font-size: 10px;
+	color: #9CA3AF;
+	margin-left: auto;
+	transition: transform 0.15s ease;
+}
+
+._debugExpandedContent {
+	margin-top: 8px;
+	padding-top: 8px;
+	border-top: 1px dashed #D1D5DB;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+._statementDebugInfo._errored ._debugExpandedContent {
+	border-top-color: #FECACA;
+}
+
+._debugExpandedContent ._debugInfoRow {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+._statementDebugInfo ._debugInfoRow._errorRow {
+	flex-direction: row;
+	align-items: flex-start;
+}
+
+._debugInfoValue._json {
+	font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+	font-size: 10px;
+	background-color: #F3F4F6;
+	padding: 8px 10px;
+	border-radius: 6px;
+	max-height: 150px;
+	overflow-y: auto;
+	white-space: pre-wrap;
+	word-break: break-all;
+	margin: 0;
+	line-height: 1.4;
+}
+
+._statementDebugInfo._errored ._debugInfoValue._json {
+	background-color: #FEE2E2;
+}
+
+._debugBadge {
+	position: absolute;
+	top: -6px;
+	right: -6px;
+	background-color: #10B981;
+	color: #fff;
+	font-size: 9px;
+	font-weight: 600;
+	padding: 2px 6px;
+	border-radius: 10px;
+	white-space: nowrap;
+}
+
+._debugBadge._slow {
+	background-color: #F59E0B;
+}
+
+._debugBadge._verySlow {
+	background-color: #EF4444;
+}
+
+._debugBadge._errored {
+	background-color: #EF4444;
+}
+
+/* Execution timeline visualization */
+._debugTimeline {
+	padding: 4px 12px 8px;
+	border-top: 1px solid #F3F4F6;
+}
+
+._timelineBar {
+	height: 4px;
+	background-color: #E5E7EB;
+	border-radius: 2px;
+	overflow: hidden;
+	position: relative;
+}
+
+._timelineProgress {
+	height: 100%;
+	background-color: #10B981;
+	border-radius: 2px;
+	transition: width 0.3s ease;
+}
+
+._timelineProgress._slow {
+	background-color: #F59E0B;
+}
+
+._timelineProgress._verySlow {
+	background-color: #EF4444;
+}
+
+/* Expanded debug window with KIRunEditor */
+._debugWindowExpanded {
+	position: fixed;
+	top: 20px;
+	left: 20px;
+	right: 20px;
+	bottom: 20px;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.03),
+		0 4px 16px rgba(0, 0, 0, 0.08),
+		0 12px 40px rgba(0, 0, 0, 0.12);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	z-index: 9999;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+._debugWindowExpanded ._debugHeader {
+	flex-shrink: 0;
+}
+
+._debugWindowExpanded ._debugTitle span {
+	max-width: 400px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+._debugWindowExpanded ._debugTitle ._executionDuration {
+	margin-left: 8px;
+}
+
+._debugEditorContainer {
+	flex: 1;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+._debugEditorContainer .comp.compKIRunEditor {
+	flex: 1;
+	height: 100%;
+}
+
+._debugLoading {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: #6B7280;
+	font-size: 14px;
+}
+
+._debugClose:hover i.fa {
+	color: #6366F1 !important;
+}
+
+/* Function selector for switching between definitions */
+._debugFunctionSelector {
+	display: flex;
+	gap: 4px;
+	padding: 8px 16px;
+	background-color: #F9FAFB;
+	border-bottom: 1px solid #E5E7EB;
+	overflow-x: auto;
+	flex-shrink: 0;
+}
+
+._debugFunctionTab {
+	padding: 6px 12px;
+	font-size: 12px;
+	font-weight: 500;
+	color: #6B7280;
+	background-color: #fff;
+	border: 1px solid #E5E7EB;
+	border-radius: 6px;
+	cursor: pointer;
+	transition: all 0.15s ease;
+	white-space: nowrap;
+}
+
+._debugFunctionTab:hover {
+	background-color: #F3F4F6;
+	border-color: #D1D5DB;
+}
+
+._debugFunctionTab._selected {
+	background-color: #6366F1;
+	border-color: #6366F1;
+	color: #fff;
+}
+
+/* No definition state */
+._debugNoDefinition {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	height: 100%;
+	color: #9CA3AF;
+	text-align: center;
+	gap: 12px;
+	padding: 40px;
+}
+
+._debugNoDefinition i.fa {
+	font-size: 48px;
+	color: #E5E7EB;
+}
+
+._debugNoDefinition span {
+	font-size: 14px;
+	color: #6B7280;
+}
+
+/* Multiple execution count badge */
+._debugExecutionCount {
+	font-size: 10px;
+	font-weight: 600;
+	color: #6366F1;
+	background-color: #EEF2FF;
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+
+/* Individual log entry in expanded view */
+._debugLogEntry {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+._debugLogEntry:not(:last-child) {
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #E5E7EB;
+}
+
+._statementDebugInfo._errored ._debugLogEntry:not(:last-child) {
+	border-bottom-color: #FECACA;
+}
+
+._debugLogEntryHeader {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding-bottom: 4px;
+}
+
+._debugLogEntryIndex {
+	font-size: 10px;
+	font-weight: 600;
+	color: #6366F1;
+	background-color: #EEF2FF;
+	padding: 2px 8px;
+	border-radius: 4px;
+}
+
+._debugLogEntryDuration {
+	font-size: 10px;
+	font-weight: 500;
+	color: #059669;
+}
+
+._debugLogEntryEvent {
+	font-size: 10px;
+	color: #6B7280;
+	font-weight: 500;
+}
+
+/* Store button in debug header */
+._debugStoreBtn {
+	width: 32px;
+	height: 32px;
+	border: none;
+	background-color: transparent;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s ease;
+	padding: 0;
+}
+
+._debugStoreBtn:hover {
+	background-color: #F3F4F6;
+}
+
+._debugStoreBtn i.fa {
+	font-size: 14px;
+	color: #9CA3AF;
+	transition: color 0.15s ease;
+}
+
+._debugStoreBtn:hover i.fa {
+	color: #6366F1;
+}
+
+._debugStoreBtn._active {
+	background-color: #EEF2FF;
+}
+
+._debugStoreBtn._active i.fa {
+	color: #6366F1;
+}
+
+/* Store Panel */
+._debugStorePanel {
+	position: absolute;
+	top: 60px;
+	right: 16px;
+	width: 400px;
+	max-height: calc(100% - 80px);
+	background-color: #fff;
+	border-radius: 12px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.05),
+		0 4px 16px rgba(0, 0, 0, 0.1),
+		0 12px 40px rgba(0, 0, 0, 0.15);
+	z-index: 100;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+._debugStorePanelHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	border-bottom: 1px solid #E5E7EB;
+	background-color: #F9FAFB;
+}
+
+._debugStorePanelTitle {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 14px;
+	font-weight: 600;
+	color: #1F2937;
+}
+
+._debugStorePanelTitle i.fa {
+	color: #6366F1 !important;
+}
+
+._debugStorePanelClose {
+	width: 28px;
+	height: 28px;
+	border: none;
+	background-color: transparent;
+	border-radius: 6px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.15s ease;
+	padding: 0;
+}
+
+._debugStorePanelClose:hover {
+	background-color: #E5E7EB;
+}
+
+._debugStorePanelClose i.fa {
+	font-size: 12px;
+	color: #6B7280;
+}
+
+._debugStoreFilter {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 12px;
+	border-bottom: 1px solid #E5E7EB;
+	background-color: #fff;
+}
+
+._debugStoreFilter i.fa-search {
+	font-size: 12px;
+	color: #9CA3AF;
+}
+
+._debugStoreFilter input {
+	flex: 1;
+	border: none;
+	outline: none;
+	font-size: 13px;
+	color: #1F2937;
+	background: transparent;
+}
+
+._debugStoreFilter input::placeholder {
+	color: #9CA3AF;
+}
+
+._debugStoreFilterClear {
+	width: 20px;
+	height: 20px;
+	border: none !important;
+	background-color: #E5E7EB !important;
+	border-radius: 50% !important;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 0 !important;
+	transition: all 0.15s ease;
+}
+
+._debugStoreFilterClear:hover {
+	background-color: #D1D5DB !important;
+}
+
+._debugStoreFilterClear i.fa {
+	font-size: 10px !important;
+	color: #6B7280 !important;
+}
+
+._debugStorePanelContent {
+	flex: 1;
+	overflow-y: auto;
+	padding: 12px;
+	font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+._debugStoreEmpty {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 40px 20px;
+	color: #9CA3AF;
+	text-align: center;
+	gap: 12px;
+}
+
+._debugStoreEmpty i.fa {
+	font-size: 32px;
+	color: #E5E7EB;
+}
+
+/* JSON Tree Viewer */
+._jsonTreeNode {
+	user-select: text;
+}
+
+._jsonTreeHeader {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	cursor: pointer;
+	padding: 2px 4px;
+	border-radius: 4px;
+	transition: background-color 0.1s ease;
+}
+
+._jsonTreeHeader:hover {
+	background-color: #F3F4F6;
+}
+
+._jsonTreeHeader ._expandIcon {
+	font-size: 10px !important;
+	color: #9CA3AF !important;
+	width: 12px;
+	flex-shrink: 0;
+}
+
+._jsonTreeLeaf {
+	display: flex;
+	align-items: baseline;
+	gap: 4px;
+	padding: 2px 4px 2px 20px;
+}
+
+._jsonKey {
+	color: #7C3AED;
+	font-weight: 500;
+}
+
+._jsonValue {
+	color: #1F2937;
+}
+
+._jsonValue._string {
+	color: #059669;
+}
+
+._jsonValue._number {
+	color: #2563EB;
+}
+
+._jsonValue._boolean {
+	color: #DC2626;
+}
+
+._jsonValue._null {
+	color: #9CA3AF;
+	font-style: italic;
+}
+
+._jsonBracket {
+	color: #6B7280;
+}
+
+._jsonPreview {
+	color: #9CA3AF;
+	font-style: italic;
+	margin-left: 4px;
+}
+
+._jsonCloseBracket {
+	color: #6B7280;
+	padding-left: 20px;
+}
+
+._jsonTreeChildren {
+	border-left: 1px dashed #E5E7EB;
+	margin-left: 8px;
+}
+/* PageEditor Debug Window Styles */
+
+._popupMenuBackground {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+._executionListMenu {
+	width: 500px;
+	max-height: 600px;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.03),
+		0 4px 16px rgba(0, 0, 0, 0.08),
+		0 12px 40px rgba(0, 0, 0, 0.12);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+._executionListHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid #E5E7EB;
+	background: linear-gradient(135deg, #F9FAFB 0%, #fff 100%);
+	flex-shrink: 0;
+}
+
+._executionListHeader h3 {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	font-size: 16px;
+	font-weight: 600;
+	color: #1F2937;
+	margin: 0;
+}
+
+._executionListHeader svg {
+	color: #6366F1;
+}
+
+._executionListActions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+._iconButton {
+	width: 36px;
+	height: 36px;
+	border: 1px solid #E5E7EB;
+	background-color: #fff;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+	padding: 0;
+}
+
+._iconButton:hover {
+	background-color: #F3F4F6;
+	border-color: #D1D5DB;
+	transform: translateY(-1px);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+._iconButton:active {
+	transform: translateY(0);
+}
+
+._iconButton i.fa {
+	font-size: 14px !important;
+	color: #6B7280 !important;
+	transition: color 0.2s ease;
+}
+
+._iconButton:hover i.fa {
+	color: #1F2937;
+}
+
+._iconButton._active {
+	background-color: #EEF2FF;
+	border-color: #6366F1;
+}
+
+._iconButton._active i.fa {
+	color: #6366F1;
+}
+
+/* Trash button - red hover */
+._iconButton:hover i.fa-trash {
+	color: #EF4444;
+}
+
+._closeButton {
+	width: 36px;
+	height: 36px;
+	border: 1px solid #E5E7EB;
+	background-color: #fff;
+	border-radius: 8px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: all 0.2s ease;
+	padding: 0;
+	font-size: 24px;
+	font-weight: 300;
+	color: #9CA3AF;
+	line-height: 1;
+}
+
+._closeButton:hover {
+	background-color: #FEE2E2;
+	border-color: #FECACA;
+	color: #EF4444;
+	transform: scale(1.05);
+}
+
+._closeButton:active {
+	transform: scale(0.95);
+}
+
+._executionListContent {
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+._emptyState {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 60px 20px;
+	color: #9CA3AF;
+	text-align: center;
+	gap: 12px;
+}
+
+._emptyState i.fa {
+	color: #D1D5DB;
+}
+
+._executionListItem {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	padding: 14px 16px;
+	background-color: #fff;
+	border: 1px solid #E5E7EB;
+	border-radius: 12px;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+._executionListItem:hover {
+	background-color: #F9FAFB;
+	border-color: #6366F1;
+	box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+	transform: translateY(-1px);
+}
+
+._executionListItem:active {
+	transform: translateY(0);
+}
+
+._status {
+	width: 28px;
+	height: 28px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	border-radius: 50%;
+	font-size: 14px;
+	font-weight: 700;
+}
+
+._status._success {
+	background-color: #D1FAE5;
+	color: #059669;
+}
+
+._status._error {
+	background-color: #FEE2E2;
+	color: #DC2626;
+}
+
+._executionInfo {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+._functionName {
+	font-size: 14px;
+	font-weight: 600;
+	color: #1F2937;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+._eventName {
+	font-size: 12px;
+	color: #6B7280;
+}
+
+._screenType {
+	font-size: 11px;
+	color: #9CA3AF;
+	font-weight: 500;
+	text-transform: capitalize;
+}
+
+._executionMeta {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 4px;
+	flex-shrink: 0;
+}
+
+._timestamp {
+	font-size: 11px;
+	color: #9CA3AF;
+	font-weight: 500;
+}
+
+._duration {
+	font-size: 12px;
+	font-weight: 600;
+	color: #6366F1;
+	background-color: #EEF2FF;
+	padding: 3px 8px;
+	border-radius: 6px;
+}
+
+._steps {
+	font-size: 11px;
+	color: #6B7280;
+	background-color: #F3F4F6;
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+
+/* Code Editor Content - for execution detail view */
+._codeEditorContent {
+	width: 900px;
+	max-width: 90vw;
+	height: 700px;
+	max-height: 85vh;
+	background-color: #fff;
+	border-radius: 16px;
+	box-shadow:
+		0 0 0 1px rgba(0, 0, 0, 0.03),
+		0 4px 16px rgba(0, 0, 0, 0.08),
+		0 12px 40px rgba(0, 0, 0, 0.12);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transition: all 0.3s ease;
+}
+
+._codeEditorContent._fullScreen {
+	width: calc(100vw - 40px);
+	height: calc(100vh - 40px);
+	max-width: none;
+	max-height: none;
+}
+
+/* Maximize button special styling */
+._iconButton i.fa-up-right-and-down-left-from-center,
+._iconButton i.fa-down-left-and-up-right-to-center {
+	font-size: 13px;
+}
+
+._iconButton:hover i.fa-up-right-and-down-left-from-center,
+._iconButton:hover i.fa-down-left-and-up-right-to-center {
+	color: #6366F1;
+}
+
+/* Device Group Styles */
+._deviceGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+._deviceGroup:not(:last-child) {
+	margin-bottom: 8px;
+	padding-bottom: 12px;
+	border-bottom: 1px solid #E5E7EB;
+}
+
+._deviceHeader {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 12px;
+	background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+	border-radius: 10px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #4B5563;
+}
+
+._deviceHeader i.fa {
+	font-size: 16px;
+	color: #6366F1;
+	width: 20px;
+	text-align: center;
+}
+
+._deviceHeader i.fa-desktop {
+	color: #3B82F6;
+}
+
+._deviceHeader i.fa-tablet {
+	color: #8B5CF6;
+}
+
+._deviceHeader i.fa-mobile {
+	color: #10B981;
+}
+
+._deviceCount {
+	margin-left: auto;
+	font-size: 11px;
+	font-weight: 600;
+	color: #6B7280;
+	background-color: #fff;
+	padding: 3px 10px;
+	border-radius: 12px;
+	border: 1px solid #E5E7EB;
+}

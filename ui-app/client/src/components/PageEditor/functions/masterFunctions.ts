@@ -15,10 +15,11 @@ interface MasterFunctionOptions {
 	onSelectedSubComponentChange: (key: string) => void;
 	operations: PageOperations;
 	onContextMenu: (m: ContextMenuDetails) => void;
-	onSlaveStore: (payload: any) => void;
+	onSlaveStore: (screenType: string, payload: any) => void;
 	selectedComponent: string;
 	styleSelectorPref: any;
 	setStyleSelectorPref: (pref: any) => void;
+	onDebugExecution?: (debugMessage: any) => void;
 }
 export const MASTER_FUNCTIONS = new Map<
 	string,
@@ -72,12 +73,13 @@ export const MASTER_FUNCTIONS = new Map<
 			options.operations.droppedOn(componentKey, droppedData),
 	],
 	['SLAVE_CONTEXT_MENU', (options, payload) => options.onContextMenu(payload)],
-	['SLAVE_STORE', (options, payload) => options.onSlaveStore(payload)],
+	['SLAVE_STORE', (options, payload) => options.onSlaveStore(options.screenType, payload)],
 	['SLAVE_COMP_CHANGED', (options, payload) => options.operations.componentChanged(payload)],
 	[
 		'SLAVE_COMP_PROP_CHANGED',
 		(options, payload) => options.operations.componentPropChanged(payload),
 	],
+	['SLAVE_DEBUG_EXECUTION', (options, payload) => options.onDebugExecution?.(payload)],
 ]);
 
 function udpateDeviceSelection(key: string, options: MasterFunctionOptions) {
