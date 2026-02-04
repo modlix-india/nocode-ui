@@ -28,7 +28,7 @@
 	--kirun-accent: #3182ce;
 }
 
-.comp.compKIRunEditor._theme-light ._designer {
+.comp.compKIRunEditor._theme-light ._container {
 	background-color: var(--kirun-bg-secondary);
 	background-image: radial-gradient(circle, rgba(0, 0, 0, 0.1) 1.3px, transparent 1.3px);
 	background-size: 20px 20px;
@@ -77,7 +77,7 @@
 	--kirun-accent: #60a5fa;
 }
 
-.comp.compKIRunEditor._theme-dark ._designer {
+.comp.compKIRunEditor._theme-dark ._container {
 	background-color: var(--kirun-bg-secondary);
 	color: var(--kirun-text-primary);
 	background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1.3px, transparent 1.3px);
@@ -130,7 +130,7 @@
 	--kirun-accent: #00ff00;
 }
 
-.comp.compKIRunEditor._theme-high-contrast ._designer {
+.comp.compKIRunEditor._theme-high-contrast ._container {
 	background-color: var(--kirun-bg-secondary);
 	color: var(--kirun-text-primary);
 	border: 1px solid var(--kirun-border-color);
@@ -187,7 +187,7 @@
 	--kirun-accent: #7c9885;
 }
 
-.comp.compKIRunEditor._theme-easy-on-eyes ._designer {
+.comp.compKIRunEditor._theme-easy-on-eyes ._container {
 	background-color: var(--kirun-bg-secondary);
 	color: var(--kirun-text-primary);
 	background-image: radial-gradient(circle, rgba(62, 56, 50, 0.1) 1.3px, transparent 1.3px);
@@ -238,7 +238,7 @@
 	--kirun-accent: #a78bfa;
 }
 
-.comp.compKIRunEditor._theme-flared-up ._designer {
+.comp.compKIRunEditor._theme-flared-up ._container {
 	background-color: var(--kirun-bg-secondary);
 	color: var(--kirun-text-primary);
 	background-image: radial-gradient(circle, rgba(167, 139, 250, 0.15) 1.3px, transparent 1.3px);
