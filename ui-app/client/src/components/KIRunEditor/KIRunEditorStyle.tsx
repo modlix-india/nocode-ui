@@ -22,7 +22,10 @@ export default function KIRunEditorStyle({
 	const css = processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return (
 		<>
-			{used ? <link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} /> : undefined}
+			{used ? <>
+				<link key="externalCSS" rel="stylesheet" href={lazyCSSURL(NAME)} /> 
+				<link key="externalCSS" rel="stylesheet" href={lazyCSSURL('KIRunEditorThemes')} /> 
+			</> : undefined}	
 			<style id="KIRUNEditorCss">{css}</style>
 		</>
 	);
