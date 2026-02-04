@@ -49,6 +49,60 @@ if (typeof globalThis !== 'undefined') {
 	(globalThis as any).DebugCollector = DebugCollector;
 }
 
+// Add listener for debug executions to send to PageEditor
+// Only add listener if in design mode or debug mode
+if (typeof globalThis !== 'undefined' && (globalThis.isDesignMode || globalThis.isDebugMode)) {
+	DebugCollector.getInstance().addEventListener((event) => {
+		// Only send executionEnd events when in PAGE design mode
+		if (event.type === 'executionEnd' && globalThis.designMode === 'PAGE') {
+			try {
+				const executionLog = DebugCollector.getInstance().getExecution(event.executionId);
+				const debugContext = (globalThis as any).debugContext?.[event.executionId];
+
+				if (executionLog) {
+					console.log('[DEBUG] Sending execution log:', {
+						executionId: event.executionId,
+						screenType: globalThis.screenType,
+						logs: executionLog.logs,
+						startTime: executionLog.startTime,
+						endTime: executionLog.endTime,
+						errored: executionLog.errored,
+						hasDebugContext: !!debugContext,
+					});
+
+					// Send the entire execution log as is, including pageDefinition from debugContext
+					window.parent.postMessage(
+						{
+							type: 'SLAVE_DEBUG_EXECUTION',
+							editorType: 'PAGE',
+							screenType: globalThis.screenType,
+							payload: {
+								executionLog: {
+									...executionLog,
+									// Convert Map to plain object for serialization
+									definitions: executionLog.definitions
+										? Object.fromEntries(executionLog.definitions)
+										: {},
+								},
+								executionId: event.executionId,
+								screenType: globalThis.screenType,
+								// Include pageDefinition and locationHistory from debugContext
+								pageDefinition: debugContext?.pageDefinition,
+								locationHistory: debugContext?.locationHistory || [],
+							},
+						},
+						'*',
+					);
+				} else {
+					console.warn('[DEBUG] No execution log found for:', event.executionId);
+				}
+			} catch (error) {
+				console.error('Failed to send debug execution message:', error);
+			}
+		}
+	});
+}
+
 export const runEvent = async (
 	functionDefinition: any,
 	key: string = UUID(),
@@ -174,7 +228,8 @@ export const runEvent = async (
 			}
 		}
 
-		if (isDebugMode){
+		if (isDebugMode || isDesignMode){
+			if (!globalThis.debugContext) globalThis.debugContext = {};
 			globalThis.debugContext[eid] = {
 				pageDefinition,
 				functionRepository,

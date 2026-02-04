@@ -15,6 +15,7 @@ import { UIFunctionRepository } from '../functions';
 import { UISchemaRepository } from '../schemas/common';
 import { shortUUID } from '../util/shortUUID';
 import axios from 'axios';
+import StorePanel from './StorePanel';
 
 const LazyKIRunEditor = React.lazy(
 	() => import(/* webpackChunkName: "KIRunEditor" */ '../components/KIRunEditor/LazyKIRunEditor'),
@@ -43,120 +44,26 @@ function countSteps(logs: LogEntry[]): number {
 	return count;
 }
 
-// JSON Tree Node component for collapsible/expandable tree view
-function JsonTreeNode({ name, value, depth = 0, keyFilter = '' }: { name?: string; value: any; depth?: number; keyFilter?: string }) {
-	const [expanded, setExpanded] = useState(depth < 2); // Auto-expand first 2 levels
-
-	const isObject = value !== null && typeof value === 'object';
-	const isArray = Array.isArray(value);
-	const isEmpty = isObject && Object.keys(value).length === 0;
-
-	// Check if this node or any of its children match the filter
-	const matchesFilter = (key: string, val: any, filter: string): boolean => {
-		if (!filter) return true;
-		const lowerFilter = filter.toLowerCase();
-		if (key.toLowerCase().includes(lowerFilter)) return true;
-		if (val !== null && typeof val === 'object') {
-			return Object.entries(val).some(([k, v]) => matchesFilter(k, v, filter));
-		}
-		return false;
-	};
-
-	// Check if a key directly matches the filter (not via children)
-	const keyDirectlyMatches = (key: string, filter: string): boolean => {
-		if (!filter) return false;
-		return key.toLowerCase().includes(filter.toLowerCase());
-	};
-
-	const getValuePreview = (val: any): string => {
-		if (val === null) return 'null';
-		if (val === undefined) return 'undefined';
-		if (typeof val === 'string') return `"${val.length > 50 ? val.slice(0, 50) + '...' : val}"`;
-		if (typeof val === 'number' || typeof val === 'boolean') return String(val);
-		if (Array.isArray(val)) return `Array(${val.length})`;
-		if (typeof val === 'object') return `{${Object.keys(val).length} keys}`;
-		return String(val);
-	};
-
-	const getValueClass = (val: any): string => {
-		if (val === null || val === undefined) return '_null';
-		if (typeof val === 'string') return '_string';
-		if (typeof val === 'number') return '_number';
-		if (typeof val === 'boolean') return '_boolean';
-		return '';
-	};
-
-	if (!isObject || isEmpty) {
-		return (
-			<div className="_jsonTreeLeaf" style={{ paddingLeft: `${depth * 16}px` }}>
-				{name !== undefined && <span className="_jsonKey">{name}: </span>}
-				<span className={`_jsonValue ${getValueClass(value)}`}>
-					{getValuePreview(value)}
-				</span>
-			</div>
-		);
-	}
-
-	// Sort keys alphabetically for objects, keep original order for arrays
-	// Apply key filter at depth 0 (root level only filters, children show all matching branches)
-	const allEntries = isArray
-		? Object.entries(value)
-		: Object.entries(value).sort(([a], [b]) => a.localeCompare(b));
-
-	const entries = depth === 0 && keyFilter
-		? allEntries.filter(([key, val]) => matchesFilter(key, val, keyFilter))
-		: allEntries;
-
-	return (
-		<div className="_jsonTreeNode">
-			<div
-				className="_jsonTreeHeader"
-				style={{ paddingLeft: `${depth * 16}px` }}
-				onClick={() => setExpanded(!expanded)}
-			>
-				<i className={`fa fa-chevron-${expanded ? 'down' : 'right'} _expandIcon`} />
-				{name !== undefined && <span className="_jsonKey">{name}: </span>}
-				<span className="_jsonBracket">
-					{isArray ? '[' : '{'}
-					{!expanded && (
-						<span className="_jsonPreview">
-							{entries.length} {isArray ? 'items' : 'keys'}
-						</span>
-					)}
-					{!expanded && (isArray ? ']' : '}')}
-				</span>
-			</div>
-			{expanded && (
-				<div className="_jsonTreeChildren">
-					{entries.map(([key, val]) => {
-						// If this key directly matches the filter, don't pass filter to children
-						// (show entire subtree without further filtering)
-						const childFilter = keyDirectlyMatches(key, keyFilter) ? '' : keyFilter;
-						return (
-							<JsonTreeNode
-								key={key}
-								name={isArray ? `[${key}]` : key}
-								value={val}
-								depth={depth + 1}
-								keyFilter={childFilter}
-							/>
-						);
-					})}
-					<div className="_jsonCloseBracket" style={{ paddingLeft: `${depth * 16}px` }}>
-						{isArray ? ']' : '}'}
-					</div>
-				</div>
-			)}
-		</div>
-	);
-}
-
 // Get the root function name from execution
 function getRootFunctionName(execution: ExecutionLog): string {
 	// Get from definitions - the first definition is typically the root function
 	const definitionKeys = Array.from(execution.definitions.keys());
 	if (definitionKeys.length > 0) {
-		return definitionKeys[0];
+		const key = definitionKeys[0];
+		const definition = execution.definitions.get(key);
+
+		// If definition exists, construct name with namespace
+		if (definition) {
+			const namespace = definition.namespace;
+			const name = definition.name;
+			// Only include namespace if it exists
+			if (namespace) {
+				return `${namespace}.${name}`;
+			}
+			return name;
+		}
+
+		return key;
 	}
 	// Fallback to first log entry
 	const firstLog = execution.logs[0];
@@ -368,50 +275,12 @@ export default function LazyDebugWindow() {
 	}
 
 	const storeContainer = showStore ? (
-		<div className="_debugStorePanel">
-			<div className="_debugStorePanelHeader">
-				<span className="_debugStorePanelTitle">
-					<i className="fa fa-database" />
-					Store
-				</span>
-				<button
-					className="_debugStorePanelClose"
-					onClick={() => setShowStore(false)}
-					title="Close Store"
-				>
-					<i className="fa fa-times" />
-				</button>
-			</div>
-			<div className="_debugStoreFilter">
-				<i className="fa fa-search" />
-				<input
-					type="text"
-					placeholder="Filter keys..."
-					value={storeKeyFilter}
-					onChange={e => handleStoreKeyFilterChange(e.target.value)}
-					autoFocus
-				/>
-				{storeKeyFilter && (
-					<button
-						className="_debugStoreFilterClear"
-						onClick={() => handleStoreKeyFilterChange('')}
-						title="Clear filter"
-					>
-						<i className="fa fa-times" />
-					</button>
-				)}
-			</div>
-			<div className="_debugStorePanelContent">
-				{storeData ? (
-					<JsonTreeNode value={storeData} keyFilter={storeKeyFilter} />
-				) : (
-					<div className="_debugStoreEmpty">
-						<i className="fa fa-info-circle" />
-						<span>No store data available</span>
-					</div>
-				)}
-			</div>
-		</div>
+		<StorePanel
+			storeData={storeData}
+			onClose={() => setShowStore(false)}
+			initialKeyFilter={storeKeyFilter}
+			onKeyFilterChange={handleStoreKeyFilterChange}
+		/>
 	) : null;
 
 	// Show expanded editor view when an execution is selected
@@ -462,7 +331,7 @@ export default function LazyDebugWindow() {
 									className={`_debugFunctionTab ${funcName === selectedFunctionName ? '_selected' : ''}`}
 									onClick={() => handleSelectFunction(funcName)}
 								>
-									{funcName.split('.').pop()}
+									{funcName}
 								</button>
 							))}
 						</div>
