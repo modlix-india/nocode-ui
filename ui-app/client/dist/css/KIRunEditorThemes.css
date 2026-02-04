@@ -394,6 +394,13 @@
 	background-color: #222222;
 }
 
+.comp.compKIRunEditor._theme-high-contrast ._statement._selected {
+	box-shadow:  0 0 3px #00ff00,
+		0 0 0 6px rgba(0, 255, 0, 0.75),
+		0 8px 20px rgba(0, 0, 0, 0.12),
+		0 12px 32px rgba(0, 0, 0, 0.08) !important
+}
+
 /* High Contrast Theme - Connection Lines */
 .comp.compKIRunEditor._theme-high-contrast ._connector {
 	stroke: #00ff00;
@@ -457,6 +464,13 @@
 .comp.compKIRunEditor._theme-easy-on-eyes ._connector:hover {
 	stroke: #5a7a67;
 	stroke-width: 2.5px;
+}
+
+.comp.compKIRunEditor._theme-easy-on-eyes ._statement._selected {
+	box-shadow:  0 0 3px #7c9885,
+		0 0 0 6px rgba(124, 152, 133, 0.75),
+		0 8px 20px rgba(0, 0, 0, 0.12),
+		0 12px 32px rgba(0, 0, 0, 0.08) !important
 }
 
 /* Easy on Eyes Theme - Icons */
@@ -532,6 +546,13 @@
 
 .comp.compKIRunEditor._theme-flared-up ._statement ._paramsContainer ._param ._paramName {
 	color: #f0e7ff !important;
+}
+
+.comp.compKIRunEditor._theme-flared-up ._statement._selected {
+	box-shadow:  0 0 3px #b19cd9,
+		0 0 0 6px rgba(167, 139, 250, 0.75),
+		0 8px 20px rgba(0, 0, 0, 0.12),
+		0 12px 32px rgba(0, 0, 0, 0.08) !important
 }
 
 /* Container background */

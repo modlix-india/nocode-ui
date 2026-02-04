@@ -276,7 +276,7 @@
 		0 0 0 3px rgba(59, 130, 246, 0.4),
 		0 0 0 6px rgba(59, 130, 246, 0.15),
 		0 8px 20px rgba(0, 0, 0, 0.12),
-		0 12px 32px rgba(0, 0, 0, 0.08);
+		0 12px 32px rgba(0, 0, 0, 0.08) !important;
 	transform: translateY(-2px);
 }
 
@@ -674,7 +674,7 @@
 .comp.compKIRunEditor ._connector:hover,
 .comp.compKIRunEditor ._connector._selected {
 	opacity: 0.9;
-	stroke-width: 2.5px;
+	stroke-width: 3.5px !important;
 	stroke: #3B82F6;
 }
 
