@@ -58,7 +58,6 @@ import {
 import { COPY_STMT_KEY } from '../../constants';
 import { KIRunTextEditor, EditorTheme } from './components/TextEditor/KIRunTextEditor';
 import { DSLHelpWindow } from './components/TextEditor/DSLHelpWindow';
-import './KIRunEditorThemes.css';
 
 const gridSize = 20;
 
