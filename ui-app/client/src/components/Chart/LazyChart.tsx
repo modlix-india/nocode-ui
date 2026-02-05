@@ -14,6 +14,14 @@ import {
 	Tooltip,
 	Legend,
 	Filler,
+	BarController,
+	LineController,
+	PieController,
+	DoughnutController,
+	RadarController,
+	PolarAreaController,
+	BubbleController,
+	ScatterController,
 } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import {
@@ -36,17 +44,29 @@ import {
 } from './chartjs';
 import { gradientPlugin } from './chartjs/gradientPlugin';
 
-// Register Chart.js components and plugins
+// Register Chart.js components, controllers and plugins
 ChartJS.register(
+	// Controllers
+	BarController,
+	LineController,
+	PieController,
+	DoughnutController,
+	RadarController,
+	PolarAreaController,
+	BubbleController,
+	ScatterController,
+	// Scales
 	CategoryScale,
 	LinearScale,
 	LogarithmicScale,
 	TimeScale,
+	RadialLinearScale,
+	// Elements
 	PointElement,
 	LineElement,
 	BarElement,
 	ArcElement,
-	RadialLinearScale,
+	// Plugins
 	Tooltip,
 	Legend,
 	Filler,
