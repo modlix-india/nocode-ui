@@ -159,7 +159,8 @@
 
 .comp.compKIRunEditor ._statement._editParameters {
 	width: 420px;
-	height: 380px;
+	height: auto;
+	max-height: 90vh;
 }
 
 .comp.compKIRunEditor ._storeContainer {
@@ -276,7 +277,7 @@
 		0 0 0 3px rgba(59, 130, 246, 0.4),
 		0 0 0 6px rgba(59, 130, 246, 0.15),
 		0 8px 20px rgba(0, 0, 0, 0.12),
-		0 12px 32px rgba(0, 0, 0, 0.08);
+		0 12px 32px rgba(0, 0, 0, 0.08) !important;
 	transform: translateY(-2px);
 }
 
@@ -674,7 +675,7 @@
 .comp.compKIRunEditor ._connector:hover,
 .comp.compKIRunEditor ._connector._selected {
 	opacity: 0.9;
-	stroke-width: 2.5px;
+	stroke-width: 3.5px !important;
 	stroke: #3B82F6;
 }
 
@@ -727,6 +728,12 @@
 	align-items: center;
 	justify-content: center;
 	z-index: 100;
+}
+
+.comp.compKIRunEditor ._paramEditor {
+	gap: 5px;
+	display: flex;
+	flex-direction: column;
 }
 
 .comp.compKIRunEditor ._paramEditorBack ._statementBack {
@@ -847,46 +854,41 @@
 	gap: 8px;
 }
 
-.comp.compKIRunEditor ._paramToggleContainer ._paramEditorToggle {
+.comp.compKIRunEditor ._paramToggleContainer {
 	display: flex;
-	position: relative;
-	font-size: 10px;
-	cursor: pointer;
-	padding: 3px 24px;
-	padding-left: 6px;
-	height: 22px;
-	border-radius: 22px;
 	border: 1px solid #E5E7EB;
-	transition: all 0.2s ease;
-	width: 44px;
+	border-radius: 6px;
+	overflow: hidden;
 	background-color: #F3F4F6;
 }
 
-.comp.compKIRunEditor ._paramEditorRow ._paramEditorToggle::before {
-	position: absolute;
-	content: ' ';
-	width: 18px;
-	height: 18px;
-	border-radius: 50%;
-	left: 1px;
-	top: 1px;
-	background-color: #fff;
-	transition: left 0.2s ease;
-	border: none;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.comp.compKIRunEditor ._paramToggleContainer ._paramToggleOption {
+	padding: 4px 10px;
+	font-size: 11px;
+	font-weight: 500;
+	cursor: pointer;
+	color: #6B7280;
+	background-color: transparent;
+	transition: all 0.15s ease;
+	user-select: none;
 }
 
-.comp.compKIRunEditor ._paramEditorRow ._paramEditorToggle._value {
+.comp.compKIRunEditor ._paramToggleContainer ._paramToggleOption:first-child {
+	border-right: 1px solid #E5E7EB;
+}
+
+.comp.compKIRunEditor ._paramToggleContainer ._paramToggleOption:hover {
+	color: #374151;
+	background-color: #E5E7EB;
+}
+
+.comp.compKIRunEditor ._paramToggleContainer ._paramToggleOption._active {
+	color: #fff !important;
 	background-color: #3B82F6;
-	border-color: #3B82F6;
 }
 
-.comp.compKIRunEditor ._paramEditorRow ._paramEditorToggle._value::before {
-	left: calc(100% - 19px);
-}
-
-.comp.compKIRunEditor ._paramToggleContainer {
-	display: flex;
+.comp.compKIRunEditor ._paramToggleContainer ._paramToggleOption._active:hover {
+	background-color: #2563EB;
 }
 
 .comp.compKIRunEditor ._paramExpression input {
@@ -933,6 +935,10 @@
 
 .comp.compKIRunEditor ._paramToggleValueGrid i.fa:hover {
 	color: #3B82F6;
+}
+
+.comp.compKIRunEditor ._paramToggleValueGrid i.fa._deleteParam:hover {
+	color: #DC2626;
 }
 
 /* Global toast styles - rendered via portal at body level */
