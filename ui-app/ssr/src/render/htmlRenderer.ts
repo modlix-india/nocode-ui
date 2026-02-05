@@ -345,15 +345,11 @@ function generateHtml(
 		<link rel="preconnect" href="https://${cdn.hostName}" crossorigin="anonymous">
 
 		<!-- Preload entrypoint scripts -->
-		${entrypointPreloadTags}
-		<link rel="preload" href="${cdnUrl}css/App.css" as="style">
+		${entrypointPreloadTags}		
 		${chunkPreloadTags ? `${chunkPreloadTags}\n\t\t` : ''}<!-- Preload critical Application chunks -->
 
 		<!-- Critical CSS -->
 		<style id="criticalCss">${CRITICAL_CSS}</style>
-
-		<!-- External CSS -->
-		<link rel="stylesheet" href="${cdnUrl}css/App.css">
 
 		<!-- External stylesheets (fonts, etc.) -->
 		${externalLinks}
