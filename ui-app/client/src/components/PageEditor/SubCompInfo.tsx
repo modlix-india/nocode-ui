@@ -946,6 +946,18 @@ export const SubComponentDefinitions: Record<
 			icon: 'fa fa-solid fa-box',
 		},
 		{
+			name: 'xTicks',
+			displayName: 'X Ticks',
+			description: 'X Axis Tick Marks',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'yTicks',
+			displayName: 'Y Ticks',
+			description: 'Y Axis Tick Marks',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
 			name: 'legendLabel',
 			displayName: 'Legend Label',
 			description: 'Legend Label',
@@ -980,6 +992,48 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Bar',
 			description: 'Bar',
 			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'line',
+			displayName: 'Line',
+			description: 'Line',
+			icon: 'fa fa-solid fa-chart-line',
+		},
+		{
+			name: 'point',
+			displayName: 'Point',
+			description: 'Point/Marker',
+			icon: 'fa fa-solid fa-circle',
+		},
+		{
+			name: 'area',
+			displayName: 'Area',
+			description: 'Filled Area',
+			icon: 'fa fa-solid fa-chart-area',
+		},
+		{
+			name: 'pie',
+			displayName: 'Pie',
+			description: 'Pie Slice',
+			icon: 'fa fa-solid fa-chart-pie',
+		},
+		{
+			name: 'doughnut',
+			displayName: 'Doughnut',
+			description: 'Doughnut Segment',
+			icon: 'fa fa-solid fa-circle-notch',
+		},
+		{
+			name: 'radar',
+			displayName: 'Radar',
+			description: 'Radar Chart',
+			icon: 'fa fa-solid fa-diagram-project',
+		},
+		{
+			name: 'polarArea',
+			displayName: 'Polar Area',
+			description: 'Polar Area Segment',
+			icon: 'fa fa-solid fa-circle-half-stroke',
 		},
 	],
 

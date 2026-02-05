@@ -36,6 +36,7 @@ declare global {
 		personalization?: any;
 	};
 	var cdnPrefix: string;
+	var buildVersion: string;
 	var cdnStripAPIPrefix: boolean;
 	var cdnReplacePlus: boolean;
 	var cdnResizeOptionsType: string;
