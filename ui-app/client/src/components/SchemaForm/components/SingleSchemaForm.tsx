@@ -78,7 +78,7 @@ export default function SingleSchema({
 
 	// Initialize selectedType based on value or default to STRING
 	useEffect(() => {
-		const availableTypes = Array.from(types).filter(t => t !== SchemaType.NULL);
+		const availableTypes: SchemaType[] = Array.from(types).filter(t => t !== SchemaType.NULL);
 		if (currentType && availableTypes.includes(currentType)) {
 			setSelectedType(currentType);
 		} else if (availableTypes.includes(SchemaType.STRING)) {
@@ -230,7 +230,7 @@ export default function SingleSchema({
 	}
 
 	// Multi-type schema - show type selector with editor
-	const availableTypes = Array.from(types).filter(t => t !== SchemaType.NULL);
+	const availableTypes: SchemaType[] = Array.from(types).filter(t => t !== SchemaType.NULL);
 
 	const handleTypeChange = (newType: SchemaType) => {
 		setSelectedType(newType);
