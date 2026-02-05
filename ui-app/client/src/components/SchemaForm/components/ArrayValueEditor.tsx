@@ -35,7 +35,7 @@ export function ArrayValueEditor({
 		})();
 	}, [schema, schemaRepository]);
 
-	const itemSchema = resolvedSchema.getItems();
+	const itemSchema = resolvedSchema.getItems()?.getSingleSchema();
 	const items = Array.isArray(value) ? value : [];
 
 	const addItem = async () => {

@@ -21,7 +21,6 @@ import { validate } from '../../util/validationProcessor';
 import { flattenUUID } from '../util/uuid';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
-import { select } from 'd3';
 import getSrcUrl from '../util/getSrcUrl';
 import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
