@@ -14,12 +14,14 @@ export function NumberValueEditor({
 	onChange: actualOnChange,
 	schemaRepository,
 	defaultValue,
+	label,
 }: Readonly<{
 	value: number | undefined;
 	defaultValue: number | undefined;
 	schema: Schema;
 	onChange: (v: number | undefined) => void;
 	schemaRepository: Repository<Schema>;
+	label?: string;
 }>) {
 	const [inValue, setInValue] = useState<number | undefined>(value ?? defaultValue);
 
@@ -94,11 +96,12 @@ export function NumberValueEditor({
 	);
 	return (
 		<div className="_singleSchema">
+			{label && <div className="_fieldLabel">{label}</div>}
 			<div className="_inputElement">
 				{inputElement}
 				<i className="fa fa-regular fa-circle-xmark" onClick={() => onChange(undefined)} />
 			</div>
-			<div className="_errorMessages">{msg}</div>
+			{msg && <div className="_errorMessages">{msg}</div>}
 		</div>
 	);
 }
