@@ -1,14 +1,19 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = async (env = {}) => {
   const publicUrl = env.publicUrl || '/';
+  const buildVersion = Date.now().toString(36); // Short unique build identifier
 
   // Dynamically import ES module
   const { WebpackManifestPlugin } = await import('webpack-manifest-plugin');
 
   const plugins =  [
+    new webpack.DefinePlugin({
+      'globalThis.buildVersion': JSON.stringify(buildVersion),
+    }),
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: ['**/*', '!css/**', '!styleProperties/**' ]
     }),
@@ -43,6 +48,7 @@ module.exports = async (env = {}) => {
           .map(f => f.name);
 
         return {
+          buildVersion,
           files: manifestFiles,
           entrypoints: entrypointFiles,
           preload: {
@@ -68,10 +74,10 @@ module.exports = async (env = {}) => {
       index: './src/index.tsx',
     },
     output: {
-      filename: '[name].js',
+      filename: '[name]-[contenthash:8].js',
       chunkFilename: (pathData) => {
         // Use explicit name for named chunks, ID for auto-generated ones
-        return pathData.chunk.name ? '[name].js' : 'chunk.[id].[contenthash:8].js';
+        return pathData.chunk.name ? '[name]-[contenthash:8].js' : 'chunk.[id].[contenthash:8].js';
       },
       path: path.resolve(__dirname, 'dist'),
       publicPath: publicUrl
