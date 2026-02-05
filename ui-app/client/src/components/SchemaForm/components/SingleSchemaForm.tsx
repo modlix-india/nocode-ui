@@ -4,6 +4,8 @@ import { intersection, isSubset } from '../../../util/setOperations';
 import { StringValueEditor } from './StringValueEditor';
 import { BooleanValueEditor } from './BooleanValueEditor';
 import { NumberValueEditor } from './NumberValueEditor';
+import { ObjectValueEditor } from './ObjectValueEditor';
+import { ArrayValueEditor } from './ArrayValueEditor';
 
 const NUMBER_SET = new Set([
 	SchemaType.FLOAT,
@@ -30,6 +32,7 @@ export default function SingleSchema({
 	path,
 	onChange,
 	schemaRepository,
+	label,
 }: {
 	schema?: Schema;
 	value: any;
@@ -37,6 +40,7 @@ export default function SingleSchema({
 	showLabel?: boolean;
 	onChange: (path: string, v: any) => void;
 	schemaRepository: Repository<Schema>;
+	label?: string;
 }) {
 	const [schema, setSchema] = useState(actualSchema);
 
@@ -70,6 +74,19 @@ export default function SingleSchema({
 
 	const [currentType, setCurrentType] = React.useState<SchemaType | undefined>();
 	const [message, setMessage] = useState<string>('');
+	const [selectedType, setSelectedType] = useState<SchemaType>(SchemaType.STRING);
+
+	// Initialize selectedType based on value or default to STRING
+	useEffect(() => {
+		const availableTypes = Array.from(types).filter(t => t !== SchemaType.NULL);
+		if (currentType && availableTypes.includes(currentType)) {
+			setSelectedType(currentType);
+		} else if (availableTypes.includes(SchemaType.STRING)) {
+			setSelectedType(SchemaType.STRING);
+		} else if (availableTypes.length > 0) {
+			setSelectedType(availableTypes[0]);
+		}
+	}, [types, currentType]);
 
 	useEffect(() => {
 		if (types?.size === 1) {
@@ -141,11 +158,31 @@ export default function SingleSchema({
 		else setMessage('');
 	}, [value]);
 
+	const fieldLabel = showLabel ? label || schema.getName() : undefined;
+
 	if (types?.size === 1) {
 		if (types.has(SchemaType.OBJECT)) {
-			return <div className="_singleSchema"></div>;
+			return (
+				<ObjectValueEditor
+					value={value}
+					schema={schema}
+					onChange={onChange}
+					schemaRepository={schemaRepository}
+					path={path}
+					label={fieldLabel}
+				/>
+			);
 		} else if (types.has(SchemaType.ARRAY)) {
-			return <div className="_singleSchema"></div>;
+			return (
+				<ArrayValueEditor
+					value={value}
+					schema={schema}
+					onChange={onChange}
+					schemaRepository={schemaRepository}
+					path={path}
+					label={fieldLabel}
+				/>
+			);
 		} else if (types.has(SchemaType.STRING)) {
 			return (
 				<StringValueEditor
@@ -154,6 +191,7 @@ export default function SingleSchema({
 					schema={schema}
 					onChange={v => onChange(path, v)}
 					schemaRepository={schemaRepository}
+					label={fieldLabel}
 				/>
 			);
 		} else if (types.has(SchemaType.BOOLEAN)) {
@@ -163,6 +201,7 @@ export default function SingleSchema({
 					schema={schema}
 					onChange={v => onChange(path, v)}
 					schemaRepository={schemaRepository}
+					label={fieldLabel}
 				/>
 			);
 		} else if (isSubset(types, NUMBER_SET)) {
@@ -173,6 +212,7 @@ export default function SingleSchema({
 					schema={schema}
 					onChange={v => onChange(path, v)}
 					schemaRepository={schemaRepository}
+					label={fieldLabel}
 				/>
 			);
 		}
@@ -184,9 +224,107 @@ export default function SingleSchema({
 				schema={schema}
 				onChange={v => onChange(path, v)}
 				schemaRepository={schemaRepository}
+				label={fieldLabel}
 			/>
 		);
 	}
 
-	return <div className="_singleSchema"></div>;
+	// Multi-type schema - show type selector with editor
+	const availableTypes = Array.from(types).filter(t => t !== SchemaType.NULL);
+
+	const handleTypeChange = (newType: SchemaType) => {
+		setSelectedType(newType);
+		// Clear the value when type changes to avoid type mismatches
+		onChange(path, undefined);
+	};
+
+	const renderEditorForType = (type: SchemaType) => {
+		switch (type) {
+			case SchemaType.STRING:
+				return (
+					<StringValueEditor
+						value={typeof value === 'string' ? value : undefined}
+						defaultValue={defaultValue}
+						schema={schema}
+						onChange={v => onChange(path, v)}
+						schemaRepository={schemaRepository}
+					/>
+				);
+			case SchemaType.BOOLEAN:
+				return (
+					<BooleanValueEditor
+						value={typeof value === 'boolean' ? value : undefined}
+						schema={schema}
+						onChange={v => onChange(path, v)}
+						schemaRepository={schemaRepository}
+					/>
+				);
+			case SchemaType.INTEGER:
+			case SchemaType.LONG:
+			case SchemaType.FLOAT:
+			case SchemaType.DOUBLE:
+				return (
+					<NumberValueEditor
+						value={typeof value === 'number' ? value : undefined}
+						defaultValue={defaultValue}
+						schema={schema}
+						onChange={v => onChange(path, v)}
+						schemaRepository={schemaRepository}
+					/>
+				);
+			case SchemaType.OBJECT:
+				return (
+					<ObjectValueEditor
+						value={typeof value === 'object' && !Array.isArray(value) ? value : undefined}
+						schema={schema}
+						onChange={onChange}
+						schemaRepository={schemaRepository}
+						path={path}
+					/>
+				);
+			case SchemaType.ARRAY:
+				return (
+					<ArrayValueEditor
+						value={Array.isArray(value) ? value : undefined}
+						schema={schema}
+						onChange={onChange}
+						schemaRepository={schemaRepository}
+						path={path}
+					/>
+				);
+			default:
+				return null;
+		}
+	};
+
+	const typeLabels: Record<string, string> = {
+		[SchemaType.STRING]: 'String',
+		[SchemaType.BOOLEAN]: 'Boolean',
+		[SchemaType.INTEGER]: 'Integer',
+		[SchemaType.LONG]: 'Long',
+		[SchemaType.FLOAT]: 'Float',
+		[SchemaType.DOUBLE]: 'Double',
+		[SchemaType.OBJECT]: 'Object',
+		[SchemaType.ARRAY]: 'Array',
+	};
+
+	return (
+		<div className="_singleSchema">
+			{fieldLabel && <div className="_fieldLabel">{fieldLabel}</div>}
+			<div className="_multiTypeContainer">
+				<select
+					className="_typeSelector"
+					value={selectedType}
+					onChange={e => handleTypeChange(e.target.value as SchemaType)}
+				>
+					{availableTypes.map(type => (
+						<option key={type} value={type}>
+							{typeLabels[type] || type}
+						</option>
+					))}
+				</select>
+				<div className="_multiTypeEditor">{renderEditorForType(selectedType)}</div>
+			</div>
+		</div>
+	);
 }

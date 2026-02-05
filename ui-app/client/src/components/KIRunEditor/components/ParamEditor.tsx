@@ -167,6 +167,22 @@ export default function ParamEditor({
 		[values, onChange],
 	);
 
+	const removeValue = useCallback(
+		(key: string) => {
+			let obj = values.reduce((a: any, c: any) => {
+				a[c.key] = c;
+				return a;
+			}, {});
+			delete obj[key];
+			if (Object.keys(obj).length === 0) {
+				onChange(undefined);
+			} else {
+				onChange(obj);
+			}
+		},
+		[values, onChange],
+	);
+
 	return (
 		<div className="_paramEditor">
 			{values.map(eachValue => {
@@ -205,23 +221,16 @@ export default function ParamEditor({
 				) : (
 					<div className="_paramToggleContainer">
 						<div
-							className={`_paramEditorToggle ${
-								eachValue.type === 'EXPRESSION' ? '' : '_value'
-							}`}
-							title={
-								eachValue.type === 'EXPRESSION'
-									? 'Change to Value'
-									: 'Change to Expression'
-							}
-							onClick={e =>
-								updateValue(
-									key,
-									'type',
-									eachValue.type === 'EXPRESSION' ? 'VALUE' : 'EXPRESSION',
-								)
-							}
+							className={`_paramToggleOption ${eachValue.type === 'EXPRESSION' ? '_active' : ''}`}
+							onClick={() => updateValue(key, 'type', 'EXPRESSION')}
 						>
-							{eachValue.type === 'EXPRESSION' ? 'Expr' : 'Value'}
+							Expr
+						</div>
+						<div
+							className={`_paramToggleOption ${eachValue.type === 'VALUE' ? '_active' : ''}`}
+							onClick={() => updateValue(key, 'type', 'VALUE')}
+						>
+							Value
 						</div>
 					</div>
 				);
@@ -243,20 +252,33 @@ export default function ParamEditor({
 						<>
 							<i
 								className="fa fa-arrow-up"
+								title="Move up"
 								onClick={() => moveUpDown(eachValue.key, -1)}
 							/>
 							<i
 								className="fa fa-arrow-down"
+								title="Move down"
 								onClick={() => moveUpDown(eachValue.key, 1)}
 							/>
 						</>
 					);
 				}
+				const deleteButton =
+					!eachValue.isNew ? (
+						<i
+							className="fa fa-trash _deleteParam"
+							title="Remove"
+							onClick={() => removeValue(eachValue.key)}
+						/>
+					) : (
+						<></>
+					);
 				return (
 					<div className="_paramEditorRow" key={key}>
 						<div className="_paramToggleValueGrid">
 							{paramToggle}
 							{upDown}
+							{deleteButton}
 							{fullValueEditor}
 						</div>
 						{valueEditor}
