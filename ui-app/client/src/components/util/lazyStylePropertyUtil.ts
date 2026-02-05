@@ -60,11 +60,13 @@ export function inflateAndSetStyleProps(
 }
 
 export function lazyStylePropURL(name: string) {
-	return `${globalThis.cdnPrefix ? 'https://' + globalThis.cdnPrefix + '/js/dist' : ''}/styleProperties/${name}.json`;
+	const version = globalThis.buildVersion ? `?v=${globalThis.buildVersion}` : '';
+	return `${globalThis.cdnPrefix ? 'https://' + globalThis.cdnPrefix + '/js/dist' : ''}/styleProperties/${name}.json${version}`;
 }
 
 export function lazyCSSURL(name: string) {
-	return `${globalThis.cdnPrefix ? 'https://' + globalThis.cdnPrefix + '/js/dist' : ''}/css/${name}.css`;
+	const version = globalThis.buildVersion ? `?v=${globalThis.buildVersion}` : '';
+	return `${globalThis.cdnPrefix ? 'https://' + globalThis.cdnPrefix + '/js/dist' : ''}/css/${name}.css${version}`;
 }
 
 export function findPropertyDefinitions(
