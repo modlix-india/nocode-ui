@@ -92,7 +92,7 @@ export default function FunctionDetailsEditor({
 								}
 							}}
 						/>
-						<span className="_errors">{errors.name}</span>
+						{errors.name && <span className="_errors">{errors.name}</span>}
 					</div>
 					<div className="_field">
 						<label>Namespace :</label>
@@ -125,7 +125,7 @@ export default function FunctionDetailsEditor({
 								});
 							}}
 						/>
-						<span className="_errors">{errors.namespace}</span>
+						{errors.namespace && <span className="_errors">{errors.namespace}</span>}
 					</div>
 					{functionKeyComp}
 				</div>

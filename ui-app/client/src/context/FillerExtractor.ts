@@ -13,7 +13,7 @@ export class FillerExtractor extends SpecialTokenValueExtractor {
 
 		return this.retrieveElementFrom(
 			newToken,
-			newToken.split(TokenValueExtractor.REGEX_DOT),
+			TokenValueExtractor.splitPath(newToken),
 			1,
 			this.store,
 		);

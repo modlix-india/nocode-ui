@@ -1,5 +1,29 @@
-import { deepEqual, isNullValue } from '@fincity/kirun-js';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { deepEqual } from '@fincity/kirun-js';
+import React, { useEffect, useMemo, useRef } from 'react';
+import {
+	Chart as ChartJS,
+	CategoryScale,
+	LinearScale,
+	LogarithmicScale,
+	TimeScale,
+	PointElement,
+	LineElement,
+	BarElement,
+	ArcElement,
+	RadialLinearScale,
+	Tooltip,
+	Legend,
+	Filler,
+	BarController,
+	LineController,
+	PieController,
+	DoughnutController,
+	RadarController,
+	PolarAreaController,
+	BubbleController,
+	ScatterController,
+} from 'chart.js';
+import { Chart } from 'react-chartjs-2';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -11,14 +35,45 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './chartProperties';
-import { makeChart } from './d3Chart';
-import Gradient from './types/chartComponents/Gradient';
-import Legends from './types/chartComponents/Legends';
-import { ChartData, Dimension, makeChartDataFromProperties } from './types/common';
+import { ChartData, makeChartDataFromProperties } from './types/common';
+import {
+	transformToChartJsData,
+	determineChartJsType,
+	buildChartJsOptions,
+	applyStylesToDatasets,
+} from './chartjs';
+import { gradientPlugin } from './chartjs/gradientPlugin';
 
-const CHART_PADDING = 10;
+// Register Chart.js components, controllers and plugins
+ChartJS.register(
+	// Controllers
+	BarController,
+	LineController,
+	PieController,
+	DoughnutController,
+	RadarController,
+	PolarAreaController,
+	BubbleController,
+	ScatterController,
+	// Scales
+	CategoryScale,
+	LinearScale,
+	LogarithmicScale,
+	TimeScale,
+	RadialLinearScale,
+	// Elements
+	PointElement,
+	LineElement,
+	BarElement,
+	ArcElement,
+	// Plugins
+	Tooltip,
+	Legend,
+	Filler,
+	gradientPlugin,
+);
 
-export default function Chart(props: Readonly<ComponentProps>) {
+export default function LazyChart(props: Readonly<ComponentProps>) {
 	const {
 		definition,
 		locationHistory,
@@ -36,42 +91,21 @@ export default function Chart(props: Readonly<ComponentProps>) {
 		urlExtractor,
 	);
 
-	const [value, setValue] = React.useState<any>(undefined);
-
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
+	// Binding path listener for selection binding (currently unused but preserved for future use)
 	React.useEffect(() => {
 		if (!bindingPathPath) return;
 		return addListenerAndCallImmediately(
 			props.context.pageName,
-			(_, v) => {
-				if (isNullValue(v)) {
-					setValue(undefined);
-					return;
-				}
-				setValue(v);
+			() => {
+				// Selection binding - can be used for click interactions
 			},
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
-
-	const [render, setRender] = React.useState(Date.now());
-
-	React.useEffect(() => {
-		const element = document.getElementById('d3-7.9.0');
-		if (element) {
-			element.addEventListener('load', () => setRender(Date.now()));
-			return;
-		}
-		const script = document.createElement('script');
-		script.id = 'd3-7.9.0';
-		script.src = '/api/files/static/file/SYSTEM/jslib/d3/d3%407.9.0.min.js';
-		script.async = true;
-		script.addEventListener('load', () => setRender(Date.now()));
-		document.body.appendChild(script);
-	}, [setRender]);
 
 	const processedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -79,7 +113,7 @@ export default function Chart(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
-	const [resolvedStyles, setResolvedStyles] = useState<any>({});
+	const [resolvedStyles, setResolvedStyles] = React.useState<any>({});
 
 	useEffect(() => {
 		setResolvedStyles((old: any) => (deepEqual(old, processedStyles) ? old : processedStyles));
@@ -88,29 +122,10 @@ export default function Chart(props: Readonly<ComponentProps>) {
 	const [oldProperties, setOldProperties] = React.useState<any>(undefined);
 	const [chartData, setChartData] = React.useState<ChartData | undefined>(undefined);
 
-	const [hiddenDataSets, setHiddenDataSets] = React.useState<Set<number>>(new Set<number>());
-	const [focusedDataSet, setFocusedDataSet] = React.useState<number | undefined>(undefined);
+	const chartRef = useRef<ChartJS>(null);
 
-	const svgRef = useRef<SVGSVGElement | null>(null);
-
-	const [svgDimension, setSvgDimension] = React.useState<Dimension>({ width: 0, height: 0 });
-	const [legendDimension, setLegendDimension] = React.useState<Dimension>({
-		width: 0,
-		height: 0,
-	});
-
-	const chartWidth = Math.floor(
-		svgDimension.width -
-			(properties.legendPosition === 'left' || properties.legendPosition === 'right'
-				? legendDimension.width
-				: 0),
-	);
-	const chartHeight = Math.floor(
-		svgDimension.height -
-			(properties.legendPosition === 'top' || properties.legendPosition === 'bottom'
-				? legendDimension.height
-				: 0),
-	);
+	// Empty set - Chart.js handles dataset visibility internally via legend clicks
+	const emptyHiddenSet = useMemo(() => new Set<number>(), []);
 
 	useEffect(() => {
 		if (deepEqual(properties, oldProperties)) return;
@@ -119,197 +134,72 @@ export default function Chart(props: Readonly<ComponentProps>) {
 			properties,
 			locationHistory,
 			pageExtractor,
-			hiddenDataSets,
+			emptyHiddenSet,
 		);
 		setChartData(cd);
-	}, [oldProperties, properties, locationHistory, pageExtractor, hiddenDataSets]);
+	}, [oldProperties, properties, locationHistory, pageExtractor, emptyHiddenSet]);
 
-	useEffect(() => {
-		const cd = makeChartDataFromProperties(
-			properties,
-			locationHistory,
-			pageExtractor,
-			hiddenDataSets,
-		);
-		setChartData(cd);
-	}, [hiddenDataSets]);
+	// Determine Chart.js type and prepare data
+	const chartJsType = useMemo(() => {
+		if (!chartData) return 'bar';
+		return determineChartJsType(properties, chartData);
+	}, [properties, chartData]);
 
-	useEffect(() => {
-		if (!globalThis.d3 || !svgRef.current || !chartData) return;
+	// Prepare dataset labels
+	const dataSetLabels = useMemo(() => {
+		return properties.dataSetLabels || [];
+	}, [properties.dataSetLabels]);
 
-		makeChart({
-			properties,
-			chartData,
-			svgRef: svgRef.current,
-			resolvedStyles,
-			chartDimension: {
-				width: chartWidth - CHART_PADDING * 2,
-				height: chartHeight - CHART_PADDING * 2,
+	// Transform data to Chart.js format and apply subcomponent styles
+	const chartJsData = useMemo(() => {
+		if (!chartData) return { labels: [], datasets: [] };
+		const data = transformToChartJsData(properties, chartData, dataSetLabels);
+		// Apply subcomponent styles (bar, line, point, etc.) to datasets
+		data.datasets = applyStylesToDatasets(data.datasets, resolvedStyles, chartJsType);
+		return data;
+	}, [properties, chartData, dataSetLabels, resolvedStyles, chartJsType]);
+
+	// Build Chart.js options
+	const chartJsOptions = useMemo(() => {
+		if (!chartData) return {};
+		return buildChartJsOptions(properties, chartData, chartJsType, resolvedStyles);
+	}, [properties, chartData, chartJsType, resolvedStyles]);
+
+	// Handle legend click to toggle dataset visibility
+	// Chart.js has built-in support for strikethrough on hidden datasets
+	const options = useMemo(() => {
+		const legendOptions = (chartJsOptions as any).plugins?.legend || {};
+
+		return {
+			...chartJsOptions,
+			plugins: {
+				...chartJsOptions.plugins,
+				legend: {
+					...legendOptions,
+					// Only override onClick if legend interaction is disabled
+					onClick: properties.disableLegendInteraction
+						? () => {} // Do nothing
+						: undefined, // Use Chart.js default behavior (toggle + strikethrough)
+				},
 			},
-			hiddenDataSets,
-			focusedDataSet,
-			onFocusDataSet: (index: number | undefined) =>
-				setFocusedDataSet(index === focusedDataSet ? undefined : index),
-		});
-	}, [
-		svgRef.current,
-		globalThis.d3,
-		chartData,
-		legendDimension,
-		render,
-		resolvedStyles,
-		focusedDataSet,
-	]);
-
-	useEffect(() => {
-		if (isNullValue(svgRef.current)) return;
-
-		let rect = svgRef.current!.getBoundingClientRect();
-		setSvgDimension({
-			width: Math.floor(rect.width),
-			height: Math.floor(rect.height),
-		});
-		const resizeObserver = new ResizeObserver(() => {
-			setTimeout(() => {
-				const newRect = svgRef.current?.getBoundingClientRect();
-				if (!newRect) return;
-				if (
-					Math.abs(newRect.width - rect.width) < 8 &&
-					Math.abs(newRect.height - rect.height) < 8
-				)
-					return;
-				rect = newRect;
-				setSvgDimension({
-					width: Math.floor(newRect.width),
-					height: Math.floor(newRect.height),
-				});
-			}, 2000);
-		});
-		resizeObserver.observe(svgRef.current!);
-		return () => resizeObserver.disconnect();
-	}, [svgRef.current, setSvgDimension]);
-
-	useEffect(() => setHiddenDataSets(new Set()), [chartData?.dataSetData?.length]);
-
-	const gradientDef = useMemo(
-		() => (
-			<defs>
-				{Array.from(chartData?.gradients?.values() ?? []).map(g => (
-					<Gradient
-						key={'' + Math.abs(g.hashCode).toString(16)}
-						gradient={g}
-						gradientUnits={properties.gradientSpace}
-					/>
-				))}
-			</defs>
-		),
-		[
-			Array.from(chartData?.gradients?.values() ?? [])
-				.map(e => e.hashCode)
-				.reduce((a, c) => a + c, 0),
-			properties.gradientSpace,
-		],
-	);
+		};
+	}, [chartJsOptions, properties.disableLegendInteraction]);
 
 	return (
-		<div className={`comp compChart `} style={resolvedStyles.comp ?? {}}>
+		<div
+			className="comp compChart"
+			style={{
+				...resolvedStyles.comp,
+				padding: properties.padding || 10,
+			}}
+		>
 			<HelperComponent context={props.context} definition={definition} />
-			<svg
-				className="chart"
-				ref={svgRef}
-				viewBox={`0 0 ${svgDimension.width} ${svgDimension.height}`}
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				{gradientDef}
-				<text
-					className="xAxisLabelSampler"
-					x={0}
-					y={0}
-					style={{ ...resolvedStyles.xAxisLabel, transition: 'none' }}
-					fillOpacity={0}
-					strokeOpacity={0}
-				></text>
-				<text
-					x={0}
-					y={0}
-					className="yAxisLabelSampler"
-					style={{ ...resolvedStyles.yAxisLabel, transition: 'none' }}
-					fillOpacity={0}
-					strokeOpacity={0}
-				></text>
-				<g
-					className="titleGroup"
-					transform={`translate(${
-						(properties.legendPosition === 'left' ? legendDimension.width : 0) +
-						CHART_PADDING
-					}, ${
-						(properties.legendPosition === 'top' ? legendDimension.height : 0) +
-						CHART_PADDING
-					})`}
-				>
-					<text
-						x={0}
-						y={0}
-						className="xAxisTitle"
-						style={resolvedStyles.xAxisTitle ?? {}}
-						fill="currentColor"
-					>
-						{chartData?.xAxisTitle ?? ''}
-					</text>
-					<text
-						x={0}
-						y={0}
-						className="yAxisTitle"
-						style={resolvedStyles.yAxisTitle ?? {}}
-						fill="currentColor"
-						textAnchor="end"
-					>
-						{chartData?.yAxisTitle ?? ''}
-					</text>
-				</g>
-
-				<g
-					className="chartGroup"
-					transform={`translate(${
-						(properties.legendPosition === 'left' ? legendDimension.width : 0) +
-						CHART_PADDING
-					}, ${
-						(properties.legendPosition === 'top' ? legendDimension.height : 0) +
-						CHART_PADDING
-					})`}
-				/>
-				<Legends
-					containerDimension={{ width: svgDimension.width, height: svgDimension.height }}
-					legendDimension={legendDimension}
-					properties={properties}
-					chartData={chartData}
-					onLegendDimensionChange={setLegendDimension}
-					labelStyles={resolvedStyles.legendLabel ?? {}}
-					rectangleStyles={resolvedStyles.legendRectangle ?? {}}
-					hiddenDataSets={hiddenDataSets}
-					onToggleDataSet={(index: number) => {
-						const newSet = new Set(hiddenDataSets);
-						if (newSet.has(index)) newSet.delete(index);
-						else newSet.add(index);
-						setHiddenDataSets(newSet);
-						if (focusedDataSet) setFocusedDataSet(undefined);
-					}}
-					onShowOnlyDataSet={(index: number) =>
-						setHiddenDataSets(
-							new Set(
-								chartData?.dataSetData?.map((_, i) => i).filter(i => i !== index),
-							),
-						)
-					}
-					onFocusDataSet={(index: number | undefined) =>
-						setFocusedDataSet(
-							index === focusedDataSet || hiddenDataSets.has(index ?? -1)
-								? undefined
-								: index,
-						)
-					}
-				/>
-			</svg>
+			<Chart
+				ref={chartRef}
+				type={chartJsType}
+				data={chartJsData}
+				options={options}
+			/>
 		</div>
 	);
 }

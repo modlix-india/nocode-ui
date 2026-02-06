@@ -7,11 +7,13 @@ export function BooleanValueEditor({
 	schema,
 	onChange,
 	schemaRepository,
+	label,
 }: Readonly<{
 	value: boolean | undefined;
 	schema: Schema;
 	onChange: (v: boolean | undefined) => void;
 	schemaRepository: Repository<Schema>;
+	label?: string;
 }>) {
 	const [inValue, setInValue] = useState(value);
 
@@ -36,10 +38,11 @@ export function BooleanValueEditor({
 
 	return (
 		<div className="_singleSchema">
+			{label && <div className="_fieldLabel">{label}</div>}
 			<div className="_inputElement">
 				<CommonTriStateCheckbox value={inValue} onChange={e => onChange(e)} states={3} />
 			</div>
-			<div className="_errorMessages">{msg}</div>
+			{msg && <div className="_errorMessages">{msg}</div>}
 		</div>
 	);
 }

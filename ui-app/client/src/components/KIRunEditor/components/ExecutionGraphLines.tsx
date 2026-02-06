@@ -257,7 +257,6 @@ export default function ExecutionGraphLines({
 
 	return (
 		<svg className="_linesSvg">
-			<defs>{Array.from(gradients.values())}</defs>
 			{lines}
 		</svg>
 	);
@@ -421,7 +420,6 @@ function lineFrom(
 			d={dPath}
 			role="button"
 			{...props}
-			stroke={`url(#grad_${sx < ex ? fromColor : toColor}_${ex <= sx ? fromColor : toColor})`}
 		/>
 	);
 }

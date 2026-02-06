@@ -441,6 +441,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'dataSetPointShowOnHover',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Data Set Points on Hover',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+
+	{
 		name: 'dataSetPointType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Point Type',
@@ -570,6 +578,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'allDataSets', displayName: 'All Data Sets' },
 			{ name: 'currentDataSet', displayName: 'Current Data Set' },
 		],
+	},
+
+	{
+		name: 'tooltipLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tooltip Label',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'Use "Data." prefix to access data object in expression',
 	},
 
 	{
@@ -707,6 +723,51 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
 	],
 	yAxis: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	xTicks: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	yTicks: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	line: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	point: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	area: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	pie: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	doughnut: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	radar: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,
+	],
+	polarArea: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.svg.type,

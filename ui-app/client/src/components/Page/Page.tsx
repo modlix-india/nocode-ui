@@ -58,12 +58,6 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			app?.properties?.sso?.redirectURL;
 	}
 
-	if (window.isDebugMode) {
-		console.log('shouldRedirect', shouldRedirect);
-		console.log('pageDefinition', pageDefinition);
-		console.log('pageName', pageName);
-		console.log('auth', auth);
-	}
 	useEffect(() => {
 		if (!shouldRedirect) return;
 

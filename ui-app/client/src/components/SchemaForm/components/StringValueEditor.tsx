@@ -15,12 +15,14 @@ export function StringValueEditor({
 	onChange: actualOnChange,
 	schemaRepository,
 	defaultValue,
+	label,
 }: {
 	value: string | undefined;
 	defaultValue: string | undefined;
 	schema: Schema;
 	onChange: (v: string | undefined) => void;
 	schemaRepository: Repository<Schema>;
+	label?: string;
 }) {
 	const [inValue, setInValue] = useState(value ?? defaultValue ?? '');
 
@@ -90,11 +92,12 @@ export function StringValueEditor({
 	);
 	return (
 		<div className="_singleSchema">
+			{label && <div className="_fieldLabel">{label}</div>}
 			<div className="_inputElement">
 				{inputElement}
 				<i className="fa fa-regular fa-circle-xmark" onClick={() => onChange(undefined)} />
 			</div>
-			<div className="_errorMessages">{msg}</div>
+			{msg && <div className="_errorMessages">{msg}</div>}
 		</div>
 	);
 }

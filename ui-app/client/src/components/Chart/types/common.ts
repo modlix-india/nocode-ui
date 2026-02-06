@@ -107,6 +107,7 @@ export interface ChartProperties {
 	dataPointTypePath?: string[]; // Done.
 	dataSetPointSize?: number[]; // Done.
 	dataPointSizePath?: string[]; // Done.
+	dataSetPointShowOnHover?: boolean; // Done.
 	dataSetStrokeColors?: string[]; // Done.
 	dataStrokeColorsPath?: string[]; // Done.
 
@@ -165,6 +166,7 @@ export interface ChartProperties {
 	tooltipPosition: 'top' | 'bottom' | 'left' | 'right';
 	tooltipData: 'allDataSets' | 'currentDataSet';
 	tooltipTrigger: 'hoverOnAxis' | 'hoverOnData' | 'clickOnData';
+	tooltipLabel?: string;
 	disableLegendInteraction?: boolean;
 	radarType: 'polygon' | 'circle';
 	radialType: 'circle' | 'line';
@@ -201,7 +203,7 @@ class DataValueExtractor extends TokenValueExtractor {
 
 		return this.retrieveElementFrom(
 			token,
-			token.split(TokenValueExtractor.REGEX_DOT),
+			TokenValueExtractor.splitPath(token),
 			1,
 			this.data,
 		);
@@ -253,6 +255,8 @@ export interface ChartData {
 	yAxisTitle?: string;
 	actualXAxisType: AxisType | 'time';
 	actualYAxisType: AxisType;
+	// True if Y data actually contains string/categorical values (not just configured as ordinal)
+	yDataIsActuallyOrdinal: boolean;
 	gradients: Map<number, Gradient>;
 }
 
@@ -262,6 +266,7 @@ export function makeChartDataFromProperties(
 	pageExtractor: PageStoreExtractor,
 	hiddenDataSets: Set<number>,
 ): ChartData {
+	const isRadialChart = properties.chartType === 'radial';
 	let yAxisData = makeYAxisData(properties, locationHistory, pageExtractor, hiddenDataSets);
 	let xAxisData = makeXAxisData(
 		yAxisData.length,
@@ -281,6 +286,55 @@ export function makeChartDataFromProperties(
 			? 'time'
 			: findDerivedType(xUniqueData, properties.xAxisType);
 	let yAxisType = findDerivedType(yUniqueData, properties.yAxisType);
+
+	// Sort xUniqueData if requested
+	if (properties.xAxisLabelsSort && properties.xAxisLabelsSort !== 'none' && xUniqueData.length > 0) {
+		if (xAxisType === 'value' || xAxisType === 'log') {
+			// Numeric sort for value/log axis
+			xUniqueData.sort((a, b) => {
+				const numA = Number.parseFloat(a);
+				const numB = Number.parseFloat(b);
+				return properties.xAxisLabelsSort === 'ascending' ? numA - numB : numB - numA;
+			});
+		} else if (xAxisType === 'time') {
+			// Chronological sort for time axis
+			xUniqueData.sort((a, b) => {
+				const timeA = new Date(a).getTime();
+				const timeB = new Date(b).getTime();
+				return properties.xAxisLabelsSort === 'ascending' ? timeA - timeB : timeB - timeA;
+			});
+		} else if (xAxisType === 'ordinal') {
+			// String sort for ordinal axis
+			xUniqueData.sort((a, b) => {
+				const strA = String(a);
+				const strB = String(b);
+				return properties.xAxisLabelsSort === 'ascending'
+					? strA.localeCompare(strB)
+					: strB.localeCompare(strA);
+			});
+		}
+	}
+
+	// Sort yUniqueData if requested
+	if (properties.yAxisLabelsSort && properties.yAxisLabelsSort !== 'none' && yUniqueData.length > 0) {
+		if (yAxisType === 'value' || yAxisType === 'log') {
+			// Numeric sort for value/log axis
+			yUniqueData.sort((a, b) => {
+				const numA = Number.parseFloat(a);
+				const numB = Number.parseFloat(b);
+				return properties.yAxisLabelsSort === 'ascending' ? numA - numB : numB - numA;
+			});
+		} else if (yAxisType === 'ordinal') {
+			// String sort for ordinal axis
+			yUniqueData.sort((a, b) => {
+				const strA = String(a);
+				const strB = String(b);
+				return properties.yAxisLabelsSort === 'ascending'
+					? strA.localeCompare(strB)
+					: strB.localeCompare(strA);
+			});
+		}
+	}
 
 	let dataSetColors: string[] = [];
 	if (!properties.dataSetColors) {
@@ -305,6 +359,7 @@ export function makeChartDataFromProperties(
 		yAxisData.length,
 		locationHistory,
 		pageExtractor,
+		isRadialChart,
 	);
 	dataStrokeColors = getPathBasedValues(
 		properties.data,
@@ -313,6 +368,7 @@ export function makeChartDataFromProperties(
 		yAxisData.length,
 		locationHistory,
 		pageExtractor,
+		isRadialChart,
 	);
 
 	const fillOpacity = getPathBasedValues(
@@ -396,6 +452,12 @@ export function makeChartDataFromProperties(
 	const actualXAxisType = xAxisType;
 	const actualYAxisType = yAxisType;
 
+	// Determine if Y data actually contains ordinal (string) values, regardless of configured type
+	// This is used to decide whether to apply ordinal-to-index mapping in dataTransformer
+	// Even if yAxisType is configured as 'ordinal', we shouldn't map numeric values to indices
+	const yDataIsActuallyOrdinal = yUniqueData.some((val: any) =>
+		typeof val === 'string' && Number.isNaN(Number.parseFloat(val)));
+
 	if ((hasBar && !axisInverted) || (hasHorizontalBar && axisInverted)) xAxisType = 'ordinal';
 	else if ((hasHorizontalBar && !axisInverted) || (hasBar && axisInverted)) yAxisType = 'ordinal';
 
@@ -412,6 +474,7 @@ export function makeChartDataFromProperties(
 		yAxisType,
 		actualXAxisType,
 		actualYAxisType,
+		yDataIsActuallyOrdinal,
 		axisInverted,
 		hasBar,
 		hasHorizontalBar,
@@ -485,6 +548,35 @@ function makeStackedYAxisStackedData(
 	return yUniqueData;
 }
 
+/**
+ * Converts multiValued property format to array of path strings
+ * Handles both array format ["path1", "path2"] and object format
+ * { key1: { order: 1, property: { value: "path1" } }, key2: { order: 2, property: { value: "path2" } } }
+ */
+function extractPaths(pathProperty: any): string[] {
+	if (!pathProperty) return [];
+
+	// Already an array of strings
+	if (Array.isArray(pathProperty)) {
+		return pathProperty.map(p => (typeof p === 'string' ? p : p?.property?.value ?? p?.value ?? p));
+	}
+
+	// Single string path
+	if (typeof pathProperty === 'string') {
+		return [pathProperty];
+	}
+
+	// Object format from multiValued properties: { key: { order, property: { value } } }
+	if (typeof pathProperty === 'object') {
+		return Object.values(pathProperty)
+			.sort((a: any, b: any) => (a?.order ?? 0) - (b?.order ?? 0))
+			.map((item: any) => item?.property?.value ?? item?.value ?? item)
+			.filter((p): p is string => typeof p === 'string');
+	}
+
+	return [];
+}
+
 function makeYAxisData(
 	properties: ChartProperties,
 	locationHistory: LocationHistory[],
@@ -493,11 +585,8 @@ function makeYAxisData(
 ) {
 	let yAxisData: any[][] | undefined = [];
 	if (properties.yAxisDataSetPath) {
-		yAxisData = (
-			Array.isArray(properties.yAxisDataSetPath)
-				? properties.yAxisDataSetPath
-				: [properties.yAxisDataSetPath]
-		).map((path: string, index: number) => {
+		const paths = extractPaths(properties.yAxisDataSetPath);
+		yAxisData = paths.map((path: string, index: number) => {
 			if (hiddenDataSets.has(index)) return [];
 			if (Array.isArray(properties.data)) {
 				return properties.data.map(simpleExtractor(path, locationHistory, pageExtractor));
@@ -512,9 +601,8 @@ function makeYAxisData(
 
 	if (properties.yAxisRangeDataSetPath) {
 		let i = -1;
-		for (let path of Array.isArray(properties.yAxisRangeDataSetPath)
-			? properties.yAxisRangeDataSetPath
-			: [properties.yAxisRangeDataSetPath]) {
+		const rangePaths = extractPaths(properties.yAxisRangeDataSetPath);
+		for (let path of rangePaths) {
 			let rangeData: any = undefined;
 			if (Array.isArray(properties.data)) {
 				rangeData = properties.data.map(
@@ -528,17 +616,40 @@ function makeYAxisData(
 			i++;
 			if (isNullValue(rangeData) || hiddenDataSets.has(i)) continue;
 			if (!yAxisData[i]?.length) {
-				if (Array.isArray(rangeData))
-					yAxisData[i] = rangeData.map(e => e?.flat(Infinity) ?? e);
-				else yAxisData[i] = [rangeData];
+				if (Array.isArray(rangeData)) {
+					// For range data, preserve [start, end] pairs for floating bars
+					// Only flatten one level to keep range pairs intact: [[10,20],[23,30]] stays as-is
+					// but [[[10,20]]] becomes [[10,20]]
+					yAxisData[i] = rangeData.map(e => {
+						if (!Array.isArray(e)) return e;
+						// Check if this is an array of range pairs (e.g., [[10,20],[23,30]])
+						// or a single value/pair that needs flattening
+						const firstElement = e[0];
+						if (Array.isArray(firstElement) && firstElement.length === 2 &&
+							typeof firstElement[0] === 'number' && typeof firstElement[1] === 'number') {
+							// This is an array of [start, end] pairs - keep them intact
+							return e;
+						}
+						// Otherwise flatten as before for backward compatibility
+						return e?.flat(Infinity) ?? e;
+					});
+				} else yAxisData[i] = [rangeData];
 			} else
 				yAxisData[i] = yAxisData[i].map((val: any, index: number) => {
 					if (isNullValue(val)) val = [];
 					else if (!Array.isArray(val)) val = [val];
 
 					if (isNullValue(rangeData[index])) return val;
-					if (Array.isArray(rangeData[index]))
+					if (Array.isArray(rangeData[index])) {
+						// Check if range data contains [start, end] pairs
+						const firstElement = rangeData[index][0];
+						if (Array.isArray(firstElement) && firstElement.length === 2 &&
+							typeof firstElement[0] === 'number' && typeof firstElement[1] === 'number') {
+							// Preserve range pairs - don't flatten
+							return val.concat(rangeData[index]);
+						}
 						return val.concat(rangeData[index].flat(Infinity));
+					}
 					return val.concat(rangeData[index]);
 				});
 		}
@@ -559,11 +670,8 @@ function makeXAxisData(
 		return Array(dataSetsCount).fill(properties.xAxisLabels);
 	}
 	if (properties.xAxisDataSetPath) {
-		xAxisData = (
-			Array.isArray(properties.xAxisDataSetPath)
-				? properties.xAxisDataSetPath
-				: [properties.xAxisDataSetPath]
-		).map((path: string, index: number) => {
+		const paths = extractPaths(properties.xAxisDataSetPath);
+		xAxisData = paths.map((path: string, index: number) => {
 			if (hiddenDataSets.has(index)) return [];
 			if (Array.isArray(properties.data)) {
 				return properties.data.map(simpleExtractor(path, locationHistory, pageExtractor));
@@ -613,18 +721,31 @@ function getPathBasedValues<T>(
 	numberOfDataSets: number,
 	locationHistory: Array<LocationHistory>,
 	pageExtractor: PageStoreExtractor,
+	distributeColorsPerDataPoint: boolean = false,
 ): RepetetiveArray<T>[] {
 	if (!data) return [];
 	if (!Array.isArray(data) && typeof data !== 'object') return [];
 	const dataList = Array.isArray(data) ? data : Object.values(data);
 
-	if (!dataPaths) {
+	// Extract paths from multiValued property format if needed
+	const extractedPaths = dataPaths ? extractPaths(dataPaths) : [];
+
+	// If no paths provided (or empty after extraction), use the set values directly
+	if (!extractedPaths.length) {
 		if (!set?.length) return [];
 		const result: RepetetiveArray<any>[] = [];
 		for (let i = 0; i < numberOfDataSets; i++) {
 			const temp = new RepetetiveArray<any>();
-			for (const _ of dataList) {
-				temp.push(set[i % set.length]);
+			// For radial charts (pie/doughnut/polarArea), distribute colors per data point (slice)
+			// For other charts, use the same color for all data points in a dataset
+			if (distributeColorsPerDataPoint) {
+				dataList.forEach((_, dataIndex) => {
+					temp.push(set[dataIndex % set.length]);
+				});
+			} else {
+				for (const _ of dataList) {
+					temp.push(set[i % set.length]);
+				}
 			}
 			result.push(temp);
 		}
@@ -635,7 +756,7 @@ function getPathBasedValues<T>(
 
 	let dataSetNum = 0;
 
-	for (let path of dataPaths) {
+	for (let path of extractedPaths) {
 		const temp = new RepetetiveArray<any>();
 		const extractor = simpleExtractor(path, locationHistory, pageExtractor);
 

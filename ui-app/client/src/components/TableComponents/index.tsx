@@ -77,6 +77,15 @@ import {
 	styleDefaults as tablePreviewGridStyleDefaults,
 	styleProperties as tablePreviewGridStyleProperties,
 } from './TablePreviewGrid/tablePreviewGridStyleProperties';
+import TableRowStyle from './TableRow/TableRowStyle';
+import {
+	propertiesDefinition as tableRowPropertiesDefinition,
+	stylePropertiesDefinition as tableRowStylePropertiesDefinition,
+} from './TableRow/tableRowProperties';
+import {
+	styleDefaults as tableRowStyleDefaults,
+	stylePropertiesForTheme as tableRowStylePropertiesForTheme,
+} from './TableRow/tableRowStyleProperties';
 
 const LazyTableComponent = React.lazy(
 	() => import(/* webpackChunkName: "Table" */ './Table/Table'),
@@ -123,7 +132,7 @@ export const Table: Component = {
 		bindingPath6: { name: 'Sort Binding' },
 		bindingPath7: { name: 'Personalization Binding' },
 	},
-		externalStylePropsForThemeJson: true,
+	externalStylePropsForThemeJson: true,
 	stylePropertiesForTheme: tableStylePropertiesForTheme,
 	propertiesForTheme: [tableDesign, colorScheme],
 };
@@ -153,7 +162,7 @@ export const TableColumn: Component = {
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],
 	styleProperties: tableColumnStylePropertiesDefinition,
-		stylePropertiesForTheme: tableColumnStylePropertiesForTheme,
+	stylePropertiesForTheme: tableColumnStylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 	propertiesForTheme: [tableDesign, colorScheme],
 };
@@ -182,7 +191,7 @@ export const TableColumnHeader: Component = {
 	styleComponent: TableColumnHeaderStyle,
 	styleDefaults: tableColumnHeaderStyleDefaults,
 	isHidden: true,
-	
+
 	propertiesForTheme: [tableDesign, colorScheme],
 	stylePropertiesForTheme: tableColumnHeaderStylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
@@ -213,10 +222,11 @@ export const TableColumns: Component = {
 	allowedChildrenType: new Map([
 		['TableColumn', -1],
 		['TableDynamicColumn', -1],
+		['TableRow', 1],
 	]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
-		propertiesForTheme: [tableDesign, colorScheme],
+	propertiesForTheme: [tableDesign, colorScheme],
 	stylePropertiesForTheme: tableColumnsStylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
@@ -233,7 +243,7 @@ export const TableDynamicColumn: Component = {
 	styleDefaults: tableColumnStyleDefaults,
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],
-		stylePropertiesForTheme: [],
+	stylePropertiesForTheme: [],
 };
 
 const LazyTableEmptyGridComponent = React.lazy(
@@ -261,7 +271,7 @@ export const TableEmptyGrid: Component = {
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',
-		stylePropertiesForTheme: tableEmptyGridStyleProperties,
+	stylePropertiesForTheme: tableEmptyGridStyleProperties,
 	externalStylePropsForThemeJson: true,
 };
 
@@ -290,7 +300,7 @@ export const TableGrid: Component = {
 	allowedChildrenType: new Map<string, number>([['', 1]]),
 	parentType: 'Table',
 	stylePseudoStates: ['hover'],
-		stylePropertiesForTheme: tableGridStyleProperties,
+	stylePropertiesForTheme: tableGridStyleProperties,
 	externalStylePropsForThemeJson: true,
 };
 
@@ -319,6 +329,36 @@ export const TablePreviewGrid: Component = {
 	stylePseudoStates: ['hover', 'focus', 'readonly'],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'Table',
-		stylePropertiesForTheme: tablePreviewGridStyleProperties,
+	stylePropertiesForTheme: tablePreviewGridStyleProperties,
 	externalStylePropsForThemeJson: true,
+};
+
+const LazyTableRowComponent = React.lazy(
+	() => import(/* webpackChunkName: "TableRow" */ './TableRow/TableRow'),
+);
+
+function LoadLazyTableRowComponent(props: Readonly<ComponentProps>) {
+	return (
+		<React.Suspense fallback={<></>}>
+			<LazyTableRowComponent {...props} />
+		</React.Suspense>
+	);
+}
+
+export const TableRow: Component = {
+	name: 'TableRow',
+	displayName: 'Table Row',
+	description: 'Table Row component',
+	component: LoadLazyTableRowComponent,
+	propertyValidation: (): Array<string> => [],
+	properties: tableRowPropertiesDefinition,
+	styleProperties: tableRowStylePropertiesDefinition,
+	styleComponent: TableRowStyle,
+	styleDefaults: tableRowStyleDefaults,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
+	parentType: 'TableColumns',
+	stylePseudoStates: ['hover'],
+	stylePropertiesForTheme: tableRowStylePropertiesForTheme,
+	externalStylePropsForThemeJson: true,
+	propertiesForTheme: [tableDesign, colorScheme],
 };

@@ -17,7 +17,7 @@ module.exports = {
     rules: [
       {
         test: /\.[jt]sx?$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!@fincity)/,
         use: [
           {
             loader: require.resolve('ts-loader'),
@@ -47,6 +47,13 @@ module.exports = {
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js'], // Resolve these extensions
+    symlinks: true, // Follow symlinks to resolve modules
+    // Prefer "source" (Parcel field) so linked @fincity/kirun-js uses src/ in dev for live edits
+    mainFields: ['source', 'module', 'main'],
+  },
+  watchOptions: {
+    followSymlinks: true, // Watch changes in symlinked directories
+    ignored: /node_modules\/(?!@fincity)/, // Ignore node_modules except @fincity packages
   },
   plugins: [
     new HtmlWebpackPlugin({

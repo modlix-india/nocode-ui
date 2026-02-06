@@ -10,6 +10,7 @@ export default function PageEditorStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [used, setUsed] = useState(usedComponents.used(NAME));
+	usedComponents.using('KIRun Editor');
 
 	useEffect(() => {
 		const fn = () => setTimeout(() => setUsed(true), 100);

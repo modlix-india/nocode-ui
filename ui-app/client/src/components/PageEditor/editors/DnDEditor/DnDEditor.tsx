@@ -52,7 +52,7 @@ interface DnDEditorProps {
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 	latestVersion: React.MutableRefObject<number>;
-	slaveStore: any;
+	slaveStore: {desktop: any, tablet: any, mobile: any};
 	editPageName: string | undefined;
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;
@@ -64,6 +64,8 @@ interface DnDEditorProps {
 	sectionsListConnectionName: string | undefined;
 	sectionsCategoryList: any;
 	helpURL: string | undefined;
+	onDebugButtonClick: () => void;
+	debugMessageCount: number;
 }
 
 export default function DnDEditor({
@@ -117,6 +119,8 @@ export default function DnDEditor({
 	sectionsListConnectionName,
 	sectionsCategoryList,
 	helpURL,
+	onDebugButtonClick,
+	debugMessageCount,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
 
@@ -186,6 +190,8 @@ export default function DnDEditor({
 						sectionsListConnectionName={sectionsListConnectionName}
 						sectionsCategoryList={sectionsCategoryList}
 						helpURL={helpURL}
+						onDebugButtonClick={onDebugButtonClick}
+						debugMessageCount={debugMessageCount}
 					/>
 					<div className="_dndIframeContentContainer">
 						<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
