@@ -1,4 +1,5 @@
-import React, { MouseEvent, useState, useRef, useLayoutEffect } from 'react';
+import React, { MouseEvent, useState, useRef, useLayoutEffect, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocation } from 'react-router-dom';
 import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentProps } from '../../types/common';
@@ -56,6 +57,7 @@ function Menu(props: Readonly<ComponentProps>) {
 			subMenuOrientation,
 			readOnly,
 			showOpenCloseButton,
+			closeOnClickOutside,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -66,83 +68,220 @@ function Menu(props: Readonly<ComponentProps>) {
 		pageExtractor,
 		urlExtractor,
 	);
+	const anchorRef = useRef<HTMLAnchorElement>(null);
+	const submenuRef = useRef<HTMLDivElement>(null);
 	const resolvedLink = getHref(linkPath, location);
 	const [isMenuOpenState, setIsMenuOpenState] = React.useState(isMenuOpen);
 	const [isMenuActive, setIsMenuActive] = React.useState(false);
 	const { pathname } = useLocation();
 	const [containerHover, setContainerHover] = useState(false);
 	const [isHovered, setIsHovered] = useState(false);
-	const anchorRef = useRef<HTMLAnchorElement>(null);
-	const submenuRef = useRef<HTMLDivElement>(null);
+	const [mouseIsInside, setMouseIsInside] = useState(false);
+
+	// Synchronize the internal state with the 'isMenuOpen' property from the definition.
+	React.useEffect(() => {
+		setIsMenuOpenState(isMenuOpen);
+	}, [isMenuOpen]);
 
 	useLayoutEffect(() => {
-		if (!isMenuOpenState || !anchorRef.current || !submenuRef.current) return;
+		if (!isMenuOpenState || !anchorRef.current) return;
 
-		const anchor = anchorRef.current.getBoundingClientRect();
-		const submenu = submenuRef.current.getBoundingClientRect();
-		const windowWidth = window.innerWidth;
-		const windowHeight = window.innerHeight;
+		const positionSubmenu = () => {
+			if (!anchorRef.current || !submenuRef.current) return;
 
-		let top = 0;
-		let left = 0;
-		let orientation = subMenuOrientation === '_default_orientation' || !subMenuOrientation ? '_bottom_orientation' : subMenuOrientation;
+			const anchorRect = anchorRef.current.getBoundingClientRect();
+			const submenuRect = submenuRef.current.getBoundingClientRect();
+			const viewportWidth = window.innerWidth;
+			const viewportHeight = window.innerHeight;
 
-		if (orientation === '_right_orientation' && anchor.right + submenu.width > windowWidth) {
-			orientation = '_left_orientation';
-		} else if (orientation === '_left_orientation' && anchor.left - submenu.width < 0) {
-			orientation = '_right_orientation';
-		} else if (
-			orientation === '_bottom_orientation' &&
-			anchor.bottom + submenu.height > windowHeight
-		) {
-			orientation = '_top_orientation';
-		} else if (orientation === '_top_orientation' && anchor.top - submenu.height < 0) {
-			orientation = '_bottom_orientation';
-		}
+			// Gap between anchor and submenu
+			const gap = 2;
 
-		const offsetParent = anchorRef.current.offsetParent || document.body;
-		const parentRect = offsetParent.getBoundingClientRect();
+			// Available space in each direction
+			const spaceTop = anchorRect.top;
+			const spaceBottom = viewportHeight - anchorRect.bottom;
+			const spaceLeft = anchorRect.left;
+			const spaceRight = viewportWidth - anchorRect.right;
 
-		const relativeAnchorTop = anchor.top - parentRect.top;
-		const relativeAnchorLeft = anchor.left - parentRect.left;
-		const gap = 2;
+			let orientation =
+				subMenuOrientation === '_default_orientation' || !subMenuOrientation
+					? '_bottom_orientation'
+					: subMenuOrientation;
 
-		if (orientation === '_right_orientation') {
-			top = relativeAnchorTop;
-			left = relativeAnchorLeft + anchor.width + gap;
-		} else if (orientation === '_left_orientation') {
-			top = relativeAnchorTop;
-			left = relativeAnchorLeft - submenu.width - gap;
-		} else if (orientation === '_top_orientation') {
-			top = relativeAnchorTop - submenu.height - gap;
-			left = relativeAnchorLeft;
-		} else {
-			top = relativeAnchorTop + anchor.height + gap;
-			left = relativeAnchorLeft;
-		}
+			let finalTop = 0;
+			let finalLeft = 0;
 
-		submenuRef.current.style.top = `${top}px`;
-		submenuRef.current.style.left = `${left}px`;
+			// Helper to check if orientation fits
+			const fits = (orient: string) => {
+				if (orient === '_bottom_orientation')
+					return spaceBottom >= submenuRect.height + gap;
+				if (orient === '_top_orientation') return spaceTop >= submenuRect.height + gap;
+				if (orient === '_right_orientation') return spaceRight >= submenuRect.width + gap;
+				if (orient === '_left_orientation') return spaceLeft >= submenuRect.width + gap;
+				return false;
+			};
+
+			// Logic to determine best orientation if preferred doesn't fit
+			if (!fits(orientation)) {
+				if (
+					(orientation === '_bottom_orientation' && spaceTop > spaceBottom) ||
+					(orientation === '_top_orientation' && spaceBottom > spaceTop)
+				) {
+					orientation =
+						orientation === '_bottom_orientation'
+							? '_top_orientation'
+							: '_bottom_orientation';
+				} else if (
+					(orientation === '_right_orientation' && spaceLeft > spaceRight) ||
+					(orientation === '_left_orientation' && spaceRight > spaceLeft)
+				) {
+					orientation =
+						orientation === '_right_orientation'
+							? '_left_orientation'
+							: '_right_orientation';
+				}
+			}
+
+			// Calculate Final Position logic
+			if (orientation === '_bottom_orientation') {
+				finalTop = anchorRect.bottom + gap;
+				finalLeft = anchorRect.left;
+			} else if (orientation === '_top_orientation') {
+				finalTop = anchorRect.top - submenuRect.height - gap;
+				finalLeft = anchorRect.left;
+			} else if (orientation === '_right_orientation') {
+				finalTop = anchorRect.top;
+				finalLeft = anchorRect.right + gap;
+			} else {
+				// _left_orientation
+				finalTop = anchorRect.top;
+				finalLeft = anchorRect.left - submenuRect.width - gap;
+			}
+
+			// Horizontal Overflow Check (Slide Logic)
+			if (orientation === '_top_orientation' || orientation === '_bottom_orientation') {
+				if (finalLeft + submenuRect.width > viewportWidth) {
+					finalLeft = viewportWidth - submenuRect.width - 10;
+				}
+				if (finalLeft < 0) {
+					finalLeft = 10;
+				}
+			}
+
+			// Vertical Overflow Check (Slide Logic)
+			if (orientation === '_left_orientation' || orientation === '_right_orientation') {
+				if (finalTop + submenuRect.height > viewportHeight) {
+					finalTop = viewportHeight - submenuRect.height - 10;
+				}
+				if (finalTop < 0) {
+					finalTop = 10;
+				}
+			}
+
+			// Apply Styles
+			const style = submenuRef.current.style;
+			style.setProperty('top', `${finalTop}px`, 'important');
+			style.setProperty('left', `${finalLeft}px`, 'important');
+
+			if (
+				(orientation === '_top_orientation' || orientation === '_bottom_orientation') &&
+				!regularStyle?.subMenuContainer?.width &&
+				!regularStyle?.subMenuContainer?.minWidth
+			) {
+				style.setProperty('width', `${anchorRect.width}px`, 'important');
+			} else {
+				style.removeProperty('width');
+			}
+		};
+
+		// 1. Initial trigger
+		positionSubmenu();
+
+		// 2. Use ResizeObserver to detect size changes in anchor or submenu (content loading)
+		const resizeObserver = new ResizeObserver(() => {
+			requestAnimationFrame(positionSubmenu);
+		});
+		if (anchorRef.current) resizeObserver.observe(anchorRef.current);
+
+		// 3. Robust initial warm-up to catch layout shifts on reload
+		const warmUpInterval = setInterval(positionSubmenu, 100);
+		const warmUpTimeout = setTimeout(() => clearInterval(warmUpInterval), 2000);
+
+		// 4. Standard listeners
+		window.addEventListener('resize', positionSubmenu);
+		window.addEventListener('scroll', positionSubmenu, true);
+
+		// 5. Special check for submenuRef.current when it becomes available via Portal
+		let rafId: number;
+		const checkSubmenu = () => {
+			if (submenuRef.current) {
+				resizeObserver.observe(submenuRef.current);
+				positionSubmenu();
+			} else {
+				rafId = requestAnimationFrame(checkSubmenu);
+			}
+		};
+		rafId = requestAnimationFrame(checkSubmenu);
+
+		return () => {
+			resizeObserver.disconnect();
+			clearInterval(warmUpInterval);
+			clearTimeout(warmUpTimeout);
+			cancelAnimationFrame(rafId);
+			window.removeEventListener('resize', positionSubmenu);
+			window.removeEventListener('scroll', positionSubmenu, true);
+		};
 	}, [isMenuOpenState, subMenuOrientation]);
 
 	React.useEffect(() => {
-		if (!pathsActiveFor?.length) return;
-		const paths = pathsActiveFor.split(',');
-		let hasPath;
-		if (pathname === '/') {
-			hasPath = !!paths.find((e: string) => pathname === e);
-		} else {
-			const lowerPath = pathname.toLowerCase();
-			hasPath = !!paths
-				.filter((e: string) => e !== '/')
-				.find((e: string) => lowerPath.indexOf('/' + e.toLowerCase()) >= 0);
+		const allActivePaths = pathsActiveFor ? pathsActiveFor.split(',') : [];
+		if (linkPath && resolvedLink && resolvedLink !== 'javascript:void(0)') {
+			allActivePaths.push(resolvedLink);
 		}
+
+		const currentPathname = (pathname || '').toLowerCase().trim();
+		const hasPath = allActivePaths.some((e: string) => {
+			const cleanE = e.toLowerCase().trim();
+			if (!cleanE || cleanE === 'javascript:void(0)') return false;
+
+			if (cleanE === '/') return currentPathname === '/' || currentPathname === '';
+
+			const normalizedPath = currentPathname.replace(/^\//, '').replace(/\/$/, '');
+			const normalizedE = cleanE.replace(/^\//, '').replace(/\/$/, '');
+			return normalizedPath === normalizedE || normalizedPath.startsWith(normalizedE + '/');
+		});
 		setIsMenuActive(hasPath);
-	}, [pathname, pathsActiveFor]);
+	}, [pathname, pathsActiveFor, resolvedLink, linkPath]);
+
+	const isFirstRun = useRef(true);
+	// Close menu on navigation
+	useEffect(() => {
+		if (isFirstRun.current) {
+			isFirstRun.current = false;
+			return;
+		}
+		setIsMenuOpenState(false);
+	}, [pathname]);
+
+	useEffect(() => {
+		if (!isMenuOpenState || !closeOnClickOutside) return;
+		const closeFunction = () => {
+			if (mouseIsInside) return;
+			setIsMenuOpenState(false);
+		};
+		window.addEventListener('mousedown', closeFunction);
+		return () => window.removeEventListener('mousedown', closeFunction);
+	}, [mouseIsInside, isMenuOpenState, closeOnClickOutside]);
 
 	const hoverStyle = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ hover: true },
+		stylePropertiesWithPseudoStates,
+	);
+
+	const activeStyle = processComponentStylePseudoClasses(
+		props.pageDefinition,
+		{ active: true },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -154,7 +293,7 @@ function Menu(props: Readonly<ComponentProps>) {
 
 	const regularStyle = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ visited: false, hover: false },
+		{ visited: false, hover: false, active: false },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -165,20 +304,20 @@ function Menu(props: Readonly<ComponentProps>) {
 				readOnly
 					? undefined
 					: e => {
-						e.stopPropagation();
-						e.preventDefault();
-						if (externalButtonTarget === '_self') {
-							window.history.pushState(undefined, '', resolvedLink);
-							window.history.back();
-							setTimeout(() => window.history.forward(), 100);
-						} else {
-							window.open(
-								resolvedLink,
-								externalButtonTarget,
-								externalButtonFeatures ?? features,
-							);
+							e.stopPropagation();
+							e.preventDefault();
+							if (externalButtonTarget === '_self') {
+								window.history.pushState(undefined, '', resolvedLink);
+								window.history.back();
+								setTimeout(() => window.history.forward(), 100);
+							} else {
+								window.open(
+									resolvedLink,
+									externalButtonTarget,
+									externalButtonFeatures ?? features,
+								);
+							}
 						}
-					}
 			}
 		>
 			<SubHelperComponent definition={definition} subComponentName="externalIcon" />
@@ -201,12 +340,12 @@ function Menu(props: Readonly<ComponentProps>) {
 			<img src={getSrcUrl(activeImageIcon)} alt="activeImageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
 		</span>
-	) : imageIcon && activeImageIcon && (isHovered || isMenuActive) ? (
+	) : imageIcon && activeImageIcon && (isHovered || isMenuActive || containerHover) ? (
 		<span className="_activeImageIcon">
 			<img src={getSrcUrl(activeImageIcon)} alt="activeImageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="activeImageIcon" />
 		</span>
-	) : imageIcon && activeImageIcon && (!isHovered || !isMenuActive) ? (
+	) : imageIcon && activeImageIcon && !isHovered && !isMenuActive && !containerHover ? (
 		<span className="_imageIcon">
 			<img src={getSrcUrl(imageIcon)} alt="imageIcon" />
 			<SubHelperComponent definition={definition} subComponentName="imageIcon" />
@@ -236,7 +375,7 @@ function Menu(props: Readonly<ComponentProps>) {
 
 	const caretIcon =
 		showOpenCloseButton &&
-			Object.entries(definition?.children ?? {}).filter(e => e[1]).length ? (
+		Object.entries(definition?.children ?? {}).filter(e => e[1]).length ? (
 			<div className="_caretIconContainer">
 				<i
 					className={`_caretIcon ${isMenuOpenState ? caretIconOpen : caretIconClose}`}
@@ -249,8 +388,9 @@ function Menu(props: Readonly<ComponentProps>) {
 			<></>
 		);
 
-	const styleKey = `${key}_${locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
-		}`;
+	const styleKey = `${key}_${
+		locationHistory?.length ? locationHistory.map(e => e.index).join('_') : ''
+	}`;
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
@@ -264,7 +404,11 @@ function Menu(props: Readonly<ComponentProps>) {
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.comp,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover`,
+			)}
+			{processStyleObjectToCSS(
+				activeStyle?.comp,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:active, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive`,
 			)}
 			{processStyleObjectToCSS(
 				regularStyle?.externalIcon,
@@ -276,7 +420,11 @@ function Menu(props: Readonly<ComponentProps>) {
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.externalIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._externalButton, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive > ._externalButton`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._externalButton`,
+			)}
+			{processStyleObjectToCSS(
+				activeStyle?.externalIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:active > ._externalButton, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive > ._externalButton`,
 			)}
 
 			{processStyleObjectToCSS(
@@ -289,7 +437,11 @@ function Menu(props: Readonly<ComponentProps>) {
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.icon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._icon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._icon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._icon`,
+			)}
+			{processStyleObjectToCSS(
+				activeStyle?.icon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:active > ._icon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._icon`,
 			)}
 
 			{processStyleObjectToCSS(
@@ -302,7 +454,11 @@ function Menu(props: Readonly<ComponentProps>) {
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.imageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._imageIcon img, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon img`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._imageIcon img`,
+			)}
+			{processStyleObjectToCSS(
+				activeStyle?.imageIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:active > ._imageIcon img, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon img`,
 			)}
 			{processStyleObjectToCSS(
 				regularStyle?.activeImageIcon,
@@ -314,7 +470,11 @@ function Menu(props: Readonly<ComponentProps>) {
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.activeImageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._activeImageIcon img, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon img`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._activeImageIcon img`,
+			)}
+			{processStyleObjectToCSS(
+				activeStyle?.activeImageIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:active > ._activeImageIcon img, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon img`,
 			)}
 
 			{processStyleObjectToCSS(
@@ -327,34 +487,59 @@ function Menu(props: Readonly<ComponentProps>) {
 			)}
 			{processStyleObjectToCSS(
 				hoverStyle?.caretIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._caretIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._caretIcon`,
+			)}
+			{processStyleObjectToCSS(
+				activeStyle?.caretIcon,
+				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:active > ._caretIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
+			)}
+			{processStyleObjectToCSS(
+				regularStyle?.subMenuContainer,
+				`.comp.compMenuSubmenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}`,
+			)}
+			{processStyleObjectToCSS(
+				hoverStyle?.subMenuContainer,
+				`.comp.compMenuSubmenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover`,
+			)}
+			{processStyleObjectToCSS(
+				activeStyle?.subMenuContainer,
+				`.comp.compMenuSubmenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:active, .comp.compMenuSubmenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive`,
 			)}
 		</style>
 	);
 
 	const children =
 		definition.children && isMenuOpenState ? (
-			<div
-				ref={submenuRef}
-				className={`${subMenuOrientation}`}
-				style={(containerHover ? hoverStyle : regularStyle)?.subMenuContainer}
-				onMouseOver={() => setContainerHover(true)}
-				onMouseLeave={() => setContainerHover(false)}
-			>
-				<SubHelperComponent
-					definition={props.definition}
-					subComponentName="subMenuContainer"
-				/>
-				<Children
-					pageDefinition={props.pageDefinition}
-					renderableChildren={definition.children}
-					context={{
-						...context,
-						menuLevel: (context.menuLevel ?? 0) + 1,
+			createPortal(
+				<div
+					key={`${key}_submenu`}
+					ref={submenuRef}
+					className={`comp compMenuSubmenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${subMenuOrientation}`}
+					onMouseOver={() => {
+						setContainerHover(true);
+						setMouseIsInside(true);
 					}}
-					locationHistory={locationHistory}
-				/>
-			</div>
+					onMouseLeave={() => {
+						setContainerHover(false);
+						setMouseIsInside(false);
+					}}
+				>
+					<SubHelperComponent
+						definition={props.definition}
+						subComponentName="subMenuContainer"
+					/>
+					<Children
+						pageDefinition={props.pageDefinition}
+						renderableChildren={definition.children}
+						context={{
+							...context,
+							menuLevel: (context.menuLevel ?? 0) + 1,
+						}}
+						locationHistory={locationHistory}
+					/>
+				</div>,
+				document.body,
+			)
 		) : (
 			<></>
 		);
@@ -364,12 +549,21 @@ function Menu(props: Readonly<ComponentProps>) {
 			{styleComp}
 			<a
 				ref={anchorRef}
-				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${isMenuActive ? '_isActive' : ''
-					} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
-				href={readOnly ? 'javascript:void(0)' : resolvedLink}
+				className={`comp compMenu _${styleKey}menu_css ${menuDesignSelectionType} ${menuColorScheme} ${
+					isMenuActive ? '_isActive' : ''
+				} ${isHovered || containerHover ? '_hover' : ''} ${
+					readOnly ? '_disabled' : ''
+				} _level${context.menuLevel ?? 0}`}
+				href={readOnly || !linkPath ? 'javascript:void(0)' : resolvedLink}
 				target={target}
-				onMouseEnter={() => setIsHovered(true)}
-				onMouseLeave={() => setIsHovered(false)}
+				onMouseEnter={() => {
+					setIsHovered(true);
+					setMouseIsInside(true);
+				}}
+				onMouseLeave={() => {
+					setIsHovered(false);
+					setMouseIsInside(false);
+				}}
 				onClick={e => {
 					if ((!target || target === '_self') && linkPath) {
 						e.stopPropagation();
@@ -377,10 +571,12 @@ function Menu(props: Readonly<ComponentProps>) {
 						window.history.pushState(undefined, '', resolvedLink);
 						window.history.back();
 						setTimeout(() => window.history.forward(), 100);
+						setIsMenuOpenState(false);
 					} else if (features && linkPath) {
 						e.stopPropagation();
 						e.preventDefault();
 						window.open(resolvedLink, target, features);
+						setIsMenuOpenState(false);
 					} else if (!onClick) {
 						menuToggle(e);
 					}

@@ -84,12 +84,17 @@ export default function MenuStyle({
 		text-align: right;
  	}
 
-	${PREFIX} + ._right_orientation,
-	${PREFIX} + ._left_orientation,
-	${PREFIX} + ._top_orientation,
-	${PREFIX} + ._bottom_orientation {
-		position: absolute;
-		z-index: 1;
+	${PREFIX}Submenu._right_orientation,
+	${PREFIX}Submenu._left_orientation,
+	${PREFIX}Submenu._top_orientation,
+	${PREFIX}Submenu._bottom_orientation {
+		position: fixed;
+		background:#fff;
+		z-index: 10000;
+		bottom: auto;
+		right: auto;
+		transform: none;
+		box-sizing: border-box;
 	}
 
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

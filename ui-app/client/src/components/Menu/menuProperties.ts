@@ -72,7 +72,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		displayName: "Menu's caret icon open",
 		description: "Menu's icon to be displayed when menu open.",
-		defaultValue: 'fa fa-solid fa-angle-down',
+		defaultValue: 'fa fa-solid fa-angle-down fa-rotate-180',
 		editor: ComponentPropertyEditor.ICON,
 	},
 	{
@@ -81,7 +81,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		displayName: "Menu's caret icon close",
 		description: "Menu's icon to be displayed when menu close.",
-		defaultValue: 'fa fa-solid fa-angle-down fa-rotate-180',
+		defaultValue: 'fa fa-solid fa-angle-down',
 		editor: ComponentPropertyEditor.ICON,
 	},
 	{
@@ -162,6 +162,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Opens submenu to the left of the parent menu',
 			},
 		],
+	},
+	{
+		name: 'closeOnClickOutside',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Close menu on click outside',
+		description: 'Menu will be closed on clicking outside when this property is true.',
+		defaultValue: true,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
