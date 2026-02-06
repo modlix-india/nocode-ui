@@ -151,12 +151,13 @@ module.exports = async (env = {}) => {
             priority: 13,
             reuseExistingChunk: true,
           },
-          // Heavy Editor Components (PageEditor, KIRunEditor, etc.)
+          // Heavy Editor Components - only lazy-loaded implementation files
           editors: {
-            test: /[\\/]src[\\/]components[\\/](PageEditor|KIRunEditor|FormEditor|FillerDefinitionEditor|FillerValueEditor|SchemaBuilder|TemplateEditor|TextEditor|ThemeEditor|MarkdownEditor)[\\/]/,
+            test: /[\\/]src[\\/]components[\\/](PageEditor|KIRunEditor|FormEditor|FillerDefinitionEditor|FillerValueEditor|SchemaBuilder|TemplateEditor|TextEditor|ThemeEditor|MarkdownEditor)[\\/].*Lazy/,
             name: 'editors',
             priority: 12,
             reuseExistingChunk: true,
+            chunks: 'async',  // Only include in async chunks (loaded via React.lazy)
             minSize: 10000,
           },
           // Table Components
