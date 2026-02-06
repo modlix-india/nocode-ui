@@ -1,5 +1,8 @@
-import Editor from '@monaco-editor/react';
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
+
+const LazyEditor = React.lazy(() =>
+	import('@monaco-editor/react').then(module => ({ default: module.default })),
+);
 
 interface AnyValueEditorProps {
 	value?: any;
@@ -37,20 +40,22 @@ export function AnyValueEditor({
 			<div className={`_popupBackground`} onClick={() => setShowEditor(false)}>
 				<div className="_popupContainer" onClick={e => e.stopPropagation()}>
 					<div className="_jsonEditorContainer">
-						<Editor
-							language="json"
-							height="100%"
-							value={localValue}
-							onChange={ev => {
-								setEditorValue(ev ?? '');
-								try {
-									if (ev !== 'undefined' && ev !== 'null' && ev) JSON.parse(ev);
-									setEnableOk(true);
-								} catch (err) {
-									setEnableOk(false);
-								}
-							}}
-						/>
+						<Suspense fallback={<div className="_editorLoading">Loading editor...</div>}>
+							<LazyEditor
+								language="json"
+								height="100%"
+								value={localValue}
+								onChange={ev => {
+									setEditorValue(ev ?? '');
+									try {
+										if (ev !== 'undefined' && ev !== 'null' && ev) JSON.parse(ev);
+										setEnableOk(true);
+									} catch (err) {
+										setEnableOk(false);
+									}
+								}}
+							/>
+						</Suspense>
 					</div>
 					<div className="_popupButtons">
 						<button
