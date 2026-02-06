@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 import Animator from '../Animator/Animator';
 import ArrayRepeater from '../ArrayRepeater/ArrayRepeater';
@@ -31,6 +31,7 @@ import {
 	TableEmptyGrid,
 	TableGrid,
 	TablePreviewGrid,
+	TableRow,
 } from '../TableComponents';
 
 import Tabs from '../Tabs/Tabs';
@@ -66,13 +67,15 @@ import SchemaForm from '../SchemaForm/SchemaForm';
 import TemplateEditor from '../TemplateEditor/TemplateEditor';
 import TextEditor from '../TextEditor/TextEditor';
 
-import { ComponentStyleSubComponentDefinition } from "../../types/common";
-import { IconHelper } from "../util/IconHelper";
-import TimerIcon from "../Timer/TimerIcon";
+import { ComponentStyleSubComponentDefinition } from '../../types/common';
+import { IconHelper } from '../util/IconHelper';
+import TimerIcon from '../Timer/TimerIcon';
 
-export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComponentDefinition>> = {
-
-"Animator" : [
+export const SubComponentDefinitions: Record<
+	string,
+	Array<ComponentStyleSubComponentDefinition>
+> = {
+	Animator: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -113,9 +116,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[ArrayRepeater.name] : [
+	[ArrayRepeater.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -166,9 +169,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Move Button',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Audio.name] : [
+	[Audio.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -289,9 +292,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'File Name Container',
 			icon: 'fa fa-solid fa-box',
 		},
-],
+	],
 
-[Button.name] : [
+	[Button.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -355,9 +358,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Active Right Image',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[ButtonBar.name] : [
+	[ButtonBar.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -410,9 +413,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Button',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Calendar.name] : [
+	[Calendar.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -773,9 +776,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Individual option in dropdown',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Carousel.name] : [
+	[Carousel.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -859,9 +862,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Active indicator navigation arrow button',
 			icon: 'fa-solid fa-arrow-right-arrow-left',
 		},
-],
+	],
 
-[Chart.name] : [
+	[Chart.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -943,6 +946,18 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			icon: 'fa fa-solid fa-box',
 		},
 		{
+			name: 'xTicks',
+			displayName: 'X Ticks',
+			description: 'X Axis Tick Marks',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'yTicks',
+			displayName: 'Y Ticks',
+			description: 'Y Axis Tick Marks',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
 			name: 'legendLabel',
 			displayName: 'Legend Label',
 			description: 'Legend Label',
@@ -978,9 +993,51 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Bar',
 			icon: 'fa fa-solid fa-box',
 		},
-],
+		{
+			name: 'line',
+			displayName: 'Line',
+			description: 'Line',
+			icon: 'fa fa-solid fa-chart-line',
+		},
+		{
+			name: 'point',
+			displayName: 'Point',
+			description: 'Point/Marker',
+			icon: 'fa fa-solid fa-circle',
+		},
+		{
+			name: 'area',
+			displayName: 'Area',
+			description: 'Filled Area',
+			icon: 'fa fa-solid fa-chart-area',
+		},
+		{
+			name: 'pie',
+			displayName: 'Pie',
+			description: 'Pie Slice',
+			icon: 'fa fa-solid fa-chart-pie',
+		},
+		{
+			name: 'doughnut',
+			displayName: 'Doughnut',
+			description: 'Doughnut Segment',
+			icon: 'fa fa-solid fa-circle-notch',
+		},
+		{
+			name: 'radar',
+			displayName: 'Radar',
+			description: 'Radar Chart',
+			icon: 'fa fa-solid fa-diagram-project',
+		},
+		{
+			name: 'polarArea',
+			displayName: 'Polar Area',
+			description: 'Polar Area Segment',
+			icon: 'fa fa-solid fa-circle-half-stroke',
+		},
+	],
 
-[CheckBox.name] : [
+	[CheckBox.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1027,9 +1084,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Tick',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[ColorPicker.name] : [
+	[ColorPicker.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1134,9 +1191,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Error Text Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Dropdown.name] : [
+	[Dropdown.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1295,9 +1352,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[FileSelector.name] : [
+	[FileSelector.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1346,9 +1403,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[FileUpload.name] : [
+	[FileUpload.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1433,9 +1490,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Sub Text',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[FillerDefinitionEditor.name] : [
+	[FillerDefinitionEditor.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1467,9 +1524,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[FillerValueEditor.name] : [
+	[FillerValueEditor.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1531,9 +1588,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[Form.name] : [
+	[Form.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1569,9 +1626,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[FormEditor.name] : [
+	[FormEditor.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1614,9 +1671,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Object Add Bar',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Gallery.name] : [
+	[Gallery.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1720,9 +1777,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Preview Image',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Grid.name] : [
+	[Grid.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1751,9 +1808,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[Icon.name] : [
+	[Icon.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1771,9 +1828,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[Iframe.name] : [
+	[Iframe.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1813,9 +1870,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Iframe',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Image.name] : [
+	[Image.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1875,9 +1932,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Image Tooltip',
 			icon: 'fa-solid fa-comment',
 		},
-],
+	],
 
-[ImageWithBrowser.name] : [
+	[ImageWithBrowser.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1907,9 +1964,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Image',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[KIRunEditor.name] : [
+	[KIRunEditor.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -1965,9 +2022,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[Link.name] : [
+	[Link.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2007,9 +2064,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'External Icon',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[MarkdownEditor.name] : [
+	[MarkdownEditor.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2277,9 +2334,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Footnote Link',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[MarkdownTOC.name] : [
+	[MarkdownTOC.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2399,9 +2456,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'bottomIconImage',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Menu.name] : [
+	[Menu.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2475,9 +2532,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Sub Menu Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Otp.name] : [
+	[Otp.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2599,9 +2656,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Visibility Toggle Icon',
 			icon: 'fa-solid fa-eye',
 		},
-],
+	],
 
-[Page.name] : [
+	[Page.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2637,9 +2694,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[PhoneNumber.name] : [
+	[PhoneNumber.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2776,9 +2833,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Popover.name] : [
+	[Popover.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2831,9 +2888,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Popover Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Popup.name] : [
+	[Popup.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2884,9 +2941,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Close Button Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[ProgressBar.name] : [
+	[ProgressBar.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2956,9 +3013,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Label',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[RadioButton.name] : [
+	[RadioButton.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -2998,9 +3055,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Circle / Tick',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[RangeSlider.name] : [
+	[RangeSlider.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3147,9 +3204,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Tick Label',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[SSEventListener.name] : [
+	[SSEventListener.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3162,9 +3219,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			),
 			mainComponent: true,
 		},
-],
+	],
 
-[SchemaBuilder.name] : [
+	[SchemaBuilder.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3202,9 +3259,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[SchemaForm.name] : [
+	[SchemaForm.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3240,9 +3297,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[SectionGrid.name] : [
+	[SectionGrid.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3296,9 +3353,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[SmallCarousel.name] : [
+	[SmallCarousel.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3400,9 +3457,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Active indicator navigation arrow button',
 			icon: 'fa-solid fa-arrow-right-arrow-left',
 		},
-],
+	],
 
-[Stepper.name] : [
+	[Stepper.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3524,9 +3581,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Active Before Line',
 			icon: 'fa-solid fa-list',
 		},
-],
+	],
 
-[SubPage.name] : [
+	[SubPage.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3551,9 +3608,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[Table.name] : [
+	[Table.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3712,9 +3769,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Table With Pagination',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TableColumn.name] : [
+	[TableColumn.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3836,9 +3893,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Tooltip Triangle',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TableColumnHeader.name] : [
+	[TableColumnHeader.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3912,9 +3969,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Header',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TableColumns.name] : [
+	[TableColumns.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -3989,9 +4046,55 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Row Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
+	[TableRow.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="white" />
+					<path
+						d="M0 4C0 1.79086 1.79086 0 4 0H26C28.2091 0 30 1.79086 30 4V8H0V4Z"
+						fill="#2196F3"
+						className="_tableHeader"
+					/>
+					<path
+						d="M2.54769 14.2852C2.39752 14.2846 2.24873 14.3136 2.10977 14.3705C1.97081 14.4274 1.84442 14.5112 1.73784 14.617C1.63126 14.7228 1.54657 14.8486 1.48861 14.9871C1.43064 15.1256 1.40055 15.2742 1.40003 15.4244C1.39944 15.5753 1.4287 15.7248 1.48617 15.8643C1.54363 16.0038 1.62815 16.1305 1.73484 16.2372C1.84153 16.3439 1.96832 16.4284 2.10783 16.4859C2.24734 16.5433 2.39681 16.5726 2.54769 16.572H27.6949C27.8458 16.5726 27.9953 16.5433 28.1348 16.4859C28.2743 16.4284 28.4011 16.3439 28.5077 16.2372C28.6144 16.1305 28.699 16.0038 28.7564 15.8643C28.8139 15.7248 28.8431 15.5753 28.8425 15.4244C28.842 15.2742 28.8119 15.1256 28.754 14.9871C28.696 14.8486 28.6113 14.7228 28.5048 14.617C28.3982 14.5112 28.2718 14.4275 28.1328 14.3705C27.9939 14.3136 27.8451 14.2846 27.6949 14.2852H2.54769Z"
+						fill="#CFD8DD"
+					/>
+					<path
+						d="M2.54769 20.5742C2.39752 20.5736 2.24873 20.6026 2.10977 20.6595C1.97081 20.7165 1.84442 20.8002 1.73784 20.906C1.63126 21.0118 1.54657 21.1376 1.48861 21.2761C1.43064 21.4147 1.40055 21.5632 1.40003 21.7134C1.39944 21.8643 1.4287 22.0138 1.48617 22.1533C1.54363 22.2928 1.62815 22.4196 1.73484 22.5263C1.84153 22.633 1.96832 22.7174 2.10783 22.7749C2.24734 22.8324 2.39681 22.8617 2.54769 22.8611H27.6949C27.8458 22.8617 27.9953 22.8324 28.1348 22.7749C28.2743 21.7174 28.4011 22.6329 28.5077 22.5263C28.6144 22.4196 28.699 22.2928 28.7564 22.1533C28.8139 22.0138 28.8431 21.8643 28.8425 21.7134C28.842 21.5632 28.8119 21.4147 28.754 21.2761C28.696 21.1376 28.6113 21.0119 28.5048 20.9061C28.3982 20.8003 28.2718 20.7165 28.1328 20.6596C27.9939 20.6026 27.8451 20.5736 27.6949 20.5742H2.54769Z"
+						fill="#CFD8DD"
+					/>
+					<rect
+						x="1.5"
+						y="14.28"
+						width="27"
+						height="6.29"
+						fill="#2196F3"
+						fillOpacity="0.2"
+					/>
+					<path
+						d="M1.5 9.5H28.5V26C28.5 27.3807 27.3807 28.5 26 28.5H4C2.61929 28.5 1.5 27.3807 1.5 26V9.5Z"
+						stroke="#CFD8DD"
+						strokeWidth="3"
+						fillOpacity={0}
+					/>
+				</IconHelper>
+			),
+		},
+		{
+			name: 'rowContainer',
+			displayName: 'Row Container',
+			description: 'Row Container',
+			icon: 'fa-solid fa-box',
+		},
+	],
 
-[TableDynamicColumn.name] : [
+	[TableDynamicColumn.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4101,9 +4204,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Header',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TableEmptyGrid.name] : [
+	[TableEmptyGrid.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4173,9 +4276,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[TableGrid.name] : [
+	[TableGrid.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4240,9 +4343,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Each Grid',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TablePreviewGrid.name] : [
+	[TablePreviewGrid.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4312,9 +4415,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[Tabs.name] : [
+	[Tabs.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4368,9 +4471,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Tabs Seperator',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Tags.name] : [
+	[Tags.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4479,9 +4582,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Title Label',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TemplateEditor.name] : [
+	[TemplateEditor.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4515,9 +4618,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[Text.name] : [
+	[Text.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4765,9 +4868,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Footnote Link',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TextArea.name] : [
+	[TextArea.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4855,9 +4958,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TextBox.name] : [
+	[TextBox.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4949,9 +5052,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Edit Confirm Cancel Container',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[TextEditor.name] : [
+	[TextEditor.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -4978,9 +5081,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 				</IconHelper>
 			),
 		},
-],
+	],
 
-[TextList.name] : [
+	[TextList.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -5055,9 +5158,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'List Item Icon',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-"ThemeEditor" : [
+	ThemeEditor: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -5132,22 +5235,20 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			),
 			mainComponent: true,
 		},
-],
+	],
 
-[Timer.name] : [
+	[Timer.name]: [
 		{
 			name: '',
 			displayName: 'Component',
 			description: 'Component',
 
-			icon: (
-				<TimerIcon />
-			),
+			icon: <TimerIcon />,
 			mainComponent: true,
 		},
-],
+	],
 
-[ToggleButton.name] : [
+	[ToggleButton.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -5190,9 +5291,9 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Icon',
 			icon: 'fa-solid fa-box',
 		},
-],
+	],
 
-[Video.name] : [
+	[Video.name]: [
 		{
 			name: '',
 			displayName: 'Component',
@@ -5285,8 +5386,8 @@ export const SubComponentDefinitions: Record<string, Array<ComponentStyleSubComp
 			description: 'Seek Time Text On Hover',
 			icon: 'fa fa-solid fa-box',
 		},
-],
-"PageEditor": [
+	],
+	PageEditor: [
 		{
 			name: '',
 			displayName: 'Component',

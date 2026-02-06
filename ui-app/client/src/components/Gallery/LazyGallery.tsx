@@ -598,7 +598,7 @@ export default function Gallery(props: Readonly<ComponentProps>) {
 			</div>
 		) : null;
 
-	if (isActive || (globalThis.isDesignMode && showInDesign === true)) {
+	if (isActive || (globalThis.designMode == 'PAGE' && showInDesign === true)) {
 		return (
 			<Portal>
 				<div

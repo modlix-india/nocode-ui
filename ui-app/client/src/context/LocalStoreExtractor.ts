@@ -12,7 +12,7 @@ export class LocalStoreExtractor extends SpecialTokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 		// Add isSlave_ as prefix for preview mode
 		const key = globalThis.isDesignMode ? 'designMode_' + parts[1] : parts[1];
 		let localStorageValue = this.store?.getItem(key);

@@ -39,11 +39,13 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 	protected getValueInternal(token: string) {
 		const { path, lastHistory } = this.getPath(token);
 
-		return getDataFromPath(
+		const value = getDataFromPath(
 			path,
 			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
 			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
 		);
+
+		return value;
 	}
 
 	public getPath(token: string): { path: string; lastHistory: LocationHistory } {
@@ -61,7 +63,7 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory; removeHistory: number } {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
@@ -143,11 +145,18 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 	}
 
 	protected getValueInternal(token: string) {
-		return getDataFromPath(
-			this.computeParentPath(token),
+		const path = this.computeParentPath(token);
+		const value = getDataFromPath(
+			path,
 			[],
 			...Array.from(this.valueMaps.values()),
 		);
+
+		if (value === undefined || value === null) {
+			// console.warn('[ParentExtractorForRunEvent] undefined/null for token:', token, '=> path:', path, this.valueMaps.get('Page.')?.getStore()?.dealData?.content);
+		}
+
+		return value;
 	}
 
 	public computeParentPath(token: string): string {
@@ -165,7 +174,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		token: string,
 		history: LocationHistory[],
 	): { path: string; removeHistory: number } {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
@@ -203,7 +212,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory } {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;

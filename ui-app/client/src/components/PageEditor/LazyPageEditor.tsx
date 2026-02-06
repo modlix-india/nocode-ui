@@ -22,6 +22,7 @@ import useDefinition from '../util/useDefinition';
 import AISpotlight from './components/AISpotlight';
 import CodeEditor from './components/CodeEditor';
 import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
+import PageEditorDebugWindow from './components/PageEditorDebugWindow';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
@@ -430,6 +431,14 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	const [generateFormOnComponentKey, setGenerateFormOnComponentKey] = useState<string>('');
 	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
 
+	// Debug viewer state
+	const [debugMessages, setDebugMessages] = useState<Map<string, any[]>>(new Map([
+		['desktop', []],
+		['tablet', []],
+		['mobile', []]
+	]));
+	const [showDebugMenu, setShowDebugMenu] = useState<boolean>(false);
+
 	// AI Spotlight state
 	const [aiSpotlight, setAISpotlight] = useState<{
 		componentKey: string;
@@ -529,6 +538,21 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		},
 		[selectedComponent],
 	);
+
+	// Debug viewer handlers
+	// Debug viewer - simply toggle the window
+	const handleDebugButtonClick = useCallback(() => {
+		setShowDebugMenu(prev => !prev);
+	}, []);
+
+	const handleClearAllDebug = useCallback(() => {
+		setDebugMessages(new Map([
+			['desktop', []],
+			['tablet', []],
+			['mobile', []]
+		]));
+	}, []);
+
 
 	const [styleSelectorPref, setStyleSelectorPref] = useState<any>({});
 
@@ -766,7 +790,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	}, []); // Empty deps - only run once on mount
 
 	// This will be used to store slave store.
-	const [slaveStore, setSlaveStore] = useState<any>(undefined);
+	const [slaveStore, setSlaveStore] = useState<{desktop: any, tablet: any, mobile: any}>({desktop: {}, tablet: {}, mobile: {}});
 
 	// Effect to listen to all the messages from the iframe/slave of the page iframes.
 	// Use refs to avoid recreating listener on every render
@@ -824,8 +848,8 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					onSelectedSubComponentChange: key => setSelectedSubComponent(key),
 					operations: operationsRef.current!,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
-					onSlaveStore: (store: any) => {
-						setSlaveStore({
+					onSlaveStore: (screenType: string, store: any) => {
+						setSlaveStore((obj) => ({...obj, [screenType]: {
 							store,
 							localStore: Object.entries(window.localStorage)
 								.filter((e: [string, string]) => e[0].startsWith('designMode_'))
@@ -842,6 +866,66 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 									}
 									return a;
 								}, {} as any),
+						}}));
+					},
+					onDebugExecution: (msg: any) => {
+						// Flatten executionLog to top level for easier access
+						const flattenedMsg = {
+							...msg.executionLog,
+							executionLog: msg.executionLog, // Keep nested for DebugExecutionModal
+							executionId: msg.executionId,
+							screenType: msg.screenType,
+					pageDefinition: msg.pageDefinition,
+					locationHistory: msg.locationHistory || [],
+				};
+
+						console.log('[DEBUG] LazyPageEditor received message:', {
+							screenType: flattenedMsg.screenType,
+							executionId: flattenedMsg.executionId,
+							logs: flattenedMsg.logs,
+							logsLength: flattenedMsg.logs?.length,
+							firstLog: flattenedMsg.logs?.[0],
+							firstLogFunctionName: flattenedMsg.logs?.[0]?.functionName,
+							startTime: flattenedMsg.startTime,
+							endTime: flattenedMsg.endTime,
+							errored: flattenedMsg.errored,
+							allKeys: Object.keys(flattenedMsg),
+						});
+						setDebugMessages(prev => {
+							const updated = new Map(prev);
+							const deviceMessages = updated.get(flattenedMsg.screenType) || [];
+
+							// Check if execution with same ID already exists
+							const existingIndex = deviceMessages.findIndex(m => m.executionId === flattenedMsg.executionId);
+
+							let newMessages;
+							if (existingIndex !== -1) {
+								// Update existing execution (replace with latest data which should have more complete logs)
+								newMessages = [...deviceMessages];
+								newMessages[existingIndex] = flattenedMsg;
+								console.log('[DEBUG] Updated existing execution:', {
+									executionId: flattenedMsg.executionId,
+									oldLogsLength: deviceMessages[existingIndex].logs?.length,
+									newLogsLength: flattenedMsg.logs?.length,
+								});
+							} else {
+								// Add new execution at the beginning
+								newMessages = [flattenedMsg, ...deviceMessages].slice(0, 50); // Keep max 50
+								console.log('[DEBUG] Added new execution:', {
+									executionId: flattenedMsg.executionId,
+									logsLength: flattenedMsg.logs?.length,
+								});
+							}
+
+							updated.set(flattenedMsg.screenType, newMessages);
+							console.log('[DEBUG] Updated debug messages:', {
+								device: flattenedMsg.screenType,
+								newMessagesCount: newMessages.length,
+								totalDevicesWithMessages: Array.from(updated.entries())
+									.filter(([_, msgs]) => msgs.length > 0)
+									.map(([device, msgs]) => `${device}:${msgs.length}`),
+							});
+							return updated;
 						});
 					},
 				},
@@ -884,13 +968,13 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		() =>
 			allPaths(
 				STORE_PREFIX,
-				slaveStore?.store,
+				(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.store,
 				allPaths(
 					LOCAL_STORE_PREFIX,
-					slaveStore?.localStore,
+					(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.localStore,
 					allPaths(
 						PAGE_STORE_PREFIX,
-						slaveStore?.store?.pageData?.[editPageDefinition?.name ?? ''],
+						(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.store?.pageData?.[editPageDefinition?.name ?? ''],
 					),
 				),
 			),
@@ -1016,6 +1100,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				sectionsListConnectionName={sectionsListConnectionName}
 				sectionsCategoryList={sectionsCategoryList}
 				helpURL={helpURL}
+				onDebugButtonClick={handleDebugButtonClick}
+				debugMessageCount={Math.max(debugMessages.get('desktop')?.length ?? 0,
+					debugMessages.get('tablet')?.length ?? 0, debugMessages.get('mobile')?.length ?? 0)}
 			/>
 			<CodeEditor
 				showCodeEditor={showCodeEditor}
@@ -1089,6 +1176,17 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 						setAISpotlight(null);
 					}}
 					onClose={() => setAISpotlight(null)}
+				/>
+			)}
+			{/* Debug Window */}
+			{showDebugMenu && (
+				<PageEditorDebugWindow
+					executions={Array.from(debugMessages.values()).flat()}
+					onClose={() => setShowDebugMenu(false)}
+					onClearAll={handleClearAllDebug}
+					slaveStore={slaveStore}
+					savePersonalization={() => savePersonalization('test', 'test')}
+					personalizationPath={personalizationPath}
 				/>
 			)}
 		</div>

@@ -1,6 +1,7 @@
 import {
 	FunctionDefinition,
 	FunctionExecutionParameters,
+	DebugCollector,
 	HybridRepository,
 	KIRuntime,
 	LinkedList,
@@ -24,6 +25,7 @@ import { UISchemaRepository } from '../../schemas/common';
 import { LocationHistory, PageDefinition } from '../../types/common';
 import PageDefintionFunctionsRepository from './PageDefinitionFunctionsRepository';
 import UUID, { flattenUUID } from './uuid';
+import { shortUUID } from '../../util/shortUUID';
 
 function addValidationTriggers(
 	flatId: string,
@@ -42,6 +44,65 @@ function addValidationTriggers(
 let UI_FUN_REPO: UIFunctionRepository;
 let UI_SCHEMA_REPO: UISchemaRepository;
 
+// Expose DebugCollector to console for debugging
+if (typeof globalThis !== 'undefined') {
+	(globalThis as any).DebugCollector = DebugCollector;
+}
+
+// Add listener for debug executions to send to PageEditor
+// Only add listener if in design mode or debug mode
+if (typeof globalThis !== 'undefined' && (globalThis.isDesignMode || globalThis.isDebugMode)) {
+	DebugCollector.getInstance().addEventListener((event) => {
+		// Only send executionEnd events when in PAGE design mode
+		if (event.type === 'executionEnd' && globalThis.designMode === 'PAGE') {
+			try {
+				const executionLog = DebugCollector.getInstance().getExecution(event.executionId);
+				const debugContext = (globalThis as any).debugContext?.[event.executionId];
+
+				if (executionLog) {
+					console.log('[DEBUG] Sending execution log:', {
+						executionId: event.executionId,
+						screenType: globalThis.screenType,
+						logs: executionLog.logs,
+						startTime: executionLog.startTime,
+						endTime: executionLog.endTime,
+						errored: executionLog.errored,
+						hasDebugContext: !!debugContext,
+					});
+
+					// Send the entire execution log as is, including pageDefinition from debugContext
+					window.parent.postMessage(
+						{
+							type: 'SLAVE_DEBUG_EXECUTION',
+							editorType: 'PAGE',
+							screenType: globalThis.screenType,
+							payload: {
+								executionLog: {
+									...executionLog,
+									// Convert Map to plain object for serialization
+									definitions: executionLog.definitions
+										? Object.fromEntries(executionLog.definitions)
+										: {},
+								},
+								executionId: event.executionId,
+								screenType: globalThis.screenType,
+								// Include pageDefinition and locationHistory from debugContext
+								pageDefinition: debugContext?.pageDefinition,
+								locationHistory: debugContext?.locationHistory || [],
+							},
+						},
+						'*',
+					);
+				} else {
+					console.warn('[DEBUG] No execution log found for:', event.executionId);
+				}
+			} catch (error) {
+				console.error('Failed to send debug execution message:', error);
+			}
+		}
+	});
+}
+
 export const runEvent = async (
 	functionDefinition: any,
 	key: string = UUID(),
@@ -59,7 +120,6 @@ export const runEvent = async (
 	const isRunningPath = `Store.functionExecutions.${page}.${flattenUUID(key)}.isRunning`;
 	try {
 		const def: FunctionDefinition = FunctionDefinition.from(functionDefinition);
-		console.log("Executing: ", functionDefinition.name, page);
 		const pageExtractor = PageStoreExtractor.getForContext(page);
 		const urlExtractor = UrlDetailsExtractor.getForContext(page);
 		// if (locationHistory?.length)
@@ -118,9 +178,8 @@ export const runEvent = async (
 			valuesMap.set(pse.getPrefix(), pse);
 		}
 
-		const runtime = new KIRuntime(def, isDesignMode || isDebugMode);
-		const fep = new FunctionExecutionParameters(
-			new HybridRepository(
+		const eid = `${key}_${shortUUID()}`;
+		const functionRepository = new HybridRepository(
 				UI_FUN_REPO,
 				new PageDefintionFunctionsRepository(pageDefinition),
 				RemoteRepository.getRemoteFunctionRepository(
@@ -135,8 +194,9 @@ export const runEvent = async (
 					false,
 					REPO_SERVER.UI,
 				),
-			),
-			new HybridRepository(
+			);
+
+		const schemaRepository = new HybridRepository(
 				UI_SCHEMA_REPO,
 				RemoteRepository.getRemoteSchemaRepository(
 					undefined,
@@ -150,8 +210,13 @@ export const runEvent = async (
 					false,
 					REPO_SERVER.UI,
 				),
-			),
-			key,
+			);
+
+		const runtime = new KIRuntime(def, isDesignMode || isDebugMode);
+		const fep = new FunctionExecutionParameters(
+			functionRepository,
+			schemaRepository,
+			eid,
 		).setValuesMap(valuesMap);
 		if (args) {
 			fep.setArguments(args);
@@ -160,6 +225,17 @@ export const runEvent = async (
 		if (runSequentially) {
 			while (getDataFromPath(isRunningPath, locationHistory)) {
 				await new Promise(resolve => setTimeout(resolve, 100));
+			}
+		}
+
+		if (isDebugMode || isDesignMode){
+			if (!globalThis.debugContext) globalThis.debugContext = {};
+			globalThis.debugContext[eid] = {
+				pageDefinition,
+				functionRepository,
+				schemaRepository,
+				locationHistory,
+				tokenValueExtractors: valuesMap,
 			}
 		}
 

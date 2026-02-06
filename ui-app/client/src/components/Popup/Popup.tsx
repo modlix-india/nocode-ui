@@ -138,7 +138,7 @@ function Popup(props: Readonly<ComponentProps>) {
 		</i>
 	);
 
-	if (isActive || (isDesignMode && showInDesign === true)) {
+	if (isActive || (globalThis.designMode == 'PAGE' && showInDesign === true)) {
 		return (
 			<Portal>
 				<div className="comp compPopup">

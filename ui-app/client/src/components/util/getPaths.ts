@@ -27,6 +27,12 @@ export class PathExtractor extends TokenValueExtractor {
 		this.paths = paths;
 	}
 
+	// Forward setValuesMap to the wrapped extractor so it can resolve dynamic bracket indices
+	public override setValuesMap(valuesMap: Map<string, TokenValueExtractor>): void {
+		super.setValuesMap(valuesMap);
+		this.orig.setValuesMap(valuesMap);
+	}
+
 	protected getValueInternal(token: string) {
 		// Reconstruct path with proper bracket notation and quotes
 		const reconstructedPath = this.reconstructPath(token);
@@ -36,7 +42,7 @@ export class PathExtractor extends TokenValueExtractor {
 
 	private reconstructPath(token: string): string {
 		// Split the path using the enhanced splitPath that understands bracket notation
-		const parts = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts = TokenValueExtractor.splitPath(token);
 
 		if (parts.length === 0) return token;
 		if (parts.length === 1) return parts[0];
@@ -128,7 +134,9 @@ export class ParentPathExtractor extends TokenValueExtractor {
 				count++;
 				index++;
 			}
-			return this.history[this.history.length - count]?.index ?? value;
+			// During path extraction, if index is not available, return 0 as a placeholder
+			// This allows the expression to be evaluated for path discovery
+			return this.history[this.history.length - count]?.index ?? 0;
 		}
 
 		return value;
@@ -138,11 +146,15 @@ export class ParentPathExtractor extends TokenValueExtractor {
 		const { path, lastHistory } = this.getPath(token);
 		this.paths.add(path);
 
-		return getDataFromPath(
+		const value = getDataFromPath(
 			path,
 			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
 			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
 		);
+		
+		// During path extraction, return 0 as placeholder for undefined/null values
+		// This allows numeric expressions like Parent.id < 10 to evaluate without errors
+		return value ?? 0;
 	}
 
 	public getPath(token: string): { path: string; lastHistory: LocationHistory } {
@@ -160,7 +172,7 @@ export class ParentPathExtractor extends TokenValueExtractor {
 		token: string,
 		locationHistory: LocationHistory[],
 	): { path: string; lastHistory: LocationHistory } {
-		const parts: string[] = token.split(TokenValueExtractor.REGEX_DOT);
+		const parts: string[] = TokenValueExtractor.splitPath(token);
 
 		let pNum: number = 0;
 		while (parts[pNum] === 'Parent') pNum++;
