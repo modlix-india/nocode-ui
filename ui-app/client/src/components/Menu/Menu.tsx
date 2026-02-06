@@ -512,6 +512,7 @@ function Menu(props: Readonly<ComponentProps>) {
 		definition.children && isMenuOpenState ? (
 			//  using the react portal to render the submenu at the end of the body to
 			// avoid any overflow:hidden or z-index issues from parent components
+			//  this is a common pattern for rendering dropdowns, modals, and tooltips
 			createPortal(
 				<div
 					key={`${key}_submenu`}
