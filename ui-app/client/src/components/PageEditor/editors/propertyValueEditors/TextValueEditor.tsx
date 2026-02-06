@@ -1,6 +1,9 @@
-import Editor from '@monaco-editor/react';
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { MarkdownParser } from '../../../../commonComponents/Markdown/MarkdownParser';
+
+const LazyEditor = React.lazy(() =>
+	import('@monaco-editor/react').then(module => ({ default: module.default })),
+);
 
 interface TextValueEditorProps {
 	value?: any;
@@ -28,16 +31,18 @@ export function TextValueEditor({ value, defaultValue, onChange }: Readonly<Text
 				>
 					<div>
 						<div className="_jsonEditorContainer">
-							<Editor
-								language="markdown"
-								height="100%"
-								value={localValue}
-								onChange={ev => {
-									setEditorValue(ev ?? '');
-									if (ev !== 'undefined' && ev !== 'null' && ev)
-										setEnableOk(true);
-								}}
-							/>
+							<Suspense fallback={<div className="_editorLoading">Loading editor...</div>}>
+								<LazyEditor
+									language="markdown"
+									height="100%"
+									value={localValue}
+									onChange={ev => {
+										setEditorValue(ev ?? '');
+										if (ev !== 'undefined' && ev !== 'null' && ev)
+											setEnableOk(true);
+									}}
+								/>
+							</Suspense>
 						</div>
 						<div className="_popupButtons">
 							<button
