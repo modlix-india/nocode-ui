@@ -15,7 +15,9 @@ import { shortUUID } from '../util/shortUUID';
 
 const SIGNATURE = new FunctionSignature('Logout')
 	.setParameters(new Map([
-		Parameter.ofEntry('ssoLogout', Schema.ofBoolean('ssoLogout').setDefaultValue(false)),]))
+		Parameter.ofEntry('ssoLogout', Schema.ofBoolean('ssoLogout').setDefaultValue(false)),
+		Parameter.ofEntry('redirectUrl', Schema.ofString('redirectUrl').setDefaultValue('')),
+	]))
 	.setNamespace(NAMESPACE_UI_ENGINE).setEvents(
 	new Map([
 		Event.eventMapEntry(Event.OUTPUT, new Map()),
@@ -49,12 +51,19 @@ export class Logout extends AbstractFunction {
 			if (globalThis.isDebugMode) headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 
 			const ssoLogout: boolean = context.getArguments()?.get('ssoLogout');
+			const redirectUrl: string = context.getArguments()?.get('redirectUrl');
 
 			const response = await axios({
 				url: `api/security/revoke?ssoLogout=${ssoLogout ? 'true' : 'false'}`,
 				method: 'GET',
 				headers,
 			});
+
+			if (redirectUrl && redirectUrl !== '') {
+				setTimeout(() => {
+					globalThis.location.href = redirectUrl;
+				}, 100);
+			}
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
 		} catch (err: any) {
