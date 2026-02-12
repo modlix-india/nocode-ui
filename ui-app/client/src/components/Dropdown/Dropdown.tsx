@@ -257,14 +257,17 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	React.useEffect(() => {
 		if (!onSearch) return;
-		(async () =>
-			await runEvent(
-				searchEvent,
-				key,
-				context.pageName,
-				locationHistory,
-				props.pageDefinition,
-			))();
+		const timer = setTimeout(() => {
+			(async () =>
+				await runEvent(
+					searchEvent,
+					key,
+					context.pageName,
+					locationHistory,
+					props.pageDefinition,
+				))();
+		}, 500);
+		return () => clearTimeout(timer);
 	}, [searchText, searchEvent, locationHistory, props.pageDefinition]);
 
 	React.useEffect(() => {
