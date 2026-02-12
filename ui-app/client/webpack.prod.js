@@ -106,7 +106,16 @@ module.exports = async (env = {}) => {
       ]
     },
     resolve: {
-      extensions: ['.ts', '.tsx', '.js']
+      extensions: ['.ts', '.tsx', '.js'],
+      alias: {
+        // Force symlinked packages (e.g. @fincity/kirun-ui) to resolve peer
+        // dependencies from nocode-ui's node_modules, not their own copies.
+        // Without this, duplicate React/kirun-js instances cause runtime errors.
+        'react': path.resolve(__dirname, 'node_modules/react'),
+        'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+        'monaco-editor': path.resolve(__dirname, 'node_modules/monaco-editor'),
+        '@fincity/kirun-js': path.resolve(__dirname, 'node_modules/@fincity/kirun-js'),
+      },
     },
     plugins,
     optimization: {
