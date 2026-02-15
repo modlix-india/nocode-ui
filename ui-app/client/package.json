@@ -95,8 +95,8 @@
 		"webpack-manifest-plugin": "^6.0.1"
 	},
 	"dependencies": {
-		"@fincity/kirun-js": "^3.2.2",
-		"@fincity/kirun-ui": "^1.0.2",
+		"@fincity/kirun-js": "^3.3.0",
+		"@fincity/kirun-ui": "^1.1.0",
 		"@fincity/path-reactive-state-management": "^2.9.2",
 		"@monaco-editor/react": "^4.6.0",
 		"axios": "^1.7.9",
