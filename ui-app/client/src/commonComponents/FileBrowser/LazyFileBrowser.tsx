@@ -172,14 +172,13 @@ export default function FileBrowser({
 					e.preventDefault();
 					e.stopPropagation();
 
-					const formData = new FormData();
 					setInProgress(true);
 					try {
-						let url = `/api/files/${resourceType}/${path === '' ? '/' : path + '/' + newFolderName}`;
+						let url = `/api/files/${resourceType}/directory/${path === '' ? '/' : path + '/' + newFolderName}`;
 						if (clientCode) {
 							url += `?clientCode=${clientCode}`;
 						}
-						await axios.post(url, formData, { headers });
+						await axios.post(url, undefined, { headers });
 						setNewFolder(false);
 						setNewFolderName('');
 						setSomethingChanged(Date.now());
