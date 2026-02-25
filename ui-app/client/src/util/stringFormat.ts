@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon';
+
 const MONTHS = [
 	'January',
 	'February',
@@ -461,6 +463,21 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string, additionalProps?: any
 					date.getSeconds(),
 					2,
 				)}.${prependZero(date.getMilliseconds(), 3)}`;
+			} catch (e) {
+				console.error(e);
+			}
+			return str;
+		},
+	],
+	[
+		'LUXON_FORMAT',
+		(str, additionalProps) => {
+			try {
+				const pi = parseInt(str);
+				if (isNaN(pi)) return str;
+				const fmt = additionalProps?.luxonFormat;
+				if (!fmt) return str;
+				return DateTime.fromSeconds(pi).toFormat(fmt);
 			} catch (e) {
 				console.error(e);
 			}
