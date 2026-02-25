@@ -47,6 +47,7 @@ function Text(props: Readonly<ComponentProps>) {
 			removeToolTip,
 			textSuffix,
 			textPrefix,
+			luxonFormat,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -121,6 +122,8 @@ function Text(props: Readonly<ComponentProps>) {
 			maximumFractionDigits: max,
 		};
 	}
+
+	if (luxonFormat) numberFormattingOptions.luxonFormat = luxonFormat;
 
 	if (stringFormat !== 'STRING' && translatedText) {
 		translatedText = formatString(translatedText, stringFormat, numberFormattingOptions);
