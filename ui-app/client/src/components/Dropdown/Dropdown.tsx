@@ -49,6 +49,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	>();
 	const [selected, setSelected] = useState<any>();
 	const [searchText, setSearchText] = useState('');
+	const currentSearchText = useRef<string>(searchText);
 	const [focus, setFocus] = useState(false);
 	const [validationMessages, setValidationMessages] = React.useState<Array<string>>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -255,12 +256,15 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		setData(searchBindingPath, event.target.value, context.pageName);
 	};
 
+	console.log(currentSearchText.current);
+
 	React.useEffect(() => {
 		if (!onSearch) return;
 		const timer = setTimeout(() => {
 			(async () =>
+				searchText !== currentSearchText.current &&
 				await runEvent(
-					searchEvent,
+					currentSearchText.current = searchEvent,
 					key,
 					context.pageName,
 					locationHistory,

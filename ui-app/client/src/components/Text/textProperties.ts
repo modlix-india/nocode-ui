@@ -64,6 +64,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Plain String',
 			},
 			{
+				name: 'LUXON_FORMAT',
+				displayName: 'Luxon Format',
+				description: 'Format epoch seconds using a Luxon format string (set in Luxon Format property)',
+			},
+			{
 				name: 'UTC_TO_MM/DD/YYYY',
 				displayName: 'UTC to MM/DD/YYYY',
 				description: 'UTC to MM/DD/YYYY',
@@ -204,6 +209,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				description: 'Formats file size.',
 			},
 		],
+	},
+
+	{
+		name: 'luxonFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Luxon Format',
+		description: 'Luxon format string to format epoch seconds (e.g. "yyyy-MM-dd HH:mm:ss"). Used only when String Format is set to Luxon Format.',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	{
