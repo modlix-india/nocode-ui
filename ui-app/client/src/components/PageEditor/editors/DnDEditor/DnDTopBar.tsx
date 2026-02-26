@@ -59,7 +59,9 @@ interface TopBarProps {
 	onSelectedComponentChanged: (key: string) => void;
 	pageOperations: PageOperations;
 	dashboardPageName: string | undefined;
+	dashboardPageMenuName: string | undefined;
 	settingsPageName: string | undefined;
+	settingsPageMenuName: string | undefined;
 	addnewPageName: string | undefined;
 	editorType: string | undefined;
 }
@@ -172,7 +174,9 @@ export default function DnDTopBar({
 	currentPageId,
 	logo,
 	dashboardPageName,
+	dashboardPageMenuName,
 	settingsPageName,
+	settingsPageMenuName,
 	addnewPageName,
 	editorType,
 }: Readonly<TopBarProps>) {
@@ -582,7 +586,7 @@ export default function DnDTopBar({
 						onClick={() => window.open(getHref(dashboardPageName, location), '_self')}
 						className="_iconMenuOption"
 					>
-						View Dashboard
+						{dashboardPageMenuName ?? 'View Dashboard'}
 					</div>
 				) : null}
 				{settingsPageName ? (
@@ -594,7 +598,7 @@ export default function DnDTopBar({
 						}
 						className="_iconMenuOption"
 					>
-						Settings
+						{settingsPageMenuName ?? 'Settings'}
 					</div>
 				) : null}
 			</div>
