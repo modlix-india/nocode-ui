@@ -370,6 +370,9 @@ function generateHtml(
 		<!-- Main app container -->
 		<div id="app">${error ? `<div style="padding:20px;color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;margin:20px;">${escapeHtml(error)}</div>` : ''}</div>
 
+		<!-- Application style from style service -->
+		<link rel="stylesheet" href="/${escapeHtml(codes.appCode)}/${escapeHtml(codes.clientCode)}/page/api/ui/style" />
+
 		<!-- External scripts from application -->
 		${externalScripts}
 
