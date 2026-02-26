@@ -73,11 +73,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'dashboardPageMenuName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Dashboard Menu Name',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Dashboard menu name.',
+		defaultValue: 'View Dashboard'
+	},
+
+	{
 		name: 'dashboardPageName',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Name of dashboard page',
+		displayName: 'Dashboard page',
 		group: ComponentPropertyGroup.DATA,
-		description: 'Name of dashboard page.',
+		description: 'Dashboard page.',
 	},
 
 	{
@@ -89,11 +98,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'settingsPageMenuName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Site settings menu name',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Site settings menu name.',
+		defaultValue: 'Settings',
+	},
+
+	{
 		name: 'settingsPageName',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Name of site settings page',
+		displayName: 'Site settings page',
 		group: ComponentPropertyGroup.DATA,
-		description: 'Name of site settings page.',
+		description: 'Site settings page.',
 	},
 
 	{

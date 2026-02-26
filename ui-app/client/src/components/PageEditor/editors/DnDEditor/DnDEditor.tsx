@@ -17,7 +17,9 @@ interface DnDEditorProps {
 	defPath: string | undefined;
 	addnewPageName: string | undefined;
 	dashboardPageName: string | undefined;
+	dashboardPageMenuName: string | undefined;
 	settingsPageName: string | undefined;
+	settingsPageMenuName: string | undefined;
 	pagesData: any;
 	currentPageId: string;
 	personalizationPath: string | undefined;
@@ -113,7 +115,9 @@ export default function DnDEditor({
 	pagesData,
 	currentPageId,
 	settingsPageName,
+	settingsPageMenuName,
 	dashboardPageName,
+	dashboardPageMenuName,
 	addnewPageName,
 	editorType,
 	sectionsListConnectionName,
@@ -170,7 +174,9 @@ export default function DnDEditor({
 					currentPageId={currentPageId}
 					logo={logo}
 					settingsPageName={settingsPageName}
+					settingsPageMenuName={settingsPageMenuName}
 					dashboardPageName={dashboardPageName}
+					dashboardPageMenuName={dashboardPageMenuName}
 					addnewPageName={addnewPageName}
 					editorType={editorType}
 				/>
