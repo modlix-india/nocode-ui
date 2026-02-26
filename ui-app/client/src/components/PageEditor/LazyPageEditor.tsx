@@ -90,8 +90,10 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			pagesData,
 			currentPageId,
 			dashboardPageName,
+			dashboardPageMenuName,
 			formStorageUrl,
 			settingsPageName,
+			settingsPageMenuName,
 			addnewPageName,
 			editorType,
 			sectionsListConnectionName,
@@ -1094,7 +1096,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				pagesData={pagesData}
 				currentPageId={currentPageId}
 				settingsPageName={settingsPageName}
+				settingsPageMenuName={settingsPageMenuName}
 				dashboardPageName={dashboardPageName}
+				dashboardPageMenuName={dashboardPageMenuName}
 				addnewPageName={addnewPageName}
 				editorType={editorType}
 				sectionsListConnectionName={sectionsListConnectionName}
