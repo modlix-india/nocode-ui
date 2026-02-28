@@ -19,7 +19,6 @@ interface ContextMenuProps {
 	pageOperations: PageOperations;
 	formStorageUrl: string | undefined;
 	setClickedComponent: (pref: any) => void;
-	onAIClick?: (componentKey: string, componentType?: string) => void;
 }
 
 export function ContextMenu({
@@ -30,7 +29,6 @@ export function ContextMenu({
 	pageOperations,
 	formStorageUrl,
 	setClickedComponent,
-	onAIClick,
 }: ContextMenuProps) {
 	const [theme, setTheme] = useState('_light');
 
@@ -193,25 +191,6 @@ export function ContextMenu({
 				onClick={e => e.stopPropagation()}
 			>
 				<div className="_contextMenu">
-					{/* AI Assist Option */}
-					{onAIClick && (
-						<>
-							<div
-								className="_popupMenuItem _aiMenuItem"
-								title="AI Assist"
-								onClick={() => {
-									onAIClick(menuDetails.componentKey, componentDefinition?.type);
-									onCloseContextmenu();
-								}}
-							>
-								<IconHelper viewBox="0 0 136 83">
-									<path d="M76.0314 17.1742V7.37459L68.0056 0L59.9801 7.37459V17.1742C26.667 21.1066 0.384999 49.1784 0 83H0.0111617C5.5023 81.0767 10.9934 79.1525 16.4846 77.2283C19.3292 54.5598 37.2044 36.4823 59.9764 32.9995V60.7251L68.0093 55.1126L76.0237 60.7251V32.9995C98.7957 36.4823 116.674 54.5598 119.516 77.2283C125.006 79.1525 130.498 81.0767 135.989 83H136C135.615 49.1784 109.333 21.1066 76.0203 17.1742H76.0314Z" fill="#D97757"/>
-								</IconHelper>
-								AI Assist
-							</div>
-							<div className="_popupMenuSeperator" />
-						</>
-					)}
 					{addGrid}
 					{!ifRoot && (
 						<div

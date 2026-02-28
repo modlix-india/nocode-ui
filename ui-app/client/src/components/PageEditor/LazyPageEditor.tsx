@@ -19,7 +19,6 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
-import AISpotlight from './components/AISpotlight';
 import CodeEditor from './components/CodeEditor';
 import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
 import PageEditorDebugWindow from './components/PageEditorDebugWindow';
@@ -440,12 +439,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		['mobile', []]
 	]));
 	const [showDebugMenu, setShowDebugMenu] = useState<boolean>(false);
-
-	// AI Spotlight state
-	const [aiSpotlight, setAISpotlight] = useState<{
-		componentKey: string;
-		componentType?: string;
-	} | null>(null);
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
@@ -1145,43 +1138,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				pageOperations={operations}
 				formStorageUrl={formStorageUrl}
 				setClickedComponent={setGenerateFormOnComponentKey}
-				onAIClick={(componentKey, componentType) => {
-					setAISpotlight({ componentKey, componentType });
-				}}
 			/>
-			{/* AI Spotlight Overlay */}
-			{aiSpotlight && editPageDefinition && (
-				<AISpotlight
-					componentKey={aiSpotlight.componentKey}
-					componentType={aiSpotlight.componentType}
-					pageDefinition={editPageDefinition}
-					appCode={editPageDefinition.appCode ?? ''}
-					desktopIframe={desktopRef}
-					tabletIframe={tabletRef}
-					mobileIframe={mobileRef}
-					appPath={appPath}
-					themePath={themePath}
-					pageExtractor={pageExtractor}
-					locationHistory={locationHistory}
-					onApply={aiResult => {
-						if (defPath && aiResult) {
-							// Merge AI result with existing page, preserving metadata
-							const mergedPage: PageDefinition = {
-								...editPageDefinition, // Keep all existing metadata (id, clientCode, version, etc.)
-								...aiResult, // Apply AI modifications
-								// Ensure critical fields from original are preserved
-								id: editPageDefinition.id,
-								clientCode: editPageDefinition.clientCode,
-								appCode: editPageDefinition.appCode,
-								version: editPageDefinition.version,
-							};
-							setData(defPath, mergedPage, pageExtractor.getPageName());
-						}
-						setAISpotlight(null);
-					}}
-					onClose={() => setAISpotlight(null)}
-				/>
-			)}
 			{/* Debug Window */}
 			{showDebugMenu && (
 				<PageEditorDebugWindow
