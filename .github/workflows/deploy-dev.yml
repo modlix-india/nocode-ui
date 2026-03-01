@@ -43,6 +43,10 @@ jobs:
           script: |-
             map(select(. == "test"))
 
+      - name: Generate Component Catalog
+        working-directory: ./ui-app/client
+        run: npm run generate-catalog
+
       - name: Building to JS Dev
         working-directory: ./ui-app/client
         run: npm run cf-dev
@@ -56,6 +60,7 @@ jobs:
         working-directory: ./ui-app/client
         run: |
           rclone copy ./dist r2user:dev-static/js/dist
+          rclone copyto ./component-catalog.json r2user:dev-static/js/component-catalog.json
 
           echo "\n"
           echo "JSON prepared :"
@@ -123,6 +128,10 @@ jobs:
           script: |-
             map(select(. == "test"))
 
+      - name: Generate Component Catalog (Local)
+        working-directory: ./ui-app/client
+        run: npm run generate-catalog
+
       - name: Building to JS Local
         working-directory: ./ui-app/client
         run: npm run cf-local
@@ -131,6 +140,7 @@ jobs:
         working-directory: ./ui-app/client
         run: |
           rclone copy ./dist r2user:local-static/js/dist
+          rclone copyto ./component-catalog.json r2user:local-static/js/component-catalog.json
 
           echo "\n"
           echo "JSON prepared :"
