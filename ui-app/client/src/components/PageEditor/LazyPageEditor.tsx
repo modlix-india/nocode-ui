@@ -398,7 +398,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		setUrl(
 			`/${editPageDefinition.appCode}/${
 				clientCode === ''
-					? (appDefinition?.clientCode ?? editPageDefinition.clientCode)
+					? (editPageDefinition?.clientCode ?? appDefinition?.clientCode)
 					: clientCode
 			}/page/${editPageDefinition.name}`,
 		);
