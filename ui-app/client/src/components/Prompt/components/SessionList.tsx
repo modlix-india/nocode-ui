@@ -5,6 +5,7 @@ import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 export interface Session {
 	session_id: string;
 	title: string;
+	status?: string;
 	updated_at?: string;
 }
 

@@ -41,6 +41,7 @@ interface Message {
 interface ToolCall {
 	id: string;
 	toolName: string;
+	displayName: string;
 	summary: string;
 	success?: boolean;
 	isRunning: boolean;
@@ -85,10 +86,29 @@ function mapHistoryToMessages(history: any[]): Message[] {
 			});
 		}
 		if (h.assistant_summary) {
+			const toolCalls: ToolCall[] = [];
+			if (h.tool_calls_json) {
+				try {
+					const parsed = JSON.parse(h.tool_calls_json);
+					for (const tc of parsed) {
+						toolCalls.push({
+							id: `hist_tc_${i}_${toolCalls.length}`,
+							toolName: tc.tool ?? 'unknown',
+							displayName: tc.display_name || tc.tool || 'unknown',
+							summary: tc.summary ?? '',
+							success: tc.success,
+							isRunning: false,
+						});
+					}
+				} catch {
+					// Skip unparseable tool_calls_json
+				}
+			}
 			msgs.push({
 				id: `hist_asst_${i}`,
 				role: 'assistant',
 				content: h.assistant_summary,
+				toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
 			});
 		}
 	}
@@ -203,6 +223,9 @@ function PromptComponent(props: Readonly<ComponentProps>) {
 	const abortControllerRef = useRef<AbortController | null>(null);
 	const shouldAutoScrollRef = useRef(true);
 	const wasNewSessionRef = useRef(false);
+
+	// Polling for PROCESSING sessions
+	const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
 	// Sidebar resize state
 	const [sidebarWidth, setSidebarWidth] = useState(260);
@@ -451,9 +474,59 @@ function PromptComponent(props: Readonly<ComponentProps>) {
 		totalSessions,
 	]);
 
+	// Stop polling for a PROCESSING session
+	const stopPolling = useCallback(() => {
+		if (pollingRef.current) {
+			clearInterval(pollingRef.current);
+			pollingRef.current = null;
+		}
+	}, []);
+
+	// Start polling a PROCESSING session for updates
+	const startPolling = useCallback(
+		(pollSessionId: string) => {
+			stopPolling();
+			setIsStreaming(true);
+
+			const poll = async () => {
+				try {
+					const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+					const response = await fetch(
+						`${baseUrl}/sessions/${pollSessionId}?limit=${messagesPerPage}&offset=0`,
+						{ headers: getAuthHeaders() },
+					);
+					if (!response.ok) return;
+
+					const data = await response.json();
+					const history = Array.isArray(data.history)
+						? data.history
+						: [];
+					setMessages(mapHistoryToMessages(history));
+					setTotalMessages(data.total_history ?? history.length);
+
+					const status = data.session?.status;
+					if (status !== 'PROCESSING') {
+						stopPolling();
+						setIsStreaming(false);
+						fetchSessions();
+					}
+				} catch {
+					// Will retry on next interval
+				}
+			};
+
+			poll();
+			pollingRef.current = setInterval(poll, 3000);
+		},
+		[agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, fetchSessions],
+	);
+
 	// Select a session and load its history
 	const handleSelectSession = useCallback(
 		async (selectedSessionId: string) => {
+			stopPolling();
+			setIsStreaming(false);
+
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
 				const response = await fetch(
@@ -470,20 +543,27 @@ function PromptComponent(props: Readonly<ComponentProps>) {
 					setMessages(mapHistoryToMessages(history));
 					setTotalMessages(data.total_history ?? history.length);
 					setMessagesOffset(0);
+
+					// If session is currently being processed, poll for updates
+					if (data.session?.status === 'PROCESSING') {
+						startPolling(selectedSessionId);
+					}
 				}
 			} catch {
 				// Silently fail
 			}
 		},
-		[agentEndpoint, getAuthHeaders, messagesPerPage],
+		[agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, startPolling],
 	);
 
 	const handleNewChat = useCallback(() => {
+		stopPolling();
+		setIsStreaming(false);
 		setSessionId(null);
 		setMessages([]);
 		setTotalMessages(0);
 		setMessagesOffset(0);
-	}, []);
+	}, [stopPolling]);
 
 	// Delete a session
 	const handleDeleteSession = useCallback(
@@ -621,6 +701,7 @@ function PromptComponent(props: Readonly<ComponentProps>) {
 	const handleSend = useCallback(
 		async (text: string, attachments?: Attachment[]) => {
 			if (isStreaming || readOnly) return;
+			stopPolling();
 
 			wasNewSessionRef.current = sessionId === null;
 
@@ -633,7 +714,11 @@ function PromptComponent(props: Readonly<ComponentProps>) {
 			setMessages(prev => [...prev, userMsg]);
 			setIsStreaming(true);
 
-			// Clear draft
+			// Clear draft — cancel any pending debounce first
+			if (saveDraftTimeoutRef.current) {
+				clearTimeout(saveDraftTimeoutRef.current);
+				saveDraftTimeoutRef.current = null;
+			}
 			const draftKey = sessionId ?? '_new';
 			setDraftText('');
 			setData(
@@ -785,6 +870,7 @@ function PromptComponent(props: Readonly<ComponentProps>) {
 			onError,
 			getAuthHeaders,
 			fetchSessions,
+			stopPolling,
 			props.context.pageName,
 			props.locationHistory,
 			props.pageDefinition,
@@ -793,18 +879,20 @@ function PromptComponent(props: Readonly<ComponentProps>) {
 
 	const handleStop = useCallback(() => {
 		abortControllerRef.current?.abort();
+		stopPolling();
 		setIsStreaming(false);
 		abortControllerRef.current = null;
-	}, []);
+	}, [stopPolling]);
 
 	useEffect(() => {
 		return () => {
 			abortControllerRef.current?.abort();
+			stopPolling();
 			if (saveDraftTimeoutRef.current) {
 				clearTimeout(saveDraftTimeoutRef.current);
 			}
 		};
-	}, []);
+	}, [stopPolling]);
 
 	const hasEarlierMessages =
 		totalMessages > 0 && messagesOffset + messagesPerPage < totalMessages;
@@ -1027,6 +1115,7 @@ function processSSEEvent(
 			const tc: ToolCall = {
 				id: data.tool_use_id ?? `tc_${Date.now()}`,
 				toolName: data.tool_name ?? 'unknown',
+				displayName: data.display_name || data.tool_name || 'unknown',
 				summary: '',
 				isRunning: true,
 			};

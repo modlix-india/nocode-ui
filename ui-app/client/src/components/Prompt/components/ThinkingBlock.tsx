@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const THINKING_MESSAGES = [
 	'Thinking',
@@ -34,6 +34,7 @@ function pickRandom(current: string): string {
 interface ToolCallInfo {
 	id: string;
 	toolName: string;
+	displayName?: string;
 	summary: string;
 	success?: boolean;
 	isRunning: boolean;
@@ -59,6 +60,7 @@ export function ThinkingBlock({
 	collapseIcon = 'fa fa-chevron-up',
 }: Readonly<ThinkingBlockProps>) {
 	const [expanded, setExpanded] = useState(isActive);
+	const [expandedTools, setExpandedTools] = useState<Set<string>>(new Set());
 	const [thinkingMsg, setThinkingMsg] = useState(
 		() => THINKING_MESSAGES[Math.floor(Math.random() * THINKING_MESSAGES.length)],
 	);
@@ -80,6 +82,15 @@ export function ThinkingBlock({
 		}, 3000);
 		return () => clearInterval(interval);
 	}, [isActive]);
+
+	const toggleToolExpanded = useCallback((toolId: string) => {
+		setExpandedTools(prev => {
+			const next = new Set(prev);
+			if (next.has(toolId)) next.delete(toolId);
+			else next.add(toolId);
+			return next;
+		});
+	}, []);
 
 	// Don't render if not active and no tool calls
 	if (!isActive && !toolCalls.length) return null;
@@ -121,19 +132,44 @@ export function ThinkingBlock({
 
 			{expanded && toolCalls.length > 0 && (
 				<div className="_thinkingBody">
-					{toolCalls.map(tc => (
-						<div key={tc.id} className={`_thinkingToolRow ${toolStatusClass(tc)}`}>
-							<span className={`_thinkingToolIcon ${toolIcon(tc)}`} />
-							<span className="_thinkingToolName">{tc.toolName}</span>
-							{tc.summary && (
-								<span className="_thinkingToolSummary">
-									{tc.summary.length > 80
-										? tc.summary.slice(0, 80) + '...'
-										: tc.summary}
-								</span>
-							)}
-						</div>
-					))}
+					{toolCalls.map(tc => {
+						const isToolExpanded = expandedTools.has(tc.id);
+						const label = tc.displayName || tc.toolName;
+						const hasSummary = !!tc.summary;
+
+						return (
+							<div key={tc.id} className={`_thinkingToolEntry ${toolStatusClass(tc)}`}>
+								{hasSummary ? (
+									<button
+										type="button"
+										className="_thinkingToolRow _clickable"
+										onClick={() => toggleToolExpanded(tc.id)}
+									>
+										<span className={`_thinkingToolIcon ${toolIcon(tc)}`} />
+										<span className="_thinkingToolName">{label}</span>
+										{!isToolExpanded && (
+											<span className="_thinkingToolSummary">
+												{tc.summary.length > 80
+													? tc.summary.slice(0, 80) + '...'
+													: tc.summary}
+											</span>
+										)}
+										<i className={`_thinkingToolToggle ${isToolExpanded ? collapseIcon : expandIcon}`} />
+									</button>
+								) : (
+									<div className="_thinkingToolRow">
+										<span className={`_thinkingToolIcon ${toolIcon(tc)}`} />
+										<span className="_thinkingToolName">{label}</span>
+									</div>
+								)}
+								{isToolExpanded && hasSummary && (
+									<div className="_thinkingToolDetail">
+										{tc.summary}
+									</div>
+								)}
+							</div>
+						);
+					})}
 				</div>
 			)}
 		</div>

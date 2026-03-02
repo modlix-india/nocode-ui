@@ -578,13 +578,32 @@ export default function PromptStyle({
 			gap: 4px;
 		}
 
+		${PREFIX} ._thinkingToolEntry {
+			display: flex;
+			flex-direction: column;
+		}
+
 		${PREFIX} ._thinkingToolRow {
 			display: flex;
 			align-items: center;
 			gap: 8px;
-			padding: 4px 0;
+			padding: 4px 8px;
 			font-size: 12px;
 			color: #666;
+			border: none;
+			background: none;
+			font: inherit;
+			text-align: left;
+			width: 100%;
+			border-radius: 6px;
+		}
+
+		${PREFIX} ._thinkingToolRow._clickable {
+			cursor: pointer;
+		}
+
+		${PREFIX} ._thinkingToolRow._clickable:hover {
+			background: #f4f4f4;
 		}
 
 		${PREFIX} ._thinkingToolIcon {
@@ -592,15 +611,15 @@ export default function PromptStyle({
 			flex-shrink: 0;
 		}
 
-		${PREFIX} ._thinkingToolRow._running ._thinkingToolIcon {
+		${PREFIX} ._thinkingToolEntry._running ._thinkingToolIcon {
 			color: #6c757d;
 		}
 
-		${PREFIX} ._thinkingToolRow._success ._thinkingToolIcon {
+		${PREFIX} ._thinkingToolEntry._success ._thinkingToolIcon {
 			color: #198754;
 		}
 
-		${PREFIX} ._thinkingToolRow._error ._thinkingToolIcon {
+		${PREFIX} ._thinkingToolEntry._error ._thinkingToolIcon {
 			color: #dc3545;
 		}
 
@@ -614,6 +633,27 @@ export default function PromptStyle({
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+			flex: 1;
+			min-width: 0;
+		}
+
+		${PREFIX} ._thinkingToolToggle {
+			font-size: 9px;
+			color: #9b9b9b;
+			flex-shrink: 0;
+			margin-left: auto;
+		}
+
+		${PREFIX} ._thinkingToolDetail {
+			padding: 6px 12px 8px 26px;
+			font-size: 12px;
+			line-height: 1.5;
+			color: #555;
+			background: #f9f9f9;
+			border-radius: 0 0 6px 6px;
+			margin: 0 8px 4px;
+			white-space: pre-wrap;
+			word-break: break-word;
 		}
 
 		/* Streaming cursor */
