@@ -18,6 +18,8 @@ interface DnDEditorProps {
 	addnewPageName: string | undefined;
 	dashboardPageName: string | undefined;
 	dashboardPageMenuName: string | undefined;
+	pagesPageMenuName: string | undefined;
+	pagesPageUrl: string | undefined;
 	settingsPageName: string | undefined;
 	settingsPageMenuName: string | undefined;
 	pagesData: any;
@@ -66,6 +68,7 @@ interface DnDEditorProps {
 	sectionsListConnectionName: string | undefined;
 	sectionsCategoryList: any;
 	helpURL: string | undefined;
+	defaultZoomPercentage: number | undefined;
 	onDebugButtonClick: () => void;
 	debugMessageCount: number;
 }
@@ -118,11 +121,14 @@ export default function DnDEditor({
 	settingsPageMenuName,
 	dashboardPageName,
 	dashboardPageMenuName,
+	pagesPageMenuName,
+	pagesPageUrl,
 	addnewPageName,
 	editorType,
 	sectionsListConnectionName,
 	sectionsCategoryList,
 	helpURL,
+	defaultZoomPercentage,
 	onDebugButtonClick,
 	debugMessageCount,
 }: DnDEditorProps) {
@@ -177,6 +183,8 @@ export default function DnDEditor({
 					settingsPageMenuName={settingsPageMenuName}
 					dashboardPageName={dashboardPageName}
 					dashboardPageMenuName={dashboardPageMenuName}
+					pagesPageMenuName={pagesPageMenuName}
+					pagesPageUrl={pagesPageUrl}
 					addnewPageName={addnewPageName}
 					editorType={editorType}
 				/>
@@ -227,6 +235,7 @@ export default function DnDEditor({
 								mobileIframe={mobileIframe}
 								previewMode={preview}
 								onChangePersonalization={onChangePersonalization}
+								defaultZoomPercentage={defaultZoomPercentage}
 							/>
 							<DnDPropertyBar
 								appPath={appPath}
