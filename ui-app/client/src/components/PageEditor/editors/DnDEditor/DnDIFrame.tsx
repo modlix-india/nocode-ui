@@ -15,6 +15,7 @@ interface DnDIFrameProps {
 	mobileIframe: React.RefObject<HTMLIFrameElement>;
 	previewMode: boolean;
 	onChangePersonalization: (prop: string, value: any) => void;
+	defaultZoomPercentage: number | undefined;
 }
 
 const DEVICES = {
@@ -177,6 +178,7 @@ export default function DnDIFrame({
 	mobileIframe,
 	previewMode,
 	onChangePersonalization,
+	defaultZoomPercentage,
 }: Readonly<DnDIFrameProps>) {
 	const [theme, setTheme] = useState('_light');
 
@@ -194,7 +196,12 @@ export default function DnDIFrame({
 	const [tablet, setTablet] = useState<boolean>(true);
 	const [mobile, setMobile] = useState<boolean>(true);
 
-	const [scale, setScale] = useState<number>(1);
+	const defaultScale = defaultZoomPercentage ? defaultZoomPercentage / 100 : 1;
+	const [scale, setScale] = useState<number>(defaultScale);
+
+	useEffect(() => {
+		setScale(defaultScale);
+	}, [defaultScale, setScale]);
 
 	const [desktopDevice, setDesktopDevice] = useState(DEVICES.desktop[0]);
 	const [tabletDevice, setTabletDevice] = useState(DEVICES.tablet[0]);
@@ -208,7 +215,7 @@ export default function DnDIFrame({
 				setDesktop(v?.devices?.desktop ?? true);
 				setTablet(v?.devices?.tablet ?? true);
 				setMobile(v?.devices?.mobile ?? true);
-				setScale(v?.devices?.scale ?? 1);
+				setScale(v?.devices?.scale ?? defaultScale);
 				if (v?.devices?.desktopDevice) {
 					setDesktopDevice(
 						DEVICES.desktop.find(d => d.name === v.devices.desktopDevice) ??
@@ -230,7 +237,7 @@ export default function DnDIFrame({
 			},
 			`${personalizationPath}`,
 		);
-	}, [personalizationPath]);
+	}, [defaultScale, personalizationPath]);
 
 	let desktopComponent = <></>;
 	let tabletComponent = <></>;

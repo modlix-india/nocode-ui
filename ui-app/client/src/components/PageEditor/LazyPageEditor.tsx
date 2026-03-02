@@ -98,6 +98,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			sectionsListConnectionName,
 			sectionsCategoryList,
 			helpURL,
+			defaultZoomPercentage,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -1097,6 +1098,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				sectionsListConnectionName={sectionsListConnectionName}
 				sectionsCategoryList={sectionsCategoryList}
 				helpURL={helpURL}
+				defaultZoomPercentage={defaultZoomPercentage}
 				onDebugButtonClick={handleDebugButtonClick}
 				debugMessageCount={Math.max(debugMessages.get('desktop')?.length ?? 0,
 					debugMessages.get('tablet')?.length ?? 0, debugMessages.get('mobile')?.length ?? 0)}

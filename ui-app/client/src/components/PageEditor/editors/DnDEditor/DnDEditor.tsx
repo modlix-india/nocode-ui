@@ -66,6 +66,7 @@ interface DnDEditorProps {
 	sectionsListConnectionName: string | undefined;
 	sectionsCategoryList: any;
 	helpURL: string | undefined;
+	defaultZoomPercentage: number | undefined;
 	onDebugButtonClick: () => void;
 	debugMessageCount: number;
 }
@@ -123,6 +124,7 @@ export default function DnDEditor({
 	sectionsListConnectionName,
 	sectionsCategoryList,
 	helpURL,
+	defaultZoomPercentage,
 	onDebugButtonClick,
 	debugMessageCount,
 }: DnDEditorProps) {
@@ -227,6 +229,7 @@ export default function DnDEditor({
 								mobileIframe={mobileIframe}
 								previewMode={preview}
 								onChangePersonalization={onChangePersonalization}
+								defaultZoomPercentage={defaultZoomPercentage}
 							/>
 							<DnDPropertyBar
 								appPath={appPath}

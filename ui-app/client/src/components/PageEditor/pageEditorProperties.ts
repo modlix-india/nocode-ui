@@ -1,4 +1,4 @@
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_NUM_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -200,6 +200,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Help URL',
 		group: ComponentPropertyGroup.ADVANCED,
 		description: 'URL to the help page.',
+	},
+
+	{
+		name: 'defaultZoomPercentage',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Default Zoom Percentage',
+		group: ComponentPropertyGroup.BASIC,
+		description: 'Default zoom percentage for the editor canvas (e.g. 100 for 100%).',
+		defaultValue: 100,
 	},
 ];
 
