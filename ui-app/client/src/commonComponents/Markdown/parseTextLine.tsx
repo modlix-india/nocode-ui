@@ -10,7 +10,7 @@ import { parseTable } from './parseTable';
 import { parseYoutubeEmbedding } from './parseYoutubeEmbedding';
 
 const HR_REGEX = /^[-*=_]{3,}$/;
-const TABLE_REGEX = /^(\| )?(:)?-{3,}:?\s+(\|(:|\s+:?)-{3,}(:?\s*))*\|?$/;
+const TABLE_REGEX = /^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$/;
 
 export function parseTextLine(params: MarkdownParserParameters): MarkdownParserReturnValue {
 	const { lines, lineNumber: i, editable, styles, line: acutalLine } = params;
@@ -22,7 +22,7 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 
 	if (/^https:\/\/((www\.)?youtube.com\/(watch|embed)|youtu.be\/)/i.test(line)) {
 		({ lineNumber, comp } = parseYoutubeEmbedding(params));
-	} else if (lineNumber + 1 < lines.length && TABLE_REGEX.test(nextLine)) {
+	} else if (lineNumber + 1 < lines.length && nextLine.includes('|') && TABLE_REGEX.test(nextLine)) {
 		({ lineNumber, comp } = parseTable(params));
 	} else if (
 		line.startsWith('#') ||
