@@ -43,13 +43,13 @@ jobs:
           script: |-
             map(select(. == "test"))
 
-      - name: Generate Component Catalog
-        working-directory: ./ui-app/client
-        run: npm run generate-catalog
-
       - name: Building to JS Dev
         working-directory: ./ui-app/client
         run: npm run cf-dev
+
+      - name: Generate Component Catalog
+        working-directory: ./ui-app/client
+        run: npm run generate-catalog
 
       - name: Copy manifest for SSR
         run: |
@@ -128,13 +128,13 @@ jobs:
           script: |-
             map(select(. == "test"))
 
-      - name: Generate Component Catalog (Local)
-        working-directory: ./ui-app/client
-        run: npm run generate-catalog
-
       - name: Building to JS Local
         working-directory: ./ui-app/client
         run: npm run cf-local
+
+      - name: Generate Component Catalog (Local)
+        working-directory: ./ui-app/client
+        run: npm run generate-catalog
 
       - name: Pushing Local to Cloudflare
         working-directory: ./ui-app/client
