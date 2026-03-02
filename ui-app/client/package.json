@@ -18,7 +18,8 @@
 		"bundle-analyze": "webpack --config webpack.prod.js --profile --json --env publicUrl=https://cdn-local.modlix.com/js/dist/ > report/stats.json && webpack-bundle-analyzer report/stats.json dist -p 1234",
 		"test": "jest --watchAll",
 		"coverage": "jest --coverage",
-		"pretty": "prettier --write ./src || prettier --write ./__tests__"
+		"pretty": "prettier --write ./src || prettier --write ./__tests__",
+		"generate-catalog": "npx ts-node --transpile-only scripts/generate-component-catalog.ts"
 	},
 	"keywords": [
 		"nocode",

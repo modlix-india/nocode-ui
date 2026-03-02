@@ -16,6 +16,7 @@ import Link from './Link/Link';
 import Menu from './Menu/Menu';
 import Page from './Page/Page';
 import Popover from './Popover/Popover';
+import Prompt from './Prompt/Prompt';
 import Popup from './Popup/Popup';
 import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
@@ -135,6 +136,7 @@ const componentMap = new Map<string, Component>([
 	[ThemeEditor.name, ThemeEditor],
 	[Form.name, Form],
 	[TableRow.name, TableRow],
+	[Prompt.name, Prompt],
 ]);
 
 export default componentMap;

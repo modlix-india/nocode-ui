@@ -60,6 +60,8 @@ interface TopBarProps {
 	pageOperations: PageOperations;
 	dashboardPageName: string | undefined;
 	dashboardPageMenuName: string | undefined;
+	pagesPageMenuName: string | undefined;
+	pagesPageUrl: string | undefined;
 	settingsPageName: string | undefined;
 	settingsPageMenuName: string | undefined;
 	addnewPageName: string | undefined;
@@ -175,6 +177,8 @@ export default function DnDTopBar({
 	logo,
 	dashboardPageName,
 	dashboardPageMenuName,
+	pagesPageMenuName,
+	pagesPageUrl,
 	settingsPageName,
 	settingsPageMenuName,
 	addnewPageName,
@@ -574,7 +578,7 @@ export default function DnDTopBar({
 
 	let dropdownItems = <></>;
 
-	if (dashboardPageName || settingsPageName) {
+	if (dashboardPageName || settingsPageName || pagesPageUrl) {
 		dropdownItems = (
 			<div className="_iconMenuBody">
 				{dashboardPageName ? (
@@ -587,6 +591,18 @@ export default function DnDTopBar({
 						className="_iconMenuOption"
 					>
 						{dashboardPageMenuName ?? 'View Dashboard'}
+					</div>
+				) : null}
+				{pagesPageUrl ? (
+					<div
+						onKeyDown={e =>
+							(e.key === 'Enter' || e.key === ' ') &&
+							window.open(getHref(pagesPageUrl, location), '_self')
+						}
+						onClick={() => window.open(getHref(pagesPageUrl, location), '_self')}
+						className="_iconMenuOption"
+					>
+						{pagesPageMenuName ?? 'Pages'}
 					</div>
 				) : null}
 				{settingsPageName ? (
