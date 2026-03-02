@@ -19,6 +19,14 @@ export function parseBlockQuote(params: MarkdownParserParameters): MarkdownParse
 		const match = line.match(BLOCK_QUOTE_MULTI_LEVEL_REGEX);
 
 		if (!match) {
+			if (line.trim() === '>' && quoteElementsStack.length > 0) {
+				quoteElementsStack[quoteElementsStack.length - 1].push(
+					React.createElement('br', {
+						key: cyrb53(`blockQuote-${i}-empty`),
+					}),
+				);
+				continue;
+			}
 			break;
 		}
 

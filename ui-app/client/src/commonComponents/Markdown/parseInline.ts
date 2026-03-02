@@ -257,6 +257,7 @@ function processImageLink(
 ) {
 	if (actualLine[i + 1] !== '[') return { i, current, found: false };
 
+	const originalI = i;
 	let ind = actualLine.indexOf(']', i + 2);
 	if (ind == -1) return { i, current, found: false };
 
@@ -282,7 +283,7 @@ function processImageLink(
 		i = ind;
 	}
 
-	if (!linkParts) return { i, current, found: false };
+	if (!linkParts) return { i: originalI, current, found: false };
 
 	let style = styles.images;
 	let attrs = undefined;
@@ -330,6 +331,7 @@ function processLink(
 	styles: any,
 	params: MarkdownParserParameters & { parseNewline?: boolean },
 ) {
+	const originalI = i;
 	let ind = actualLine.indexOf(']', i + 1);
 	if (ind == -1) return { i, current, found: false };
 
@@ -356,7 +358,7 @@ function processLink(
 		i = ind;
 	}
 
-	if (!linkParts) return { i, current, found: false };
+	if (!linkParts) return { i: originalI, current, found: false };
 
 	let style = styles.links;
 	let attrs = undefined;
