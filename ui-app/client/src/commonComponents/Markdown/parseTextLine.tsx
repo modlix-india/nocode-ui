@@ -4,6 +4,7 @@ import { parseBlockQuote } from './parseBlockQuote';
 import { parseCodeBlock } from './parseCodeBlock';
 import { parseHeaderLine } from './parseHeaderLine';
 import { parseHrLine } from './parseHrLine';
+import { parseHtmlBlock } from './parseHtmlBlock';
 import { parseLine } from './parseLine';
 import { ORDERED_LIST_REGEX, UNORDERED_LIST_REGEX, parseLists } from './parseLists';
 import { parseTable } from './parseTable';
@@ -24,6 +25,10 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 		({ lineNumber, comp } = parseYoutubeEmbedding(params));
 	} else if (lineNumber + 1 < lines.length && nextLine.includes('|') && TABLE_REGEX.test(nextLine)) {
 		({ lineNumber, comp } = parseTable(params));
+	} else if (line.startsWith('```')) {
+		({ lineNumber, comp } = parseCodeBlock(params));
+	} else if (/^<details([\s>]|$)/i.test(line)) {
+		({ lineNumber, comp } = parseHtmlBlock(params));
 	} else if (
 		line.startsWith('#') ||
 		line.startsWith('\\#') ||
@@ -31,13 +36,11 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 		nextLine.startsWith('===')
 	) {
 		({ lineNumber, comp } = parseHeaderLine(params));
-	} else if (line.startsWith('```')) {
-		({ lineNumber, comp } = parseCodeBlock(params));
 	} else if (HR_REGEX.test(line)) {
 		({ lineNumber, comp } = parseHrLine(params));
 	} else if (ORDERED_LIST_REGEX.test(line) || UNORDERED_LIST_REGEX.test(line)) {
 		({ lineNumber, comp } = parseLists(params));
-	} else if (line.startsWith('>')) {
+	} else if (line.startsWith('>') && !params.indentationLength) {
 		({ lineNumber, comp } = parseBlockQuote(params));
 	}
 

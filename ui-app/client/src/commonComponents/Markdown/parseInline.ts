@@ -391,7 +391,7 @@ function processLink(
 				title: linkParts.title,
 				...(attrs ?? {}),
 			},
-			linkText,
+			...parseInline({ ...params, line: linkText }),
 		),
 	);
 
@@ -443,19 +443,17 @@ function processInlineMarkup(
 	const text = actualLine.substring(i + count, ind);
 
 	ind += count - 1;
-	const attrStart = actualLine.indexOf('{', ind);
 
 	let attrs: { [key: string]: any } | undefined = undefined;
 	const subCompName = searchString == '`' ? 'icBlock' : TYPE_MAP[searchString];
 	let style = styles[subCompName];
-	if (attrStart) {
-		const attrEnd = actualLine.indexOf('}', attrStart);
+	if (ind + 1 < actualLine.length && actualLine[ind + 1] === '{') {
+		const attrEnd = actualLine.indexOf('}', ind + 2);
 		if (attrEnd !== -1) {
-			attrs = parseAttributes(actualLine.substring(attrStart, attrEnd));
+			attrs = parseAttributes(actualLine.substring(ind + 1, attrEnd));
 			if (attrs) {
 				ind = attrEnd;
 				if (attrs.style) style = style ? { ...style, ...attrs.style } : attrs.style;
-				ind = attrEnd;
 			}
 		}
 	}
