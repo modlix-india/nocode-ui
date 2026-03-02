@@ -139,7 +139,6 @@ jobs:
         working-directory: ./ui-app/client
         run: |
           rclone copy ./dist r2user:local-static/js/dist
-          rclone copyto ./dist/component-catalog.json r2user:local-static/js/component-catalog.json
 
           echo "\n"
           echo "JSON prepared :"
