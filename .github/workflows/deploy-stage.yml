@@ -43,6 +43,10 @@ jobs:
           script: |-
             map(select(. == "test"))
 
+      - name: Generate Component Catalog
+        working-directory: ./ui-app/client
+        run: npm run generate-catalog
+
       - name: Building to JS
         working-directory: ./ui-app/client
         run: npm run cf-stage
@@ -56,6 +60,7 @@ jobs:
         working-directory: ./ui-app/client
         run: |
           rclone copy ./dist r2user:stage-static/js/dist
+          rclone copyto ./component-catalog.json r2user:stage-static/js/component-catalog.json
 
           echo "\n"
           echo "JSON prepared :"
