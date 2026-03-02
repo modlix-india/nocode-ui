@@ -18,6 +18,8 @@ interface DnDEditorProps {
 	addnewPageName: string | undefined;
 	dashboardPageName: string | undefined;
 	dashboardPageMenuName: string | undefined;
+	pagesPageMenuName: string | undefined;
+	pagesPageUrl: string | undefined;
 	settingsPageName: string | undefined;
 	settingsPageMenuName: string | undefined;
 	pagesData: any;
@@ -119,6 +121,8 @@ export default function DnDEditor({
 	settingsPageMenuName,
 	dashboardPageName,
 	dashboardPageMenuName,
+	pagesPageMenuName,
+	pagesPageUrl,
 	addnewPageName,
 	editorType,
 	sectionsListConnectionName,
@@ -179,6 +183,8 @@ export default function DnDEditor({
 					settingsPageMenuName={settingsPageMenuName}
 					dashboardPageName={dashboardPageName}
 					dashboardPageMenuName={dashboardPageMenuName}
+					pagesPageMenuName={pagesPageMenuName}
+					pagesPageUrl={pagesPageUrl}
 					addnewPageName={addnewPageName}
 					editorType={editorType}
 				/>

@@ -90,6 +90,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'pagesPageMenuName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Pages Menu Name',
+		group: ComponentPropertyGroup.DATA,
+		description: 'Pages menu name.',
+		defaultValue: 'Pages',
+	},
+
+	{
+		name: 'pagesPageUrl',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Pages page URL',
+		group: ComponentPropertyGroup.DATA,
+		description: 'URL to navigate to the pages list.',
+	},
+
+	{
 		name: 'formStorageUrl',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Url of Form storage',
