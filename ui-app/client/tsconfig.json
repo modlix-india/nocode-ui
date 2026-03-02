@@ -12,5 +12,10 @@
 		"forceConsistentCasingInFileNames": true,
 		"types": ["jest", "node"],
 		"sourceMap": true
+	},
+	"ts-node": {
+		"compilerOptions": {
+			"module": "CommonJS"
+		}
 	}
 }
