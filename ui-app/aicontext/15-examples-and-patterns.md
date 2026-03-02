@@ -20,10 +20,13 @@ This document provides real-world examples and common patterns for building appl
         "style-1": {
           "resolutions": {
             "ALL": {
-              "display": { "value": "flex" },
-              "flexDirection": { "value": "column" },
-              "alignItems": { "value": "center" },
-              "padding": { "value": "20px" }
+              "display": { "type": "VALUE", "value": "flex" },
+              "flexDirection": { "type": "VALUE", "value": "column" },
+              "alignItems": { "type": "VALUE", "value": "center" },
+              "paddingLeft": { "type": "VALUE", "value": "20px" },
+              "paddingRight": { "type": "VALUE", "value": "20px" },
+              "paddingTop": { "type": "VALUE", "value": "20px" },
+              "paddingBottom": { "type": "VALUE", "value": "20px" }
             }
           }
         }
@@ -37,14 +40,14 @@ This document provides real-world examples and common patterns for building appl
       "key": "text-1",
       "type": "Text",
       "properties": {
-        "text": { "value": "Welcome to our app" }
+        "text": { "type": "VALUE", "value": "Welcome to our app" }
       },
       "styleProperties": {
         "style-1": {
           "resolutions": {
             "ALL": {
-              "fontSize": { "value": "24px" },
-              "marginBottom": { "value": "20px" }
+              "fontSize": { "type": "VALUE", "value": "24px" },
+              "marginBottom": { "type": "VALUE", "value": "20px" }
             }
           }
         }
@@ -54,8 +57,8 @@ This document provides real-world examples and common patterns for building appl
       "key": "button-1",
       "type": "Button",
       "properties": {
-        "label": { "value": "Get Started" },
-        "onClick": { "value": "navigateToDashboard" }
+        "label": { "type": "VALUE", "value": "Get Started" },
+        "onClick": { "type": "VALUE", "value": "navigateToDashboard" }
       }
     }
   },
@@ -93,7 +96,7 @@ This document provides real-world examples and common patterns for building appl
       "key": "form-1",
       "type": "Form",
       "properties": {
-        "onSubmit": { "value": "handleLogin" }
+        "onSubmit": { "type": "VALUE", "value": "handleLogin" }
       },
       "children": {
         "email-field": true,
@@ -105,13 +108,7 @@ This document provides real-world examples and common patterns for building appl
       "key": "email-field",
       "type": "TextBox",
       "properties": {
-        "value": {
-          "location": {
-            "type": "VALUE",
-            "value": "Page.formData.email"
-          }
-        },
-        "placeholder": { "value": "Email" }
+        "placeholder": { "type": "VALUE", "value": "Email" }
       },
       "validations": [
         {
@@ -128,14 +125,8 @@ This document provides real-world examples and common patterns for building appl
       "key": "password-field",
       "type": "TextBox",
       "properties": {
-        "value": {
-          "location": {
-            "type": "VALUE",
-            "value": "Page.formData.password"
-          }
-        },
-        "placeholder": { "value": "Password" },
-        "type": { "value": "password" }
+        "placeholder": { "type": "VALUE", "value": "Password" },
+        "type": { "type": "VALUE", "value": "password" }
       },
       "validations": [
         {
@@ -153,7 +144,7 @@ This document provides real-world examples and common patterns for building appl
       "key": "submit-button",
       "type": "Button",
       "properties": {
-        "label": { "value": "Login" }
+        "label": { "type": "VALUE", "value": "Login" }
       }
     }
   },
@@ -233,9 +224,17 @@ This document provides real-world examples and common patterns for building appl
         "style-1": {
           "resolutions": {
             "ALL": {
-              "border": { "value": "1px solid #ccc" },
-              "padding": { "value": "16px" },
-              "margin": { "value": "8px" }
+              "borderWidth": { "type": "VALUE", "value": "1px" },
+              "borderStyle": { "type": "VALUE", "value": "solid" },
+              "borderColor": { "type": "VALUE", "value": "#ccc" },
+              "paddingLeft": { "type": "VALUE", "value": "16px" },
+              "paddingRight": { "type": "VALUE", "value": "16px" },
+              "paddingTop": { "type": "VALUE", "value": "16px" },
+              "paddingBottom": { "type": "VALUE", "value": "16px" },
+              "marginLeft": { "type": "VALUE", "value": "8px" },
+              "marginRight": { "type": "VALUE", "value": "8px" },
+              "marginTop": { "type": "VALUE", "value": "8px" },
+              "marginBottom": { "type": "VALUE", "value": "8px" }
             }
           }
         }
@@ -251,10 +250,8 @@ This document provides real-world examples and common patterns for building appl
       "type": "Text",
       "properties": {
         "text": {
-          "location": {
-            "type": "EXPRESSION",
-            "expression": "Parent.name"
-          }
+          "type": "EXPRESSION",
+          "expression": "Parent.name"
         }
       }
     },
@@ -263,10 +260,8 @@ This document provides real-world examples and common patterns for building appl
       "type": "Text",
       "properties": {
         "text": {
-          "location": {
-            "type": "EXPRESSION",
-            "expression": "'$' + Parent.price"
-          }
+          "type": "EXPRESSION",
+          "expression": "'$' + Parent.price"
         }
       }
     },
@@ -274,8 +269,8 @@ This document provides real-world examples and common patterns for building appl
       "key": "buy-button",
       "type": "Button",
       "properties": {
-        "label": { "value": "Buy" },
-        "onClick": { "value": "addToCart" }
+        "label": { "type": "VALUE", "value": "Buy" },
+        "onClick": { "type": "VALUE", "value": "addToCart" }
       }
     }
   },
@@ -307,7 +302,7 @@ This document provides real-world examples and common patterns for building appl
     }
   },
   "properties": {
-    "onLoadEvent": { "value": "loadProducts" }
+    "onLoadEvent": { "type": "VALUE", "value": "loadProducts" }
   },
   "eventFunctions": {
     "loadProducts": {
@@ -355,10 +350,8 @@ This document provides real-world examples and common patterns for building appl
     "type": "Menu",
     "properties": {
       "visibility": {
-        "location": {
-          "type": "EXPRESSION",
-          "expression": "Store.user.isAuthenticated"
-        }
+        "type": "EXPRESSION",
+        "expression": "Store.user.isAuthenticated"
       }
     }
   },
@@ -367,13 +360,11 @@ This document provides real-world examples and common patterns for building appl
     "type": "Button",
     "properties": {
       "visibility": {
-        "location": {
-          "type": "EXPRESSION",
-          "expression": "!Store.user.isAuthenticated"
-        }
+        "type": "EXPRESSION",
+        "expression": "!Store.user.isAuthenticated"
       },
-      "label": { "value": "Login" },
-      "onClick": { "value": "navigateToLogin" }
+      "label": { "type": "VALUE", "value": "Login" },
+      "onClick": { "type": "VALUE", "value": "navigateToLogin" }
     }
   }
 }
@@ -390,12 +381,12 @@ This document provides real-world examples and common patterns for building appl
       "style-1": {
         "resolutions": {
           "ALL": {
-            "display": { "value": "flex" },
-            "flexDirection": { "value": "column" }
+            "display": { "type": "VALUE", "value": "flex" },
+            "flexDirection": { "type": "VALUE", "value": "column" }
           },
           "DESKTOP_SCREEN": {
-            "flexDirection": { "value": "row" },
-            "gap": { "value": "20px" }
+            "flexDirection": { "type": "VALUE", "value": "row" },
+            "gap": { "type": "VALUE", "value": "20px" }
           }
         }
       }
@@ -412,11 +403,11 @@ This document provides real-world examples and common patterns for building appl
       "style-1": {
         "resolutions": {
           "ALL": {
-            "width": { "value": "100%" }
+            "width": { "type": "VALUE", "value": "100%" }
           },
           "DESKTOP_SCREEN": {
-            "width": { "value": "250px" },
-            "flexShrink": { "value": "0" }
+            "width": { "type": "VALUE", "value": "250px" },
+            "flexShrink": { "type": "VALUE", "value": "0" }
           }
         }
       }
@@ -432,10 +423,8 @@ This document provides real-world examples and common patterns for building appl
 ```json
 {
   "value": {
-    "location": {
-      "type": "VALUE",
-      "value": "Page.formData.fieldName"
-    }
+    "type": "EXPRESSION",
+    "expression": "Page.formData.fieldName"
   }
 }
 ```
@@ -445,10 +434,8 @@ This document provides real-world examples and common patterns for building appl
 ```json
 {
   "value": {
-    "location": {
-      "type": "VALUE",
-      "value": "Store.user.name"
-    }
+    "type": "EXPRESSION",
+    "expression": "Store.user.name"
   }
 }
 ```
@@ -458,10 +445,8 @@ This document provides real-world examples and common patterns for building appl
 ```json
 {
   "text": {
-    "location": {
-      "type": "EXPRESSION",
-      "expression": "Store.items.length > 0 ? 'Items: ' + Store.items.length : 'No items'"
-    }
+    "type": "EXPRESSION",
+    "expression": "Store.items.length > 0 ? 'Items: ' + Store.items.length : 'No items'"
   }
 }
 ```

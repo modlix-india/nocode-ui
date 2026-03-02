@@ -344,7 +344,7 @@ Schemas can be referenced in component bindings for validation:
 {
   "type": "TextBox",
   "properties": {
-    "label": { "value": "Email" }
+    "label": { "type": "VALUE", "value": "Email" }
   },
   "bindingPath": {
     "type": "VALUE",
