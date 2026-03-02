@@ -66,6 +66,7 @@ import SchemaBuilder from '../SchemaBuilder/SchemaBuilder';
 import SchemaForm from '../SchemaForm/SchemaForm';
 import TemplateEditor from '../TemplateEditor/TemplateEditor';
 import TextEditor from '../TextEditor/TextEditor';
+import Prompt from '../Prompt/Prompt';
 
 import { ComponentStyleSubComponentDefinition } from '../../types/common';
 import { IconHelper } from '../util/IconHelper';
@@ -5434,6 +5435,93 @@ export const SubComponentDefinitions: Record<
 					/>
 				</IconHelper>
 			),
+		},
+	],
+
+	[Prompt.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="#F9F9F9" />
+					<rect x="4" y="4" width="22" height="15" rx="2" fill="#96A1B4" fillOpacity="0.2" />
+					<rect x="6" y="7" width="12" height="2" rx="1" fill="#96A1B4" />
+					<rect x="6" y="11" width="8" height="2" rx="1" fill="#96A1B4" />
+					<rect x="14" y="14" width="10" height="2" rx="1" fill="#007BFF" />
+					<rect x="4" y="21" width="17" height="5" rx="2" fill="#96A1B4" fillOpacity="0.15" stroke="#96A1B4" strokeWidth="0.5" />
+					<circle cx="24" cy="23.5" r="2.5" fill="#007BFF" />
+					<path d="M23.5 23L24.5 23.5L23.5 24V23Z" fill="white" />
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'messagesContainer',
+			displayName: 'Messages Container',
+			description: 'Messages Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'userMessage',
+			displayName: 'User Message',
+			description: 'User Message',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'assistantMessage',
+			displayName: 'Assistant Message',
+			description: 'Assistant Message',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toolCallCard',
+			displayName: 'Tool Call Card',
+			description: 'Tool Call Card',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'inputBar',
+			displayName: 'Input Bar',
+			description: 'Input Bar',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'inputTextArea',
+			displayName: 'Input Text Area',
+			description: 'Input Text Area',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sendButton',
+			displayName: 'Send Button',
+			description: 'Send Button',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'sessionSidebar',
+			displayName: 'Session Sidebar',
+			description: 'Session Sidebar',
+			icon: 'fa-solid fa-sidebar',
+		},
+		{
+			name: 'sidebarHeader',
+			displayName: 'Sidebar Header',
+			description: 'Sidebar Header',
+			icon: 'fa-solid fa-bars',
+		},
+		{
+			name: 'newChatButton',
+			displayName: 'New Chat Button',
+			description: 'New Chat Button',
+			icon: 'fa-solid fa-plus',
+		},
+		{
+			name: 'sessionItem',
+			displayName: 'Session Item',
+			description: 'Session Item',
+			icon: 'fa-solid fa-message',
 		},
 	],
 };
