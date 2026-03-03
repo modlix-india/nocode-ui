@@ -203,67 +203,48 @@ const { properties, stylePropertiesWithPseudoStates } = useDefinition(
 
 ## Property Examples
 
+All property values use DataLocation format with a required `type` field.
+
 ### Static Value
 
 ```json
 {
   "label": {
+    "type": "VALUE",
     "value": "Click Me"
   }
 }
 ```
 
-### Store Path (VALUE)
+### Store Path
 
 ```json
 {
   "text": {
-    "location": {
-      "type": "VALUE",
-      "value": "Store.user.name"
-    }
+    "type": "EXPRESSION",
+    "expression": "Store.user.name"
   }
 }
 ```
 
-### Expression (EXPRESSION)
+### Computed Expression
 
 ```json
 {
   "text": {
-    "location": {
-      "type": "EXPRESSION",
-      "expression": "Store.items.length > 0 ? 'Items: ' + Store.items.length : 'No items'"
-    }
+    "type": "EXPRESSION",
+    "expression": "Store.items.length > 0 ? 'Items: ' + Store.items.length : 'No items'"
   }
 }
 ```
-
-### With Fallback Value
-
-```json
-{
-  "text": {
-    "value": "Default Text",
-    "location": {
-      "type": "EXPRESSION",
-      "expression": "Store.dynamicText"
-    }
-  }
-}
-```
-
-If `Store.dynamicText` is null/undefined, falls back to "Default Text".
 
 ### Theme Reference
 
 ```json
 {
   "color": {
-    "location": {
-      "type": "EXPRESSION",
-      "expression": "Theme.primaryColor"
-    }
+    "type": "EXPRESSION",
+    "expression": "Theme.primaryColor"
   }
 }
 ```
@@ -273,10 +254,8 @@ If `Store.dynamicText` is null/undefined, falls back to "Default Text".
 ```json
 {
   "pageName": {
-    "location": {
-      "type": "EXPRESSION",
-      "expression": "Url.pageName"
-    }
+    "type": "EXPRESSION",
+    "expression": "Url.pageName"
   }
 }
 ```
@@ -286,10 +265,8 @@ If `Store.dynamicText` is null/undefined, falls back to "Default Text".
 ```json
 {
   "currentItem": {
-    "location": {
-      "type": "EXPRESSION",
-      "expression": "Page.currentItem"
-    }
+    "type": "EXPRESSION",
+    "expression": "Page.currentItem"
   }
 }
 ```
@@ -312,6 +289,7 @@ In the definition:
 ```json
 {
   "label": {
+    "type": "VALUE",
     "value": "Hello World"
   }
 }
@@ -367,9 +345,9 @@ These are defined in `components/util/properties.ts` as `COMMON_COMPONENT_PROPER
   "key": "button-1",
   "type": "Button",
   "properties": {
-    "label": { "value": "Submit" },
-    "onClick": { "value": "submitEvent" },
-    "colorScheme": { "value": "_primary" }
+    "label": { "type": "VALUE", "value": "Submit" },
+    "onClick": { "type": "VALUE", "value": "submitEvent" },
+    "colorScheme": { "type": "VALUE", "value": "_primary" }
   }
 }
 ```
@@ -382,10 +360,8 @@ These are defined in `components/util/properties.ts` as `COMMON_COMPONENT_PROPER
   "type": "Text",
   "properties": {
     "text": {
-      "location": {
-        "type": "EXPRESSION",
-        "expression": "Store.userName || 'Guest'"
-      }
+      "type": "EXPRESSION",
+      "expression": "Store.userName || 'Guest'"
     }
   }
 }
@@ -398,12 +374,10 @@ These are defined in `components/util/properties.ts` as `COMMON_COMPONENT_PROPER
   "key": "icon-1",
   "type": "Icon",
   "properties": {
-    "icon": { "value": "fa-solid fa-user" },
+    "icon": { "type": "VALUE", "value": "fa-solid fa-user" },
     "colorScheme": {
-      "location": {
-        "type": "EXPRESSION",
-        "expression": "Theme.iconColor"
-      }
+      "type": "EXPRESSION",
+      "expression": "Theme.iconColor"
     }
   }
 }

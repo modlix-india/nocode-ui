@@ -26,7 +26,7 @@ function getListType(type: 'ol' | 'ul', number: string): '1' | 'a' | 'A' | 'i' |
 	return undefined;
 }
 
-export const ORDERED_LIST_REGEX = /^(\s{0,}|\.{0,}|⋅{0,})(\d+|\#|a|A|i|I")\.\s(.*)/;
+export const ORDERED_LIST_REGEX = /^(\s{0,}|\.{0,}|⋅{0,})(\d+|\#|a|A|i|I)\.\s(.*)/;
 export const UNORDERED_LIST_REGEX = /^(\s{0,}|\.{0,}|⋅{0,})(\*|\-|\+)\s(.*)/;
 
 const MULTILINE_LIST_REGEX = /^(\s{0,}|\.{0,}|⋅{0,})(.*)/;

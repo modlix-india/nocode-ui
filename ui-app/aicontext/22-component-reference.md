@@ -4,11 +4,11 @@ This document provides complete property definitions for all available UI compon
 
 ## Property Value Format
 
-All property values must use this structure:
+All property values must use DataLocation format with a `type` field:
 
 ```json
 {
-  "propertyName": { "value": "actual value" }
+  "propertyName": { "type": "VALUE", "value": "actual value" }
 }
 ```
 
@@ -16,7 +16,7 @@ For data bindings:
 
 ```json
 {
-  "propertyName": { "location": "Page.someValue" }
+  "propertyName": { "type": "EXPRESSION", "expression": "Page.someValue" }
 }
 ```
 
@@ -45,9 +45,9 @@ For data bindings:
     "buttonStyle": {
       "resolutions": {
         "ALL": {
-          "backgroundColor": { "value": "#007ACC" },
-          "backgroundColor:hover": { "value": "#005A9E" },
-          "opacity:disabled": { "value": "0.5" }
+          "backgroundColor": { "type": "VALUE", "value": "#007ACC" },
+          "backgroundColor:hover": { "type": "VALUE", "value": "#005A9E" },
+          "opacity:disabled": { "type": "VALUE", "value": "0.5" }
         }
       }
     }
@@ -123,8 +123,8 @@ The primary container component for layouts. Uses flexbox or CSS grid.
   "key": "header",
   "type": "Grid",
   "properties": {
-    "layout": { "value": "ROWLAYOUT" },
-    "containerType": { "value": "HEADER" }
+    "layout": { "type": "VALUE", "value": "ROWLAYOUT" },
+    "containerType": { "type": "VALUE", "value": "HEADER" }
   },
   "children": { "logo": true, "nav": true }
 }
@@ -242,9 +242,8 @@ Text input field for single-line text or numbers.
   "key": "emailInput",
   "type": "TextBox",
   "properties": {
-    "label": { "value": "Email Address" },
-    "placeholder": { "value": "Enter your email" },
-    "bindingPath": { "value": "Page.form.email" },
+    "label": { "type": "VALUE", "value": "Email Address" },
+    "placeholder": { "type": "VALUE", "value": "Enter your email" },
     "validation": [
       { "type": "MANDATORY", "message": "Email is required" },
       { "type": "EMAIL", "message": "Invalid email format" }
@@ -351,11 +350,10 @@ Selection dropdown/select component.
   "key": "countryDropdown",
   "type": "Dropdown",
   "properties": {
-    "label": { "value": "Country" },
-    "bindingPath": { "value": "Page.form.country" },
-    "data": { "location": "Page.countries" },
-    "labelKey": { "value": "name" },
-    "selectionKey": { "value": "code" }
+    "label": { "type": "VALUE", "value": "Country" },
+    "data": { "type": "EXPRESSION", "expression": "Page.countries" },
+    "labelKey": { "type": "VALUE", "value": "name" },
+    "selectionKey": { "type": "VALUE", "value": "code" }
   }
 }
 ```
@@ -400,8 +398,7 @@ Boolean checkbox input.
   "key": "rememberMe",
   "type": "CheckBox",
   "properties": {
-    "label": { "value": "Remember me" },
-    "bindingPath": { "value": "Page.form.rememberMe" }
+    "label": { "type": "VALUE", "value": "Remember me" }
   }
 }
 ```
@@ -612,7 +609,7 @@ Display text content (supports plain text and markdown).
   "key": "welcomeText",
   "type": "Text",
   "properties": {
-    "text": { "value": "Welcome to our application!" }
+    "text": { "type": "VALUE", "value": "Welcome to our application!" }
   }
 }
 ```
@@ -662,8 +659,8 @@ Display images.
   "key": "logo",
   "type": "Image",
   "properties": {
-    "src": { "value": "/images/logo.png" },
-    "alt": { "value": "Company Logo" }
+    "src": { "type": "VALUE", "value": "/images/logo.png" },
+    "alt": { "type": "VALUE", "value": "Company Logo" }
   }
 }
 ```
@@ -700,7 +697,7 @@ Display icons (Font Awesome, Material, etc.).
   "key": "userIcon",
   "type": "Icon",
   "properties": {
-    "icon": { "value": "fa-solid fa-user" }
+    "icon": { "type": "VALUE", "value": "fa-solid fa-user" }
   }
 }
 ```
@@ -849,9 +846,9 @@ Clickable button component.
   "key": "submitBtn",
   "type": "Button",
   "properties": {
-    "label": { "value": "Submit" },
-    "onClick": { "value": "onSubmitForm" },
-    "leftIcon": { "value": "fa-solid fa-paper-plane" }
+    "label": { "type": "VALUE", "value": "Submit" },
+    "onClick": { "type": "VALUE", "value": "onSubmitForm" },
+    "leftIcon": { "type": "VALUE", "value": "fa-solid fa-paper-plane" }
   }
 }
 ```
@@ -1125,7 +1122,7 @@ Repeats child components for each item in an array.
   "key": "userList",
   "type": "ArrayRepeater",
   "properties": {
-    "bindingPath": { "value": "Store.users" }
+    "bindingPath": { "type": "VALUE", "value": "Store.users" }
   },
   "children": { "userCard": true }
 }
@@ -1745,12 +1742,18 @@ All components support these style property groups in `styleProperties`:
     "uniqueStyleId": {
       "resolutions": {
         "ALL": {
-          "backgroundColor": { "value": "#ffffff" },
-          "padding": { "value": "16px" },
-          "color:hover": { "value": "#0066cc" }
+          "backgroundColor": { "type": "VALUE", "value": "#ffffff" },
+          "paddingLeft": { "type": "VALUE", "value": "16px" },
+          "paddingRight": { "type": "VALUE", "value": "16px" },
+          "paddingTop": { "type": "VALUE", "value": "16px" },
+          "paddingBottom": { "type": "VALUE", "value": "16px" },
+          "color:hover": { "type": "VALUE", "value": "#0066cc" }
         },
         "MOBILE_POTRAIT_SCREEN": {
-          "padding": { "value": "8px" }
+          "paddingLeft": { "type": "VALUE", "value": "8px" },
+          "paddingRight": { "type": "VALUE", "value": "8px" },
+          "paddingTop": { "type": "VALUE", "value": "8px" },
+          "paddingBottom": { "type": "VALUE", "value": "8px" }
         }
       }
     }
