@@ -66,14 +66,14 @@ interface EachComponentResolutionStyle {
     "3INq4d0XPB2v7BL7Nb1sXO": {
       "resolutions": {
         "ALL": {
-          "width": { "value": "100vw" },
-          "height": { "value": "100vh" },
-          "alignItems": { "value": "center" },
-          "justifyContent": { "value": "center" }
+          "width": { "type": "VALUE", "value": "100vw" },
+          "height": { "type": "VALUE", "value": "100vh" },
+          "alignItems": { "type": "VALUE", "value": "center" },
+          "justifyContent": { "type": "VALUE", "value": "center" }
         },
         "MOBILE_POTRAIT_SCREEN_ONLY": {
-          "width": { "value": "100%" },
-          "height": { "value": "auto" }
+          "width": { "type": "VALUE", "value": "100%" },
+          "height": { "type": "VALUE", "value": "auto" }
         }
       }
     }
@@ -102,8 +102,8 @@ Components can have different styles for different states:
     "style-1": {
       "resolutions": {
         "ALL": {
-          "backgroundColor": { "value": "#ffffff" },
-          "color": { "value": "#000000" }
+          "backgroundColor": { "type": "VALUE", "value": "#ffffff" },
+          "color": { "type": "VALUE", "value": "#000000" }
         }
       }
     },
@@ -111,7 +111,7 @@ Components can have different styles for different states:
       "pseudoState": "hover",
       "resolutions": {
         "ALL": {
-          "backgroundColor": { "value": "#f0f0f0" }
+          "backgroundColor": { "type": "VALUE", "value": "#f0f0f0" }
         }
       }
     },
@@ -119,8 +119,10 @@ Components can have different styles for different states:
       "pseudoState": "focus",
       "resolutions": {
         "ALL": {
-          "borderColor": { "value": "#007bff" },
-          "outline": { "value": "2px solid #007bff" }
+          "borderColor": { "type": "VALUE", "value": "#007bff" },
+          "outlineWidth": { "type": "VALUE", "value": "2px" },
+          "outlineStyle": { "type": "VALUE", "value": "solid" },
+          "outlineColor": { "type": "VALUE", "value": "#007bff" }
         }
       }
     }
@@ -159,8 +161,8 @@ Styles can be conditionally applied based on store values:
       },
       "resolutions": {
         "ALL": {
-          "backgroundColor": { "value": "#1a1a1a" },
-          "color": { "value": "#ffffff" }
+          "backgroundColor": { "type": "VALUE", "value": "#1a1a1a" },
+          "color": { "type": "VALUE", "value": "#ffffff" }
         }
       }
     }
@@ -179,7 +181,7 @@ Conditions can be named for reuse:
       "conditionName": "darkMode",
       "resolutions": {
         "ALL": {
-          "backgroundColor": { "value": "#1a1a1a" }
+          "backgroundColor": { "type": "VALUE", "value": "#1a1a1a" }
         }
       }
     },
@@ -187,7 +189,7 @@ Conditions can be named for reuse:
       "conditionName": "darkMode",
       "resolutions": {
         "ALL": {
-          "color": { "value": "#ffffff" }
+          "color": { "type": "VALUE", "value": "#ffffff" }
         }
       }
     }
@@ -208,22 +210,18 @@ Components can have multiple style targets (sub-components):
 
 ### Example with Sub-Components
 
+Style property keys use the format `<subComponent>-<cssProp>:<pseudoState>` (subComponent and pseudoState are optional):
+
 ```json
 {
   "styleProperties": {
     "style-1": {
       "resolutions": {
         "ALL": {
-          "comp": {
-            "backgroundColor": { "value": "#ffffff" }
-          },
-          "comp-label": {
-            "fontSize": { "value": "16px" },
-            "fontWeight": { "value": "bold" }
-          },
-          "comp-icon": {
-            "color": { "value": "#007bff" }
-          }
+          "backgroundColor": { "type": "VALUE", "value": "#ffffff" },
+          "comp-label-fontSize": { "type": "VALUE", "value": "16px" },
+          "comp-label-fontWeight": { "type": "VALUE", "value": "bold" },
+          "comp-icon-color": { "type": "VALUE", "value": "#007bff" }
         }
       }
     }
@@ -312,16 +310,12 @@ Styles can reference theme variables:
 ```json
 {
   "color": {
-    "location": {
-      "type": "EXPRESSION",
-      "expression": "Theme.primaryColor"
-    }
+    "type": "EXPRESSION",
+    "expression": "Theme.primaryColor"
   },
   "backgroundColor": {
-    "location": {
-      "type": "EXPRESSION",
-      "expression": "Theme.backgroundColor"
-    }
+    "type": "EXPRESSION",
+    "expression": "Theme.backgroundColor"
   }
 }
 ```
@@ -358,14 +352,14 @@ Example:
     "3INq4d0XPB2v7BL7Nb1sXO": {
       "resolutions": {
         "ALL": {
-          "width": { "value": "100vw" },
-          "height": { "value": "100vh" },
-          "display": { "value": "flex" },
-          "flexDirection": { "value": "column" }
+          "width": { "type": "VALUE", "value": "100vw" },
+          "height": { "type": "VALUE", "value": "100vh" },
+          "display": { "type": "VALUE", "value": "flex" },
+          "flexDirection": { "type": "VALUE", "value": "column" }
         },
         "MOBILE_POTRAIT_SCREEN_ONLY": {
-          "flexDirection": { "value": "row" },
-          "height": { "value": "auto" }
+          "flexDirection": { "type": "VALUE", "value": "row" },
+          "height": { "type": "VALUE", "value": "auto" }
         }
       }
     }
@@ -381,12 +375,10 @@ Example:
     "3zHxLip0NfbU71SALwnHVh": {
       "resolutions": {
         "ALL": {
-          "textAlign": { "value": "center" },
+          "textAlign": { "type": "VALUE", "value": "center" },
           "color": {
-            "location": {
-              "type": "EXPRESSION",
-              "expression": "Theme.backgroundColorFour"
-            }
+            "type": "EXPRESSION",
+            "expression": "Theme.backgroundColorFour"
           }
         }
       }

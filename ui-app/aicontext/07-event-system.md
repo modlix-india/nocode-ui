@@ -175,7 +175,7 @@ Components can trigger events:
 {
   "type": "Button",
   "properties": {
-    "onClick": { "value": "buttonClickEvent" }
+    "onClick": { "type": "VALUE", "value": "buttonClickEvent" }
   }
 }
 ```
@@ -186,7 +186,7 @@ Components can trigger events:
 {
   "type": "Form",
   "properties": {
-    "onSubmit": { "value": "formSubmitEvent" }
+    "onSubmit": { "type": "VALUE", "value": "formSubmitEvent" }
   }
 }
 ```
