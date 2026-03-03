@@ -317,10 +317,8 @@ Children can be filtered by visibility:
 // Component with visibility property
 properties: {
     visibility: {
-        location: {
-            type: "EXPRESSION",
-            expression: "Store.showMenu"
-        }
+        type: "EXPRESSION",
+        expression: "Store.showMenu"
     }
 }
 ```
@@ -335,15 +333,15 @@ properties: {
   "name": "Submit Button",
   "type": "Button",
   "properties": {
-    "label": { "value": "Submit" },
-    "onClick": { "value": "submitEvent" }
+    "label": { "type": "VALUE", "value": "Submit" },
+    "onClick": { "type": "VALUE", "value": "submitEvent" }
   },
   "styleProperties": {
     "style-1": {
       "resolutions": {
         "ALL": {
-          "backgroundColor": { "value": "#007bff" },
-          "color": { "value": "#ffffff" }
+          "backgroundColor": { "type": "VALUE", "value": "#007bff" },
+          "color": { "type": "VALUE", "value": "#ffffff" }
         }
       }
     }
@@ -360,10 +358,8 @@ properties: {
   "type": "Text",
   "properties": {
     "text": {
-      "location": {
-        "type": "EXPRESSION",
-        "expression": "Store.userName"
-      }
+      "type": "EXPRESSION",
+      "expression": "Store.userName"
     }
   }
 }
@@ -380,8 +376,8 @@ properties: {
     "style-1": {
       "resolutions": {
         "ALL": {
-          "display": { "value": "flex" },
-          "flexDirection": { "value": "column" }
+          "display": { "type": "VALUE", "value": "flex" },
+          "flexDirection": { "type": "VALUE", "value": "column" }
         }
       }
     }

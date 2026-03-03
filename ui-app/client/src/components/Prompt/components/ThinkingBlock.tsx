@@ -65,10 +65,12 @@ export function ThinkingBlock({
 		() => THINKING_MESSAGES[Math.floor(Math.random() * THINKING_MESSAGES.length)],
 	);
 	const startTimeRef = useRef(Date.now());
+	const wasEverActiveRef = useRef(isActive);
 
 	// Auto-expand when active
 	useEffect(() => {
 		if (isActive) {
+			wasEverActiveRef.current = true;
 			setExpanded(true);
 			startTimeRef.current = Date.now();
 		}
@@ -92,8 +94,8 @@ export function ThinkingBlock({
 		});
 	}, []);
 
-	// Don't render if not active and no tool calls
-	if (!isActive && !toolCalls.length) return null;
+	// Don't render if never been active and no tool calls (e.g. historical messages)
+	if (!isActive && !wasEverActiveRef.current && !toolCalls.length) return null;
 
 	const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
 

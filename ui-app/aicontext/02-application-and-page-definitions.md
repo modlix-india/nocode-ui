@@ -361,8 +361,8 @@ From `samples/page-samples.json`:
   "rootComponent": "0710873b-933e-47f9-90f5-407e67e92d83",
   "properties": {
     "title": {
-      "name": { "value": "Danger, Will Robinson" },
-      "append": { "value": false }
+      "name": { "type": "VALUE", "value": "Danger, Will Robinson" },
+      "append": { "type": "VALUE", "value": false }
     },
     "wrapShell": false
   },
@@ -375,10 +375,10 @@ From `samples/page-samples.json`:
         "3INq4d0XPB2v7BL7Nb1sXO": {
           "resolutions": {
             "ALL": {
-              "width": { "value": "100vw" },
-              "height": { "value": "100vh" },
-              "alignItems": { "value": "center" },
-              "justifyContent": { "value": "center" }
+              "width": { "type": "VALUE", "value": "100vw" },
+              "height": { "type": "VALUE", "value": "100vh" },
+              "alignItems": { "type": "VALUE", "value": "center" },
+              "justifyContent": { "type": "VALUE", "value": "center" }
             }
           }
         }
@@ -402,8 +402,8 @@ From `samples/page-samples.json`:
       "name": "Icon",
       "type": "Icon",
       "properties": {
-        "icon": { "value": "fa-solid fa-explosion fa-4x" },
-        "colorScheme": { "value": "_quaternary" }
+        "icon": { "type": "VALUE", "value": "fa-solid fa-explosion fa-4x" },
+        "colorScheme": { "type": "VALUE", "value": "_quaternary" }
       },
       "displayOrder": 1
     },
@@ -420,12 +420,10 @@ From `samples/page-samples.json`:
         "3zHxLip0NfbU71SALwnHVh": {
           "resolutions": {
             "ALL": {
-              "textAlign": { "value": "center" },
+              "textAlign": { "type": "VALUE", "value": "center" },
               "color": {
-                "location": {
-                  "type": "EXPRESSION",
-                  "expression": "Theme.backgroundColorFour"
-                }
+                "type": "EXPRESSION",
+                "expression": "Theme.backgroundColorFour"
               }
             }
           }

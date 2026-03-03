@@ -1,6 +1,6 @@
 import { MarkdownFootnoteRef, MarkdownURLRef } from './common';
 
-const URL_TITLE_REGEX = /(.*)(\"(.*?)\")?/;
+const URL_TITLE_REGEX = /^(.*?)\s+"(.*)"$/;
 
 export function parseAttributes(line: string | undefined): { [key: string]: any } | undefined {
 	if (!line?.startsWith('{')) return undefined;
@@ -110,8 +110,8 @@ export function makeRefsAndRemove(lines: string[]): {
 }
 
 export function makeURLnTitle(text: string): MarkdownURLRef {
-	const match = text.match(URL_TITLE_REGEX);
-	if (!match) return { url: text };
-	const [, url, , title] = match;
-	return { url, title: title };
+	const trimmed = text.trim();
+	const match = trimmed.match(URL_TITLE_REGEX);
+	if (!match) return { url: trimmed };
+	return { url: match[1].trim(), title: match[2] };
 }
