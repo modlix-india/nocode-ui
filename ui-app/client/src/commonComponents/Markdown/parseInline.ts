@@ -257,6 +257,7 @@ function processImageLink(
 ) {
 	if (actualLine[i + 1] !== '[') return { i, current, found: false };
 
+	const originalI = i;
 	let ind = actualLine.indexOf(']', i + 2);
 	if (ind == -1) return { i, current, found: false };
 
@@ -282,7 +283,7 @@ function processImageLink(
 		i = ind;
 	}
 
-	if (!linkParts) return { i, current, found: false };
+	if (!linkParts) return { i: originalI, current, found: false };
 
 	let style = styles.images;
 	let attrs = undefined;
@@ -330,6 +331,7 @@ function processLink(
 	styles: any,
 	params: MarkdownParserParameters & { parseNewline?: boolean },
 ) {
+	const originalI = i;
 	let ind = actualLine.indexOf(']', i + 1);
 	if (ind == -1) return { i, current, found: false };
 
@@ -356,7 +358,7 @@ function processLink(
 		i = ind;
 	}
 
-	if (!linkParts) return { i, current, found: false };
+	if (!linkParts) return { i: originalI, current, found: false };
 
 	let style = styles.links;
 	let attrs = undefined;
@@ -389,7 +391,7 @@ function processLink(
 				title: linkParts.title,
 				...(attrs ?? {}),
 			},
-			linkText,
+			...parseInline({ ...params, line: linkText }),
 		),
 	);
 
@@ -441,19 +443,17 @@ function processInlineMarkup(
 	const text = actualLine.substring(i + count, ind);
 
 	ind += count - 1;
-	const attrStart = actualLine.indexOf('{', ind);
 
 	let attrs: { [key: string]: any } | undefined = undefined;
 	const subCompName = searchString == '`' ? 'icBlock' : TYPE_MAP[searchString];
 	let style = styles[subCompName];
-	if (attrStart) {
-		const attrEnd = actualLine.indexOf('}', attrStart);
+	if (ind + 1 < actualLine.length && actualLine[ind + 1] === '{') {
+		const attrEnd = actualLine.indexOf('}', ind + 2);
 		if (attrEnd !== -1) {
-			attrs = parseAttributes(actualLine.substring(attrStart, attrEnd));
+			attrs = parseAttributes(actualLine.substring(ind + 1, attrEnd));
 			if (attrs) {
 				ind = attrEnd;
 				if (attrs.style) style = style ? { ...style, ...attrs.style } : attrs.style;
-				ind = attrEnd;
 			}
 		}
 	}
