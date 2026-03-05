@@ -84,6 +84,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'showModelSelector',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Model Selector',
+		description: 'Show a dropdown to select the LLM model.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'showToolCalls',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Tool Calls',

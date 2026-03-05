@@ -33,6 +33,7 @@ interface Message {
 	content: string;
 	toolCalls?: ToolCall[];
 	attachments?: Attachment[];
+	thinking?: string;
 }
 
 interface ToolCall {
@@ -51,6 +52,16 @@ interface Attachment {
 	url: string;
 	mimeType: string;
 	file?: File;
+}
+
+interface TokenUsage {
+	input_tokens: number;
+	output_tokens: number;
+	total_tokens: number;
+	context_used: number;
+	context_limit: number;
+	context_percent: number;
+	turns: number;
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -112,32 +123,43 @@ function mapHistoryToMessages(history: any[]): Message[] {
 	return msgs;
 }
 
-function processSSEEvent(
-	eventType: string,
-	data: any,
-	assistantMsgId: string,
-	currentText: string,
-	toolCalls: Map<string, ToolCall>,
-	setText: (t: string) => void,
-	setMessages: React.Dispatch<React.SetStateAction<Message[]>>,
-	setSessionId: React.Dispatch<React.SetStateAction<string | null>>,
-	showToolCalls: boolean,
-) {
+interface SSEEventContext {
+	assistantMsgId: string;
+	currentText: string;
+	toolCalls: Map<string, ToolCall>;
+	setText: (t: string) => void;
+	setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+	setSessionId: React.Dispatch<React.SetStateAction<string | null>>;
+	setUsage: React.Dispatch<React.SetStateAction<TokenUsage | null>>;
+	showToolCalls: boolean;
+}
+
+function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 	switch (eventType) {
 		case 'text': {
-			const newText = currentText + (data.text ?? '');
-			setText(newText);
-			setMessages(prev =>
+			const newText = ctx.currentText + (data.text ?? '');
+			ctx.setText(newText);
+			ctx.setMessages(prev =>
 				prev.map(m =>
-					m.id === assistantMsgId
+					m.id === ctx.assistantMsgId
 						? { ...m, content: newText }
 						: m,
 				),
 			);
 			break;
 		}
+		case 'thinking': {
+			ctx.setMessages(prev =>
+				prev.map(m =>
+					m.id === ctx.assistantMsgId
+						? { ...m, thinking: data.text ?? '' }
+						: m,
+				),
+			);
+			break;
+		}
 		case 'tool_start': {
-			if (!showToolCalls) break;
+			if (!ctx.showToolCalls) break;
 			const tc: ToolCall = {
 				id: data.tool_use_id ?? `tc_${Date.now()}`,
 				toolName: data.tool_name ?? 'unknown',
@@ -145,28 +167,28 @@ function processSSEEvent(
 				summary: '',
 				isRunning: true,
 			};
-			toolCalls.set(tc.id, tc);
-			setMessages(prev =>
+			ctx.toolCalls.set(tc.id, tc);
+			ctx.setMessages(prev =>
 				prev.map(m =>
-					m.id === assistantMsgId
-						? { ...m, toolCalls: Array.from(toolCalls.values()) }
+					m.id === ctx.assistantMsgId
+						? { ...m, toolCalls: Array.from(ctx.toolCalls.values()) }
 						: m,
 				),
 			);
 			break;
 		}
 		case 'tool_result': {
-			if (!showToolCalls) break;
+			if (!ctx.showToolCalls) break;
 			const tcId = data.tool_use_id ?? '';
-			const existing = toolCalls.get(tcId);
+			const existing = ctx.toolCalls.get(tcId);
 			if (existing) {
 				existing.summary = data.summary ?? '';
 				existing.success = data.success;
 				existing.isRunning = false;
-				setMessages(prev =>
+				ctx.setMessages(prev =>
 					prev.map(m =>
-						m.id === assistantMsgId
-							? { ...m, toolCalls: Array.from(toolCalls.values()) }
+						m.id === ctx.assistantMsgId
+							? { ...m, toolCalls: Array.from(ctx.toolCalls.values()) }
 							: m,
 					),
 				);
@@ -175,21 +197,165 @@ function processSSEEvent(
 		}
 		case 'done': {
 			if (data.session_id) {
-				setSessionId(data.session_id);
+				ctx.setSessionId(data.session_id);
+			}
+			if (data.usage) {
+				const u = data.usage;
+				const input = u.input_tokens ?? 0;
+				const output = u.output_tokens ?? 0;
+				const contextUsed = u.context_used ?? 0;
+				const contextLimit = u.context_limit ?? 48000;
+				const contextPercent =
+					u.context_percent ??
+					(contextLimit > 0
+						? Math.min(Math.round((contextUsed / contextLimit) * 100), 100)
+						: 0);
+				ctx.setUsage({
+					input_tokens: input,
+					output_tokens: output,
+					total_tokens: u.total_tokens ?? input + output,
+					context_used: contextUsed,
+					context_limit: contextLimit,
+					context_percent: contextPercent,
+					turns: u.turns ?? 0,
+				});
 			}
 			break;
 		}
 		case 'error': {
-			const errText = currentText + `\n\n*Error: ${data.message ?? 'Unknown error'}*`;
-			setText(errText);
-			setMessages(prev =>
+			const errText =
+				ctx.currentText + `\n\n*Error: ${data.message ?? 'Unknown error'}*`;
+			ctx.setText(errText);
+			ctx.setMessages(prev =>
 				prev.map(m =>
-					m.id === assistantMsgId ? { ...m, content: errText } : m,
+					m.id === ctx.assistantMsgId ? { ...m, content: errText } : m,
 				),
 			);
 			break;
 		}
 	}
+}
+
+function extractUsageFromSession(session: any): TokenUsage | null {
+	if (!session) return null;
+	const input = session.total_input_tokens ?? 0;
+	const output = session.total_output_tokens ?? 0;
+	const contextUsed = session.context_tokens_used ?? 0;
+	const contextLimit = session.context_limit ?? 48000;
+	const contextPercent =
+		contextLimit > 0 ? Math.round((contextUsed / contextLimit) * 100) : 0;
+	if (input === 0 && output === 0 && (session.turn_count ?? 0) === 0) return null;
+	return {
+		input_tokens: input,
+		output_tokens: output,
+		total_tokens: input + output,
+		context_used: contextUsed,
+		context_limit: contextLimit,
+		context_percent: Math.min(contextPercent, 100),
+		turns: session.turn_count ?? 0,
+	};
+}
+
+function getContextLevel(percent: number): string {
+	if (percent >= 90) return ' _critical';
+	if (percent >= 70) return ' _warning';
+	return '';
+}
+
+function UsageBar({ usage }: Readonly<{ usage: TokenUsage }>) {
+	const contextClass = `_usageContext${getContextLevel(usage.context_percent)}`;
+	return (
+		<div className="_usageBar">
+			<span className="_usageTokens">
+				{usage.total_tokens.toLocaleString()} tokens
+			</span>
+			<span className="_usageSeparator" />
+			<span className="_usageTurns">
+				{usage.turns} {usage.turns === 1 ? 'turn' : 'turns'}
+			</span>
+			<span className="_usageSeparator" />
+			<span className={contextClass}>{usage.context_percent}% context</span>
+			<div className="_usageContextBar">
+				<div
+					className="_usageContextFill"
+					style={{ width: `${Math.min(usage.context_percent, 100)}%` }}
+				/>
+			</div>
+		</div>
+	);
+}
+
+function ModelSelector({
+	models,
+	selectedModel,
+	onSelectModel,
+	disabled,
+}: Readonly<{
+	models: { id: string; name: string }[];
+	selectedModel: string;
+	onSelectModel: (id: string) => void;
+	disabled: boolean;
+}>) {
+	const [open, setOpen] = useState(false);
+	const ref = useRef<HTMLDivElement>(null);
+
+	// Close on outside click
+	useEffect(() => {
+		if (!open) return;
+		const handler = (e: MouseEvent) => {
+			if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+		};
+		document.addEventListener('mousedown', handler);
+		return () => document.removeEventListener('mousedown', handler);
+	}, [open]);
+
+	const selectedLabel =
+		models.find(m => m.id === selectedModel)?.name ?? 'Auto';
+
+	return (
+		<div className="_modelSelector" ref={ref}>
+			<button
+				className="_modelSelectorButton"
+				onClick={() => !disabled && setOpen(o => !o)}
+				disabled={disabled}
+				type="button"
+			>
+				<span className="_modelSelectorLabel">{selectedLabel}</span>
+				<i className="fa fa-chevron-down _modelSelectorChevron" />
+			</button>
+			{open && (
+				<div className="_modelSelectorDropdown">
+					<button
+						className={`_modelSelectorOption${!selectedModel ? ' _active' : ''}`}
+						onClick={() => {
+							onSelectModel('');
+							setOpen(false);
+						}}
+						type="button"
+					>
+						<span className="_modelOptionName">Auto</span>
+						{!selectedModel && <i className="fa fa-check _modelOptionCheck" />}
+					</button>
+					{models.map(m => (
+						<button
+							key={m.id}
+							className={`_modelSelectorOption${selectedModel === m.id ? ' _active' : ''}`}
+							onClick={() => {
+								onSelectModel(m.id);
+								setOpen(false);
+							}}
+							type="button"
+						>
+							<span className="_modelOptionName">{m.name}</span>
+							{selectedModel === m.id && (
+								<i className="fa fa-check _modelOptionCheck" />
+							)}
+						</button>
+					))}
+				</div>
+			)}
+		</div>
+	);
 }
 
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
@@ -207,6 +373,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			newChatLabel = 'New chat',
 			yourChatsLabel = 'Your chats',
 			deleteConfirmMessage = 'Delete this chat? This action cannot be undone.',
+			showModelSelector = false,
 			showToolCalls = true,
 			enablePersonalization = true,
 			sessionsPerPage = 20,
@@ -281,6 +448,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [sessionId, setSessionId] = useState<string | null>(null);
 	const [sessions, setSessions] = useState<Session[]>([]);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
+	const [usage, setUsage] = useState<TokenUsage | null>(null);
+
+	// Model selector state
+	const [availableModels, setAvailableModels] = useState<{ id: string; name: string }[]>([]);
+	const [selectedModel, setSelectedModel] = useState<string>('');
 
 	// Session pagination state
 	const [totalSessions, setTotalSessions] = useState(0);
@@ -494,6 +666,26 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		fetchSessions();
 	}, [fetchSessions]);
 
+	// Fetch available models when model selector is enabled
+	useEffect(() => {
+		if (!showModelSelector) return;
+		(async () => {
+			try {
+				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const response = await fetch(`${baseUrl}/models`, {
+					headers: getAuthHeaders(),
+				});
+				if (response.ok) {
+					const data = await response.json();
+					const models = Array.isArray(data?.models) ? data.models : [];
+					setAvailableModels(models);
+				}
+			} catch {
+				// Silently fail — model selector is optional
+			}
+		})();
+	}, [showModelSelector, agentEndpoint, getAuthHeaders]);
+
 	// Auto-scroll to bottom on new messages (but not when loading earlier)
 	useEffect(() => {
 		if (shouldAutoScrollRef.current) {
@@ -580,6 +772,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						: [];
 					setMessages(mapHistoryToMessages(history));
 					setTotalMessages(data.total_history ?? history.length);
+					setUsage(extractUsageFromSession(data.session));
 
 					const status = data.session?.status;
 					if (status !== 'PROCESSING') {
@@ -620,6 +813,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					setMessages(mapHistoryToMessages(history));
 					setTotalMessages(data.total_history ?? history.length);
 					setMessagesOffset(0);
+					setUsage(extractUsageFromSession(data.session));
 
 					// If session is currently being processed, poll for updates
 					if (data.session?.status === 'PROCESSING') {
@@ -638,6 +832,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		setIsStreaming(false);
 		setSessionId(null);
 		setMessages([]);
+		setUsage(null);
 		setTotalMessages(0);
 		setMessagesOffset(0);
 	}, [stopPolling]);
@@ -812,6 +1007,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				const body: any = {
 					message: text,
 					session_id: sessionId,
+					...(selectedModel ? { model: selectedModel } : {}),
 				};
 
 				if (attachments?.length) {
@@ -871,19 +1067,18 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						} else if (line.startsWith('data: ') && eventType) {
 							try {
 								const data = JSON.parse(line.slice(6));
-								processSSEEvent(
-									eventType,
-									data,
+								processSSEEvent(eventType, data, {
 									assistantMsgId,
-									assistantText,
+									currentText: assistantText,
 									toolCalls,
-									(newText: string) => {
+									setText: (newText: string) => {
 										assistantText = newText;
 									},
 									setMessages,
 									setSessionId,
+									setUsage,
 									showToolCalls,
-								);
+								});
 							} catch {
 								// Skip unparseable data
 							}
@@ -942,6 +1137,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			readOnly,
 			agentEndpoint,
 			sessionId,
+			selectedModel,
 			showToolCalls,
 			onMessage,
 			onError,
@@ -1099,6 +1295,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												? msg.toolCalls ?? []
 												: []
 										}
+										reasoningContent={msg.thinking}
 										toolRunningIcon={toolRunningIcon}
 										toolSuccessIcon={toolSuccessIcon}
 										toolErrorIcon={toolErrorIcon}
@@ -1157,6 +1354,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						microphoneIcon={microphoneIcon}
 						microphoneActiveIcon={microphoneActiveIcon}
 					/>
+					<div className="_promptBottomBar">
+						{showModelSelector && availableModels.length > 0 && (
+							<ModelSelector
+								models={availableModels}
+								selectedModel={selectedModel}
+								onSelectModel={setSelectedModel}
+								disabled={isStreaming}
+							/>
+						)}
+						{usage && <UsageBar usage={usage} />}
+					</div>
 				</div>
 			</div>
 		</div>
