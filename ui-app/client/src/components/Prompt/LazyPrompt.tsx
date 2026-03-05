@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	ComponentPropertyDefinition,
 	ComponentProps,
@@ -374,6 +374,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			yourChatsLabel = 'Your chats',
 			deleteConfirmMessage = 'Delete this chat? This action cannot be undone.',
 			showModelSelector = false,
+			selectedProviders = [],
 			showToolCalls = true,
 			enablePersonalization = true,
 			sessionsPerPage = 20,
@@ -453,6 +454,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Model selector state
 	const [availableModels, setAvailableModels] = useState<{ id: string; name: string }[]>([]);
 	const [selectedModel, setSelectedModel] = useState<string>('');
+
+	const filteredModels = useMemo(() => {
+		if (!selectedProviders.length) return availableModels;
+		const providerSet = new Set(selectedProviders.map((p: string) => p.toLowerCase()));
+		return availableModels.filter(m => providerSet.has(m.id.split(':')[0]));
+	}, [availableModels, selectedProviders]);
 
 	// Session pagination state
 	const [totalSessions, setTotalSessions] = useState(0);
@@ -1045,48 +1052,75 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				let assistantText = '';
 				const toolCalls = new Map<string, ToolCall>();
 				const assistantMsgId = `asst_${Date.now()}`;
+				let receivedSessionId = sessionId;
 
 				setMessages(prev => [
 					...prev,
 					{ id: assistantMsgId, role: 'assistant', content: '', toolCalls: [] },
 				]);
 
-				while (true) {
-					const { done, value } = await reader.read();
-					if (done) break;
+				// Watchdog: detect dead connections (server keepalives every 15s)
+				const STREAM_TIMEOUT_MS = 45_000;
+				let lastDataAt = Date.now();
+				let streamTimedOut = false;
+				const watchdog = setInterval(() => {
+					if (Date.now() - lastDataAt > STREAM_TIMEOUT_MS) {
+						streamTimedOut = true;
+						abortControllerRef.current?.abort();
+						clearInterval(watchdog);
+					}
+				}, 5_000);
 
-					buffer += decoder.decode(value, { stream: true });
-					const lines = buffer.split('\n');
-					buffer = lines.pop() ?? '';
+				try {
+					while (true) {
+						const { done, value } = await reader.read();
+						if (done) break;
+						lastDataAt = Date.now();
 
-					let eventType = '';
+						buffer += decoder.decode(value, { stream: true });
+						const lines = buffer.split('\n');
+						buffer = lines.pop() ?? '';
 
-					for (const line of lines) {
-						if (line.startsWith('event: ')) {
-							eventType = line.slice(7).trim();
-						} else if (line.startsWith('data: ') && eventType) {
-							try {
-								const data = JSON.parse(line.slice(6));
-								processSSEEvent(eventType, data, {
-									assistantMsgId,
-									currentText: assistantText,
-									toolCalls,
-									setText: (newText: string) => {
-										assistantText = newText;
-									},
-									setMessages,
-									setSessionId,
-									setUsage,
-									showToolCalls,
-								});
-							} catch {
-								// Skip unparseable data
+						let eventType = '';
+
+						for (const line of lines) {
+							if (line.startsWith('event: ')) {
+								eventType = line.slice(7).trim();
+							} else if (line.startsWith('data: ') && eventType) {
+								try {
+									const data = JSON.parse(line.slice(6));
+									if (eventType === 'done' && data.session_id) {
+										receivedSessionId = data.session_id;
+									}
+									processSSEEvent(eventType, data, {
+										assistantMsgId,
+										currentText: assistantText,
+										toolCalls,
+										setText: (newText: string) => {
+											assistantText = newText;
+										},
+										setMessages,
+										setSessionId,
+										setUsage,
+										showToolCalls,
+									});
+								} catch {
+									// Skip unparseable data
+								}
+								eventType = '';
+							} else if (line === '') {
+								eventType = '';
 							}
-							eventType = '';
-						} else if (line === '') {
-							eventType = '';
 						}
 					}
+				} finally {
+					clearInterval(watchdog);
+				}
+
+				// If stream timed out, fall back to polling the session
+				if (streamTimedOut && receivedSessionId) {
+					startPolling(receivedSessionId);
+					return;
 				}
 
 				// Refresh sessions after a message exchange
@@ -1355,9 +1389,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						microphoneActiveIcon={microphoneActiveIcon}
 					/>
 					<div className="_promptBottomBar">
-						{showModelSelector && availableModels.length > 0 && (
+						{showModelSelector && filteredModels.length > 0 && (
 							<ModelSelector
-								models={availableModels}
+								models={filteredModels}
 								selectedModel={selectedModel}
 								onSelectModel={setSelectedModel}
 								disabled={isStreaming}

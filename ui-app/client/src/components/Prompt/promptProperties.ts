@@ -92,6 +92,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'selectedProviders',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Selected Providers',
+		description: 'Providers to show in model selector. If empty, all providers are shown.',
+		multiValued: true,
+		defaultValue: [],
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'showToolCalls',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Tool Calls',
