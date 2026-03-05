@@ -1007,6 +1007,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			);
 
 			const headers = getAuthHeaders();
+			let streamTimedOut = false;
+			let receivedSessionId = sessionId;
 
 			try {
 				abortControllerRef.current = new AbortController();
@@ -1052,7 +1054,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				let assistantText = '';
 				const toolCalls = new Map<string, ToolCall>();
 				const assistantMsgId = `asst_${Date.now()}`;
-				let receivedSessionId = sessionId;
 
 				setMessages(prev => [
 					...prev,
@@ -1062,7 +1063,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				// Watchdog: detect dead connections (server keepalives every 15s)
 				const STREAM_TIMEOUT_MS = 45_000;
 				let lastDataAt = Date.now();
-				let streamTimedOut = false;
 				const watchdog = setInterval(() => {
 					if (Date.now() - lastDataAt > STREAM_TIMEOUT_MS) {
 						streamTimedOut = true;
@@ -1140,7 +1140,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					}
 				}
 			} catch (err: any) {
-				if (err.name === 'AbortError') return;
+				if (err.name === 'AbortError') {
+					// Timeout-triggered abort: fall back to polling the session
+					if (streamTimedOut && receivedSessionId) {
+						startPolling(receivedSessionId);
+					}
+					return;
+				}
 
 				const errorMsg: Message = {
 					id: `err_${Date.now()}`,
@@ -1177,6 +1183,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			onError,
 			getAuthHeaders,
 			fetchSessions,
+			startPolling,
 			stopPolling,
 			props.context.pageName,
 			props.locationHistory,
