@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	ComponentPropertyDefinition,
 	ComponentProps,
@@ -34,6 +34,8 @@ interface Message {
 	toolCalls?: ToolCall[];
 	attachments?: Attachment[];
 	thinking?: string;
+	turnNumber?: number;
+	feedbackRating?: number; // -1 = thumbs down, 0 = neutral, 1 = thumbs up
 }
 
 interface ToolCall {
@@ -86,11 +88,13 @@ function mapHistoryToMessages(history: any[]): Message[] {
 	const msgs: Message[] = [];
 	for (let i = 0; i < sorted.length; i++) {
 		const h = sorted[i];
+		const turnNumber = h.turn_number ?? i + 1;
 		if (h.user_instruction) {
 			msgs.push({
 				id: `hist_user_${i}`,
 				role: 'user',
 				content: h.user_instruction,
+				turnNumber,
 			});
 		}
 		if (h.assistant_summary) {
@@ -117,6 +121,8 @@ function mapHistoryToMessages(history: any[]): Message[] {
 				role: 'assistant',
 				content: h.assistant_summary,
 				toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
+				turnNumber,
+				feedbackRating: h.feedback_rating,
 			});
 		}
 	}
@@ -132,6 +138,7 @@ interface SSEEventContext {
 	setSessionId: React.Dispatch<React.SetStateAction<string | null>>;
 	setUsage: React.Dispatch<React.SetStateAction<TokenUsage | null>>;
 	showToolCalls: boolean;
+	setFeedbackTurn: (turn: { sessionId: string; turnNumber: number }) => void;
 }
 
 function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
@@ -219,6 +226,21 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					context_percent: contextPercent,
 					turns: u.turns ?? 0,
 				});
+			}
+			break;
+		}
+		case 'feedback_request': {
+			const fbSessionId = data.session_id;
+			const fbTurnNumber = data.turn_number ?? 0;
+			if (fbSessionId) {
+				ctx.setFeedbackTurn({ sessionId: fbSessionId, turnNumber: fbTurnNumber });
+				ctx.setMessages(prev =>
+					prev.map(m =>
+						m.id === ctx.assistantMsgId
+							? { ...m, turnNumber: fbTurnNumber }
+							: m,
+					),
+				);
 			}
 			break;
 		}
@@ -374,6 +396,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			yourChatsLabel = 'Your chats',
 			deleteConfirmMessage = 'Delete this chat? This action cannot be undone.',
 			showModelSelector = false,
+			selectedProviders = [],
 			showToolCalls = true,
 			enablePersonalization = true,
 			sessionsPerPage = 20,
@@ -398,6 +421,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			enableVoiceInput = true,
 			microphoneIcon = 'fa fa-microphone',
 			microphoneActiveIcon = 'fa fa-stop',
+			enableFeedback = true,
+			thumbsUpIcon = 'fa fa-thumbs-up',
+			thumbsDownIcon = 'fa fa-thumbs-down',
 			readOnly,
 			onMessage,
 			onError,
@@ -447,12 +473,19 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [isStreaming, setIsStreaming] = useState(false);
 	const [sessionId, setSessionId] = useState<string | null>(null);
 	const [sessions, setSessions] = useState<Session[]>([]);
+	const [feedbackTurn, setFeedbackTurn] = useState<{ sessionId: string; turnNumber: number } | null>(null);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [usage, setUsage] = useState<TokenUsage | null>(null);
 
 	// Model selector state
 	const [availableModels, setAvailableModels] = useState<{ id: string; name: string }[]>([]);
 	const [selectedModel, setSelectedModel] = useState<string>('');
+
+	const filteredModels = useMemo(() => {
+		if (!selectedProviders.length) return availableModels;
+		const providerSet = new Set(selectedProviders.map((p: string) => p.toLowerCase()));
+		return availableModels.filter(m => providerSet.has(m.id.split(':')[0]));
+	}, [availableModels, selectedProviders]);
 
 	// Session pagination state
 	const [totalSessions, setTotalSessions] = useState(0);
@@ -835,6 +868,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		setUsage(null);
 		setTotalMessages(0);
 		setMessagesOffset(0);
+		setFeedbackTurn(null);
 	}, [stopPolling]);
 
 	// Delete a session
@@ -1000,6 +1034,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			);
 
 			const headers = getAuthHeaders();
+			let streamTimedOut = false;
+			let receivedSessionId = sessionId;
 
 			try {
 				abortControllerRef.current = new AbortController();
@@ -1051,42 +1087,68 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					{ id: assistantMsgId, role: 'assistant', content: '', toolCalls: [] },
 				]);
 
-				while (true) {
-					const { done, value } = await reader.read();
-					if (done) break;
+				// Watchdog: detect dead connections (server keepalives every 15s)
+				const STREAM_TIMEOUT_MS = 45_000;
+				let lastDataAt = Date.now();
+				const watchdog = setInterval(() => {
+					if (Date.now() - lastDataAt > STREAM_TIMEOUT_MS) {
+						streamTimedOut = true;
+						abortControllerRef.current?.abort();
+						clearInterval(watchdog);
+					}
+				}, 5_000);
 
-					buffer += decoder.decode(value, { stream: true });
-					const lines = buffer.split('\n');
-					buffer = lines.pop() ?? '';
+				try {
+					while (true) {
+						const { done, value } = await reader.read();
+						if (done) break;
+						lastDataAt = Date.now();
 
-					let eventType = '';
+						buffer += decoder.decode(value, { stream: true });
+						const lines = buffer.split('\n');
+						buffer = lines.pop() ?? '';
 
-					for (const line of lines) {
-						if (line.startsWith('event: ')) {
-							eventType = line.slice(7).trim();
-						} else if (line.startsWith('data: ') && eventType) {
-							try {
-								const data = JSON.parse(line.slice(6));
-								processSSEEvent(eventType, data, {
-									assistantMsgId,
-									currentText: assistantText,
-									toolCalls,
-									setText: (newText: string) => {
-										assistantText = newText;
-									},
-									setMessages,
-									setSessionId,
-									setUsage,
-									showToolCalls,
-								});
-							} catch {
-								// Skip unparseable data
+						let eventType = '';
+
+						for (const line of lines) {
+							if (line.startsWith('event: ')) {
+								eventType = line.slice(7).trim();
+							} else if (line.startsWith('data: ') && eventType) {
+								try {
+									const data = JSON.parse(line.slice(6));
+									if (eventType === 'done' && data.session_id) {
+										receivedSessionId = data.session_id;
+									}
+									processSSEEvent(eventType, data, {
+										assistantMsgId,
+										currentText: assistantText,
+										toolCalls,
+										setText: (newText: string) => {
+											assistantText = newText;
+										},
+										setMessages,
+										setSessionId,
+										setUsage,
+										showToolCalls,
+										setFeedbackTurn: (turn) => setFeedbackTurn(turn),
+									});
+								} catch {
+									// Skip unparseable data
+								}
+								eventType = '';
+							} else if (line === '') {
+								eventType = '';
 							}
-							eventType = '';
-						} else if (line === '') {
-							eventType = '';
 						}
 					}
+				} finally {
+					clearInterval(watchdog);
+				}
+
+				// If stream timed out, fall back to polling the session
+				if (streamTimedOut && receivedSessionId) {
+					startPolling(receivedSessionId);
+					return;
 				}
 
 				// Refresh sessions after a message exchange
@@ -1106,7 +1168,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					}
 				}
 			} catch (err: any) {
-				if (err.name === 'AbortError') return;
+				if (err.name === 'AbortError') {
+					// Timeout-triggered abort: fall back to polling the session
+					if (streamTimedOut && receivedSessionId) {
+						startPolling(receivedSessionId);
+					}
+					return;
+				}
 
 				const errorMsg: Message = {
 					id: `err_${Date.now()}`,
@@ -1143,6 +1211,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			onError,
 			getAuthHeaders,
 			fetchSessions,
+			startPolling,
 			stopPolling,
 			props.context.pageName,
 			props.locationHistory,
@@ -1166,6 +1235,43 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			}
 		};
 	}, [stopPolling]);
+
+	// Feedback handler — calls POST /api/ai/learning/feedback
+	const handleFeedback = useCallback(
+		async (messageId: string, turnNumber: number, rating: number) => {
+			const targetSessionId = sessionId ?? feedbackTurn?.sessionId;
+			if (!targetSessionId || !enableFeedback) return;
+
+			// Optimistically update the message's feedback rating
+			setMessages(prev =>
+				prev.map(m =>
+					m.id === messageId ? { ...m, feedbackRating: rating } : m,
+				),
+			);
+
+			try {
+				const baseUrl = agentEndpoint.replace(/\/chat$/, '').replace(/\/appbuilder$/, '');
+				await fetch(`${baseUrl}/learning/feedback`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({
+						session_id: targetSessionId,
+						turn_number: turnNumber,
+						rating,
+						feedback_type: 'RATING',
+					}),
+				});
+			} catch {
+				// Revert on failure
+				setMessages(prev =>
+					prev.map(m =>
+						m.id === messageId ? { ...m, feedbackRating: undefined } : m,
+					),
+				);
+			}
+		},
+		[sessionId, feedbackTurn, enableFeedback, agentEndpoint, getAuthHeaders],
+	);
 
 	const hasEarlierMessages =
 		totalMessages > 0 && messagesOffset + messagesPerPage < totalMessages;
@@ -1316,6 +1422,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									definition={props.definition}
 									copyIcon={copyIcon}
 									copySuccessIcon={copySuccessIcon}
+									enableFeedback={!!enableFeedback}
+									feedbackRating={msg.feedbackRating}
+									turnNumber={msg.turnNumber}
+									messageId={msg.id}
+									onFeedback={handleFeedback}
+									thumbsUpIcon={thumbsUpIcon}
+									thumbsDownIcon={thumbsDownIcon}
 								/>
 							</React.Fragment>
 						))}
@@ -1355,9 +1468,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						microphoneActiveIcon={microphoneActiveIcon}
 					/>
 					<div className="_promptBottomBar">
-						{showModelSelector && availableModels.length > 0 && (
+						{showModelSelector && filteredModels.length > 0 && (
 							<ModelSelector
-								models={availableModels}
+								models={filteredModels}
 								selectedModel={selectedModel}
 								onSelectModel={setSelectedModel}
 								disabled={isStreaming}
