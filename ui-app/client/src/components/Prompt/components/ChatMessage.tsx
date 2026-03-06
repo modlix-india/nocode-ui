@@ -12,6 +12,13 @@ interface ChatMessageProps {
 	definition: ComponentDefinition;
 	copyIcon?: string;
 	copySuccessIcon?: string;
+	enableFeedback?: boolean;
+	feedbackRating?: number;
+	turnNumber?: number;
+	messageId?: string;
+	onFeedback?: (messageId: string, turnNumber: number, rating: number) => void;
+	thumbsUpIcon?: string;
+	thumbsDownIcon?: string;
 }
 
 export function ChatMessage({
@@ -23,6 +30,13 @@ export function ChatMessage({
 	definition,
 	copyIcon = 'fa fa-clone',
 	copySuccessIcon = 'fa fa-check',
+	enableFeedback = false,
+	feedbackRating,
+	turnNumber,
+	messageId,
+	onFeedback,
+	thumbsUpIcon = 'fa fa-thumbs-up',
+	thumbsDownIcon = 'fa fa-thumbs-down',
 }: Readonly<ChatMessageProps>) {
 	const [copied, setCopied] = useState(false);
 
@@ -32,6 +46,18 @@ export function ChatMessage({
 			setTimeout(() => setCopied(false), 2000);
 		});
 	}, [content]);
+
+	const handleThumbsUp = useCallback(() => {
+		if (!onFeedback || !messageId || turnNumber === undefined) return;
+		const newRating = feedbackRating === 1 ? 0 : 1;
+		onFeedback(messageId, turnNumber, newRating);
+	}, [onFeedback, messageId, turnNumber, feedbackRating]);
+
+	const handleThumbsDown = useCallback(() => {
+		if (!onFeedback || !messageId || turnNumber === undefined) return;
+		const newRating = feedbackRating === -1 ? 0 : -1;
+		onFeedback(messageId, turnNumber, newRating);
+	}, [onFeedback, messageId, turnNumber, feedbackRating]);
 
 	if (role === 'user') {
 		return (
@@ -77,6 +103,24 @@ export function ChatMessage({
 								}
 							/>
 						</button>
+						{enableFeedback && turnNumber !== undefined && (
+							<>
+								<button
+									className={`_actionButton _feedbackButton${feedbackRating === 1 ? ' _active' : ''}`}
+									onClick={handleThumbsUp}
+									title="Good response"
+								>
+									<i className={thumbsUpIcon} />
+								</button>
+								<button
+									className={`_actionButton _feedbackButton${feedbackRating === -1 ? ' _active' : ''}`}
+									onClick={handleThumbsDown}
+									title="Bad response"
+								>
+									<i className={thumbsDownIcon} />
+								</button>
+							</>
+						)}
 					</div>
 				)}
 			</div>

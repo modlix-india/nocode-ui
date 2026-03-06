@@ -715,6 +715,15 @@ export default function PromptStyle({
 			color: #1a1a1a;
 		}
 
+		${PREFIX} ._feedbackButton._active {
+			color: #1a1a1a;
+			background: #e8e8e8;
+		}
+
+		${PREFIX} ._feedbackButton._active:hover {
+			background: #ddd;
+		}
+
 		/* ─── Message attachments ─── */
 		${PREFIX} ._messageAttachments {
 			display: flex;
