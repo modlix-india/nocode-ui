@@ -48,9 +48,22 @@ interface SubComponentInfo {
 	description: string;
 }
 
+/**
+ * Component groups for AI prompt sizing.
+ *
+ * - "common"      : Full detail always (primary building blocks).
+ * - "data"        : Full detail always (input/data components).
+ * - "specialized" : One-liner in prompt (site-specific, occasional use).
+ * - "table"       : One-liner in prompt (Table and its sub-components).
+ * - "multimedia"  : One-liner in prompt (audio/video).
+ * - "internal"    : Omitted from AI prompt entirely (admin/developer tools).
+ */
+type ComponentTier = 'common' | 'data' | 'specialized' | 'table' | 'multimedia' | 'internal';
+
 interface CatalogComponent {
 	displayName: string;
 	description: string;
+	tier: ComponentTier;
 	structure?: string; // visual DOM hierarchy notation
 	order?: number;
 	properties: CatalogProperty[];
@@ -397,13 +410,107 @@ const COMMON_PROPERTIES: Record<string, CatalogProperty> = {
 	},
 };
 
+// ── Component Group Assignment ─────────────────────────────────
+// Controls how much detail the AI agent receives per component.
+//
+// "common"      → full detail (primary building blocks)
+// "data"        → full detail (input & data-bound components)
+// "specialized" → one-liner (site-specific, occasional use)
+// "table"       → one-liner (Table and its sub-components)
+// "multimedia"  → one-liner (audio/video)
+// "internal"    → omitted from AI prompt
+
+const COMPONENT_TIERS: Record<string, ComponentTier> = {
+	// ── common: primary building blocks ──
+	Button: 'common',
+	Grid: 'common',
+	Image: 'common',
+	Link: 'common',
+	Popup: 'common',
+	Text: 'common',
+
+	// ── specialized: site-specific / occasional ──
+	Animator: 'specialized',
+	Carousel: 'specialized',
+	Form: 'specialized',
+	FormEditor: 'specialized',
+	Gallery: 'specialized',
+	Icon: 'specialized',
+	Iframe: 'specialized',
+	ImageWithBrowser: 'specialized',
+	MarkdownEditor: 'specialized',
+	MarkdownTOC: 'specialized',
+	Menu: 'specialized',
+	Popover: 'specialized',
+	SchemaBuilder: 'specialized',
+	SchemaForm: 'specialized',
+	'Small Carousel': 'specialized',
+	Stepper: 'specialized',
+	Tabs: 'specialized',
+	Timer: 'specialized',
+
+	// ── data: input & data-bound components ──
+	ArrayRepeater: 'data',
+	ButtonBar: 'data',
+	Calendar: 'data',
+	Chart: 'data',
+	CheckBox: 'data',
+	ColorPicker: 'data',
+	Dropdown: 'data',
+	FileSelector: 'data',
+	FileUpload: 'data',
+	Otp: 'data',
+	PhoneNumber: 'data',
+	ProgressBar: 'data',
+	RadioButton: 'data',
+	RangeSlider: 'data',
+	SubPage: 'data',
+	Tags: 'data',
+	TextArea: 'data',
+	TextBox: 'data',
+	TextEditor: 'data',
+	TextList: 'data',
+	ToggleButton: 'data',
+
+	// ── table: Table and its sub-components ──
+	Table: 'table',
+	TableColumn: 'table',
+	TableColumnHeader: 'table',
+	TableColumns: 'table',
+	TableDynamicColumn: 'table',
+	TableEmptyGrid: 'table',
+	TableGrid: 'table',
+	TablePreviewGrid: 'table',
+	TableRow: 'table',
+
+	// ── multimedia: audio/video ──
+	Audio: 'multimedia',
+	Video: 'multimedia',
+
+	// ── internal: admin/developer tools, hidden from AI ──
+	FillerDefinitionEditor: 'internal',
+	FillerValueEditor: 'internal',
+	'KIRun Editor': 'internal',
+	Page: 'internal',
+	PageEditor: 'internal',
+	Prompt: 'internal',
+	SSEventListener: 'internal',
+	SectionGrid: 'internal',
+	TemplateEditor: 'internal',
+	ThemeEditor: 'internal',
+	Jot: 'internal',
+};
+
+// Default tier for components not explicitly listed
+const DEFAULT_TIER: ComponentTier = 'specialized';
+
 // ── Component Briefs ───────────────────────────────────────────
 // Hardcoded 1-2 sentence descriptions for each component so the
 // AI agent understands what it does and when to use it.
 
 const COMPONENT_BRIEFS: Record<string, string> = {
 	Animator:
-		'Animation wrapper that applies CSS animations to child components. Use to add entrance, exit, or scroll-triggered animations.',
+		'Animation wrapper that starts animations based on an intersection observer. Used in sites for scroll-triggered entrance effects.',
 	ArrayRepeater:
 		'Repeats child components for each item in a bound array. Supports add, delete, and reorder operations on list data.',
 	Audio:
@@ -411,11 +518,11 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 	Button:
 		'Clickable button with designType variants (default, outlined, text, fab, icon, decorative). Triggers onClick events.',
 	ButtonBar:
-		'Horizontal group of buttons for related actions (e.g. save/cancel, pagination). Arranges Button children in a row.',
+		'Rarely used. Similar to Dropdown but shows options as buttons. Horizontal group of buttons for related actions.',
 	Calendar:
 		'Date picker with month/year navigation, date range selection, and weekend highlighting. Binds to a date value.',
 	Carousel:
-		'Image/content slideshow with navigation arrows, dot indicators, and auto-play. Slides through child components.',
+		'Big carousel that shows one item at a time with navigation arrows and dot indicators. Used in sites for hero sections and slideshows.',
 	Chart:
 		'Data visualization using Chart.js — supports bar, line, pie, doughnut, radar, and polar area chart types.',
 	CheckBox:
@@ -432,18 +539,18 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 		'Editor for defining filler templates — configures template variables and their types. Internal/admin component.',
 	FillerValueEditor:
 		'Editor for filling in filler template values. Renders form fields based on filler definition. Internal/admin component.',
-	Form: 'Form wrapper that provides validation context for child input components. Groups inputs and handles submit.',
+	Form: 'Generates a form based on a JSON schema. Groups inputs and provides validation context.',
 	FormEditor:
-		'Visual form builder that generates form layouts from schema definitions. Drag-and-drop field arrangement.',
+		'Used to generate a JSON schema for forms. Visual form builder with drag-and-drop field arrangement.',
 	Gallery:
-		'Image gallery with grid/masonry layout, lightbox preview, and thumbnail navigation. Displays image collections.',
+		'Shows a series of images in a grid/masonry layout with lightbox preview. Used in sites for image collections.',
 	Grid: 'Flex/grid container for layout. The primary building block — use to arrange child components in rows, columns, or grid layouts.',
-	Icon: 'Displays an icon from the platform icon library (Font Awesome). Supports sizing, color, and click events.',
+	Icon: 'Displays an icon from the platform icon library. Only usable when icon packs are configured in the UI application definition.',
 	Iframe:
-		'Embeds an external webpage or URL inside an iframe. Use for third-party content integration.',
+		'Embeds an external webpage or URL inside an iframe. Used mostly in sites for third-party content.',
 	Image: 'Displays an image with responsive sizing, object-fit modes, and optional click/hover events.',
 	ImageWithBrowser:
-		'Image display with built-in file browser for selecting images from platform storage. Combines Image + FileSelector.',
+		'Image display with built-in file browser for selecting images from platform storage. Used mostly for blog editing and content authoring.',
 	Jot: 'Sticky note / annotation component for adding comments or notes to a page layout. Internal/editor component.',
 	'KIRun Editor':
 		'Visual editor for KIRun function definitions with step-by-step flow builder. Internal/developer component.',
@@ -460,7 +567,7 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 	PhoneNumber:
 		'Phone number input with country code dropdown, flag icons, and international format validation.',
 	Popover:
-		'Content that appears in a floating overlay near a trigger element. Use for tooltips, menus, or contextual info.',
+		'Shows a component when hovered/clicked on the trigger component. Use for tooltips, menus, or contextual info.',
 	Popup:
 		'Modal dialog overlay with backdrop, close button, and customizable content area. Use for confirmations or forms.',
 	ProgressBar:
@@ -474,17 +581,17 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 	SSEventListener:
 		'Server-Sent Events listener that subscribes to an SSE endpoint and triggers events on messages. Non-visual component.',
 	SchemaBuilder:
-		'Visual JSON schema editor for defining data structures. Supports nested objects, arrays, and type constraints.',
+		'JSON schema builder for defining data structures. Supports nested objects, arrays, and type constraints.',
 	SchemaForm:
-		'Auto-generates a form UI from a JSON schema definition. Maps schema types to appropriate input components.',
+		'Generates a form out of a JSON schema definition. Maps schema types to appropriate input components.',
 	SectionGrid:
 		'Page section container with semantic HTML (header, main, footer, section, article, aside, nav). Use for page structure.',
 	'Small Carousel':
-		'Compact carousel variant showing multiple items at once with peek/slide navigation. Use for product cards or thumbnails.',
+		'Carousel that shows a bunch of components at a time with peek/slide navigation. Used in sites for product cards or thumbnails.',
 	Stepper:
-		'Multi-step wizard/progress indicator showing numbered steps with active/done/pending states. Use for multi-page forms.',
+		'Multi-step wizard/progress indicator showing numbered steps with active/done/pending states. Use for wizard-kind setups.',
 	SubPage:
-		'Embeds another page inside the current page. Use for reusable page fragments and page composition.',
+		'Used to show a page inside another page. Use for reusable page fragments and page composition.',
 	Table:
 		'Data table with pagination, sorting, filtering, column/grid view modes, and row selection. Uses TableColumn children.',
 	TableColumn:
@@ -513,12 +620,12 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 	TextBox:
 		'Single-line text input with label, validation, icons, and edit-on-request mode. Use for email, password, search, numbers.',
 	TextEditor:
-		'Rich text WYSIWYG editor with formatting toolbar. Outputs HTML content. Use for content authoring.',
+		'Rich text editor mostly for JSON or code-type content. WYSIWYG with formatting toolbar.',
 	TextList:
-		'Ordered or unordered list display. Renders array data as a styled list with bullet/number markers.',
+		'Makes ul and ol type elements. Renders array data as a styled list with bullet/number markers.',
 	ThemeEditor:
 		'Visual theme customization editor for colors, fonts, and spacing. Internal/admin component.',
-	Timer: 'Countdown or count-up timer with start/stop/reset controls. Triggers events on completion.',
+	Timer: 'Calls a page event function repeatedly like setTimeout or setInterval. Use for polling or delayed actions.',
 	ToggleButton:
 		'On/off switch toggle with label. Renders as a sliding switch control with customizable track and knob.',
 	Video:
@@ -1026,6 +1133,7 @@ function processComponent(dirPath: string, dirName: string): [string, CatalogCom
 	const catalogEntry: CatalogComponent = {
 		displayName: meta.displayName,
 		description,
+		tier: COMPONENT_TIERS[meta.name] ?? DEFAULT_TIER,
 		structure: COMPONENT_STRUCTURES[meta.name],
 		order: meta.order,
 		properties,
@@ -1093,6 +1201,7 @@ function processTableComponents(tableDir: string): Array<[string, CatalogCompone
 		const catalogEntry: CatalogComponent = {
 			displayName: meta.displayName,
 			description,
+			tier: COMPONENT_TIERS[meta.name] ?? DEFAULT_TIER,
 			structure: COMPONENT_STRUCTURES[meta.name],
 			order: meta.order,
 			properties,

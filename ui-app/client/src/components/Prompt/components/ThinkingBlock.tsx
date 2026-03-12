@@ -31,6 +31,19 @@ function pickRandom(current: string): string {
 	return next;
 }
 
+function getHeaderLabel(
+	isActive: boolean,
+	thinkingMsg: string,
+	toolCount: number,
+	hasReasoning: boolean,
+	elapsed: number,
+): string {
+	if (isActive) return `${thinkingMsg}...`;
+	if (toolCount > 0) return `Used ${toolCount} tool${toolCount !== 1 ? 's' : ''}`;
+	if (hasReasoning) return 'Reasoned through it';
+	return `Thought for ${elapsed}s`;
+}
+
 interface ToolCallInfo {
 	id: string;
 	toolName: string;
@@ -43,6 +56,7 @@ interface ToolCallInfo {
 interface ThinkingBlockProps {
 	isActive: boolean;
 	toolCalls: ToolCallInfo[];
+	reasoningContent?: string;
 	toolRunningIcon?: string;
 	toolSuccessIcon?: string;
 	toolErrorIcon?: string;
@@ -53,6 +67,7 @@ interface ThinkingBlockProps {
 export function ThinkingBlock({
 	isActive,
 	toolCalls,
+	reasoningContent,
 	toolRunningIcon = 'fa fa-circle-notch fa-spin',
 	toolSuccessIcon = 'fa fa-check',
 	toolErrorIcon = 'fa fa-xmark',
@@ -94,8 +109,8 @@ export function ThinkingBlock({
 		});
 	}, []);
 
-	// Don't render if never been active and no tool calls (e.g. historical messages)
-	if (!isActive && !wasEverActiveRef.current && !toolCalls.length) return null;
+	// Don't render if never been active and no tool calls and no reasoning (e.g. historical messages)
+	if (!isActive && !wasEverActiveRef.current && !toolCalls.length && !reasoningContent) return null;
 
 	const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
 
@@ -105,11 +120,8 @@ export function ThinkingBlock({
 	const toolStatusClass = (tc: ToolCallInfo) =>
 		tc.isRunning ? '_running' : tc.success ? '_success' : tc.success === false ? '_error' : '_success';
 
-	const headerLabel = isActive
-		? `${thinkingMsg}...`
-		: toolCalls.length
-			? `Used ${toolCalls.length} tool${toolCalls.length !== 1 ? 's' : ''}`
-			: `Thought for ${elapsed}s`;
+	const hasContent = toolCalls.length > 0 || !!reasoningContent;
+	const headerLabel = getHeaderLabel(isActive, thinkingMsg, toolCalls.length, !!reasoningContent, elapsed);
 
 	return (
 		<div className={`_thinkingBlock ${isActive ? '_active' : '_done'}`}>
@@ -127,13 +139,16 @@ export function ThinkingBlock({
 					<i className={expanded ? collapseIcon : expandIcon} />
 				)}
 				<span className="_thinkingLabel">{headerLabel}</span>
-				{isActive && toolCalls.length > 0 && (
+				{isActive && hasContent && (
 					<i className={`_thinkingChevron ${expanded ? collapseIcon : expandIcon}`} />
 				)}
 			</button>
 
-			{expanded && toolCalls.length > 0 && (
+			{expanded && hasContent && (
 				<div className="_thinkingBody">
+					{reasoningContent && (
+						<div className="_thinkingReasoning">{reasoningContent}</div>
+					)}
 					{toolCalls.map(tc => {
 						const isToolExpanded = expandedTools.has(tc.id);
 						const label = tc.displayName || tc.toolName;

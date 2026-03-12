@@ -644,6 +644,21 @@ export default function PromptStyle({
 			margin-left: auto;
 		}
 
+		${PREFIX} ._thinkingReasoning {
+			padding: 8px 12px;
+			font-size: 12px;
+			line-height: 1.6;
+			color: #666;
+			background: #f5f5f5;
+			border-radius: 6px;
+			margin: 0 8px 4px;
+			white-space: pre-wrap;
+			word-break: break-word;
+			max-height: 200px;
+			overflow-y: auto;
+			border-left: 3px solid #d0d0d0;
+		}
+
 		${PREFIX} ._thinkingToolDetail {
 			padding: 6px 12px 8px 26px;
 			font-size: 12px;
@@ -698,6 +713,15 @@ export default function PromptStyle({
 		${PREFIX} ._actionButton:hover {
 			background: #f4f4f4;
 			color: #1a1a1a;
+		}
+
+		${PREFIX} ._feedbackButton._active {
+			color: #1a1a1a;
+			background: #e8e8e8;
+		}
+
+		${PREFIX} ._feedbackButton._active:hover {
+			background: #ddd;
 		}
 
 		/* ─── Message attachments ─── */
@@ -960,6 +984,159 @@ export default function PromptStyle({
 		${PREFIX} ._micButton:disabled {
 			opacity: 0.4;
 			cursor: not-allowed;
+		}
+
+		/* ─── Bottom bar ─── */
+		${PREFIX} ._promptBottomBar {
+			max-width: 768px;
+			margin: 6px auto 0;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 0 4px;
+		}
+
+		/* ─── Model selector ─── */
+		${PREFIX} ._modelSelector {
+			position: relative;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._modelSelectorButton {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			border: none;
+			background: transparent;
+			color: #9b9b9b;
+			font-size: 12px;
+			font-family: inherit;
+			cursor: pointer;
+			padding: 4px 8px;
+			border-radius: 6px;
+			transition: background 0.15s, color 0.15s;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._modelSelectorButton:hover {
+			background: #f4f4f4;
+			color: #1a1a1a;
+		}
+
+		${PREFIX} ._modelSelectorButton:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		${PREFIX} ._modelSelectorChevron {
+			font-size: 8px;
+			opacity: 0.6;
+		}
+
+		${PREFIX} ._modelSelectorDropdown {
+			position: absolute;
+			bottom: calc(100% + 6px);
+			left: 0;
+			min-width: 220px;
+			max-height: 320px;
+			overflow-y: auto;
+			background: #fff;
+			border: 1px solid #e5e5e5;
+			border-radius: 12px;
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+			padding: 4px;
+			z-index: 50;
+			display: flex;
+			flex-direction: column;
+		}
+
+		${PREFIX} ._modelSelectorOption {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 8px;
+			width: 100%;
+			border: none;
+			background: transparent;
+			color: #1a1a1a;
+			font-size: 13px;
+			font-family: inherit;
+			text-align: left;
+			padding: 8px 12px;
+			border-radius: 8px;
+			cursor: pointer;
+			transition: background 0.1s;
+		}
+
+		${PREFIX} ._modelSelectorOption:hover {
+			background: #f4f4f4;
+		}
+
+		${PREFIX} ._modelSelectorOption._active {
+			font-weight: 500;
+		}
+
+		${PREFIX} ._modelOptionName {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._modelOptionCheck {
+			font-size: 11px;
+			color: #1a1a1a;
+			flex-shrink: 0;
+		}
+
+		/* ─── Usage bar ─── */
+		${PREFIX} ._usageBar {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			font-size: 11px;
+			color: #9b9b9b;
+			margin-left: auto;
+		}
+
+		${PREFIX} ._usageSeparator {
+			width: 3px;
+			height: 3px;
+			border-radius: 50%;
+			background: #d0d0d0;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._usageContext._warning {
+			color: #b45309;
+		}
+
+		${PREFIX} ._usageContext._critical {
+			color: #dc3545;
+			font-weight: 500;
+		}
+
+		${PREFIX} ._usageContextBar {
+			width: 60px;
+			height: 4px;
+			background: #e5e5e5;
+			border-radius: 2px;
+			overflow: hidden;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._usageContextFill {
+			height: 100%;
+			background: #9b9b9b;
+			border-radius: 2px;
+			transition: width 0.3s ease;
+		}
+
+		${PREFIX} ._usageContext._warning + ._usageContextBar ._usageContextFill {
+			background: #b45309;
+		}
+
+		${PREFIX} ._usageContext._critical + ._usageContextBar ._usageContextFill {
+			background: #dc3545;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

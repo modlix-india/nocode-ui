@@ -17,3 +17,4 @@ export * from './EncodeURIComponent';
 export * from './DecodeURIComponent';
 export * from './ScrollTo';
 export * from './ScrollToGrid';
+export * from './OpenWindow';
