@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	addListener,
@@ -89,6 +89,8 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const eventRunningRef = useRef(false);
+
 	const handleClick = async (e: any) => {
 		if (stopPropagation) e.stopPropagation();
 		if (preventDefault) e.preventDefault();
@@ -107,14 +109,20 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			}
 		}
 
-		if (clickEvent && !isLoading)
-			await runEvent(
-				clickEvent,
-				onClick,
-				props.context.pageName,
-				props.locationHistory,
-				props.pageDefinition,
-			);
+		if (clickEvent && !isLoading && !eventRunningRef.current) {
+			eventRunningRef.current = true;
+			try {
+				await runEvent(
+					clickEvent,
+					onClick,
+					props.context.pageName,
+					props.locationHistory,
+					props.pageDefinition,
+				);
+			} finally {
+				eventRunningRef.current = false;
+			}
+		}
 	};
 
 	const hasRightIcon = !leftIcon && !leftImage && (rightIcon || rightImage);
