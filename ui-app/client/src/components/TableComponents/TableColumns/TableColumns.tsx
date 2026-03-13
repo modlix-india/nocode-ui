@@ -69,7 +69,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
-		properties: { showEmptyRows, showHeaders, fixedHeader } = {},
+		properties: { showEmptyRows, showHeaders, fixedHeader, expandIcon, collapseIcon } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -171,8 +171,6 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		toggleExpand,
 		showConnectors = true,
 		indentSize = 20,
-		expandIcon,
-		collapseIcon,
 	} = props.context.table ?? {};
 
 	useEffect(() => setValue(props.context.table?.data), [props.context.table?.data]);
@@ -278,9 +276,28 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	const showCheckBox = multiSelect && selectionType !== 'NONE' && selectionBindingPath;
 
-	const rowColSpan = columnNames.length + (showCheckBox ? 1 : 0) + (treeMode ? 1 : 0);
+	const rowColSpan = columnNames.length + (showCheckBox ? 1 : 0);
+	const firstColumnKey = treeMode && columnNames.length > 0 ? columnNames[0].key : undefined;
+
+	const treeStyles = treeMode
+		? {
+				normal: {
+					treeExpandButton: styleNormalProperties.treeExpandButton,
+					treeCollapseButton: styleNormalProperties.treeCollapseButton,
+					treeLines: styleNormalProperties.treeLines,
+					treeCell: styleNormalProperties.treeCell,
+				},
+				hover: {
+					treeExpandButton: styleHoverProperties.treeExpandButton,
+					treeCollapseButton: styleHoverProperties.treeCollapseButton,
+					treeLines: styleHoverProperties.treeLines,
+					treeCell: styleHoverProperties.treeCell,
+				},
+			}
+		: undefined;
 
 	let rows;
+	let treeRowCount = 0;
 	if (treeMode && expandedKeys && toggleExpand) {
 		const flattenedRows = flattenTree({
 			nodes: value,
@@ -292,6 +309,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			parentPath: [],
 			basePath: '',
 		});
+
+		treeRowCount = flattenedRows.length;
 
 		rows = generateTreeRows({
 			flattenedRows,
@@ -314,6 +333,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			collapseIcon,
 			toggleExpand,
 			dataBindingPath,
+			firstColumnKey,
+			treeStyles,
 		});
 	} else {
 		rows = generateRows({
@@ -346,17 +367,12 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
 
-		const treeHeader = treeMode ? (
-			<th className="comp compTableHeaderColumn _treeHeaderColumn">&nbsp;</th>
-		) : undefined;
-
-		headers = (
+			headers = (
 			<thead className="_headerContainer" style={styleNormalProperties.headerContainer}>
 				<tr
 					className="_row _header"
 					style={(hover ? styleHoverProperties : styleNormalProperties).header}
 				>
-					{treeHeader}
 					{checkBoxTop}
 					<Children
 						pageDefinition={headerDef}
@@ -367,6 +383,11 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				</tr>
 			</thead>
 		);
+	}
+
+	if (treeMode && treeRowCount > 0) {
+		emptyCount = pageSize - treeRowCount;
+		if (emptyCount < 0 || !showEmptyRows) emptyCount = 0;
 	}
 
 	const emptyRows = [];
@@ -957,6 +978,7 @@ interface FlattenedRow {
 	depth: number;
 	hasChildren: boolean;
 	isExpanded: boolean;
+	isFirstChild: boolean;
 	isLastChild: boolean;
 	parentPath: boolean[];
 	dataPath: string;
@@ -981,6 +1003,7 @@ function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
 		const node = nodes[i];
 		if (!node) continue;
 		const nodeKey = String(node[uniqueKey] ?? `${basePath}[${i}]`);
+		const isFirst = i === 0;
 		const isLast = i === nodes.length - 1;
 		const nodeChildren = node[childrenKey];
 		const hasChildrenByArray = Array.isArray(nodeChildren) && nodeChildren.length > 0;
@@ -994,6 +1017,7 @@ function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
 			depth,
 			hasChildren,
 			isExpanded,
+			isFirstChild: isFirst,
 			isLastChild: isLast,
 			parentPath: [...parentPath],
 			dataPath: currentPath,
@@ -1033,85 +1057,6 @@ function collectAllKeysFromTree(data: any[], childrenKey: string): Set<string> {
 	return keys;
 }
 
-function getToggleIcon(
-	isExpanded: boolean,
-	expandIcon: string | undefined,
-	collapseIcon: string | undefined,
-): React.ReactNode {
-	const iconClass = isExpanded ? collapseIcon : expandIcon;
-	if (iconClass) return <i className={iconClass} />;
-
-	if (isExpanded) {
-		return (
-			<svg width="10" height="10" viewBox="0 0 10 10">
-				<path d="M1 3L5 7L9 3" stroke="currentColor" strokeWidth="1.5" fill="none" />
-			</svg>
-		);
-	}
-
-	return (
-		<svg width="10" height="10" viewBox="0 0 10 10">
-			<path d="M3 1L7 5L3 9" stroke="currentColor" strokeWidth="1.5" fill="none" />
-		</svg>
-	);
-}
-
-function renderTreeCell(
-	row: FlattenedRow,
-	showConnectors: boolean,
-	indentSize: number,
-	expandIcon: string | undefined,
-	collapseIcon: string | undefined,
-	toggleExpand: (nodeKey: string, dataPath: string) => void,
-): React.ReactNode {
-	const indents: React.ReactNode[] = [];
-	const sizeStyle = { width: indentSize, minWidth: indentSize };
-
-	for (let d = 0; d < row.parentPath.length; d++) {
-		const hasLine = showConnectors && row.parentPath[d];
-		indents.push(
-			<span
-				key={`indent_${d}`}
-				className={`_treeIndent${hasLine ? ' _hasLine' : ''}`}
-				style={sizeStyle}
-			/>,
-		);
-	}
-
-	if (row.depth > 0 && showConnectors) {
-		const connectorClass = row.isLastChild ? '_last' : '_notLast';
-		indents.push(
-			<span
-				key="connector"
-				className={`_treeConnector ${connectorClass}`}
-				style={sizeStyle}
-			/>,
-		);
-	} else if (row.depth > 0) {
-		indents.push(<span key="connector" className="_treeConnector" style={sizeStyle} />);
-	}
-
-	if (row.hasChildren) {
-		const handleToggle = (e: React.SyntheticEvent) => {
-			e.stopPropagation();
-			toggleExpand(row.nodeKey, row.dataPath);
-		};
-		indents.push(
-			<button
-				key="toggle"
-				className={`_treeToggle ${row.isExpanded ? '_expanded' : '_collapsed'}`}
-				onClick={handleToggle}
-				type="button"
-			>
-				{getToggleIcon(row.isExpanded, expandIcon, collapseIcon)}
-			</button>,
-		);
-	} else {
-		indents.push(<span key="leaf" className="_treeLeafSpacer" />);
-	}
-
-	return <div className="_treeColumnCell">{indents}</div>;
-}
 
 function generateTreeRows(properties: {
 	flattenedRows: FlattenedRow[];
@@ -1134,6 +1079,8 @@ function generateTreeRows(properties: {
 	collapseIcon: string | undefined;
 	toggleExpand: (nodeKey: string, dataPath: string) => void;
 	dataBindingPath: string;
+	firstColumnKey: string | undefined;
+	treeStyles: any;
 }) {
 	const {
 		flattenedRows,
@@ -1153,6 +1100,8 @@ function generateTreeRows(properties: {
 		collapseIcon,
 		toggleExpand,
 		dataBindingPath,
+		firstColumnKey,
+		treeStyles,
 	} = properties;
 
 	const rows: React.ReactNode[] = [];
@@ -1173,19 +1122,6 @@ function generateTreeRows(properties: {
 
 		const onClick = !multiSelect && selectionType !== 'NONE' ? () => select(i) : undefined;
 
-		const treeCell = (
-			<td className="comp compTableColumn _treeColumn">
-				{renderTreeCell(
-					row,
-					showConnectors,
-					indentSize,
-					expandIcon,
-					collapseIcon,
-					toggleExpand,
-				)}
-			</td>
-		);
-
 		const rowLocationHistory: LocationHistory[] = [
 			...locationHistory,
 			{
@@ -1199,6 +1135,22 @@ function generateTreeRows(properties: {
 			},
 		];
 
+		const rowContext = {
+			...context,
+			table: {
+				...context.table,
+				treeRowData: row,
+				firstColumnKey,
+				showConnectors,
+				indentSize,
+				expandIcon,
+				collapseIcon,
+				toggleExpand,
+				treeStyles,
+				columnsDefinition: definition,
+			},
+		};
+
 		rows.push(
 			<tr
 				key={row.nodeKey}
@@ -1207,12 +1159,11 @@ function generateTreeRows(properties: {
 				tabIndex={onClick ? 0 : undefined}
 				role="row"
 			>
-				{treeCell}
 				{checkBox}
 				<Children
 					pageDefinition={columnDef}
 					renderableChildren={children}
-					context={context}
+					context={rowContext}
 					locationHistory={rowLocationHistory}
 				/>
 			</tr>,

@@ -538,7 +538,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'Number of tree levels to expand by default. 0 = all collapsed, 1 = first level expanded, -1 = all expanded.',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 1,
+		defaultValue: 0,
 	},
 
 	{
@@ -557,24 +557,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Pixels of indentation per tree depth level.',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 20,
-	},
-
-	{
-		name: 'expandIcon',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Expand Icon',
-		description: 'Custom icon for collapsed tree nodes.',
-		editor: ComponentPropertyEditor.ICON,
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-
-	{
-		name: 'collapseIcon',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Collapse Icon',
-		description: 'Custom icon for expanded tree nodes.',
-		editor: ComponentPropertyEditor.ICON,
-		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	{

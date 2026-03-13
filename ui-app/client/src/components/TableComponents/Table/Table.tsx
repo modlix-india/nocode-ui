@@ -101,8 +101,6 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			defaultExpandLevel,
 			showConnectors,
 			indentSize,
-			expandIcon,
-			collapseIcon,
 			onExpandEvent,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -1161,8 +1159,6 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								toggleExpand,
 								showConnectors,
 								indentSize,
-								expandIcon,
-								collapseIcon,
 							},
 						}}
 						locationHistory={locationHistory}
