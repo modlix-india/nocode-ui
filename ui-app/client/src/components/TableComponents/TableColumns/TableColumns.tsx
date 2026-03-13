@@ -164,6 +164,15 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		pageSize,
 		uniqueKey,
 		onSelect,
+		treeMode,
+		childrenKey = 'children',
+		hasChildrenProperty,
+		expandedKeys,
+		toggleExpand,
+		showConnectors = true,
+		indentSize = 20,
+		expandIcon,
+		collapseIcon,
 	} = props.context.table ?? {};
 
 	useEffect(() => setValue(props.context.table?.data), [props.context.table?.data]);
@@ -269,29 +278,66 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	const showCheckBox = multiSelect && selectionType !== 'NONE' && selectionBindingPath;
 
-	const rowColSpan = columnNames.length + (showCheckBox ? 1 : 0);
+	const rowColSpan = columnNames.length + (showCheckBox ? 1 : 0) + (treeMode ? 1 : 0);
 
-	const rows = generateRows({
-		value,
-		from,
-		to,
-		showCheckBox,
-		isSelected,
-		select,
-		multiSelect,
-		selectionType,
-		uniqueKey,
-		data,
-		columnDef,
-		children: columnChildren,
-		context: { ...context, table: { ...context.table, rowColSpan } },
-		locationHistory,
-		definition,
-		pageExtractor,
-		tableRowChildKey,
-		tableRowProps,
-		urlExtractor,
-	});
+	let rows;
+	if (treeMode && expandedKeys && toggleExpand) {
+		const flattenedRows = flattenTree({
+			nodes: value,
+			childrenKey,
+			uniqueKey: uniqueKey ?? 'id',
+			hasChildrenProperty,
+			expandedKeys,
+			depth: 0,
+			parentPath: [],
+			basePath: '',
+		});
+
+		rows = generateTreeRows({
+			flattenedRows,
+			showCheckBox,
+			isSelected,
+			select,
+			multiSelect,
+			selectionType,
+			uniqueKey,
+			data,
+			columnDef,
+			children: columnChildren,
+			context: { ...context, table: { ...context.table, rowColSpan } },
+			locationHistory,
+			definition,
+			pageExtractor,
+			showConnectors,
+			indentSize,
+			expandIcon,
+			collapseIcon,
+			toggleExpand,
+			dataBindingPath,
+		});
+	} else {
+		rows = generateRows({
+			value,
+			from,
+			to,
+			showCheckBox,
+			isSelected,
+			select,
+			multiSelect,
+			selectionType,
+			uniqueKey,
+			data,
+			columnDef,
+			children: columnChildren,
+			context: { ...context, table: { ...context.table, rowColSpan } },
+			locationHistory,
+			definition,
+			pageExtractor,
+			tableRowChildKey,
+			tableRowProps,
+			urlExtractor,
+		});
+	}
 
 	let headers = undefined;
 	if (showHeaders) {
@@ -300,12 +346,17 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
 
+		const treeHeader = treeMode ? (
+			<th className="comp compTableHeaderColumn _treeHeaderColumn">&nbsp;</th>
+		) : undefined;
+
 		headers = (
 			<thead className="_headerContainer" style={styleNormalProperties.headerContainer}>
 				<tr
 					className="_row _header"
 					style={(hover ? styleHoverProperties : styleNormalProperties).header}
 				>
+					{treeHeader}
 					{checkBoxTop}
 					<Children
 						pageDefinition={headerDef}
@@ -784,13 +835,20 @@ function generateDynamicColumns(
 		if (columnsOrder)
 			columnsOrderArray = Object.values(columnsOrder).map(col => col.property.value);
 
-		let columns = Array.from<string>(
-			(context.table.data ?? []).reduce((a: Set<string>, c: any) => {
+		let allKeys: Set<string>;
+		if (context.table.treeMode && context.table.childrenKey) {
+			allKeys = collectAllKeysFromTree(
+				context.table.data ?? [],
+				context.table.childrenKey,
+			);
+		} else {
+			allKeys = (context.table.data ?? []).reduce((a: Set<string>, c: any) => {
 				if (!c) return a;
 				for (const eachKey of Object.keys(c)) a.add(eachKey);
 				return a;
-			}, new Set<string>()),
-		);
+			}, new Set<string>());
+		}
+		let columns = Array.from<string>(allKeys);
 
 		const includedColumns = new Set<string>(includeColumnsArray);
 		const excludedColumns = new Set<string>(excludeColumnsArray);
@@ -890,4 +948,276 @@ function generateDynamicColumns(
 			children[eachChild.key] = true;
 		}
 	}
+}
+
+// Tree mode types and helpers
+
+interface FlattenedRow {
+	node: any;
+	depth: number;
+	hasChildren: boolean;
+	isExpanded: boolean;
+	isLastChild: boolean;
+	parentPath: boolean[];
+	dataPath: string;
+	nodeKey: string;
+}
+
+interface FlattenTreeParams {
+	nodes: any[];
+	childrenKey: string;
+	uniqueKey: string;
+	hasChildrenProperty: string | undefined;
+	expandedKeys: Set<string>;
+	depth: number;
+	parentPath: boolean[];
+	basePath: string;
+}
+
+function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
+	const { nodes, childrenKey, uniqueKey, hasChildrenProperty, expandedKeys, depth, parentPath, basePath } = params;
+	const result: FlattenedRow[] = [];
+	for (let i = 0; i < nodes.length; i++) {
+		const node = nodes[i];
+		if (!node) continue;
+		const nodeKey = String(node[uniqueKey] ?? `${basePath}[${i}]`);
+		const isLast = i === nodes.length - 1;
+		const nodeChildren = node[childrenKey];
+		const hasChildrenByArray = Array.isArray(nodeChildren) && nodeChildren.length > 0;
+		const hasChildrenByProp = hasChildrenProperty ? !!node[hasChildrenProperty] : false;
+		const hasChildren = hasChildrenByArray || hasChildrenByProp;
+		const isExpanded = expandedKeys.has(nodeKey);
+		const currentPath = `${basePath}[${i}]`;
+
+		result.push({
+			node,
+			depth,
+			hasChildren,
+			isExpanded,
+			isLastChild: isLast,
+			parentPath: [...parentPath],
+			dataPath: currentPath,
+			nodeKey,
+		});
+
+		if (hasChildrenByArray && isExpanded) {
+			result.push(
+				...flattenTree({
+					nodes: nodeChildren,
+					childrenKey,
+					uniqueKey,
+					hasChildrenProperty,
+					expandedKeys,
+					depth: depth + 1,
+					parentPath: [...parentPath, !isLast],
+					basePath: `${currentPath}.${childrenKey}`,
+				}),
+			);
+		}
+	}
+	return result;
+}
+
+function collectAllKeysFromTree(data: any[], childrenKey: string): Set<string> {
+	const keys = new Set<string>();
+	const walk = (nodes: any[]) => {
+		for (const node of nodes) {
+			if (!node) continue;
+			for (const k of Object.keys(node)) {
+				if (k !== childrenKey) keys.add(k);
+			}
+			if (Array.isArray(node[childrenKey])) walk(node[childrenKey]);
+		}
+	};
+	walk(data);
+	return keys;
+}
+
+function getToggleIcon(
+	isExpanded: boolean,
+	expandIcon: string | undefined,
+	collapseIcon: string | undefined,
+): React.ReactNode {
+	const iconClass = isExpanded ? collapseIcon : expandIcon;
+	if (iconClass) return <i className={iconClass} />;
+
+	if (isExpanded) {
+		return (
+			<svg width="10" height="10" viewBox="0 0 10 10">
+				<path d="M1 3L5 7L9 3" stroke="currentColor" strokeWidth="1.5" fill="none" />
+			</svg>
+		);
+	}
+
+	return (
+		<svg width="10" height="10" viewBox="0 0 10 10">
+			<path d="M3 1L7 5L3 9" stroke="currentColor" strokeWidth="1.5" fill="none" />
+		</svg>
+	);
+}
+
+function renderTreeCell(
+	row: FlattenedRow,
+	showConnectors: boolean,
+	indentSize: number,
+	expandIcon: string | undefined,
+	collapseIcon: string | undefined,
+	toggleExpand: (nodeKey: string, dataPath: string) => void,
+): React.ReactNode {
+	const indents: React.ReactNode[] = [];
+	const sizeStyle = { width: indentSize, minWidth: indentSize };
+
+	for (let d = 0; d < row.parentPath.length; d++) {
+		const hasLine = showConnectors && row.parentPath[d];
+		indents.push(
+			<span
+				key={`indent_${d}`}
+				className={`_treeIndent${hasLine ? ' _hasLine' : ''}`}
+				style={sizeStyle}
+			/>,
+		);
+	}
+
+	if (row.depth > 0 && showConnectors) {
+		const connectorClass = row.isLastChild ? '_last' : '_notLast';
+		indents.push(
+			<span
+				key="connector"
+				className={`_treeConnector ${connectorClass}`}
+				style={sizeStyle}
+			/>,
+		);
+	} else if (row.depth > 0) {
+		indents.push(<span key="connector" className="_treeConnector" style={sizeStyle} />);
+	}
+
+	if (row.hasChildren) {
+		const handleToggle = (e: React.SyntheticEvent) => {
+			e.stopPropagation();
+			toggleExpand(row.nodeKey, row.dataPath);
+		};
+		indents.push(
+			<button
+				key="toggle"
+				className={`_treeToggle ${row.isExpanded ? '_expanded' : '_collapsed'}`}
+				onClick={handleToggle}
+				type="button"
+			>
+				{getToggleIcon(row.isExpanded, expandIcon, collapseIcon)}
+			</button>,
+		);
+	} else {
+		indents.push(<span key="leaf" className="_treeLeafSpacer" />);
+	}
+
+	return <div className="_treeColumnCell">{indents}</div>;
+}
+
+function generateTreeRows(properties: {
+	flattenedRows: FlattenedRow[];
+	showCheckBox: any;
+	isSelected: (index: number) => boolean;
+	select: (index: number) => void;
+	multiSelect: any;
+	selectionType: any;
+	uniqueKey: any;
+	data: any;
+	columnDef: any;
+	children: { [key: string]: boolean } | undefined;
+	context: RenderContext;
+	locationHistory: LocationHistory[];
+	definition: ComponentDefinition;
+	pageExtractor: PageStoreExtractor;
+	showConnectors: boolean;
+	indentSize: number;
+	expandIcon: string | undefined;
+	collapseIcon: string | undefined;
+	toggleExpand: (nodeKey: string, dataPath: string) => void;
+	dataBindingPath: string;
+}) {
+	const {
+		flattenedRows,
+		showCheckBox,
+		isSelected,
+		select,
+		multiSelect,
+		selectionType,
+		columnDef,
+		children,
+		context,
+		locationHistory,
+		definition,
+		showConnectors,
+		indentSize,
+		expandIcon,
+		collapseIcon,
+		toggleExpand,
+		dataBindingPath,
+	} = properties;
+
+	const rows: React.ReactNode[] = [];
+
+	for (let i = 0; i < flattenedRows.length; i++) {
+		const row = flattenedRows[i];
+		const checkBox = showCheckBox ? (
+			<td className="comp compTableColumn">
+				<CommonCheckbox
+					key="checkbox"
+					isChecked={isSelected(i)}
+					onChange={() => select(i)}
+				/>
+			</td>
+		) : (
+			<></>
+		);
+
+		const onClick = !multiSelect && selectionType !== 'NONE' ? () => select(i) : undefined;
+
+		const treeCell = (
+			<td className="comp compTableColumn _treeColumn">
+				{renderTreeCell(
+					row,
+					showConnectors,
+					indentSize,
+					expandIcon,
+					collapseIcon,
+					toggleExpand,
+				)}
+			</td>
+		);
+
+		const rowLocationHistory: LocationHistory[] = [
+			...locationHistory,
+			{
+				location: {
+					type: 'EXPRESSION' as const,
+					expression: `${dataBindingPath}${row.dataPath}`,
+				},
+				index: row.nodeKey,
+				pageName: context.pageName,
+				componentKey: definition.key,
+			},
+		];
+
+		rows.push(
+			<tr
+				key={row.nodeKey}
+				className={`_row _dataRow _treeDepth${row.depth} ${onClick ? '_pointer' : ''} ${isSelected(i) ? '_selected' : ''}`}
+				onClick={onClick}
+				tabIndex={onClick ? 0 : undefined}
+				role="row"
+			>
+				{treeCell}
+				{checkBox}
+				<Children
+					pageDefinition={columnDef}
+					renderableChildren={children}
+					context={context}
+					locationHistory={rowLocationHistory}
+				/>
+			</tr>,
+		);
+	}
+
+	return rows;
 }

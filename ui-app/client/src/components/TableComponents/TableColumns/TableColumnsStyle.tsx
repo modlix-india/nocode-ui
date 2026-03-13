@@ -75,6 +75,107 @@ export default function TableColumnsStyle({
 			border-right: none !important;
 		}
 
+	` +
+		// Tree mode styles
+		`
+		${PREFIX} ._treeColumnCell {
+			display: flex;
+			align-items: center;
+			white-space: nowrap;
+			padding: 0 4px;
+			height: 100%;
+		}
+
+		${PREFIX} ._treeColumn {
+			padding: 0 !important;
+			vertical-align: middle;
+		}
+
+		${PREFIX} ._treeHeaderColumn {
+			width: 1px;
+			padding: 0 !important;
+		}
+
+		${PREFIX} ._treeIndent {
+			display: inline-block;
+			position: relative;
+			flex-shrink: 0;
+			height: 100%;
+			min-height: 28px;
+		}
+
+		${PREFIX} ._treeIndent._hasLine::before {
+			content: '';
+			position: absolute;
+			left: 50%;
+			top: 0;
+			bottom: 0;
+			border-left: 1px dotted #ccc;
+		}
+
+		${PREFIX} ._treeConnector {
+			display: inline-block;
+			position: relative;
+			flex-shrink: 0;
+			height: 100%;
+			min-height: 28px;
+		}
+
+		${PREFIX} ._treeConnector::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 50%;
+			width: 50%;
+			border-top: 1px dotted #ccc;
+		}
+
+		${PREFIX} ._treeConnector._notLast::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			border-left: 1px dotted #ccc;
+		}
+
+		${PREFIX} ._treeConnector._last::after {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			height: 50%;
+			border-left: 1px dotted #ccc;
+		}
+
+		${PREFIX} button._treeToggle {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 18px;
+			height: 18px;
+			cursor: pointer;
+			flex-shrink: 0;
+			user-select: none;
+			background: none;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			padding: 0;
+			color: inherit;
+			margin: 0 2px;
+		}
+
+		${PREFIX} button._treeToggle:hover {
+			background: rgba(0, 0, 0, 0.05);
+		}
+
+		${PREFIX} ._treeLeafSpacer {
+			display: inline-block;
+			width: 18px;
+			min-width: 18px;
+			flex-shrink: 0;
+			margin: 0 2px;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnsCss">{css}</style>;

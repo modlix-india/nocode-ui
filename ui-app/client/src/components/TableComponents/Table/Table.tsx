@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
 	LOCAL_STORE_PREFIX,
 	STORE_PATH_FUNCTION_EXECUTION,
@@ -95,6 +95,15 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			ascValue,
 			sortObjectType,
 			spinnerType,
+			treeMode,
+			childrenKey,
+			hasChildrenProperty,
+			defaultExpandLevel,
+			showConnectors,
+			indentSize,
+			expandIcon,
+			collapseIcon,
+			onExpandEvent,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -192,6 +201,75 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 					)
 				: undefined,
 		[dataBindingPath],
+	);
+
+	// Tree mode: expand/collapse state management
+	const [expandedKeys, setExpandedKeys] = useState<Set<string>>(() => new Set());
+	const treeExpandInitialized = useRef(false);
+
+	useEffect(() => {
+		if (!treeMode || !data || !Array.isArray(data)) return;
+		if (treeExpandInitialized.current) return;
+		treeExpandInitialized.current = true;
+		setExpandedKeys(
+			computeInitialExpanded(
+				data,
+				childrenKey ?? 'children',
+				uniqueKey ?? 'id',
+				hasChildrenProperty,
+				defaultExpandLevel ?? 1,
+			),
+		);
+	}, [data, treeMode, childrenKey, uniqueKey, hasChildrenProperty, defaultExpandLevel]);
+
+	const expandEventDef = onExpandEvent
+		? props.pageDefinition.eventFunctions?.[onExpandEvent]
+		: undefined;
+
+	const toggleExpand = useCallback(
+		(nodeKey: string, nodeDataPath: string) => {
+			setExpandedKeys(prev => {
+				const next = new Set(prev);
+				const isExpanding = !next.has(nodeKey);
+				if (isExpanding) {
+					next.add(nodeKey);
+					if (expandEventDef && dataBindingPath) {
+						const nodeLocationHistory = [
+							...locationHistory,
+							{
+								location: {
+									type: 'EXPRESSION' as const,
+									expression: `${dataBindingPath}${nodeDataPath}`,
+								},
+								index: nodeKey,
+								pageName: context.pageName,
+								componentKey: key,
+							},
+						];
+						(async () =>
+							await runEvent(
+								expandEventDef,
+								onExpandEvent,
+								context.pageName,
+								nodeLocationHistory,
+								pageDefinition,
+							))();
+					}
+				} else {
+					next.delete(nodeKey);
+				}
+				return next;
+			});
+		},
+		[
+			expandEventDef,
+			onExpandEvent,
+			dataBindingPath,
+			locationHistory,
+			context.pageName,
+			key,
+			pageDefinition,
+		],
 	);
 
 	const paginationEvent = onPagination
@@ -371,7 +449,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		let to = data?.length ?? 0;
 		if (offlineData) {
 			to = (pageNumber + 1) * pageSize;
-			if (to >= data?.length) to = (data?.length ?? 0) - 1;
+			if (to > data?.length) to = data?.length ?? 0;
 		}
 
 		let pagination = undefined;
@@ -1076,6 +1154,15 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 								isLoading,
 								spinnerType,
 								showSpinner,
+								treeMode,
+								childrenKey,
+								hasChildrenProperty,
+								expandedKeys,
+								toggleExpand,
+								showConnectors,
+								indentSize,
+								expandIcon,
+								collapseIcon,
 							},
 						}}
 						locationHistory={locationHistory}
@@ -1123,7 +1210,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compTable ${tableDesign} ${colorScheme} ${previewGridPosition} ${tableLayout}`}
+			className={`comp compTable ${tableDesign} ${colorScheme} ${previewGridPosition} ${tableLayout}${treeMode ? ' _treeMode' : ''}`}
 			style={getStyleObject('comp', hovers)}
 		>
 			<HelperComponent context={props.context} definition={definition} />
@@ -1131,6 +1218,41 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			{spinner}
 		</div>
 	);
+}
+
+function computeInitialExpanded(
+	data: any[],
+	childrenKey: string,
+	uniqueKey: string,
+	hasChildrenProperty: string | undefined,
+	level: number,
+): Set<string> {
+	const keys = new Set<string>();
+	if (level === 0) return keys;
+
+	const walk = (nodes: any[], currentDepth: number) => {
+		for (const node of nodes) {
+			if (!node) continue;
+			const nodeKey = String(node[uniqueKey] ?? '');
+			if (!nodeKey) continue;
+
+			const children = node[childrenKey];
+			const hasChildrenByArray = Array.isArray(children) && children.length > 0;
+			const hasChildrenByProp = hasChildrenProperty ? !!node[hasChildrenProperty] : false;
+
+			if (hasChildrenByArray || hasChildrenByProp) {
+				if (level === -1 || currentDepth < level) {
+					keys.add(nodeKey);
+					if (hasChildrenByArray) {
+						walk(children, currentDepth + 1);
+					}
+				}
+			}
+		}
+	};
+
+	walk(data, 0);
+	return keys;
 }
 
 function personalizationEvent({

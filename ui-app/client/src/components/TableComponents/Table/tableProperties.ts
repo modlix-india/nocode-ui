@@ -503,6 +503,90 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 
+	{
+		name: 'treeMode',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Tree Mode',
+		description:
+			'Enable tree/hierarchical rendering. When enabled, the table renders rows with expand/collapse toggles and indentation based on nested children.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+
+	{
+		name: 'childrenKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Children Key',
+		description: 'Key in each data node that contains the child array.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'children',
+	},
+
+	{
+		name: 'hasChildrenProperty',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Has Children Property',
+		description:
+			'Property name on each node that indicates it has children. When set, the expand icon is shown if this property is truthy OR if the children array has items. Useful for lazy-loading where the server flags expandable nodes before children are fetched.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+
+	{
+		name: 'defaultExpandLevel',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Default Expand Level',
+		description:
+			'Number of tree levels to expand by default. 0 = all collapsed, 1 = first level expanded, -1 = all expanded.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 1,
+	},
+
+	{
+		name: 'showConnectors',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Tree Connectors',
+		description: 'Show dotted lines connecting parent and child nodes in tree mode.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: true,
+	},
+
+	{
+		name: 'indentSize',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Tree Indent Size (px)',
+		description: 'Pixels of indentation per tree depth level.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 20,
+	},
+
+	{
+		name: 'expandIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Expand Icon',
+		description: 'Custom icon for collapsed tree nodes.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'collapseIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Collapse Icon',
+		description: 'Custom icon for expanded tree nodes.',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+
+	{
+		name: 'onExpandEvent',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Expand Event',
+		description:
+			'Event fired when a tree row is expanded. Called with parent context pointing to the expanded node so Parent.* expressions resolve to its data. Useful for lazy-loading children.',
+		group: ComponentPropertyGroup.EVENTS,
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+	},
+
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 
