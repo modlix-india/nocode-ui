@@ -101,24 +101,12 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 	const [hoverSlider, setHoverSlider] = useState<boolean>(false);
 	const [hoverThumb, setHoverThumb] = useState<boolean>(false);
 	const [hoverMark, setHoverMark] = useState<number | undefined>(undefined);
+	const [activeThumb, setActiveThumb] = useState<'thumb1' | 'thumb2'>('thumb1');
 
 	const [value1, setValue1] = useState<number | undefined>(min);
 	const [value2, setValue2] = useState<number | undefined>(bindingPathPath2 ? max : min);
 
 	const precision = getPrecision(step, decimalPrecision);
-
-	useEffect(() => {
-		if (!bindingPathPath) return;
-		return addListenerAndCallImmediately(
-			pageExtractor.getPageName(),
-			(_, v) => {
-				if (isNullValue(v)) setValue1(undefined);
-				else if (storageDataType === 'value') setValue1(v);
-				else setValue1(getValue(v, storageDataType, min, max, step, precision));
-			},
-			bindingPathPath,
-		);
-	}, [bindingPathPath, storageDataType, min, max, step, precision]);
 
 	const constrainValues = useCallback(
 		(val1?: number, val2?: number) => {
@@ -169,15 +157,23 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 				}
 			}
 
-			newVal1 = Math.min(max, Math.max(min, newVal1));
-			newVal2 = Math.min(max, Math.max(min, newVal2));
-
-			newVal1 = Math.round((newVal1 - min) / step) * step + min;
-			newVal2 = Math.round((newVal2 - min) / step) * step + min;
-
-			return [newVal1, newVal2];
+			return [
+				getValue(newVal1, 'value', min, max, step, precision),
+				getValue(newVal2, 'value', min, max, step, precision),
+			];
 		},
-		[min, max, step, sliderCrossing, bindingPathPath2, minOffset, maxOffset, value1, value2],
+		[
+			min,
+			max,
+			step,
+			sliderCrossing,
+			bindingPathPath2,
+			minOffset,
+			maxOffset,
+			value1,
+			value2,
+			precision,
+		],
 	);
 
 	useEffect(() => {
@@ -308,6 +304,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 			context,
 			definition,
 			locationHistory,
+			constrainValues,
 		],
 	);
 
@@ -359,6 +356,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 			definition,
 			locationHistory,
 			fillType,
+			constrainValues,
 		],
 	);
 
@@ -525,6 +523,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 				className={`_toolTip ${toolTipPosition}`}
 				style={{
 					...(styleProperties?.toolTip1 ?? {}),
+					zIndex: activeThumb === 'thumb1' ? 12 : 11,
 				}}
 			>
 				<SubHelperComponent subComponentName="toolTip1" definition={definition} />
@@ -540,6 +539,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 				className={`_toolTip ${toolTipPosition}`}
 				style={{
 					...(styleProperties?.toolTip2 ?? {}),
+					zIndex: activeThumb === 'thumb2' ? 12 : 11,
 				}}
 			>
 				<SubHelperComponent subComponentName="toolTip2" definition={definition} />
@@ -590,7 +590,20 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 							step,
 					) *
 						step;
-				updateStore1(newValue);
+
+				if (bindingPathPath2) {
+					const dist1 = Math.abs(newValue - (value1 ?? min));
+					const dist2 = Math.abs(newValue - (value2 ?? max));
+					if (dist1 <= dist2) {
+						updateStore1(newValue);
+						setActiveThumb('thumb1');
+					} else {
+						updateStore2(newValue);
+						setActiveThumb('thumb2');
+					}
+				} else {
+					updateStore1(newValue);
+				}
 			}}
 		>
 			<SubHelperComponent subComponentName="track" definition={definition} zIndex={7} />
@@ -617,12 +630,14 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 				onMouseOut={() => setHoverThumb(false)}
 				style={{
 					left: `${visualPercent1}%`,
+					zIndex: activeThumb === 'thumb1' ? 10 : 9,
 					...((hoverThumb ? hoverStyleProperties : styleProperties)?.thumb1 ?? {}),
 				}}
 				onMouseDown={e => {
 					e.preventDefault();
 					e.stopPropagation();
 
+					setActiveThumb('thumb1');
 					if (e.button !== 0) return;
 
 					const startValue = value1 ?? min;
@@ -683,7 +698,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 					e.preventDefault();
 				}}
 			>
-				<SubHelperComponent subComponentName="thumb1" definition={definition} zIndex={10} />
+				<SubHelperComponent subComponentName="thumb1" definition={definition} />
 				<div
 					className="_thumbPit"
 					style={{
@@ -707,6 +722,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 					onMouseOut={() => setHoverThumb(false)}
 					style={{
 						left: `${visualPercent2}%`,
+						zIndex: activeThumb === 'thumb2' ? 10 : 9,
 						...((hoverThumb ? hoverStyleProperties : styleProperties)?.thumb2 ?? {}),
 						...styleProperties?.[rangeThumbDesign],
 						...styleProperties?.[rangeThumbSize],
@@ -715,6 +731,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 						e.preventDefault();
 						e.stopPropagation();
 
+						setActiveThumb('thumb2');
 						if (e.button !== 0) return;
 
 						const startValue = value2 ?? max;
@@ -778,7 +795,6 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 					<SubHelperComponent
 						subComponentName="thumb2"
 						definition={definition}
-						zIndex={9}
 						style={styleProperties?.[rangeThumbDesign]}
 					/>
 					<div
