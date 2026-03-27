@@ -159,7 +159,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			ctx.setMessages(prev =>
 				prev.map(m =>
 					m.id === ctx.assistantMsgId
-						? { ...m, thinking: data.text ?? '' }
+						? { ...m, thinking: (m.thinking ?? '') + (data.text ?? '') }
 						: m,
 				),
 			);
@@ -424,6 +424,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			enableFeedback = true,
 			thumbsUpIcon = 'fa fa-thumbs-up',
 			thumbsDownIcon = 'fa fa-thumbs-down',
+			quickActionLayout = '_list',
+			quickActionLabels = [],
+			quickActionPrompts = [],
+			quickActionIcons = [],
 			readOnly,
 			onMessage,
 			onError,
@@ -1312,7 +1316,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				/>
 			)}
 
-			<div className="_promptMain">
+			<div className={`_promptMain${messages.length === 0 && !hasEarlierMessages ? ' _promptEmpty' : ''}`}>
 				<div className="_promptTopBar">
 					<button
 						className="_sidebarToggle"
@@ -1358,6 +1362,32 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								<h2 className="_emptyTitle">
 									{resolvedWelcomeMessage ?? welcomeMessage}
 								</h2>
+								{quickActionLabels.length > 0 && (
+									<div className={`_quickActions ${quickActionLayout}`} role="group" aria-label="Quick actions">
+										{quickActionLabels.map((label: string, i: number) => {
+											const prompt = quickActionPrompts[i] ?? '';
+											const icon = quickActionIcons[i] ?? '';
+											const isDisabled = !prompt;
+											if (!label) return null;
+											return (
+												<button
+													key={i}
+													className={`_quickActionItem${isDisabled ? ' _quickActionDisabled' : ''}`}
+													onClick={isDisabled ? undefined : () => handleSend(prompt)}
+													disabled={isDisabled || isStreaming}
+													type="button"
+													aria-label={isDisabled ? `${label} - coming soon` : label}
+												>
+													{icon && <i className={`${icon} _quickActionIcon`} aria-hidden="true" />}
+													<span className="_quickActionLabel">{label}</span>
+													{isDisabled && (
+														<span className="_quickActionBadge" aria-hidden="true">Soon</span>
+													)}
+												</button>
+											);
+										})}
+									</div>
+								)}
 							</div>
 						)}
 						{messages.map(msg => (

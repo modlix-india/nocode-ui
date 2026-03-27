@@ -385,12 +385,35 @@ export default function PromptStyle({
 			gap: 24px;
 		}
 
-		/* Empty state */
-		${PREFIX} ._emptyState {
+		/* Empty state — centered layout with input below */
+		${PREFIX} ._promptEmpty ._promptMessages {
+			flex: 1;
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			min-height: 200px;
+		}
+
+		${PREFIX} ._promptEmpty ._promptTopBar {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			z-index: 1;
+		}
+
+		${PREFIX} ._emptyState {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			padding: 0 16px 16px;
+			width: 100%;
+			animation: _promptFadeIn 0.4s ease;
+		}
+
+		@keyframes _promptFadeIn {
+			from { opacity: 0; transform: translateY(10px); }
+			to { opacity: 1; transform: translateY(0); }
 		}
 
 		${PREFIX} ._emptyTitle {
@@ -398,6 +421,87 @@ export default function PromptStyle({
 			font-weight: 600;
 			color: #1a1a1a;
 			margin: 0;
+		}
+
+		/* Quick actions */
+		${PREFIX} ._quickActions {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			width: 100%;
+			max-width: 600px;
+			margin: 16px auto 0;
+			max-height: 40vh;
+			overflow-y: auto;
+		}
+
+		${PREFIX} ._quickActions._pills {
+			flex-direction: row;
+			flex-wrap: wrap;
+			justify-content: center;
+			max-width: 600px;
+		}
+
+		${PREFIX} ._quickActions._grid {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 12px;
+			max-width: 520px;
+		}
+
+		${PREFIX} ._quickActionItem {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			padding: 12px 16px;
+			border: 1px solid #e0e0e0;
+			border-radius: 12px;
+			background: transparent;
+			cursor: pointer;
+			font-size: 14px;
+			color: #1a1a1a;
+			text-align: left;
+			transition: background 0.15s, border-color 0.15s;
+		}
+
+		${PREFIX} ._quickActionItem:hover:not(:disabled) {
+			background: #f5f5f5;
+			border-color: #c0c0c0;
+		}
+
+		${PREFIX} ._quickActions._pills ._quickActionItem {
+			padding: 8px 16px;
+			border-radius: 20px;
+			font-size: 13px;
+		}
+
+		${PREFIX} ._quickActionDisabled {
+			opacity: 0.5;
+			cursor: default;
+		}
+
+		${PREFIX} ._quickActionIcon {
+			font-size: 16px;
+			color: #6b6b6b;
+			width: 20px;
+			text-align: center;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._quickActionLabel {
+			flex: 1;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._quickActionBadge {
+			font-size: 11px;
+			color: #999;
+			background: #f0f0f0;
+			padding: 2px 8px;
+			border-radius: 10px;
+			flex-shrink: 0;
 		}
 
 		${PREFIX} ._loadEarlierMessages {
