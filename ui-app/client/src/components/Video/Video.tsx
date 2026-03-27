@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
+import {
+	addListenerAndCallImmediately,
+	PageStoreExtractor,
+	UrlDetailsExtractor,
+} from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './videoProperties';
@@ -19,9 +23,17 @@ function Video(props: Readonly<ComponentProps>) {
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		properties: {
-			src,
+			src: defaultSrc,
+			src2,
+			src3,
+			src4,
+			src5,
 			type,
-			poster,
+			poster: defaultPoster,
+			poster2,
+			poster3,
+			poster4,
+			poster5,
 			playsInline,
 			muted: mutedProperty,
 			playInViewport,
@@ -57,6 +69,46 @@ function Video(props: Readonly<ComponentProps>) {
 			setVolume(`${vol}`);
 		}
 	};
+
+	const [currentSrc, setCurrentSrc] = useState(defaultSrc);
+	const [currentPoster, setCurrentPoster] = useState(defaultPoster);
+
+	useEffect(() => {
+		addListenerAndCallImmediately(
+			props.context.pageName,
+			(_, value) => {
+				if (value?.TABLET_LANDSCAPE_SCREEN_ONLY) {
+					setCurrentSrc(src2 ?? defaultSrc);
+					setCurrentPoster(poster2 ?? defaultPoster);
+				} else if (value?.TABLET_POTRAIT_SCREEN_ONLY) {
+					setCurrentSrc(src3 ?? defaultSrc);
+					setCurrentPoster(poster3 ?? defaultPoster);
+				} else if (value?.MOBILE_LANDSCAPE_SCREEN_ONLY) {
+					setCurrentSrc(src4 ?? defaultSrc);
+					setCurrentPoster(poster4 ?? defaultPoster);
+				} else if (value?.MOBILE_POTRAIT_SCREEN_ONLY) {
+					setCurrentSrc(src5 ?? defaultSrc);
+					setCurrentPoster(poster5 ?? defaultPoster);
+				} else {
+					setCurrentSrc(defaultSrc);
+					setCurrentPoster(defaultPoster);
+				}
+			},
+			'Store.devices',
+		);
+	}, [
+		defaultSrc,
+		src2,
+		src3,
+		src4,
+		src5,
+		defaultPoster,
+		poster2,
+		poster3,
+		poster4,
+		poster5,
+		props.context.pageName,
+	]);
 
 	//to check wheater browser supports html5 video
 	const [videoControls, setVideoControls] = useState<boolean>(true);
@@ -134,7 +186,7 @@ function Video(props: Readonly<ComponentProps>) {
 			observer = new IntersectionObserver(
 				([entry]) => {
 					if (entry.isIntersecting) {
-						video.current?.play().catch(() => {});
+						video.current?.play().catch(() => { });
 					} else {
 						video.current?.pause();
 					}
@@ -540,11 +592,11 @@ function Video(props: Readonly<ComponentProps>) {
 			) : null}
 			<video
 				controls={videoControls}
-				poster={getSrcUrl(poster)}
+				poster={getSrcUrl(currentPoster)}
 				playsInline={playsInline}
 				preload="metadata"
 				ref={video}
-				key={getSrcUrl(src)}
+				key={getSrcUrl(currentSrc)}
 				muted={muted}
 				loop={loop}
 				autoPlay={autoPlay}
@@ -564,7 +616,7 @@ function Video(props: Readonly<ComponentProps>) {
 					}, 500);
 				}}
 			>
-				<source src={getSrcUrl(src)} type={type} />
+				<source src={getSrcUrl(currentSrc)} type={type} />
 				Your browser does not support HTML5 video.
 			</video>
 			<SubHelperComponent
@@ -617,9 +669,8 @@ function Video(props: Readonly<ComponentProps>) {
 										...(resolvedStyles.seekTimeTextOnHover ?? {}),
 									}}
 									className="_toolTip"
-								>{`${seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''}${
-									seekToolTip.minutes
-								}:${seekToolTip.seconds}`}</div>
+								>{`${seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''}${seekToolTip.minutes
+									}:${seekToolTip.seconds}`}</div>
 							)}
 						</div>
 					)}
@@ -629,24 +680,20 @@ function Video(props: Readonly<ComponentProps>) {
 								<time
 									className="_timeElapsed"
 									id="time-elapsed"
-									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${
-										timElapsed.minutes != '00' ? timElapsed.minutes : ''
-									}${timElapsed.seconds}`}
+									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${timElapsed.minutes != '00' ? timElapsed.minutes : ''
+										}${timElapsed.seconds}`}
 									style={resolvedStyles.timeText ?? {}}
-								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
-									timElapsed.minutes
-								}:${timElapsed.seconds}`}</time>
+								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${timElapsed.minutes
+									}:${timElapsed.seconds}`}</time>
 								<span className="_timeSplitter">/</span>
 								<time
 									className="_duration"
 									id="duration"
-									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${
-										duration.minutes != '00' ? duration.minutes : ''
-									}:${duration.seconds}`}
+									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${duration.minutes != '00' ? duration.minutes : ''
+										}:${duration.seconds}`}
 									style={resolvedStyles.timeText ?? {}}
-								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
-									duration.minutes
-								}:${duration.seconds}`}</time>
+								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${duration.minutes
+									}:${duration.seconds}`}</time>
 							</div>
 						)}
 						{videoDesign != '_videoDesign3' ? (
@@ -660,28 +707,22 @@ function Video(props: Readonly<ComponentProps>) {
 										<time
 											className="_timeElapsed"
 											id="time-elapsed"
-											dateTime={`${
-												timElapsed.hours != '00' ? timElapsed.hours : ''
-											}${
-												timElapsed.minutes != '00' ? timElapsed.minutes : ''
-											}${timElapsed.seconds}`}
+											dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''
+												}${timElapsed.minutes != '00' ? timElapsed.minutes : ''
+												}${timElapsed.seconds}`}
 											style={resolvedStyles.timeText ?? {}}
-										>{`${
-											timElapsed.hours != '00' ? timElapsed.hours + ':' : ''
-										}${timElapsed.minutes}:${timElapsed.seconds}`}</time>
+										>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''
+											}${timElapsed.minutes}:${timElapsed.seconds}`}</time>
 										<span className="_timeSplitter">/</span>
 										<time
 											className="_duration"
 											id="duration"
-											dateTime={`${
-												duration.hours != '00' ? duration.hours : ''
-											}:${duration.minutes != '00' ? duration.minutes : ''}:${
-												duration.seconds
-											}`}
+											dateTime={`${duration.hours != '00' ? duration.hours : ''
+												}:${duration.minutes != '00' ? duration.minutes : ''}:${duration.seconds
+												}`}
 											style={resolvedStyles.timeText ?? {}}
-										>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
-											duration.minutes
-										}:${duration.seconds}`}</time>
+										>{`${duration.hours != '00' ? duration.hours + ':' : ''}${duration.minutes
+											}:${duration.seconds}`}</time>
 									</div>
 								)}
 								{showAudioControls && (
@@ -732,7 +773,7 @@ const component: Component = {
 	styleComponent: VideoStyle,
 	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
