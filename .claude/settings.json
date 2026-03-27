@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src/components/TableComponents/*/)",
+      "Bash(grep -r usedComponents.register /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src --include=*.ts --include=*.tsx)",
+      "Bash(find /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src -name usedComponents.ts -o -name *ComponentsRegistry* -o -name *Component.ts)",
+      "Bash(find /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/dist/css -type f -name *.css)",
+      "Bash(grep -r \"export.*TableComponents\\\\|import.*TableComponents\\\\|components.*register\" /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src --include=*.ts --include=*.tsx)",
+      "Bash(grep -r \"componentMap\\\\|getComponent\\\\|Component\\\\[\" /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src/Engine --include=*.ts --include=*.tsx)",
+      "Bash(grep -r \"import componentMap\\\\|import.*from.*components''''\" /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src --include=*.tsx)",
+      "Bash(grep -r \"comp.component\\\\|ComponentDefinitions\\\\|componentMap.get\" /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src --include=*.tsx)",
+      "Bash(grep -r \"renderComponent\\\\|ComponentRenderer\" /Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src --include=*.tsx --include=*.ts)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}

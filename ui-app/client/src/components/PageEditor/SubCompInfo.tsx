@@ -4047,6 +4047,30 @@ export const SubComponentDefinitions: Record<
 			description: 'Row Container',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'treeExpandButton',
+			displayName: 'Tree Expand Button',
+			description: 'Tree Expand Button',
+			icon: 'fa-solid fa-plus',
+		},
+		{
+			name: 'treeCollapseButton',
+			displayName: 'Tree Collapse Button',
+			description: 'Tree Collapse Button',
+			icon: 'fa-solid fa-minus',
+		},
+		{
+			name: 'treeLines',
+			displayName: 'Tree Lines',
+			description: 'Tree Lines',
+			icon: 'fa-solid fa-grip-lines-vertical',
+		},
+		{
+			name: 'treeCell',
+			displayName: 'Tree Cell',
+			description: 'Tree Cell',
+			icon: 'fa-solid fa-box',
+		},
 	],
 	[TableRow.name]: [
 		{
