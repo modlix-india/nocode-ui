@@ -9,7 +9,8 @@
 	],
 	"scripts": {
 		"start": "webpack serve --config webpack.dev.js",
-		"dev": "./dev-with-watch.sh",
+		"local": "webpack serve --config webpack.local.js",
+		"ai": "webpack serve --config webpack.ai.js",
 		"build": "webpack --config webpack.prod.js",
 		"cf-local": "webpack --config webpack.prod.js --env publicUrl=https://cdn-local.modlix.com/js/dist/ ",
 		"cf-dev": "webpack --config webpack.prod.js --env publicUrl=https://cdn-dev.modlix.com/js/dist/",
