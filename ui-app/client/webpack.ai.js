@@ -82,10 +82,21 @@ module.exports = {
     hot: true, 
     proxy: [
       {
-        context: ["/api/ai/**"],
+        context: ["**/api/ai/**"],
         target: "http://localhost:5001",
         secure: false,
         changeOrigin: true,
+        pathRewrite: (path) => path.replace(/^.*?(\/api\/ai\/)/, '$1'),
+        onProxyReq: (proxyReq, req) => {
+          // Extract /{appCode}/{clientCode}/page prefix from the Referer header
+          // (the browser URL), since fetch calls use relative paths without the prefix.
+          // e.g. Referer: http://localhost:1234/appbuilder/SYSTEM/page/...
+          const referer = req.headers.referer || '';
+          const refMatch = referer.match(/\/([^/]+)\/([^/]+)\/page/);
+          if (refMatch) {
+            proxyReq.setHeader('X-Path-Prefix', `/${refMatch[1]}/${refMatch[2]}/page`);
+          }
+        },
         onProxyRes: (proxyRes, _req, res) => {
           if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
             res.flushHeaders();
