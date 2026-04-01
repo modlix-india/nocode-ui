@@ -78,7 +78,7 @@ module.exports = {
       directory: path.join(__dirname, 'dist') // If you have static files like index.html
     },
     historyApiFallback: true, // For React Router support
-    port: 1234,
+    port: 4321,
     hot: true, 
     proxy: [
       {
