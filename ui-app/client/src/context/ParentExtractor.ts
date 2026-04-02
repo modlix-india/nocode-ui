@@ -72,15 +72,17 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		let path;
 
 		const remainingSuffix = this.reconstructPath(parts.slice(pNum));
+		let baseLocation: string;
 
 		if (typeof lastHistory.location === 'string')
-			path = `${lastHistory.location}.${remainingSuffix}`;
+			baseLocation = lastHistory.location;
 		else
-			path = `${
-				lastHistory.location.type === 'VALUE'
+			baseLocation =
+				(lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value
-					: lastHistory.location.expression
-			}.${remainingSuffix}`;
+					: lastHistory.location.expression) ?? '';
+
+		path = remainingSuffix ? `${baseLocation}.${remainingSuffix}` : baseLocation;
 
 		return { path, lastHistory, removeHistory: pNum };
 	}
@@ -185,14 +187,15 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 
 		lastHistory = history[history.length - pNum];
 
-		let path = remainingSuffix;
-		if (typeof lastHistory?.location === 'string') path = `${lastHistory.location}.${remainingSuffix}`;
+		let baseLocation = remainingSuffix;
+		if (typeof lastHistory?.location === 'string') baseLocation = lastHistory.location;
 		else if (lastHistory?.location)
-			path = `${
-				lastHistory.location.type === 'VALUE'
+			baseLocation =
+				(lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value
-					: lastHistory.location.expression
-			}.${remainingSuffix}`;
+					: lastHistory.location.expression) ?? '';
+
+		const path = remainingSuffix ? `${baseLocation}.${remainingSuffix}` : baseLocation;
 
 		return { path, removeHistory: pNum };
 	}
@@ -218,18 +221,19 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		while (parts[pNum] === 'Parent') pNum++;
 
 		const lastHistory = locationHistory[locationHistory.length - pNum];
-		let path;
 
 		const remainingSuffix = this.reconstructPath(parts.slice(pNum));
+		let baseLocation: string;
 
 		if (typeof lastHistory.location === 'string')
-			path = `${lastHistory.location}.${remainingSuffix}`;
+			baseLocation = lastHistory.location;
 		else
-			path = `${
-				lastHistory.location.type === 'VALUE'
+			baseLocation =
+				(lastHistory.location.type === 'VALUE'
 					? lastHistory.location.value
-					: lastHistory.location.expression
-			}.${remainingSuffix}`;
+					: lastHistory.location.expression) ?? '';
+
+		const path = remainingSuffix ? `${baseLocation}.${remainingSuffix}` : baseLocation;
 
 		return { path, lastHistory };
 	}

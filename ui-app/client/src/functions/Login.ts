@@ -43,7 +43,9 @@ const SIGNATURE = new FunctionSignature('Login')
 				]),
 			),
 		]),
-	);
+	)
+	.setDescription('Authenticates a user and stores session data in the application store')
+	.setDocumentation('# UIEngine.Login\n\nAuthenticates a user by calling the `/api/security/authenticate` endpoint. On success, stores authentication data in `Store.auth`, saves the access token to `LocalStore.AuthToken`, and clears all page caches to ensure a fresh session.\n\n## Parameters\n\n- **userName** (String, required): Username or email for authentication\n- **password** (String, optional, default: \'\'): User password\n- **userId** (Any, optional, default: null): User ID if available\n- **otp** (String, optional, default: \'\'): One-time password for two-factor authentication\n- **pin** (String, optional, default: \'\'): PIN code if required\n- **identifierType** (String, optional, default: \'\'): Type of identifier being used for login\n- **rememberMe** (Boolean, optional, default: false): Whether to persist the session\n- **cookie** (Boolean, optional, default: false): Whether to set an authentication cookie\n\n## Events\n\n- **output**: Triggered on successful authentication\n  - `data` (Any): Authentication response containing access token and user details\n- **error**: Triggered on authentication failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **User Authentication**: Log users into the application\n- **Multi-Factor Auth**: Support OTP and PIN-based authentication flows\n- **Session Management**: Establish and persist user sessions\n- **SSO Integration**: Authenticate via various identifier types');
 
 export class Login extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
