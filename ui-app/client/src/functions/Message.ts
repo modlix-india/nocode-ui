@@ -33,7 +33,9 @@ const SIGNATURE = new FunctionSignature('Message')
 			),
 		]),
 	)
-	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));
+	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]))
+	.setDescription('Displays a notification message to the user with configurable type and scope')
+	.setDocumentation('# UIEngine.Message\n\nAdds a notification message to the application\'s message queue. Messages can be displayed globally or scoped to a specific page. Supports different message types for various severity levels.\n\n## Parameters\n\n- **msg** (Any, required): The message content to display\n- **isGlobalScope** (Boolean, optional, default: true): If true, the message is shown globally; if false, scoped to a specific page\n- **pageName** (String, optional, default: \'__GLOBAL__\'): The page name for page-scoped messages\n- **type** (String, optional, default: \'ERROR\'): Message severity type\n  - `ERROR`: Error notification (red)\n  - `WARNING`: Warning notification (yellow/orange)\n  - `INFO`: Informational notification (blue)\n  - `SUCCESS`: Success notification (green)\n\n## Events\n\n- **output**: Triggered after the message is added to the queue\n\n## Use Cases\n\n- **Form Validation Feedback**: Show errors when form validation fails\n- **Operation Confirmation**: Confirm successful save, delete, or update operations\n- **API Error Display**: Show user-friendly error messages from API failures\n- **Warnings**: Alert users about potential issues or required actions');
 
 export class Message extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {

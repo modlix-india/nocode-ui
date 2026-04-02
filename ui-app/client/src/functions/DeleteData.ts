@@ -59,7 +59,9 @@ const SIGNATURE = new FunctionSignature('DeleteData')
 				]),
 			),
 		]),
-	);
+	)
+	.setDescription('Sends an HTTP DELETE request to remove data at the specified URL')
+	.setDocumentation('# UIEngine.DeleteData\n\nMakes an HTTP DELETE request to the specified URL with configurable query parameters, path parameters, and headers. Used to delete resources on the server. Automatically resolves parameter and header values from store expressions.\n\n## Parameters\n\n- **url** (String, required): The endpoint URL to send the DELETE request to\n- **queryParams** (UrlParameters, optional): Key-value pairs appended as query string parameters to the URL\n- **pathParams** (UrlParameters, optional): Key-value pairs substituted into path placeholders in the URL\n- **headers** (UrlParameters, optional): HTTP request headers\n  - Default includes `Authorization` (from `LocalStore.AuthToken`) and `clientCode` (from `Store.auth.loggedInClientCode`)\n\n## Events\n\n- **output**: Triggered on successful response\n  - `data` (Any): The response body from the server\n- **error**: Triggered on request failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **Record Deletion**: Remove individual records from the database\n- **Bulk Cleanup**: Delete resources matching specific criteria\n- **Cache Invalidation**: Clear server-side caches\n- **Session Termination**: End active sessions or revoke tokens');
 
 export class DeleteData extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {

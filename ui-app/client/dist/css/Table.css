@@ -7,6 +7,13 @@
 	table-layout: fixed;
 }
 
+
+.comp.compTableColumns ._row._dataRow,
+.comp.compTableColumns ._detailRow {
+	content-visibility: auto;
+	contain-intrinsic-block-size: auto 40px;
+}
+
 .comp.compTable ._tableWithPagination {
 	flex: 1;
 	display: flex;
