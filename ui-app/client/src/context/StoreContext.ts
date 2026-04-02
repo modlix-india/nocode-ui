@@ -120,29 +120,19 @@ export function getData<T>(
 	return prop.value;
 }
 
-// Cache ParentExtractorForRunEvent per locationHistory+tve combination
-// to avoid creating 300K+ instances per render batch.
-let _cachedParentExtractor: ParentExtractorForRunEvent | undefined;
-let _cachedParentHistory: Array<LocationHistory> | undefined;
-let _cachedParentTveLength: number = -1;
-
 export function getDataFromLocation(
 	loc: DataLocation,
 	locationHistory: Array<LocationHistory>,
 	...tve: Array<TokenValueExtractor>
 ): any {
-	if (locationHistory?.length) {
-		// Reuse cached extractor if locationHistory and tve haven't changed
-		if (_cachedParentHistory !== locationHistory || _cachedParentTveLength !== tve.length) {
-			_cachedParentExtractor = new ParentExtractorForRunEvent(
+	if (locationHistory?.length)
+		tve = [
+			...tve,
+			new ParentExtractorForRunEvent(
 				locationHistory,
 				new Map(tve.map(e => [e.getPrefix(), e])),
-			);
-			_cachedParentHistory = locationHistory;
-			_cachedParentTveLength = tve.length;
-		}
-		tve = [...tve, _cachedParentExtractor!];
-	}
+			),
+		];
 	if (loc?.type === 'VALUE' && loc.value) {
 		return _getData(loc.value || '', ...tve);
 	} else if (loc?.type === 'EXPRESSION' && loc.expression) {
@@ -178,17 +168,14 @@ export function getDataFromPath(
 	...tve: Array<TokenValueExtractor>
 ) {
 	if (!path) return undefined;
-	if (locationHistory?.length && !tve?.some(e => e.getPrefix() === 'Parent.')) {
-		if (_cachedParentHistory !== locationHistory || _cachedParentTveLength !== tve.length) {
-			_cachedParentExtractor = new ParentExtractorForRunEvent(
+	if (locationHistory?.length && !tve?.some(e => e.getPrefix() === 'Parent.'))
+		tve = [
+			...tve,
+			new ParentExtractorForRunEvent(
 				locationHistory,
 				new Map(tve.map(e => [e.getPrefix(), e])),
-			);
-			_cachedParentHistory = locationHistory;
-			_cachedParentTveLength = tve.length;
-		}
-		tve = [...tve, _cachedParentExtractor!];
-	}
+			),
+		];
 	return _getData(path, ...tve);
 }
 
