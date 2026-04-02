@@ -21,7 +21,9 @@ const SIGNATURE = new FunctionSignature('OpenWindow')
             Parameter.ofEntry('popup', Schema.ofBoolean('popup').setDefaultValue(false)),
         ]),
     )
-    .setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));
+    .setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]))
+    .setDescription('Opens a URL in a new browser window or tab with configurable features')
+    .setDocumentation('# UIEngine.OpenWindow\n\nOpens a URL in a new browser window or tab using `window.open()`. Supports configuring the target, window features (size, position, etc.), and popup mode.\n\n## Parameters\n\n- **url** (String, required): The URL to open\n- **target** (String, optional, default: \'_blank\'): Window target (`_blank`, `_self`, `_parent`, `_top`, or a named window)\n- **features** (String, optional, default: \'\'): Window features string (e.g., `width=800,height=600,scrollbars=yes`)\n- **popup** (Boolean, optional, default: false): If true, adds `popup=yes` to the window features\n\n## Events\n\n- **output**: Triggered after the window is opened\n\n## Use Cases\n\n- **External Links**: Open external websites in new tabs\n- **Preview Windows**: Open preview or print views in popup windows\n- **OAuth Flows**: Open authentication popups for third-party login\n- **Documentation**: Open help or documentation pages in new tabs\n- **Reports**: Open generated reports in separate windows');
 
 export class OpenWindow extends AbstractFunction {
     protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {

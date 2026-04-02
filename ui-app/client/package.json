@@ -98,7 +98,7 @@
 	},
 	"dependencies": {
 		"@fincity/kirun-js": "^3.4.0",
-		"@fincity/kirun-ui": "^1.1.1",
+		"@fincity/kirun-ui": "^1.1.2",
 		"@fincity/path-reactive-state-management": "^2.9.3",
 		"@monaco-editor/react": "^4.6.0",
 		"axios": "^1.7.9",

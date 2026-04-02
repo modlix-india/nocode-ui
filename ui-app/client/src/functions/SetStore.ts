@@ -23,7 +23,9 @@ const SIGNATURE = new FunctionSignature('SetStore')
 			Parameter.ofEntry('deleteKey', Schema.ofBoolean('deleteKey').setDefaultValue(false)),
 		]),
 	)
-	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]));
+	.setEvents(new Map([Event.eventMapEntry(Event.OUTPUT, new Map())]))
+	.setDescription('Sets or deletes a value at a specified path in the application store')
+	.setDocumentation('# UIEngine.SetStore\n\nSets data at a specified path in the application store (Store, Page, or Parent scope). Creates a deep copy of the value before storing to prevent unintended reference mutations. Can also delete keys from the store.\n\n## Parameters\n\n- **path** (String, required): The store path to set the value at\n  - Examples: `Store.user.name`, `Page.formData.email`, `Parent.items`\n  - Supports `Parent.` prefix for updating parent component store in nested contexts\n- **value** (Any, optional): The value to set at the specified path\n- **deleteKey** (Boolean, optional, default: false): If true, deletes the key at the path instead of setting a value\n\n## Events\n\n- **output**: Triggered after the store is updated\n\n## Use Cases\n\n- **Form State Management**: Update form field values in the store\n- **User Session Data**: Store user preferences or session information\n- **Component Communication**: Share data between components via the store\n- **Reset State**: Clear or delete temporary data after processing\n- **Parent Updates**: Update parent component state from child components');
 
 export class SetStore extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
