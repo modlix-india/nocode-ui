@@ -35,14 +35,14 @@ module.exports = async (env = {}) => {
         });
 
         // Extract Application/ApplicationStyle chunks for preloading
-        // Use filenames only (not full paths) since HTML renderers will prepend CDN URL
+        // Use actual filenames (with contenthash) so the server generates correct script tags
         const applicationChunks = files
           .filter(f => /^Application.*\.js$/.test(f.name))
-          .map(f => f.name);
+          .map(f => f.path.split('/').pop());
 
         const applicationStyleChunks = files
           .filter(f => /^ApplicationStyle.*\.js$/.test(f.name))
-          .map(f => f.name);
+          .map(f => f.path.split('/').pop());
 
         return {
           buildVersion,
