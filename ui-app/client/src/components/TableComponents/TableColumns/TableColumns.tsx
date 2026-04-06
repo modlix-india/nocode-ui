@@ -71,7 +71,14 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	} = props;
 
 	const locationHistoryKey = (locationHistory ?? [])
-		.map(e => (typeof e.location === 'string' ? e.location : e.location?.expression ?? e.location?.value ?? '') + '_' + e.index)
+		.map(
+			e =>
+				(typeof e.location === 'string'
+					? e.location
+					: (e.location?.expression ?? e.location?.value ?? '')) +
+				'_' +
+				e.index,
+		)
 		.join('|');
 
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
@@ -138,7 +145,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			listenPaths,
 			tableRowProps,
 		};
-	// eslint-disable-next-line react-hooks/exhaustive-deps
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		pageDefinition,
 		updateColumnsAt,
@@ -219,28 +226,13 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		[columnDef, locationHistoryKey, pageExtractor, columnChildren],
 	);
 
-	const [progressiveCount, setProgressiveCount] = useState(INITIAL_BATCH);
-
-	useEffect(() => {
-		if (!Array.isArray(value)) return;
-		const totalRows = value.length;
-		if (totalRows <= INITIAL_BATCH) {
-			setProgressiveCount(totalRows);
-			return;
-		}
-		if (progressiveCount >= totalRows) return;
-		const timer = setTimeout(() => {
-			setProgressiveCount(prev => Math.min(prev + PROGRESSIVE_BATCH, totalRows));
-		}, 0);
-		return () => clearTimeout(timer);
-	}, [progressiveCount, value]);
-
 	if (!Array.isArray(value)) return <></>;
 
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
 
 	const firstchild: any = {};
 	if (entry) firstchild[entry[0]] = true;
+
 	const styleNormalProperties =
 		processComponentStylePseudoClasses(
 			props.pageDefinition,
@@ -327,7 +319,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			}
 		: undefined;
 
-	let rows;
+	let rows: any[] = [];
 	let treeRowCount = 0;
 	if (treeMode && expandedKeys && toggleExpand) {
 		const flattenedRows = flattenTree({
@@ -391,6 +383,22 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		});
 	}
 
+	const [progressiveCount, setProgressiveCount] = useState(INITIAL_BATCH);
+
+	useEffect(() => {
+		if (!Array.isArray(value)) return;
+		const totalRows = rows?.length ?? 0;
+		if (totalRows <= INITIAL_BATCH) {
+			setProgressiveCount(totalRows);
+			return;
+		}
+		if (progressiveCount >= totalRows) return;
+		const timer = setTimeout(() => {
+			setProgressiveCount(prev => Math.min(prev + PROGRESSIVE_BATCH, totalRows));
+		}, 0);
+		return () => clearTimeout(timer);
+	}, [progressiveCount, rows?.length, value]);
+
 	let headers = undefined;
 	if (showHeaders) {
 		let checkBoxTop = undefined;
@@ -398,7 +406,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
 
-			headers = (
+		headers = (
 			<thead className="_headerContainer" style={styleNormalProperties.headerContainer}>
 				<tr
 					className="_row _header"
@@ -645,7 +653,7 @@ function resolvePropertiesOfDynamicColumns(
 }
 
 function generateRows(properties: {
-	value: never[];
+	value: any[];
 	from: any;
 	to: any;
 	showCheckBox: any;
@@ -893,10 +901,7 @@ function generateDynamicColumns(
 
 		let allKeys: Set<string>;
 		if (context.table.treeMode && context.table.childrenKey) {
-			allKeys = collectAllKeysFromTree(
-				context.table.data ?? [],
-				context.table.childrenKey,
-			);
+			allKeys = collectAllKeysFromTree(context.table.data ?? [], context.table.childrenKey);
 		} else {
 			allKeys = (context.table.data ?? []).reduce((a: Set<string>, c: any) => {
 				if (!c) return a;
@@ -1032,7 +1037,16 @@ interface FlattenTreeParams {
 }
 
 function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
-	const { nodes, childrenKey, uniqueKey, hasChildrenProperty, expandedKeys, depth, parentPath, basePath } = params;
+	const {
+		nodes,
+		childrenKey,
+		uniqueKey,
+		hasChildrenProperty,
+		expandedKeys,
+		depth,
+		parentPath,
+		basePath,
+	} = params;
 	const result: FlattenedRow[] = [];
 	for (let i = 0; i < nodes.length; i++) {
 		const node = nodes[i];
@@ -1091,7 +1105,6 @@ function collectAllKeysFromTree(data: any[], childrenKey: string): Set<string> {
 	walk(data);
 	return keys;
 }
-
 
 function generateTreeRows(properties: {
 	flattenedRows: FlattenedRow[];
