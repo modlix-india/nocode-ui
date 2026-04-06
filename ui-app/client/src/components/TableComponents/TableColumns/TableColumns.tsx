@@ -226,6 +226,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		[columnDef, locationHistoryKey, pageExtractor, columnChildren],
 	);
 
+	const [progressiveCount, setProgressiveCount] = useState(INITIAL_BATCH);
+
 	if (!Array.isArray(value)) return <></>;
 
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
@@ -382,8 +384,6 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			urlExtractor,
 		});
 	}
-
-	const [progressiveCount, setProgressiveCount] = useState(INITIAL_BATCH);
 
 	useEffect(() => {
 		if (!Array.isArray(value)) return;
