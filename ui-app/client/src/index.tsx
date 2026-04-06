@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createRoot, hydrateRoot } from 'react-dom/client';
+import { ErrorBoundary } from './App/ErrorBoundary';
 import { AppDefinitionResponse, getAppDefinition } from './App/appDefinition';
 import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
@@ -206,10 +207,10 @@ if (!app) {
 		}
 
 		const reactNode = (
-			<>
+			<ErrorBoundary>
 				<AppStyle />
 				<App />
-			</>
+			</ErrorBoundary>
 		);
 		if (window.localStorage.getItem(AUTH_TOKEN) || !rendered) createRoot(app).render(reactNode);
 		else
