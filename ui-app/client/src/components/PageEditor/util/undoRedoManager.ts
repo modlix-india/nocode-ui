@@ -401,5 +401,6 @@ class UndoRedoManager {
 	}
 }
 
-export { UndoRedoManager, UndoRedoEntry };
+export { UndoRedoManager };
+export type { UndoRedoEntry };
 

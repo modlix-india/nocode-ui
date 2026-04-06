@@ -23,7 +23,9 @@ const SIGNATURE = new FunctionSignature('ExecuteJSFunction')
 			Event.eventMapEntry(Event.OUTPUT, new Map([['result', Schema.ofAny('result')]])),
 			Event.eventMapEntry(Event.ERROR, new Map([['data', Schema.ofAny('data')]])),
 		]),
-	);
+	)
+	.setDescription('Dynamically executes a named JavaScript function with provided parameters')
+	.setDocumentation('# UIEngine.ExecuteJSFunction\n\nDynamically executes a JavaScript function by name with provided parameters. Uses the Function constructor to invoke the named function, allowing integration with global JavaScript functions or third-party libraries.\n\n## Parameters\n\n- **name** (String, required): The fully qualified JavaScript function name to execute (e.g., `console.log`, `Math.round`)\n- **params** (Any[], required): Array of parameters to pass to the function\n\n## Events\n\n- **output**: Triggered on successful execution\n  - `result` (Any): The return value from the executed function\n- **error**: Triggered if the function execution fails\n  - `data` (Any): Error details\n\n## Use Cases\n\n- **Third-Party Integration**: Call functions from external JavaScript libraries\n- **Custom Logic**: Execute custom JavaScript functions defined in the global scope\n- **Dynamic Computation**: Perform calculations using built-in JavaScript functions\n- **Legacy Integration**: Interface with existing JavaScript codebases');
 
 export class ExecuteJSFunction extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {

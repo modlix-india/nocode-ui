@@ -190,6 +190,27 @@ export default function TableColumnsStyle({
 			align-items: center;
 			display: inline-flex;
 		}
+
+		${PREFIX} ._row._dataRow,
+		${PREFIX} ._detailRow {
+			content-visibility: auto;
+			contain-intrinsic-block-size: auto 40px;
+		}
+
+		@keyframes _tableRowFadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(8px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		${PREFIX} ._row._dataRow {
+			animation: _tableRowFadeIn 0.25s ease-out both;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnsCss">{css}</style>;

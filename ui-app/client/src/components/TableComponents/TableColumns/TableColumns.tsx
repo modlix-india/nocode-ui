@@ -5,7 +5,7 @@ import {
 	isNullValue,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
 import {
 	addListener,
@@ -45,6 +45,10 @@ import { propertiesDefinition as tableRowPropertiesDefinition } from '../TableRo
 import { createNewState } from '../../util/useDefinition/commons';
 import { getPathsFromComponentDefinition } from '../../util/getPaths';
 
+// Progressive row rendering — renders rows in batches to avoid freezing the browser.
+const INITIAL_BATCH = 5;
+const PROGRESSIVE_BATCH = 3;
+
 function fieldToName(field: string): string {
 	return field
 		.replace('_', ' ')
@@ -66,8 +70,20 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 
+	const locationHistoryKey = (locationHistory ?? [])
+		.map(
+			e =>
+				(typeof e.location === 'string'
+					? e.location
+					: (e.location?.expression ?? e.location?.value ?? '')) +
+				'_' +
+				e.index,
+		)
+		.join('|');
+
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
+
 	const {
 		properties: { showEmptyRows, showHeaders, fixedHeader, expandIcon, collapseIcon } = {},
 		stylePropertiesWithPseudoStates,
@@ -81,18 +97,23 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	);
 
 	const [updateColumnsAt, setUpdateColumnsAt] = useState(Date.now());
+	const updateColumnsAtTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+	const debouncedSetUpdateColumnsAt = React.useCallback(() => {
+		if (updateColumnsAtTimerRef.current) clearTimeout(updateColumnsAtTimerRef.current);
+		updateColumnsAtTimerRef.current = setTimeout(() => setUpdateColumnsAt(Date.now()), 50);
+	}, []);
 
 	useEffect(() => {
 		if (!context.table.personalizationBindingPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			context.pageName,
-			() => setUpdateColumnsAt(Date.now()),
+			debouncedSetUpdateColumnsAt,
 			context.table.personalizationBindingPath,
 		);
 	}, [
 		context.table.personalizationBindingPath,
 		context.table.enablePersonalization,
-		setUpdateColumnsAt,
+		debouncedSetUpdateColumnsAt,
 		context.pageName,
 	]);
 
@@ -124,6 +145,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			listenPaths,
 			tableRowProps,
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		pageDefinition,
 		updateColumnsAt,
@@ -132,7 +154,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		context.table.key,
 		originalChildren,
 		pageExtractor,
-		locationHistory,
+		locationHistoryKey,
 		urlExtractor,
 	]);
 
@@ -150,8 +172,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!listenPaths.length) return;
-		addListener(context.pageName, () => setUpdateColumnsAt(Date.now()), ...listenPaths);
-	}, [setUpdateColumnsAt, pageExtractor, listenPaths, context.pageName]);
+		return addListener(context.pageName, debouncedSetUpdateColumnsAt, ...listenPaths);
+	}, [debouncedSetUpdateColumnsAt, pageExtractor, listenPaths, context.pageName]);
 
 	const {
 		from = 0,
@@ -200,7 +222,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				locationHistory,
 				pageExtractor,
 			}),
-		[columnDef, locationHistory, pageExtractor, columnChildren],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columnDef, locationHistoryKey, pageExtractor, columnChildren],
 	);
 
 	if (!Array.isArray(value)) return <></>;
@@ -296,7 +319,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			}
 		: undefined;
 
-	let rows;
+	let rows: any[] = [];
 	let treeRowCount = 0;
 	if (treeMode && expandedKeys && toggleExpand) {
 		const flattenedRows = flattenTree({
@@ -360,6 +383,22 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		});
 	}
 
+	const [progressiveCount, setProgressiveCount] = useState(INITIAL_BATCH);
+
+	useEffect(() => {
+		if (!Array.isArray(value)) return;
+		const totalRows = rows?.length ?? 0;
+		if (totalRows <= INITIAL_BATCH) {
+			setProgressiveCount(totalRows);
+			return;
+		}
+		if (progressiveCount >= totalRows) return;
+		const timer = setTimeout(() => {
+			setProgressiveCount(prev => Math.min(prev + PROGRESSIVE_BATCH, totalRows));
+		}, 0);
+		return () => clearTimeout(timer);
+	}, [progressiveCount, rows?.length, value]);
+
 	let headers = undefined;
 	if (showHeaders) {
 		let checkBoxTop = undefined;
@@ -367,7 +406,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
 		}
 
-			headers = (
+		headers = (
 			<thead className="_headerContainer" style={styleNormalProperties.headerContainer}>
 				<tr
 					className="_row _header"
@@ -426,6 +465,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	let tableStyle = (hover ? styleHoverProperties : styleNormalProperties).comp;
 
+	const visibleRows = rows?.length > INITIAL_BATCH ? rows?.slice(0, progressiveCount) : rows;
+
 	return (
 		<table
 			id={styleKey}
@@ -444,7 +485,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				role="rowgroup"
 			>
 				<style>{rowStyles}</style>
-				{rows}
+				{visibleRows}
 				{emptyRows}
 			</tbody>
 			<HelperComponent context={props.context} definition={definition} />
@@ -612,7 +653,7 @@ function resolvePropertiesOfDynamicColumns(
 }
 
 function generateRows(properties: {
-	value: never[];
+	value: any[];
 	from: any;
 	to: any;
 	showCheckBox: any;
@@ -679,10 +720,12 @@ function generateRows(properties: {
 			key = ev.evaluate(getExtractionMap(data?.[index]));
 		}
 
+		const rowClassName = `_row _dataRow ${onClick ? '_pointer' : ''} ${isSelected(index) ? '_selected' : ''}`;
+
 		rows.push(
 			<tr
 				key={key}
-				className={`_row _dataRow ${onClick ? '_pointer' : ''} ${isSelected(index) ? '_selected' : ''}`}
+				className={rowClassName}
 				onClick={onClick}
 				tabIndex={onClick ? 0 : undefined}
 				role="row"
@@ -858,10 +901,7 @@ function generateDynamicColumns(
 
 		let allKeys: Set<string>;
 		if (context.table.treeMode && context.table.childrenKey) {
-			allKeys = collectAllKeysFromTree(
-				context.table.data ?? [],
-				context.table.childrenKey,
-			);
+			allKeys = collectAllKeysFromTree(context.table.data ?? [], context.table.childrenKey);
 		} else {
 			allKeys = (context.table.data ?? []).reduce((a: Set<string>, c: any) => {
 				if (!c) return a;
@@ -997,7 +1037,16 @@ interface FlattenTreeParams {
 }
 
 function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
-	const { nodes, childrenKey, uniqueKey, hasChildrenProperty, expandedKeys, depth, parentPath, basePath } = params;
+	const {
+		nodes,
+		childrenKey,
+		uniqueKey,
+		hasChildrenProperty,
+		expandedKeys,
+		depth,
+		parentPath,
+		basePath,
+	} = params;
 	const result: FlattenedRow[] = [];
 	for (let i = 0; i < nodes.length; i++) {
 		const node = nodes[i];
@@ -1056,7 +1105,6 @@ function collectAllKeysFromTree(data: any[], childrenKey: string): Set<string> {
 	walk(data);
 	return keys;
 }
-
 
 function generateTreeRows(properties: {
 	flattenedRows: FlattenedRow[];
@@ -1151,10 +1199,12 @@ function generateTreeRows(properties: {
 			},
 		};
 
+		const rowClassName = `_row _dataRow _treeDepth${row.depth} ${onClick ? '_pointer' : ''} ${isSelected(i) ? '_selected' : ''}`;
+
 		rows.push(
 			<tr
 				key={row.nodeKey}
-				className={`_row _dataRow _treeDepth${row.depth} ${onClick ? '_pointer' : ''} ${isSelected(i) ? '_selected' : ''}`}
+				className={rowClassName}
 				onClick={onClick}
 				tabIndex={onClick ? 0 : undefined}
 				role="row"
