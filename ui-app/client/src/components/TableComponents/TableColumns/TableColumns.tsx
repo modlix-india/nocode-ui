@@ -61,6 +61,7 @@ function fieldToName(field: string): string {
 }
 
 export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
+	console.log("Rendering TableColumns with key:", props.definition.key);
 	const [value, setValue] = useState([]);
 	const {
 		definition: { key, children: originalChildren },
@@ -226,6 +227,23 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		[columnDef, locationHistoryKey, pageExtractor, columnChildren],
 	);
 
+	const [progressiveCount, setProgressiveCount] = useState(INITIAL_BATCH);
+	const progressiveRowRef = React.useRef<number>(0);
+
+	useEffect(() => {
+		if (!Array.isArray(value)) return;
+		const totalRows = progressiveRowRef.current;
+		if (totalRows <= INITIAL_BATCH) {
+			setProgressiveCount(totalRows);
+			return;
+		}
+		if (progressiveCount >= totalRows) return;
+		const timer = setTimeout(() => {
+			setProgressiveCount(prev => Math.min(prev + PROGRESSIVE_BATCH, totalRows));
+		}, 0);
+		return () => clearTimeout(timer);
+	}, [progressiveCount, progressiveRowRef.current, value]);
+
 	if (!Array.isArray(value)) return <></>;
 
 	let entry = Object.entries(children ?? {}).find(([, v]) => v);
@@ -383,21 +401,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		});
 	}
 
-	const [progressiveCount, setProgressiveCount] = useState(INITIAL_BATCH);
-
-	useEffect(() => {
-		if (!Array.isArray(value)) return;
-		const totalRows = rows?.length ?? 0;
-		if (totalRows <= INITIAL_BATCH) {
-			setProgressiveCount(totalRows);
-			return;
-		}
-		if (progressiveCount >= totalRows) return;
-		const timer = setTimeout(() => {
-			setProgressiveCount(prev => Math.min(prev + PROGRESSIVE_BATCH, totalRows));
-		}, 0);
-		return () => clearTimeout(timer);
-	}, [progressiveCount, rows?.length, value]);
+	progressiveRowRef.current = rows?.length ?? 0;
 
 	let headers = undefined;
 	if (showHeaders) {
