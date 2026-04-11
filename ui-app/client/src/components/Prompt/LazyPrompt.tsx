@@ -1541,7 +1541,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						{isStreaming && messages.at(-1)?.role === 'user' && (
 							<ThinkingBlock
 								isActive={true}
-								toolCalls={[]}
+								toolCalls={
+									messages
+										.findLast(m => m.role === 'assistant')
+										?.toolCalls ?? []
+								}
 								toolRunningIcon={toolRunningIcon}
 								toolSuccessIcon={toolSuccessIcon}
 								toolErrorIcon={toolErrorIcon}
@@ -1549,6 +1553,21 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								collapseIcon={collapseIcon}
 							/>
 						)}
+						{/* Render pending confirmations at the bottom so they're always
+						    visible even when ThinkingBlock is showing. This handles the
+						    case where the agent is waiting for user approval while the
+						    UI shows "Brainstorming..." */}
+						{isStreaming &&
+							messages
+								.flatMap(m => m.confirmationActions ?? [])
+								.filter(a => a.status === 'pending')
+								.map(action => (
+									<ActionBlock
+										key={`bottom-${action.confirmationId}`}
+										action={action}
+										onRespond={handleActionResponse}
+									/>
+								))}
 						<div ref={messagesEndRef} />
 					</div>
 				</div>
