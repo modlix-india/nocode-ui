@@ -111,6 +111,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'HEADER', displayName: 'HEADER', description: 'Header tag' },
 			{ name: 'MAIN', displayName: 'MAIN', description: 'Main tag' },
 			{ name: 'NAV', displayName: 'NAV', description: 'Nav tag' },
+			{
+				name: '_bare',
+				displayName: 'Bare (div, no default styling)',
+				description:
+					'Renders a plain <div> with no default Grid styling — use for cloned sites where you provide all CSS via styleProperties.',
+			},
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.background,

@@ -54,6 +54,18 @@ export default function LinkStyle({
 	${PREFIX} ._externalButton {
 		position: relative;
 	}
+
+	${PREFIX}._bare, ${PREFIX}._bare:hover, ${PREFIX}._bare:visited, ${PREFIX}._bare:active, ${PREFIX}._bare:focus {
+		color: inherit;
+		background: none;
+		background-color: transparent;
+		text-decoration: none;
+		padding: 0;
+		margin: 0;
+		border: none;
+		gap: 0;
+		font: inherit;
+	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="LinkCss">{css}</style>;

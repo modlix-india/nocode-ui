@@ -17,6 +17,18 @@ export default function IframeStyle({
         flex:1;
         height:100%;
     }
+
+    ${PREFIX}._bare {
+        padding: 0;
+        margin: 0;
+        background: none;
+        background-color: transparent;
+        border: none;
+    }
+    ${PREFIX}._bare iframe {
+        border: 0 !important;
+        outline: none;
+    }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="IframeCss">{css}</style>;
 }

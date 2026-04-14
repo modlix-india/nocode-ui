@@ -172,7 +172,7 @@ function Text(props: Readonly<ComponentProps>) {
 	);
 	return (
 		<div
-			className={`comp compText ${textContainer} ${textColor}`}
+			className={`comp compText ${textContainer} ${textColor} ${designType ?? ''}`}
 			style={styleProperties.comp ?? {}}
 			title={removeToolTip ? undefined : originalText}
 		>

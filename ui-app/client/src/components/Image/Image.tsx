@@ -83,6 +83,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			tooltipEnabled,
 			tooltipPosition,
 			tooltipOffset,
+			designType,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -594,7 +595,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className="comp compImage"
+			className={`comp compImage ${designType ?? ''}`}
 			style={{ ...(resolvedStyles.comp ?? {}), userSelect: isDragging ? 'none' : 'auto' }}
 			ref={containerRef}
 			onMouseMove={handleMouseMove}

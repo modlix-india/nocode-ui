@@ -254,7 +254,7 @@ function Grid(props: Readonly<ComponentProps>) {
 				<Link
 					key={`${key}_Link`}
 					ref={ref}
-					className={`_anchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${
+					className={`_anchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${containerType === '_bare' ? '_bare' : ''} ${
 						sepStyle ? `_${key}_grid_css` : ''
 					}`}
 					onMouseEnter={
@@ -330,7 +330,7 @@ function Grid(props: Readonly<ComponentProps>) {
 			: undefined;
 
 	return React.createElement(
-		containerType.toLowerCase(),
+		containerType === '_bare' ? 'div' : containerType.toLowerCase(),
 		{
 			onScroll: onScrollFunction,
 			onMouseEnter:
@@ -371,7 +371,7 @@ function Grid(props: Readonly<ComponentProps>) {
 			onBlur: stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined,
 			ref: ref,
 			draggable: !!dragData,
-			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${
+			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${containerType === '_bare' ? '_bare' : ''} ${
 				sepStyle ? `_${key}_grid_css` : ''
 			}`,
 			style: resolvedStyles.comp ?? {},

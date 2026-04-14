@@ -53,6 +53,27 @@ export default function ButtonStyle({
 			justify-content: center;
 		}
 
+		${PREFIX}._bare, ${PREFIX}._bare:hover, ${PREFIX}._bare:focus, ${PREFIX}._bare:active {
+			all: revert;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			background: none;
+			background-color: transparent;
+			color: inherit;
+			padding: 0;
+			margin: 0;
+			border: none;
+			border-radius: 0;
+			box-shadow: none;
+			outline: none;
+			width: auto;
+			height: auto;
+			font: inherit;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
 		${PREFIX} ._icon{
 			position: relative;
 		}

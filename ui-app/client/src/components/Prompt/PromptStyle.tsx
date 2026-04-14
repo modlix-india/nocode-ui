@@ -765,6 +765,14 @@ export default function PromptStyle({
 			max-width: 768px;
 			margin: 0 auto;
 			position: relative;
+			transition: outline-color 120ms ease;
+			outline: 2px dashed transparent;
+			outline-offset: 4px;
+			border-radius: 12px;
+		}
+
+		${PREFIX} ._promptInputBar._dragOver {
+			outline-color: currentColor;
 		}
 
 		/* Input attachments preview */

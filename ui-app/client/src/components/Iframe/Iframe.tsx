@@ -45,6 +45,7 @@ function Iframe(props: Readonly<ComponentProps>) {
 			loading,
 			allowfullscreen,
 			allow,
+			designType,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -82,7 +83,7 @@ function Iframe(props: Readonly<ComponentProps>) {
 	}, [src]);
 
 	return (
-		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
+		<div className={`comp compIframe ${designType ?? ''}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
 			{shouldRenderIframe ? (
 				<iframe

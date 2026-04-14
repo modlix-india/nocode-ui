@@ -57,9 +57,11 @@ export function InputBar({
 	const [text, setText] = useState(initialText ?? '');
 	const [attachments, setAttachments] = useState<Attachment[]>([]);
 	const [isListening, setIsListening] = useState(false);
+	const [isDragging, setIsDragging] = useState(false);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const recognitionRef = useRef<any>(null);
+	const inputBarRef = useRef<HTMLDivElement>(null);
 
 	// Sync internal text when initialText changes (e.g. session switch)
 	useEffect(() => {
@@ -136,6 +138,60 @@ export function InputBar({
 			}
 		},
 		[addFileAttachment],
+	);
+
+	// Capture paste events anywhere inside the input bar (not just textarea)
+	// so the user doesn't have to click the text field first.
+	useEffect(() => {
+		const el = inputBarRef.current;
+		if (!el) return;
+		const onPaste = (e: ClipboardEvent) => {
+			if (disabled || isStreaming) return;
+			const items = e.clipboardData?.items;
+			if (!items) return;
+			for (let i = 0; i < items.length; i++) {
+				if (items[i].type.startsWith('image/')) {
+					e.preventDefault();
+					const file = items[i].getAsFile();
+					if (file) addFileAttachment(file);
+					return;
+				}
+			}
+		};
+		el.addEventListener('paste', onPaste);
+		return () => el.removeEventListener('paste', onPaste);
+	}, [addFileAttachment, disabled, isStreaming]);
+
+	// Drag-and-drop: drop an image anywhere on the input bar to attach it
+	const handleDragOver = useCallback(
+		(e: React.DragEvent<HTMLDivElement>) => {
+			e.preventDefault();
+			e.stopPropagation();
+			if (!isDragging) setIsDragging(true);
+		},
+		[isDragging],
+	);
+
+	const handleDragLeave = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+		// Only clear if leaving the bar itself, not children
+		if (e.currentTarget === e.target) setIsDragging(false);
+	}, []);
+
+	const handleDrop = useCallback(
+		(e: React.DragEvent<HTMLDivElement>) => {
+			e.preventDefault();
+			e.stopPropagation();
+			setIsDragging(false);
+			if (disabled || isStreaming) return;
+			const files = e.dataTransfer?.files;
+			if (!files?.length) return;
+			for (let i = 0; i < files.length; i++) {
+				addFileAttachment(files[i]);
+			}
+		},
+		[addFileAttachment, disabled, isStreaming],
 	);
 
 	const handleFileSelect = useCallback(
@@ -218,8 +274,12 @@ export function InputBar({
 
 	return (
 		<div
-			className="_promptInputBar"
+			ref={inputBarRef}
+			className={`_promptInputBar${isDragging ? ' _dragOver' : ''}`}
 			style={styleProperties?.inputBar ?? {}}
+			onDragOver={handleDragOver}
+			onDragLeave={handleDragLeave}
+			onDrop={handleDrop}
 		>
 			<SubHelperComponent
 				definition={definition}

@@ -3,6 +3,7 @@ import { ComponentPropertyDefinition, ComponentPropertyGroup } from '../../types
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	COMMON_COMPONENT_PROPERTIES.designType,
 	{
 		name: 'src',
 		schema: SCHEMA_STRING_COMP_PROP,

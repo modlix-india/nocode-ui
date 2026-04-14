@@ -44,6 +44,14 @@ export default function LabelStyle({
 
 	const css =
 		`
+	${PREFIX}._bare {
+		margin: 0;
+		padding: 0;
+		background: none;
+		background-color: transparent;
+		border: none;
+	}
+
 	${PREFIX} ._textContainer {
 		width: 100%;
 		display: block;

@@ -13,6 +13,21 @@ export default function ImageStyle({
             cursor: pointer;
         }
 
+        ${PREFIX}._bare {
+            background: none;
+            background-color: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
+            display: block;
+        }
+        ${PREFIX}._bare img, ${PREFIX}._bare object {
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            display: block;
+        }
+
         ${PREFIX} img {
             width: inherit;
             height: inherit;

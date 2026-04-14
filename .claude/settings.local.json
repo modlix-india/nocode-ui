@@ -1,0 +1,47 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3)",
+      "Bash(wc -l \"/Users/kirangrandhi/kiran/fincity/nocode-ai/definitions/site defs/fincityskvxysxhbnyignp_FIN/\"*)",
+      "Bash(find \"/Users/kirangrandhi/kiran/fincity/nocode-ai/definitions/site defs/fincityskvxysxhbnyignp_FIN/Page/\" -name \"*.json\" -exec wc -l {} \\\\;)",
+      "Bash(awk '{total += $1} END {print \"Total lines across all pages:\", total; print \"Files:\", NR}')",
+      "Bash(python3 -c ':*)",
+      "Read(//Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/bin/**)",
+      "Bash(./venv/bin/python3 -c ':*)",
+      "Bash(./venv/bin/pip list:*)",
+      "Bash(timeout 20 ./venv/bin/python3 -c ':*)",
+      "Bash(./venv/bin/pip install:*)",
+      "Bash(./venv/bin/python3 -m pip install google-generativeai)",
+      "Bash(ls venv/bin/python*)",
+      "Bash(/Users/kirangrandhi/kiran/fincity/nocode-ai/venv/bin/python3 -m pip install google-generativeai)",
+      "Bash(/Users/kirangrandhi/kiran/fincity/nocode-ai/venv/bin/python3 -c ':*)",
+      "Bash(find \"/Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src/components\" -name \"*StyleProperties.ts\" -exec wc -l {} \\\\;)",
+      "Bash(grep -h \"sel:\" \"/Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src/components\"/**/*StyleProperties.ts)",
+      "Bash(grep -l \"stylePropertiesDefinition\" \"/Users/kirangrandhi/kiran/fincity/nocode-ui/ui-app/client/src/components\"/**/*.ts)",
+      "Bash(ls -la /Users/kirangrandhi/kiran/fincity/nocode-ai/app/agents/appbuilder/tools/*.py)",
+      "Read(//Users/kirangrandhi/.claude/projects/-Users-kirangrandhi-kiran-fincity-nocode-ui/**)",
+      "Bash(python3 -c \" import sys, json for line in sys.stdin: try: msg = json.loads\\(line\\) if msg.get\\('type'\\) == 'assistant': content = msg.get\\('message', {}\\).get\\('content', []\\) for c in content: if isinstance\\(c, dict\\) and c.get\\('type'\\) == 'text': print\\(c['text'][:500]\\) print\\('---'\\) except: pass \")",
+      "Bash(python3 -c \" import sys, json for line in sys.stdin: try: msg = json.loads\\(line\\) if msg.get\\('type'\\) in \\('human', 'assistant'\\): content = msg.get\\('message', {}\\).get\\('content', []\\) for c in content: if isinstance\\(c, dict\\) and c.get\\('type'\\) == 'text': txt = c['text'][:300] if txt.strip\\(\\): print\\(f'[{msg[\\\\\"type\\\\\"]}] {txt}'\\) print\\('---'\\) except: pass \")",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\('app/agents/appbuilder/tools/html_to_modlix.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\('app/agents/appbuilder/tools/visual_qa.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\('app/agents/appbuilder/tools/vision_converter.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\('app/agents/appbuilder/tools/section_extractor.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\('app/agents/appbuilder/tools/section_builder.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(python3 -c \"import ast; ast.parse\\(open\\('app/agents/appbuilder/tools/clone_tool.py'\\).read\\(\\)\\); print\\('OK'\\)\")",
+      "Bash(curl -s https://apps.local.modlix.com/api/ai/appbuilder/chat -H 'Accept: */*' -H 'Content-Type: application/json' -b Authorization=eyJhbGciOiJIUzUxMiJ9.eyJob3N0TmFtZSI6ImFwcHMubG9jYWwubW9kbGl4LmNvbSxsb2NhbGhvc3Q6ODA4MCIsInBvcnQiOiI0NDMsODA4MCIsImxvZ2dlZEluQ2xpZW50SWQiOjEsImxvZ2dlZEluQ2xpZW50Q29kZSI6IlNZU1RFTSIsImFwcENvZGUiOiJhcHBidWlsZGVyIiwib25lVGltZSI6ZmFsc2UsInVzZXJJZCI6MTQyLCJpYXQiOjE3NzU5MDExMzgsImV4cCI6MTgwNzQzNzEzOH0.8vWQlzA4tqlyY94aInQTHacKUOnoHEglLYZgc7ohcu8gbCR-uhJ4ywo0cqt8FTsOQ95_hlyzOGJYmY_LNnosqQ -H 'Origin: https://apps.local.modlix.com' -H 'Referer: https://apps.local.modlix.com/appbuilder/SYSTEM/page/agent' -H 'appCode: appbuilder' -H 'clientCode;' --data-raw '{\"message\":\"clone https://sobhabangalore.co.in/ to \\\\\"bobabangalore\\\\\" sobha3 page.\",\"session_id\":null}' --max-time 300)",
+      "Read(//dev/**)",
+      "Bash(curl -s https://apps.local.modlix.com/api/ai/appbuilder/chat -H 'Content-Type: application/json' -b Authorization=eyJhbGciOiJIUzUxMiJ9.eyJob3N0TmFtZSI6ImFwcHMubG9jYWwubW9kbGl4LmNvbSxsb2NhbGhvc3Q6ODA4MCIsInBvcnQiOiI0NDMsODA4MCIsImxvZ2dlZEluQ2xpZW50SWQiOjEsImxvZ2dlZEluQ2xpZW50Q29kZSI6IlNZU1RFTSIsImFwcENvZGUiOiJhcHBidWlsZGVyIiwib25lVGltZSI6ZmFsc2UsInVzZXJJZCI6MTQyLCJpYXQiOjE3NzU5MDExMzgsImV4cCI6MTgwNzQzNzEzOH0.8vWQlzA4tqlyY94aInQTHacKUOnoHEglLYZgc7ohcu8gbCR-uhJ4ywo0cqt8FTsOQ95_hlyzOGJYmY_LNnosqQ -H 'Origin: https://apps.local.modlix.com' -H 'Referer: https://apps.local.modlix.com/appbuilder/SYSTEM/page/agent' -H 'appCode: appbuilder' -H 'clientCode;' --data-raw '{\"message\":\"clone https://sobhabangalore.co.in/ to \\\\\"bobabangalore\\\\\" sobha3 page.\",\"session_id\":null}' --max-time 300)",
+      "Bash(curl -s -o /dev/null -w '%{http_code}' https://apps.local.modlix.com/api/ai/appbuilder/sessions -H 'appCode: appbuilder' -b Authorization=eyJhbGciOiJIUzUxMiJ9.eyJob3N0TmFtZSI6ImFwcHMubG9jYWwubW9kbGl4LmNvbSxsb2NhbGhvc3Q6ODA4MCIsInBvcnQiOiI0NDMsODA4MCIsImxvZ2dlZEluQ2xpZW50SWQiOjEsImxvZ2dlZEluQ2xpZW50Q29kZSI6IlNZU1RFTSIsImFwcENvZGUiOiJhcHBidWlsZGVyIiwib25lVGltZSI6ZmFsc2UsInVzZXJJZCI6MTQyLCJpYXQiOjE3NzU5MDExMzgsImV4cCI6MTgwNzQzNzEzOH0.8vWQlzA4tqlyY94aInQTHacKUOnoHEglLYZgc7ohcu8gbCR-uhJ4ywo0cqt8FTsOQ95_hlyzOGJYmY_LNnosqQ)",
+      "WebFetch(domain:api-docs.deepseek.com)",
+      "Read(//Users/kirangrandhi/Downloads/**)"
+    ],
+    "additionalDirectories": [
+      "/Users/kirangrandhi/kiran/fincity/nocode-saas/commons/src/main/java/com/fincity/saas/commons/model/dto",
+      "/Users/kirangrandhi/kiran/fincity/nocode-saas/commons-mongo/src/main/java/com/fincity/saas/commons/mongo/document",
+      "/Users/kirangrandhi/kiran/fincity/nocode-saas/commons-mongo/src/main/java/com/fincity/saas/commons/mongo/service",
+      "/Users/kirangrandhi/kiran/fincity/nocode-saas/ui/src/main/java/com/fincity/saas/ui/service",
+      "/Users/kirangrandhi/kiran/fincity/nocode-saas/ui/src/main/java/com/fincity/saas/ui/controller",
+      "/Users/kirangrandhi/kiran/fincity/nocode-saas/ui/src/main/java/com/fincity/saas/ui/model"
+    ]
+  }
+}
