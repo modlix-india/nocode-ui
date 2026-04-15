@@ -76,16 +76,15 @@ function getDefaultStyles(styleProps: ComponentStyle | undefined) {
 	if (inStyles.length !== 1) {
 		if (inStyles.length === 0) {
 			const key = shortUUID();
-			const newStyleProps = duplicate(styleProps ?? {}) as ComponentStyle;
-			newStyleProps[key] = { resolutions: { ALL: {} } };
-			return [key, {}];
+			return [key, { resolutions: { ALL: {} } }];
 		} else {
 			let styles = duplicate(inStyles);
 			const first = styles[0];
+			first[1].resolutions ??= {};
 			const newStyleProps = duplicate(styleProps) as ComponentStyle;
 			for (let i = 1; i < styles.length; i++) {
 				delete newStyleProps[styles[i][0]];
-				Object.entries(styles[i][1].resolutions).forEach(e => {
+				Object.entries(styles[i][1].resolutions ?? {}).forEach(e => {
 					if (!first[1].resolutions[e[0]]) first[1].resolutions[e[0]] = {};
 					Object.assign(first[1].resolutions[e[0]], e[1]);
 				});
@@ -94,7 +93,9 @@ function getDefaultStyles(styleProps: ComponentStyle | undefined) {
 			return first;
 		}
 	}
-	return inStyles[0];
+	const only = inStyles[0];
+	only[1].resolutions ??= {};
+	return only;
 }
 
 function getProperties(
@@ -112,8 +113,9 @@ function getProperties(
 
 	let styles = duplicate(conditionStyles);
 	const first = duplicate(defaultStyles);
+	first[1].resolutions ??= {};
 
-	Object.entries(styles[1].resolutions).forEach(e => {
+	Object.entries(styles[1].resolutions ?? {}).forEach(e => {
 		if (!first[1].resolutions[e[0]]) first[1].resolutions[e[0]] = {};
 		Object.assign(first[1].resolutions[e[0]], e[1]);
 	});

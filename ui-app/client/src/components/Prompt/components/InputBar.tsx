@@ -123,23 +123,6 @@ export function InputBar({
 		setAttachments(prev => [...prev, attachment]);
 	}, []);
 
-	const handlePaste = useCallback(
-		(e: React.ClipboardEvent<HTMLTextAreaElement>) => {
-			const items = e.clipboardData?.items;
-			if (!items) return;
-
-			for (let i = 0; i < items.length; i++) {
-				if (items[i].type.startsWith('image/')) {
-					e.preventDefault();
-					const file = items[i].getAsFile();
-					if (file) addFileAttachment(file);
-					return;
-				}
-			}
-		},
-		[addFileAttachment],
-	);
-
 	// Capture paste events anywhere inside the input bar (not just textarea)
 	// so the user doesn't have to click the text field first.
 	useEffect(() => {
@@ -334,7 +317,6 @@ export function InputBar({
 					value={text}
 					onChange={handleInput}
 					onKeyDown={handleKeyDown}
-					onPaste={handlePaste}
 					placeholder={placeholder}
 					disabled={disabled}
 					rows={1}

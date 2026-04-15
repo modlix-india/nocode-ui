@@ -1541,11 +1541,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						{isStreaming && messages.at(-1)?.role === 'user' && (
 							<ThinkingBlock
 								isActive={true}
-								toolCalls={
-									messages
-										.findLast(m => m.role === 'assistant')
-										?.toolCalls ?? []
-								}
+								// Empty toolCalls — this transitional thinking block renders
+								// BEFORE the new assistant message is appended to state.
+								// Reusing the PREVIOUS assistant's toolCalls here made stale
+								// tools from the prior turn appear attached to the new prompt.
+								toolCalls={[]}
 								toolRunningIcon={toolRunningIcon}
 								toolSuccessIcon={toolSuccessIcon}
 								toolErrorIcon={toolErrorIcon}
