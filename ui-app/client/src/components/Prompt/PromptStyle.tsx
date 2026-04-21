@@ -385,12 +385,17 @@ export default function PromptStyle({
 			gap: 24px;
 		}
 
-		/* Empty state — centered layout with input below */
+		/* Empty state — welcome + input centered as one group */
+		${PREFIX} ._promptEmpty {
+			justify-content: center;
+		}
+
 		${PREFIX} ._promptEmpty ._promptMessages {
-			flex: 1;
+			flex: none;
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			overflow: visible;
 		}
 
 		${PREFIX} ._promptEmpty ._promptTopBar {
@@ -716,15 +721,15 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._thinkingToolEntry._running ._thinkingToolIcon {
-			color: #6c757d;
+			color: #1a1a1a;
 		}
 
 		${PREFIX} ._thinkingToolEntry._success ._thinkingToolIcon {
-			color: #198754;
+			color: #1a1a1a;
 		}
 
 		${PREFIX} ._thinkingToolEntry._error ._thinkingToolIcon {
-			color: #dc3545;
+			color: #1a1a1a;
 		}
 
 		${PREFIX} ._thinkingToolName {
@@ -773,6 +778,200 @@ export default function PromptStyle({
 			margin: 0 8px 4px;
 			white-space: pre-wrap;
 			word-break: break-word;
+		}
+
+		/* ─── Monochrome status dot (running / success / error) ─── */
+		${PREFIX} ._statusDot {
+			display: inline-block;
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			flex-shrink: 0;
+			box-sizing: border-box;
+		}
+		${PREFIX} ._statusDot._running {
+			background: #1a1a1a;
+			animation: promptStatusDotPulse 1.2s ease-in-out infinite;
+		}
+		${PREFIX} ._statusDot._success {
+			background: #1a1a1a;
+		}
+		${PREFIX} ._statusDot._error {
+			background: transparent;
+			border: 1.5px solid #1a1a1a;
+		}
+		@keyframes promptStatusDotPulse {
+			0%, 100% { opacity: 1; transform: scale(1); }
+			50%      { opacity: 0.25; transform: scale(0.75); }
+		}
+
+		${PREFIX} ._statusDotStatic {
+			display: inline-block;
+			width: 7px;
+			height: 7px;
+			border-radius: 50%;
+			flex-shrink: 0;
+			background: #1a1a1a;
+		}
+
+		/* ─── Agent group (single agent = no wrapper, multi = group) ─── */
+		${PREFIX} ._agentGroupSingle {
+			max-width: 768px;
+			font-size: 13px;
+			margin-bottom: 4px;
+			align-self: flex-start;
+		}
+
+		${PREFIX} ._agentRow {
+			margin: 2px 0;
+		}
+
+		${PREFIX} ._agentRowHeader {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 6px 8px;
+			border: none;
+			background: none;
+			font: inherit;
+			color: inherit;
+			width: 100%;
+			text-align: left;
+			cursor: pointer;
+			border-radius: 8px;
+		}
+
+		${PREFIX} ._agentRowHeader:hover {
+			background: #f4f4f4;
+		}
+
+		${PREFIX} ._agentRowHeader > i {
+			font-size: 10px;
+			color: #9b9b9b;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._agentRowLabel {
+			font-size: 13px;
+			color: #8b8b8b;
+		}
+
+		${PREFIX} ._agentRowName {
+			color: #1a1a1a;
+			font-weight: 600;
+		}
+
+		${PREFIX} ._agentRowRight {
+			margin-left: auto;
+			font-size: 12px;
+			color: #9b9b9b;
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._agentRowBody {
+			padding-left: 24px;
+			margin: 0 0 4px;
+			border-left: 1px solid #e5e5e5;
+			margin-left: 12px;
+			display: flex;
+			flex-direction: column;
+			gap: 1px;
+		}
+
+		${PREFIX} ._agentToolRow {
+			display: flex;
+			flex-direction: column;
+		}
+
+		${PREFIX} ._agentToolHeader {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 3px 8px;
+			font-size: 12px;
+			color: #666;
+			border: none;
+			background: none;
+			font: inherit;
+			text-align: left;
+			width: 100%;
+			border-radius: 6px;
+		}
+
+		${PREFIX} ._agentToolHeader._clickable {
+			cursor: pointer;
+		}
+
+		${PREFIX} ._agentToolHeader._clickable:hover {
+			background: #f4f4f4;
+		}
+
+		${PREFIX} ._agentToolLabel {
+			font-size: 12px;
+			color: #8b8b8b;
+		}
+
+		${PREFIX} ._agentToolName {
+			color: #1a1a1a;
+			font-weight: 500;
+		}
+
+		${PREFIX} ._agentToolSummary {
+			color: #9b9b9b;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			flex: 1;
+			min-width: 0;
+			font-size: 12px;
+		}
+
+		${PREFIX} ._agentToolToggle {
+			font-size: 9px;
+			color: #9b9b9b;
+			flex-shrink: 0;
+			margin-left: auto;
+		}
+
+		${PREFIX} ._agentToolDetail {
+			padding: 6px 8px;
+			font-size: 11px;
+			line-height: 1.5;
+			color: #555;
+			background: #f5f5f5;
+			border-radius: 6px;
+			white-space: pre-wrap;
+			word-break: break-word;
+			max-height: 200px;
+			overflow-y: auto;
+		}
+
+		${PREFIX} ._agentStatusText {
+			padding: 3px 8px;
+			font-size: 12px;
+			color: #9b9b9b;
+			font-style: italic;
+		}
+
+		${PREFIX} ._agentToolExpanded {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			padding-left: 12px;
+			margin: 2px 0 4px;
+			border-left: 1px solid #e5e5e5;
+			margin-left: 8px;
+		}
+
+		${PREFIX} ._agentToolUpdates {
+			padding: 2px 8px;
+		}
+
+		${PREFIX} ._agentToolUpdateLine {
+			font-size: 11px;
+			line-height: 1.6;
+			color: #9b9b9b;
 		}
 
 		/* Streaming cursor */
@@ -828,6 +1027,363 @@ export default function PromptStyle({
 			background: #ddd;
 		}
 
+		/* ─── Suggestion buttons ─── */
+		${PREFIX} ._suggestions {
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+			margin-top: 12px;
+			max-width: 75%;
+		}
+
+		${PREFIX} ._suggestionButton {
+			padding: 8px 16px;
+			border: 1px solid #ddd;
+			border-radius: 18px;
+			background: #fff;
+			color: #1a1a1a;
+			font-size: 14px;
+			cursor: pointer;
+			transition: background 0.15s, border-color 0.15s;
+		}
+
+		${PREFIX} ._suggestionButton:hover {
+			background: #f4f4f4;
+			border-color: #bbb;
+		}
+
+		${PREFIX} ._suggestionButton:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		${PREFIX} ._suggestionButton._selected {
+			background: #e8e8e8;
+			border-color: #999;
+		}
+
+		${PREFIX} ._suggestionsConfirm {
+			background: #1a1a1a;
+			color: #fff;
+			border-color: #1a1a1a;
+		}
+
+		${PREFIX} ._suggestionsConfirm:hover {
+			background: #333;
+		}
+
+		/* ─── Craft Card (inline in chat) ─── */
+		${PREFIX} ._craftCard {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 10px 14px;
+			border: 1px solid #e5e5e5;
+			border-radius: 10px;
+			background: #fafafa;
+			cursor: pointer;
+			margin-top: 12px;
+			width: fit-content;
+			max-width: 300px;
+			transition: background 0.15s, border-color 0.15s;
+			font-family: inherit;
+			text-align: left;
+		}
+
+		${PREFIX} ._craftCard:hover {
+			background: #f0f0f0;
+			border-color: #ccc;
+		}
+
+		${PREFIX} ._craftCardIcon {
+			font-size: 16px;
+			color: #666;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._craftCardText {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			min-width: 0;
+		}
+
+		${PREFIX} ._craftCardTitle {
+			font-size: 14px;
+			font-weight: 500;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		${PREFIX} ._craftCardSubtitle {
+			font-size: 12px;
+			color: #888;
+		}
+
+		${PREFIX} ._craftCardChevron {
+			font-size: 12px;
+			color: #bbb;
+			flex-shrink: 0;
+		}
+
+		/* ─── Craft Cards Bar (above input) ─── */
+		${PREFIX} ._craftCardsBar {
+			display: flex;
+			gap: 8px;
+			padding: 8px 16px;
+			overflow-x: auto;
+			flex-shrink: 0;
+			max-width: 768px;
+			margin: 0 auto;
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		/* ─── Craft Panel (side panel) ─── */
+		${PREFIX} ._promptMain._hasCraft {
+			flex: 0 0 60%;
+			max-width: 60%;
+			min-width: 0;
+		}
+
+		${PREFIX} ._promptMain._hasCraft ._promptMessages {
+			max-width: 100%;
+		}
+
+		${PREFIX} ._promptMain._hasCraft ._promptMessagesInner {
+			max-width: 100%;
+			padding: 0 16px;
+		}
+
+		${PREFIX} ._craftPanel {
+			flex: 0 0 40%;
+			max-width: 40%;
+			border-left: 1px solid #e5e5e5;
+			display: flex;
+			flex-direction: column;
+			height: 100%;
+			background: #fff;
+			overflow: hidden;
+		}
+
+		${PREFIX} ._craftPanelHeader {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 14px 16px;
+			border-bottom: 1px solid #e5e5e5;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._craftPanelTitle {
+			font-size: 16px;
+			font-weight: 600;
+		}
+
+		${PREFIX} ._craftPanelClose {
+			width: 28px;
+			height: 28px;
+			border: none;
+			background: transparent;
+			color: #999;
+			cursor: pointer;
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 14px;
+		}
+
+		${PREFIX} ._craftPanelClose:hover {
+			background: #f4f4f4;
+			color: #1a1a1a;
+		}
+
+		${PREFIX} ._craftPanelBody {
+			flex: 1;
+			overflow-y: auto;
+			padding: 16px;
+		}
+
+		/* ─── Craft Block Styles ─── */
+		${PREFIX} ._craftContent {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		${PREFIX} ._craftHeading {
+			margin: 0;
+		}
+
+		${PREFIX} h1._craftHeading { font-size: 20px; }
+		${PREFIX} h2._craftHeading { font-size: 16px; }
+		${PREFIX} h3._craftHeading { font-size: 14px; }
+
+		${PREFIX} ._craftText {
+			margin: 0;
+			font-size: 14px;
+			line-height: 1.6;
+		}
+
+		${PREFIX} ._craftBadge {
+			display: inline-block;
+			padding: 3px 10px;
+			border-radius: 12px;
+			font-size: 12px;
+			font-weight: 500;
+			background: #f0f0f0;
+			color: #555;
+			width: fit-content;
+		}
+
+		${PREFIX} ._craftKeyValue {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		${PREFIX} ._craftKvRow {
+			display: flex;
+			gap: 8px;
+			font-size: 14px;
+		}
+
+		${PREFIX} ._craftKvKey {
+			color: #666;
+			min-width: 100px;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._craftKvValue {
+		}
+
+		${PREFIX} ._craftKvValue a {
+			color: #1967d2;
+			text-decoration: none;
+		}
+
+		${PREFIX} ._craftKvValue a:hover {
+			text-decoration: underline;
+		}
+
+		${PREFIX} ._craftImage a {
+			display: block;
+			cursor: zoom-in;
+		}
+
+		${PREFIX} ._craftImage img {
+			max-width: 100%;
+			border-radius: 8px;
+			aspect-ratio: 16 / 10;
+			object-fit: cover;
+			background: #f0f0f0;
+		}
+
+		${PREFIX} ._craftImageCaption {
+			font-size: 12px;
+			color: #888;
+			margin-top: 4px;
+			display: block;
+		}
+
+		${PREFIX} ._craftTable {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 13px;
+		}
+
+		${PREFIX} ._craftTable th,
+		${PREFIX} ._craftTable td {
+			padding: 8px 10px;
+			text-align: left;
+			border-bottom: 1px solid #eee;
+		}
+
+		${PREFIX} ._craftTable th {
+			font-weight: 600;
+			color: #666;
+			font-size: 12px;
+			text-transform: uppercase;
+		}
+
+		${PREFIX} ._craftDivider {
+			border: none;
+			border-top: 1px solid #eee;
+			margin: 4px 0;
+		}
+
+		${PREFIX} ._craftMetric {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		${PREFIX} ._craftMetricLabel {
+			font-size: 12px;
+			color: #888;
+		}
+
+		${PREFIX} ._craftMetricValue {
+			font-size: 20px;
+			font-weight: 600;
+		}
+
+		${PREFIX} ._craftMetricDetail {
+			font-size: 12px;
+			color: #666;
+		}
+
+		${PREFIX} ._craftMetricTrend._up { color: #34a853; }
+		${PREFIX} ._craftMetricTrend._down { color: #ea4335; }
+
+		${PREFIX} ._craftCallout {
+			padding: 10px 14px;
+			border-radius: 8px;
+			font-size: 14px;
+		}
+
+		${PREFIX} ._craftCallout._info { background: #e8f0fe; color: #1967d2; }
+		${PREFIX} ._craftCallout._warning { background: #fef7e0; color: #b06000; }
+		${PREFIX} ._craftCallout._success { background: #e6f4ea; color: #137333; }
+
+		${PREFIX} ._craftList {
+			margin: 0;
+			padding-left: 20px;
+			font-size: 14px;
+			line-height: 1.8;
+			color: #333;
+		}
+
+		${PREFIX} ._craftRow {
+			display: flex;
+			gap: 16px;
+		}
+
+		${PREFIX} ._craftRow > * {
+			flex: 1;
+		}
+
+		/* ─── Craft Panel responsive ─── */
+		@media (max-width: 768px) {
+			${PREFIX} ._craftPanel {
+				position: fixed;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				width: 100%;
+				max-width: 100%;
+				z-index: 100;
+				border-left: none;
+			}
+
+			${PREFIX} ._promptMain._hasCraft {
+				flex: 1;
+				max-width: 100%;
+			}
+		}
+
 		/* ─── Message attachments ─── */
 		${PREFIX} ._messageAttachments {
 			display: flex;
@@ -863,6 +1419,7 @@ export default function PromptStyle({
 		/* ─── Input area ─── */
 		${PREFIX} ._promptInputWrapper {
 			padding: 0 16px 16px;
+			transition: margin-top 0.3s ease;
 		}
 
 		${PREFIX} ._promptInputBar {

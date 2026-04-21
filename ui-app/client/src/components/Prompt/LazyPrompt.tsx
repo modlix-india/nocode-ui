@@ -23,8 +23,12 @@ import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import { ChatMessage } from './components/ChatMessage';
 import { ThinkingBlock } from './components/ThinkingBlock';
+import { AgentGroup } from './components/AgentGroup';
 import { InputBar } from './components/InputBar';
 import { SessionList, Session } from './components/SessionList';
+import { CraftCard } from './components/CraftCard';
+import { CraftPanel } from './components/CraftPanel';
+import type { CraftData } from './components/CraftPanel';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 
 interface Message {
@@ -32,10 +36,16 @@ interface Message {
 	role: 'user' | 'assistant';
 	content: string;
 	toolCalls?: ToolCall[];
+	agentSpans?: AgentSpan[];
 	attachments?: Attachment[];
 	thinking?: string;
 	turnNumber?: number;
 	feedbackRating?: number; // -1 = thumbs down, 0 = neutral, 1 = thumbs up
+	suggestions?: {
+		options: Array<{ label: string; value: string }>;
+		mode: 'single' | 'multi';
+	};
+	craftIds?: string[];
 }
 
 interface ToolCall {
@@ -45,6 +55,27 @@ interface ToolCall {
 	summary: string;
 	success?: boolean;
 	isRunning: boolean;
+	agentId?: string; // sub-agent that produced this tool call (if any)
+	startedAt?: number;
+	updates?: string[]; // accumulated tool_update messages (mini-log)
+}
+
+interface AgentSpan {
+	agentId: string;
+	label: string;
+	parentId: string;
+	parentToolUseId?: string;
+	status: 'running' | 'success' | 'error';
+	startedAt: number;
+	endedAt?: number;
+	durationMs?: number;
+	tokensIn?: number;
+	tokensOut?: number;
+	stepCount?: number;
+	summary?: string;
+	toolCalls: ToolCall[];
+	thinking?: string;
+	statusText?: string; // live progress text from tool_update (e.g. "Analyzing results…")
 }
 
 interface Attachment {
@@ -133,12 +164,29 @@ interface SSEEventContext {
 	assistantMsgId: string;
 	currentText: string;
 	toolCalls: Map<string, ToolCall>;
+	agentSpans: Map<string, AgentSpan>;
 	setText: (t: string) => void;
 	setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 	setSessionId: React.Dispatch<React.SetStateAction<string | null>>;
 	setUsage: React.Dispatch<React.SetStateAction<TokenUsage | null>>;
 	showToolCalls: boolean;
 	setFeedbackTurn: (turn: { sessionId: string; turnNumber: number }) => void;
+	setCrafts: React.Dispatch<React.SetStateAction<Map<string, CraftData>>>;
+	setActiveCraftId: React.Dispatch<React.SetStateAction<string | null>>;
+	setActiveCraft: React.Dispatch<React.SetStateAction<CraftData | null>>;
+}
+
+// Helper: update the assistant message with current toolCalls + agentSpans state.
+function flushMessageState(ctx: SSEEventContext) {
+	const flatToolCalls = Array.from(ctx.toolCalls.values());
+	const spans = Array.from(ctx.agentSpans.values());
+	ctx.setMessages(prev =>
+		prev.map(m =>
+			m.id === ctx.assistantMsgId
+				? { ...m, toolCalls: flatToolCalls, agentSpans: spans }
+				: m,
+		),
+	);
 }
 
 function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
@@ -156,32 +204,106 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 		case 'thinking': {
-			ctx.setMessages(prev =>
-				prev.map(m =>
-					m.id === ctx.assistantMsgId
-						? { ...m, thinking: (m.thinking ?? '') + (data.text ?? '') }
-						: m,
-				),
-			);
+			const agentId = data.agent_id;
+			const span = agentId ? ctx.agentSpans.get(agentId) : undefined;
+			if (span) {
+				span.thinking = (span.thinking ?? '') + (data.text ?? '');
+				flushMessageState(ctx);
+			} else {
+				ctx.setMessages(prev =>
+					prev.map(m =>
+						m.id === ctx.assistantMsgId
+							? { ...m, thinking: (m.thinking ?? '') + (data.text ?? '') }
+							: m,
+					),
+				);
+			}
+			break;
+		}
+		case 'agent_started': {
+			const agentId = data.agent_id;
+			if (!agentId) break;
+			ctx.agentSpans.set(agentId, {
+				agentId,
+				label: data.label ?? agentId,
+				parentId: data.parent_id ?? 'root',
+				parentToolUseId: data.parent_tool_use_id || undefined,
+				status: 'running',
+				startedAt: Date.now(),
+				toolCalls: [],
+			});
+			flushMessageState(ctx);
+			break;
+		}
+		case 'agent_finished': {
+			const agentId = data.agent_id;
+			const span = agentId ? ctx.agentSpans.get(agentId) : undefined;
+			if (span) {
+				span.status = data.status === 'error' ? 'error' : 'success';
+				span.endedAt = Date.now();
+				span.durationMs = data.duration_ms ?? span.endedAt - span.startedAt;
+				span.tokensIn = data.tokens_in ?? 0;
+				span.tokensOut = data.tokens_out ?? 0;
+				span.stepCount = data.step_count ?? span.toolCalls.length;
+				span.summary = data.summary ?? '';
+				flushMessageState(ctx);
+			}
+			break;
+		}
+		case 'agent_usage': {
+			const agentId = data.agent_id;
+			const span = agentId ? ctx.agentSpans.get(agentId) : undefined;
+			if (span) {
+				span.tokensIn = data.tokens_in ?? span.tokensIn;
+				span.tokensOut = data.tokens_out ?? span.tokensOut;
+				flushMessageState(ctx);
+			}
 			break;
 		}
 		case 'tool_start': {
 			if (!ctx.showToolCalls) break;
+			const agentId = data.agent_id;
 			const tc: ToolCall = {
 				id: data.tool_use_id ?? `tc_${Date.now()}`,
 				toolName: data.tool_name ?? 'unknown',
 				displayName: data.display_name || data.tool_name || 'unknown',
 				summary: '',
 				isRunning: true,
+				agentId,
+				startedAt: Date.now(),
 			};
 			ctx.toolCalls.set(tc.id, tc);
-			ctx.setMessages(prev =>
-				prev.map(m =>
-					m.id === ctx.assistantMsgId
-						? { ...m, toolCalls: Array.from(ctx.toolCalls.values()) }
-						: m,
-				),
-			);
+			// If this tool belongs to a known sub-agent span, also nest it there.
+			const span = agentId ? ctx.agentSpans.get(agentId) : undefined;
+			if (span) span.toolCalls.push(tc);
+			flushMessageState(ctx);
+			break;
+		}
+		case 'tool_update': {
+			if (!ctx.showToolCalls) break;
+			const tuId = data.tool_use_id ?? '';
+			const msg = data.message ?? '';
+			// Check if this update targets a parent tool that spawned an agent.
+			// If so, show it as the agent's live status text.
+			let routed = false;
+			for (const [, span] of ctx.agentSpans) {
+				if (span.parentToolUseId && span.parentToolUseId === tuId && span.status === 'running') {
+					span.statusText = msg;
+					routed = true;
+					flushMessageState(ctx);
+					break;
+				}
+			}
+			if (!routed) {
+				const tuTc = ctx.toolCalls.get(tuId);
+				if (tuTc && tuTc.isRunning) {
+					// Accumulate updates as a mini-log for expanded view.
+					// Don't replace summary — that's set by tool_result only.
+					if (!tuTc.updates) tuTc.updates = [];
+					tuTc.updates.push(msg);
+					flushMessageState(ctx);
+				}
+			}
 			break;
 		}
 		case 'tool_result': {
@@ -192,13 +314,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				existing.summary = data.summary ?? '';
 				existing.success = data.success;
 				existing.isRunning = false;
-				ctx.setMessages(prev =>
-					prev.map(m =>
-						m.id === ctx.assistantMsgId
-							? { ...m, toolCalls: Array.from(ctx.toolCalls.values()) }
-							: m,
-					),
-				);
+				flushMessageState(ctx);
 			}
 			break;
 		}
@@ -244,6 +360,88 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			}
 			break;
 		}
+		case 'suggestions': {
+			const options = data.options ?? [];
+			const mode = data.mode ?? 'single';
+			if (options.length > 0) {
+				ctx.setMessages(prev =>
+					prev.map(m =>
+						m.id === ctx.assistantMsgId
+							? { ...m, suggestions: { options, mode } }
+							: m,
+					),
+				);
+			}
+			break;
+		}
+		case 'craft': {
+			const craftId = data.id;
+			if (craftId) {
+				const isAppend = data.append === true;
+				const textDelta = data.text_delta;
+				const newBlocks = data.blocks ?? [];
+
+				ctx.setCrafts(prev => {
+					const next = new Map(prev);
+					let craft: CraftData;
+
+					if (textDelta && next.has(craftId)) {
+						// Stream text into the last text block (or create one)
+						const existing = next.get(craftId)!;
+						const blocks = [...existing.blocks];
+						// Remove callout if present (summary is starting)
+						const lastBlock = blocks[blocks.length - 1];
+						if (lastBlock?.type === 'callout') {
+							blocks.pop();
+						}
+						// Append to existing text block or create new one
+						const lastTextBlock = blocks[blocks.length - 1];
+						if (lastTextBlock?.type === 'text') {
+							blocks[blocks.length - 1] = {
+								...lastTextBlock,
+								content: lastTextBlock.content + textDelta,
+							};
+						} else {
+							blocks.push({ type: 'text', content: textDelta });
+						}
+						craft = { ...existing, blocks };
+					} else if (isAppend && next.has(craftId)) {
+						// Append blocks to existing craft
+						const existing = next.get(craftId)!;
+						craft = {
+							...existing,
+							title: data.title ?? existing.title,
+							blocks: [...existing.blocks, ...newBlocks],
+						};
+					} else {
+						// Create or replace craft
+						craft = {
+							id: craftId,
+							title: data.title ?? 'Craft',
+							blocks: newBlocks,
+							message_id: data.message_id ?? ctx.assistantMsgId,
+						};
+					}
+
+					next.set(craftId, craft);
+					ctx.setActiveCraft(craft);
+					return next;
+				});
+
+				ctx.setActiveCraftId(craftId);
+
+				// Link craft to the assistant message (avoid duplicates)
+				ctx.setMessages(prev =>
+					prev.map(m => {
+						if (m.id !== ctx.assistantMsgId) return m;
+						const existing = m.craftIds ?? [];
+						if (existing.includes(craftId)) return m;
+						return { ...m, craftIds: [...existing, craftId] };
+					}),
+				);
+			}
+			break;
+		}
 		case 'error': {
 			const errText =
 				ctx.currentText + `\n\n*Error: ${data.message ?? 'Unknown error'}*`;
@@ -256,6 +454,78 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 	}
+}
+
+function SuggestionButtons({
+	suggestions,
+	onSelect,
+	disabled,
+}: Readonly<{
+	suggestions: NonNullable<Message['suggestions']>;
+	onSelect: (text: string) => void;
+	disabled: boolean;
+}>) {
+	const [selected, setSelected] = React.useState<Set<string>>(new Set());
+
+	if (suggestions.mode === 'single') {
+		return (
+			<div className="_suggestions">
+				{suggestions.options.map(opt => (
+					<button
+						key={opt.value}
+						className="_suggestionButton"
+						onClick={() => onSelect(opt.value)}
+						disabled={disabled}
+						type="button"
+					>
+						{opt.label}
+					</button>
+				))}
+			</div>
+		);
+	}
+
+	// Multi-select mode
+	const handleToggle = (value: string) => {
+		setSelected(prev => {
+			const next = new Set(prev);
+			if (next.has(value)) next.delete(value);
+			else next.add(value);
+			return next;
+		});
+	};
+
+	const handleConfirm = () => {
+		if (selected.size > 0) {
+			onSelect(Array.from(selected).join(', '));
+		}
+	};
+
+	return (
+		<div className="_suggestions">
+			{suggestions.options.map(opt => (
+				<button
+					key={opt.value}
+					className={`_suggestionButton${selected.has(opt.value) ? ' _selected' : ''}`}
+					onClick={() => handleToggle(opt.value)}
+					disabled={disabled}
+					type="button"
+				>
+					{opt.label}
+				</button>
+			))}
+			{selected.size > 0 && (
+				<button
+					className="_suggestionButton _suggestionsConfirm"
+					onClick={handleConfirm}
+					disabled={disabled}
+					type="button"
+				>
+					Confirm
+				</button>
+			)}
+		</div>
+	);
 }
 
 function extractUsageFromSession(session: any): TokenUsage | null {
@@ -480,6 +750,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [feedbackTurn, setFeedbackTurn] = useState<{ sessionId: string; turnNumber: number } | null>(null);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [usage, setUsage] = useState<TokenUsage | null>(null);
+
+	// Craft panel state
+	const [crafts, setCrafts] = useState<Map<string, CraftData>>(new Map());
+	const [activeCraftId, setActiveCraftId] = useState<string | null>(null);
+	const [activeCraft, setActiveCraft] = useState<CraftData | null>(null);
 
 	// Model selector state
 	const [availableModels, setAvailableModels] = useState<{ id: string; name: string }[]>([]);
@@ -736,8 +1011,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		shouldAutoScrollRef.current = true;
 	}, [messages]);
 
-	// Restore draft when session changes
+	// Restore draft when session changes — but NOT while streaming,
+	// because the `done` event updates sessionId and would wipe
+	// whatever the user typed in the input while waiting.
+	const isStreamingRef = useRef(isStreaming);
+	isStreamingRef.current = isStreaming;
 	useEffect(() => {
+		if (isStreamingRef.current) return;
 		const draftKey = sessionId ?? '_new';
 		const draft = getDataFromPath(
 			`LocalStore.promptDrafts.${draftKey}`,
@@ -1084,11 +1364,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				let buffer = '';
 				let assistantText = '';
 				const toolCalls = new Map<string, ToolCall>();
+				const agentSpans = new Map<string, AgentSpan>();
 				const assistantMsgId = `asst_${Date.now()}`;
 
 				setMessages(prev => [
 					...prev,
-					{ id: assistantMsgId, role: 'assistant', content: '', toolCalls: [] },
+					{ id: assistantMsgId, role: 'assistant', content: '', toolCalls: [], agentSpans: [] },
 				]);
 
 				// Watchdog: detect dead connections (server keepalives every 15s)
@@ -1127,6 +1408,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										assistantMsgId,
 										currentText: assistantText,
 										toolCalls,
+										agentSpans,
 										setText: (newText: string) => {
 											assistantText = newText;
 										},
@@ -1135,6 +1417,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										setUsage,
 										showToolCalls,
 										setFeedbackTurn: (turn) => setFeedbackTurn(turn),
+										setCrafts,
+										setActiveCraftId,
+										setActiveCraft,
 									});
 								} catch {
 									// Skip unparseable data
@@ -1316,7 +1601,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				/>
 			)}
 
-			<div className={`_promptMain${messages.length === 0 && !hasEarlierMessages ? ' _promptEmpty' : ''}`}>
+			<div className={`_promptMain${messages.length === 0 && !hasEarlierMessages ? ' _promptEmpty' : ''}${activeCraftId ? ' _hasCraft' : ''}`}>
 				<div className="_promptTopBar">
 					<button
 						className="_sidebarToggle"
@@ -1362,32 +1647,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								<h2 className="_emptyTitle">
 									{resolvedWelcomeMessage ?? welcomeMessage}
 								</h2>
-								{quickActionLabels.length > 0 && (
-									<div className={`_quickActions ${quickActionLayout}`} role="group" aria-label="Quick actions">
-										{quickActionLabels.map((label: string, i: number) => {
-											const prompt = quickActionPrompts[i] ?? '';
-											const icon = quickActionIcons[i] ?? '';
-											const isDisabled = !prompt;
-											if (!label) return null;
-											return (
-												<button
-													key={i}
-													className={`_quickActionItem${isDisabled ? ' _quickActionDisabled' : ''}`}
-													onClick={isDisabled ? undefined : () => handleSend(prompt)}
-													disabled={isDisabled || isStreaming}
-													type="button"
-													aria-label={isDisabled ? `${label} - coming soon` : label}
-												>
-													{icon && <i className={`${icon} _quickActionIcon`} aria-hidden="true" />}
-													<span className="_quickActionLabel">{label}</span>
-													{isDisabled && (
-														<span className="_quickActionBadge" aria-hidden="true">Soon</span>
-													)}
-												</button>
-											);
-										})}
-									</div>
-								)}
 							</div>
 						)}
 						{messages.map(msg => (
@@ -1415,30 +1674,86 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										))}
 									</div>
 								) : null}
-								{msg.role === 'assistant' && (
-									<ThinkingBlock
-										isActive={
-											isStreaming &&
-											msg.id === messages.at(-1)?.id &&
-											(!msg.content ||
-												(msg.toolCalls?.some(
-													tc => tc.isRunning,
-												) ??
-													false))
-										}
-										toolCalls={
-											showToolCalls
-												? msg.toolCalls ?? []
-												: []
-										}
-										reasoningContent={msg.thinking}
-										toolRunningIcon={toolRunningIcon}
-										toolSuccessIcon={toolSuccessIcon}
-										toolErrorIcon={toolErrorIcon}
-										expandIcon={expandIcon}
-										collapseIcon={collapseIcon}
-									/>
-								)}
+								{msg.role === 'assistant' && (() => {
+									// 1. Tools owned by a sub-agent render
+									//    inside that agent's row, not the
+									//    orchestrator's group.
+									// 2. Tools that *spawned* an agent
+									//    (parent_tool_use_id) are suppressed
+									//    from the orchestrator group — the
+									//    agent row replaces them.
+									const subAgentToolIds = new Set<string>();
+									const spawnToolIds = new Set<string>();
+									for (const sp of msg.agentSpans ?? []) {
+										for (const tc of sp.toolCalls) subAgentToolIds.add(tc.id);
+										if (sp.parentToolUseId) spawnToolIds.add(sp.parentToolUseId);
+									}
+									const orchestratorToolCalls = (msg.toolCalls ?? []).filter(
+										tc => !subAgentToolIds.has(tc.id) && !spawnToolIds.has(tc.id),
+									);
+									// Render blocks in chronological order —
+									// whichever happened first appears first.
+									const firstToolAt = orchestratorToolCalls
+										.map(tc => tc.startedAt ?? Infinity)
+										.reduce((a, b) => Math.min(a, b), Infinity);
+									const firstAgentAt = (msg.agentSpans ?? [])
+										.map(sp => sp.startedAt ?? Infinity)
+										.reduce((a, b) => Math.min(a, b), Infinity);
+									const agentsFirst = firstAgentAt < firstToolAt;
+
+									// Hide the thinking indicator while an agent is running —
+									// the agent's pulsing dot already signals activity.
+									const anyAgentRunning = (msg.agentSpans ?? []).some(
+										sp => sp.status === 'running',
+									);
+									const thinkingBlock = (
+										<ThinkingBlock
+											isActive={
+												!anyAgentRunning &&
+												isStreaming &&
+												msg.id === messages.at(-1)?.id &&
+												(!msg.content ||
+													(msg.toolCalls?.some(
+														tc => tc.isRunning,
+													) ??
+														false))
+											}
+											toolCalls={
+												showToolCalls
+													? orchestratorToolCalls
+													: []
+											}
+											reasoningContent={msg.thinking}
+											toolRunningIcon={toolRunningIcon}
+											toolSuccessIcon={toolSuccessIcon}
+											toolErrorIcon={toolErrorIcon}
+											expandIcon={expandIcon}
+											collapseIcon={collapseIcon}
+										/>
+									);
+									const agentGroup = (msg.agentSpans ?? []).length > 0 ? (
+										<AgentGroup
+											spans={msg.agentSpans ?? []}
+											expandIcon={expandIcon}
+											collapseIcon={collapseIcon}
+										/>
+									) : null;
+									return (
+										<>
+											{agentsFirst ? (
+												<>
+													{agentGroup}
+													{thinkingBlock}
+												</>
+											) : (
+												<>
+													{thinkingBlock}
+													{agentGroup}
+												</>
+											)}
+										</>
+									);
+								})()}
 								<ChatMessage
 									role={msg.role}
 									content={msg.content}
@@ -1459,7 +1774,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									onFeedback={handleFeedback}
 									thumbsUpIcon={thumbsUpIcon}
 									thumbsDownIcon={thumbsDownIcon}
-								/>
+								>
+									{msg.suggestions &&
+										!isStreaming &&
+										msg.id === messages.at(-1)?.id && (
+											<SuggestionButtons
+												suggestions={msg.suggestions}
+												onSelect={handleSend}
+												disabled={isStreaming}
+											/>
+										)}
+								</ChatMessage>
 							</React.Fragment>
 						))}
 						{isStreaming && messages.at(-1)?.role === 'user' && (
@@ -1477,6 +1802,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					</div>
 				</div>
 
+				{crafts.size > 0 && !activeCraftId && (
+					<div className="_craftCardsBar">
+						{Array.from(crafts.values()).map(c => {
+							const subtitle = c.blocks.find(
+								(b: any) => b.type === 'badge',
+							)?.label;
+							return (
+								<CraftCard
+									key={c.id}
+									title={c.title}
+									subtitle={subtitle}
+									onClick={() => { setActiveCraftId(c.id); setActiveCraft(c); }}
+									definition={props.definition}
+									styleProperties={styleProperties}
+								/>
+							);
+						})}
+					</div>
+				)}
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}
@@ -1509,7 +1853,42 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						{usage && <UsageBar usage={usage} />}
 					</div>
 				</div>
+
+				{messages.length === 0 && !hasEarlierMessages && quickActionLabels.length > 0 && (
+					<div className={`_quickActions ${quickActionLayout}`} role="group" aria-label="Quick actions">
+						{quickActionLabels.map((label: string, i: number) => {
+							const prompt = quickActionPrompts[i] ?? '';
+							const icon = quickActionIcons[i] ?? '';
+							const isDisabled = !prompt;
+							if (!label) return null;
+							return (
+								<button
+									key={i}
+									className={`_quickActionItem${isDisabled ? ' _quickActionDisabled' : ''}`}
+									onClick={isDisabled ? undefined : () => handleSend(prompt)}
+									disabled={isDisabled || isStreaming}
+									type="button"
+									aria-label={isDisabled ? `${label} - coming soon` : label}
+								>
+									{icon && <i className={`${icon} _quickActionIcon`} aria-hidden="true" />}
+									<span className="_quickActionLabel">{label}</span>
+									{isDisabled && (
+										<span className="_quickActionBadge" aria-hidden="true">Soon</span>
+									)}
+								</button>
+							);
+						})}
+					</div>
+				)}
 			</div>
+			{activeCraft && (
+				<CraftPanel
+					craft={activeCraft}
+					onClose={() => { setActiveCraftId(null); setActiveCraft(null); }}
+					definition={props.definition}
+					styleProperties={styleProperties}
+				/>
+			)}
 		</div>
 	);
 }
