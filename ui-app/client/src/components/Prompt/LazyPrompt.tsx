@@ -29,6 +29,7 @@ import { SessionList, Session } from './components/SessionList';
 import { CraftCard } from './components/CraftCard';
 import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
+import { InlineDataRenderer } from './components/InlineDataRenderer';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 
 interface Message {
@@ -45,6 +46,9 @@ interface Message {
 		options: Array<{ label: string; value: string }>;
 		mode: 'single' | 'multi';
 	};
+	data?: Array<{ type: string; [k: string]: any }>;
+	dataConfirmed?: boolean;
+	dataConfirmedMeta?: Record<string, any>;
 	craftIds?: string[];
 }
 
@@ -374,6 +378,18 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			}
 			break;
 		}
+		case 'data': {
+			if (data?.type) {
+				ctx.setMessages(prev =>
+					prev.map(m =>
+						m.id === ctx.assistantMsgId
+							? { ...m, data: [...(m.data ?? []), data as any] }
+							: m,
+					),
+				);
+			}
+			break;
+		}
 		case 'craft': {
 			const craftId = data.id;
 			if (craftId) {
@@ -462,7 +478,7 @@ function SuggestionButtons({
 	disabled,
 }: Readonly<{
 	suggestions: NonNullable<Message['suggestions']>;
-	onSelect: (text: string) => void;
+	onSelect: (text: string, attachments?: Attachment[], displayText?: string) => void;
 	disabled: boolean;
 }>) {
 	const [selected, setSelected] = React.useState<Set<string>>(new Set());
@@ -474,7 +490,7 @@ function SuggestionButtons({
 					<button
 						key={opt.value}
 						className="_suggestionButton"
-						onClick={() => onSelect(opt.value)}
+						onClick={() => onSelect(opt.value, undefined, opt.label)}
 						disabled={disabled}
 						type="button"
 					>
@@ -496,9 +512,11 @@ function SuggestionButtons({
 	};
 
 	const handleConfirm = () => {
-		if (selected.size > 0) {
-			onSelect(Array.from(selected).join(', '));
-		}
+		if (selected.size === 0) return;
+		const picked = suggestions.options.filter(o => selected.has(o.value));
+		const sendText = picked.map(o => o.value).join(', ');
+		const displayText = picked.map(o => o.label).join(', ');
+		onSelect(sendText, undefined, displayText);
 	};
 
 	return (
@@ -1289,7 +1307,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	);
 
 	const handleSend = useCallback(
-		async (text: string, attachments?: Attachment[]) => {
+		async (text: string, attachments?: Attachment[], displayText?: string) => {
 			if (isStreaming || readOnly) return;
 			stopPolling();
 
@@ -1298,7 +1316,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const userMsg: Message = {
 				id: `user_${Date.now()}`,
 				role: 'user',
-				content: text,
+				content: displayText ?? text,
 				attachments,
 			};
 			setMessages(prev => [...prev, userMsg]);
@@ -1784,6 +1802,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												disabled={isStreaming}
 											/>
 										)}
+									{msg.data?.map((payload, i) => (
+										<InlineDataRenderer
+											key={`${msg.id}-data-${i}`}
+											payload={payload}
+											confirmed={msg.dataConfirmed}
+											confirmedMeta={msg.dataConfirmedMeta}
+											disabled={isStreaming || msg.id !== messages.at(-1)?.id}
+											onRespond={(sendText, displayText, meta) => {
+												setMessages(prev =>
+													prev.map(m =>
+														m.id === msg.id
+															? { ...m, dataConfirmed: true, dataConfirmedMeta: meta }
+															: m,
+													),
+												);
+												handleSend(sendText, undefined, displayText);
+											}}
+										/>
+									))}
 								</ChatMessage>
 							</React.Fragment>
 						))}
