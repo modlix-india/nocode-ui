@@ -24,6 +24,7 @@ import { flattenUUID } from '../util/uuid';
 import { ChatMessage } from './components/ChatMessage';
 import { ThinkingBlock } from './components/ThinkingBlock';
 import { AgentGroup } from './components/AgentGroup';
+import { ActionBlock, ConfirmationAction } from './components/ActionBlock';
 import { InputBar } from './components/InputBar';
 import { SessionList, Session } from './components/SessionList';
 import { CraftCard } from './components/CraftCard';
@@ -50,6 +51,7 @@ interface Message {
 	dataConfirmed?: boolean;
 	dataConfirmedMeta?: Record<string, any>;
 	craftIds?: string[];
+	confirmationActions?: ConfirmationAction[];
 }
 
 interface ToolCall {
@@ -171,7 +173,7 @@ interface SSEEventContext {
 	agentSpans: Map<string, AgentSpan>;
 	setText: (t: string) => void;
 	setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-	setSessionId: React.Dispatch<React.SetStateAction<string | null>>;
+	setSessionId: (id: string | null) => void;
 	setUsage: React.Dispatch<React.SetStateAction<TokenUsage | null>>;
 	showToolCalls: boolean;
 	setFeedbackTurn: (turn: { sessionId: string; turnNumber: number }) => void;
@@ -456,6 +458,42 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					}),
 				);
 			}
+			break;
+		}
+		case 'confirmation_request': {
+			// Capture session_id early so handleActionResponse can POST /confirm
+			// before the stream ends (session_id is normally set in the 'done' event)
+			if (data.session_id) {
+				ctx.setSessionId(data.session_id);
+			}
+			const action: ConfirmationAction = {
+				confirmationId: data.confirmation_id ?? '',
+				message: data.message ?? '',
+				toolName: data.tool_name ?? '',
+				displayName: data.display_name ?? '',
+				details: data.details ?? {},
+				options: Array.isArray(data.options)
+					? data.options
+					: [
+							{ label: 'Approve', value: 'approve' },
+							{ label: 'Deny', value: 'deny' },
+						],
+				toolUseId: data.tool_use_id ?? '',
+				status: 'pending',
+			};
+			ctx.setMessages(prev =>
+				prev.map(m =>
+					m.id === ctx.assistantMsgId
+						? {
+								...m,
+								confirmationActions: [
+									...(m.confirmationActions ?? []),
+									action,
+								],
+							}
+						: m,
+				),
+			);
 			break;
 		}
 		case 'error': {
@@ -763,7 +801,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 	const [messages, setMessages] = useState<Message[]>([]);
 	const [isStreaming, setIsStreaming] = useState(false);
-	const [sessionId, setSessionId] = useState<string | null>(null);
+	const [sessionId, _setSessionId] = useState<string | null>(null);
+	const sessionIdRef = useRef<string | null>(null);
+	const setSessionId = useCallback((id: string | null) => {
+		sessionIdRef.current = id;
+		_setSessionId(id);
+	}, []);
 	const [sessions, setSessions] = useState<Session[]>([]);
 	const [feedbackTurn, setFeedbackTurn] = useState<{ sessionId: string; turnNumber: number } | null>(null);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -1150,9 +1193,16 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					setMessagesOffset(0);
 					setUsage(extractUsageFromSession(data.session));
 
-					// If session is currently being processed, poll for updates
+					// If session is currently being processed and was recently
+					// updated, poll for updates. Stale PROCESSING sessions
+					// (e.g. server crashed or stop was hit) are treated as done.
 					if (data.session?.status === 'PROCESSING') {
-						startPolling(selectedSessionId);
+						const updatedAt = data.session?.updated_at;
+						const isStale = updatedAt &&
+							(Date.now() - new Date(updatedAt).getTime() > 60_000);
+						if (!isStale) {
+							startPolling(selectedSessionId);
+						}
 					}
 				}
 			} catch {
@@ -1531,7 +1581,18 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		stopPolling();
 		setIsStreaming(false);
 		abortControllerRef.current = null;
-	}, [stopPolling]);
+
+		// Tell the backend to stop the agent loop
+		const sid = sessionIdRef.current;
+		if (sid) {
+			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			fetch(`${baseUrl}/stop`, {
+				method: 'POST',
+				headers: getAuthHeaders(),
+				body: JSON.stringify({ session_id: sid }),
+			}).catch(() => {});
+		}
+	}, [stopPolling, agentEndpoint, getAuthHeaders]);
 
 	useEffect(() => {
 		return () => {
@@ -1578,6 +1639,44 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			}
 		},
 		[sessionId, feedbackTurn, enableFeedback, agentEndpoint, getAuthHeaders],
+	);
+
+	// Confirmation response handler — updates action status and sends choice to POST /confirm
+	const handleActionResponse = useCallback(
+		async (confirmationId: string, approved: boolean, selectedValue: string) => {
+			const sid = sessionIdRef.current;
+			if (!sid) return;
+
+			// Optimistically update the action status on the message
+			const newStatus = approved ? 'approved' : 'denied';
+			setMessages(prev =>
+				prev.map(m => ({
+					...m,
+					confirmationActions: m.confirmationActions?.map(a =>
+						a.confirmationId === confirmationId
+							? { ...a, status: newStatus as ConfirmationAction['status'], selectedValue }
+							: a,
+					),
+				})),
+			);
+
+			try {
+				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				await fetch(`${baseUrl}/confirm`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({
+						confirmation_id: confirmationId,
+						session_id: sid,
+						approved,
+						selected: selectedValue,
+					}),
+				});
+			} catch {
+				// If the confirm POST fails, the backend will timeout and auto-deny
+			}
+		},
+		[agentEndpoint, getAuthHeaders],
 	);
 
 	const hasEarlierMessages =
@@ -1822,6 +1921,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										/>
 									))}
 								</ChatMessage>
+								{msg.confirmationActions?.map(action => (
+									<ActionBlock
+										key={action.confirmationId}
+										action={action}
+										onRespond={handleActionResponse}
+									/>
+								))}
 							</React.Fragment>
 						))}
 						{isStreaming && messages.at(-1)?.role === 'user' && (

@@ -170,9 +170,8 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 			return v === 0 ? (a[1]?.key ?? '').localeCompare(b[1]?.key ?? '') : v;
 		});
 
-	const bindingPathPath = `Store.defaultData.${
-		pageExtractor?.getPageName() ?? '_global'
-	}.${flattenUUID(key)}`;
+	const bindingPathPath = `Store.defaultData.${pageExtractor?.getPageName() ?? '_global'
+		}.${flattenUUID(key)}`;
 
 	useEffect(() => {
 		setFirstTime(true);
@@ -195,9 +194,9 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 					key,
 					dataProperty?.value
 						? {
-								type: 'VALUE',
-								value: bindingPathPath,
-							}
+							type: 'VALUE',
+							value: bindingPathPath,
+						}
 						: dataProperty.location!,
 					index,
 					locationHistory,
@@ -289,7 +288,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 	const applyTransform = (to: number, scrollDirection: number = 1) => {
 		if (
 			finNumberOfChildren == undefined ||
-			finNumberOfChildren <= 1 ||
+			childrenComponents.length <= 1 ||
 			childWidth < 5 ||
 			childHeight < 5
 		)
@@ -366,7 +365,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 	};
 
 	useEffect(() => {
-		if (finNumberOfChildren <= 1 || childWidth < 5 || childHeight < 5) return;
+		if (childrenEntries.length <= 1 || childWidth < 5 || childHeight < 5) return;
 
 		if (firstTime) applyTransform(0);
 
@@ -514,9 +513,9 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 							style={
 								isActive
 									? {
-											...(resolvedStyles.indicatorButton ?? {}),
-											...(resolvedStyles.indicatorButtonActive ?? {}),
-										}
+										...(resolvedStyles.indicatorButton ?? {}),
+										...(resolvedStyles.indicatorButtonActive ?? {}),
+									}
 									: (resolvedStyles.indicatorButton ?? {})
 							}
 						>
@@ -576,9 +575,8 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${
-				showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
-			} `}
+			className={`comp compSmallCarousel ${designType} ${arrowButtonsPlacement} ${arrowButtonsHorizontalPlacement} ${arrowButtonsVerticalPlacement} ${showArrowButtonsOnHover ? '_showArrowsOnHover' : ''
+				} `}
 			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
 			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
 			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
@@ -794,7 +792,7 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

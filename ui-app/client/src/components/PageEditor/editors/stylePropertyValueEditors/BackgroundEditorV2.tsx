@@ -1451,8 +1451,8 @@ function formatBackgroundImage(image: BackgroundImageValue): string {
 	switch (image.type) {
 		case 'URL': {
 			if (!image.value) return 'none';
-			const needsQuotes = /\\s/.test(image.value) && !/^['\"].*['\"]$/.test(image.value);
-			const urlValue = needsQuotes ? `\"${image.value}\"` : image.value;
+			const needsQuotes = /\s/.test(image.value) && !/^['"].*['"]$/.test(image.value);
+			const urlValue = needsQuotes ? `"${image.value}"` : image.value;
 			return `url(${urlValue})`;
 		}
 		case 'LINEAR_GRADIENT':

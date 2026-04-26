@@ -75,6 +75,142 @@ export default function TableColumnsStyle({
 			border-right: none !important;
 		}
 
+	` +
+		// Tree mode styles
+		`
+		${PREFIX} ._treeColumnCell {
+			display: flex;
+			align-items: stretch;
+			white-space: nowrap;
+			padding: 0;
+			height: 100%;
+		}
+
+		${PREFIX} ._treeColumn {
+			padding: 0 !important;
+			vertical-align: middle;
+			height: 1px;
+		}
+
+		${PREFIX} ._treeIndent {
+			display: inline-flex;
+			position: relative;
+			flex-shrink: 0;
+			align-self: stretch;
+		}
+
+		${PREFIX} ._treeLine {
+			position: absolute;
+			pointer-events: none;
+		}
+
+		${PREFIX} ._treeLine._vertical {
+			left: 50%;
+			top: 0;
+			bottom: 0;
+			width: 0;
+			border-left: 1px dotted #ccc;
+		}
+
+		${PREFIX} ._treeLine._horizontal {
+			left: 50%;
+			top: 50%;
+			right: 0;
+			height: 0;
+			border-top: 1px dotted #ccc;
+		}
+
+		${PREFIX} ._treeLine._verticalHalf {
+			left: 50%;
+			top: 0;
+			height: 50%;
+			width: 0;
+			border-left: 1px dotted #ccc;
+		}
+
+		${PREFIX} ._treeLine._verticalBottom {
+			left: 50%;
+			top: 50%;
+			bottom: 0;
+			width: 0;
+			border-left: 1px dotted #ccc;
+		}
+
+		${PREFIX} ._treeConnector {
+			display: inline-flex;
+			position: relative;
+			flex-shrink: 0;
+			align-self: stretch;
+		}
+
+		${PREFIX} button._treeToggle {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 20px;
+			height: 20px;
+			cursor: pointer;
+			flex-shrink: 0;
+			user-select: none;
+			background: none;
+			border: 1px solid #ddd;
+			border-radius: 3px;
+			padding: 0;
+			color: inherit;
+			margin: 0;
+			position: relative;
+			z-index: 1;
+		}
+
+		${PREFIX} button._treeToggle:hover {
+			background: rgba(0, 0, 0, 0.05);
+		}
+
+		${PREFIX} ._treeToggleWrap {
+			display: inline-flex;
+			align-items: center;
+			position: relative;
+			align-self: stretch;
+			margin: 0 4px 0 0;
+		}
+
+		${PREFIX} ._treeLeafSpacer {
+			display: inline-block;
+			width: 20px;
+			min-width: 20px;
+			flex-shrink: 0;
+			margin: 0 4px 0 0;
+		}
+
+		${PREFIX} ._treeCellContent {
+			flex: 1;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			align-items: center;
+			display: inline-flex;
+		}
+
+		${PREFIX} ._row._dataRow,
+		${PREFIX} ._detailRow {
+			content-visibility: auto;
+			contain-intrinsic-block-size: auto 40px;
+		}
+
+		@keyframes _tableRowFadeIn {
+			from {
+				opacity: 0;
+				transform: translateY(8px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		${PREFIX} ._row._dataRow {
+			animation: _tableRowFadeIn 0.25s ease-out both;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnsCss">{css}</style>;

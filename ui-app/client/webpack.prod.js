@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+
 
 module.exports = async (env = {}) => {
   const publicUrl = env.publicUrl || '/';
@@ -13,9 +13,6 @@ module.exports = async (env = {}) => {
   const plugins =  [
     new webpack.DefinePlugin({
       'globalThis.buildVersion': JSON.stringify(buildVersion),
-    }),
-    new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: ['**/*', '!css/**', '!styleProperties/**' ]
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html'),
@@ -38,14 +35,14 @@ module.exports = async (env = {}) => {
         });
 
         // Extract Application/ApplicationStyle chunks for preloading
-        // Use filenames only (not full paths) since HTML renderers will prepend CDN URL
+        // Use actual filenames (with contenthash) so the server generates correct script tags
         const applicationChunks = files
           .filter(f => /^Application.*\.js$/.test(f.name))
-          .map(f => f.name);
+          .map(f => f.path.split('/').pop());
 
         const applicationStyleChunks = files
           .filter(f => /^ApplicationStyle.*\.js$/.test(f.name))
-          .map(f => f.name);
+          .map(f => f.path.split('/').pop());
 
         return {
           buildVersion,
@@ -80,7 +77,10 @@ module.exports = async (env = {}) => {
         return pathData.chunk.name ? '[name]-[contenthash:8].js' : 'chunk.[id].[contenthash:8].js';
       },
       path: path.resolve(__dirname, 'dist'),
-      publicPath: publicUrl
+      publicPath: publicUrl,
+      clean: {
+        keep: /^(css|styleProperties)\//,
+      }
     },
     devtool: 'source-map', // You can remove or change this to 'hidden-source-map' or false if desired
     module: {

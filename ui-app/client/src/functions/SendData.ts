@@ -65,7 +65,9 @@ const SIGNATURE = new FunctionSignature('SendData')
 				]),
 			),
 		]),
-	);
+	)
+	.setDescription('Sends data to the server using a specified HTTP method with support for file uploads and downloads')
+	.setDocumentation('# UIEngine.SendData\n\nMakes an HTTP request with a specified method (POST, PUT, PATCH, etc.) and payload. Automatically detects File objects in the payload and converts to FormData for file uploads. Supports downloading the response as a file.\n\n## Parameters\n\n- **url** (String, required): The endpoint URL to send data to\n- **method** (String, required): HTTP method to use (e.g., POST, PUT, PATCH)\n- **queryParams** (UrlParameters, optional): Key-value pairs appended as query string parameters\n- **pathParams** (UrlParameters, optional): Key-value pairs substituted into path placeholders in the URL\n- **payload** (Any, required): The request body data. If it contains File objects, automatically converts to FormData\n- **downloadAsAFile** (Boolean, optional, default: false): If true, downloads the response as a file in the browser\n- **downloadFileName** (String, optional, default: \'\'): Custom filename for the downloaded file. Falls back to Content-Disposition header\n- **headers** (UrlParameters, optional): HTTP request headers\n  - Default includes `Authorization` (from `LocalStore.AuthToken`) and `clientCode` (from `Store.auth.loggedInClientCode`)\n\n## Events\n\n- **output**: Triggered on successful response\n  - `data` (Any): The response body from the server\n- **error**: Triggered on request failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **Form Submission**: Submit form data to create or update records\n- **File Upload**: Upload images, documents, or other files\n- **File Download**: Generate and download reports, exports, or documents\n- **API Integration**: Send data to external APIs with various HTTP methods\n- **Bulk Operations**: Send batch update or create requests');
 
 const FILE_NAME = 'filename=';
 

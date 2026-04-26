@@ -78,16 +78,37 @@ module.exports = {
       directory: path.join(__dirname, 'dist') // If you have static files like index.html
     },
     historyApiFallback: true, // For React Router support
-    port: 1234,
+    port: 4321,
     hot: true, 
     proxy: [
+      {
+        context: ["**/api/ai/**"],
+        target: "http://localhost:5001",
+        secure: false,
+        changeOrigin: true,
+        pathRewrite: (path) => path.replace(/^.*?(\/api\/ai\/)/, '$1'),
+        onProxyReq: (proxyReq, req) => {
+          // Extract /{appCode}/{clientCode}/page prefix from the Referer header
+          // (the browser URL), since fetch calls use relative paths without the prefix.
+          // e.g. Referer: http://localhost:1234/appbuilder/SYSTEM/page/...
+          const referer = req.headers.referer || '';
+          const refMatch = referer.match(/\/([^/]+)\/([^/]+)\/page/);
+          if (refMatch) {
+            proxyReq.setHeader('X-Path-Prefix', `/${refMatch[1]}/${refMatch[2]}/page`);
+          }
+        },
+        onProxyRes: (proxyRes, _req, res) => {
+          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+            res.flushHeaders();
+          }
+        },
+      },
       {
         context: ["**/api/**", "/sso/**"],
         target: "https://apps.dev.modlix.com",
         secure: true,
         changeOrigin: true,
         onProxyRes: (proxyRes, _req, res) => {
-          // Disable buffering for SSE responses to enable real-time streaming
           if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
             res.flushHeaders();
           }

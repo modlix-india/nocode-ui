@@ -763,7 +763,7 @@ export default function PromptStyle({
 			margin: 0 8px 4px;
 			white-space: pre-wrap;
 			word-break: break-word;
-			max-height: 200px;
+			max-height: 400px;
 			overflow-y: auto;
 			border-left: 3px solid #d0d0d0;
 		}
@@ -1798,6 +1798,144 @@ export default function PromptStyle({
 
 		${PREFIX} ._usageContext._critical + ._usageContextBar ._usageContextFill {
 			background: #dc3545;
+		}
+
+		/* ─── Confirmation Prompt ─── */
+		${PREFIX} ._confirmationPrompt {
+			margin: 12px 20px;
+			padding: 16px;
+			border: 1px solid #e0e0e0;
+			border-radius: 12px;
+			background: #fafafa;
+			animation: confirmSlideIn 0.2s ease-out;
+		}
+
+		@keyframes confirmSlideIn {
+			from { opacity: 0; transform: translateY(8px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
+		${PREFIX} ._confirmationHeader {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin-bottom: 8px;
+		}
+
+		${PREFIX} ._confirmationIcon {
+			font-size: 16px;
+			color: #b45309;
+		}
+
+		${PREFIX} ._confirmationTitle {
+			font-size: 14px;
+			font-weight: 600;
+			color: #1a1a1a;
+		}
+
+		${PREFIX} ._confirmationMessage {
+			font-size: 13px;
+			color: #444;
+			line-height: 1.5;
+			margin: 0 0 12px;
+			white-space: pre-wrap;
+			word-break: break-word;
+		}
+
+		${PREFIX} ._confirmationOptions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		${PREFIX} ._confirmationOption {
+			padding: 7px 16px;
+			border-radius: 8px;
+			font-size: 13px;
+			font-weight: 500;
+			cursor: pointer;
+			border: 1px solid #d0d0d0;
+			background: #fff;
+			color: #1a1a1a;
+			transition: background 0.15s, border-color 0.15s;
+		}
+
+		${PREFIX} ._confirmationOption:hover {
+			background: #f0f0f0;
+			border-color: #bbb;
+		}
+
+		${PREFIX} ._confirmationOption._approve {
+			background: #1a7f37;
+			color: #fff;
+			border-color: #1a7f37;
+		}
+
+		${PREFIX} ._confirmationOption._approve:hover {
+			background: #15692e;
+			border-color: #15692e;
+		}
+
+		${PREFIX} ._confirmationOption._deny {
+			background: #fff;
+			color: #dc3545;
+			border-color: #dc3545;
+		}
+
+		${PREFIX} ._confirmationOption._deny:hover {
+			background: #fef2f2;
+		}
+
+		${PREFIX} ._confirmationOption._selected {
+			background: #e8f0fe;
+			border-color: #1a73e8;
+			color: #1a73e8;
+		}
+
+		${PREFIX} ._confirmationOption._selected:hover {
+			background: #d2e3fc;
+		}
+
+		/* Resolved confirmation states */
+		${PREFIX} ._confirmationPrompt._resolved {
+			padding: 10px 16px;
+			animation: none;
+		}
+
+		${PREFIX} ._confirmationPrompt._resolved ._confirmationHeader {
+			margin-bottom: 0;
+		}
+
+		${PREFIX} ._confirmationPrompt._approved {
+			background: #f0fdf4;
+			border-color: #bbf7d0;
+		}
+
+		${PREFIX} ._confirmationPrompt._approved ._confirmationIcon {
+			color: #16a34a;
+		}
+
+		${PREFIX} ._confirmationPrompt._denied {
+			background: #fef2f2;
+			border-color: #fecaca;
+		}
+
+		${PREFIX} ._confirmationPrompt._denied ._confirmationIcon {
+			color: #dc3545;
+		}
+
+		/* Details list */
+		${PREFIX} ._confirmationDetails {
+			font-size: 12px;
+			color: #555;
+			line-height: 1.5;
+			margin: 0 0 12px;
+			padding-left: 18px;
+			list-style: disc;
+		}
+
+		${PREFIX} ._confirmationDetails li {
+			margin-bottom: 2px;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

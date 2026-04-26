@@ -256,8 +256,6 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		setData(searchBindingPath, event.target.value, context.pageName);
 	};
 
-	console.log(currentSearchText.current);
-
 	React.useEffect(() => {
 		if (!onSearch) return;
 		const timer = setTimeout(() => {

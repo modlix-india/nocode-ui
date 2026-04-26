@@ -5,7 +5,7 @@ import {
 	isNullValue,
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
 import {
 	addListener,
@@ -45,6 +45,10 @@ import { propertiesDefinition as tableRowPropertiesDefinition } from '../TableRo
 import { createNewState } from '../../util/useDefinition/commons';
 import { getPathsFromComponentDefinition } from '../../util/getPaths';
 
+// Progressive row rendering — renders rows in batches to avoid freezing the browser.
+const INITIAL_BATCH = 5;
+const PROGRESSIVE_BATCH = 3;
+
 function fieldToName(field: string): string {
 	return field
 		.replace('_', ' ')
@@ -57,6 +61,7 @@ function fieldToName(field: string): string {
 }
 
 export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
+	console.log("Rendering TableColumns with key:", props.definition.key);
 	const [value, setValue] = useState([]);
 	const {
 		definition: { key, children: originalChildren },
@@ -66,10 +71,22 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		definition,
 	} = props;
 
+	const locationHistoryKey = (locationHistory ?? [])
+		.map(
+			e =>
+				(typeof e.location === 'string'
+					? e.location
+					: (e.location?.expression ?? e.location?.value ?? '')) +
+				'_' +
+				e.index,
+		)
+		.join('|');
+
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
+
 	const {
-		properties: { showEmptyRows, showHeaders, fixedHeader } = {},
+		properties: { showEmptyRows, showHeaders, fixedHeader, expandIcon, collapseIcon } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -81,18 +98,23 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	);
 
 	const [updateColumnsAt, setUpdateColumnsAt] = useState(Date.now());
+	const updateColumnsAtTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+	const debouncedSetUpdateColumnsAt = React.useCallback(() => {
+		if (updateColumnsAtTimerRef.current) clearTimeout(updateColumnsAtTimerRef.current);
+		updateColumnsAtTimerRef.current = setTimeout(() => setUpdateColumnsAt(Date.now()), 50);
+	}, []);
 
 	useEffect(() => {
 		if (!context.table.personalizationBindingPath) return;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			context.pageName,
-			() => setUpdateColumnsAt(Date.now()),
+			debouncedSetUpdateColumnsAt,
 			context.table.personalizationBindingPath,
 		);
 	}, [
 		context.table.personalizationBindingPath,
 		context.table.enablePersonalization,
-		setUpdateColumnsAt,
+		debouncedSetUpdateColumnsAt,
 		context.pageName,
 	]);
 
@@ -124,6 +146,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			listenPaths,
 			tableRowProps,
 		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		pageDefinition,
 		updateColumnsAt,
@@ -132,7 +155,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		context.table.key,
 		originalChildren,
 		pageExtractor,
-		locationHistory,
+		locationHistoryKey,
 		urlExtractor,
 	]);
 
@@ -150,8 +173,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!listenPaths.length) return;
-		addListener(context.pageName, () => setUpdateColumnsAt(Date.now()), ...listenPaths);
-	}, [setUpdateColumnsAt, pageExtractor, listenPaths, context.pageName]);
+		return addListener(context.pageName, debouncedSetUpdateColumnsAt, ...listenPaths);
+	}, [debouncedSetUpdateColumnsAt, pageExtractor, listenPaths, context.pageName]);
 
 	const {
 		from = 0,
@@ -164,6 +187,13 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		pageSize,
 		uniqueKey,
 		onSelect,
+		treeMode,
+		childrenKey = 'children',
+		hasChildrenProperty,
+		expandedKeys,
+		toggleExpand,
+		showConnectors = true,
+		indentSize = 20,
 	} = props.context.table ?? {};
 
 	useEffect(() => setValue(props.context.table?.data), [props.context.table?.data]);
@@ -193,8 +223,26 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				locationHistory,
 				pageExtractor,
 			}),
-		[columnDef, locationHistory, pageExtractor, columnChildren],
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[columnDef, locationHistoryKey, pageExtractor, columnChildren],
 	);
+
+	const [progressiveCount, setProgressiveCount] = useState(INITIAL_BATCH);
+	const progressiveRowRef = React.useRef<number>(0);
+
+	useEffect(() => {
+		if (!Array.isArray(value)) return;
+		const totalRows = progressiveRowRef.current;
+		if (totalRows <= INITIAL_BATCH) {
+			setProgressiveCount(totalRows);
+			return;
+		}
+		if (progressiveCount >= totalRows) return;
+		const timer = setTimeout(() => {
+			setProgressiveCount(prev => Math.min(prev + PROGRESSIVE_BATCH, totalRows));
+		}, 0);
+		return () => clearTimeout(timer);
+	}, [progressiveCount, progressiveRowRef.current, value]);
 
 	if (!Array.isArray(value)) return <></>;
 
@@ -270,28 +318,90 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	const showCheckBox = multiSelect && selectionType !== 'NONE' && selectionBindingPath;
 
 	const rowColSpan = columnNames.length + (showCheckBox ? 1 : 0);
+	const firstColumnKey = treeMode && columnNames.length > 0 ? columnNames[0].key : undefined;
 
-	const rows = generateRows({
-		value,
-		from,
-		to,
-		showCheckBox,
-		isSelected,
-		select,
-		multiSelect,
-		selectionType,
-		uniqueKey,
-		data,
-		columnDef,
-		children: columnChildren,
-		context: { ...context, table: { ...context.table, rowColSpan } },
-		locationHistory,
-		definition,
-		pageExtractor,
-		tableRowChildKey,
-		tableRowProps,
-		urlExtractor,
-	});
+	const treeStyles = treeMode
+		? {
+				normal: {
+					treeExpandButton: styleNormalProperties.treeExpandButton,
+					treeCollapseButton: styleNormalProperties.treeCollapseButton,
+					treeLines: styleNormalProperties.treeLines,
+					treeCell: styleNormalProperties.treeCell,
+				},
+				hover: {
+					treeExpandButton: styleHoverProperties.treeExpandButton,
+					treeCollapseButton: styleHoverProperties.treeCollapseButton,
+					treeLines: styleHoverProperties.treeLines,
+					treeCell: styleHoverProperties.treeCell,
+				},
+			}
+		: undefined;
+
+	let rows: any[] = [];
+	let treeRowCount = 0;
+	if (treeMode && expandedKeys && toggleExpand) {
+		const flattenedRows = flattenTree({
+			nodes: value,
+			childrenKey,
+			uniqueKey: uniqueKey ?? 'id',
+			hasChildrenProperty,
+			expandedKeys,
+			depth: 0,
+			parentPath: [],
+			basePath: '',
+		});
+
+		treeRowCount = flattenedRows.length;
+
+		rows = generateTreeRows({
+			flattenedRows,
+			showCheckBox,
+			isSelected,
+			select,
+			multiSelect,
+			selectionType,
+			uniqueKey,
+			data,
+			columnDef,
+			children: columnChildren,
+			context: { ...context, table: { ...context.table, rowColSpan } },
+			locationHistory,
+			definition,
+			pageExtractor,
+			showConnectors,
+			indentSize,
+			expandIcon,
+			collapseIcon,
+			toggleExpand,
+			dataBindingPath,
+			firstColumnKey,
+			treeStyles,
+		});
+	} else {
+		rows = generateRows({
+			value,
+			from,
+			to,
+			showCheckBox,
+			isSelected,
+			select,
+			multiSelect,
+			selectionType,
+			uniqueKey,
+			data,
+			columnDef,
+			children: columnChildren,
+			context: { ...context, table: { ...context.table, rowColSpan } },
+			locationHistory,
+			definition,
+			pageExtractor,
+			tableRowChildKey,
+			tableRowProps,
+			urlExtractor,
+		});
+	}
+
+	progressiveRowRef.current = rows?.length ?? 0;
 
 	let headers = undefined;
 	if (showHeaders) {
@@ -316,6 +426,11 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				</tr>
 			</thead>
 		);
+	}
+
+	if (treeMode && treeRowCount > 0) {
+		emptyCount = pageSize - treeRowCount;
+		if (emptyCount < 0 || !showEmptyRows) emptyCount = 0;
 	}
 
 	const emptyRows = [];
@@ -354,6 +469,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	let tableStyle = (hover ? styleHoverProperties : styleNormalProperties).comp;
 
+	const visibleRows = rows?.length > INITIAL_BATCH ? rows?.slice(0, progressiveCount) : rows;
+
 	return (
 		<table
 			id={styleKey}
@@ -372,7 +489,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				role="rowgroup"
 			>
 				<style>{rowStyles}</style>
-				{rows}
+				{visibleRows}
 				{emptyRows}
 			</tbody>
 			<HelperComponent context={props.context} definition={definition} />
@@ -540,7 +657,7 @@ function resolvePropertiesOfDynamicColumns(
 }
 
 function generateRows(properties: {
-	value: never[];
+	value: any[];
 	from: any;
 	to: any;
 	showCheckBox: any;
@@ -607,10 +724,12 @@ function generateRows(properties: {
 			key = ev.evaluate(getExtractionMap(data?.[index]));
 		}
 
+		const rowClassName = `_row _dataRow ${onClick ? '_pointer' : ''} ${isSelected(index) ? '_selected' : ''}`;
+
 		rows.push(
 			<tr
 				key={key}
-				className={`_row _dataRow ${onClick ? '_pointer' : ''} ${isSelected(index) ? '_selected' : ''}`}
+				className={rowClassName}
 				onClick={onClick}
 				tabIndex={onClick ? 0 : undefined}
 				role="row"
@@ -784,13 +903,17 @@ function generateDynamicColumns(
 		if (columnsOrder)
 			columnsOrderArray = Object.values(columnsOrder).map(col => col.property.value);
 
-		let columns = Array.from<string>(
-			(context.table.data ?? []).reduce((a: Set<string>, c: any) => {
+		let allKeys: Set<string>;
+		if (context.table.treeMode && context.table.childrenKey) {
+			allKeys = collectAllKeysFromTree(context.table.data ?? [], context.table.childrenKey);
+		} else {
+			allKeys = (context.table.data ?? []).reduce((a: Set<string>, c: any) => {
 				if (!c) return a;
 				for (const eachKey of Object.keys(c)) a.add(eachKey);
 				return a;
-			}, new Set<string>()),
-		);
+			}, new Set<string>());
+		}
+		let columns = Array.from<string>(allKeys);
 
 		const includedColumns = new Set<string>(includeColumnsArray);
 		const excludedColumns = new Set<string>(excludeColumnsArray);
@@ -890,4 +1013,216 @@ function generateDynamicColumns(
 			children[eachChild.key] = true;
 		}
 	}
+}
+
+// Tree mode types and helpers
+
+interface FlattenedRow {
+	node: any;
+	depth: number;
+	hasChildren: boolean;
+	isExpanded: boolean;
+	isFirstChild: boolean;
+	isLastChild: boolean;
+	parentPath: boolean[];
+	dataPath: string;
+	nodeKey: string;
+}
+
+interface FlattenTreeParams {
+	nodes: any[];
+	childrenKey: string;
+	uniqueKey: string;
+	hasChildrenProperty: string | undefined;
+	expandedKeys: Set<string>;
+	depth: number;
+	parentPath: boolean[];
+	basePath: string;
+}
+
+function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
+	const {
+		nodes,
+		childrenKey,
+		uniqueKey,
+		hasChildrenProperty,
+		expandedKeys,
+		depth,
+		parentPath,
+		basePath,
+	} = params;
+	const result: FlattenedRow[] = [];
+	for (let i = 0; i < nodes.length; i++) {
+		const node = nodes[i];
+		if (!node) continue;
+		const nodeKey = String(node[uniqueKey] ?? `${basePath}[${i}]`);
+		const isFirst = i === 0;
+		const isLast = i === nodes.length - 1;
+		const nodeChildren = node[childrenKey];
+		const hasChildrenByArray = Array.isArray(nodeChildren) && nodeChildren.length > 0;
+		const hasChildrenByProp = hasChildrenProperty ? !!node[hasChildrenProperty] : false;
+		const hasChildren = hasChildrenByArray || hasChildrenByProp;
+		const isExpanded = expandedKeys.has(nodeKey);
+		const currentPath = `${basePath}[${i}]`;
+
+		result.push({
+			node,
+			depth,
+			hasChildren,
+			isExpanded,
+			isFirstChild: isFirst,
+			isLastChild: isLast,
+			parentPath: [...parentPath],
+			dataPath: currentPath,
+			nodeKey,
+		});
+
+		if (hasChildrenByArray && isExpanded) {
+			result.push(
+				...flattenTree({
+					nodes: nodeChildren,
+					childrenKey,
+					uniqueKey,
+					hasChildrenProperty,
+					expandedKeys,
+					depth: depth + 1,
+					parentPath: [...parentPath, !isLast],
+					basePath: `${currentPath}.${childrenKey}`,
+				}),
+			);
+		}
+	}
+	return result;
+}
+
+function collectAllKeysFromTree(data: any[], childrenKey: string): Set<string> {
+	const keys = new Set<string>();
+	const walk = (nodes: any[]) => {
+		for (const node of nodes) {
+			if (!node) continue;
+			for (const k of Object.keys(node)) {
+				if (k !== childrenKey) keys.add(k);
+			}
+			if (Array.isArray(node[childrenKey])) walk(node[childrenKey]);
+		}
+	};
+	walk(data);
+	return keys;
+}
+
+function generateTreeRows(properties: {
+	flattenedRows: FlattenedRow[];
+	showCheckBox: any;
+	isSelected: (index: number) => boolean;
+	select: (index: number) => void;
+	multiSelect: any;
+	selectionType: any;
+	uniqueKey: any;
+	data: any;
+	columnDef: any;
+	children: { [key: string]: boolean } | undefined;
+	context: RenderContext;
+	locationHistory: LocationHistory[];
+	definition: ComponentDefinition;
+	pageExtractor: PageStoreExtractor;
+	showConnectors: boolean;
+	indentSize: number;
+	expandIcon: string | undefined;
+	collapseIcon: string | undefined;
+	toggleExpand: (nodeKey: string, dataPath: string) => void;
+	dataBindingPath: string;
+	firstColumnKey: string | undefined;
+	treeStyles: any;
+}) {
+	const {
+		flattenedRows,
+		showCheckBox,
+		isSelected,
+		select,
+		multiSelect,
+		selectionType,
+		columnDef,
+		children,
+		context,
+		locationHistory,
+		definition,
+		showConnectors,
+		indentSize,
+		expandIcon,
+		collapseIcon,
+		toggleExpand,
+		dataBindingPath,
+		firstColumnKey,
+		treeStyles,
+	} = properties;
+
+	const rows: React.ReactNode[] = [];
+
+	for (let i = 0; i < flattenedRows.length; i++) {
+		const row = flattenedRows[i];
+		const checkBox = showCheckBox ? (
+			<td className="comp compTableColumn">
+				<CommonCheckbox
+					key="checkbox"
+					isChecked={isSelected(i)}
+					onChange={() => select(i)}
+				/>
+			</td>
+		) : (
+			<></>
+		);
+
+		const onClick = !multiSelect && selectionType !== 'NONE' ? () => select(i) : undefined;
+
+		const rowLocationHistory: LocationHistory[] = [
+			...locationHistory,
+			{
+				location: {
+					type: 'EXPRESSION' as const,
+					expression: `${dataBindingPath}${row.dataPath}`,
+				},
+				index: row.nodeKey,
+				pageName: context.pageName,
+				componentKey: definition.key,
+			},
+		];
+
+		const rowContext = {
+			...context,
+			table: {
+				...context.table,
+				treeRowData: row,
+				firstColumnKey,
+				showConnectors,
+				indentSize,
+				expandIcon,
+				collapseIcon,
+				toggleExpand,
+				treeStyles,
+				columnsDefinition: definition,
+			},
+		};
+
+		const rowClassName = `_row _dataRow _treeDepth${row.depth} ${onClick ? '_pointer' : ''} ${isSelected(i) ? '_selected' : ''}`;
+
+		rows.push(
+			<tr
+				key={row.nodeKey}
+				className={rowClassName}
+				onClick={onClick}
+				tabIndex={onClick ? 0 : undefined}
+				role="row"
+			>
+				{checkBox}
+				<Children
+					pageDefinition={columnDef}
+					renderableChildren={children}
+					context={rowContext}
+					locationHistory={rowLocationHistory}
+				/>
+			</tr>,
+		);
+	}
+
+	return rows;
 }
