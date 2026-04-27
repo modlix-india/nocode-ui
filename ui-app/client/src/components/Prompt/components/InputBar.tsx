@@ -66,6 +66,13 @@ export function InputBar({
 		setText(initialText ?? '');
 	}, [initialText]);
 
+	// Re-focus input when streaming completes
+	useEffect(() => {
+		if (!isStreaming && textareaRef.current) {
+			textareaRef.current.focus();
+		}
+	}, [isStreaming]);
+
 	// Cleanup speech recognition on unmount
 	useEffect(() => {
 		return () => recognitionRef.current?.stop();
@@ -278,6 +285,7 @@ export function InputBar({
 					placeholder={placeholder}
 					disabled={disabled}
 					rows={1}
+					autoFocus
 					style={styleProperties?.inputTextArea ?? {}}
 				/>
 				<div className="_inputActions">
