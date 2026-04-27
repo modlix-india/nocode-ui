@@ -31,19 +31,6 @@ function pickRandom(current: string): string {
 	return next;
 }
 
-function getHeaderLabel(
-	isActive: boolean,
-	thinkingMsg: string,
-	toolCount: number,
-	hasReasoning: boolean,
-	elapsed: number,
-): string {
-	if (isActive) return `${thinkingMsg}...`;
-	if (toolCount > 0) return `Used ${toolCount} tool${toolCount !== 1 ? 's' : ''}`;
-	if (hasReasoning) return 'Reasoned through it';
-	return `Thought for ${elapsed}s`;
-}
-
 interface ToolCallInfo {
 	id: string;
 	toolName: string;
@@ -51,6 +38,7 @@ interface ToolCallInfo {
 	summary: string;
 	success?: boolean;
 	isRunning: boolean;
+	updates?: string[];
 }
 
 interface ThinkingBlockProps {
@@ -64,13 +52,71 @@ interface ThinkingBlockProps {
 	collapseIcon?: string;
 }
 
+// Single tool row with Tool(name) label — used when exactly 1 tool, no wrapper.
+function SingleToolRow({
+	tc,
+	expandIcon,
+	collapseIcon,
+}: {
+	tc: ToolCallInfo;
+	expandIcon: string;
+	collapseIcon: string;
+}) {
+	const [expanded, setExpanded] = useState(false);
+	const label = tc.displayName || tc.toolName;
+	const hasSummary = !!tc.summary;
+
+	return (
+		<div className="_agentGroupSingle">
+			<div className="_agentToolRow">
+				{hasSummary ? (
+					<button
+						type="button"
+						className="_agentToolHeader _clickable"
+						onClick={() => setExpanded(prev => !prev)}
+					>
+						<span className="_statusDotStatic" />
+						<span className="_agentToolLabel">
+							Tool(<span className="_agentToolName">{label}</span>)
+						</span>
+						{!expanded && (
+							<span className="_agentToolSummary">
+								{tc.summary.length > 80
+									? tc.summary.slice(0, 80) + '...'
+									: tc.summary}
+							</span>
+						)}
+						<i className={`_agentToolToggle ${expanded ? collapseIcon : expandIcon}`} />
+					</button>
+				) : (
+					<div className="_agentToolHeader">
+						<span className="_statusDotStatic" />
+						<span className="_agentToolLabel">
+							Tool(<span className="_agentToolName">{label}</span>)
+						</span>
+					</div>
+				)}
+				{expanded && (tc.updates?.length ? (
+					<div className="_agentToolUpdates">
+						{tc.updates.map((u, i) => (
+							<div key={i} className="_agentToolUpdateLine">{u}</div>
+						))}
+					</div>
+				) : hasSummary ? (
+					<div className="_agentToolDetail">{tc.summary}</div>
+				) : null)}
+			</div>
+		</div>
+	);
+}
+
 export function ThinkingBlock({
 	isActive,
 	toolCalls,
 	reasoningContent,
-	toolRunningIcon = 'fa fa-circle-notch fa-spin',
-	toolSuccessIcon = 'fa fa-check',
-	toolErrorIcon = 'fa fa-xmark',
+	toolRunningIcon,
+	toolSuccessIcon,
+	toolErrorIcon,
 	expandIcon = 'fa fa-chevron-down',
 	collapseIcon = 'fa fa-chevron-up',
 }: Readonly<ThinkingBlockProps>) {
@@ -82,7 +128,6 @@ export function ThinkingBlock({
 	const startTimeRef = useRef(Date.now());
 	const wasEverActiveRef = useRef(isActive);
 
-	// Auto-expand when active
 	useEffect(() => {
 		if (isActive) {
 			wasEverActiveRef.current = true;
@@ -91,7 +136,6 @@ export function ThinkingBlock({
 		}
 	}, [isActive]);
 
-	// Rotate thinking messages while active
 	useEffect(() => {
 		if (!isActive) return;
 		const interval = setInterval(() => {
@@ -109,19 +153,41 @@ export function ThinkingBlock({
 		});
 	}, []);
 
-	// Don't render if never been active and no tool calls and no reasoning (e.g. historical messages)
 	if (!isActive && !wasEverActiveRef.current && !toolCalls.length && !reasoningContent) return null;
 
 	const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
 
-	const toolIcon = (tc: ToolCallInfo) =>
-		tc.isRunning ? toolRunningIcon : tc.success ? toolSuccessIcon : tc.success === false ? toolErrorIcon : toolSuccessIcon;
-
 	const toolStatusClass = (tc: ToolCallInfo) =>
 		tc.isRunning ? '_running' : tc.success ? '_success' : tc.success === false ? '_error' : '_success';
 
+	const toolGlyph = (tc: ToolCallInfo) => (
+		<span className={`_statusDot ${toolStatusClass(tc)}`} />
+	);
+
+	// Single tool, not active, no reasoning → render flat, no wrapper.
+	if (!isActive && toolCalls.length === 1 && !reasoningContent) {
+		return (
+			<SingleToolRow
+				tc={toolCalls[0]}
+				expandIcon={expandIcon}
+				collapseIcon={collapseIcon}
+			/>
+		);
+	}
+
 	const hasContent = toolCalls.length > 0 || !!reasoningContent;
-	const headerLabel = getHeaderLabel(isActive, thinkingMsg, toolCalls.length, !!reasoningContent, elapsed);
+
+	// Header label
+	let headerLabel: string;
+	if (isActive) {
+		headerLabel = `${thinkingMsg}...`;
+	} else if (toolCalls.length > 0) {
+		headerLabel = `Used ${toolCalls.length} tools`;
+	} else if (reasoningContent) {
+		headerLabel = 'Reasoned through it';
+	} else {
+		headerLabel = `Thought for ${elapsed}s`;
+	}
 
 	return (
 		<div className={`_thinkingBlock ${isActive ? '_active' : '_done'}`}>
@@ -130,11 +196,7 @@ export function ThinkingBlock({
 				onClick={() => setExpanded(prev => !prev)}
 			>
 				{isActive ? (
-					<div className="_thinkingDots">
-						<span />
-						<span />
-						<span />
-					</div>
+					<span className="_statusDot _running" />
 				) : (
 					<i className={expanded ? collapseIcon : expandIcon} />
 				)}
@@ -162,7 +224,7 @@ export function ThinkingBlock({
 										className="_thinkingToolRow _clickable"
 										onClick={() => toggleToolExpanded(tc.id)}
 									>
-										<span className={`_thinkingToolIcon ${toolIcon(tc)}`} />
+										{toolGlyph(tc)}
 										<span className="_thinkingToolName">{label}</span>
 										{!isToolExpanded && (
 											<span className="_thinkingToolSummary">
@@ -175,15 +237,21 @@ export function ThinkingBlock({
 									</button>
 								) : (
 									<div className="_thinkingToolRow">
-										<span className={`_thinkingToolIcon ${toolIcon(tc)}`} />
+										{toolGlyph(tc)}
 										<span className="_thinkingToolName">{label}</span>
 									</div>
 								)}
-								{isToolExpanded && hasSummary && (
+								{isToolExpanded && (tc.updates?.length ? (
+									<div className="_agentToolUpdates">
+										{tc.updates.map((u, i) => (
+											<div key={i} className="_agentToolUpdateLine">{u}</div>
+										))}
+									</div>
+								) : hasSummary ? (
 									<div className="_thinkingToolDetail">
 										{tc.summary}
 									</div>
-								)}
+								) : null)}
 							</div>
 						);
 					})}

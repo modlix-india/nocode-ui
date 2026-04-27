@@ -19,6 +19,7 @@ interface ChatMessageProps {
 	onFeedback?: (messageId: string, turnNumber: number, rating: number) => void;
 	thumbsUpIcon?: string;
 	thumbsDownIcon?: string;
+	children?: React.ReactNode;
 }
 
 export function ChatMessage({
@@ -37,6 +38,7 @@ export function ChatMessage({
 	onFeedback,
 	thumbsUpIcon = 'fa fa-thumbs-up',
 	thumbsDownIcon = 'fa fa-thumbs-down',
+	children,
 }: Readonly<ChatMessageProps>) {
 	const [copied, setCopied] = useState(false);
 
@@ -90,6 +92,7 @@ export function ChatMessage({
 					styles={styles ?? {}}
 				/>
 				{isStreaming && <span className="_streamingCursor" />}
+				{children}
 				{!isStreaming && content && (
 					<div className="_messageActions">
 						<button
