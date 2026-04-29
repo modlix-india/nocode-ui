@@ -83,9 +83,6 @@ export interface ApplicationDefinition {
 
 export interface AnalyticsConfig {
 	enabled?: boolean;
-	provider?: 'posthog';
-	projectApiKey?: string;
-	ingestionHost?: string;
 	autocapture?: boolean;
 	capturePageviews?: boolean;
 	capturePageleaves?: boolean;
@@ -94,8 +91,6 @@ export interface AnalyticsConfig {
 	sessionReplay?: {
 		enabled?: boolean;
 		maskAllInputs?: boolean;
-		maskTextSelector?: string;
-		blockSelector?: string;
 	};
 }
 

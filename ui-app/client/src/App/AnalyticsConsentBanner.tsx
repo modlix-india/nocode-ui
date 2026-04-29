@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { STORE_PREFIX } from '../constants';
+import { addListenerAndCallImmediately } from '../context/StoreContext';
 
 const DEFAULT_COOKIE_NAME = 'modlix_analytics_consent';
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
@@ -18,6 +20,9 @@ declare global {
 			opt_out_capturing?: () => void;
 			startSessionRecording?: () => void;
 			stopSessionRecording?: () => void;
+			register?: (props: Record<string, unknown>) => void;
+			identify?: (id: string, props?: Record<string, unknown>) => void;
+			reset?: () => void;
 		};
 		__APP_BOOTSTRAP__?: {
 			application?: { properties?: { analytics?: AnalyticsBootstrap } };
@@ -70,28 +75,62 @@ export function AnalyticsConsentBanner() {
 
 	useEffect(() => {
 		const analytics = window.__APP_BOOTSTRAP__?.application?.properties?.analytics;
-		if (!analytics?.enabled || !analytics.consentRequired) return;
+		if (!analytics?.enabled) return;
 
-		const name = analytics.consentCookieName || DEFAULT_COOKIE_NAME;
-		setCookieName(name);
+		const removeApp = addListenerAndCallImmediately(
+			undefined,
+			(_, app) => {
+				if (!window.posthog?.register || !app) return;
+				window.posthog.register({
+					app_code: app.appCode,
+					url_client_code: app.urlClientCode,
+				});
+			},
+			`${STORE_PREFIX}.application`,
+		);
 
-		const stored = readConsent(name);
-		if (stored) {
-			applyConsent(stored);
-			return;
+		const removeUser = addListenerAndCallImmediately(
+			undefined,
+			(_, user) => {
+				if (!window.posthog) return;
+				if (user?.id) {
+					window.posthog.identify?.(String(user.id), { email: user.emailId });
+				} else {
+					window.posthog.reset?.();
+				}
+			},
+			`${STORE_PREFIX}.auth.user`,
+		);
+
+		const removeClient = addListenerAndCallImmediately(
+			undefined,
+			(_, client) => {
+				if (!window.posthog?.register || !client) return;
+				window.posthog.register({ client_code: client.code });
+			},
+			`${STORE_PREFIX}.auth.client`,
+		);
+
+		const cleanups: Array<() => void> = [removeApp, removeUser, removeClient];
+
+		if (analytics.consentRequired) {
+			const name = analytics.consentCookieName || DEFAULT_COOKIE_NAME;
+			setCookieName(name);
+
+			const stored = readConsent(name);
+			if (stored) {
+				applyConsent(stored);
+			} else {
+				window.__MODLIX_CONSENT__ = { mounted: true };
+				if (window.__MODLIX_FORCE_CONSENT__) setVisible(true);
+
+				const onForce = () => setVisible(true);
+				window.addEventListener('modlix:force-consent', onForce);
+				cleanups.push(() => window.removeEventListener('modlix:force-consent', onForce));
+			}
 		}
 
-		// Mark this default banner as the mounted consent surface so the bootstrap
-		// fallback in IndexHTMLService knows a banner exists.
-		window.__MODLIX_CONSENT__ = { mounted: true };
-
-		if (window.__MODLIX_FORCE_CONSENT__) {
-			setVisible(true);
-		}
-
-		const onForce = () => setVisible(true);
-		window.addEventListener('modlix:force-consent', onForce);
-		return () => window.removeEventListener('modlix:force-consent', onForce);
+		return () => cleanups.forEach((fn) => fn());
 	}, []);
 
 	if (!visible) return null;
