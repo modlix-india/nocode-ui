@@ -54,6 +54,11 @@ interface SSRConfig {
 	cache: {
 		ttlSeconds: number;
 	};
+	// Analytics (PostHog) configuration
+	analytics: {
+		ingestionHost: string;
+		projectApiKey: string;
+	};
 }
 
 // Default configuration (used in development or if config server is unavailable)
@@ -78,6 +83,10 @@ const defaultConfig: SSRConfig = {
 		stripAPIPrefix: true,
 		replacePlus: false,
 		resizeOptionsType: 'none',
+	},
+	analytics: {
+		ingestionHost: '',
+		projectApiKey: '',
 	},
 	cache: {
 		ttlSeconds: 1800, // 30 minutes
@@ -135,6 +144,10 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 			},
 			cache: {
 				ttlSeconds: (source['ssr.cache.ttlSeconds'] as number) || defaultConfig.cache.ttlSeconds,
+			},
+			analytics: {
+				ingestionHost: (source['ui.analytics.ingestionHost'] as string) || defaultConfig.analytics.ingestionHost,
+				projectApiKey: (source['ui.analytics.posthog.projectApiKey'] as string) || defaultConfig.analytics.projectApiKey,
 			},
 		};
 	} catch (error) {

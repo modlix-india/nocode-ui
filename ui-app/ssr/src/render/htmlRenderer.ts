@@ -247,18 +247,25 @@ const CONSENT_FALLBACK_BOOTSTRAP =
 	'}},250);});';
 
 /**
- * Generate the PostHog analytics snippet when properties.analytics is enabled and complete.
- * Returns '' otherwise — no analytics block, no script tag, no PostHog footprint.
+ * Generate the PostHog analytics snippet. Project key + ingestion host come from
+ * env-level Spring Cloud Config; only the user-facing toggles come from the app.
+ * Returns '' if env config is missing or the app has analytics disabled.
  */
-function generateAnalyticsSnippet(application: ApplicationDefinition | null): string {
+function generateAnalyticsSnippet(
+	application: ApplicationDefinition | null,
+	projectApiKey: string,
+	ingestionHost: string,
+): string {
+	if (!projectApiKey || !ingestionHost) return '';
+
 	const a = application?.properties?.analytics;
-	if (!a?.enabled || !a.projectApiKey || !a.ingestionHost) return '';
+	if (!a?.enabled) return '';
 
 	const replayEnabled = !!a.sessionReplay?.enabled;
 	const consentRequired = a.consentRequired !== false;
 
 	const initOptions: Record<string, unknown> = {
-		api_host: a.ingestionHost,
+		api_host: ingestionHost,
 		person_profiles: 'identified_only',
 		autocapture: a.autocapture ?? true,
 		capture_pageview: a.capturePageviews ?? true,
@@ -268,15 +275,12 @@ function generateAnalyticsSnippet(application: ApplicationDefinition | null): st
 	};
 
 	if (replayEnabled) {
-		const recording: Record<string, unknown> = {
+		initOptions.session_recording = {
 			maskAllInputs: a.sessionReplay?.maskAllInputs ?? true,
 		};
-		if (a.sessionReplay?.maskTextSelector) recording.maskTextSelector = a.sessionReplay.maskTextSelector;
-		if (a.sessionReplay?.blockSelector) recording.blockSelector = a.sessionReplay.blockSelector;
-		initOptions.session_recording = recording;
 	}
 
-	const apiKeyJson = JSON.stringify(a.projectApiKey);
+	const apiKeyJson = JSON.stringify(projectApiKey);
 	const optionsJson = JSON.stringify(initOptions);
 
 	return `<script>${POSTHOG_STUB}posthog.init(${apiKeyJson},${optionsJson});${
@@ -364,7 +368,11 @@ function generateHtml(
 	const metaTags = generateMetaTags(page, application);
 	const externalLinks = generateExternalLinks(application);
 	const externalScripts = generateExternalScripts(application);
-	const analyticsSnippet = generateAnalyticsSnippet(application);
+	const analyticsSnippet = generateAnalyticsSnippet(
+		application,
+		getConfig().analytics.projectApiKey,
+		getConfig().analytics.ingestionHost,
+	);
 
 	// Extract code parts for different placements
 	const beforeHeadParts = extractCodeParts(application, 'BEFORE_HEAD');
