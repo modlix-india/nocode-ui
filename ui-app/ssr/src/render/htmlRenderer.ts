@@ -222,6 +222,68 @@ function generateExternalLinks(application: ApplicationDefinition | null): strin
 	return links.join('\n\t\t');
 }
 
+const POSTHOG_STUB =
+	'!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){' +
+	'function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),' +
+	't[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}' +
+	'(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",' +
+	'p.async=!0,p.src=s.api_host+"/static/array.js",' +
+	'(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;' +
+	'for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],' +
+	'u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),' +
+	't||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},' +
+	'o="init capture register register_once unregister identify setPersonProperties group reset ' +
+	'opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing ' +
+	'startSessionRecording stopSessionRecording".split(" "),' +
+	'n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}' +
+	'(document,window.posthog||[]);';
+
+const CONSENT_FALLBACK_BOOTSTRAP =
+	"window.addEventListener('DOMContentLoaded',function(){" +
+	'setTimeout(function(){' +
+	'if(!window.__MODLIX_CONSENT__||!window.__MODLIX_CONSENT__.mounted){' +
+	'window.__MODLIX_FORCE_CONSENT__=true;' +
+	"window.dispatchEvent(new CustomEvent('modlix:force-consent'));" +
+	'}},250);});';
+
+/**
+ * Generate the PostHog analytics snippet when properties.analytics is enabled and complete.
+ * Returns '' otherwise — no analytics block, no script tag, no PostHog footprint.
+ */
+function generateAnalyticsSnippet(application: ApplicationDefinition | null): string {
+	const a = application?.properties?.analytics;
+	if (!a?.enabled || !a.projectApiKey || !a.ingestionHost) return '';
+
+	const replayEnabled = !!a.sessionReplay?.enabled;
+	const consentRequired = a.consentRequired !== false;
+
+	const initOptions: Record<string, unknown> = {
+		api_host: a.ingestionHost,
+		person_profiles: 'identified_only',
+		autocapture: a.autocapture ?? true,
+		capture_pageview: a.capturePageviews ?? true,
+		capture_pageleave: a.capturePageleaves ?? true,
+		disable_session_recording: !replayEnabled,
+		opt_out_capturing_by_default: consentRequired,
+	};
+
+	if (replayEnabled) {
+		const recording: Record<string, unknown> = {
+			maskAllInputs: a.sessionReplay?.maskAllInputs ?? true,
+		};
+		if (a.sessionReplay?.maskTextSelector) recording.maskTextSelector = a.sessionReplay.maskTextSelector;
+		if (a.sessionReplay?.blockSelector) recording.blockSelector = a.sessionReplay.blockSelector;
+		initOptions.session_recording = recording;
+	}
+
+	const apiKeyJson = JSON.stringify(a.projectApiKey);
+	const optionsJson = JSON.stringify(initOptions);
+
+	return `<script>${POSTHOG_STUB}posthog.init(${apiKeyJson},${optionsJson});${
+		consentRequired ? CONSENT_FALLBACK_BOOTSTRAP : ''
+	}</script>`;
+}
+
 /**
  * Generate external scripts HTML
  */
@@ -302,6 +364,7 @@ function generateHtml(
 	const metaTags = generateMetaTags(page, application);
 	const externalLinks = generateExternalLinks(application);
 	const externalScripts = generateExternalScripts(application);
+	const analyticsSnippet = generateAnalyticsSnippet(application);
 
 	// Extract code parts for different placements
 	const beforeHeadParts = extractCodeParts(application, 'BEFORE_HEAD');
@@ -353,6 +416,7 @@ function generateHtml(
 
 		<!-- External stylesheets (fonts, etc.) -->
 		${externalLinks}
+		${analyticsSnippet}
 		${afterHeadParts ? `\n\t\t${afterHeadParts}` : ''}
 	</head>
 	<body>
