@@ -227,6 +227,9 @@ function mergeConfigs(...configs: Array<Partial<SSRConfig> | null>): SSRConfig {
 		if (config.cache) {
 			result.cache = { ...result.cache, ...config.cache };
 		}
+		if (config.analytics) {
+			result.analytics = { ...result.analytics, ...config.analytics };
+		}
 	}
 
 	return result;
