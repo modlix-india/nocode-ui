@@ -48,6 +48,7 @@ export default function Gallery(props: Readonly<ComponentProps>) {
 			animationType,
 			animationDuration,
 			showInDesign,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -606,6 +607,7 @@ export default function Gallery(props: Readonly<ComponentProps>) {
 					onClick={handleCloseOnOutsideClick}
 					style={resolvedStyles.comp ?? {}}
 					ref={galleryRef}
+					data-analytics-label={analyticsLabel || undefined}
 				>
 					<HelperComponent context={props.context} definition={props.definition} />
 					<div className={`_mainContainer _preview${position}`}>

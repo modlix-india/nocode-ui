@@ -274,7 +274,7 @@ function generateAnalyticsSnippet(
 		disable_session_recording: !replayEnabled,
 		enable_heatmaps: heatmapsEnabled,
 		opt_out_capturing_by_default: consentRequired,
-		advanced_disable_decide: true,
+		advanced_disable_flags: true,
 	};
 
 	if (replayEnabled) {

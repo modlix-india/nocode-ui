@@ -73,6 +73,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			editRequestIcon,
 			editConfirmIcon,
 			editCancelIcon,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -292,6 +293,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			editRequestIcon={editRequestIcon}
 			editConfirmIcon={editConfirmIcon}
 			editCancelIcon={editCancelIcon}
+			analyticsLabel={analyticsLabel}
 			onEditRequest={(editMode, cancel) => {
 				if (!originalBindingPathPath || editMode) return;
 				if (cancel) {
