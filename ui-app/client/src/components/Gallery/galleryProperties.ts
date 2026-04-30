@@ -14,6 +14,7 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	COMMON_COMPONENT_PROPERTIES.analyticsLabel,
 	{
 		name: 'data',
 		schema: SCHEMA_ANY_COMP_PROP,

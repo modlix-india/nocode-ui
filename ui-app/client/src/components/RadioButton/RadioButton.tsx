@@ -57,6 +57,7 @@ function RadioButton(props: Readonly<ComponentProps>) {
 			isMultiSelect,
 			designType,
 			colorScheme,
+			analyticsLabel,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -170,6 +171,7 @@ function RadioButton(props: Readonly<ComponentProps>) {
 		<div
 			className={`comp compRadioButton _${layout} ${designType} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{radioButtonData?.map((e: any) => (

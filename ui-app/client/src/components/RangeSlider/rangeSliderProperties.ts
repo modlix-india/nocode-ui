@@ -12,6 +12,7 @@ import {
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	COMMON_COMPONENT_PROPERTIES.analyticsLabel,
 	{
 		name: 'trackDesign',
 		schema: SCHEMA_STRING_COMP_PROP,

@@ -88,6 +88,7 @@ export default function ColorPickerComponent(props: Readonly<ComponentProps>) {
 			noAlpha,
 			format,
 			supportingText,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -300,6 +301,7 @@ export default function ColorPickerComponent(props: Readonly<ComponentProps>) {
 			leftIcon={leftIcon}
 			showDropdown={showDropdown}
 			supportingText={supportingText}
+			analyticsLabel={analyticsLabel}
 			onMouseEnter={() => {
 				setMouseIsInside(true);
 			}}

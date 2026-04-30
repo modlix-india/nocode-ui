@@ -64,6 +64,7 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 			onTabChange,
 			image,
 			showLabel,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -177,6 +178,7 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 		<div
 			className={`comp compTabs ${tabsOrientation} ${designType} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			<div

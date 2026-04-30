@@ -56,6 +56,7 @@ function Menu(props: Readonly<ComponentProps>) {
 			subMenuOrientation,
 			readOnly,
 			showOpenCloseButton,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -321,6 +322,7 @@ function Menu(props: Readonly<ComponentProps>) {
 				} ${readOnly ? '_disabled' : ''} _level${context.menuLevel ?? 0}`}
 				href={readOnly ? 'javascript:void(0)' : resolvedLink}
 				target={target}
+				data-analytics-label={analyticsLabel || undefined}
 				onMouseEnter={() => setIsHovered(true)}
 				onMouseLeave={() => setIsHovered(false)}
 				onClick={e => {
