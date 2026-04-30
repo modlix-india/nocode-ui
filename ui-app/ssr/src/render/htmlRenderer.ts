@@ -272,6 +272,7 @@ function generateAnalyticsSnippet(
 		capture_pageleave: a.capturePageleaves ?? true,
 		disable_session_recording: !replayEnabled,
 		opt_out_capturing_by_default: consentRequired,
+		advanced_disable_decide: true,
 	};
 
 	if (replayEnabled) {
@@ -283,7 +284,11 @@ function generateAnalyticsSnippet(
 	const apiKeyJson = JSON.stringify(projectApiKey);
 	const optionsJson = JSON.stringify(initOptions);
 
-	return `<script>${POSTHOG_STUB}posthog.init(${apiKeyJson},${optionsJson});${
+	const initCall = replayEnabled
+		? `var __phOpts=${optionsJson};__phOpts.loaded=function(ph){try{ph.persistence.register({'$session_recording_remote_config':{enabled:true,sampleRate:null,recorderVersion:'v2',endpoint:'/s/',linkedFlag:null,urlBlocklist:[],urlTriggers:[],eventTriggers:[]}});ph.sessionRecording&&ph.sessionRecording.startIfEnabledOrStop&&ph.sessionRecording.startIfEnabledOrStop();}catch(e){}};posthog.init(${apiKeyJson},__phOpts);`
+		: `posthog.init(${apiKeyJson},${optionsJson});`;
+
+	return `<script>${POSTHOG_STUB}${initCall}${
 		consentRequired ? CONSENT_FALLBACK_BOOTSTRAP : ''
 	}</script>`;
 }
