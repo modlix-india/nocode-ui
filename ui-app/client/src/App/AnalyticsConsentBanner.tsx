@@ -111,7 +111,16 @@ export function AnalyticsConsentBanner() {
 			`${STORE_PREFIX}.auth.client`,
 		);
 
-		const cleanups: Array<() => void> = [removeApp, removeUser, removeClient];
+		const removeUrlDetails = addListenerAndCallImmediately(
+			undefined,
+			(_, details) => {
+				if (!window.posthog?.register || !details?.pageName) return;
+				window.posthog.register({ page_name: details.pageName });
+			},
+			`${STORE_PREFIX}.urlDetails`,
+		);
+
+		const cleanups: Array<() => void> = [removeApp, removeUser, removeClient, removeUrlDetails];
 
 		if (analytics.consentRequired) {
 			const name = analytics.consentCookieName || DEFAULT_COOKIE_NAME;
