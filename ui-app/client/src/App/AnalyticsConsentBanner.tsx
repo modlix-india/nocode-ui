@@ -22,6 +22,7 @@ declare global {
 			stopSessionRecording?: () => void;
 			register?: (props: Record<string, unknown>) => void;
 			identify?: (id: string, props?: Record<string, unknown>) => void;
+			group?: (groupType: string, groupKey: string, groupProps?: Record<string, unknown>) => void;
 			reset?: () => void;
 		};
 		__APP_BOOTSTRAP__?: {
@@ -105,8 +106,9 @@ export function AnalyticsConsentBanner() {
 		const removeClient = addListenerAndCallImmediately(
 			undefined,
 			(_, client) => {
-				if (!window.posthog?.register || !client) return;
-				window.posthog.register({ client_code: client.code });
+				if (!window.posthog || !client?.code) return;
+				window.posthog.register?.({ client_code: client.code });
+				window.posthog.group?.('tenant', client.code);
 			},
 			`${STORE_PREFIX}.auth.client`,
 		);

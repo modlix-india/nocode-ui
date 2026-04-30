@@ -42,6 +42,7 @@ export default function Tags(props: Readonly<ComponentProps>) {
 			delimitter,
 			placeHolder,
 			label,
+			analyticsLabel,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -137,7 +138,7 @@ export default function Tags(props: Readonly<ComponentProps>) {
 		}
 	};
 	return (
-		<div className="comp compTags">
+		<div className="comp compTags" data-analytics-label={analyticsLabel || undefined}>
 			<HelperComponent context={props.context} definition={props.definition} />
 			<div className="label" style={resolvedStyles.titleLabel ?? {}}>
 				<SubHelperComponent definition={props.definition} subComponentName="titleLabel" />

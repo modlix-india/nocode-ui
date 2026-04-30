@@ -17,6 +17,7 @@ const ENUM_OPTION: Array<ComponentENUM> = COUNTRY_LIST.map(each => {
 	return { name: each.C, displayName: `${each.N} ${each.D}` };
 });
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	COMMON_COMPONENT_PROPERTIES.analyticsLabel,
 	COMMON_COMPONENT_PROPERTIES.label,
 	{
 		name: 'placeholder',

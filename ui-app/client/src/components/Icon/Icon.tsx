@@ -14,7 +14,7 @@ function Icon(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
-	const { properties: { icon, designType, colorScheme } = {}, stylePropertiesWithPseudoStates } =
+	const { properties: { icon, designType, colorScheme, analyticsLabel } = {}, stylePropertiesWithPseudoStates } =
 		useDefinition(
 			definition,
 			propertiesDefinition,
@@ -34,6 +34,7 @@ function Icon(props: Readonly<ComponentProps>) {
 		<i
 			className={`comp compIcon _icon ${designType} ${colorScheme} ${icon}`}
 			style={styleProperties.comp ?? {}}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 		</i>

@@ -95,6 +95,7 @@ const DATE_FORMATS = [
 ];
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
+	COMMON_COMPONENT_PROPERTIES.analyticsLabel,
 	{
 		name: 'placeholder',
 		schema: SCHEMA_STRING_COMP_PROP,

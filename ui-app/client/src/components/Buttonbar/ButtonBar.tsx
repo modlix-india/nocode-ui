@@ -49,6 +49,7 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 			isMultiSelect,
 			colorScheme,
 			buttonBarDesign,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -151,6 +152,7 @@ function ButtonBar(props: Readonly<ComponentProps>) {
 		<div
 			className={`comp compButtonBar ${buttonBarDesign} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={props.definition} />
 			{buttonBarData?.map((each, i, arr) => (

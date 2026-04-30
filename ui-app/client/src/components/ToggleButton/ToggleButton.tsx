@@ -45,6 +45,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 			offIcon,
 			onImage,
 			offImage,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -126,6 +127,7 @@ function ToggleButton(props: Readonly<ComponentProps>) {
 			style={resolvedStyles.comp ?? {}}
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 

@@ -68,6 +68,7 @@ export default function Otp(props: Readonly<ComponentProps>) {
 			onBlur,
 			onFocus,
 			onClear,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -457,6 +458,7 @@ export default function Otp(props: Readonly<ComponentProps>) {
 				hasValue ? '_hasValue' : ''
 			}`}
 			style={computedStyles.comp ?? {}}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{label && (
