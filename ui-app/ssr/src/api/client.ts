@@ -77,6 +77,20 @@ export interface ApplicationDefinition {
 		notFoundPage?: string;
 		csp?: string | Record<string, string>;
 		cspReport?: string | Record<string, string>;
+		analytics?: AnalyticsConfig;
+	};
+}
+
+export interface AnalyticsConfig {
+	enabled?: boolean;
+	autocapture?: boolean;
+	capturePageviews?: boolean;
+	capturePageleaves?: boolean;
+	consentRequired?: boolean;
+	consentCookieName?: string;
+	sessionReplay?: {
+		enabled?: boolean;
+		maskAllInputs?: boolean;
 	};
 }
 
