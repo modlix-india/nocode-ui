@@ -23,6 +23,13 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'successBindingPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Success Binding Path',
+		description: 'Store path where the success event data will be automatically saved.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'placeholder',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Placeholder',
@@ -387,6 +394,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Error',
 		description: 'Event fired on error.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: 'onSuccess',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Success',
+		description: 'Event fired when a success signal is received.',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 	},

@@ -180,6 +180,10 @@ interface SSEEventContext {
 	setCrafts: React.Dispatch<React.SetStateAction<Map<string, CraftData>>>;
 	setActiveCraftId: React.Dispatch<React.SetStateAction<string | null>>;
 	setActiveCraft: React.Dispatch<React.SetStateAction<CraftData | null>>;
+	onSuccess?: string;
+	successBindingPath?: string;
+	props: Readonly<ComponentProps>;
+	runEvent: any;
 }
 
 // Helper: update the assistant message with current toolCalls + agentSpans state.
@@ -389,6 +393,31 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 							: m,
 					),
 				);
+			}
+			break;
+		}
+		case 'success': {
+			// Automatically update the store if a binding path is provided
+			if (ctx.successBindingPath) {
+				setData(
+					ctx.successBindingPath,
+					data,
+					ctx.props.context.pageName,
+				);
+			}
+
+			if (ctx.onSuccess) {
+				const successEvent =
+					ctx.props.pageDefinition.eventFunctions?.[ctx.onSuccess];
+				if (successEvent) {
+					ctx.runEvent(
+						successEvent,
+						ctx.onSuccess,
+						ctx.props.context.pageName,
+						ctx.props.locationHistory,
+						ctx.props.pageDefinition,
+					);
+				}
 			}
 			break;
 		}
@@ -715,6 +744,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		key,
 		properties: {
 			agentEndpoint = '/api/ai/appbuilder/chat',
+			successBindingPath,
 			placeholder = 'Ask anything',
 			welcomeMessage = 'What can I help with?',
 			showSessions = true,
@@ -757,6 +787,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			readOnly,
 			onMessage,
 			onError,
+			onSuccess,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -1488,6 +1519,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										setCrafts,
 										setActiveCraftId,
 										setActiveCraft,
+										onSuccess,
+										successBindingPath,
+										props,
+										runEvent,
 									});
 								} catch {
 									// Skip unparseable data
@@ -1892,15 +1927,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									thumbsUpIcon={thumbsUpIcon}
 									thumbsDownIcon={thumbsDownIcon}
 								>
-									{msg.suggestions &&
-										!isStreaming &&
-										msg.id === messages.at(-1)?.id && (
-											<SuggestionButtons
-												suggestions={msg.suggestions}
-												onSelect={handleSend}
-												disabled={isStreaming}
-											/>
-										)}
+									{msg.suggestions && !isStreaming && (
+										<SuggestionButtons
+											suggestions={msg.suggestions}
+											onSelect={handleSend}
+											disabled={isStreaming || msg.id !== messages.at(-1)?.id}
+										/>
+									)}
 									{msg.data?.map((payload, i) => (
 										<InlineDataRenderer
 											key={`${msg.id}-data-${i}`}
