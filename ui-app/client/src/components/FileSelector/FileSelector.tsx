@@ -71,6 +71,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			uploadButtonText,
 			UploadPlaceholderText,
 			label,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -742,6 +743,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		<div
 			className={`comp compFileSelector ${selectedFile ? '_withImage' : ''} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{content}

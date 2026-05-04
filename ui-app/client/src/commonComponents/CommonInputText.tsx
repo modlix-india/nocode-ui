@@ -54,6 +54,7 @@ type CommonInputType = {
 	editConfirmIcon?: any;
 	editCancelIcon?: any;
 	onEditRequest?: (editMode: boolean, canceled: boolean) => void;
+	analyticsLabel?: string;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -106,6 +107,7 @@ function CommonInputText(props: CommonInputType) {
 		editRequestIcon,
 		editConfirmIcon,
 		editCancelIcon,
+		analyticsLabel,
 		onEditRequest,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
@@ -325,6 +327,7 @@ function CommonInputText(props: CommonInputType) {
 			onMouseEnter={onMouseEnter}
 			onKeyUp={updDownHandler}
 			title={isPassword ? undefined : (title ?? value)}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{leftChildren}

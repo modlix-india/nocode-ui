@@ -92,6 +92,9 @@ export interface AnalyticsConfig {
 		enabled?: boolean;
 		maskAllInputs?: boolean;
 	};
+	heatmaps?: {
+		enabled?: boolean;
+	};
 }
 
 /**

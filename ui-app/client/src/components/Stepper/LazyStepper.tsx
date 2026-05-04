@@ -59,6 +59,7 @@ export default function Stepper(props: Readonly<ComponentProps>) {
 			successImage,
 			currentImage,
 			nextImage,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -293,6 +294,7 @@ export default function Stepper(props: Readonly<ComponentProps>) {
 					: '_horizontal'
 			} ${sepStyle ? `_${key}_grid_css` : ''}
 			${getPositionStyle()} `}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{styleComp}

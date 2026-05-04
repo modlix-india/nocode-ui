@@ -1,13 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-	ComponentPropertyDefinition,
-	ComponentProps,
-} from '../../types/common';
+import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import {
 	PageStoreExtractor,
 	UrlDetailsExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
+	getPathFromLocation,
 	setData,
 	setData as setStoreData,
 } from '../../context/StoreContext';
@@ -119,9 +117,7 @@ function fileToBase64(file: File): Promise<string> {
 
 function mapHistoryToMessages(history: any[]): Message[] {
 	// Sort by turn_number ascending to guarantee chronological order
-	const sorted = [...history].sort(
-		(a, b) => (a.turn_number ?? 0) - (b.turn_number ?? 0),
-	);
+	const sorted = [...history].sort((a, b) => (a.turn_number ?? 0) - (b.turn_number ?? 0));
 	const msgs: Message[] = [];
 	for (let i = 0; i < sorted.length; i++) {
 		const h = sorted[i];
@@ -180,6 +176,10 @@ interface SSEEventContext {
 	setCrafts: React.Dispatch<React.SetStateAction<Map<string, CraftData>>>;
 	setActiveCraftId: React.Dispatch<React.SetStateAction<string | null>>;
 	setActiveCraft: React.Dispatch<React.SetStateAction<CraftData | null>>;
+	onComplete?: string;
+	completeBindingPath?: string;
+	props: Readonly<ComponentProps>;
+	runEvent: any;
 }
 
 // Helper: update the assistant message with current toolCalls + agentSpans state.
@@ -188,9 +188,7 @@ function flushMessageState(ctx: SSEEventContext) {
 	const spans = Array.from(ctx.agentSpans.values());
 	ctx.setMessages(prev =>
 		prev.map(m =>
-			m.id === ctx.assistantMsgId
-				? { ...m, toolCalls: flatToolCalls, agentSpans: spans }
-				: m,
+			m.id === ctx.assistantMsgId ? { ...m, toolCalls: flatToolCalls, agentSpans: spans } : m,
 		),
 	);
 }
@@ -201,11 +199,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			const newText = ctx.currentText + (data.text ?? '');
 			ctx.setText(newText);
 			ctx.setMessages(prev =>
-				prev.map(m =>
-					m.id === ctx.assistantMsgId
-						? { ...m, content: newText }
-						: m,
-				),
+				prev.map(m => (m.id === ctx.assistantMsgId ? { ...m, content: newText } : m)),
 			);
 			break;
 		}
@@ -293,7 +287,11 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			// If so, show it as the agent's live status text.
 			let routed = false;
 			for (const [, span] of ctx.agentSpans) {
-				if (span.parentToolUseId && span.parentToolUseId === tuId && span.status === 'running') {
+				if (
+					span.parentToolUseId &&
+					span.parentToolUseId === tuId &&
+					span.status === 'running'
+				) {
 					span.statusText = msg;
 					routed = true;
 					flushMessageState(ctx);
@@ -358,9 +356,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				ctx.setFeedbackTurn({ sessionId: fbSessionId, turnNumber: fbTurnNumber });
 				ctx.setMessages(prev =>
 					prev.map(m =>
-						m.id === ctx.assistantMsgId
-							? { ...m, turnNumber: fbTurnNumber }
-							: m,
+						m.id === ctx.assistantMsgId ? { ...m, turnNumber: fbTurnNumber } : m,
 					),
 				);
 			}
@@ -372,9 +368,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			if (options.length > 0) {
 				ctx.setMessages(prev =>
 					prev.map(m =>
-						m.id === ctx.assistantMsgId
-							? { ...m, suggestions: { options, mode } }
-							: m,
+						m.id === ctx.assistantMsgId ? { ...m, suggestions: { options, mode } } : m,
 					),
 				);
 			}
@@ -389,6 +383,26 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 							: m,
 					),
 				);
+			}
+			break;
+		}
+		case 'complete': {
+			// Automatically update the store if a binding path is provided
+			if (ctx.completeBindingPath) {
+				setData(ctx.completeBindingPath, data, ctx.props.context.pageName);
+			}
+
+			if (ctx.onComplete) {
+				const completeEvent = ctx.props.pageDefinition.eventFunctions?.[ctx.onComplete];
+				if (completeEvent) {
+					ctx.runEvent(
+						completeEvent,
+						ctx.onComplete,
+						ctx.props.context.pageName,
+						ctx.props.locationHistory,
+						ctx.props.pageDefinition,
+					);
+				}
 			}
 			break;
 		}
@@ -486,10 +500,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					m.id === ctx.assistantMsgId
 						? {
 								...m,
-								confirmationActions: [
-									...(m.confirmationActions ?? []),
-									action,
-								],
+								confirmationActions: [...(m.confirmationActions ?? []), action],
 							}
 						: m,
 				),
@@ -497,13 +508,10 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 		case 'error': {
-			const errText =
-				ctx.currentText + `\n\n*Error: ${data.message ?? 'Unknown error'}*`;
+			const errText = ctx.currentText + `\n\n*Error: ${data.message ?? 'Unknown error'}*`;
 			ctx.setText(errText);
 			ctx.setMessages(prev =>
-				prev.map(m =>
-					m.id === ctx.assistantMsgId ? { ...m, content: errText } : m,
-				),
+				prev.map(m => (m.id === ctx.assistantMsgId ? { ...m, content: errText } : m)),
 			);
 			break;
 		}
@@ -590,8 +598,7 @@ function extractUsageFromSession(session: any): TokenUsage | null {
 	const output = session.total_output_tokens ?? 0;
 	const contextUsed = session.context_tokens_used ?? 0;
 	const contextLimit = session.context_limit ?? 48000;
-	const contextPercent =
-		contextLimit > 0 ? Math.round((contextUsed / contextLimit) * 100) : 0;
+	const contextPercent = contextLimit > 0 ? Math.round((contextUsed / contextLimit) * 100) : 0;
 	if (input === 0 && output === 0 && (session.turn_count ?? 0) === 0) return null;
 	return {
 		input_tokens: input,
@@ -614,9 +621,7 @@ function UsageBar({ usage }: Readonly<{ usage: TokenUsage }>) {
 	const contextClass = `_usageContext${getContextLevel(usage.context_percent)}`;
 	return (
 		<div className="_usageBar">
-			<span className="_usageTokens">
-				{usage.total_tokens.toLocaleString()} tokens
-			</span>
+			<span className="_usageTokens">{usage.total_tokens.toLocaleString()} tokens</span>
 			<span className="_usageSeparator" />
 			<span className="_usageTurns">
 				{usage.turns} {usage.turns === 1 ? 'turn' : 'turns'}
@@ -657,8 +662,7 @@ function ModelSelector({
 		return () => document.removeEventListener('mousedown', handler);
 	}, [open]);
 
-	const selectedLabel =
-		models.find(m => m.id === selectedModel)?.name ?? 'Auto';
+	const selectedLabel = models.find(m => m.id === selectedModel)?.name ?? 'Auto';
 
 	return (
 		<div className="_modelSelector" ref={ref}>
@@ -707,6 +711,9 @@ function ModelSelector({
 }
 
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
+	const {
+		definition: { bindingPath },
+	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const [hover, setHover] = useState(false);
@@ -757,6 +764,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			readOnly,
 			onMessage,
 			onError,
+			onComplete,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -767,21 +775,22 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		pageExtractor,
 		urlExtractor,
 	);
-
-	const resolvedPlaceholder = getTranslations(
-		placeholder,
-		props.pageDefinition.translations,
+	const completeBindingPath = useMemo(
+		() =>
+			bindingPath
+				? getPathFromLocation(bindingPath, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath, props.locationHistory, pageExtractor],
 	);
+
+	const resolvedPlaceholder = getTranslations(placeholder, props.pageDefinition.translations);
 
 	const resolvedWelcomeMessage = getTranslations(
 		welcomeMessage,
 		props.pageDefinition.translations,
 	);
 
-	const resolvedNewChatLabel = getTranslations(
-		newChatLabel,
-		props.pageDefinition.translations,
-	);
+	const resolvedNewChatLabel = getTranslations(newChatLabel, props.pageDefinition.translations);
 
 	const resolvedYourChatsLabel = getTranslations(
 		yourChatsLabel,
@@ -808,7 +817,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		_setSessionId(id);
 	}, []);
 	const [sessions, setSessions] = useState<Session[]>([]);
-	const [feedbackTurn, setFeedbackTurn] = useState<{ sessionId: string; turnNumber: number } | null>(null);
+	const [feedbackTurn, setFeedbackTurn] = useState<{
+		sessionId: string;
+		turnNumber: number;
+	} | null>(null);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [usage, setUsage] = useState<TokenUsage | null>(null);
 
@@ -878,11 +890,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					},
 				});
 				if (po.data) {
-					setStoreData(
-						personalizationBindingPath,
-						po.data,
-						pageExtractor.getPageName(),
-					);
+					setStoreData(personalizationBindingPath, po.data, pageExtractor.getPageName());
 					if (po.data.sidebarWidth) {
 						setSidebarWidth(po.data.sidebarWidth);
 					}
@@ -961,7 +969,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						) ?? {};
 					setStoreData(
 						personalizationBindingPath,
-						{ ...current, sidebarWidth: sidebarRef.current?.offsetWidth ?? sidebarWidth },
+						{
+							...current,
+							sidebarWidth: sidebarRef.current?.offsetWidth ?? sidebarWidth,
+						},
 						pageExtractor.getPageName(),
 					);
 				}
@@ -998,8 +1009,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 	const getAuthHeaders = useCallback(() => {
 		const token = getDataFromPath('Store.auth.token', [], pageExtractor) ?? '';
-		const clientCode =
-			getDataFromPath('Store.auth.clientCode', [], pageExtractor) ?? '';
+		const clientCode = getDataFromPath('Store.auth.clientCode', [], pageExtractor) ?? '';
 		const appCode =
 			getDataFromPath(
 				`${STORE_PREFIX}.application.appCode`,
@@ -1018,10 +1028,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const fetchSessions = useCallback(async () => {
 		try {
 			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
-			const response = await fetch(
-				`${baseUrl}/sessions?limit=${sessionsPerPage}`,
-				{ headers: getAuthHeaders() },
-			);
+			const response = await fetch(`${baseUrl}/sessions?limit=${sessionsPerPage}`, {
+				headers: getAuthHeaders(),
+			});
 			if (response.ok) {
 				const data = await response.json();
 				let items: Session[] = [];
@@ -1080,11 +1089,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (isStreamingRef.current) return;
 		const draftKey = sessionId ?? '_new';
-		const draft = getDataFromPath(
-			`LocalStore.promptDrafts.${draftKey}`,
-			[],
-			pageExtractor,
-		);
+		const draft = getDataFromPath(`LocalStore.promptDrafts.${draftKey}`, [], pageExtractor);
 		setDraftText(draft?.text ?? '');
 	}, [sessionId, pageExtractor]);
 
@@ -1101,9 +1106,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			);
 			if (response.ok) {
 				const data = await response.json();
-				const newItems: Session[] = Array.isArray(data?.items)
-					? data.items
-					: [];
+				const newItems: Session[] = Array.isArray(data?.items) ? data.items : [];
 				setSessions(prev => [...prev, ...newItems]);
 				setTotalSessions(data?.total ?? totalSessions);
 			}
@@ -1145,9 +1148,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					if (!response.ok) return;
 
 					const data = await response.json();
-					const history = Array.isArray(data.history)
-						? data.history
-						: [];
+					const history = Array.isArray(data.history) ? data.history : [];
 					setMessages(mapHistoryToMessages(history));
 					setTotalMessages(data.total_history ?? history.length);
 					setUsage(extractUsageFromSession(data.session));
@@ -1185,9 +1186,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					const data = await response.json();
 					setSessionId(selectedSessionId);
 
-					const history = Array.isArray(data.history)
-						? data.history
-						: [];
+					const history = Array.isArray(data.history) ? data.history : [];
 					setMessages(mapHistoryToMessages(history));
 					setTotalMessages(data.total_history ?? history.length);
 					setMessagesOffset(0);
@@ -1198,8 +1197,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					// (e.g. server crashed or stop was hit) are treated as done.
 					if (data.session?.status === 'PROCESSING') {
 						const updatedAt = data.session?.updated_at;
-						const isStale = updatedAt &&
-							(Date.now() - new Date(updatedAt).getTime() > 60_000);
+						const isStale =
+							updatedAt && Date.now() - new Date(updatedAt).getTime() > 60_000;
 						if (!isStale) {
 							startPolling(selectedSessionId);
 						}
@@ -1232,9 +1231,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					method: 'DELETE',
 					headers: getAuthHeaders(),
 				});
-				setSessions(prev =>
-					prev.filter(s => s.session_id !== deleteSessionId),
-				);
+				setSessions(prev => prev.filter(s => s.session_id !== deleteSessionId));
 				setTotalSessions(prev => Math.max(0, prev - 1));
 				// If the deleted session was active, clear chat
 				if (sessionId === deleteSessionId) {
@@ -1255,20 +1252,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		async (renameSessionId: string, newTitle: string) => {
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
-				const response = await fetch(
-					`${baseUrl}/sessions/${renameSessionId}`,
-					{
-						method: 'PATCH',
-						headers: getAuthHeaders(),
-						body: JSON.stringify({ title: newTitle }),
-					},
-				);
+				const response = await fetch(`${baseUrl}/sessions/${renameSessionId}`, {
+					method: 'PATCH',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({ title: newTitle }),
+				});
 				if (response.ok) {
 					setSessions(prev =>
 						prev.map(s =>
-							s.session_id === renameSessionId
-								? { ...s, title: newTitle }
-								: s,
+							s.session_id === renameSessionId ? { ...s, title: newTitle } : s,
 						),
 					);
 				}
@@ -1296,9 +1288,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			);
 			if (response.ok) {
 				const data = await response.json();
-				const olderMessages = mapHistoryToMessages(
-					data.history ?? [],
-				);
+				const olderMessages = mapHistoryToMessages(data.history ?? []);
 
 				shouldAutoScrollRef.current = false;
 				setMessages(prev => [...olderMessages, ...prev]);
@@ -1309,8 +1299,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				requestAnimationFrame(() => {
 					if (container) {
 						const newScrollHeight = container.scrollHeight;
-						container.scrollTop =
-							newScrollHeight - prevScrollHeight;
+						container.scrollTop = newScrollHeight - prevScrollHeight;
 					}
 				});
 			}
@@ -1379,11 +1368,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			}
 			const draftKey = sessionId ?? '_new';
 			setDraftText('');
-			setData(
-				`LocalStore.promptDrafts.${draftKey}`,
-				undefined,
-				props.context.pageName,
-			);
+			setData(`LocalStore.promptDrafts.${draftKey}`, undefined, props.context.pageName);
 
 			const headers = getAuthHeaders();
 			let streamTimedOut = false;
@@ -1437,7 +1422,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 				setMessages(prev => [
 					...prev,
-					{ id: assistantMsgId, role: 'assistant', content: '', toolCalls: [], agentSpans: [] },
+					{
+						id: assistantMsgId,
+						role: 'assistant',
+						content: '',
+						toolCalls: [],
+						agentSpans: [],
+					},
 				]);
 
 				// Watchdog: detect dead connections (server keepalives every 15s)
@@ -1484,10 +1475,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										setSessionId,
 										setUsage,
 										showToolCalls,
-										setFeedbackTurn: (turn) => setFeedbackTurn(turn),
+										setFeedbackTurn: turn => setFeedbackTurn(turn),
 										setCrafts,
 										setActiveCraftId,
 										setActiveCraft,
+										onComplete,
+										completeBindingPath,
+										props,
+										runEvent,
 									});
 								} catch {
 									// Skip unparseable data
@@ -1512,8 +1507,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				await fetchSessions();
 
 				if (onMessage) {
-					const messageEvent =
-						props.pageDefinition.eventFunctions?.[onMessage];
+					const messageEvent = props.pageDefinition.eventFunctions?.[onMessage];
 					if (messageEvent) {
 						await runEvent(
 							messageEvent,
@@ -1566,6 +1560,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			showToolCalls,
 			onMessage,
 			onError,
+			onComplete,
+			completeBindingPath,
 			getAuthHeaders,
 			fetchSessions,
 			startPolling,
@@ -1612,9 +1608,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			// Optimistically update the message's feedback rating
 			setMessages(prev =>
-				prev.map(m =>
-					m.id === messageId ? { ...m, feedbackRating: rating } : m,
-				),
+				prev.map(m => (m.id === messageId ? { ...m, feedbackRating: rating } : m)),
 			);
 
 			try {
@@ -1632,9 +1626,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			} catch {
 				// Revert on failure
 				setMessages(prev =>
-					prev.map(m =>
-						m.id === messageId ? { ...m, feedbackRating: undefined } : m,
-					),
+					prev.map(m => (m.id === messageId ? { ...m, feedbackRating: undefined } : m)),
 				);
 			}
 		},
@@ -1654,7 +1646,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					...m,
 					confirmationActions: m.confirmationActions?.map(a =>
 						a.confirmationId === confirmationId
-							? { ...a, status: newStatus as ConfirmationAction['status'], selectedValue }
+							? {
+									...a,
+									status: newStatus as ConfirmationAction['status'],
+									selectedValue,
+								}
 							: a,
 					),
 				})),
@@ -1718,7 +1714,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				/>
 			)}
 
-			<div className={`_promptMain${messages.length === 0 && !hasEarlierMessages ? ' _promptEmpty' : ''}${activeCraftId ? ' _hasCraft' : ''}`}>
+			<div
+				className={`_promptMain${messages.length === 0 && !hasEarlierMessages ? ' _promptEmpty' : ''}${activeCraftId ? ' _hasCraft' : ''}`}
+			>
 				<div className="_promptTopBar">
 					<button
 						className="_sidebarToggle"
@@ -1754,9 +1752,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								onClick={handleLoadEarlierMessages}
 								disabled={loadingMoreMessages}
 							>
-								{loadingMoreMessages
-									? 'Loading...'
-									: 'Load earlier messages'}
+								{loadingMoreMessages ? 'Loading...' : 'Load earlier messages'}
 							</button>
 						)}
 						{messages.length === 0 && !hasEarlierMessages && (
@@ -1771,10 +1767,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								{msg.attachments?.length ? (
 									<div className="_messageAttachments">
 										{msg.attachments.map(att => (
-											<div
-												key={att.id}
-												className="_attachmentPreview"
-											>
+											<div key={att.id} className="_attachmentPreview">
 												{att.type === 'image' ? (
 													<img
 														src={att.url}
@@ -1791,86 +1784,88 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										))}
 									</div>
 								) : null}
-								{msg.role === 'assistant' && (() => {
-									// 1. Tools owned by a sub-agent render
-									//    inside that agent's row, not the
-									//    orchestrator's group.
-									// 2. Tools that *spawned* an agent
-									//    (parent_tool_use_id) are suppressed
-									//    from the orchestrator group — the
-									//    agent row replaces them.
-									const subAgentToolIds = new Set<string>();
-									const spawnToolIds = new Set<string>();
-									for (const sp of msg.agentSpans ?? []) {
-										for (const tc of sp.toolCalls) subAgentToolIds.add(tc.id);
-										if (sp.parentToolUseId) spawnToolIds.add(sp.parentToolUseId);
-									}
-									const orchestratorToolCalls = (msg.toolCalls ?? []).filter(
-										tc => !subAgentToolIds.has(tc.id) && !spawnToolIds.has(tc.id),
-									);
-									// Render blocks in chronological order —
-									// whichever happened first appears first.
-									const firstToolAt = orchestratorToolCalls
-										.map(tc => tc.startedAt ?? Infinity)
-										.reduce((a, b) => Math.min(a, b), Infinity);
-									const firstAgentAt = (msg.agentSpans ?? [])
-										.map(sp => sp.startedAt ?? Infinity)
-										.reduce((a, b) => Math.min(a, b), Infinity);
-									const agentsFirst = firstAgentAt < firstToolAt;
+								{msg.role === 'assistant' &&
+									(() => {
+										// 1. Tools owned by a sub-agent render
+										//    inside that agent's row, not the
+										//    orchestrator's group.
+										// 2. Tools that *spawned* an agent
+										//    (parent_tool_use_id) are suppressed
+										//    from the orchestrator group — the
+										//    agent row replaces them.
+										const subAgentToolIds = new Set<string>();
+										const spawnToolIds = new Set<string>();
+										for (const sp of msg.agentSpans ?? []) {
+											for (const tc of sp.toolCalls)
+												subAgentToolIds.add(tc.id);
+											if (sp.parentToolUseId)
+												spawnToolIds.add(sp.parentToolUseId);
+										}
+										const orchestratorToolCalls = (msg.toolCalls ?? []).filter(
+											tc =>
+												!subAgentToolIds.has(tc.id) &&
+												!spawnToolIds.has(tc.id),
+										);
+										// Render blocks in chronological order —
+										// whichever happened first appears first.
+										const firstToolAt = orchestratorToolCalls
+											.map(tc => tc.startedAt ?? Infinity)
+											.reduce((a, b) => Math.min(a, b), Infinity);
+										const firstAgentAt = (msg.agentSpans ?? [])
+											.map(sp => sp.startedAt ?? Infinity)
+											.reduce((a, b) => Math.min(a, b), Infinity);
+										const agentsFirst = firstAgentAt < firstToolAt;
 
-									// Hide the thinking indicator while an agent is running —
-									// the agent's pulsing dot already signals activity.
-									const anyAgentRunning = (msg.agentSpans ?? []).some(
-										sp => sp.status === 'running',
-									);
-									const thinkingBlock = (
-										<ThinkingBlock
-											isActive={
-												!anyAgentRunning &&
-												isStreaming &&
-												msg.id === messages.at(-1)?.id &&
-												(!msg.content ||
-													(msg.toolCalls?.some(
-														tc => tc.isRunning,
-													) ??
-														false))
-											}
-											toolCalls={
-												showToolCalls
-													? orchestratorToolCalls
-													: []
-											}
-											reasoningContent={msg.thinking}
-											toolRunningIcon={toolRunningIcon}
-											toolSuccessIcon={toolSuccessIcon}
-											toolErrorIcon={toolErrorIcon}
-											expandIcon={expandIcon}
-											collapseIcon={collapseIcon}
-										/>
-									);
-									const agentGroup = (msg.agentSpans ?? []).length > 0 ? (
-										<AgentGroup
-											spans={msg.agentSpans ?? []}
-											expandIcon={expandIcon}
-											collapseIcon={collapseIcon}
-										/>
-									) : null;
-									return (
-										<>
-											{agentsFirst ? (
-												<>
-													{agentGroup}
-													{thinkingBlock}
-												</>
-											) : (
-												<>
-													{thinkingBlock}
-													{agentGroup}
-												</>
-											)}
-										</>
-									);
-								})()}
+										// Hide the thinking indicator while an agent is running —
+										// the agent's pulsing dot already signals activity.
+										const anyAgentRunning = (msg.agentSpans ?? []).some(
+											sp => sp.status === 'running',
+										);
+										const thinkingBlock = (
+											<ThinkingBlock
+												isActive={
+													!anyAgentRunning &&
+													isStreaming &&
+													msg.id === messages.at(-1)?.id &&
+													(!msg.content ||
+														(msg.toolCalls?.some(tc => tc.isRunning) ??
+															false))
+												}
+												toolCalls={
+													showToolCalls ? orchestratorToolCalls : []
+												}
+												reasoningContent={msg.thinking}
+												toolRunningIcon={toolRunningIcon}
+												toolSuccessIcon={toolSuccessIcon}
+												toolErrorIcon={toolErrorIcon}
+												expandIcon={expandIcon}
+												collapseIcon={collapseIcon}
+											/>
+										);
+										const agentGroup =
+											(msg.agentSpans ?? []).length > 0 ? (
+												<AgentGroup
+													spans={msg.agentSpans ?? []}
+													expandIcon={expandIcon}
+													collapseIcon={collapseIcon}
+												/>
+											) : null;
+										return (
+											<>
+												{agentsFirst ? (
+													<>
+														{agentGroup}
+														{thinkingBlock}
+													</>
+												) : (
+													<>
+														{thinkingBlock}
+														{agentGroup}
+													</>
+												)}
+											</>
+										);
+									})()}
 								<ChatMessage
 									role={msg.role}
 									content={msg.content}
@@ -1892,15 +1887,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									thumbsUpIcon={thumbsUpIcon}
 									thumbsDownIcon={thumbsDownIcon}
 								>
-									{msg.suggestions &&
-										!isStreaming &&
-										msg.id === messages.at(-1)?.id && (
-											<SuggestionButtons
-												suggestions={msg.suggestions}
-												onSelect={handleSend}
-												disabled={isStreaming}
-											/>
-										)}
+									{msg.suggestions && !isStreaming && (
+										<SuggestionButtons
+											suggestions={msg.suggestions}
+											onSelect={handleSend}
+											disabled={isStreaming || msg.id !== messages.at(-1)?.id}
+										/>
+									)}
 									{msg.data?.map((payload, i) => (
 										<InlineDataRenderer
 											key={`${msg.id}-data-${i}`}
@@ -1912,7 +1905,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												setMessages(prev =>
 													prev.map(m =>
 														m.id === msg.id
-															? { ...m, dataConfirmed: true, dataConfirmedMeta: meta }
+															? {
+																	...m,
+																	dataConfirmed: true,
+																	dataConfirmedMeta: meta,
+																}
 															: m,
 													),
 												);
@@ -1948,15 +1945,16 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				{crafts.size > 0 && !activeCraftId && (
 					<div className="_craftCardsBar">
 						{Array.from(crafts.values()).map(c => {
-							const subtitle = c.blocks.find(
-								(b: any) => b.type === 'badge',
-							)?.label;
+							const subtitle = c.blocks.find((b: any) => b.type === 'badge')?.label;
 							return (
 								<CraftCard
 									key={c.id}
 									title={c.title}
 									subtitle={subtitle}
-									onClick={() => { setActiveCraftId(c.id); setActiveCraft(c); }}
+									onClick={() => {
+										setActiveCraftId(c.id);
+										setActiveCraft(c);
+									}}
 									definition={props.definition}
 									styleProperties={styleProperties}
 								/>
@@ -1998,7 +1996,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				</div>
 
 				{messages.length === 0 && !hasEarlierMessages && quickActionLabels.length > 0 && (
-					<div className={`_quickActions ${quickActionLayout}`} role="group" aria-label="Quick actions">
+					<div
+						className={`_quickActions ${quickActionLayout}`}
+						role="group"
+						aria-label="Quick actions"
+					>
 						{quickActionLabels.map((label: string, i: number) => {
 							const prompt = quickActionPrompts[i] ?? '';
 							const icon = quickActionIcons[i] ?? '';
@@ -2013,10 +2015,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									type="button"
 									aria-label={isDisabled ? `${label} - coming soon` : label}
 								>
-									{icon && <i className={`${icon} _quickActionIcon`} aria-hidden="true" />}
+									{icon && (
+										<i
+											className={`${icon} _quickActionIcon`}
+											aria-hidden="true"
+										/>
+									)}
 									<span className="_quickActionLabel">{label}</span>
 									{isDisabled && (
-										<span className="_quickActionBadge" aria-hidden="true">Soon</span>
+										<span className="_quickActionBadge" aria-hidden="true">
+											Soon
+										</span>
 									)}
 								</button>
 							);
@@ -2027,7 +2036,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			{activeCraft && (
 				<CraftPanel
 					craft={activeCraft}
-					onClose={() => { setActiveCraftId(null); setActiveCraft(null); }}
+					onClose={() => {
+						setActiveCraftId(null);
+						setActiveCraft(null);
+					}}
 					definition={props.definition}
 					styleProperties={styleProperties}
 				/>
