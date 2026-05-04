@@ -390,6 +390,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 	},
+	{
+		name: 'onComplete',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Complete',
+		description: 'Event fired when a completion signal is received.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
