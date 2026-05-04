@@ -49,6 +49,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			linkPath,
 			stopPropagation,
 			preventDefault,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -440,6 +441,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
 			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
 			title={label ?? ''}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent
 				context={props.context}

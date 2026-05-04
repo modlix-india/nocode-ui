@@ -43,7 +43,7 @@ export default function ImageWithBrowser(props: Readonly<ComponentProps>) {
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const location = useLocation();
 	const {
-		properties: { onClick: onClickEvent } = {},
+		properties: { onClick: onClickEvent, analyticsLabel } = {},
 		key,
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -156,7 +156,7 @@ export default function ImageWithBrowser(props: Readonly<ComponentProps>) {
 	);
 
 	return (
-		<div className="comp compImageWithBrowser" style={resolvedStyles.comp ?? {}}>
+		<div className="comp compImageWithBrowser" style={resolvedStyles.comp ?? {}} data-analytics-label={analyticsLabel || undefined}>
 			<HelperComponent context={props.context} definition={definition} />
 			{img}
 			<SubHelperComponent

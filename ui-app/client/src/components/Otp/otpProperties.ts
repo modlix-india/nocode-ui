@@ -15,6 +15,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	// BASIC
+	COMMON_COMPONENT_PROPERTIES.analyticsLabel,
 	COMMON_COMPONENT_PROPERTIES.label,
 	{
 		name: 'otpLength',

@@ -262,6 +262,7 @@ function generateAnalyticsSnippet(
 	if (!a?.enabled) return '';
 
 	const replayEnabled = !!a.sessionReplay?.enabled;
+	const heatmapsEnabled = !!a.heatmaps?.enabled;
 	const consentRequired = a.consentRequired !== false;
 
 	const initOptions: Record<string, unknown> = {
@@ -271,8 +272,9 @@ function generateAnalyticsSnippet(
 		capture_pageview: a.capturePageviews ?? true,
 		capture_pageleave: a.capturePageleaves ?? true,
 		disable_session_recording: !replayEnabled,
+		enable_heatmaps: heatmapsEnabled,
 		opt_out_capturing_by_default: consentRequired,
-		advanced_disable_decide: true,
+		advanced_disable_flags: true,
 	};
 
 	if (replayEnabled) {
