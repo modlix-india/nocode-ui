@@ -180,8 +180,8 @@ interface SSEEventContext {
 	setCrafts: React.Dispatch<React.SetStateAction<Map<string, CraftData>>>;
 	setActiveCraftId: React.Dispatch<React.SetStateAction<string | null>>;
 	setActiveCraft: React.Dispatch<React.SetStateAction<CraftData | null>>;
-	onSuccess?: string;
-	successBindingPath?: string;
+	onComplete?: string;
+	completeBindingPath?: string;
 	props: Readonly<ComponentProps>;
 	runEvent: any;
 }
@@ -396,23 +396,23 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			}
 			break;
 		}
-		case 'success': {
+		case 'complete': {
 			// Automatically update the store if a binding path is provided
-			if (ctx.successBindingPath) {
+			if (ctx.completeBindingPath) {
 				setData(
-					ctx.successBindingPath,
+					ctx.completeBindingPath,
 					data,
 					ctx.props.context.pageName,
 				);
 			}
 
-			if (ctx.onSuccess) {
-				const successEvent =
-					ctx.props.pageDefinition.eventFunctions?.[ctx.onSuccess];
-				if (successEvent) {
+			if (ctx.onComplete) {
+				const completeEvent =
+					ctx.props.pageDefinition.eventFunctions?.[ctx.onComplete];
+				if (completeEvent) {
 					ctx.runEvent(
-						successEvent,
-						ctx.onSuccess,
+						completeEvent,
+						ctx.onComplete,
 						ctx.props.context.pageName,
 						ctx.props.locationHistory,
 						ctx.props.pageDefinition,
@@ -744,7 +744,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		key,
 		properties: {
 			agentEndpoint = '/api/ai/appbuilder/chat',
-			successBindingPath,
+			completeBindingPath,
 			placeholder = 'Ask anything',
 			welcomeMessage = 'What can I help with?',
 			showSessions = true,
@@ -787,7 +787,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			readOnly,
 			onMessage,
 			onError,
-			onSuccess,
+			onComplete,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -1519,8 +1519,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										setCrafts,
 										setActiveCraftId,
 										setActiveCraft,
-										onSuccess,
-										successBindingPath,
+										onComplete,
+										completeBindingPath,
 										props,
 										runEvent,
 									});
@@ -1601,6 +1601,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			showToolCalls,
 			onMessage,
 			onError,
+			onComplete,
+			completeBindingPath,
 			getAuthHeaders,
 			fetchSessions,
 			startPolling,

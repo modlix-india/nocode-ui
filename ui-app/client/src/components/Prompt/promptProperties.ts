@@ -23,10 +23,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'successBindingPath',
+		name: 'completeBindingPath',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Success Binding Path',
-		description: 'Store path where the success event data will be automatically saved.',
+		displayName: 'Complete Binding Path',
+		description: 'Store path where the completion event data will be automatically saved.',
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -398,10 +398,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
-		name: 'onSuccess',
+		name: 'onComplete',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'On Success',
-		description: 'Event fired when a success signal is received.',
+		displayName: 'On Complete',
+		description: 'Event fired when a completion signal is received.',
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 	},
