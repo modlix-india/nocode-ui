@@ -28,6 +28,9 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: ['hover'],
+	bindingPaths: {
+		bindingPath: { name: 'Complete Binding' },
+	},
 	defaultTemplate: {
 		key: '',
 		name: 'prompt',
