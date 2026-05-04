@@ -23,13 +23,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'completeBindingPath',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Complete Binding Path',
-		description: 'Store path where the completion event data will be automatically saved.',
-		group: ComponentPropertyGroup.BASIC,
-	},
-	{
 		name: 'placeholder',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Placeholder',
