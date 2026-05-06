@@ -457,6 +457,7 @@ function generateHtml(
 			window.cdnStripAPIPrefix = ${cdn.stripAPIPrefix};
 			window.cdnReplacePlus = ${cdn.replacePlus};
 			${cdn.resizeOptionsType ? `window.cdnResizeOptionsType = '${escapeHtml(cdn.resizeOptionsType)}';` : ''}
+			window.__SOCIAL_LOGIN_HOST__ = '${escapeHtml(deriveBeaconHost(getConfig().security.appCodeSuffix))}';
 			${application?.properties?.sso3 === true ? `window.__SSO_BEACON_HOST__ = '${escapeHtml(deriveBeaconHost(getConfig().security.appCodeSuffix))}';` : ''}
 		</script>
 

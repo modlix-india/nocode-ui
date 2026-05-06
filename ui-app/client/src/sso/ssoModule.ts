@@ -1,5 +1,6 @@
 declare global {
 	var __SSO_BEACON_HOST__: string | undefined;
+	var __SOCIAL_LOGIN_HOST__: string | undefined;
 }
 
 const ATTEMPT_TIMEOUT_MS = 8000;
@@ -115,6 +116,37 @@ export function completeWithToken(token: string, redirectUrl: string): void {
 		`/sso/${encodeURIComponent(token)}` +
 		`?cookie=true&redirectUrl=${encodeURIComponent(redirectUrl)}`;
 	window.location.replace(target);
+}
+
+/**
+ * Build the URL a customer-app's "Sign in with Google/Meta" button should
+ * navigate to. Lands on authzump → OAuth consent → callback → chained /sso
+ * redirects → user back on `redirectUrl` (defaults to current page) fully
+ * authenticated.
+ *
+ * Uses `window.__SOCIAL_LOGIN_HOST__` (always injected by IndexHTMLService /
+ * htmlRenderer), independent of the `sso3` flag. An app can offer social login
+ * without participating in the cross-app SSO beacon. Returns null only if the
+ * social-login host isn't injected at all (e.g. running outside the platform).
+ */
+export function buildSocialLoginURL(
+	platform: 'GOOGLE' | 'META',
+	application: { appCode?: string; clientCode?: string } | null,
+	redirectUrl?: string,
+): string | null {
+	const host = globalThis.__SOCIAL_LOGIN_HOST__;
+	if (!host || !application?.appCode) return null;
+	const back = redirectUrl ?? window.location.href;
+	// Query param names match the platform convention so the existing
+	// SocialLogin KIRun function (which reads Store.urlDetails.queryParameters.appCode
+	// etc.) keeps working when the legacy /appLogin redirect path fires.
+	return (
+		`https://${host}/api/security/clients/socialRegister/evoke` +
+		`?platform=${platform}` +
+		`&appCode=${encodeURIComponent(application.appCode)}` +
+		`&clientCode=${encodeURIComponent(application.clientCode ?? 'SYSTEM')}` +
+		`&redirectUrl=${encodeURIComponent(back)}`
+	);
 }
 
 export async function establishBeacon(token: string): Promise<void> {

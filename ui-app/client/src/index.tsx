@@ -14,7 +14,8 @@ import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 // globalThis.cdnResizeOptionsType = 'cloudflare';
 
 // TEST SSO3
-globalThis.__SSO_BEACON_HOST__ = 'authzump.local.modlix.com';
+globalThis.__SSO_BEACON_HOST__ = 'local.authzump.ai';
+globalThis.__SOCIAL_LOGIN_HOST__ = 'local.authzump.ai';
 
 declare global {
 	var nodeDev: boolean;
