@@ -62,6 +62,7 @@ export interface ApplicationDefinition {
 		defaultPage?: string;
 		shellPageDefinition?: string;
 		loginPage?: string;
+		sso3?: boolean;
 		fillerValues?: Record<string, unknown>;
 		fontPacks?: string[];
 		iconPacks?: string[];

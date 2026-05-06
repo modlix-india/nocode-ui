@@ -112,6 +112,19 @@ function generateETag(data: CachedPageData): string {
 /**
  * Escape HTML special characters
  */
+// Map security.appCodeSuffix to the authzump beacon host:
+//   ""        -> "authzump.ai"
+//   ".dev"    -> "dev.authzump.ai"
+//   ".stage"  -> "stage.authzump.ai"
+//   ".local"  -> "local.authzump.ai"
+function deriveBeaconHost(appCodeSuffix: string | undefined | null): string {
+	if (!appCodeSuffix) return 'authzump.ai';
+	const trimmed = appCodeSuffix.startsWith('.') ? appCodeSuffix.slice(1) : appCodeSuffix;
+	const dotIdx = trimmed.indexOf('.');
+	const env = dotIdx >= 0 ? trimmed.slice(0, dotIdx) : trimmed;
+	return env ? `${env}.authzump.ai` : 'authzump.ai';
+}
+
 function escapeHtml(str: string | undefined | null): string {
 	if (!str || typeof str !== 'string') {
 		return '';
@@ -444,6 +457,7 @@ function generateHtml(
 			window.cdnStripAPIPrefix = ${cdn.stripAPIPrefix};
 			window.cdnReplacePlus = ${cdn.replacePlus};
 			${cdn.resizeOptionsType ? `window.cdnResizeOptionsType = '${escapeHtml(cdn.resizeOptionsType)}';` : ''}
+			${application?.properties?.sso3 === true ? `window.__SSO_BEACON_HOST__ = '${escapeHtml(deriveBeaconHost(getConfig().security.appCodeSuffix))}';` : ''}
 		</script>
 
 		<!-- Main app container -->
