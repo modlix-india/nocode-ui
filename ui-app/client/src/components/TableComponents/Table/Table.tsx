@@ -212,7 +212,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		setExpandedKeys(
 			computeInitialExpanded(
 				data,
-				childrenKey ?? 'children',
+				childrenKey,
 				uniqueKey ?? 'id',
 				hasChildrenProperty,
 				defaultExpandLevel ?? 1,
@@ -1216,25 +1216,48 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
+export type TreeKeyConfig = string | string[] | undefined;
+
+export function getChildrenKeyAtDepth(childrenKey: TreeKeyConfig, depth: number): string {
+	if (Array.isArray(childrenKey)) {
+		if (childrenKey.length === 0) return 'children';
+		return childrenKey[Math.min(depth, childrenKey.length - 1)] || 'children';
+	}
+	return childrenKey || 'children';
+}
+
+export function getHasChildrenPropertyAtDepth(
+	hasChildrenProperty: TreeKeyConfig,
+	depth: number,
+): string | undefined {
+	if (Array.isArray(hasChildrenProperty)) {
+		if (hasChildrenProperty.length === 0) return undefined;
+		return hasChildrenProperty[Math.min(depth, hasChildrenProperty.length - 1)] || undefined;
+	}
+	return hasChildrenProperty || undefined;
+}
+
 function computeInitialExpanded(
 	data: any[],
-	childrenKey: string,
+	childrenKey: TreeKeyConfig,
 	uniqueKey: string,
-	hasChildrenProperty: string | undefined,
+	hasChildrenProperty: TreeKeyConfig,
 	level: number,
 ): Set<string> {
 	const keys = new Set<string>();
 	if (level === 0) return keys;
 
 	const walk = (nodes: any[], currentDepth: number) => {
+		const ck = getChildrenKeyAtDepth(childrenKey, currentDepth);
+		const hcp = getHasChildrenPropertyAtDepth(hasChildrenProperty, currentDepth);
 		for (const node of nodes) {
 			if (!node) continue;
 			const nodeKey = String(node[uniqueKey] ?? '');
 			if (!nodeKey) continue;
 
-			const children = node[childrenKey];
+			const children = node[ck];
 			const hasChildrenByArray = Array.isArray(children) && children.length > 0;
-			const hasChildrenByProp = hasChildrenProperty ? !!node[hasChildrenProperty] : false;
+			const hasChildrenByProp = hcp ? !!node[hcp] : false;
 
 			if (hasChildrenByArray || hasChildrenByProp) {
 				if (level === -1 || currentDepth < level) {
