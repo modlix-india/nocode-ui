@@ -84,6 +84,14 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		description: 'This component will be hidden when this property is true.',
 		group: ComponentPropertyGroup.COMMON,
 	},
+	analyticsLabel: {
+		name: 'analyticsLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Analytics Label',
+		description:
+			'Stable label emitted as data-analytics-label on the rendered element for autocapture and heatmap filtering.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	validation: {
 		name: 'validation',
 		schema: SCHEMA_VALIDATION,

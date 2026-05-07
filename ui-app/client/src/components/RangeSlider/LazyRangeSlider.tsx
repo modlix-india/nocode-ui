@@ -76,6 +76,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 			readOnly,
 			colorScheme,
 			onChange,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -967,6 +968,7 @@ export default function RangeSlider(props: Readonly<ComponentProps>) {
 			style={(hoverSlider ? hoverStyleProperties : styleProperties)?.comp ?? {}}
 			onMouseEnter={() => setHoverSlider(true)}
 			onMouseLeave={() => setHoverSlider(false)}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={context} definition={definition} />
 			{toolTipPosition === '_top' && toolTipDesign === '_fixedLabelTT' ? toolTip1 : null}

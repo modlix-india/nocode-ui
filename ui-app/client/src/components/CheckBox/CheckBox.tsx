@@ -44,6 +44,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			hideLabel,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -95,6 +96,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			className={`comp compCheckbox ${designType} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
 			title={labelText}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 

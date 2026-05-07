@@ -41,6 +41,7 @@ function Link(props: Readonly<ComponentProps>) {
 			designType,
 			colorScheme,
 			showLines,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -147,6 +148,7 @@ function Link(props: Readonly<ComponentProps>) {
 				}`}
 				href={resolvedLink}
 				target={target}
+				data-analytics-label={analyticsLabel || undefined}
 				onClick={e => {
 					if (resolvedLink?.startsWith('tel') || resolvedLink?.startsWith('mailto')) {
 						window.open(resolvedLink, target);

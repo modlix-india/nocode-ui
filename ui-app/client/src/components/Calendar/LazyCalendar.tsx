@@ -82,6 +82,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			editRequestIcon,
 			editConfirmIcon,
 			editCancelIcon,
+			analyticsLabel,
 		} = {},
 		properties: computedProperties,
 		stylePropertiesWithPseudoStates,
@@ -624,6 +625,7 @@ export default function CalendarComponent(props: Readonly<ComponentProps>) {
 			editRequestIcon={editRequestIcon}
 			editConfirmIcon={editConfirmIcon}
 			editCancelIcon={editCancelIcon}
+			analyticsLabel={analyticsLabel}
 			showEditRequest={editOn}
 			onEditRequest={(editMode, canceled) => {
 				if (editMode) return;

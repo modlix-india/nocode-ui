@@ -17,6 +17,7 @@ import { Messages } from './Messages/Messages';
 import { getAppDefinition } from './appDefinition';
 import { usedComponents } from './usedComponents';
 import DebugWindow from '../debug/DebugWindow';
+import { AnalyticsConsentBanner } from './AnalyticsConsentBanner';
 
 // In design mode we are listening to the messages from editor
 
@@ -252,8 +253,9 @@ export function App() {
 				</Routes>
 			</BrowserRouter>
 			<Messages />
+			<AnalyticsConsentBanner />
 			<div id="_rendered" data-used-components={usedComps} />
-			<DebugWindow />	
+			<DebugWindow />
 		</>
 	);
 }

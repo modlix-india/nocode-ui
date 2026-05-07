@@ -32,6 +32,7 @@ export default function Carousel(props: Readonly<ComponentProps>) {
 			indicatorFill,
 			indicatorShowNumbers,
 			showIndicatorArrows: _showIndicatorArrows,
+			analyticsLabel,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -395,6 +396,7 @@ export default function Carousel(props: Readonly<ComponentProps>) {
 			style={resolvedStyles.comp ?? {}}
 			onMouseEnter={handleMouse}
 			onMouseLeave={handleMouseLeave}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{(indicatorPosition === 'top' || indicatorPosition === 'left') && <IndicatorBar />}

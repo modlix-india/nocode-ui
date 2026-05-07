@@ -85,6 +85,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 			editRequestIcon,
 			editConfirmIcon,
 			editCancelIcon,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -495,6 +496,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 				editRequestIcon={editRequestIcon}
 				editConfirmIcon={editConfirmIcon}
 				editCancelIcon={editCancelIcon}
+				analyticsLabel={analyticsLabel}
 				onEditRequest={(editMode, cancel) => {
 					if (editMode || !originalBindingPathPath) return;
 					if (cancel) {

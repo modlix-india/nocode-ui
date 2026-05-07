@@ -13,6 +13,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	// BASIC
+	COMMON_COMPONENT_PROPERTIES.analyticsLabel,
 	{
 		name: 'showArrowButtons',
 		schema: SCHEMA_BOOL_COMP_PROP,

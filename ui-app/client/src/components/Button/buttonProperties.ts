@@ -11,6 +11,7 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.label,
+	COMMON_COMPONENT_PROPERTIES.analyticsLabel,
 	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [

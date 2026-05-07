@@ -84,6 +84,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 			indicatorFill,
 			indicatorShowNumbers,
 			showIndicatorArrows,
+			analyticsLabel,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -580,6 +581,7 @@ function SmallCarousel(props: Readonly<ComponentProps>) {
 			style={{ minWidth, minHeight, ...(resolvedStyles?.comp ?? {}) }}
 			onMouseOver={pauseOnHover ? () => (transit.current.hover = true) : undefined}
 			onMouseOut={pauseOnHover ? () => (transit.current.hover = false) : undefined}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props?.context} definition={definition} />
 			{(indicatorPosition === 'top' || indicatorPosition === 'left') && <IndicatorBar />}

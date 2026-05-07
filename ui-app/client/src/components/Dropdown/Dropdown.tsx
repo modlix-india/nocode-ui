@@ -107,6 +107,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			editRequestIcon,
 			editConfirmIcon,
 			editCancelIcon,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -593,6 +594,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				)
 			}
 			supportingText={supportingText}
+			analyticsLabel={analyticsLabel}
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {
 					if (!showDropdown) setShowDropdown(true);

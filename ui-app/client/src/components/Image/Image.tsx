@@ -83,6 +83,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			tooltipEnabled,
 			tooltipPosition,
 			tooltipOffset,
+			analyticsLabel,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -605,6 +606,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			onTouchStart={handleTouchStart}
 			onTouchMove={handleTouchMove}
 			onTouchEnd={handleTouchEnd}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{imageTag}

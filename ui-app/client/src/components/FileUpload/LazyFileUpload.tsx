@@ -93,6 +93,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 			noFloat,
 			supportingText,
 			showMandatoryAsterisk,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -480,6 +481,7 @@ function FileUpload(props: Readonly<ComponentProps>) {
 			onDragEnter={preventDefault}
 			onDragOver={preventDefault}
 			onDrop={handleDrop}
+			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{renderLabel}

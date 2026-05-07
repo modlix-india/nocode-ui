@@ -18,3 +18,4 @@ export * from './DecodeURIComponent';
 export * from './ScrollTo';
 export * from './ScrollToGrid';
 export * from './OpenWindow';
+export * from './TrackAnalyticsEvent';

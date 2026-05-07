@@ -96,6 +96,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			editRequestIcon,
 			editConfirmIcon,
 			editCancelIcon,
+			analyticsLabel,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -661,6 +662,7 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			editRequestIcon={editRequestIcon}
 			editConfirmIcon={editConfirmIcon}
 			editCancelIcon={editCancelIcon}
+			analyticsLabel={analyticsLabel}
 			onEditRequest={(editMode, canceled) => {
 				setEditMode(editMode);
 				if (editMode) {
