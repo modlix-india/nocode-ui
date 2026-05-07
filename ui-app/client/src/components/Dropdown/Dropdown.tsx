@@ -4,10 +4,12 @@ import React, {
 	UIEvent,
 	useCallback,
 	useEffect,
+	useLayoutEffect,
 	useMemo,
 	useRef,
 	useState,
 } from 'react';
+import ReactDOM from 'react-dom';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import CommonInputText from '../../commonComponents/CommonInputText';
 import {
@@ -289,6 +291,41 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	}, [searchText, dropdownData]);
 
 	const [mouseIsInside, setMouseIsInside] = useState(false);
+	const mouseIsInsideRef = useRef(false);
+
+	const setMouseInside = useCallback((value: boolean) => {
+		mouseIsInsideRef.current = value;
+		setMouseIsInside(value);
+	}, []);
+
+	const [wrapperRect, setWrapperRect] = useState<{
+		top: number;
+		left: number;
+		width: number;
+		height: number;
+	} | null>(null);
+
+	const updateWrapperRect = useCallback(() => {
+		const wrapper = inputRef.current?.closest('.compDropdown') as HTMLElement | null;
+		if (!wrapper) return;
+		const r = wrapper.getBoundingClientRect();
+		setWrapperRect({ top: r.top, left: r.left, width: r.width, height: r.height });
+	}, []);
+
+	useLayoutEffect(() => {
+		if (!showDropdown) {
+			setWrapperRect(null);
+			return;
+		}
+		updateWrapperRect();
+		const handler = () => updateWrapperRect();
+		window.addEventListener('scroll', handler, true);
+		window.addEventListener('resize', handler);
+		return () => {
+			window.removeEventListener('scroll', handler, true);
+			window.removeEventListener('resize', handler);
+		};
+	}, [showDropdown, updateWrapperRect]);
 
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
@@ -407,7 +444,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	}, [moveSelectedToTop, showDropdown]);
 
 	let dropdownContainer = null;
-	if (showDropdown) {
+	if (showDropdown && wrapperRect) {
 		let options =
 			searchDropdownData?.length || (searchText && !onSearch)
 				? searchDropdownData
@@ -423,11 +460,16 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			});
 		}
 
-		dropdownContainer = (
+		const dropdownPanel = (
 			<div
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
-				style={computedStyles.dropDownContainer ?? {}}
+				style={{ pointerEvents: 'auto', ...(computedStyles.dropDownContainer ?? {}) }}
 				onScroll={scrollEndEvent}
+				onMouseEnter={() => setMouseInside(true)}
+				onMouseLeave={() => {
+					setMouseInside(false);
+					if (closeOnMouseLeave) handleClose();
+				}}
 				ref={element => {
 					if (!element || searchText) return;
 					const rect = element.getBoundingClientRect();
@@ -530,6 +572,48 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				})}
 			</div>
 		);
+
+		dropdownContainer = ReactDOM.createPortal(
+			<div
+				className={`comp compDropdown _dropdownPortal ${designType ?? ''} ${
+					colorScheme ?? ''
+				}`}
+				style={{
+					position: 'fixed',
+					top: wrapperRect.top,
+					left: wrapperRect.left,
+					width: wrapperRect.width,
+					height: wrapperRect.height,
+					pointerEvents: 'none',
+					zIndex: 9999,
+				}}
+			>
+				{!closeOnMouseLeave && (
+					<button
+						type="button"
+						aria-label="Close dropdown"
+						tabIndex={-1}
+						className="_dropdownBackdrop"
+						style={{
+							position: 'fixed',
+							inset: 0,
+							pointerEvents: 'auto',
+							zIndex: 0,
+							background: 'transparent',
+							border: 'none',
+							padding: 0,
+							cursor: 'default',
+						}}
+						onMouseDown={e => {
+							e.stopPropagation();
+							handleClose();
+						}}
+					/>
+				)}
+				{dropdownPanel}
+			</div>,
+			document.body,
+		);
 	}
 
 	return (
@@ -579,12 +663,14 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			leftIcon={leftIcon}
 			//rightIcon = {rightIcon} 'fa-solid fa-angle-up'
 			showDropdown={showDropdown}
-			onMouseEnter={() => {
-				setMouseIsInside(true);
-			}}
+			onMouseEnter={() => setMouseInside(true)}
 			onMouseLeave={() => {
-				setMouseIsInside(false);
-				if (closeOnMouseLeave) handleClose();
+				setMouseInside(false);
+				if (closeOnMouseLeave) {
+					setTimeout(() => {
+						if (!mouseIsInsideRef.current) handleClose();
+					}, 0);
+				}
 			}}
 			showMandatoryAsterisk={
 				!!(
