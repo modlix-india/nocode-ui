@@ -19,3 +19,4 @@ export * from './ScrollTo';
 export * from './ScrollToGrid';
 export * from './OpenWindow';
 export * from './TrackAnalyticsEvent';
+export * from './QueryAnalytics';
