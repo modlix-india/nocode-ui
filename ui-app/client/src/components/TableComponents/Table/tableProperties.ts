@@ -517,9 +517,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'childrenKey',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Children Key',
-		description: 'Key in each data node that contains the child array.',
+		description:
+			'Key in each data node that contains the child array. Provide multiple values to use a different key per depth (entry N is used at depth N; the last entry is reused for any deeper levels). Defaults to "children" when not set.',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'children',
+		multiValued: true,
 	},
 
 	{
@@ -527,8 +528,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Has Children Property',
 		description:
-			'Property name on each node that indicates it has children. When set, the expand icon is shown if this property is truthy OR if the children array has items. Useful for lazy-loading where the server flags expandable nodes before children are fetched.',
+			'Property name on each node that indicates it has children. When set, the expand icon is shown if this property is truthy OR if the children array has items. Useful for lazy-loading where the server flags expandable nodes before children are fetched. Provide multiple values to use a different property per depth (entry N is used at depth N; the last entry is reused for any deeper levels).',
 		group: ComponentPropertyGroup.BASIC,
+		multiValued: true,
 	},
 
 	{
