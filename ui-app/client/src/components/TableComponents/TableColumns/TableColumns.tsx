@@ -66,7 +66,6 @@ function fieldToName(field: string): string {
 }
 
 export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
-	console.log("Rendering TableColumns with key:", props.definition.key);
 	const [value, setValue] = useState([]);
 	const {
 		definition: { key, children: originalChildren },

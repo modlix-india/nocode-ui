@@ -82,7 +82,7 @@ module.exports = {
     hot: true, 
     proxy: [
       {
-        context: ["**/api/**", "/sso/**"],
+        context: ["**/api/**", "/sso/**", "/hassso/**"],
         target: "http://localhost:8080/",
         secure: false,
         changeOrigin: true,
