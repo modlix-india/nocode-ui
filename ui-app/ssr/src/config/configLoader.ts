@@ -59,6 +59,10 @@ interface SSRConfig {
 		ingestionHost: string;
 		projectApiKey: string;
 	};
+	// Security configuration (mirror of Java security.appCodeSuffix for SSO beacon host derivation)
+	security: {
+		appCodeSuffix: string;
+	};
 }
 
 // Default configuration (used in development or if config server is unavailable)
@@ -87,6 +91,9 @@ const defaultConfig: SSRConfig = {
 	analytics: {
 		ingestionHost: '',
 		projectApiKey: '',
+	},
+	security: {
+		appCodeSuffix: process.env.SECURITY_APP_CODE_SUFFIX ?? '',
 	},
 	cache: {
 		ttlSeconds: 1800, // 30 minutes
@@ -149,6 +156,9 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 				ingestionHost: (source['ui.analytics.ingestionHost'] as string) || defaultConfig.analytics.ingestionHost,
 				projectApiKey: (source['ui.analytics.posthog.projectApiKey'] as string) || defaultConfig.analytics.projectApiKey,
 			},
+			security: {
+				appCodeSuffix: (source['security.appCodeSuffix'] as string) ?? defaultConfig.security.appCodeSuffix,
+			},
 		};
 	} catch (error) {
 		logger.warn('Failed to fetch from config server, using defaults', { error: String(error) });
@@ -197,6 +207,10 @@ function loadFromEnvironment(): Partial<SSRConfig> {
 		config.cache = { ttlSeconds: Number.parseInt(process.env.CACHE_TTL_SECONDS, 10) };
 	}
 
+	if (process.env.SECURITY_APP_CODE_SUFFIX !== undefined) {
+		config.security = { appCodeSuffix: process.env.SECURITY_APP_CODE_SUFFIX };
+	}
+
 	return config;
 }
 
@@ -229,6 +243,9 @@ function mergeConfigs(...configs: Array<Partial<SSRConfig> | null>): SSRConfig {
 		}
 		if (config.analytics) {
 			result.analytics = { ...result.analytics, ...config.analytics };
+		}
+		if (config.security) {
+			result.security = { ...result.security, ...config.security };
 		}
 	}
 

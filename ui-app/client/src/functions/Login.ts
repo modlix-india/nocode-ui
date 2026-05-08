@@ -10,9 +10,10 @@ import {
 } from '@fincity/kirun-js';
 import axios from 'axios';
 import { NAMESPACE_UI_ENGINE } from '../constants';
-import { setData } from '../context/StoreContext';
+import { getDataFromPath, setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
 import pageHistory from '../components/Page/pageHistory';
+import { establishBeacon, isSsoEnabled } from '../sso/ssoModule';
 
 const SIGNATURE = new FunctionSignature('Login')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -56,7 +57,11 @@ export class Login extends AbstractFunction {
 		const pin: string = context.getArguments()?.get('pin');
 		const identifierType: string = context.getArguments()?.get('identifierType');
 		const rememberMe: string = context.getArguments()?.get('rememberMe');
-		const cookie: boolean = context.getArguments()?.get('cookie');
+		const cookieArg: boolean = context.getArguments()?.get('cookie');
+
+		const application = getDataFromPath('Store.application', []);
+		const ssoOn = isSsoEnabled(application);
+		const cookie: boolean = ssoOn ? true : cookieArg;
 
 		const data: any = { userName, rememberMe, cookie };
 		if (userId) data.userId = userId;
@@ -75,6 +80,21 @@ export class Login extends AbstractFunction {
 				data,
 				headers,
 			});
+
+			if (ssoOn && response.data?.accessToken) {
+				try {
+					const ottResponse = await axios.post(
+						'api/security/makeOneTimeToken',
+						{ rememberMe: !!rememberMe, targetAppCode: 'authzump', targetClientCode: 'SYSTEM' },
+						{ withCredentials: true, headers: {...headers, Authorization: response.data.accessToken } },
+					);
+					const ssoToken = ottResponse?.data?.token;
+					if (ssoToken) await establishBeacon(ssoToken);
+				} catch {
+					// Beacon establishment is best-effort; failure must not block login.
+				}
+			}
+
 			for (let key of Object.keys(pageHistory)) delete pageHistory[key];
 
 			setData('Store.auth', response.data);
