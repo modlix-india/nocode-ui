@@ -1,5 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { shortUUID } from '../util/shortUUID';
+import { ssoAttempt } from '../sso/ssoModule';
 
 export interface AppDefinitionResponse {
 	auth: any;
@@ -48,6 +49,22 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 		axiosOptions,
 		language,
 	));
+
+	if (
+		!auth &&
+		application?.properties?.sso3 === true
+	) {
+		// On success the iframe chain has already written AuthToken to localStorage
+		// on this origin. Whatever the platform decides to do next (reload, retry
+		// verifyToken, render unauthenticated) is the caller's choice — the
+		// bootstrap doesn't second-guess it here.
+		ssoAttempt({
+			appCode: application.appCode,
+			clientCode: application.urlClientCode ?? '',
+		}).then(result => {
+			console.log('SSO attempt result:', result);
+		});
+	}
 	if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 	try {
 
