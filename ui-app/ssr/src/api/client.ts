@@ -92,6 +92,7 @@ export interface AnalyticsConfig {
 	sessionReplay?: {
 		enabled?: boolean;
 		maskAllInputs?: boolean;
+		sampleRate?: number;
 	};
 	heatmaps?: {
 		enabled?: boolean;

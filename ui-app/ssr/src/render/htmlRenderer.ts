@@ -290,6 +290,12 @@ function generateAnalyticsSnippet(
 		advanced_disable_flags: true,
 	};
 
+	const rawSampleRate = a.sessionReplay?.sampleRate;
+	const sampleRate =
+		typeof rawSampleRate === 'number' && rawSampleRate >= 0 && rawSampleRate <= 1
+			? rawSampleRate
+			: 0.1;
+
 	if (replayEnabled) {
 		initOptions.session_recording = {
 			maskAllInputs: a.sessionReplay?.maskAllInputs ?? true,
@@ -298,9 +304,10 @@ function generateAnalyticsSnippet(
 
 	const apiKeyJson = JSON.stringify(projectApiKey);
 	const optionsJson = JSON.stringify(initOptions);
+	const sampleRateLiteral = sampleRate >= 1 ? 'null' : String(sampleRate);
 
 	const initCall = replayEnabled
-		? `var __phOpts=${optionsJson};__phOpts.loaded=function(ph){try{ph.persistence.register({'$session_recording_remote_config':{enabled:true,sampleRate:null,recorderVersion:'v2',endpoint:'/s/',linkedFlag:null,urlBlocklist:[],urlTriggers:[],eventTriggers:[]}});ph.sessionRecording&&ph.sessionRecording.startIfEnabledOrStop&&ph.sessionRecording.startIfEnabledOrStop();}catch(e){}};posthog.init(${apiKeyJson},__phOpts);`
+		? `var __phOpts=${optionsJson};__phOpts.loaded=function(ph){try{ph.persistence.register({'$session_recording_remote_config':{enabled:true,sampleRate:${sampleRateLiteral},recorderVersion:'v2',endpoint:'/s/',linkedFlag:null,urlBlocklist:[],urlTriggers:[],eventTriggers:[]}});ph.sessionRecording&&ph.sessionRecording.startIfEnabledOrStop&&ph.sessionRecording.startIfEnabledOrStop();}catch(e){}};posthog.init(${apiKeyJson},__phOpts);`
 		: `posthog.init(${apiKeyJson},${optionsJson});`;
 
 	return `<script>${POSTHOG_STUB}${initCall}${
@@ -497,7 +504,7 @@ function setResponseHeaders(
 	fromCache: boolean,
 	etag: string | null,
 	application: ApplicationDefinition | null,
-	cdnHostName?: string
+	cdnHostName?: string,
 ): void {
 	res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
