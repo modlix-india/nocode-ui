@@ -710,6 +710,8 @@ function ModelSelector({
 	);
 }
 
+const SCROLL_BOTTOM_THRESHOLD_PX = 50;
+
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
 		definition: { bindingPath },
@@ -751,6 +753,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			toolErrorIcon = 'fa fa-xmark',
 			expandIcon = 'fa fa-chevron-down',
 			collapseIcon = 'fa fa-chevron-up',
+			scrollToBottomIcon = 'fa fa-arrow-down',
 			enableVoiceInput = true,
 			microphoneIcon = 'fa fa-microphone',
 			microphoneActiveIcon = 'fa fa-stop',
@@ -823,6 +826,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	} | null>(null);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [usage, setUsage] = useState<TokenUsage | null>(null);
+	const [isAtBottom, setIsAtBottom] = useState(true);
 
 	// Craft panel state
 	const [crafts, setCrafts] = useState<Map<string, CraftData>>(new Map());
@@ -857,6 +861,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const abortControllerRef = useRef<AbortController | null>(null);
 	const shouldAutoScrollRef = useRef(true);
 	const wasNewSessionRef = useRef(false);
+	const isNavigatingRef = useRef(false);
 
 	// Polling for PROCESSING sessions
 	const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -1068,17 +1073,40 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		})();
 	}, [showModelSelector, agentEndpoint, getAuthHeaders]);
 
+	const handleScroll = useCallback(() => {
+		const container = messagesContainerRef.current;
+		if (!container) return;
+
+		// Check if user is within threshold of the bottom
+		const atBottom =
+			container.scrollHeight - container.scrollTop <=
+			container.clientHeight + SCROLL_BOTTOM_THRESHOLD_PX;
+		shouldAutoScrollRef.current = atBottom;
+		setIsAtBottom(prev => (prev === atBottom ? prev : atBottom));
+	}, []);
+
+	const handleScrollToBottom = useCallback(() => {
+		const container = messagesContainerRef.current;
+		if (!container) return;
+
+		shouldAutoScrollRef.current = true;
+		isNavigatingRef.current = false;
+		setIsAtBottom(true);
+
+		// Force absolute bottom immediately
+		container.scrollTop = container.scrollHeight;
+	}, []);
+
 	// Auto-scroll to bottom on new messages (but not when loading earlier)
 	useEffect(() => {
-		if (shouldAutoScrollRef.current) {
-			requestAnimationFrame(() => {
-				const container = messagesContainerRef.current;
-				if (container) {
-					container.scrollTop = container.scrollHeight;
-				}
-			});
-		}
-		shouldAutoScrollRef.current = true;
+		if (!shouldAutoScrollRef.current) return;
+		requestAnimationFrame(() => {
+			if (shouldAutoScrollRef.current) {
+				const behavior = isNavigatingRef.current ? 'auto' : 'smooth';
+				messagesEndRef.current?.scrollIntoView({ behavior, block: 'end' });
+				isNavigatingRef.current = false;
+			}
+		});
 	}, [messages]);
 
 	// Restore draft when session changes — but NOT while streaming,
@@ -1173,8 +1201,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Select a session and load its history
 	const handleSelectSession = useCallback(
 		async (selectedSessionId: string) => {
+			if (selectedSessionId === sessionId) return; // Already viewing this session
+
 			stopPolling();
 			setIsStreaming(false);
+			shouldAutoScrollRef.current = true;
+			isNavigatingRef.current = true;
 
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
@@ -1208,12 +1240,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				// Silently fail
 			}
 		},
-		[agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, startPolling],
+		[sessionId, agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, startPolling],
 	);
 
 	const handleNewChat = useCallback(() => {
 		stopPolling();
 		setIsStreaming(false);
+		shouldAutoScrollRef.current = true;
+		isNavigatingRef.current = true;
+		setIsAtBottom(true);
 		setSessionId(null);
 		setMessages([]);
 		setUsage(null);
@@ -1360,6 +1395,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			};
 			setMessages(prev => [...prev, userMsg]);
 			setIsStreaming(true);
+			shouldAutoScrollRef.current = true;
+			setIsAtBottom(true);
 
 			// Clear draft — cancel any pending debounce first
 			if (saveDraftTimeoutRef.current) {
@@ -1717,28 +1754,37 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			<div
 				className={`_promptMain${messages.length === 0 && !hasEarlierMessages ? ' _promptEmpty' : ''}${activeCraftId ? ' _hasCraft' : ''}`}
 			>
-				<div className="_promptTopBar">
-					<button
-						className="_sidebarToggle"
-						onClick={handleSidebarToggle}
-						title="Toggle sessions"
-					>
-						<i className={sidebarToggleIcon} />
-					</button>
-					{sessionId && (
-						<button
-							className="_newChatTopButton"
-							onClick={handleNewChat}
-							title="New chat"
-						>
-							<i className={newChatTopIcon} />
-						</button>
-					)}
-				</div>
+				{(showSessions || sessionId) && (
+					<div className="_promptTopBar">
+						{showSessions && (
+							<button
+								className="_sidebarToggle"
+								onClick={handleSidebarToggle}
+								title="Toggle sessions"
+								type="button"
+								aria-label="Toggle sessions"
+							>
+								<i className={sidebarToggleIcon} aria-hidden="true" />
+							</button>
+						)}
+						{sessionId && (
+							<button
+								className="_newChatTopButton"
+								onClick={handleNewChat}
+								title="New chat"
+								type="button"
+								aria-label="New chat"
+							>
+								<i className={newChatTopIcon} aria-hidden="true" />
+							</button>
+						)}
+					</div>
+				)}
 
 				<div
 					className="_promptMessages"
 					ref={messagesContainerRef}
+					onScroll={handleScroll}
 					style={styleProperties.messagesContainer ?? {}}
 				>
 					<SubHelperComponent
@@ -1887,7 +1933,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									thumbsUpIcon={thumbsUpIcon}
 									thumbsDownIcon={thumbsDownIcon}
 								>
-									{msg.suggestions && !isStreaming && (
+									{msg.suggestions && (
 										<SuggestionButtons
 											suggestions={msg.suggestions}
 											onSelect={handleSend}
@@ -1962,6 +2008,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						})}
 					</div>
 				)}
+				<button
+					className={`_scrollToBottom${isAtBottom ? ' _hidden' : ''}`}
+					onClick={handleScrollToBottom}
+					title="Scroll to bottom"
+					type="button"
+					aria-label="Scroll to bottom"
+				>
+					<i className={scrollToBottomIcon} aria-hidden="true" />
+				</button>
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}
