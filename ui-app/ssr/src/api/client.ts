@@ -62,6 +62,7 @@ export interface ApplicationDefinition {
 		defaultPage?: string;
 		shellPageDefinition?: string;
 		loginPage?: string;
+		sso3?: boolean;
 		fillerValues?: Record<string, unknown>;
 		fontPacks?: string[];
 		iconPacks?: string[];
@@ -91,6 +92,7 @@ export interface AnalyticsConfig {
 	sessionReplay?: {
 		enabled?: boolean;
 		maskAllInputs?: boolean;
+		sampleRate?: number;
 	};
 	heatmaps?: {
 		enabled?: boolean;

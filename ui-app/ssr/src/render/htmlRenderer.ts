@@ -112,6 +112,19 @@ function generateETag(data: CachedPageData): string {
 /**
  * Escape HTML special characters
  */
+// Map security.appCodeSuffix to the authzump beacon host:
+//   ""        -> "authzump.ai"
+//   ".dev"    -> "dev.authzump.ai"
+//   ".stage"  -> "stage.authzump.ai"
+//   ".local"  -> "local.authzump.ai"
+function deriveBeaconHost(appCodeSuffix: string | undefined | null): string {
+	if (!appCodeSuffix) return 'authzump.ai';
+	const trimmed = appCodeSuffix.startsWith('.') ? appCodeSuffix.slice(1) : appCodeSuffix;
+	const dotIdx = trimmed.indexOf('.');
+	const env = dotIdx >= 0 ? trimmed.slice(0, dotIdx) : trimmed;
+	return env ? `${env}.authzump.ai` : 'authzump.ai';
+}
+
 function escapeHtml(str: string | undefined | null): string {
 	if (!str || typeof str !== 'string') {
 		return '';
@@ -277,6 +290,12 @@ function generateAnalyticsSnippet(
 		advanced_disable_flags: true,
 	};
 
+	const rawSampleRate = a.sessionReplay?.sampleRate;
+	const sampleRate =
+		typeof rawSampleRate === 'number' && rawSampleRate >= 0 && rawSampleRate <= 1
+			? rawSampleRate
+			: 0.1;
+
 	if (replayEnabled) {
 		initOptions.session_recording = {
 			maskAllInputs: a.sessionReplay?.maskAllInputs ?? true,
@@ -285,9 +304,10 @@ function generateAnalyticsSnippet(
 
 	const apiKeyJson = JSON.stringify(projectApiKey);
 	const optionsJson = JSON.stringify(initOptions);
+	const sampleRateLiteral = sampleRate >= 1 ? 'null' : String(sampleRate);
 
 	const initCall = replayEnabled
-		? `var __phOpts=${optionsJson};__phOpts.loaded=function(ph){try{ph.persistence.register({'$session_recording_remote_config':{enabled:true,sampleRate:null,recorderVersion:'v2',endpoint:'/s/',linkedFlag:null,urlBlocklist:[],urlTriggers:[],eventTriggers:[]}});ph.sessionRecording&&ph.sessionRecording.startIfEnabledOrStop&&ph.sessionRecording.startIfEnabledOrStop();}catch(e){}};posthog.init(${apiKeyJson},__phOpts);`
+		? `var __phOpts=${optionsJson};__phOpts.loaded=function(ph){try{ph.persistence.register({'$session_recording_remote_config':{enabled:true,sampleRate:${sampleRateLiteral},recorderVersion:'v2',endpoint:'/s/',linkedFlag:null,urlBlocklist:[],urlTriggers:[],eventTriggers:[]}});ph.sessionRecording&&ph.sessionRecording.startIfEnabledOrStop&&ph.sessionRecording.startIfEnabledOrStop();}catch(e){}};posthog.init(${apiKeyJson},__phOpts);`
 		: `posthog.init(${apiKeyJson},${optionsJson});`;
 
 	return `<script>${POSTHOG_STUB}${initCall}${
@@ -444,6 +464,8 @@ function generateHtml(
 			window.cdnStripAPIPrefix = ${cdn.stripAPIPrefix};
 			window.cdnReplacePlus = ${cdn.replacePlus};
 			${cdn.resizeOptionsType ? `window.cdnResizeOptionsType = '${escapeHtml(cdn.resizeOptionsType)}';` : ''}
+			window.__SOCIAL_LOGIN_HOST__ = '${escapeHtml(deriveBeaconHost(getConfig().security.appCodeSuffix))}';
+			${application?.properties?.sso3 === true ? `window.__SSO_BEACON_HOST__ = '${escapeHtml(deriveBeaconHost(getConfig().security.appCodeSuffix))}';` : ''}
 		</script>
 
 		<!-- Main app container -->
@@ -482,7 +504,7 @@ function setResponseHeaders(
 	fromCache: boolean,
 	etag: string | null,
 	application: ApplicationDefinition | null,
-	cdnHostName?: string
+	cdnHostName?: string,
 ): void {
 	res.setHeader('Content-Type', 'text/html; charset=utf-8');
 

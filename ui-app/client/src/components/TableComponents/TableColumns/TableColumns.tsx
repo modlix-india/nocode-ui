@@ -39,6 +39,11 @@ import { runEvent } from '../../util/runEvent';
 import { updateLocationForChild } from '../../util/updateLoactionForChild';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableColumnsProperties';
+import {
+	getChildrenKeyAtDepth,
+	getHasChildrenPropertyAtDepth,
+	TreeKeyConfig,
+} from '../Table/Table';
 import { ParentExtractor } from '../../../context/ParentExtractor';
 import { propertiesDefinition as tableDynamicColumnPropertiesDefinition } from '../TableDynamicColumn/tableDynamicColumnProperties';
 import { propertiesDefinition as tableRowPropertiesDefinition } from '../TableRow/tableRowProperties';
@@ -61,7 +66,6 @@ function fieldToName(field: string): string {
 }
 
 export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
-	console.log("Rendering TableColumns with key:", props.definition.key);
 	const [value, setValue] = useState([]);
 	const {
 		definition: { key, children: originalChildren },
@@ -188,7 +192,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		uniqueKey,
 		onSelect,
 		treeMode,
-		childrenKey = 'children',
+		childrenKey,
 		hasChildrenProperty,
 		expandedKeys,
 		toggleExpand,
@@ -904,7 +908,7 @@ function generateDynamicColumns(
 			columnsOrderArray = Object.values(columnsOrder).map(col => col.property.value);
 
 		let allKeys: Set<string>;
-		if (context.table.treeMode && context.table.childrenKey) {
+		if (context.table.treeMode) {
 			allKeys = collectAllKeysFromTree(context.table.data ?? [], context.table.childrenKey);
 		} else {
 			allKeys = (context.table.data ?? []).reduce((a: Set<string>, c: any) => {
@@ -1031,9 +1035,9 @@ interface FlattenedRow {
 
 interface FlattenTreeParams {
 	nodes: any[];
-	childrenKey: string;
+	childrenKey: TreeKeyConfig;
 	uniqueKey: string;
-	hasChildrenProperty: string | undefined;
+	hasChildrenProperty: TreeKeyConfig;
 	expandedKeys: Set<string>;
 	depth: number;
 	parentPath: boolean[];
@@ -1051,6 +1055,8 @@ function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
 		parentPath,
 		basePath,
 	} = params;
+	const ck = getChildrenKeyAtDepth(childrenKey, depth);
+	const hcp = getHasChildrenPropertyAtDepth(hasChildrenProperty, depth);
 	const result: FlattenedRow[] = [];
 	for (let i = 0; i < nodes.length; i++) {
 		const node = nodes[i];
@@ -1058,9 +1064,9 @@ function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
 		const nodeKey = String(node[uniqueKey] ?? `${basePath}[${i}]`);
 		const isFirst = i === 0;
 		const isLast = i === nodes.length - 1;
-		const nodeChildren = node[childrenKey];
+		const nodeChildren = node[ck];
 		const hasChildrenByArray = Array.isArray(nodeChildren) && nodeChildren.length > 0;
-		const hasChildrenByProp = hasChildrenProperty ? !!node[hasChildrenProperty] : false;
+		const hasChildrenByProp = hcp ? !!node[hcp] : false;
 		const hasChildren = hasChildrenByArray || hasChildrenByProp;
 		const isExpanded = expandedKeys.has(nodeKey);
 		const currentPath = `${basePath}[${i}]`;
@@ -1087,7 +1093,7 @@ function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
 					expandedKeys,
 					depth: depth + 1,
 					parentPath: [...parentPath, !isLast],
-					basePath: `${currentPath}.${childrenKey}`,
+					basePath: `${currentPath}.${ck}`,
 				}),
 			);
 		}
@@ -1095,18 +1101,24 @@ function flattenTree(params: FlattenTreeParams): FlattenedRow[] {
 	return result;
 }
 
-function collectAllKeysFromTree(data: any[], childrenKey: string): Set<string> {
+function collectAllKeysFromTree(data: any[], childrenKey: TreeKeyConfig): Set<string> {
 	const keys = new Set<string>();
-	const walk = (nodes: any[]) => {
+	let childKeyList: string[];
+	if (Array.isArray(childrenKey)) childKeyList = childrenKey.filter(Boolean);
+	else if (childrenKey) childKeyList = [childrenKey];
+	else childKeyList = ['children'];
+	const childKeySet = new Set<string>(childKeyList);
+	const walk = (nodes: any[], depth: number) => {
+		const ck = getChildrenKeyAtDepth(childrenKey, depth);
 		for (const node of nodes) {
 			if (!node) continue;
 			for (const k of Object.keys(node)) {
-				if (k !== childrenKey) keys.add(k);
+				if (!childKeySet.has(k)) keys.add(k);
 			}
-			if (Array.isArray(node[childrenKey])) walk(node[childrenKey]);
+			if (Array.isArray(node[ck])) walk(node[ck], depth + 1);
 		}
 	};
-	walk(data);
+	walk(data, 0);
 	return keys;
 }
 
