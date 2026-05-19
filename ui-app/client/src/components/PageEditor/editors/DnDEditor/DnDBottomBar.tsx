@@ -109,7 +109,7 @@ export default function DnDBottomBar({
 						/> */}
 						{comp.name} {last ? '' : '/'}
 						<div className="_iconMenuBody _top _clickable">
-							{Object.keys(defMap[comp.key].children ?? {})
+							{Object.keys(defMap[comp.key]?.children ?? {})
 								.filter(f => !!defMap[f])
 								.sort((a: any, b: any) => {
 									const v =
