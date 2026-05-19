@@ -72,7 +72,15 @@ function Animator(props: Readonly<ComponentProps>) {
 	const animationCount = React.useRef<{ [key: string]: number }>({});
 
 	useEffect(() => {
-		if (!animation?.length || !ref.current) return;
+		console.log('[Animator] effect run', { key, animation, hasRef: !!ref.current });
+		if (!animation?.length || !ref.current) {
+			console.log('[Animator] bailing — no animations or no ref', {
+				key,
+				animationsLen: animation?.length,
+				hasRef: !!ref.current,
+			});
+			return;
+		}
 
 		const threshold: number[] = [];
 
@@ -93,21 +101,49 @@ function Animator(props: Readonly<ComponentProps>) {
 			}
 		}
 
+		console.log('[Animator] observer setup', {
+			key,
+			thresholds: Array.from(new Set(threshold)),
+			enteringKeys: Array.from(entering.keys()),
+			exitingKeys: Array.from(exiting.keys()),
+			enteringCount: Array.from(entering.values()).reduce((s, a) => s + a.length, 0),
+			exitingCount: Array.from(exiting.values()).reduce((s, a) => s + a.length, 0),
+		});
+
 		try {
 			const io = new IntersectionObserver(
 				entries => {
-					if (entries.length !== 1) return;
+					console.log('[Animator] IO fired', {
+						key,
+						entriesCount: entries.length,
+					});
+					if (entries.length !== 1) {
+						console.log('[Animator] skipping — entries.length !== 1', {
+							key,
+							entriesCount: entries.length,
+						});
+						return;
+					}
 					const entry = entries[0];
 
 					let isEntering =
-						entry.boundingClientRect.top > 0 &&
-						entry.boundingClientRect.left > 0 &&
+						entry.boundingClientRect.top >= 0 &&
+						entry.boundingClientRect.left >= 0 &&
 						entry.isIntersecting;
 
 					const th = entry.intersectionRatio;
+					console.log('[Animator] entry', {
+						key,
+						intersectionRatio: th,
+						isIntersecting: entry.isIntersecting,
+						top: entry.boundingClientRect.top,
+						left: entry.boundingClientRect.left,
+						isEntering,
+					});
 					const closest = Array.from((isEntering ? entering : exiting).keys()).filter(
 						e => Math.abs(e - th) < 0.08,
 					);
+					console.log('[Animator] closest thresholds', { key, closest, isEntering });
 					const currentAnimations: any[] = [];
 
 					for (let each of closest) {
@@ -127,13 +163,21 @@ function Animator(props: Readonly<ComponentProps>) {
 
 					closest.flatMap(e => (isEntering ? entering : exiting).get(e));
 
+					console.log('[Animator] applying animations', {
+						key,
+						count: currentAnimations.length,
+						names: currentAnimations.map(a => a.animationName),
+					});
 					setObservations(currentAnimations);
 				},
 				{ threshold: Array.from(new Set(threshold)) },
 			);
 			io.observe(ref.current);
+			console.log('[Animator] observing', { key });
 			return () => (ref.current ? io.unobserve(ref.current!) : undefined);
-		} catch (e) {}
+		} catch (e) {
+			console.error('[Animator] observer setup failed', { key, error: e });
+		}
 	}, [animation, ref.current, setObservations]);
 
 	return (
