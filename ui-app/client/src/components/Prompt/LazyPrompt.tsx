@@ -69,6 +69,9 @@ interface AgentSpan {
 	label: string;
 	parentId: string;
 	parentToolUseId?: string;
+	// v5 (2026-05-25): this sub-agent's OWN tool_use_id, used by tool_update
+	// routing as the primary key. parentToolUseId is now legacy fallback.
+	agentToolUseId?: string;
 	status: 'running' | 'success' | 'error';
 	startedAt: number;
 	endedAt?: number;
@@ -175,7 +178,6 @@ interface SSEEventContext {
 	setFeedbackTurn: (turn: { sessionId: string; turnNumber: number }) => void;
 	setCrafts: React.Dispatch<React.SetStateAction<Map<string, CraftData>>>;
 	setActiveCraftId: React.Dispatch<React.SetStateAction<string | null>>;
-	setActiveCraft: React.Dispatch<React.SetStateAction<CraftData | null>>;
 	onComplete?: string;
 	completeBindingPath?: string;
 	props: Readonly<ComponentProps>;
@@ -228,6 +230,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				label: data.label ?? agentId,
 				parentId: data.parent_id ?? 'root',
 				parentToolUseId: data.parent_tool_use_id || undefined,
+				agentToolUseId: data.agent_tool_use_id || undefined,
 				status: 'running',
 				startedAt: Date.now(),
 				toolCalls: [],
@@ -246,6 +249,10 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				span.tokensOut = data.tokens_out ?? 0;
 				span.stepCount = data.step_count ?? span.toolCalls.length;
 				span.summary = data.summary ?? '';
+				// v5 (2026-05-25): clear lingering statusText only when a summary
+				// is present. If summary is empty (error / no-result), keep the last
+				// statusText so the row still reads as informative on its final state.
+				if (span.summary) span.statusText = undefined;
 				flushMessageState(ctx);
 			}
 			break;
@@ -283,31 +290,67 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			if (!ctx.showToolCalls) break;
 			const tuId = data.tool_use_id ?? '';
 			const msg = data.message ?? '';
-			// Check if this update targets a parent tool that spawned an agent.
-			// If so, show it as the agent's live status text.
+			// v5 (2026-05-25): 3-priority routing.
+			//   P1 — tool_call.id match: this update is for a known tool. Most common path.
+			//   P2 — span.agentToolUseId match: update belongs to a sub-agent's own tuid
+			//        (e.g. AssetPicker's "Picking the best images…"). Surfaces as the agent's
+			//        live status text on its own row — fixes v4's misattribution bug.
+			//   P3 — legacy parentToolUseId match: pre-v5 emits where sub-agents reused
+			//        the parent scrape tool's tuid. Kept for back-compat with old backends.
+			// Counter: window.__promptRouteCounts tracks per-priority hits for telemetry.
+			const w = typeof window !== 'undefined' ? (window as any) : undefined;
+			if (w && !w.__promptRouteCounts) {
+				w.__promptRouteCounts = { p1_tool: 0, p2_agent: 0, p3_legacy: 0, dropped: 0 };
+			}
 			let routed = false;
-			for (const [, span] of ctx.agentSpans) {
-				if (
-					span.parentToolUseId &&
-					span.parentToolUseId === tuId &&
-					span.status === 'running'
-				) {
-					span.statusText = msg;
-					routed = true;
-					flushMessageState(ctx);
-					break;
-				}
+			// P1 — direct tool_call match
+			const tuTc = ctx.toolCalls.get(tuId);
+			if (tuTc && tuTc.isRunning) {
+				if (!tuTc.updates) tuTc.updates = [];
+				tuTc.updates.push(msg);
+				routed = true;
+				if (w) w.__promptRouteCounts.p1_tool += 1;
+				flushMessageState(ctx);
 			}
+			// P2 — sub-agent's own tool_use_id (v5 path)
 			if (!routed) {
-				const tuTc = ctx.toolCalls.get(tuId);
-				if (tuTc && tuTc.isRunning) {
-					// Accumulate updates as a mini-log for expanded view.
-					// Don't replace summary — that's set by tool_result only.
-					if (!tuTc.updates) tuTc.updates = [];
-					tuTc.updates.push(msg);
-					flushMessageState(ctx);
+				for (const [, span] of ctx.agentSpans) {
+					if (
+						span.agentToolUseId &&
+						span.agentToolUseId === tuId &&
+						span.status === 'running'
+					) {
+						span.statusText = msg;
+						routed = true;
+						if (w) w.__promptRouteCounts.p2_agent += 1;
+						flushMessageState(ctx);
+						break;
+					}
 				}
 			}
+			// P3 — legacy parentToolUseId (old backend)
+			if (!routed) {
+				for (const [, span] of ctx.agentSpans) {
+					if (
+						span.parentToolUseId &&
+						span.parentToolUseId === tuId &&
+						span.status === 'running'
+					) {
+						span.statusText = msg;
+						routed = true;
+						if (w) w.__promptRouteCounts.p3_legacy += 1;
+						// eslint-disable-next-line no-console
+						console.debug(
+							'[prompt] tool_update routed via legacy parentToolUseId — ' +
+								'expected in transition window, should trend to 0 after backend rollout.',
+							{ tuId, agentId: span.agentId, label: span.label },
+						);
+						flushMessageState(ctx);
+						break;
+					}
+				}
+			}
+			if (!routed && w) w.__promptRouteCounts.dropped += 1;
 			break;
 		}
 		case 'tool_result': {
@@ -438,12 +481,29 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 						}
 						craft = { ...existing, blocks };
 					} else if (isAppend && next.has(craftId)) {
-						// Append blocks to existing craft
+						// Append blocks. Any new block carrying an `id` that
+						// matches an existing block replaces in place — lets
+						// the backend stream incremental updates (e.g. each
+						// uploaded thumbnail) into the same row without
+						// duplicating blocks.
 						const existing = next.get(craftId)!;
+						const merged = [...existing.blocks];
+						const toAppend: any[] = [];
+						for (const nb of newBlocks) {
+							const id = (nb as any).id;
+							if (id) {
+								const idx = merged.findIndex(b => (b as any).id === id);
+								if (idx >= 0) {
+									merged[idx] = nb;
+									continue;
+								}
+							}
+							toAppend.push(nb);
+						}
 						craft = {
 							...existing,
 							title: data.title ?? existing.title,
-							blocks: [...existing.blocks, ...newBlocks],
+							blocks: [...merged, ...toAppend],
 						};
 					} else {
 						// Create or replace craft
@@ -456,7 +516,6 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					}
 
 					next.set(craftId, craft);
-					ctx.setActiveCraft(craft);
 					return next;
 				});
 
@@ -827,7 +886,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Craft panel state
 	const [crafts, setCrafts] = useState<Map<string, CraftData>>(new Map());
 	const [activeCraftId, setActiveCraftId] = useState<string | null>(null);
-	const [activeCraft, setActiveCraft] = useState<CraftData | null>(null);
+	// Derive activeCraft from the crafts Map so it never drifts out of sync.
+	// (Previously a separate useState updated inside setCrafts' updater — a
+	// React anti-pattern that caused appended blocks to occasionally drop.)
+	const activeCraft = activeCraftId ? crafts.get(activeCraftId) ?? null : null;
 
 	// Model selector state
 	const [availableModels, setAvailableModels] = useState<{ id: string; name: string }[]>([]);
@@ -1442,6 +1504,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					}
 				}, 5_000);
 
+				// eventType is preserved across reader.read() chunks because a
+				// single SSE event ("event: foo\ndata: ...\n\n") can be split
+				// at any byte boundary. Resetting per-chunk dropped the data
+				// line whenever a network read landed between the header and
+				// the data, intermittently silently losing craft events.
+				let eventType = '';
 				try {
 					while (true) {
 						const { done, value } = await reader.read();
@@ -1451,8 +1519,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						buffer += decoder.decode(value, { stream: true });
 						const lines = buffer.split('\n');
 						buffer = lines.pop() ?? '';
-
-						let eventType = '';
 
 						for (const line of lines) {
 							if (line.startsWith('event: ')) {
@@ -1478,7 +1544,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										setFeedbackTurn: turn => setFeedbackTurn(turn),
 										setCrafts,
 										setActiveCraftId,
-										setActiveCraft,
 										onComplete,
 										completeBindingPath,
 										props,
@@ -1951,10 +2016,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									key={c.id}
 									title={c.title}
 									subtitle={subtitle}
-									onClick={() => {
-										setActiveCraftId(c.id);
-										setActiveCraft(c);
-									}}
+									onClick={() => setActiveCraftId(c.id)}
 									definition={props.definition}
 									styleProperties={styleProperties}
 								/>
@@ -2036,10 +2098,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			{activeCraft && (
 				<CraftPanel
 					craft={activeCraft}
-					onClose={() => {
-						setActiveCraftId(null);
-						setActiveCraft(null);
-					}}
+					onClose={() => setActiveCraftId(null)}
 					definition={props.definition}
 					styleProperties={styleProperties}
 				/>
