@@ -119,6 +119,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 		usedComponents.using('TableColumns');
 		usedComponents.using('TableDynamicColumn');
 		usedComponents.using('TableDynamicColumns');
+		usedComponents.using('TableDynamicGroupedColumn');
 		usedComponents.using('TableEmptyGrid');
 		usedComponents.using('TableGrid');
 		usedComponents.using('TablePreviewGrid');
