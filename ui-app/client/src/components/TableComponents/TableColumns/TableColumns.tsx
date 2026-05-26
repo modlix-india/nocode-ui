@@ -46,6 +46,7 @@ import {
 } from '../Table/Table';
 import { ParentExtractor } from '../../../context/ParentExtractor';
 import { propertiesDefinition as tableDynamicColumnPropertiesDefinition } from '../TableDynamicColumn/tableDynamicColumnProperties';
+import { propertiesDefinition as tableDynamicGroupedColumnPropertiesDefinition } from '../TableDynamicGroupedColumn/tableDynamicGroupedColumnProperties';
 import { propertiesDefinition as tableRowPropertiesDefinition } from '../TableRow/tableRowProperties';
 import { createNewState } from '../../util/useDefinition/commons';
 import { getPathsFromComponentDefinition } from '../../util/getPaths';
@@ -123,7 +124,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	]);
 
 	const { headerDef, columnDef, listenPaths, children, tableRowProps } = useMemo(() => {
-		let { dynamicColumns, columnsPageDefinition, listenPaths, tableRowProps } =
+		let { dynamicColumns, groupedColumns, columnsPageDefinition, listenPaths, tableRowProps } =
 			resolvePropertiesOfDynamicColumns(
 				pageDefinition,
 				originalChildren ?? {},
@@ -142,10 +143,13 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		return {
 			...generateTableColumnDefinitions(
 				dynamicColumns,
+				groupedColumns,
 				columnsPageDefinition,
 				originalChildren ?? {},
 				context,
 				personalizationObject,
+				locationHistory,
+				pageExtractor,
 			),
 			listenPaths,
 			tableRowProps,
@@ -559,6 +563,10 @@ function resolvePropertiesOfDynamicColumns(
 		.map(k => pageDefinition.componentDefinition[k])
 		.filter(cd => cd?.type === 'TableDynamicColumn');
 
+	let groupedColumns = childrenKeys
+		.map(k => pageDefinition.componentDefinition[k])
+		.filter(cd => cd?.type === 'TableDynamicGroupedColumn');
+
 	let tableRowComp = childrenKeys
 		.map(k => pageDefinition.componentDefinition[k])
 		.find(cd => cd?.type === 'TableRow');
@@ -567,11 +575,14 @@ function resolvePropertiesOfDynamicColumns(
 	let tableRowProps: any = undefined;
 
 	let columnsPageDefinition = pageDefinition;
-	if (dynamicColumns.length > 0 || tableRowComp) {
+	if (dynamicColumns.length > 0 || groupedColumns.length > 0 || tableRowComp) {
 		columnsPageDefinition = duplicate(pageDefinition);
 		dynamicColumns = childrenKeys
 			.map(k => columnsPageDefinition.componentDefinition[k])
 			.filter(cd => cd?.type === 'TableDynamicColumn');
+		groupedColumns = childrenKeys
+			.map(k => columnsPageDefinition.componentDefinition[k])
+			.filter(cd => cd?.type === 'TableDynamicGroupedColumn');
 		tableRowComp = childrenKeys
 			.map(k => columnsPageDefinition.componentDefinition[k])
 			.find(cd => cd?.type === 'TableRow');
@@ -631,6 +642,42 @@ function resolvePropertiesOfDynamicColumns(
 			}
 		}
 
+		if (groupedColumns.length) {
+			const propDefMap = tableDynamicGroupedColumnPropertiesDefinition.reduce(
+				(a: any, c) => {
+					a[c.name] = c;
+					return a;
+				},
+				{},
+			);
+
+			for (let groupedColumn of groupedColumns) {
+				const paths = getPathsFromComponentDefinition(
+					groupedColumn,
+					evaluatorMaps,
+					propDefMap,
+				);
+				if (paths.length) listenPaths.push(...paths);
+
+				const properties = createNewState(
+					groupedColumn,
+					tableDynamicGroupedColumnPropertiesDefinition,
+					{},
+					locationHistory,
+					tokenExtractors,
+				);
+				if (properties.properties && groupedColumn.properties) {
+					Object.entries(properties.properties).forEach(
+						([key, value]) => (groupedColumn.properties![key] = { value }),
+					);
+				} else if (properties.properties) {
+					groupedColumn.properties = Object.fromEntries(
+						Object.entries(properties.properties).map(([k, v]) => [k, { value: v }]),
+					) as any;
+				}
+			}
+		}
+
 		if (tableRowComp) {
 			const propDefMap = tableRowPropertiesDefinition.reduce((a: any, c) => {
 				a[c.name] = c;
@@ -657,7 +704,7 @@ function resolvePropertiesOfDynamicColumns(
 			}
 		}
 	}
-	return { dynamicColumns, columnsPageDefinition, listenPaths, tableRowProps };
+	return { dynamicColumns, groupedColumns, columnsPageDefinition, listenPaths, tableRowProps };
 }
 
 function generateRows(properties: {
@@ -812,16 +859,27 @@ function generateRows(properties: {
 
 function generateTableColumnDefinitions(
 	dynamicColumns: ComponentDefinition[],
+	groupedColumns: ComponentDefinition[],
 	pageDefinition: PageDefinition,
 	originalChildren: { [key: string]: boolean },
 	context: RenderContext,
 	personalizationObject: any,
+	locationHistory: LocationHistory[],
+	pageExtractor: PageStoreExtractor,
 ) {
 	const children = duplicate(originalChildren);
 
 	let cp = pageDefinition;
-	if (dynamicColumns.length > 0) {
-		generateDynamicColumns(dynamicColumns, context, cp, children);
+	if (dynamicColumns.length > 0 || groupedColumns.length > 0) {
+		if (dynamicColumns.length > 0) generateDynamicColumns(dynamicColumns, context, cp, children);
+		if (groupedColumns.length > 0)
+			generateGroupedDynamicColumns(
+				groupedColumns,
+				cp,
+				children,
+				locationHistory,
+				pageExtractor,
+			);
 
 		let order = 1;
 		for (const key of Object.entries(originalChildren)
@@ -839,7 +897,11 @@ function generateTableColumnDefinitions(
 				continue;
 			}
 
-			if (component?.type !== 'TableDynamicColumn') continue;
+			if (
+				component?.type !== 'TableDynamicColumn' &&
+				component?.type !== 'TableDynamicGroupedColumn'
+			)
+				continue;
 
 			Object.keys(cp.componentDefinition)
 				.filter(
@@ -1015,6 +1077,119 @@ function generateDynamicColumns(
 			cp.componentDefinition[eachRenderer.key] = eachRenderer;
 			cp.componentDefinition[eachChild.key] = eachChild;
 			children[eachChild.key] = true;
+		}
+	}
+}
+
+/**
+ * Walks the group tree binding for every TableDynamicGroupedColumn child and
+ * synthesises one TableColumn per (leaf × sub-cell field) into the page
+ * definition. Each synthesised column gets a Text renderer reading
+ * {@code Parent.<cellPathTemplate(leafId)>.<subField>}. Labels embed the
+ * parent-group / leaf / sub-cell hierarchy inline (single header row) — true
+ * multi-row colspan grouping is a follow-up that needs deeper Table renderer
+ * changes.
+ */
+function generateGroupedDynamicColumns(
+	groupedColumns: ComponentDefinition[],
+	cp: any,
+	children: { [key: string]: boolean },
+	locationHistory: LocationHistory[],
+	pageExtractor: PageStoreExtractor,
+) {
+	if (!children) return;
+
+	for (const gc of groupedColumns) {
+		const key = gc.key;
+		const propValue = (name: string, dflt: any) =>
+			(gc as any).properties?.[name]?.value ?? dflt;
+		const idField = String(propValue('idField', 'id'));
+		const labelField = String(propValue('labelField', 'name'));
+		const childrenField = String(propValue('childrenField', 'children'));
+		const cellPathTemplate = String(propValue('cellPathTemplate', 'stageCells.{id}'));
+		const subCellFields: string[] = String(propValue('subCellFields', 'count,cpl'))
+			.split(',')
+			.map((s: string) => s.trim())
+			.filter(Boolean);
+		const subCellLabels: string[] = String(propValue('subCellLabels', 'Count,CPL'))
+			.split(',')
+			.map((s: string) => s.trim());
+
+		const bp = (gc as any).bindingPath as { type?: string; value?: string } | undefined;
+		if (!bp || !bp.value) continue;
+		const tree = getDataFromPath(bp.value, locationHistory, pageExtractor);
+		if (!Array.isArray(tree) || tree.length === 0) continue;
+
+		const styleProperties = (gc as any).styleProperties
+			? duplicate((gc as any).styleProperties)
+			: undefined;
+
+		let order = 0;
+
+		// Emit one TableColumn pair per (node, subField). For every parent group we
+		// emit a rollup column first, then one column per substage. Tickets often
+		// sit at the parent stage itself (not a leaf), so without the parent column
+		// the data is invisible to users.
+		const emitColumnsFor = (node: any, parentLabel: string | undefined) => {
+			const nid = (node as any)[idField];
+			const nname = (node as any)[labelField] ?? '';
+			const cellPath = cellPathTemplate.replace('{id}', String(nid));
+			const safeId = String(nid).replace(/[^a-zA-Z0-9]/g, '');
+
+			for (let i = 0; i < subCellFields.length; i++) {
+				const sf = subCellFields[i];
+				const sl = subCellLabels[i] ?? sf;
+
+				const rendererKey = `${key}_${safeId}_${sf}_renderer`;
+				cp.componentDefinition[rendererKey] = {
+					key: rendererKey,
+					type: 'Text',
+					name: `${nname}_${sf}`,
+					properties: {
+						text: {
+							location: {
+								type: 'EXPRESSION',
+								expression: `Parent.${cellPath}.${sf}`,
+							},
+						},
+					},
+				};
+
+				const colKey = `${key}_${safeId}_${sf}`;
+				const labelStr = parentLabel
+					? `${parentLabel} › ${nname} · ${sl}`
+					: `${nname} · ${sl}`;
+				cp.componentDefinition[colKey] = {
+					key: colKey,
+					type: 'TableColumn',
+					name: `${parentLabel ? parentLabel + '_' : ''}${nname}_${sf}`,
+					displayOrder: order++,
+					properties: { label: { value: labelStr } },
+					styleProperties,
+					children: { [rendererKey]: true },
+				};
+				children[colKey] = true;
+			}
+		};
+
+		const expandSubstages = !!propValue('expandSubstages', false);
+
+		for (const group of tree) {
+			if (!group) continue;
+			const gname = (group as any)[labelField] ?? '';
+			const rawLeaves = (group as any)[childrenField];
+			const hasLeaves = Array.isArray(rawLeaves) && rawLeaves.length > 0;
+
+			// Parent group: rollup column (or self-as-leaf when no children).
+			emitColumnsFor(group, undefined);
+
+			// Substage columns only when explicitly opted in. Default state is
+			// "collapsed" — only parent rollups are visible.
+			if (hasLeaves && expandSubstages) {
+				for (const leaf of rawLeaves) {
+					if (leaf) emitColumnsFor(leaf, gname);
+				}
+			}
 		}
 	}
 }
