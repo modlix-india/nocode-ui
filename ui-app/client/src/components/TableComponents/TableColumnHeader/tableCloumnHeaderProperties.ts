@@ -19,6 +19,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.label,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	{
+		name: 'headerOnClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Header Click',
+		description:
+			'Event fired when the column header is clicked (and the column is not sortable). Used by TableDynamicGroupedColumn to wire per-stage expand/collapse onto parent headers.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
 		name: 'leftIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Left Icon',

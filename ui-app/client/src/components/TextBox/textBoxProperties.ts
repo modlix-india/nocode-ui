@@ -253,6 +253,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 
+	{
+		name: 'debounceTime',
+		displayName: 'Debounce (ms)',
+		description:
+			'When > 0 and Update Immediately is on, delays the store update and onChange firing until the user stops typing for this many milliseconds. Use for search inputs to avoid firing on every keystroke.',
+		schema: SCHEMA_NUM_COMP_PROP,
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: 0,
+	},
+
 	COMMON_COMPONENT_PROPERTIES.onEnter,
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	COMMON_COMPONENT_PROPERTIES.onBlur,
