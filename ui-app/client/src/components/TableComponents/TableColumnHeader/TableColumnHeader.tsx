@@ -108,6 +108,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			leftIconTitle,
 			rightIconTitle,
 			tooltipPosition,
+			headerOnClick,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -562,12 +563,26 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 		dragProperties.onDragOver = (ev: React.DragEvent<HTMLElement>) => ev.preventDefault();
 	}
 
+	const hasHeaderClick = !!headerOnClick;
+	const headerClickEvent = hasHeaderClick
+		? props.pageDefinition?.eventFunctions?.[headerOnClick as string]
+		: undefined;
+
 	return (
 		<th
 			id={styleKey}
-			className={`comp compTableHeaderColumn ${hasSort ? '_pointer' : ''} ${tooltipPosition}`}
+			className={`comp compTableHeaderColumn ${hasSort || hasHeaderClick ? '_pointer' : ''} ${tooltipPosition}`}
 			style={{ ...(styleProperties.header ?? {}) }}
-			onClick={() =>
+			onClick={() => {
+				if (headerClickEvent) {
+					runEvent(
+						headerClickEvent,
+						headerOnClick as string,
+						context.pageName,
+						locationHistory,
+						props.pageDefinition,
+					);
+				}
 				onChangeSort({
 					currentSortOrder,
 					initialSortOrder,
@@ -582,8 +597,8 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 					ascValue,
 					descValue,
 					locationHistory,
-				})
-			}
+				});
+			}}
 			tabIndex={hasSort ? 0 : undefined}
 			onContextMenu={
 				context.table.enablePersonalization && !context.table.hideContextMenu
