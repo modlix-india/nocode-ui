@@ -8,7 +8,7 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import CommonCheckbox from '../../../commonComponents/CommonCheckbox';
 import {
-	addListener,
+	addListenerWithChildrenActivity,
 	addListenerAndCallImmediatelyWithChildrenActivity,
 	fillerExtractor,
 	getData,
@@ -181,7 +181,13 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!listenPaths.length) return;
-		return addListener(context.pageName, debouncedSetUpdateColumnsAt, ...listenPaths);
+		// Children-activity variant so listening to `Page.expandedStages` also
+		// fires on `Page.expandedStages.s_<id>` writes (per-stage toggles).
+		return addListenerWithChildrenActivity(
+			context.pageName,
+			debouncedSetUpdateColumnsAt,
+			...listenPaths,
+		);
 	}, [debouncedSetUpdateColumnsAt, pageExtractor, listenPaths, context.pageName]);
 
 	const {
@@ -250,7 +256,12 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			setProgressiveCount(prev => Math.min(prev + PROGRESSIVE_BATCH, totalRows));
 		}, 0);
 		return () => clearTimeout(timer);
-	}, [progressiveCount, progressiveRowRef.current, value]);
+		// expandedKeys is included so that expanding/collapsing a tree node
+		// (which grows/shrinks the flattened row count assigned to
+		// progressiveRowRef.current later in render) re-fires this ramp. The
+		// ref alone can't trigger it: its dep value is read above, before the
+		// render assigns the new total, so it always lags one render behind.
+	}, [progressiveCount, progressiveRowRef.current, value, expandedKeys]);
 
 	if (!Array.isArray(value)) return <></>;
 
@@ -658,6 +669,16 @@ function resolvePropertiesOfDynamicColumns(
 					propDefMap,
 				);
 				if (paths.length) listenPaths.push(...paths);
+
+				// Also listen to the per-stage expanded-state path so a header
+				// click that toggles Page.expandedStages forces a re-render and
+				// the substage columns appear/disappear.
+				const expandedPath =
+					(groupedColumn as any).properties?.expandedGroupsPath?.value ??
+					'Page.expandedStages';
+				if (typeof expandedPath === 'string' && expandedPath.length > 0) {
+					listenPaths.push(expandedPath);
+				}
 
 				const properties = createNewState(
 					groupedColumn,
@@ -1115,6 +1136,14 @@ function generateGroupedDynamicColumns(
 			.split(',')
 			.map((s: string) => s.trim());
 
+		// Page-state path holding the per-stage expanded flags. Default
+		// `Page.expandedStages` — keyed by stageId → truthy when expanded.
+		const expandedGroupsPath = String(
+			propValue('expandedGroupsPath', 'Page.expandedStages'),
+		);
+		const expandedMap =
+			getDataFromPath(expandedGroupsPath, locationHistory, pageExtractor) ?? {};
+
 		const bp = (gc as any).bindingPath as { type?: string; value?: string } | undefined;
 		if (!bp || !bp.value) continue;
 		const tree = getDataFromPath(bp.value, locationHistory, pageExtractor);
@@ -1126,11 +1155,64 @@ function generateGroupedDynamicColumns(
 
 		let order = 0;
 
+		// Synthesize a 1-step toggle event function on the page def for the
+		// given stage id. SetStore writes `not Page.expandedStages.<id>` to the
+		// same path, so the value flips between truthy and falsy on each click.
+		// Returns the synthesized event-function key so the column can wire its
+		// headerOnClick to it.
+		const synthToggleEventKey = (stageId: any): string => {
+			// Prefix with `s_` so numeric stage ids (e.g. 66) don't get treated as
+			// array indices by the SetStore path resolver — which would replace
+			// the expandedStages object with a sparse array.
+			const safe = `s_${String(stageId).replace(/[^a-zA-Z0-9]/g, '')}`;
+			const efKey = `__expandToggle_${key}_${safe}`;
+			if (!cp.eventFunctions) cp.eventFunctions = {};
+			if (!cp.eventFunctions[efKey]) {
+				const togglePath = `${expandedGroupsPath}.${safe}`;
+				cp.eventFunctions[efKey] = {
+					key: efKey,
+					name: efKey,
+					steps: {
+						toggle: {
+							statementName: 'toggle',
+							name: 'SetStore',
+							namespace: 'UIEngine',
+							parameterMap: {
+								path: {
+									k1: {
+										key: 'k1',
+										type: 'VALUE',
+										value: togglePath,
+										order: 1,
+									},
+								},
+								value: {
+									k2: {
+										key: 'k2',
+										type: 'EXPRESSION',
+										expression: `not ${togglePath}`,
+										order: 1,
+									},
+								},
+							},
+							dependentStatements: {},
+						},
+					},
+				};
+			}
+			return efKey;
+		};
+
 		// Emit one TableColumn pair per (node, subField). For every parent group we
 		// emit a rollup column first, then one column per substage. Tickets often
 		// sit at the parent stage itself (not a leaf), so without the parent column
 		// the data is invisible to users.
-		const emitColumnsFor = (node: any, parentLabel: string | undefined) => {
+		const emitColumnsFor = (
+			node: any,
+			parentLabel: string | undefined,
+			toggleEfKey: string | undefined,
+			isExpanded: boolean,
+		) => {
 			const nid = (node as any)[idField];
 			const nname = (node as any)[labelField] ?? '';
 			const cellPath = cellPathTemplate.replace('{id}', String(nid));
@@ -1156,15 +1238,20 @@ function generateGroupedDynamicColumns(
 				};
 
 				const colKey = `${key}_${safeId}_${sf}`;
+				// Prefix the first sub-cell column of a clickable parent with a
+				// chevron so users see the column group is expandable.
+				const chevron = toggleEfKey && i === 0 ? (isExpanded ? '▾ ' : '▸ ') : '';
 				const labelStr = parentLabel
 					? `${parentLabel} › ${nname} · ${sl}`
-					: `${nname} · ${sl}`;
+					: `${chevron}${nname} · ${sl}`;
+				const colProps: any = { label: { value: labelStr } };
+				if (toggleEfKey) colProps.headerOnClick = { value: toggleEfKey };
 				cp.componentDefinition[colKey] = {
 					key: colKey,
 					type: 'TableColumn',
 					name: `${parentLabel ? parentLabel + '_' : ''}${nname}_${sf}`,
 					displayOrder: order++,
-					properties: { label: { value: labelStr } },
+					properties: colProps,
 					styleProperties,
 					children: { [rendererKey]: true },
 				};
@@ -1172,22 +1259,35 @@ function generateGroupedDynamicColumns(
 			}
 		};
 
-		const expandSubstages = !!propValue('expandSubstages', false);
+		// Legacy global override — when set, ignore per-stage state and force
+		// every parent to render its substages. Kept for callers that want the
+		// flat-expanded look without wiring toggle UI.
+		const forceExpandAll = !!propValue('expandSubstages', false);
 
 		for (const group of tree) {
 			if (!group) continue;
+			const gid = (group as any)[idField];
 			const gname = (group as any)[labelField] ?? '';
 			const rawLeaves = (group as any)[childrenField];
 			const hasLeaves = Array.isArray(rawLeaves) && rawLeaves.length > 0;
 
-			// Parent group: rollup column (or self-as-leaf when no children).
-			emitColumnsFor(group, undefined);
+			// Only wire a toggle when the parent actually has substages — clicking
+			// a leaf-only "parent" is a no-op.
+			const toggleEfKey = hasLeaves ? synthToggleEventKey(gid) : undefined;
 
-			// Substage columns only when explicitly opted in. Default state is
-			// "collapsed" — only parent rollups are visible.
-			if (hasLeaves && expandSubstages) {
+			const isExpanded =
+				forceExpandAll ||
+				!!expandedMap?.[`s_${String(gid).replace(/[^a-zA-Z0-9]/g, '')}`];
+
+			// Parent group: rollup column. Wire headerOnClick to the toggle and
+			// pass isExpanded so the chevron reflects current state.
+			emitColumnsFor(group, undefined, toggleEfKey, isExpanded);
+
+			// Substage columns only when this parent is expanded. Default state is
+			// "collapsed" — only parent rollups are visible until the user clicks.
+			if (hasLeaves && isExpanded) {
 				for (const leaf of rawLeaves) {
-					if (leaf) emitColumnsFor(leaf, gname);
+					if (leaf) emitColumnsFor(leaf, gname, undefined, false);
 				}
 			}
 		}

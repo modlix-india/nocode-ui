@@ -125,9 +125,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Expand Substages',
 		description:
-			'When false (default), only parent-group rollup columns render. When true, each parent is followed by one column per substage. Use this for a flat-expanded view when you want every substage column visible.',
+			'When false (default), only parent-group rollup columns render — and the user can expand a single stage by clicking its header (toggle written to expandedGroupsPath). When true, every parent is force-expanded into its substages regardless of click state — use for a flat-expanded view.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'expandedGroupsPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Expanded Groups Path',
+		description:
+			"Page-state path holding the per-stage expanded flags. Keyed by sanitized stageId → truthy when expanded. Default: 'Page.expandedStages'. Clicking a parent stage's column header toggles the corresponding entry at this path.",
+		defaultValue: 'Page.expandedStages',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'leafColspanOnEmptyGroup',
