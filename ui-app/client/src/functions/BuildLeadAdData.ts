@@ -28,8 +28,8 @@ const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
 function readCookie(name: string): string | undefined {
 	if (typeof document === 'undefined') return undefined;
-	const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-	const match = document.cookie.match(new RegExp('(?:^|; )' + escaped + '=([^;]*)'));
+	const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+	const match = new RegExp('(?:^|; )' + escaped + '=([^;]*)').exec(document.cookie);
 	return match ? decodeURIComponent(match[1]) : undefined;
 }
 
@@ -38,8 +38,18 @@ function writeCookie(name: string, value: string) {
 	document.cookie = `${name}=${encodeURIComponent(value)}; max-age=${ONE_YEAR_SECONDS}; path=/; SameSite=Lax`;
 }
 
+function firstNonBlank(values: string[]): string | undefined {
+	for (const v of values) {
+		if (v && v.trim().length > 0) return v;
+	}
+	return undefined;
+}
+
 function paramOrCookie(urlParams: URLSearchParams, name: string): string | undefined {
-	const fromUrl = urlParams.get(name);
+	// Some Google Ads landing-page URLs contain the param twice (template
+	// placeholder `&gclid=` left in plus auto-tagged real value), so we must
+	// scan all occurrences and pick the first non-blank one.
+	const fromUrl = firstNonBlank(urlParams.getAll(name));
 	if (fromUrl) {
 		writeCookie(COOKIE_PREFIX + name, fromUrl);
 		return fromUrl;
@@ -53,8 +63,8 @@ export class BuildLeadAdData extends AbstractFunction {
 	): Promise<FunctionOutput> {
 		const adData: Record<string, string> = {};
 
-		if (typeof window !== 'undefined') {
-			const urlParams = new URLSearchParams(window.location.search);
+		if (globalThis.window !== undefined) {
+			const urlParams = new URLSearchParams(globalThis.window.location.search);
 
 			const gclid = paramOrCookie(urlParams, 'gclid');
 			if (gclid) adData.gclid = gclid;
