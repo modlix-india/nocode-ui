@@ -57,6 +57,48 @@ function paramOrCookie(urlParams: URLSearchParams, name: string): string | undef
 	return readCookie(COOKIE_PREFIX + name);
 }
 
+function captureGoogleClickIds(urlParams: URLSearchParams, adData: Record<string, string>) {
+	const gclid = paramOrCookie(urlParams, 'gclid');
+	if (gclid) adData.gclid = gclid;
+	const wbraid = paramOrCookie(urlParams, 'wbraid');
+	if (wbraid) adData.wbraid = wbraid;
+	const gbraid = paramOrCookie(urlParams, 'gbraid');
+	if (gbraid) adData.gbraid = gbraid;
+}
+
+function captureMetaIdentifiers(urlParams: URLSearchParams, adData: Record<string, string>) {
+	const fbclid = paramOrCookie(urlParams, 'fbclid');
+	const fbp = readCookie('_fbp');
+	if (fbp) adData.fbp = fbp;
+	const browserFbc = readCookie('_fbc');
+	if (browserFbc) {
+		adData.fbc = browserFbc;
+	} else if (fbclid) {
+		// Meta CAPI user_data.fbc format: fb.1.<timestamp>.<fbclid>
+		adData.fbc = `fb.1.${Date.now()}.${fbclid}`;
+	}
+}
+
+// Captures every utm_* query param (plus Google's gad_* family) so the full
+// marketing context lands in adData. Persists to first-party cookies the same
+// way click identifiers do, so a form opened later — or on a child page without
+// the UTM tail — still sees them.
+function captureMarketingParams(urlParams: URLSearchParams, adData: Record<string, string>) {
+	for (const [key, value] of urlParams.entries()) {
+		if (!value || value.trim().length === 0) continue;
+		if (!key.startsWith('utm_') && !key.startsWith('gad_')) continue;
+		const persisted = paramOrCookie(urlParams, key);
+		if (persisted) adData[key] = persisted;
+	}
+}
+
+// Best-effort referrer + landing page — useful for attribution debugging on
+// Meta/Google CAPI side and harmless when absent.
+function captureBrowsingContext(adData: Record<string, string>) {
+	if (globalThis.document?.referrer) adData.referrer = globalThis.document.referrer;
+	if (globalThis.window?.location?.href) adData.landingPage = globalThis.window.location.href;
+}
+
 export class BuildLeadAdData extends AbstractFunction {
 	protected async internalExecute(
 		_context: FunctionExecutionParameters,
@@ -65,28 +107,10 @@ export class BuildLeadAdData extends AbstractFunction {
 
 		if (globalThis.window !== undefined) {
 			const urlParams = new URLSearchParams(globalThis.window.location.search);
-
-			const gclid = paramOrCookie(urlParams, 'gclid');
-			if (gclid) adData.gclid = gclid;
-
-			const wbraid = paramOrCookie(urlParams, 'wbraid');
-			if (wbraid) adData.wbraid = wbraid;
-
-			const gbraid = paramOrCookie(urlParams, 'gbraid');
-			if (gbraid) adData.gbraid = gbraid;
-
-			const fbclid = paramOrCookie(urlParams, 'fbclid');
-
-			const fbp = readCookie('_fbp');
-			if (fbp) adData.fbp = fbp;
-
-			const browserFbc = readCookie('_fbc');
-			if (browserFbc) {
-				adData.fbc = browserFbc;
-			} else if (fbclid) {
-				// Meta CAPI user_data.fbc format: fb.1.<timestamp>.<fbclid>
-				adData.fbc = `fb.1.${Date.now()}.${fbclid}`;
-			}
+			captureGoogleClickIds(urlParams, adData);
+			captureMetaIdentifiers(urlParams, adData);
+			captureMarketingParams(urlParams, adData);
+			captureBrowsingContext(adData);
 		}
 
 		return new FunctionOutput([EventResult.outputOf(new Map([['adData', adData]]))]);
