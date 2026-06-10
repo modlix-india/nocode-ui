@@ -21,3 +21,4 @@ export * from './OpenWindow';
 export * from './TrackAnalyticsEvent';
 export * from './QueryAnalytics';
 export * from './InitiateSocialLogin';
+export * from './BuildLeadAdData';

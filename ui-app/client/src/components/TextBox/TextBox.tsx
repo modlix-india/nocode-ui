@@ -51,6 +51,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 	const {
 		properties: {
 			updateStoreImmediately: upStoreImm,
+			debounceTime,
 			removeKeyWhenEmpty,
 			valueType,
 			emptyValue,
@@ -222,6 +223,15 @@ function TextBox(props: Readonly<ComponentProps>) {
 
 	const updateStoreImmediately = editOn ? false : upStoreImm || autoComplete === 'on';
 
+	const debounceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+	const pendingDebouncedValueRef = React.useRef<any>(undefined);
+
+	React.useEffect(() => {
+		return () => {
+			if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+		};
+	}, []);
+
 	const callChangeEvent = useCallback(
 		(force: boolean = false) => {
 			if (!changeEvent || (editOn && !force)) return;
@@ -236,6 +246,17 @@ function TextBox(props: Readonly<ComponentProps>) {
 		},
 		[changeEvent, editOn],
 	);
+
+	const flushDebouncedChange = useCallback(() => {
+		if (debounceTimerRef.current) {
+			clearTimeout(debounceTimerRef.current);
+			debounceTimerRef.current = null;
+		}
+		if (pendingDebouncedValueRef.current === undefined || !bindingPathPath) return;
+		setData(bindingPathPath, pendingDebouncedValueRef.current, context?.pageName);
+		pendingDebouncedValueRef.current = undefined;
+		callChangeEvent();
+	}, [bindingPathPath, context?.pageName, callChangeEvent]);
 
 	const callBlurEvent = useCallback(
 		(force: boolean = false) => {
@@ -299,6 +320,8 @@ function TextBox(props: Readonly<ComponentProps>) {
 				setData(bindingPathPath, temp, context?.pageName);
 			}
 			callChangeEvent();
+		} else if (updateStoreImmediately && debounceTimerRef.current) {
+			flushDebouncedChange();
 		}
 		callBlurEvent();
 		setFocus(false);
@@ -311,14 +334,29 @@ function TextBox(props: Readonly<ComponentProps>) {
 
 	const handleTextChange = (text: string) => {
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
+			if (debounceTimerRef.current) {
+				clearTimeout(debounceTimerRef.current);
+				debounceTimerRef.current = null;
+				pendingDebouncedValueRef.current = undefined;
+			}
 			setData(bindingPathPath, undefined, context?.pageName, true);
 			callChangeEvent();
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
 		if (updateStoreImmediately && bindingPathPath) {
-			setData(bindingPathPath, temp, context?.pageName);
-			callChangeEvent();
+			if (debounceTime && debounceTime > 0) {
+				setValue(text);
+				pendingDebouncedValueRef.current = temp;
+				if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+				debounceTimerRef.current = setTimeout(() => {
+					debounceTimerRef.current = null;
+					flushDebouncedChange();
+				}, debounceTime);
+			} else {
+				setData(bindingPathPath, temp, context?.pageName);
+				callChangeEvent();
+			}
 		}
 		if (!updateStoreImmediately) setValue(text);
 	};
@@ -405,6 +443,8 @@ function TextBox(props: Readonly<ComponentProps>) {
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;
 		if (!updateStoreImmediately) {
 			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);
+		} else if (debounceTimerRef.current) {
+			flushDebouncedChange();
 		}
 		await runEvent(
 			clickEvent,

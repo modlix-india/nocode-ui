@@ -44,6 +44,10 @@ import {
 	propertiesDefinition as tableDynamicColumnPropertiesDefinition,
 	stylePropertiesDefinition as tableDynamicColumnStylePropertiesDefinition,
 } from './TableDynamicColumn/tableDynamicColumnProperties';
+import {
+	propertiesDefinition as tableDynamicGroupedColumnPropertiesDefinition,
+	stylePropertiesDefinition as tableDynamicGroupedColumnStylePropertiesDefinition,
+} from './TableDynamicGroupedColumn/tableDynamicGroupedColumnProperties';
 import TableEmptyGridStyle from './TableEmptyGrid/TableEmptyGridStyle';
 import {
 	propertiesDefinition as tableEmptyGridPropertiesDefinintion,
@@ -222,6 +226,7 @@ export const TableColumns: Component = {
 	allowedChildrenType: new Map([
 		['TableColumn', -1],
 		['TableDynamicColumn', -1],
+		['TableDynamicGroupedColumn', -1],
 		['TableRow', 1],
 	]),
 	parentType: 'Table',
@@ -242,6 +247,25 @@ export const TableDynamicColumn: Component = {
 	styleComponent: () => <></>,
 	styleDefaults: tableColumnStyleDefaults,
 	parentType: 'TableColumns',
+	stylePseudoStates: ['hover'],
+	stylePropertiesForTheme: [],
+};
+
+export const TableDynamicGroupedColumn: Component = {
+	name: 'TableDynamicGroupedColumn',
+	displayName: 'Table Dynamic Grouped Column',
+	description:
+		'Dynamic column group driven by a tree binding (e.g. parent stage → substages). Renders multi-row grouped headers with one or more sub-cells per leaf.',
+	component: () => <></>,
+	styleProperties: tableDynamicGroupedColumnStylePropertiesDefinition,
+	propertyValidation: (): Array<string> => [],
+	properties: tableDynamicGroupedColumnPropertiesDefinition,
+	styleComponent: () => <></>,
+	styleDefaults: tableColumnStyleDefaults,
+	parentType: 'TableColumns',
+	bindingPaths: {
+		bindingPath: { name: 'Group Tree' },
+	},
 	stylePseudoStates: ['hover'],
 	stylePropertiesForTheme: [],
 };
