@@ -24,14 +24,21 @@ export function CraftPanel({
 	styleProperties,
 }: Readonly<CraftPanelProps>) {
 	const bodyRef = useRef<HTMLDivElement>(null);
+	const prevBlockCount = useRef(0);
 
-	// Auto-scroll to bottom as content streams in
+	// Auto-scroll on content change. Two modes:
+	//   - text streaming (block count unchanged): only scroll if user was
+	//     already at the bottom — respects their position if they scrolled up.
+	//   - new block appended (block count grew): always scroll, so emitted
+	//     content (e.g. asset receipts appended after summary) is visible.
 	useEffect(() => {
 		const el = bodyRef.current;
 		if (!el) return;
-		// Only auto-scroll if user is near the bottom (within 100px)
+		const blocksGrew = craft.blocks.length > prevBlockCount.current;
+		prevBlockCount.current = craft.blocks.length;
+
 		const isNearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-		if (isNearBottom) {
+		if (blocksGrew || isNearBottom) {
 			el.scrollTop = el.scrollHeight;
 		}
 	}, [craft.blocks]);

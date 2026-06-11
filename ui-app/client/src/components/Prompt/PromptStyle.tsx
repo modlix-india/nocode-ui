@@ -899,12 +899,18 @@ export default function PromptStyle({
 			border-radius: 6px;
 		}
 
-		${PREFIX} ._agentToolHeader._clickable {
-			cursor: pointer;
+		${PREFIX} ._agentToolDot {
+			width: 6px;
+			height: 6px;
+			border-radius: 50%;
+			background: #1a1a1a;
+			flex-shrink: 0;
+			animation: _agentToolPulse 1.4s ease-in-out infinite;
 		}
 
-		${PREFIX} ._agentToolHeader._clickable:hover {
-			background: #f4f4f4;
+		@keyframes _agentToolPulse {
+			0%, 100% { opacity: 0.35; }
+			50% { opacity: 1; }
 		}
 
 		${PREFIX} ._agentToolLabel {
@@ -919,16 +925,38 @@ export default function PromptStyle({
 
 		${PREFIX} ._agentToolSummary {
 			color: #9b9b9b;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
 			flex: 1;
 			min-width: 0;
 			font-size: 12px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._agentToolBody {
+			max-height: 200px;
+			overflow-y: auto;
+			white-space: pre-wrap;
+			word-break: break-word;
+			padding: 8px 10px;
+			margin: 4px 0 4px 22px;
+			background: #f8f8f8;
+			border-radius: 6px;
+			font-size: 12px;
+			color: #555;
+			line-height: 1.6;
+		}
+
+		${PREFIX} ._agentToolHeader._clickable {
+			cursor: pointer;
+		}
+
+		${PREFIX} ._agentToolHeader._clickable:hover ._agentToolName {
+			color: #000;
 		}
 
 		${PREFIX} ._agentToolToggle {
-			font-size: 9px;
+			font-size: 10px;
 			color: #9b9b9b;
 			flex-shrink: 0;
 			margin-left: auto;
@@ -1363,6 +1391,123 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftRow > * {
 			flex: 1;
+		}
+
+		/* Empty placeholders for receipt blocks (assets_label / assets_row)
+		   are emitted by the scrape pipeline so the layout order is fixed
+		   from the first paint; we hide them until the agent fills them in. */
+		${PREFIX} ._craftRow:empty {
+			display: none;
+		}
+		${PREFIX} ._craftText:empty {
+			display: none;
+		}
+
+		/* Collapsible block — generic single-line summary + toggleable body.
+		   Any agent can use it to surface optional detail without bloating
+		   the craft canvas. */
+		${PREFIX} ._craftCollapsible {
+			border-top: 1px solid #eee;
+			border-bottom: 1px solid #eee;
+			margin: 4px 0;
+		}
+
+		${PREFIX} ._craftCollapsibleHeader {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 10px 2px;
+			background: none;
+			border: none;
+			cursor: pointer;
+			font-size: 13px;
+			color: #555;
+			text-align: left;
+		}
+
+		${PREFIX} ._craftCollapsibleHeader:hover {
+			color: #1a1a1a;
+		}
+
+		${PREFIX} ._craftCollapsibleGlyph {
+			font-size: 14px;
+			color: #888;
+			line-height: 1;
+		}
+
+		${PREFIX} ._craftCollapsibleSummary {
+			flex: 1;
+		}
+
+		${PREFIX} ._craftCollapsibleChevron {
+			font-size: 16px;
+			color: #999;
+			line-height: 1;
+			transition: transform 0.15s ease;
+			display: inline-block;
+		}
+
+		${PREFIX} ._craftCollapsibleChevron._open {
+			transform: rotate(90deg);
+		}
+
+		${PREFIX} ._craftCollapsibleBody {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			padding: 4px 2px 12px;
+		}
+
+		/* Thumbnail variant of image block — fixed 48px square, contain (not
+		   cover) so logos with transparent backgrounds render correctly.
+		   Explicit flex override so a parent _craftRow flex-1 rule does
+		   not stretch these. */
+		${PREFIX} ._craftImage._thumbnail {
+			display: inline-block;
+			width: 48px;
+			height: 48px;
+			flex: 0 0 48px;
+		}
+
+		${PREFIX} ._craftImage._thumbnail a {
+			display: block;
+			width: 100%;
+			height: 100%;
+			border: 1px solid #e5e5e5;
+			border-radius: 8px;
+			overflow: hidden;
+			background: #fafafa;
+		}
+
+		${PREFIX} ._craftImage._thumbnail img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			aspect-ratio: auto;
+			border-radius: 0;
+			background: transparent;
+		}
+
+		/* Dark variant of the thumbnail tile — for white/transparent content
+		   that would otherwise vanish on a light background. */
+		${PREFIX} ._craftImage._thumbnail._dark a {
+			background: #1a1a1a;
+			border-color: #333;
+		}
+
+		/* Light variant — explicit (matches default) so dark-on-transparent
+		   content reads. Same as default but documented for symmetry with
+		   the dark hint. */
+		${PREFIX} ._craftImage._thumbnail._light a {
+			background: #fafafa;
+			border-color: #e5e5e5;
+		}
+
+		/* Cover variant — for photo-style images that should fill the tile
+		   without letterboxing. Use for creative/hero thumbnails. */
+		${PREFIX} ._craftImage._thumbnail._cover img {
+			object-fit: cover;
 		}
 
 		/* ─── Craft Panel responsive ─── */

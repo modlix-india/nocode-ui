@@ -60,8 +60,9 @@ function AgentRow({
 	const isRunning = sp.status === 'running';
 	const [expanded, setExpanded] = useState(isRunning);
 	const [userToggled, setUserToggled] = useState(false);
-	// Accordion: only one tool expanded at a time. null = all collapsed.
-	const [expandedToolId, setExpandedToolId] = useState<string | null>(null);
+	// Tool rows that have been clicked open to view the full summary. Running
+	// rows are never in this set — progress is ephemeral and shouldn't expand.
+	const [openSummaries, setOpenSummaries] = useState<Set<string>>(new Set());
 
 	useEffect(() => {
 		if (userToggled) return;
@@ -72,29 +73,35 @@ function AgentRow({
 		}
 	}, [isRunning, userToggled]);
 
-	// Auto-expand the latest running tool; close when next one starts.
-	useEffect(() => {
-		if (!isRunning) return;
-		const lastRunning = [...sp.toolCalls].reverse().find(tc => tc.isRunning);
-		if (lastRunning) setExpandedToolId(lastRunning.id);
-	}, [isRunning, sp.toolCalls]);
-
 	const toggle = useCallback(() => {
 		setUserToggled(true);
 		setExpanded(prev => !prev);
 	}, []);
 
-	const toggleTool = useCallback((toolId: string) => {
-		setExpandedToolId(prev => prev === toolId ? null : toolId);
+	const toggleSummary = useCallback((id: string) => {
+		setOpenSummaries(prev => {
+			const next = new Set(prev);
+			if (next.has(id)) next.delete(id);
+			else next.add(id);
+			return next;
+		});
 	}, []);
 
 	const elapsed = elapsedSeconds(sp, now);
 	const hasBody = sp.toolCalls.length > 0 || !!sp.statusText;
 
-	// Right-side meta: summary when done, statusText when processing, elapsed always
+	// Right-side meta: summary when done, statusText when processing, elapsed always.
+	// Defensive cap (rightMeta-overflow fix · 2026-05-27): the backend contract is
+	// "summary = a span outcome users can't derive elsewhere" (see SummaryAgent's
+	// _emit_finished docstring), but a misbehaving caller can still ship a long
+	// string. Truncate to 40 chars with ellipsis so the row layout can't break.
+	const SUMMARY_CAP = 40;
 	let rightMeta = `${elapsed}s`;
 	if (sp.status !== 'running' && sp.summary) {
-		rightMeta = `${sp.summary}  ${elapsed}s`;
+		const s = sp.summary.length > SUMMARY_CAP
+			? sp.summary.slice(0, SUMMARY_CAP - 1) + '…'
+			: sp.summary;
+		rightMeta = `${s}  ${elapsed}s`;
 	}
 
 	return (
@@ -117,57 +124,55 @@ function AgentRow({
 			{expanded && hasBody && (
 				<div className="_agentRowBody">
 					{sp.toolCalls.map(tc => {
-						const isToolOpen = expandedToolId === tc.id;
 						const label = tc.displayName || tc.toolName;
-						const updateCount = tc.updates?.length ?? 0;
-						// Collapsed text: final summary if done, else count/last-update while running
-						let collapsedText = tc.summary || '';
-						if (!collapsedText && updateCount > 1) {
-							collapsedText = `${updateCount} operations`;
-						} else if (!collapsedText && updateCount === 1) {
-							collapsedText = tc.updates![0];
-						}
-						const hasDetail = !!collapsedText || updateCount > 0;
+						const updates = tc.updates ?? [];
+						const latest = updates.length ? updates[updates.length - 1] : '';
+						const inlineText = tc.isRunning ? latest : (tc.summary || latest);
+						const canExpand =
+							!tc.isRunning &&
+							!!tc.summary &&
+							(tc.summary.includes('\n') || tc.summary.length > 80);
+						const isOpen = openSummaries.has(tc.id);
+						const rowClasses = [
+							'_agentToolRow',
+							tc.isRunning && '_running',
+							canExpand && '_expandable',
+							isOpen && '_open',
+						].filter(Boolean).join(' ');
+						const headerInner = (
+							<>
+								{tc.isRunning && <span className="_agentToolDot" />}
+								<span className="_agentToolLabel">
+									Tool(<span className="_agentToolName">{label}</span>)
+								</span>
+								{/* Inline peek only when closed; expanded body lives below. */}
+								{!isOpen && inlineText && (
+									<span className="_agentToolSummary">{inlineText}</span>
+								)}
+								{canExpand && (
+									<i
+										className={`_agentToolToggle ${isOpen ? collapseIcon : expandIcon}`}
+										aria-hidden="true"
+									/>
+								)}
+							</>
+						);
 						return (
-							<div key={tc.id} className="_agentToolRow">
-								{hasDetail ? (
+							<div key={tc.id} className={rowClasses}>
+								{canExpand ? (
 									<button
 										type="button"
 										className="_agentToolHeader _clickable"
-										onClick={() => toggleTool(tc.id)}
+										onClick={() => toggleSummary(tc.id)}
+										aria-expanded={isOpen}
 									>
-										<span className="_agentToolLabel">
-											Tool(<span className="_agentToolName">{label}</span>)
-										</span>
-										{!isToolOpen && collapsedText && (
-											<span className="_agentToolSummary">
-												{collapsedText.length > 80
-													? collapsedText.slice(0, 80) + '...'
-													: collapsedText}
-											</span>
-										)}
-										<i className={`_agentToolToggle ${isToolOpen ? collapseIcon : expandIcon}`} />
+										{headerInner}
 									</button>
 								) : (
-									<div className="_agentToolHeader">
-										<span className="_agentToolLabel">
-											Tool(<span className="_agentToolName">{label}</span>)
-										</span>
-									</div>
+									<div className="_agentToolHeader">{headerInner}</div>
 								)}
-								{isToolOpen && (
-									<div className="_agentToolExpanded">
-										{tc.updates?.length ? (
-											<div className="_agentToolUpdates">
-												{tc.updates.map((u, i) => (
-													<div key={i} className="_agentToolUpdateLine">{u}</div>
-												))}
-											</div>
-										) : null}
-										{tc.summary && tc.summary !== tc.updates?.[tc.updates.length - 1] && (
-											<div className="_agentToolDetail">{tc.summary}</div>
-										)}
-									</div>
+								{canExpand && isOpen && (
+									<div className="_agentToolBody">{inlineText}</div>
 								)}
 							</div>
 						);

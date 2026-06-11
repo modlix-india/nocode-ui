@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 
@@ -54,11 +54,34 @@ function KeyValueBlock({ items }: { items: Array<{ key: string; value: string }>
 	);
 }
 
-function ImageBlock({ url, caption }: { url: string; caption?: string }) {
+function ImageBlock({
+	url,
+	thumb_url,
+	caption,
+	size,
+	background,
+	fit,
+}: {
+	url: string;
+	thumb_url?: string;
+	caption?: string;
+	size?: 'thumbnail';
+	background?: 'dark' | 'light';
+	fit?: 'cover' | 'contain';
+}) {
+	const classes = ['_craftImage'];
+	if (size === 'thumbnail') classes.push('_thumbnail');
+	if (background === 'dark') classes.push('_dark');
+	if (background === 'light') classes.push('_light');
+	if (fit === 'cover') classes.push('_cover');
+	// Render the thumbnail inline (bandwidth-friendly for the 48px tile) but
+	// link to the full-resolution URL on click. When no thumb is supplied the
+	// inline image falls back to the full URL.
+	const inlineSrc = thumb_url || url;
 	return (
-		<div className="_craftImage">
+		<div className={classes.join(' ')}>
 			<a href={url} target="_blank" rel="noopener noreferrer" title="Click to view full size">
-				<img src={url} alt={caption ?? ''} loading="lazy" />
+				<img src={inlineSrc} alt={caption ?? ''} loading="lazy" />
 			</a>
 			{caption && <span className="_craftImageCaption">{caption}</span>}
 		</div>
@@ -157,6 +180,54 @@ function RowBlock({
 	);
 }
 
+function CollapsibleBlock({
+	summary,
+	glyph,
+	children = [],
+	default_expanded,
+	styleProperties,
+}: {
+	summary: string;
+	glyph?: string;
+	children?: Block[];
+	default_expanded?: boolean;
+	styleProperties?: any;
+}) {
+	const [expanded, setExpanded] = useState(Boolean(default_expanded));
+	if (!summary && (!children || children.length === 0)) return null;
+
+	return (
+		<div className="_craftCollapsible">
+			<button
+				type="button"
+				className="_craftCollapsibleHeader"
+				onClick={() => setExpanded(prev => !prev)}
+				aria-expanded={expanded}
+			>
+				{glyph && <span className="_craftCollapsibleGlyph">{glyph}</span>}
+				<span className="_craftCollapsibleSummary">{summary}</span>
+				<span
+					className={`_craftCollapsibleChevron ${expanded ? '_open' : ''}`}
+					aria-hidden="true"
+				>
+					›
+				</span>
+			</button>
+			{expanded && (
+				<div className="_craftCollapsibleBody">
+					{children.map((block, i) => (
+						<CraftBlockRenderer
+							key={i}
+							block={block}
+							styleProperties={styleProperties}
+						/>
+					))}
+				</div>
+			)}
+		</div>
+	);
+}
+
 const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	heading: HeadingBlock,
 	text: TextBlock,
@@ -169,6 +240,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	callout: CalloutBlock,
 	list: ListBlock,
 	row: RowBlock,
+	collapsible: CollapsibleBlock,
 };
 
 function CraftBlockRenderer({
