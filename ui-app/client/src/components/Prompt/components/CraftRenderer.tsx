@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 
@@ -12,7 +12,9 @@ function HeadingBlock({ text, level = 1 }: { text: string; level?: number }) {
 	return <Tag className="_craftHeading">{text}</Tag>;
 }
 
+// empty block = unfilled placeholder (seeded for layout, filled later by id) — don't paint
 function TextBlock({ content }: { content: string }) {
+	if (!content) return null;
 	return <p className="_craftText">{content}</p>;
 }
 
@@ -54,12 +56,43 @@ function KeyValueBlock({ items }: { items: Array<{ key: string; value: string }>
 	);
 }
 
-function ImageBlock({ url, caption }: { url: string; caption?: string }) {
+function ImageBlock({
+	url,
+	thumb_url,
+	caption,
+	size,
+	background,
+	fit,
+}: {
+	url: string;
+	thumb_url?: string;
+	caption?: string;
+	size?: 'thumbnail';
+	background?: 'dark' | 'light';
+	fit?: 'cover' | 'contain';
+}) {
+	if (!url && !thumb_url) return null; // placeholder, no image yet
+	const classes = ['_craftImage'];
+	if (size === 'thumbnail') classes.push('_thumbnail');
+	if (background === 'dark') classes.push('_dark');
+	if (fit === 'cover') classes.push('_cover');
+	// show thumb inline, link to full-res; no url → no link
+	const inlineSrc = thumb_url || url;
+	const img = <img src={inlineSrc} alt={caption ?? ''} loading="lazy" />;
 	return (
-		<div className="_craftImage">
-			<a href={url} target="_blank" rel="noopener noreferrer" title="Click to view full size">
-				<img src={url} alt={caption ?? ''} loading="lazy" />
-			</a>
+		<div className={classes.join(' ')}>
+			{url ? (
+				<a
+					href={url}
+					target="_blank"
+					rel="noopener noreferrer"
+					title="Click to view full size"
+				>
+					{img}
+				</a>
+			) : (
+				img
+			)}
 			{caption && <span className="_craftImageCaption">{caption}</span>}
 		</div>
 	);
@@ -142,17 +175,70 @@ function ListBlock({ items, ordered }: { items: string[]; ordered?: boolean }) {
 }
 
 function RowBlock({
-	children,
+	children = [],
 	styleProperties,
 }: {
-	children: Block[];
+	children?: Block[];
 	styleProperties?: any;
 }) {
+	if (!children.length) return null;
 	return (
 		<div className="_craftRow">
 			{children.map((block, i) => (
-				<CraftBlockRenderer key={i} block={block} styleProperties={styleProperties} />
+				<CraftBlockRenderer
+					key={(block as any).id ?? i}
+					block={block}
+					styleProperties={styleProperties}
+				/>
 			))}
+		</div>
+	);
+}
+
+function CollapsibleBlock({
+	summary,
+	glyph,
+	children = [],
+	default_expanded,
+	styleProperties,
+}: {
+	summary: string;
+	glyph?: string;
+	children?: Block[];
+	default_expanded?: boolean;
+	styleProperties?: any;
+}) {
+	const [expanded, setExpanded] = useState(Boolean(default_expanded));
+	if (!summary && (!children || children.length === 0)) return null;
+
+	return (
+		<div className="_craftCollapsible">
+			<button
+				type="button"
+				className="_craftCollapsibleHeader"
+				onClick={() => setExpanded(prev => !prev)}
+				aria-expanded={expanded}
+			>
+				{glyph && <span className="_craftCollapsibleGlyph">{glyph}</span>}
+				<span className="_craftCollapsibleSummary">{summary}</span>
+				<span
+					className={`_craftCollapsibleChevron ${expanded ? '_open' : ''}`}
+					aria-hidden="true"
+				>
+					›
+				</span>
+			</button>
+			{expanded && (
+				<div className="_craftCollapsibleBody">
+					{children.map((block, i) => (
+						<CraftBlockRenderer
+							key={(block as any).id ?? i}
+							block={block}
+							styleProperties={styleProperties}
+						/>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }
@@ -169,6 +255,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	callout: CalloutBlock,
 	list: ListBlock,
 	row: RowBlock,
+	collapsible: CollapsibleBlock,
 };
 
 function CraftBlockRenderer({
@@ -197,7 +284,7 @@ export function CraftRenderer({
 			<SubHelperComponent definition={definition} subComponentName="craftContent" />
 			{blocks.map((block, i) => (
 				<CraftBlockRenderer
-					key={i}
+					key={(block as any).id ?? i}
 					block={block}
 					styleProperties={styleProperties}
 				/>
