@@ -1259,6 +1259,9 @@ export default function PromptStyle({
 			margin: 0;
 			font-size: 14px;
 			line-height: 1.6;
+			/* flush right edge — streaming rag doesn't dance */
+			text-align: justify;
+			hyphens: auto;
 		}
 
 		${PREFIX} ._craftBadge {
