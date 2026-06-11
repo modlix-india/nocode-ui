@@ -1944,10 +1944,18 @@ export default function PromptStyle({
 			margin-bottom: 2px;
 		}
 		
-		/* Scroll to bottom button */
+		/* Scroll to bottom button anchor — sits between messages and input,
+		   zero height so it doesn't affect layout. Button positioned relative to this. */
+		${PREFIX} ._scrollToBottomAnchor {
+			position: relative;
+			height: 0;
+			z-index: 10;
+			flex-shrink: 0;
+		}
+
 		${PREFIX} ._scrollToBottom {
 			position: absolute;
-			bottom: 100px;
+			bottom: 12px;
 			left: 50%;
 			transform: translateX(-50%) translateY(0);
 			width: 34px;
@@ -1963,7 +1971,6 @@ export default function PromptStyle({
 			transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s;
 			opacity: 1;
 			color: #6b6b6b;
-			z-index: 10;
 		}
 
 		${PREFIX} ._scrollToBottom._hidden {
@@ -1976,12 +1983,6 @@ export default function PromptStyle({
 			background: #f4f4f4;
 			color: #1a1a1a;
 			transform: translateX(-50%) scale(1.05);
-		}
-		
-		@media (max-width: 768px) {
-			${PREFIX} ._scrollToBottom {
-				bottom: 90px;
-			}
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 

@@ -856,10 +856,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [draftText, setDraftText] = useState('');
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	const abortControllerRef = useRef<AbortController | null>(null);
 	const shouldAutoScrollRef = useRef(true);
+	const prevMessageCountRef = useRef(0);
+	const lastTouchYRef = useRef(0);
 	const wasNewSessionRef = useRef(false);
 	const isNavigatingRef = useRef(false);
 
@@ -1073,15 +1074,22 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		})();
 	}, [showModelSelector, agentEndpoint, getAuthHeaders]);
 
+	// handleScroll: only re-sticks auto-scroll when at bottom.
+	// Never un-sticks here — wheel/touch do that (human-only, so programmatic
+	// scroll can't trip it). Scrollbar-drag fires only 'scroll', which we don't
+	// trust, so it won't un-stick — accepted tradeoff to keep the race impossible.
 	const handleScroll = useCallback(() => {
 		const container = messagesContainerRef.current;
 		if (!container) return;
 
-		// Check if user is within threshold of the bottom
 		const atBottom =
 			container.scrollHeight - container.scrollTop <=
 			container.clientHeight + SCROLL_BOTTOM_THRESHOLD_PX;
-		shouldAutoScrollRef.current = atBottom;
+
+		// Re-engage auto-scroll when user scrolls back to bottom
+		if (atBottom) {
+			shouldAutoScrollRef.current = true;
+		}
 		setIsAtBottom(prev => (prev === atBottom ? prev : atBottom));
 	}, []);
 
@@ -1093,21 +1101,59 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		isNavigatingRef.current = false;
 		setIsAtBottom(true);
 
-		// Force absolute bottom immediately
-		container.scrollTop = container.scrollHeight;
+		// Smooth glide — deliberate button click, so animate (streaming snaps).
+		container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
 	}, []);
 
-	// Auto-scroll to bottom on new messages (but not when loading earlier)
+	// Auto-scroll to bottom on new messages (but not when loading earlier).
+	// Uses container.scrollTo instead of scrollIntoView to avoid scrolling
+	// ancestor elements when the chat is embedded in a scrollable page.
 	useEffect(() => {
+		const container = messagesContainerRef.current;
+		if (!container) return;
+
+		const isNewMessage = messages.length !== prevMessageCountRef.current;
+		prevMessageCountRef.current = messages.length;
+
 		if (!shouldAutoScrollRef.current) return;
+
+		// Instant scroll while the same message streams (keeps up with fast models).
+		// Smooth scroll only when a genuinely new message appears.
+		const behavior: ScrollBehavior = isNavigatingRef.current
+			? 'auto'
+			: isNewMessage
+				? 'smooth'
+				: 'auto';
+
 		requestAnimationFrame(() => {
-			if (shouldAutoScrollRef.current) {
-				const behavior = isNavigatingRef.current ? 'auto' : 'smooth';
-				messagesEndRef.current?.scrollIntoView({ behavior, block: 'end' });
+			if (shouldAutoScrollRef.current && container) {
+				container.scrollTo({ top: container.scrollHeight, behavior });
 				isNavigatingRef.current = false;
 			}
 		});
 	}, [messages]);
+
+	// Only human-initiated wheel/touch un-stick auto-scroll — programmatic
+	// scrollTo never fires them, so the smooth-scroll race can't happen.
+	const handleWheel = useCallback((e: React.WheelEvent) => {
+		// Only upward scroll un-sticks (deltaY < 0 = viewing older content)
+		if (e.deltaY < 0) {
+			shouldAutoScrollRef.current = false;
+		}
+	}, []);
+
+	const handleTouchStart = useCallback((e: React.TouchEvent) => {
+		lastTouchYRef.current = e.touches[0]?.clientY ?? 0;
+	}, []);
+
+	const handleTouchMove = useCallback((e: React.TouchEvent) => {
+		const currentY = e.touches[0]?.clientY ?? 0;
+		// Finger moves down on screen → content scrolls up → viewing older content
+		if (currentY > lastTouchYRef.current) {
+			shouldAutoScrollRef.current = false;
+		}
+		lastTouchYRef.current = currentY;
+	}, []);
 
 	// Restore draft when session changes — but NOT while streaming,
 	// because the `done` event updates sessionId and would wipe
@@ -1207,6 +1253,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			setIsStreaming(false);
 			shouldAutoScrollRef.current = true;
 			isNavigatingRef.current = true;
+			setIsAtBottom(true);
 
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
@@ -1785,6 +1832,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					className="_promptMessages"
 					ref={messagesContainerRef}
 					onScroll={handleScroll}
+					onWheel={handleWheel}
+					onTouchStart={handleTouchStart}
+					onTouchMove={handleTouchMove}
 					style={styleProperties.messagesContainer ?? {}}
 				>
 					<SubHelperComponent
@@ -1984,7 +2034,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								collapseIcon={collapseIcon}
 							/>
 						)}
-						<div ref={messagesEndRef} />
 					</div>
 				</div>
 
@@ -2008,15 +2057,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						})}
 					</div>
 				)}
-				<button
-					className={`_scrollToBottom${isAtBottom ? ' _hidden' : ''}`}
-					onClick={handleScrollToBottom}
-					title="Scroll to bottom"
-					type="button"
-					aria-label="Scroll to bottom"
-				>
-					<i className={scrollToBottomIcon} aria-hidden="true" />
-				</button>
+				<div className="_scrollToBottomAnchor">
+					<button
+						className={`_scrollToBottom${isAtBottom ? ' _hidden' : ''}`}
+						onClick={handleScrollToBottom}
+						title="Scroll to bottom"
+						type="button"
+						aria-label="Scroll to bottom"
+					>
+						<i className={scrollToBottomIcon} aria-hidden="true" />
+					</button>
+				</div>
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}
