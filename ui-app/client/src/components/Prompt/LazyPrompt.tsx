@@ -290,67 +290,38 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			if (!ctx.showToolCalls) break;
 			const tuId = data.tool_use_id ?? '';
 			const msg = data.message ?? '';
-			// v5 (2026-05-25): 3-priority routing.
-			//   P1 — tool_call.id match: this update is for a known tool. Most common path.
-			//   P2 — span.agentToolUseId match: update belongs to a sub-agent's own tuid
-			//        (e.g. AssetPicker's "Picking the best images…"). Surfaces as the agent's
-			//        live status text on its own row — fixes v4's misattribution bug.
-			//   P3 — legacy parentToolUseId match: pre-v5 emits where sub-agents reused
-			//        the parent scrape tool's tuid. Kept for back-compat with old backends.
-			// Counter: window.__promptRouteCounts tracks per-priority hits for telemetry.
-			const w = typeof window !== 'undefined' ? (window as any) : undefined;
-			if (w && !w.__promptRouteCounts) {
-				w.__promptRouteCounts = { p1_tool: 0, p2_agent: 0, p3_legacy: 0, dropped: 0 };
+			// spans win over the direct tool match — legacy updates carry the
+			// SPAWN tool's tuid (also a running toolCall, rendered suppressed).
+			// agent's own tuid (v5) checked before legacy spawn tuid.
+			const spanFor = (field: 'agentToolUseId' | 'parentToolUseId') => {
+				for (const [, span] of ctx.agentSpans) {
+					if (span.status === 'running' && span[field] && span[field] === tuId)
+						return span;
+				}
+				return undefined;
+			};
+			let span = spanFor('agentToolUseId');
+			if (!span) {
+				span = spanFor('parentToolUseId');
+				if (span && !(window as any).__promptLegacyRouteWarned) {
+					(window as any).__promptLegacyRouteWarned = true;
+					// eslint-disable-next-line no-console
+					console.debug(
+						'[prompt] tool_update routed via legacy parentToolUseId (pre-v5 backend)',
+					);
+				}
 			}
-			let routed = false;
-			// P1 — direct tool_call match
+			if (span) {
+				span.statusText = msg;
+				flushMessageState(ctx);
+				break;
+			}
 			const tuTc = ctx.toolCalls.get(tuId);
 			if (tuTc && tuTc.isRunning) {
 				if (!tuTc.updates) tuTc.updates = [];
 				tuTc.updates.push(msg);
-				routed = true;
-				if (w) w.__promptRouteCounts.p1_tool += 1;
 				flushMessageState(ctx);
 			}
-			// P2 — sub-agent's own tool_use_id (v5 path)
-			if (!routed) {
-				for (const [, span] of ctx.agentSpans) {
-					if (
-						span.agentToolUseId &&
-						span.agentToolUseId === tuId &&
-						span.status === 'running'
-					) {
-						span.statusText = msg;
-						routed = true;
-						if (w) w.__promptRouteCounts.p2_agent += 1;
-						flushMessageState(ctx);
-						break;
-					}
-				}
-			}
-			// P3 — legacy parentToolUseId (old backend)
-			if (!routed) {
-				for (const [, span] of ctx.agentSpans) {
-					if (
-						span.parentToolUseId &&
-						span.parentToolUseId === tuId &&
-						span.status === 'running'
-					) {
-						span.statusText = msg;
-						routed = true;
-						if (w) w.__promptRouteCounts.p3_legacy += 1;
-						// eslint-disable-next-line no-console
-						console.debug(
-							'[prompt] tool_update routed via legacy parentToolUseId — ' +
-								'expected in transition window, should trend to 0 after backend rollout.',
-							{ tuId, agentId: span.agentId, label: span.label },
-						);
-						flushMessageState(ctx);
-						break;
-					}
-				}
-			}
-			if (!routed && w) w.__promptRouteCounts.dropped += 1;
 			break;
 		}
 		case 'tool_result': {
@@ -461,49 +432,50 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					let craft: CraftData;
 
 					if (textDelta && next.has(craftId)) {
-						// Stream text into the last text block (or create one)
+						// delta goes to block_id if given, else trailing text block
 						const existing = next.get(craftId)!;
 						const blocks = [...existing.blocks];
-						// Remove callout if present (summary is starting)
-						const lastBlock = blocks[blocks.length - 1];
-						if (lastBlock?.type === 'callout') {
-							blocks.pop();
-						}
-						// Append to existing text block or create new one
-						const lastTextBlock = blocks[blocks.length - 1];
-						if (lastTextBlock?.type === 'text') {
-							blocks[blocks.length - 1] = {
-								...lastTextBlock,
-								content: lastTextBlock.content + textDelta,
+						const targetId = data.block_id;
+						const idx = targetId
+							? blocks.findIndex(b => (b as any).id === targetId)
+							: blocks.length - 1;
+						if (idx >= 0 && blocks[idx]?.type === 'text') {
+							blocks[idx] = {
+								...blocks[idx],
+								content: (blocks[idx].content ?? '') + textDelta,
 							};
 						} else {
-							blocks.push({ type: 'text', content: textDelta });
+							blocks.push({
+								...(targetId ? { id: targetId } : {}),
+								type: 'text',
+								content: textDelta,
+							});
 						}
 						craft = { ...existing, blocks };
 					} else if (isAppend && next.has(craftId)) {
-						// Append blocks. Any new block carrying an `id` that
-						// matches an existing block replaces in place — lets
-						// the backend stream incremental updates (e.g. each
-						// uploaded thumbnail) into the same row without
-						// duplicating blocks.
+						// keyed upsert: same id replaces (even within this batch), no id appends
 						const existing = next.get(craftId)!;
-						const merged = [...existing.blocks];
-						const toAppend: any[] = [];
+						const blocks = [...existing.blocks];
+						const at = new Map<string, number>();
+						blocks.forEach((b, i) => {
+							const bid = (b as any).id;
+							if (bid != null && bid !== '') at.set(String(bid), i);
+						});
 						for (const nb of newBlocks) {
-							const id = (nb as any).id;
-							if (id) {
-								const idx = merged.findIndex(b => (b as any).id === id);
-								if (idx >= 0) {
-									merged[idx] = nb;
-									continue;
-								}
+							const bid = (nb as any).id;
+							const key = bid != null && bid !== '' ? String(bid) : undefined;
+							const idx = key !== undefined ? at.get(key) : undefined;
+							if (idx !== undefined) {
+								blocks[idx] = nb;
+							} else {
+								blocks.push(nb);
+								if (key !== undefined) at.set(key, blocks.length - 1);
 							}
-							toAppend.push(nb);
 						}
 						craft = {
 							...existing,
 							title: data.title ?? existing.title,
-							blocks: [...merged, ...toAppend],
+							blocks,
 						};
 					} else {
 						// Create or replace craft
@@ -521,15 +493,16 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 
 				ctx.setActiveCraftId(craftId);
 
-				// Link craft to the assistant message (avoid duplicates)
-				ctx.setMessages(prev =>
-					prev.map(m => {
-						if (m.id !== ctx.assistantMsgId) return m;
-						const existing = m.craftIds ?? [];
-						if (existing.includes(craftId)) return m;
-						return { ...m, craftIds: [...existing, craftId] };
-					}),
-				);
+				// link craft to message; already linked → return prev, no re-render
+				ctx.setMessages(prev => {
+					const m = prev.find(x => x.id === ctx.assistantMsgId);
+					if (!m || m.craftIds?.includes(craftId)) return prev;
+					return prev.map(x =>
+						x.id !== ctx.assistantMsgId
+							? x
+							: { ...x, craftIds: [...(x.craftIds ?? []), craftId] },
+					);
+				});
 			}
 			break;
 		}

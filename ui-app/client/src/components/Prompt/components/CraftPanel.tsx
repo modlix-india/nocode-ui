@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { CraftRenderer } from './CraftRenderer';
@@ -24,38 +24,37 @@ export function CraftPanel({
 	styleProperties,
 }: Readonly<CraftPanelProps>) {
 	const bodyRef = useRef<HTMLDivElement>(null);
-	const prevBlockCount = useRef(0);
-	const craftIdRef = useRef(craft.id);
-	// stick = user at/near bottom. written only on wheel/touch (human-only
-	// events) — smooth glide fires scroll events but never these, can't unstick itself.
-	const stickToBottomRef = useRef(true);
+	const craftIdRef = useRef<string | null>(null);
+	// at bottom → follow new content; scrolled up (any way) → never yank
+	const stickRef = useRef(true);
+	// pill shown ⇔ content below; no pill = you're at the end
+	const [belowFold, setBelowFold] = useState(false);
 
-	const noteUserScroll = () => {
-		// rAF: wheel fires before scrollTop updates
-		requestAnimationFrame(() => {
-			const el = bodyRef.current;
-			if (!el) return;
-			stickToBottomRef.current = el.scrollHeight - el.scrollTop - el.clientHeight < 100;
-		});
+	const measure = () => {
+		const el = bodyRef.current;
+		if (!el) return;
+		const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 40;
+		stickRef.current = atBottom;
+		setBelowFold(!atBottom);
 	};
 
-	// scroll when: sticking · new block appended · craft switched
 	useEffect(() => {
 		const el = bodyRef.current;
 		if (!el) return;
 		const isNewCraft = craftIdRef.current !== craft.id;
 		craftIdRef.current = craft.id;
-		const blocksGrew = !isNewCraft && craft.blocks.length > prevBlockCount.current;
-		prevBlockCount.current = craft.blocks.length;
-
-		if (isNewCraft || blocksGrew || stickToBottomRef.current) {
-			const gap = el.scrollHeight - el.scrollTop - el.clientHeight;
-			// glide big jumps; snap small growth (fast deltas can't stack glides) + craft switch
-			const behavior = !isNewCraft && gap > 150 ? 'smooth' : 'auto';
-			el.scrollTo({ top: el.scrollHeight, behavior });
-			stickToBottomRef.current = true;
-		}
+		// open/switch lands at end; sticking follows new content
+		if (isNewCraft || stickRef.current) el.scrollTop = el.scrollHeight;
+		measure();
 	}, [craft.id, craft.blocks]);
+
+	const jumpToBottom = () => {
+		// stick resumes via onScroll when the glide hits bottom
+		bodyRef.current?.scrollTo({
+			top: bodyRef.current.scrollHeight,
+			behavior: 'smooth',
+		});
+	};
 
 	return (
 		<div className="_craftPanel" style={styleProperties?.craftPanel ?? {}}>
@@ -78,18 +77,23 @@ export function CraftPanel({
 					<i className="fa fa-xmark" />
 				</button>
 			</div>
-			<div
-				className="_craftPanelBody"
-				ref={bodyRef}
-				onWheel={noteUserScroll}
-				onTouchMove={noteUserScroll}
-			>
+			<div className="_craftPanelBody" ref={bodyRef} onScroll={measure}>
 				<CraftRenderer
 					blocks={craft.blocks}
 					definition={definition}
 					styleProperties={styleProperties}
 				/>
 			</div>
+			{belowFold && (
+				<button
+					type="button"
+					className="_craftJumpDown"
+					onClick={jumpToBottom}
+					title="Jump to latest"
+				>
+					<i className="fa fa-chevron-down" />
+				</button>
+			)}
 		</div>
 	);
 }

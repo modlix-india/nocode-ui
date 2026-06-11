@@ -800,6 +800,10 @@ export default function PromptStyle({
 			background: transparent;
 			border: 1.5px solid #1a1a1a;
 		}
+		${PREFIX} ._statusDot._sm {
+			width: 6px;
+			height: 6px;
+		}
 		@keyframes promptStatusDotPulse {
 			0%, 100% { opacity: 1; transform: scale(1); }
 			50%      { opacity: 0.25; transform: scale(0.75); }
@@ -899,20 +903,6 @@ export default function PromptStyle({
 			border-radius: 6px;
 		}
 
-		${PREFIX} ._agentToolDot {
-			width: 6px;
-			height: 6px;
-			border-radius: 50%;
-			background: #1a1a1a;
-			flex-shrink: 0;
-			animation: _agentToolPulse 1.4s ease-in-out infinite;
-		}
-
-		@keyframes _agentToolPulse {
-			0%, 100% { opacity: 0.35; }
-			50% { opacity: 1; }
-		}
-
 		${PREFIX} ._agentToolLabel {
 			font-size: 12px;
 			color: #8b8b8b;
@@ -933,18 +923,8 @@ export default function PromptStyle({
 			white-space: nowrap;
 		}
 
-		${PREFIX} ._agentToolBody {
-			max-height: 200px;
-			overflow-y: auto;
-			white-space: pre-wrap;
-			word-break: break-word;
-			padding: 8px 10px;
+		${PREFIX} ._agentToolRow ._agentToolDetail {
 			margin: 4px 0 4px 22px;
-			background: #f8f8f8;
-			border-radius: 6px;
-			font-size: 12px;
-			color: #555;
-			line-height: 1.6;
 		}
 
 		${PREFIX} ._agentToolHeader._clickable {
@@ -980,16 +960,6 @@ export default function PromptStyle({
 			font-size: 12px;
 			color: #9b9b9b;
 			font-style: italic;
-		}
-
-		${PREFIX} ._agentToolExpanded {
-			display: flex;
-			flex-direction: column;
-			gap: 2px;
-			padding-left: 12px;
-			margin: 2px 0 4px;
-			border-left: 1px solid #e5e5e5;
-			margin-left: 8px;
 		}
 
 		${PREFIX} ._agentToolUpdates {
@@ -1193,6 +1163,42 @@ export default function PromptStyle({
 			height: 100%;
 			background: #fff;
 			overflow: hidden;
+			position: relative;
+		}
+
+		${PREFIX} ._craftJumpDown {
+			position: absolute;
+			bottom: 16px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			background: #fff;
+			border: 1px solid #ddd;
+			color: #333;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			animation: _craftJumpIn 0.15s ease-out;
+		}
+
+		${PREFIX} ._craftJumpDown:hover {
+			background: #f5f5f5;
+		}
+
+		@keyframes _craftJumpIn {
+			from {
+				opacity: 0;
+				transform: translate(-50%, 4px);
+			}
+			to {
+				opacity: 1;
+				transform: translate(-50%, 0);
+			}
 		}
 
 		${PREFIX} ._craftPanelHeader {
@@ -1393,11 +1399,8 @@ export default function PromptStyle({
 			flex: 1;
 		}
 
-		/* hide placeholder blocks emitted empty (layout order fixed at first paint) */
-		${PREFIX} ._craftRow:empty {
-			display: none;
-		}
-		${PREFIX} ._craftText:empty {
+		/* a divider with nothing after it (section never filled) is noise */
+		${PREFIX} ._craftContent > ._craftDivider:last-child {
 			display: none;
 		}
 
@@ -1492,14 +1495,6 @@ export default function PromptStyle({
 		${PREFIX} ._craftImage._thumbnail._dark a {
 			background: #1a1a1a;
 			border-color: #333;
-		}
-
-		/* Light variant — explicit (matches default) so dark-on-transparent
-		   content reads. Same as default but documented for symmetry with
-		   the dark hint. */
-		${PREFIX} ._craftImage._thumbnail._light a {
-			background: #fafafa;
-			border-color: #e5e5e5;
 		}
 
 		/* Cover variant — for photo-style images that should fill the tile

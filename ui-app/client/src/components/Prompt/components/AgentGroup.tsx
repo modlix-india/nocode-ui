@@ -90,14 +90,15 @@ function AgentRow({
 	const elapsed = elapsedSeconds(sp, now);
 	const hasBody = sp.toolCalls.length > 0 || !!sp.statusText;
 
-	// Right-side meta: summary when done, statusText when processing, elapsed always.
-	// cap summary at 40ch — long strings break row layout
+	// right meta: summary when done (falls back to last statusText so error
+	// rows aren't blank), elapsed always. 40ch cap — long strings break layout
 	const SUMMARY_CAP = 40;
 	let rightMeta = `${elapsed}s`;
-	if (sp.status !== 'running' && sp.summary) {
-		const s = sp.summary.length > SUMMARY_CAP
-			? sp.summary.slice(0, SUMMARY_CAP - 1) + '…'
-			: sp.summary;
+	const finalText = sp.status !== 'running' ? sp.summary || sp.statusText : '';
+	if (finalText) {
+		const s = finalText.length > SUMMARY_CAP
+			? finalText.slice(0, SUMMARY_CAP - 1) + '…'
+			: finalText;
 		rightMeta = `${s}  ${elapsed}s`;
 	}
 
@@ -127,8 +128,9 @@ function AgentRow({
 						const inlineText = tc.isRunning ? latest : (tc.summary || latest);
 						const canExpand =
 							!tc.isRunning &&
-							!!tc.summary &&
-							(tc.summary.includes('\n') || tc.summary.length > 80);
+							(updates.length > 1 ||
+								(!!tc.summary &&
+									(tc.summary.includes('\n') || tc.summary.length > 80)));
 						const isOpen = openSummaries.has(tc.id);
 						const rowClasses = [
 							'_agentToolRow',
@@ -138,7 +140,7 @@ function AgentRow({
 						].filter(Boolean).join(' ');
 						const headerInner = (
 							<>
-								{tc.isRunning && <span className="_agentToolDot" />}
+								{tc.isRunning && <span className="_statusDot _running _sm" />}
 								<span className="_agentToolLabel">
 									Tool(<span className="_agentToolName">{label}</span>)
 								</span>
@@ -169,7 +171,14 @@ function AgentRow({
 									<div className="_agentToolHeader">{headerInner}</div>
 								)}
 								{canExpand && isOpen && (
-									<div className="_agentToolBody">{inlineText}</div>
+									<div className="_agentToolDetail">
+										{updates.map((u, i) => (
+											<div key={i} className="_agentToolUpdateLine">
+												{u}
+											</div>
+										))}
+										{tc.summary && <div>{tc.summary}</div>}
+									</div>
 								)}
 							</div>
 						);

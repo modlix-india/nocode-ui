@@ -12,7 +12,9 @@ function HeadingBlock({ text, level = 1 }: { text: string; level?: number }) {
 	return <Tag className="_craftHeading">{text}</Tag>;
 }
 
+// empty block = unfilled placeholder (seeded for layout, filled later by id) — don't paint
 function TextBlock({ content }: { content: string }) {
+	if (!content) return null;
 	return <p className="_craftText">{content}</p>;
 }
 
@@ -69,20 +71,28 @@ function ImageBlock({
 	background?: 'dark' | 'light';
 	fit?: 'cover' | 'contain';
 }) {
+	if (!url && !thumb_url) return null; // placeholder, no image yet
 	const classes = ['_craftImage'];
 	if (size === 'thumbnail') classes.push('_thumbnail');
 	if (background === 'dark') classes.push('_dark');
-	if (background === 'light') classes.push('_light');
 	if (fit === 'cover') classes.push('_cover');
-	// Render the thumbnail inline (bandwidth-friendly for the 48px tile) but
-	// link to the full-resolution URL on click. When no thumb is supplied the
-	// inline image falls back to the full URL.
+	// show thumb inline, link to full-res; no url → no link
 	const inlineSrc = thumb_url || url;
+	const img = <img src={inlineSrc} alt={caption ?? ''} loading="lazy" />;
 	return (
 		<div className={classes.join(' ')}>
-			<a href={url} target="_blank" rel="noopener noreferrer" title="Click to view full size">
-				<img src={inlineSrc} alt={caption ?? ''} loading="lazy" />
-			</a>
+			{url ? (
+				<a
+					href={url}
+					target="_blank"
+					rel="noopener noreferrer"
+					title="Click to view full size"
+				>
+					{img}
+				</a>
+			) : (
+				img
+			)}
 			{caption && <span className="_craftImageCaption">{caption}</span>}
 		</div>
 	);
@@ -165,16 +175,21 @@ function ListBlock({ items, ordered }: { items: string[]; ordered?: boolean }) {
 }
 
 function RowBlock({
-	children,
+	children = [],
 	styleProperties,
 }: {
-	children: Block[];
+	children?: Block[];
 	styleProperties?: any;
 }) {
+	if (!children.length) return null;
 	return (
 		<div className="_craftRow">
 			{children.map((block, i) => (
-				<CraftBlockRenderer key={i} block={block} styleProperties={styleProperties} />
+				<CraftBlockRenderer
+					key={(block as any).id ?? i}
+					block={block}
+					styleProperties={styleProperties}
+				/>
 			))}
 		</div>
 	);
@@ -217,7 +232,7 @@ function CollapsibleBlock({
 				<div className="_craftCollapsibleBody">
 					{children.map((block, i) => (
 						<CraftBlockRenderer
-							key={i}
+							key={(block as any).id ?? i}
 							block={block}
 							styleProperties={styleProperties}
 						/>
@@ -269,7 +284,7 @@ export function CraftRenderer({
 			<SubHelperComponent definition={definition} subComponentName="craftContent" />
 			{blocks.map((block, i) => (
 				<CraftBlockRenderer
-					key={i}
+					key={(block as any).id ?? i}
 					block={block}
 					styleProperties={styleProperties}
 				/>
