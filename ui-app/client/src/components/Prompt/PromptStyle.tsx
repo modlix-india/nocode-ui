@@ -1393,9 +1393,7 @@ export default function PromptStyle({
 			flex: 1;
 		}
 
-		/* Empty placeholders for receipt blocks (assets_label / assets_row)
-		   are emitted by the scrape pipeline so the layout order is fixed
-		   from the first paint; we hide them until the agent fills them in. */
+		/* hide placeholder blocks emitted empty (layout order fixed at first paint) */
 		${PREFIX} ._craftRow:empty {
 			display: none;
 		}

@@ -91,10 +91,7 @@ function AgentRow({
 	const hasBody = sp.toolCalls.length > 0 || !!sp.statusText;
 
 	// Right-side meta: summary when done, statusText when processing, elapsed always.
-	// Defensive cap (rightMeta-overflow fix · 2026-05-27): the backend contract is
-	// "summary = a span outcome users can't derive elsewhere" (see SummaryAgent's
-	// _emit_finished docstring), but a misbehaving caller can still ship a long
-	// string. Truncate to 40 chars with ellipsis so the row layout can't break.
+	// cap summary at 40ch — long strings break row layout
 	const SUMMARY_CAP = 40;
 	let rightMeta = `${elapsed}s`;
 	if (sp.status !== 'running' && sp.summary) {
