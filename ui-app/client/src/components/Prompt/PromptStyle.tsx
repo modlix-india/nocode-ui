@@ -2078,6 +2078,160 @@ export default function PromptStyle({
 		${PREFIX} ._confirmationDetails li {
 			margin-bottom: 2px;
 		}
+
+		/* ─── Map Block Styles (Added for Geotargeting UI) ─── */
+		${PREFIX} ._craftMapBlock {
+			border: 1px solid #e2e8f0;
+			border-radius: 12px;
+			background: #ffffff;
+			overflow: hidden;
+			margin: 16px 0;
+			box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+		}
+		${PREFIX} ._mapSearchBox {
+			position: relative;
+			padding: 12px;
+			border-bottom: 1px solid #e2e8f0;
+			background: #f8fafc;
+		}
+		${PREFIX} ._mapSearchInput {
+			width: 100%;
+			padding: 8px 12px;
+			border: 1px solid #cbd5e1;
+			border-radius: 8px;
+			font-size: 13px;
+			color: #1e293b;
+			outline: none;
+			transition: border-color 0.2s;
+		}
+		${PREFIX} ._mapSearchInput:focus {
+			border-color: #6366f1;
+		}
+		${PREFIX} ._mapSearchSpinner {
+			position: absolute;
+			right: 20px;
+			top: 20px;
+			font-size: 11px;
+			color: #64748b;
+		}
+		${PREFIX} ._mapSuggestionsList {
+			position: absolute;
+			left: 12px;
+			right: 12px;
+			top: calc(100% - 4px);
+			background: #ffffff;
+			border: 1px solid #e2e8f0;
+			border-radius: 8px;
+			box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+			max-height: 200px;
+			overflow-y: auto;
+			z-index: 10;
+		}
+		${PREFIX} ._mapSuggestionItem {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+			border: none;
+			background: #ffffff !important;
+			color: #1e293b !important;
+			text-align: left;
+			cursor: pointer;
+			font-size: 13px;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._mapSuggestionItem:hover {
+			background: #f1f5f9;
+		}
+		${PREFIX} ._mapSugName {
+			font-weight: 500;
+			color: #1e293b;
+		}
+		${PREFIX} ._mapSugType {
+			font-size: 11px;
+			color: #64748b;
+			background: #f1f5f9;
+			padding: 2px 6px;
+			border-radius: 4px;
+		}
+		${PREFIX} ._mapCanvasWrap {
+			position: relative;
+			height: 300px;
+			background: #f1f5f9;
+		}
+		${PREFIX} ._mapCanvasDiv {
+			width: 100%;
+			height: 100%;
+		}
+		${PREFIX} ._mapCanvasOverlay {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(248, 250, 252, 0.9);
+			color: #64748b;
+			font-size: 13px;
+		}
+		${PREFIX} ._mapTooltip {
+			position: absolute;
+			background: rgba(26, 26, 26, 0.95);
+			color: #fff;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-size: 11px;
+			line-height: 1.6;
+			pointer-events: none;
+			z-index: 1000;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+			white-space: nowrap;
+			transition: opacity 0.1s ease;
+		}
+
+		/* ─── Map footer (detail panel) ─── */
+		${PREFIX} ._mapFooter {
+			padding: 12px;
+			border-top: 1px solid #e2e8f0;
+			background: #fafafa;
+			min-height: 50px;
+			display: flex;
+			align-items: center;
+		}
+		${PREFIX} ._mapFooterDetail {
+			display: flex;
+			width: 100%;
+			justify-content: space-between;
+			align-items: center;
+		}
+		${PREFIX} ._mapFooterName {
+			font-size: 13px;
+			font-weight: 600;
+			color: #1a1a1a;
+		}
+		${PREFIX} ._mapFooterMeta {
+			font-size: 11px;
+			color: #666;
+			margin-top: 2px;
+		}
+		${PREFIX} ._mapFooterDelete {
+			border: none;
+			background: none;
+			color: #dc2626;
+			cursor: pointer;
+			padding: 8px;
+			font-size: 13px;
+		}
+		${PREFIX} ._mapFooterDelete:hover {
+			color: #ef4444;
+		}
+		${PREFIX} ._mapFooterHint {
+			font-size: 11px;
+			color: #888;
+			font-style: italic;
+			text-align: center;
+			width: 100%;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PromptCss">{css}</style>;

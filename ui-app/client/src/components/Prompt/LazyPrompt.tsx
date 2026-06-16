@@ -2074,6 +2074,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					onClose={() => setActiveCraftId(null)}
 					definition={props.definition}
 					styleProperties={styleProperties}
+					sessionId={sessionId}
+					agentEndpoint={agentEndpoint}
+					onSend={handleSend}
+					getAuthHeaders={getAuthHeaders}
 				/>
 			)}
 		</div>

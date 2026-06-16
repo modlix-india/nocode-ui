@@ -5,116 +5,139 @@ const ReactRefreshTypeScript = require('react-refresh-typescript');
 const webpack = require('webpack');
 
 module.exports = {
-  mode: 'development',
-  entry: './src/index.tsx', // Your main entry file
-  output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'dist'),
-    publicPath: '/' // Ensures correct handling of assets when using dev-server
-  },
-  devtool: 'source-map', // Better debugging in development
-  module: {
-    rules: [
-      {
-        test: /\.[jt]sx?$/,
-        exclude: /node_modules\/(?!@fincity)/,
-        use: [
-          {
-            loader: require.resolve('ts-loader'),
-            options: {
-              getCustomTransformers: () => ({
-                before: [ReactRefreshTypeScript()],
-              }),
-              transpileOnly: true,
-            },
-          },
-        ],
-      },
-      {
-        test: /\.css$/, // If you are using CSS
-        use: ['style-loader', 'css-loader']
-      },
-      {
-        test: /\.(png|jpg|gif|svg)$/, // If you need images
-        type: 'asset/resource'
-      },
-      {
-        enforce: 'pre',
-        test: /\.js$/,
-        loader: 'source-map-loader'
-      }
-    ]
-  },
-  resolve: {
-    extensions: ['.ts', '.tsx', '.js'], // Resolve these extensions
-    symlinks: true, // Follow symlinks to resolve modules
-    // Prefer "source" (Parcel field) so linked @fincity/kirun-js uses src/ in dev for live edits
-    mainFields: ['source', 'module', 'main'],
-    alias: {
-      // Force symlinked packages (e.g. @fincity/kirun-ui) to resolve peer
-      // dependencies from nocode-ui's node_modules, not their own copies.
-      // Without this, duplicate React/kirun-js instances cause runtime errors.
-      'react': path.resolve(__dirname, 'node_modules/react'),
-      'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
-      'monaco-editor': path.resolve(__dirname, 'node_modules/monaco-editor'),
-      '@fincity/kirun-js': path.resolve(__dirname, 'node_modules/@fincity/kirun-js'),
-    },
-  },
-  watchOptions: {
-    followSymlinks: true, // Watch changes in symlinked directories
-    ignored: /node_modules\/(?!@fincity)/, // Ignore node_modules except @fincity packages
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src', 'index.html')
-    }),
-    new ReactRefreshWebpackPlugin(),
-    new webpack.EvalSourceMapDevToolPlugin({}),
-  ],
-  devServer: {
+	mode: 'development',
+	entry: './src/index.tsx', // Your main entry file
+	output: {
+		filename: 'index.js',
+		path: path.resolve(__dirname, 'dist'),
+		publicPath: '/', // Ensures correct handling of assets when using dev-server
+	},
+	devtool: 'source-map', // Better debugging in development
+	module: {
+		rules: [
+			{
+				test: /\.[jt]sx?$/,
+				exclude: /node_modules\/(?!@fincity)/,
+				use: [
+					{
+						loader: require.resolve('ts-loader'),
+						options: {
+							getCustomTransformers: () => ({
+								before: [ReactRefreshTypeScript()],
+							}),
+							transpileOnly: true,
+						},
+					},
+				],
+			},
+			{
+				test: /\.css$/, // If you are using CSS
+				use: ['style-loader', 'css-loader'],
+			},
+			{
+				test: /\.(png|jpg|gif|svg)$/, // If you need images
+				type: 'asset/resource',
+			},
+			{
+				enforce: 'pre',
+				test: /\.js$/,
+				loader: 'source-map-loader',
+			},
+		],
+	},
+	resolve: {
+		extensions: ['.ts', '.tsx', '.js'], // Resolve these extensions
+		symlinks: true, // Follow symlinks to resolve modules
+		// Prefer "source" (Parcel field) so linked @fincity/kirun-js uses src/ in dev for live edits
+		mainFields: ['source', 'module', 'main'],
+		alias: {
+			// Force symlinked packages (e.g. @fincity/kirun-ui) to resolve peer
+			// dependencies from nocode-ui's node_modules, not their own copies.
+			// Without this, duplicate React/kirun-js instances cause runtime errors.
+			react: path.resolve(__dirname, 'node_modules/react'),
+			'react-dom': path.resolve(__dirname, 'node_modules/react-dom'),
+			'monaco-editor': path.resolve(__dirname, 'node_modules/monaco-editor'),
+			'@fincity/kirun-js': path.resolve(__dirname, 'node_modules/@fincity/kirun-js'),
+		},
+	},
+	watchOptions: {
+		followSymlinks: true, // Watch changes in symlinked directories
+		ignored: /node_modules\/(?!@fincity)/, // Ignore node_modules except @fincity packages
+	},
+	plugins: [
+		new HtmlWebpackPlugin({
+			template: path.join(__dirname, 'src', 'index.html'),
+		}),
+		new ReactRefreshWebpackPlugin(),
+		new webpack.EvalSourceMapDevToolPlugin({}),
+	],
+	devServer: {
+		allowedHosts: 'all',
+		static: {
+			directory: path.join(__dirname, 'dist'), // If you have static files like index.html
+		},
+		historyApiFallback: true, // For React Router support
+		port: 4321,
+		hot: true,
+		proxy: [
+			{
+				context: ['**/api/ai/**'],
+				target: 'http://localhost:5001',
+				secure: false,
+				changeOrigin: true,
+				pathRewrite: path => path.replace(/^.*?(\/api\/ai\/)/, '$1'),
+				onProxyReq: (proxyReq, req) => {
+					// 1. Read existing headers sent by the client if present
+					let appCode = req.headers['appcode'] || req.headers['appCode'];
+					let clientCode = req.headers['clientcode'] || req.headers['clientCode']; // 2. Parse Referer header if available
 
-    allowedHosts: "all",
-    static: {
-      directory: path.join(__dirname, 'dist') // If you have static files like index.html
-    },
-    historyApiFallback: true, // For React Router support
-    port: 4321,
-    hot: true, 
-    proxy: [
-      {
-        context: ["**/api/ai/**"],
-        target: "http://localhost:5001",
-        secure: false,
-        changeOrigin: true,
-        pathRewrite: (path) => path.replace(/^.*?(\/api\/ai\/)/, '$1'),
-        onProxyReq: (proxyReq, req) => {
-          // Extract /{appCode}/{clientCode}/page prefix from the Referer header
-          // (the browser URL), since fetch calls use relative paths without the prefix.
-          // e.g. Referer: http://localhost:1234/appbuilder/SYSTEM/page/...
-          const referer = req.headers.referer || '';
-          const refMatch = referer.match(/\/([^/]+)\/([^/]+)\/page/);
-          if (refMatch) {
-            proxyReq.setHeader('X-Path-Prefix', `/${refMatch[1]}/${refMatch[2]}/page`);
-          }
-        },
-        onProxyRes: (proxyRes, _req, res) => {
-          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
-            res.flushHeaders();
-          }
-        },
-      },
-      {
-        context: ["**/api/**", "/sso/**"],
-        target: "https://apps.dev.modlix.com",
-        secure: true,
-        changeOrigin: true,
-        onProxyRes: (proxyRes, _req, res) => {
-          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
-            res.flushHeaders();
-          }
-        },
-      }
-    ]
-  }
-  
+					const referer = req.headers.referer || '';
+					const refMatch = referer.match(/\/([^/]+)\/([^/]+)\/page/);
+
+					if (refMatch) {
+						if (!appCode) appCode = refMatch[1];
+						if (!clientCode) clientCode = refMatch[2];
+					} // 3. Fallback: Parse appCode directly from request path (e.g. /api/ai/appbuilder/chat)
+
+					if (!appCode) {
+						const pathMatch = req.url.match(/\/api\/ai\/([^/]+)/);
+						if (pathMatch) {
+							appCode = pathMatch[1];
+						}
+					} // 4. Fallback: Default clientCode to 'SYSTEM' for local dev
+
+					if (!clientCode) {
+						clientCode = 'SYSTEM';
+					} // 5. Inject the resolved headers into the outgoing proxy request
+
+					if (appCode) {
+						proxyReq.setHeader('appCode', appCode);
+					}
+					if (clientCode) {
+						proxyReq.setHeader('clientCode', clientCode);
+					} // 6. Prepend the X-Path-Prefix if both are resolved
+
+					if (appCode && clientCode) {
+						proxyReq.setHeader('X-Path-Prefix', `/${appCode}/${clientCode}/page`);
+					}
+				},
+				onProxyRes: (proxyRes, _req, res) => {
+					if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+						res.flushHeaders();
+					}
+				},
+			},
+			{
+				context: ['**/api/**', '/sso/**'],
+				target: 'https://apps.dev.modlix.com',
+				secure: true,
+				changeOrigin: true,
+				onProxyRes: (proxyRes, _req, res) => {
+					if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+						res.flushHeaders();
+					}
+				},
+			},
+		],
+	},
 };
