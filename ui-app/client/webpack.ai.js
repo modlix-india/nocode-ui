@@ -87,38 +87,13 @@ module.exports = {
 				changeOrigin: true,
 				pathRewrite: path => path.replace(/^.*?(\/api\/ai\/)/, '$1'),
 				onProxyReq: (proxyReq, req) => {
-					// 1. Read existing headers sent by the client if present
-					let appCode = req.headers['appcode'] || req.headers['appCode'];
-					let clientCode = req.headers['clientcode'] || req.headers['clientCode']; // 2. Parse Referer header if available
-
+					// Extract /{appCode}/{clientCode}/page prefix from the Referer header
+					// (the browser URL), since fetch calls use relative paths without the prefix.
+					// e.g. Referer: http://localhost:1234/appbuilder/SYSTEM/page/...
 					const referer = req.headers.referer || '';
 					const refMatch = referer.match(/\/([^/]+)\/([^/]+)\/page/);
-
 					if (refMatch) {
-						if (!appCode) appCode = refMatch[1];
-						if (!clientCode) clientCode = refMatch[2];
-					} // 3. Fallback: Parse appCode directly from request path (e.g. /api/ai/appbuilder/chat)
-
-					if (!appCode) {
-						const pathMatch = req.url.match(/\/api\/ai\/([^/]+)/);
-						if (pathMatch) {
-							appCode = pathMatch[1];
-						}
-					} // 4. Fallback: Default clientCode to 'SYSTEM' for local dev
-
-					if (!clientCode) {
-						clientCode = 'SYSTEM';
-					} // 5. Inject the resolved headers into the outgoing proxy request
-
-					if (appCode) {
-						proxyReq.setHeader('appCode', appCode);
-					}
-					if (clientCode) {
-						proxyReq.setHeader('clientCode', clientCode);
-					} // 6. Prepend the X-Path-Prefix if both are resolved
-
-					if (appCode && clientCode) {
-						proxyReq.setHeader('X-Path-Prefix', `/${appCode}/${clientCode}/page`);
+						proxyReq.setHeader('X-Path-Prefix', `/${refMatch[1]}/${refMatch[2]}/page`);
 					}
 				},
 				onProxyRes: (proxyRes, _req, res) => {
