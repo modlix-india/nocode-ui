@@ -177,6 +177,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'scrollToBottomIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Scroll To Bottom Icon',
+		description: 'Icon class for the scroll to bottom button.',
+		defaultValue: 'fa fa-arrow-down',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'newChatTopIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'New Chat Top Icon',
