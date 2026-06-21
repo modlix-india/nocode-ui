@@ -334,6 +334,7 @@ export default function PromptStyle({
 			flex-direction: column;
 			min-width: 0;
 			overflow: hidden;
+			position: relative;
 		}
 
 		/* Top bar */
@@ -385,26 +386,29 @@ export default function PromptStyle({
 			gap: 24px;
 		}
 
-		/* Empty state — welcome + input centered as one group */
+
 		${PREFIX} ._promptEmpty {
-			justify-content: center;
+			display: flex;
+			flex-direction: column;
 		}
 
 		${PREFIX} ._promptEmpty ._promptMessages {
 			flex: none;
+			margin-top: auto;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			overflow: visible;
 		}
 
-		${PREFIX} ._promptEmpty ._promptTopBar {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			z-index: 1;
+		${PREFIX} ._promptEmpty ._promptInputWrapper:last-child {
+			margin-bottom: auto;
 		}
+
+		${PREFIX} ._promptEmpty ._quickActions {
+			margin-bottom: auto;
+		}
+
 
 		${PREFIX} ._emptyState {
 			display: flex;
@@ -426,6 +430,8 @@ export default function PromptStyle({
 			font-weight: 600;
 			color: #1a1a1a;
 			margin: 0;
+			line-height: 1.4;
+			text-align: center;
 		}
 
 		/* Quick actions */
@@ -800,6 +806,10 @@ export default function PromptStyle({
 			background: transparent;
 			border: 1.5px solid #1a1a1a;
 		}
+		${PREFIX} ._statusDot._sm {
+			width: 6px;
+			height: 6px;
+		}
 		@keyframes promptStatusDotPulse {
 			0%, 100% { opacity: 1; transform: scale(1); }
 			50%      { opacity: 0.25; transform: scale(0.75); }
@@ -899,14 +909,6 @@ export default function PromptStyle({
 			border-radius: 6px;
 		}
 
-		${PREFIX} ._agentToolHeader._clickable {
-			cursor: pointer;
-		}
-
-		${PREFIX} ._agentToolHeader._clickable:hover {
-			background: #f4f4f4;
-		}
-
 		${PREFIX} ._agentToolLabel {
 			font-size: 12px;
 			color: #8b8b8b;
@@ -919,16 +921,28 @@ export default function PromptStyle({
 
 		${PREFIX} ._agentToolSummary {
 			color: #9b9b9b;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
 			flex: 1;
 			min-width: 0;
 			font-size: 12px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._agentToolRow ._agentToolDetail {
+			margin: 4px 0 4px 22px;
+		}
+
+		${PREFIX} ._agentToolHeader._clickable {
+			cursor: pointer;
+		}
+
+		${PREFIX} ._agentToolHeader._clickable:hover ._agentToolName {
+			color: #000;
 		}
 
 		${PREFIX} ._agentToolToggle {
-			font-size: 9px;
+			font-size: 10px;
 			color: #9b9b9b;
 			flex-shrink: 0;
 			margin-left: auto;
@@ -952,16 +966,6 @@ export default function PromptStyle({
 			font-size: 12px;
 			color: #9b9b9b;
 			font-style: italic;
-		}
-
-		${PREFIX} ._agentToolExpanded {
-			display: flex;
-			flex-direction: column;
-			gap: 2px;
-			padding-left: 12px;
-			margin: 2px 0 4px;
-			border-left: 1px solid #e5e5e5;
-			margin-left: 8px;
 		}
 
 		${PREFIX} ._agentToolUpdates {
@@ -1165,6 +1169,42 @@ export default function PromptStyle({
 			height: 100%;
 			background: #fff;
 			overflow: hidden;
+			position: relative;
+		}
+
+		${PREFIX} ._craftJumpDown {
+			position: absolute;
+			bottom: 16px;
+			left: 50%;
+			transform: translateX(-50%);
+			width: 32px;
+			height: 32px;
+			border-radius: 50%;
+			background: #fff;
+			border: 1px solid #ddd;
+			color: #333;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			animation: _craftJumpIn 0.15s ease-out;
+		}
+
+		${PREFIX} ._craftJumpDown:hover {
+			background: #f5f5f5;
+		}
+
+		@keyframes _craftJumpIn {
+			from {
+				opacity: 0;
+				transform: translate(-50%, 4px);
+			}
+			to {
+				opacity: 1;
+				transform: translate(-50%, 0);
+			}
 		}
 
 		${PREFIX} ._craftPanelHeader {
@@ -1225,6 +1265,9 @@ export default function PromptStyle({
 			margin: 0;
 			font-size: 14px;
 			line-height: 1.6;
+			/* flush right edge — streaming rag doesn't dance */
+			text-align: justify;
+			hyphens: auto;
 		}
 
 		${PREFIX} ._craftBadge {
@@ -1363,6 +1406,110 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftRow > * {
 			flex: 1;
+		}
+
+		/* a divider with nothing after it (section never filled) is noise */
+		${PREFIX} ._craftContent > ._craftDivider:last-child {
+			display: none;
+		}
+
+		/* Collapsible block — generic single-line summary + toggleable body.
+		   Any agent can use it to surface optional detail without bloating
+		   the craft canvas. */
+		${PREFIX} ._craftCollapsible {
+			border-top: 1px solid #eee;
+			border-bottom: 1px solid #eee;
+			margin: 4px 0;
+		}
+
+		${PREFIX} ._craftCollapsibleHeader {
+			width: 100%;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 10px 2px;
+			background: none;
+			border: none;
+			cursor: pointer;
+			font-size: 13px;
+			color: #555;
+			text-align: left;
+		}
+
+		${PREFIX} ._craftCollapsibleHeader:hover {
+			color: #1a1a1a;
+		}
+
+		${PREFIX} ._craftCollapsibleGlyph {
+			font-size: 14px;
+			color: #888;
+			line-height: 1;
+		}
+
+		${PREFIX} ._craftCollapsibleSummary {
+			flex: 1;
+		}
+
+		${PREFIX} ._craftCollapsibleChevron {
+			font-size: 16px;
+			color: #999;
+			line-height: 1;
+			transition: transform 0.15s ease;
+			display: inline-block;
+		}
+
+		${PREFIX} ._craftCollapsibleChevron._open {
+			transform: rotate(90deg);
+		}
+
+		${PREFIX} ._craftCollapsibleBody {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			padding: 4px 2px 12px;
+		}
+
+		/* Thumbnail variant of image block — fixed 48px square, contain (not
+		   cover) so logos with transparent backgrounds render correctly.
+		   Explicit flex override so a parent _craftRow flex-1 rule does
+		   not stretch these. */
+		${PREFIX} ._craftImage._thumbnail {
+			display: inline-block;
+			width: 48px;
+			height: 48px;
+			flex: 0 0 48px;
+		}
+
+		${PREFIX} ._craftImage._thumbnail a {
+			display: block;
+			width: 100%;
+			height: 100%;
+			border: 1px solid #e5e5e5;
+			border-radius: 8px;
+			overflow: hidden;
+			background: #fafafa;
+		}
+
+		${PREFIX} ._craftImage._thumbnail img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+			aspect-ratio: auto;
+			border-radius: 0;
+			background: transparent;
+		}
+
+		/* Dark variant of the thumbnail tile — for white/transparent content
+		   that would otherwise vanish on a light background. */
+		${PREFIX} ._craftImage._thumbnail._dark a {
+			background: #1a1a1a;
+			border-color: #333;
+		}
+
+		/* Cover variant — for photo-style images that should fill the tile
+		   without letterboxing. Use for creative/hero thumbnails. */
+		${PREFIX} ._craftImage._thumbnail._cover img {
+			object-fit: cover;
 		}
 
 		/* ─── Craft Panel responsive ─── */
@@ -1936,6 +2083,47 @@ export default function PromptStyle({
 
 		${PREFIX} ._confirmationDetails li {
 			margin-bottom: 2px;
+		}
+		
+		/* Scroll to bottom button anchor — sits between messages and input,
+		   zero height so it doesn't affect layout. Button positioned relative to this. */
+		${PREFIX} ._scrollToBottomAnchor {
+			position: relative;
+			height: 0;
+			z-index: 10;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._scrollToBottom {
+			position: absolute;
+			bottom: 12px;
+			left: 50%;
+			transform: translateX(-50%) translateY(0);
+			width: 34px;
+			height: 34px;
+			border-radius: 50%;
+			border: 0.5px solid #e5e5e5;
+			background: #fff;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+			transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s;
+			opacity: 1;
+			color: #6b6b6b;
+		}
+
+		${PREFIX} ._scrollToBottom._hidden {
+			opacity: 0;
+			transform: translateX(-50%) translateY(8px);
+			pointer-events: none;
+		}
+
+		${PREFIX} ._scrollToBottom:hover:not(._hidden) {
+			background: #f4f4f4;
+			color: #1a1a1a;
+			transform: translateX(-50%) scale(1.05);
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
