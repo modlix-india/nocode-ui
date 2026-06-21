@@ -22,6 +22,7 @@ import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
 import Stepper from './Stepper/Stepper';
 import SubPage from './SubPage/SubPage';
+import Svg from './Svg/Svg';
 import {
 	Table,
 	TableColumn,
@@ -92,6 +93,7 @@ const componentMap = new Map<string, Component>([
 	[Menu.name, Menu],
 	[Tags.name, Tags],
 	[Image.name, Image],
+	[Svg.name, Svg],
 	[Tabs.name, Tabs],
 	[Icon.name, Icon],
 	[Text.name, Text],
