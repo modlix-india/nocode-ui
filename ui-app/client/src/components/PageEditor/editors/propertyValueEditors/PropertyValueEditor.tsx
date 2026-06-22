@@ -24,6 +24,7 @@ import { AnimationValueEditor } from './AnimationValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
 import SectionPropertyValueEditor from './SectionPropertyValueEditor';
+import { SvgContentEditor } from './SvgContentEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -38,6 +39,7 @@ interface PropertyValueEditorProps {
 	editPageName: string | undefined;
 	pageOperations: PageOperations;
 	appPath?: string;
+	selectedComponent?: string;
 }
 
 export default function PropertyValueEditor({
@@ -53,6 +55,7 @@ export default function PropertyValueEditor({
 	editPageName,
 	pageOperations,
 	appPath,
+	selectedComponent,
 }: Readonly<PropertyValueEditorProps>) {
 	const [chngValue, setChngValue] = useState<any>('');
 	const [showAdvanced, setShowAdvanced] = useState<boolean>(false);
@@ -106,21 +109,31 @@ export default function PropertyValueEditor({
 		);
 	}
 
-	let valueEditor = makeValueEditor(
-		propDef,
-		chngValue,
-		onChange,
-		value,
-		setChngValue,
-		storePaths,
-		slaveStore,
-		editPageName,
-		pageOperations,
-		onShowCodeEditor,
-		pageDefinition,
-		showPlaceholder,
-		appPath,
-	);
+	let valueEditor =
+		propDef.editor === ComponentPropertyEditor.SVG ? (
+			<SvgContentEditor
+				value={chngValue}
+				onChange={e => onChange({ ...value, value: e })}
+				pageOperations={pageOperations}
+				selectedComponent={selectedComponent}
+			/>
+		) : (
+			makeValueEditor(
+				propDef,
+				chngValue,
+				onChange,
+				value,
+				setChngValue,
+				storePaths,
+				slaveStore,
+				editPageName,
+				pageOperations,
+				onShowCodeEditor,
+				pageDefinition,
+				showPlaceholder,
+				appPath,
+			)
+		);
 
 	const microToggle = onlyValue ? undefined : (
 		<button

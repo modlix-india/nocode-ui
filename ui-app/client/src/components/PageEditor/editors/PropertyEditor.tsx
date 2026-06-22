@@ -315,6 +315,7 @@ export default function PropertyEditor({
 					editPageName={editPageName}
 					slaveStore={slaveStore}
 					pageOperations={pageOperations}
+					selectedComponent={selectedComponent}
 				/>
 			);
 		}

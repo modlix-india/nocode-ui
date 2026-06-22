@@ -71,6 +71,7 @@ export enum ComponentPropertyEditor {
 	COLOR_PICKER,
 	SECTION_PROPERTIES_EDITOR,
 	TEXT_EDITOR,
+	SVG,
 }
 
 export enum ComponentPropertyGroup {
@@ -139,9 +140,9 @@ export interface Section {
 }
 
 export interface Tutorial {
-  demoVideo?: string;
-  description?: string;
-  youtubeLink?: string;
+	demoVideo?: string;
+	description?: string;
+	youtubeLink?: string;
 }
 
 export interface Component {
@@ -186,7 +187,7 @@ export interface Component {
 	propertiesForTheme?: Array<ComponentPropertyDefinition>;
 	stylePropertiesForTheme: Array<StylePropertyDefinition>;
 	externalStylePropsForThemeJson?: boolean;
-	tutorial?: Tutorial;  
+	tutorial?: Tutorial;
 }
 
 export enum StyleResolution {
