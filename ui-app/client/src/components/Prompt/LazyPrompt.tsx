@@ -742,6 +742,8 @@ function ModelSelector({
 	);
 }
 
+const SCROLL_BOTTOM_THRESHOLD_PX = 50;
+
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
 		definition: { bindingPath },
@@ -783,6 +785,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			toolErrorIcon = 'fa fa-xmark',
 			expandIcon = 'fa fa-chevron-down',
 			collapseIcon = 'fa fa-chevron-up',
+			scrollToBottomIcon = 'fa fa-arrow-down',
 			enableVoiceInput = true,
 			microphoneIcon = 'fa fa-microphone',
 			microphoneActiveIcon = 'fa fa-stop',
@@ -855,6 +858,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	} | null>(null);
 	const [sidebarOpen, setSidebarOpen] = useState(true);
 	const [usage, setUsage] = useState<TokenUsage | null>(null);
+	const [isAtBottom, setIsAtBottom] = useState(true);
 
 	// Craft panel state
 	const [crafts, setCrafts] = useState<Map<string, CraftData>>(new Map());
@@ -887,11 +891,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [draftText, setDraftText] = useState('');
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-	const messagesEndRef = useRef<HTMLDivElement>(null);
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	const abortControllerRef = useRef<AbortController | null>(null);
 	const shouldAutoScrollRef = useRef(true);
+	const prevMessageCountRef = useRef(0);
+	const lastTouchYRef = useRef(0);
 	const wasNewSessionRef = useRef(false);
+	const isNavigatingRef = useRef(false);
 
 	// Polling for PROCESSING sessions
 	const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -1103,18 +1109,86 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		})();
 	}, [showModelSelector, agentEndpoint, getAuthHeaders]);
 
-	// Auto-scroll to bottom on new messages (but not when loading earlier)
-	useEffect(() => {
-		if (shouldAutoScrollRef.current) {
-			requestAnimationFrame(() => {
-				const container = messagesContainerRef.current;
-				if (container) {
-					container.scrollTop = container.scrollHeight;
-				}
-			});
+	// handleScroll: only re-sticks auto-scroll when at bottom.
+	// Never un-sticks here — wheel/touch do that (human-only, so programmatic
+	// scroll can't trip it). Scrollbar-drag fires only 'scroll', which we don't
+	// trust, so it won't un-stick — accepted tradeoff to keep the race impossible.
+	const handleScroll = useCallback(() => {
+		const container = messagesContainerRef.current;
+		if (!container) return;
+
+		const atBottom =
+			container.scrollHeight - container.scrollTop <=
+			container.clientHeight + SCROLL_BOTTOM_THRESHOLD_PX;
+
+		// Re-engage auto-scroll when user scrolls back to bottom
+		if (atBottom) {
+			shouldAutoScrollRef.current = true;
 		}
+		setIsAtBottom(prev => (prev === atBottom ? prev : atBottom));
+	}, []);
+
+	const handleScrollToBottom = useCallback(() => {
+		const container = messagesContainerRef.current;
+		if (!container) return;
+
 		shouldAutoScrollRef.current = true;
+		isNavigatingRef.current = false;
+		setIsAtBottom(true);
+
+		// Smooth glide — deliberate button click, so animate (streaming snaps).
+		container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+	}, []);
+
+	// Auto-scroll to bottom on new messages (but not when loading earlier).
+	// Uses container.scrollTo instead of scrollIntoView to avoid scrolling
+	// ancestor elements when the chat is embedded in a scrollable page.
+	useEffect(() => {
+		const container = messagesContainerRef.current;
+		if (!container) return;
+
+		const isNewMessage = messages.length !== prevMessageCountRef.current;
+		prevMessageCountRef.current = messages.length;
+
+		if (!shouldAutoScrollRef.current) return;
+
+		// Instant scroll while the same message streams (keeps up with fast models).
+		// Smooth scroll only when a genuinely new message appears.
+		const behavior: ScrollBehavior = isNavigatingRef.current
+			? 'auto'
+			: isNewMessage
+				? 'smooth'
+				: 'auto';
+
+		requestAnimationFrame(() => {
+			if (shouldAutoScrollRef.current && container) {
+				container.scrollTo({ top: container.scrollHeight, behavior });
+				isNavigatingRef.current = false;
+			}
+		});
 	}, [messages]);
+
+	// Only human-initiated wheel/touch un-stick auto-scroll — programmatic
+	// scrollTo never fires them, so the smooth-scroll race can't happen.
+	const handleWheel = useCallback((e: React.WheelEvent) => {
+		// Only upward scroll un-sticks (deltaY < 0 = viewing older content)
+		if (e.deltaY < 0) {
+			shouldAutoScrollRef.current = false;
+		}
+	}, []);
+
+	const handleTouchStart = useCallback((e: React.TouchEvent) => {
+		lastTouchYRef.current = e.touches[0]?.clientY ?? 0;
+	}, []);
+
+	const handleTouchMove = useCallback((e: React.TouchEvent) => {
+		const currentY = e.touches[0]?.clientY ?? 0;
+		// Finger moves down on screen → content scrolls up → viewing older content
+		if (currentY > lastTouchYRef.current) {
+			shouldAutoScrollRef.current = false;
+		}
+		lastTouchYRef.current = currentY;
+	}, []);
 
 	// Restore draft when session changes — but NOT while streaming,
 	// because the `done` event updates sessionId and would wipe
@@ -1208,8 +1282,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Select a session and load its history
 	const handleSelectSession = useCallback(
 		async (selectedSessionId: string) => {
+			if (selectedSessionId === sessionId) return; // Already viewing this session
+
 			stopPolling();
 			setIsStreaming(false);
+			shouldAutoScrollRef.current = true;
+			isNavigatingRef.current = true;
+			setIsAtBottom(true);
 
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
@@ -1243,12 +1322,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				// Silently fail
 			}
 		},
-		[agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, startPolling],
+		[sessionId, agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, startPolling],
 	);
 
 	const handleNewChat = useCallback(() => {
 		stopPolling();
 		setIsStreaming(false);
+		shouldAutoScrollRef.current = true;
+		isNavigatingRef.current = true;
+		setIsAtBottom(true);
 		setSessionId(null);
 		setMessages([]);
 		setUsage(null);
@@ -1395,6 +1477,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			};
 			setMessages(prev => [...prev, userMsg]);
 			setIsStreaming(true);
+			shouldAutoScrollRef.current = true;
+			setIsAtBottom(true);
 
 			// Clear draft — cancel any pending debounce first
 			if (saveDraftTimeoutRef.current) {
@@ -1755,28 +1839,40 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			<div
 				className={`_promptMain${messages.length === 0 && !hasEarlierMessages ? ' _promptEmpty' : ''}${activeCraftId ? ' _hasCraft' : ''}`}
 			>
-				<div className="_promptTopBar">
-					<button
-						className="_sidebarToggle"
-						onClick={handleSidebarToggle}
-						title="Toggle sessions"
-					>
-						<i className={sidebarToggleIcon} />
-					</button>
-					{sessionId && (
-						<button
-							className="_newChatTopButton"
-							onClick={handleNewChat}
-							title="New chat"
-						>
-							<i className={newChatTopIcon} />
-						</button>
-					)}
-				</div>
+				{(showSessions || sessionId) && (
+					<div className="_promptTopBar">
+						{showSessions && (
+							<button
+								className="_sidebarToggle"
+								onClick={handleSidebarToggle}
+								title="Toggle sessions"
+								type="button"
+								aria-label="Toggle sessions"
+							>
+								<i className={sidebarToggleIcon} aria-hidden="true" />
+							</button>
+						)}
+						{sessionId && (
+							<button
+								className="_newChatTopButton"
+								onClick={handleNewChat}
+								title="New chat"
+								type="button"
+								aria-label="New chat"
+							>
+								<i className={newChatTopIcon} aria-hidden="true" />
+							</button>
+						)}
+					</div>
+				)}
 
 				<div
 					className="_promptMessages"
 					ref={messagesContainerRef}
+					onScroll={handleScroll}
+					onWheel={handleWheel}
+					onTouchStart={handleTouchStart}
+					onTouchMove={handleTouchMove}
 					style={styleProperties.messagesContainer ?? {}}
 				>
 					<SubHelperComponent
@@ -1925,7 +2021,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 									thumbsUpIcon={thumbsUpIcon}
 									thumbsDownIcon={thumbsDownIcon}
 								>
-									{msg.suggestions && !isStreaming && (
+									{msg.suggestions && (
 										<SuggestionButtons
 											suggestions={msg.suggestions}
 											onSelect={handleSend}
@@ -1976,7 +2072,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								collapseIcon={collapseIcon}
 							/>
 						)}
-						<div ref={messagesEndRef} />
 					</div>
 				</div>
 
@@ -1997,6 +2092,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						})}
 					</div>
 				)}
+				<div className="_scrollToBottomAnchor">
+					<button
+						className={`_scrollToBottom${isAtBottom ? ' _hidden' : ''}`}
+						onClick={handleScrollToBottom}
+						title="Scroll to bottom"
+						type="button"
+						aria-label="Scroll to bottom"
+					>
+						<i className={scrollToBottomIcon} aria-hidden="true" />
+					</button>
+				</div>
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}

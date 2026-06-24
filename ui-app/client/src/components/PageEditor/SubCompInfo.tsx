@@ -22,6 +22,7 @@ import ProgressBar from '../ProgressBar/ProgressBar';
 import RadioButton from '../RadioButton/RadioButton';
 import Stepper from '../Stepper/Stepper';
 import SubPage from '../SubPage/SubPage';
+import Svg from '../Svg/Svg';
 import {
 	Table,
 	TableColumn,
@@ -1932,6 +1933,28 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Tooltip',
 			description: 'Image Tooltip',
 			icon: 'fa-solid fa-comment',
+		},
+	],
+
+	[Svg.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect x="1" y="1" width="28" height="28" rx="3" fill="#EDEAEA" />
+					<path d="M15 6L23 21H7L15 6Z" fill="#3F83EA" />
+					<circle cx="15" cy="15" r="3.2" fill="#FFB534" />
+				</IconHelper>
+			),
+		},
+		{
+			name: 'svg',
+			displayName: 'SVG',
+			description: 'Inline SVG content',
+			icon: 'fa-solid fa-box',
 		},
 	],
 
@@ -5470,11 +5493,29 @@ export const SubComponentDefinitions: Record<
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
 					<rect width="30" height="30" rx="4" fill="#F9F9F9" />
-					<rect x="4" y="4" width="22" height="15" rx="2" fill="#96A1B4" fillOpacity="0.2" />
+					<rect
+						x="4"
+						y="4"
+						width="22"
+						height="15"
+						rx="2"
+						fill="#96A1B4"
+						fillOpacity="0.2"
+					/>
 					<rect x="6" y="7" width="12" height="2" rx="1" fill="#96A1B4" />
 					<rect x="6" y="11" width="8" height="2" rx="1" fill="#96A1B4" />
 					<rect x="14" y="14" width="10" height="2" rx="1" fill="#007BFF" />
-					<rect x="4" y="21" width="17" height="5" rx="2" fill="#96A1B4" fillOpacity="0.15" stroke="#96A1B4" strokeWidth="0.5" />
+					<rect
+						x="4"
+						y="21"
+						width="17"
+						height="5"
+						rx="2"
+						fill="#96A1B4"
+						fillOpacity="0.15"
+						stroke="#96A1B4"
+						strokeWidth="0.5"
+					/>
 					<circle cx="24" cy="23.5" r="2.5" fill="#007BFF" />
 					<path d="M23.5 23L24.5 23.5L23.5 24V23Z" fill="white" />
 				</IconHelper>

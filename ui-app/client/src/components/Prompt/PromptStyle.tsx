@@ -334,6 +334,7 @@ export default function PromptStyle({
 			flex-direction: column;
 			min-width: 0;
 			overflow: hidden;
+			position: relative;
 		}
 
 		/* Top bar */
@@ -385,26 +386,29 @@ export default function PromptStyle({
 			gap: 24px;
 		}
 
-		/* Empty state — welcome + input centered as one group */
+
 		${PREFIX} ._promptEmpty {
-			justify-content: center;
+			display: flex;
+			flex-direction: column;
 		}
 
 		${PREFIX} ._promptEmpty ._promptMessages {
 			flex: none;
+			margin-top: auto;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			overflow: visible;
 		}
 
-		${PREFIX} ._promptEmpty ._promptTopBar {
-			position: absolute;
-			top: 0;
-			left: 0;
-			right: 0;
-			z-index: 1;
+		${PREFIX} ._promptEmpty ._promptInputWrapper:last-child {
+			margin-bottom: auto;
 		}
+
+		${PREFIX} ._promptEmpty ._quickActions {
+			margin-bottom: auto;
+		}
+
 
 		${PREFIX} ._emptyState {
 			display: flex;
@@ -426,6 +430,8 @@ export default function PromptStyle({
 			font-weight: 600;
 			color: #1a1a1a;
 			margin: 0;
+			line-height: 1.4;
+			text-align: center;
 		}
 
 		/* Quick actions */
@@ -2231,6 +2237,47 @@ export default function PromptStyle({
 			font-style: italic;
 			text-align: center;
 			width: 100%;
+		}
+
+		/* Scroll to bottom button anchor — sits between messages and input,
+		   zero height so it doesn't affect layout. Button positioned relative to this. */
+		${PREFIX} ._scrollToBottomAnchor {
+			position: relative;
+			height: 0;
+			z-index: 10;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._scrollToBottom {
+			position: absolute;
+			bottom: 12px;
+			left: 50%;
+			transform: translateX(-50%) translateY(0);
+			width: 34px;
+			height: 34px;
+			border-radius: 50%;
+			border: 0.5px solid #e5e5e5;
+			background: #fff;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+			transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s;
+			opacity: 1;
+			color: #6b6b6b;
+		}
+
+		${PREFIX} ._scrollToBottom._hidden {
+			opacity: 0;
+			transform: translateX(-50%) translateY(8px);
+			pointer-events: none;
+		}
+
+		${PREFIX} ._scrollToBottom:hover:not(._hidden) {
+			background: #f4f4f4;
+			color: #1a1a1a;
+			transform: translateX(-50%) scale(1.05);
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
