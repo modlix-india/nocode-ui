@@ -2279,6 +2279,121 @@ export default function PromptStyle({
 			color: #1a1a1a;
 			transform: translateX(-50%) scale(1.05);
 		}
+
+		/* ─── LocationMap (inline location confirmation widget) ─── */
+		${PREFIX} ._pLocationContainer {
+			border: 1px solid #e5e5e5;
+			border-radius: 12px;
+			overflow: hidden;
+			margin: 8px 0;
+		}
+		${PREFIX} ._pLocationHeader {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 14px;
+			font-size: 13px;
+			font-weight: 600;
+			color: #1a1a1a;
+			background: #fafafa;
+		}
+		${PREFIX} ._pLocationMapWrap {
+			position: relative;
+			width: 100%;
+			height: 220px;
+			background: #f4f4f4;
+		}
+		${PREFIX} ._pLocationMapDiv { width: 100%; height: 100%; }
+		${PREFIX} ._pLocationMapOverlay {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 24px;
+			text-align: center;
+			color: #666;
+			font-size: 13px;
+			background: rgba(244, 244, 244, 0.85);
+			pointer-events: none;
+		}
+		${PREFIX} ._pLocationFooter {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 6px 14px;
+			border-top: 1px solid #e5e5e5;
+			background: #fafafa;
+		}
+		${PREFIX} ._pLocationHint { font-size: 12px; color: #666; }
+		${PREFIX} ._pLocationActions { display: flex; gap: 8px; }
+		${PREFIX} ._pLocationConfirmBtn {
+			padding: 5px 14px;
+			border-radius: 8px;
+			font-size: 12px;
+			font-weight: 500;
+			cursor: pointer;
+			border: 1px solid transparent;
+			background: #1a1a1a;
+			color: #fff;
+		}
+		${PREFIX} ._pLocationConfirmBtn:hover { opacity: 0.85; }
+		${PREFIX} ._pLocationConfirmBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+		${PREFIX} ._pLocationConfirmedCard {
+			display: flex;
+			flex-direction: column;
+			margin: 8px 0;
+			width: 75%;
+			max-width: 480px;
+			border: 1px solid #e5e5e5;
+			border-radius: 10px;
+			overflow: hidden;
+			background: #fff;
+		}
+		${PREFIX} ._pLocationConfirmedMap {
+			width: 100%;
+			height: 240px;
+			background: #f4f4f4;
+			overflow: hidden;
+		}
+		${PREFIX} ._pLocationConfirmedMap img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			display: block;
+			filter: grayscale(100%);
+		}
+		${PREFIX} ._pLocationConfirmedRow {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 12px;
+			border-top: 1px solid #f0f0f0;
+			background: #fafafa;
+			min-height: 32px;
+		}
+		${PREFIX} ._pLocationConfirmedCheck {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 18px;
+			height: 18px;
+			flex: 0 0 18px;
+			border-radius: 999px;
+			background: #1a1a1a;
+			color: #fff;
+		}
+		${PREFIX} ._pLocationConfirmedAddr {
+			flex: 1 1 auto;
+			min-width: 0;
+			font-size: 12px;
+			font-weight: 500;
+			color: #1a1a1a;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PromptCss">{css}</style>;

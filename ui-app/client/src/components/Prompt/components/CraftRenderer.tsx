@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import { loadGoogleMaps } from '../../../util/googleMapsLoader';
 
 interface CraftContextValue {
 	sessionId: string | null;
@@ -252,28 +253,6 @@ function CollapsibleBlock({
 	);
 }
 
-const loaders = new Map<string, Promise<any>>();
-
-function loadMaps(apiKey: string): Promise<any> {
-	if ((window as any).google?.maps) return Promise.resolve((window as any).google);
-	const cached = loaders.get(apiKey);
-	if (cached) return cached;
-	const p = new Promise<any>((resolve, reject) => {
-		const cbName = `__gmapsCb_${Math.random().toString(36).slice(2)}`;
-		(window as any)[cbName] = () => {
-			resolve((window as any).google);
-			delete (window as any)[cbName];
-		};
-		const script = document.createElement('script');
-		script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${cbName}&loading=async`;
-		script.async = true;
-		script.defer = true;
-		script.onerror = () => reject(new Error('Failed to load Google Maps'));
-		document.head.appendChild(script);
-	});
-	loaders.set(apiKey, p);
-	return p;
-}
 
 function MapBlock({
 	api_key,
@@ -312,13 +291,27 @@ function MapBlock({
 	const [suggestions, setSuggestions] = useState<any[]>([]);
 	const [searching, setSearching] = useState(false);
 	const [selectedLocation, setSelectedLocation] = useState<any | null>(null);
-	const [tooltipContent, setTooltipContent] = useState<string>('');
+	const [tooltipLines, setTooltipLines] = useState<string[]>([]);
 	const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+	const [mapReady, setMapReady] = useState(false);
 	const mapRef = useRef<any>(null);
+	const googleRef = useRef<any>(null);
 	const markersRef = useRef<any[]>([]);
+	const featureListenersRef = useRef<any[]>([]);
 	const tooltipRef = useRef<HTMLDivElement>(null);
 
 	const containerRef = useCallback((node: HTMLDivElement | null) => setContainer(node), []);
+
+	// Each craft re-emit hands us fresh `center`/`target_areas` references with
+	// identical contents. Depend on these stable values — not the object/array
+	// identities — so the map is built once and the geocode/feature-style pass
+	// re-runs only when the targeting set actually changes (not on every emit).
+	const centerLat = center?.lat;
+	const centerLng = center?.lng;
+	const areasKey = React.useMemo(
+		() => JSON.stringify((target_areas || []).map(a => [a.name, a.pincode, a.lat, a.lng])),
+		[target_areas],
+	);
 
 	// Search Autocomplete lookup API call
 	useEffect(() => {
@@ -358,12 +351,12 @@ function MapBlock({
 		}
 	}, [target_areas, selectedLocation]);
 
-	// Initialize Google Map, Markers & styling boundaries
+	// Create the map and center marker once — re-runs only when api_key/container/center changes.
 	useEffect(() => {
 		if (!api_key || !container) return;
 		let cancelled = false;
 
-		loadMaps(api_key)
+		loadGoogleMaps(api_key)
 			.then(async google => {
 				if (cancelled || !container.isConnected) return;
 				await new Promise(requestAnimationFrame);
@@ -380,161 +373,22 @@ function MapBlock({
 						renderingType: 'VECTOR',
 					});
 					mapRef.current = map;
+					googleRef.current = google;
 
-					// Clear old markers
 					markersRef.current.forEach(m => m.setMap(null));
 					markersRef.current = [];
 
-					const bounds = new google.maps.LatLngBounds();
-					let hasCoords = false;
-
-					// Base product center marker
 					if (center) {
 						const bizMarker = new google.maps.Marker({
 							position: center,
 							map,
 							title: product_location || 'Business Location',
-							icon: {
-								url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png',
-							},
+							icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' },
 						});
 						markersRef.current.push(bizMarker);
-						bounds.extend(center);
-						hasCoords = true;
 					}
 
-					// Compute bounds for targeted areas
-					target_areas.forEach((area) => {
-						if (area.lat && area.lng) {
-							bounds.extend({ lat: area.lat, lng: area.lng });
-							hasCoords = true;
-						}
-					});
-
-					// Client-side geocoding to resolve Place IDs for Feature Layer styling.
-					// Guard every iteration with `cancelled` so the cleanup of a previous
-					// effect stops this loop immediately — otherwise two overlapping loops
-					// run concurrently, double the geocoding requests, and hit OVER_QUERY_LIMIT.
-					//
-					// TODO: Areas added manually from the search widget (neighbourhood names like
-					// "New Thippasandra") may not resolve to a Feature Layer boundary polygon —
-					// Google's Feature Layers cover postal codes reliably but neighbourhood
-					// coverage is incomplete. Such areas end up invisible on the map even though
-					// they are saved correctly in the campaign. A fallback marker/circle for
-					// areas that fail geocoding (or whose place_id doesn't match any Feature
-					// Layer feature) would make them visible.
-					const geocoder = new google.maps.Geocoder();
-					const resolveBoundariesAndStyle = async () => {
-						const placeIdsToStyle = new Set<string>();
-						const placeIdToLocMap = new Map<string, any>();
-
-						for (const loc of target_areas) {
-							if (cancelled) return;
-							const query = loc.pincode ? `${loc.pincode}, India` : (loc.name || loc.city);
-							if (!query) continue;
-
-							await new Promise<void>((resolve) => {
-								geocoder.geocode({ address: query }, (results: any, gStatus: any) => {
-									if (!cancelled && gStatus === 'OK' && results?.[0]?.place_id) {
-										const pId = results[0].place_id;
-										placeIdsToStyle.add(pId);
-										placeIdToLocMap.set(pId, loc);
-									}
-									resolve();
-								});
-							});
-						}
-
-						if (cancelled) return;
-
-						// Style FeatureLayers using resolved Place IDs
-						const FT = google.maps.FeatureType || {};
-						if (typeof map.getFeatureLayer !== 'function') return;
-						if (!map_id) return;
-
-						const layersToStyle = [
-							FT.LOCALITY || 'LOCALITY',
-							FT.POSTAL_CODE || 'POSTAL_CODE',
-							FT.NEIGHBORHOOD || 'NEIGHBORHOOD',
-							FT.SUBLOCALITY_LEVEL_1 || 'SUBLOCALITY_LEVEL_1',
-						];
-
-						layersToStyle.forEach(layerType => {
-							try {
-								const layer = map.getFeatureLayer(layerType);
-								if (placeIdsToStyle.size > 0) {
-									layer.addListener('click', (e: any) => {
-										if (e.features?.length > 0) {
-											const clickedPlaceId = e.features[0].placeId;
-											const matchedLoc = placeIdToLocMap.get(clickedPlaceId);
-											if (matchedLoc) setSelectedLocation(matchedLoc);
-										}
-									});
-
-									layer.addListener('pointermove', (e: any) => {
-										if (e.features?.length > 0) {
-											const pid = e.features[0].placeId;
-											const matchedLoc = placeIdToLocMap.get(pid);
-											if (matchedLoc && tooltipRef.current) {
-												const rows: string[] = [];
-												if (matchedLoc.pincode) rows.push(`Pincode: ${matchedLoc.pincode}`);
-												if (matchedLoc.city) rows.push(`City: ${matchedLoc.city}`);
-												if (matchedLoc.state) rows.push(`State: ${matchedLoc.state}`);
-												if (matchedLoc.lat && matchedLoc.lng) rows.push(`Coordinates: ${Number(matchedLoc.lat).toFixed(4)}, ${Number(matchedLoc.lng).toFixed(4)}`);
-												if (matchedLoc.google_id) rows.push(`Google ID: ${matchedLoc.google_id}`);
-												if (matchedLoc.meta_key) rows.push(`Meta Key: ${matchedLoc.meta_key}`);
-												setTooltipContent(rows.join('<br/>'));
-												setTooltipPos({ x: e.domEvent.offsetX + 12, y: e.domEvent.offsetY + 12 });
-											} else {
-												setTooltipContent('');
-												setTooltipPos(null);
-											}
-										} else {
-											setTooltipContent('');
-											setTooltipPos(null);
-										}
-									});
-
-									layer.addListener('pointerout', () => {
-										setTooltipContent('');
-										setTooltipPos(null);
-									});
-
-									layer.style = (options: any) => {
-										if (placeIdsToStyle.has(options.feature.placeId)) {
-											return {
-												strokeColor: '#1E88E5',
-												strokeOpacity: 0.8,
-												strokeWeight: 2,
-												fillColor: '#1E88E5',
-												fillOpacity: 0.25,
-											};
-										}
-										return null;
-									};
-								} else {
-									layer.style = null;
-								}
-							} catch (err) {
-								console.warn('Feature layer', layerType, 'error:', err);
-							}
-						});
-					};
-
-					await resolveBoundariesAndStyle();
-
-					if (hasCoords) {
-						if (target_areas.length > 0) {
-							map.fitBounds(bounds);
-							google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
-								if (map.getZoom() > 14) map.setZoom(14);
-							});
-						} else {
-							map.setCenter(mapCenter);
-						}
-					}
-
-					if (!cancelled) setStatus('ready');
+					if (!cancelled) setMapReady(true);
 				} catch (e) {
 					console.error(e);
 					if (!cancelled) setStatus('error');
@@ -548,29 +402,163 @@ function MapBlock({
 			cancelled = true;
 			markersRef.current.forEach(m => m.setMap(null));
 			mapRef.current = null;
+			googleRef.current = null;
+			setMapReady(false);
 		};
-	}, [api_key, container, center, target_areas, product_location]);
+		// Rebuild only when the map identity or business location actually changes —
+		// `center`/`product_location` are read from the live closure on each run.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [api_key, container, map_id, centerLat, centerLng]);
+
+	// Geocode target areas and apply feature-layer styling whenever areas change.
+	// Depends on mapReady so it re-runs once the map from the effect above is ready.
+	// TODO: neighbourhood names (e.g. "New Thippasandra") may not resolve to a Feature
+	// Layer polygon — postal code coverage is reliable but neighbourhood coverage is
+	// incomplete. A fallback marker/circle for unresolved areas would make them visible.
+	useEffect(() => {
+		const map = mapRef.current;
+		const google = googleRef.current;
+		if (!map || !google || !map_id) {
+			if (mapReady) setStatus('ready');
+			return;
+		}
+
+		let cancelled = false;
+		const geocoder = new google.maps.Geocoder();
+
+		const FT = google.maps.FeatureType || {};
+		const hasFeatureLayers = typeof map.getFeatureLayer === 'function';
+		const layerTypes = [
+			FT.LOCALITY || 'LOCALITY',
+			FT.POSTAL_CODE || 'POSTAL_CODE',
+			FT.NEIGHBORHOOD || 'NEIGHBORHOOD',
+			FT.SUBLOCALITY_LEVEL_1 || 'SUBLOCALITY_LEVEL_1',
+		];
+
+		// Listeners and styles attach to map-cached layer objects that outlive this
+		// effect, so both must be cleared on re-run/unmount — otherwise listeners
+		// stack up and a stale style closure keeps highlighting the previous set.
+		const clearFeatureLayers = () => {
+			featureListenersRef.current.forEach(l => {
+				try { l.remove(); } catch { /* layer already gone */ }
+			});
+			featureListenersRef.current = [];
+			if (hasFeatureLayers) {
+				layerTypes.forEach(t => {
+					try { map.getFeatureLayer(t).style = null; } catch { /* unsupported layer */ }
+				});
+			}
+		};
+
+		const run = async () => {
+			const placeIdsToStyle = new Set<string>();
+			const placeIdToLocMap = new Map<string, any>();
+
+			// Guard every iteration with `cancelled` so cleanup of a previous run
+			// stops the loop immediately — prevents overlapping geocode floods.
+			for (const loc of target_areas) {
+				if (cancelled) return;
+				const query = loc.pincode ? `${loc.pincode}, India` : (loc.name || loc.city);
+				if (!query) continue;
+				await new Promise<void>(resolve => {
+					geocoder.geocode({ address: query }, (results: any, gStatus: any) => {
+						if (!cancelled && gStatus === 'OK' && results?.[0]?.place_id) {
+							const pId = results[0].place_id;
+							placeIdsToStyle.add(pId);
+							placeIdToLocMap.set(pId, loc);
+						}
+						resolve();
+					});
+				});
+			}
+
+			if (cancelled) return;
+
+			// Drop prior listeners + styles before re-binding against the current
+			// area set (the layer objects persist across runs now).
+			clearFeatureLayers();
+
+			if (hasFeatureLayers && placeIdsToStyle.size > 0) {
+				layerTypes.forEach(layerType => {
+					try {
+						const layer = map.getFeatureLayer(layerType);
+						featureListenersRef.current.push(
+							layer.addListener('click', (e: any) => {
+								const matchedLoc = e.features?.length > 0
+									? placeIdToLocMap.get(e.features[0].placeId)
+									: null;
+								if (matchedLoc) setSelectedLocation(matchedLoc);
+							}),
+							layer.addListener('pointermove', (e: any) => {
+								const matchedLoc = e.features?.length > 0
+									? placeIdToLocMap.get(e.features[0].placeId)
+									: null;
+								if (matchedLoc) {
+									setTooltipLines([
+										matchedLoc.pincode && `Pincode: ${matchedLoc.pincode}`,
+										matchedLoc.city && `City: ${matchedLoc.city}`,
+										matchedLoc.state && `State: ${matchedLoc.state}`,
+										matchedLoc.lat && matchedLoc.lng && `Coordinates: ${Number(matchedLoc.lat).toFixed(4)}, ${Number(matchedLoc.lng).toFixed(4)}`,
+										matchedLoc.google_id && `Google ID: ${matchedLoc.google_id}`,
+										matchedLoc.meta_key && `Meta Key: ${matchedLoc.meta_key}`,
+									].filter(Boolean) as string[]);
+									setTooltipPos({ x: e.domEvent.offsetX + 12, y: e.domEvent.offsetY + 12 });
+								} else {
+									setTooltipLines([]);
+									setTooltipPos(null);
+								}
+							}),
+							layer.addListener('pointerout', () => {
+								setTooltipLines([]);
+								setTooltipPos(null);
+							}),
+						);
+						layer.style = (options: any) =>
+							placeIdsToStyle.has(options.feature.placeId)
+								? { strokeColor: '#1E88E5', strokeOpacity: 0.8, strokeWeight: 2, fillColor: '#1E88E5', fillOpacity: 0.25 }
+								: null;
+					} catch (err) {
+						console.warn('Feature layer', layerType, 'error:', err);
+					}
+				});
+			}
+
+			const bounds = new google.maps.LatLngBounds();
+			let hasCoords = false;
+			if (center) { bounds.extend(center); hasCoords = true; }
+			target_areas.forEach(area => {
+				if (area.lat && area.lng) { bounds.extend({ lat: area.lat, lng: area.lng }); hasCoords = true; }
+			});
+			if (hasCoords && target_areas.length > 0) {
+				map.fitBounds(bounds);
+				google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+					if (map.getZoom() > 14) map.setZoom(14);
+				});
+			}
+
+			if (!cancelled) setStatus('ready');
+		};
+
+		run().catch(() => { if (!cancelled) setStatus('error'); });
+		return () => { cancelled = true; clearFeatureLayers(); };
+		// `target_areas` is read live; `areasKey` is its stable-content proxy.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [mapReady, areasKey, map_id, centerLat, centerLng]);
 
 	const handleAddLocation = (place: any) => {
 		setSearchQuery('');
 		setSuggestions([]);
-		
+		const isMeta = platform.toLowerCase().includes('meta');
 		const payload = {
 			name: place.canonical_name || place.name,
 			lat: place.lat,
 			lng: place.lng,
 			place_id: place.place_id,
 			pincode: place.pincode,
-			google_id: platform.toLowerCase().includes('meta') ? undefined : place.id,
-			meta_key: platform.toLowerCase().includes('meta') ? place.id : undefined,
+			google_id: isMeta ? undefined : place.id,
+			meta_key: isMeta ? place.id : undefined,
 		};
-		
-		const args = Object.entries(payload)
-			.filter(([_, v]) => v !== undefined && v !== '')
-			.map(([k, v]) => `${k}=${typeof v === 'number' ? v : `"${v}"`}`)
-			.join(' ');
-
-		onSend(`add targeting location ${args}`, undefined, `Adding location ${payload.name}...`);
+		onSend(`add targeting location ${JSON.stringify(payload)}`, undefined, `Adding location ${payload.name}...`);
 	};
 
 	const handleDelete = (index?: number) => {
@@ -598,10 +586,9 @@ function MapBlock({
 								type="button"
 								onClick={() => handleAddLocation(sug)}
 								className="_mapSuggestionItem"
-								style={{ color: '#1e293b', background: '#ffffff' }}
 							>
-								<span className="_mapSugName" style={{ color: '#1e293b' }}>{sug.canonical_name || sug.name}</span>
-								<span className="_mapSugType" style={{ color: '#64748b', background: '#f1f5f9' }}>{sug.type || 'Region'}</span>
+								<span className="_mapSugName">{sug.canonical_name || sug.name}</span>
+								<span className="_mapSugType">{sug.type || 'Region'}</span>
 							</button>
 						))}
 					</div>
@@ -618,8 +605,9 @@ function MapBlock({
 						left: tooltipPos?.x ?? 0,
 						top: tooltipPos?.y ?? 0,
 					}}
-					dangerouslySetInnerHTML={{ __html: tooltipContent }}
-				/>
+				>
+					{tooltipLines.map((line, i) => <div key={i}>{line}</div>)}
+				</div>
 				{status !== 'ready' && (
 					<div className="_mapCanvasOverlay">
 						{status === 'loading' && 'Loading interactive map...'}
@@ -635,12 +623,14 @@ function MapBlock({
 						<div>
 							<div className="_mapFooterName">{selectedLocation.name}</div>
 							<div className="_mapFooterMeta">
-								{selectedLocation.pincode ? `Pincode: ${selectedLocation.pincode}` : ''}
-								{selectedLocation.city ? ` | City: ${selectedLocation.city}` : ''}
-								{selectedLocation.state ? ` | State: ${selectedLocation.state}` : ''}
-								{selectedLocation.lat && selectedLocation.lng ? ` | ${Number(selectedLocation.lat).toFixed(4)}, ${Number(selectedLocation.lng).toFixed(4)}` : ''}
-								{selectedLocation.google_id ? ` | Google ID: ${selectedLocation.google_id}` : ''}
-								{selectedLocation.meta_key ? ` | Meta Key: ${selectedLocation.meta_key}` : ''}
+								{[
+									selectedLocation.pincode && `Pincode: ${selectedLocation.pincode}`,
+									selectedLocation.city && `City: ${selectedLocation.city}`,
+									selectedLocation.state && `State: ${selectedLocation.state}`,
+									selectedLocation.lat && selectedLocation.lng && `${Number(selectedLocation.lat).toFixed(4)}, ${Number(selectedLocation.lng).toFixed(4)}`,
+									selectedLocation.google_id && `Google ID: ${selectedLocation.google_id}`,
+									selectedLocation.meta_key && `Meta Key: ${selectedLocation.meta_key}`,
+								].filter(Boolean).join(' | ')}
 							</div>
 						</div>
 						<button
