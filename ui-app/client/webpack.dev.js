@@ -79,13 +79,7 @@ module.exports = {
     },
     historyApiFallback: true, // For React Router support
     port: 1234,
-    hot: true,
-    client: {
-      overlay: {
-        // Suppress cross-origin "Script error." from external scripts (e.g. Google Maps Feature Layers)
-        runtimeErrors: error => error.message !== 'Script error.',
-      },
-    },
+    hot: true, 
     proxy: [
       {
         context: ["**/api/**", "/sso/**"],
