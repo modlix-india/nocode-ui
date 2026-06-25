@@ -1052,37 +1052,89 @@ function generateDynamicColumns(
 		if (sortColumns)
 			sortColumnsArray = Object.values(sortColumns).map(col => col.property.value);
 
+		// Collect user-defined children of TableDynamicColumn (if any).
+		const dynamicColumnChildKeys: string[] = dynamicColumn.children
+			? Object.entries(dynamicColumn.children)
+					.filter(([, v]) => v)
+					.map(([k]) => k)
+			: [];
+
+		// Recursively collect all component keys in a subtree.
+		const collectSubtree = (rootKey: string): string[] => {
+			const result: string[] = [rootKey];
+			const comp = cp.componentDefinition[rootKey];
+			if (!comp?.children) return result;
+			for (const [ck, cv] of Object.entries(comp.children))
+				if (cv) result.push(...collectSubtree(ck));
+			return result;
+		};
+
 		for (let i = 0; i < columns.length; i++) {
 			const eachField = columns[i];
-
-			const childRendererKey = `${key}${eachField}_renderer`;
-			const eachRenderer: ComponentDefinition = {
-				key: childRendererKey,
-				type: 'Text',
-				name: eachField + 'Text',
-				properties: {
-					text: {
-						location: { type: 'EXPRESSION', expression: `Parent.${eachField}` },
-					},
-				},
-			};
 
 			const styleProperties = dynamicColumn?.styleProperties
 				? duplicate(dynamicColumn.styleProperties)
 				: undefined;
+
+			let columnChildren: { [k: string]: boolean };
+			let dynamicChildField: string | undefined;
+
+			if (dynamicColumnChildKeys.length > 0) {
+				// Clone the user's children subtree so each field column
+				// gets independent component keys.
+				columnChildren = {};
+				const keyMap: { [orig: string]: string } = {};
+				for (const origKey of dynamicColumnChildKeys) {
+					for (const sk of collectSubtree(origKey))
+					keyMap[sk] = `${key}${eachField}_${sk}`;
+				}
+				for (const [origKey, newKey] of Object.entries(keyMap)) {
+					const origComp = cp.componentDefinition[origKey];
+					if (!origComp) continue;
+					const cloned: ComponentDefinition = duplicate(origComp);
+					cloned.key = newKey;
+					if (cloned.children) {
+						const remapped: { [k: string]: boolean } = {};
+						for (const [ck, cv] of Object.entries(cloned.children))
+							remapped[keyMap[ck] ?? ck] = cv as boolean;
+						cloned.children = remapped;
+					}
+					cp.componentDefinition[newKey] = cloned;
+				}
+				for (const origKey of dynamicColumnChildKeys)
+					if (keyMap[origKey]) columnChildren[keyMap[origKey]] = true;
+				// Tell TableColumn to push Parent.<eachField> onto location
+				// history so children can use just `Parent` to access the
+				// field value (e.g. Parent.percentage, Parent.count).
+				dynamicChildField = eachField;
+			} else {
+				// Default: auto-generate a Text renderer for Parent.<field>.
+				const childRendererKey = `${key}${eachField}_renderer`;
+				cp.componentDefinition[childRendererKey] = {
+					key: childRendererKey,
+					type: 'Text',
+					name: eachField + 'Text',
+					properties: {
+						text: {
+							location: { type: 'EXPRESSION', expression: `Parent.${eachField}` },
+						},
+					},
+				};
+				columnChildren = { [childRendererKey]: true };
+			}
+
+			const eachChildProperties: any = { label: { value: columnNamesIndex[eachField] } };
+			if (dynamicChildField)
+				eachChildProperties.dynamicChildField = { value: dynamicChildField };
 
 			const eachChild: ComponentDefinition = {
 				key: `${key}${eachField}`,
 				type: 'TableColumn',
 				name: eachField,
 				displayOrder: i,
-				properties: {
-					label: {
-						value: columnNamesIndex[eachField],
-					},
-				},
+				properties: eachChildProperties,
 				styleProperties,
-				children: { [eachRenderer.key]: true },
+				children: columnChildren,
 			};
 
 			if (
@@ -1095,7 +1147,6 @@ function generateDynamicColumns(
 				};
 			}
 
-			cp.componentDefinition[eachRenderer.key] = eachRenderer;
 			cp.componentDefinition[eachChild.key] = eachChild;
 			children[eachChild.key] = true;
 		}

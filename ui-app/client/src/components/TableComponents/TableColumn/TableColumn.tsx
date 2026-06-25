@@ -4,7 +4,7 @@ import {
 	PageStoreExtractor,
 	UrlDetailsExtractor,
 } from '../../../context/StoreContext';
-import { ComponentDefinition, ComponentProps } from '../../../types/common';
+import { ComponentDefinition, ComponentProps, LocationHistory } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
 import Children from '../../Children';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
@@ -31,6 +31,13 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 			pageExtractor,
 			urlExtractor,
 		);
+
+	// Read directly from raw definition properties — not via useDefinition
+	// since dynamicChildField is a synthetic internal property not declared
+	// in propertiesDefinition.
+	const dynamicChildField = definition.properties?.dynamicChildField?.value as
+		| string
+		| undefined;
 
 	const [hover, setHover] = useState(false);
 	const [treeHover, setTreeHover] = useState(false);
@@ -66,6 +73,34 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		context.table.showSpinner &&
 		context.table.spinnerType.startsWith('_emptyRow');
 
+	// If this TableColumn was synthesised by TableDynamicColumn with user
+	// children, push one extra location history level so that `Parent`
+	// inside the children resolves to the field value (e.g. row.fresh)
+	// rather than the full row object.
+	const childLocationHistory: LocationHistory[] =
+		dynamicChildField && locationHistory.length > 0
+			? [
+					...locationHistory,
+					{
+						location: {
+							type: 'EXPRESSION' as const,
+							expression:
+								(typeof locationHistory[locationHistory.length - 1].location === 'string'
+									? locationHistory[locationHistory.length - 1].location
+									: ((locationHistory[locationHistory.length - 1].location as any)
+											?.expression ??
+										(locationHistory[locationHistory.length - 1].location as any)
+											?.value ??
+										'')) +
+								`.${dynamicChildField}`,
+						},
+						index: locationHistory[locationHistory.length - 1].index,
+						pageName: context.pageName,
+						componentKey: definition.key,
+					},
+				]
+			: locationHistory;
+
 	if (isLoading) {
 		dataPart = <div className={`_animateData ${context.table.spinnerType}`}>&nbsp;</div>;
 	} else {
@@ -74,7 +109,7 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 				pageDefinition={pageDefinition}
 				renderableChildren={firstchild}
 				context={context}
-				locationHistory={locationHistory}
+				locationHistory={childLocationHistory}
 			/>
 		);
 	}
