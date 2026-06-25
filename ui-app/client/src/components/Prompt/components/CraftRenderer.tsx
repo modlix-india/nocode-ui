@@ -411,13 +411,25 @@ function MapBlock({
 						}
 					});
 
-					// Client-side geocoding to resolve Place IDs for Feature Layer styling
+					// Client-side geocoding to resolve Place IDs for Feature Layer styling.
+					// Guard every iteration with `cancelled` so the cleanup of a previous
+					// effect stops this loop immediately — otherwise two overlapping loops
+					// run concurrently, double the geocoding requests, and hit OVER_QUERY_LIMIT.
+					//
+					// TODO: Areas added manually from the search widget (neighbourhood names like
+					// "New Thippasandra") may not resolve to a Feature Layer boundary polygon —
+					// Google's Feature Layers cover postal codes reliably but neighbourhood
+					// coverage is incomplete. Such areas end up invisible on the map even though
+					// they are saved correctly in the campaign. A fallback marker/circle for
+					// areas that fail geocoding (or whose place_id doesn't match any Feature
+					// Layer feature) would make them visible.
 					const geocoder = new google.maps.Geocoder();
 					const resolveBoundariesAndStyle = async () => {
 						const placeIdsToStyle = new Set<string>();
 						const placeIdToLocMap = new Map<string, any>();
 
 						for (const loc of target_areas) {
+							if (cancelled) return;
 							const query = loc.pincode ? `${loc.pincode}, India` : (loc.name || loc.city);
 							if (!query) continue;
 
