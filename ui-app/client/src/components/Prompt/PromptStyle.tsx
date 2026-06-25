@@ -2084,7 +2084,161 @@ export default function PromptStyle({
 		${PREFIX} ._confirmationDetails li {
 			margin-bottom: 2px;
 		}
-		
+
+		/* ─── Map Block Styles (Added for Geotargeting UI) ─── */
+		${PREFIX} ._craftMapBlock {
+			border: 1px solid #e2e8f0;
+			border-radius: 12px;
+			background: #ffffff;
+			overflow: hidden;
+			margin: 16px 0;
+			box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+		}
+		${PREFIX} ._mapSearchBox {
+			position: relative;
+			padding: 12px;
+			border-bottom: 1px solid #e2e8f0;
+			background: #f8fafc;
+		}
+		${PREFIX} ._mapSearchInput {
+			width: 100%;
+			padding: 8px 12px;
+			border: 1px solid #cbd5e1;
+			border-radius: 8px;
+			font-size: 13px;
+			color: #1e293b;
+			outline: none;
+			transition: border-color 0.2s;
+		}
+		${PREFIX} ._mapSearchInput:focus {
+			border-color: #6366f1;
+		}
+		${PREFIX} ._mapSearchSpinner {
+			position: absolute;
+			right: 20px;
+			top: 20px;
+			font-size: 11px;
+			color: #64748b;
+		}
+		${PREFIX} ._mapSuggestionsList {
+			position: absolute;
+			left: 12px;
+			right: 12px;
+			top: calc(100% - 4px);
+			background: #ffffff;
+			border: 1px solid #e2e8f0;
+			border-radius: 8px;
+			box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+			max-height: 200px;
+			overflow-y: auto;
+			z-index: 10;
+		}
+		${PREFIX} ._mapSuggestionItem {
+			width: 100%;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			padding: 8px 12px;
+			border: none;
+			background: #ffffff !important;
+			color: #1e293b !important;
+			text-align: left;
+			cursor: pointer;
+			font-size: 13px;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._mapSuggestionItem:hover {
+			background: #f1f5f9;
+		}
+		${PREFIX} ._mapSugName {
+			font-weight: 500;
+			color: #1e293b;
+		}
+		${PREFIX} ._mapSugType {
+			font-size: 11px;
+			color: #64748b;
+			background: #f1f5f9;
+			padding: 2px 6px;
+			border-radius: 4px;
+		}
+		${PREFIX} ._mapCanvasWrap {
+			position: relative;
+			height: 300px;
+			background: #f1f5f9;
+		}
+		${PREFIX} ._mapCanvasDiv {
+			width: 100%;
+			height: 100%;
+		}
+		${PREFIX} ._mapCanvasOverlay {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: rgba(248, 250, 252, 0.9);
+			color: #64748b;
+			font-size: 13px;
+		}
+		${PREFIX} ._mapTooltip {
+			position: absolute;
+			background: rgba(26, 26, 26, 0.95);
+			color: #fff;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-size: 11px;
+			line-height: 1.6;
+			pointer-events: none;
+			z-index: 1000;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+			white-space: nowrap;
+			transition: opacity 0.1s ease;
+		}
+
+		/* ─── Map footer (detail panel) ─── */
+		${PREFIX} ._mapFooter {
+			padding: 12px;
+			border-top: 1px solid #e2e8f0;
+			background: #fafafa;
+			min-height: 50px;
+			display: flex;
+			align-items: center;
+		}
+		${PREFIX} ._mapFooterDetail {
+			display: flex;
+			width: 100%;
+			justify-content: space-between;
+			align-items: center;
+		}
+		${PREFIX} ._mapFooterName {
+			font-size: 13px;
+			font-weight: 600;
+			color: #1a1a1a;
+		}
+		${PREFIX} ._mapFooterMeta {
+			font-size: 11px;
+			color: #666;
+			margin-top: 2px;
+		}
+		${PREFIX} ._mapFooterDelete {
+			border: none;
+			background: none;
+			color: #dc2626;
+			cursor: pointer;
+			padding: 8px;
+			font-size: 13px;
+		}
+		${PREFIX} ._mapFooterDelete:hover {
+			color: #ef4444;
+		}
+		${PREFIX} ._mapFooterHint {
+			font-size: 11px;
+			color: #888;
+			font-style: italic;
+			text-align: center;
+			width: 100%;
+		}
+
 		/* Scroll to bottom button anchor — sits between messages and input,
 		   zero height so it doesn't affect layout. Button positioned relative to this. */
 		${PREFIX} ._scrollToBottomAnchor {
@@ -2124,6 +2278,121 @@ export default function PromptStyle({
 			background: #f4f4f4;
 			color: #1a1a1a;
 			transform: translateX(-50%) scale(1.05);
+		}
+
+		/* ─── LocationMap (inline location confirmation widget) ─── */
+		${PREFIX} ._pLocationContainer {
+			border: 1px solid #e5e5e5;
+			border-radius: 12px;
+			overflow: hidden;
+			margin: 8px 0;
+		}
+		${PREFIX} ._pLocationHeader {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 14px;
+			font-size: 13px;
+			font-weight: 600;
+			color: #1a1a1a;
+			background: #fafafa;
+		}
+		${PREFIX} ._pLocationMapWrap {
+			position: relative;
+			width: 100%;
+			height: 220px;
+			background: #f4f4f4;
+		}
+		${PREFIX} ._pLocationMapDiv { width: 100%; height: 100%; }
+		${PREFIX} ._pLocationMapOverlay {
+			position: absolute;
+			inset: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 24px;
+			text-align: center;
+			color: #666;
+			font-size: 13px;
+			background: rgba(244, 244, 244, 0.85);
+			pointer-events: none;
+		}
+		${PREFIX} ._pLocationFooter {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 12px;
+			padding: 6px 14px;
+			border-top: 1px solid #e5e5e5;
+			background: #fafafa;
+		}
+		${PREFIX} ._pLocationHint { font-size: 12px; color: #666; }
+		${PREFIX} ._pLocationActions { display: flex; gap: 8px; }
+		${PREFIX} ._pLocationConfirmBtn {
+			padding: 5px 14px;
+			border-radius: 8px;
+			font-size: 12px;
+			font-weight: 500;
+			cursor: pointer;
+			border: 1px solid transparent;
+			background: #1a1a1a;
+			color: #fff;
+		}
+		${PREFIX} ._pLocationConfirmBtn:hover { opacity: 0.85; }
+		${PREFIX} ._pLocationConfirmBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+		${PREFIX} ._pLocationConfirmedCard {
+			display: flex;
+			flex-direction: column;
+			margin: 8px 0;
+			width: 75%;
+			max-width: 480px;
+			border: 1px solid #e5e5e5;
+			border-radius: 10px;
+			overflow: hidden;
+			background: #fff;
+		}
+		${PREFIX} ._pLocationConfirmedMap {
+			width: 100%;
+			height: 240px;
+			background: #f4f4f4;
+			overflow: hidden;
+		}
+		${PREFIX} ._pLocationConfirmedMap img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			display: block;
+			filter: grayscale(100%);
+		}
+		${PREFIX} ._pLocationConfirmedRow {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 12px;
+			border-top: 1px solid #f0f0f0;
+			background: #fafafa;
+			min-height: 32px;
+		}
+		${PREFIX} ._pLocationConfirmedCheck {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 18px;
+			height: 18px;
+			flex: 0 0 18px;
+			border-radius: 999px;
+			background: #1a1a1a;
+			color: #fff;
+		}
+		${PREFIX} ._pLocationConfirmedAddr {
+			flex: 1 1 auto;
+			min-width: 0;
+			font-size: 12px;
+			font-weight: 500;
+			color: #1a1a1a;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
