@@ -15,6 +15,10 @@ interface CraftPanelProps {
 	onClose: () => void;
 	definition: ComponentDefinition;
 	styleProperties?: any;
+	sessionId: string | null;
+	agentEndpoint: string;
+	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
+	getAuthHeaders: () => Record<string, string>;
 }
 
 export function CraftPanel({
@@ -22,6 +26,10 @@ export function CraftPanel({
 	onClose,
 	definition,
 	styleProperties,
+	sessionId,
+	agentEndpoint,
+	onSend,
+	getAuthHeaders,
 }: Readonly<CraftPanelProps>) {
 	const bodyRef = useRef<HTMLDivElement>(null);
 	const craftIdRef = useRef<string | null>(null);
@@ -82,6 +90,10 @@ export function CraftPanel({
 					blocks={craft.blocks}
 					definition={definition}
 					styleProperties={styleProperties}
+					sessionId={sessionId}
+					agentEndpoint={agentEndpoint}
+					onSend={onSend}
+					getAuthHeaders={getAuthHeaders}
 				/>
 			</div>
 			{belowFold && (

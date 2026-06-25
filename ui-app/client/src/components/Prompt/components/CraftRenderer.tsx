@@ -1,18 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import { loadGoogleMaps } from '../../../util/googleMapsLoader';
+
+interface CraftContextValue {
+	sessionId: string | null;
+	agentEndpoint: string;
+	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
+	getAuthHeaders: () => Record<string, string>;
+}
+
+const CraftContext = createContext<CraftContextValue | null>(null);
 
 interface Block {
 	type: string;
 	[key: string]: any;
 }
 
+
+
 function HeadingBlock({ text, level = 1 }: { text: string; level?: number }) {
 	const Tag = `h${Math.min(level, 3)}` as keyof JSX.IntrinsicElements;
 	return <Tag className="_craftHeading">{text}</Tag>;
 }
 
-// empty block = unfilled placeholder (seeded for layout, filled later by id) — don't paint
 function TextBlock({ content }: { content: string }) {
 	if (!content) return null;
 	return <p className="_craftText">{content}</p>;
@@ -71,12 +82,11 @@ function ImageBlock({
 	background?: 'dark' | 'light';
 	fit?: 'cover' | 'contain';
 }) {
-	if (!url && !thumb_url) return null; // placeholder, no image yet
+	if (!url && !thumb_url) return null;
 	const classes = ['_craftImage'];
 	if (size === 'thumbnail') classes.push('_thumbnail');
 	if (background === 'dark') classes.push('_dark');
 	if (fit === 'cover') classes.push('_cover');
-	// show thumb inline, link to full-res; no url → no link
 	const inlineSrc = thumb_url || url;
 	const img = <img src={inlineSrc} alt={caption ?? ''} loading="lazy" />;
 	return (
@@ -243,6 +253,438 @@ function CollapsibleBlock({
 	);
 }
 
+
+function MapBlock({
+	api_key,
+	map_id,
+	center,
+	target_areas = [],
+	platform = 'Google Ads',
+	product_location,
+}: {
+	api_key?: string;
+	map_id?: string;
+	center?: { lat: number; lng: number };
+	target_areas?: Array<{
+		name: string;
+		type: string;
+		lat?: number;
+		lng?: number;
+		place_id?: string;
+		pincode?: string;
+		google_id?: string;
+		meta_key?: string;
+		city?: string;
+		state?: string;
+	}>;
+	platform?: string;
+	product_location?: string;
+}) {
+	const context = useContext(CraftContext);
+	if (!context) {
+		throw new Error('MapBlock must be used within a CraftRenderer');
+	}
+	const { sessionId, agentEndpoint, onSend, getAuthHeaders } = context;
+	const [container, setContainer] = useState<HTMLDivElement | null>(null);
+	const [status, setStatus] = useState<'loading' | 'ready' | 'no-key' | 'error'>(api_key ? 'loading' : 'no-key');
+	const [searchQuery, setSearchQuery] = useState('');
+	const [suggestions, setSuggestions] = useState<any[]>([]);
+	const [searching, setSearching] = useState(false);
+	const [selectedLocation, setSelectedLocation] = useState<any | null>(null);
+	const [tooltipLines, setTooltipLines] = useState<string[]>([]);
+	const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null);
+	const [mapReady, setMapReady] = useState(false);
+	const mapRef = useRef<any>(null);
+	const googleRef = useRef<any>(null);
+	const markersRef = useRef<any[]>([]);
+	const featureListenersRef = useRef<any[]>([]);
+	const areaMarkersRef = useRef<any[]>([]);
+	const tooltipRef = useRef<HTMLDivElement>(null);
+
+	const containerRef = useCallback((node: HTMLDivElement | null) => setContainer(node), []);
+
+	// Each craft re-emit hands us fresh `center`/`target_areas` references with
+	// identical contents. Depend on these stable values — not the object/array
+	// identities — so the map is built once and the geocode/feature-style pass
+	// re-runs only when the targeting set actually changes (not on every emit).
+	const centerLat = center?.lat;
+	const centerLng = center?.lng;
+	const areasKey = React.useMemo(
+		() => JSON.stringify((target_areas || []).map(a => [a.name, a.pincode, a.lat, a.lng])),
+		[target_areas],
+	);
+
+	// Search Autocomplete lookup API call
+	useEffect(() => {
+		if (searchQuery.trim().length < 2 || !sessionId) {
+			setSuggestions([]);
+			return;
+		}
+		const delayDebounce = setTimeout(async () => {
+			setSearching(true);
+			try {
+				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const queryPlatform = platform.toLowerCase().includes('meta') ? 'meta' : 'google';
+				const url = `${baseUrl}/sessions/${sessionId}/target-locations/search?q=${encodeURIComponent(searchQuery)}&platform=${queryPlatform}`;
+				const res = await fetch(url, {
+					headers: getAuthHeaders(),
+				});
+				if (res.ok) {
+					const data = await res.json();
+					setSuggestions(data || []);
+				}
+			} catch (err) {
+				console.error('Search autocomplete failed:', err);
+			} finally {
+				setSearching(false);
+			}
+		}, 300);
+		return () => clearTimeout(delayDebounce);
+	}, [searchQuery, sessionId, agentEndpoint, getAuthHeaders, platform]);
+
+	// Update selectedLocation when target_areas change
+	useEffect(() => {
+		if (selectedLocation) {
+			const stillExists = target_areas.some(
+				loc => loc.lat === selectedLocation.lat && loc.lng === selectedLocation.lng
+			);
+			if (!stillExists) setSelectedLocation(null);
+		}
+	}, [target_areas, selectedLocation]);
+
+	// Create the map and center marker once — re-runs only when api_key/container/center changes.
+	useEffect(() => {
+		if (!api_key || !container) return;
+		let cancelled = false;
+
+		loadGoogleMaps(api_key)
+			.then(async google => {
+				if (cancelled || !container.isConnected) return;
+				await new Promise(requestAnimationFrame);
+				if (cancelled || !container.isConnected) return;
+
+				try {
+					const mapCenter = center || { lat: 20.5937, lng: 78.9629 };
+					const map = new google.maps.Map(container, {
+						center: mapCenter,
+						zoom: center ? 11 : 5,
+						mapId: map_id,
+						disableDefaultUI: true,
+						zoomControl: true,
+						renderingType: 'VECTOR',
+					});
+					mapRef.current = map;
+					googleRef.current = google;
+
+					markersRef.current.forEach(m => m.setMap(null));
+					markersRef.current = [];
+
+					if (center) {
+						const bizMarker = new google.maps.Marker({
+							position: center,
+							map,
+							title: product_location || 'Business Location',
+							icon: { url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png' },
+						});
+						markersRef.current.push(bizMarker);
+					}
+
+					if (!cancelled) setMapReady(true);
+				} catch (e) {
+					console.error(e);
+					if (!cancelled) setStatus('error');
+				}
+			})
+			.catch(() => {
+				if (!cancelled) setStatus('error');
+			});
+
+		return () => {
+			cancelled = true;
+			markersRef.current.forEach(m => m.setMap(null));
+			mapRef.current = null;
+			googleRef.current = null;
+			setMapReady(false);
+		};
+		// Rebuild only when the map identity or business location actually changes —
+		// `center`/`product_location` are read from the live closure on each run.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [api_key, container, map_id, centerLat, centerLng]);
+
+	// Geocode target areas and apply feature-layer styling whenever areas change.
+	// Depends on mapReady so it re-runs once the map from the effect above is ready.
+	// TODO: neighbourhood names (e.g. "New Thippasandra") may not resolve to a Feature
+	// Layer polygon — postal code coverage is reliable but neighbourhood coverage is
+	// incomplete. A fallback marker/circle for unresolved areas would make them visible.
+	useEffect(() => {
+		const map = mapRef.current;
+		const google = googleRef.current;
+		if (!map || !google || !map_id) {
+			if (mapReady) setStatus('ready');
+			return;
+		}
+
+		let cancelled = false;
+		const geocoder = new google.maps.Geocoder();
+
+		const FT = google.maps.FeatureType || {};
+		const hasFeatureLayers = typeof map.getFeatureLayer === 'function';
+		const layerTypes = [
+			FT.LOCALITY || 'LOCALITY',
+			FT.POSTAL_CODE || 'POSTAL_CODE',
+			FT.NEIGHBORHOOD || 'NEIGHBORHOOD',
+			FT.SUBLOCALITY_LEVEL_1 || 'SUBLOCALITY_LEVEL_1',
+		];
+
+		// Listeners, styles and fallback markers attach to objects that outlive this
+		// effect, so all must be cleared on re-run/unmount — otherwise listeners
+		// stack up, a stale style closure keeps highlighting the previous set, and
+		// fallback markers from the previous area set linger.
+		const clearOverlays = () => {
+			featureListenersRef.current.forEach(l => {
+				try { l.remove(); } catch { /* layer already gone */ }
+			});
+			featureListenersRef.current = [];
+			areaMarkersRef.current.forEach(m => {
+				try { m.setMap(null); } catch { /* marker already gone */ }
+			});
+			areaMarkersRef.current = [];
+			if (hasFeatureLayers) {
+				layerTypes.forEach(t => {
+					try { map.getFeatureLayer(t).style = null; } catch { /* unsupported layer */ }
+				});
+			}
+		};
+
+		const run = async () => {
+			const placeIdsToStyle = new Set<string>();
+			const placeIdToLocMap = new Map<string, any>();
+
+			// Guard every iteration with `cancelled` so cleanup of a previous run
+			// stops the loop immediately — prevents overlapping geocode floods.
+			for (const loc of target_areas) {
+				if (cancelled) return;
+				const query = loc.pincode ? `${loc.pincode}, India` : (loc.name || loc.city);
+				if (!query) continue;
+				await new Promise<void>(resolve => {
+					geocoder.geocode({ address: query }, (results: any, gStatus: any) => {
+						if (!cancelled && gStatus === 'OK' && results?.[0]?.place_id) {
+							const pId = results[0].place_id;
+							placeIdsToStyle.add(pId);
+							placeIdToLocMap.set(pId, loc);
+						}
+						resolve();
+					});
+				});
+			}
+
+			if (cancelled) return;
+
+			// Drop prior listeners + styles before re-binding against the current
+			// area set (the layer objects persist across runs now).
+			clearOverlays();
+
+			if (hasFeatureLayers && placeIdsToStyle.size > 0) {
+				layerTypes.forEach(layerType => {
+					try {
+						const layer = map.getFeatureLayer(layerType);
+						featureListenersRef.current.push(
+							layer.addListener('click', (e: any) => {
+								const matchedLoc = e.features?.length > 0
+									? placeIdToLocMap.get(e.features[0].placeId)
+									: null;
+								if (matchedLoc) setSelectedLocation(matchedLoc);
+							}),
+							layer.addListener('pointermove', (e: any) => {
+								const matchedLoc = e.features?.length > 0
+									? placeIdToLocMap.get(e.features[0].placeId)
+									: null;
+								if (matchedLoc) {
+									setTooltipLines([
+										matchedLoc.pincode && `Pincode: ${matchedLoc.pincode}`,
+										matchedLoc.city && `City: ${matchedLoc.city}`,
+										matchedLoc.state && `State: ${matchedLoc.state}`,
+										matchedLoc.lat && matchedLoc.lng && `Coordinates: ${Number(matchedLoc.lat).toFixed(4)}, ${Number(matchedLoc.lng).toFixed(4)}`,
+										matchedLoc.google_id && `Google ID: ${matchedLoc.google_id}`,
+										matchedLoc.meta_key && `Meta Key: ${matchedLoc.meta_key}`,
+									].filter(Boolean) as string[]);
+									setTooltipPos({ x: e.domEvent.offsetX + 12, y: e.domEvent.offsetY + 12 });
+								} else {
+									setTooltipLines([]);
+									setTooltipPos(null);
+								}
+							}),
+							layer.addListener('pointerout', () => {
+								setTooltipLines([]);
+								setTooltipPos(null);
+							}),
+						);
+						layer.style = (options: any) =>
+							placeIdsToStyle.has(options.feature.placeId)
+								? { strokeColor: '#1E88E5', strokeOpacity: 0.8, strokeWeight: 2, fillColor: '#1E88E5', fillOpacity: 0.25 }
+								: null;
+					} catch (err) {
+						console.warn('Feature layer', layerType, 'error:', err);
+					}
+				});
+			}
+
+			// Fallback markers for areas with no postal-code polygon coverage
+			// (neighbourhoods / manually-added places). Postal codes resolve to a
+			// Feature Layer boundary reliably; neighbourhoods often don't, so without
+			// a pin they'd be saved but invisible. A coordinate marker keeps every
+			// targeted area visible and clickable for delete.
+			target_areas.forEach(area => {
+				if (area.pincode || area.lat == null || area.lng == null) return;
+				const marker = new google.maps.Marker({
+					position: { lat: Number(area.lat), lng: Number(area.lng) },
+					map,
+					title: area.name,
+					icon: {
+						path: google.maps.SymbolPath.CIRCLE,
+						scale: 7,
+						fillColor: '#1E88E5',
+						fillOpacity: 0.9,
+						strokeColor: '#ffffff',
+						strokeWeight: 2,
+					},
+				});
+				marker.addListener('click', () => setSelectedLocation(area));
+				areaMarkersRef.current.push(marker);
+			});
+
+			const bounds = new google.maps.LatLngBounds();
+			let hasCoords = false;
+			if (center) { bounds.extend(center); hasCoords = true; }
+			target_areas.forEach(area => {
+				if (area.lat && area.lng) { bounds.extend({ lat: area.lat, lng: area.lng }); hasCoords = true; }
+			});
+			if (hasCoords && target_areas.length > 0) {
+				map.fitBounds(bounds);
+				google.maps.event.addListenerOnce(map, 'bounds_changed', () => {
+					if (map.getZoom() > 14) map.setZoom(14);
+				});
+			}
+
+			if (!cancelled) setStatus('ready');
+		};
+
+		run().catch(() => { if (!cancelled) setStatus('error'); });
+		return () => { cancelled = true; clearOverlays(); };
+		// `target_areas` is read live; `areasKey` is its stable-content proxy.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [mapReady, areasKey, map_id, centerLat, centerLng]);
+
+	const handleAddLocation = (place: any) => {
+		setSearchQuery('');
+		setSuggestions([]);
+		const isMeta = platform.toLowerCase().includes('meta');
+		const payload = {
+			name: place.canonical_name || place.name,
+			lat: place.lat,
+			lng: place.lng,
+			place_id: place.place_id,
+			pincode: place.pincode,
+			google_id: isMeta ? undefined : place.id,
+			meta_key: isMeta ? place.id : undefined,
+		};
+		onSend(`add targeting location ${JSON.stringify(payload)}`, undefined, `Adding location ${payload.name}...`);
+	};
+
+	const handleDelete = (index?: number) => {
+		if (index === undefined) return;
+		onSend(`delete targeting location index ${index + 1}`, undefined, `Deleting location...`);
+		setSelectedLocation(null);
+	};
+
+	return (
+		<div className="_craftMapBlock">
+			<div className="_mapSearchBox">
+				<input
+					type="text"
+					placeholder="Search locations to target..."
+					value={searchQuery}
+					onChange={e => setSearchQuery(e.target.value)}
+					className="_mapSearchInput"
+				/>
+				{searching && <span className="_mapSearchSpinner">Searching...</span>}
+				{suggestions.length > 0 && (
+					<div className="_mapSuggestionsList">
+						{suggestions.map((sug, i) => (
+							<button
+								key={i}
+								type="button"
+								onClick={() => handleAddLocation(sug)}
+								className="_mapSuggestionItem"
+							>
+								<span className="_mapSugName">{sug.canonical_name || sug.name}</span>
+								<span className="_mapSugType">{sug.type || 'Region'}</span>
+							</button>
+						))}
+					</div>
+				)}
+			</div>
+
+			<div className="_mapCanvasWrap">
+				<div ref={containerRef} className="_mapCanvasDiv" />
+				<div
+					ref={tooltipRef}
+					className="_mapTooltip"
+					style={{
+						display: tooltipPos ? 'block' : 'none',
+						left: tooltipPos?.x ?? 0,
+						top: tooltipPos?.y ?? 0,
+					}}
+				>
+					{tooltipLines.map((line, i) => <div key={i}>{line}</div>)}
+				</div>
+				{status !== 'ready' && (
+					<div className="_mapCanvasOverlay">
+						{status === 'loading' && 'Loading interactive map...'}
+						{status === 'no-key' && 'Map unavailable (Google Maps API key not configured)'}
+						{status === 'error' && 'Failed to load interactive Google Map.'}
+					</div>
+				)}
+			</div>
+
+			<div className="_mapFooter">
+				{selectedLocation ? (
+					<div className="_mapFooterDetail">
+						<div>
+							<div className="_mapFooterName">{selectedLocation.name}</div>
+							<div className="_mapFooterMeta">
+								{[
+									selectedLocation.pincode && `Pincode: ${selectedLocation.pincode}`,
+									selectedLocation.city && `City: ${selectedLocation.city}`,
+									selectedLocation.state && `State: ${selectedLocation.state}`,
+									selectedLocation.lat && selectedLocation.lng && `${Number(selectedLocation.lat).toFixed(4)}, ${Number(selectedLocation.lng).toFixed(4)}`,
+									selectedLocation.google_id && `Google ID: ${selectedLocation.google_id}`,
+									selectedLocation.meta_key && `Meta Key: ${selectedLocation.meta_key}`,
+								].filter(Boolean).join(' | ')}
+							</div>
+						</div>
+						<button
+							type="button"
+							className="_mapFooterDelete"
+							onClick={() => {
+								const idx = target_areas.findIndex(
+									loc => loc.lat === selectedLocation.lat && loc.lng === selectedLocation.lng
+								);
+								handleDelete(idx >= 0 ? idx : undefined);
+							}}
+						>
+							Delete
+						</button>
+					</div>
+				) : target_areas.length > 0 ? (
+					<div className="_mapFooterHint">Click a highlighted boundary or pin to view details and delete.</div>
+				) : null}
+			</div>
+
+		</div>
+	);
+}
+
 const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	heading: HeadingBlock,
 	text: TextBlock,
@@ -256,6 +698,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	list: ListBlock,
 	row: RowBlock,
 	collapsible: CollapsibleBlock,
+	map: MapBlock,
 };
 
 function CraftBlockRenderer({
@@ -267,28 +710,43 @@ function CraftBlockRenderer({
 }) {
 	const Component = BLOCK_RENDERERS[block.type];
 	if (!Component) return null;
-	return <Component {...block} styleProperties={styleProperties} />;
+	return (
+		<Component
+			{...block}
+			styleProperties={styleProperties}
+		/>
+	);
 }
 
 export function CraftRenderer({
 	blocks,
 	definition,
 	styleProperties,
+	sessionId,
+	agentEndpoint,
+	onSend,
+	getAuthHeaders,
 }: Readonly<{
 	blocks: Block[];
 	definition: ComponentDefinition;
 	styleProperties?: any;
+	sessionId: string | null;
+	agentEndpoint: string;
+	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
+	getAuthHeaders: () => Record<string, string>;
 }>) {
 	return (
-		<div className="_craftContent" style={styleProperties?.craftContent ?? {}}>
-			<SubHelperComponent definition={definition} subComponentName="craftContent" />
-			{blocks.map((block, i) => (
-				<CraftBlockRenderer
-					key={(block as any).id ?? i}
-					block={block}
-					styleProperties={styleProperties}
-				/>
-			))}
-		</div>
+		<CraftContext.Provider value={{ sessionId, agentEndpoint, onSend, getAuthHeaders }}>
+			<div className="_craftContent" style={styleProperties?.craftContent ?? {}}>
+				<SubHelperComponent definition={definition} subComponentName="craftContent" />
+				{blocks.map((block, i) => (
+					<CraftBlockRenderer
+						key={(block as any).id ?? i}
+						block={block}
+						styleProperties={styleProperties}
+					/>
+				))}
+			</div>
+		</CraftContext.Provider>
 	);
 }
