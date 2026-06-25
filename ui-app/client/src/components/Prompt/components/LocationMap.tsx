@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { loadGoogleMaps } from '../../../util/googleMapsLoader';
 
 interface LocationMapProps {
 	location: {
@@ -69,28 +70,6 @@ const MAP_STYLES = [
 	{ featureType: 'water', elementType: 'geometry', stylers: [{ color: '#cfe2f3' }] },
 ];
 
-const loaders = new Map<string, Promise<any>>();
-
-function loadMaps(apiKey: string): Promise<any> {
-	if ((window as any).google?.maps) return Promise.resolve((window as any).google);
-	const cached = loaders.get(apiKey);
-	if (cached) return cached;
-	const p = new Promise<any>((resolve, reject) => {
-		const cbName = `__gmapsCb_${Math.random().toString(36).slice(2)}`;
-		(window as any)[cbName] = () => {
-			resolve((window as any).google);
-			delete (window as any)[cbName];
-		};
-		const script = document.createElement('script');
-		script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=${cbName}&loading=async`;
-		script.async = true;
-		script.defer = true;
-		script.onerror = () => reject(new Error('Failed to load Google Maps'));
-		document.head.appendChild(script);
-	});
-	loaders.set(apiKey, p);
-	return p;
-}
 
 async function geocodeQuery(google: any, query: string): Promise<{ lat: number; lng: number; address: string } | null> {
 	if (!query) return null;
@@ -165,7 +144,7 @@ export function LocationMap({
 		let map: any = null;
 		let marker: any = null;
 
-		loadMaps(apiKey)
+		loadGoogleMaps(apiKey)
 			.then(async google => {
 				if (cancelled || !container.isConnected) return;
 
@@ -260,184 +239,61 @@ export function LocationMap({
 		const lng = confirmedMeta?.lng;
 		const snapshot = apiKey && lat != null && lng != null ? staticMapUrl(lat, lng, apiKey) : null;
 		return (
-			<>
-				<style id="PromptLocationMapCss">{STYLES}</style>
-				<div className="_pLocationConfirmedCard" role="status">
-					{snapshot && (
-						<div className="_pLocationConfirmedMap">
-							<img src={snapshot} alt={`Map of ${addr}`} />
-						</div>
-					)}
-					<div className="_pLocationConfirmedRow">
-						<span className="_pLocationConfirmedCheck" aria-hidden="true">
-							<svg viewBox="0 0 24 24" width="14" height="14">
-								<path
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="3"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									d="M5 12l5 5L20 7"
-								/>
-							</svg>
-						</span>
-						<span className="_pLocationConfirmedAddr">{addr}</span>
+			<div className="_pLocationConfirmedCard" role="status">
+				{snapshot && (
+					<div className="_pLocationConfirmedMap">
+						<img src={snapshot} alt={`Map of ${addr}`} />
 					</div>
+				)}
+				<div className="_pLocationConfirmedRow">
+					<span className="_pLocationConfirmedCheck" aria-hidden="true">
+						<svg viewBox="0 0 24 24" width="14" height="14">
+							<path
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="3"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M5 12l5 5L20 7"
+							/>
+						</svg>
+					</span>
+					<span className="_pLocationConfirmedAddr">{addr}</span>
 				</div>
-			</>
+			</div>
 		);
 	}
 
 	return (
-		<>
-			<style id="PromptLocationMapCss">{STYLES}</style>
-			<div className="_pLocationContainer">
-				<div className="_pLocationHeader">
-					<span>{display}</span>
-				</div>
-				<div className="_pLocationMapWrap">
-					<div ref={containerRef} className="_pLocationMapDiv" />
-					{status !== 'ready' && (
-						<div className="_pLocationMapOverlay">
-							{status === 'loading' && 'Loading map…'}
-							{status === 'no-key' && 'Map unavailable (API key not configured)'}
-							{status === 'error' && 'Couldn\u2019t load map. You can still confirm the detected location.'}
-						</div>
-					)}
-				</div>
-				<div className="_pLocationFooter">
-					<span className="_pLocationHint">
-						{coords ? 'Drag the pin or click the map to adjust' : 'Locating…'}
-					</span>
-					<div className="_pLocationActions">
-						<button
-							className="_pLocationConfirmBtn"
-							onClick={() => onConfirm(coords, addressRef.current)}
-							disabled={disabled || !coords}
-							type="button"
-						>
-							Confirm
-						</button>
+		<div className="_pLocationContainer">
+			<div className="_pLocationHeader">
+				<span>{display}</span>
+			</div>
+			<div className="_pLocationMapWrap">
+				<div ref={containerRef} className="_pLocationMapDiv" />
+				{status !== 'ready' && (
+					<div className="_pLocationMapOverlay">
+						{status === 'loading' && 'Loading map…'}
+						{status === 'no-key' && 'Map unavailable (API key not configured)'}
+						{status === 'error' && 'Couldn’t load map. You can still confirm the detected location.'}
 					</div>
+				)}
+			</div>
+			<div className="_pLocationFooter">
+				<span className="_pLocationHint">
+					{coords ? 'Drag the pin or click the map to adjust' : 'Locating…'}
+				</span>
+				<div className="_pLocationActions">
+					<button
+						className="_pLocationConfirmBtn"
+						onClick={() => onConfirm(coords, addressRef.current)}
+						disabled={disabled || !coords}
+						type="button"
+					>
+						Confirm
+					</button>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }
-
-const STYLES = `
-	._pLocationContainer {
-		border: 1px solid #e5e5e5;
-		border-radius: 12px;
-		overflow: hidden;
-		margin: 8px 0;
-	}
-	._pLocationHeader {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 8px 14px;
-		font-size: 13px;
-		font-weight: 600;
-		color: #1a1a1a;
-		background: #fafafa;
-	}
-	._pLocationMapWrap {
-		position: relative;
-		width: 100%;
-		height: 220px;
-		background: #f4f4f4;
-	}
-	._pLocationMapDiv { width: 100%; height: 100%; }
-	._pLocationMapOverlay {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0 24px;
-		text-align: center;
-		color: #666;
-		font-size: 13px;
-		background: rgba(244, 244, 244, 0.85);
-		pointer-events: none;
-	}
-	._pLocationFooter {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 12px;
-		padding: 6px 14px;
-		border-top: 1px solid #e5e5e5;
-		background: #fafafa;
-	}
-	._pLocationHint { font-size: 12px; color: #666; }
-	._pLocationActions { display: flex; gap: 8px; }
-	._pLocationConfirmBtn {
-		padding: 5px 14px;
-		border-radius: 8px;
-		font-size: 12px;
-		font-weight: 500;
-		cursor: pointer;
-		border: 1px solid transparent;
-		background: #1a1a1a;
-		color: #fff;
-	}
-	._pLocationConfirmBtn:hover { opacity: 0.85; }
-	._pLocationConfirmBtn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-	._pLocationConfirmedCard {
-		display: flex;
-		flex-direction: column;
-		margin: 8px 0;
-		width: 75%;
-		max-width: 480px;
-		border: 1px solid #e5e5e5;
-		border-radius: 10px;
-		overflow: hidden;
-		background: #fff;
-	}
-	._pLocationConfirmedMap {
-		width: 100%;
-		height: 240px;
-		background: #f4f4f4;
-		overflow: hidden;
-	}
-	._pLocationConfirmedMap img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		display: block;
-		filter: grayscale(100%);
-	}
-	._pLocationConfirmedRow {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		padding: 8px 12px;
-		border-top: 1px solid #f0f0f0;
-		background: #fafafa;
-		min-height: 32px;
-	}
-	._pLocationConfirmedCheck {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 18px;
-		height: 18px;
-		flex: 0 0 18px;
-		border-radius: 999px;
-		background: #1a1a1a;
-		color: #fff;
-	}
-	._pLocationConfirmedAddr {
-		flex: 1 1 auto;
-		min-width: 0;
-		font-size: 12px;
-		font-weight: 500;
-		color: #1a1a1a;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-`;
