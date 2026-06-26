@@ -103,7 +103,7 @@ export default function CodeEditor({
 			name: key,
 			displayName: funct.namespace ? `${funct.namespace}.${funct.name}` : funct.name,
 		}));
-	}, [eventFunctions]);
+	}, [eventFunctions, changed]);
 	const validationOptions = useMemo(() => {
 		return Object.values(editPage?.componentDefinition ?? {})
 			.sort((a: any, b: any) => (a.name ?? a.key).localeCompare(b.name ?? b.key))
@@ -111,7 +111,7 @@ export default function CodeEditor({
 				name: e.key,
 				displayName: e.name ?? e.key,
 			}));
-	}, [editPage?.componentDefinition]);
+	}, [editPage?.componentDefinition, changed]);
 
 
 	useEffect(() => {
@@ -509,6 +509,7 @@ export default function CodeEditor({
 						properties: {
 							editorType: { value: 'page' },
 							...definition.properties,
+							readOnly: { value: false },
 						},
 						bindingPath: {
 							type: 'VALUE',
