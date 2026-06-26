@@ -48,7 +48,7 @@ export function Dropdown({
 		);
 	}, [allOptions, filterText]);
 
-	const isSearchEnabled = showSearch ?? orignalOptions.length > 7;
+	const isSearchEnabled = showSearch ?? orignalOptions.length > 5;
 
 	let label = undefined;
 
