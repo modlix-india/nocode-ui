@@ -177,6 +177,7 @@
 .comp.compPageEditor ._compsTree:hover ._treeNodeLevel {
 	border-right: 0.75px dotted #00000020;
 }
+
 .comp.compPageEditor ._compsTree:hover ._treeNode._subComponent:hover ._treeNodeLevel,
 .comp.compPageEditor ._compsTree:hover ._treeNode._subComponent._selected ._treeNodeLevel {
 	border-right: 0.75px dotted #00000020;
@@ -275,7 +276,9 @@
 	gap: 15px;
 }
 
-.comp.compPageEditor select._peSelect {
+.comp.compPageEditor select._peSelect,
+.comp.compPageEditor ._peSelect,
+.comp.compPageEditor ._simpleEditorSelect._peSelect {
 	height: 35px;
 	font-family: Inter;
 	font-size: 12px;
@@ -290,6 +293,7 @@
 	outline: none;
 	cursor: pointer;
 	width: 100%;
+	flex: 1;
 }
 
 .comp.compPageEditor button,
@@ -540,6 +544,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._iconMenu._active svg._iconHelperSVG {
 	color: #000;
 }
+
 .comp.compPageEditor ._sideBar ._iconMenu._active svg._iconHelperSVG,
 .comp.compPageEditor ._sideBar ._iconMenu:hover svg._iconHelperSVG {
 	color: #ffffff;
@@ -609,6 +614,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._iconMenuBody._bottom {
 	top: 100%;
 }
+
 .comp.compPageEditor ._iconMenuBody._right {
 	right: 100%;
 }
@@ -959,11 +965,7 @@ input._peInput[type='number'] {
 	width: 64px;
 }
 
-.comp.compPageEditor
-	._simpleEditorPixelSize
-	._inputDropdownContainer
-	._simpleEditorSelect
-	._selectedOption {
+.comp.compPageEditor ._simpleEditorPixelSize ._inputDropdownContainer ._simpleEditorSelect ._selectedOption {
 	margin-right: 5px;
 	text-align: right;
 }
@@ -1020,6 +1022,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._page_Selector ._simpleEditorSelect path {
 	fill: #000000;
 }
+
 .comp.compPageEditor ._add_page_btn_container {
 	padding: 10px 10px;
 }
@@ -1044,12 +1047,50 @@ input._peInput[type='number'] {
 	min-width: 100%;
 	background-color: #fff;
 	border: 1px solid rgba(0, 0, 0, 0.1);
-	z-index: 2;
+	z-index: 11;
 	box-shadow: 0px 1px 4px 0px #00000026;
 	border-radius: 6px;
 	margin-top: 4px;
 	max-height: 250px;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody ._optionsContainer {
 	overflow: auto;
+	flex: 1;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownSearchContainer {
+	padding: 6px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+	display: flex;
+	align-items: center;
+	background-color: #fff;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody input._simpleEditorDropdownSearch {
+	width: 100%;
+	height: 34px;
+	border: 1px solid rgba(0, 0, 0, 0.15);
+	border-radius: 4px;
+	padding: 0 10px;
+	font-weight: 400;
+	font-family: Inter;
+	font-size: 12px;
+	color: #0000004d;
+	outline: none;
+	background-color: #fafafa;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody input._simpleEditorDropdownSearch::placeholder {
+	color: #0000004d;
+}
+
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody input._simpleEditorDropdownSearch:focus {
+	border-color: #52bd94;
+	background-color: #fff;
 }
 
 .comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody ._options_divider {
@@ -1079,19 +1120,13 @@ input._peInput[type='number'] {
 	font-family: Inter;
 }
 
-.comp.compPageEditor
-	._simpleEditorSelect
-	._simpleEditorDropdownBody
-	._simpleEditorDropdownOption._hovered {
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._hovered {
 	background-color: #f9f9f9;
 	border-radius: 4px;
 	color: #52bd94;
 }
 
-.comp.compPageEditor
-	._simpleEditorSelect
-	._simpleEditorDropdownBody
-	._simpleEditorDropdownOption._selected {
+.comp.compPageEditor ._simpleEditorSelect ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
 	color: #52bd94;
 }
 
@@ -1346,11 +1381,7 @@ input._peInput[type='number'] {
 	text-align: center;
 }
 
-.comp.compPageEditor
-	._simpleEditorBigSelector
-	._searchResult
-	._searchResultItem:hover
-	._animationName {
+.comp.compPageEditor ._simpleEditorBigSelector ._searchResult ._searchResultItem:hover ._animationName {
 	color: #4fbbb2;
 }
 
@@ -1438,7 +1469,7 @@ input._peInput[type='number'] {
 	min-width: 20px;
 }
 
-.comp.compPageEditor ._dropdownToggle._open + ._dropdownContent {
+.comp.compPageEditor ._dropdownToggle._open+._dropdownContent {
 	min-width: 100px;
 	max-width: 250px;
 	position: absolute;
@@ -1517,54 +1548,14 @@ input._peInput[type='number'] {
 	stroke: #fff;
 }
 
-.comp.compPageEditor
-	._simpleEditorGroupTitle._gradient
-	._simpleEditorIcons
-	._eachIcon:hover
-	svg
-	path,
-.comp.compPageEditor
-	._simpleEditorGroupTitle._gradient
-	._simpleEditorIcons
-	._eachIcon:hover
-	svg
-	circle,
-.comp.compPageEditor
-	._simpleEditorGroupTitle._gradient
-	._simpleEditorIcons
-	._eachIcon:hover
-	svg
-	rect,
-.comp.compPageEditor
-	._simpleEditorGroupTitle._gradient
-	._simpleEditorIcons
-	._eachIcon:hover
-	svg
-	line,
-.comp.compPageEditor
-	._simpleEditorGroupTitle._gradient
-	._simpleEditorIcons
-	._eachIcon._active
-	svg
-	path,
-.comp.compPageEditor
-	._simpleEditorGroupTitle._gradient
-	._simpleEditorIcons
-	._eachIcon._active
-	svg
-	circle,
-.comp.compPageEditor
-	._simpleEditorGroupTitle._gradient
-	._simpleEditorIcons
-	._eachIcon._active
-	svg
-	rect,
-.comp.compPageEditor
-	._simpleEditorGroupTitle._gradient
-	._simpleEditorIcons
-	._eachIcon._active
-	svg
-	line {
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg path,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg circle,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg rect,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon:hover svg line,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg path,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg circle,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg rect,
+.comp.compPageEditor ._simpleEditorGroupTitle._gradient ._simpleEditorIcons ._eachIcon._active svg line {
 	fill-opacity: 0.5;
 	stroke-opacity: 0.5;
 }
@@ -1986,12 +1977,15 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._spacingEditor ._value._top {
 	top: 5px;
 }
+
 .comp.compPageEditor ._spacingEditor ._value._bottom {
 	bottom: 5px;
 }
+
 .comp.compPageEditor ._spacingEditor ._value._left {
 	left: 5px;
 }
+
 .comp.compPageEditor ._spacingEditor ._value._right {
 	right: 5px;
 }
@@ -2014,11 +2008,9 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._buttonBar._screenSizes svg.active {
 	color: #8e90a4;
 	border-bottom: 3px solid #8e90a4;
-	background: linear-gradient(
-		360deg,
-		rgba(142, 144, 164, 0.1) 0.78%,
-		rgba(142, 144, 164, 0.011) 157.03%
-	);
+	background: linear-gradient(360deg,
+			rgba(142, 144, 164, 0.1) 0.78%,
+			rgba(142, 144, 164, 0.011) 157.03%);
 }
 
 .comp.compPageEditor ._screenSizes i.fa {
@@ -2259,6 +2251,7 @@ input._peInput[type='number'] {
 	fill: #52bd94;
 	fill-opacity: 1;
 }
+
 .comp.compPageEditor i._separator {
 	opacity: 0.1;
 }
@@ -2283,12 +2276,15 @@ input._peInput[type='number'] {
 	color: #fff;
 	box-shadow: 0px 1px 3px 0px #0000001a;
 }
+
 .comp.compPageEditor ._styleButtonContainer button:hover svg path {
 	fill: #fff;
 }
+
 .comp.compPageEditor ._styleButtonContainer button svg path {
 	fill: #d2d3db;
 }
+
 .comp.compPageEditor ._styleButtonContainer ._seperator {
 	height: 12px;
 	width: 1px;
@@ -2719,7 +2715,8 @@ input._peInput[type='number'] {
 	align-items: center;
 }
 
-.comp.compPageEditor ._codeEditorContent ._codeFunctions select._peSelect {
+.comp.compPageEditor ._codeEditorContent ._codeFunctions select._peSelect,
+.comp.compPageEditor ._codeEditorContent ._codeFunctions ._simpleEditorSelect {
 	text-transform: none;
 }
 
@@ -2870,10 +2867,7 @@ input._peInput[type='number'] {
 	overflow-y: scroll;
 }
 
-.comp.compPageEditor
-	._popupContainer._formEditor
-	._formEditorContent
-	._formEditorOptionsPagination {
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorContent ._formEditorOptionsPagination {
 	width: 100%;
 	height: 40px;
 	display: flex;
@@ -2956,18 +2950,12 @@ input._peInput[type='number'] {
 	cursor: pointer;
 }
 
-.comp.compPageEditor
-	._popupContainer._formEditor
-	._formEditorEachOption:hover
-	._formEditorEachOptionPreview {
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorEachOption:hover ._formEditorEachOptionPreview {
 	box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.1);
 	border: 1px solid rgba(66, 126, 228, 0.8);
 }
 
-.comp.compPageEditor
-	._popupContainer._formEditor
-	._formEditorEachOption
-	._formEditorEachOptionPreview {
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorEachOption ._formEditorEachOptionPreview {
 	height: 80%;
 	border-radius: 4px;
 	background: #f9f9f9;
@@ -2976,10 +2964,7 @@ input._peInput[type='number'] {
 	align-items: center;
 }
 
-.comp.compPageEditor
-	._popupContainer._formEditor
-	._formEditorEachOption
-	._formEditorEachOptionName {
+.comp.compPageEditor ._popupContainer._formEditor ._formEditorEachOption ._formEditorEachOptionName {
 	margin-top: 15px;
 	color: rgba(0, 0, 0, 0.8);
 	font-family: Inter;
@@ -3002,10 +2987,7 @@ input._peInput[type='number'] {
 	flex: 1;
 }
 
-.comp.compPageEditor
-	._popupContainer._formEditor
-	._formFieldsAndButtons
-	._formFieldsAndButtonsTitle {
+.comp.compPageEditor ._popupContainer._formEditor ._formFieldsAndButtons ._formFieldsAndButtonsTitle {
 	color: rgba(0, 0, 0, 0.4);
 	font-family: Inter;
 	font-size: 12px;
@@ -3036,10 +3018,7 @@ input._peInput[type='number'] {
 	padding-left: 20px;
 }
 
-.comp.compPageEditor
-	._popupContainer._formEditor
-	._formFieldAndButton
-	._formFieldAndButtonCheckbox {
+.comp.compPageEditor ._popupContainer._formEditor ._formFieldAndButton ._formFieldAndButtonCheckbox {
 	padding-right: 20px;
 	width: 18px;
 	height: 18px;
@@ -3062,18 +3041,11 @@ input._peInput[type='number'] {
 	height: 60vh;
 }
 
-.comp.compPageEditor
-	._popupBackground
-	._popupContainer._popupContainerWithPreview
-	._mdPreviewContainer {
+.comp.compPageEditor ._popupBackground ._popupContainer._popupContainerWithPreview ._mdPreviewContainer {
 	overflow: auto;
 }
 
-.comp.compPageEditor
-	._popupBackground
-	._popupContainer._popupContainerWithPreview
-	._mdPreviewContainer
-	._markDownContent {
+.comp.compPageEditor ._popupBackground ._popupContainer._popupContainerWithPreview ._mdPreviewContainer ._markDownContent {
 	height: 400px;
 	width: 400px;
 }
@@ -3089,7 +3061,7 @@ input._peInput[type='number'] {
 		height 0s;
 }
 
-.comp.compPageEditor ._popupBackground ._popupContainer ._jsonEditorContainer > * {
+.comp.compPageEditor ._popupBackground ._popupContainer ._jsonEditorContainer>* {
 	transition:
 		width 0s,
 		height 0s;
@@ -3175,6 +3147,7 @@ input._peInput[type='number'] {
 	right: 5px;
 	top: 5px;
 }
+
 .comp.compPageEditor ._popupBackground ._popupContainer ._eachIcon:hover ._deleteButton {
 	display: block;
 }
@@ -3524,10 +3497,10 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor ._tutorialCloser {
 	display: flex;
-    justify-content: end;
-    padding-right: 10px;
-    padding-top: 10px;
-    color: #000;
+	justify-content: end;
+	padding-right: 10px;
+	padding-top: 10px;
+	color: #000;
 }
 
 .comp.compPageEditor ._tutorialHeader {
@@ -3601,6 +3574,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._youtubeButton i {
 	font-size: 20px;
 }
+
 .comp.compPageEditor ._videoContainer {
 	width: 100%;
 	aspect-ratio: 18/9;
@@ -3672,6 +3646,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._popupMenuContainer._compMenu ._pinIcon:hover {
 	color: var(--primary-color);
 }
+
 .comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem:hover img.hover,
 .comp.compPageEditor ._popupMenuContainer._compMenu ._compMenuItem.active img.hover {
 	display: inline;
@@ -3771,15 +3746,18 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._popupMenuContainer._compMenu ._compList ._compMenuItem:hover i.fa {
 	color: #1893e9;
 }
+
 /* Animations Start here... */
 
 @keyframes updown {
 	0% {
 		transform: translateY(0);
 	}
+
 	50% {
 		transform: translateY(5px);
 	}
+
 	100% {
 		transform: translateY(0);
 	}
@@ -3793,6 +3771,7 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleY(1);
 	}
+
 	50% {
 		transform: scaleY(0.2);
 	}
@@ -3820,6 +3799,7 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(90deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -3834,10 +3814,12 @@ input._peInput[type='number'] {
 		transform: translateY(0px);
 		opacity: 1;
 	}
+
 	50% {
 		transform: translateY(-10px);
 		opacity: 0;
 	}
+
 	100% {
 		transform: translateY(0px);
 		opacity: 1;
@@ -3853,12 +3835,15 @@ input._peInput[type='number'] {
 	0% {
 		transform: scale(1);
 	}
+
 	33% {
 		transform: scale(1);
 	}
+
 	66% {
 		transform: scale(1.2);
 	}
+
 	100% {
 		transform: scale(1);
 	}
@@ -3873,14 +3858,17 @@ input._peInput[type='number'] {
 		transform: translate(8px, 8px);
 		opacity: 1;
 	}
+
 	33% {
 		transform: translate(30px, 8px);
 		opacity: 1;
 	}
+
 	66% {
 		transform: translate(30px, 8px);
 		opacity: 1;
 	}
+
 	100% {
 		transform: translate(8px, 8px);
 		opacity: 1;
@@ -3892,10 +3880,12 @@ input._peInput[type='number'] {
 		opacity: 1;
 		transform: translate(0px);
 	}
+
 	50% {
 		opacity: 0;
 		transform: translate(10px);
 	}
+
 	100% {
 		opacity: 1;
 		transform: translate(0px);
@@ -3913,10 +3903,12 @@ input._peInput[type='number'] {
 		opacity: 1;
 		transform: translate(0px);
 	}
+
 	50% {
 		opacity: 0;
 		transform: translate(-10px);
 	}
+
 	100% {
 		opacity: 1;
 		transform: translate(0px);
@@ -3938,10 +3930,12 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: translateY(-20px);
 	}
+
 	50% {
 		opacity: 1;
 		transform: translateY(0px);
 	}
+
 	100% {
 		opacity: 1;
 		transform: translateY(-20px);
@@ -3957,10 +3951,12 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: translateY(-15px);
 	}
+
 	50% {
 		opacity: 1;
 		transform: translateY(0px);
 	}
+
 	100% {
 		opacity: 1;
 		transform: translateY(-15px);
@@ -3976,10 +3972,12 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: translateY(-5px);
 	}
+
 	50% {
 		opacity: 1;
 		transform: translateY(0px);
 	}
+
 	100% {
 		opacity: 1;
 		transform: translateY(-5px);
@@ -3996,9 +3994,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0px, 0px);
 	}
+
 	50% {
 		transform: translate(-10px, 10px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -4013,18 +4013,23 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	20% {
 		transform: rotate(-10deg);
 	}
+
 	40% {
 		transform: rotate(10deg);
 	}
+
 	60% {
 		transform: rotate(-10deg);
 	}
+
 	80% {
 		transform: rotate(10deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -4039,6 +4044,7 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -4055,6 +4061,7 @@ input._peInput[type='number'] {
 		opacity: 1;
 		transform: rotateX(0deg);
 	}
+
 	50% {
 		opacity: 0;
 		transform: rotateX(100deg);
@@ -4069,9 +4076,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0px);
 	}
+
 	50% {
 		transform: translateX(-5px);
 	}
+
 	100% {
 		transform: translateX(0px);
 	}
@@ -4085,9 +4094,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0px);
 	}
+
 	50% {
 		transform: translateX(5px);
 	}
+
 	100% {
 		transform: translateX(0px);
 	}
@@ -4103,10 +4114,12 @@ input._peInput[type='number'] {
 		fill: transparent;
 		opacity: 1;
 	}
+
 	35% {
 		fill: #1cba79;
 		opacity: 1;
 	}
+
 	100% {
 		fill: #1cba79;
 		opacity: 1;
@@ -4122,6 +4135,7 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0px);
 	}
+
 	100% {
 		transform: translateX(18px);
 	}
@@ -4135,6 +4149,7 @@ input._peInput[type='number'] {
 	0% {
 		fill: #e0e0e7;
 	}
+
 	100% {
 		fill: transparent;
 	}
@@ -4149,9 +4164,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0px, 0px);
 	}
+
 	50% {
 		transform: translate(-2px, -2px);
 	}
+
 	100% {
 		transform: translate(0px, 0px);
 	}
@@ -4165,9 +4182,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateY(0px);
 	}
+
 	50% {
 		transform: translateY(-3px);
 	}
+
 	100% {
 		transform: translateY(0px);
 	}
@@ -4182,12 +4201,15 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	33% {
 		transform: rotate(10deg);
 	}
+
 	66% {
 		transform: rotate(-10deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -4202,9 +4224,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleY(1);
 	}
+
 	50% {
 		transform: scaleY(0.2);
 	}
+
 	100% {
 		transform: scaleY(1);
 	}
@@ -4220,10 +4244,12 @@ input._peInput[type='number'] {
 		opacity: 1;
 		rotate: 0deg;
 	}
+
 	50% {
 		opacity: 0;
 		rotate: 90deg;
 	}
+
 	100% {
 		opacity: 1;
 		rotate: 0deg;
@@ -4240,10 +4266,12 @@ input._peInput[type='number'] {
 		opacity: 0;
 		rotate: -90deg;
 	}
+
 	50% {
 		opacity: 1;
 		rotate: 0deg;
 	}
+
 	100% {
 		opacity: 0;
 		rotate: -90deg;
@@ -4296,9 +4324,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0, 0);
 	}
+
 	50% {
 		transform: translate(11px, 3.5px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -4315,9 +4345,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	50% {
 		transform: rotate(90deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -4331,18 +4363,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0.2;
 	}
+
 	10% {
 		opacity: 0.5;
 	}
+
 	20% {
 		opacity: 1;
 	}
+
 	80% {
 		opacity: 1;
 	}
+
 	90% {
 		opacity: 0.5;
 	}
+
 	100% {
 		opacity: 0.2;
 	}
@@ -4356,18 +4393,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0.2;
 	}
+
 	20% {
 		opacity: 0.5;
 	}
+
 	30% {
 		opacity: 1;
 	}
+
 	70% {
 		opacity: 1;
 	}
+
 	80% {
 		opacity: 0.5;
 	}
+
 	100% {
 		opacity: 0.2;
 	}
@@ -4381,18 +4423,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0.2;
 	}
+
 	30% {
 		opacity: 0.5;
 	}
+
 	40% {
 		opacity: 1;
 	}
+
 	60% {
 		opacity: 1;
 	}
+
 	70% {
 		opacity: 0.5;
 	}
+
 	100% {
 		opacity: 0.2;
 	}
@@ -4406,18 +4453,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0.2;
 	}
+
 	40% {
 		opacity: 0.5;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	60% {
 		opacity: 1;
 	}
+
 	70% {
 		opacity: 0.5;
 	}
+
 	100% {
 		opacity: 0.2;
 	}
@@ -4433,10 +4485,12 @@ input._peInput[type='number'] {
 		transform: translate(0, 19) scale(1);
 		opacity: 1;
 	}
+
 	50% {
 		transform: translate(0, 19) scale(0.5);
 		opacity: 0;
 	}
+
 	100% {
 		transform: translate(0, 19) scale(1);
 		opacity: 1;
@@ -4453,10 +4507,12 @@ input._peInput[type='number'] {
 		transform: scale(0);
 		opacity: 0;
 	}
+
 	50% {
 		transform: scale(1);
 		opacity: 1;
 	}
+
 	100% {
 		transform: scale(0);
 		opacity: 0;
@@ -4471,9 +4527,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateY(5px);
 	}
+
 	50% {
 		transform: translateY(0px);
 	}
+
 	100% {
 		transform: translateY(5px);
 	}
@@ -4488,12 +4546,15 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateY(20px);
 	}
+
 	30% {
 		transform: translateY(5px);
 	}
+
 	65% {
 		transform: translateY(0px);
 	}
+
 	100% {
 		transform: translateY(20px);
 	}
@@ -4508,9 +4569,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scale(1);
 	}
+
 	50% {
 		transform: scale(0.5);
 	}
+
 	100% {
 		transform: scale(1);
 	}
@@ -4526,9 +4589,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotateZ(0deg) scale(1);
 	}
+
 	50% {
 		transform: rotateZ(90deg) scale(0.8);
 	}
+
 	100% {
 		transform: rotateZ(180deg) scale(1);
 	}
@@ -4543,9 +4608,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0, 0);
 	}
+
 	50% {
 		transform: translate(9px, 8px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -4560,9 +4627,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0, 0);
 	}
+
 	50% {
 		transform: translate(5px, 4px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -4577,9 +4646,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleY(1);
 	}
+
 	50% {
 		transform: scaleY(0.4);
 	}
+
 	100% {
 		transform: scaleY(1);
 	}
@@ -4594,9 +4665,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleY(1);
 	}
+
 	50% {
 		transform: scaleY(1.6);
 	}
+
 	100% {
 		transform: scaleY(1);
 	}
@@ -4611,9 +4684,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotateZ(0deg);
 	}
+
 	50% {
 		transform: rotateZ(90deg);
 	}
+
 	100% {
 		transform: rotateZ(0deg);
 	}
@@ -4627,12 +4702,15 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0, 0);
 	}
+
 	5% {
 		transform: translate(-2px, 0);
 	}
+
 	25% {
 		transform: translate(-2px, 24px);
 	}
+
 	50% {
 		transform: translate(16px, 24px);
 	}
@@ -4655,18 +4733,23 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(-15px, -15px) rotateZ(90deg);
 	}
+
 	20% {
 		transform: translate(0px, -15px) rotateZ(90deg);
 	}
+
 	40% {
 		transform: translate(-15px, -7px) rotateZ(90deg);
 	}
+
 	60% {
 		transform: translate(0px, -7px) rotateZ(90deg);
 	}
+
 	80% {
 		transform: translate(-15px, -0px) rotateZ(90deg);
 	}
+
 	100% {
 		transform: translate(0px, 0px) rotateZ(90deg);
 	}
@@ -4680,9 +4763,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0px, 0);
 	}
+
 	50% {
 		transform: translate(4px, 0);
 	}
+
 	100% {
 		transform: translate(0px, 0);
 	}
@@ -4697,9 +4782,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(0.5);
 	}
+
 	50% {
 		transform: scaleX(1);
 	}
+
 	100% {
 		transform: scaleX(0.5);
 	}
@@ -4715,15 +4802,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(0);
 	}
+
 	20% {
 		transform: scaleX(0);
 	}
+
 	50% {
 		transform: scaleX(1);
 	}
+
 	80% {
 		transform: scaleX(1);
 	}
+
 	100% {
 		transform: scaleX(0);
 	}
@@ -4739,15 +4830,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(0);
 	}
+
 	30% {
 		transform: scaleX(0);
 	}
+
 	50% {
 		transform: scaleX(1);
 	}
+
 	70% {
 		transform: scaleX(1);
 	}
+
 	100% {
 		transform: scaleX(0);
 	}
@@ -4763,15 +4858,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(0);
 	}
+
 	40% {
 		transform: scaleX(0);
 	}
+
 	50% {
 		transform: scaleX(1);
 	}
+
 	60% {
 		transform: scaleX(1);
 	}
+
 	100% {
 		transform: scaleX(0);
 	}
@@ -4787,15 +4886,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(0);
 	}
+
 	15% {
 		transform: scaleX(0);
 	}
+
 	50% {
 		transform: scaleX(1);
 	}
+
 	85% {
 		transform: scaleX(1);
 	}
+
 	100% {
 		transform: scaleX(0);
 	}
@@ -4811,15 +4914,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(0);
 	}
+
 	25% {
 		transform: scaleX(0);
 	}
+
 	50% {
 		transform: scaleX(1);
 	}
+
 	75% {
 		transform: scaleX(1);
 	}
+
 	100% {
 		transform: scaleX(0);
 	}
@@ -4835,15 +4942,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(0);
 	}
+
 	35% {
 		transform: scaleX(0);
 	}
+
 	50% {
 		transform: scaleX(1);
 	}
+
 	65% {
 		transform: scaleX(1);
 	}
+
 	100% {
 		transform: scaleX(0);
 	}
@@ -4858,9 +4969,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scale(1) translate(0, 0) rotateZ(0deg);
 	}
+
 	50% {
 		transform: scale(0.5) translate(15px, 15px) rotateZ(90deg);
 	}
+
 	100% {
 		transform: scale(1) translate(0, 0) rotateZ(0deg);
 	}
@@ -4874,9 +4987,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotateX(0);
 	}
+
 	50% {
 		transform: rotateX(-70deg);
 	}
+
 	100% {
 		transform: rotateX(0);
 	}
@@ -4890,9 +5005,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0);
 	}
+
 	50% {
 		transform: translateX(-15px);
 	}
+
 	100% {
 		transform: translateX(0);
 	}
@@ -4907,15 +5024,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0px, 0px);
 	}
+
 	25% {
 		transform: translate(5px, -6px);
 	}
+
 	50% {
 		transform: translate(6px, -2px);
 	}
+
 	75% {
 		transform: translate(8px, -6px);
 	}
+
 	100% {
 		transform: translate(10px, 0px);
 	}
@@ -4930,33 +5051,43 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0px, 0px);
 	}
+
 	10% {
 		transform: translate(-15px, -20px);
 	}
+
 	20% {
 		transform: translate(0px, -20px);
 	}
+
 	30% {
 		transform: translate(-15px, -15px);
 	}
+
 	40% {
 		transform: translate(0px, -15px);
 	}
+
 	50% {
 		transform: translate(-15px, -10px);
 	}
+
 	60% {
 		transform: translate(0px, -10px);
 	}
+
 	70% {
 		transform: translate(-15px, -5px);
 	}
+
 	80% {
 		transform: translate(0px, -5px);
 	}
+
 	90% {
 		transform: translate(-15px, 0px);
 	}
+
 	100% {
 		transform: translate(0px, 0px);
 	}
@@ -4970,9 +5101,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0);
 	}
+
 	50% {
 		transform: translateX(-8px);
 	}
+
 	100% {
 		transform: translateX(0);
 	}
@@ -4990,18 +5123,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	39% {
 		opacity: 0;
 	}
+
 	40% {
 		opacity: 1;
 	}
+
 	60% {
 		opacity: 1;
 	}
+
 	61% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -5015,18 +5153,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 1;
 	}
+
 	39% {
 		opacity: 1;
 	}
+
 	40% {
 		opacity: 0;
 	}
+
 	60% {
 		opacity: 0;
 	}
+
 	61% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5040,18 +5183,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	19% {
 		opacity: 0;
 	}
+
 	20% {
 		opacity: 1;
 	}
+
 	90% {
 		opacity: 1;
 	}
+
 	91% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -5065,18 +5213,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	29% {
 		opacity: 0;
 	}
+
 	30% {
 		opacity: 1;
 	}
+
 	80% {
 		opacity: 1;
 	}
+
 	81% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -5090,18 +5243,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	39% {
 		opacity: 0;
 	}
+
 	40% {
 		opacity: 1;
 	}
+
 	70% {
 		opacity: 1;
 	}
+
 	71% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -5115,18 +5273,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 1;
 	}
+
 	19% {
 		opacity: 1;
 	}
+
 	20% {
 		opacity: 0;
 	}
+
 	90% {
 		opacity: 0;
 	}
+
 	91% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5140,18 +5303,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 1;
 	}
+
 	29% {
 		opacity: 1;
 	}
+
 	30% {
 		opacity: 0;
 	}
+
 	80% {
 		opacity: 0;
 	}
+
 	81% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5165,18 +5333,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 1;
 	}
+
 	39% {
 		opacity: 1;
 	}
+
 	40% {
 		opacity: 0;
 	}
+
 	70% {
 		opacity: 0;
 	}
+
 	71% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5191,15 +5364,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0px, 0px) rotate(12deg);
 	}
+
 	25% {
 		transform: translate(7px, -5px) rotate(-12deg);
 	}
+
 	50% {
 		transform: translate(15px, 0px) rotate(0deg);
 	}
+
 	75% {
 		transform: translate(7px, -5px) rotate(12deg);
 	}
+
 	100% {
 		transform: translate(0px, 0px) rotate(-12deg);
 	}
@@ -5214,15 +5391,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	25% {
 		transform: rotate(-3deg);
 	}
+
 	50% {
 		transform: rotate(3deg);
 	}
+
 	75% {
 		transform: rotate(9deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -5237,18 +5418,23 @@ input._peInput[type='number'] {
 	0% {
 		transform: scale(0);
 	}
+
 	19% {
 		transform: scale(0);
 	}
+
 	20% {
 		transform: scale(1);
 	}
+
 	79% {
 		transform: scale(1);
 	}
+
 	80% {
 		transform: scale(0);
 	}
+
 	100% {
 		transform: scale(0);
 	}
@@ -5262,9 +5448,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0);
 	}
+
 	50% {
 		transform: translateX(-11px);
 	}
+
 	100% {
 		transform: translateX(0);
 	}
@@ -5278,9 +5466,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(1);
 	}
+
 	50% {
 		transform: scaleX(0.2);
 	}
+
 	100% {
 		transform: scaleX(1);
 	}
@@ -5294,15 +5484,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateY(0);
 	}
+
 	25% {
 		transform: translateY(-7px);
 	}
+
 	50% {
 		transform: translateY(-15px);
 	}
+
 	75% {
 		transform: translateY(-23px);
 	}
+
 	100% {
 		transform: translateY(0);
 	}
@@ -5316,18 +5510,23 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	25% {
 		opacity: 0;
 	}
+
 	50% {
 		opacity: 0;
 	}
+
 	75% {
 		opacity: 0;
 	}
+
 	95% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5341,15 +5540,19 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	25% {
 		opacity: 0;
 	}
+
 	50% {
 		opacity: 0;
 	}
+
 	75% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5363,15 +5566,19 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	25% {
 		opacity: 0;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	75% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5385,15 +5592,19 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	25% {
 		opacity: 1;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	75% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5408,15 +5619,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(-8px);
 	}
+
 	25% {
 		transform: translateX(-4px);
 	}
+
 	50% {
 		transform: translateX(0);
 	}
+
 	75% {
 		transform: translateX(-4px);
 	}
+
 	100% {
 		transform: translateX(-8px);
 	}
@@ -5430,15 +5645,19 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	25% {
 		opacity: 1;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	75% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -5452,15 +5671,19 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	25% {
 		opacity: 0;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	75% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -5475,9 +5698,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0, 0);
 	}
+
 	50% {
 		transform: translate(-7px, -7px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -5492,9 +5717,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0, 0);
 	}
+
 	50% {
 		transform: translate(7px, -7px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -5509,9 +5736,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0, 0);
 	}
+
 	50% {
 		transform: translate(-7px, 7px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -5526,9 +5755,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0, 0);
 	}
+
 	50% {
 		transform: translate(7px, 7px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -5544,18 +5775,22 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	25% {
 		opacity: 1;
 		transform: scale(1.2);
 	}
+
 	50% {
 		opacity: 1;
 		transform: scale(1);
 	}
+
 	75% {
 		opacity: 1;
 		transform: scale(1);
 	}
+
 	100% {
 		opacity: 1;
 		transform: scale(1);
@@ -5572,18 +5807,22 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	25% {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	50% {
 		opacity: 1;
 		transform: scale(1.2);
 	}
+
 	75% {
 		opacity: 1;
 		transform: scale(1);
 	}
+
 	100% {
 		opacity: 1;
 		transform: scale(1);
@@ -5600,18 +5839,22 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	25% {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	50% {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	75% {
 		opacity: 1;
 		transform: scale(1.2);
 	}
+
 	100% {
 		opacity: 1;
 		transform: scale(1);
@@ -5628,22 +5871,27 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	25% {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	50% {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	75% {
 		opacity: 0;
 		transform: scale(0);
 	}
+
 	85% {
 		opacity: 1;
 		transform: scale(1.2);
 	}
+
 	100% {
 		opacity: 1;
 		transform: scale(1);
@@ -5659,15 +5907,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(1);
 	}
+
 	25% {
 		transform: scaleX(0.3);
 	}
+
 	50% {
 		transform: scaleX(1);
 	}
+
 	75% {
 		transform: scaleX(0.3);
 	}
+
 	100% {
 		transform: scaleX(1);
 	}
@@ -5682,15 +5934,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleY(1);
 	}
+
 	25% {
 		transform: scaleY(0.3);
 	}
+
 	50% {
 		transform: scaleY(1);
 	}
+
 	75% {
 		transform: scaleY(0.3);
 	}
+
 	100% {
 		transform: scaleY(1);
 	}
@@ -5704,9 +5960,11 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 1;
 	}
+
 	50% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -5721,9 +5979,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	50% {
 		transform: rotate(180deg);
 	}
+
 	100% {
 		transform: rotate(360deg);
 	}
@@ -5738,9 +5998,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	50% {
 		transform: rotate(90deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -5754,15 +6016,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	25% {
 		transform: rotate(-15deg);
 	}
+
 	50% {
 		transform: rotate(-20deg);
 	}
+
 	75% {
 		transform: rotate(-15deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -5776,15 +6042,19 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	25% {
 		transform: rotate(-25deg);
 	}
+
 	50% {
 		transform: rotate(-50deg);
 	}
+
 	75% {
 		transform: rotate(-25deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -5798,9 +6068,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0px);
 	}
+
 	50% {
 		transform: translateX(14px);
 	}
+
 	100% {
 		transform: translateX(0px);
 	}
@@ -5816,9 +6088,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(1);
 	}
+
 	50% {
 		transform: scaleX(1.6);
 	}
+
 	100% {
 		transform: scaleX(1);
 	}
@@ -5833,9 +6107,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: scaleX(1);
 	}
+
 	50% {
 		transform: scaleX(0.2);
 	}
+
 	100% {
 		transform: scaleX(1);
 	}
@@ -5851,38 +6127,47 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: rotate(-180deg);
 	}
+
 	30% {
 		opacity: 0;
 		transform: rotate(-180deg);
 	}
+
 	31% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	40% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	41% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	59% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	60% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	70% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	71% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	100% {
 		opacity: 0;
 		transform: rotate(180deg);
@@ -5899,38 +6184,47 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: rotate(-180deg);
 	}
+
 	20% {
 		opacity: 0;
 		transform: rotate(-180deg);
 	}
+
 	21% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	30% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	31% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	69% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	70% {
 		opacity: 1;
 		transform: rotate(360deg);
 	}
+
 	80% {
 		opacity: 1;
 		transform: rotate(360deg);
 	}
+
 	81% {
 		opacity: 0;
 		transform: rotate(540deg);
 	}
+
 	100% {
 		opacity: 0;
 		transform: rotate(540deg);
@@ -5947,38 +6241,47 @@ input._peInput[type='number'] {
 		opacity: 0;
 		transform: rotate(-180deg);
 	}
+
 	10% {
 		opacity: 0;
 		transform: rotate(-180deg);
 	}
+
 	11% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	20% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	21% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	79% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	80% {
 		opacity: 1;
 		transform: rotate(360deg);
 	}
+
 	90% {
 		opacity: 1;
 		transform: rotate(360deg);
 	}
+
 	91% {
 		opacity: 0;
 		transform: rotate(540deg);
 	}
+
 	100% {
 		opacity: 0;
 		transform: rotate(540deg);
@@ -5995,38 +6298,47 @@ input._peInput[type='number'] {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	10% {
 		opacity: 1;
 		transform: rotate(0deg);
 	}
+
 	11% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	20% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	40% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	50% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	60% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	89% {
 		opacity: 0;
 		transform: rotate(180deg);
 	}
+
 	90% {
 		opacity: 1;
 		transform: rotate(360deg);
 	}
+
 	100% {
 		opacity: 1;
 		transform: rotate(360deg);
@@ -6042,33 +6354,43 @@ input._peInput[type='number'] {
 	0% {
 		transform: rotate(0deg);
 	}
+
 	10% {
 		transform: rotate(90deg);
 	}
+
 	20% {
 		transform: rotate(180deg);
 	}
+
 	30% {
 		transform: rotate(270deg);
 	}
+
 	40% {
 		transform: rotate(360deg);
 	}
+
 	50% {
 		transform: rotate(360deg);
 	}
+
 	60% {
 		transform: rotate(360deg);
 	}
+
 	70% {
 		transform: rotate(270deg);
 	}
+
 	80% {
 		transform: rotate(180deg);
 	}
+
 	90% {
 		transform: rotate(90deg);
 	}
+
 	100% {
 		transform: rotate(0deg);
 	}
@@ -6083,30 +6405,39 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	10% {
 		opacity: 1;
 	}
+
 	20% {
 		opacity: 1;
 	}
+
 	30% {
 		opacity: 1;
 	}
+
 	40% {
 		opacity: 1;
 	}
+
 	60% {
 		opacity: 1;
 	}
+
 	70% {
 		opacity: 1;
 	}
+
 	80% {
 		opacity: 1;
 	}
+
 	90% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -6121,30 +6452,39 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	10% {
 		opacity: 0;
 	}
+
 	20% {
 		opacity: 1;
 	}
+
 	30% {
 		opacity: 1;
 	}
+
 	40% {
 		opacity: 1;
 	}
+
 	60% {
 		opacity: 1;
 	}
+
 	70% {
 		opacity: 1;
 	}
+
 	80% {
 		opacity: 1;
 	}
+
 	90% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -6159,30 +6499,39 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	10% {
 		opacity: 0;
 	}
+
 	20% {
 		opacity: 0;
 	}
+
 	30% {
 		opacity: 1;
 	}
+
 	40% {
 		opacity: 1;
 	}
+
 	60% {
 		opacity: 1;
 	}
+
 	70% {
 		opacity: 1;
 	}
+
 	80% {
 		opacity: 0;
 	}
+
 	90% {
 		opacity: 0;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -6196,9 +6545,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0);
 	}
+
 	50% {
 		transform: translateX(-15px);
 	}
+
 	100% {
 		transform: translateX(0);
 	}
@@ -6212,9 +6563,11 @@ input._peInput[type='number'] {
 	0% {
 		fill: #02b694;
 	}
+
 	50% {
 		fill: #edeaea;
 	}
+
 	100% {
 		fill: #02b694;
 	}
@@ -6224,9 +6577,11 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 0;
 	}
@@ -6245,9 +6600,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0px, 0px);
 	}
+
 	50% {
 		transform: translate(0px, 4px);
 	}
+
 	100% {
 		transform: translate(0px, 0px);
 	}
@@ -6261,9 +6618,11 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0.5;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 0.5;
 	}
@@ -6273,9 +6632,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translateX(0);
 	}
+
 	50% {
 		transform: translateX(5px);
 	}
+
 	100% {
 		transform: translateX(0);
 	}
@@ -6289,9 +6650,11 @@ input._peInput[type='number'] {
 	0% {
 		transform: translate(0 0);
 	}
+
 	50% {
 		transform: translate(5px, 5px);
 	}
+
 	100% {
 		transform: translate(0, 0);
 	}
@@ -6305,17 +6668,21 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	25% {
 		opacity: 1;
 	}
+
 	35% {
 		opacity: 0;
 		transform: translateX(0%);
 	}
+
 	55% {
 		opacity: 1;
 		transform: translateX(65%);
 	}
+
 	99% {
 		opacity: 0;
 		transform: translateX(65%);
@@ -6326,12 +6693,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	25% {
 		opacity: 0;
 	}
+
 	40% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6349,12 +6719,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	9% {
 		opacity: 0;
 	}
+
 	10% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6364,12 +6737,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	19% {
 		opacity: 0;
 	}
+
 	20% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6379,12 +6755,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	29% {
 		opacity: 0;
 	}
+
 	30% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6394,12 +6773,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	39% {
 		opacity: 0;
 	}
+
 	40% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6409,12 +6791,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	49% {
 		opacity: 0;
 	}
+
 	50% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6424,12 +6809,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	59% {
 		opacity: 0;
 	}
+
 	60% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6439,12 +6827,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	69% {
 		opacity: 0;
 	}
+
 	70% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6454,12 +6845,15 @@ input._peInput[type='number'] {
 	0% {
 		opacity: 0;
 	}
+
 	79% {
 		opacity: 0;
 	}
+
 	80% {
 		opacity: 1;
 	}
+
 	100% {
 		opacity: 1;
 	}
@@ -6531,25 +6925,13 @@ input._peInput[type='number'] {
 	flex: 1;
 }
 
-.comp.compPageEditor
-	._popupMenuBackground
-	._popupMenuContainer
-	._compTemplateSections
-	._eachTemplateSection {
+.comp.compPageEditor ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection {
 	padding: 11px 20px 11px 20px;
 	cursor: pointer;
 }
 
-.comp.compPageEditor
-	._popupMenuBackground
-	._popupMenuContainer
-	._compTemplateSections
-	._eachTemplateSection:hover,
-.comp.compPageEditor
-	._popupMenuBackground
-	._popupMenuContainer
-	._compTemplateSections
-	._eachTemplateSection._active {
+.comp.compPageEditor ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection:hover,
+.comp.compPageEditor ._popupMenuBackground ._popupMenuContainer ._compTemplateSections ._eachTemplateSection._active {
 	background: linear-gradient(90deg, rgba(8, 112, 92, 0.2) 0%, rgba(248, 250, 251, 0) 93.35%);
 	color: #08705c;
 }
@@ -6577,6 +6959,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._popupBackground._transparent {
 	background: none;
 }
+
 /* Dark theme values  */
 .comp.compPageEditor._dark ._dndGrid {
 	background-color: #000;
@@ -6598,6 +6981,8 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor._dark button,
 .comp.compPageEditor ._dark select._peSelect,
+.comp.compPageEditor ._dark ._peSelect,
+.comp.compPageEditor ._dark ._simpleEditorSelect._peSelect,
 .comp.compPageEditor ._dark input._peInput[type='text'],
 .comp.compPageEditor._dark ._pvExpressionEditor,
 .comp.compPageEditor ._popupBackground._dark button,
@@ -6605,6 +6990,50 @@ input._peInput[type='number'] {
 	color: #000;
 	background-color: #222;
 	border: 1px solid #333;
+}
+
+.comp.compPageEditor ._dark ._peSelect,
+.comp.compPageEditor ._dark ._simpleEditorSelect._peSelect {
+	color: #fff;
+}
+
+/* Dropdown popover styling in dark mode */
+.comp.compPageEditor._dark ._simpleEditorDropdownBody {
+	background-color: #222;
+	border: 1px solid #333;
+	box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.comp.compPageEditor._dark ._simpleEditorDropdownBody ._simpleEditorDropdownOption {
+	color: #eee;
+}
+
+.comp.compPageEditor._dark ._simpleEditorDropdownBody ._simpleEditorDropdownOption._hovered {
+	background-color: #333;
+	color: #52bd94;
+}
+
+.comp.compPageEditor._dark ._simpleEditorDropdownBody ._simpleEditorDropdownOption._selected {
+	color: #52bd94;
+}
+
+.comp.compPageEditor._dark ._simpleEditorDropdownBody ._simpleEditorDropdownSearchContainer {
+	background-color: #222;
+	border-bottom: 1px solid #333;
+}
+
+.comp.compPageEditor._dark ._simpleEditorDropdownBody input._simpleEditorDropdownSearch {
+	background-color: #111;
+	border: 1px solid #333;
+	color: #eee;
+}
+
+.comp.compPageEditor._dark ._simpleEditorDropdownBody input._simpleEditorDropdownSearch::placeholder {
+	color: #eee;
+}
+
+.comp.compPageEditor._dark ._simpleEditorDropdownBody ._options_divider {
+	border-bottom: 1px solid #333;
 }
 
 .comp.compPageEditor._dark ._pvExpressionEditor input._peInput {
@@ -6624,6 +7053,7 @@ input._peInput[type='number'] {
 	background-color: #aaa;
 	color: #222;
 }
+
 .comp.compPageEditor._dark ._iconMenu:hover i.fa,
 .comp.compPageEditor._dark ._buttonBar i.fa {
 	color: #222;
@@ -6697,6 +7127,7 @@ input._peInput[type='number'] {
 .comp.compPageEditor._dark ._propertyGroupHeader {
 	color: #aaa;
 }
+
 .comp.compPageEditor._dark ._propertyGroupHeader i.fa {
 	color: #222;
 }
@@ -6734,8 +7165,13 @@ input._peInput[type='number'] {
 }
 
 @keyframes _aiSwirl {
-	from { --ai-angle: 0deg; }
-	to { --ai-angle: 360deg; }
+	from {
+		--ai-angle: 0deg;
+	}
+
+	to {
+		--ai-angle: 360deg;
+	}
 }
 
 .comp.compPageEditor ._aiSpotlightOverlay {
@@ -6751,8 +7187,13 @@ input._peInput[type='number'] {
 }
 
 @keyframes _aiFadeIn {
-	from { opacity: 0; }
-	to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
 }
 
 .comp.compPageEditor ._aiSpotlightContainer {
@@ -6766,8 +7207,15 @@ input._peInput[type='number'] {
 }
 
 @keyframes _aiSlideUp {
-	from { transform: translateY(20px); opacity: 0; }
-	to { transform: translateY(0); opacity: 1; }
+	from {
+		transform: translateY(20px);
+		opacity: 0;
+	}
+
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
 }
 
 .comp.compPageEditor ._aiSpotlightHeader {
@@ -7604,8 +8052,8 @@ input._peInput[type='number'] {
 	transform: scale(1.1);
 }
 
-.comp.compPageEditor ._sideBar ._debugBarIcon svg._iconHelperSVG  {
+.comp.compPageEditor ._sideBar ._debugBarIcon svg._iconHelperSVG {
 	color: white;
 	height: 20px;
 	width: 20px;
-} 
+}
