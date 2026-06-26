@@ -246,6 +246,7 @@ export const TableDynamicColumn: Component = {
 	properties: tableDynamicColumnPropertiesDefinition,
 	styleComponent: () => <></>,
 	styleDefaults: tableColumnStyleDefaults,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'TableColumns',
 	stylePseudoStates: ['hover'],
 	stylePropertiesForTheme: [],
