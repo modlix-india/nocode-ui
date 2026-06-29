@@ -267,15 +267,16 @@ function MapBlock({
 	center?: { lat: number; lng: number };
 	target_areas?: Array<{
 		name: string;
-		type: string;
+		type?: string;
 		lat?: number;
 		lng?: number;
 		place_id?: string;
 		pincode?: string;
-		google_id?: string;
-		meta_key?: string;
 		city?: string;
 		state?: string;
+		scale?: string;
+		meta?: { type?: string; key?: string; name?: string };
+		google?: { resourceName?: string; name?: string };
 	}>;
 	platform?: string;
 	product_location?: string;
@@ -298,7 +299,6 @@ function MapBlock({
 	const googleRef = useRef<any>(null);
 	const markersRef = useRef<any[]>([]);
 	const featureListenersRef = useRef<any[]>([]);
-	const areaMarkersRef = useRef<any[]>([]);
 	const tooltipRef = useRef<HTMLDivElement>(null);
 
 	const containerRef = useCallback((node: HTMLDivElement | null) => setContainer(node), []);
@@ -436,19 +436,14 @@ function MapBlock({
 			FT.SUBLOCALITY_LEVEL_1 || 'SUBLOCALITY_LEVEL_1',
 		];
 
-		// Listeners, styles and fallback markers attach to objects that outlive this
-		// effect, so all must be cleared on re-run/unmount — otherwise listeners
-		// stack up, a stale style closure keeps highlighting the previous set, and
-		// fallback markers from the previous area set linger.
-		const clearOverlays = () => {
+		// Listeners and styles attach to map-cached layer objects that outlive this
+		// effect, so both must be cleared on re-run/unmount — otherwise listeners
+		// stack up and a stale style closure keeps highlighting the previous set.
+		const clearFeatureLayers = () => {
 			featureListenersRef.current.forEach(l => {
 				try { l.remove(); } catch { /* layer already gone */ }
 			});
 			featureListenersRef.current = [];
-			areaMarkersRef.current.forEach(m => {
-				try { m.setMap(null); } catch { /* marker already gone */ }
-			});
-			areaMarkersRef.current = [];
 			if (hasFeatureLayers) {
 				layerTypes.forEach(t => {
 					try { map.getFeatureLayer(t).style = null; } catch { /* unsupported layer */ }
@@ -482,7 +477,7 @@ function MapBlock({
 
 			// Drop prior listeners + styles before re-binding against the current
 			// area set (the layer objects persist across runs now).
-			clearOverlays();
+			clearFeatureLayers();
 
 			if (hasFeatureLayers && placeIdsToStyle.size > 0) {
 				layerTypes.forEach(layerType => {
@@ -505,8 +500,8 @@ function MapBlock({
 										matchedLoc.city && `City: ${matchedLoc.city}`,
 										matchedLoc.state && `State: ${matchedLoc.state}`,
 										matchedLoc.lat && matchedLoc.lng && `Coordinates: ${Number(matchedLoc.lat).toFixed(4)}, ${Number(matchedLoc.lng).toFixed(4)}`,
-										matchedLoc.google_id && `Google ID: ${matchedLoc.google_id}`,
-										matchedLoc.meta_key && `Meta Key: ${matchedLoc.meta_key}`,
+										matchedLoc.google?.resourceName && `Google: ${matchedLoc.google.resourceName}`,
+										matchedLoc.meta?.key && `Meta Key: ${matchedLoc.meta.key}`,
 									].filter(Boolean) as string[]);
 									setTooltipPos({ x: e.domEvent.offsetX + 12, y: e.domEvent.offsetY + 12 });
 								} else {
@@ -529,30 +524,6 @@ function MapBlock({
 				});
 			}
 
-			// Fallback markers for areas with no postal-code polygon coverage
-			// (neighbourhoods / manually-added places). Postal codes resolve to a
-			// Feature Layer boundary reliably; neighbourhoods often don't, so without
-			// a pin they'd be saved but invisible. A coordinate marker keeps every
-			// targeted area visible and clickable for delete.
-			target_areas.forEach(area => {
-				if (area.pincode || area.lat == null || area.lng == null) return;
-				const marker = new google.maps.Marker({
-					position: { lat: Number(area.lat), lng: Number(area.lng) },
-					map,
-					title: area.name,
-					icon: {
-						path: google.maps.SymbolPath.CIRCLE,
-						scale: 7,
-						fillColor: '#1E88E5',
-						fillOpacity: 0.9,
-						strokeColor: '#ffffff',
-						strokeWeight: 2,
-					},
-				});
-				marker.addListener('click', () => setSelectedLocation(area));
-				areaMarkersRef.current.push(marker);
-			});
-
 			const bounds = new google.maps.LatLngBounds();
 			let hasCoords = false;
 			if (center) { bounds.extend(center); hasCoords = true; }
@@ -570,7 +541,7 @@ function MapBlock({
 		};
 
 		run().catch(() => { if (!cancelled) setStatus('error'); });
-		return () => { cancelled = true; clearOverlays(); };
+		return () => { cancelled = true; clearFeatureLayers(); };
 		// `target_areas` is read live; `areasKey` is its stable-content proxy.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [mapReady, areasKey, map_id, centerLat, centerLng]);
@@ -658,8 +629,8 @@ function MapBlock({
 									selectedLocation.city && `City: ${selectedLocation.city}`,
 									selectedLocation.state && `State: ${selectedLocation.state}`,
 									selectedLocation.lat && selectedLocation.lng && `${Number(selectedLocation.lat).toFixed(4)}, ${Number(selectedLocation.lng).toFixed(4)}`,
-									selectedLocation.google_id && `Google ID: ${selectedLocation.google_id}`,
-									selectedLocation.meta_key && `Meta Key: ${selectedLocation.meta_key}`,
+									selectedLocation.google?.resourceName && `Google: ${selectedLocation.google.resourceName}`,
+									selectedLocation.meta?.key && `Meta Key: ${selectedLocation.meta.key}`,
 								].filter(Boolean).join(' | ')}
 							</div>
 						</div>
@@ -677,7 +648,7 @@ function MapBlock({
 						</button>
 					</div>
 				) : target_areas.length > 0 ? (
-					<div className="_mapFooterHint">Click a highlighted boundary or pin to view details and delete.</div>
+					<div className="_mapFooterHint">Click a highlighted boundary to view details and delete.</div>
 				) : null}
 			</div>
 
