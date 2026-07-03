@@ -1271,35 +1271,42 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._craftBadge {
-			display: inline-block;
-			padding: 3px 10px;
-			border-radius: 12px;
+			display: inline-flex;
+			align-items: center;
+			padding: 4px 12px;
+			border-radius: 999px;
 			font-size: 12px;
-			font-weight: 500;
-			background: #f0f0f0;
-			color: #555;
+			font-weight: 600;
+			background: #eef2ff;
+			color: #4f46e5;
+			border: 1px solid #e0e7ff;
 			width: fit-content;
+			letter-spacing: 0.2px;
 		}
 
 		${PREFIX} ._craftKeyValue {
 			display: flex;
 			flex-direction: column;
-			gap: 6px;
+			gap: 8px;
 		}
 
 		${PREFIX} ._craftKvRow {
 			display: flex;
-			gap: 8px;
-			font-size: 14px;
+			gap: 12px;
+			font-size: 13px;
+			align-items: baseline;
 		}
 
 		${PREFIX} ._craftKvKey {
-			color: #666;
-			min-width: 100px;
+			color: #94a3b8;
+			min-width: 110px;
 			flex-shrink: 0;
+			font-weight: 500;
 		}
 
 		${PREFIX} ._craftKvValue {
+			color: #1e293b;
+			font-weight: 600;
 		}
 
 		${PREFIX} ._craftKvValue a {
@@ -2237,6 +2244,292 @@ export default function PromptStyle({
 			font-style: italic;
 			text-align: center;
 			width: 100%;
+		}
+
+		/* ─── Keyword Review Block ─── */
+		${PREFIX} ._kwReviewBlock {
+			border: 1px solid #e2e8f0;
+			border-radius: 12px;
+			background: #ffffff;
+			overflow: hidden;
+			margin: 16px 0;
+			box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+		}
+		${PREFIX} ._kwReviewTabs {
+			display: flex;
+			gap: 4px;
+			padding: 10px 12px;
+			border-bottom: 1px solid #e2e8f0;
+			background: #f8fafc;
+		}
+		${PREFIX} ._kwReviewTab {
+			padding: 6px 18px;
+			border: 1px solid #cbd5e1;
+			border-radius: 8px;
+			background: #ffffff;
+			color: #475569;
+			font-size: 12px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: background 0.15s, border-color 0.15s, color 0.15s;
+		}
+		${PREFIX} ._kwReviewTab:hover {
+			background: #f1f5f9;
+			border-color: #94a3b8;
+		}
+		${PREFIX} ._kwReviewTab._active {
+			background: #6366f1;
+			border-color: #6366f1;
+			color: #ffffff;
+			box-shadow: 0 1px 3px rgb(99 102 241 / 0.35);
+		}
+		${PREFIX} ._kwReviewContent {
+			padding: 0;
+		}
+		${PREFIX} ._kwReviewSection {
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._kwReviewSection:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._kwReviewSectionHeader {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+			padding: 10px 14px;
+			border: none;
+			background: #f8fafc;
+			cursor: pointer;
+			text-align: left;
+			font-size: 13px;
+			font-weight: 600;
+			color: #374151;
+		}
+		${PREFIX} ._kwReviewSectionHeader:hover {
+			background: #f1f5f9;
+		}
+		${PREFIX} ._kwReviewSectionChevron {
+			font-size: 16px;
+			color: #94a3b8;
+			transition: transform 0.2s;
+			display: inline-block;
+		}
+		${PREFIX} ._kwReviewSectionChevron._open {
+			transform: rotate(90deg);
+		}
+		${PREFIX} ._kwReviewSectionBody {
+			padding: 0 0 8px 0;
+		}
+		${PREFIX} ._kwReviewError {
+			margin: 8px 14px;
+			padding: 8px 12px;
+			background: #fef2f2;
+			border: 1px solid #fca5a5;
+			border-radius: 6px;
+			font-size: 12px;
+			color: #dc2626;
+			cursor: pointer;
+		}
+		${PREFIX} ._kwReviewTable {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 12px;
+		}
+		${PREFIX} ._kwReviewTh {
+			padding: 7px 10px;
+			text-align: left;
+			font-size: 11px;
+			font-weight: 600;
+			color: #64748b;
+			background: #f8fafc;
+			border-bottom: 1px solid #e2e8f0;
+			white-space: nowrap;
+		}
+		${PREFIX} ._kwActionsHead {
+			width: 72px;
+		}
+		${PREFIX} ._kwReviewRow {
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._kwReviewRow:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._kwReviewRow:hover {
+			background: #fafafa;
+		}
+		${PREFIX} ._kwReviewRow._editing {
+			background: #f8fafc;
+		}
+		${PREFIX} ._kwReviewTd {
+			padding: 7px 8px;
+			vertical-align: top;
+			color: #1e293b;
+		}
+		${PREFIX} ._kwKwText {
+			font-weight: 500;
+			max-width: 150px;
+			overflow-wrap: break-word;
+		}
+		${PREFIX} ._kwVol {
+			color: #64748b;
+			font-variant-numeric: tabular-nums;
+			white-space: nowrap;
+		}
+		${PREFIX} ._kwExtra {
+			color: #64748b;
+			font-size: 11px;
+			line-height: 1.45;
+			max-width: 160px;
+			white-space: normal;
+			overflow-wrap: break-word;
+		}
+		${PREFIX} ._kwActionsCell {
+			white-space: nowrap;
+		}
+		${PREFIX} ._kwMatchBadge {
+			display: inline-block;
+			padding: 2px 7px;
+			border-radius: 4px;
+			font-size: 10px;
+			font-weight: 600;
+			letter-spacing: 0.3px;
+		}
+		${PREFIX} ._kwMatchBadge._phrase {
+			background: #eff6ff;
+			color: #3b82f6;
+		}
+		${PREFIX} ._kwMatchBadge._exact {
+			background: #f0fdf4;
+			color: #16a34a;
+		}
+		${PREFIX} ._kwEditBtn,
+		${PREFIX} ._kwDeleteBtn,
+		${PREFIX} ._kwSaveBtn,
+		${PREFIX} ._kwCancelBtn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 28px;
+			height: 28px;
+			border-radius: 6px;
+			border: 1px solid #e2e8f0;
+			background: #ffffff;
+			cursor: pointer;
+			font-size: 12px;
+			transition: background 0.15s, border-color 0.15s;
+		}
+		${PREFIX} ._kwEditBtn:disabled,
+		${PREFIX} ._kwDeleteBtn:disabled,
+		${PREFIX} ._kwSaveBtn:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+		${PREFIX} ._kwEditBtn {
+			color: #6366f1;
+			margin-right: 4px;
+		}
+		${PREFIX} ._kwEditBtn:hover {
+			background: #eff6ff;
+			border-color: #6366f1;
+		}
+		${PREFIX} ._kwDeleteBtn {
+			color: #dc2626;
+		}
+		${PREFIX} ._kwDeleteBtn:hover {
+			background: #fef2f2;
+			border-color: #fca5a5;
+		}
+		${PREFIX} ._kwSaveBtn {
+			background: #6366f1;
+			color: #ffffff;
+			border-color: #6366f1;
+			margin-right: 4px;
+		}
+		${PREFIX} ._kwCancelBtn {
+			color: #64748b;
+		}
+		${PREFIX} ._kwCancelBtn:hover {
+			background: #f1f5f9;
+		}
+		${PREFIX} ._kwInlineInput {
+			width: 100%;
+			padding: 4px 7px;
+			border: 1px solid #cbd5e1;
+			border-radius: 5px;
+			font-size: 12px;
+			color: #1e293b;
+			outline: none;
+		}
+		${PREFIX} ._kwInlineInput:focus {
+			border-color: #6366f1;
+		}
+		${PREFIX} ._kwEmptyCell {
+			padding: 14px 10px;
+			color: #94a3b8;
+			font-size: 12px;
+			font-style: italic;
+			text-align: center;
+		}
+		${PREFIX} ._kwAddRow {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px;
+			padding: 8px 12px;
+			border-bottom: 1px solid #f1f5f9;
+			background: #fafbfc;
+			align-items: center;
+		}
+		${PREFIX} ._kwAddInput,
+		${PREFIX} ._kwAddExtra {
+			flex: 1 1 120px;
+			padding: 6px 10px;
+			border: 1px solid #cbd5e1;
+			border-radius: 7px;
+			font-size: 12px;
+			color: #1e293b;
+			outline: none;
+			min-width: 0;
+		}
+		${PREFIX} ._kwAddExtra {
+			flex-basis: 100px;
+			color: #475569;
+		}
+		${PREFIX} ._kwAddInput:focus,
+		${PREFIX} ._kwAddExtra:focus {
+			border-color: #6366f1;
+		}
+		${PREFIX} ._kwMatchSelect {
+			padding: 6px 8px;
+			border: 1px solid #cbd5e1;
+			border-radius: 7px;
+			font-size: 12px;
+			color: #374151;
+			background: #ffffff;
+			cursor: pointer;
+			outline: none;
+		}
+		${PREFIX} ._kwMatchSelect._inline {
+			padding: 4px 6px;
+			font-size: 11px;
+		}
+		${PREFIX} ._kwAddBtn {
+			padding: 6px 12px;
+			background: #6366f1;
+			color: #ffffff;
+			border: none;
+			border-radius: 7px;
+			font-size: 12px;
+			font-weight: 500;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+		${PREFIX} ._kwAddBtn:hover {
+			background: #4f46e5;
+		}
+		${PREFIX} ._kwAddBtn:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
 		}
 
 		/* Scroll to bottom button anchor — sits between messages and input,

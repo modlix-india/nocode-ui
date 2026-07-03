@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, createContext, useCont
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { loadGoogleMaps } from '../../../util/googleMapsLoader';
+import { KeywordReviewBlock } from './KeywordReviewBlock';
 
 interface CraftContextValue {
 	sessionId: string | null;
@@ -10,7 +11,7 @@ interface CraftContextValue {
 	getAuthHeaders: () => Record<string, string>;
 }
 
-const CraftContext = createContext<CraftContextValue | null>(null);
+export const CraftContext = createContext<CraftContextValue | null>(null);
 
 interface Block {
 	type: string;
@@ -699,6 +700,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	row: RowBlock,
 	collapsible: CollapsibleBlock,
 	map: MapBlock,
+	keyword_review: KeywordReviewBlock,
 };
 
 function CraftBlockRenderer({

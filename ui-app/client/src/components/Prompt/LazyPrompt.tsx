@@ -178,6 +178,7 @@ interface SSEEventContext {
 	setFeedbackTurn: (turn: { sessionId: string; turnNumber: number }) => void;
 	setCrafts: React.Dispatch<React.SetStateAction<Map<string, CraftData>>>;
 	setActiveCraftId: React.Dispatch<React.SetStateAction<string | null>>;
+	seenCraftIds: React.MutableRefObject<Set<string>>;
 	onComplete?: string;
 	completeBindingPath?: string;
 	props: Readonly<ComponentProps>;
@@ -491,7 +492,13 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					return next;
 				});
 
-				ctx.setActiveCraftId(craftId);
+				// Surface the panel only for a craft the user hasn't seen yet; later
+				// updates / background re-emits of a known craft update it in place
+				// without yanking focus from the stage the user is currently viewing.
+				if (!ctx.seenCraftIds.current.has(craftId)) {
+					ctx.seenCraftIds.current.add(craftId);
+					ctx.setActiveCraftId(craftId);
+				}
 
 				// link craft to message; already linked → return prev, no re-render
 				ctx.setMessages(prev => {
@@ -863,6 +870,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Craft panel state
 	const [crafts, setCrafts] = useState<Map<string, CraftData>>(new Map());
 	const [activeCraftId, setActiveCraftId] = useState<string | null>(null);
+	// Craft ids the panel has already surfaced. A brand-new craft opens the panel;
+	// in-place updates / background re-emits of a known craft must not steal focus
+	// from the stage the user is on (e.g. the campaign panel after create_campaign).
+	const seenCraftIds = useRef<Set<string>>(new Set());
 	// Derive activeCraft from the crafts Map so it never drifts out of sync.
 	// (Previously a separate useState updated inside setCrafts' updater — a
 	// React anti-pattern that caused appended blocks to occasionally drop.)
@@ -1601,6 +1612,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										setFeedbackTurn: turn => setFeedbackTurn(turn),
 										setCrafts,
 										setActiveCraftId,
+										seenCraftIds,
 										onComplete,
 										completeBindingPath,
 										props,
