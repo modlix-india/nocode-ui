@@ -14,6 +14,8 @@ export function Dropdown({
 	multipleValueType = SimpleEditorMultipleValueType.SpaceSeparated,
 	multiSelect = false,
 	children,
+	showSearch,
+	className = '',
 }: {
 	value: string;
 	onChange: (v: string | Array<string>) => void;
@@ -24,10 +26,30 @@ export function Dropdown({
 	multipleValueType?: SimpleEditorMultipleValueType;
 	multiSelect?: boolean;
 	children?: ReactNode;
+	showSearch?: boolean;
+	className?: string;
 }) {
-	const options = showNoneLabel
-		? [{ name: '', displayName: selectNoneLabel }, ...orignalOptions]
-		: orignalOptions;
+	const allOptions = useMemo(() => {
+		return showNoneLabel
+			? [{ name: '', displayName: selectNoneLabel }, ...orignalOptions]
+			: orignalOptions;
+	}, [showNoneLabel, selectNoneLabel, orignalOptions]);
+
+	const [filterText, setFilterText] = useState('');
+
+	const options = useMemo(() => {
+		if (!filterText.trim()) return allOptions;
+		const query = filterText.toLowerCase();
+		return allOptions.filter(
+			o =>
+				o.displayName.toLowerCase().includes(query) ||
+				o.name.toLowerCase().includes(query) ||
+				o.description?.toLowerCase().includes(query),
+		);
+	}, [allOptions, filterText]);
+
+	const isSearchEnabled = showSearch ?? orignalOptions.length > 5;
+
 	let label = undefined;
 
 	const selection = useMemo(() => {
@@ -42,7 +64,7 @@ export function Dropdown({
 		label = (
 			<span className="_selectedOption">
 				{Array.from(selection)
-					.map(s => options.find(e => e.name === s)?.displayName)
+					.map(s => allOptions.find(e => e.name === s)?.displayName)
 					.join(
 						multipleValueType === SimpleEditorMultipleValueType.Array
 							? ', '
@@ -59,6 +81,7 @@ export function Dropdown({
 
 	const dropDown = useRef<HTMLDivElement>(null);
 	const ddBody = useRef<HTMLDivElement>(null);
+	const searchInputRef = useRef<HTMLInputElement>(null);
 
 	const setCurrentOption = (num: number) => {
 		setOriginalCurrentOption(num);
@@ -68,8 +91,24 @@ export function Dropdown({
 	};
 
 	useEffect(() => {
-		if (!open && currentOption != -1) setOriginalCurrentOption(-1);
+		if (!open) {
+			setFilterText('');
+			if (currentOption != -1) setOriginalCurrentOption(-1);
+		}
 	}, [open]);
+
+	useEffect(() => {
+		setOriginalCurrentOption(-1);
+	}, [filterText]);
+
+	useEffect(() => {
+		if (open && isSearchEnabled) {
+			const handle = setTimeout(() => {
+				searchInputRef.current?.focus();
+			}, 50);
+			return () => clearTimeout(handle);
+		}
+	}, [open, isSearchEnabled]);
 
 	let body;
 	if (open) {
@@ -82,45 +121,61 @@ export function Dropdown({
 			dropdownBodyStyle.right = document.body.clientWidth - rect.right;
 			dropdownBodyStyle.minWidth = rect.width;
 		}
+
+		const searchBox = isSearchEnabled ? (
+			<div className="_simpleEditorDropdownSearchContainer" onClick={e => e.stopPropagation()}>
+				<input
+					ref={searchInputRef}
+					type="text"
+					className="_simpleEditorDropdownSearch"
+					placeholder="Search..."
+					value={filterText}
+					onChange={e => setFilterText(e.target.value)}
+				/>
+			</div>
+		) : null;
+
 		body = (
 			<div className="_simpleEditorDropdownBody" ref={ddBody} style={dropdownBodyStyle}>
+				{searchBox}
 				{children}
 				{React.Children.count(children) > 0 ? (
 					<div className="_options_divider"></div>
 				) : null}
 
-				{options.map((o, i) => (
-					<div
-						key={o.name}
-						className={`_simpleEditorDropdownOption ${
-							i === currentOption ? '_hovered' : ''
-						} ${selection.has(o.name) ? '_selected' : ''}`}
-						onMouseDown={e => {
-							if (e.button != 0) return;
+				<div className="_optionsContainer">
+					{options.map((o, i) => (
+						<div
+							key={o.name}
+							className={`_simpleEditorDropdownOption ${i === currentOption ? '_hovered' : ''
+								} ${selection.has(o.name) ? '_selected' : ''}`}
+							onMouseDown={e => {
+								if (e.button != 0) return;
 
-							setOpen(false);
-							setTimeout(() => dropDown.current?.blur(), 0);
-							if (!multiSelect) {
-								onChange(value === o.name ? '' : o.name);
-								return;
-							}
+								setOpen(false);
+								setTimeout(() => dropDown.current?.blur(), 0);
+								if (!multiSelect) {
+									onChange(value === o.name ? '' : o.name);
+									return;
+								}
 
-							let arr = Array.from(selection);
-							if (selection.has(o.name)) arr.splice(arr.indexOf(o.name), 1);
-							else arr.push(o.name);
+								let arr = Array.from(selection);
+								if (selection.has(o.name)) arr.splice(arr.indexOf(o.name), 1);
+								else arr.push(o.name);
 
-							onChange(
-								multipleValueType === SimpleEditorMultipleValueType.Array
-									? arr
-									: arr.join(multipleValueType.toString()),
-							);
-						}}
-						onMouseOver={() => setCurrentOption(i)}
-						title={o.description}
-					>
-						{o.displayName}
-					</div>
-				))}
+								onChange(
+									multipleValueType === SimpleEditorMultipleValueType.Array
+										? arr
+										: arr.join(multipleValueType.toString()),
+								);
+							}}
+							onMouseOver={() => setCurrentOption(i)}
+							title={o.description}
+						>
+							{o.displayName}
+						</div>
+					))}
+				</div>
 			</div>
 		);
 	}
@@ -129,23 +184,33 @@ export function Dropdown({
 		<div
 			tabIndex={0}
 			ref={dropDown}
-			className="_simpleEditorSelect"
+			className={`_simpleEditorSelect ${className}`}
 			role="combobox"
 			onClick={() => setOpen(true)}
 			onFocus={() => setOpen(true)}
-			onBlur={() => setOpen(false)}
-			onMouseLeave={() => setOpen(false)}
+			onBlur={e => {
+				if (dropDown.current && dropDown.current.contains(e.relatedTarget as Node)) {
+					return;
+				}
+				setOpen(false);
+			}}
+			onMouseLeave={() => {
+				if (document.activeElement && dropDown.current?.contains(document.activeElement)) {
+					return;
+				}
+				setOpen(false);
+			}}
 			onKeyDown={e => {
 				if (e.key === 'ArrowUp') {
 					e.preventDefault();
 					e.stopPropagation();
-					if (!options) return;
+					if (!options || options.length === 0) return;
 					setCurrentOption((options.length + currentOption - 1) % options.length);
 					if (!open) setOpen(true);
 				} else if (e.key === 'ArrowDown') {
 					e.preventDefault();
 					e.stopPropagation();
-					if (!options) return;
+					if (!options || options.length === 0) return;
 					setCurrentOption((currentOption + 1) % options.length);
 					if (!open) setOpen(true);
 				} else if (e.key === 'Enter') {

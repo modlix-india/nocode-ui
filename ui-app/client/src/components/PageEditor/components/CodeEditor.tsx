@@ -34,6 +34,7 @@ import {
 import { shortUUID } from '../../../util/shortUUID';
 import KIRunEditor from '../../KIRunEditor/KIRunEditor';
 import PageDefintionFunctionsRepository from '../../util/PageDefinitionFunctionsRepository';
+import { Dropdown } from '../editors/stylePropertyValueEditors/simpleEditors/Dropdown';
 interface CodeEditorProps {
 	showCodeEditor: string | undefined;
 	onSetShowCodeEditor: (key: string | undefined) => void;
@@ -97,6 +98,21 @@ export default function CodeEditor({
 		useState<Repository<Schema>>(UI_SCHEMA_REPO);
 
 	const eventFunctions = editPage?.eventFunctions ?? {};
+	const dropdownOptions = useMemo(() => {
+		return Object.entries(eventFunctions).map(([key, funct]: [string, any]) => ({
+			name: key,
+			displayName: funct.namespace ? `${funct.namespace}.${funct.name}` : funct.name,
+		}));
+	}, [eventFunctions, changed]);
+	const validationOptions = useMemo(() => {
+		return Object.values(editPage?.componentDefinition ?? {})
+			.sort((a: any, b: any) => (a.name ?? a.key).localeCompare(b.name ?? b.key))
+			.map((e: any) => ({
+				name: e.key,
+				displayName: e.name ?? e.key,
+			}));
+	}, [editPage?.componentDefinition, changed]);
+
 
 	useEffect(() => {
 		if (showCodeEditor === selectedFunction && selectedFunction !== '') return;
@@ -219,24 +235,13 @@ export default function CodeEditor({
 						<div className="_iconMenu" title="Code Editor">
 							<i className="fa-solid fa-code" />
 						</div>
-						<select
+						<Dropdown
 							className="_peSelect"
-							value={selectedFunction}
-							onChange={e => onSetShowCodeEditor(e.target.value)}
-							title="Select a function to edit"
-						>
-							{(eventFunctions ? Object.entries(eventFunctions) : []).map(
-								([key, funct]: [string, any]) => {
-									return (
-										<option key={`${key}-${funct?.name ?? ''}`} value={key}>
-											{funct.namespace
-												? `${funct.namespace}.${funct.name}`
-												: funct.name}
-										</option>
-									);
-								},
-							)}
-						</select>
+							value={selectedFunction ?? ''}
+							onChange={v => onSetShowCodeEditor(Array.isArray(v) ? v[0] : v)}
+							options={dropdownOptions}
+							showNoneLabel={false}
+						/>
 						<div
 							className="_iconMenu"
 							title="Create a new function"
@@ -283,11 +288,11 @@ export default function CodeEditor({
 											'text/plain': new Blob(
 												[
 													COPY_FUNCTION_KEY +
-														JSON.stringify({
-															key: selectedFunction,
-															functionDefinition:
-																eventFunctions[selectedFunction],
-														}),
+													JSON.stringify({
+														key: selectedFunction,
+														functionDefinition:
+															eventFunctions[selectedFunction],
+													}),
 												],
 												{
 													type: 'text/plain',
@@ -403,38 +408,29 @@ export default function CodeEditor({
 								>
 									<i className="fa-solid fa-check-double" />
 								</div>
-								<select
+								<Dropdown
 									className="_peSelect"
 									value={eventFunctions[selectedFunction]?.validationCheck ?? ''}
-									onChange={e => {
+									onChange={v => {
+										let val = Array.isArray(v) ? v[0] : v;
 										let newFun = duplicate(eventFunctions[selectedFunction]);
-										if (e.target.value === '') {
+										if (val === '') {
 											delete newFun.validationCheck;
 										} else {
-											newFun.validationCheck = e.target.value;
+											newFun.validationCheck = val;
 										}
 										changeEventFunction(selectedFunction, newFun);
 									}}
-								>
-									<option value="">--None--</option>
-									{Object.values(editPage?.componentDefinition ?? {})
-										.sort((a: any, b: any) =>
-											(a.name ?? a.key).localeCompare(b.name ?? b.key),
-										)
-										.map((e: any) => (
-											<option key={e.key} value={e.key}>
-												{e.name ?? e.key}
-											</option>
-										))}
-								</select>
+									options={validationOptions}
+									selectNoneLabel="--None--"
+								/>
 							</>
 						)}
 						<div className="_iconMenuSeperator" />
 						<div className="_buttonBar">
 							<i
-								className={`fa fa-solid fa-left-long ${
-									undoStackRef.current.length ? 'active' : ''
-								}`}
+								className={`fa fa-solid fa-left-long ${undoStackRef.current.length ? 'active' : ''
+									}`}
 								onClick={() => {
 									if (!undoStackRef.current.length || !defPath) return;
 									const x = undoStackRef.current[undoStackRef.current.length - 1];
@@ -460,9 +456,8 @@ export default function CodeEditor({
 								title="Undo"
 							/>
 							<i
-								className={`fa fa-solid fa-right-long ${
-									redoStackRef.current.length ? 'active' : ''
-								}`}
+								className={`fa fa-solid fa-right-long ${redoStackRef.current.length ? 'active' : ''
+									}`}
 								onClick={() => {
 									if (!redoStackRef.current.length || !defPath) return;
 									const x = redoStackRef.current[0];
@@ -492,11 +487,10 @@ export default function CodeEditor({
 					<div className="_codeButtons">
 						<div className="_iconMenu" onClick={() => setFullScreen(!fullScreen)}>
 							<i
-								className={`fa fa-solid ${
-									fullScreen
-										? 'fa-down-left-and-up-right-to-center'
-										: 'fa-up-right-and-down-left-from-center'
-								}`}
+								className={`fa fa-solid ${fullScreen
+									? 'fa-down-left-and-up-right-to-center'
+									: 'fa-up-right-and-down-left-from-center'
+									}`}
 							></i>
 						</div>
 						<div className="_iconMenu" onClick={() => onSetShowCodeEditor(undefined)}>
@@ -515,6 +509,7 @@ export default function CodeEditor({
 						properties: {
 							editorType: { value: 'page' },
 							...definition.properties,
+							readOnly: { value: false },
 						},
 						bindingPath: {
 							type: 'VALUE',
