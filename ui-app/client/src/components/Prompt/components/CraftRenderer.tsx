@@ -574,7 +574,6 @@ function MapBlock({
 	const handleAddLocation = (place: any) => {
 		setSearchQuery('');
 		setSuggestions([]);
-		const isMeta = platform.toLowerCase().includes('meta');
 		const payload = {
 			name: place.canonical_name || place.name,
 			lat: place.lat,
@@ -582,12 +581,14 @@ function MapBlock({
 			place_id: place.place_id,
 			pincode: place.pincode,
 			scale: SUGGESTION_SCALES[(place.type || '').toLowerCase()],
-			// Platform-native handle names — match Meta/Google's own API vocab.
-			// `key` is Meta's `geo_locations[].key`; `resourceName` is Google's
-			// `geoTargetConstants.resourceName`. Backend (nocode-ai) reads
-			// these names; the legacy `meta_key` / `google_id` aliases are gone.
-			resourceName: isMeta ? undefined : place.id,
-			key: isMeta ? place.id : undefined,
+			// Raw ad-platform type (e.g. "Neighborhood", "City"). The backend
+			// derives scale from it deterministically - a sub-city type keeps
+			// pincode backfill (and the map polygon) alive even when the LLM
+			// would infer "city" from the canonical name.
+			// NOTE: no platform handles (key/resourceName) - the backend drops
+			// LLM-writable handles at its boundary and always re-derives them
+			// via its own platform lookup.
+			place_type: place.type,
 		};
 		onSend(`add targeting location ${JSON.stringify(payload)}`, undefined, `Adding location ${payload.name}...`);
 	};
