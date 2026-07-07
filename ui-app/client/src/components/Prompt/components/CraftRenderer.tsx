@@ -593,11 +593,20 @@ function MapBlock({
 		onSend(`add targeting location ${JSON.stringify(payload)}`, undefined, `Adding location ${payload.name}...`);
 	};
 
-	const handleDelete = (index?: number, name?: string) => {
+	const handleDelete = (index?: number, loc?: { name?: string; pincode?: string; city?: string; state?: string; lat?: number; lng?: number }) => {
 		if (index === undefined) return;
-		const label = name ? `"${name}"` : `index ${index + 1}`;
+		const name = loc?.name;
+		// Build rich context so the Location Agent can unambiguously identify the
+		// area even when names collide (e.g. two "Whitefield" entries).
+		const details: string[] = [];
+		if (loc?.pincode) details.push(`pincode: ${loc.pincode}`);
+		if (loc?.city) details.push(`city: ${loc.city}`);
+		if (loc?.state) details.push(`state: ${loc.state}`);
+		if (loc?.lat != null && loc?.lng != null) details.push(`lat: ${loc.lat}, lng: ${loc.lng}`);
+		const detailStr = details.length ? ` (${details.join(', ')})` : '';
+		const nameStr = name ? `"${name}"` : `index ${index + 1}`;
 		onSend(
-			`delete targeting location ${label} (index ${index + 1})`,
+			`delete targeting location ${nameStr}${detailStr} (index ${index + 1})`,
 			undefined,
 			`Removing ${name || `location ${index + 1}`}...`,
 		);
@@ -683,7 +692,7 @@ function MapBlock({
 											Math.abs((loc.lng ?? 0) - (selectedLocation.lng ?? 0)) < 0.0001,
 									);
 								}
-								handleDelete(idx >= 0 ? idx : undefined, selectedLocation.name);
+								handleDelete(idx >= 0 ? idx : undefined, selectedLocation);
 							}}
 						>
 							Delete
