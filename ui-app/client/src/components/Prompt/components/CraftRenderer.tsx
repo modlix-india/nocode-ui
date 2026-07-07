@@ -254,6 +254,18 @@ function CollapsibleBlock({
 }
 
 
+// Suggestion type → TargetArea.scale. Broad scales keep their locality-level
+// map polygon (the backend skips pincode-stamping them); unlisted types
+// (neighbourhoods, postal codes) stay unscaled and get a pincode backfilled.
+const SUGGESTION_SCALES: Record<string, string> = {
+	city: 'city',
+	municipality: 'city',
+	region: 'state',
+	province: 'state',
+	state: 'state',
+	country: 'country',
+};
+
 function MapBlock({
 	api_key,
 	map_id,
@@ -300,8 +312,20 @@ function MapBlock({
 	const markersRef = useRef<any[]>([]);
 	const featureListenersRef = useRef<any[]>([]);
 	const tooltipRef = useRef<HTMLDivElement>(null);
+	const searchBoxRef = useRef<HTMLDivElement>(null);
 
 	const containerRef = useCallback((node: HTMLDivElement | null) => setContainer(node), []);
+
+	// Close suggestions when clicking outside the search box.
+	useEffect(() => {
+		const handleOutsideClick = (e: MouseEvent) => {
+			if (searchBoxRef.current && !searchBoxRef.current.contains(e.target as Node)) {
+				setSuggestions([]);
+			}
+		};
+		document.addEventListener('mousedown', handleOutsideClick);
+		return () => document.removeEventListener('mousedown', handleOutsideClick);
+	}, []);
 
 	// Each craft re-emit hands us fresh `center`/`target_areas` references with
 	// identical contents. Depend on these stable values — not the object/array
@@ -413,9 +437,10 @@ function MapBlock({
 
 	// Geocode target areas and apply feature-layer styling whenever areas change.
 	// Depends on mapReady so it re-runs once the map from the effect above is ready.
-	// TODO: neighbourhood names (e.g. "New Thippasandra") may not resolve to a Feature
-	// Layer polygon — postal code coverage is reliable but neighbourhood coverage is
-	// incomplete. A fallback marker/circle for unresolved areas would make them visible.
+	// Feature Layer polygon coverage is reliable for postal codes but incomplete for
+	// neighbourhoods, so the backend stamps a pincode on every target area (search
+	// adds included) and the pincode-first geocode below lands on a POSTAL_CODE
+	// feature that always carries a polygon.
 	useEffect(() => {
 		const map = mapRef.current;
 		const google = googleRef.current;
@@ -556,21 +581,31 @@ function MapBlock({
 			lng: place.lng,
 			place_id: place.place_id,
 			pincode: place.pincode,
-			google_id: isMeta ? undefined : place.id,
-			meta_key: isMeta ? place.id : undefined,
+			scale: SUGGESTION_SCALES[(place.type || '').toLowerCase()],
+			// Platform-native handle names — match Meta/Google's own API vocab.
+			// `key` is Meta's `geo_locations[].key`; `resourceName` is Google's
+			// `geoTargetConstants.resourceName`. Backend (nocode-ai) reads
+			// these names; the legacy `meta_key` / `google_id` aliases are gone.
+			resourceName: isMeta ? undefined : place.id,
+			key: isMeta ? place.id : undefined,
 		};
 		onSend(`add targeting location ${JSON.stringify(payload)}`, undefined, `Adding location ${payload.name}...`);
 	};
 
-	const handleDelete = (index?: number) => {
+	const handleDelete = (index?: number, name?: string) => {
 		if (index === undefined) return;
-		onSend(`delete targeting location index ${index + 1}`, undefined, `Deleting location...`);
+		const label = name ? `"${name}"` : `index ${index + 1}`;
+		onSend(
+			`delete targeting location ${label} (index ${index + 1})`,
+			undefined,
+			`Removing ${name || `location ${index + 1}`}...`,
+		);
 		setSelectedLocation(null);
 	};
 
 	return (
 		<div className="_craftMapBlock">
-			<div className="_mapSearchBox">
+			<div className="_mapSearchBox" ref={searchBoxRef}>
 				<input
 					type="text"
 					placeholder="Search locations to target..."
@@ -638,10 +673,16 @@ function MapBlock({
 							type="button"
 							className="_mapFooterDelete"
 							onClick={() => {
-								const idx = target_areas.findIndex(
-									loc => loc.lat === selectedLocation.lat && loc.lng === selectedLocation.lng
-								);
-								handleDelete(idx >= 0 ? idx : undefined);
+								// Match by name first (stable), then fall back to coordinate proximity.
+								let idx = target_areas.findIndex(loc => loc.name === selectedLocation.name);
+								if (idx < 0) {
+									idx = target_areas.findIndex(
+										loc =>
+											Math.abs((loc.lat ?? 0) - (selectedLocation.lat ?? 0)) < 0.0001 &&
+											Math.abs((loc.lng ?? 0) - (selectedLocation.lng ?? 0)) < 0.0001,
+									);
+								}
+								handleDelete(idx >= 0 ? idx : undefined, selectedLocation.name);
 							}}
 						>
 							Delete

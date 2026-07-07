@@ -195,6 +195,22 @@ function flushMessageState(ctx: SSEEventContext) {
 	);
 }
 
+// Spans are keyed by their unique per-spawn id (agent_tool_use_id), so one
+// agent can hold several spans in a single turn (e.g. an orchestrator retry
+// after a refused run). Events that carry only agent_id route to that agent's
+// latest span, preferring one still running.
+function spanForAgent(ctx: SSEEventContext, agentId?: string): AgentSpan | undefined {
+	if (!agentId) return undefined;
+	let latest: AgentSpan | undefined;
+	let latestRunning: AgentSpan | undefined;
+	for (const span of ctx.agentSpans.values()) {
+		if (span.agentId !== agentId) continue;
+		latest = span;
+		if (span.status === 'running') latestRunning = span;
+	}
+	return latestRunning ?? latest;
+}
+
 function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 	switch (eventType) {
 		case 'text': {
@@ -207,7 +223,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 		}
 		case 'thinking': {
 			const agentId = data.agent_id;
-			const span = agentId ? ctx.agentSpans.get(agentId) : undefined;
+			const span = spanForAgent(ctx, agentId);
 			if (span) {
 				span.thinking = (span.thinking ?? '') + (data.text ?? '');
 				flushMessageState(ctx);
@@ -225,7 +241,11 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 		case 'agent_started': {
 			const agentId = data.agent_id;
 			if (!agentId) break;
-			ctx.agentSpans.set(agentId, {
+			// Key by the per-spawn id, NOT agent_id: the same agent may run
+			// twice in one turn, and keying by agent_id clobbered the first
+			// span (its card vanished and its spawn tool row un-suppressed).
+			const spanKey = data.agent_tool_use_id || data.parent_tool_use_id || agentId;
+			ctx.agentSpans.set(spanKey, {
 				agentId,
 				label: data.label ?? agentId,
 				parentId: data.parent_id ?? 'root',
@@ -240,11 +260,13 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 		}
 		case 'agent_finished': {
 			const agentId = data.agent_id;
-			const span = agentId ? ctx.agentSpans.get(agentId) : undefined;
+			const span = spanForAgent(ctx, agentId);
 			if (span) {
 				span.status = data.status === 'error' ? 'error' : 'success';
 				span.endedAt = Date.now();
-				span.durationMs = data.duration_ms ?? span.endedAt - span.startedAt;
+				// || not ??: a backend that omits duration sends 0, which must
+				// fall back to the measured elapsed time (the "0s" card bug).
+				span.durationMs = data.duration_ms || span.endedAt - span.startedAt;
 				span.tokensIn = data.tokens_in ?? 0;
 				span.tokensOut = data.tokens_out ?? 0;
 				span.stepCount = data.step_count ?? span.toolCalls.length;
@@ -259,7 +281,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 		}
 		case 'agent_usage': {
 			const agentId = data.agent_id;
-			const span = agentId ? ctx.agentSpans.get(agentId) : undefined;
+			const span = spanForAgent(ctx, agentId);
 			if (span) {
 				span.tokensIn = data.tokens_in ?? span.tokensIn;
 				span.tokensOut = data.tokens_out ?? span.tokensOut;
@@ -281,7 +303,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			};
 			ctx.toolCalls.set(tc.id, tc);
 			// If this tool belongs to a known sub-agent span, also nest it there.
-			const span = agentId ? ctx.agentSpans.get(agentId) : undefined;
+			const span = spanForAgent(ctx, agentId);
 			if (span) span.toolCalls.push(tc);
 			flushMessageState(ctx);
 			break;
