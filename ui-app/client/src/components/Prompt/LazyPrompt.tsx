@@ -1327,6 +1327,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					setTotalMessages(data.total_history ?? history.length);
 					setMessagesOffset(0);
 					setUsage(extractUsageFromSession(data.session));
+					// Same as handleNewChat: the previous session's panel must
+					// not carry over into the one being opened.
+					setCrafts(new Map());
+					setActiveCraftId(null);
 
 					// If session is currently being processed and was recently
 					// updated, poll for updates. Stale PROCESSING sessions
@@ -1359,6 +1363,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		setTotalMessages(0);
 		setMessagesOffset(0);
 		setFeedbackTurn(null);
+		// Crafts belong to the session being left - keeping them rendered the
+		// old panel over the fresh chat until the next craft event replaced it.
+		setCrafts(new Map());
+		setActiveCraftId(null);
 	}, [stopPolling]);
 
 	// Delete a session
@@ -1372,12 +1380,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				});
 				setSessions(prev => prev.filter(s => s.session_id !== deleteSessionId));
 				setTotalSessions(prev => Math.max(0, prev - 1));
-				// If the deleted session was active, clear chat
+				// If the deleted session was active, clear chat + its panel
 				if (sessionId === deleteSessionId) {
 					setSessionId(null);
 					setMessages([]);
 					setTotalMessages(0);
 					setMessagesOffset(0);
+					setCrafts(new Map());
+					setActiveCraftId(null);
 				}
 			} catch {
 				// Silently fail
