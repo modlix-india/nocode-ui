@@ -254,18 +254,6 @@ function CollapsibleBlock({
 }
 
 
-// Suggestion type → TargetArea.scale. Broad scales keep their locality-level
-// map polygon (the backend skips pincode-stamping them); unlisted types
-// (neighbourhoods, postal codes) stay unscaled and get a pincode backfilled.
-const SUGGESTION_SCALES: Record<string, string> = {
-	city: 'city',
-	municipality: 'city',
-	region: 'state',
-	province: 'state',
-	state: 'state',
-	country: 'country',
-};
-
 function MapBlock({
 	api_key,
 	map_id,
@@ -311,6 +299,7 @@ function MapBlock({
 	const googleRef = useRef<any>(null);
 	const markersRef = useRef<any[]>([]);
 	const featureListenersRef = useRef<any[]>([]);
+	const areaMarkersRef = useRef<any[]>([]);
 	const tooltipRef = useRef<HTMLDivElement>(null);
 	const searchBoxRef = useRef<HTMLDivElement>(null);
 
@@ -438,9 +427,11 @@ function MapBlock({
 	// Geocode target areas and apply feature-layer styling whenever areas change.
 	// Depends on mapReady so it re-runs once the map from the effect above is ready.
 	// Feature Layer polygon coverage is reliable for postal codes but incomplete for
-	// neighbourhoods, so the backend stamps a pincode on every target area (search
-	// adds included) and the pincode-first geocode below lands on a POSTAL_CODE
-	// feature that always carries a polygon.
+	// neighbourhoods, so the backend stamps a pincode on every SUB-CITY target area
+	// (search adds included) and the pincode-first geocode below lands on a
+	// POSTAL_CODE feature that always carries a polygon. Cities polygon via the
+	// LOCALITY layer. State/country areas (and rare backfill failures) can't match
+	// any styled layer - those keep a fallback pin so they're never invisible.
 	useEffect(() => {
 		const map = mapRef.current;
 		const google = googleRef.current;
@@ -461,14 +452,19 @@ function MapBlock({
 			FT.SUBLOCALITY_LEVEL_1 || 'SUBLOCALITY_LEVEL_1',
 		];
 
-		// Listeners and styles attach to map-cached layer objects that outlive this
-		// effect, so both must be cleared on re-run/unmount — otherwise listeners
-		// stack up and a stale style closure keeps highlighting the previous set.
-		const clearFeatureLayers = () => {
+		// Listeners, styles and fallback markers attach to objects that outlive this
+		// effect, so all must be cleared on re-run/unmount — otherwise listeners
+		// stack up, a stale style closure keeps highlighting the previous set, and
+		// markers from the previous area set linger.
+		const clearOverlays = () => {
 			featureListenersRef.current.forEach(l => {
 				try { l.remove(); } catch { /* layer already gone */ }
 			});
 			featureListenersRef.current = [];
+			areaMarkersRef.current.forEach(m => {
+				try { m.setMap(null); } catch { /* marker already gone */ }
+			});
+			areaMarkersRef.current = [];
 			if (hasFeatureLayers) {
 				layerTypes.forEach(t => {
 					try { map.getFeatureLayer(t).style = null; } catch { /* unsupported layer */ }
@@ -500,9 +496,9 @@ function MapBlock({
 
 			if (cancelled) return;
 
-			// Drop prior listeners + styles before re-binding against the current
-			// area set (the layer objects persist across runs now).
-			clearFeatureLayers();
+			// Drop prior listeners + styles + markers before re-binding against
+			// the current area set (the layer objects persist across runs now).
+			clearOverlays();
 
 			if (hasFeatureLayers && placeIdsToStyle.size > 0) {
 				layerTypes.forEach(layerType => {
@@ -549,6 +545,29 @@ function MapBlock({
 				});
 			}
 
+			// Fallback pins for areas that provably can't match a styled layer:
+			// state/region/country scales (no administrative layer is styled) and
+			// sub-city areas whose pincode backfill failed. Cities polygon via
+			// LOCALITY and pincoded areas via POSTAL_CODE - no pin for those.
+			target_areas.forEach(area => {
+				if (area.pincode || area.scale === 'city' || area.lat == null || area.lng == null) return;
+				const marker = new google.maps.Marker({
+					position: { lat: Number(area.lat), lng: Number(area.lng) },
+					map,
+					title: area.name,
+					icon: {
+						path: google.maps.SymbolPath.CIRCLE,
+						scale: 7,
+						fillColor: '#1E88E5',
+						fillOpacity: 0.9,
+						strokeColor: '#ffffff',
+						strokeWeight: 2,
+					},
+				});
+				marker.addListener('click', () => setSelectedLocation(area));
+				areaMarkersRef.current.push(marker);
+			});
+
 			const bounds = new google.maps.LatLngBounds();
 			let hasCoords = false;
 			if (center) { bounds.extend(center); hasCoords = true; }
@@ -566,7 +585,7 @@ function MapBlock({
 		};
 
 		run().catch(() => { if (!cancelled) setStatus('error'); });
-		return () => { cancelled = true; clearFeatureLayers(); };
+		return () => { cancelled = true; clearOverlays(); };
 		// `target_areas` is read live; `areasKey` is its stable-content proxy.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [mapReady, areasKey, map_id, centerLat, centerLng]);
@@ -580,11 +599,11 @@ function MapBlock({
 			lng: place.lng,
 			place_id: place.place_id,
 			pincode: place.pincode,
-			scale: SUGGESTION_SCALES[(place.type || '').toLowerCase()],
 			// Raw ad-platform type (e.g. "Neighborhood", "City"). The backend
-			// derives scale from it deterministically - a sub-city type keeps
-			// pincode backfill (and the map polygon) alive even when the LLM
-			// would infer "city" from the canonical name.
+			// derives scale from it deterministically (its _PLACE_TYPE_SCALE is
+			// the ONE vocabulary owner - no scale is sent from here), so a
+			// sub-city type keeps pincode backfill (and the map polygon) alive
+			// even when the LLM would infer "city" from the canonical name.
 			// NOTE: no platform handles (key/resourceName) - the backend drops
 			// LLM-writable handles at its boundary and always re-derives them
 			// via its own platform lookup.
@@ -683,8 +702,15 @@ function MapBlock({
 							type="button"
 							className="_mapFooterDelete"
 							onClick={() => {
-								// Match by name first (stable), then fall back to coordinate proximity.
-								let idx = target_areas.findIndex(loc => loc.name === selectedLocation.name);
+								// selectedLocation IS an element of target_areas (set from the
+								// clicked feature/pin), so identity is exact - it survives name
+								// collisions (two "Whitefield" entries). Name and coordinate
+								// proximity are fallbacks for a craft re-emit replacing the array
+								// between click and delete.
+								let idx = target_areas.indexOf(selectedLocation);
+								if (idx < 0) {
+									idx = target_areas.findIndex(loc => loc.name === selectedLocation.name);
+								}
 								if (idx < 0) {
 									idx = target_areas.findIndex(
 										loc =>
@@ -699,7 +725,7 @@ function MapBlock({
 						</button>
 					</div>
 				) : target_areas.length > 0 ? (
-					<div className="_mapFooterHint">Click a highlighted boundary to view details and delete.</div>
+					<div className="_mapFooterHint">Click a highlighted boundary or pin to view details and delete.</div>
 				) : null}
 			</div>
 
