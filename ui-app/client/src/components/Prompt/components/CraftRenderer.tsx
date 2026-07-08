@@ -550,6 +550,8 @@ function MapBlock({
 			// states/regions via ADMINISTRATIVE_AREA_LEVEL_1/2, countries via COUNTRY.
 			// Only truly un-geocodable areas (no pincode, no recognized scale, has coords)
 			// fall through to a pin so they are never invisible on the map.
+			// Known gap: Meta neighborhood-keyed areas (Meta Key, no pincode) have no
+			// POSTAL_CODE equivalent in Google Maps feature layers, so they stay pins.
 			const LAYER_COVERED_SCALES = new Set(['city', 'state', 'region', 'country']);
 			target_areas.forEach(area => {
 				if (area.pincode || LAYER_COVERED_SCALES.has(area.scale ?? '') || area.lat == null || area.lng == null) return;
