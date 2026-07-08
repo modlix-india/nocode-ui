@@ -426,12 +426,11 @@ function MapBlock({
 
 	// Geocode target areas and apply feature-layer styling whenever areas change.
 	// Depends on mapReady so it re-runs once the map from the effect above is ready.
-	// Feature Layer polygon coverage is reliable for postal codes but incomplete for
-	// neighbourhoods, so the backend stamps a pincode on every SUB-CITY target area
-	// (search adds included) and the pincode-first geocode below lands on a
-	// POSTAL_CODE feature that always carries a polygon. Cities polygon via the
-	// LOCALITY layer. State/country areas (and rare backfill failures) can't match
-	// any styled layer - those keep a fallback pin so they're never invisible.
+	// Layer coverage: POSTAL_CODE for sub-city areas (backend stamps pincode on every
+	// neighborhood/zip result), LOCALITY for cities, ADMINISTRATIVE_AREA_LEVEL_1/2
+	// for states/regions, COUNTRY for country-level targets. Areas that match none
+	// of these (rare backfill failures with no pincode and no recognized scale) fall
+	// back to a blue pin so they are never invisible on the map.
 	useEffect(() => {
 		const map = mapRef.current;
 		const google = googleRef.current;
@@ -448,8 +447,9 @@ function MapBlock({
 		const layerTypes = [
 			FT.LOCALITY || 'LOCALITY',
 			FT.POSTAL_CODE || 'POSTAL_CODE',
-			FT.NEIGHBORHOOD || 'NEIGHBORHOOD',
-			FT.SUBLOCALITY_LEVEL_1 || 'SUBLOCALITY_LEVEL_1',
+			FT.ADMINISTRATIVE_AREA_LEVEL_1 || 'ADMINISTRATIVE_AREA_LEVEL_1',
+			FT.ADMINISTRATIVE_AREA_LEVEL_2 || 'ADMINISTRATIVE_AREA_LEVEL_2',
+			FT.COUNTRY || 'COUNTRY',
 		];
 
 		// Listeners, styles and fallback markers attach to objects that outlive this
@@ -545,12 +545,14 @@ function MapBlock({
 				});
 			}
 
-			// Fallback pins for areas that provably can't match a styled layer:
-			// state/region/country scales (no administrative layer is styled) and
-			// sub-city areas whose pincode backfill failed. Cities polygon via
-			// LOCALITY and pincoded areas via POSTAL_CODE - no pin for those.
+			// Fallback pins for sub-city areas whose pincode backfill failed.
+			// Cities render via LOCALITY, pincoded areas via POSTAL_CODE,
+			// states/regions via ADMINISTRATIVE_AREA_LEVEL_1/2, countries via COUNTRY.
+			// Only truly un-geocodable areas (no pincode, no recognized scale, has coords)
+			// fall through to a pin so they are never invisible on the map.
+			const LAYER_COVERED_SCALES = new Set(['city', 'state', 'region', 'country']);
 			target_areas.forEach(area => {
-				if (area.pincode || area.scale === 'city' || area.lat == null || area.lng == null) return;
+				if (area.pincode || LAYER_COVERED_SCALES.has(area.scale ?? '') || area.lat == null || area.lng == null) return;
 				const marker = new google.maps.Marker({
 					position: { lat: Number(area.lat), lng: Number(area.lng) },
 					map,
