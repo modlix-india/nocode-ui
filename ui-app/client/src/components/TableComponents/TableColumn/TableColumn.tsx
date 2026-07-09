@@ -4,11 +4,12 @@ import {
 	PageStoreExtractor,
 	UrlDetailsExtractor,
 } from '../../../context/StoreContext';
-import { ComponentDefinition, ComponentProps } from '../../../types/common';
+import { ComponentDefinition, ComponentProps, LocationHistory } from '../../../types/common';
 import { processComponentStylePseudoClasses } from '../../../util/styleProcessor';
 import Children from '../../Children';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import { updateLocationForChild } from '../../util/updateLoactionForChild';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnProperties';
 
@@ -31,6 +32,11 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 			pageExtractor,
 			urlExtractor,
 		);
+
+	// Read directly from raw definition properties, not via useDefinition,
+	// since dynamicChildField is a synthetic internal property not declared
+	// in propertiesDefinition.
+	const dynamicChildField = definition.properties?.dynamicChildField?.value as string | undefined;
 
 	const [hover, setHover] = useState(false);
 	const [treeHover, setTreeHover] = useState(false);
@@ -66,6 +72,28 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 		context.table.showSpinner &&
 		context.table.spinnerType.startsWith('_emptyRow');
 
+	// If this TableColumn was synthesised by TableDynamicColumn with user
+	// children, push one extra location history level so that `Parent`
+	// inside the children resolves to the field value (e.g. row.fresh)
+	// rather than the full row object. updateLocationForChild appends
+	// `.<field>` for a string index and handles string / VALUE / EXPRESSION
+	// location shapes with the correct type semantics.
+	const lastHistoryEntry = locationHistory.at(-1);
+	const childLocationHistory: LocationHistory[] =
+		dynamicChildField && lastHistoryEntry
+			? [
+					...locationHistory,
+					updateLocationForChild(
+						definition.key,
+						lastHistoryEntry.location,
+						dynamicChildField,
+						locationHistory.slice(0, -1),
+						context.pageName,
+						pageExtractor,
+					),
+				]
+			: locationHistory;
+
 	if (isLoading) {
 		dataPart = <div className={`_animateData ${context.table.spinnerType}`}>&nbsp;</div>;
 	} else {
@@ -74,7 +102,7 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 				pageDefinition={pageDefinition}
 				renderableChildren={firstchild}
 				context={context}
-				locationHistory={locationHistory}
+				locationHistory={childLocationHistory}
 			/>
 		);
 	}
@@ -118,7 +146,10 @@ export default function TableColumnComponent(props: Readonly<ComponentProps>) {
 					onMouseEnter={() => setTreeHover(true)}
 					onMouseLeave={() => setTreeHover(false)}
 				>
-					<SubHelperComponent definition={context.table?.columnsDefinition ?? definition} subComponentName="treeCell" />
+					<SubHelperComponent
+						definition={context.table?.columnsDefinition ?? definition}
+						subComponentName="treeCell"
+					/>
 					{treePrefix}
 					<span className="_treeCellContent">{dataPart}</span>
 				</div>
@@ -140,7 +171,17 @@ function renderTreeCellContent(params: {
 	hoverStyles: any;
 	definition: ComponentDefinition;
 }): React.ReactNode {
-	const { row, showConnectors, indentSize, expandIcon, collapseIcon, toggleExpand, normalStyles, hoverStyles, definition } = params;
+	const {
+		row,
+		showConnectors,
+		indentSize,
+		expandIcon,
+		collapseIcon,
+		toggleExpand,
+		normalStyles,
+		hoverStyles,
+		definition,
+	} = params;
 	const indents: React.ReactNode[] = [];
 	const lineStyle = normalStyles.treeLines ?? {};
 	const sizeStyle = { width: indentSize, minWidth: indentSize };
@@ -180,17 +221,25 @@ function renderTreeCellContent(params: {
 		if (row.depth === 0) {
 			// Root level sibling lines
 			if (row.isFirstChild && !row.isLastChild) {
-				wrapLines.push(<div key="rootLine" className="_treeLine _verticalBottom" style={lineStyle} />);
+				wrapLines.push(
+					<div key="rootLine" className="_treeLine _verticalBottom" style={lineStyle} />,
+				);
 			} else if (!row.isFirstChild && !row.isLastChild) {
-				wrapLines.push(<div key="rootLine" className="_treeLine _vertical" style={lineStyle} />);
+				wrapLines.push(
+					<div key="rootLine" className="_treeLine _vertical" style={lineStyle} />,
+				);
 			} else if (row.isLastChild && !row.isFirstChild) {
-				wrapLines.push(<div key="rootLine" className="_treeLine _verticalHalf" style={lineStyle} />);
+				wrapLines.push(
+					<div key="rootLine" className="_treeLine _verticalHalf" style={lineStyle} />,
+				);
 			}
 		}
 
 		if (row.isExpanded && row.depth > 0) {
 			// Downward children line for non-root expanded nodes
-			wrapLines.push(<div key="childLine" className="_treeLine _verticalBottom" style={lineStyle} />);
+			wrapLines.push(
+				<div key="childLine" className="_treeLine _verticalBottom" style={lineStyle} />,
+			);
 		}
 
 		indents.push(
