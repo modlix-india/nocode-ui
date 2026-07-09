@@ -654,13 +654,10 @@ function resolvePropertiesOfDynamicColumns(
 		}
 
 		if (groupedColumns.length) {
-			const propDefMap = tableDynamicGroupedColumnPropertiesDefinition.reduce(
-				(a: any, c) => {
-					a[c.name] = c;
-					return a;
-				},
-				{},
-			);
+			const propDefMap = tableDynamicGroupedColumnPropertiesDefinition.reduce((a: any, c) => {
+				a[c.name] = c;
+				return a;
+			}, {});
 
 			for (let groupedColumn of groupedColumns) {
 				const paths = getPathsFromComponentDefinition(
@@ -892,7 +889,8 @@ function generateTableColumnDefinitions(
 
 	let cp = pageDefinition;
 	if (dynamicColumns.length > 0 || groupedColumns.length > 0) {
-		if (dynamicColumns.length > 0) generateDynamicColumns(dynamicColumns, context, cp, children);
+		if (dynamicColumns.length > 0)
+			generateDynamicColumns(dynamicColumns, context, cp, children);
 		if (groupedColumns.length > 0)
 			generateGroupedDynamicColumns(
 				groupedColumns,
@@ -1059,13 +1057,16 @@ function generateDynamicColumns(
 					.map(([k]) => k)
 			: [];
 
-		// Recursively collect all component keys in a subtree.
-		const collectSubtree = (rootKey: string): string[] => {
+		// Recursively collect all component keys in a subtree. The visited
+		// set guards against cycles in a corrupted definition.
+		const collectSubtree = (rootKey: string, visited = new Set<string>()): string[] => {
+			if (visited.has(rootKey)) return [];
+			visited.add(rootKey);
 			const result: string[] = [rootKey];
 			const comp = cp.componentDefinition[rootKey];
 			if (!comp?.children) return result;
 			for (const [ck, cv] of Object.entries(comp.children))
-				if (cv) result.push(...collectSubtree(ck));
+				if (cv) result.push(...collectSubtree(ck, visited));
 			return result;
 		};
 
@@ -1086,7 +1087,7 @@ function generateDynamicColumns(
 				const keyMap: { [orig: string]: string } = {};
 				for (const origKey of dynamicColumnChildKeys) {
 					for (const sk of collectSubtree(origKey))
-					keyMap[sk] = `${key}${eachField}_${sk}`;
+						keyMap[sk] = `${key}${eachField}_${sk}`;
 				}
 				for (const [origKey, newKey] of Object.entries(keyMap)) {
 					const origComp = cp.componentDefinition[origKey];
@@ -1123,7 +1124,9 @@ function generateDynamicColumns(
 				columnChildren = { [childRendererKey]: true };
 			}
 
-			const eachChildProperties: any = { label: { value: columnNamesIndex[eachField] } };
+			const eachChildProperties: NonNullable<ComponentDefinition['properties']> = {
+				label: { value: columnNamesIndex[eachField] },
+			};
 			if (dynamicChildField)
 				eachChildProperties.dynamicChildField = { value: dynamicChildField };
 
@@ -1189,9 +1192,7 @@ function generateGroupedDynamicColumns(
 
 		// Page-state path holding the per-stage expanded flags. Default
 		// `Page.expandedStages` — keyed by stageId → truthy when expanded.
-		const expandedGroupsPath = String(
-			propValue('expandedGroupsPath', 'Page.expandedStages'),
-		);
+		const expandedGroupsPath = String(propValue('expandedGroupsPath', 'Page.expandedStages'));
 		const expandedMap =
 			getDataFromPath(expandedGroupsPath, locationHistory, pageExtractor) ?? {};
 
@@ -1327,8 +1328,7 @@ function generateGroupedDynamicColumns(
 			const toggleEfKey = hasLeaves ? synthToggleEventKey(gid) : undefined;
 
 			const isExpanded =
-				forceExpandAll ||
-				!!expandedMap?.[`s_${String(gid).replace(/[^a-zA-Z0-9]/g, '')}`];
+				forceExpandAll || !!expandedMap?.[`s_${String(gid).replace(/[^a-zA-Z0-9]/g, '')}`];
 
 			// Parent group: rollup column. Wire headerOnClick to the toggle and
 			// pass isExpanded so the chevron reflects current state.
