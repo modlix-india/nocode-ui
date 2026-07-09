@@ -267,15 +267,16 @@ function MapBlock({
 	center?: { lat: number; lng: number };
 	target_areas?: Array<{
 		name: string;
-		type: string;
+		type?: string;
 		lat?: number;
 		lng?: number;
 		place_id?: string;
 		pincode?: string;
-		google_id?: string;
-		meta_key?: string;
 		city?: string;
 		state?: string;
+		scale?: string;
+		meta?: { type?: string; key?: string; name?: string };
+		google?: { resourceName?: string; name?: string };
 	}>;
 	platform?: string;
 	product_location?: string;
@@ -300,8 +301,20 @@ function MapBlock({
 	const featureListenersRef = useRef<any[]>([]);
 	const areaMarkersRef = useRef<any[]>([]);
 	const tooltipRef = useRef<HTMLDivElement>(null);
+	const searchBoxRef = useRef<HTMLDivElement>(null);
 
 	const containerRef = useCallback((node: HTMLDivElement | null) => setContainer(node), []);
+
+	// Close suggestions when clicking outside the search box.
+	useEffect(() => {
+		const handleOutsideClick = (e: MouseEvent) => {
+			if (searchBoxRef.current && !searchBoxRef.current.contains(e.target as Node)) {
+				setSuggestions([]);
+			}
+		};
+		document.addEventListener('mousedown', handleOutsideClick);
+		return () => document.removeEventListener('mousedown', handleOutsideClick);
+	}, []);
 
 	// Each craft re-emit hands us fresh `center`/`target_areas` references with
 	// identical contents. Depend on these stable values — not the object/array
@@ -413,9 +426,11 @@ function MapBlock({
 
 	// Geocode target areas and apply feature-layer styling whenever areas change.
 	// Depends on mapReady so it re-runs once the map from the effect above is ready.
-	// TODO: neighbourhood names (e.g. "New Thippasandra") may not resolve to a Feature
-	// Layer polygon — postal code coverage is reliable but neighbourhood coverage is
-	// incomplete. A fallback marker/circle for unresolved areas would make them visible.
+	// Layer coverage: POSTAL_CODE for sub-city areas (backend stamps pincode on every
+	// neighborhood/zip result), LOCALITY for cities, ADMINISTRATIVE_AREA_LEVEL_1/2
+	// for states/regions, COUNTRY for country-level targets. Areas that match none
+	// of these (rare backfill failures with no pincode and no recognized scale) fall
+	// back to a blue pin so they are never invisible on the map.
 	useEffect(() => {
 		const map = mapRef.current;
 		const google = googleRef.current;
@@ -432,14 +447,15 @@ function MapBlock({
 		const layerTypes = [
 			FT.LOCALITY || 'LOCALITY',
 			FT.POSTAL_CODE || 'POSTAL_CODE',
-			FT.NEIGHBORHOOD || 'NEIGHBORHOOD',
-			FT.SUBLOCALITY_LEVEL_1 || 'SUBLOCALITY_LEVEL_1',
+			FT.ADMINISTRATIVE_AREA_LEVEL_1 || 'ADMINISTRATIVE_AREA_LEVEL_1',
+			FT.ADMINISTRATIVE_AREA_LEVEL_2 || 'ADMINISTRATIVE_AREA_LEVEL_2',
+			FT.COUNTRY || 'COUNTRY',
 		];
 
 		// Listeners, styles and fallback markers attach to objects that outlive this
 		// effect, so all must be cleared on re-run/unmount — otherwise listeners
 		// stack up, a stale style closure keeps highlighting the previous set, and
-		// fallback markers from the previous area set linger.
+		// markers from the previous area set linger.
 		const clearOverlays = () => {
 			featureListenersRef.current.forEach(l => {
 				try { l.remove(); } catch { /* layer already gone */ }
@@ -480,8 +496,8 @@ function MapBlock({
 
 			if (cancelled) return;
 
-			// Drop prior listeners + styles before re-binding against the current
-			// area set (the layer objects persist across runs now).
+			// Drop prior listeners + styles + markers before re-binding against
+			// the current area set (the layer objects persist across runs now).
 			clearOverlays();
 
 			if (hasFeatureLayers && placeIdsToStyle.size > 0) {
@@ -505,8 +521,8 @@ function MapBlock({
 										matchedLoc.city && `City: ${matchedLoc.city}`,
 										matchedLoc.state && `State: ${matchedLoc.state}`,
 										matchedLoc.lat && matchedLoc.lng && `Coordinates: ${Number(matchedLoc.lat).toFixed(4)}, ${Number(matchedLoc.lng).toFixed(4)}`,
-										matchedLoc.google_id && `Google ID: ${matchedLoc.google_id}`,
-										matchedLoc.meta_key && `Meta Key: ${matchedLoc.meta_key}`,
+										matchedLoc.google?.resourceName && `Google: ${matchedLoc.google.resourceName}`,
+										matchedLoc.meta?.key && `Meta Key: ${matchedLoc.meta.key}`,
 									].filter(Boolean) as string[]);
 									setTooltipPos({ x: e.domEvent.offsetX + 12, y: e.domEvent.offsetY + 12 });
 								} else {
@@ -529,13 +545,16 @@ function MapBlock({
 				});
 			}
 
-			// Fallback markers for areas with no postal-code polygon coverage
-			// (neighbourhoods / manually-added places). Postal codes resolve to a
-			// Feature Layer boundary reliably; neighbourhoods often don't, so without
-			// a pin they'd be saved but invisible. A coordinate marker keeps every
-			// targeted area visible and clickable for delete.
+			// Fallback pins for sub-city areas whose pincode backfill failed.
+			// Cities render via LOCALITY, pincoded areas via POSTAL_CODE,
+			// states/regions via ADMINISTRATIVE_AREA_LEVEL_1/2, countries via COUNTRY.
+			// Only truly un-geocodable areas (no pincode, no recognized scale, has coords)
+			// fall through to a pin so they are never invisible on the map.
+			// Known gap: Meta neighborhood-keyed areas (Meta Key, no pincode) have no
+			// POSTAL_CODE equivalent in Google Maps feature layers, so they stay pins.
+			const LAYER_COVERED_SCALES = new Set(['city', 'state', 'region', 'country']);
 			target_areas.forEach(area => {
-				if (area.pincode || area.lat == null || area.lng == null) return;
+				if (area.pincode || LAYER_COVERED_SCALES.has(area.scale ?? '') || area.lat == null || area.lng == null) return;
 				const marker = new google.maps.Marker({
 					position: { lat: Number(area.lat), lng: Number(area.lng) },
 					map,
@@ -578,28 +597,48 @@ function MapBlock({
 	const handleAddLocation = (place: any) => {
 		setSearchQuery('');
 		setSuggestions([]);
-		const isMeta = platform.toLowerCase().includes('meta');
 		const payload = {
 			name: place.canonical_name || place.name,
 			lat: place.lat,
 			lng: place.lng,
 			place_id: place.place_id,
 			pincode: place.pincode,
-			google_id: isMeta ? undefined : place.id,
-			meta_key: isMeta ? place.id : undefined,
+			// Raw ad-platform type (e.g. "Neighborhood", "City"). The backend
+			// derives scale from it deterministically (its _PLACE_TYPE_SCALE is
+			// the ONE vocabulary owner - no scale is sent from here), so a
+			// sub-city type keeps pincode backfill (and the map polygon) alive
+			// even when the LLM would infer "city" from the canonical name.
+			// NOTE: no platform handles (key/resourceName) - the backend drops
+			// LLM-writable handles at its boundary and always re-derives them
+			// via its own platform lookup.
+			place_type: place.type,
 		};
 		onSend(`add targeting location ${JSON.stringify(payload)}`, undefined, `Adding location ${payload.name}...`);
 	};
 
-	const handleDelete = (index?: number) => {
+	const handleDelete = (index?: number, loc?: { name?: string; pincode?: string; city?: string; state?: string; lat?: number; lng?: number }) => {
 		if (index === undefined) return;
-		onSend(`delete targeting location index ${index + 1}`, undefined, `Deleting location...`);
+		const name = loc?.name;
+		// Build rich context so the Location Agent can unambiguously identify the
+		// area even when names collide (e.g. two "Whitefield" entries).
+		const details: string[] = [];
+		if (loc?.pincode) details.push(`pincode: ${loc.pincode}`);
+		if (loc?.city) details.push(`city: ${loc.city}`);
+		if (loc?.state) details.push(`state: ${loc.state}`);
+		if (loc?.lat != null && loc?.lng != null) details.push(`lat: ${loc.lat}, lng: ${loc.lng}`);
+		const detailStr = details.length ? ` (${details.join(', ')})` : '';
+		const nameStr = name ? `"${name}"` : `index ${index + 1}`;
+		onSend(
+			`delete targeting location ${nameStr}${detailStr} (index ${index + 1})`,
+			undefined,
+			`Removing ${name || `location ${index + 1}`}...`,
+		);
 		setSelectedLocation(null);
 	};
 
 	return (
 		<div className="_craftMapBlock">
-			<div className="_mapSearchBox">
+			<div className="_mapSearchBox" ref={searchBoxRef}>
 				<input
 					type="text"
 					placeholder="Search locations to target..."
@@ -658,8 +697,8 @@ function MapBlock({
 									selectedLocation.city && `City: ${selectedLocation.city}`,
 									selectedLocation.state && `State: ${selectedLocation.state}`,
 									selectedLocation.lat && selectedLocation.lng && `${Number(selectedLocation.lat).toFixed(4)}, ${Number(selectedLocation.lng).toFixed(4)}`,
-									selectedLocation.google_id && `Google ID: ${selectedLocation.google_id}`,
-									selectedLocation.meta_key && `Meta Key: ${selectedLocation.meta_key}`,
+									selectedLocation.google?.resourceName && `Google: ${selectedLocation.google.resourceName}`,
+									selectedLocation.meta?.key && `Meta Key: ${selectedLocation.meta.key}`,
 								].filter(Boolean).join(' | ')}
 							</div>
 						</div>
@@ -667,10 +706,23 @@ function MapBlock({
 							type="button"
 							className="_mapFooterDelete"
 							onClick={() => {
-								const idx = target_areas.findIndex(
-									loc => loc.lat === selectedLocation.lat && loc.lng === selectedLocation.lng
-								);
-								handleDelete(idx >= 0 ? idx : undefined);
+								// selectedLocation IS an element of target_areas (set from the
+								// clicked feature/pin), so identity is exact - it survives name
+								// collisions (two "Whitefield" entries). Name and coordinate
+								// proximity are fallbacks for a craft re-emit replacing the array
+								// between click and delete.
+								let idx = target_areas.indexOf(selectedLocation);
+								if (idx < 0) {
+									idx = target_areas.findIndex(loc => loc.name === selectedLocation.name);
+								}
+								if (idx < 0) {
+									idx = target_areas.findIndex(
+										loc =>
+											Math.abs((loc.lat ?? 0) - (selectedLocation.lat ?? 0)) < 0.0001 &&
+											Math.abs((loc.lng ?? 0) - (selectedLocation.lng ?? 0)) < 0.0001,
+									);
+								}
+								handleDelete(idx >= 0 ? idx : undefined, selectedLocation);
 							}}
 						>
 							Delete
