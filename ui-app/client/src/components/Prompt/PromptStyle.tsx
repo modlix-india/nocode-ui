@@ -2403,6 +2403,10 @@ export default function PromptStyle({
 			background: #f0fdf4;
 			color: #16a34a;
 		}
+		${PREFIX} ._kwMatchBadge._broad {
+			background: #fffbeb;
+			color: #d97706;
+		}
 		${PREFIX} ._kwEditBtn,
 		${PREFIX} ._kwDeleteBtn,
 		${PREFIX} ._kwSaveBtn,

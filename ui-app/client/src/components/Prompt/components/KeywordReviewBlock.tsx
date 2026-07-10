@@ -33,7 +33,10 @@ interface EditState {
 	originalVolume: number;
 }
 
-const MATCH_TYPES = ['PHRASE', 'EXACT'];
+// Positives target (exact/phrase); negatives exclude a concept (phrase/broad) — never
+// exact, which blocks only the literal query. Mirrors the backend submit schemas.
+const matchTypesFor = (sectionKey: string): string[] =>
+	sectionKey === 'positives' ? ['PHRASE', 'EXACT'] : ['PHRASE', 'BROAD'];
 
 const COL_LABELS: Record<string, string> = {
 	keyword: 'Keyword',
@@ -254,7 +257,7 @@ function KeywordReviewInner({
 												disabled={acting}
 												onChange={e => setAddForms(prev => ({ ...prev, [sk]: { ...form, matchType: e.target.value } }))}
 											>
-												{MATCH_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
+												{matchTypesFor(sec.key).map(m => <option key={m} value={m}>{m}</option>)}
 											</select>
 											<button
 												type="button"
@@ -301,7 +304,7 @@ function KeywordReviewInner({
 																			value={es.matchType}
 																			onChange={e => setEditStates(prev => ({ ...prev, [sk]: { ...es, matchType: e.target.value } }))}
 																		>
-																			{MATCH_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
+																			{matchTypesFor(sec.key).map(m => <option key={m} value={m}>{m}</option>)}
 																		</select>
 																	</td>
 																);
