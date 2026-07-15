@@ -401,6 +401,30 @@ function buildScalesOptions(
 		yAxisType = 'linear';
 	}
 
+	const xAxisTicks: any = {
+		display: !properties.xAxisHideLabels,
+	};
+	if (properties.xAxisStepSize !== undefined) {
+		xAxisTicks.stepSize = properties.xAxisStepSize;
+	} else if (xAxisType === 'linear' && !hasOrdinalYValues && chartData.xUniqueData.length > 0) {
+		const xValues = chartData.xUniqueData.map(val => Number(val)).filter(val => !isNaN(val));
+		const allXValuesAreIntegers = xValues.length > 0 && xValues.every(val => Number.isInteger(val));
+		if (allXValuesAreIntegers) {
+			const maxVal = Math.max(...xValues);
+			const minVal = Math.min(...xValues);
+			const range = maxVal - minVal;
+			if (range <= 10) {
+				xAxisTicks.stepSize = 1;
+			}
+			xAxisTicks.callback = function(value: number) {
+				if (value % 1 === 0) {
+					return value;
+				}
+				return undefined;
+			};
+		}
+	}
+
 	// Build custom ticks for ordinal Y values
 	const xAxisOrdinalTicks = isHorizontalBar && hasOrdinalYValues ? {
 		display: !properties.xAxisHideLabels,
@@ -411,7 +435,31 @@ function buildScalesOptions(
 			const index = value - 1;
 			return chartData.yUniqueData[index] || '';
 		},
-	} : { display: !properties.xAxisHideLabels };
+	} : xAxisTicks;
+
+	const yAxisTicks: any = {
+		display: !properties.yAxisHideLabels,
+	};
+	if (properties.yAxisStepSize !== undefined) {
+		yAxisTicks.stepSize = properties.yAxisStepSize;
+	} else if (yAxisType === 'linear' && !hasOrdinalYValues && chartData.yUniqueData.length > 0) {
+		const yValues = chartData.yUniqueData.map(val => Number(val)).filter(val => !isNaN(val));
+		const allYValuesAreIntegers = yValues.length > 0 && yValues.every(val => Number.isInteger(val));
+		if (allYValuesAreIntegers) {
+			const maxVal = Math.max(...yValues);
+			const minVal = Math.min(...yValues);
+			const range = maxVal - minVal;
+			if (range <= 10) {
+				yAxisTicks.stepSize = 1;
+			}
+			yAxisTicks.callback = function(value: number) {
+				if (value % 1 === 0) {
+					return value;
+				}
+				return undefined;
+			};
+		}
+	}
 
 	const yAxisOrdinalTicks = !isHorizontalBar && chartData.hasBar && hasOrdinalYValues ? {
 		display: !properties.yAxisHideLabels,
@@ -422,7 +470,7 @@ function buildScalesOptions(
 			const index = value - 1;
 			return chartData.yUniqueData[index] || '';
 		},
-	} : { display: !properties.yAxisHideLabels };
+	} : yAxisTicks;
 
 	const scales: Record<string, any> = {
 		x: {

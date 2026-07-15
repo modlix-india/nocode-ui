@@ -120,6 +120,7 @@ export interface ChartProperties {
 	xAxisSuggestedMin?: number; // Done.
 	xAxisMax?: number; // Done.
 	xAxisSuggestedMax?: number; // Done.
+	xAxisStepSize?: number;
 	xAxisReverse?: boolean;
 	xAxisHideTicks?: boolean;
 	xAxisHideLabels?: boolean;
@@ -137,6 +138,7 @@ export interface ChartProperties {
 	yAxisSuggestedMin?: number; // Done.
 	yAxisMax?: number; // Done.
 	yAxisSuggestedMax?: number; // Done.
+	yAxisStepSize?: number;
 	yAxisReverse?: boolean;
 	yAxisHideTicks?: boolean;
 	yAxisHideLabels?: boolean;
