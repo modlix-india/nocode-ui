@@ -1,15 +1,5 @@
-import { Schema } from '@fincity/kirun-js';
-import {
-	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP,
-	SCHEMA_STRING_COMP_PROP,
-} from '../../constants';
-import {
-	ComponentPropertyDefinition,
-	ComponentPropertyEditor,
-	ComponentPropertyGroup,
-	ComponentStylePropertyDefinition,
-} from '../../types/common';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { ComponentPropertyDefinition, ComponentStylePropertyDefinition } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -28,6 +18,38 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'DOUBLE', displayName: 'Double', description: 'Double' },
 			{ name: 'BOOLEAN', displayName: 'Boolean', description: 'Boolean' },
 		],
+	},
+	{
+		name: 'defaultView',
+		displayName: 'Default View',
+		schema: SCHEMA_STRING_COMP_PROP,
+		description: 'Editor view shown initially; users can switch views at runtime.',
+		defaultValue: 'COMPACT',
+		enumValues: [
+			{
+				name: 'COMPACT',
+				displayName: 'Compact Tree',
+				description: 'Tree with one row per field',
+			},
+			{
+				name: 'EXTENDED',
+				displayName: 'Extended',
+				description: 'Tree with every setting visible inline',
+			},
+			{ name: 'JSON', displayName: 'JSON', description: 'Raw schema JSON editor' },
+		],
+	},
+	{
+		name: 'appCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Application Code',
+		description: 'Application Code for listing app-defined schemas in references',
+	},
+	{
+		name: 'clientCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Client Code',
+		description: 'Client Code for listing app-defined schemas in references',
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
