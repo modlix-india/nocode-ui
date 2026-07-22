@@ -1,5 +1,5 @@
 import { duplicate, isNullValue } from '@fincity/kirun-js';
-import React, { useCallback, useState } from 'react';
+import React, { Suspense, useCallback, useState } from 'react';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediately,
@@ -10,25 +10,27 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
-import { IconHelper } from '../util/IconHelper';
 import useDefinition from '../util/useDefinition';
 import TemplateEditorStyle from './TemplateEditorStyle';
 import { styleProperties, styleDefaults } from './TemplateEditorStyleProperties';
-import EmailEditor from './editors/EmailEditor';
 import { propertiesDefinition, stylePropertiesDefinition } from './templateEditorProperties';
-import InAppEditor from './editors/InAppEditor';
+
+const LazyTemplateEditor = React.lazy(
+	() => import(/* webpackChunkName: "TemplateEditor" */ './LazyTemplateEditor'),
+);
 
 function TemplateEditor(props: Readonly<ComponentProps>) {
 	const {
-		pageDefinition: { translations },
 		definition,
 		definition: { bindingPath },
+		pageDefinition,
 		locationHistory,
 		context,
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
-	const { properties: { templateType } = {}, stylePropertiesWithPseudoStates } = useDefinition(
+	const { properties: { templateType, aiEndpoint } = {}, stylePropertiesWithPseudoStates } =
+		useDefinition(
 		definition,
 		propertiesDefinition,
 		stylePropertiesDefinition,
@@ -37,7 +39,7 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 		urlExtractor,
 	);
 
-	const styleProperties = processComponentStylePseudoClasses(
+	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
 		stylePropertiesWithPseudoStates,
@@ -65,26 +67,28 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 	}, [bindingPathPath]);
 
 	const onChange = useCallback(
-		(template: any) => {
+		(next: any) => {
 			if (!bindingPathPath) return;
-			setData(bindingPathPath, template, context.pageName);
+			setData(bindingPathPath, next, context.pageName);
 		},
-		[bindingPathPath],
+		[bindingPathPath, context.pageName],
 	);
 
-	let editorComponent: React.JSX.Element | undefined = undefined;
-	if (templateType === 'email') {
-		editorComponent = <EmailEditor template={template} onChange={onChange}></EmailEditor>;
-	} else if (templateType === 'whatsapp') {
-		editorComponent = <></>;
-	} else if (templateType === 'inapp') {
-		editorComponent = <InAppEditor template={template} onChange={onChange}></InAppEditor>;
-	}
-
 	return (
-		<div className={`comp compTemplateEditor`} style={styleProperties.comp ?? {}}>
+		<div className="comp compTemplateEditor" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-			{editorComponent}
+			<Suspense fallback={<div className="_templateEditorLoading">Loading editor…</div>}>
+				<LazyTemplateEditor
+					template={template}
+					onChange={onChange}
+					lockedType={templateType}
+					aiEndpoint={aiEndpoint}
+					context={context}
+					pageDefinition={pageDefinition}
+					locationHistory={locationHistory}
+					pageExtractor={pageExtractor}
+				/>
+			</Suspense>
 		</div>
 	);
 }
@@ -92,7 +96,7 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 const component: Component = {
 	name: 'TemplateEditor',
 	displayName: 'Template Editor',
-	description: 'Template Editor',
+	description: 'Drag-and-drop / code editor for email, PDF, in-app and messaging templates',
 	component: TemplateEditor,
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
@@ -108,7 +112,7 @@ const component: Component = {
 		name: 'Template Editor',
 		properties: {},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;
