@@ -737,6 +737,323 @@ function MapBlock({
 	);
 }
 
+interface TargetingItem {
+	id: string;
+	name: string;
+	size?: string | number;
+	path?: string[];
+	description?: string;
+	audience_size_lower_bound?: number;
+	audience_size_upper_bound?: number;
+	type?: string;
+	category?: string;
+}
+
+function TargetingChip({
+	item,
+	onDelete,
+}: {
+	item: TargetingItem;
+	onDelete: () => void;
+}) {
+	const [hovered, setHovered] = useState(false);
+
+	const formattedSize =
+		item.audience_size_lower_bound && item.audience_size_upper_bound
+			? `${item.audience_size_lower_bound.toLocaleString()} - ${item.audience_size_upper_bound.toLocaleString()}`
+			: item.size;
+
+	const renderPath = () => {
+		const pathList = item.path || [];
+		let category = '';
+		let restPath = '';
+		if (pathList.length > 0) {
+			category = pathList[0];
+			restPath = [...pathList.slice(1), item.name].join(' > ');
+		} else {
+			const rawCat = item.category || item.type || 'interests';
+			category = rawCat.charAt(0).toUpperCase() + rawCat.slice(1);
+			restPath = item.name;
+		}
+		return (
+			<div className="_craftPopoverPath">
+				<strong>{category}</strong>{restPath ? ` > ${restPath}` : ''}
+			</div>
+		);
+	};
+
+	return (
+		<div
+			className="_craftTargetingChip"
+			onMouseEnter={() => setHovered(true)}
+			onMouseLeave={() => setHovered(false)}
+			style={{ position: 'relative' }}
+		>
+			<span className="_craftChipText">
+				<span className="_craftChipName">{item.name}</span>
+			</span>
+			<button
+				type="button"
+				className="_craftChipDeleteBtn"
+				onClick={onDelete}
+				title={`Delete ${item.name}`}
+			>
+				<i className="fa-regular fa-trash-can" />
+			</button>
+
+			{hovered && (
+				<div className="_craftTargetingPopover">
+					<div className="_craftPopoverHeader">
+						<strong>{item.name}</strong>
+					</div>
+					<div className="_craftPopoverBody">
+						{renderPath()}
+						{formattedSize && (
+							<div>
+								<strong>Audience Size:</strong> {formattedSize}
+							</div>
+						)}
+						{item.description && (
+							<div className="_craftPopoverDesc">
+								<strong>Description:</strong> {item.description}
+							</div>
+						)}
+					</div>
+				</div>
+			)}
+		</div>
+	);
+}
+
+function SearchResultRow({
+	item,
+	onAdd,
+}: {
+	item: TargetingItem;
+	onAdd: () => void;
+}) {
+	const rawCat = item.category || item.type || 'interests';
+	const categoryLabel = rawCat.charAt(0).toUpperCase() + rawCat.slice(1);
+
+	return (
+		<div className="_craftSearchResultRow">
+			<div className="_craftSearchResultInfo">
+				<div className="_craftSearchResultNameLine">
+					<span className="_craftSearchResultName">{item.name}</span>
+					{item.size && (
+						<span className="_craftSearchResultSize">
+							({typeof item.size === 'number' ? item.size.toLocaleString() : item.size})
+						</span>
+					)}
+				</div>
+				<div className="_craftSearchResultType" style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'capitalize', textAlign: 'left', marginTop: '1px' }}>
+					{categoryLabel}
+				</div>
+			</div>
+			<button
+				type="button"
+				className="_craftSearchResultAddBtn"
+				onClick={onAdd}
+			>
+				Add
+			</button>
+		</div>
+	);
+}
+
+function TargetingManagerBlock({
+	interests = [],
+	demographics = [],
+	behaviors = [],
+	searchResults = [],
+}: {
+	interests?: TargetingItem[];
+	demographics?: TargetingItem[];
+	behaviors?: TargetingItem[];
+	searchResults?: TargetingItem[];
+}) {
+	const context = useContext(CraftContext);
+	if (!context) {
+		throw new Error('TargetingManagerBlock must be used within a CraftRenderer');
+	}
+	const { onSend } = context;
+	const [searchQuery, setSearchQuery] = useState('');
+	const [activeTab, setActiveTab] = useState<'interests' | 'demographics' | 'behaviors'>('interests');
+	const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' } | null>(null);
+	const [showDropdown, setShowDropdown] = useState(false);
+	const containerRef = useRef<HTMLDivElement | null>(null);
+
+	useEffect(() => {
+		if (!toast) return;
+		const timer = setTimeout(() => {
+			setToast(null);
+		}, 3000);
+		return () => clearTimeout(timer);
+	}, [toast]);
+
+	useEffect(() => {
+		if (searchResults && searchResults.length > 0) {
+			setShowDropdown(true);
+		} else {
+			setShowDropdown(false);
+		}
+	}, [searchResults]);
+
+	useEffect(() => {
+		const handleClickOutside = (event: MouseEvent) => {
+			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+				setShowDropdown(false);
+			}
+		};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, []);
+
+	const handleSearch = useCallback(() => {
+		const trimmed = searchQuery.trim();
+		if (!trimmed) return;
+		onSend(`Please search Meta targeting options matching '${trimmed}'`, undefined, `Searched Meta targeting for "${trimmed}"`);
+		setSearchQuery('');
+	}, [searchQuery, onSend]);
+
+	const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter') {
+			handleSearch();
+		} else if (e.key === 'Escape') {
+			setShowDropdown(false);
+		}
+	}, [handleSearch]);
+
+	const renderList = (categoryTitle: string, list: TargetingItem[]) => {
+		if (!list || list.length === 0) {
+			return (
+				<div className="_craftTargetingEmptyState">
+					No {categoryTitle.toLowerCase()} selected yet. Search and add above!
+				</div>
+			);
+		}
+		return (
+			<div className="_craftTargetingSection">
+				<div className="_craftTargetingList">
+					{list.map(item => (
+						<TargetingChip
+							key={item.id}
+							item={item}
+							onDelete={() => {
+								onSend(
+									`Please remove detailed targeting segment with ID ${item.id}`,
+									undefined,
+									`Removed detailed targeting segment: "${item.name}"`,
+								);
+								setToast({ message: `Removed "${item.name}" successfully!`, type: 'info' });
+							}}
+						/>
+					))}
+				</div>
+			</div>
+		);
+	};
+
+	return (
+		<div className="_craftTargetingManager" ref={containerRef}>
+			{/* Sticky header containing subheading, search input, and inline results */}
+			<div className="_craftTargetingStickyHeader">
+				<h3 className="_craftHeading" style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: 'bold' }}>Detailed Targeting</h3>
+				<p className="_craftText" style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#6b7280', textAlign: 'left', lineHeight: '1.5' }}>
+					Meta Ads detailed targeting segments. Review, delete, or search and add new segments directly below:
+				</p>
+
+				<div className="_craftTargetingIncludeHeading">
+					Include people who match <i className="fa-solid fa-circle-info" title="Select segments from categories to narrow your audience" />
+				</div>
+
+				<div className="_craftTargetingSearchSection">
+					<input
+						type="text"
+						className="_craftTargetingSearchInput"
+						value={searchQuery}
+						onChange={e => setSearchQuery(e.target.value)}
+						onKeyDown={handleKeyDown}
+						placeholder="Add demographics, interests or behaviours"
+					/>
+					<button
+						type="button"
+						className="_craftTargetingSearchBtn"
+						onClick={handleSearch}
+						disabled={!searchQuery.trim()}
+					>
+						Search
+					</button>
+				</div>
+
+				{/* Search results overlay dropdown menu - absolute positioned */}
+				{showDropdown && searchResults && searchResults.length > 0 && (
+					<div className="_craftSearchResultsSection">
+						<div className="_craftSearchResultsList">
+							{searchResults.map(item => (
+								<SearchResultRow
+									key={item.id}
+									item={item}
+									onAdd={() => {
+										onSend(
+											`Please add detailed targeting segment: ${item.type || 'interest'} ${item.id} name ${item.name}`,
+											undefined,
+											`Added detailed targeting segment: "${item.name}"`,
+										);
+										setToast({ message: `Added "${item.name}" successfully!`, type: 'success' });
+									}}
+								/>
+							))}
+						</div>
+					</div>
+				)}
+			</div>
+
+			{/* Tabs Navigation */}
+			<div className="_craftTargetingTabsNav">
+				<button
+					type="button"
+					className={`_craftTargetingTabBtn ${activeTab === 'interests' ? '_active' : ''}`}
+					onClick={() => setActiveTab('interests')}
+				>
+					Interests ({interests.length})
+				</button>
+				<button
+					type="button"
+					className={`_craftTargetingTabBtn ${activeTab === 'demographics' ? '_active' : ''}`}
+					onClick={() => setActiveTab('demographics')}
+				>
+					Demographics ({demographics.length})
+				</button>
+				<button
+					type="button"
+					className={`_craftTargetingTabBtn ${activeTab === 'behaviors' ? '_active' : ''}`}
+					onClick={() => setActiveTab('behaviors')}
+				>
+					Behaviors ({behaviors.length})
+				</button>
+			</div>
+
+			{/* Active Tab Content */}
+			<div className="_craftTargetingTabContent">
+				{activeTab === 'interests' && renderList('Interests', interests)}
+				{activeTab === 'demographics' && renderList('Demographics', demographics)}
+				{activeTab === 'behaviors' && renderList('Behaviors', behaviors)}
+			</div>
+
+			{/* Toast Notification overlay */}
+			{toast && (
+				<div className={`_craftTargetingToast ${toast.type === 'info' ? '_info' : ''}`}>
+					<i className={toast.type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-info'} />
+					<span>{toast.message}</span>
+				</div>
+			)}
+		</div>
+	);
+}
+
 const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	heading: HeadingBlock,
 	text: TextBlock,
@@ -751,6 +1068,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	row: RowBlock,
 	collapsible: CollapsibleBlock,
 	map: MapBlock,
+	targeting_manager: TargetingManagerBlock,
 };
 
 function CraftBlockRenderer({
