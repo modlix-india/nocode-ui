@@ -1,4 +1,6 @@
-import React, { useEffect } from 'react';
+import { HybridRepository, isNullValue, Repository, Schema } from '@fincity/kirun-js';
+import React, { useEffect, useMemo } from 'react';
+import { RemoteRepository, REPO_SERVER } from '../../Engine/RemoteRepository';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -6,14 +8,13 @@ import {
 	setData,
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
+import { UISchemaRepository } from '../../schemas/common';
+import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
+import SchemaEditor from './editor/SchemaEditor';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaBuilderProperties';
-import SingleSchema from './components/SingleSchema';
-import { UISchemaRepository } from '../../schemas/common';
-import { isNullValue } from '@fincity/kirun-js';
-import { ComponentProps } from '../../types/common';
 
 let UI_SCHEMA_REPO: UISchemaRepository;
 
@@ -28,15 +29,17 @@ export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
-	const { properties: { readOnly, rootSchemaType } = {}, stylePropertiesWithPseudoStates } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-			urlExtractor,
-		);
+	const {
+		properties: { readOnly, rootSchemaType, defaultView, appCode, clientCode } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+		urlExtractor,
+	);
 
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -54,6 +57,20 @@ export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 
 	const isReadonly = readOnly || !bindingPathPath;
 
+	const schemaRepository: Repository<Schema> = useMemo(() => {
+		if (!appCode || !clientCode) return UI_SCHEMA_REPO;
+		return new HybridRepository<Schema>(
+			UI_SCHEMA_REPO,
+			RemoteRepository.getRemoteSchemaRepository(appCode, clientCode, false, REPO_SERVER.UI),
+			RemoteRepository.getRemoteSchemaRepository(
+				appCode,
+				clientCode,
+				false,
+				REPO_SERVER.CORE,
+			),
+		);
+	}, [appCode, clientCode]);
+
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{},
@@ -63,9 +80,11 @@ export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 	return (
 		<div className="comp compSchemaBuilder" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
-			<SingleSchema
-				schema={value}
-				type={rootSchemaType}
+			<SchemaEditor
+				value={value}
+				readOnly={isReadonly}
+				defaultMode={defaultView}
+				rootType={rootSchemaType}
 				onChange={v => {
 					if (isReadonly) return;
 					if (rootSchemaType) {
@@ -76,8 +95,8 @@ export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 					}
 					setData(bindingPathPath!, v, pageExtractor.getPageName());
 				}}
-				schemaRepository={UI_SCHEMA_REPO}
-				shouldShowNameNamespace={true}
+				schemaRepository={schemaRepository}
+				showNameNamespace={true}
 			/>
 		</div>
 	);

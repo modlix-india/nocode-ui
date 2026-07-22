@@ -1,9 +1,8 @@
-import React, { ReactNode, useCallback, useEffect, useState } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import StringField from './StringField';
 import NumberField from './NumberField';
 import AnyField from './AnyField';
-import SingleSchema from './SingleSchema';
-import { Repository, Schema, isNullValue } from '@fincity/kirun-js';
+import { Repository, Schema } from '@fincity/kirun-js';
 import { shortUUID } from '../../../util/shortUUID';
 import { duplicate } from '@fincity/kirun-js';
 import SelectField from './SelectField';
@@ -13,7 +12,7 @@ interface ArrayFieldProps {
 	value: any[] | undefined;
 	propPath: string;
 	onChange: (propPath: string, v: [] | undefined) => void;
-	type?: 'STRING' | 'NUMBER' | 'SCHEMA' | 'ANY' | 'SELECT';
+	type?: 'STRING' | 'NUMBER' | 'ANY' | 'SELECT';
 	options?: { label: string; value: any }[];
 	schemaRepository: Repository<Schema>;
 	children?: ReactNode;
@@ -101,7 +100,7 @@ export default function ArrayField({
 }
 
 interface EachOneProps {
-	type: 'STRING' | 'NUMBER' | 'SCHEMA' | 'ANY' | 'SELECT';
+	type: 'STRING' | 'NUMBER' | 'ANY' | 'SELECT';
 	value: any;
 	propPath: string;
 	onChange: (propPath: string, v: any) => void;
@@ -131,15 +130,6 @@ function EachOne({
 	} else if (type === 'NUMBER') {
 		valueComp = (
 			<NumberField label={''} value={value} onChange={onChange} propPath={propPath} />
-		);
-	} else if (type === 'SCHEMA') {
-		valueComp = (
-			<SingleSchema
-				schema={value}
-				onChange={v => onChange(propPath, v)}
-				schemaRepository={schemaRepository}
-				shouldShowNameNamespace={false}
-			/>
 		);
 	} else if (type === 'SELECT') {
 		valueComp = (
