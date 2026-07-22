@@ -10,14 +10,25 @@ import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'templateType',
-		displayName: 'Template Type',
-		description: 'The type of template to be used',
+		displayName: 'Locked Template Type',
+		description:
+			'Optionally lock the editor to a single template type. Leave empty to let the user choose the type inside the editor.',
 		schema: SCHEMA_STRING_COMP_PROP,
 		enumValues: [
 			{ name: 'email', displayName: 'Email' },
-			{ name: 'whatsapp', displayName: 'WhatsApp' },
+			{ name: 'pdf', displayName: 'PDF' },
 			{ name: 'inapp', displayName: 'In App' },
+			{ name: 'whatsapp', displayName: 'WhatsApp' },
+			{ name: 'sms', displayName: 'SMS' },
 		],
+	},
+	{
+		name: 'aiEndpoint',
+		displayName: 'AI Endpoint',
+		description:
+			"Endpoint the editor's AI tab posts prompts to (POST {prompt, template, language, part, templateType} -> {subject, html, message}). Leave empty to hide the AI tab.",
+		schema: SCHEMA_STRING_COMP_PROP,
+		defaultValue: 'api/ai/appbuilder/template',
 	},
 ];
 
