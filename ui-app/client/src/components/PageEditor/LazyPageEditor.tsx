@@ -873,22 +873,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 							executionLog: msg.executionLog, // Keep nested for DebugExecutionModal
 							executionId: msg.executionId,
 							screenType: msg.screenType,
-					pageDefinition: msg.pageDefinition,
-					locationHistory: msg.locationHistory || [],
-				};
+							locationHistory: msg.locationHistory || [],
+						};
 
-						console.log('[DEBUG] LazyPageEditor received message:', {
-							screenType: flattenedMsg.screenType,
-							executionId: flattenedMsg.executionId,
-							logs: flattenedMsg.logs,
-							logsLength: flattenedMsg.logs?.length,
-							firstLog: flattenedMsg.logs?.[0],
-							firstLogFunctionName: flattenedMsg.logs?.[0]?.functionName,
-							startTime: flattenedMsg.startTime,
-							endTime: flattenedMsg.endTime,
-							errored: flattenedMsg.errored,
-							allKeys: Object.keys(flattenedMsg),
-						});
 						setDebugMessages(prev => {
 							const updated = new Map(prev);
 							const deviceMessages = updated.get(flattenedMsg.screenType) || [];
@@ -901,28 +888,12 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 								// Update existing execution (replace with latest data which should have more complete logs)
 								newMessages = [...deviceMessages];
 								newMessages[existingIndex] = flattenedMsg;
-								console.log('[DEBUG] Updated existing execution:', {
-									executionId: flattenedMsg.executionId,
-									oldLogsLength: deviceMessages[existingIndex].logs?.length,
-									newLogsLength: flattenedMsg.logs?.length,
-								});
 							} else {
-								// Add new execution at the beginning
-								newMessages = [flattenedMsg, ...deviceMessages].slice(0, 50); // Keep max 50
-								console.log('[DEBUG] Added new execution:', {
-									executionId: flattenedMsg.executionId,
-									logsLength: flattenedMsg.logs?.length,
-								});
+								// Add new execution at the beginning; cap retention so we don't hold many logs.
+								newMessages = [flattenedMsg, ...deviceMessages].slice(0, 15);
 							}
 
 							updated.set(flattenedMsg.screenType, newMessages);
-							console.log('[DEBUG] Updated debug messages:', {
-								device: flattenedMsg.screenType,
-								newMessagesCount: newMessages.length,
-								totalDevicesWithMessages: Array.from(updated.entries())
-									.filter(([_, msgs]) => msgs.length > 0)
-									.map(([device, msgs]) => `${device}:${msgs.length}`),
-							});
 							return updated;
 						});
 					},
@@ -1152,6 +1123,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					onClose={() => setShowDebugMenu(false)}
 					onClearAll={handleClearAllDebug}
 					slaveStore={slaveStore}
+					editPageDefinition={editPageDefinition}
 					savePersonalization={() => savePersonalization('test', 'test')}
 					personalizationPath={personalizationPath}
 				/>

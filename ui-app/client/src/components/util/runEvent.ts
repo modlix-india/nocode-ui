@@ -44,6 +44,11 @@ function addValidationTriggers(
 let UI_FUN_REPO: UIFunctionRepository;
 let UI_SCHEMA_REPO: UISchemaRepository;
 
+// Cap the number of retained debug contexts so long editing sessions don't leak
+// (each execution used to add an entry that pinned a full page definition, forever).
+const DEBUG_CONTEXT_MAX = 10;
+const debugContextOrder: string[] = [];
+
 // Expose DebugCollector to console for debugging
 if (typeof globalThis !== 'undefined') {
 	(globalThis as any).DebugCollector = DebugCollector;
@@ -60,17 +65,9 @@ if (typeof globalThis !== 'undefined' && (globalThis.isDesignMode || globalThis.
 				const debugContext = (globalThis as any).debugContext?.[event.executionId];
 
 				if (executionLog) {
-					console.log('[DEBUG] Sending execution log:', {
-						executionId: event.executionId,
-						screenType: globalThis.screenType,
-						logs: executionLog.logs,
-						startTime: executionLog.startTime,
-						endTime: executionLog.endTime,
-						errored: executionLog.errored,
-						hasDebugContext: !!debugContext,
-					});
-
-					// Send the entire execution log as is, including pageDefinition from debugContext
+					// Send the execution log. The page definition is intentionally NOT
+					// included: the editor (master) already holds it, and re-sending +
+					// retaining it per execution was the primary memory leak.
 					window.parent.postMessage(
 						{
 							type: 'SLAVE_DEBUG_EXECUTION',
@@ -86,8 +83,6 @@ if (typeof globalThis !== 'undefined' && (globalThis.isDesignMode || globalThis.
 								},
 								executionId: event.executionId,
 								screenType: globalThis.screenType,
-								// Include pageDefinition and locationHistory from debugContext
-								pageDefinition: debugContext?.pageDefinition,
 								locationHistory: debugContext?.locationHistory || [],
 							},
 						},
@@ -230,12 +225,27 @@ export const runEvent = async (
 
 		if (isDebugMode || isDesignMode){
 			if (!globalThis.debugContext) globalThis.debugContext = {};
-			globalThis.debugContext[eid] = {
-				pageDefinition,
-				functionRepository,
-				schemaRepository,
-				locationHistory,
-				tokenValueExtractors: valuesMap,
+			// In the Page Editor the master already holds the page definition and nothing
+			// reads the repositories back out of debugContext, so keep only the lightweight
+			// fields there. The standalone ?debug window still needs the full context.
+			globalThis.debugContext[eid] =
+				globalThis.designMode === 'PAGE'
+					? {
+						locationHistory,
+						tokenValueExtractors: valuesMap,
+					}
+					: {
+						pageDefinition,
+						functionRepository,
+						schemaRepository,
+						locationHistory,
+						tokenValueExtractors: valuesMap,
+					};
+			// Bound the map: drop the oldest entries once we exceed the cap.
+			debugContextOrder.push(eid);
+			while (debugContextOrder.length > DEBUG_CONTEXT_MAX) {
+				const old = debugContextOrder.shift();
+				if (old) delete globalThis.debugContext[old];
 			}
 		}
 

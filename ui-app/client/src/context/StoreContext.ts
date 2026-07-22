@@ -181,6 +181,20 @@ export function getDataFromPath(
 
 export const innerSetData = _setData;
 
+// The editor mirrors the running page's store to drive binding-path autocomplete.
+// Previously the ENTIRE store was structured-cloned and posted to the master on every
+// single setData, which flooded the editor and drove it to crash. Trailing-debounce it:
+// the master only needs the latest snapshot, not one per mutation.
+let slaveStoreTimer: ReturnType<typeof setTimeout> | undefined;
+const SLAVE_STORE_DEBOUNCE_MS = 400;
+function scheduleSlaveStoreBroadcast() {
+	if (slaveStoreTimer) return;
+	slaveStoreTimer = setTimeout(() => {
+		slaveStoreTimer = undefined;
+		messageToMaster({ type: 'SLAVE_STORE', payload: _store });
+	}, SLAVE_STORE_DEBOUNCE_MS);
+}
+
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
 
 	if (path.endsWith('.')) path = path.substring(0, path.length - 1);
@@ -252,7 +266,7 @@ export function setData(path: string, value: any, context?: string, deleteKey?: 
 
 	if (globalThis.designMode !== 'PAGE') return;
 
-	messageToMaster({ type: 'SLAVE_STORE', payload: _store });
+	scheduleSlaveStoreBroadcast();
 }
 
 export class PageStoreExtractor extends SpecialTokenValueExtractor {
