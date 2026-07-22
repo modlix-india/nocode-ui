@@ -2278,10 +2278,40 @@ export default function PromptStyle({
 			border-color: #94a3b8;
 		}
 		${PREFIX} ._kwReviewTab._active {
-			background: #6366f1;
-			border-color: #6366f1;
+			background: #1e293b;
+			border-color: #1e293b;
 			color: #ffffff;
-			box-shadow: 0 1px 3px rgb(99 102 241 / 0.35);
+			box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
+		}
+		${PREFIX} ._kwTabIcon {
+			margin-left: 6px;
+			font-size: 10px;
+			opacity: 0.7;
+		}
+		${PREFIX} ._kwReviewTab._pending {
+			color: #64748b;
+			border-style: dashed;
+		}
+		${PREFIX} ._kwReviewTab._partial {
+			color: #475569;
+		}
+		${PREFIX} ._kwReviewTab._failed {
+			color: #dc2626;
+			border-color: #fca5a5;
+		}
+		${PREFIX} ._kwStatusNote {
+			margin: 10px 14px 0;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-size: 12px;
+			background: #f8fafc;
+			border: 1px solid #e2e8f0;
+			color: #475569;
+		}
+		${PREFIX} ._kwStatusNote._failed {
+			background: #fef2f2;
+			border-color: #fca5a5;
+			color: #dc2626;
 		}
 		${PREFIX} ._kwReviewContent {
 			padding: 0;
@@ -2396,16 +2426,16 @@ export default function PromptStyle({
 			letter-spacing: 0.3px;
 		}
 		${PREFIX} ._kwMatchBadge._phrase {
-			background: #eff6ff;
-			color: #3b82f6;
+			background: #f1f5f9;
+			color: #475569;
 		}
 		${PREFIX} ._kwMatchBadge._exact {
-			background: #f0fdf4;
-			color: #16a34a;
+			background: #e2e8f0;
+			color: #1e293b;
 		}
 		${PREFIX} ._kwMatchBadge._broad {
-			background: #fffbeb;
-			color: #d97706;
+			background: #f8fafc;
+			color: #64748b;
 		}
 		${PREFIX} ._kwEditBtn,
 		${PREFIX} ._kwDeleteBtn,
@@ -2430,12 +2460,12 @@ export default function PromptStyle({
 			cursor: not-allowed;
 		}
 		${PREFIX} ._kwEditBtn {
-			color: #6366f1;
+			color: #475569;
 			margin-right: 4px;
 		}
 		${PREFIX} ._kwEditBtn:hover {
-			background: #eff6ff;
-			border-color: #6366f1;
+			background: #f1f5f9;
+			border-color: #94a3b8;
 		}
 		${PREFIX} ._kwDeleteBtn {
 			color: #dc2626;
@@ -2445,9 +2475,9 @@ export default function PromptStyle({
 			border-color: #fca5a5;
 		}
 		${PREFIX} ._kwSaveBtn {
-			background: #6366f1;
+			background: #1e293b;
 			color: #ffffff;
-			border-color: #6366f1;
+			border-color: #1e293b;
 			margin-right: 4px;
 		}
 		${PREFIX} ._kwCancelBtn {
@@ -2466,7 +2496,7 @@ export default function PromptStyle({
 			outline: none;
 		}
 		${PREFIX} ._kwInlineInput:focus {
-			border-color: #6366f1;
+			border-color: #64748b;
 		}
 		${PREFIX} ._kwEmptyCell {
 			padding: 14px 10px;
@@ -2501,7 +2531,7 @@ export default function PromptStyle({
 		}
 		${PREFIX} ._kwAddInput:focus,
 		${PREFIX} ._kwAddExtra:focus {
-			border-color: #6366f1;
+			border-color: #64748b;
 		}
 		${PREFIX} ._kwMatchSelect {
 			padding: 6px 8px;
@@ -2519,7 +2549,7 @@ export default function PromptStyle({
 		}
 		${PREFIX} ._kwAddBtn {
 			padding: 6px 12px;
-			background: #6366f1;
+			background: #1e293b;
 			color: #ffffff;
 			border: none;
 			border-radius: 7px;
@@ -2529,7 +2559,7 @@ export default function PromptStyle({
 			white-space: nowrap;
 		}
 		${PREFIX} ._kwAddBtn:hover {
-			background: #4f46e5;
+			background: #0f172a;
 		}
 		${PREFIX} ._kwAddBtn:disabled {
 			opacity: 0.5;

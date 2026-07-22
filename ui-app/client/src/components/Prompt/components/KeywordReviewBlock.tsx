@@ -9,11 +9,22 @@ interface KwSection {
 	actions: string[];
 }
 
+// complete = positives + negatives; partial = positives kept but negatives never ran;
+// pending = still being researched; failed = nothing usable.
+type KwStatus = 'complete' | 'partial' | 'pending' | 'failed';
+
 interface KwTab {
 	key: string;
 	label: string;
+	status?: KwStatus;
 	sections: KwSection[];
 }
+
+const STATUS_NOTE: Record<string, string> = {
+	pending: 'Researching this ad group…',
+	failed: "This ad group couldn't be researched. Ask to retry it.",
+	partial: 'Negatives are still missing — ask to finish this ad group before launching.',
+};
 
 interface AddForm {
 	keyword: string;
@@ -184,25 +195,48 @@ function KeywordReviewInner({
 	};
 
 	const currentTab = tabs.find(t => t.key === activeTab) ?? tabs[0];
+	// Each ad group that lands re-renders this block from server state, which would wipe an
+	// edit made in the meantime — so edits wait until nothing is still being researched.
+	const researching = tabs.some(t => t.status === 'pending');
 
 	return (
 		<div className="_kwReviewBlock">
-			{tabs.length > 1 && (
-				<div className="_kwReviewTabs">
-					{tabs.map(tab => (
-						<button
-							key={tab.key}
-							type="button"
-							className={`_kwReviewTab${activeTab === tab.key ? ' _active' : ''}`}
-							onClick={() => setActiveTab(tab.key)}
-						>
-							{tab.label}
-						</button>
-					))}
-				</div>
-			)}
+			{/* Always rendered: with one ad group the bar is what names it, and during
+			    research there is always a moment with a single finished tab. */}
+			<div className="_kwReviewTabs">
+				{tabs.map(tab => (
+					<button
+						key={tab.key}
+						type="button"
+						className={`_kwReviewTab${activeTab === tab.key ? ' _active' : ''}${
+							tab.status && tab.status !== 'complete' ? ` _${tab.status}` : ''
+						}`}
+						onClick={() => setActiveTab(tab.key)}
+					>
+						{tab.label}
+						{tab.status === 'pending' && (
+							<i className="fa fa-solid fa-spinner fa-spin _kwTabIcon" aria-label="researching" />
+						)}
+						{tab.status === 'partial' && <span className="_kwTabIcon">·</span>}
+						{tab.status === 'failed' && (
+							<i className="fa fa-solid fa-triangle-exclamation _kwTabIcon" aria-label="failed" />
+						)}
+					</button>
+				))}
+			</div>
 
 			<div className="_kwReviewContent">
+				{researching && (
+					<div className="_kwStatusNote" role="status">
+						Still researching the other ad groups — you can review now, and edit once
+						they all finish.
+					</div>
+				)}
+				{currentTab?.status && currentTab.status !== 'complete' && (
+					<div className={`_kwStatusNote _${currentTab.status}`} role="status">
+						{STATUS_NOTE[currentTab.status]}
+					</div>
+				)}
 				{(currentTab?.sections ?? []).map(sec => {
 					const sk = secKey(currentTab.key, sec.key);
 					const open = isExpanded(sk);
@@ -210,7 +244,7 @@ function KeywordReviewInner({
 					const form = addForms[sk] ?? EMPTY_ADD;
 					// A mutation is in flight anywhere → disable all controls (avoid racing the
 					// session read-modify-write); only the acting button shows the spinner.
-					const acting = busyId !== null;
+					const acting = busyId !== null || researching;
 					const loading = (id: string) => busyId === id;
 					const err = errors[sk];
 
@@ -231,7 +265,7 @@ function KeywordReviewInner({
 										<div className="_kwReviewError" role="alert" onClick={() => clearError(sk)}>{err}</div>
 									)}
 
-									{sec.actions.includes('add') && (
+									{sec.actions.includes('add') && !researching && (
 										<div className="_kwAddRow">
 											<input
 												type="text"
