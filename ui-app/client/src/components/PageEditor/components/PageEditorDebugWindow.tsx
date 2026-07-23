@@ -93,11 +93,14 @@ interface PageEditorDebugWindowProps {
 	onClose: () => void;
 	onClearAll: () => void;
 	slaveStore: {desktop: any, tablet: any, mobile: any};
+	// The editor's current page definition. The slave no longer re-sends the page
+	// definition per execution (it was the main memory leak); the editor supplies its own.
+	editPageDefinition?: any;
 	savePersonalization: () => void;
 	personalizationPath: string | undefined;
 }
 
-export default function PageEditorDebugWindow({ executions: propsExecutions, onClose, onClearAll, slaveStore, savePersonalization, personalizationPath }: PageEditorDebugWindowProps) {
+export default function PageEditorDebugWindow({ executions: propsExecutions, onClose, onClearAll, slaveStore, editPageDefinition, savePersonalization, personalizationPath }: PageEditorDebugWindowProps) {
 	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
 	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
 
@@ -126,8 +129,8 @@ export default function PageEditorDebugWindow({ executions: propsExecutions, onC
 	useEffect(() => {
 		if (!selectedExecutionData) return;
 
-		// Get pageDefinition from the message data (not from globalThis)
-		const pageDefinition = selectedExecutionData.pageDefinition;
+		// Use the editor's current page definition (the slave no longer sends one per execution).
+		const pageDefinition = editPageDefinition;
 
 		if (pageDefinition?.appCode && pageDefinition?.clientCode) {
 			setFunctionRepository(
@@ -166,7 +169,7 @@ export default function PageEditorDebugWindow({ executions: propsExecutions, onC
 				),
 			);
 		}
-	}, [selectedExecutionData, selectedExecution]);
+	}, [selectedExecutionData, selectedExecution, editPageDefinition]);
 
 	// Convert flattened messages to ExecutionSummary format
 	const executions = useMemo<ExecutionSummary[]>(() => {
@@ -373,7 +376,7 @@ export default function PageEditorDebugWindow({ executions: propsExecutions, onC
 										shellPageName: getDataFromPath('Store.urlDetails.pageName', []) || '',
 										level: 0,
 									}}
-									pageDefinition={selectedExecutionData.pageDefinition}
+									pageDefinition={editPageDefinition}
 									locationHistory={selectedExecutionData.locationHistory || []}
 									definition={{
 										key: uuid,
