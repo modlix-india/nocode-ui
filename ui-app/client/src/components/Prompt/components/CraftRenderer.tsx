@@ -207,12 +207,16 @@ function RowBlock({
 
 function CollapsibleBlock({
 	summary,
+	summary_url,
+	badge,
 	glyph,
 	children = [],
 	default_expanded,
 	styleProperties,
 }: {
 	summary: string;
+	summary_url?: string;
+	badge?: string;
 	glyph?: string;
 	children?: Block[];
 	default_expanded?: boolean;
@@ -223,21 +227,38 @@ function CollapsibleBlock({
 
 	return (
 		<div className="_craftCollapsible">
-			<button
-				type="button"
-				className="_craftCollapsibleHeader"
-				onClick={() => setExpanded(prev => !prev)}
-				aria-expanded={expanded}
-			>
-				{glyph && <span className="_craftCollapsibleGlyph">{glyph}</span>}
-				<span className="_craftCollapsibleSummary">{summary}</span>
-				<span
-					className={`_craftCollapsibleChevron ${expanded ? '_open' : ''}`}
-					aria-hidden="true"
+			{/* The link is a sibling of the toggle (an <a> inside <button> is
+			    invalid HTML), so it stays clickable - and the badge visible -
+			    while the card is closed. */}
+			<div className="_craftCollapsibleHeader">
+				<button
+					type="button"
+					className="_craftCollapsibleToggle"
+					onClick={() => setExpanded(prev => !prev)}
+					aria-expanded={expanded}
 				>
-					›
-				</span>
-			</button>
+					{glyph && <span className="_craftCollapsibleGlyph">{glyph}</span>}
+					<span className="_craftCollapsibleSummary">{summary}</span>
+					{badge && <span className="_craftCollapsibleBadge">{badge}</span>}
+					<span
+						className={`_craftCollapsibleChevron ${expanded ? '_open' : ''}`}
+						aria-hidden="true"
+					>
+						›
+					</span>
+				</button>
+				{summary_url && (
+					<a
+						className="_craftCollapsibleLink"
+						href={summary_url}
+						target="_blank"
+						rel="noopener noreferrer"
+						title={summary_url}
+					>
+						↗
+					</a>
+				)}
+			</div>
 			{expanded && (
 				<div className="_craftCollapsibleBody">
 					{children.map((block, i) => (
@@ -249,6 +270,28 @@ function CollapsibleBlock({
 					))}
 				</div>
 			)}
+		</div>
+	);
+}
+
+
+function CarouselBlock({
+	children = [],
+	styleProperties,
+}: {
+	children?: Block[];
+	styleProperties?: any;
+}) {
+	if (!children.length) return null;
+	return (
+		<div className="_craftCarousel">
+			{children.map((block, i) => (
+				<CraftBlockRenderer
+					key={(block as any).id ?? i}
+					block={block}
+					styleProperties={styleProperties}
+				/>
+			))}
 		</div>
 	);
 }
@@ -750,6 +793,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	list: ListBlock,
 	row: RowBlock,
 	collapsible: CollapsibleBlock,
+	carousel: CarouselBlock,
 	map: MapBlock,
 };
 

@@ -1423,7 +1423,14 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._craftCollapsibleHeader {
-			width: 100%;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		${PREFIX} ._craftCollapsibleToggle {
+			flex: 1;
+			min-width: 0;
 			display: flex;
 			align-items: center;
 			gap: 10px;
@@ -1436,7 +1443,7 @@ export default function PromptStyle({
 			text-align: left;
 		}
 
-		${PREFIX} ._craftCollapsibleHeader:hover {
+		${PREFIX} ._craftCollapsibleToggle:hover {
 			color: #1a1a1a;
 		}
 
@@ -1448,6 +1455,36 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftCollapsibleSummary {
 			flex: 1;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		/* Badge ("4 ads") + website link stay visible while the card is closed. */
+		${PREFIX} ._craftCollapsibleBadge {
+			flex: none;
+			font-size: 11px;
+			line-height: 1;
+			padding: 4px 8px;
+			border-radius: 999px;
+			background: #eef2ff;
+			color: #4a5aa8;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._craftCollapsibleLink {
+			flex: none;
+			padding: 6px 8px;
+			font-size: 13px;
+			line-height: 1;
+			color: #888;
+			text-decoration: none;
+			border-radius: 6px;
+		}
+
+		${PREFIX} ._craftCollapsibleLink:hover {
+			color: #1967d2;
+			background: #f0f4ff;
 		}
 
 		${PREFIX} ._craftCollapsibleChevron {
@@ -1467,6 +1504,38 @@ export default function PromptStyle({
 			flex-direction: column;
 			gap: 12px;
 			padding: 4px 2px 12px;
+		}
+
+		/* Horizontal creative carousel - assets-style thumbnail strip that
+		   scrolls sideways when a competitor has many creatives. */
+		${PREFIX} ._craftCarousel {
+			display: flex;
+			gap: 10px;
+			overflow-x: auto;
+			padding-bottom: 6px;
+			scroll-snap-type: x proximity;
+			scrollbar-width: thin;
+		}
+
+		${PREFIX} ._craftCarousel > * {
+			flex: 0 0 auto;
+			width: 140px;
+			scroll-snap-align: start;
+		}
+
+		${PREFIX} ._craftCarousel ._craftImage img {
+			width: 140px;
+			height: 175px;
+			aspect-ratio: auto;
+			object-fit: cover;
+		}
+
+		${PREFIX} ._craftCarousel ._craftImageCaption {
+			overflow: hidden;
+			text-overflow: ellipsis;
+			display: -webkit-box;
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
 		}
 
 		/* Thumbnail variant of image block — fixed 48px square, contain (not
