@@ -1506,8 +1506,12 @@ export default function PromptStyle({
 			padding: 4px 2px 12px;
 		}
 
-		/* Horizontal creative carousel - assets-style thumbnail strip that
-		   scrolls sideways when a competitor has many creatives. */
+		/* Horizontal creative carousel - assets-style thumbnail strip with
+		   arrow paging when a competitor has many creatives. */
+		${PREFIX} ._craftCarouselWrap {
+			position: relative;
+		}
+
 		${PREFIX} ._craftCarousel {
 			display: flex;
 			gap: 10px;
@@ -1523,6 +1527,10 @@ export default function PromptStyle({
 			scroll-snap-align: start;
 		}
 
+		${PREFIX} ._craftCarousel ._craftImage {
+			position: relative;
+		}
+
 		${PREFIX} ._craftCarousel ._craftImage img {
 			width: 140px;
 			height: 175px;
@@ -1536,6 +1544,80 @@ export default function PromptStyle({
 			display: -webkit-box;
 			-webkit-line-clamp: 2;
 			-webkit-box-orient: vertical;
+		}
+
+		${PREFIX} ._craftCarouselArrow {
+			position: absolute;
+			top: 78px;
+			transform: translateY(-50%);
+			z-index: 2;
+			width: 28px;
+			height: 28px;
+			border-radius: 50%;
+			border: 1px solid #e2e2e2;
+			background: rgba(255, 255, 255, 0.95);
+			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+			color: #444;
+			font-size: 18px;
+			line-height: 1;
+			cursor: pointer;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 0 0 2px;
+		}
+
+		${PREFIX} ._craftCarouselArrow:hover {
+			background: #fff;
+			color: #111;
+		}
+
+		${PREFIX} ._craftCarouselArrow._left {
+			left: -6px;
+		}
+
+		${PREFIX} ._craftCarouselArrow._right {
+			right: -6px;
+		}
+
+		/* Status/days chips overlaid on the creative tile + metrics footer.
+		   Zero-metric creatives carry no meta line at all (backend omits it). */
+		${PREFIX} ._craftImageBadges {
+			position: absolute;
+			top: 6px;
+			left: 6px;
+			display: flex;
+			gap: 4px;
+			z-index: 1;
+			pointer-events: none;
+		}
+
+		${PREFIX} ._craftImageBadge {
+			font-size: 10px;
+			line-height: 1;
+			padding: 3px 6px;
+			border-radius: 999px;
+			background: rgba(0, 0, 0, 0.55);
+			color: #fff;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._craftImageBadge._active {
+			background: rgba(22, 128, 61, 0.9);
+		}
+
+		${PREFIX} ._craftImageBadge._paused {
+			background: rgba(90, 90, 90, 0.85);
+		}
+
+		${PREFIX} ._craftImageMeta {
+			font-size: 11px;
+			color: #999;
+			margin-top: 2px;
+			display: block;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 		/* Thumbnail variant of image block — fixed 48px square, contain (not

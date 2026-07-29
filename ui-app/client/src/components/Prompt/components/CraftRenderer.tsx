@@ -74,6 +74,8 @@ function ImageBlock({
 	size,
 	background,
 	fit,
+	badges,
+	meta,
 }: {
 	url: string;
 	thumb_url?: string;
@@ -81,6 +83,8 @@ function ImageBlock({
 	size?: 'thumbnail';
 	background?: 'dark' | 'light';
 	fit?: 'cover' | 'contain';
+	badges?: Array<{ label: string; tone?: string }>;
+	meta?: string;
 }) {
 	if (!url && !thumb_url) return null;
 	const classes = ['_craftImage'];
@@ -103,7 +107,17 @@ function ImageBlock({
 			) : (
 				img
 			)}
+			{badges && badges.length > 0 && (
+				<div className="_craftImageBadges">
+					{badges.map((b, i) => (
+						<span key={i} className={`_craftImageBadge${b.tone ? ` _${b.tone}` : ''}`}>
+							{b.label}
+						</span>
+					))}
+				</div>
+			)}
 			{caption && <span className="_craftImageCaption">{caption}</span>}
+			{meta && <span className="_craftImageMeta">{meta}</span>}
 		</div>
 	);
 }
@@ -282,16 +296,63 @@ function CarouselBlock({
 	children?: Block[];
 	styleProperties?: any;
 }) {
+	const scrollRef = useRef<HTMLDivElement>(null);
+	const [canLeft, setCanLeft] = useState(false);
+	const [canRight, setCanRight] = useState(false);
+
+	const updateArrows = useCallback(() => {
+		const el = scrollRef.current;
+		if (!el) return;
+		setCanLeft(el.scrollLeft > 4);
+		setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+	}, []);
+
+	useEffect(() => {
+		updateArrows();
+		const el = scrollRef.current;
+		if (!el || typeof ResizeObserver === 'undefined') return;
+		const observer = new ResizeObserver(updateArrows);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, [updateArrows, children.length]);
+
+	const scrollByPage = (direction: number) => {
+		const el = scrollRef.current;
+		if (el) el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' });
+	};
+
 	if (!children.length) return null;
 	return (
-		<div className="_craftCarousel">
-			{children.map((block, i) => (
-				<CraftBlockRenderer
-					key={(block as any).id ?? i}
-					block={block}
-					styleProperties={styleProperties}
-				/>
-			))}
+		<div className="_craftCarouselWrap">
+			{canLeft && (
+				<button
+					type="button"
+					className="_craftCarouselArrow _left"
+					onClick={() => scrollByPage(-1)}
+					aria-label="Scroll left"
+				>
+					‹
+				</button>
+			)}
+			<div className="_craftCarousel" ref={scrollRef} onScroll={updateArrows}>
+				{children.map((block, i) => (
+					<CraftBlockRenderer
+						key={(block as any).id ?? i}
+						block={block}
+						styleProperties={styleProperties}
+					/>
+				))}
+			</div>
+			{canRight && (
+				<button
+					type="button"
+					className="_craftCarouselArrow _right"
+					onClick={() => scrollByPage(1)}
+					aria-label="Scroll right"
+				>
+					›
+				</button>
+			)}
 		</div>
 	);
 }
