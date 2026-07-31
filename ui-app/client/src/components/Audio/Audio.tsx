@@ -64,9 +64,9 @@ function Audio(props: Readonly<ComponentProps>) {
 	const [progressbarCurr, setProgressbarCurr] = useState<number>(0);
 	const [toolTipX, setToolTipX] = useState<number>(0);
 
-	const volumeButton = useRef<any>();
-	const audioContainer = useRef<any>();
-	const audio = useRef<any>();
+	const volumeButton = useRef<any>(undefined);
+	const audioContainer = useRef<any>(undefined);
+	const audio = useRef<any>(undefined);
 
 	const [timeState, setTimeState] = useState({
 		duration: { hours: '00', minutes: '00', seconds: '00' },
@@ -78,7 +78,7 @@ function Audio(props: Readonly<ComponentProps>) {
 	const [muted, setMuted] = useState<boolean>(mutedProperty);
 	const [isFirstTimePlay, setIsFirstTimePlay] = useState<boolean>(true);
 
-	const progressBarRef = useRef<any>();
+	const progressBarRef = useRef<any>(undefined);
 	const [volume, setVolume] = useState<string>('1');
 	const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
 	const [manualSeek, setManualSeek] = useState<number | undefined>(undefined);

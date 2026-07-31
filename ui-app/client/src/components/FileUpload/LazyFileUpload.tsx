@@ -58,7 +58,7 @@ const icon2 = (computedStyles: any, def: ComponentDefinition) => (
 
 function FileUpload(props: Readonly<ComponentProps>) {
 	const [fileValue, setFileValue] = useState<any>();
-	const inputRef = useRef<any>();
+	const inputRef = useRef<any>(undefined);
 	const [hover, setHover] = useState<boolean>(false);
 	const [active, setActive] = useState<boolean>(false);
 	const [validationMessages, setValidationMessages] = useState<Array<string>>([]);

@@ -27,7 +27,7 @@ interface SessionListProps {
 	yourChatsLabel?: string;
 	deleteConfirmMessage?: string;
 	sidebarWidth?: number;
-	sidebarRef?: React.RefObject<HTMLDivElement>;
+	sidebarRef?: React.RefObject<HTMLDivElement | null>;
 	onResizeStart?: (e: React.MouseEvent) => void;
 	newChatSidebarIcon?: string;
 	renameIcon?: string;
