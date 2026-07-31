@@ -112,7 +112,7 @@ export default function FileBrowser({
 	if (globalThis.isDebugMode)
 		headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
-	const axiosAborter = useRef<AbortController | undefined>();
+	const axiosAborter = useRef<AbortController | undefined>(undefined);
 
 	useEffect(() => {
 		setInProgress(true);
@@ -385,19 +385,22 @@ export default function FileBrowser({
 							{deleteButton}
 							<div
 								className="_image"
-								ref={async ref => {
+								ref={ref => {
 									if (!ref?.style || ref.style.backgroundImage) return;
 
-									ref.style.backgroundImage =
-										"url('" +
-										(await imageURLForFile(
-											e.url,
-											e.directory,
-											e.type,
-											96,
-											96,
-										)) +
-										"')";
+									const el = ref;
+									void (async () => {
+										el.style.backgroundImage =
+											"url('" +
+											(await imageURLForFile(
+												e.url,
+												e.directory,
+												e.type,
+												96,
+												96,
+											)) +
+											"')";
+									})();
 								}}
 							/>
 							<p className="_imageLabel">

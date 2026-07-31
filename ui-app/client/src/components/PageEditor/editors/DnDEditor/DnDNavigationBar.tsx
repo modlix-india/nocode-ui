@@ -253,7 +253,7 @@ function CompTree({
 	editorType,
 }: CompTreeProps) {
 	const comp = pageDef?.componentDefinition[compKey];
-	const hoverLonger = useRef<NodeJS.Timeout | null>();
+	const hoverLonger = useRef<NodeJS.Timeout | null>(null);
 	if (!comp) return <></>;
 
 	const children =

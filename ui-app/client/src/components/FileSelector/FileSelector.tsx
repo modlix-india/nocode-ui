@@ -318,10 +318,13 @@ function FileSelector(props: Readonly<ComponentProps>) {
 				<>
 					<img
 						key={fileUrl}
-						ref={async e => {
+						ref={e => {
 							if (!e || e.src) return;
-							const dataURL = await imageURLForFile(fileUrl, directory, type);
-							e.src = dataURL;
+							const el = e;
+							void (async () => {
+								const dataURL = await imageURLForFile(fileUrl, directory, type);
+								el.src = dataURL;
+							})();
 						}}
 						alt="Selected file"
 						style={resolvedStyles.image ?? {}}

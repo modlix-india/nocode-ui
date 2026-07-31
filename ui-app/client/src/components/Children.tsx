@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { duplicate, isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
 import React from 'react';
 import { useLocation } from 'react-router-dom';

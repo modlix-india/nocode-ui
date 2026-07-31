@@ -10,9 +10,9 @@ interface DnDIFrameProps {
 	personalizationPath: string | undefined;
 	url: string;
 	pageExtractor: PageStoreExtractor;
-	desktopIframe: React.RefObject<HTMLIFrameElement>;
-	tabletIframe: React.RefObject<HTMLIFrameElement>;
-	mobileIframe: React.RefObject<HTMLIFrameElement>;
+	desktopIframe: React.RefObject<HTMLIFrameElement | null>;
+	tabletIframe: React.RefObject<HTMLIFrameElement | null>;
+	mobileIframe: React.RefObject<HTMLIFrameElement | null>;
 	previewMode: boolean;
 	onChangePersonalization: (prop: string, value: any) => void;
 	defaultZoomPercentage: number | undefined;
