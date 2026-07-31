@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { duplicate, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {

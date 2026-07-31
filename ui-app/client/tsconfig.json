@@ -5,7 +5,7 @@
 		"resolveJsonModule": true,
 		"module": "ESNext",
 		"target": "ESNext",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"strict": true,
 		"esModuleInterop": true,
 		"skipLibCheck": true,
@@ -16,7 +16,9 @@
 	},
 	"ts-node": {
 		"compilerOptions": {
-			"module": "CommonJS"
+			"module": "NodeNext",
+			"moduleResolution": "NodeNext",
+			"rootDir": "."
 		}
 	}
 }

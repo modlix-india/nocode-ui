@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import { duplicate } from '@fincity/kirun-js';
 import { useState } from 'react';
 import { EditorProps, getKeysInOrder } from './FSECommons';
