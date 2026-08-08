@@ -33,9 +33,9 @@ interface DnDEditorProps {
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
 	pageExtractor: PageStoreExtractor;
-	desktopIframe: React.RefObject<HTMLIFrameElement>;
-	tabletIframe: React.RefObject<HTMLIFrameElement>;
-	mobileIframe: React.RefObject<HTMLIFrameElement>;
+	desktopIframe: React.RefObject<HTMLIFrameElement | null>;
+	tabletIframe: React.RefObject<HTMLIFrameElement | null>;
+	mobileIframe: React.RefObject<HTMLIFrameElement | null>;
 	templateIframeRef: (element: HTMLIFrameElement | undefined) => void;
 	selectedComponent: string | undefined;
 	selectedComponentsList: string[] | [];

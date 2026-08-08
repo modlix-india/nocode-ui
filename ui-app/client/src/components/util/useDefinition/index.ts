@@ -1,5 +1,5 @@
 import { deepEqual, TokenValueExtractor } from '@fincity/kirun-js';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ParentExtractor } from '../../../context/ParentExtractor';
 import {
 	addListener,
@@ -53,7 +53,10 @@ export default function useDefinition(
 		tokenExtractors.push(parentExtractor);
 	}
 
-	const [compState, setCompState] = useState<ComponentDefinitionValues>(
+	// Lazy initialiser: createNewState evaluates every property and every style
+	// resolution. Passing it eagerly ran that full evaluation on every render and
+	// threw the result away on all but the first.
+	const [compState, setCompState] = useState<ComponentDefinitionValues>(() =>
 		createNewState(
 			definition,
 			properties,
@@ -64,10 +67,14 @@ export default function useDefinition(
 	);
 	const [pathsChangedAt, setPathsChangedAt] = useState(Date.now());
 
-	const propDefMap = properties.reduce((a: any, c) => {
-		a[c.name] = c;
-		return a;
-	}, {});
+	const propDefMap = useMemo(
+		() =>
+			properties.reduce((a: any, c) => {
+				a[c.name] = c;
+				return a;
+			}, {}),
+		[properties],
+	);
 
 	const locationHistoryString = (locationHistory ?? [])
 		.map(e => e.location + '_' + e.index)
@@ -122,7 +129,11 @@ export default function useDefinition(
 						setPathsChangedAt(Date.now());
 					}
 				}
-				setCompState(newState);
+				// createNewState always returns a fresh object, so setting it
+				// unconditionally re-rendered this component (and its whole subtree)
+				// on every store notification even when nothing it depends on
+				// actually changed. Bail out when the resolved values are equal.
+				setCompState(prev => (deepEqual(prev, newState) ? prev : newState));
 			},
 			...paths,
 		);
