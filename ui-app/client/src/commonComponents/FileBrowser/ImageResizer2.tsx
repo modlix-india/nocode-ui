@@ -511,26 +511,30 @@ export function ImageResizer2({
 					/>
 					{cropBox}
 					<img
-						ref={async r => {
+						ref={r => {
 							imageRef.current = r;
 
 							if (!r || r.src) return;
 
-							if (url.indexOf('api/files/secured') !== -1) {
-								const headers: any = {
-									Authorization: getDataFromPath(
-										`${LOCAL_STORE_PREFIX}.AuthToken`,
-										[],
-									),
-								};
-								if (globalThis.isDebugMode)
-									headers['x-debug'] =
-										(globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
+							const el = r;
+							void (async () => {
+								if (url.indexOf('api/files/secured') !== -1) {
+									const headers: any = {
+										Authorization: getDataFromPath(
+											`${LOCAL_STORE_PREFIX}.AuthToken`,
+											[],
+										),
+									};
+									if (globalThis.isDebugMode)
+										headers['x-debug'] =
+											(globalThis.isFullDebugMode ? 'full-' : '') +
+											shortUUID();
 
-								r.src = await axios
-									.get(url, { responseType: 'blob', headers })
-									.then(res => URL.createObjectURL(res.data));
-							} else r.src = url;
+									el.src = await axios
+										.get(url, { responseType: 'blob', headers })
+										.then(res => URL.createObjectURL(res.data));
+								} else el.src = url;
+							})();
 						}}
 						style={{
 							transform: `scale(${zoom}) rotate(${rotate}deg) ${
