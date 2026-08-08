@@ -342,6 +342,16 @@ function setDeviceType() {
 	setBaseDeviceTypes(size, newDevices);
 	setSmallDeviceTypes(size, newDevices);
 
+	// Above the early return below, unlike everything else here. The rest of this function describes
+	// the viewport and only has to be republished when the device class actually changes; the time
+	// zone has nothing to do with the viewport and would simply never be written on any run where
+	// the class was unchanged.
+	//
+	// This is the only way to learn the viewer's real zone. A timestamp carries an offset, not a
+	// zone, so anything derived from one gives "UTC+5:30" rather than "Asia/Kolkata" and cannot
+	// survive a daylight-saving boundary in the countries this platform is meant to grow into.
+	setData('Store.window.timeZone', Intl.DateTimeFormat().resolvedOptions().timeZone);
+
 	let devicesString = JSON.stringify(newDevices);
 
 	if (currentDevices === devicesString) return;
