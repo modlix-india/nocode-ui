@@ -29,7 +29,9 @@ import { usedComponents } from '../App/usedComponents';
 
 const Page = PageComponentDefinition.component;
 
-// Wrapper component to add data-key attribute in design mode for AI capture
+// Wrapper component to add data-key attribute in design mode for AI capture.
+// Only mounted in design mode - outside it the wrapper rendered a passthrough
+// fragment, which still cost an element, a fiber and a render pass per component.
 function ComponentWrapper({
 	definition,
 	children,
@@ -37,14 +39,11 @@ function ComponentWrapper({
 	definition: ComponentDefinition;
 	children: React.ReactNode;
 }>) {
-	if (globalThis.designMode === 'PAGE') {
-		return (
-			<div data-key={definition.key} style={{ display: 'contents' }}>
-				{children}
-			</div>
-		);
-	}
-	return <>{children}</>;
+	return (
+		<div data-key={definition.key} style={{ display: 'contents' }}>
+			{children}
+		</div>
+	);
 }
 
 const getOrLoadPageDefinition = (location: any) => {
@@ -83,14 +82,16 @@ function Children({
 	const location = useLocation();
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
-	const evaluatorMaps = new Map<string, TokenValueExtractor>([
-		[storeExtractor.getPrefix(), storeExtractor],
-		[localStoreExtractor.getPrefix(), localStoreExtractor],
-		[pageExtractor.getPrefix(), pageExtractor],
-		[urlExtractor.getPrefix(), urlExtractor],
-	]);
 
 	React.useEffect(() => {
+		// Built here rather than on every render - it is only ever read by this effect.
+		const evaluatorMaps = new Map<string, TokenValueExtractor>([
+			[storeExtractor.getPrefix(), storeExtractor],
+			[localStoreExtractor.getPrefix(), localStoreExtractor],
+			[pageExtractor.getPrefix(), pageExtractor],
+			[urlExtractor.getPrefix(), urlExtractor],
+		]);
+
 		let set = Object.entries(
 			(pageDefinition?.componentDefinition ? renderableChildren : {}) ?? {},
 		)
@@ -160,17 +161,24 @@ function Children({
 						else return undefined;
 					}
 					const fKey = flattenUUID(e?.key);
+					// Spreading into a new object here handed every child a fresh
+					// context identity on each render, defeating any memoisation
+					// below this point. ctx is already a stable reference unless
+					// validation is actually being triggered for this component.
 					const ctx = validationTriggers[fKey]
 						? { ...context, showValidationMessages: true }
 						: context;
+					const child = React.createElement(Comp, {
+						key: e.key,
+						definition: e,
+						pageDefinition: pageDefinition,
+						context: ctx,
+						locationHistory: locationHistory,
+					});
+					if (globalThis.designMode !== 'PAGE') return child;
 					return (
 						<ComponentWrapper definition={e} key={e.key}>
-							{React.createElement(Comp, {
-								definition: e,
-								pageDefinition: pageDefinition,
-								context: { ...ctx },
-								locationHistory: locationHistory,
-							})}
+							{child}
 						</ComponentWrapper>
 					);
 				})
