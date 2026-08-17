@@ -1,0 +1,566 @@
+[
+	{
+		"cp": "padding",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme>",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "10px",
+			"_voiceRecorderDesign2-": "10px"
+		},
+		"gn": "Padding",
+		"dn": "Padding",
+		"n": "voiceRecorderPadding<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme>",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background",
+		"n": "voiceRecorderBackground<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme>",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border",
+		"n": "voiceRecorderBorder<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme>",
+		"np": true,
+		"gn": "Border Radius",
+		"dn": "BorderRadius",
+		"n": "voiceRecorderBorderRadius<designType><colorScheme>"
+	},
+	{
+		"cp": "box-shadow",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme>",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow",
+		"n": "voiceRecorderBoxShadow<designType><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme>",
+		"np": true,
+		"gn": "Gap",
+		"dn": "Gap",
+		"n": "voiceRecorderGap<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._playPauseContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "6px 10px",
+			"_voiceRecorderDesign2-": "6px 10px"
+		},
+		"gn": "Padding",
+		"dn": "Padding PlayPauseContainer",
+		"n": "voiceRecorderPaddingPlayPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._playPauseContainer",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background PlayPauseContainer",
+		"n": "voiceRecorderBackgroundPlayPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._playPauseContainer",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border PlayPauseContainer",
+		"n": "voiceRecorderBorderPlayPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._playPauseContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "4px",
+			"_voiceRecorderDesign2-": "4px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius PlayPauseContainer",
+		"n": "voiceRecorderBorderRadiusPlayPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._playPauseContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "5px",
+			"_voiceRecorderDesign2-": "5px"
+		},
+		"gn": "Gap",
+		"dn": "Gap PlayPauseContainer",
+		"n": "voiceRecorderGapPlayPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._startContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "6px 10px",
+			"_voiceRecorderDesign2-": "6px 10px"
+		},
+		"gn": "Padding",
+		"dn": "Padding StartContainer",
+		"n": "voiceRecorderPaddingStartContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._startContainer",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background StartContainer",
+		"n": "voiceRecorderBackgroundStartContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._startContainer",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border StartContainer",
+		"n": "voiceRecorderBorderStartContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._startContainer",
+		"np": true,
+		"gn": "Border Radius",
+		"dn": "BorderRadius StartContainer",
+		"n": "voiceRecorderBorderRadiusStartContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._startContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "5px",
+			"_voiceRecorderDesign2-": "5px"
+		},
+		"gn": "Gap",
+		"dn": "Gap StartContainer",
+		"n": "voiceRecorderGapStartContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "6px 10px",
+			"_voiceRecorderDesign2-": "6px 10px"
+		},
+		"gn": "Padding",
+		"dn": "Padding PauseContainer",
+		"n": "voiceRecorderPaddingPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseContainer",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background PauseContainer",
+		"n": "voiceRecorderBackgroundPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseContainer",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border PauseContainer",
+		"n": "voiceRecorderBorderPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "4px",
+			"_voiceRecorderDesign2-": "4px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius PauseContainer",
+		"n": "voiceRecorderBorderRadiusPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "5px",
+			"_voiceRecorderDesign2-": "5px"
+		},
+		"gn": "Gap",
+		"dn": "Gap PauseContainer",
+		"n": "voiceRecorderGapPauseContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "6px 10px",
+			"_voiceRecorderDesign2-": "6px 10px"
+		},
+		"gn": "Padding",
+		"dn": "Padding StopContainer",
+		"n": "voiceRecorderPaddingStopContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopContainer",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background StopContainer",
+		"n": "voiceRecorderBackgroundStopContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopContainer",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border StopContainer",
+		"n": "voiceRecorderBorderStopContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "4px",
+			"_voiceRecorderDesign2-": "4px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius StopContainer",
+		"n": "voiceRecorderBorderRadiusStopContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "5px",
+			"_voiceRecorderDesign2-": "5px"
+		},
+		"gn": "Gap",
+		"dn": "Gap StopContainer",
+		"n": "voiceRecorderGapStopContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "8px",
+			"_voiceRecorderDesign2-": "8px"
+		},
+		"gn": "Padding",
+		"dn": "Padding RecordContainer",
+		"n": "voiceRecorderPaddingRecordContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "background",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordContainer",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background RecordContainer",
+		"n": "voiceRecorderBackgroundRecordContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordContainer",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border RecordContainer",
+		"n": "voiceRecorderBorderRecordContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "border-radius",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "40px",
+			"_voiceRecorderDesign2-": "40px"
+		},
+		"gn": "Border Radius",
+		"dn": "BorderRadius RecordContainer",
+		"n": "voiceRecorderBorderRadiusRecordContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "gap",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordContainer",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "5px",
+			"_voiceRecorderDesign2-": "5px"
+		},
+		"gn": "Gap",
+		"dn": "Gap RecordContainer",
+		"n": "voiceRecorderGapRecordContainer<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordText",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "<fontColorTwo>",
+			"_voiceRecorderDesign2-": "<fontColorTwo>"
+		},
+		"gn": "Font",
+		"dn": "Font RecordText",
+		"n": "voiceRecorderFontRecordText<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordText",
+		"np": true,																																					
+		"spv": {
+			"_voiceRecorderDesign1-_primary": "<fontColorEight>",
+			"_voiceRecorderDesign1-_secondary": "<fontColorEight>",
+			"_voiceRecorderDesign1-_tertiary": "<fontColorEight>",
+			"_voiceRecorderDesign1-_quaternary": "<fontColorEight>",
+			"_voiceRecorderDesign1-_quinary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_primary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_secondary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_tertiary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_quaternary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_quinary": "<fontColorEight>"
+		},
+		"gn": "Color",
+		"dn": "Color RecordText",
+		"n": "voiceRecorderColorRecordText<designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordText",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin RecordText",
+		"n": "voiceRecorderMarginRecordText<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseText",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "<fontColorTwo>",
+			"_voiceRecorderDesign2-": "<fontColorTwo>"
+		},
+		"gn": "Font",
+		"dn": "Font PauseText",
+		"n": "voiceRecorderFontPauseText<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseText",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-_primary": "<fontColorEight>",
+			"_voiceRecorderDesign1-_secondary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_primary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_secondary": "<fontColorEight>"
+		},
+		"gn": "Color",
+		"dn": "Color PauseText",
+		"n": "voiceRecorderColorPauseText<designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseText",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin PauseText",
+		"n": "voiceRecorderMarginPauseText<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopText",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "<fontColorTwo>",
+			"_voiceRecorderDesign2-": "<fontColorTwo>"
+		},
+		"gn": "Font",
+		"dn": "Font StopText",
+		"n": "voiceRecorderFontStopText<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopText",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-_primary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_primary": "<fontColorEight>"
+		},
+		"gn": "Color",
+		"dn": "Color StopText",
+		"n": "voiceRecorderColorStopText<designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopText",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin StopText",
+		"n": "voiceRecorderMarginStopText<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordingDuration",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "<fontColorTwo>",
+			"_voiceRecorderDesign2-": "<fontColorTwo>"
+		},
+		"gn": "Font",
+		"dn": "Font Timer",
+		"n": "voiceRecorderFontTimer<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordingDuration",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-_primary": "<fontColorEight>",
+			"_voiceRecorderDesign2-_primary": "<fontColorEight>"
+		},
+		"gn": "Color",
+		"dn": "Color Timer",
+		"n": "voiceRecorderColorTimer<designType><colorScheme>"
+	},
+	{
+		"cp": "margin",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordingDuration",
+		"np": true,
+		"gn": "Margin",
+		"dn": "Margin Timer",
+		"n": "voiceRecorderMarginTimer<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordIcon",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "<fontColorTwo>",
+			"_voiceRecorderDesign2-": "<fontColorTwo>"
+		},
+		"gn": "Font",
+		"dn": "Font RecordIcon",
+		"n": "voiceRecorderFontRecordIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._recordIcon",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-_primary": "<backgroundDarkerColorOne>",
+			"_voiceRecorderDesign1-_secondary": "<backgroundDarkerColorTwo>",
+			"_voiceRecorderDesign2-_primary": "<backgroundDarkerColorOne>",
+			"_voiceRecorderDesign2-_secondary": "<backgroundDarkerColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color RecordIcon",
+		"n": "voiceRecorderColorRecordIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseIcon",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "<fontColorTwo>",
+			"_voiceRecorderDesign2-": "<fontColorTwo>"
+		},
+		"gn": "Font",
+		"dn": "Font PauseIcon",
+		"n": "voiceRecorderFontPauseIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._pauseIcon",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-_primary": "<backgroundDarkerColorOne>",
+			"_voiceRecorderDesign1-_secondary": "<backgroundDarkerColorTwo>",
+			"_voiceRecorderDesign2-_primary": "<backgroundDarkerColorOne>",
+			"_voiceRecorderDesign2-_secondary": "<backgroundDarkerColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color PauseIcon",
+		"n": "voiceRecorderColorPauseIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopIcon",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "<fontColorTwo>",
+			"_voiceRecorderDesign2-": "<fontColorTwo>"
+		},
+		"gn": "Font",
+		"dn": "Font StopIcon",
+		"n": "voiceRecorderFontStopIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._stopIcon",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-_primary": "<backgroundDarkerColorOne>",
+			"_voiceRecorderDesign1-_secondary": "<backgroundDarkerColorTwo>",
+			"_voiceRecorderDesign2-_primary": "<backgroundDarkerColorOne>",
+			"_voiceRecorderDesign2-_secondary": "<backgroundDarkerColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color StopIcon",
+		"n": "voiceRecorderColorStopIcon<designType><colorScheme>"
+	},
+	{
+		"cp": "accent-color",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._audioLevelSlider",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-_primary": "<backgroundDarkerColorOne>",
+			"_voiceRecorderDesign1-_secondary": "<backgroundDarkerColorTwo>",
+			"_voiceRecorderDesign1-_tertiary": "<backgroundDarkerColorThree>",
+			"_voiceRecorderDesign1-_quaternary": "<backgroundDarkerColorFour>",
+			"_voiceRecorderDesign1-_quinary": "<backgroundDarkerColorFive>",
+			"_voiceRecorderDesign2-_primary": "<backgroundDarkerColorOne>",
+			"_voiceRecorderDesign2-_secondary": "<backgroundDarkerColorTwo>",
+			"_voiceRecorderDesign2-_tertiary": "<backgroundDarkerColorThree>",
+			"_voiceRecorderDesign2-_quaternary": "<backgroundDarkerColorFour>",
+			"_voiceRecorderDesign2-_quinary": "<backgroundDarkerColorFive>"
+		},
+		"gn": "Accent Color",
+		"dn": "AccentColor AudioLevelSlider",
+		"n": "voiceRecorderAccentColorAudioLevelSlider<designType><colorScheme>"
+	},
+	{
+		"cp": "height",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._audioLevelSlider",
+		"np": true,
+		"spv": {
+			"_voiceRecorderDesign1-": "4px",
+			"_voiceRecorderDesign2-": "100px"
+		},
+		"gn": "Height",
+		"dn": "Height AudioLevelSlider",
+		"n": "voiceRecorderHeightAudioLevelSlider<designType><colorScheme>"
+	},
+	{
+		"cp": "width",
+		"sel": ".comp.compVoiceRecorder<designType><colorScheme> ._audioLevelSlider",
+		"np": true,
+		"gn": "Width",
+		"dn": "Width AudioLevelSlider",
+		"n": "voiceRecorderWidthAudioLevelSlider<designType><colorScheme>"
+	}
+]
