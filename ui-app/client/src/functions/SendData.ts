@@ -201,7 +201,19 @@ export class SendData extends AbstractFunction {
 }
 
 function getAsBlob(data: any) {
+	if (isNullValue(data)) return '';
 	if (data.constructor?.name === 'File') return data;
+
+	// Primitives go as plain form fields, which is what a multipart text part is. They used to be
+	// JSON-encoded like everything else, and that quietly wrapped every string in quote characters:
+	// a caption typed as hello arrived at the server as "hello", was stored with the quotes, and was
+	// sent on to the recipient with them. Nothing errored, because "hello" is a perfectly valid
+	// string; it was just not the one anybody typed.
+	if (typeof data === 'string') return data;
+	if (typeof data === 'number' || typeof data === 'boolean') return String(data);
+
+	// Objects and arrays still go as JSON, which is the only sensible encoding for them and what
+	// every existing caller sending a structured part already expects.
 	const jsonData = JSON.stringify(data);
 	return new Blob([jsonData], { type: 'application/json' });
 }
