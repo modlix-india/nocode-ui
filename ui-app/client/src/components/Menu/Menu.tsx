@@ -340,6 +340,12 @@ function Menu(props: Readonly<ComponentProps>) {
 						menuToggle(e);
 					}
 
+					// A menu with no linkPath is an action, not a link, and must not navigate.
+					// getHref defaults an absent path to '' and does not special-case it, so it
+					// resolves to the current page: without this the browser follows the anchor and
+					// the page reloads, which looks like the onClick did nothing even though it ran.
+					if (!linkPath) e.preventDefault();
+
 					const func = onClick
 						? props.pageDefinition?.eventFunctions?.[onClick]
 						: undefined;
