@@ -88,13 +88,15 @@ function KeywordReviewInner({
 	// small icon can't delete a keyword outright.
 	const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 	// Guards post-await setState against a mid-flight unmount (SSE can re-emit the craft).
+	// Set on mount too: Fast Refresh runs the cleanup then re-runs the effect, and a
+	// cleanup-only body left this false for the rest of the session.
 	const mountedRef = useRef(true);
-	useEffect(
-		() => () => {
+	useEffect(() => {
+		mountedRef.current = true;
+		return () => {
 			mountedRef.current = false;
-		},
-		[],
-	);
+		};
+	}, []);
 
 	useEffect(() => {
 		if (tabs.length && !tabs.find(t => t.key === activeTab)) {

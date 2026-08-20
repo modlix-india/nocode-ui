@@ -1,5 +1,9 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext } from 'react';
 import { CraftContext } from './CraftRenderer';
+import { useWidgetSend } from './useWidgetSend';
+
+// This panel shows one error for the whole list, so every action reports under one key.
+const _SURFACES = 'surfaces';
 
 interface SurfaceRow {
 	surface: string;
@@ -32,40 +36,22 @@ function ChannelControlsInner({
 	context: NonNullable<React.ContextType<typeof CraftContext>>;
 }>) {
 	const { onSend } = context;
-	const [busy, setBusy] = useState<string | null>(null);
-	const [error, setError] = useState('');
+	const { send, busyId, errors, clearError } = useWidgetSend(
+		'channel_controls_widget',
+		onSend,
+		'Could not change that — please try again.',
+	);
+	const busy = busyId;
+	const error = errors[_SURFACES];
 
-	// Guards post-await setState against a mid-flight unmount (SSE can re-emit the craft).
-	const mountedRef = useRef(true);
-	useEffect(() => {
-		// Set on mount, not just cleared on unmount: Fast Refresh runs the cleanup and then
-		// re-runs the effect, so a body that only returned a cleanup left this false for the
-		// rest of the session - and every guarded setState below silently stopped working.
-		mountedRef.current = true;
-		return () => {
-			mountedRef.current = false;
-		};
-	}, []);
-
-	const toggle = async (row: SurfaceRow) => {
+	const toggle = (row: SurfaceRow) => {
 		if (row.locked) return;
-		setError('');
-		setBusy(row.surface);
-		try {
-			await onSend(
-				JSON.stringify({
-					type: 'channel_controls_widget',
-					surface: row.surface,
-					enabled: !row.enabled,
-				}),
-				undefined,
-				`${row.enabled ? 'Stop' : 'Start'} showing ads on ${row.label}`,
-			);
-		} catch {
-			if (mountedRef.current) setError('Could not change that — please try again.');
-		} finally {
-			if (mountedRef.current) setBusy(null);
-		}
+		return send(
+			row.surface,
+			_SURFACES,
+			{ surface: row.surface, enabled: !row.enabled },
+			`${row.enabled ? 'Stop' : 'Start'} showing ads on ${row.label}`,
+		);
 	};
 
 	// Counted against every row on screen. Excluding the locked ones made the total
@@ -82,7 +68,7 @@ function ChannelControlsInner({
 			</div>
 
 			{error && (
-				<div className="_kwReviewError" role="alert" onClick={() => setError('')}>
+				<div className="_kwReviewError" role="alert" onClick={() => clearError(_SURFACES)}>
 					{error}
 				</div>
 			)}
