@@ -2339,8 +2339,122 @@ export default function PromptStyle({
 		${PREFIX} ._kwReviewSectionHeader:hover {
 			background: #f1f5f9;
 		}
+		${PREFIX} ._kwReviewSectionLabel {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+		}
+		${PREFIX} ._audMixHelp {
+			margin: 0 0 8px;
+			padding: 8px 10px;
+			background: #f8fafc;
+			border-left: 2px solid #cbd5e1;
+			font-size: 11px;
+			line-height: 1.5;
+			color: #475569;
+		}
+		${PREFIX} ._audMembers {
+			border: 1px solid #f1f5f9;
+			border-radius: 6px;
+			padding: 4px 10px 8px;
+			margin-bottom: 8px;
+		}
+		${PREFIX} ._audMemberNote {
+			margin: 8px 0 4px;
+			font-size: 11px;
+			color: #64748b;
+			font-style: italic;
+		}
+		${PREFIX} ._audMemberWarn {
+			margin: 8px 0 4px;
+			padding: 6px 10px;
+			background: #fffbeb;
+			border: 1px solid #fde68a;
+			border-radius: 6px;
+			font-size: 11px;
+			color: #92400e;
+		}
+		${PREFIX} ._audMemberBlock {
+			padding: 10px 0;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audMemberBlock:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._audMemberHead {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			margin-bottom: 4px;
+			font-size: 12px;
+			font-weight: 600;
+			color: #334155;
+		}
+		${PREFIX} ._audMemberTable {
+			width: 100%;
+			table-layout: fixed;
+		}
+		/* A number the eye scans down, so it gets its own lane rather than wrapping with
+		   the text beside it. */
+		${PREFIX} ._audMemberVol {
+			width: 68px;
+			text-align: right;
+			color: #94a3b8;
+			font-size: 11px;
+			font-variant-numeric: tabular-nums;
+		}
+		${PREFIX} ._audMemberTable ._kwActions {
+			width: 62px;
+			white-space: nowrap;
+			text-align: right;
+		}
+		${PREFIX} ._audMemberTable ._kwActions button {
+			border: none;
+			background: none;
+			padding: 2px 4px;
+			cursor: pointer;
+			color: #94a3b8;
+			font-size: 11px;
+		}
+		${PREFIX} ._audMemberTable ._kwActions button:hover {
+			color: #1e293b;
+		}
+		${PREFIX} ._audMemberTable ._kwKwText {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		${PREFIX} ._audMemberAdd {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			margin: 0 0 6px;
+		}
+		${PREFIX} ._audMemberAddBtn {
+			margin-bottom: 4px;
+		}
+		${PREFIX} ._audTextBtn {
+			border: none;
+			background: none;
+			padding: 6px 10px;
+			font-size: 12px;
+			color: #64748b;
+			cursor: pointer;
+			border-radius: 6px;
+		}
+		${PREFIX} ._audTextBtn:hover {
+			background: #f1f5f9;
+			color: #1e293b;
+		}
+		${PREFIX} ._audHelp {
+			font-size: 11px;
+			color: #94a3b8;
+			cursor: pointer;
+		}
+		${PREFIX} ._audHelp:hover {
+			color: #475569;
+		}
 		${PREFIX} ._kwReviewSectionChevron {
-			font-size: 16px;
+			font-size: 11px;
 			color: #94a3b8;
 			transition: transform 0.2s;
 			display: inline-block;
@@ -2468,9 +2582,10 @@ export default function PromptStyle({
 			border-color: #94a3b8;
 		}
 		${PREFIX} ._kwDeleteBtn {
-			color: #dc2626;
+			color: #94a3b8;
 		}
 		${PREFIX} ._kwDeleteBtn:hover {
+			color: #dc2626;
 			background: #fef2f2;
 			border-color: #fca5a5;
 		}
@@ -2497,6 +2612,330 @@ export default function PromptStyle({
 		}
 		${PREFIX} ._kwInlineInput:focus {
 			border-color: #64748b;
+		}
+		/* Audience review — reuses the _kwReview* shell; only the segment picker and the
+		   demographics editor are new, because a segment is a catalogue reference rather
+		   than typed text. */
+		${PREFIX} ._audPicker {
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 8px 12px;
+		}
+		${PREFIX} ._audResults {
+			position: absolute;
+			top: 100%;
+			left: 12px;
+			right: 12px;
+			z-index: 20;
+			max-height: 240px;
+			overflow-y: auto;
+			background: #ffffff;
+			border: 1px solid #cbd5e1;
+			border-radius: 8px;
+			box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+		}
+		${PREFIX} ._audResult {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			width: 100%;
+			padding: 8px 12px;
+			border: none;
+			border-bottom: 1px solid #f1f5f9;
+			background: transparent;
+			text-align: left;
+			cursor: pointer;
+		}
+		${PREFIX} ._audResult:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._audResult:hover {
+			background: #f8fafc;
+		}
+		${PREFIX} ._audResultLabel {
+			font-size: 12px;
+			font-weight: 500;
+			color: #1e293b;
+		}
+		${PREFIX} ._audResultPath {
+			font-size: 11px;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audPathSep {
+			font-size: 8px;
+			margin: 0 4px;
+			vertical-align: middle;
+		}
+		${PREFIX} ._audResultNote {
+			padding: 10px 12px;
+			font-size: 12px;
+			color: #64748b;
+		}
+		${PREFIX} ._audDemoEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			padding: 10px 12px;
+		}
+		${PREFIX} ._audDemoRow {
+			display: grid;
+			grid-template-columns: 116px 1fr;
+			align-items: start;
+			gap: 4px 10px;
+			padding: 7px 0;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audDemoRow:last-of-type {
+			border-bottom: none;
+		}
+		${PREFIX} ._audDemoLabel {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			font-size: 11px;
+			font-weight: 600;
+			color: #64748b;
+			padding-top: 5px;
+		}
+		${PREFIX} ._audDemoDash {
+			font-size: 11px;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audTabs {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+			margin-bottom: 6px;
+		}
+		${PREFIX} ._audTab {
+			padding: 4px 10px;
+			border: none;
+			border-bottom: 2px solid transparent;
+			background: none;
+			color: #64748b;
+			font-size: 12px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audTab._on {
+			color: #0f172a;
+			border-bottom-color: #2563eb;
+			font-weight: 600;
+		}
+		${PREFIX} ._audTabs ._kwCancelBtn {
+			margin-left: auto;
+		}
+		${PREFIX} ._audBrowseList {
+			max-height: 340px;
+			padding: 5px;
+		}
+		${PREFIX} ._audBrowseRow {
+			display: flex;
+			align-items: stretch;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audBrowsePick {
+			flex: 1;
+			min-width: 0;
+			display: flex;
+			align-items: center;
+			gap: 9px;
+			padding: 9px 8px 9px 0;
+			border: none;
+			background: none;
+			text-align: left;
+			cursor: pointer;
+		}
+		${PREFIX} ._audBrowsePick._leaf {
+			cursor: default;
+		}
+		${PREFIX} ._audBrowseLabel {
+			font-size: 13px;
+			color: #0f172a;
+			text-align: left;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		${PREFIX} ._audBrowseRow._added ._audBrowseCheck {
+			/* Ticked in the theme colour, not greyed - the disabled attribute would make the
+			   browser paint it grey and ignore accent-color. The row still expands. */
+			pointer-events: none;
+		}
+		${PREFIX} ._audBrowseRow:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._audBrowseRow:hover {
+			background: #f8fafc;
+		}
+		${PREFIX} ._audBrowseTwisty {
+			width: 30px;
+			flex: 0 0 30px;
+			align-self: stretch;
+			border: none;
+			background: none;
+			color: #64748b;
+			font-size: 11px;
+			cursor: pointer;
+			padding: 0;
+		}
+		${PREFIX} ._audBrowseTwisty:hover {
+			color: #0f172a;
+		}
+		${PREFIX} ._audBrowseTwisty i {
+			transition: transform 0.12s ease;
+		}
+		${PREFIX} ._audBrowseTwisty i._open {
+			transform: rotate(180deg);
+		}
+		${PREFIX} ._audUnknownBox {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			margin-right: 10px;
+			font-size: 12px;
+			color: #334155;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+		${PREFIX} ._audUnknownBox input,
+		${PREFIX} ._audBrowseCheck {
+			/* Slate, not the browser's blue — same ink as the primary button. */
+			accent-color: #1e293b;
+			width: 14px;
+			height: 14px;
+			margin: 0;
+			flex: 0 0 14px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audBrowseCheck {
+			/* The row is stretch-aligned so the chevron fills its height; the box is not. */
+			align-self: center;
+			margin-right: 9px;
+		}
+		${PREFIX} ._audBrowseCheck:disabled {
+			cursor: default;
+		}
+		${PREFIX} ._audChip {
+			padding: 4px 10px;
+			border: 1px solid #cbd5e1;
+			border-radius: 999px;
+			background: #ffffff;
+			color: #475569;
+			font-size: 11px;
+			cursor: pointer;
+			text-transform: capitalize;
+			transition: background 0.15s, border-color 0.15s, color 0.15s;
+		}
+		${PREFIX} ._audChip:hover {
+			border-color: #94a3b8;
+		}
+		${PREFIX} ._audChip._on {
+			background: #1e293b;
+			border-color: #1e293b;
+			color: #ffffff;
+		}
+		${PREFIX} ._audDemoControls {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 6px;
+		}
+		${PREFIX} ._audDemoWhy {
+			grid-column: 1 / -1;
+			font-size: 11px;
+			color: #64748b;
+			font-style: italic;
+			padding-left: 2px;
+		}
+		${PREFIX} ._audDemoActions {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 4px 12px 8px 12px;
+		}
+		${PREFIX} ._audDemoHint {
+			margin: 6px 0 0;
+			font-size: 11px;
+			color: #94a3b8;
+		}
+
+		/* Where ads show — toggles. A surface the ad type cannot serve on stays visible and
+		   disabled with its reason, rather than disappearing. */
+		${PREFIX} ._ccHeader {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px 14px;
+			border-bottom: 1px solid #e2e8f0;
+			background: #f8fafc;
+		}
+		${PREFIX} ._ccCount {
+			font-size: 12px;
+			font-weight: 600;
+			color: #374151;
+		}
+		${PREFIX} ._ccAdType {
+			padding: 2px 8px;
+			border-radius: 999px;
+			background: #e2e8f0;
+			color: #475569;
+			font-size: 11px;
+			font-weight: 600;
+		}
+		${PREFIX} ._ccList {
+			padding: 6px 0;
+		}
+		${PREFIX} ._ccRow {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 7px 14px;
+		}
+		${PREFIX} ._ccRow._locked {
+			opacity: 0.6;
+		}
+		${PREFIX} ._ccToggle {
+			flex: 0 0 auto;
+			width: 34px;
+			height: 20px;
+			padding: 2px;
+			border: none;
+			border-radius: 999px;
+			background: #cbd5e1;
+			cursor: pointer;
+			transition: background 0.15s;
+		}
+		${PREFIX} ._ccToggle._on {
+			background: #1e293b;
+		}
+		${PREFIX} ._ccToggle:disabled {
+			cursor: not-allowed;
+		}
+		${PREFIX} ._ccKnob {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background: #ffffff;
+			font-size: 8px;
+			color: #475569;
+			transition: transform 0.15s;
+		}
+		${PREFIX} ._ccToggle._on ._ccKnob {
+			transform: translateX(14px);
+		}
+		${PREFIX} ._ccLabel {
+			font-size: 12px;
+			color: #1e293b;
+		}
+		${PREFIX} ._ccReason {
+			font-size: 11px;
+			color: #94a3b8;
+			font-style: italic;
 		}
 		${PREFIX} ._kwEmptyCell {
 			padding: 14px 10px;

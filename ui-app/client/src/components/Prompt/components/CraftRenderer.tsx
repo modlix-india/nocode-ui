@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, useCallback, createContext, useCont
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { loadGoogleMaps } from '../../../util/googleMapsLoader';
+import { AudienceReviewBlock } from './AudienceReviewBlock';
+import { ChannelControlsBlock } from './ChannelControlsBlock';
 import { KeywordReviewBlock } from './KeywordReviewBlock';
 
 interface CraftContextValue {
@@ -753,6 +755,8 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	collapsible: CollapsibleBlock,
 	map: MapBlock,
 	keyword_review: KeywordReviewBlock,
+	audience_review: AudienceReviewBlock,
+	channel_controls: ChannelControlsBlock,
 };
 
 function CraftBlockRenderer({

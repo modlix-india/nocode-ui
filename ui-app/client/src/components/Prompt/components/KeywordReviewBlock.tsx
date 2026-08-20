@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { CraftContext } from './CraftRenderer';
+import { fetchKeywordVolume } from './keywordVolume';
 
 interface KwSection {
 	key: string;
@@ -65,8 +66,7 @@ export function KeywordReviewBlock({ tabs = [] }: Readonly<{ tabs: KwTab[] }>) {
 	// Fallback (not throw): a missing provider shouldn't crash the whole chat. The inner
 	// component receives a non-null context so all its hooks run unconditionally.
 	const context = useContext(CraftContext);
-	if (!context)
-		return <div className="_kwReviewError">Keyword review is unavailable here.</div>;
+	if (!context) return <div className="_kwReviewError">Keyword review is unavailable here.</div>;
 	return <KeywordReviewInner tabs={tabs} context={context} />;
 }
 
@@ -89,7 +89,12 @@ function KeywordReviewInner({
 	const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 	// Guards post-await setState against a mid-flight unmount (SSE can re-emit the craft).
 	const mountedRef = useRef(true);
-	useEffect(() => () => { mountedRef.current = false; }, []);
+	useEffect(
+		() => () => {
+			mountedRef.current = false;
+		},
+		[],
+	);
 
 	useEffect(() => {
 		if (tabs.length && !tabs.find(t => t.key === activeTab)) {
@@ -103,33 +108,32 @@ function KeywordReviewInner({
 		setExpanded(prev => ({ ...prev, [sk]: !isExpanded(sk) }));
 
 	const clearError = (sk: string) =>
-		setErrors(prev => { const n = { ...prev }; delete n[sk]; return n; });
+		setErrors(prev => {
+			const n = { ...prev };
+			delete n[sk];
+			return n;
+		});
 
-	const setError = (sk: string, msg: string) =>
-		setErrors(prev => ({ ...prev, [sk]: msg }));
+	const setError = (sk: string, msg: string) => setErrors(prev => ({ ...prev, [sk]: msg }));
 
-	const fetchVolume = async (keyword: string): Promise<number> => {
-		if (!sessionId) return 0;
-		try {
-			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
-			const res = await fetch(`${baseUrl}/keyword/volume`, {
-				method: 'POST',
-				headers: getAuthHeaders(), // already sets Content-Type: application/json
-				body: JSON.stringify({ session_id: sessionId, keywords: [keyword] }),
-			});
-			if (!res.ok) return 0;
-			const data = await res.json();
-			return (data?.results?.[0]?.volume as number) ?? 0;
-		} catch {
-			return 0;
-		}
-	};
-
-	const sendAction = async (actionId: string, sk: string, payload: Record<string, any>, existingVolume?: number) => {
+	const sendAction = async (
+		actionId: string,
+		sk: string,
+		payload: Record<string, any>,
+		existingVolume?: number,
+	) => {
 		clearError(sk);
 		setBusyId(actionId);
 		try {
-			const volume = existingVolume !== undefined ? existingVolume : await fetchVolume(payload.keyword as string);
+			const volume =
+				existingVolume !== undefined
+					? existingVolume
+					: await fetchKeywordVolume(
+							payload.keyword as string,
+							sessionId,
+							agentEndpoint,
+							getAuthHeaders,
+						);
 			const msg = JSON.stringify({ type: 'keyword_widget', ...payload, volume });
 			await onSend(msg, undefined, `${payload.action} keyword: ${payload.keyword as string}`);
 		} catch {
@@ -143,7 +147,10 @@ function KeywordReviewInner({
 		const sk = secKey(tabKey, sec.key);
 		const form = addForms[sk] ?? EMPTY_ADD;
 		const kw = form.keyword.trim().toLowerCase();
-		if (!kw) { setError(sk, 'Enter a keyword.'); return; }
+		if (!kw) {
+			setError(sk, 'Enter a keyword.');
+			return;
+		}
 		const extraField = sec.key === 'positives' ? 'intent' : 'reason';
 		await sendAction(`add:${sk}`, sk, {
 			action: 'add',
@@ -162,7 +169,14 @@ function KeywordReviewInner({
 		setBusyId(`del:${sk}:${row.keyword}`);
 		try {
 			await onSend(
-				JSON.stringify({ type: 'keyword_widget', action: 'delete', keyword_type: tabKey, section: sec.key, keyword: row.keyword, volume: 0 }),
+				JSON.stringify({
+					type: 'keyword_widget',
+					action: 'delete',
+					keyword_type: tabKey,
+					section: sec.key,
+					keyword: row.keyword,
+					volume: 0,
+				}),
 				undefined,
 				`Delete keyword: ${row.keyword}`,
 			);
@@ -178,19 +192,27 @@ function KeywordReviewInner({
 		const es = editStates[sk];
 		if (!es) return;
 		const kw = es.keyword.trim().toLowerCase();
-		if (!kw) { setError(sk, 'Keyword cannot be empty.'); return; }
+		if (!kw) {
+			setError(sk, 'Keyword cannot be empty.');
+			return;
+		}
 		const extraField = sec.key === 'positives' ? 'intent' : 'reason';
 		// Skip the volume round-trip when only match_type or extra changed.
 		const knownVolume = kw === es.originalKeyword.toLowerCase() ? es.originalVolume : undefined;
-		await sendAction(`save:${sk}`, sk, {
-			action: 'edit',
-			keyword_type: tabKey,
-			section: sec.key,
-			old_keyword: oldKeyword,
-			keyword: kw,
-			match_type: es.matchType,
-			[extraField]: es.extra,
-		}, knownVolume);
+		await sendAction(
+			`save:${sk}`,
+			sk,
+			{
+				action: 'edit',
+				keyword_type: tabKey,
+				section: sec.key,
+				old_keyword: oldKeyword,
+				keyword: kw,
+				match_type: es.matchType,
+				[extraField]: es.extra,
+			},
+			knownVolume,
+		);
 		setEditStates(prev => ({ ...prev, [sk]: null }));
 	};
 
@@ -215,11 +237,17 @@ function KeywordReviewInner({
 					>
 						{tab.label}
 						{tab.status === 'pending' && (
-							<i className="fa fa-solid fa-spinner fa-spin _kwTabIcon" aria-label="researching" />
+							<i
+								className="fa fa-solid fa-spinner fa-spin _kwTabIcon"
+								aria-label="researching"
+							/>
 						)}
 						{tab.status === 'partial' && <span className="_kwTabIcon">·</span>}
 						{tab.status === 'failed' && (
-							<i className="fa fa-solid fa-triangle-exclamation _kwTabIcon" aria-label="failed" />
+							<i
+								className="fa fa-solid fa-triangle-exclamation _kwTabIcon"
+								aria-label="failed"
+							/>
 						)}
 					</button>
 				))}
@@ -256,13 +284,22 @@ function KeywordReviewInner({
 								onClick={() => toggleExpanded(sk)}
 							>
 								<span className="_kwReviewSectionLabel">{sec.label}</span>
-								<span className={`_kwReviewSectionChevron${open ? ' _open' : ''}`} aria-hidden="true">›</span>
+								<i
+									className={`fa fa-solid fa-chevron-right _kwReviewSectionChevron${open ? ' _open' : ''}`}
+									aria-hidden="true"
+								/>
 							</button>
 
 							{open && (
 								<div className="_kwReviewSectionBody">
 									{err && (
-										<div className="_kwReviewError" role="alert" onClick={() => clearError(sk)}>{err}</div>
+										<div
+											className="_kwReviewError"
+											role="alert"
+											onClick={() => clearError(sk)}
+										>
+											{err}
+										</div>
 									)}
 
 									{sec.actions.includes('add') && !researching && (
@@ -273,25 +310,57 @@ function KeywordReviewInner({
 												placeholder="Add keyword…"
 												value={form.keyword}
 												disabled={acting}
-												onChange={e => setAddForms(prev => ({ ...prev, [sk]: { ...form, keyword: e.target.value } }))}
-												onKeyDown={e => { if (e.key === 'Enter') handleAdd(currentTab.key, sec); }}
+												onChange={e =>
+													setAddForms(prev => ({
+														...prev,
+														[sk]: { ...form, keyword: e.target.value },
+													}))
+												}
+												onKeyDown={e => {
+													if (e.key === 'Enter')
+														handleAdd(currentTab.key, sec);
+												}}
 											/>
 											<input
 												type="text"
 												className="_kwAddExtra"
-												placeholder={sec.key === 'positives' ? 'Intent (optional)' : 'Reason (optional)'}
+												placeholder={
+													sec.key === 'positives'
+														? 'Intent (optional)'
+														: 'Reason (optional)'
+												}
 												value={form.extra}
 												disabled={acting}
-												onChange={e => setAddForms(prev => ({ ...prev, [sk]: { ...form, extra: e.target.value } }))}
-												onKeyDown={e => { if (e.key === 'Enter') handleAdd(currentTab.key, sec); }}
+												onChange={e =>
+													setAddForms(prev => ({
+														...prev,
+														[sk]: { ...form, extra: e.target.value },
+													}))
+												}
+												onKeyDown={e => {
+													if (e.key === 'Enter')
+														handleAdd(currentTab.key, sec);
+												}}
 											/>
 											<select
 												className="_kwMatchSelect"
 												value={form.matchType}
 												disabled={acting}
-												onChange={e => setAddForms(prev => ({ ...prev, [sk]: { ...form, matchType: e.target.value } }))}
+												onChange={e =>
+													setAddForms(prev => ({
+														...prev,
+														[sk]: {
+															...form,
+															matchType: e.target.value,
+														},
+													}))
+												}
 											>
-												{matchTypesFor(sec.key).map(m => <option key={m} value={m}>{m}</option>)}
+												{matchTypesFor(sec.key).map(m => (
+													<option key={m} value={m}>
+														{m}
+													</option>
+												))}
 											</select>
 											<button
 												type="button"
@@ -299,7 +368,11 @@ function KeywordReviewInner({
 												disabled={acting || !form.keyword.trim()}
 												onClick={() => handleAdd(currentTab.key, sec)}
 											>
-												{loading(`add:${sk}`) ? <i className="fa fa-solid fa-spinner fa-spin" /> : '+ Add'}
+												{loading(`add:${sk}`) ? (
+													<i className="fa fa-solid fa-spinner fa-spin" />
+												) : (
+													'+ Add'
+												)}
 											</button>
 										</div>
 									)}
@@ -307,57 +380,180 @@ function KeywordReviewInner({
 										<thead>
 											<tr>
 												{sec.columns.map(col => (
-													<th key={col} className="_kwReviewTh">{COL_LABELS[col] ?? col}</th>
+													<th key={col} className="_kwReviewTh">
+														{COL_LABELS[col] ?? col}
+													</th>
 												))}
-												{sec.actions.length > 0 && <th className="_kwReviewTh _kwActionsHead" />}
+												{sec.actions.length > 0 && (
+													<th className="_kwReviewTh _kwActionsHead" />
+												)}
 											</tr>
 										</thead>
 										<tbody>
 											{sec.rows.map((row, ri) => {
-												const isEditing = es != null && es.originalKeyword === row.keyword;
+												const isEditing =
+													es != null &&
+													es.originalKeyword === row.keyword;
 												if (isEditing) {
 													return (
-														<tr key={`${row.keyword}_${ri}`} className="_kwReviewRow _editing">
-															{sec.columns.map((col) => {
-																if (col === 'keyword') return (
-																	<td key={col} className="_kwReviewTd">
-																		<input
-																			className="_kwInlineInput"
-																			value={es.keyword}
-																			autoFocus
-																			onChange={e => setEditStates(prev => ({ ...prev, [sk]: { ...es, keyword: e.target.value } }))}
-																			onKeyDown={e => { if (e.key === 'Enter') handleEditSave(currentTab.key, sec, row.keyword); if (e.key === 'Escape') setEditStates(prev => ({ ...prev, [sk]: null })); }}
-																		/>
-																	</td>
-																);
-																if (col === 'volume') return <td key={col} className="_kwReviewTd _kwVol">—</td>;
-																if (col === 'match_type') return (
-																	<td key={col} className="_kwReviewTd">
-																		<select
-																			className="_kwMatchSelect _inline"
-																			value={es.matchType}
-																			onChange={e => setEditStates(prev => ({ ...prev, [sk]: { ...es, matchType: e.target.value } }))}
+														<tr
+															key={`${row.keyword}_${ri}`}
+															className="_kwReviewRow _editing"
+														>
+															{sec.columns.map(col => {
+																if (col === 'keyword')
+																	return (
+																		<td
+																			key={col}
+																			className="_kwReviewTd"
 																		>
-																			{matchTypesFor(sec.key).map(m => <option key={m} value={m}>{m}</option>)}
-																		</select>
-																	</td>
-																);
+																			<input
+																				className="_kwInlineInput"
+																				value={es.keyword}
+																				autoFocus
+																				onChange={e =>
+																					setEditStates(
+																						prev => ({
+																							...prev,
+																							[sk]: {
+																								...es,
+																								keyword:
+																									e
+																										.target
+																										.value,
+																							},
+																						}),
+																					)
+																				}
+																				onKeyDown={e => {
+																					if (
+																						e.key ===
+																						'Enter'
+																					)
+																						handleEditSave(
+																							currentTab.key,
+																							sec,
+																							row.keyword,
+																						);
+																					if (
+																						e.key ===
+																						'Escape'
+																					)
+																						setEditStates(
+																							prev => ({
+																								...prev,
+																								[sk]: null,
+																							}),
+																						);
+																				}}
+																			/>
+																		</td>
+																	);
+																if (col === 'volume')
+																	return (
+																		<td
+																			key={col}
+																			className="_kwReviewTd _kwVol"
+																		>
+																			—
+																		</td>
+																	);
+																if (col === 'match_type')
+																	return (
+																		<td
+																			key={col}
+																			className="_kwReviewTd"
+																		>
+																			<select
+																				className="_kwMatchSelect _inline"
+																				value={es.matchType}
+																				onChange={e =>
+																					setEditStates(
+																						prev => ({
+																							...prev,
+																							[sk]: {
+																								...es,
+																								matchType:
+																									e
+																										.target
+																										.value,
+																							},
+																						}),
+																					)
+																				}
+																			>
+																				{matchTypesFor(
+																					sec.key,
+																				).map(m => (
+																					<option
+																						key={m}
+																						value={m}
+																					>
+																						{m}
+																					</option>
+																				))}
+																			</select>
+																		</td>
+																	);
 																return (
-																	<td key={col} className="_kwReviewTd">
+																	<td
+																		key={col}
+																		className="_kwReviewTd"
+																	>
 																		<input
 																			className="_kwInlineInput"
 																			value={es.extra}
 																			placeholder={col}
-																			onChange={e => setEditStates(prev => ({ ...prev, [sk]: { ...es, extra: e.target.value } }))}
+																			onChange={e =>
+																				setEditStates(
+																					prev => ({
+																						...prev,
+																						[sk]: {
+																							...es,
+																							extra: e
+																								.target
+																								.value,
+																						},
+																					}),
+																				)
+																			}
 																		/>
 																	</td>
 																);
 															})}
 															<td className="_kwReviewTd _kwActionsCell">
-																<button type="button" className="_kwSaveBtn" title="Save" aria-label="Save" disabled={acting} onClick={() => handleEditSave(currentTab.key, sec, row.keyword)}>
-																	{loading(`save:${sk}`) ? <i className="fa fa-solid fa-spinner fa-spin" /> : <i className="fa fa-solid fa-check" />}
+																<button
+																	type="button"
+																	className="_kwSaveBtn"
+																	title="Save"
+																	aria-label="Save"
+																	disabled={acting}
+																	onClick={() =>
+																		handleEditSave(
+																			currentTab.key,
+																			sec,
+																			row.keyword,
+																		)
+																	}
+																>
+																	{loading(`save:${sk}`) ? (
+																		<i className="fa fa-solid fa-spinner fa-spin" />
+																	) : (
+																		<i className="fa fa-solid fa-check" />
+																	)}
 																</button>
-																<button type="button" className="_kwCancelBtn" title="Cancel" aria-label="Cancel" onClick={() => setEditStates(prev => ({ ...prev, [sk]: null }))}>
+																<button
+																	type="button"
+																	className="_kwCancelBtn"
+																	title="Cancel"
+																	aria-label="Cancel"
+																	onClick={() =>
+																		setEditStates(prev => ({
+																			...prev,
+																			[sk]: null,
+																		}))
+																	}
+																>
 																	<i className="fa fa-solid fa-xmark" />
 																</button>
 															</td>
@@ -365,18 +561,53 @@ function KeywordReviewInner({
 													);
 												}
 												return (
-													<tr key={`${row.keyword}_${ri}`} className="_kwReviewRow">
+													<tr
+														key={`${row.keyword}_${ri}`}
+														className="_kwReviewRow"
+													>
 														{sec.columns.map(col => {
-															if (col === 'keyword') return <td key={col} className="_kwReviewTd _kwKwText">{row.keyword}</td>;
-															if (col === 'volume') return <td key={col} className="_kwReviewTd _kwVol">{(row.volume ?? 0).toLocaleString()}</td>;
-															if (col === 'match_type') return (
-																<td key={col} className="_kwReviewTd">
-																	<span className={`_kwMatchBadge _${(row.match_type ?? 'PHRASE').toLowerCase()}`}>
-																		{row.match_type ?? 'PHRASE'}
-																	</span>
+															if (col === 'keyword')
+																return (
+																	<td
+																		key={col}
+																		className="_kwReviewTd _kwKwText"
+																	>
+																		{row.keyword}
+																	</td>
+																);
+															if (col === 'volume')
+																return (
+																	<td
+																		key={col}
+																		className="_kwReviewTd _kwVol"
+																	>
+																		{(
+																			row.volume ?? 0
+																		).toLocaleString()}
+																	</td>
+																);
+															if (col === 'match_type')
+																return (
+																	<td
+																		key={col}
+																		className="_kwReviewTd"
+																	>
+																		<span
+																			className={`_kwMatchBadge _${(row.match_type ?? 'PHRASE').toLowerCase()}`}
+																		>
+																			{row.match_type ??
+																				'PHRASE'}
+																		</span>
+																	</td>
+																);
+															return (
+																<td
+																	key={col}
+																	className="_kwReviewTd _kwExtra"
+																>
+																	{row[col] ?? ''}
 																</td>
 															);
-															return <td key={col} className="_kwReviewTd _kwExtra">{row[col] ?? ''}</td>;
 														})}
 														<td className="_kwReviewTd _kwActionsCell">
 															{sec.actions.includes('edit') && (
@@ -386,16 +617,33 @@ function KeywordReviewInner({
 																	title="Edit"
 																	aria-label="Edit"
 																	disabled={acting}
-																	onClick={() => setEditStates(prev => ({
-																		...prev,
-																		[sk]: { keyword: row.keyword, matchType: row.match_type ?? 'PHRASE', extra: row.intent ?? row.reason ?? '', originalKeyword: row.keyword, originalVolume: row.volume ?? 0 },
-																	}))}
+																	onClick={() =>
+																		setEditStates(prev => ({
+																			...prev,
+																			[sk]: {
+																				keyword:
+																					row.keyword,
+																				matchType:
+																					row.match_type ??
+																					'PHRASE',
+																				extra:
+																					row.intent ??
+																					row.reason ??
+																					'',
+																				originalKeyword:
+																					row.keyword,
+																				originalVolume:
+																					row.volume ?? 0,
+																			},
+																		}))
+																	}
 																>
 																	<i className="fa fa-solid fa-pen" />
 																</button>
 															)}
-															{sec.actions.includes('delete') && (
-																pendingDelete === `${sk}:${row.keyword}` ? (
+															{sec.actions.includes('delete') &&
+																(pendingDelete ===
+																`${sk}:${row.keyword}` ? (
 																	<>
 																		<button
 																			type="button"
@@ -403,16 +651,35 @@ function KeywordReviewInner({
 																			title="Confirm delete"
 																			aria-label="Confirm delete"
 																			disabled={acting}
-																			onClick={() => { setPendingDelete(null); handleDelete(currentTab.key, sec, row); }}
+																			onClick={() => {
+																				setPendingDelete(
+																					null,
+																				);
+																				handleDelete(
+																					currentTab.key,
+																					sec,
+																					row,
+																				);
+																			}}
 																		>
-																			{loading(`del:${sk}:${row.keyword}`) ? <i className="fa fa-solid fa-spinner fa-spin" /> : <i className="fa fa-solid fa-check" />}
+																			{loading(
+																				`del:${sk}:${row.keyword}`,
+																			) ? (
+																				<i className="fa fa-solid fa-spinner fa-spin" />
+																			) : (
+																				<i className="fa fa-solid fa-check" />
+																			)}
 																		</button>
 																		<button
 																			type="button"
 																			className="_kwCancelBtn"
 																			title="Cancel"
 																			aria-label="Cancel delete"
-																			onClick={() => setPendingDelete(null)}
+																			onClick={() =>
+																				setPendingDelete(
+																					null,
+																				)
+																			}
 																		>
 																			<i className="fa fa-solid fa-xmark" />
 																		</button>
@@ -424,19 +691,27 @@ function KeywordReviewInner({
 																		title="Delete"
 																		aria-label="Delete"
 																		disabled={acting}
-																		onClick={() => setPendingDelete(`${sk}:${row.keyword}`)}
+																		onClick={() =>
+																			setPendingDelete(
+																				`${sk}:${row.keyword}`,
+																			)
+																		}
 																	>
 																		<i className="fa fa-solid fa-trash" />
 																	</button>
-																)
-															)}
+																))}
 														</td>
 													</tr>
 												);
 											})}
 											{sec.rows.length === 0 && (
 												<tr>
-													<td colSpan={sec.columns.length + 1} className="_kwEmptyCell">No {sec.key} yet.</td>
+													<td
+														colSpan={sec.columns.length + 1}
+														className="_kwEmptyCell"
+													>
+														No {sec.key} yet.
+													</td>
 												</tr>
 											)}
 										</tbody>
