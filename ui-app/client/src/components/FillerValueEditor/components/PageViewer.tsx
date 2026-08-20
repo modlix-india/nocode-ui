@@ -10,7 +10,7 @@ export default function PageViewer({
 	pageExtractor,
 	personalizationPath,
 }: {
-	iframeRef: React.RefObject<HTMLIFrameElement>;
+	iframeRef: React.RefObject<HTMLIFrameElement | null>;
 	url: string;
 	pageExtractor: PageStoreExtractor;
 	personalizationPath?: string;
