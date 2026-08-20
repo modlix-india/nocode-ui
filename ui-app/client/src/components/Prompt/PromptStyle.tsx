@@ -2394,6 +2394,359 @@ export default function PromptStyle({
 			text-overflow: ellipsis;
 			white-space: nowrap;
 		}
+
+		/* ─── Detailed Targeting Manager Styles ─── */
+		${PREFIX} ._craftTargetingManager {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			margin-top: 12px;
+			font-family: inherit;
+			position: relative;
+		}
+		${PREFIX} ._craftTargetingStickyHeader {
+			background-color: #ffffff;
+			padding-top: 4px;
+			padding-bottom: 8px;
+			border-bottom: 1px solid #f3f4f6;
+			margin-bottom: 8px;
+			position: relative; /* Anchor search results absolute overlay */
+		}
+		${PREFIX} ._craftTargetingIncludeHeading {
+			font-size: 13px;
+			font-weight: 600;
+			color: #374151;
+			margin-bottom: 8px;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			text-align: left;
+		}
+		${PREFIX} ._craftTargetingIncludeHeading i {
+			font-size: 11px;
+			color: #9ca3af;
+			cursor: help;
+		}
+		${PREFIX} ._craftTargetingSection {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			border-bottom: 1px solid #f3f4f6;
+			padding-bottom: 12px;
+			text-align: left;
+		}
+		${PREFIX} ._craftTargetingSection:last-of-type {
+			border-bottom: none;
+		}
+		${PREFIX} ._craftTargetingCategoryHeading {
+			margin: 0;
+			font-size: 13px;
+			font-weight: 700;
+			color: #374151;
+			text-transform: uppercase;
+			letter-spacing: 0.05em;
+			text-align: left;
+		}
+		${PREFIX} ._craftTargetingList {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+		${PREFIX} ._craftTargetingChip {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			background-color: #f3f4f6;
+			border: 1px solid #e5e7eb;
+			border-radius: 6px;
+			padding: 4px 8px;
+			font-size: 13px;
+			color: #1f2937;
+			transition: all 0.15s ease;
+		}
+		${PREFIX} ._craftTargetingChip:hover {
+			background-color: #e5e7eb;
+			border-color: #d1d5db;
+		}
+		${PREFIX} ._craftChipText {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+		}
+		${PREFIX} ._craftChipName {
+			font-weight: 500;
+		}
+		${PREFIX} ._craftChipDeleteBtn {
+			background: transparent;
+			border: none;
+			cursor: pointer;
+			padding: 2px;
+			border-radius: 4px;
+			color: #9ca3af;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+		${PREFIX} ._craftChipDeleteBtn:hover {
+			background-color: rgba(239, 68, 68, 0.1);
+			color: #ef4444;
+			transform: scale(1.1);
+		}
+		${PREFIX} ._craftChipDeleteBtn:active {
+			transform: scale(0.95);
+		}
+		${PREFIX} ._craftTargetingSearchSection {
+			display: flex;
+			gap: 8px;
+			margin-bottom: 0px;
+		}
+		${PREFIX} ._craftTargetingSearchInput {
+			flex: 1;
+			border: 1px solid #d1d5db;
+			border-radius: 6px;
+			padding: 6px 12px;
+			font-size: 13px;
+			outline: none;
+			transition: border-color 0.15s ease;
+		}
+		${PREFIX} ._craftTargetingSearchInput:focus {
+			border-color: #6b7280;
+		}
+		${PREFIX} ._craftTargetingSearchBtn {
+			background-color: #1f2937;
+			color: #ffffff;
+			border: none;
+			border-radius: 6px;
+			padding: 6px 16px;
+			font-size: 13px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: background-color 0.15s ease;
+		}
+		${PREFIX} ._craftTargetingSearchBtn:hover {
+			background-color: #374151;
+		}
+		${PREFIX} ._craftTargetingSearchBtn:disabled {
+			background-color: #e5e7eb;
+			color: #9ca3af;
+			cursor: not-allowed;
+		}
+		${PREFIX} ._craftSearchResultsSection {
+			background-color: #ffffff;
+			border: 1px solid #d1d5db;
+			border-radius: 8px;
+			padding: 12px;
+			margin-top: 4px;
+			margin-bottom: 0px;
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			z-index: 500;
+			box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+		}
+		${PREFIX} ._craftSearchResultsList {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			max-height: 220px;
+			overflow-y: auto;
+			padding-right: 4px;
+		}
+		${PREFIX} ._craftSearchResultRow {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			background: #ffffff;
+			border: 1px solid #e5e7eb;
+			border-radius: 6px;
+			padding: 6px 10px;
+			transition: all 0.15s ease;
+			position: relative;
+		}
+		${PREFIX} ._craftSearchResultRow:hover {
+			border-color: #cbd5e1;
+			background-color: #f8fafc;
+		}
+		${PREFIX} ._craftSearchResultInfo {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			flex: 1;
+			text-align: left;
+		}
+		${PREFIX} ._craftSearchResultNameLine {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+		${PREFIX} ._craftSearchResultName {
+			font-size: 13px;
+			font-weight: 500;
+			color: #1f2937;
+		}
+		${PREFIX} ._craftSearchResultSize {
+			font-size: 11px;
+			color: #6b7280;
+		}
+		${PREFIX} ._craftSearchResultAddBtn {
+			background-color: #e0f2fe;
+			color: #0369a1;
+			border: none;
+			border-radius: 4px;
+			padding: 4px 10px;
+			font-size: 11px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: all 0.15s ease;
+		}
+		${PREFIX} ._craftSearchResultAddBtn:hover {
+			background-color: #0284c7;
+			color: #ffffff;
+		}
+
+		/* Popovers styles */
+		${PREFIX} ._craftPopoverHeader {
+			font-weight: 600;
+			border-bottom: 1px solid #374151;
+			padding-bottom: 4px;
+			margin-bottom: 4px;
+			font-size: 12px;
+			color: #f3f4f6;
+		}
+		${PREFIX} ._craftPopoverBody {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+		}
+		${PREFIX} ._craftPopoverPath {
+			font-size: 11px;
+			color: #9ca3af;
+			margin-bottom: 4px;
+			line-height: 1.4;
+		}
+		${PREFIX} ._craftPopoverPath strong {
+			color: #ffffff;
+			font-weight: 600;
+		}
+		${PREFIX} ._craftPopoverDesc {
+			margin-top: 4px;
+			color: #9ca3af;
+			font-style: italic;
+		}
+		${PREFIX} ._craftTargetingPopover {
+			position: absolute;
+			bottom: 125%;
+			left: 0;
+			z-index: 1000;
+			background-color: #1f2937;
+			color: #ffffff;
+			padding: 10px 12px;
+			border-radius: 8px;
+			font-size: 11px;
+			line-height: 1.4;
+			width: 220px;
+			pointer-events: none;
+			box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+			border: 1px solid #374151;
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			text-align: left;
+		}
+		${PREFIX} ._craftTargetingPopover::after {
+			content: "";
+			position: absolute;
+			top: 100%;
+			left: 15px;
+			border-width: 5px;
+			border-style: solid;
+			border-color: #1f2937 transparent transparent transparent;
+		}
+
+		/* ─── Detailed Targeting Tabs, Empty States, and Toast ─── */
+		${PREFIX} ._craftTargetingTabsNav {
+			display: flex;
+			border-bottom: 2px solid #f3f4f6;
+			gap: 8px;
+			margin-bottom: 12px;
+			margin-top: 4px;
+		}
+		${PREFIX} ._craftTargetingTabBtn {
+			background: transparent;
+			border: none;
+			border-bottom: 2px solid transparent;
+			padding: 8px 12px;
+			font-size: 13px;
+			font-weight: 600;
+			color: #6b7280;
+			cursor: pointer;
+			transition: all 0.15s ease;
+			margin-bottom: -2px;
+		}
+		${PREFIX} ._craftTargetingTabBtn:hover {
+			color: #374151;
+		}
+		${PREFIX} ._craftTargetingTabBtn._active {
+			color: #1f2937;
+			border-bottom-color: #1f2937;
+		}
+		${PREFIX} ._craftTargetingTabContent {
+			max-height: 380px;
+			overflow-y: auto;
+			padding-right: 4px;
+			border: 1px solid #f3f4f6;
+			border-radius: 8px;
+			background-color: #ffffff;
+			padding: 8px;
+		}
+		${PREFIX} ._craftTargetingEmptyState {
+			padding: 24px 16px;
+			background-color: #f9fafb;
+			border: 1px dashed #e5e7eb;
+			border-radius: 6px;
+			font-size: 13px;
+			color: #6b7280;
+			text-align: center;
+			margin-top: 0px;
+		}
+		${PREFIX} ._craftTargetingToast {
+			position: fixed;
+			bottom: 24px;
+			right: 24px;
+			background-color: #1f2937;
+			color: #ffffff;
+			padding: 10px 16px;
+			border-radius: 8px;
+			box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			z-index: 9999;
+			font-size: 13px;
+			font-weight: 500;
+			animation: _craftToastSlideIn 0.2s ease;
+		}
+		${PREFIX} ._craftTargetingToast i {
+			color: #34d399;
+		}
+		${PREFIX} ._craftTargetingToast._info i {
+			color: #60a5fa;
+		}
+		@keyframes _craftToastSlideIn {
+			from {
+				transform: translateY(20px);
+				opacity: 0;
+			}
+			to {
+				transform: translateY(0);
+				opacity: 1;
+			}
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PromptCss">{css}</style>;
