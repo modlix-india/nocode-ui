@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useCallback, createContext, useCont
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { loadGoogleMaps } from '../../../util/googleMapsLoader';
-import { AudienceReviewBlock } from './AudienceReviewBlock';
+import { AudienceReviewBlock } from './audience';
 import { ChannelControlsBlock } from './ChannelControlsBlock';
 import { KeywordReviewBlock } from './KeywordReviewBlock';
 
