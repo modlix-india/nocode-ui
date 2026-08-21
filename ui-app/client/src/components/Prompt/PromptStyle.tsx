@@ -2403,21 +2403,11 @@ export default function PromptStyle({
 			font-size: 11px;
 			font-variant-numeric: tabular-nums;
 		}
+		/* Fits an edit and a delete at the shared 28px. */
 		${PREFIX} ._audMemberTable ._kwActions {
-			width: 62px;
+			width: 68px;
 			white-space: nowrap;
 			text-align: right;
-		}
-		${PREFIX} ._audMemberTable ._kwActions button {
-			border: none;
-			background: none;
-			padding: 2px 4px;
-			cursor: pointer;
-			color: #94a3b8;
-			font-size: 11px;
-		}
-		${PREFIX} ._audMemberTable ._kwActions button:hover {
-			color: #1e293b;
 		}
 		${PREFIX} ._audMemberTable ._kwKwText {
 			overflow: hidden;
@@ -2428,9 +2418,6 @@ export default function PromptStyle({
 			align-items: center;
 			gap: 6px;
 			margin: 0 0 6px;
-		}
-		${PREFIX} ._audMemberAddBtn {
-			margin-bottom: 4px;
 		}
 		${PREFIX} ._audTextBtn {
 			border: none;
@@ -2443,6 +2430,18 @@ export default function PromptStyle({
 		}
 		${PREFIX} ._audTextBtn:hover {
 			background: #f1f5f9;
+			color: #1e293b;
+		}
+		${PREFIX} ._audTextBtn._audMemberAddBtn {
+			display: block;
+			margin: 0 0 6px auto;
+			border: 1px solid #e2e8f0;
+			background: #ffffff;
+			color: #475569;
+		}
+		${PREFIX} ._audTextBtn._audMemberAddBtn:hover {
+			background: #f1f5f9;
+			border-color: #94a3b8;
 			color: #1e293b;
 		}
 		${PREFIX} ._audHelp {
@@ -2622,6 +2621,9 @@ export default function PromptStyle({
 			align-items: center;
 			gap: 6px;
 			padding: 8px 12px;
+		}
+		${PREFIX} ._audPicker ._kwAddBtn:only-child {
+			margin-left: auto;
 		}
 		${PREFIX} ._audResults {
 			position: absolute;
@@ -2852,6 +2854,7 @@ export default function PromptStyle({
 		${PREFIX} ._audDemoActions {
 			display: flex;
 			align-items: center;
+			justify-content: flex-end;
 			gap: 8px;
 			padding: 4px 12px 8px 12px;
 		}

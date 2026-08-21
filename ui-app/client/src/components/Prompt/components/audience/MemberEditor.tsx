@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
 import { CraftContext } from '../CraftRenderer';
 import { fetchKeywordVolume } from '../keywordVolume';
-import { useWidgetSend } from '../useWidgetSend';
 import type { MemberGroup } from './types';
 
-// One row per member type. `field` is what the widget action is named after, `param` the key
-// the value travels under — a term also carries the volume the panel looked up.
+// `field` names the widget action, `param` the key the value travels under.
 const MEMBER_KINDS: { field: string; param: string; label: string; placeholder: string }[] = [
 	{
 		field: 'term',
@@ -65,10 +63,7 @@ export function MemberEditor({
 		}
 	};
 
-	// Caught before the round trip: the backend refuses a duplicate too, but its reply lands
-	// in chat while the user is looking at the panel.
-	// Terms highest-demand first, like the keyword panel — a newly added one lands where its
-	// volume puts it rather than at the bottom, so the list stays one ordering.
+	// Highest demand first, so a newly added term lands by volume rather than at the bottom.
 	const values = (field: string): string[] =>
 		field === 'term'
 			? [...group.terms].sort((a, b) => (b.volume ?? 0) - (a.volume ?? 0)).map(t => t.keyword)
@@ -81,7 +76,9 @@ export function MemberEditor({
 		if (!v) return 'Enter a value.';
 		if (field === 'url' && !/^https?:\/\//i.test(v))
 			return 'Include https:// — a bare domain is not a valid URL.';
-		if (values(field).some(x => x !== ignore && x.toLowerCase() === v.toLowerCase()))
+		// Matches the backend's _is_same. Exact for apps - a package name is case-sensitive.
+		const fold = (s: string) => (field === 'app' ? s : s.toLowerCase());
+		if (values(field).some(x => x !== ignore && fold(x) === fold(v)))
 			return 'That is already in this segment.';
 		return '';
 	};
@@ -223,6 +220,7 @@ export function MemberEditor({
 														{group.editable && canEdit && (
 															<button
 																type="button"
+																className="_kwEditBtn"
 																title="Edit"
 																aria-label={`Edit ${v}`}
 																disabled={busy}
@@ -238,6 +236,7 @@ export function MemberEditor({
 														{group.editable && (
 															<button
 																type="button"
+																className="_kwDeleteBtn"
 																aria-label={
 																	pending === key
 																		? `Confirm remove ${v}`
@@ -250,9 +249,6 @@ export function MemberEditor({
 																}
 																disabled={busy}
 																onClick={() => {
-																	// Two-step, as on the segment
-																	// rows: a misclick must not
-																	// change what is targeted.
 																	if (pending === key)
 																		send(
 																			`delete_${field}`,

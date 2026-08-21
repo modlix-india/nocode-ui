@@ -1,5 +1,4 @@
-// The shapes craft.py's audience_review block sends. Kept together so the panel's parts can
-// share them without importing each other.
+// The shapes craft.py's audience_review block sends.
 
 export interface AudSection {
 	key: string;
@@ -14,8 +13,7 @@ export interface AudSection {
 	options?: DemoOptions; // demographics only
 }
 
-// Sent by craft.py, not declared here — a second copy of the enums that validate these
-// would drift silently.
+// Sent by craft.py - a second copy of the enums here would drift.
 export interface DemoOptions {
 	dimensions: { field: string; label: string; help: string; unknown_help: string }[];
 	age_mins: number[];
@@ -50,9 +48,8 @@ export interface Segment {
 }
 
 export interface DemoState {
-	// Mirrors Google's editor: every control is always shown, and "no narrowing" is every box
-	// ticked rather than an absent one. An empty list in the saved spec means exactly that,
-	// so it seeds as all-selected.
+	// As in Google's editor, "no narrowing" is every box ticked - so an empty saved list
+	// seeds as all-selected.
 	minAge: string;
 	maxAge: string; // '' = 65+, the open end
 	genders: string[];
@@ -61,7 +58,6 @@ export interface DemoState {
 	parental: string[];
 	// Per dimension, keyed by its DemographicSpec field. Absent means Google's default, ON.
 	unknown: Record<string, boolean>;
-	// Age ranges beyond the first. The editor shows one span; the model allows several, and
-	// editing something else must not drop the ones it cannot show.
+	// The editor shows one span; the model allows several, which must survive an edit.
 	extraAges: AgeRange[];
 }
