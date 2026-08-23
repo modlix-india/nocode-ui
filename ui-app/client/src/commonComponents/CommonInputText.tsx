@@ -9,6 +9,7 @@ type CommonInputType = {
 	focusHandler?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	blurHandler?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	keyUpHandler?: (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+	keyDownHandler?: (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	clearContentHandler?: () => void;
 	id: string;
 	noFloat?: boolean;
@@ -76,6 +77,7 @@ function CommonInputText(props: CommonInputType) {
 		focusHandler,
 		blurHandler,
 		keyUpHandler,
+		keyDownHandler,
 		clearContentHandler,
 		validationMessages,
 		supportingText,
@@ -168,13 +170,22 @@ function CommonInputText(props: CommonInputType) {
 	let inputStyle = computedStyles.inputBox ?? {};
 	if (!handleChange) inputStyle = { ...inputStyle, caretColor: 'transparent' };
 
-	const keyDownEvent = maxChars
+	const maxCharsKeyDown = maxChars
 		? (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 				if (e.currentTarget.value.length < maxChars) return;
 				if (e.metaKey || e.shiftKey || e.ctrlKey || e.key.length > 2) return;
 				e.preventDefault();
 			}
 		: undefined;
+
+	const keyDownEvent =
+		maxCharsKeyDown || keyDownHandler
+			? (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+					maxCharsKeyDown?.(e);
+					if (e.defaultPrevented) return;
+					keyDownHandler?.(e);
+				}
+			: undefined;
 
 	const [editModeOriginal, setEditModeOriginal] = useState(!showEditRequest);
 
