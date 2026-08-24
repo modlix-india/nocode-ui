@@ -1512,7 +1512,502 @@ export default function PromptStyle({
 			object-fit: cover;
 		}
 
+		/* ─── Lead Form Preview (Meta Ads Manager Style) ─── */
+
+		${PREFIX} ._craftLeadFormWrapper {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			margin: 10px 0;
+		}
+
+		${PREFIX} ._lfPreviewLabel {
+			color: #65676B;
+			font-size: 13px;
+			font-weight: 600;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		${PREFIX} ._lfCard {
+			background: white;
+			border-radius: 12px;
+			border: 1px solid #dddfe2;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+			overflow: hidden;
+			max-width: 480px;
+			width: 100%;
+			max-height: 580px;
+			display: flex;
+			flex-direction: column;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+		}
+
+		/* ─── Post Header ─── */
+		${PREFIX} ._lfPostHeader {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 12px 16px;
+			border-bottom: 1px solid #f0f2f5;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._lfPageAvatar {
+			width: 40px;
+			height: 40px;
+			border-radius: 50%;
+			background: #1877F2;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: white;
+			font-size: 18px;
+			flex-shrink: 0;
+			overflow: hidden;
+		}
+
+		${PREFIX} ._lfPageAvatarImg {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		${PREFIX} ._lfPageInfo {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		${PREFIX} ._lfPageName {
+			font-size: 14px;
+			font-weight: 600;
+			color: #050505;
+			line-height: 1.2;
+		}
+
+		${PREFIX} ._lfSponsored {
+			font-size: 12px;
+			color: #65676B;
+			display: flex;
+			align-items: center;
+			gap: 3px;
+		}
+
+		${PREFIX} ._lfPostMenuIcon {
+			color: #65676B;
+			font-size: 16px;
+			padding: 4px;
+			cursor: default;
+		}
+
+		/* ─── Step Progress Bar ─── */
+		${PREFIX} ._lfStepBar {
+			display: flex;
+			gap: 3px;
+			padding: 10px 16px 0;
+			background: white;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._lfStepSegment {
+			height: 3px;
+			flex: 1;
+			background: #e4e6eb;
+			border-radius: 2px;
+			transition: background 0.25s ease;
+		}
+
+		${PREFIX} ._lfStepSegment._active {
+			background: #1877F2;
+		}
+
+		/* ─── Cover Image ─── */
+		${PREFIX} ._lfCoverImage {
+			width: 100%;
+			height: 180px;
+			background: #e4e6eb;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: #bcc0c4;
+			font-size: 36px;
+			flex-shrink: 0;
+		}
+
+		/* ─── Screen Body ─── */
+		${PREFIX} ._lfScreenArea {
+			background: white;
+			flex: 1;
+			overflow-y: auto;
+			min-height: 0;
+		}
+
+		${PREFIX} ._lfScreenBody {
+			padding: 16px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		${PREFIX} ._lfScreenCentered {
+			align-items: center;
+			text-align: center;
+			padding-top: 24px;
+		}
+
+		${PREFIX} ._lfHeadline {
+			font-size: 18px;
+			font-weight: 700;
+			color: #050505;
+			margin: 0;
+			line-height: 1.3;
+		}
+
+		${PREFIX} ._lfBodyText {
+			font-size: 14px;
+			color: #65676B;
+			line-height: 1.5;
+			margin: 0;
+		}
+
+		${PREFIX} ._lfSectionTitle {
+			font-size: 16px;
+			font-weight: 600;
+			color: #050505;
+			margin: 0;
+		}
+
+		/* ─── Buttons ─── */
+		${PREFIX} ._lfNextBtn {
+			background: #1877F2;
+			color: white;
+			border: none;
+			border-radius: 6px;
+			padding: 11px 20px;
+			font-size: 15px;
+			font-weight: 600;
+			cursor: pointer;
+			width: 100%;
+			margin-top: 4px;
+			transition: background 0.15s;
+			text-align: center;
+			text-decoration: none;
+			display: block;
+			box-sizing: border-box;
+		}
+
+		${PREFIX} ._lfNextBtn:hover {
+			background: #166fe5;
+		}
+
+		${PREFIX} ._lfNextBtnInline {
+			width: auto;
+			flex: 1;
+			margin-top: 0;
+		}
+
+		${PREFIX} ._lfCtaBtn {
+			display: block;
+			box-sizing: border-box;
+		}
+
+		${PREFIX} ._lfBackBtn {
+			background: none;
+			border: 1px solid #ccd0d5;
+			border-radius: 6px;
+			color: #050505;
+			padding: 10px 20px;
+			font-size: 14px;
+			font-weight: 500;
+			cursor: pointer;
+			transition: background 0.15s;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._lfBackBtn:hover {
+			background: #f0f2f5;
+		}
+
+		${PREFIX} ._lfNavRow {
+			display: flex;
+			gap: 8px;
+			margin-top: 4px;
+			align-items: center;
+		}
+
+		/* ─── Form Fields ─── */
+		${PREFIX} ._lfFieldGroup {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		${PREFIX} ._lfFieldLabel {
+			font-size: 13px;
+			font-weight: 500;
+			color: #65676B;
+			text-transform: capitalize;
+		}
+
+		${PREFIX} ._lfInput {
+			padding: 12px 14px;
+			border: 1px solid #ccd0d5;
+			border-radius: 8px;
+			font-size: 14px;
+			color: #050505;
+			background: white;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		${PREFIX} ._lfInputPrefill {
+			background: #EBF2FD;
+			border-color: #c1d5f0;
+		}
+
+		${PREFIX} ._lfInputDisabled {
+			background: #f5f6f7;
+		}
+
+		${PREFIX} ._lfInputPlaceholder {
+			color: #65676B;
+			font-size: 14px;
+		}
+
+		${PREFIX} ._lfPrefillIcon {
+			color: #1877F2;
+			font-size: 12px;
+			flex-shrink: 0;
+		}
+
+		/* ─── Radio Options ─── */
+		${PREFIX} ._lfRadioGroup {
+			display: flex;
+			flex-direction: column;
+			border: 1px solid #ccd0d5;
+			border-radius: 8px;
+			overflow: hidden;
+		}
+
+		${PREFIX} ._lfRadioOption {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 12px 14px;
+			font-size: 14px;
+			color: #050505;
+			background: #f5f6f7;
+			border-bottom: 1px solid #e4e6eb;
+		}
+
+		${PREFIX} ._lfRadioOption:last-child {
+			border-bottom: none;
+		}
+
+		${PREFIX} ._lfRadioCircle {
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			border: 2px solid #ccd0d5;
+			flex-shrink: 0;
+		}
+
+		/* ─── Privacy ─── */
+		${PREFIX} ._lfPrivacyLink {
+			color: #1877F2;
+			font-size: 14px;
+			font-weight: 600;
+			text-decoration: none;
+			display: inline-block;
+		}
+
+		${PREFIX} ._lfPrivacyLink:hover {
+			text-decoration: underline;
+		}
+
+		${PREFIX} ._lfDisclaimer {
+			font-size: 12px;
+			color: #65676B;
+			line-height: 1.4;
+			margin: 0;
+		}
+
+		/* ─── Review ─── */
+		${PREFIX} ._lfReviewBox {
+			border: 1px solid #ccd0d5;
+			border-radius: 8px;
+			overflow: hidden;
+			background: white;
+		}
+
+		${PREFIX} ._lfReviewItem {
+			display: flex;
+			flex-direction: column;
+			padding: 10px 14px;
+			border-bottom: 1px solid #e4e6eb;
+		}
+
+		${PREFIX} ._lfReviewItem:last-child {
+			border-bottom: none;
+		}
+
+		${PREFIX} ._lfReviewLabel {
+			font-size: 12px;
+			color: #65676B;
+			text-transform: capitalize;
+			margin-bottom: 2px;
+		}
+
+		${PREFIX} ._lfReviewValue {
+			font-size: 14px;
+			color: #050505;
+			font-weight: 500;
+		}
+
+		/* ─── Thank You / Completion ─── */
+		${PREFIX} ._lfCheckIcon {
+			color: #42B72A;
+			font-size: 48px;
+			margin-bottom: 12px;
+		}
+
+		/* ─── Publish Controls ─── */
+		${PREFIX} ._lfPublishControls {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			max-width: 480px;
+		}
+
+		${PREFIX} ._lfPublishBtn {
+			width: 100%;
+			padding: 12px;
+			background: #1877F2;
+			color: white;
+			border-radius: 6px;
+			font-size: 15px;
+			font-weight: 600;
+			border: none;
+			cursor: pointer;
+			transition: background 0.15s, opacity 0.15s;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+		}
+
+		${PREFIX} ._lfPublishBtn:hover:not(:disabled) {
+			background: #166fe5;
+		}
+
+		${PREFIX} ._lfPublishBtn:disabled {
+			opacity: 0.7;
+			cursor: not-allowed;
+		}
+
+		
+		/* ────── Cover Image Image ────── */
+		${PREFIX} ._lfCoverImageImg {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		/* ────── Phone Verification (OTP) Card ────── */
+		${PREFIX} ._lfOtpCard {
+			background: white;
+			border-radius: 12px;
+			border: 1px solid #e4e6eb;
+			padding: 16px;
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+		}
+
+		${PREFIX} ._lfOtpBoxes {
+			display: flex;
+			justify-content: center;
+			gap: 12px;
+			margin: 8px 0;
+		}
+
+		${PREFIX} ._lfOtpBox {
+			width: 48px;
+			height: 56px;
+			border: 2px solid #ccd0d5;
+			border-radius: 10px;
+			background: #f7f8fa;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 22px;
+			font-weight: 600;
+			color: #1877F2;
+			transition: border-color 0.2s;
+		}
+
+		${PREFIX} ._lfOtpBoxActive {
+			border-color: #1877F2;
+			background: white;
+			animation: _lfBlink 1s infinite;
+		}
+
+		@keyframes _lfBlink {
+			0%, 100% { opacity: 1; }
+			50% { opacity: 0; }
+		}
+
+		${PREFIX} ._lfOtpMeta {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			padding-top: 4px;
+		}
+
+		/* ────── Numeric Keypad Mock ────── */
+		${PREFIX} ._lfKeypad {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 8px;
+			padding: 12px 4px 4px;
+			margin-top: auto;
+		}
+
+		${PREFIX} ._lfKeypadKey {
+			background: white;
+			border: 1px solid #dddfe2;
+			border-radius: 8px;
+			padding: 8px 0;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+			user-select: none;
+		}
+
+		${PREFIX} ._lfKeypadNum {
+			font-size: 17px;
+			font-weight: 600;
+			color: #050505;
+			line-height: 1.1;
+		}
+
+		${PREFIX} ._lfKeypadSub {
+			font-size: 9px;
+			font-weight: 600;
+			color: #65676B;
+			letter-spacing: 0.5px;
+		}
+
+
 		/* ─── Craft Panel responsive ─── */
+
 		@media (max-width: 768px) {
 			${PREFIX} ._craftPanel {
 				position: fixed;

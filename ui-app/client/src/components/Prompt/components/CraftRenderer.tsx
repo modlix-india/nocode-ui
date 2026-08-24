@@ -1002,6 +1002,335 @@ function TargetingManagerBlock({
 	);
 }
 
+function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_phone_sms_verify_enabled }: { payload: any; page_id?: string; page_logo_url?: string; cover_image_url?: string; is_phone_sms_verify_enabled?: boolean }) {
+	const [currentStepIndex, setCurrentStepIndex] = useState(0);
+	const context = useContext(CraftContext);
+	const [isPublishing, setIsPublishing] = useState(false);
+	const [publishError, setPublishError] = useState<string | null>(null);
+	const [published, setPublished] = useState(false);
+
+	if (!payload) return null;
+
+	const customQuestions = payload.questions?.filter((q: any) => q.type === 'CUSTOM') || [];
+	const contactQuestions = payload.questions?.filter((q: any) => q.type !== 'CUSTOM') || [];
+
+	// Dynamic step sequence — no magic numbers
+	const sequence: string[] = ['intro'];
+	if (customQuestions.length > 0) sequence.push('custom');
+	if (contactQuestions.length > 0) sequence.push('contact');
+	if (payload.is_phone_sms_verify_enabled || is_phone_sms_verify_enabled) sequence.push('phone_verification');
+	sequence.push('privacy');
+	if (payload.is_optimized_for_quality || payload.is_higher_intent) sequence.push('review');
+	sequence.push('thankyou');
+
+	const currentStepId = sequence[currentStepIndex];
+	const handleNext = () => setCurrentStepIndex(idx => Math.min(sequence.length - 1, idx + 1));
+	const handlePrev = () => setCurrentStepIndex(idx => Math.max(0, idx - 1));
+
+	const handlePublish = async () => {
+		if (!context?.sessionId || !page_id) {
+			setPublishError('Missing session or page configuration. Cannot publish.');
+			return;
+		}
+		setIsPublishing(true);
+		setPublishError(null);
+		try {
+			await context.onSend('Publish the lead form to page ' + page_id, [], 'Publish to Meta');
+			setPublished(true);
+		} catch (err: any) {
+			setPublishError(err.message || 'An unexpected error occurred.');
+		} finally {
+			setIsPublishing(false);
+		}
+	};
+
+	return (
+		<div className="_craftLeadFormWrapper">
+			{/* Preview type label */}
+			<div className="_lfPreviewLabel">
+				<i className="fa-solid fa-mobile-screen" />
+				{payload.is_optimized_for_quality || payload.is_higher_intent
+					? 'Higher Intent – Form Preview'
+					: 'More Volume – Form Preview'}
+			</div>
+
+			{/* Ads Manager–style card */}
+			<div className="_lfCard">
+
+				{/* Facebook feed-style post header */}
+				<div className="_lfPostHeader">
+					<div className="_lfPageAvatar">
+						{page_logo_url
+							? <img src={page_logo_url} alt="Page logo" className="_lfPageAvatarImg" />
+							: <i className="fa-brands fa-facebook" />}
+					</div>
+					<div className="_lfPageInfo">
+						<div className="_lfPageName">{payload.name || 'Lead Form'}</div>
+						<div className="_lfSponsored">
+							Sponsored &middot; <i className="fa-solid fa-earth-americas" />
+						</div>
+					</div>
+					<i className="fa-solid fa-ellipsis _lfPostMenuIcon" />
+				</div>
+
+				{/* Segmented step progress bar */}
+				<div className="_lfStepBar">
+					{sequence.map((stepId, i) => (
+						<div key={stepId} className={`_lfStepSegment${i <= currentStepIndex ? ' _active' : ''}`} />
+					))}
+				</div>
+
+				{/* Screen content */}
+				<div className="_lfScreenArea">
+
+					{/* ── Intro / Context Card ── */}
+					{currentStepId === 'intro' && (
+						<div>
+							<div className="_lfCoverImage">
+								{(payload.context_card?.cover_image_url || cover_image_url) ? (
+									<img src={payload.context_card?.cover_image_url || cover_image_url} alt="Cover" className="_lfCoverImageImg" />
+								) : (
+									<i className="fa-regular fa-image" />
+								)}
+							</div>
+							<div className="_lfScreenBody">
+								<h2 className="_lfHeadline">
+									{payload.context_card?.title || payload.question_page_custom_headline || payload.name || 'Headline'}
+								</h2>
+								{payload.context_card?.content?.map((text: string, i: number) => (
+									<p key={i} className="_lfBodyText">{text}</p>
+								))}
+								<button type="button" className="_lfNextBtn" onClick={handleNext}>Next</button>
+							</div>
+						</div>
+					)}
+
+					{/* ── Custom Questions ── */}
+					{currentStepId === 'custom' && (
+						<div className="_lfScreenBody">
+							<h3 className="_lfSectionTitle">{payload.question_page_custom_headline || 'A few questions'}</h3>
+							{customQuestions.map((q: any, i: number) => (
+								<div key={i} className="_lfFieldGroup">
+									<label className="_lfFieldLabel">{q.label || q.key}</label>
+									{q.options && q.options.length > 0 ? (
+										<div className="_lfRadioGroup">
+											{q.options.map((opt: any, j: number) => (
+												<div key={j} className="_lfRadioOption">
+													<div className="_lfRadioCircle" />
+													<span>{opt.value ?? opt}</span>
+												</div>
+											))}
+										</div>
+									) : (
+										<div className="_lfInput _lfInputDisabled">
+											<span className="_lfInputPlaceholder">Your answer</span>
+										</div>
+									)}
+								</div>
+							))}
+							<div className="_lfNavRow">
+								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
+								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>Next</button>
+							</div>
+						</div>
+					)}
+
+					{/* ── Contact Info (Prefill) ── */}
+					{currentStepId === 'contact' && (
+						<div className="_lfScreenBody">
+							<h3 className="_lfSectionTitle">Contact information</h3>
+							<p className="_lfDisclaimer">Your data is safe and encrypted for security.</p>
+							{contactQuestions.map((q: any, i: number) => (
+								<div key={i} className="_lfFieldGroup">
+									<label className="_lfFieldLabel">
+										{(q.type || '').replace(/_/g, ' ').toLowerCase()}
+									</label>
+									<div className="_lfInput _lfInputPrefill">
+										<i className="fa-solid fa-lock _lfPrefillIcon" />
+										<span className="_lfInputPlaceholder">
+											{`Prefilled ${(q.type || '').replace(/_/g, ' ').toLowerCase()}`}
+										</span>
+									</div>
+								</div>
+							))}
+							<p className="_lfDisclaimer">The business may contact you to follow up.</p>
+							<div className="_lfNavRow">
+								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
+								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>Next</button>
+							</div>
+						</div>
+					)}
+
+					{/* ──── Phone Verification (OTP) ──── */}
+					{currentStepId === 'phone_verification' && (
+						<div className="_lfScreenBody">
+							<div className="_lfOtpCard">
+								<h3 className="_lfHeadline" style={{ fontSize: '17px', color: '#050505', margin: 0 }}>
+									Enter verification code
+								</h3>
+								<p className="_lfBodyText" style={{ fontSize: '13px', color: '#65676B', margin: 0 }}>
+									We've sent you an SMS with a 4-digit code. This code will expire in 10 minutes.
+								</p>
+								<div className="_lfOtpBoxes">
+									<div className="_lfOtpBox _lfOtpBoxActive">|</div>
+									<div className="_lfOtpBox" />
+									<div className="_lfOtpBox" />
+									<div className="_lfOtpBox" />
+								</div>
+								<div className="_lfOtpMeta">
+									<p className="_lfDisclaimer" style={{ margin: 0 }}>
+										Didn't get a code? You can resend it after <strong style={{ color: '#050505' }}>60 seconds</strong> or choose another verification method.
+									</p>
+									<a href="#resend" onClick={(e) => e.preventDefault()} className="_lfPrivacyLink" style={{ fontSize: '13px', fontWeight: 600 }}>
+										Verify another phone number
+									</a>
+								</div>
+							</div>
+							<div className="_lfKeypad">
+								{[
+									{ n: '1', sub: '' },
+									{ n: '2', sub: 'ABC' },
+									{ n: '3', sub: 'DEF' },
+									{ n: '4', sub: 'GHI' },
+									{ n: '5', sub: 'JKL' },
+									{ n: '6', sub: 'MNO' },
+									{ n: '7', sub: 'PQRS' },
+									{ n: '8', sub: 'TUV' },
+									{ n: '9', sub: 'WXYZ' },
+									{ n: '', sub: '' },
+									{ n: '0', sub: '' },
+									{ n: '', sub: '' },
+								].map((k, idx) => (
+									k.n ? (
+										<div key={idx} className="_lfKeypadKey">
+											<span className="_lfKeypadNum">{k.n}</span>
+											{k.sub && <span className="_lfKeypadSub">{k.sub}</span>}
+										</div>
+									) : <div key={idx} />
+								))}
+							</div>
+							<div className="_lfNavRow">
+								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
+								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>Next</button>
+							</div>
+						</div>
+					)}
+
+					{/* ── Privacy ── */}
+					{currentStepId === 'privacy' && (
+						<div className="_lfScreenBody">
+							<h3 className="_lfSectionTitle">Privacy policy</h3>
+							<p className="_lfBodyText">
+								By clicking Submit, you agree to send your info to the business who agrees to use it according to their privacy policy. Facebook will also use it subject to our Data Policy.
+							</p>
+							{payload.privacy_policy?.url && (
+								<a
+									href={payload.privacy_policy.url}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="_lfPrivacyLink"
+								>
+									{payload.privacy_policy.link_text || 'View Privacy Policy'}
+								</a>
+							)}
+							{payload.custom_disclaimer?.body?.text && (
+								<p className="_lfDisclaimer">{payload.custom_disclaimer.body.text}</p>
+							)}
+							<div className="_lfNavRow">
+								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
+								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>
+									{payload.is_higher_intent ? 'Continue' : 'Submit'}
+								</button>
+							</div>
+						</div>
+					)}
+
+					{/* ── Review (Higher Intent only) ── */}
+					{currentStepId === 'review' && (
+						<div className="_lfScreenBody">
+							<h3 className="_lfSectionTitle">Review your info</h3>
+							<p className="_lfBodyText">Please review your information before submitting.</p>
+							<div className="_lfReviewBox">
+								{payload.questions?.map((q: any, i: number) => (
+									<div key={i} className="_lfReviewItem">
+										<span className="_lfReviewLabel">
+											{q.label || (q.type || '').replace(/_/g, ' ').toLowerCase()}
+										</span>
+										<span className="_lfReviewValue">Your answer</span>
+									</div>
+								))}
+							</div>
+							<div className="_lfNavRow">
+								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
+								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>Submit</button>
+							</div>
+						</div>
+					)}
+
+					{/* ── Thank You ── */}
+					{currentStepId === 'thankyou' && (
+						<div className="_lfScreenBody _lfScreenCentered">
+							<div className="_lfCheckIcon">
+								<i className="fa-solid fa-circle-check" />
+							</div>
+							<h2 className="_lfHeadline">
+								{payload.thank_you_page?.title || "Thanks, you're all set."}
+							</h2>
+							<p className="_lfBodyText">
+								{payload.thank_you_page?.body || 'We will contact you shortly.'}
+							</p>
+							{payload.thank_you_page?.button_type === 'CALL_BUSINESS' ? (
+								<a href={`tel:${payload.thank_you_page?.website_url || ''}`} className="_lfNextBtn _lfCtaBtn">
+									<i className="fa-solid fa-phone" style={{ marginRight: '6px' }} />
+									{payload.thank_you_page?.button_text || 'Call Business'}
+								</a>
+							) : (
+								<a
+									href={payload.thank_you_page?.website_url}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="_lfNextBtn _lfCtaBtn"
+								>
+									{payload.thank_you_page?.button_text || 'Visit Website'}
+								</a>
+							)}
+							<button type="button" className="_lfBackBtn" onClick={handlePrev} style={{ marginTop: '8px', alignSelf: 'center' }}>
+								← Back
+							</button>
+						</div>
+					)}
+
+				</div>{/* /_lfScreenArea */}
+			</div>{/* /_lfCard */}
+
+			{/* Publish controls — sits below the preview card */}
+			<div className="_lfPublishControls">
+				{publishError && (
+					<div className="_craftCallout _error" style={{ marginBottom: '8px' }}>
+						<strong>Error publishing to Meta:</strong> {publishError}
+					</div>
+				)}
+				{published ? (
+					<div className="_craftCallout _success" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+						<i className="fa-solid fa-circle-check" /> Form published successfully!
+					</div>
+				) : (
+					<button
+						type="button"
+						className="_lfPublishBtn"
+						onClick={handlePublish}
+						disabled={isPublishing}
+					>
+						{isPublishing
+							? <><i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '8px' }} />Publishing...</>
+							: <><i className="fa-brands fa-meta" style={{ marginRight: '8px' }} />Publish to Meta</>}
+					</button>
+				)}
+			</div>
+		</div>
+	);
+}
+
 const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	heading: HeadingBlock,
 	text: TextBlock,
@@ -1017,6 +1346,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	collapsible: CollapsibleBlock,
 	map: MapBlock,
 	targeting_manager: TargetingManagerBlock,
+	lead_form: LeadFormBlock,
 };
 
 function CraftBlockRenderer({
