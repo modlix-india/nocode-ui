@@ -192,9 +192,6 @@ export function DemographicsEditor({
 					Cancel
 				</button>
 			</div>
-			<p className="_audDemoHint">
-				Every filter shrinks reach — narrow only where the product truly does not apply.
-			</p>
 		</div>
 	);
 }

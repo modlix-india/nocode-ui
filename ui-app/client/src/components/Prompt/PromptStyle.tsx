@@ -1134,14 +1134,28 @@ export default function PromptStyle({
 		/* ─── Craft Cards Bar (above input) ─── */
 		${PREFIX} ._craftCardsBar {
 			display: flex;
+			flex-wrap: wrap;
 			gap: 8px;
+			margin-top: 26px;
 			padding: 8px 16px;
-			overflow-x: auto;
 			flex-shrink: 0;
 			max-width: 768px;
 			margin: 0 auto;
 			width: 100%;
 			box-sizing: border-box;
+		}
+		/* One row's worth of sizing, so a wrapped grid lines up instead of ragging. The
+		   chat-inline card keeps its own. */
+		${PREFIX} ._craftCardsBar ._craftCard {
+			flex: 1 1 200px;
+			min-width: 0;
+			max-width: 100%;
+			margin-top: 0;
+		}
+		${PREFIX} ._craftCardsBar ._craftCardSubtitle {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		/* ─── Craft Panel (side panel) ─── */
@@ -2277,12 +2291,6 @@ export default function PromptStyle({
 			background: #f1f5f9;
 			border-color: #94a3b8;
 		}
-		${PREFIX} ._kwReviewTab._active {
-			background: #1e293b;
-			border-color: #1e293b;
-			color: #ffffff;
-			box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
-		}
 		${PREFIX} ._kwTabIcon {
 			margin-left: 6px;
 			font-size: 10px;
@@ -2293,20 +2301,51 @@ export default function PromptStyle({
 			border-style: dashed;
 		}
 		${PREFIX} ._kwReviewTab._partial {
-			color: #475569;
+			color: #b45309;
+			background: #fffbeb;
+			border-color: #fcd34d;
 		}
 		${PREFIX} ._kwReviewTab._failed {
 			color: #dc2626;
+			background: #fef2f2;
 			border-color: #fca5a5;
 		}
+		${PREFIX} ._kwReviewTab._active {
+			background: #1e293b;
+			border-color: #1e293b;
+			color: #ffffff;
+			box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
+		}
 		${PREFIX} ._kwStatusNote {
-			margin: 10px 14px 0;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			margin: 10px 14px 10px;
 			padding: 8px 12px;
 			border-radius: 6px;
 			font-size: 12px;
 			background: #f8fafc;
 			border: 1px solid #e2e8f0;
 			color: #475569;
+		}
+		${PREFIX} ._kwStatusAction {
+			flex: 0 0 auto;
+			padding: 4px 12px;
+			border: 1px solid currentColor;
+			border-radius: 6px;
+			background: transparent;
+			color: inherit;
+			font-size: 11px;
+			font-weight: 500;
+			cursor: pointer;
+		}
+		${PREFIX} ._kwStatusAction:hover:not(:disabled) {
+			background: rgba(0, 0, 0, 0.04);
+		}
+		${PREFIX} ._kwStatusAction:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
 		}
 		${PREFIX} ._kwStatusNote._failed {
 			background: #fef2f2;
@@ -2343,6 +2382,164 @@ export default function PromptStyle({
 			display: inline-flex;
 			align-items: center;
 			gap: 6px;
+		}
+		${PREFIX} ._audSectionText {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			min-width: 0;
+			padding-right: 10px;
+		}
+		${PREFIX} ._audSectionSub {
+			font-size: 11px;
+			font-weight: 400;
+			line-height: 1.45;
+			color: #64748b;
+		}
+		/* A caption and a gap, not another collapsible level. */
+		${PREFIX} ._audGroup {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			margin-bottom: 18px;
+			padding:10px 10px;
+		}
+		${PREFIX} ._audGroup:last-child {
+			margin-bottom: 0;
+		}
+		${PREFIX} ._audGroupCaption {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 8px;
+			font-size: 10px;
+			font-weight: 600;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			color: #94a3b8;
+			padding: 0 14px;
+		}
+		/* Scoped: _kwReviewSection is shared with the keyword panel. */
+		${PREFIX} ._audGroupCount {
+			font-weight: 400;
+			letter-spacing: 0;
+			text-transform: none;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audGroup ._kwReviewSection {
+			border: 1px solid #e2e8f0;
+			border-radius: 10px;
+			overflow: hidden;
+			background: #ffffff;
+		}
+		${PREFIX} ._audGroup ._kwReviewSection:last-child {
+			border: 1px solid #e2e8f0;
+		}
+		${PREFIX} ._audAddSignal {
+			width: 100%;
+			padding: 9px;
+			border: 1px dashed #cbd5e1;
+			border-radius: 8px;
+			background: transparent;
+			color: #475569;
+			font-size: 12px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audAddSignal._audEditFilters {
+			display: block;
+			width: auto;
+			margin: 8px 14px 10px auto;
+			padding: 5px 11px;
+			border-radius: 7px;
+			font-size: 11px;
+		}
+		${PREFIX} ._audAddSignal:hover:not(:disabled) {
+			border-color: #94a3b8;
+			background: #f8fafc;
+			color: #1e293b;
+		}
+		${PREFIX} ._audAddSignal:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+		${PREFIX} ._audItems {
+			display: flex;
+			flex-direction: column;
+		}
+		${PREFIX} ._audGroup ._kwReviewSectionHeader {
+			background: #eef2f7;
+			border-bottom: 1px solid #e2e8f0;
+		}
+		${PREFIX} ._audItemsHead {
+			display: flex;
+			gap: 10px;
+			padding: 7px 14px;
+			background: #fbfcfd;
+			border-bottom: 1px solid #eef2f6;
+			font-size: 10px;
+			font-weight: 600;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audItemsHead > span:first-child {
+			flex: 1;
+			min-width: 0;
+		}
+		${PREFIX} ._audItemsHeadPath {
+			flex: 0 0 38%;
+			text-align: left;
+		}
+		${PREFIX} ._audItem {
+			display: flex;
+			align-items: baseline;
+			gap: 10px;
+			padding: 8px 14px;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audItem:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._audItem:hover {
+			background: #f8fafc;
+		}
+		${PREFIX} ._audItemMain {
+			flex: 1;
+			min-width: 0;
+		}
+		${PREFIX} ._audItemLabel {
+			font-size: 12px;
+			font-weight: 500;
+			color: #1e293b;
+		}
+		${PREFIX} ._audItemWhy {
+			margin-top: 2px;
+			font-size: 11px;
+			line-height: 1.45;
+			color: #64748b;
+		}
+		/* Where a reach estimate goes if AudienceInsights access lands. */
+		${PREFIX} ._audItemPath {
+			flex: 0 0 38%;
+			font-size: 11px;
+			color: #94a3b8;
+			text-align: left;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		${PREFIX} ._audItemActions {
+			flex: 0 0 auto;
+			display: flex;
+			gap: 4px;
+			opacity: 0;
+			transition: opacity 0.12s;
+		}
+		/* Stays visible mid-confirm and on keyboard focus. */
+		${PREFIX} ._audItem:hover ._audItemActions,
+		${PREFIX} ._audItem:focus-within ._audItemActions,
+		${PREFIX} ._audItem._pending ._audItemActions {
+			opacity: 1;
 		}
 		${PREFIX} ._audMixHelp {
 			margin: 0 0 8px;
@@ -2394,8 +2591,7 @@ export default function PromptStyle({
 			width: 100%;
 			table-layout: fixed;
 		}
-		/* A number the eye scans down, so it gets its own lane rather than wrapping with
-		   the text beside it. */
+		/* Own lane, so the number does not wrap with the text. */
 		${PREFIX} ._audMemberVol {
 			width: 68px;
 			text-align: right;
@@ -2612,31 +2808,15 @@ export default function PromptStyle({
 		${PREFIX} ._kwInlineInput:focus {
 			border-color: #64748b;
 		}
-		/* Audience review — reuses the _kwReview* shell; only the segment picker and the
-		   demographics editor are new, because a segment is a catalogue reference rather
-		   than typed text. */
 		${PREFIX} ._audPicker {
 			position: relative;
 			display: flex;
 			align-items: center;
 			gap: 6px;
-			padding: 8px 12px;
+			padding: 4px 14px 12px;
 		}
 		${PREFIX} ._audPicker ._kwAddBtn:only-child {
 			margin-left: auto;
-		}
-		${PREFIX} ._audResults {
-			position: absolute;
-			top: 100%;
-			left: 12px;
-			right: 12px;
-			z-index: 20;
-			max-height: 240px;
-			overflow-y: auto;
-			background: #ffffff;
-			border: 1px solid #cbd5e1;
-			border-radius: 8px;
-			box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 		}
 		${PREFIX} ._audResult {
 			display: flex;
@@ -2655,20 +2835,6 @@ export default function PromptStyle({
 		}
 		${PREFIX} ._audResult:hover {
 			background: #f8fafc;
-		}
-		${PREFIX} ._audResultLabel {
-			font-size: 12px;
-			font-weight: 500;
-			color: #1e293b;
-		}
-		${PREFIX} ._audResultPath {
-			font-size: 11px;
-			color: #94a3b8;
-		}
-		${PREFIX} ._audPathSep {
-			font-size: 8px;
-			margin: 0 4px;
-			vertical-align: middle;
 		}
 		${PREFIX} ._audResultNote {
 			padding: 10px 12px;
@@ -2705,91 +2871,189 @@ export default function PromptStyle({
 			font-size: 11px;
 			color: #94a3b8;
 		}
+		${PREFIX} ._audPickerPanel {
+			display: flex;
+			flex-direction: column;
+			border: 1px solid #e2e8f0;
+			border-radius: 10px;
+			background: #ffffff;
+			overflow: hidden;
+		}
+		${PREFIX} ._audPickHeader {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 14px;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audPickTitle {
+			flex: 1;
+			font-size: 13px;
+			font-weight: 600;
+			color: #0f172a;
+		}
+		${PREFIX} ._audPickBack,
+		${PREFIX} ._audPickClose {
+			border: none;
+			background: none;
+			padding: 2px 4px;
+			color: #64748b;
+			font-size: 13px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audPickBack:hover,
+		${PREFIX} ._audPickClose:hover {
+			color: #0f172a;
+		}
+		${PREFIX} ._kwAddInput._audPickInput {
+			flex: 0 0 auto;
+			margin: 10px 14px 4px;
+			width: calc(100% - 28px);
+		}
+		${PREFIX} ._audKinds {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 5px;
+			padding: 10px 14px 4px;
+		}
+		${PREFIX} ._audKind {
+			padding: 4px 9px;
+			border: 1px solid #e2e8f0;
+			border-radius: 999px;
+			background: #ffffff;
+			color: #475569;
+			font-size: 11px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audKind._on {
+			border-color: #1e293b;
+			background: #1e293b;
+			color: #ffffff;
+		}
+		${PREFIX} ._audPickList {
+			max-height: 320px;
+			overflow-y: auto;
+		}
+		${PREFIX} ._audPickRow {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 10px;
+			width: 100%;
+			padding: 8px 14px;
+			border: none;
+			background: none;
+			text-align: left;
+			cursor: pointer;
+		}
+		${PREFIX} ._audPickRow:hover:not(:disabled) {
+			background: #f8fafc;
+		}
+		${PREFIX} ._audPickRow._added {
+			cursor: default;
+		}
+		${PREFIX} ._audPickRow:disabled ._audPickLabel {
+			color: #94a3b8;
+		}
+		${PREFIX} ._audPickMain {
+			display: flex;
+			flex-direction: column;
+			gap: 1px;
+			min-width: 0;
+		}
+		${PREFIX} ._audPickLabel {
+			font-size: 12px;
+			color: #1e293b;
+		}
+		${PREFIX} ._audPickPath {
+			font-size: 10px;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audPickKind,
+		${PREFIX} ._audPickAdded {
+			flex: 0 0 auto;
+			font-size: 10px;
+			color: #94a3b8;
+			white-space: nowrap;
+		}
+		${PREFIX} ._audPickAdded {
+			color: #64748b;
+		}
+		${PREFIX} ._audPickAdded._rec {
+			color: #16a34a;
+		}
+		${PREFIX} ._audBrowseRow {
+			display: flex;
+			align-items: center;
+		}
+		${PREFIX} ._audTwisty {
+			flex: 0 0 auto;
+			width: 20px;
+			border: none;
+			background: none;
+			padding: 0;
+			color: #94a3b8;
+			font-size: 10px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audTwisty i {
+			transition: transform 0.12s;
+		}
+		${PREFIX} ._audTwisty i._open {
+			transform: rotate(90deg);
+		}
+		${PREFIX} ._audTwistySpacer {
+			flex: 0 0 auto;
+			width: 20px;
+		}
+		${PREFIX} ._audPickFoot {
+			display: flex;
+			justify-content: flex-end;
+			padding: 8px 14px;
+			border-top: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audPickCancel {
+			width: auto;
+			padding: 5px 12px;
+			font-size: 12px;
+		}
 		${PREFIX} ._audTabs {
 			display: flex;
 			align-items: center;
 			gap: 4px;
 			margin-bottom: 6px;
+			padding: 0 10px;
 		}
 		${PREFIX} ._audTab {
-			padding: 4px 10px;
+			padding: 6px 12px;
 			border: none;
 			border-bottom: 2px solid transparent;
 			background: none;
-			color: #64748b;
+			color: #475569;
 			font-size: 12px;
 			cursor: pointer;
 		}
+		${PREFIX} ._audTab:hover:not(._on) {
+			color: #1e293b;
+		}
 		${PREFIX} ._audTab._on {
 			color: #0f172a;
-			border-bottom-color: #2563eb;
+			border-bottom-color: #1e293b;
 			font-weight: 600;
 		}
 		${PREFIX} ._audTabs ._kwCancelBtn {
 			margin-left: auto;
-		}
-		${PREFIX} ._audBrowseList {
-			max-height: 340px;
-			padding: 5px;
 		}
 		${PREFIX} ._audBrowseRow {
 			display: flex;
 			align-items: stretch;
 			border-bottom: 1px solid #f1f5f9;
 		}
-		${PREFIX} ._audBrowsePick {
-			flex: 1;
-			min-width: 0;
-			display: flex;
-			align-items: center;
-			gap: 9px;
-			padding: 9px 8px 9px 0;
-			border: none;
-			background: none;
-			text-align: left;
-			cursor: pointer;
-		}
-		${PREFIX} ._audBrowsePick._leaf {
-			cursor: default;
-		}
-		${PREFIX} ._audBrowseLabel {
-			font-size: 13px;
-			color: #0f172a;
-			text-align: left;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			white-space: nowrap;
-		}
-		${PREFIX} ._audBrowseRow._added ._audBrowseCheck {
-			/* Ticked in the theme colour, not greyed - the disabled attribute would make the
-			   browser paint it grey and ignore accent-color. The row still expands. */
-			pointer-events: none;
-		}
 		${PREFIX} ._audBrowseRow:last-child {
 			border-bottom: none;
 		}
 		${PREFIX} ._audBrowseRow:hover {
 			background: #f8fafc;
-		}
-		${PREFIX} ._audBrowseTwisty {
-			width: 30px;
-			flex: 0 0 30px;
-			align-self: stretch;
-			border: none;
-			background: none;
-			color: #64748b;
-			font-size: 11px;
-			cursor: pointer;
-			padding: 0;
-		}
-		${PREFIX} ._audBrowseTwisty:hover {
-			color: #0f172a;
-		}
-		${PREFIX} ._audBrowseTwisty i {
-			transition: transform 0.12s ease;
-		}
-		${PREFIX} ._audBrowseTwisty i._open {
-			transform: rotate(180deg);
 		}
 		${PREFIX} ._audUnknownBox {
 			display: inline-flex;
@@ -2802,42 +3066,6 @@ export default function PromptStyle({
 			white-space: nowrap;
 		}
 		${PREFIX} ._audUnknownBox input,
-		${PREFIX} ._audBrowseCheck {
-			/* Slate, not the browser's blue — same ink as the primary button. */
-			accent-color: #1e293b;
-			width: 14px;
-			height: 14px;
-			margin: 0;
-			flex: 0 0 14px;
-			cursor: pointer;
-		}
-		${PREFIX} ._audBrowseCheck {
-			/* The row is stretch-aligned so the chevron fills its height; the box is not. */
-			align-self: center;
-			margin-right: 9px;
-		}
-		${PREFIX} ._audBrowseCheck:disabled {
-			cursor: default;
-		}
-		${PREFIX} ._audChip {
-			padding: 4px 10px;
-			border: 1px solid #cbd5e1;
-			border-radius: 999px;
-			background: #ffffff;
-			color: #475569;
-			font-size: 11px;
-			cursor: pointer;
-			text-transform: capitalize;
-			transition: background 0.15s, border-color 0.15s, color 0.15s;
-		}
-		${PREFIX} ._audChip:hover {
-			border-color: #94a3b8;
-		}
-		${PREFIX} ._audChip._on {
-			background: #1e293b;
-			border-color: #1e293b;
-			color: #ffffff;
-		}
 		${PREFIX} ._audDemoControls {
 			display: flex;
 			flex-wrap: wrap;
@@ -2857,11 +3085,6 @@ export default function PromptStyle({
 			justify-content: flex-end;
 			gap: 8px;
 			padding: 4px 12px 8px 12px;
-		}
-		${PREFIX} ._audDemoHint {
-			margin: 6px 0 0;
-			font-size: 11px;
-			color: #94a3b8;
 		}
 
 		/* Where ads show — toggles. A surface the ad type cannot serve on stays visible and

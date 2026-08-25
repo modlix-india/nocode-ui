@@ -23,8 +23,14 @@ interface KwTab {
 
 const STATUS_NOTE: Record<string, string> = {
 	pending: 'Researching this ad group…',
-	failed: "This ad group couldn't be researched. Ask to retry it.",
-	partial: 'Negatives are still missing — ask to finish this ad group before launching.',
+	failed: "This ad group couldn't be researched.",
+	partial: 'Negatives are still missing.',
+};
+
+// Sent as the user's own words: both need the research agent, which the widget path cannot reach.
+const RECOVER: Record<string, { label: string; ask: (adGroup: string) => string }> = {
+	failed: { label: 'Retry', ask: g => `Retry the ${g} ad group` },
+	partial: { label: 'Finish it', ask: g => `Finish the ${g} ad group` },
 };
 
 interface AddForm {
@@ -244,7 +250,12 @@ function KeywordReviewInner({
 								aria-label="researching"
 							/>
 						)}
-						{tab.status === 'partial' && <span className="_kwTabIcon">·</span>}
+						{tab.status === 'partial' && (
+							<i
+								className="fa fa-solid fa-circle-half-stroke _kwTabIcon"
+								aria-label="negatives still missing"
+							/>
+						)}
 						{tab.status === 'failed' && (
 							<i
 								className="fa fa-solid fa-triangle-exclamation _kwTabIcon"
@@ -264,7 +275,37 @@ function KeywordReviewInner({
 				)}
 				{currentTab?.status && currentTab.status !== 'complete' && (
 					<div className={`_kwStatusNote _${currentTab.status}`} role="status">
-						{STATUS_NOTE[currentTab.status]}
+						<span>{STATUS_NOTE[currentTab.status]}</span>
+						{RECOVER[currentTab.status] && (
+							<button
+								type="button"
+								className="_kwStatusAction"
+								disabled={busyId !== null || researching}
+								// Through busyId like every other mutation: the agent takes
+								// minutes to answer, and without it the button stays live and
+								// a second click starts the whole run again.
+								onClick={async () => {
+									const id = `recover:${currentTab.key}`;
+									setBusyId(id);
+									try {
+										await onSend(
+											RECOVER[currentTab.status!].ask(currentTab.label),
+										);
+									} finally {
+										if (mountedRef.current) setBusyId(null);
+									}
+								}}
+							>
+								{busyId === `recover:${currentTab.key}` ? (
+									<>
+										<i className="fa fa-solid fa-spinner fa-spin" />
+										Working…
+									</>
+								) : (
+									RECOVER[currentTab.status].label
+								)}
+							</button>
+						)}
 					</div>
 				)}
 				{(currentTab?.sections ?? []).map(sec => {

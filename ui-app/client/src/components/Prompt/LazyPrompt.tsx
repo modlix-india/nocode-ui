@@ -2119,6 +2119,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					</div>
 				</div>
 
+				<div className="_scrollToBottomAnchor">
+					<button
+						className={`_scrollToBottom${isAtBottom ? ' _hidden' : ''}`}
+						onClick={handleScrollToBottom}
+						title="Scroll to bottom"
+						type="button"
+						aria-label="Scroll to bottom"
+					>
+						<i className={scrollToBottomIcon} aria-hidden="true" />
+					</button>
+				</div>
 				{crafts.size > 0 && !activeCraftId && (
 					<div className="_craftCardsBar">
 						{Array.from(crafts.values()).map(c => {
@@ -2136,17 +2147,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						})}
 					</div>
 				)}
-				<div className="_scrollToBottomAnchor">
-					<button
-						className={`_scrollToBottom${isAtBottom ? ' _hidden' : ''}`}
-						onClick={handleScrollToBottom}
-						title="Scroll to bottom"
-						type="button"
-						aria-label="Scroll to bottom"
-					>
-						<i className={scrollToBottomIcon} aria-hidden="true" />
-					</button>
-				</div>
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}

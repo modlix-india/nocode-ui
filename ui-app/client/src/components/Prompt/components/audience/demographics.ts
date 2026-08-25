@@ -1,7 +1,6 @@
 import type { AgeRange, DemoOptions, DemoState } from './types';
 
-// Seeded from what is saved, never blank: set_demographics replaces the whole spec, so an
-// empty editor would wipe every filter the user did not re-enter.
+// Never blank: set_demographics replaces the whole spec, so gaps would wipe filters.
 export function seedDemo(
 	values: Record<string, any> | undefined,
 	o: DemoOptions | undefined,

@@ -3,10 +3,12 @@
 export interface AudSection {
 	key: string;
 	label: string;
+	// 'reach' adds, 'narrow' subtracts, 'custom' is built in chat. Sent by craft.py.
+	group?: 'reach' | 'custom' | 'narrow';
 	columns: string[];
 	rows: Record<string, any>[];
 	actions?: string[];
-	help?: string; // what this kind of segment actually means, shown on the info icon
+	help?: string; // what this kind of segment means, shown under its name
 	members?: MemberGroup[]; // custom segments only — editable until the campaign launches
 	mix_help?: string;
 	values?: Record<string, any>; // demographics only — the raw spec behind the display rows
@@ -44,12 +46,12 @@ export interface Segment {
 	label: string;
 	kind: string;
 	path: string[];
-	targeted?: boolean; // browse only — already in the audience, shown rather than removed
+	targeted?: boolean; // already in the audience, shown rather than removed
+	recommended?: boolean; // the agent chose it, so it carries a reason
 }
 
 export interface DemoState {
-	// As in Google's editor, "no narrowing" is every box ticked - so an empty saved list
-	// seeds as all-selected.
+	// As in Google's editor, "no narrowing" is every box ticked - so empty seeds as all.
 	minAge: string;
 	maxAge: string; // '' = 65+, the open end
 	genders: string[];
