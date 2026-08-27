@@ -586,6 +586,15 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					height: wrapperRect.height,
 					pointerEvents: 'none',
 					zIndex: 9999,
+					// This div only exists to anchor the panel and to carry the
+					// comp/designType/colorScheme classes the panel's selectors need. Without
+					// these, the theme's .comp.compDropdown box (background, border, padding,
+					// shadow) paints an empty copy of the control over the real one, hiding the
+					// selected label and the right icon.
+					background: 'transparent',
+					border: 'none',
+					boxShadow: 'none',
+					padding: 0,
 				}}
 			>
 				{!closeOnMouseLeave && (
