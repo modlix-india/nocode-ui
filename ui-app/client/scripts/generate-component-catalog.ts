@@ -208,14 +208,21 @@ function resolveGroupName(node: ts.Expression): string | undefined {
 /**
  * Extract a single property definition from an object literal AST node.
  */
-function extractPropertyFromObject(obj: ts.ObjectLiteralExpression): CatalogProperty | null {
+/**
+ * `base` carries the common property a `{ ...COMMON_COMPONENT_PROPERTIES.x, ... }`
+ * spread refers to. Its fields are the starting point and anything written
+ * alongside the spread overrides them — which is exactly what the spread means
+ * at runtime. Without a base, the literal must name itself.
+ */
+function extractPropertyFromObject(
+	obj: ts.ObjectLiteralExpression,
+	base?: CatalogProperty,
+): CatalogProperty | null {
 	const nameNode = getObjectProperty(obj, 'name');
-	if (!nameNode) return null;
-
-	const name = getStringLiteral(nameNode);
+	const name = nameNode ? getStringLiteral(nameNode) : base?.name;
 	if (!name) return null;
 
-	const prop: CatalogProperty = { name };
+	const prop: CatalogProperty = base ? { ...base, name } : { name };
 
 	const displayNameNode = getObjectProperty(obj, 'displayName');
 	if (displayNameNode) prop.displayName = getStringLiteral(displayNameNode);
@@ -281,8 +288,66 @@ function extractCommonPropReference(node: ts.Expression): string | undefined {
 	return undefined;
 }
 
-// Well-known common properties (from util/properties.ts)
-const COMMON_PROPERTIES: Record<string, CatalogProperty> = {
+/**
+ * Read COMMON_COMPONENT_PROPERTIES straight out of util/properties.ts.
+ *
+ * Components pull shared properties by reference (`COMMON_COMPONENT_PROPERTIES.layout`),
+ * so the catalog can only describe them if it knows what they are. This used to be
+ * a hand-maintained copy below, and it drifted: 13 of the 27 properties components
+ * actually reference were missing, so the catalog silently omitted them. A consumer
+ * validating against it — the AppBuilder agent, modlix-mcp — then rejects `layout`
+ * on a Grid or `datatype` on a Dropdown as unknown, though both are perfectly valid.
+ *
+ * Parsing the real table keeps them in step. The literal below stays as a fallback
+ * for the case where properties.ts moves or fails to parse.
+ */
+function loadCommonProperties(): Record<string, CatalogProperty> {
+	const filePath = path.join(COMPONENTS_DIR, 'util', 'properties.ts');
+	const sourceFile = parseFile(filePath);
+	if (!sourceFile) {
+		console.warn(`  ! Could not parse ${filePath}; using the built-in common properties`);
+		return { ...COMMON_PROPERTIES_FALLBACK };
+	}
+
+	const found: Record<string, CatalogProperty> = {};
+
+	function visit(node: ts.Node) {
+		if (
+			ts.isVariableDeclaration(node) &&
+			ts.isIdentifier(node.name) &&
+			node.name.text === 'COMMON_COMPONENT_PROPERTIES' &&
+			node.initializer &&
+			ts.isObjectLiteralExpression(node.initializer)
+		) {
+			for (const member of node.initializer.properties) {
+				if (!ts.isPropertyAssignment(member)) continue;
+				if (!ts.isObjectLiteralExpression(member.initializer)) continue;
+
+				// Components reference the KEY (`...linkTargetFeatures`), but a page
+				// stores the inner `name` (`features`). Index by key, emit the name.
+				const key = ts.isIdentifier(member.name)
+					? member.name.text
+					: getStringLiteral(member.name);
+				if (!key) continue;
+
+				const prop = extractPropertyFromObject(member.initializer);
+				if (prop) found[key] = prop;
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+
+	visit(sourceFile);
+
+	if (!Object.keys(found).length) {
+		console.warn('  ! COMMON_COMPONENT_PROPERTIES not found; using the built-in copy');
+		return { ...COMMON_PROPERTIES_FALLBACK };
+	}
+	return { ...COMMON_PROPERTIES_FALLBACK, ...found };
+}
+
+// Fallback copy, used only when util/properties.ts cannot be parsed.
+const COMMON_PROPERTIES_FALLBACK: Record<string, CatalogProperty> = {
 	onClick: {
 		name: 'onClick',
 		displayName: 'On Click',
@@ -409,6 +474,10 @@ const COMMON_PROPERTIES: Record<string, CatalogProperty> = {
 		type: 'string',
 	},
 };
+
+// The table components are resolved against: parsed from source, with the
+// fallback filling any gap.
+const COMMON_PROPERTIES: Record<string, CatalogProperty> = loadCommonProperties();
 
 // ── Component Group Assignment ─────────────────────────────────
 // Controls how much detail the AI agent receives per component.
@@ -841,17 +910,26 @@ function extractPropertiesFromFile(filePath: string): CatalogProperty[] {
 					continue;
 				}
 
-				// Object literal (inline property definition)
+				// Object literal — either a self-contained definition, or a
+				// spread of a common property with overrides:
+				//   { ...COMMON_COMPONENT_PROPERTIES.linkPath, group: BASIC }
+				//
+				// The spread form used to fall through `extractPropertyFromObject`,
+				// which requires a `name` the literal doesn't carry, and the
+				// property was dropped from the catalog entirely. That is how
+				// Link lost `linkPath` — its only means of navigating anywhere.
 				if (ts.isObjectLiteralExpression(element)) {
-					const prop = extractPropertyFromObject(element);
+					const spreadRef = element.properties
+						.filter(ts.isSpreadAssignment)
+						.map((s) => extractCommonPropReference(s.expression))
+						.find((ref): ref is string => !!ref && !!COMMON_PROPERTIES[ref]);
+
+					const prop = extractPropertyFromObject(
+						element,
+						spreadRef ? COMMON_PROPERTIES[spreadRef] : undefined,
+					);
 					if (prop) properties.push(prop);
 					continue;
-				}
-
-				// Spread of common property with overrides:
-				// { ...COMMON_COMPONENT_PROPERTIES.designType, enumValues: [...] }
-				if (ts.isObjectLiteralExpression(element)) {
-					// Already handled above
 				}
 			}
 		}
