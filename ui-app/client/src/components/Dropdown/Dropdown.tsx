@@ -36,6 +36,10 @@ import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 import { styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
 
+// Grace period before a closeOnMouseLeave dropdown actually closes. Long enough to
+// cross the gap between the control and its panel, or to glance away and come back.
+const MOUSE_LEAVE_CLOSE_DELAY = 1000;
+
 function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [searchDropdownData, setSearchDropdownData] = useState<
@@ -350,6 +354,31 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		runEventOnDropDownClose,
 	]);
 
+	// closeOnMouseLeave used to shut the panel the instant the cursor left it, which
+	// makes the control hostile to aim: the gap between the box and the panel, or a
+	// short detour off the edge while scanning a long list, threw the selection away.
+	// Leaving now only ARMS a close, and re-entering either the box or the panel
+	// disarms it, so a brief wander costs nothing.
+	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+	const cancelPendingClose = useCallback(() => {
+		if (closeTimerRef.current === undefined) return;
+		clearTimeout(closeTimerRef.current);
+		closeTimerRef.current = undefined;
+	}, []);
+
+	const schedulePendingClose = useCallback(() => {
+		cancelPendingClose();
+		closeTimerRef.current = setTimeout(() => {
+			closeTimerRef.current = undefined;
+			// The cursor may have come back after the timer was armed but before it
+			// fired; the ref is the live answer, the state would be a frame stale.
+			if (!mouseIsInsideRef.current) handleClose();
+		}, MOUSE_LEAVE_CLOSE_DELAY);
+	}, [cancelPendingClose, handleClose]);
+
+	useEffect(() => cancelPendingClose, [cancelPendingClose]);
+
 	const getLabel = useCallback(() => {
 		let label = '';
 		if (selected == undefined || (Array.isArray(selected) && !selected.length)) {
@@ -465,10 +494,13 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
 				style={{ pointerEvents: 'auto', ...(computedStyles.dropDownContainer ?? {}) }}
 				onScroll={scrollEndEvent}
-				onMouseEnter={() => setMouseInside(true)}
+				onMouseEnter={() => {
+					setMouseInside(true);
+					cancelPendingClose();
+				}}
 				onMouseLeave={() => {
 					setMouseInside(false);
-					if (closeOnMouseLeave) handleClose();
+					if (closeOnMouseLeave) schedulePendingClose();
 				}}
 				ref={element => {
 					if (!element || searchText) return;
@@ -672,14 +704,13 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			leftIcon={leftIcon}
 			//rightIcon = {rightIcon} 'fa-solid fa-angle-up'
 			showDropdown={showDropdown}
-			onMouseEnter={() => setMouseInside(true)}
+			onMouseEnter={() => {
+				setMouseInside(true);
+				cancelPendingClose();
+			}}
 			onMouseLeave={() => {
 				setMouseInside(false);
-				if (closeOnMouseLeave) {
-					setTimeout(() => {
-						if (!mouseIsInsideRef.current) handleClose();
-					}, 0);
-				}
+				if (closeOnMouseLeave) schedulePendingClose();
 			}}
 			showMandatoryAsterisk={
 				!!(
