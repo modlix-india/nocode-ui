@@ -1134,14 +1134,28 @@ export default function PromptStyle({
 		/* ─── Craft Cards Bar (above input) ─── */
 		${PREFIX} ._craftCardsBar {
 			display: flex;
+			flex-wrap: wrap;
 			gap: 8px;
+			margin-top: 26px;
 			padding: 8px 16px;
-			overflow-x: auto;
 			flex-shrink: 0;
 			max-width: 768px;
 			margin: 0 auto;
 			width: 100%;
 			box-sizing: border-box;
+		}
+		/* One row's worth of sizing, so a wrapped grid lines up instead of ragging. The
+		   chat-inline card keeps its own. */
+		${PREFIX} ._craftCardsBar ._craftCard {
+			flex: 1 1 200px;
+			min-width: 0;
+			max-width: 100%;
+			margin-top: 0;
+		}
+		${PREFIX} ._craftCardsBar ._craftCardSubtitle {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
 		}
 
 		/* ─── Craft Panel (side panel) ─── */
@@ -1271,35 +1285,42 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._craftBadge {
-			display: inline-block;
-			padding: 3px 10px;
-			border-radius: 12px;
+			display: inline-flex;
+			align-items: center;
+			padding: 4px 12px;
+			border-radius: 999px;
 			font-size: 12px;
-			font-weight: 500;
-			background: #f0f0f0;
-			color: #555;
+			font-weight: 600;
+			background: #eef2ff;
+			color: #4f46e5;
+			border: 1px solid #e0e7ff;
 			width: fit-content;
+			letter-spacing: 0.2px;
 		}
 
 		${PREFIX} ._craftKeyValue {
 			display: flex;
 			flex-direction: column;
-			gap: 6px;
+			gap: 8px;
 		}
 
 		${PREFIX} ._craftKvRow {
 			display: flex;
-			gap: 8px;
-			font-size: 14px;
+			gap: 12px;
+			font-size: 13px;
+			align-items: baseline;
 		}
 
 		${PREFIX} ._craftKvKey {
-			color: #666;
-			min-width: 100px;
+			color: #94a3b8;
+			min-width: 110px;
 			flex-shrink: 0;
+			font-weight: 500;
 		}
 
 		${PREFIX} ._craftKvValue {
+			color: #1e293b;
+			font-weight: 600;
 		}
 
 		${PREFIX} ._craftKvValue a {
@@ -2237,6 +2258,977 @@ export default function PromptStyle({
 			font-style: italic;
 			text-align: center;
 			width: 100%;
+		}
+
+		/* ─── Keyword Review Block ─── */
+		${PREFIX} ._kwReviewBlock {
+			border: 1px solid #e2e8f0;
+			border-radius: 12px;
+			background: #ffffff;
+			overflow: hidden;
+			margin: 16px 0;
+			box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+		}
+		${PREFIX} ._kwReviewTabs {
+			display: flex;
+			gap: 4px;
+			padding: 10px 12px;
+			border-bottom: 1px solid #e2e8f0;
+			background: #f8fafc;
+		}
+		${PREFIX} ._kwReviewTab {
+			padding: 6px 18px;
+			border: 1px solid #cbd5e1;
+			border-radius: 8px;
+			background: #ffffff;
+			color: #475569;
+			font-size: 12px;
+			font-weight: 600;
+			cursor: pointer;
+			transition: background 0.15s, border-color 0.15s, color 0.15s;
+		}
+		${PREFIX} ._kwReviewTab:hover {
+			background: #f1f5f9;
+			border-color: #94a3b8;
+		}
+		${PREFIX} ._kwTabIcon {
+			margin-left: 6px;
+			font-size: 10px;
+			opacity: 0.7;
+		}
+		${PREFIX} ._kwReviewTab._pending {
+			color: #64748b;
+			border-style: dashed;
+		}
+		${PREFIX} ._kwReviewTab._partial {
+			color: #b45309;
+			background: #fffbeb;
+			border-color: #fcd34d;
+		}
+		${PREFIX} ._kwReviewTab._failed {
+			color: #dc2626;
+			background: #fef2f2;
+			border-color: #fca5a5;
+		}
+		${PREFIX} ._kwReviewTab._active {
+			background: #1e293b;
+			border-color: #1e293b;
+			color: #ffffff;
+			box-shadow: 0 1px 3px rgb(15 23 42 / 0.2);
+		}
+		${PREFIX} ._kwStatusNote {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 10px;
+			margin: 10px 14px 10px;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-size: 12px;
+			background: #f8fafc;
+			border: 1px solid #e2e8f0;
+			color: #475569;
+		}
+		${PREFIX} ._kwStatusAction {
+			flex: 0 0 auto;
+			padding: 4px 12px;
+			border: 1px solid currentColor;
+			border-radius: 6px;
+			background: transparent;
+			color: inherit;
+			font-size: 11px;
+			font-weight: 500;
+			cursor: pointer;
+		}
+		${PREFIX} ._kwStatusAction:hover:not(:disabled) {
+			background: rgba(0, 0, 0, 0.04);
+		}
+		${PREFIX} ._kwStatusAction:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+		${PREFIX} ._kwStatusNote._failed {
+			background: #fef2f2;
+			border-color: #fca5a5;
+			color: #dc2626;
+		}
+		${PREFIX} ._kwReviewContent {
+			padding: 0;
+		}
+		${PREFIX} ._kwReviewSection {
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._kwReviewSection:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._kwReviewSectionHeader {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+			padding: 10px 14px;
+			border: none;
+			background: #f8fafc;
+			cursor: pointer;
+			text-align: left;
+			font-size: 13px;
+			font-weight: 600;
+			color: #374151;
+		}
+		${PREFIX} ._kwReviewSectionHeader:hover {
+			background: #f1f5f9;
+		}
+		${PREFIX} ._kwReviewSectionLabel {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+		}
+		${PREFIX} ._audSectionText {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			min-width: 0;
+			padding-right: 10px;
+		}
+		${PREFIX} ._audSectionSub {
+			font-size: 11px;
+			font-weight: 400;
+			line-height: 1.45;
+			color: #64748b;
+		}
+		/* A caption and a gap, not another collapsible level. */
+		${PREFIX} ._audGroup {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			margin-bottom: 18px;
+			padding:10px 10px;
+		}
+		${PREFIX} ._audGroup:last-child {
+			margin-bottom: 0;
+		}
+		${PREFIX} ._audGroupCaption {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 8px;
+			font-size: 10px;
+			font-weight: 600;
+			letter-spacing: 0.06em;
+			text-transform: uppercase;
+			color: #94a3b8;
+			padding: 0 14px;
+		}
+		/* Scoped: _kwReviewSection is shared with the keyword panel. */
+		${PREFIX} ._audGroupCount {
+			font-weight: 400;
+			letter-spacing: 0;
+			text-transform: none;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audGroup ._kwReviewSection {
+			border: 1px solid #e2e8f0;
+			border-radius: 10px;
+			overflow: hidden;
+			background: #ffffff;
+		}
+		${PREFIX} ._audGroup ._kwReviewSection:last-child {
+			border: 1px solid #e2e8f0;
+		}
+		${PREFIX} ._audAddSignal {
+			width: 100%;
+			padding: 9px;
+			border: 1px dashed #cbd5e1;
+			border-radius: 8px;
+			background: transparent;
+			color: #475569;
+			font-size: 12px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audAddSignal._audEditFilters {
+			display: block;
+			width: auto;
+			margin: 8px 14px 10px auto;
+			padding: 5px 11px;
+			border-radius: 7px;
+			font-size: 11px;
+		}
+		${PREFIX} ._audAddSignal:hover:not(:disabled) {
+			border-color: #94a3b8;
+			background: #f8fafc;
+			color: #1e293b;
+		}
+		${PREFIX} ._audAddSignal:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+		${PREFIX} ._audItems {
+			display: flex;
+			flex-direction: column;
+		}
+		${PREFIX} ._audGroup ._kwReviewSectionHeader {
+			background: #eef2f7;
+			border-bottom: 1px solid #e2e8f0;
+		}
+		${PREFIX} ._audItemsHead {
+			display: flex;
+			gap: 10px;
+			padding: 7px 14px;
+			background: #fbfcfd;
+			border-bottom: 1px solid #eef2f6;
+			font-size: 10px;
+			font-weight: 600;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audItemsHead > span:first-child {
+			flex: 1;
+			min-width: 0;
+		}
+		${PREFIX} ._audItemsHeadPath {
+			flex: 0 0 38%;
+			text-align: left;
+		}
+		${PREFIX} ._audItem {
+			display: flex;
+			align-items: baseline;
+			gap: 10px;
+			padding: 8px 14px;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audItem:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._audItem:hover {
+			background: #f8fafc;
+		}
+		${PREFIX} ._audItemMain {
+			flex: 1;
+			min-width: 0;
+		}
+		${PREFIX} ._audItemLabel {
+			font-size: 12px;
+			font-weight: 500;
+			color: #1e293b;
+		}
+		${PREFIX} ._audItemWhy {
+			margin-top: 2px;
+			font-size: 11px;
+			line-height: 1.45;
+			color: #64748b;
+		}
+		/* Where a reach estimate goes if AudienceInsights access lands. */
+		${PREFIX} ._audItemPath {
+			flex: 0 0 38%;
+			font-size: 11px;
+			color: #94a3b8;
+			text-align: left;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+		${PREFIX} ._audItemActions {
+			flex: 0 0 auto;
+			display: flex;
+			gap: 4px;
+			opacity: 0;
+			transition: opacity 0.12s;
+		}
+		/* Stays visible mid-confirm and on keyboard focus. */
+		${PREFIX} ._audItem:hover ._audItemActions,
+		${PREFIX} ._audItem:focus-within ._audItemActions,
+		${PREFIX} ._audItem._pending ._audItemActions {
+			opacity: 1;
+		}
+		${PREFIX} ._audMixHelp {
+			margin: 0 0 8px;
+			padding: 8px 10px;
+			background: #f8fafc;
+			border-left: 2px solid #cbd5e1;
+			font-size: 11px;
+			line-height: 1.5;
+			color: #475569;
+		}
+		${PREFIX} ._audMembers {
+			border: 1px solid #f1f5f9;
+			border-radius: 6px;
+			padding: 4px 10px 8px;
+			margin-bottom: 8px;
+		}
+		${PREFIX} ._audMemberNote {
+			margin: 8px 0 4px;
+			font-size: 11px;
+			color: #64748b;
+			font-style: italic;
+		}
+		${PREFIX} ._audMemberWarn {
+			margin: 8px 0 4px;
+			padding: 6px 10px;
+			background: #fffbeb;
+			border: 1px solid #fde68a;
+			border-radius: 6px;
+			font-size: 11px;
+			color: #92400e;
+		}
+		${PREFIX} ._audMemberBlock {
+			padding: 10px 0;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audMemberBlock:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._audMemberHead {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			margin-bottom: 4px;
+			font-size: 12px;
+			font-weight: 600;
+			color: #334155;
+		}
+		${PREFIX} ._audMemberTable {
+			width: 100%;
+			table-layout: fixed;
+		}
+		/* Own lane, so the number does not wrap with the text. */
+		${PREFIX} ._audMemberVol {
+			width: 68px;
+			text-align: right;
+			color: #94a3b8;
+			font-size: 11px;
+			font-variant-numeric: tabular-nums;
+		}
+		/* Fits an edit and a delete at the shared 28px. */
+		${PREFIX} ._audMemberTable ._kwActions {
+			width: 68px;
+			white-space: nowrap;
+			text-align: right;
+		}
+		${PREFIX} ._audMemberTable ._kwKwText {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		${PREFIX} ._audMemberAdd {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			margin: 0 0 6px;
+		}
+		${PREFIX} ._audTextBtn {
+			border: none;
+			background: none;
+			padding: 6px 10px;
+			font-size: 12px;
+			color: #64748b;
+			cursor: pointer;
+			border-radius: 6px;
+		}
+		${PREFIX} ._audTextBtn:hover {
+			background: #f1f5f9;
+			color: #1e293b;
+		}
+		${PREFIX} ._audTextBtn._audMemberAddBtn {
+			display: block;
+			margin: 0 0 6px auto;
+			border: 1px solid #e2e8f0;
+			background: #ffffff;
+			color: #475569;
+		}
+		${PREFIX} ._audTextBtn._audMemberAddBtn:hover {
+			background: #f1f5f9;
+			border-color: #94a3b8;
+			color: #1e293b;
+		}
+		${PREFIX} ._audHelp {
+			font-size: 11px;
+			color: #94a3b8;
+			cursor: pointer;
+		}
+		${PREFIX} ._audHelp:hover {
+			color: #475569;
+		}
+		${PREFIX} ._kwReviewSectionChevron {
+			font-size: 11px;
+			color: #94a3b8;
+			transition: transform 0.2s;
+			display: inline-block;
+		}
+		${PREFIX} ._kwReviewSectionChevron._open {
+			transform: rotate(90deg);
+		}
+		${PREFIX} ._kwReviewSectionBody {
+			padding: 0 0 8px 0;
+		}
+		${PREFIX} ._kwReviewError {
+			margin: 8px 14px;
+			padding: 8px 12px;
+			background: #fef2f2;
+			border: 1px solid #fca5a5;
+			border-radius: 6px;
+			font-size: 12px;
+			color: #dc2626;
+			cursor: pointer;
+		}
+		${PREFIX} ._kwReviewTable {
+			width: 100%;
+			border-collapse: collapse;
+			font-size: 12px;
+		}
+		${PREFIX} ._kwReviewTh {
+			padding: 7px 10px;
+			text-align: left;
+			font-size: 11px;
+			font-weight: 600;
+			color: #64748b;
+			background: #f8fafc;
+			border-bottom: 1px solid #e2e8f0;
+			white-space: nowrap;
+		}
+		${PREFIX} ._kwActionsHead {
+			width: 72px;
+		}
+		${PREFIX} ._kwReviewRow {
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._kwReviewRow:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._kwReviewRow:hover {
+			background: #fafafa;
+		}
+		${PREFIX} ._kwReviewRow._editing {
+			background: #f8fafc;
+		}
+		${PREFIX} ._kwReviewTd {
+			padding: 7px 8px;
+			vertical-align: top;
+			color: #1e293b;
+		}
+		${PREFIX} ._kwKwText {
+			font-weight: 500;
+			max-width: 150px;
+			overflow-wrap: break-word;
+		}
+		${PREFIX} ._kwVol {
+			color: #64748b;
+			font-variant-numeric: tabular-nums;
+			white-space: nowrap;
+		}
+		${PREFIX} ._kwExtra {
+			color: #64748b;
+			font-size: 11px;
+			line-height: 1.45;
+			max-width: 160px;
+			white-space: normal;
+			overflow-wrap: break-word;
+		}
+		${PREFIX} ._kwActionsCell {
+			white-space: nowrap;
+		}
+		${PREFIX} ._kwMatchBadge {
+			display: inline-block;
+			padding: 2px 7px;
+			border-radius: 4px;
+			font-size: 10px;
+			font-weight: 600;
+			letter-spacing: 0.3px;
+		}
+		${PREFIX} ._kwMatchBadge._phrase {
+			background: #f1f5f9;
+			color: #475569;
+		}
+		${PREFIX} ._kwMatchBadge._exact {
+			background: #e2e8f0;
+			color: #1e293b;
+		}
+		${PREFIX} ._kwMatchBadge._broad {
+			background: #f8fafc;
+			color: #64748b;
+		}
+		${PREFIX} ._kwEditBtn,
+		${PREFIX} ._kwDeleteBtn,
+		${PREFIX} ._kwSaveBtn,
+		${PREFIX} ._kwCancelBtn {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			width: 28px;
+			height: 28px;
+			border-radius: 6px;
+			border: 1px solid #e2e8f0;
+			background: #ffffff;
+			cursor: pointer;
+			font-size: 12px;
+			transition: background 0.15s, border-color 0.15s;
+		}
+		${PREFIX} ._kwEditBtn:disabled,
+		${PREFIX} ._kwDeleteBtn:disabled,
+		${PREFIX} ._kwSaveBtn:disabled {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+		${PREFIX} ._kwEditBtn {
+			color: #475569;
+			margin-right: 4px;
+		}
+		${PREFIX} ._kwEditBtn:hover {
+			background: #f1f5f9;
+			border-color: #94a3b8;
+		}
+		${PREFIX} ._kwDeleteBtn {
+			color: #94a3b8;
+		}
+		${PREFIX} ._kwDeleteBtn:hover {
+			color: #dc2626;
+			background: #fef2f2;
+			border-color: #fca5a5;
+		}
+		${PREFIX} ._kwSaveBtn {
+			background: #1e293b;
+			color: #ffffff;
+			border-color: #1e293b;
+			margin-right: 4px;
+		}
+		${PREFIX} ._kwCancelBtn {
+			color: #64748b;
+		}
+		${PREFIX} ._kwCancelBtn:hover {
+			background: #f1f5f9;
+		}
+		${PREFIX} ._kwInlineInput {
+			width: 100%;
+			padding: 4px 7px;
+			border: 1px solid #cbd5e1;
+			border-radius: 5px;
+			font-size: 12px;
+			color: #1e293b;
+			outline: none;
+		}
+		${PREFIX} ._kwInlineInput:focus {
+			border-color: #64748b;
+		}
+		${PREFIX} ._audPicker {
+			position: relative;
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 4px 14px 12px;
+		}
+		${PREFIX} ._audPicker ._kwAddBtn:only-child {
+			margin-left: auto;
+		}
+		${PREFIX} ._audResult {
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			width: 100%;
+			padding: 8px 12px;
+			border: none;
+			border-bottom: 1px solid #f1f5f9;
+			background: transparent;
+			text-align: left;
+			cursor: pointer;
+		}
+		${PREFIX} ._audResult:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._audResult:hover {
+			background: #f8fafc;
+		}
+		${PREFIX} ._audResultNote {
+			padding: 10px 12px;
+			font-size: 12px;
+			color: #64748b;
+		}
+		${PREFIX} ._audDemoEditor {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			padding: 10px 12px;
+		}
+		${PREFIX} ._audDemoRow {
+			display: grid;
+			grid-template-columns: 116px 1fr;
+			align-items: start;
+			gap: 4px 10px;
+			padding: 7px 0;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audDemoRow:last-of-type {
+			border-bottom: none;
+		}
+		${PREFIX} ._audDemoLabel {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			font-size: 11px;
+			font-weight: 600;
+			color: #64748b;
+			padding-top: 5px;
+		}
+		${PREFIX} ._audDemoDash {
+			font-size: 11px;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audPickerPanel {
+			display: flex;
+			flex-direction: column;
+			border: 1px solid #e2e8f0;
+			border-radius: 10px;
+			background: #ffffff;
+			overflow: hidden;
+		}
+		${PREFIX} ._audPickHeader {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 10px 14px;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audPickTitle {
+			flex: 1;
+			font-size: 13px;
+			font-weight: 600;
+			color: #0f172a;
+		}
+		${PREFIX} ._audPickBack,
+		${PREFIX} ._audPickClose {
+			border: none;
+			background: none;
+			padding: 2px 4px;
+			color: #64748b;
+			font-size: 13px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audPickBack:hover,
+		${PREFIX} ._audPickClose:hover {
+			color: #0f172a;
+		}
+		${PREFIX} ._kwAddInput._audPickInput {
+			flex: 0 0 auto;
+			margin: 10px 14px 4px;
+			width: calc(100% - 28px);
+		}
+		${PREFIX} ._audKinds {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 5px;
+			padding: 10px 14px 4px;
+		}
+		${PREFIX} ._audKind {
+			padding: 4px 9px;
+			border: 1px solid #e2e8f0;
+			border-radius: 999px;
+			background: #ffffff;
+			color: #475569;
+			font-size: 11px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audKind._on {
+			border-color: #1e293b;
+			background: #1e293b;
+			color: #ffffff;
+		}
+		${PREFIX} ._audPickList {
+			max-height: 320px;
+			overflow-y: auto;
+		}
+		${PREFIX} ._audPickRow {
+			display: flex;
+			align-items: baseline;
+			justify-content: space-between;
+			gap: 10px;
+			width: 100%;
+			padding: 8px 14px;
+			border: none;
+			background: none;
+			text-align: left;
+			cursor: pointer;
+		}
+		${PREFIX} ._audPickRow:hover:not(:disabled) {
+			background: #f8fafc;
+		}
+		${PREFIX} ._audPickRow._added {
+			cursor: default;
+		}
+		${PREFIX} ._audPickRow:disabled ._audPickLabel {
+			color: #94a3b8;
+		}
+		${PREFIX} ._audPickMain {
+			display: flex;
+			flex-direction: column;
+			gap: 1px;
+			min-width: 0;
+		}
+		${PREFIX} ._audPickLabel {
+			font-size: 12px;
+			color: #1e293b;
+		}
+		${PREFIX} ._audPickPath {
+			font-size: 10px;
+			color: #94a3b8;
+		}
+		${PREFIX} ._audPickKind,
+		${PREFIX} ._audPickAdded {
+			flex: 0 0 auto;
+			font-size: 10px;
+			color: #94a3b8;
+			white-space: nowrap;
+		}
+		${PREFIX} ._audPickAdded {
+			color: #64748b;
+		}
+		${PREFIX} ._audPickAdded._rec {
+			color: #16a34a;
+		}
+		${PREFIX} ._audBrowseRow {
+			display: flex;
+			align-items: center;
+		}
+		${PREFIX} ._audTwisty {
+			flex: 0 0 auto;
+			width: 20px;
+			border: none;
+			background: none;
+			padding: 0;
+			color: #94a3b8;
+			font-size: 10px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audTwisty i {
+			transition: transform 0.12s;
+		}
+		${PREFIX} ._audTwisty i._open {
+			transform: rotate(90deg);
+		}
+		${PREFIX} ._audTwistySpacer {
+			flex: 0 0 auto;
+			width: 20px;
+		}
+		${PREFIX} ._audPickFoot {
+			display: flex;
+			justify-content: flex-end;
+			padding: 8px 14px;
+			border-top: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audPickCancel {
+			width: auto;
+			padding: 5px 12px;
+			font-size: 12px;
+		}
+		${PREFIX} ._audTabs {
+			display: flex;
+			align-items: center;
+			gap: 4px;
+			margin-bottom: 6px;
+			padding: 0 10px;
+		}
+		${PREFIX} ._audTab {
+			padding: 6px 12px;
+			border: none;
+			border-bottom: 2px solid transparent;
+			background: none;
+			color: #475569;
+			font-size: 12px;
+			cursor: pointer;
+		}
+		${PREFIX} ._audTab:hover:not(._on) {
+			color: #1e293b;
+		}
+		${PREFIX} ._audTab._on {
+			color: #0f172a;
+			border-bottom-color: #1e293b;
+			font-weight: 600;
+		}
+		${PREFIX} ._audTabs ._kwCancelBtn {
+			margin-left: auto;
+		}
+		${PREFIX} ._audBrowseRow {
+			display: flex;
+			align-items: stretch;
+			border-bottom: 1px solid #f1f5f9;
+		}
+		${PREFIX} ._audBrowseRow:last-child {
+			border-bottom: none;
+		}
+		${PREFIX} ._audBrowseRow:hover {
+			background: #f8fafc;
+		}
+		${PREFIX} ._audUnknownBox {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			margin-right: 10px;
+			font-size: 12px;
+			color: #334155;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+		${PREFIX} ._audUnknownBox input,
+		${PREFIX} ._audDemoControls {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 6px;
+		}
+		${PREFIX} ._audDemoWhy {
+			grid-column: 1 / -1;
+			font-size: 11px;
+			color: #64748b;
+			font-style: italic;
+			padding-left: 2px;
+		}
+		${PREFIX} ._audDemoActions {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 8px;
+			padding: 4px 12px 8px 12px;
+		}
+
+		/* Where ads show — toggles. A surface the ad type cannot serve on stays visible and
+		   disabled with its reason, rather than disappearing. */
+		${PREFIX} ._ccHeader {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 10px 14px;
+			border-bottom: 1px solid #e2e8f0;
+			background: #f8fafc;
+		}
+		${PREFIX} ._ccCount {
+			font-size: 12px;
+			font-weight: 600;
+			color: #374151;
+		}
+		${PREFIX} ._ccAdType {
+			padding: 2px 8px;
+			border-radius: 999px;
+			background: #e2e8f0;
+			color: #475569;
+			font-size: 11px;
+			font-weight: 600;
+		}
+		${PREFIX} ._ccList {
+			padding: 6px 0;
+		}
+		${PREFIX} ._ccRow {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			padding: 7px 14px;
+		}
+		${PREFIX} ._ccRow._locked {
+			opacity: 0.6;
+		}
+		${PREFIX} ._ccToggle {
+			flex: 0 0 auto;
+			width: 34px;
+			height: 20px;
+			padding: 2px;
+			border: none;
+			border-radius: 999px;
+			background: #cbd5e1;
+			cursor: pointer;
+			transition: background 0.15s;
+		}
+		${PREFIX} ._ccToggle._on {
+			background: #1e293b;
+		}
+		${PREFIX} ._ccToggle:disabled {
+			cursor: not-allowed;
+		}
+		${PREFIX} ._ccKnob {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 16px;
+			height: 16px;
+			border-radius: 50%;
+			background: #ffffff;
+			font-size: 8px;
+			color: #475569;
+			transition: transform 0.15s;
+		}
+		${PREFIX} ._ccToggle._on ._ccKnob {
+			transform: translateX(14px);
+		}
+		${PREFIX} ._ccLabel {
+			font-size: 12px;
+			color: #1e293b;
+		}
+		${PREFIX} ._ccReason {
+			font-size: 11px;
+			color: #94a3b8;
+			font-style: italic;
+		}
+		${PREFIX} ._kwEmptyCell {
+			padding: 14px 10px;
+			color: #94a3b8;
+			font-size: 12px;
+			font-style: italic;
+			text-align: center;
+		}
+		${PREFIX} ._kwAddRow {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px;
+			padding: 8px 12px;
+			border-bottom: 1px solid #f1f5f9;
+			background: #fafbfc;
+			align-items: center;
+		}
+		${PREFIX} ._kwAddInput,
+		${PREFIX} ._kwAddExtra {
+			flex: 1 1 120px;
+			padding: 6px 10px;
+			border: 1px solid #cbd5e1;
+			border-radius: 7px;
+			font-size: 12px;
+			color: #1e293b;
+			outline: none;
+			min-width: 0;
+		}
+		${PREFIX} ._kwAddExtra {
+			flex-basis: 100px;
+			color: #475569;
+		}
+		${PREFIX} ._kwAddInput:focus,
+		${PREFIX} ._kwAddExtra:focus {
+			border-color: #64748b;
+		}
+		${PREFIX} ._kwMatchSelect {
+			padding: 6px 8px;
+			border: 1px solid #cbd5e1;
+			border-radius: 7px;
+			font-size: 12px;
+			color: #374151;
+			background: #ffffff;
+			cursor: pointer;
+			outline: none;
+		}
+		${PREFIX} ._kwMatchSelect._inline {
+			padding: 4px 6px;
+			font-size: 11px;
+		}
+		${PREFIX} ._kwAddBtn {
+			padding: 6px 12px;
+			background: #1e293b;
+			color: #ffffff;
+			border: none;
+			border-radius: 7px;
+			font-size: 12px;
+			font-weight: 500;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+		${PREFIX} ._kwAddBtn:hover {
+			background: #0f172a;
+		}
+		${PREFIX} ._kwAddBtn:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
 		}
 
 		/* Scroll to bottom button anchor — sits between messages and input,

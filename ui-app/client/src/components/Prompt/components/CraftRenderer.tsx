@@ -1,8 +1,19 @@
 import type { JSX } from 'react';
-import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
+import React, {
+	useState,
+	useEffect,
+	useRef,
+	useCallback,
+	useMemo,
+	createContext,
+	useContext,
+} from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { loadGoogleMaps } from '../../../util/googleMapsLoader';
+import { AudienceReviewBlock } from './audience';
+import { ChannelControlsBlock } from './ChannelControlsBlock';
+import { KeywordReviewBlock } from './KeywordReviewBlock';
 
 interface CraftContextValue {
 	sessionId: string | null;
@@ -11,7 +22,7 @@ interface CraftContextValue {
 	getAuthHeaders: () => Record<string, string>;
 }
 
-const CraftContext = createContext<CraftContextValue | null>(null);
+export const CraftContext = createContext<CraftContextValue | null>(null);
 
 interface Block {
 	type: string;
@@ -752,6 +763,9 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	row: RowBlock,
 	collapsible: CollapsibleBlock,
 	map: MapBlock,
+	keyword_review: KeywordReviewBlock,
+	audience_review: AudienceReviewBlock,
+	channel_controls: ChannelControlsBlock,
 };
 
 function CraftBlockRenderer({
@@ -788,8 +802,13 @@ export function CraftRenderer({
 	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
 	getAuthHeaders: () => Record<string, string>;
 }>) {
+	// A fresh object here re-renders every panel on each craft update.
+	const ctx = useMemo(
+		() => ({ sessionId, agentEndpoint, onSend, getAuthHeaders }),
+		[sessionId, agentEndpoint, onSend, getAuthHeaders],
+	);
 	return (
-		<CraftContext.Provider value={{ sessionId, agentEndpoint, onSend, getAuthHeaders }}>
+		<CraftContext.Provider value={ctx}>
 			<div className="_craftContent" style={styleProperties?.craftContent ?? {}}>
 				<SubHelperComponent definition={definition} subComponentName="craftContent" />
 				{blocks.map((block, i) => (
