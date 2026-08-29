@@ -42,6 +42,7 @@ import Text from './Text/Text';
 import TextArea from './TextArea/TextArea';
 import TextBox from './TextBox/TextBox';
 import TextList from './TextList/TextList';
+import Tree from './Tree/Tree';
 import ToggleButton from './ToggleButton/ToggleButton';
 import Video from './Video/Video';
 import ImageWithBrowser from './ImageWithBrowser/ImageWithBrowser';
@@ -98,6 +99,7 @@ const componentMap = new Map<string, Component>([
 	[Icon.name, Icon],
 	[Text.name, Text],
 	[TextList.name, TextList],
+	[Tree.name, Tree],
 	[Stepper.name, Stepper],
 	[Table.name, Table],
 	[TableGrid.name, TableGrid],

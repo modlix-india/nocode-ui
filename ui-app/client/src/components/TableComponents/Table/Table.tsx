@@ -19,6 +19,11 @@ import { processComponentStylePseudoClasses } from '../../../util/styleProcessor
 import Children from '../../Children';
 import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import { runEvent } from '../../util/runEvent';
+import {
+	getChildrenKeyAtDepth,
+	getHasChildrenPropertyAtDepth,
+	TreeKeyConfig,
+} from '../../util/treeData';
 import useDefinition from '../../util/useDefinition';
 import { flattenUUID } from '../../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
@@ -1217,26 +1222,13 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 	);
 }
 
-export type TreeKeyConfig = string | string[] | undefined;
-
-export function getChildrenKeyAtDepth(childrenKey: TreeKeyConfig, depth: number): string {
-	if (Array.isArray(childrenKey)) {
-		if (childrenKey.length === 0) return 'children';
-		return childrenKey[Math.min(depth, childrenKey.length - 1)] || 'children';
-	}
-	return childrenKey || 'children';
-}
-
-export function getHasChildrenPropertyAtDepth(
-	hasChildrenProperty: TreeKeyConfig,
-	depth: number,
-): string | undefined {
-	if (Array.isArray(hasChildrenProperty)) {
-		if (hasChildrenProperty.length === 0) return undefined;
-		return hasChildrenProperty[Math.min(depth, hasChildrenProperty.length - 1)] || undefined;
-	}
-	return hasChildrenProperty || undefined;
-}
+/*
+ * These moved to components/util/treeData.ts so the Table and the Tree component resolve
+ * depth-indexed children keys identically. Re-exported here to keep this module's public
+ * surface unchanged for existing importers.
+ */
+export type { TreeKeyConfig };
+export { getChildrenKeyAtDepth, getHasChildrenPropertyAtDepth };
 
 function computeInitialExpanded(
 	data: any[],
