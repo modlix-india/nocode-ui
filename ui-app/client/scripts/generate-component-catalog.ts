@@ -490,6 +490,7 @@ const COMMON_PROPERTIES: Record<string, CatalogProperty> = loadCommonProperties(
 // "internal"    → omitted from AI prompt
 
 const COMPONENT_TIERS: Record<string, ComponentTier> = {
+	Tree: 'data',
 	// ── common: primary building blocks ──
 	Button: 'common',
 	Grid: 'common',
@@ -578,6 +579,8 @@ const DEFAULT_TIER: ComponentTier = 'specialized';
 // AI agent understands what it does and when to use it.
 
 const COMPONENT_BRIEFS: Record<string, string> = {
+	Tree:
+		'Renders hierarchical data, repeating ONE child template at every depth. dataShape accepts NESTED (children array), FLAT (idKey + parentKey), OBJECT_MAP (object keyed by id) or RAW_JSON (structure inferred). treeDesign picks indented list, accordion, org chart or Finder-style columns. Inside the node template, Parent.<field> is the current node and Parent.Parent.<field> is its parent, at every depth. bindingPath2 holds the selection (single or multi), bindingPath3 the expanded node keys, bindingPath4 the active path for the columns design. Set editable to allow drag reorder, drag reparent, add and delete; RAW_JSON is read only.',
 	Animator:
 		'Animation wrapper that starts animations based on an intersection observer. Used in sites for scroll-triggered entrance effects.',
 	ArrayRepeater:
@@ -706,6 +709,28 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 // in stylePropertiesDefinition across components.
 
 const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
+	viewport: 'Scrolling area inside the tree root',
+	nodeContainer: 'Wrapper for one node and its children; the panel frame in the accordion design',
+	nodeRow: 'The clickable row for one node; the box in the org chart design',
+	nodeContent: 'Container holding the authored node template',
+	nodeActions: 'Container for the per-node add and delete buttons',
+	toggle: 'Expand/collapse button',
+	toggleExpanded: 'Expand/collapse button while the node is open',
+	toggleCollapsed: 'Expand/collapse button while the node is closed',
+	guideLine: 'Guide and connector lines between a parent and its children',
+	leafSpacer: 'Spacer keeping leaf rows aligned with rows that have a toggle',
+	childrenContainer: 'Container holding a node\'s child nodes',
+	dragHandle: 'Grab handle for dragging a node',
+	dropBefore: 'Indicator shown when a drag will drop above a node',
+	dropAfter: 'Indicator shown when a drag will drop below a node',
+	dropInto: 'Indicator shown when a drag will drop onto a node to reparent it',
+	buttonAdd: 'Per-node add button',
+	buttonDelete: 'Per-node delete button',
+	column: 'One column in the columns design',
+	columnHeaderPart: 'Header at the top of a column',
+	columnDividerLine: 'Divider between two columns',
+	columnChevronIcon: 'Chevron marking a column row that has children',
+	emptyState: 'Shown when the bound data yields no nodes',
 	inputBox: 'The text input element',
 	label: 'Label text above/beside the input',
 	leftIcon: 'Icon on the left side of the input',
@@ -775,6 +800,8 @@ const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
 //  ... repeated elements
 
 const COMPONENT_STRUCTURES: Record<string, string> = {
+	Tree:
+		'viewport → nodes[ node[ nodeRow[toggle | checkBox? | nodeContent(childTemplate) | nodeActions?] → children[ node... ] ] ] | columns[ column[columnHeader? → nodeRow...]... ]',
 	TextBox:
 		'[label + asterisk?] → [leftIcon? | inputBox | rightIcon?] → supportText? → errorText?',
 	Dropdown:
@@ -831,6 +858,14 @@ const COMPONENT_STRUCTURES: Record<string, string> = {
 // can choose the right variant. Shared across components.
 
 const DESIGN_TYPE_DESCRIPTIONS: Record<string, string> = {
+	indented:
+		'File-explorer tree — one indent step per depth, with optional dotted guide lines and elbow connectors.',
+	accordion:
+		'Full-width stacked panels; expanding slides the children block open beneath the header. No guide lines.',
+	orgChart:
+		'Boxes laid out top-down (or left-to-right) with connector lines between a parent and its children. Scrolls horizontally when wide.',
+	columns:
+		'Finder-style Miller columns — one scrolling column per level of the active path, driven by bindingPath4.',
 	default:
 		'Standard appearance — solid background, minimal border, 32px height, 4px border-radius.',
 	outlined:

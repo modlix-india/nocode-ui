@@ -695,6 +695,14 @@
 		"n": "dropdownBorderRadiusDropdownContainer<designType><colorScheme>"
 	},
 	{
+		"cp": "box-shadow",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownContainer",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow DropdownContainer",
+		"n": "dropdownBoxShadowDropdownContainer<designType><colorScheme>"
+	},
+	{
 		"cp": "padding",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownContainer",
 		"np": true,
