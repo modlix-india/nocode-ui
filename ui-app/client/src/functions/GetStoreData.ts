@@ -9,7 +9,7 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE, SCHEMA_DATA_LOCATION } from '../constants';
-import { getData, getDataFromPath } from '../context/StoreContext';
+import { getDataFromPath } from '../context/StoreContext';
 
 const SIGNATURE = new FunctionSignature('GetStoreData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -23,7 +23,13 @@ const SIGNATURE = new FunctionSignature('GetStoreData')
 export class GetStoreData extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		const evmap = [...Array.from(context.getValuesMap().values())];
-		const data = getData(context.getArguments()?.get('path'), [], ...evmap);
+		// `path` arrives as a resolved string. getData() takes a ComponentProperty
+		// ({location, value}) and reads neither off a string, so it returned
+		// undefined for every call this function has ever made; getDataFromPath is
+		// the string-taking sibling, and was already imported for it.
+		// Parent. resolves because runEvent puts a ParentExtractorForRunEvent into
+		// the values map, which arrives here in evmap.
+		const data = getDataFromPath(context.getArguments()?.get('path'), [], ...evmap);
 		return new FunctionOutput([EventResult.outputOf(new Map([['data', data]]))]);
 	}
 
