@@ -3,14 +3,11 @@ import { ComponentPropertyDefinition, ComponentProps } from '../../types/common'
 import {
 	PageStoreExtractor,
 	UrlDetailsExtractor,
-	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	getPathFromLocation,
 	setData,
 	setData as setStoreData,
 } from '../../context/StoreContext';
-import axios from 'axios';
-import { deepEqual, duplicate } from '@fincity/kirun-js';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -30,6 +27,8 @@ import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
+import { personalizationEvent } from '../util/personalization';
+import { serialiseActiveData } from './editorContext';
 
 interface Message {
 	id: string;
@@ -101,7 +100,31 @@ interface TokenUsage {
 	context_used: number;
 	context_limit: number;
 	context_percent: number;
+	cache_read_tokens?: number;
 	turns: number;
+}
+
+// Fallback only — the server sends the real limit with every usage payload
+// (CONTEXT_LIMIT_DEFAULT). DeepSeek V4 documents a 1M window; the old 48000
+// here dated from the 64K era and made the bar read far fuller than it was.
+const DEFAULT_CONTEXT_LIMIT = 1_000_000;
+
+/** "64,228 of 1,000,000 tokens in context" — the absolute numbers behind the bar. */
+function formatContextTitle(used: number, limit: number): string {
+	return `${used.toLocaleString()} of ${limit.toLocaleString()} tokens in context`;
+}
+
+/**
+ * Total tokens read across the whole session, and how many of them were served
+ * from the provider's prompt cache. The agent re-sends the conversation on every
+ * tool round-trip, so the total runs far ahead of the context size — the cache
+ * share is what shows that most of those re-reads were cheap.
+ */
+function formatTokensTitle(total: number, cacheRead?: number): string {
+	const base = `${total.toLocaleString()} tokens read this session`;
+	if (!cacheRead) return base;
+	const pct = total > 0 ? Math.round((cacheRead / total) * 100) : 0;
+	return `${base}\n${cacheRead.toLocaleString()} (${pct}%) served from prompt cache`;
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -367,19 +390,21 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				const input = u.input_tokens ?? 0;
 				const output = u.output_tokens ?? 0;
 				const contextUsed = u.context_used ?? 0;
-				const contextLimit = u.context_limit ?? 48000;
+				const contextLimit = u.context_limit ?? DEFAULT_CONTEXT_LIMIT;
 				const contextPercent =
 					u.context_percent ??
 					(contextLimit > 0
 						? Math.min(Math.round((contextUsed / contextLimit) * 100), 100)
 						: 0);
+				const cacheRead = u.cache_read_tokens ?? 0;
 				ctx.setUsage({
 					input_tokens: input,
 					output_tokens: output,
-					total_tokens: u.total_tokens ?? input + output,
+					total_tokens: u.total_tokens ?? input + cacheRead + output,
 					context_used: contextUsed,
 					context_limit: contextLimit,
 					context_percent: contextPercent,
+					cache_read_tokens: cacheRead,
 					turns: u.turns ?? 0,
 				});
 			}
@@ -651,7 +676,7 @@ function extractUsageFromSession(session: any): TokenUsage | null {
 	const input = session.total_input_tokens ?? 0;
 	const output = session.total_output_tokens ?? 0;
 	const contextUsed = session.context_tokens_used ?? 0;
-	const contextLimit = session.context_limit ?? 48000;
+	const contextLimit = session.context_limit ?? DEFAULT_CONTEXT_LIMIT;
 	const contextPercent = contextLimit > 0 ? Math.round((contextUsed / contextLimit) * 100) : 0;
 	if (input === 0 && output === 0 && (session.turn_count ?? 0) === 0) return null;
 	return {
@@ -675,14 +700,27 @@ function UsageBar({ usage }: Readonly<{ usage: TokenUsage }>) {
 	const contextClass = `_usageContext${getContextLevel(usage.context_percent)}`;
 	return (
 		<div className="_usageBar">
-			<span className="_usageTokens">{usage.total_tokens.toLocaleString()} tokens</span>
+			<span
+				className="_usageTokens"
+				title={formatTokensTitle(usage.total_tokens, usage.cache_read_tokens)}
+			>
+				{usage.total_tokens.toLocaleString()} tokens
+			</span>
 			<span className="_usageSeparator" />
 			<span className="_usageTurns">
 				{usage.turns} {usage.turns === 1 ? 'turn' : 'turns'}
 			</span>
 			<span className="_usageSeparator" />
-			<span className={contextClass}>{usage.context_percent}% context</span>
-			<div className="_usageContextBar">
+			<span
+				className={contextClass}
+				title={formatContextTitle(usage.context_used, usage.context_limit)}
+			>
+				{usage.context_percent}% context
+			</span>
+			<div
+				className="_usageContextBar"
+				title={formatContextTitle(usage.context_used, usage.context_limit)}
+			>
 				<div
 					className="_usageContextFill"
 					style={{ width: `${Math.min(usage.context_percent, 100)}%` }}
@@ -766,6 +804,11 @@ function ModelSelector({
 
 const SCROLL_BOTTOM_THRESHOLD_PX = 50;
 
+// Below this the session sidebar stops being a column beside the chat and becomes a
+// drawer over it. 640px leaves ~380px of conversation next to a 260px sidebar, which
+// is about the narrowest that still reads as two panes.
+const SESSIONS_OVERLAY_BELOW_PX = 640;
+
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
 		definition: { bindingPath },
@@ -780,7 +823,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			agentEndpoint = '/api/ai/appbuilder/chat',
 			placeholder = 'Ask anything',
 			welcomeMessage = 'What can I help with?',
+			initialPrompt = '',
+			contextSurface = '',
+			targetAppCode = '',
+			activeObject = '',
+			openTabs = '',
+			openTabIds = '',
+			activeDataPath = '',
 			showSessions = true,
+			sessionsMode = '_auto',
 			newChatLabel = 'New chat',
 			yourChatsLabel = 'Your chats',
 			deleteConfirmMessage = 'Delete this chat? This action cannot be undone.',
@@ -888,7 +939,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Derive activeCraft from the crafts Map so it never drifts out of sync.
 	// (Previously a separate useState updated inside setCrafts' updater — a
 	// React anti-pattern that caused appended blocks to occasionally drop.)
-	const activeCraft = activeCraftId ? crafts.get(activeCraftId) ?? null : null;
+	const activeCraft = activeCraftId ? (crafts.get(activeCraftId) ?? null) : null;
 
 	// Model selector state
 	const [availableModels, setAvailableModels] = useState<{ id: string; name: string }[]>([]);
@@ -929,75 +980,68 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const isResizingRef = useRef(false);
 	const sidebarRef = useRef<HTMLDivElement>(null);
 
+	// Sessions layout. The sidebar is a 260px column, so beside a chat docked in a
+	// side panel there is nothing left for the conversation. Measure the component
+	// rather than the viewport: a 340px panel on a 2560px screen is narrow, and no
+	// media query can see that.
+	const rootRef = useRef<HTMLDivElement>(null);
+	const [isNarrow, setIsNarrow] = useState(false);
+
+	useEffect(() => {
+		if (sessionsMode !== '_auto' || !rootRef.current) return;
+		const observer = new ResizeObserver(entries => {
+			const width = entries[0]?.contentRect.width ?? 0;
+			// Only act on a real measurement: a hidden or unmounted panel reports 0
+			// and must not flip the layout underneath the user.
+			if (width > 0) setIsNarrow(width < SESSIONS_OVERLAY_BELOW_PX);
+		});
+		observer.observe(rootRef.current);
+		return () => observer.disconnect();
+	}, [sessionsMode]);
+
+	const overlaySessions = sessionsMode === '_overlay' || (sessionsMode === '_auto' && isNarrow);
+
+	// Whether the sidebar was left open is a preference worth remembering, but only
+	// as a sidebar. As a drawer it sits ON TOP of the conversation, so restoring it
+	// open would hide the chat behind the history every time the panel is opened.
+	// Kept here so the preference survives for when there is room for a column again.
+	const preferredSidebarOpenRef = useRef<boolean | undefined>(undefined);
+	// Read from the personalization callback, which fires outside render.
+	const overlaySessionsRef = useRef(overlaySessions);
+	overlaySessionsRef.current = overlaySessions;
+
+	useEffect(() => {
+		if (overlaySessions) setSidebarOpen(false);
+		else if (preferredSidebarOpenRef.current !== undefined)
+			setSidebarOpen(preferredSidebarOpenRef.current);
+	}, [overlaySessions]);
+
 	// Personalization: persist sidebar width
 	const personalizationBindingPath = enablePersonalization
 		? `${STORE_PREFIX}.personalization.${props.context.pageName}.${flattenUUID(key)}`
 		: undefined;
 
-	useEffect(() => {
-		if (!personalizationBindingPath) return;
-
-		const appCode = getDataFromPath(
-			`${STORE_PREFIX}.application.appCode`,
-			props.locationHistory,
-			pageExtractor,
-		);
-		const url = `api/ui/personalization/${appCode}/prompt_${pageExtractor.getPageName()}_${key}`;
-		let currentObject: any;
-
-		(async () => {
-			try {
-				const po = await axios.get(url, {
-					headers: {
-						Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-					},
-				});
-				if (po.data) {
-					setStoreData(personalizationBindingPath, po.data, pageExtractor.getPageName());
-					if (po.data.sidebarWidth) {
-						setSidebarWidth(po.data.sidebarWidth);
+	useEffect(
+		() =>
+			personalizationEvent({
+				prefix: 'prompt',
+				personalizationBindingPath,
+				key,
+				locationHistory: props.locationHistory,
+				pageExtractor,
+				onLoad: data => {
+					if (data.sidebarWidth) setSidebarWidth(data.sidebarWidth);
+					if (data.sidebarOpen !== undefined) {
+						preferredSidebarOpenRef.current = data.sidebarOpen;
+						// Never reopen a drawer over the chat: this arrives async, so
+						// it would otherwise undo the close above whenever the GET
+						// resolves after the layout has settled on overlay.
+						if (!overlaySessionsRef.current) setSidebarOpen(data.sidebarOpen);
 					}
-					if (po.data.sidebarOpen !== undefined) {
-						setSidebarOpen(po.data.sidebarOpen);
-					}
-				}
-				currentObject = duplicate(po.data);
-			} catch {
-				// Silently fail — personalization is optional
-			}
-		})();
-
-		let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
-		const unsub = addListenerAndCallImmediatelyWithChildrenActivity(
-			pageExtractor.getPageName(),
-			(_, v) => {
-				if (timeoutHandle) clearTimeout(timeoutHandle);
-				if (deepEqual(currentObject, v) || currentObject === undefined) return;
-				currentObject = duplicate(v);
-
-				timeoutHandle = setTimeout(() => {
-					(async () => {
-						try {
-							await axios.post(url, v, {
-								headers: {
-									Authorization: getDataFromPath(
-										`${LOCAL_STORE_PREFIX}.AuthToken`,
-										[],
-									),
-								},
-							});
-						} catch {
-							// Silently fail
-						}
-						timeoutHandle = undefined;
-					})();
-				}, 2000);
-			},
-			personalizationBindingPath,
-		);
-
-		return unsub;
-	}, [personalizationBindingPath]);
+				},
+			}),
+		[personalizationBindingPath],
+	);
 
 	// Sidebar resize handlers
 	const handleResizeStart = useCallback(
@@ -1071,8 +1115,16 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	}, [personalizationBindingPath, props.locationHistory, pageExtractor]);
 
 	const getAuthHeaders = useCallback(() => {
-		const token = getDataFromPath('Store.auth.token', [], pageExtractor) ?? '';
-		const clientCode = getDataFromPath('Store.auth.clientCode', [], pageExtractor) ?? '';
+		// Store.auth carries `accessToken` / `loggedInClientCode`; there is no `token`
+		// or `clientCode` on it. Reading those sent an empty Authorization on every AI
+		// call, which only ever worked because the gateway fell back to the auth
+		// cookie — so anywhere the cookie is absent the whole chat 401s.
+		const token =
+			getDataFromPath('Store.auth.accessToken', [], pageExtractor) ??
+			getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []) ??
+			'';
+		const clientCode =
+			getDataFromPath('Store.auth.loggedInClientCode', [], pageExtractor) ?? '';
 		const appCode =
 			getDataFromPath(
 				`${STORE_PREFIX}.application.appCode`,
@@ -1087,13 +1139,52 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		};
 	}, [pageExtractor, props.locationHistory]);
 
+	// What the hosting page has open. Rebuilt on every render so it always reflects
+	// the tab the user is on now, not the one they were on when the chat mounted.
+	// Built per send rather than memoised: the tab's rows change underneath us as
+	// the user filters and pages, and the agent should be told what is on screen
+	// now, not what was there when the chat last rendered.
+	const buildEditorContext = useCallback(() => {
+		const ctx: Record<string, string> = {};
+		if (contextSurface) ctx.surface = contextSurface;
+		if (targetAppCode) ctx.app_code = targetAppCode;
+		if (activeObject) ctx.active_object = activeObject;
+		if (openTabs) ctx.open_tabs = openTabs;
+		if (openTabIds) ctx.open_tab_ids = openTabIds;
+
+		if (activeDataPath) {
+			const data = serialiseActiveData(
+				getDataFromPath(activeDataPath, props.locationHistory, pageExtractor),
+			);
+			if (data) ctx.active_data = data;
+		}
+		return Object.keys(ctx).length ? ctx : undefined;
+	}, [
+		contextSurface,
+		targetAppCode,
+		activeObject,
+		openTabs,
+		openTabIds,
+		activeDataPath,
+		props.locationHistory,
+		pageExtractor,
+	]);
+
+	// Sessions are scoped per user + client + agent server side. When the chat is
+	// working on a specific app, narrow the history to that app so each workspace
+	// gets its own list instead of one shared pile.
+	const sessionScopeQuery = targetAppCode ? `&app_code=${encodeURIComponent(targetAppCode)}` : '';
+
 	// Fetch sessions list
 	const fetchSessions = useCallback(async () => {
 		try {
 			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
-			const response = await fetch(`${baseUrl}/sessions?limit=${sessionsPerPage}`, {
-				headers: getAuthHeaders(),
-			});
+			const response = await fetch(
+				`${baseUrl}/sessions?limit=${sessionsPerPage}${sessionScopeQuery}`,
+				{
+					headers: getAuthHeaders(),
+				},
+			);
 			if (response.ok) {
 				const data = await response.json();
 				let items: Session[] = [];
@@ -1105,7 +1196,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		} catch {
 			// Silently fail - sessions are optional
 		}
-	}, [agentEndpoint, getAuthHeaders, sessionsPerPage]);
+	}, [agentEndpoint, getAuthHeaders, sessionsPerPage, sessionScopeQuery]);
 
 	useEffect(() => {
 		fetchSessions();
@@ -1232,7 +1323,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const newOffset = sessions.length;
 			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
 			const response = await fetch(
-				`${baseUrl}/sessions?limit=${sessionsPerPage}&offset=${newOffset}`,
+				`${baseUrl}/sessions?limit=${sessionsPerPage}&offset=${newOffset}${sessionScopeQuery}`,
 				{ headers: getAuthHeaders() },
 			);
 			if (response.ok) {
@@ -1253,6 +1344,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		sessionsPerPage,
 		getAuthHeaders,
 		totalSessions,
+		sessionScopeQuery,
 	]);
 
 	// Stop polling for a PROCESSING session
@@ -1311,6 +1403,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			shouldAutoScrollRef.current = true;
 			isNavigatingRef.current = true;
 			setIsAtBottom(true);
+			// A drawer has done its job once a chat is picked, and it is sitting on
+			// top of that chat. Not routed through handleSidebarToggle: this is not a
+			// preference to remember.
+			if (overlaySessions) setSidebarOpen(false);
 
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
@@ -1348,11 +1444,20 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				// Silently fail
 			}
 		},
-		[sessionId, agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, startPolling],
+		[
+			sessionId,
+			agentEndpoint,
+			getAuthHeaders,
+			messagesPerPage,
+			stopPolling,
+			startPolling,
+			overlaySessions,
+		],
 	);
 
 	const handleNewChat = useCallback(() => {
 		stopPolling();
+		if (overlaySessions) setSidebarOpen(false);
 		setIsStreaming(false);
 		shouldAutoScrollRef.current = true;
 		isNavigatingRef.current = true;
@@ -1367,7 +1472,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		// old panel over the fresh chat until the next craft event replaced it.
 		setCrafts(new Map());
 		setActiveCraftId(null);
-	}, [stopPolling]);
+	}, [stopPolling, overlaySessions]);
 
 	// Delete a session
 	const handleDeleteSession = useCallback(
@@ -1528,10 +1633,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			try {
 				abortControllerRef.current = new AbortController();
 
+				const editorContext = buildEditorContext();
 				const body: any = {
 					message: text,
 					session_id: sessionId,
 					...(selectedModel ? { model: selectedModel } : {}),
+					...(targetAppCode ? { app_code: targetAppCode } : {}),
+					...(editorContext ? { editor_context: editorContext } : {}),
 				};
 
 				if (attachments?.length) {
@@ -1711,6 +1819,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			agentEndpoint,
 			sessionId,
 			selectedModel,
+			targetAppCode,
+			buildEditorContext,
 			showToolCalls,
 			onMessage,
 			onError,
@@ -1725,6 +1835,18 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			props.pageDefinition,
 		],
 	);
+
+	// An opening question handed in by the page, e.g. arriving at /ai/<prompt> from
+	// the New view. Guarded by a ref rather than the dependency list: handleSend is
+	// rebuilt on nearly every state change, so a plain dependency would resend on
+	// each stream tick. Only ever fires into an empty chat.
+	const initialSentRef = useRef(false);
+	useEffect(() => {
+		if (initialSentRef.current) return;
+		if (!initialPrompt || messages.length > 0 || isStreaming || readOnly) return;
+		initialSentRef.current = true;
+		handleSend(initialPrompt);
+	}, [initialPrompt, messages.length, isStreaming, readOnly, handleSend]);
 
 	const handleStop = useCallback(() => {
 		abortControllerRef.current?.abort();
@@ -1834,7 +1956,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className="comp compPrompt"
+			ref={rootRef}
+			className={`comp compPrompt${overlaySessions ? ' _overlaySessions' : ''}`}
 			style={styleProperties.comp ?? {}}
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}

@@ -857,5 +857,21 @@
 		"gn": "Background",
 		"dn": "Background ValidationSuccess Value Active",
 		"n": "textAreaBackgroundValidationSuccessValueActive<designType><colorScheme>"
+	},
+	{
+		"gn": "Label",
+		"dn": "Label Letter Spacing",
+		"n": "textAreaLetterSpacingLabel<designType><colorScheme>",
+		"cp": "letter-spacing",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._label",
+		"np": true
+	},
+{
+		"gn": "Label",
+		"dn": "Label Text Transform",
+		"n": "textAreaTextTransformLabel<designType><colorScheme>",
+		"cp": "text-transform",
+		"sel": ".comp.compTextArea<designType><colorScheme> ._label",
+		"np": true
 	}
 ]

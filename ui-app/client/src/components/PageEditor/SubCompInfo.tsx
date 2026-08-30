@@ -68,6 +68,7 @@ import SchemaForm from '../SchemaForm/SchemaForm';
 import TemplateEditor from '../TemplateEditor/TemplateEditor';
 import TextEditor from '../TextEditor/TextEditor';
 import Prompt from '../Prompt/Prompt';
+import Tree from '../Tree/Tree';
 
 import { ComponentStyleSubComponentDefinition } from '../../types/common';
 import { IconHelper } from '../util/IconHelper';
@@ -5131,6 +5132,51 @@ export const SubComponentDefinitions: Record<
 		},
 	],
 
+	[Tree.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect id="_treeRoot" x="1" y="2" width="12" height="6" rx="1" fill="#3aad6c" />
+					<rect id="_treeChildOne" x="13" y="12" width="12" height="6" rx="1" fill="#008FDD" />
+					<rect id="_treeChildTwo" x="13" y="22" width="12" height="6" rx="1" fill="#008FDD" />
+					<path
+						id="_treeConnectors"
+						d="M5 8 V25 H13 M5 15 H13"
+						stroke="#A8A8A8"
+						strokeWidth="1.2"
+						fill="none"
+					/>
+				</IconHelper>
+			),
+		},
+		{ name: 'viewport', displayName: 'Scroll Area', description: 'Scroll Area', icon: 'fa-solid fa-box' },
+		{ name: 'nodeContainer', displayName: 'Node / Panel', description: 'Node / Panel', icon: 'fa-solid fa-box' },
+		{ name: 'nodeRow', displayName: 'Node Row / Box', description: 'Node Row / Box', icon: 'fa-solid fa-box' },
+		{ name: 'nodeContent', displayName: 'Node Content', description: 'Node Content', icon: 'fa-solid fa-box' },
+		{ name: 'nodeActions', displayName: 'Node Actions', description: 'Node Actions', icon: 'fa-solid fa-box' },
+		{ name: 'toggle', displayName: 'Toggle Button', description: 'Toggle Button', icon: 'fa-solid fa-caret-right' },
+		{ name: 'toggleExpanded', displayName: 'Toggle (Expanded)', description: 'Toggle when expanded', icon: 'fa-solid fa-caret-down' },
+		{ name: 'toggleCollapsed', displayName: 'Toggle (Collapsed)', description: 'Toggle when collapsed', icon: 'fa-solid fa-caret-right' },
+		{ name: 'guideLine', displayName: 'Guide / Connector Line', description: 'Guide and connector lines', icon: 'fa-solid fa-sitemap' },
+		{ name: 'leafSpacer', displayName: 'Leaf Spacer', description: 'Spacer aligning leaf rows with rows that have a toggle', icon: 'fa-solid fa-indent' },
+		{ name: 'childrenContainer', displayName: 'Children Container', description: 'Children Container', icon: 'fa-solid fa-box' },
+		{ name: 'checkBox', displayName: 'Check Box', description: 'Multi select check box', icon: 'fa-solid fa-square-check' },
+		{ name: 'dragHandle', displayName: 'Drag Handle', description: 'Drag Handle', icon: 'fa-solid fa-grip-vertical' },
+		{ name: 'dropBefore', displayName: 'Drop Indicator (Before)', description: 'Shown when dropping above a node', icon: 'fa-solid fa-minus' },
+		{ name: 'dropAfter', displayName: 'Drop Indicator (After)', description: 'Shown when dropping below a node', icon: 'fa-solid fa-minus' },
+		{ name: 'dropInto', displayName: 'Drop Indicator (Into)', description: 'Shown when dropping onto a node to reparent', icon: 'fa-solid fa-square' },
+		{ name: 'buttonAdd', displayName: 'Add Button', description: 'Add Button', icon: 'fa-solid fa-circle-plus' },
+		{ name: 'buttonDelete', displayName: 'Delete Button', description: 'Delete Button', icon: 'fa-solid fa-circle-minus' },
+		{ name: 'column', displayName: 'Column', description: 'Column in the columns design', icon: 'fa-solid fa-table-columns' },
+		{ name: 'columnHeaderPart', displayName: 'Column Header', description: 'Column Header', icon: 'fa-solid fa-box' },
+		{ name: 'columnDividerLine', displayName: 'Column Divider', description: 'Column Divider', icon: 'fa-solid fa-grip-lines-vertical' },
+		{ name: 'columnChevronIcon', displayName: 'Column Chevron', description: 'Chevron marking a node with children', icon: 'fa-solid fa-chevron-right' },
+		{ name: 'emptyState', displayName: 'Empty State', description: 'Shown when there are no nodes', icon: 'fa-solid fa-box' },
+	],
 	[TextList.name]: [
 		{
 			name: '',

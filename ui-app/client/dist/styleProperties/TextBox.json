@@ -863,5 +863,29 @@
 		"gn": "Border Color",
 		"dn": "Success Border Color",
 		"n": "textBoxSuccessBorderColor<designType><colorScheme>"
+	},
+	{
+		"gn": "Label",
+		"dn": "Label Letter Spacing",
+		"n": "textBoxLetterSpacingLabel<designType><colorScheme>",
+		"cp": "letter-spacing",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._label",
+		"np": true
+	},
+{
+		"gn": "Label",
+		"dn": "Label Text Transform",
+		"n": "textBoxTextTransformLabel<designType><colorScheme>",
+		"cp": "text-transform",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._label",
+		"np": true
+	},
+{
+		"gn": "Icon",
+		"dn": "Icon Font Size",
+		"n": "textBoxFontSizeIcon<designType><colorScheme>",
+		"cp": "font-size",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._leftIcon, .comp.compTextBox<designType><colorScheme> ._rightIcon",
+		"np": true
 	}
 ]
