@@ -293,6 +293,42 @@ export default function PromptStyle({
 			display: none;
 		}
 
+		/* Overlay sessions: the list floats over the chat instead of sitting beside
+		   it. Driven by a class (the component measures its own width, see
+		   sessionsMode) and, as a fallback, by a genuinely small viewport. Both
+		   selectors carry identical rules. */
+		${PREFIX}._overlaySessions ._sessionSidebar {
+			position: absolute;
+			z-index: 20;
+			width: 260px;
+			transform: translateX(-100%);
+			transition: transform 0.2s ease;
+			box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+			opacity: 1;
+			pointer-events: auto;
+		}
+
+		${PREFIX}._overlaySessions ._sessionSidebar._collapsed {
+			width: 260px;
+			margin-left: 0;
+			border-right: 1px solid #e5e5e5;
+			opacity: 1;
+			pointer-events: auto;
+			transform: translateX(-100%);
+		}
+
+		${PREFIX}._overlaySessions ._sessionSidebar._open {
+			transform: translateX(0);
+		}
+
+		${PREFIX}._overlaySessions ._sidebarOverlay {
+			display: block;
+			position: absolute;
+			inset: 0;
+			z-index: 19;
+			background: rgba(0, 0, 0, 0.3);
+		}
+
 		@media (max-width: 768px) {
 			${PREFIX} ._sessionSidebar {
 				position: absolute;

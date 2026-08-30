@@ -90,6 +90,7 @@ export default function TreeComponent(props: Readonly<ComponentProps>) {
 			labelPath,
 			defaultData,
 			defaultExpandLevel,
+			expandToSelection,
 			singleExpand,
 			expandIcon,
 			collapseIcon,
@@ -193,16 +194,106 @@ export default function TreeComponent(props: Readonly<ComponentProps>) {
 		return m;
 	}, [roots]);
 
+	/*
+	 * Selection is read here, above expansion, because Expand To Selection makes expansion
+	 * depend on it: `isExpanded` has to be able to ask which nodes are ancestors of the
+	 * selected one. The write side of selection stays below, next to the other handlers.
+	 */
+	// ------------------------------------------------------------------ selection (read)
+	const [selection, setSelection] = useState<any>();
+	useEffect(() => {
+		if (!selectionPath) return undefined;
+		return addListenerAndCallImmediately(
+			context.pageName,
+			(_, v) => setSelection(v),
+			selectionPath,
+		);
+	}, [selectionPath, context.pageName]);
+
+	const selectionValueOf = useCallback(
+		(node: TreeNodeModel): any => {
+			switch (selectionType) {
+				case 'PATH':
+					return `${bindingPathPath}${node.dataPath}`;
+				case 'OBJECT':
+					return duplicate(node.data);
+				case 'KEY': {
+					if (!selectionKey) return undefined;
+					return new ExpressionEvaluator(`Data.${selectionKey}`).evaluate(
+						getExtractionMap(node.data),
+					);
+				}
+				case 'TREE_KEY':
+					return node.nodeKey;
+				default:
+					return undefined;
+			}
+		},
+		[selectionType, selectionKey, bindingPathPath],
+	);
+
+	const isSelectable = useCallback(
+		(node: TreeNodeModel): boolean => {
+			if (selectionType === 'NONE' || !selectionPath || readOnly) return false;
+			if (selectionBehaviour === 'LEAF_ONLY') return !node.hasChildren;
+			if (selectionBehaviour === 'BRANCH_ONLY') return node.hasChildren;
+			return true;
+		},
+		[selectionType, selectionPath, selectionBehaviour, readOnly],
+	);
+
+	const isSelected = useCallback(
+		(node: TreeNodeModel): boolean => {
+			if (selectionType === 'NONE' || !selectionPath) return false;
+			const value = selectionValueOf(node);
+			if (value === undefined) return false;
+			if (multiSelect)
+				return Array.isArray(selection)
+					? selection.some((e: any) => deepEqual(e, value))
+					: false;
+			return deepEqual(selection, value);
+		},
+		[selectionType, selectionPath, selectionValueOf, multiSelect, selection],
+	);
+
 	// ------------------------------------------------------------------ expansion
+	/*
+	 * Every ancestor of a selected node, so a deep link into a collapsed branch reveals
+	 * itself rather than looking like the tree ignored it. Recomputed from the data, never
+	 * written to the expansion binding: nothing here is a user action, so nothing here
+	 * should survive as one.
+	 */
+	const selectionAncestors = useMemo(() => {
+		const keys = new Set<string>();
+		if (!expandToSelection || selectionType === 'NONE' || !selectionPath) return keys;
+
+		const walk = (nodes: TreeNodeModel[], chain: string[]) => {
+			for (const node of nodes) {
+				if (isSelected(node)) for (const k of chain) keys.add(k);
+				if (node.children.length) walk(node.children, [...chain, node.nodeKey]);
+			}
+		};
+		walk(roots, []);
+
+		return keys;
+	}, [roots, isSelected, expandToSelection, selectionType, selectionPath]);
+
 	const [openedByUser, setOpenedByUser] = useState<Set<string>>(() => new Set());
 	const [closedByUser, setClosedByUser] = useState<Set<string>>(() => new Set());
 	const [boundExpanded, setBoundExpanded] = useState<any>();
 
+	/*
+	 * The listener is handed the expansion map itself, and the store mutates that object in
+	 * place, so the reference never changes after the map first appears. Passing it straight
+	 * to setState means React compares it against itself and skips the render: the very first
+	 * toggle works, because it creates the map, and every toggle after it is silently ignored.
+	 * Copy on the way in so each change carries a new identity.
+	 */
 	useEffect(() => {
 		if (!expandedPath) return undefined;
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			context.pageName,
-			(_, v) => setBoundExpanded(v),
+			(_, v) => setBoundExpanded(v && typeof v === 'object' ? { ...v } : v),
 			expandedPath,
 		);
 	}, [expandedPath, context.pageName]);
@@ -240,13 +331,13 @@ export default function TreeComponent(props: Readonly<ComponentProps>) {
 			if (expandedPath) {
 				const v = boundExpanded?.[nodeKey];
 				if (v !== undefined) return !!v;
-				return defaults.has(nodeKey);
+				return defaults.has(nodeKey) || selectionAncestors.has(nodeKey);
 			}
 			if (closedByUser.has(nodeKey)) return false;
 			if (openedByUser.has(nodeKey)) return true;
-			return defaults.has(nodeKey);
+			return defaults.has(nodeKey) || selectionAncestors.has(nodeKey);
 		},
-		[expandedPath, boundExpanded, defaults, openedByUser, closedByUser],
+		[expandedPath, boundExpanded, defaults, openedByUser, closedByUser, selectionAncestors],
 	);
 
 	const visibleNodes = useMemo(() => flattenVisibleTree(roots, isExpanded), [roots, isExpanded]);
@@ -365,63 +456,6 @@ export default function TreeComponent(props: Readonly<ComponentProps>) {
 			onExpand,
 			onCollapse,
 		],
-	);
-
-	// ------------------------------------------------------------------ selection
-	const [selection, setSelection] = useState<any>();
-	useEffect(() => {
-		if (!selectionPath) return undefined;
-		return addListenerAndCallImmediately(
-			context.pageName,
-			(_, v) => setSelection(v),
-			selectionPath,
-		);
-	}, [selectionPath, context.pageName]);
-
-	const selectionValueOf = useCallback(
-		(node: TreeNodeModel): any => {
-			switch (selectionType) {
-				case 'PATH':
-					return `${bindingPathPath}${node.dataPath}`;
-				case 'OBJECT':
-					return duplicate(node.data);
-				case 'KEY': {
-					if (!selectionKey) return undefined;
-					return new ExpressionEvaluator(`Data.${selectionKey}`).evaluate(
-						getExtractionMap(node.data),
-					);
-				}
-				case 'TREE_KEY':
-					return node.nodeKey;
-				default:
-					return undefined;
-			}
-		},
-		[selectionType, selectionKey, bindingPathPath],
-	);
-
-	const isSelectable = useCallback(
-		(node: TreeNodeModel): boolean => {
-			if (selectionType === 'NONE' || !selectionPath || readOnly) return false;
-			if (selectionBehaviour === 'LEAF_ONLY') return !node.hasChildren;
-			if (selectionBehaviour === 'BRANCH_ONLY') return node.hasChildren;
-			return true;
-		},
-		[selectionType, selectionPath, selectionBehaviour, readOnly],
-	);
-
-	const isSelected = useCallback(
-		(node: TreeNodeModel): boolean => {
-			if (selectionType === 'NONE' || !selectionPath) return false;
-			const value = selectionValueOf(node);
-			if (value === undefined) return false;
-			if (multiSelect)
-				return Array.isArray(selection)
-					? selection.some((e: any) => deepEqual(e, value))
-					: false;
-			return deepEqual(selection, value);
-		},
-		[selectionType, selectionPath, selectionValueOf, multiSelect, selection],
 	);
 
 	const select = useCallback(
