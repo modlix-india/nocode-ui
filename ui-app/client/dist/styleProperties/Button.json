@@ -22,7 +22,8 @@
 			"_fabButton-": "48px",
 			"_fabButtonMini-": "32px",
 			"_decorative-": "32px",
-			"_bigDesign1-": "60px"
+			"_bigDesign1-": "60px",
+			"_smallOutlined-": "28px"
 		}
 	},
 	{
@@ -51,7 +52,8 @@
 			"_fabButton-": "0px",
 			"_fabButtonMini-": "0px",
 			"_decorative-": "5px 5px",
-			"_bigDesign1-": "5px 5px"
+			"_bigDesign1-": "5px 5px",
+			"_smallOutlined-": "0 12px"
 		}
 	},
 	{
@@ -70,7 +72,8 @@
 			"_fabButton-": "50%",
 			"_fabButtonMini-": "50%",
 			"_decorative-": "4px",
-			"_bigDesign1-": "4px"
+			"_bigDesign1-": "4px",
+			"_smallOutlined-": "16px"
 		}
 	},
 	{
@@ -82,7 +85,8 @@
 		"sel": ".comp.compButton<designType><colorScheme>",
 		"np": true,
 		"spv": {
-			"_outlined-": "1px solid"
+			"_outlined-": "1px solid",
+			"_smallOutlined-": "1px solid"
 		}
 	},
 	{
@@ -196,7 +200,8 @@
 			"_bigDesign1-_secondary": "linear-gradient(90deg, <backgroundDarkerColorTwo> 0%, <backgroundColorTwo> 100%)",
 			"_bigDesign1-_tertiary": "linear-gradient(90deg, <backgroundDarkerColorThree> 0%, <backgroundColorThree> 100%)",
 			"_bigDesign1-_quaternary": "linear-gradient(90deg, <backgroundDarkerColorFour> 0%, <backgroundColorFour> 100%)",
-			"_bigDesign1-_quinary": "linear-gradient(90deg, <backgroundDarkerColorFive> 0%, <backgroundColorFive> 100%)"
+			"_bigDesign1-_quinary": "linear-gradient(90deg, <backgroundDarkerColorFive> 0%, <backgroundColorFive> 100%)",
+			"_smallOutlined-": "transparent"
 		}
 	},
 	{
@@ -241,7 +246,12 @@
 			"_bigDesign1-_secondary": "<backgroundColorTwo>",
 			"_bigDesign1-_tertiary": "<backgroundColorThree>",
 			"_bigDesign1-_quaternary": "<backgroundColorFour>",
-			"_bigDesign1-_quinary": "<backgroundColorFive>"
+			"_bigDesign1-_quinary": "<backgroundColorFive>",
+			"_smallOutlined-_primary": "<backgroundHoverColorOne>",
+			"_smallOutlined-_secondary": "<backgroundHoverColorTwo>",
+			"_smallOutlined-_tertiary": "<backgroundHoverColorThree>",
+			"_smallOutlined-_quaternary": "<backgroundHoverColorFour>",
+			"_smallOutlined-_quinary": "<backgroundHoverColorFive>"
 		}
 	},
 	{
@@ -276,7 +286,12 @@
 			"_fabButton-": "<fontColorTwo>",
 			"_fabButtonMini-": "<fontColorTwo>",
 			"_decorative-": "<fontColorTwo>",
-			"_bigDesign1-": "<fontColorTwo>"
+			"_bigDesign1-": "<fontColorTwo>",
+			"_smallOutlined-_primary": "<fontColorThree>",
+			"_smallOutlined-_secondary": "<fontColorFour>",
+			"_smallOutlined-_tertiary": "<fontColorFive>",
+			"_smallOutlined-_quaternary": "<fontColorNine>",
+			"_smallOutlined-_quinary": "<fontColorSeven>"
 		}
 	},
 	{
@@ -303,7 +318,8 @@
 			"_fabButton-": "<fontColorOne>",
 			"_fabButtonMini-": "<fontColorOne>",
 			"_decorative-": "<fontColorOne>",
-			"_bigDesign1-": "<fontColorOne>"
+			"_bigDesign1-": "<fontColorOne>",
+			"_smallOutlined-": "<fontColorTwo>"
 		}
 	},
 	{
@@ -322,7 +338,8 @@
 			"_fabButton-": "<backgroundColorNine>",
 			"_fabButtonMini-": "<backgroundColorNine>",
 			"_decorative-": "<backgroundColorNine>",
-			"_bigDesign1-": "<backgroundColorNine>"
+			"_bigDesign1-": "<backgroundColorNine>",
+			"_smallOutlined-": "<backgroundColorNine>"
 		}
 	},
 	{
@@ -341,7 +358,8 @@
 			"_fabButton-": "<backgroundColorNine>",
 			"_fabButtonMini-": "<backgroundColorNine>",
 			"_decorative-": "<backgroundColorNine>",
-			"_bigDesign1-": "<backgroundColorNine>"
+			"_bigDesign1-": "<backgroundColorNine>",
+			"_smallOutlined-": "<backgroundColorNine>"
 		}
 	},
 	{
@@ -360,7 +378,8 @@
 			"_fabButton-": "<fontColorOne>",
 			"_fabButtonMini-": "<fontColorOne>",
 			"_decorative-": "<fontColorOne>",
-			"_bigDesign1-": "<fontColorOne>"
+			"_bigDesign1-": "<fontColorOne>",
+			"_smallOutlined-": "<fontColorOne>"
 		}
 	},
 	{
@@ -379,7 +398,8 @@
 			"_fabButton-": "<fontColorOne>",
 			"_fabButtonMini-": "<fontColorOne>",
 			"_decorative-": "<fontColorOne>",
-			"_bigDesign1-": "<fontColorOne>"
+			"_bigDesign1-": "<fontColorOne>",
+			"_smallOutlined-": "<fontColorOne>"
 		}
 	},
 	{
@@ -398,7 +418,8 @@
 			"_fabButton-": "<fontColorEight>",
 			"_fabButtonMini-": "<fontColorEight>",
 			"_decorative-": "<fontColorEight>",
-			"_bigDesign1-": "<fontColorEight>"
+			"_bigDesign1-": "<fontColorEight>",
+			"_smallOutlined-": "<fontColorEight>"
 		}
 	},
 	{
@@ -438,7 +459,12 @@
 			"_fabButtonMini-_secondary": "<fontColorFour>",
 			"_fabButtonMini-_tertiary": "<fontColorFive>",
 			"_fabButtonMini-_quaternary": "<fontColorNine>",
-			"_fabButtonMini-_quinary": "<fontColorSeven>"
+			"_fabButtonMini-_quinary": "<fontColorSeven>",
+			"_smallOutlined-_primary": "<fontColorThree>",
+			"_smallOutlined-_secondary": "<fontColorFour>",
+			"_smallOutlined-_tertiary": "<fontColorFive>",
+			"_smallOutlined-_quaternary": "<fontColorNine>",
+			"_smallOutlined-_quinary": "<fontColorSeven>"
 		}
 	},
 	{
@@ -478,7 +504,12 @@
 			"_fabButtonMini-_secondary": "<fontColorFour>",
 			"_fabButtonMini-_tertiary": "<fontColorFive>",
 			"_fabButtonMini-_quaternary": "<fontColorNine>",
-			"_fabButtonMini-_quinary": "<fontColorSeven>"
+			"_fabButtonMini-_quinary": "<fontColorSeven>",
+			"_smallOutlined-_primary": "<fontColorThree>",
+			"_smallOutlined-_secondary": "<fontColorFour>",
+			"_smallOutlined-_tertiary": "<fontColorFive>",
+			"_smallOutlined-_quaternary": "<fontColorNine>",
+			"_smallOutlined-_quinary": "<fontColorSeven>"
 		}
 	},
 	{
@@ -510,7 +541,8 @@
 			"_default-": "0px 5px 0px 0px",
 			"_outlined-": "0px 5px 0px 0px",
 			"_text-": "0px 5px 0px 0px",
-			"_bigDesign1-": "0px 10px 0px 0px"
+			"_bigDesign1-": "0px 10px 0px 0px",
+			"_smallOutlined-": "0px 5px 0px 0px"
 		}
 	},
 	{
@@ -524,7 +556,8 @@
 			"_default-": "0px 0px 0px 5px",
 			"_outlined-": "0px 0px 0px 5px",
 			"_text-": "0px 0px 0px 5px",
-			"_bigDesign1-": "0px 0px 0px 10px"
+			"_bigDesign1-": "0px 0px 0px 10px",
+			"_smallOutlined-": "0px 0px 0px 5px"
 		}
 	},
 	{
@@ -608,7 +641,8 @@
 			"_default-": "0px 5px 0px 0px",
 			"_outlined-": "0px 5px 0px 0px",
 			"_text-": "0px 5px 0px 0px",
-			"_bigDesign1-": "0px 10px 0px 0px"
+			"_bigDesign1-": "0px 10px 0px 0px",
+			"_smallOutlined-": "0px 5px 0px 0px"
 		}
 	},
 	{
@@ -622,7 +656,8 @@
 			"_default-": "0px 0px 0px 5px",
 			"_outlined-": "0px 0px 0px 5px",
 			"_text-": "0px 0px 0px 5px",
-			"_bigDesign1-": "0px 0px 0px 10px"
+			"_bigDesign1-": "0px 0px 0px 10px",
+			"_smallOutlined-": "0px 0px 0px 5px"
 		}
 	},
 	{
@@ -636,7 +671,8 @@
 			"_default-": "0px 5px 0px 0px",
 			"_outlined-": "0px 5px 0px 0px",
 			"_text-": "0px 5px 0px 0px",
-			"_bigDesign1-": "0px 10px 0px 0px"
+			"_bigDesign1-": "0px 10px 0px 0px",
+			"_smallOutlined-": "0px 5px 0px 0px"
 		}
 	},
 	{
@@ -650,7 +686,8 @@
 			"_default-": "0px 0px 0px 5px",
 			"_outlined-": "0px 0px 0px 5px",
 			"_text-": "0px 0px 0px 5px",
-			"_bigDesign1-": "0px 0px 0px 10px"
+			"_bigDesign1-": "0px 0px 0px 10px",
+			"_smallOutlined-": "0px 0px 0px 5px"
 		}
 	},
 	{

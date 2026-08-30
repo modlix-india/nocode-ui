@@ -9,10 +9,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import {
-	COMMON_COMPONENT_PROPERTIES,
-	COMPONENT_STYLE_GROUP_PROPERTIES,
-} from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -39,6 +36,82 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 'What can I help with?',
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
+	},
+	{
+		// Lets a page hand the chat its opening question, typically from the URL:
+		// /ai/<encoded prompt> with this bound to Url.pathParts[1]. Sent once, and
+		// only into an empty chat, so reopening a session never replays it.
+		name: 'initialPrompt',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Initial Prompt',
+		description:
+			'A question to send automatically when the chat opens empty. Use it to arrive from elsewhere with the conversation already started.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: false,
+	},
+	// ── Editor context ──────────────────────────────────────────────────────
+	// What the surrounding page has open. Sent with every message as
+	// `editor_context`, so the agent can answer about the thing in front of the
+	// user without spending a tool round-trip discovering it first. Plain
+	// properties rather than one bound object, so what gets sent is visible by
+	// name in the property editor. Set them as EXPRESSIONs.
+	{
+		// Without this the agent has to guess what kind of thing the names in
+		// activeObject are. An org section called "Invites" reads exactly like a
+		// page called "Invites", and the agent goes hunting with the page tools.
+		name: 'contextSurface',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Context Surface',
+		description:
+			'What kind of screen this chat is embedded in, e.g. "the organization admin console". Tells the agent how to read the other context fields.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'targetAppCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Target App Code',
+		description:
+			'The app the user is working on, when it differs from the app hosting this chat. Scopes both the conversation and the session history to that app.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'activeObject',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Active Object',
+		description:
+			'What the user is looking at right now, e.g. "storage:Lead". Told to the agent as the current focus.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'openTabs',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Tabs',
+		description: 'Everything else the user has open, as a comma separated list.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'openTabIds',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Tab Ids',
+		description:
+			'Ids of the open objects, comma separated, so the agent can read them directly instead of searching by name.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// A PATH rather than the value, for two reasons. The expression engine
+		// cannot resolve a dynamic root (`Page[Page.sk.ns]` comes back as the
+		// literal string), and reading the path fresh on each send means the agent
+		// gets the rows as they are now, not as they were when the tab was opened.
+		// Point it at whatever the open tab keeps, warts and all: the payload is
+		// serialised within a fixed budget, credential-looking values are redacted,
+		// and the bulkiest entries are dropped first (dropdown option lists are
+		// routinely bigger than the rows themselves).
+		name: 'activeDataPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Active Tab Data Path',
+		description:
+			'Store path holding what the open tab is showing, e.g. "Page.pnInvites". Read fresh on every message and sent as JSON: capped, with anything named like a credential redacted.',
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'quickActionLayout',
@@ -90,6 +163,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Show the session history sidebar.',
 		defaultValue: true,
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// The sidebar is a 260px column, which is most of the room in a docked side
+		// panel. Auto measures the component (not the viewport) and floats the list
+		// over the chat once there is no room to sit beside it.
+		name: 'sessionsMode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sessions Layout',
+		description: 'Whether the session history sits beside the chat or floats over it.',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: '_auto',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: '_auto',
+				displayName: 'Auto',
+				description: 'Beside the chat when there is room, over it when there is not',
+			},
+			{ name: '_sidebar', displayName: 'Sidebar', description: 'Always beside the chat' },
+			{ name: '_overlay', displayName: 'Overlay', description: 'Always over the chat' },
+		],
 	},
 	{
 		name: 'newChatLabel',

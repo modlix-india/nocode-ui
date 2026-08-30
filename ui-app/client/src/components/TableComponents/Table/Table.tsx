@@ -1,9 +1,5 @@
 import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-	LOCAL_STORE_PREFIX,
-	STORE_PATH_FUNCTION_EXECUTION,
-	STORE_PREFIX,
-} from '../../../constants';
+import { STORE_PATH_FUNCTION_EXECUTION, STORE_PREFIX } from '../../../constants';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -29,9 +25,8 @@ import { flattenUUID } from '../../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableProperties';
 import { usedComponents } from '../../../App/usedComponents';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
-import axios from 'axios';
-import { deepEqual, duplicate } from '@fincity/kirun-js';
 import getSrcUrl from '../../util/getSrcUrl';
+import { personalizationEvent } from '../../util/personalization';
 
 export default function TableComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -185,6 +180,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 	useEffect(
 		() =>
 			personalizationEvent({
+				prefix: 'table',
 				personalizationBindingPath,
 				pageExtractor,
 				locationHistory,
@@ -1265,59 +1261,6 @@ function computeInitialExpanded(
 
 	walk(data, 0);
 	return keys;
-}
-
-function personalizationEvent({
-	personalizationBindingPath,
-	key,
-	locationHistory,
-	pageExtractor,
-}: {
-	personalizationBindingPath: string | undefined;
-	key: string;
-	locationHistory: any[];
-	pageExtractor: PageStoreExtractor;
-}) {
-	if (!personalizationBindingPath) return;
-
-	const appCode = getDataFromPath(
-		`${STORE_PREFIX}.application.appCode`,
-		locationHistory,
-		pageExtractor,
-	);
-	const url = `api/ui/personalization/${appCode}/table_${pageExtractor.getPageName()}_${key}`;
-	let currentObject: any;
-	(async () => {
-		const po = await axios.get(url, {
-			headers: {
-				Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-			},
-		});
-		if (po.data) setStoreData(personalizationBindingPath, po.data, pageExtractor.getPageName());
-		currentObject = duplicate(po.data);
-	})();
-
-	let timeoutHandle: NodeJS.Timeout | undefined;
-	return addListenerAndCallImmediatelyWithChildrenActivity(
-		pageExtractor.getPageName(),
-		(_, v) => {
-			if (!timeoutHandle) clearTimeout(timeoutHandle);
-			if (deepEqual(currentObject, v) || currentObject === undefined) return;
-			currentObject = duplicate(v);
-
-			timeoutHandle = setTimeout(() => {
-				(async () => {
-					await axios.post(url, v, {
-						headers: {
-							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-						},
-					});
-					timeoutHandle = undefined;
-				})();
-			}, 2000);
-		},
-		personalizationBindingPath,
-	);
 }
 
 export function addToToggleSetCurry(

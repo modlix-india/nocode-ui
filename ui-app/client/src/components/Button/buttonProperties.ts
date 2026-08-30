@@ -21,6 +21,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Outline Button',
 				description: 'Outline Button type',
 			},
+			// An outlined button has exactly one size, so an app that needs a
+			// compact secondary action inside a table row has nowhere to put it and
+			// ends up sizing every one of them inline. This is that size as a
+			// variant: same chrome as `_outlined`, its own height, padding and font.
+			{
+				name: '_smallOutlined',
+				displayName: 'Small Outline Button',
+				description: 'Compact outline button, for in-row and toolbar actions',
+			},
 			{ name: '_text', displayName: 'Text Button', description: 'Outline Button type' },
 			{ name: '_iconButton', displayName: 'Icon Button', description: 'Icon Button type' },
 			{

@@ -281,5 +281,13 @@
 		"gn": "Font Weight",
 		"dn": "FontWeight Quinaryhover Active",
 		"n": "menuFontWeightQuinaryhoverActive<designType><colorScheme>"
+	},
+	{
+		"gn": "Font",
+		"dn": "Text Decoration",
+		"n": "menuTextDecoration<designType><colorScheme>",
+		"cp": "text-decoration",
+		"sel": ".comp.compMenu<designType><colorScheme>, .comp.compMenu<designType><colorScheme>:visited",
+		"np": true
 	}
 ]
