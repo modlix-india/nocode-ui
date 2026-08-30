@@ -893,6 +893,15 @@
 		"dv": "100%"
 	},
 	{
+		"cp": "padding",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBox",
+		"np": true,
+		"gn": "Padding",
+		"dn": "Padding DropdownSearchBox",
+		"n": "dropdownPaddingDropdownSearchBox<designType><colorScheme>",
+		"dv": "0 10px"
+	},
+	{
 		"cp": "border-radius",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBox",
 		"np": true,
