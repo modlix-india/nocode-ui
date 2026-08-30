@@ -1402,5 +1402,29 @@
 		"gn": "Background",
 		"dn": "Background HasError Active Error",
 		"n": "dropdownBackgroundHasErrorActiveError<designType><colorScheme>"
+	},
+	{
+		"gn": "Label",
+		"dn": "Label Letter Spacing",
+		"n": "dropdownLetterSpacingLabel<designType><colorScheme>",
+		"cp": "letter-spacing",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._label",
+		"np": true
+	},
+{
+		"gn": "Label",
+		"dn": "Label Text Transform",
+		"n": "dropdownTextTransformLabel<designType><colorScheme>",
+		"cp": "text-transform",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._label",
+		"np": true
+	},
+{
+		"gn": "Icon",
+		"dn": "Icon Font Size",
+		"n": "dropdownFontSizeIcon<designType><colorScheme>",
+		"cp": "font-size",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._leftIcon, .comp.compDropdown<designType><colorScheme> ._rightIcon",
+		"np": true
 	}
 ]
