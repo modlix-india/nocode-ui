@@ -121,6 +121,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 0,
 	},
 	{
+		name: 'expandToSelection',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Expand To Selection',
+		description:
+			'Keep the ancestors of the selected node expanded, so a tree that is told what is selected reveals it instead of hiding it inside collapsed branches. This is what a navigation rail needs on a deep link. A node the reader has collapsed by hand stays collapsed.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
 		name: 'singleExpand',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Expand One At A Time',

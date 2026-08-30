@@ -581,5 +581,21 @@
 			"_design9-": "5px",
 			"_design0-": "5px"
 		}
+	},
+	{
+		"gn": "Font",
+		"dn": "Letter Spacing",
+		"n": "tableColumnHeaderLetterSpacing<tableDesign><colorScheme>",
+		"cp": "letter-spacing",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableHeaderColumn",
+		"np": true
+	},
+{
+		"gn": "Font",
+		"dn": "Text Transform",
+		"n": "tableColumnHeaderTextTransform<tableDesign><colorScheme>",
+		"cp": "text-transform",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableHeaderColumn",
+		"np": true
 	}
 ]
