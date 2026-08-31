@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
 import { shortUUID } from '../../util/shortUUID';
 import {
@@ -28,6 +28,10 @@ import { Variables } from './components/Variables';
 import { APP_KEY, MESSAGE_KEY, themableComponents } from './components/themableComponents';
 import Editor from '@monaco-editor/react';
 import { SubComponentDefinitions } from '../PageEditor/SubCompInfo';
+
+const PANEL_WIDTH_KEY = 'modlixThemeEditorPanelWidth';
+const PANEL_MIN = 300;
+const PANEL_DEFAULT = 600;
 
 export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -59,6 +63,16 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	const [showJSON, setShowJSON] = useState(false);
 	const [url, setUrl] = useState('');
 	const [close, setClose] = useState(false);
+
+	// Panel width. The variable list used to be a hard 600px, which left the 1280px
+	// desktop preview clipped in any pane narrower than about 1900px. Draggable, and
+	// remembered per browser so you set it once.
+	const [panelWidth, setPanelWidth] = useState<number>(() => {
+		const stored = Number(window.localStorage.getItem(PANEL_WIDTH_KEY));
+		return Number.isFinite(stored) && stored >= PANEL_MIN ? stored : PANEL_DEFAULT;
+	});
+	const rootRef = useRef<HTMLDivElement>(null);
+	const dragRef = useRef<{ startX: number; startWidth: number } | undefined>(undefined);
 
 	const iFrameRef = useRef<HTMLIFrameElement>(null);
 	const editorRef = useRef<any>(null);
@@ -125,6 +139,50 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	);
 
 	const theme = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
+
+	useEffect(() => {
+		function onMove(e: MouseEvent) {
+			if (!dragRef.current) return;
+			e.preventDefault();
+			const max = Math.max(
+				PANEL_MIN,
+				(rootRef.current?.clientWidth ?? PANEL_DEFAULT * 2) - 360,
+			);
+			const next = Math.min(
+				max,
+				Math.max(
+					PANEL_MIN,
+					dragRef.current.startWidth + (e.clientX - dragRef.current.startX),
+				),
+			);
+			setPanelWidth(next);
+		}
+
+		function onUp() {
+			if (!dragRef.current) return;
+			dragRef.current = undefined;
+			document.body.style.removeProperty('cursor');
+			document.body.style.removeProperty('user-select');
+		}
+
+		window.addEventListener('mousemove', onMove);
+		window.addEventListener('mouseup', onUp);
+		return () => {
+			window.removeEventListener('mousemove', onMove);
+			window.removeEventListener('mouseup', onUp);
+		};
+	}, []);
+
+	useEffect(() => {
+		window.localStorage.setItem(PANEL_WIDTH_KEY, String(panelWidth));
+	}, [panelWidth]);
+
+	const startPanelDrag = (e: React.MouseEvent) => {
+		e.preventDefault();
+		dragRef.current = { startX: e.clientX, startWidth: panelWidth };
+		document.body.style.cursor = 'col-resize';
+		document.body.style.userSelect = 'none';
+	};
 
 	// Page names for the preview picker. Optional: without bindingPath2 the URL box
 	// still takes any path typed by hand, which is how `editTheme` uses it.
@@ -207,7 +265,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	if (!close) {
 		if (!showJSON) {
 			editor = (
-				<div className="_variableContainer">
+				<div className="_variableContainer" style={{ width: panelWidth }}>
 					<div className="_devices">
 						<select
 							value={themeGroup}
@@ -260,7 +318,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 			);
 		} else {
 			editor = (
-				<div className="_editorContainer">
+				<div className="_editorContainer" style={{ width: panelWidth }}>
 					<div className="_editorWrapper">
 						<Editor
 							width="100%"
@@ -288,9 +346,18 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	}
 
 	return (
-		<div className="comp compThemeEditor" style={resolvedStyles.comp ?? {}}>
+		<div className="comp compThemeEditor" ref={rootRef} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={context} definition={definition} />
 			{editor}
+			{editor && iframeComp ? (
+				<button
+					type="button"
+					className="_panelResizer"
+					title="Drag to resize, double click to reset"
+					onMouseDown={startPanelDrag}
+					onDoubleClick={() => setPanelWidth(PANEL_DEFAULT)}
+				/>
+			) : null}
 			{iframeComp}
 		</div>
 	);
