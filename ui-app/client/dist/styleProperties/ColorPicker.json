@@ -550,6 +550,14 @@
 		"n": "colorpickerBorderDropdownContainer<designType><colorScheme>"
 	},
 	{
+		"cp": "box-shadow",
+		"sel": ".comp.compColorPicker<designType><colorScheme> ._dropdownContainer",
+		"np": true,
+		"gn": "Box Shadow",
+		"dn": "BoxShadow DropdownContainer",
+		"n": "colorpickerBoxShadowDropdownContainer<designType><colorScheme>"
+	},
+	{
 		"cp": "background",
 		"sel": ".comp.compColorPicker<designType><colorScheme> ._dropdownContainer",
 		"np": true,
@@ -589,11 +597,11 @@
 		"sel": ".comp.compColorPicker<designType><colorScheme> ._dropdownContainer._colorPickerBody input",
 		"np": true,
 		"spv": {
-			"_default-": "1px solid",
-			"_outlined-": "1px solid",
-			"_filled-": "1px solid",
-			"_bigDesign1-": "1px solid",
-			"_text-": "1px solid"
+			"_default-": "1px solid <fontColorEight>",
+			"_outlined-": "1px solid <fontColorEight>",
+			"_filled-": "1px solid <fontColorEight>",
+			"_bigDesign1-": "1px solid <fontColorEight>",
+			"_text-": "1px solid <fontColorEight>"
 		},
 		"gn": "Border",
 		"dn": "Border ColorPickerBodyinput",
