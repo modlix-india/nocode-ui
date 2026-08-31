@@ -56,7 +56,8 @@ export default function ThemeEditorStyle({
     }
 
     ${PREFIX} ._variableContainer {
-        width: 600px;
+        flex: 0 0 auto;
+        min-width: 300px;
         border-right: 1px solid #eee;
         display: flex;
         flex-direction: column;
@@ -386,8 +387,8 @@ export default function ThemeEditorStyle({
         display: flex;
         flex-direction: column;
         height: 100%;
-        flex: 1;
-        min-width: 0;
+        flex: 0 0 auto;
+        min-width: 300px;
         overflow: hidden;
     }
     
@@ -413,6 +414,21 @@ export default function ThemeEditorStyle({
         gap: 10px;
     }
     
+    ${PREFIX} ._panelResizer {
+        flex: 0 0 auto;
+        width: 5px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: col-resize;
+        align-self: stretch;
+    }
+
+    ${PREFIX} ._panelResizer:hover,
+    ${PREFIX} ._panelResizer:active {
+        background: rgba(245, 158, 11, .35);
+    }
+
     ${PREFIX} ._iframeWrapper {
         flex: 1;
         display:flex;

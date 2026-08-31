@@ -1,4 +1,6 @@
 import type { JSX } from 'react';
+import type { Location as ReactLocation } from 'react-router-dom';
+
 export interface MarkdownParserParameters {
 	componentKey: string;
 	lineNumber: number;
@@ -10,6 +12,9 @@ export interface MarkdownParserParameters {
 	urlRefs?: Map<string, MarkdownURLRef>;
 	line?: string;
 	indentationLength?: number;
+	// Current browser/router location, used to resolve relative asset URLs the
+	// same way the Image component does.
+	location?: ReactLocation | Location;
 }
 
 export interface MarkdownParserReturnValue {
