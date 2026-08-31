@@ -56,6 +56,10 @@ type CommonInputType = {
 	editCancelIcon?: any;
 	onEditRequest?: (editMode: boolean, canceled: boolean) => void;
 	analyticsLabel?: string;
+	/** W3C aria-keyshortcuts token for the input itself. */
+	ariaKeyShortcuts?: string;
+	/** Appended to the wrapper tooltip, e.g. ' (Ctrl+K)'. */
+	shortcutTooltip?: string;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -111,6 +115,8 @@ function CommonInputText(props: CommonInputType) {
 		editCancelIcon,
 		analyticsLabel,
 		onEditRequest,
+		ariaKeyShortcuts,
+		shortcutTooltip,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -229,6 +235,7 @@ function CommonInputText(props: CommonInputType) {
 				autoFocus={autoFocus}
 				autoComplete={autoComplete}
 				onKeyDown={keyDownEvent}
+				aria-keyshortcuts={ariaKeyShortcuts}
 			/>
 		) : (
 			<textarea
@@ -258,6 +265,7 @@ function CommonInputText(props: CommonInputType) {
 				autoComplete={autoComplete}
 				onKeyDown={keyDownEvent}
 				rows={rows}
+				aria-keyshortcuts={ariaKeyShortcuts}
 			/>
 		);
 
@@ -337,7 +345,11 @@ function CommonInputText(props: CommonInputType) {
 			onMouseLeave={onMouseLeave}
 			onMouseEnter={onMouseEnter}
 			onKeyUp={updDownHandler}
-			title={isPassword ? undefined : (title ?? value)}
+			title={
+				isPassword
+					? undefined
+					: `${title ?? value ?? ''}${shortcutTooltip ?? ''}` || undefined
+			}
 			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />

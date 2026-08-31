@@ -101,6 +101,93 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		multiValued: true,
 		group: ComponentPropertyGroup.VALIDATION,
 	},
+	shortcutKey: {
+		name: 'shortcutKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Shortcut Key',
+		description:
+			"Keyboard shortcut for this component. Write Mod for the platform's primary modifier: Cmd on Mac, Ctrl elsewhere. For example Mod+S, Mod+Shift+K, Alt+ArrowDown.",
+		editor: ComponentPropertyEditor.SHORTCUT_KEY,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	shortcutScope: {
+		name: 'shortcutScope',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Shortcut Scope',
+		description: 'Where the shortcut is active.',
+		defaultValue: 'PAGE',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: 'PAGE',
+				displayName: 'This Page',
+				description: 'Active anywhere on this page.',
+			},
+			{
+				name: 'GLOBAL',
+				displayName: 'Whole App',
+				description:
+					'Active on every page. Put the component on the shell page to make it app wide.',
+			},
+			{
+				name: 'LOCAL',
+				displayName: 'Within Component',
+				description: 'Active only while keyboard focus is inside this component.',
+			},
+		],
+	},
+	shortcutPriority: {
+		name: 'shortcutPriority',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Shortcut Priority',
+		description:
+			'Higher wins when two components claim the same key. Equal values show a chooser.',
+		defaultValue: 0,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	shortcutGroup: {
+		name: 'shortcutGroup',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Shortcut Group',
+		description:
+			'Heading this shortcut is listed under in the cheat sheet that opens with the ? key.',
+		translatable: true,
+		editor: ComponentPropertyEditor.TRANSLATABLE_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	shortcutAction: {
+		name: 'shortcutAction',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Shortcut Action',
+		description: 'What the shortcut key does to this component.',
+		defaultValue: 'FOCUS',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: 'FOCUS',
+				displayName: 'Focus this component',
+				description: 'Move keyboard focus here.',
+			},
+			{
+				name: 'FOCUS_SELECT',
+				displayName: 'Focus and select all',
+				description: 'Move focus here and select the existing text.',
+			},
+			{
+				name: 'EVENT',
+				displayName: 'Run event function',
+				description: 'Run the On Shortcut event instead of moving focus.',
+			},
+		],
+	},
+	onShortcut: {
+		name: 'onShortcut',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Shortcut',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description: 'Event to be triggered when the shortcut key is pressed.',
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	linkTargetType: {
 		name: 'target',
 		schema: SCHEMA_STRING_COMP_PROP,

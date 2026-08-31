@@ -8,6 +8,7 @@ import { StyleResolution } from '../types/common';
 import { processStyleDefinition, StyleResolutionDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './appStyleProperties';
 import MessageStyle from './Messages/MessageStyle';
+import ShortcutStyle from '../shortcuts/ShortcutStyle';
 import ComponentDefinitions from '../components';
 
 export function AppStyle() {
@@ -151,6 +152,7 @@ export function AppStyle() {
 			<style id="AppCss">{css}</style>
 			{styleComps}
 			<MessageStyle theme={theme} />
+			<ShortcutStyle theme={theme} />
 			<FileBrowserStyles />
 			<style id="AppStyle">{style}</style>
 		</>
