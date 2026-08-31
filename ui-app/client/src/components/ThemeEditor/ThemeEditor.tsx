@@ -28,6 +28,7 @@ const component: Component = {
 	styleProperties: stylePropertiesDefinition,
 	bindingPaths: {
 		bindingPath: { name: 'Theme Binding' },
+		bindingPath2: { name: 'Preview Page Names' },
 	},
 	stylePseudoStates: [],
 	defaultTemplate: {
@@ -36,7 +37,7 @@ const component: Component = {
 		type: 'ThemeEditor',
 		properties: {},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

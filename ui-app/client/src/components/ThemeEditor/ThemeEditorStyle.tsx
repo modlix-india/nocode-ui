@@ -26,7 +26,9 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._iframeContainer._DESKTOP {
         justify-content: flex-start;
-        align-items: flex-start;
+        align-items: stretch;
+        overflow-x: auto;
+        overflow-y: hidden;
     }
 
     ${PREFIX} iframe {
@@ -35,9 +37,8 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} iframe._DESKTOP {
         min-width: 1280px;
-        min-height: 1024px;
-        max-height: 1024px;
         width: 100%;
+        height: 100%;
     }
     
     ${PREFIX} iframe._TABLET {
@@ -199,6 +200,138 @@ export default function ThemeEditorStyle({
         flex: 1;
      }
 
+    ${PREFIX} ._variableValue {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    ${PREFIX} ._valueRow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    ${PREFIX} ._valueRow input[type="text"] {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* A variable set on this theme, rather than inherited from its base or the
+       component default. Without this every box looks equally authored. */
+    ${PREFIX} ._setMarker {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        background: transparent;
+    }
+
+    ${PREFIX} ._variable._overridden ._setMarker {
+        background: #F59E0B;
+    }
+
+    ${PREFIX} ._variable._overridden ._variableName {
+        color: #333;
+        font-weight: 600;
+    }
+
+    ${PREFIX} ._variableName {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    ${PREFIX} ._colorPicker {
+        flex: 0 0 auto;
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border: 1px solid #8e90a433;
+        border-radius: 3px;
+        background: none;
+        cursor: pointer;
+    }
+
+    ${PREFIX} ._colorSwatch {
+        flex: 0 0 auto;
+        width: 22px;
+        height: 22px;
+        border: 1px solid #8e90a433;
+        border-radius: 3px;
+    }
+
+    /* What a <var> value actually paints, once the indirection is followed. */
+    ${PREFIX} ._resolvedHint {
+        font: 10px/13px Inter;
+        color: #999;
+        padding-left: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    ${PREFIX} ._hitCount {
+        margin-left: auto;
+        font: 10px Inter;
+        color: #999;
+        flex: 0 0 auto;
+    }
+
+    ${PREFIX} ._componentTitle {
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        border-bottom: 2px solid #EEE8;
+        font: 13px Inter;
+        font-weight: 600;
+        color: #555;
+        cursor: pointer;
+    }
+
+    ${PREFIX} ._componentTitle:hover {
+        color: #B45309;
+    }
+
+    ${PREFIX} ._noHits {
+        padding: 14px 12px;
+        font: 11px/16px Inter;
+        color: #999;
+    }
+
+    ${PREFIX} ._scopeButton,
+    ${PREFIX} ._overrideButton {
+        width: auto;
+        min-width: 20px;
+        padding: 0 5px;
+        font: 10px Inter;
+        color: #555;
+        border: 1px solid #8e90a433;
+    }
+
+    ${PREFIX} ._scopeButton._selected,
+    ${PREFIX} ._overrideButton._selected {
+        background-color: rgba(245, 158, 11, .16);
+        border-color: #F59E0B;
+        color: #B45309;
+    }
+
+    ${PREFIX} ._overrideButton ._dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        border: 1px solid #999;
+    }
+
+    ${PREFIX} ._overrideButton._selected ._dot {
+        background: #F59E0B;
+        border-color: #F59E0B;
+    }
+
      ${PREFIX} input {
         border: 2px solid #8e90a41a;
         border-radius: 3px;
@@ -253,12 +386,22 @@ export default function ThemeEditorStyle({
         display: flex;
         flex-direction: column;
         height: 100%;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
     }
     
     ${PREFIX} ._editorWrapper {
         flex: 1;
         display: flex;
+        min-height: 0;
+        min-width: 0;
+        overflow: hidden;
+    }
 
+    ${PREFIX} ._editorWrapper > * {
+        flex: 1;
+        min-width: 0;
     }
 
     ${PREFIX} ._editorTopBar {

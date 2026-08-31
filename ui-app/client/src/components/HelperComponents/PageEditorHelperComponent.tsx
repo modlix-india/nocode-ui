@@ -46,7 +46,10 @@ export function PageEditorHelperComponent({
 		selectedComponents,
 		personalization: {
 			preview = false,
-			slave: { highlightColor = '#52BD94', noSelection = false } = {},
+			// This outline is drawn inside the edited page's iframe, where the editor's
+			// stylesheet is not loaded, so it cannot be a theme variable like the rest
+			// of the editor chrome. `personalization.slave.highlightColor` overrides it.
+			slave: { highlightColor = '#F59E0B', noSelection = false } = {},
 		} = {},
 	} = globalThis.pageEditor ?? {};
 
@@ -206,14 +209,8 @@ export function PageEditorHelperComponent({
 					});
 				}}
 			>
-				{typeof SubComponentDefinitions[definition.type]?.[0]
-					.icon === 'string' ? (
-					<i
-						className={`fa ${
-							SubComponentDefinitions[definition.type]?.[0]
-								.icon
-						}`}
-					/>
+				{typeof SubComponentDefinitions[definition.type]?.[0].icon === 'string' ? (
+					<i className={`fa ${SubComponentDefinitions[definition.type]?.[0].icon}`} />
 				) : (
 					SubComponentDefinitions[definition.type]?.[0].icon
 				)}
