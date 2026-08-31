@@ -258,9 +258,15 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		}
 	};
 
+	// The box is a controlled input off searchText, and searchText only follows the
+	// store when bindingPath2 is set. Returning early without one froze the field at
+	// '' — isSearchable rendered a search box that could not be typed in. The binding
+	// is what makes the text readable from the page (and what an onSearch event needs),
+	// so it stays authoritative when present; without one the local state is enough.
 	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-		if (!searchBindingPath) return;
-		setData(searchBindingPath, event.target.value, context.pageName);
+		const value = event.target.value;
+		if (searchBindingPath) setData(searchBindingPath, value, context.pageName);
+		else setSearchText(value);
 	};
 
 	React.useEffect(() => {
