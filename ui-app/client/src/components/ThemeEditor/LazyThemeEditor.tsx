@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
+import { shortUUID } from '../../util/shortUUID';
 import {
 	PageStoreExtractor,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -24,6 +25,7 @@ import {
 } from './components/ThemeEditorIcons';
 import { propertiesDefinition, stylePropertiesDefinition } from './themeEditorProperties';
 import { Variables } from './components/Variables';
+import { APP_KEY, MESSAGE_KEY, themableComponents } from './components/themableComponents';
 import Editor from '@monaco-editor/react';
 import { SubComponentDefinitions } from '../PageEditor/SubCompInfo';
 
@@ -31,7 +33,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
 		pageDefinition,
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2 },
 		locationHistory,
 		definition,
 		context,
@@ -124,6 +126,26 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 
 	const theme = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
 
+	// Page names for the preview picker. Optional: without bindingPath2 the URL box
+	// still takes any path typed by hand, which is how `editTheme` uses it.
+	const previewPagesPath =
+		bindingPath2 && getPathFromLocation(bindingPath2, locationHistory, pageExtractor);
+	const [previewPages, setPreviewPages] = useState<Array<string>>([]);
+
+	useEffect(() => {
+		if (!previewPagesPath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
+			(_, v) =>
+				setPreviewPages(
+					Array.isArray(v)
+						? v.map(e => (typeof e === 'string' ? e : (e?.name ?? ''))).filter(Boolean)
+						: [],
+				),
+			previewPagesPath,
+		);
+	}, [previewPagesPath]);
+
 	useEffect(
 		() => setUrl(`/${theme?.appCode}/${theme?.clientCode}/page/`),
 		[theme?.appCode, theme?.clientCode],
@@ -162,7 +184,12 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 						{showJSON ? <ThemeIcon /> : <JsonIcon />}
 					</button>
 					<div className="_separator" />
-					<URLInput value={url} onChange={setUrl} />
+					<URLInput
+						value={url}
+						onChange={setUrl}
+						pages={previewPages}
+						base={`/${theme?.appCode}/${theme?.clientCode}/page/`}
+					/>
 				</div>
 				<div className={`_iframeContainer _${device}`}>
 					<iframe
@@ -195,39 +222,28 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 					</div>
 					<div className="_compsVariables">
 						<div className="_components">
-							<button
-								onClick={() => setCurrentComponent('_app')}
-								className={`_component ${currentComponent === '_app' ? '_active' : ''}`}
-							>
-								<ModlixIcon /> App
-							</button>
-							<button
-								onClick={() => setCurrentComponent('_message')}
-								className={`_component ${currentComponent === '_message' ? '_active' : ''}`}
-							>
-								<ModlixIcon /> Messages
-							</button>
-							{Array.from(ComponentDefinitions.values())
-								.filter(e => e.stylePropertiesForTheme.length)
-								.filter(e => !e.isHidden || e.name === 'TableColumnHeader')
-								.map(comp => (
-									<button
-										key={comp.name}
-										onClick={() => setCurrentComponent(comp.name)}
-										className={`_component ${comp.name === currentComponent ? '_active' : ''}`}
-									>
-										{
-											SubComponentDefinitions[comp.name]?.find(e => e.mainComponent)
-												?.icon
-										}
-										{comp.displayName}
-									</button>
-								))}
+							{themableComponents().map(comp => (
+								<button
+									key={comp.key}
+									onClick={() => setCurrentComponent(comp.key)}
+									className={`_component ${comp.key === currentComponent ? '_active' : ''}`}
+								>
+									{comp.key === APP_KEY || comp.key === MESSAGE_KEY ? (
+										<ModlixIcon />
+									) : (
+										SubComponentDefinitions[comp.key]?.find(
+											e => e.mainComponent,
+										)?.icon
+									)}
+									{comp.displayName}
+								</button>
+							))}
 						</div>
 						<Variables
 							theme={theme}
 							themeGroup={themeGroup}
 							component={currentComponent}
+							onComponentChange={setCurrentComponent}
 							onThemeChange={props => {
 								props.forEach(prop =>
 									setData(
@@ -247,7 +263,7 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 				<div className="_editorContainer">
 					<div className="_editorWrapper">
 						<Editor
-							width="600px"
+							width="100%"
 							language="json"
 							height="100%"
 							defaultValue={''}
@@ -280,30 +296,58 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	);
 }
 
+/**
+ * The preview address. Free text, because any path in the app is legitimate, but
+ * backed by a datalist of the app's pages so you do not have to remember names.
+ */
 function URLInput({
 	value,
 	onChange,
+	pages,
+	base,
 }: {
 	value: string | undefined;
 	onChange: (value: string) => void;
+	pages?: Array<string>;
+	base?: string;
 }) {
 	const [url, setUrl] = useState(value);
+	const listId = useMemo(() => `themePreviewPages_${shortUUID()}`, []);
 
 	useEffect(() => setUrl(value), [value]);
 
+	const options = useMemo(
+		() =>
+			Array.from(new Set(pages ?? []))
+				.sort((a, b) => a.localeCompare(b))
+				.map(name => `${base ?? ''}${name}`),
+		[pages, base],
+	);
+
 	return (
-		<input
-			type="url"
-			value={url ?? ''}
-			onChange={e => setUrl(e.target.value)}
-			onBlur={e => onChange(e.target.value)}
-			onKeyDown={e => {
-				if (e.key === 'Enter') {
-					e.preventDefault();
-					onChange(url ?? '');
-				}
-			}}
-			className="_urlInput"
-		/>
+		<>
+			<input
+				type="url"
+				value={url ?? ''}
+				onChange={e => setUrl(e.target.value)}
+				onBlur={e => onChange(e.target.value)}
+				onKeyDown={e => {
+					if (e.key === 'Enter') {
+						e.preventDefault();
+						onChange(url ?? '');
+					}
+				}}
+				className="_urlInput"
+				list={options.length ? listId : undefined}
+				placeholder={options.length ? 'Pick or type a page' : undefined}
+			/>
+			{options.length ? (
+				<datalist id={listId}>
+					{options.map(o => (
+						<option key={o} value={o} />
+					))}
+				</datalist>
+			) : null}
+		</>
 	);
 }

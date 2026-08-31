@@ -19,6 +19,7 @@ import {
 	RenderContext,
 } from '../types/common';
 import { processLocation } from '../util/locationProcessor';
+import { ChildrenErrorBoundary } from './ChildrenErrorBoundary';
 import ComponentDefinitions from './index';
 import Nothing from './Nothing';
 import PageComponentDefinition from './Page/Page';
@@ -124,9 +125,26 @@ function Children({
 		.map(e => {
 			if (!e?.properties?.visibility) return e;
 
-			return getData(e?.properties?.visibility, locationHistory, pageExtractor, urlExtractor)
-				? e
-				: undefined;
+			try {
+				return getData(
+					e?.properties?.visibility,
+					locationHistory,
+					pageExtractor,
+					urlExtractor,
+				)
+					? e
+					: undefined;
+			} catch (err) {
+				// This runs in Children's own body, so a throw here escapes the
+				// boundary below and would reach the root one, killing the page.
+				// Treat an unevaluatable visibility as not visible: a gate that
+				// fails open can reveal what was meant to stay hidden.
+				console.error(
+					`Visibility expression failed for component ${e?.key} on page ${context.pageName}:`,
+					err,
+				);
+				return undefined;
+			}
 		})
 		.filter(e => !!e)
 		.sort((a: any, b: any) => {
@@ -134,7 +152,7 @@ function Children({
 			return v === 0 ? (a?.key ?? '').localeCompare(b?.key ?? '') : v;
 		});
 	return (
-		<>
+		<ChildrenErrorBoundary pageName={context.pageName}>
 			{defs
 				.map((e, i) => {
 					if (!e) return;
@@ -183,7 +201,7 @@ function Children({
 					);
 				})
 				.filter(e => !!e)}
-		</>
+		</ChildrenErrorBoundary>
 	);
 }
 
