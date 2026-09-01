@@ -188,6 +188,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
+		name: 'xAxisStepSize',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'X Axis Step Size',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
 		name: 'xAxisReverse',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'X Axis Reverse',
@@ -317,6 +323,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'yAxisSuggestedMax',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Y Axis Suggested Max',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'yAxisStepSize',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Y Axis Step Size',
 		group: ComponentPropertyGroup.DATA,
 	},
 	{

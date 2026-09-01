@@ -355,6 +355,39 @@ describe('buildChartJsOptions', () => {
 			expect(options.scales.y.suggestedMin).toBe(10);
 			expect(options.scales.y.suggestedMax).toBe(90);
 		});
+
+		it('should apply stepSize for ticks if provided', () => {
+			const properties = createMockProperties({
+				xAxisStepSize: 5,
+				yAxisStepSize: 10,
+			});
+			const chartData = createMockChartData({
+				xAxisType: 'value',
+				yAxisType: 'value',
+			});
+
+			const options = buildChartJsOptions(properties, chartData, 'line') as any;
+
+			expect(options.scales.x.ticks.stepSize).toBe(5);
+			expect(options.scales.y.ticks.stepSize).toBe(10);
+		});
+
+		it('should automatically set stepSize to 1 if all values are integers and range is small', () => {
+			const properties = createMockProperties();
+			const chartData = createMockChartData({
+				xAxisType: 'value',
+				yAxisType: 'value',
+				xUniqueData: [0, 1, 2, 3, 4],
+				yUniqueData: [0, 1, 2, 3, 4],
+			});
+
+			const options = buildChartJsOptions(properties, chartData, 'line') as any;
+
+			expect(options.scales.x.ticks.stepSize).toBe(1);
+			expect(options.scales.y.ticks.stepSize).toBe(1);
+			expect(options.scales.x.ticks.callback(0.5)).toBeUndefined();
+			expect(options.scales.x.ticks.callback(2)).toBe(2);
+		});
 	});
 
 	describe('axis position', () => {
