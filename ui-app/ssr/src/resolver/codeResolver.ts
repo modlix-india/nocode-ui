@@ -17,6 +17,18 @@ const DEFAULT_APP = 'nothing';
 export interface Codes {
 	appCode: string;
 	clientCode: string;
+	/**
+	 * Which surface this hostname serves: 'LIVE' or 'DRAFT'.
+	 *
+	 * Taken from the same security-service lookup the gateway itself uses, so SSR
+	 * and the gateway can never disagree about it. This is deliberately not read
+	 * from an inbound header: the gateway strips x-draft from every request, and a
+	 * caller-supplied one would be a way to force draft pre-renders and split the
+	 * SSR cache at will.
+	 *
+	 * Path-based resolution (/{appCode}/{clientCode}/page/...) is always LIVE.
+	 */
+	urlType?: string;
 }
 
 /**
@@ -78,36 +90,40 @@ async function resolveFromSecurityService(
 		// Call security service internal endpoint (same as GatewayFilter.java uses)
 		const gatewayUrl = getGatewayUrl();
 		const response = await fetch(
-			`${gatewayUrl}/api/security/clients/internal/getClientNAppCode?scheme=${scheme}&host=${host}&port=${port}`
+			`${gatewayUrl}/api/security/clients/internal/getClientNAppCodeNType?scheme=${scheme}&host=${host}&port=${port}`
 		);
 
 		if (!response.ok) {
 			logger.warn('Security service returned error, using defaults', { status: response.status });
-			return { clientCode: DEFAULT_CLIENT, appCode: DEFAULT_APP };
+			return { clientCode: DEFAULT_CLIENT, appCode: DEFAULT_APP, urlType: 'LIVE' };
 		}
 
-		// Response is Tuple2 from Java which serializes as {"t1": clientCode, "t2": appCode}
+		// Response is Tuple3 from Java: {"t1": clientCode, "t2": appCode, "t3": urlType}
 		const data = await response.json() as Record<string, unknown>;
 		logger.info('Security service response', { data });
 
 		let clientCode: string;
 		let appCode: string;
+		let urlType = 'LIVE';
 
 		if (Array.isArray(data)) {
-			// Array format [clientCode, appCode]
+			// Array format [clientCode, appCode, urlType]
 			clientCode = (data[0] as string) || DEFAULT_CLIENT;
 			appCode = (data[1] as string) || DEFAULT_APP;
+			urlType = (data[2] as string) || 'LIVE';
 		} else if ('t1' in data && 't2' in data) {
-			// Reactor Tuple2 format {t1: clientCode, t2: appCode}
+			// Reactor Tuple3 format {t1: clientCode, t2: appCode, t3: urlType}
 			clientCode = (data.t1 as string) || DEFAULT_CLIENT;
 			appCode = (data.t2 as string) || DEFAULT_APP;
+			urlType = (data.t3 as string) || 'LIVE';
 		} else {
-			// Object format {clientCode, appCode}
+			// Object format {clientCode, appCode, urlType}
 			clientCode = (data.clientCode as string) || DEFAULT_CLIENT;
 			appCode = (data.appCode as string) || DEFAULT_APP;
+			urlType = (data.urlType as string) || 'LIVE';
 		}
 
-		const codes: Codes = { clientCode, appCode };
+		const codes: Codes = { clientCode, appCode, urlType };
 
 		// Cache for 10 minutes
 		await redis.setex(cacheKey, 600, JSON.stringify(codes));
@@ -120,7 +136,7 @@ async function resolveFromSecurityService(
 			host,
 			port,
 		});
-		return { clientCode: DEFAULT_CLIENT, appCode: DEFAULT_APP };
+		return { clientCode: DEFAULT_CLIENT, appCode: DEFAULT_APP, urlType: 'LIVE' };
 	}
 }
 

@@ -51,6 +51,7 @@ import SmallCarousel from '../SmallCarousel/SmallCarousel';
 import Otp from '../Otp/Otp';
 import Calendar from '../Calendar/Calendar';
 import RangeSlider from '../RangeSlider/RangeSlider';
+import Shortcut from '../Shortcut/Shortcut';
 import Timer from '../Timer/Timer';
 import MarkdownEditor from '../MarkdownEditor/MarkdownEditor';
 import MarkdownTOC from '../MarkdownTOC/MarkdownTOC';
@@ -72,6 +73,7 @@ import Tree from '../Tree/Tree';
 
 import { ComponentStyleSubComponentDefinition } from '../../types/common';
 import { IconHelper } from '../util/IconHelper';
+import ShortcutIcon from '../Shortcut/ShortcutIcon';
 import TimerIcon from '../Timer/TimerIcon';
 
 export const SubComponentDefinitions: Record<
@@ -5327,6 +5329,17 @@ export const SubComponentDefinitions: Record<
 					</g>
 				</IconHelper>
 			),
+			mainComponent: true,
+		},
+	],
+
+	[Shortcut.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+
+			icon: <ShortcutIcon />,
 			mainComponent: true,
 		},
 	],

@@ -574,6 +574,16 @@ export async function handlePageRequest(
 	const authToken = getAuthToken(request);
 	const isAuthenticated = !!authToken;
 
+	// The gateway set this from the resolved hostname before the request reached
+	// us, and it is the only trustworthy signal of which surface this is: SSR
+	// talks to the gateway server to server, so the original host is not
+	// recoverable downstream.
+	// The surface comes from resolving the hostname, NOT from an inbound header.
+	// An x-draft on the incoming request is caller-supplied and is ignored: the
+	// gateway is the only thing allowed to decide this, and codes.urlType comes
+	// from the same security-service lookup the gateway itself uses.
+	const isDraft = codes.urlType === 'DRAFT';
+
 	logger.info('SSR page request', {
 		url: url.pathname,
 		appCode: codes.appCode,
@@ -600,7 +610,7 @@ export async function handlePageRequest(
 
 	// Check HTML cache first for non-authenticated requests (fastest path)
 	if (!isAuthenticated) {
-		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName);
+		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft);
 
 		// Check if client accepts gzip
 		const acceptEncoding = req.headers['accept-encoding'] || '';
@@ -648,7 +658,7 @@ export async function handlePageRequest(
 
 	// Check cache for non-authenticated, non-index requests (legacy object cache)
 	if (urlPageName !== 'index' && !isAuthenticated) {
-		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName);
+		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft);
 		const cached = await getCachedData<CachedPageData>(cacheKey);
 		if (cached) {
 			logger.info('Cache hit', { cacheKey, pageName: urlPageName });
@@ -675,13 +685,18 @@ export async function handlePageRequest(
 		appCode: codes.appCode,
 		clientCode: codes.clientCode,
 		authToken,
+		// Let the gateway resolve the surface from the host, as it does for a
+		// direct browser request.
+		forwardedHost: headers.get('x-forwarded-host') ?? url.host,
+		forwardedProto: headers.get('x-forwarded-proto') ?? url.protocol.replace(':', ''),
+		forwardedPort: headers.get('x-forwarded-port') ?? url.port,
 	});
 
 	const actualPageName = data.resolvedPageName;
 
 	// Check HTML cache for resolved page name (when index was resolved to default page)
 	if (urlPageName === 'index' && !isAuthenticated) {
-		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
+		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft);
 
 		// Check if client accepts gzip
 		const acceptEncoding = req.headers['accept-encoding'] || '';
@@ -767,7 +782,7 @@ export async function handlePageRequest(
 	const generatedHtml = generateHtml(result, codes, actualPageName, cdn);
 
 	// Cache HTML for unauthenticated requests (primary cache)
-	const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
+	const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft);
 	if (!isAuthenticated) {
 		// Cache the rendered HTML (fast serving)
 		await setCachedHtml(htmlCacheKey, generatedHtml, config.cache.ttlSeconds);

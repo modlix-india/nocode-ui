@@ -13,6 +13,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { propertiesDefinition, stylePropertiesDefinition } from './promptProperties';
+import { useComponentShortcut } from '../../shortcuts/useComponentShortcut';
 import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
@@ -29,6 +30,14 @@ import { InlineDataRenderer } from './components/InlineDataRenderer';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
 import { serialiseActiveData } from './editorContext';
+import {
+	DraftDescriptor,
+	applyDraftPatch,
+	collectDescriptors,
+	draftPayload,
+	matchDescriptor,
+	snapshotBaseline,
+} from './openDrafts';
 
 interface Message {
 	id: string;
@@ -205,6 +214,10 @@ interface SSEEventContext {
 	completeBindingPath?: string;
 	props: Readonly<ComponentProps>;
 	runEvent: any;
+	/** Apply a change the agent held in an open draft instead of saving. */
+	onDraftPatch: (data: any) => void;
+	/** A write that really did save, so anything showing that object is stale. */
+	onObjectChanged: (data: any) => void;
 }
 
 // Helper: update the assistant message with current toolCalls + agentSpans state.
@@ -553,6 +566,14 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			}
 			break;
 		}
+		case 'draft_patch': {
+			ctx.onDraftPatch(data);
+			break;
+		}
+		case 'object_changed': {
+			ctx.onObjectChanged(data);
+			break;
+		}
 		case 'confirmation_request': {
 			// Capture session_id early so handleActionResponse can POST /confirm
 			// before the stream ends (session_id is normally set in the 'done' event)
@@ -811,7 +832,7 @@ const SESSIONS_OVERLAY_BELOW_PX = 640;
 
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
@@ -830,6 +851,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			openTabs = '',
 			openTabIds = '',
 			activeDataPath = '',
+			openDraftsPath = '',
+			draftMode = false,
 			showSessions = true,
 			sessionsMode = '_auto',
 			newChatLabel = 'New chat',
@@ -873,6 +896,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			onMessage,
 			onError,
 			onComplete,
+			// Named apart from the React `onObjectSaved` escape hatch below: that
+			// one is a callback a parent COMPONENT passes, this one is an event
+			// function a PAGE names, and a page definition cannot carry a function.
+			onObjectSaved: onObjectSavedEvent,
+			shortcutKey,
+			shortcutScope,
+			shortcutPriority,
+			shortcutGroup,
+			shortcutAction,
+			onShortcut,
+			allowInInput,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -883,12 +917,40 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		pageExtractor,
 		urlExtractor,
 	);
+	// The textarea lives inside InputBar; hand it a ref so a shortcut can focus it
+	// rather than letting resolveFocusTarget guess at the first focusable descendant,
+	// which would be a toolbar button.
+	const promptInputRef = useRef<HTMLTextAreaElement>(null);
+
+	const { aria: shortcutAria } = useComponentShortcut({
+		props,
+		componentKey: key,
+		shortcutKey,
+		shortcutScope,
+		shortcutPriority,
+		shortcutGroup,
+		shortcutAction,
+		onShortcut,
+		allowInInput,
+		fallbackLabel: 'Prompt',
+		disabled: !!readOnly,
+		elementRef: promptInputRef,
+	});
+
 	const completeBindingPath = useMemo(
 		() =>
 			bindingPath
 				? getPathFromLocation(bindingPath, props.locationHistory, pageExtractor)
 				: undefined,
 		[bindingPath, props.locationHistory, pageExtractor],
+	);
+
+	const changedBindingPath = useMemo(
+		() =>
+			bindingPath2
+				? getPathFromLocation(bindingPath2, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath2, props.locationHistory, pageExtractor],
 	);
 
 	const resolvedPlaceholder = getTranslations(placeholder, props.pageDefinition.translations);
@@ -1169,6 +1231,189 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		props.locationHistory,
 		pageExtractor,
 	]);
+
+	// ── Open drafts ──────────────────────────────────────────────────────────
+	// What the surrounding surface has open and unsaved. The agent reads these
+	// instead of the saved versions and holds its writes in them, so the user can
+	// look at a change before committing it. A surface that declares nothing gets
+	// exactly the behaviour this component always had.
+
+	// An escape hatch for a host that renders this component directly in React
+	// rather than from a page definition (the page editor's docked panel), so it
+	// can react to a write that really did save. A definition cannot carry a
+	// callback, and this is not worth a store round trip.
+	const onObjectSaved = (props as any).onObjectSaved as ((d: any) => void) | undefined;
+
+	// The saved version of each open object, to measure the user's edits against.
+	// Deep copies on purpose: the store hands out live references, and a baseline
+	// that moves with the thing it measures reports everything as clean.
+	const draftBaselines = useRef<Map<string, { id: string; version: any; doc: any }>>(new Map());
+
+	const readDescriptors = useCallback(
+		(): DraftDescriptor[] =>
+			openDraftsPath
+				? collectDescriptors(
+						getDataFromPath(openDraftsPath, props.locationHistory, pageExtractor),
+						openDraftsPath,
+					)
+				: [],
+		[openDraftsPath, props.locationHistory, pageExtractor],
+	);
+
+	// Prefer a baseline the surface already keeps (the workspace stores the saved
+	// copy of each tab next to its draft). It is the same thing this component
+	// would otherwise snapshot, but it is maintained by whatever does the saving,
+	// so it cannot drift the way an inferred one can.
+	const baselineFor = useCallback(
+		(d: DraftDescriptor, doc: any) => {
+			if (d.baselinePath) {
+				const held = getDataFromPath(d.baselinePath, props.locationHistory, pageExtractor);
+				if (held) return held;
+			}
+			// Re-snapshot when a different object arrives, or when this one was saved
+			// underneath us. Without the version check, everything the user saves
+			// stays in the overlay forever and is re-sent as unsaved work.
+			const held = draftBaselines.current.get(d.path);
+			if (!held || held.id !== String(doc.id) || held.version !== doc.version)
+				draftBaselines.current.set(d.path, {
+					id: String(doc.id),
+					version: doc.version,
+					doc: snapshotBaseline(doc),
+				});
+			return draftBaselines.current.get(d.path)?.doc;
+		},
+		[props.locationHistory, pageExtractor],
+	);
+
+	const buildOpenDrafts = useCallback(() => {
+		const out: any[] = [];
+		for (const d of readDescriptors()) {
+			const doc = getDataFromPath(d.path, props.locationHistory, pageExtractor);
+			if (!doc?.id) continue;
+			const payload = draftPayload(d, doc, baselineFor(d, doc));
+			if (payload) out.push(payload);
+		}
+		return out;
+	}, [readDescriptors, baselineFor, props.locationHistory, pageExtractor]);
+
+	// Patches arrive one per tool call, and a single turn can make a dozen. Applied
+	// as they land, each is a separate write of a document that reaches 1.4MB, and
+	// every write wakes every store listener in the editor. That is wasteful on its
+	// own and it is the most likely source of the intermittent "maximum update
+	// depth" React throws mid-turn. So they are queued and flushed once a frame:
+	// the user cannot perceive the difference, and the editor sees one update.
+	const pendingPatches = useRef<Map<string, any[]>>(new Map());
+	const flushHandle = useRef<number | null>(null);
+
+	const flushDraftPatches = useCallback(() => {
+		flushHandle.current = null;
+		const queued = pendingPatches.current;
+		pendingPatches.current = new Map();
+
+		for (const [path, patches] of queued) {
+			const current = getDataFromPath(path, props.locationHistory, pageExtractor);
+			let next = current;
+			for (const patch of patches) next = applyDraftPatch(next, patch);
+			if (next === current) continue;
+			setData(path, next, props.context.pageName);
+		}
+	}, [props.locationHistory, props.context.pageName, pageExtractor]);
+
+	const handleDraftPatch = useCallback(
+		(data: any) => {
+			const target = matchDescriptor(readDescriptors(), data, path =>
+				getDataFromPath(path, props.locationHistory, pageExtractor),
+			);
+			if (!target || !data?.patch) return;
+
+			const queue = pendingPatches.current.get(target.path) ?? [];
+			queue.push(data.patch);
+			pendingPatches.current.set(target.path, queue);
+
+			if (flushHandle.current === null)
+				flushHandle.current = requestAnimationFrame(flushDraftPatches);
+		},
+		[readDescriptors, flushDraftPatches, props.locationHistory, pageExtractor],
+	);
+
+	// Never strand a patch: a turn that ends between the queue and the frame would
+	// otherwise leave the canvas one edit behind what the agent says it did.
+	useEffect(
+		() => () => {
+			if (flushHandle.current !== null) cancelAnimationFrame(flushHandle.current);
+		},
+		[],
+	);
+
+	// A write that really did save. Nothing to apply, but the surface may be
+	// showing the object, and the sharpest case is a theme edited from the page
+	// editor: saved app-wide, invisible on the canvas until something refetches it.
+	const [savedObjects, setSavedObjects] = useState<
+		Array<{ kind: string; name: string; draft: boolean }>
+	>([]);
+	const handleObjectChanged = useCallback(
+		(data: any) => {
+			if (!data?.kind) return;
+			const draft = data.draft === true;
+			setSavedObjects(prev =>
+				prev.some(
+					o => o.kind === data.kind && o.name === (data.name ?? '') && o.draft === draft,
+				)
+					? prev
+					: [...prev, { kind: data.kind, name: data.name ?? '', draft }],
+			);
+			// A parent component can take a callback; a page cannot, so it gets the
+			// same news through the store and an event. Both fire: the page editor
+			// uses the callback, the workspace uses the event, and neither knows
+			// about the other.
+			onObjectSaved?.(data);
+
+			if (changedBindingPath) {
+				// Append, reading the CURRENT store value rather than replaying
+				// component state, because the handler drains the list and the
+				// component's own `savedObjects` never shrinks. Read-modify-write is
+				// safe here: SSE events arrive one at a time on one connection.
+				const existing = getDataFromPath(changedBindingPath, props.locationHistory, pageExtractor);
+				const queue = Array.isArray(existing) ? existing : [];
+				setData(
+					changedBindingPath,
+					[
+						...queue,
+						{
+							kind: data.kind,
+							id: data.id ?? '',
+							name: data.name ?? '',
+							appCode: data.app_code ?? '',
+							operation: data.operation ?? '',
+							draft,
+						},
+					],
+					props.context.pageName,
+				);
+			}
+
+			if (onObjectSavedEvent) {
+				const savedEvent = props.pageDefinition.eventFunctions?.[onObjectSavedEvent];
+				if (savedEvent)
+					runEvent(
+						savedEvent,
+						onObjectSavedEvent,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+			}
+		},
+		[
+			onObjectSaved,
+			onObjectSavedEvent,
+			changedBindingPath,
+			props.locationHistory,
+			props.context.pageName,
+			props.pageDefinition,
+			pageExtractor,
+		],
+	);
 
 	// Sessions are scoped per user + client + agent server side. When the chat is
 	// working on a specific app, narrow the history to that app so each workspace
@@ -1634,12 +1879,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				abortControllerRef.current = new AbortController();
 
 				const editorContext = buildEditorContext();
+				const drafts = buildOpenDrafts();
 				const body: any = {
 					message: text,
 					session_id: sessionId,
 					...(selectedModel ? { model: selectedModel } : {}),
 					...(targetAppCode ? { app_code: targetAppCode } : {}),
 					...(editorContext ? { editor_context: editorContext } : {}),
+					...(drafts.length ? { open_drafts: drafts } : {}),
+					...(draftMode ? { draft_mode: true } : {}),
 				};
 
 				if (attachments?.length) {
@@ -1745,6 +1993,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										completeBindingPath,
 										props,
 										runEvent,
+										onDraftPatch: handleDraftPatch,
+										onObjectChanged: handleObjectChanged,
 									});
 								} catch {
 									// Skip unparseable data
@@ -1821,6 +2071,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			selectedModel,
 			targetAppCode,
 			buildEditorContext,
+			// These four were closed over but missing, and the omission is not
+			// harmless: buildOpenDrafts and handleDraftPatch are rebuilt whenever the
+			// declared descriptors change, and the surface writes those in an effect
+			// AFTER mount. A stale handleSend therefore shipped an empty open-drafts
+			// list and routed the reply's patches through a matcher that knew about
+			// no objects, so the first message after opening a tab saved for real
+			// instead of being held for review.
+			buildOpenDrafts,
+			draftMode,
+			handleDraftPatch,
+			handleObjectChanged,
 			showToolCalls,
 			onMessage,
 			onError,
@@ -2258,6 +2519,47 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						<i className={scrollToBottomIcon} aria-hidden="true" />
 					</button>
 				</div>
+				{savedObjects.length > 0 && (
+					<div className="_promptSavedNotice">
+						{/* The asymmetry made visible, and it is two asymmetries, not one.
+						    A drafted write is reviewable and waits for Publish; a live one
+						    is already in front of everyone. Collapsing them into a single
+						    "saved" line was the more alarming of the two claims applied to
+						    both. */}
+						<i className="fa fa-circle-info" aria-hidden="true" />
+						<span>
+							{savedObjects.some(o => o.draft) && (
+								<>
+									In the draft, waiting for Publish:{' '}
+									{savedObjects
+										.filter(o => o.draft)
+										.map(o => `${o.kind} ${o.name}`.trim())
+										.join(', ')}
+								</>
+							)}
+							{savedObjects.some(o => o.draft) && savedObjects.some(o => !o.draft) && (
+								<br />
+							)}
+							{savedObjects.some(o => !o.draft) && (
+								<>
+									Live already, not waiting for review:{' '}
+									{savedObjects
+										.filter(o => !o.draft)
+										.map(o => `${o.kind} ${o.name}`.trim())
+										.join(', ')}
+								</>
+							)}
+						</span>
+						<button
+							type="button"
+							className="_promptSavedDismiss"
+							title="Dismiss"
+							onClick={() => setSavedObjects([])}
+						>
+							<i className="fa fa-xmark" aria-hidden="true" />
+						</button>
+					</div>
+				)}
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}
@@ -2277,6 +2579,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						enableVoiceInput={enableVoiceInput}
 						microphoneIcon={microphoneIcon}
 						microphoneActiveIcon={microphoneActiveIcon}
+						textareaRef={promptInputRef}
+						ariaKeyShortcuts={shortcutAria}
 					/>
 					<div className="_promptBottomBar">
 						{showModelSelector && filteredModels.length > 0 && (
