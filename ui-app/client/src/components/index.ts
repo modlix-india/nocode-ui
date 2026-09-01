@@ -57,6 +57,7 @@ import RangeSlider from './RangeSlider/RangeSlider';
 import Timer from './Timer/Timer';
 import MarkdownTOC from './MarkdownTOC/MarkdownTOC';
 import Audio from './Audio/Audio';
+import VoiceRecorder from './VoiceRecorder/VoiceRecorder';
 import SSEventListener from './SSEventListener/SSEventListener';
 import Chart from './Chart/Chart';
 import FileSelector from './FileSelector/FileSelector';
@@ -134,6 +135,7 @@ const componentMap = new Map<string, Component>([
 	[MarkdownEditor.name, MarkdownEditor],
 	[MarkdownTOC.name, MarkdownTOC],
 	[Audio.name, Audio],
+	[VoiceRecorder.name, VoiceRecorder],
 	[SSEventListener.name, SSEventListener],
 	[Chart.name, Chart],
 	[AnalyticsQuery.name, AnalyticsQuery],

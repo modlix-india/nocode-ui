@@ -4329,6 +4329,54 @@ input._peInput[type='number'] {
 	}
 }
 
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._voiceWave1 {
+    animation: voiceWave1 0.75s ease-in-out infinite alternate;
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._voiceWave2 {
+    animation: voiceWave2 0.95s ease-in-out 0.15s infinite alternate;
+}
+
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._voiceWave1,
+.comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._voiceWave2 {
+    transform-origin: center;
+    transform-box: fill-box;
+    will-change: transform;
+}
+
+@keyframes voiceWave1 {
+    0% {
+        transform: scaleY(0.5);
+    }
+    35% {
+        transform: scaleY(0.9);
+    }
+    65% {
+        transform: scaleY(1.15);
+    }
+    100% {
+        transform: scaleY(0.65);
+    }
+}
+
+@keyframes voiceWave2 {
+    0% {
+        transform: scaleY(0.4);
+    }
+    30% {
+        transform: scaleY(1.1);
+    }
+    55% {
+        transform: scaleY(0.7);
+    }
+    80% {
+        transform: scaleY(1.2);
+    }
+    100% {
+        transform: scaleY(0.5);
+    }
+}
+
 .comp.compPageEditor ._compMenuItem:hover svg._iconHelperSVG ._popupInner {
 	animation: popupInnerAnimation var(--comp-item-animation-duration-long) infinite;
 	transform-origin: 15px 15px;

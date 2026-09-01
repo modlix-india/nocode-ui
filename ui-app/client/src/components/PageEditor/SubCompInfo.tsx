@@ -56,6 +56,7 @@ import Timer from '../Timer/Timer';
 import MarkdownEditor from '../MarkdownEditor/MarkdownEditor';
 import MarkdownTOC from '../MarkdownTOC/MarkdownTOC';
 import Audio from '../Audio/Audio';
+import VoiceRecorder from '../VoiceRecorder/VoiceRecorder';
 import SSEventListener from '../SSEventListener/SSEventListener';
 import Chart from '../Chart/Chart';
 import FileSelector from '../FileSelector/FileSelector';
@@ -297,6 +298,111 @@ export const SubComponentDefinitions: Record<
 			description: 'File Name Container',
 			icon: 'fa fa-solid fa-box',
 		},
+	],
+
+	[VoiceRecorder.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			mainComponent: true,
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 100 100">
+					<path className="_voiceWave1" d="M11.66,39.3c-1.591,0-2.88,1.29-2.88,2.88v18c0,1.592,1.289,2.881,2.88,2.881c1.591,0,2.88-1.289,2.88-2.881v-18C14.54,40.59,13.251,39.3,11.66,39.3zM28.94,22.02c-1.591,0-2.881,1.29-2.881,2.881v51.84c0,1.591,1.29,2.88,2.881,2.88c1.59,0,2.88-1.289,2.88-2.88V24.9C31.82,23.31,30.53,22.02,28.94,22.02zM46.22,41.46c-1.591,0-2.88,1.289-2.88,2.88V57.3c0,1.591,1.289,2.88,2.88,2.88c1.591,0,2.88-1.289,2.88-2.88V44.34C49.1,42.749,47.811,41.46,46.22,41.46zM63.5,39.98c-1.591,0-2.88,1.29-2.88,2.88V59.5c0,1.591,1.289,2.88,2.88,2.88s2.88-1.289,2.88-2.88V42.86C66.38,41.27,65.091,39.98,63.5,39.98zM80.779,38.82c-1.59,0-2.879,1.29-2.879,2.88v19.239c0,1.591,1.289,2.881,2.879,2.881c1.592,0,2.881-1.29,2.881-2.881V41.7C83.66,40.109,82.371,38.82,80.779,38.82z" fill="#54a2fc" />
+					<path className="_voiceWave2" d="M20.3,34.98c-1.591,0-2.88,1.289-2.88,2.88V64.5c0,1.591,1.289,2.88,2.88,2.88c1.591,0,2.88-1.289,2.88-2.88V37.86C23.18,36.27,21.891,34.98,20.3,34.98zM37.58,32.82c-1.591,0-2.88,1.289-2.88,2.88v30.239c0,1.591,1.289,2.881,2.88,2.881c1.591,0,2.88-1.29,2.88-2.881V35.7C40.46,34.109,39.171,32.82,37.58,32.82zM54.859,44.3c-1.59,0-2.879,1.29-2.879,2.88v8c0,1.592,1.289,2.881,2.879,2.881c1.591,0,2.881-1.289,2.881-2.881v-8C57.74,45.59,56.45,44.3,54.859,44.3zM72.141,32.02c-1.591,0-2.881,1.29-2.881,2.881v31.84c0,1.591,1.29,2.88,2.881,2.88c1.59,0,2.879-1.289,2.879-2.88V34.9C75.02,33.31,73.73,32.02,72.141,32.02zM89.42,41.46c-1.591,0-2.88,1.289-2.88,2.88V57.3c0,1.591,1.289,2.88,2.88,2.88c1.592,0,2.88-1.289,2.88-2.88V44.34C92.3,42.749,91.012,41.46,89.42,41.46z" fill="#54a2fc" />
+				</IconHelper>
+			),
+		},
+		{
+			name: 'recordContainer',
+			displayName: 'Record Container',
+			description: 'Record Button Container',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'pauseContainer',
+			displayName: 'Pause Container',
+			description: 'Pause Button Container',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'startContainer',
+			displayName: 'Start Container',
+			description: 'Start Button Container',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'stopContainer',
+			displayName: 'Stop Container',
+			description: 'Stop Button Container',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'recordIcon',
+			displayName: 'Record Icon',
+			description: 'Record Icon',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'recordImage',
+			displayName: 'Record Image',
+			description: 'Record Image',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'recordText',
+			displayName: 'Start Text',
+			description: 'Start Text',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'pauseIcon',
+			displayName: 'Pause Icon',
+			description: 'Pause Icon',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'pauseImage',
+			displayName: 'Pause Image',
+			description: 'Pause Image',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'pauseText',
+			displayName: 'Pause Text',
+			description: 'Pause Text',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'stopIcon',
+			displayName: 'Stop Icon',
+			description: 'Stop Icon',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'stopImage',
+			displayName: 'Stop Image',
+			description: 'Stop Image',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'stopText',
+			displayName: 'Stop Text',
+			description: 'Stop Text',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'recordingDuration',
+			displayName: 'Recording Duration',
+			description: 'Recording Duration Counter',
+			icon: 'fa fa-solid fa-box',
+		},
+		{
+			name: 'audioLevelSlider',
+			displayName: 'Audio Level Slider',
+			description: 'Microphone Audio Level / Loudness Slider',
+			icon: 'fa fa-solid fa-box',
+		}
 	],
 
 	[Button.name]: [
