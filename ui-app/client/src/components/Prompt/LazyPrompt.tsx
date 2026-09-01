@@ -832,7 +832,7 @@ const SESSIONS_OVERLAY_BELOW_PX = 640;
 
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
@@ -896,6 +896,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			onMessage,
 			onError,
 			onComplete,
+			// Named apart from the React `onObjectSaved` escape hatch below: that
+			// one is a callback a parent COMPONENT passes, this one is an event
+			// function a PAGE names, and a page definition cannot carry a function.
+			onObjectSaved: onObjectSavedEvent,
 			shortcutKey,
 			shortcutScope,
 			shortcutPriority,
@@ -939,6 +943,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				? getPathFromLocation(bindingPath, props.locationHistory, pageExtractor)
 				: undefined,
 		[bindingPath, props.locationHistory, pageExtractor],
+	);
+
+	const changedBindingPath = useMemo(
+		() =>
+			bindingPath2
+				? getPathFromLocation(bindingPath2, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath2, props.locationHistory, pageExtractor],
 	);
 
 	const resolvedPlaceholder = getTranslations(placeholder, props.pageDefinition.translations);
@@ -1339,16 +1351,69 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [savedObjects, setSavedObjects] = useState<
 		Array<{ kind: string; name: string; draft: boolean }>
 	>([]);
-	const handleObjectChanged = useCallback((data: any) => {
-		if (!data?.kind) return;
-		const draft = data.draft === true;
-		setSavedObjects(prev =>
-			prev.some(o => o.kind === data.kind && o.name === (data.name ?? '') && o.draft === draft)
-				? prev
-				: [...prev, { kind: data.kind, name: data.name ?? '', draft }],
-		);
-		onObjectSaved?.(data);
-	}, [onObjectSaved]);
+	const handleObjectChanged = useCallback(
+		(data: any) => {
+			if (!data?.kind) return;
+			const draft = data.draft === true;
+			setSavedObjects(prev =>
+				prev.some(
+					o => o.kind === data.kind && o.name === (data.name ?? '') && o.draft === draft,
+				)
+					? prev
+					: [...prev, { kind: data.kind, name: data.name ?? '', draft }],
+			);
+			// A parent component can take a callback; a page cannot, so it gets the
+			// same news through the store and an event. Both fire: the page editor
+			// uses the callback, the workspace uses the event, and neither knows
+			// about the other.
+			onObjectSaved?.(data);
+
+			if (changedBindingPath) {
+				// Append, reading the CURRENT store value rather than replaying
+				// component state, because the handler drains the list and the
+				// component's own `savedObjects` never shrinks. Read-modify-write is
+				// safe here: SSE events arrive one at a time on one connection.
+				const existing = getDataFromPath(changedBindingPath, props.locationHistory, pageExtractor);
+				const queue = Array.isArray(existing) ? existing : [];
+				setData(
+					changedBindingPath,
+					[
+						...queue,
+						{
+							kind: data.kind,
+							id: data.id ?? '',
+							name: data.name ?? '',
+							appCode: data.app_code ?? '',
+							operation: data.operation ?? '',
+							draft,
+						},
+					],
+					props.context.pageName,
+				);
+			}
+
+			if (onObjectSavedEvent) {
+				const savedEvent = props.pageDefinition.eventFunctions?.[onObjectSavedEvent];
+				if (savedEvent)
+					runEvent(
+						savedEvent,
+						onObjectSavedEvent,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+			}
+		},
+		[
+			onObjectSaved,
+			onObjectSavedEvent,
+			changedBindingPath,
+			props.locationHistory,
+			props.context.pageName,
+			props.pageDefinition,
+			pageExtractor,
+		],
+	);
 
 	// Sessions are scoped per user + client + agent server side. When the chat is
 	// working on a specific app, narrow the history to that app so each workspace
@@ -2006,6 +2071,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			selectedModel,
 			targetAppCode,
 			buildEditorContext,
+			// These four were closed over but missing, and the omission is not
+			// harmless: buildOpenDrafts and handleDraftPatch are rebuilt whenever the
+			// declared descriptors change, and the surface writes those in an effect
+			// AFTER mount. A stale handleSend therefore shipped an empty open-drafts
+			// list and routed the reply's patches through a matcher that knew about
+			// no objects, so the first message after opening a tab saved for real
+			// instead of being held for review.
+			buildOpenDrafts,
+			draftMode,
+			handleDraftPatch,
+			handleObjectChanged,
 			showToolCalls,
 			onMessage,
 			onError,

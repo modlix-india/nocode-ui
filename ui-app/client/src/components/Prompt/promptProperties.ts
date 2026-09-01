@@ -541,6 +541,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 	},
+	{
+		// Writes the agent really committed, as opposed to the ones it held back
+		// for review because `openDraftsPath` declared the object open. A surface
+		// that shows an object it did not declare has to refetch it or it is
+		// looking at a definition that no longer matches what is stored.
+		//
+		// The entry lands on the Changed Objects binding BEFORE this fires, and it
+		// appends rather than replaces, because one turn can write a dozen objects
+		// and a handler that only ever sees the last one silently loses the rest.
+		// Drain the list in the handler.
+		name: 'onObjectSaved',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Object Saved',
+		description:
+			'Event fired when the agent saves an object for real. The object lands on the Changed Objects binding as {kind, id, name, appCode, operation, draft}; the handler should drain that list.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
 	COMMON_COMPONENT_PROPERTIES.shortcutKey,
 	COMMON_COMPONENT_PROPERTIES.shortcutAction,
 	COMMON_COMPONENT_PROPERTIES.onShortcut,

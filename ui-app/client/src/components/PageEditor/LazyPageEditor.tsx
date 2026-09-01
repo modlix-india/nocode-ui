@@ -1018,9 +1018,15 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			const themeId = data.id || current?.id;
 			if (!themeId) return;
 
+			// Same surface the write landed on, for the same reason the page refetch
+			// above follows it: reading live after a drafted theme change pulls the
+			// OLD theme onto the canvas, so the user watches their change undo itself.
+			const themeDraft = data.draft === true;
+
 			(async () => {
 				try {
 					const response = await axios.get(`/api/ui/themes/${themeId}`, {
+						params: themeDraft ? { draft: true } : undefined,
 						headers: {
 							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
 						},
