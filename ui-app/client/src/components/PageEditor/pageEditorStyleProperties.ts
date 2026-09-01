@@ -12,6 +12,16 @@ import { StylePropertyDefinition } from '../../types/common';
  * property here overrides the literal by cascade alone, without touching a line
  * of the layout CSS.
  *
+ * Some selectors here end in `:not(:where(._peSidekickBar *))`. Those are the
+ * ones that reach a bare element straight from the editor root (`i.fa`,
+ * `button`, `input`, `textarea`, `select`), which outranks any embedded
+ * component's own class-scoped rules and repaints it. The docked AI panel
+ * renders the ordinary Prompt component inside the editor, and without the
+ * exclusion its icons came out black on a black button and its textarea picked
+ * up editor chrome. `:where()` contributes no specificity, so this narrows what
+ * the rule matches without moving it in the cascade. Keep it on any new rule
+ * that names a bare element with no class between it and the root.
+ *
  * Every `dv` is the literal the component ships today, except where several
  * near-identical literals were folded onto one scale step and the most common
  * value kept as the default. An app that sets none of these is unchanged but for
@@ -135,7 +145,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorFontSizeSmall',
 		dv: '11px',
 		cp: 'font-size',
-		sel: '.comp.compPageEditor button, .comp.compPageEditor ._popupButtons button',
+		sel: '.comp.compPageEditor button:not(:where(._peSidekickBar *)), .comp.compPageEditor ._popupButtons button',
 		np: true,
 	},
 	{
@@ -175,7 +185,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorFontSizeXLarge',
 		dv: '22px',
 		cp: 'font-size',
-		sel: '.comp.compPageEditor i.fa',
+		sel: '.comp.compPageEditor i.fa:not(:where(._peSidekickBar *))',
 		np: true,
 	},
 	{
@@ -565,7 +575,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorRadiusSmall',
 		dv: '4px',
 		cp: 'border-radius',
-		sel: '.comp.compPageEditor button, .comp.compPageEditor ._popupButtons button',
+		sel: '.comp.compPageEditor button:not(:where(._peSidekickBar *)), .comp.compPageEditor ._popupButtons button',
 		np: true,
 	},
 	{
@@ -1355,7 +1365,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorBackground',
 		dv: '#FFFFFF',
 		cp: 'background-color',
-		sel: '.comp.compPageEditor ._topBarGrid, .comp.compPageEditor ._sideBar, .comp.compPageEditor ._propBar',
+		sel: '.comp.compPageEditor ._topBarGrid, .comp.compPageEditor ._sideBar, .comp.compPageEditor ._propBar, .comp.compPageEditor ._peSidekickBar',
 		np: true,
 	},
 	{
@@ -1385,7 +1395,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorSurfaceAlt',
 		dv: '#EEEEEE',
 		cp: 'background-color',
-		sel: '.comp.compPageEditor button, .comp.compPageEditor ._popupButtons button',
+		sel: '.comp.compPageEditor button:not(:where(._peSidekickBar *)), .comp.compPageEditor ._popupButtons button',
 		np: true,
 	},
 	{
@@ -1455,7 +1465,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorSelectedBackground',
 		dv: 'rgba(77, 127, 238, 0.05)',
 		cp: 'background-color',
-		sel: '.comp.compPageEditor button:hover, .comp.compPageEditor select:hover, .comp.compPageEditor ._iconMenuOption:hover, .comp.compPageEditor ._popupButtons button:hover',
+		sel: '.comp.compPageEditor button:hover:not(:where(._peSidekickBar *)), .comp.compPageEditor select:hover:not(:where(._peSidekickBar *)), .comp.compPageEditor ._iconMenuOption:hover, .comp.compPageEditor ._popupButtons button:hover',
 		np: true,
 	},
 	{
@@ -1935,7 +1945,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorBorderColorStrong',
 		dv: '#CCCCCC',
 		cp: 'border-color',
-		sel: '.comp.compPageEditor button, .comp.compPageEditor ._popupButtons button',
+		sel: '.comp.compPageEditor button:not(:where(._peSidekickBar *)), .comp.compPageEditor ._popupButtons button',
 		np: true,
 	},
 	{
@@ -2285,7 +2295,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorBorderColor',
 		dv: 'rgba(0, 0, 0, 0.1)',
 		cp: 'border-left-color',
-		sel: '.comp.compPageEditor ._propBar._right',
+		sel: '.comp.compPageEditor ._propBar._right, .comp.compPageEditor ._peSidekickBar',
 		np: true,
 	},
 	{
@@ -2375,7 +2385,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorFontColorSecondary',
 		dv: '#555555',
 		cp: 'color',
-		sel: '.comp.compPageEditor select._peSelect, .comp.compPageEditor ._peSelect, .comp.compPageEditor ._simpleEditorSelect._peSelect, .comp.compPageEditor button, .comp.compPageEditor ._popupButtons button',
+		sel: '.comp.compPageEditor select._peSelect, .comp.compPageEditor ._peSelect, .comp.compPageEditor ._simpleEditorSelect._peSelect, .comp.compPageEditor button:not(:where(._peSidekickBar *)), .comp.compPageEditor ._popupButtons button',
 		np: true,
 	},
 	{
@@ -2445,7 +2455,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorFontColor',
 		dv: '#000000',
 		cp: 'color',
-		sel: '.comp.compPageEditor button:hover, .comp.compPageEditor select:hover, .comp.compPageEditor ._iconMenuOption:hover, .comp.compPageEditor ._popupButtons button:hover, .comp.compPageEditor ._iconMenuBody ._iconMenuOption:hover i.fa, .comp.compPageEditor ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG, .comp.compPageEditor ._iconMenu._active svg._iconHelperSVG',
+		sel: '.comp.compPageEditor button:hover:not(:where(._peSidekickBar *)), .comp.compPageEditor select:hover:not(:where(._peSidekickBar *)), .comp.compPageEditor ._iconMenuOption:hover, .comp.compPageEditor ._popupButtons button:hover, .comp.compPageEditor ._iconMenuBody ._iconMenuOption:hover i.fa, .comp.compPageEditor ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG, .comp.compPageEditor ._iconMenu._active svg._iconHelperSVG',
 		np: true,
 	},
 	{
@@ -2465,7 +2475,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorFontColor',
 		dv: '#000000',
 		cp: 'color',
-		sel: '.comp.compPageEditor ._sideBar ._iconMenu svg._iconHelperSVG, .comp.compPageEditor i.fa',
+		sel: '.comp.compPageEditor ._sideBar ._iconMenu svg._iconHelperSVG, .comp.compPageEditor i.fa:not(:where(._peSidekickBar *))',
 		np: true,
 	},
 	{
@@ -3510,7 +3520,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Text inside inputs, textareas and selects that no other rule colours. Opt-in: without it they fall back to the UA black, invisible on a dark chrome.',
 		n: 'pageEditorInputFontColor',
 		cp: 'color',
-		sel: '.comp.compPageEditor input, .comp.compPageEditor textarea, .comp.compPageEditor select',
+		sel: '.comp.compPageEditor input:not(:where(._peSidekickBar *)), .comp.compPageEditor textarea:not(:where(._peSidekickBar *)), .comp.compPageEditor select:not(:where(._peSidekickBar *))',
 		np: true,
 	},
 	{
@@ -4018,7 +4028,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkBackground',
 		dv: '#17171A',
 		cp: 'background-color',
-		sel: '.comp.compPageEditor._dark ._topBarGrid, .comp.compPageEditor._dark ._sideBar, .comp.compPageEditor._dark ._propBar',
+		sel: '.comp.compPageEditor._dark ._topBarGrid, .comp.compPageEditor._dark ._sideBar, .comp.compPageEditor._dark ._propBar, .comp.compPageEditor._dark ._peSidekickBar',
 		np: true,
 	},
 	{
@@ -4048,7 +4058,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkSurfaceAlt',
 		dv: '#232327',
 		cp: 'background-color',
-		sel: '.comp.compPageEditor._dark button, .comp.compPageEditor._dark ._popupButtons button',
+		sel: '.comp.compPageEditor._dark button:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark ._popupButtons button',
 		np: true,
 	},
 	{
@@ -4118,7 +4128,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkSelectedBackground',
 		dv: 'rgba(245, 158, 11, 0.14)',
 		cp: 'background-color',
-		sel: '.comp.compPageEditor._dark button:hover, .comp.compPageEditor._dark select:hover, .comp.compPageEditor._dark ._iconMenuOption:hover, .comp.compPageEditor._dark ._popupButtons button:hover',
+		sel: '.comp.compPageEditor._dark button:hover:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark select:hover:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark ._iconMenuOption:hover, .comp.compPageEditor._dark ._popupButtons button:hover',
 		np: true,
 	},
 	{
@@ -4598,7 +4608,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkBorderColorStrong',
 		dv: 'rgba(255, 255, 255, 0.17)',
 		cp: 'border-color',
-		sel: '.comp.compPageEditor._dark button, .comp.compPageEditor._dark ._popupButtons button',
+		sel: '.comp.compPageEditor._dark button:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark ._popupButtons button',
 		np: true,
 	},
 	{
@@ -5038,7 +5048,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkFontColorSecondary',
 		dv: 'rgba(245, 245, 244, 0.72)',
 		cp: 'color',
-		sel: '.comp.compPageEditor._dark select._peSelect, .comp.compPageEditor._dark ._peSelect, .comp.compPageEditor._dark ._simpleEditorSelect._peSelect, .comp.compPageEditor._dark button, .comp.compPageEditor._dark ._popupButtons button',
+		sel: '.comp.compPageEditor._dark select._peSelect, .comp.compPageEditor._dark ._peSelect, .comp.compPageEditor._dark ._simpleEditorSelect._peSelect, .comp.compPageEditor._dark button:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark ._popupButtons button',
 		np: true,
 	},
 	{
@@ -5108,7 +5118,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkFontColor',
 		dv: '#F5F5F4',
 		cp: 'color',
-		sel: '.comp.compPageEditor._dark button:hover, .comp.compPageEditor._dark select:hover, .comp.compPageEditor._dark ._iconMenuOption:hover, .comp.compPageEditor._dark ._popupButtons button:hover, .comp.compPageEditor._dark ._iconMenuBody ._iconMenuOption:hover i.fa, .comp.compPageEditor._dark ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG, .comp.compPageEditor._dark ._iconMenu._active svg._iconHelperSVG',
+		sel: '.comp.compPageEditor._dark button:hover:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark select:hover:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark ._iconMenuOption:hover, .comp.compPageEditor._dark ._popupButtons button:hover, .comp.compPageEditor._dark ._iconMenuBody ._iconMenuOption:hover i.fa, .comp.compPageEditor._dark ._iconMenuBody ._iconMenuOption:hover svg._iconHelperSVG, .comp.compPageEditor._dark ._iconMenu._active svg._iconHelperSVG',
 		np: true,
 	},
 	{
@@ -5128,7 +5138,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkFontColor',
 		dv: '#F5F5F4',
 		cp: 'color',
-		sel: '.comp.compPageEditor._dark ._sideBar ._iconMenu svg._iconHelperSVG, .comp.compPageEditor._dark i.fa',
+		sel: '.comp.compPageEditor._dark ._sideBar ._iconMenu svg._iconHelperSVG, .comp.compPageEditor._dark i.fa:not(:where(._peSidekickBar *))',
 		np: true,
 	},
 	{
@@ -6178,7 +6188,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkInputFontColor',
 		dv: '#F5F5F4',
 		cp: 'color',
-		sel: '.comp.compPageEditor._dark input, .comp.compPageEditor._dark textarea, .comp.compPageEditor._dark select',
+		sel: '.comp.compPageEditor._dark input:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark textarea:not(:where(._peSidekickBar *)), .comp.compPageEditor._dark select:not(:where(._peSidekickBar *))',
 		np: true,
 	},
 	{

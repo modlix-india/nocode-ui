@@ -3,7 +3,7 @@ import {
 	addListenerAndCallImmediately,
 	PageStoreExtractor,
 } from '../../../../context/StoreContext';
-import { LocationHistory, PageDefinition } from '../../../../types/common';
+import { LocationHistory, PageDefinition, RenderContext } from '../../../../types/common';
 import { PageOperations } from '../../functions/PageOperations';
 import DnDIFrame from './DnDIFrame';
 import DnDSideBar from './DnDSideBar';
@@ -12,6 +12,7 @@ import DnDTopBar from './DnDTopBar';
 import { ContextMenuDetails } from '../../components/ContextMenu';
 import DnDPropertyBar from './DnDPropertyBar';
 import DnDNavigationBar from './DnDNavigationBar';
+import DnDSidekickBar from './DnDSidekickBar';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
@@ -71,6 +72,16 @@ interface DnDEditorProps {
 	defaultZoomPercentage: number | undefined;
 	onDebugButtonClick: () => void;
 	debugMessageCount: number;
+	// The AI panel needs a real ComponentProps to render the Prompt component
+	// inside the editor chrome, and these two are the parts DnDEditor did not
+	// already carry.
+	editorPageDefinition: PageDefinition;
+	editorContext: RenderContext;
+	appCode: string | undefined;
+	sidekickEnabled: boolean;
+	sidekickAgentEndpoint: string;
+	sidekickDraftMode: boolean;
+	onObjectSaved: (data: any) => void;
 }
 
 export default function DnDEditor({
@@ -131,8 +142,17 @@ export default function DnDEditor({
 	defaultZoomPercentage,
 	onDebugButtonClick,
 	debugMessageCount,
+	editorPageDefinition,
+	editorContext,
+	appCode,
+	sidekickEnabled,
+	sidekickAgentEndpoint,
+	sidekickDraftMode,
+	onObjectSaved,
 }: DnDEditorProps) {
 	const [preview, setPreview] = useState(false);
+	// Lifted out of the panel because the side rail's toggle needs the same bit.
+	const [sidekickOpen, setSidekickOpen] = useState(false);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -140,6 +160,15 @@ export default function DnDEditor({
 			pageExtractor.getPageName(),
 			(_, v) => setPreview(v ?? false),
 			`${personalizationPath}.preview`,
+		);
+	}, [personalizationPath]);
+
+	useEffect(() => {
+		if (!personalizationPath) return;
+		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
+			(_, v) => setSidekickOpen(v === true),
+			`${personalizationPath}.sidekickOpen`,
 		);
 	}, [personalizationPath]);
 
@@ -206,6 +235,11 @@ export default function DnDEditor({
 						helpURL={helpURL}
 						onDebugButtonClick={onDebugButtonClick}
 						debugMessageCount={debugMessageCount}
+						sidekickEnabled={sidekickEnabled}
+						sidekickOpen={sidekickOpen}
+						onSidekickButtonClick={() =>
+							onChangePersonalization('sidekickOpen', !sidekickOpen)
+						}
 					/>
 					<div className="_dndIframeContentContainer">
 						<div className={`_iframeContainer ${preview ? '_previewMode' : ''}`}>
@@ -271,6 +305,25 @@ export default function DnDEditor({
 							previewMode={preview}
 						/>
 					</div>
+					<DnDSidekickBar
+						defPath={defPath}
+						personalizationPath={personalizationPath}
+						onChangePersonalization={onChangePersonalization}
+						pageExtractor={pageExtractor}
+						locationHistory={locationHistory}
+						context={editorContext}
+						pageDefinition={editorPageDefinition}
+						selectedComponent={selectedComponent}
+						selectedSubComponent={selectedSubComponent}
+						pageOperations={pageOperations}
+						appCode={appCode}
+						agentEndpoint={sidekickAgentEndpoint}
+						draftMode={sidekickDraftMode}
+						previewMode={preview}
+						enabled={sidekickEnabled}
+						open={sidekickOpen}
+						onObjectSaved={onObjectSaved}
+					/>
 				</div>
 			</div>
 		</div>

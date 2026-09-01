@@ -342,6 +342,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			"Number Format Locale - en-IN, en-US, or system (based on system's settings) etc.",
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	COMMON_COMPONENT_PROPERTIES.shortcutKey,
+	COMMON_COMPONENT_PROPERTIES.shortcutAction,
+	COMMON_COMPONENT_PROPERTIES.onShortcut,
+	COMMON_COMPONENT_PROPERTIES.shortcutScope,
+	COMMON_COMPONENT_PROPERTIES.shortcutPriority,
+	COMMON_COMPONENT_PROPERTIES.shortcutGroup,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

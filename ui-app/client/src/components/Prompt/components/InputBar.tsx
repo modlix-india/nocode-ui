@@ -29,6 +29,10 @@ interface InputBarProps {
 	enableVoiceInput?: boolean;
 	microphoneIcon?: string;
 	microphoneActiveIcon?: string;
+	/** Lets the Prompt focus this textarea from a keyboard shortcut. */
+	textareaRef?: React.RefObject<HTMLTextAreaElement | null>;
+	/** W3C aria-keyshortcuts token for the shortcut that focuses this textarea. */
+	ariaKeyShortcuts?: string;
 }
 
 const speechSupported =
@@ -53,11 +57,15 @@ export function InputBar({
 	enableVoiceInput = true,
 	microphoneIcon = 'fa fa-microphone',
 	microphoneActiveIcon = 'fa fa-stop',
+	textareaRef: externalTextareaRef,
+	ariaKeyShortcuts,
 }: Readonly<InputBarProps>) {
 	const [text, setText] = useState(initialText ?? '');
 	const [attachments, setAttachments] = useState<Attachment[]>([]);
 	const [isListening, setIsListening] = useState(false);
-	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const internalTextareaRef = useRef<HTMLTextAreaElement>(null);
+	const textareaRef = (externalTextareaRef ??
+		internalTextareaRef) as React.RefObject<HTMLTextAreaElement>;
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const recognitionRef = useRef<any>(null);
 
@@ -286,6 +294,7 @@ export function InputBar({
 					disabled={disabled}
 					rows={1}
 					autoFocus
+					aria-keyshortcuts={ariaKeyShortcuts}
 					style={styleProperties?.inputTextArea ?? {}}
 				/>
 				<div className="_inputActions">

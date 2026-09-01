@@ -20,6 +20,7 @@ import Prompt from './Prompt/Prompt';
 import Popup from './Popup/Popup';
 import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
+import Shortcut from './Shortcut/Shortcut';
 import Stepper from './Stepper/Stepper';
 import SubPage from './SubPage/SubPage';
 import Svg from './Svg/Svg';
@@ -100,6 +101,7 @@ const componentMap = new Map<string, Component>([
 	[Text.name, Text],
 	[TextList.name, TextList],
 	[Tree.name, Tree],
+	[Shortcut.name, Shortcut],
 	[Stepper.name, Stepper],
 	[Table.name, Table],
 	[TableGrid.name, TableGrid],
