@@ -1599,6 +1599,44 @@ export default function PromptStyle({
 			color: #1a1a1a;
 		}
 
+		/* ─── Saved-outright notice ───
+		   Objects the user does not have open are written straight to the
+		   database, unlike the ones on screen which wait for their Save. Nothing
+		   else on the page distinguishes the two, so this says which is which. */
+		${PREFIX} ._promptSavedNotice {
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			max-width: 768px;
+			margin: 0 auto 8px;
+			padding: 8px 12px;
+			border-radius: 8px;
+			font-size: 12px;
+			line-height: 1.45;
+			background-color: rgba(245, 158, 11, 0.1);
+			color: #92400e;
+		}
+
+		${PREFIX} ._promptSavedNotice > span {
+			flex: 1;
+			min-width: 0;
+			word-break: break-word;
+		}
+
+		${PREFIX} ._promptSavedDismiss {
+			flex-shrink: 0;
+			padding: 0;
+			border: none;
+			background: transparent;
+			color: inherit;
+			cursor: pointer;
+			opacity: 0.7;
+		}
+
+		${PREFIX} ._promptSavedDismiss:hover {
+			opacity: 1;
+		}
+
 		/* ─── Input area ─── */
 		${PREFIX} ._promptInputWrapper {
 			padding: 0 16px 16px;

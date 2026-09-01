@@ -22,7 +22,9 @@ class MessageThrottler {
 	private pendingMessages: Map<string, PendingMessage> = new Map();
 	private rafHandle: number | null = null;
 	private debounceTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
-	private lastSentPayloads: Map<string, any> = new Map();
+	// No cache of the last payload sent. It existed only to feed the dedup
+	// removed above, and with nothing reading it, it was a map holding a 1.4MB
+	// page definition per key for the lifetime of the editor.
 
 	// Configuration
 	private readonly DEBOUNCE_MS = 50; // Debounce rapid updates
@@ -55,17 +57,16 @@ class MessageThrottler {
 					}
 				}
 			}
-			this.lastSentPayloads.set(messageKey, payload);
 			return;
 		}
 
-		// Check if payload actually changed (shallow comparison)
-		// Disable for now to ensure messages are sent - can re-enable later for optimization
-		// const lastPayload = this.lastSentPayloads.get(messageKey);
-		// if (this.payloadsEqual(lastPayload, payload)) {
-		// 	// Skip if payload hasn't changed
-		// 	return;
-		// }
+		// There is deliberately no "skip if the payload is unchanged" short circuit
+		// here. The obvious cheap comparison for a page definition is name plus
+		// version plus the set of component keys, and every property and style
+		// edit passes that test unchanged: same keys, same version, different
+		// contents. A dedup written that way silently freezes the canvas for the
+		// most common edit there is. If this ever needs to become an
+		// optimisation, the comparison has to be over the contents.
 
 		// Store the pending message with ref getter
 		this.pendingMessages.set(messageKey, {
@@ -109,7 +110,6 @@ class MessageThrottler {
 		const iframeRefs = message.iframeRefGetter();
 		this.sendToIframes(message, iframeRefs);
 		this.pendingMessages.delete(messageKey);
-		this.lastSentPayloads.set(messageKey, message.payload);
 	}
 
 	/**
@@ -132,7 +132,6 @@ class MessageThrottler {
 			const iframeRefs = message.iframeRefGetter();
 			this.sendToIframes(message, iframeRefs);
 			this.pendingMessages.delete(key);
-			this.lastSentPayloads.set(key, message.payload);
 		}
 	}
 
@@ -179,48 +178,6 @@ class MessageThrottler {
 	}
 
 	/**
-	 * Compare two payloads for equality (shallow comparison)
-	 * For large objects, we compare a hash or key properties
-	 */
-	private payloadsEqual(payload1: any, payload2: any): boolean {
-		if (payload1 === payload2) return true;
-		if (!payload1 || !payload2) return false;
-
-		// For PageDefinition, compare key properties that indicate changes
-		if (payload1.name && payload2.name) {
-			// Compare version, rootComponent, and componentDefinition keys
-			return (
-				payload1.name === payload2.name &&
-				payload1.version === payload2.version &&
-				payload1.rootComponent === payload2.rootComponent &&
-				this.componentDefinitionKeysEqual(
-					payload1.componentDefinition,
-					payload2.componentDefinition,
-				)
-			);
-		}
-
-		// For other objects, do shallow comparison
-		try {
-			return JSON.stringify(payload1) === JSON.stringify(payload2);
-		} catch {
-			// If stringification fails, assume different
-			return false;
-		}
-	}
-
-	/**
-	 * Compare componentDefinition keys (not full content)
-	 */
-	private componentDefinitionKeysEqual(def1: any, def2: any): boolean {
-		if (!def1 || !def2) return def1 === def2;
-		const keys1 = Object.keys(def1).sort();
-		const keys2 = Object.keys(def2).sort();
-		if (keys1.length !== keys2.length) return false;
-		return keys1.every((key, i) => key === keys2[i]);
-	}
-
-	/**
 	 * Force flush all pending messages immediately
 	 */
 	flushAll(iframeRefGetter?: () => IframeRefs): void {
@@ -240,7 +197,6 @@ class MessageThrottler {
 		for (const [key, message] of this.pendingMessages.entries()) {
 			const iframeRefs = iframeRefGetter ? iframeRefGetter() : message.iframeRefGetter();
 			this.sendToIframes(message, iframeRefs);
-			this.lastSentPayloads.set(key, message.payload);
 		}
 		this.pendingMessages.clear();
 	}

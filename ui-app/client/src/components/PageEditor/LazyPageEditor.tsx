@@ -101,6 +101,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			sectionsCategoryList,
 			helpURL,
 			defaultZoomPercentage,
+			sidekickEnabled,
+			sidekickAgentEndpoint,
+			sidekickDraftMode,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -443,6 +446,11 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	]));
 	const [showDebugMenu, setShowDebugMenu] = useState<boolean>(false);
 
+	// Set when a preview refuses a definition push because it has navigated to a
+	// different page. The refusal is correct, but silence about it makes the
+	// editor look broken: edits land in the store and then visibly do nothing.
+	const [previewElsewhere, setPreviewElsewhere] = useState<string | null>(null);
+
 	const setSelectedComponent = useCallback(
 		(v: string) => {
 			setSelectedComponentsListOriginal([v]);
@@ -646,6 +654,36 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			personalizationPath,
 		);
 	}, [personalizationPath]);
+
+	// Push the theme to the canvas iframes, not only to the template one.
+	//
+	// The slave has always known how to apply a pushed theme (EDITOR_APP_THEME
+	// sets Store.theme), which is how the ThemeEditor's preview works, but the
+	// page editor only ever sent it to the component-template iframe. That was
+	// survivable while nothing could change a theme from in here. It is not
+	// survivable now: the sidekick can, that change saves immediately because a
+	// theme is not something this screen can offer for review, and without this
+	// the user asks for a colour, is told it is done, and watches nothing happen.
+	useEffect(() => {
+		if (!themePath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
+			(_, payload) => {
+				messageThrottler.scheduleMessage(
+					'EDITOR_APP_THEME_PAGES',
+					'EDITOR_APP_THEME',
+					payload,
+					['desktop', 'tablet', 'mobile'],
+					() => ({
+						desktop: desktopRef.current,
+						tablet: tabletRef.current,
+						mobile: mobileRef.current,
+					}),
+				);
+			},
+			themePath,
+		);
+	}, [themePath, pageExtractor]);
 
 	// On app def change message to component template iframe.
 	useEffect(() => {
@@ -866,6 +904,8 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 								}, {} as any),
 						}}));
 					},
+					onDefinitionIgnored: detail =>
+						setPreviewElsewhere(detail?.showing ?? 'another page'),
 					onDebugExecution: (msg: any) => {
 						// Flatten executionLog to top level for easier access
 						const flattenedMsg = {
@@ -905,6 +945,95 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		window.addEventListener('message', onMessageFromSlave);
 		return () => window.removeEventListener('message', onMessageFromSlave);
 	}, []); // Empty deps - listener uses refs for current values
+
+	// The sidekick reports every write that really did save. Only the page it has
+	// open is held back for review; a theme or style is not something this screen
+	// can show for approval, so those save outright and the canvas has to catch
+	// up. A theme we can refetch into its bound path, which feeds the push above.
+	// A style has no bound path here, so the honest option is to reload the
+	// preview rather than leave it silently wrong.
+	// A page write lands on whichever surface the agent named, and the canvas has
+	// to follow it or the user is looking at a definition that no longer exists
+	// anywhere. Refetching is the whole fix: the editor already reads the draft on
+	// load, so it only ever had to be told to read it again.
+	//
+	// Coalesced, because one turn can write the page a dozen times and each fetch
+	// pulls a definition that reaches 1.4MB and wakes every listener in the editor.
+	const pageReloadTimer = useRef<any>(null);
+	const reloadPageDefinition = useCallback(
+		(pageId: string, draft: boolean) => {
+			if (pageReloadTimer.current) clearTimeout(pageReloadTimer.current);
+			pageReloadTimer.current = setTimeout(async () => {
+				pageReloadTimer.current = null;
+				try {
+					const response = await axios.get(`/api/ui/pages/${pageId}`, {
+						params: draft ? { draft: true } : undefined,
+						headers: {
+							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+						},
+					});
+					// The store write is what drives everything downstream: the canvas
+					// iframes, the component tree and the undo stack all listen on
+					// defPath, so the previous state stays reachable with Ctrl+Z.
+					if (response.data && defPath)
+						setData(defPath, response.data, pageExtractor.getPageName());
+				} catch (error) {
+					console.error('Could not reload the page the sidekick changed:', error);
+				}
+			}, 250);
+		},
+		[defPath, pageExtractor],
+	);
+
+	useEffect(
+		() => () => {
+			if (pageReloadTimer.current) clearTimeout(pageReloadTimer.current);
+		},
+		[],
+	);
+
+	const handleObjectSaved = useCallback(
+		(data: any) => {
+			if (data?.kind === 'page') {
+				// Only the page this editor has open. The agent is free to touch
+				// others, and pulling one of those over the canvas would replace
+				// what the user is working on with an unrelated document.
+				const current: any = defPath
+					? getDataFromPath(defPath, locationHistory, pageExtractor)
+					: undefined;
+				const pageId = String(data.id ?? '');
+				if (!pageId || !current?.id || String(current.id) !== pageId) return;
+				reloadPageDefinition(pageId, data.draft === true);
+				return;
+			}
+			if (data?.kind === 'style') {
+				desktopRef.current?.contentWindow?.location.reload();
+				tabletRef.current?.contentWindow?.location.reload();
+				mobileRef.current?.contentWindow?.location.reload();
+				return;
+			}
+			if (data?.kind !== 'theme' || !themePath) return;
+
+			const current: any = getDataFromPath(themePath, locationHistory, pageExtractor);
+			const themeId = data.id || current?.id;
+			if (!themeId) return;
+
+			(async () => {
+				try {
+					const response = await axios.get(`/api/ui/themes/${themeId}`, {
+						headers: {
+							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+						},
+					});
+					if (response.data)
+						setData(themePath, response.data, pageExtractor.getPageName());
+				} catch (error) {
+					console.error('Could not reload the theme the sidekick changed:', error);
+				}
+			})();
+		},
+		[themePath, defPath, locationHistory, pageExtractor, reloadPageDefinition],
+	);
 
 	const undoStackRef = useRef<Array<PageDefinition>>([]);
 	const redoStackRef = useRef<Array<PageDefinition>>([]);
@@ -1002,6 +1131,36 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	return (
 		<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
+			{previewElsewhere && (
+				<div className="_peStaleCanvasNotice">
+					<i className="fa fa-triangle-exclamation" aria-hidden="true" />
+					<span>
+						The preview has navigated to <strong>{previewElsewhere}</strong>, so it is
+						not showing your edits to this page. They are still here and still
+						unsaved.
+					</span>
+					<button
+						type="button"
+						className="_peStaleCanvasAction"
+						onClick={() => {
+							setPreviewElsewhere(null);
+							desktopRef?.current?.contentWindow?.location.reload();
+							tabletRef?.current?.contentWindow?.location.reload();
+							mobileRef?.current?.contentWindow?.location.reload();
+						}}
+					>
+						Reload preview
+					</button>
+					<button
+						type="button"
+						className="_peStaleCanvasDismiss"
+						title="Dismiss"
+						onClick={() => setPreviewElsewhere(null)}
+					>
+						<i className="fa fa-xmark" aria-hidden="true" />
+					</button>
+				</div>
+			)}
 			<DnDEditor
 				personalizationPath={personalizationPath}
 				defPath={defPath}
@@ -1077,6 +1236,13 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				onDebugButtonClick={handleDebugButtonClick}
 				debugMessageCount={Math.max(debugMessages.get('desktop')?.length ?? 0,
 					debugMessages.get('tablet')?.length ?? 0, debugMessages.get('mobile')?.length ?? 0)}
+				editorPageDefinition={pageDefinition}
+				editorContext={context}
+				appCode={appDefinition?.appCode ?? editPageDefinition?.appCode}
+				sidekickEnabled={sidekickEnabled === true}
+				sidekickAgentEndpoint={sidekickAgentEndpoint ?? '/api/ai/appbuilder/chat'}
+				sidekickDraftMode={sidekickDraftMode !== false}
+				onObjectSaved={handleObjectSaved}
 			/>
 			<CodeEditor
 				showCodeEditor={showCodeEditor}

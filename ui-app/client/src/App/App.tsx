@@ -34,7 +34,19 @@ function onMessageFromEditor(event: MessageEvent) {
 	if (type === 'EDITOR_DEFINITION') {
 		if (!payload?.name) return;
 		const storePage = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${payload.name}`, []);
-		if (storePage?.name !== payload.name) return;
+		if (storePage?.name !== payload.name) {
+			// This preview is showing something else, so the definition is not ours
+			// to apply. The guard is right to drop it: applying it would overwrite
+			// an unrelated page. What was wrong was dropping it in silence, which
+			// makes the editor look broken. Every edit lands in the master's store
+			// and then visibly does nothing, and there is no way to tell from here
+			// that the preview simply wandered off.
+			messageToMaster({
+				type: 'SLAVE_DEFINITION_IGNORED',
+				payload: { wanted: payload.name, showing: storePage?.name ?? null },
+			});
+			return;
+		}
 		innerSetData(`${STORE_PREFIX}.pageDefinition.${payload.name}`, payload);
 	}
 }

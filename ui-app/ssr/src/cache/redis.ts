@@ -271,9 +271,15 @@ export async function invalidateCache(pattern: string): Promise<number> {
 export function generateCacheKey(
 	appCode: string,
 	clientCode: string,
-	pageName: string
+	pageName: string,
+	/**
+	 * The draft surface renders different content from the live one, so the two
+	 * must never share a pre-rendered entry. Defaulted rather than required so
+	 * every existing call site keeps producing exactly the key it produced before.
+	 */
+	draft: boolean = false
 ): string {
-	return `${appCode}:${clientCode}:${pageName}`;
+	return `${appCode}:${clientCode}:${pageName}${draft ? ':draft' : ''}`;
 }
 
 /**

@@ -21,14 +21,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'Where the shortcut is active. Put this component on the shell page with Whole App to make it work on every page.',
 	},
 	COMMON_COMPONENT_PROPERTIES.shortcutPriority,
-	{
-		name: 'allowInInput',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Fire While Typing',
-		description:
-			'Fire even when the cursor is in a text field. Defaults on for combos that use Ctrl or Cmd, off for bare keys so typing never triggers them.',
-		group: ComponentPropertyGroup.ADVANCED,
-	},
+	COMMON_COMPONENT_PROPERTIES.allowInInput,
 	{
 		name: 'preventDefault',
 		schema: SCHEMA_BOOL_COMP_PROP,

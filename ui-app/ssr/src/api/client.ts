@@ -14,6 +14,24 @@ interface FetchOptions {
 	appCode: string;
 	clientCode: string;
 	authToken?: string | null;
+	/**
+	 * The hostname the browser actually asked for.
+	 *
+	 * This is how the draft surface reaches the backend, and it replaces an earlier
+	 * attempt that forwarded an `x-draft` header. That did not work: GatewayFilter
+	 * strips `x-draft` from EVERY request, including this server-to-server hop, and
+	 * then re-derives the surface from the connection it sees, which is
+	 * `gateway-server:8080` and never matches a DRAFT row. A draft host therefore
+	 * got a live pre-render, cached under a draft key.
+	 *
+	 * Forwarding the host instead lets the gateway resolve the surface itself, the
+	 * same way it does for a direct browser request, and keeps it the single
+	 * authority on what is a draft. GatewayFilter.getSchemeHostPort already reads
+	 * exactly these three headers.
+	 */
+	forwardedHost?: string | null;
+	forwardedProto?: string | null;
+	forwardedPort?: string | null;
 }
 
 /**
@@ -31,6 +49,19 @@ async function fetchApi<T>(
 
 	if (options.authToken) {
 		headers['Authorization'] = options.authToken;
+	}
+
+	// Deliberately no x-draft here. The gateway strips it on arrival and derives
+	// the surface from the forwarded host below, so sending it would be both
+	// useless and misleading about where the decision is made.
+	if (options.forwardedHost) {
+		headers['X-Forwarded-Host'] = options.forwardedHost;
+	}
+	if (options.forwardedProto) {
+		headers['X-Forwarded-Proto'] = options.forwardedProto;
+	}
+	if (options.forwardedPort) {
+		headers['X-Forwarded-Port'] = options.forwardedPort;
 	}
 
 	try {

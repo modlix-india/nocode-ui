@@ -19,6 +19,8 @@ export interface ComponentShortcutOptions {
 	shortcutScope?: string;
 	shortcutPriority?: number;
 	shortcutGroup?: string;
+	/** Fire even while focus is in a text field. Defaults on for ctrl/meta combos. */
+	allowInInput?: boolean;
 	/** 'FOCUS' | 'FOCUS_SELECT' | 'EVENT'. Ignored when onActivate is supplied. */
 	shortcutAction?: string;
 	/** Event key into pageDefinition.eventFunctions, for the EVENT action. */
@@ -97,6 +99,7 @@ export function useComponentShortcut(opts: ComponentShortcutOptions): ComponentS
 		shortcutScope,
 		shortcutPriority,
 		shortcutGroup,
+		allowInInput,
 		shortcutAction = 'FOCUS',
 		onShortcut,
 		label,
@@ -200,6 +203,7 @@ export function useComponentShortcut(opts: ComponentShortcutOptions): ComponentS
 		level: context.level,
 		scope: (shortcutScope as ShortcutScope) ?? 'PAGE',
 		priority: shortcutPriority ?? 0,
+		allowInInput,
 		disabled: disabled ?? false,
 		elementRef,
 		onTrigger,

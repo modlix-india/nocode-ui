@@ -20,6 +20,7 @@ interface MasterFunctionOptions {
 	styleSelectorPref: any;
 	setStyleSelectorPref: (pref: any) => void;
 	onDebugExecution?: (debugMessage: any) => void;
+	onDefinitionIgnored?: (detail: { wanted: string; showing: string | null }) => void;
 }
 export const MASTER_FUNCTIONS = new Map<
 	string,
@@ -80,6 +81,9 @@ export const MASTER_FUNCTIONS = new Map<
 		(options, payload) => options.operations.componentPropChanged(payload),
 	],
 	['SLAVE_DEBUG_EXECUTION', (options, payload) => options.onDebugExecution?.(payload)],
+	// The preview navigated away, so it refused a definition push. Surfaced
+	// rather than swallowed: without it, every edit silently does nothing.
+	['SLAVE_DEFINITION_IGNORED', (options, payload) => options.onDefinitionIgnored?.(payload)],
 ]);
 
 function udpateDeviceSelection(key: string, options: MasterFunctionOptions) {

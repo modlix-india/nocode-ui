@@ -180,6 +180,14 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 			},
 		],
 	},
+	allowInInput: {
+		name: 'allowInInput',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Shortcut Fires While Typing',
+		description:
+			'Fire the shortcut even when the cursor is in a text field. Defaults on for combos that use Ctrl or Cmd, off for bare keys so typing never triggers them.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	onShortcut: {
 		name: 'onShortcut',
 		schema: SCHEMA_STRING_COMP_PROP,
