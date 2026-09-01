@@ -6,6 +6,7 @@ import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
 import { processLocation } from './util/locationProcessor';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
+import DraftBanner from './components/DraftBanner';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
@@ -60,6 +61,7 @@ declare global {
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;
 	var debugContext: any;
+	var isDraftMode: boolean;
 	// var d3: typeof import('d3/index');
 }
 
@@ -85,6 +87,20 @@ globalThis.isDesignMode = (() => {
 
 // To enable debug mode, add ?debug to the URL
 globalThis.isDebugMode = window.location.search.indexOf('debug') != -1;
+
+// Whether this page is being served from the app's draft surface.
+//
+// Derived from the response, not from the URL. The gateway resolves the hostname
+// and stamps every request, so the server is the authority on which surface this
+// is and the client only needs to know for its own chrome. Reading it from a
+// query parameter would make it look settable from here, which it is not.
+globalThis.isDraftMode = (() => {
+	try {
+		return document.documentElement.getAttribute('data-draft') === 'true';
+	} catch (e) {
+		return false;
+	}
+})();
 
 // To check if the app is being interacted with
 globalThis.lastInteracted = Date.now();
@@ -214,6 +230,7 @@ if (!app) {
 			<ErrorBoundary>
 				<AppStyle />
 				<App />
+				<DraftBanner />
 			</ErrorBoundary>
 		);
 		if (window.localStorage.getItem(AUTH_TOKEN) || !rendered) createRoot(app).render(reactNode);

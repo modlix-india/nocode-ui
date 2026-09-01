@@ -30,6 +30,10 @@ const component: Component = {
 	stylePseudoStates: ['hover'],
 	bindingPaths: {
 		bindingPath: { name: 'Complete Binding' },
+		// Objects the agent really SAVED, as a queue rather than a latest-value
+		// slot: one turn writes many, and a page that only sees the last one has
+		// silently missed the rest. The handler drains it.
+		bindingPath2: { name: 'Changed Objects Binding' },
 	},
 	defaultTemplate: {
 		key: '',

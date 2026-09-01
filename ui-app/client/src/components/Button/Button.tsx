@@ -23,6 +23,7 @@ import { styleDefaults, stylePropertiesForTheme } from './buttonStyleProperties'
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { useComponentShortcut } from '../../shortcuts/useComponentShortcut';
 
 function ButtonComponent(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
@@ -50,6 +51,10 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			stopPropagation,
 			preventDefault,
 			analyticsLabel,
+			shortcutKey,
+			shortcutScope,
+			shortcutPriority,
+			shortcutGroup,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -126,10 +131,30 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		}
 	};
 
+	const buttonRef = useRef<HTMLButtonElement>(null);
+
 	const hasRightIcon = !leftIcon && !leftImage && (rightIcon || rightImage);
-	!designType.startsWith('_fabButton') &&
-		designType !== '_iconButton' &&
-		designType !== '_iconPrimaryButton';
+
+	// handleClick already guards against a double run through eventRunningRef and
+	// isLoading, and it carries the linkPath navigation, so the keyboard path gets
+	// both for free.
+	const {
+		aria: shortcutAria,
+		titleSuffix: shortcutTooltip,
+	} = useComponentShortcut({
+		props,
+		componentKey: key,
+		shortcutKey,
+		shortcutScope,
+		shortcutPriority,
+		shortcutGroup,
+		label,
+		fallbackLabel: 'Button',
+		disabled: isLoading || readOnly,
+		elementRef: buttonRef,
+		onActivate: e => handleClick(e),
+	});
+
 	const hasRightIconClass = (!!rightIcon || !!rightImage) && !leftIcon;
 	const hasLabel =
 		!designType.startsWith('_fabButton') &&
@@ -438,9 +463,11 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			style={styleProperties.comp ?? {}}
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
+			ref={buttonRef}
 			onFocus={stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined}
 			onBlur={stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined}
-			title={label ?? ''}
+			title={`${label ?? ''}${shortcutTooltip ?? ''}`}
+			aria-keyshortcuts={shortcutAria}
 			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent

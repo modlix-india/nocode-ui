@@ -114,6 +114,46 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		// Objects the surrounding surface has open and unsaved. For exactly these,
+		// the agent reads the user's copy and holds its writes there instead of
+		// saving, so the change can be looked at before it is committed. Everything
+		// else the agent touches is saved as it always was.
+		//
+		// A path rather than the descriptors themselves, for the same reason as
+		// activeDataPath: read fresh on every message, so the agent gets the drafts
+		// as they are now and not as they were when the chat mounted.
+		//
+		// Point it at a store path holding an array of {kind, path}, where `path`
+		// names where that object's document lives. Everything else (id, name,
+		// appCode) is read off the document, so there is nothing to keep in step.
+		// Leave it unset and nothing is held, which is right for a chat that is not
+		// embedded in an editor.
+		name: 'openDraftsPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Drafts Path',
+		description:
+			'Store path holding [{kind, path}] for the objects this surface has open and unsaved. The agent edits those in place instead of saving them. Declare only what this screen can show the user for review.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// Send the agent's definition edits to the app's DRAFT surface rather than
+		// live, so the user gets a reviewable copy AND the agent can screenshot its
+		// own work. That second half is why this exists: a change held in the
+		// browser is invisible to a screenshot, which renders the live app out of
+		// the database, so the agent looks at its own edit and sees nothing.
+		//
+		// Safe to leave on: the agent probes the deployment and keeps writing live
+		// when there is no draft surface, rather than claiming a review step that
+		// does not exist.
+		name: 'draftMode',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Edit On The Draft Surface',
+		description:
+			"Send the agent's edits to the app's draft surface instead of live, so they can be reviewed and published deliberately.",
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'quickActionLayout',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Quick Action Layout',
@@ -501,6 +541,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 	},
+	{
+		// Writes the agent really committed, as opposed to the ones it held back
+		// for review because `openDraftsPath` declared the object open. A surface
+		// that shows an object it did not declare has to refetch it or it is
+		// looking at a definition that no longer matches what is stored.
+		//
+		// The entry lands on the Changed Objects binding BEFORE this fires, and it
+		// appends rather than replaces, because one turn can write a dozen objects
+		// and a handler that only ever sees the last one silently loses the rest.
+		// Drain the list in the handler.
+		name: 'onObjectSaved',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Object Saved',
+		description:
+			'Event fired when the agent saves an object for real. The object lands on the Changed Objects binding as {kind, id, name, appCode, operation, draft}; the handler should drain that list.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	COMMON_COMPONENT_PROPERTIES.shortcutKey,
+	COMMON_COMPONENT_PROPERTIES.shortcutAction,
+	COMMON_COMPONENT_PROPERTIES.onShortcut,
+	COMMON_COMPONENT_PROPERTIES.shortcutScope,
+	COMMON_COMPONENT_PROPERTIES.shortcutPriority,
+	COMMON_COMPONENT_PROPERTIES.shortcutGroup,
+	COMMON_COMPONENT_PROPERTIES.allowInInput,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

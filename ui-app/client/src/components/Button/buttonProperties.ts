@@ -127,6 +127,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Prevent default of click event.',
 		defaultValue: false,
 	},
+	COMMON_COMPONENT_PROPERTIES.shortcutKey,
+	COMMON_COMPONENT_PROPERTIES.shortcutScope,
+	COMMON_COMPONENT_PROPERTIES.shortcutPriority,
+	COMMON_COMPONENT_PROPERTIES.shortcutGroup,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

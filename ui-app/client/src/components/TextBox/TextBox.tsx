@@ -16,6 +16,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { IconHelper } from '../util/IconHelper';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { useComponentShortcut } from '../../shortcuts/useComponentShortcut';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
@@ -87,6 +88,12 @@ function TextBox(props: Readonly<ComponentProps>) {
 			editConfirmIcon,
 			editCancelIcon,
 			analyticsLabel,
+			shortcutKey,
+			shortcutScope,
+			shortcutPriority,
+			shortcutAction,
+			onShortcut,
+			shortcutGroup,
 		} = {},
 		stylePropertiesWithPseudoStates,
 		key,
@@ -478,7 +485,27 @@ function TextBox(props: Readonly<ComponentProps>) {
 			}
 		: undefined;
 
+	const inputRef = React.useRef<HTMLInputElement>(null);
+
 	const finKey: string = 't_' + key;
+
+	const {
+		aria: shortcutAria,
+		titleSuffix: shortcutTooltip,
+	} = useComponentShortcut({
+		props,
+		componentKey: key,
+		shortcutKey,
+		shortcutScope,
+		shortcutPriority,
+		shortcutAction,
+		onShortcut,
+		shortcutGroup,
+		label,
+		fallbackLabel: placeholder,
+		disabled: readOnly,
+		elementRef: inputRef,
+	});
 
 	let style = undefined;
 	if (valueType === 'number' && !showNumberSpinners) {
@@ -537,6 +564,9 @@ function TextBox(props: Readonly<ComponentProps>) {
 				editConfirmIcon={editConfirmIcon}
 				editCancelIcon={editCancelIcon}
 				analyticsLabel={analyticsLabel}
+				inputRef={inputRef}
+				ariaKeyShortcuts={shortcutAria}
+				shortcutTooltip={shortcutTooltip}
 				onEditRequest={(editMode, cancel) => {
 					if (editMode || !originalBindingPathPath) return;
 					if (cancel) {

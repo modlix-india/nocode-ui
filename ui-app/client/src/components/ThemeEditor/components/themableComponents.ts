@@ -1,10 +1,12 @@
 import { StylePropertyDefinition } from '../../../types/common';
 import { styleProperties as appStyleProperties } from '../../../App/appStyleProperties';
 import { styleProperties as messageStyleProperies } from '../../../App/Messages/messageStyleProperies';
+import { styleProperties as shortcutStyleProperties } from '../../../shortcuts/shortcutStyleProperties';
 import ComponentDefinitions from '../../index';
 
 export const APP_KEY = '_app';
 export const MESSAGE_KEY = '_message';
+export const SHORTCUT_KEY = '_shortcut';
 
 export interface ThemableComponent {
 	/** Key used for `currentComponent`: a component name, or `_app` / `_message`. */
@@ -34,6 +36,13 @@ export function themableComponents(): ThemableComponent[] {
 			key: MESSAGE_KEY,
 			displayName: 'Messages',
 			styleProps: messageStyleProperies,
+			propertiesForTheme: undefined,
+			styleDefaults: undefined,
+		},
+		{
+			key: SHORTCUT_KEY,
+			displayName: 'Shortcuts',
+			styleProps: shortcutStyleProperties,
 			propertiesForTheme: undefined,
 			styleDefaults: undefined,
 		},

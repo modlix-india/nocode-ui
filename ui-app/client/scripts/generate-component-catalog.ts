@@ -491,6 +491,9 @@ const COMMON_PROPERTIES: Record<string, CatalogProperty> = loadCommonProperties(
 
 const COMPONENT_TIERS: Record<string, ComponentTier> = {
 	Tree: 'data',
+	// Non-visual, but the agent has to know its props to wire a shortcut at all.
+	// At the default tier it rendered as a one-line description with no properties.
+	Shortcut: 'common',
 	// ── common: primary building blocks ──
 	Button: 'common',
 	Grid: 'common',
