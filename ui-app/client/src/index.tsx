@@ -55,8 +55,15 @@ declare global {
 		application: any;
 		pageDefinition: any;
 		theme: any;
+		/** Which theme `theme` is. Absent means the app's default. */
+		themeName?: string;
 		urlDetails: any;
 	}
+	/**
+	 * The app this page belongs to, stamped by IndexHTMLService. Read this rather
+	 * than `domainAppCode`, which getHref.ts overwrites on import.
+	 */
+	var __mlxAppCode: string;
 	var appDefinitionResponse: AppDefinitionResponse;
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;

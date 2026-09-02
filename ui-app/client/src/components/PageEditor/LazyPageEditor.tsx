@@ -3,7 +3,13 @@ import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ComponentDefinitions from '..';
 import { usedComponents } from '../../App/usedComponents';
-import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
+import {
+	LOCAL_STORE_PREFIX,
+	PAGE_STORE_PREFIX,
+	STORE_PATH_THEME_PATH,
+	STORE_PREFIX,
+} from '../../constants';
+import { isDarkTheme } from '../../util/themeSelection';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -144,19 +150,33 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		? (getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {})
 		: {};
 
-	// Managing theme with local state.
-	const [localTheme, setLocalTheme] = useState(personalization.theme ?? theme);
+	/**
+	 * The editor's own chrome follows the APP's theme.
+	 *
+	 * It used to have its own light/dark toggle, persisted under
+	 * `personalization.theme`. Now that the app has a theme switcher in its header
+	 * that is one decision with two controls, and the editor's copy was the one
+	 * that stuck: pick a dark app theme and the editor stayed light until you also
+	 * found the toggle in here, and a stale `_dark` left the editor dark inside a
+	 * light app forever. The toggle is gone from DnDTopBar and this reads the
+	 * theme's own ground instead, so there is nothing left to get out of step.
+	 *
+	 * `theme` (the component property) is still the fallback for a page with no
+	 * theme loaded at all, which is what it always was.
+	 */
+	const [localTheme, setLocalTheme] = useState(() =>
+		isDarkTheme(getDataFromPath(STORE_PATH_THEME_PATH, [])) ? '_dark' : theme,
+	);
 
-	// Checking if someone changed the theme
-	useEffect(() => {
-		if (!personalizationPath) return;
-
-		return addListenerAndCallImmediately(
-			pageExtractor.getPageName(),
-			(_, v) => setLocalTheme(v ?? theme),
-			`${personalizationPath}.theme`,
-		);
-	}, [personalizationPath]);
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				undefined,
+				(_, v) => setLocalTheme(isDarkTheme(v) ? '_dark' : '_light'),
+				STORE_PATH_THEME_PATH,
+			),
+		[],
+	);
 
 	useEffect(() => {
 		setData('Store.pageData._global.collapseMenu', true);
@@ -444,9 +464,15 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			return;
 		}
 
-		if (personalization?.pageLeftAt?.[editPageDefinition.name]) {
-			setUrl(personalization.pageLeftAt[editPageDefinition.name].url);
-			setClientCode(personalization.pageLeftAt[editPageDefinition.name].clientCode);
+		// Remembered only if there is actually a url remembered. The record can
+		// exist carrying just a clientCode -- `urlChange` writes the two keys
+		// separately -- and taking the branch on the record's mere presence then set
+		// the url to undefined AND returned before building the default, leaving the
+		// URL bar permanently blank for that page.
+		const left = personalization?.pageLeftAt?.[editPageDefinition.name];
+		if (left?.url) {
+			setUrl(left.url);
+			setClientCode(left.clientCode);
 			return;
 		}
 

@@ -208,12 +208,21 @@ export function App() {
 				undefined,
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						const { auth, application, isApplicationLoadFailed, theme } =
-							await getAppDefinition();
+						const {
+							auth,
+							application,
+							isApplicationLoadFailed,
+							theme,
+							selectedTheme,
+						} = await getAppDefinition();
 						setData(`${STORE_PREFIX}.application`, application);
 						setData(`${STORE_PREFIX}.auth`, auth);
 						setData(`${STORE_PREFIX}.isApplicationLoadFailed`, isApplicationLoadFailed);
 						setData(`${STORE_PREFIX}.theme`, theme);
+						// Without this the switcher on this path would mark the wrong
+						// theme active, or none at all. This is the fallback branch,
+						// taken when the store was not pre-seeded.
+						setData(`${STORE_PREFIX}.selectedTheme`, selectedTheme);
 
 						return;
 					}
