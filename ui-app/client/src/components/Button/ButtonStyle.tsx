@@ -1,5 +1,6 @@
+import { StyleResolution } from '../../types/common';
 import React, { useEffect, useState } from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './buttonStyleProperties';
 import { propertiesDefinition } from './buttonProperties';
 import { usedComponents } from '../../App/usedComponents';
@@ -13,6 +14,15 @@ const NAME = 'Button';
 export default function ButtonStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const [_, setReRender] = useState<number>(Date.now());
 
 	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
@@ -64,7 +74,7 @@ export default function ButtonStyle({
 			transform: translateY(-50%);
 			display: flex;
 			align-items: center;
-			background: #FFF;
+			background: ${t('colorSeven', '#FFF')};
 			justify-content: center;
 		}
 
@@ -89,11 +99,11 @@ export default function ButtonStyle({
 			display: flex;
 			flex-direction: row;
 			gap: 5px;
-			background-color: #fff;
+			background-color: ${t('colorSeven', '#fff')};
 			padding: 5px 10px;
 			border-radius: 4px;
 			box-shadow: 0 15px 30px 0 rgba(0,0,0,.10), 0 5px 15px 0 rgba(0,0,0,.10);
-			border: 2px solid #eee;
+			border: 2px solid ${t('borderColorNine', '#eee')};
 		}
 
 		${PREFIX} .textToolBar i.fa {
@@ -106,7 +116,7 @@ export default function ButtonStyle({
 
 		${PREFIX} .textToolBar i.fa:hover,
 		${PREFIX} .textToolBar .colorPicker:hover i.fa {
-			background-color: #eee;
+			background-color: ${t('surfaceColorThree', '#eee')};
 		}
 
 		${PREFIX} .colorPicker {

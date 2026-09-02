@@ -832,5 +832,15 @@
 		"gn": "Background",
 		"dn": "Background HasError Active Error",
 		"n": "colorpickerBackgroundHasErrorActiveError<designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compColorPicker<designType><colorScheme> input, .comp.compColorPicker<designType><colorScheme> textarea, .comp.compColorPicker<designType><colorScheme> select",
+		"np": true,
+		"gn": "Color",
+		"dn": "Input Value Color",
+		"de": "The value inside the control. Separate from every other colour here because form controls do not inherit `color` from their container -- without this they fall back to the UA black, which is invisible on a dark theme.",
+		"n": "colorPickerInputColor<designType><colorScheme>",
+		"dv": "<fontColorOne>"
 	}
 ]

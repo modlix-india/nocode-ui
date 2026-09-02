@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleResolution } from '../../types/common';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 
 import { styleProperties, styleDefaults } from './carouselStyleProperties';
 const PREFIX = '.comp.compCarousel';
@@ -8,6 +8,15 @@ const PREFIX = '.comp.compCarousel';
 export default function CarouselStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const css =
 		`
     ${PREFIX} {
@@ -206,7 +215,7 @@ export default function CarouselStyle({
     ${PREFIX} .circleWithNumbers{
         width:15px;
         height:15px;
-        background-color: #ffffff;
+        background-color: ${t('colorSeven', '#ffffff')};
         border-radius: 50%;
         display:flex;
         justify-content: center;
@@ -218,7 +227,7 @@ export default function CarouselStyle({
     ${PREFIX} .squareWithNumbers{
         width:15px;
         height:15px;
-        background-color: #ffffff;
+        background-color: ${t('colorSeven', '#ffffff')};
         display:flex;
         justify-content: center;
         border: 1px solid grey;
@@ -323,8 +332,8 @@ export default function CarouselStyle({
         display: flex;
         justify-content: center;
         align-items: center;
-        border: 1px solid #888;
-        color: #888;
+        border: 1px solid ${t('borderColorEleven', '#888')};
+        color: ${t('fontColorThree', '#888')};
         font-weight: normal;
         cursor: pointer;
         margin: 2px;
@@ -334,11 +343,11 @@ export default function CarouselStyle({
         transition: background 0.2s, color 0.2s, border 0.2s;
     }
     ${PREFIX} .indicator-button.active {
-        background: #888;
-        color: #fff;
+        background: ${t('fontColorThree', '#888')};
+        color: ${t('colorSeven', '#fff')};
         font-weight: bold;
-        outline: 2px solid #333;
-        border-color: #888;
+        outline: 2px solid ${t('fontColorOne', '#333')};
+        border-color: ${t('borderColorEleven', '#888')};
     }
     ${PREFIX} .indicator-button.shape-circle {
         border-radius: 50%;
@@ -361,14 +370,14 @@ export default function CarouselStyle({
         background: transparent;
     }
     ${PREFIX} .indicator-button.fill-solid:not(.active) {
-        background: #eee;
+        background: ${t('surfaceColorThree', '#eee')};
     }
 
     ${PREFIX} .indicator-nav-btn {
         background: none !important;
         border: none !important;
         box-shadow: none;
-        color: #444;
+        color: ${t('fontColorTwo', '#444')};
         font-size: 1.2em;
         padding: 2px 8px;
         margin: 0 2px;
@@ -380,14 +389,14 @@ export default function CarouselStyle({
         transition: color 0.2s;
     }
     ${PREFIX} .indicator-nav-btn:focus {
-        outline: 2px solid #888;
+        outline: 2px solid ${t('borderColorEleven', '#888')};
     }
     ${PREFIX} .indicator-nav-btn:hover {
-        color: #111;
+        color: ${t('fontColorOne', '#111')};
         background: none;
     }
     ${PREFIX} .indicator-nav-btn:active {
-        color: #000;
+        color: ${t('fontColorOne', '#000')};
         background: none;
     }
     /* Subcomponent helper styling for indicatorContainer, indicatorButton, and indicator-nav-btn is supported via stylePropertiesDefinition. */

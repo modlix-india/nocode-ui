@@ -752,7 +752,6 @@
 		"n": "dropdownBackgroundDropdownContainer<designType><colorScheme>",
 		"dv": "<backgroundColorSeven>"
 	},
-
 	{
 		"cp": "margin",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownContainer",
@@ -1038,7 +1037,6 @@
 		"n": "dropdownBackgroundDropdownSearchBoxContainer<designType><colorScheme>",
 		"dv": "<backgroundColorSeven>"
 	},
-
 	{
 		"cp": "border-radius",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
@@ -1069,7 +1067,6 @@
 		"dn": "Border Radius DropdownSearchBoxContainer",
 		"n": "dropdownBorderRadiusDropdownSearchBoxContainer<designType><colorScheme>"
 	},
-
 	{
 		"cp": "padding",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
@@ -1085,7 +1082,6 @@
 		"dn": "Padding DropdownSearchBoxContainer",
 		"n": "dropdownPaddingDropdownSearchBoxContainer<designType><colorScheme>"
 	},
-
 	{
 		"cp": "color",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBoxContainer",
@@ -1102,7 +1098,6 @@
 		"n": "dropdownColorDropdownSearchBoxContainer<designType><colorScheme>",
 		"dv": "<fontColorEight>"
 	},
-
 	{
 		"cp": "color",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBox::placeholder",
@@ -1350,7 +1345,6 @@
 		"dn": "Color RightIcon Active Error",
 		"n": "dropdownColorRightIconActiveError<designType><colorScheme>"
 	},
-
 	{
 		"cp": "border-color",
 		"sel": ".comp.compDropdown<designType><colorScheme>._hasError, .comp.compDropdown<designType><colorScheme>._isActive._hasError",
@@ -1420,7 +1414,7 @@
 		"sel": ".comp.compDropdown<designType><colorScheme> ._label",
 		"np": true
 	},
-{
+	{
 		"gn": "Label",
 		"dn": "Label Text Transform",
 		"n": "dropdownTextTransformLabel<designType><colorScheme>",
@@ -1428,12 +1422,22 @@
 		"sel": ".comp.compDropdown<designType><colorScheme> ._label",
 		"np": true
 	},
-{
+	{
 		"gn": "Icon",
 		"dn": "Icon Font Size",
 		"n": "dropdownFontSizeIcon<designType><colorScheme>",
 		"cp": "font-size",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._leftIcon, .comp.compDropdown<designType><colorScheme> ._rightIcon",
 		"np": true
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compDropdown<designType><colorScheme> input, .comp.compDropdown<designType><colorScheme> textarea, .comp.compDropdown<designType><colorScheme> select",
+		"np": true,
+		"gn": "Color",
+		"dn": "Input Value Color",
+		"de": "The value inside the control. Separate from every other colour here because form controls do not inherit `color` from their container -- without this they fall back to the UA black, which is invisible on a dark theme.",
+		"n": "dropdownInputColor<designType><colorScheme>",
+		"dv": "<fontColorOne>"
 	}
 ]

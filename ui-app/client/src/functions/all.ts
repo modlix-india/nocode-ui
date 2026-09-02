@@ -17,6 +17,7 @@ export * from './EncodeURIComponent';
 export * from './DecodeURIComponent';
 export * from './ScrollTo';
 export * from './ScrollToGrid';
+export * from './SelectTheme';
 export * from './OpenWindow';
 export * from './TrackAnalyticsEvent';
 export * from './QueryAnalytics';

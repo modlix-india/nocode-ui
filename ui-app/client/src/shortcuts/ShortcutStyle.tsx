@@ -3,11 +3,13 @@ import { processStyleDefinition } from '../util/styleProcessor';
 import { styleDefaults, styleProperties } from './shortcutStyleProperties';
 
 /**
- * Styles for the three global shortcut surfaces: the conflict chooser, the cheat
- * sheet and the hold-to-reveal overlay.
+ * Styles for the two global shortcut surfaces, the conflict chooser and the cheat
+ * sheet, plus the reveal rules for the inline key chips.
  *
- * There is no inline chip. An author who wants a key shown permanently on screen
- * adds a Text component, which they can place and style however the page needs.
+ * Only the chips' behaviour lives here, because it is the same for every host: a
+ * chip is hidden until `ShortcutModifierHold` puts the modifier's class on the body.
+ * How a chip looks belongs to the component that renders it, through that
+ * component's own `shortcutHint` style slot.
  */
 export default function ShortcutStyle({
 	theme,
@@ -166,28 +168,27 @@ export default function ShortcutStyle({
 			opacity: 0.6;
 		}
 
-		._shortcutRevealLayer {
-			position: fixed;
-			inset: 0;
-			z-index: 14;
-			pointer-events: none;
-		}
-
-		._shortcutRevealChip {
-			position: fixed;
-			transform: translate(-100%, -50%);
-			padding: 2px 6px;
-			border-radius: 4px;
-			font-size: 11px;
-			line-height: 1.4;
+		/* The inline key chip. It sits in its host's normal flow, so it is aligned by
+		   the host's own layout and never needs measuring. Everything here is
+		   structure; colour, padding, radius and font come from the host's slot. */
+		._shortcutHint {
+			display: none;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+			line-height: 1;
 			white-space: nowrap;
 			pointer-events: none;
-			animation: _shortcutRevealFade 120ms ease-out;
+			user-select: none;
 		}
 
-		@keyframes _shortcutRevealFade {
-			from { opacity: 0; transform: translate(-100%, -50%) scale(0.9); }
-			to { opacity: 1; transform: translate(-100%, -50%) scale(1); }
+		/* A combo carries one class per modifier it uses, so ⇧⌘O reveals under Cmd.
+		   Reveal rides on display, which means a host slot that sets display itself
+		   gets a permanently visible chip. */
+		body._modMeta ._shortcutHint._needsMeta,
+		body._modCtrl ._shortcutHint._needsCtrl,
+		body._modAlt ._shortcutHint._needsAlt {
+			display: inline-flex;
 		}
 
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);

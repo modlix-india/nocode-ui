@@ -725,5 +725,61 @@
 		"sel": ".comp.compButton<designType><colorScheme> ._rightButtonActiveImage",
 		"np": true,
 		"dv": "0"
+	},
+	{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Background",
+		"de": "Background of the key chip shown while its modifier is held",
+		"n": "buttonShortcutHintBackground<designType><colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compButton<designType><colorScheme> ._shortcutHint",
+		"np": true,
+		"dv": "rgba(127, 127, 127, 0.22)"
+	},
+	{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Text Color",
+		"de": "Inherits the label colour, so the chip reads on a filled and an outlined button alike",
+		"n": "buttonShortcutHintColor<designType><colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compButton<designType><colorScheme> ._shortcutHint",
+		"np": true,
+		"dv": "inherit"
+	},
+	{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Font Size",
+		"n": "buttonShortcutHintFontSize<designType><colorScheme>",
+		"cp": "font-size",
+		"sel": ".comp.compButton<designType><colorScheme> ._shortcutHint",
+		"np": true,
+		"dv": "11px"
+	},
+	{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Padding",
+		"n": "buttonShortcutHintPadding<designType><colorScheme>",
+		"cp": "padding",
+		"sel": ".comp.compButton<designType><colorScheme> ._shortcutHint",
+		"np": true,
+		"dv": "2px 5px"
+	},
+	{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Border Radius",
+		"n": "buttonShortcutHintBorderRadius<designType><colorScheme>",
+		"cp": "border-radius",
+		"sel": ".comp.compButton<designType><colorScheme> ._shortcutHint",
+		"np": true,
+		"dv": "4px"
+	},
+	{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Margin",
+		"n": "buttonShortcutHintMargin<designType><colorScheme>",
+		"cp": "margin",
+		"sel": ".comp.compButton<designType><colorScheme> ._shortcutHint",
+		"np": true,
+		"dv": "0px 0px 0px 6px"
 	}
 ]

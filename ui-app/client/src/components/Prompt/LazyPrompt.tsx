@@ -922,7 +922,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// which would be a toolbar button.
 	const promptInputRef = useRef<HTMLTextAreaElement>(null);
 
-	const { aria: shortcutAria } = useComponentShortcut({
+	const { aria: shortcutAria, hint: shortcutHint } = useComponentShortcut({
 		props,
 		componentKey: key,
 		shortcutKey,
@@ -1415,6 +1415,21 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		],
 	);
 
+	// handleSend closes over these four, and they are rebuilt whenever the declared
+	// descriptors or the page definition change. Naming them in handleSend's
+	// dependency array fixes the stale closure but makes handleSend itself churn,
+	// and that churn reached InputBar as a "Maximum update depth exceeded" crash.
+	// Refs give the current value with a stable identity, which is what this
+	// actually needs: the send should use whatever is true when it runs.
+	const buildOpenDraftsRef = useRef(buildOpenDrafts);
+	const draftModeRef = useRef(draftMode);
+	const handleDraftPatchRef = useRef(handleDraftPatch);
+	const handleObjectChangedRef = useRef(handleObjectChanged);
+	buildOpenDraftsRef.current = buildOpenDrafts;
+	draftModeRef.current = draftMode;
+	handleDraftPatchRef.current = handleDraftPatch;
+	handleObjectChangedRef.current = handleObjectChanged;
+
 	// Sessions are scoped per user + client + agent server side. When the chat is
 	// working on a specific app, narrow the history to that app so each workspace
 	// gets its own list instead of one shared pile.
@@ -1879,7 +1894,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				abortControllerRef.current = new AbortController();
 
 				const editorContext = buildEditorContext();
-				const drafts = buildOpenDrafts();
+				const drafts = buildOpenDraftsRef.current();
 				const body: any = {
 					message: text,
 					session_id: sessionId,
@@ -1887,7 +1902,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					...(targetAppCode ? { app_code: targetAppCode } : {}),
 					...(editorContext ? { editor_context: editorContext } : {}),
 					...(drafts.length ? { open_drafts: drafts } : {}),
-					...(draftMode ? { draft_mode: true } : {}),
+					...(draftModeRef.current ? { draft_mode: true } : {}),
 				};
 
 				if (attachments?.length) {
@@ -1993,8 +2008,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										completeBindingPath,
 										props,
 										runEvent,
-										onDraftPatch: handleDraftPatch,
-										onObjectChanged: handleObjectChanged,
+										onDraftPatch: handleDraftPatchRef.current,
+										onObjectChanged: handleObjectChangedRef.current,
 									});
 								} catch {
 									// Skip unparseable data
@@ -2071,17 +2086,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			selectedModel,
 			targetAppCode,
 			buildEditorContext,
-			// These four were closed over but missing, and the omission is not
-			// harmless: buildOpenDrafts and handleDraftPatch are rebuilt whenever the
-			// declared descriptors change, and the surface writes those in an effect
-			// AFTER mount. A stale handleSend therefore shipped an empty open-drafts
-			// list and routed the reply's patches through a matcher that knew about
-			// no objects, so the first message after opening a tab saved for real
-			// instead of being held for review.
-			buildOpenDrafts,
-			draftMode,
-			handleDraftPatch,
-			handleObjectChanged,
+			// buildOpenDrafts, draftMode, handleDraftPatch and handleObjectChanged
+			// are deliberately NOT here: they are read through refs above, which is
+			// what keeps the send current without rebuilding it on every render.
 			showToolCalls,
 			onMessage,
 			onError,
@@ -2581,6 +2588,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						microphoneActiveIcon={microphoneActiveIcon}
 						textareaRef={promptInputRef}
 						ariaKeyShortcuts={shortcutAria}
+						shortcutHint={shortcutHint?.(styleProperties?.shortcutHint)}
 					/>
 					<div className="_promptBottomBar">
 						{showModelSelector && filteredModels.length > 0 && (

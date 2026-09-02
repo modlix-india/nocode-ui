@@ -49,22 +49,90 @@ export async function resolveCodesFromRequest(request: Request): Promise<Codes> 
 	// Pattern: /{appCode}/{clientCode}/page/{pageName}
 	const pageIndex = pathParts.indexOf('page');
 
+	const scheme = request.headers.get('x-forwarded-proto') || url.protocol.replace(':', '');
+	const host = request.headers.get('x-forwarded-host') || url.hostname;
+	const port = request.headers.get('x-forwarded-port') || url.port || (scheme === 'https' ? '443' : '80');
+
 	if (pageIndex >= 2) {
 		// Codes are in URL: parts[0] = appCode, parts[1] = clientCode
-		const codes = {
+		const codes: Codes = {
 			appCode: pathParts[0],
 			clientCode: pathParts[1],
 		};
+
+		// A path-prefixed URL is LIVE on every hostname but one. The page editor's
+		// canvases run on a `t-<32 hex>` host, which is an editing session's grant of
+		// the draft surface, and there the path prefix is the point: it names the
+		// client being previewed while the token names who may preview it.
+		//
+		// Without this the shell would be rendered live -- live definitions inlined
+		// into __APP_BOOTSTRAP__, no data-draft attribute, and a live entry under a
+		// draft cache key -- while every request the page then made was drafted.
+		codes.urlType = (await resolveDraftTokenType(host, codes.appCode, codes.clientCode))
+			? 'DRAFT'
+			: 'LIVE';
+
 		logger.info('Resolved codes from URL path', { codes, pathname: url.pathname });
 		return codes;
 	}
 
 	// Fallback: resolve from scheme/host/port via security API
-	const scheme = request.headers.get('x-forwarded-proto') || url.protocol.replace(':', '');
-	const host = request.headers.get('x-forwarded-host') || url.hostname;
-	const port = request.headers.get('x-forwarded-port') || url.port || (scheme === 'https' ? '443' : '80');
-
 	return resolveFromSecurityService(scheme, host, port);
+}
+
+/** `t-` plus 32 lowercase hex, matched over the first label only. */
+const DRAFT_TOKEN_LABEL = /^t-[0-9a-f]{32}$/;
+
+/**
+ * Whether a draft-edit token hostname grants the draft surface for these codes.
+ *
+ * Cached for a minute rather than the ten the hostname resolver uses: a token is
+ * short-lived and extended in place, so a stale yes must not outlive it by much.
+ * Any failure is a no -- a pre-render that comes back live is wrong but harmless,
+ * one that comes back draft when it should not is a leak.
+ */
+async function resolveDraftTokenType(
+	host: string,
+	appCode: string,
+	clientCode: string
+): Promise<boolean> {
+	const label = host.split(':')[0].split('.')[0];
+	if (!DRAFT_TOKEN_LABEL.test(label)) return false;
+
+	const cacheKey = `draftToken:${host}:${appCode}:${clientCode}`;
+
+	try {
+		const redis = getRedisClient();
+
+		const cached = await redis.get(cacheKey);
+		if (cached) return cached === '1';
+
+		const response = await fetch(
+			`${getGatewayUrl()}/api/security/clienturls/internal/draft/token/resolve` +
+				`?host=${encodeURIComponent(host)}&appCode=${encodeURIComponent(appCode)}` +
+				`&clientCode=${encodeURIComponent(clientCode)}`
+		);
+
+		if (!response.ok) return false;
+
+		// Reactor Tuple4 {t1: allowed, t2: expiresAtEpochSeconds, t3: appCode, t4: clientCode},
+		// or the same four as an array.
+		const data = (await response.json()) as Record<string, unknown> | unknown[];
+		const allowed = Array.isArray(data) ? data[0] : data.t1;
+		const expiresAt = Number(Array.isArray(data) ? data[1] : data.t2);
+
+		const granted = allowed === true && expiresAt * 1000 > Date.now();
+
+		await redis.setex(cacheKey, 60, granted ? '1' : '0');
+
+		return granted;
+	} catch (error) {
+		logger.error('Failed to resolve a draft-edit token, rendering live', {
+			error: String(error),
+			host,
+		});
+		return false;
+	}
 }
 
 /**

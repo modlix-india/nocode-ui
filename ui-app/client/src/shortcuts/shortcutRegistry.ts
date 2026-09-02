@@ -7,8 +7,8 @@
  * readable from KIRun expressions.
  *
  * Because this one object knows every live shortcut and the element behind it,
- * the reveal overlay, the cheat sheet and the conflict chooser all read from here
- * and need no cooperation from the components themselves.
+ * the cheat sheet and the conflict chooser both read from here and need no
+ * cooperation from the components themselves.
  */
 
 import { comboFromEvent, type Combo } from './comboUtil';
@@ -279,26 +279,6 @@ export const shortcutRegistry = {
 	all(): ShortcutRegistration[] {
 		const out: ShortcutRegistration[] = [];
 		for (const bucket of byCombo.values()) out.push(...bucket.values());
-		return out;
-	},
-
-	/** Enabled, on the current layer, and backed by an element with a real box. */
-	visible(): ShortcutRegistration[] {
-		const layer = currentLayer();
-		const out: ShortcutRegistration[] = [];
-
-		for (const bucket of byCombo.values()) {
-			for (const reg of bucket.values()) {
-				if (reg.layer !== layer) continue;
-				try {
-					if (!reg.enabled()) continue;
-				} catch {
-					continue;
-				}
-				out.push(reg);
-			}
-		}
-
 		return out;
 	},
 

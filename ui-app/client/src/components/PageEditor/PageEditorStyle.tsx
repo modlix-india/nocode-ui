@@ -1,6 +1,7 @@
+import { StyleResolution } from '../../types/common';
 import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
-import { processStyleDefinition, StyleResolutionDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, StyleResolutionDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
 import { styleDefaults, styleProperties } from './pageEditorStyleProperties';
 
@@ -9,6 +10,15 @@ const NAME = 'PageEditor';
 export default function PageEditorStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const [used, setUsed] = useState(usedComponents.used(NAME));
 	usedComponents.using('KIRun Editor');
 
@@ -117,7 +127,7 @@ export default function PageEditorStyle({
 	}
 
 	.comp.compPageEditor ._shortcutKeyCapture._blocked {
-		border-color: #C62828;
+		border-color: ${t('colorTwelve', '#C62828')};
 	}
 
 	.comp.compPageEditor ._shortcutKeyClear,
@@ -145,7 +155,7 @@ export default function PageEditorStyle({
 	}
 
 	.comp.compPageEditor ._shortcutKeyFeedback._shortcutKeyBlocked {
-		color: #C62828;
+		color: ${t('colorTwelve', '#C62828')};
 	}
 
 	.comp.compPageEditor ._shortcutKeyFeedback._shortcutKeyRisky {
