@@ -887,5 +887,66 @@
 		"cp": "font-size",
 		"sel": ".comp.compTextBox<designType><colorScheme> ._leftIcon, .comp.compTextBox<designType><colorScheme> ._rightIcon",
 		"np": true
+	},
+{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Background",
+		"de": "Background of the key chip shown while its modifier is held",
+		"n": "textBoxShortcutHintBackground<designType><colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._shortcutHint",
+		"dv": "<backgroundColorNine>",
+		"np": true
+	},
+{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Text Color",
+		"n": "textBoxShortcutHintColor<designType><colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._shortcutHint",
+		"dv": "<fontColorOne>",
+		"np": true
+	},
+{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Font Size",
+		"n": "textBoxShortcutHintFontSize<designType><colorScheme>",
+		"cp": "font-size",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._shortcutHint",
+		"dv": "11px",
+		"np": true
+	},
+{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Padding",
+		"n": "textBoxShortcutHintPadding<designType><colorScheme>",
+		"cp": "padding",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._shortcutHint",
+		"spv": {
+			"_default-": "2px 5px",
+			"_outlined-": "2px 5px",
+			"_filled-": "2px 5px",
+			"_bigDesign1-": "4px 7px",
+			"_editOnReq-": "2px 5px"
+		},
+		"np": true
+	},
+{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Border Radius",
+		"n": "textBoxShortcutHintBorderRadius<designType><colorScheme>",
+		"cp": "border-radius",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._shortcutHint",
+		"dv": "4px",
+		"np": true
+	},
+{
+		"gn": "Shortcut Hint",
+		"dn": "Shortcut Hint Margin",
+		"n": "textBoxShortcutHintMargin<designType><colorScheme>",
+		"cp": "margin",
+		"sel": ".comp.compTextBox<designType><colorScheme> ._shortcutHint",
+		"dv": "0px 4px",
+		"np": true
 	}
 ]

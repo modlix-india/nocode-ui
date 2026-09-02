@@ -141,6 +141,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	const {
 		aria: shortcutAria,
 		titleSuffix: shortcutTooltip,
+		hint: shortcutHint,
 	} = useComponentShortcut({
 		props,
 		componentKey: key,
@@ -479,6 +480,9 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			</HelperComponent>
 			{leftIconTag}
 			{!designType?.startsWith('_fabButton') && designType !== '_iconButton' ? label : ''}
+			{/* An icon only button is 32px square, with no room for a chip. Its key
+			    still shows in the cheat sheet on ?. */}
+			{hasLabel ? shortcutHint?.(styleProperties.shortcutHint) : undefined}
 			{rightIconTag}
 		</button>
 	);

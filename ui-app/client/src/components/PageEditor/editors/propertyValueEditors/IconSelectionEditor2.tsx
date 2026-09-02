@@ -170,6 +170,10 @@ export function IconSelectionEditor2({
 	const [showIconBrowser, setShowIconBrowser] = useState(false);
 	const [filter, setFilter] = useState('');
 
+	// A pack's search terms are stored lowercased, so a query has to be folded
+	// the same way or a capital letter matches nothing.
+	const searchTerm = filter.toLowerCase().trim();
+
 	useEffect(() => setChngValue(value ?? ''), [value]);
 
 	const updatePackData = useCallback(
@@ -208,8 +212,8 @@ export function IconSelectionEditor2({
 							/>
 						</div>
 						<div className="_iconSelectionDisplay">
-							{(filter
-								? packJson.filter(i => i.k.includes(filter))
+							{(searchTerm
+								? packJson.filter(i => i.k.includes(searchTerm))
 								: packJson.slice(0, 30)
 							).map((i, index) => {
 								return (

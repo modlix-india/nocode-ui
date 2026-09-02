@@ -19,12 +19,22 @@ import { usedComponents } from './usedComponents';
 import DebugWindow from '../debug/DebugWindow';
 import { AnalyticsConsentBanner } from './AnalyticsConsentBanner';
 import { ShortcutChooser } from '../shortcuts/ShortcutChooser';
-import { ShortcutRevealOverlay } from '../shortcuts/ShortcutRevealOverlay';
+import { ShortcutModifierHold } from '../shortcuts/ShortcutModifierHold';
 import { ShortcutCheatSheet } from '../shortcuts/ShortcutCheatSheet';
 
 // In design mode we are listening to the messages from editor
 
 function onMessageFromEditor(event: MessageEvent) {
+	// Only the page that embedded us. This was implicit while the preview was
+	// same-origin with the editor; on its own draft-edit hostname it is not, and
+	// any page on the internet can post here. Comparing the source WINDOW rather
+	// than an origin string needs no allowlist and cannot be spoofed: only the
+	// embedder can be window.parent.
+	//
+	// It also guards the throw below, which would otherwise let a stranger stop
+	// the preview by posting an unrecognised EDITOR_ type.
+	if (event.source !== window.parent) return;
+
 	const { data: { type, payload } = {} } = event;
 	if (!type?.startsWith('EDITOR_')) return;
 
@@ -123,7 +133,10 @@ function processFontPacks(fontPacks: any) {
 const ICON_PACKS = new Map<string, string>([
 	[
 		'FREE_FONT_AWESOME_ALL',
-		'<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />',
+		// Keep in step with FONT_AWESOME_VERSION in nocode-ui-icon-packs: the pack
+		// lists the classes this stylesheet defines, and a class the loaded
+		// stylesheet does not define renders nothing at all.
+		'<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" />',
 	],
 
 	[
@@ -143,27 +156,27 @@ const ICON_PACKS = new Map<string, string>([
 
 	[
 		'MATERIAL_ICONS_FILLED',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 
 	[
 		'MATERIAL_ICONS_OUTLINED',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 
 	[
 		'MATERIAL_ICONS_ROUNDED',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 
 	[
 		'MATERIAL_ICONS_SHARP',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Sharp" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 
 	[
 		'MATERIAL_ICONS_TWO_TONE',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Two+Tone" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Two+Tone" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 ]);
 
@@ -264,7 +277,7 @@ export function App() {
 			</BrowserRouter>
 			<Messages />
 			<ShortcutChooser />
-			<ShortcutRevealOverlay />
+			<ShortcutModifierHold />
 			<ShortcutCheatSheet />
 			<AnalyticsConsentBanner />
 			<div id="_rendered" data-used-components={usedComps} />

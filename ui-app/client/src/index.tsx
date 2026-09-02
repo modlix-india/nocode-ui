@@ -102,13 +102,15 @@ globalThis.isDraftMode = (() => {
 		// webpack dev server serves its own index.html, so `data-draft` is never
 		// stamped, and routing the document to the ui service instead would serve
 		// the CDN bundle and throw away every local change. So on the dev shell
-		// alone, fall back to the shape the platform mints: `d` plus 32 hex.
+		// alone, fall back to the two shapes the platform mints: `d` plus 32 hex
+		// for the permanent draft link, `t-` plus 32 hex for an editing session's
+		// grant.
 		//
 		// `nodeDev` is set in src/index.html and nowhere else, so this branch
 		// cannot exist in a real deployment, where the stamp above is the only
 		// answer and the gateway remains the only thing that decides.
 		if (globalThis.nodeDev === true)
-			return /^d[0-9a-f]{32}\./.test(window.location.hostname);
+			return /^(d|t-)[0-9a-f]{32}\./.test(window.location.hostname);
 
 		return false;
 	} catch (e) {

@@ -15,9 +15,10 @@ interface Row {
 /**
  * Press ? (or Mod+/) for a list of every shortcut live on this page.
  *
- * Like the reveal overlay this reads the registry, so it costs nothing per
- * component. It is the affordance that scales: a page with fifteen shortcuts is
- * undiscoverable by chips alone.
+ * This reads the registry, so it costs nothing per component and it lists what no
+ * chip can show: a bare-key shortcut, an icon only button, a headless Shortcut
+ * component. It is also the affordance that scales, since a page with fifteen
+ * shortcuts is undiscoverable by chips alone.
  */
 export function ShortcutCheatSheet() {
 	const [open, setOpen] = useState(false);

@@ -33,6 +33,11 @@ interface DnDEditorProps {
 	onSavedVersions?: () => void;
 	onChangePersonalization: (prop: string, value: any) => void;
 	url: string;
+	/**
+	 * Origin the canvases load from: the draft-edit host, '' for the live surface
+	 * when no grant was issued, undefined while one is still being minted.
+	 */
+	previewOrigin: string | undefined;
 	pageExtractor: PageStoreExtractor;
 	desktopIframe: React.RefObject<HTMLIFrameElement | null>;
 	tabletIframe: React.RefObject<HTMLIFrameElement | null>;
@@ -88,6 +93,7 @@ export default function DnDEditor({
 	defPath,
 	personalizationPath,
 	url,
+	previewOrigin,
 	pageName,
 	pageExtractor,
 	templateIframeRef,
@@ -262,6 +268,7 @@ export default function DnDEditor({
 							/>
 							<DnDIFrame
 								url={url}
+								previewOrigin={previewOrigin}
 								personalizationPath={personalizationPath}
 								pageExtractor={pageExtractor}
 								desktopIframe={desktopIframe}

@@ -319,6 +319,28 @@ export function formatCombo(spec: string | undefined, apple?: boolean): string |
 	return parts.join('+');
 }
 
+/**
+ * Classes the hold-to-reveal CSS matches on, one per modifier the combo uses.
+ *
+ * `ShortcutModifierHold` puts `_modMeta`, `_modCtrl` or `_modAlt` on the body while
+ * that modifier is held, and the rule in `ShortcutStyle` shows a chip carrying the
+ * matching `_needs*` class. A combo with two modifiers gets both, so '⇧⌘O' reveals
+ * under Cmd. A combo with no modifier gets nothing: there is nothing to hold.
+ */
+export function hintClassesForCombo(combo: Combo | undefined): string | undefined {
+	if (!combo) return undefined;
+
+	const { mods } = splitCombo(combo);
+
+	let out = '';
+	if (mods.ctrl) out += '_needsCtrl ';
+	if (mods.meta) out += '_needsMeta ';
+	if (mods.alt) out += '_needsAlt';
+
+	const trimmed = out.trim();
+	return trimmed || undefined;
+}
+
 const ARIA_KEY_NAMES: { [key: string]: string } = {
 	arrowup: 'ArrowUp',
 	arrowdown: 'ArrowDown',

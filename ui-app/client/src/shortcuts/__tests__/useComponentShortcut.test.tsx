@@ -33,12 +33,17 @@ function makeProps(locationHistory: Array<LocationHistory>): ComponentProps {
 function Harness({
 	locationHistory,
 	onActivate,
-}: Readonly<{ locationHistory: Array<LocationHistory>; onActivate: () => void }>) {
+	shortcutKey = 'Mod+S',
+}: Readonly<{
+	locationHistory: Array<LocationHistory>;
+	onActivate: () => void;
+	shortcutKey?: string;
+}>) {
 	const ref = React.useRef<HTMLButtonElement>(null);
-	const { display, aria, titleSuffix } = useComponentShortcut({
+	const { display, aria, titleSuffix, hint } = useComponentShortcut({
 		props: makeProps(locationHistory),
 		componentKey: 'cmp1',
-		shortcutKey: 'Mod+S',
+		shortcutKey,
 		label: 'Save',
 		elementRef: ref,
 		onActivate,
@@ -46,6 +51,7 @@ function Harness({
 	return (
 		<button ref={ref} data-display={display ?? ''} data-aria={aria ?? ''} data-title={titleSuffix ?? ''}>
 			Save
+			{hint?.({ background: 'red' })}
 		</button>
 	);
 }
@@ -149,5 +155,69 @@ describe('the store mirror', () => {
 	it('publishes nothing for a component inside a repeater', () => {
 		act(() => root.render(<Harness locationHistory={[row(0)]} onActivate={jest.fn()} />));
 		expect(getDataFromPath(`${STORE_PATH_SHORTCUTS}.testPage.Save`, [])).toBeUndefined();
+	});
+});
+
+describe('the key chip', () => {
+	const chip = () => container.querySelector('._shortcutHint');
+
+	it('carries the class of every modifier in the combo', () => {
+		act(() => root.render(<Harness locationHistory={[]} onActivate={jest.fn()} />));
+
+		// Ctrl+S on a non-Apple platform, so the reveal must answer to a held Control.
+		expect(chip()?.className).toBe('_shortcutHint _needsCtrl');
+		expect(chip()?.textContent).toBe('Ctrl+S');
+	});
+
+	it('answers to either modifier when the combo uses two', () => {
+		act(() =>
+			root.render(
+				<Harness
+					locationHistory={[]}
+					onActivate={jest.fn()}
+					shortcutKey="Mod+Alt+K"
+				/>,
+			),
+		);
+		expect(chip()?.className).toBe('_shortcutHint _needsCtrl _needsAlt');
+	});
+
+	it('resolves Mod to Meta on an Apple platform', () => {
+		__setApplePlatformForTests(true);
+		act(() => root.render(<Harness locationHistory={[]} onActivate={jest.fn()} />));
+
+		expect(chip()?.className).toBe('_shortcutHint _needsMeta');
+		expect(chip()?.textContent).toBe('⌘S');
+	});
+
+	it('takes the style the host hands it, so the theme slot wins', () => {
+		act(() => root.render(<Harness locationHistory={[]} onActivate={jest.fn()} />));
+		expect((chip() as HTMLElement).style.background).toBe('red');
+	});
+
+	it('is hidden from assistive tech, since the control already has aria-keyshortcuts', () => {
+		act(() => root.render(<Harness locationHistory={[]} onActivate={jest.fn()} />));
+		expect(chip()?.getAttribute('aria-hidden')).toBe('true');
+	});
+
+	it('renders nothing for a bare key, which no modifier hold could reveal', () => {
+		act(() =>
+			root.render(
+				<Harness locationHistory={[]} onActivate={jest.fn()} shortcutKey="F2" />,
+			),
+		);
+		expect(chip()).toBeNull();
+	});
+
+	it('renders nothing without a shortcut', () => {
+		act(() =>
+			root.render(<Harness locationHistory={[]} onActivate={jest.fn()} shortcutKey="" />),
+		);
+		expect(chip()).toBeNull();
+	});
+
+	it('renders nothing inside a repeater, which never registers', () => {
+		act(() => root.render(<Harness locationHistory={[row(0)]} onActivate={jest.fn()} />));
+		expect(chip()).toBeNull();
 	});
 });

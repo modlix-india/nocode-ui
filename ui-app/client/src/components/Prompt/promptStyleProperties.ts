@@ -229,6 +229,63 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '.comp.compPrompt ._sendButton:disabled',
 		np: true,
 	},
+
+	// ─── Shortcut hint (the key chip, shown while its modifier is held) ───
+	{
+		gn: 'Shortcut Hint',
+		dn: 'Shortcut Hint Background',
+		de: 'Background of the key chip shown while its modifier is held',
+		n: 'promptShortcutHintBackground',
+		dv: 'rgba(127, 127, 127, 0.22)',
+		cp: 'background',
+		sel: '.comp.compPrompt ._inputActions ._shortcutHint',
+		np: true,
+	},
+	{
+		gn: 'Shortcut Hint',
+		dn: 'Shortcut Hint Font Color',
+		n: 'promptShortcutHintFontColor',
+		dv: 'inherit',
+		cp: 'color',
+		sel: '.comp.compPrompt ._inputActions ._shortcutHint',
+		np: true,
+	},
+	{
+		gn: 'Shortcut Hint',
+		dn: 'Shortcut Hint Font Size',
+		n: 'promptShortcutHintFontSize',
+		dv: '11px',
+		cp: 'font-size',
+		sel: '.comp.compPrompt ._inputActions ._shortcutHint',
+		np: true,
+	},
+	{
+		gn: 'Shortcut Hint',
+		dn: 'Shortcut Hint Padding',
+		n: 'promptShortcutHintPadding',
+		dv: '2px 5px',
+		cp: 'padding',
+		sel: '.comp.compPrompt ._inputActions ._shortcutHint',
+		np: true,
+	},
+	{
+		gn: 'Shortcut Hint',
+		dn: 'Shortcut Hint Border Radius',
+		n: 'promptShortcutHintBorderRadius',
+		dv: '4px',
+		cp: 'border-radius',
+		sel: '.comp.compPrompt ._inputActions ._shortcutHint',
+		np: true,
+	},
+	{
+		gn: 'Shortcut Hint',
+		dn: 'Shortcut Hint Margin',
+		n: 'promptShortcutHintMargin',
+		dv: '0px 4px 0px 0px',
+		cp: 'margin',
+		sel: '.comp.compPrompt ._inputActions ._shortcutHint',
+		np: true,
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

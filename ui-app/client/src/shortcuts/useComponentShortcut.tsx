@@ -1,9 +1,10 @@
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { STORE_PATH_FUNCTION_EXECUTION } from '../constants';
 import { getDataFromPath, PageStoreExtractor } from '../context/StoreContext';
 import { getTranslations } from '../components/util/getTranslations';
 import { runEvent } from '../components/util/runEvent';
 import { flattenUUID } from '../components/util/uuid';
+import { SubHelperComponent } from '../components/HelperComponents/SubHelperComponent';
 import { ComponentProps } from '../types/common';
 import { announceShortcut } from './ShortcutChooser';
 import { useShortcut } from './useShortcut';
@@ -44,6 +45,12 @@ export interface ComponentShortcutResult {
 	/** ' (Ctrl+S)', ready to append to a title attribute. Undefined when no shortcut. */
 	titleSuffix?: string;
 	conflicting: boolean;
+	/**
+	 * The key chip to place inside the component, or undefined when there is no
+	 * shortcut. Pass the `shortcutHint` style slot so the host's theme dresses it:
+	 * `{hint?.(computedStyles.shortcutHint)}`.
+	 */
+	hint?: (style?: React.CSSProperties) => React.ReactNode;
 }
 
 const NATIVELY_FOCUSABLE = 'input, textarea, select, button, a[href], [tabindex]';
@@ -84,12 +91,13 @@ function resolveFocusTarget(el: HTMLElement | null | undefined): HTMLElement | u
 
 /**
  * One call wires a component into the shortcut system: registration, the focus or
- * activate behaviour, the aria token and the tooltip suffix.
+ * activate behaviour, the aria token, the tooltip suffix and the key chip.
  *
- * The hold-to-reveal overlay and the cheat sheet read the registry directly, so a
- * component that calls this gets both without rendering anything extra. There is no
- * inline chip by design: an author who wants the key shown on screen adds a Text
- * component, which they can place and style however the page needs.
+ * The chip comes back as `hint`, built here rather than by each host, so a component
+ * that takes a shortcut cannot end up as the one that forgot to show its key. It is
+ * hidden until `ShortcutModifierHold` puts the matching modifier class on the body,
+ * and its looks come from the host's own `shortcutHint` style slot. The cheat sheet
+ * on ? reads the registry directly and needs nothing rendered at all.
  */
 export function useComponentShortcut(opts: ComponentShortcutOptions): ComponentShortcutResult {
 	const {
@@ -193,7 +201,7 @@ export function useComponentShortcut(opts: ComponentShortcutOptions): ComponentS
 		],
 	);
 
-	return useShortcut({
+	const registered = useShortcut({
 		spec: effectiveSpec,
 		label: actionLabel,
 		group,
@@ -208,4 +216,20 @@ export function useComponentShortcut(opts: ComponentShortcutOptions): ComponentS
 		elementRef,
 		onTrigger,
 	});
+
+	const { display, hintClass } = registered;
+
+	// A bare key like F2 has no hintClass, because there is no modifier to hold that
+	// could reveal it. Those live in the cheat sheet only.
+	if (!display || !hintClass) return registered;
+
+	return {
+		...registered,
+		hint: (style?: React.CSSProperties) => (
+			<span className={`_shortcutHint ${hintClass}`} style={style ?? {}} aria-hidden="true">
+				<SubHelperComponent definition={definition} subComponentName="shortcutHint" />
+				{display}
+			</span>
+		),
+	};
 }

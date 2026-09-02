@@ -363,6 +363,12 @@ export const SubComponentDefinitions: Record<
 			description: 'Active Right Image',
 			icon: 'fa-solid fa-box',
 		},
+		{
+			name: 'shortcutHint',
+			displayName: 'Shortcut Hint',
+			description: 'Key chip shown while its modifier is held',
+			icon: 'fa-solid fa-keyboard',
+		},
 	],
 
 	[ButtonBar.name]: [
@@ -5038,6 +5044,12 @@ export const SubComponentDefinitions: Record<
 			icon: 'fa-solid fa-box',
 		},
 		{
+			name: 'shortcutHint',
+			displayName: 'Shortcut Hint',
+			description: 'Key chip shown while its modifier is held',
+			icon: 'fa-solid fa-keyboard',
+		},
+		{
 			name: 'rightIcon',
 			displayName: 'Right Icon',
 			description: 'Right Icon',
@@ -5622,6 +5634,12 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Send Button',
 			description: 'Send Button',
 			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'shortcutHint',
+			displayName: 'Shortcut Hint',
+			description: 'Key chip shown while its modifier is held',
+			icon: 'fa-solid fa-keyboard',
 		},
 		{
 			name: 'sessionSidebar',

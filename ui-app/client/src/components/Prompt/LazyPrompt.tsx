@@ -922,7 +922,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// which would be a toolbar button.
 	const promptInputRef = useRef<HTMLTextAreaElement>(null);
 
-	const { aria: shortcutAria } = useComponentShortcut({
+	const { aria: shortcutAria, hint: shortcutHint } = useComponentShortcut({
 		props,
 		componentKey: key,
 		shortcutKey,
@@ -2588,6 +2588,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						microphoneActiveIcon={microphoneActiveIcon}
 						textareaRef={promptInputRef}
 						ariaKeyShortcuts={shortcutAria}
+						shortcutHint={shortcutHint?.(styleProperties?.shortcutHint)}
 					/>
 					<div className="_promptBottomBar">
 						{showModelSelector && filteredModels.length > 0 && (
