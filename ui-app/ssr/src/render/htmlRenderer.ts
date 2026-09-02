@@ -362,11 +362,20 @@ function extractCodeParts(
  */
 function generateHtml(
 	data: CachedPageData | null,
-	codes: { appCode: string; clientCode: string },
+	// `urlType` is part of the object every caller already passes; it was the
+	// TYPE here that hid it, which is why the draft marker never reached the
+	// shell. Taking it off `codes` rather than adding a parameter means none of
+	// the six call sites can forget it -- the way they all did.
+	codes: { appCode: string; clientCode: string; urlType?: string },
 	pageName: string,
 	cdn: CDNConfig,
 	error?: string
 ): string {
+	// The client reads this to know which surface it is on, and SSR is the only
+	// thing that writes the shell on this path -- IndexHTMLService never runs
+	// here, so without this a draft host gets drafted content, a draft-keyed
+	// cache entry and no banner.
+	const draftAttr = codes.urlType === 'DRAFT' ? ' data-draft="true"' : '';
 	const cdnUrl = `https://${cdn.hostName}/js/dist/`;
 	const application = data?.application || null;
 	const page = data?.page || null;
@@ -433,7 +442,7 @@ function generateHtml(
 	].join('\n\t\t');
 
 	return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en"${draftAttr}>
 	<head>
 		${beforeHeadParts ? `${beforeHeadParts}\n\t\t` : ''}${metaTags}
 		<title>${escapeHtml(pageTitle)}</title>
