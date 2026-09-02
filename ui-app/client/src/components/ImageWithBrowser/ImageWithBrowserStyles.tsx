@@ -1,5 +1,6 @@
+import { StyleResolution } from '../../types/common';
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './imageWithBrowserStyleProperties';
 
 const PREFIX = '.comp.compImageWithBrowser';
@@ -7,6 +8,15 @@ const PREFIX = '.comp.compImageWithBrowser';
 export default function ImageStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const css =
 		`
         ${PREFIX} ._onClickTrue {
@@ -19,7 +29,7 @@ export default function ImageStyle({
         }
 
         ._imageBrowserPopup ._browserBack {
-            background-color: #FFF;
+            background-color: ${t('colorSeven', '#FFF')};
             padding: 20px;
             box-shadow: 0px 3px 4px 0px #00000040;
             border-radius: 4px;
@@ -40,7 +50,7 @@ export default function ImageStyle({
 		._imageBrowserPopup ._browserBack select {
             border: none;
             padding: 5px;
-            background-color: #F5F5F5;
+            background-color: ${t('surfaceColorTwo', '#F5F5F5')};
         }
 
         ._imageBrowserPopup ._iconSelectionBrowser {
@@ -82,7 +92,7 @@ export default function ImageStyle({
 			align-items: center;
 			padding: 5px;
 			border-radius: 5px;
-			background-color: #fafafa;
+			background-color: ${t('surfaceColorOne', '#fafafa')};
 			justify-content: center;
 			gap: 15px;
 			text-align: center;
@@ -91,7 +101,7 @@ export default function ImageStyle({
 		}
 
 		._imageBrowserPopup ._iconSelectionDisplay ._eachIcon:hover {
-			background-color: #ddd;
+			background-color: ${t('surfaceColorThree', '#ddd')};
 		}
 
         ._imageBrowserPopup ._eachIcon ._image {
@@ -103,14 +113,14 @@ export default function ImageStyle({
 		}
 
 		._imageBrowserPopup ._iconSelectionDisplay ._eachIcon:hover {
-			background-color: #ddd;
+			background-color: ${t('surfaceColorThree', '#ddd')};
 		}
 
         ._imageBrowserPopup ._eachIcon input{
 			font-size: 11px;
 			border: none;
 			width: 80px;
-			background-color: #eee;
+			background-color: ${t('surfaceColorThree', '#eee')};
 			padding:0px 5px;
 		}
 
@@ -129,7 +139,7 @@ export default function ImageStyle({
 		}
 
 		._imageBrowserPopup ._eachIcon._upload {
-			border: 2px dashed #ccc;
+			border: 2px dashed ${t('borderColorTen', '#ccc')};
 		}
 
 		._imageBrowserPopup ._eachIcon input[type="file"] {
@@ -154,15 +164,15 @@ export default function ImageStyle({
 		}
 
 		._imageBrowserPopup ._pathParts span._clickable:hover {
-			color: #000;
-			background-color: #eee;
+			color: ${t('fontColorOne', '#000')};
+			background-color: ${t('surfaceColorThree', '#eee')};
 		}
 
 		._closeIcon {
 			position:absolute;
 			left: 100%;
 			border-radius: 50%;
-			background-color: #fff;
+			background-color: ${t('colorSeven', '#fff')};
 			display: flex;
 			width: 20px;
 			height: 20px;

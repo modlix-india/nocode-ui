@@ -7,8 +7,10 @@ import {
 	localStoreExtractor,
 	PageStoreExtractor,
 	storeExtractor,
+	themeExtractor,
 	UrlDetailsExtractor,
 } from '../../../context/StoreContext';
+import { STORE_PATH_THEME_PATH } from '../../../constants';
 import {
 	ComponentDefinition,
 	ComponentDefinitionValues,
@@ -80,6 +82,29 @@ export default function useDefinition(
 		.map(e => e.location + '_' + e.index)
 		.join('');
 
+	/**
+	 * Does this component read the theme, and therefore need to repaint when the
+	 * visitor switches it?
+	 *
+	 * `Theme.` is a SYNTHESISED prefix: ThemeExtractor resolves it out of the live
+	 * store, but it is not one of the extractors getPathsFromComponentDefinition
+	 * walks, so a `Theme.borderColorNine` in a style leaf produces no path and no
+	 * listener. On a theme switch the stylesheet swapped (AppStyle watches
+	 * `Store.theme` for itself) while every definition-driven colour kept the old
+	 * theme's value until the page was remounted -- so a switch half-repainted, and
+	 * the more of a page's styling pointed at the theme the more obvious the half
+	 * that did not move. Watching the theme object is what closes that.
+	 *
+	 * Guarded by the string test rather than added for everyone: it is one extra
+	 * listener per THEME-DRIVEN component instead of one per component, and the
+	 * deepEqual in the callback means a component whose resolved values did not
+	 * actually move still does not re-render.
+	 */
+	const readsTheme = useMemo(
+		() => JSON.stringify(definition ?? {}).includes(themeExtractor.getPrefix()),
+		[definition],
+	);
+
 	useEffect(() => {
 		let paths = getPathsFromComponentDefinition(definition, evaluatorMaps, propDefMap);
 
@@ -93,9 +118,11 @@ export default function useDefinition(
 
 		if (!deepEqual(x, compState)) setCompState(x);
 
-		if (!paths || !paths.length) {
+		if ((!paths || !paths.length) && !readsTheme) {
 			return;
 		}
+
+		paths = paths ?? [];
 
 		if (parentExtractor) {
 			paths = paths.map(p => {
@@ -135,9 +162,14 @@ export default function useDefinition(
 				// actually changed. Bail out when the resolved values are equal.
 				setCompState(prev => (deepEqual(prev, newState) ? prev : newState));
 			},
-			...paths,
+			// The theme path is watched but deliberately NOT part of `paths`: the
+			// block above compares `paths` against a freshly derived list to detect
+			// a binding that now points somewhere else, and a constant path in one
+			// list and not the other makes that comparison always unequal, which
+			// re-registers the listener on every notification forever.
+			...(readsTheme ? [...paths, STORE_PATH_THEME_PATH] : paths),
 		);
-	}, [definition, pathsChangedAt, locationHistoryString]);
+	}, [definition, pathsChangedAt, locationHistoryString, readsTheme]);
 
 	return compState;
 }

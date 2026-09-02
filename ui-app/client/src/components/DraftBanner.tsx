@@ -13,9 +13,16 @@ import React from 'react';
  * someone forgets which surface they are on is exactly when it needs to be there.
  * It sits at the bottom so it does not cover an app's own header, and is
  * pointer-events: none so it can never swallow a click.
+ *
+ * Not in design mode. The page editor's canvas is now genuinely on the draft
+ * surface, so the server stamps `data-draft` there too and this would render
+ * inside every preview iframe. Nobody in the page editor is confused about which
+ * surface they are looking at -- the whole screen is the editor -- and a banner
+ * pinned to the bottom of each of the three canvases only covers the page being
+ * worked on.
  */
 export default function DraftBanner() {
-	if (!globalThis.isDraftMode) return <></>;
+	if (!globalThis.isDraftMode || globalThis.isDesignMode) return <></>;
 
 	return (
 		<div

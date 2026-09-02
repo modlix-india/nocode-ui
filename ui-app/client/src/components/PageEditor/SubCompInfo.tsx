@@ -36,6 +36,7 @@ import {
 } from '../TableComponents';
 
 import Tabs from '../Tabs/Tabs';
+import ThemeSwitcher from '../ThemeSwitcher/ThemeSwitcher';
 import Tags from '../Tags/Tags';
 import Text from '../Text/Text';
 import TextArea from '../TextArea/TextArea';
@@ -362,6 +363,12 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Active Right Image',
 			description: 'Active Right Image',
 			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'shortcutHint',
+			displayName: 'Shortcut Hint',
+			description: 'Key chip shown while its modifier is held',
+			icon: 'fa-solid fa-keyboard',
 		},
 	],
 
@@ -4468,6 +4475,45 @@ export const SubComponentDefinitions: Record<
 		},
 	],
 
+	[ThemeSwitcher.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<circle cx="15" cy="15" r="13" fill="#EDEAEA" />
+					<path d="M15 2 a13 13 0 0 1 0 26 z" fill="#3792FE" />
+				</IconHelper>
+			),
+		},
+		{
+			name: 'option',
+			displayName: 'Option',
+			description: 'One theme in the list',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'icon',
+			displayName: 'Icon',
+			description: "A theme's icon",
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'label',
+			displayName: 'Label',
+			description: "A theme's display name",
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'panel',
+			displayName: 'Panel',
+			description: 'The popover panel',
+			icon: 'fa-solid fa-box',
+		},
+	],
+
 	[Tabs.name]: [
 		{
 			name: '',
@@ -5036,6 +5082,12 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Left Icon',
 			description: 'Left Icon',
 			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'shortcutHint',
+			displayName: 'Shortcut Hint',
+			description: 'Key chip shown while its modifier is held',
+			icon: 'fa-solid fa-keyboard',
 		},
 		{
 			name: 'rightIcon',
@@ -5622,6 +5674,12 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Send Button',
 			description: 'Send Button',
 			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'shortcutHint',
+			displayName: 'Shortcut Hint',
+			description: 'Key chip shown while its modifier is held',
+			icon: 'fa-solid fa-keyboard',
 		},
 		{
 			name: 'sessionSidebar',

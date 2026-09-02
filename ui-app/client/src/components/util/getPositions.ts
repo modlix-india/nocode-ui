@@ -19,8 +19,12 @@ export default function getPositions(position: Position, boxRect: DOMRect, popov
 	let left = 0;
 	let right = 0;
 
-	let bodyHeight = document.body.clientHeight;
-	let bodyWidth = document.body.clientWidth;
+	// Viewport metrics and not body metrics : boxRect / popoverRect come from
+	// getBoundingClientRect and the popover is placed with position fixed, so every number here has
+	// to be in the same viewport space. document.body.clientHeight is the content height, which on
+	// any page taller than the window threw the bottom / right anchors off screen.
+	let bodyHeight = document.documentElement.clientHeight;
+	let bodyWidth = document.documentElement.clientWidth;
 
 	if (position.includes('bottom') || position.includes('top')) {
 		let xAsixTipStyle = position.includes('end')

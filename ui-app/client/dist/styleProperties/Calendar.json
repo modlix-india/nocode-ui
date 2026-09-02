@@ -1687,7 +1687,6 @@
 		"dn": "Background HasError Active Error",
 		"n": "calendarBackgroundHasErrorActiveError<calendarDesignType><designType><colorScheme>"
 	},
-
 	{
 		"cp": "padding",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownRow",
@@ -1704,7 +1703,7 @@
 		"dn": "Gap CalendarDropdownRow",
 		"n": "calendarGapCalendarDropdownRow<calendarDesignType><designType><colorScheme>"
 	},
-		{
+	{
 		"cp": "background",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownBody",
 		"np": true,
@@ -1799,7 +1798,7 @@
 		"dn": "Font CalendarDropdownOption",
 		"n": "calendarFontCalendarDropdownOption<calendarDesignType><designType><colorScheme>"
 	},
-		{
+	{
 		"cp": "background",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption._hovered",
 		"np": true,
@@ -1833,7 +1832,7 @@
 		"dn": "Color CalendarDropdownOption Hovered",
 		"n": "calendarColorCalendarDropdownOptionHovered<calendarDesignType><designType><colorScheme>"
 	},
-		{
+	{
 		"cp": "background",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._calendarDropdownOption._selected",
 		"np": true,
@@ -1867,7 +1866,7 @@
 		"dn": "Color CalendarDropdownOption Selected",
 		"n": "calendarColorCalendarDropdownOptionSelected<calendarDesignType><designType><colorScheme>"
 	},
-		{
+	{
 		"cp": "margin",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdownWrapper",
 		"np": true,
@@ -1883,7 +1882,7 @@
 		"dn": "Width YearDropdownWrapper",
 		"n": "calendarWidthYearDropdownWrapper<calendarDesignType><designType><colorScheme>"
 	},
-		{
+	{
 		"cp": "background",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._yearDropdown",
 		"np": true,
@@ -1937,7 +1936,7 @@
 		"dn": "Color YearDropdown",
 		"n": "calendarColorYearDropdown<calendarDesignType><designType><colorScheme>"
 	},
-		{
+	{
 		"cp": "margin",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._monthDropdownWrapper",
 		"np": true,
@@ -2093,7 +2092,7 @@
 		"dn": "Width HourDropdownWrapper",
 		"n": "calendarWidthHourDropdownWrapper<calendarDesignType><designType><colorScheme>"
 	},
-		{
+	{
 		"cp": "background",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._hourDropdown",
 		"np": true,
@@ -2163,7 +2162,7 @@
 		"dn": "Width MinuteDropdownWrapper",
 		"n": "calendarWidthMinuteDropdownWrapper<calendarDesignType><designType><colorScheme>"
 	},
-		{
+	{
 		"cp": "background",
 		"sel": ".comp.compCalendar<calendarDesignType><designType><colorScheme> ._minuteDropdown",
 		"np": true,
@@ -2356,6 +2355,15 @@
 		"gn": "Color",
 		"dn": "Color AmPmDropdown",
 		"n": "calendarColorAmPmDropdown<calendarDesignType><designType><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compCalendar<designType><colorScheme> input, .comp.compCalendar<designType><colorScheme> textarea, .comp.compCalendar<designType><colorScheme> select",
+		"np": true,
+		"gn": "Color",
+		"dn": "Input Value Color",
+		"de": "The value inside the control. Separate from every other colour here because form controls do not inherit `color` from their container -- without this they fall back to the UA black, which is invisible on a dark theme.",
+		"n": "calendarInputColor<designType><colorScheme>",
+		"dv": "<fontColorOne>"
 	}
-
 ]

@@ -492,6 +492,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 	const {
 		aria: shortcutAria,
 		titleSuffix: shortcutTooltip,
+		hint: shortcutHint,
 	} = useComponentShortcut({
 		props,
 		componentKey: key,
@@ -567,6 +568,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 				inputRef={inputRef}
 				ariaKeyShortcuts={shortcutAria}
 				shortcutTooltip={shortcutTooltip}
+				shortcutHint={shortcutHint?.(computedStyles.shortcutHint)}
 				onEditRequest={(editMode, cancel) => {
 					if (editMode || !originalBindingPathPath) return;
 					if (cancel) {

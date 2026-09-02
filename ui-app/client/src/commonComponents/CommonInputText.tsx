@@ -58,6 +58,12 @@ type CommonInputType = {
 	analyticsLabel?: string;
 	/** W3C aria-keyshortcuts token for the input itself. */
 	ariaKeyShortcuts?: string;
+	/**
+	 * The key chip from useComponentShortcut. Rendered as a flex item just before the
+	 * right icons, so it stays clear of the clear, password, error and success icons
+	 * however many of them are live, and is centred by the row's own alignment.
+	 */
+	shortcutHint?: React.ReactNode;
 	/** Appended to the wrapper tooltip, e.g. ' (Ctrl+K)'. */
 	shortcutTooltip?: string;
 };
@@ -117,6 +123,7 @@ function CommonInputText(props: CommonInputType) {
 		onEditRequest,
 		ariaKeyShortcuts,
 		shortcutTooltip,
+		shortcutHint,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -367,6 +374,7 @@ function CommonInputText(props: CommonInputType) {
 				</i>
 			) : undefined}
 			{inputControl}
+			{shortcutHint}
 			{!hideClearContentIcon && value?.toString()?.length && !readOnly && !isPassword ? (
 				<i
 					style={computedStyles.rightIcon ?? {}}
