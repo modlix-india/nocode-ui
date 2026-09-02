@@ -289,5 +289,45 @@
 		"cp": "text-decoration",
 		"sel": ".comp.compMenu<designType><colorScheme>, .comp.compMenu<designType><colorScheme>:visited",
 		"np": true
+	},
+	{
+		"gn": "Background Color",
+		"dn": "Background Color Active Only",
+		"n": "menuBackgroundColorActiveOnly<designType><colorScheme>",
+		"cp": "background-color",
+		"sel": ".comp.compMenu<designType><colorScheme>._isActive",
+		"np": true
+	},
+	{
+		"gn": "Color",
+		"dn": "Color Active Only",
+		"n": "menuColorActiveOnly<designType><colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compMenu<designType><colorScheme>._isActive",
+		"np": true
+	},
+	{
+		"gn": "Font",
+		"dn": "Font Active Only",
+		"n": "menuFontActiveOnly<designType><colorScheme>",
+		"cp": "font",
+		"sel": ".comp.compMenu<designType><colorScheme>._isActive",
+		"np": true
+	},
+	{
+		"gn": "Border",
+		"dn": "Border Active Only",
+		"n": "menuBorderActiveOnly<designType><colorScheme>",
+		"cp": "border",
+		"sel": ".comp.compMenu<designType><colorScheme>._isActive",
+		"np": true
+	},
+	{
+		"gn": "Color",
+		"dn": "Color Icon Active Only",
+		"n": "menuColorIconActiveOnly<designType><colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compMenu<designType><colorScheme>._isActive ._icon",
+		"np": true
 	}
 ]

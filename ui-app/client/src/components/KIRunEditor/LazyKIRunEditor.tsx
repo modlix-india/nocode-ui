@@ -25,7 +25,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
-import { savePersonalizationCurry } from './utils';
+import { normalizeParameterTypes, savePersonalizationCurry } from './utils';
 
 let UI_FUN_REPO: Repository<Function>;
 let UI_SCHEMA_REPO: Repository<Schema>;
@@ -155,7 +155,7 @@ export default function LazyKIRunEditor(
 	// Subscribe to function definition from store, or use prop override
 	useEffect(() => {
 		if (functionDefinition) {
-			const hereDef = correctStatementNames(functionDefinition);
+			const hereDef = correctStatementNames(normalizeParameterTypes(functionDefinition));
 			setRawDef(hereDef);
 
 			const finName = `${hereDef?.namespace ?? '_'}.${hereDef?.name}`;
@@ -165,7 +165,7 @@ export default function LazyKIRunEditor(
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			pageExtractor.getPageName(),
 			(_, v) => {
-				const hereDef = correctStatementNames(v);
+				const hereDef = correctStatementNames(normalizeParameterTypes(v));
 				setRawDef(hereDef);
 				const finName = `${hereDef?.namespace ?? '_'}.${hereDef?.name}`;
 				if (name !== finName) setName(finName);

@@ -38,6 +38,7 @@ import {
 } from './TableComponents';
 
 import Tabs from './Tabs/Tabs';
+import ThemeSwitcher from './ThemeSwitcher/ThemeSwitcher';
 import Tags from './Tags/Tags';
 import Text from './Text/Text';
 import TextArea from './TextArea/TextArea';
@@ -97,6 +98,7 @@ const componentMap = new Map<string, Component>([
 	[Image.name, Image],
 	[Svg.name, Svg],
 	[Tabs.name, Tabs],
+	[ThemeSwitcher.name, ThemeSwitcher],
 	[Icon.name, Icon],
 	[Text.name, Text],
 	[TextList.name, TextList],

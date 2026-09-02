@@ -2,9 +2,9 @@
  * The whole per-component shortcut API.
  *
  * A component supplies its authored spec, a label, its identity, and what to do.
- * It gets back the aria token and a tooltip suffix. The hold-to-reveal overlay and
- * the cheat sheet read the registry directly, so a component that calls this gets
- * both without rendering anything of its own.
+ * It gets back the aria token, a tooltip suffix and the class its key chip needs.
+ * The cheat sheet reads the registry directly, so a component that calls this is
+ * listed there without rendering anything of its own.
  *
  * Deliberately kept to four hook slots, because this runs on every instance of every
  * interactive component whether or not a shortcut is configured.
@@ -14,7 +14,13 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { STORE_PATH_SHORTCUTS } from '../constants';
 import { setData } from '../context/StoreContext';
 import { flattenUUID } from '../components/util/uuid';
-import { formatAriaKeyShortcuts, formatCombo, parseCombo, type Combo } from './comboUtil';
+import {
+	formatAriaKeyShortcuts,
+	formatCombo,
+	hintClassesForCombo,
+	parseCombo,
+	type Combo,
+} from './comboUtil';
 import { currentLayer } from './layerStack';
 import {
 	shortcutRegistry,
@@ -50,6 +56,8 @@ export interface UseShortcutResult {
 	aria?: string;
 	/** ' (Ctrl+S)', ready to append to an existing title attribute. */
 	titleSuffix?: string;
+	/** '_needsMeta', for the class the hold-to-reveal CSS matches on. */
+	hintClass?: string;
 	/** True only in the page editor, when another component claims the same combo. */
 	conflicting: boolean;
 }
@@ -90,17 +98,18 @@ export function useShortcut(opts: UseShortcutOptions): UseShortcutResult {
 
 	const [conflicting, setConflicting] = useState(false);
 
-	// All three derived strings are a pure function of the spec, so one memo covers them.
-	const derived = useMemo(
-		() => ({
-			combo: parseCombo(spec),
+	// All four derived strings are a pure function of the spec, so one memo covers them.
+	const derived = useMemo(() => {
+		const parsed = parseCombo(spec);
+		return {
+			combo: parsed,
 			display: formatCombo(spec),
 			aria: formatAriaKeyShortcuts(spec),
-		}),
-		[spec],
-	);
+			hintClass: hintClassesForCombo(parsed),
+		};
+	}, [spec]);
 
-	const { combo, display, aria } = derived;
+	const { combo, display, aria, hintClass } = derived;
 
 	useEffect(() => {
 		if (!combo || !spec) return;
@@ -130,10 +139,10 @@ export function useShortcut(opts: UseShortcutOptions): UseShortcutResult {
 
 		const unregister = shortcutRegistry.register(registration);
 
-		// Mirror the resolved key into the store so a page can render its own hint.
-		// There is no built-in chip: an author binds a Text component to
-		// Store.shortcuts.<page>.<component name>.display and gets '⌘K' on a Mac and
-		// 'Ctrl+K' elsewhere, placed and styled however the page needs.
+		// Mirror the resolved key into the store so a page can render its own hint
+		// somewhere the component's own chip cannot reach: an author binds a Text
+		// component to Store.shortcuts.<page>.<component name>.display and gets '⌘K'
+		// on a Mac and 'Ctrl+K' elsewhere, placed and styled however the page needs.
 		const mirrorPath = name ? `${STORE_PATH_SHORTCUTS}.${pageName}.${name}` : undefined;
 		if (mirrorPath) setData(mirrorPath, { spec, display, aria, label: live.current.label });
 
@@ -164,6 +173,7 @@ export function useShortcut(opts: UseShortcutOptions): UseShortcutResult {
 		combo,
 		display,
 		aria,
+		hintClass,
 		titleSuffix: display ? ` (${display})` : undefined,
 		conflicting,
 	};

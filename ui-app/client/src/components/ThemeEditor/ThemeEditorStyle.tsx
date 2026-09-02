@@ -1,11 +1,21 @@
+import { StyleResolution } from '../../types/common';
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './themeEditorStyleProperties';
 
 const PREFIX = '.comp.compThemeEditor';
 export default function ThemeEditorStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const css =
 		`
     ${PREFIX} {
@@ -58,7 +68,7 @@ export default function ThemeEditorStyle({
     ${PREFIX} ._variableContainer {
         flex: 0 0 auto;
         min-width: 300px;
-        border-right: 1px solid #eee;
+        border-right: 1px solid ${t('borderColorNine', '#eee')};
         display: flex;
         flex-direction: column;
     }
@@ -93,11 +103,11 @@ export default function ThemeEditorStyle({
         height: 30px;
         cursor: pointer;
         font: 12px Inter;
-        color: #555;
+        color: ${t('fontColorTwo', '#555')};
     }
 
     ${PREFIX} ._component:hover, ${PREFIX} ._component._active {
-        background-color: #8e90a41a;
+        background-color: ${t('colorNine', '#8e90a41a')};
     }
 
     ${PREFIX} ._component svg._iconHelperSVG {
@@ -117,12 +127,12 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._icon:hover,
     ${PREFIX} ._icon._selected {
-        background-color: #8e90a41a;
+        background-color: ${t('colorNine', '#8e90a41a')};
     }
 
     ${PREFIX} select {
         height: 24px;
-        border: 2px solid #EEE;
+        border: 2px solid ${t('borderColorNine', '#EEE')};
         border-radius: 4px;
         font: 12px Inter;
         color: #777;
@@ -160,9 +170,9 @@ export default function ThemeEditorStyle({
         font: 13px Inter;
         font-weight: 600;
         padding-bottom: 5px;
-        border-bottom: 2px solid #EEE8;
+        border-bottom: 2px solid ${t('borderColorNine', '#EEE8')};
         margin-bottom: 5px;
-        color: #555;
+        color: ${t('fontColorTwo', '#555')};
         display: flex;
         align-items: center;
         gap: 4px;
@@ -177,7 +187,7 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._caret path {
         stroke-width: 12px;
-        stroke: #555;
+        stroke: ${t('fontColorTwo', '#555')};
     }
 
     ${PREFIX} ._caret._open {
@@ -194,7 +204,7 @@ export default function ThemeEditorStyle({
         background: none;
         cursor: pointer;
         font: 11px Inter;
-        color: #555;
+        color: ${t('fontColorTwo', '#555')};
     }
 
      ${PREFIX} ._variable > * {
@@ -231,11 +241,11 @@ export default function ThemeEditorStyle({
     }
 
     ${PREFIX} ._variable._overridden ._setMarker {
-        background: #F59E0B;
+        background: ${t('colorOne', '#F59E0B')};
     }
 
     ${PREFIX} ._variable._overridden ._variableName {
-        color: #333;
+        color: ${t('fontColorOne', '#333')};
         font-weight: 600;
     }
 
@@ -251,7 +261,7 @@ export default function ThemeEditorStyle({
         width: 22px;
         height: 22px;
         padding: 0;
-        border: 1px solid #8e90a433;
+        border: 1px solid ${t('borderColorEleven', '#8e90a433')};
         border-radius: 3px;
         background: none;
         cursor: pointer;
@@ -261,14 +271,14 @@ export default function ThemeEditorStyle({
         flex: 0 0 auto;
         width: 22px;
         height: 22px;
-        border: 1px solid #8e90a433;
+        border: 1px solid ${t('borderColorEleven', '#8e90a433')};
         border-radius: 3px;
     }
 
     /* What a <var> value actually paints, once the indirection is followed. */
     ${PREFIX} ._resolvedHint {
         font: 10px/13px Inter;
-        color: #999;
+        color: ${t('fontColorThree', '#999')};
         padding-left: 2px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -278,7 +288,7 @@ export default function ThemeEditorStyle({
     ${PREFIX} ._hitCount {
         margin-left: auto;
         font: 10px Inter;
-        color: #999;
+        color: ${t('fontColorThree', '#999')};
         flex: 0 0 auto;
     }
 
@@ -287,21 +297,21 @@ export default function ThemeEditorStyle({
         text-align: left;
         background: none;
         border: none;
-        border-bottom: 2px solid #EEE8;
+        border-bottom: 2px solid ${t('borderColorNine', '#EEE8')};
         font: 13px Inter;
         font-weight: 600;
-        color: #555;
+        color: ${t('fontColorTwo', '#555')};
         cursor: pointer;
     }
 
     ${PREFIX} ._componentTitle:hover {
-        color: #B45309;
+        color: ${t('colorTwo', '#B45309')};
     }
 
     ${PREFIX} ._noHits {
         padding: 14px 12px;
         font: 11px/16px Inter;
-        color: #999;
+        color: ${t('fontColorThree', '#999')};
     }
 
     ${PREFIX} ._scopeButton,
@@ -310,33 +320,33 @@ export default function ThemeEditorStyle({
         min-width: 20px;
         padding: 0 5px;
         font: 10px Inter;
-        color: #555;
-        border: 1px solid #8e90a433;
+        color: ${t('fontColorTwo', '#555')};
+        border: 1px solid ${t('borderColorEleven', '#8e90a433')};
     }
 
     ${PREFIX} ._scopeButton._selected,
     ${PREFIX} ._overrideButton._selected {
         background-color: rgba(245, 158, 11, .16);
-        border-color: #F59E0B;
-        color: #B45309;
+        border-color: ${t('colorOne', '#F59E0B')};
+        color: ${t('colorTwo', '#B45309')};
     }
 
     ${PREFIX} ._overrideButton ._dot {
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        border: 1px solid #999;
+        border: 1px solid ${t('borderColorEleven', '#999')};
     }
 
     ${PREFIX} ._overrideButton._selected ._dot {
-        background: #F59E0B;
-        border-color: #F59E0B;
+        background: ${t('colorOne', '#F59E0B')};
+        border-color: ${t('colorOne', '#F59E0B')};
     }
 
      ${PREFIX} input {
         border: 2px solid #8e90a41a;
         border-radius: 3px;
-        color: #333;
+        color: ${t('fontColorOne', '#333')};
         font: 12px inter;
         padding: 5px;
     }
@@ -345,7 +355,7 @@ export default function ThemeEditorStyle({
         display: flex;
         gap: 10px;
         padding: 10px;
-        border-bottom: 2px solid #EEE8;
+        border-bottom: 2px solid ${t('borderColorNine', '#EEE8')};
         flex-direction: column;
     }
 
@@ -370,7 +380,7 @@ export default function ThemeEditorStyle({
     }
 
      ${PREFIX} ._smallButton:hover {
-        background-color: #8e90a41a;
+        background-color: ${t('colorNine', '#8e90a41a')};
      }
 
     ${PREFIX} ._smallButton svg {
@@ -380,7 +390,7 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._smallButton svg path {
         stroke-width: 2px;
-        stroke: #555;
+        stroke: ${t('fontColorTwo', '#555')};
     }
 
     ${PREFIX} ._editorContainer {
@@ -442,8 +452,8 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._separator {
         height: 50%;
-        border-left: 1px solid #EEE;
-        border-right: 1px solid #EEE;
+        border-left: 1px solid ${t('borderColorNine', '#EEE')};
+        border-right: 1px solid ${t('borderColorNine', '#EEE')};
         border-radius: 2px;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

@@ -1,8 +1,12 @@
 import { StylePropertyDefinition } from '../types/common';
 
 /**
- * Theme variables for the three global shortcut surfaces: the conflict chooser,
- * the hold-to-reveal overlay and the cheat sheet.
+ * Theme variables for the two global shortcut surfaces: the conflict chooser and
+ * the cheat sheet.
+ *
+ * The inline key chip is not here on purpose. It is a slot of the component that
+ * renders it, styled through that component's own style properties, because the
+ * right chip for a 60px input is not the right chip for a 32px one.
  *
  * These are ordinary local style properties, not the externalised
  * `dist/styleProperties/*.json` kind, so adding variables here is free.
@@ -106,24 +110,6 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dv: '<fontColorOne>',
 		gn: 'Shortcuts',
 		sel: '._shortcutKeyCap',
-	},
-	{
-		n: 'shortcutRevealChipBackgroundColor',
-		cp: 'background-color',
-		dn: 'Shortcut Reveal Chip Background',
-		de: 'Background of the chips shown while a modifier is held',
-		dv: '<backgroundColorSix>',
-		gn: 'Shortcuts',
-		sel: '._shortcutRevealChip',
-	},
-	{
-		n: 'shortcutRevealChipFontColor',
-		cp: 'color',
-		dn: 'Shortcut Reveal Chip Text Colour',
-		de: 'Text colour of the chips shown while a modifier is held',
-		dv: '<fontColorTwo>',
-		gn: 'Shortcuts',
-		sel: '._shortcutRevealChip',
 	},
 ];
 

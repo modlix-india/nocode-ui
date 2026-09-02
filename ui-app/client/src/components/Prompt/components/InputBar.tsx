@@ -33,6 +33,8 @@ interface InputBarProps {
 	textareaRef?: React.RefObject<HTMLTextAreaElement | null>;
 	/** W3C aria-keyshortcuts token for the shortcut that focuses this textarea. */
 	ariaKeyShortcuts?: string;
+	/** The key chip from useComponentShortcut, shown while its modifier is held. */
+	shortcutHint?: React.ReactNode;
 }
 
 const speechSupported =
@@ -59,6 +61,7 @@ export function InputBar({
 	microphoneActiveIcon = 'fa fa-stop',
 	textareaRef: externalTextareaRef,
 	ariaKeyShortcuts,
+	shortcutHint,
 }: Readonly<InputBarProps>) {
 	const [text, setText] = useState(initialText ?? '');
 	const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -298,6 +301,7 @@ export function InputBar({
 					style={styleProperties?.inputTextArea ?? {}}
 				/>
 				<div className="_inputActions">
+					{shortcutHint}
 					{showMic && (
 						<button
 							className={`_micButton ${isListening ? '_recording' : ''}`}
