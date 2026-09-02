@@ -218,7 +218,6 @@
 		"dn": "Error Right Icon Color",
 		"n": "textBoxErrorRightIconColor<designType><colorScheme>"
 	},
-
 	{
 		"cp": "background",
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasError, .comp.compTextBox<designType><colorScheme>._isActive._hasError, .comp.compTextBox<designType><colorScheme>._hasValue._hasError",
@@ -306,7 +305,6 @@
 		"dn": "Value Color",
 		"n": "textBoxValueColor<designType><colorScheme>"
 	},
-
 	{
 		"cp": "background",
 		"sel": ".comp.compTextBox<designType>._hasValue<colorScheme>",
@@ -493,7 +491,6 @@
 		"n": "textBoxActiveColor<designType><colorScheme>",
 		"dv": "<fontColorOne>"
 	},
-
 	{
 		"cp": "background",
 		"sel": ".comp.compTextBox<designType>._isActive<colorScheme>",
@@ -616,7 +613,6 @@
 		"n": "textBoxActiveSupportTextColor<designType><colorScheme>",
 		"dv": "<fontColorThree>"
 	},
-
 	{
 		"cp": "background",
 		"sel": ".comp.compTextBox<designType><colorScheme>._validationSuccess, .comp.compTextBox<designType><colorScheme>._isActive._validationSuccess, .comp.compTextBox<designType><colorScheme>._hasValue._validationSuccess",
@@ -629,7 +625,6 @@
 		"dn": "Success Background",
 		"n": "textBoxSuccessBackground<designType><colorScheme>"
 	},
-
 	{
 		"cp": "background",
 		"sel": ".comp.compTextBox<designType><colorScheme>",
@@ -651,7 +646,6 @@
 		"n": "textBoxBackground<designType><colorScheme>",
 		"dv": "<backgroundColorSeven>"
 	},
-
 	{
 		"cp": "background",
 		"sel": ".comp.compTextBox<designType><colorScheme>:hover, .comp.compTextBox<designType><colorScheme>._isActive:hover, .comp.compTextBox<designType><colorScheme>._editMode",
@@ -837,7 +831,6 @@
 		"dn": "Active Border Color",
 		"n": "textBoxActiveBorderColor<designType><colorScheme>"
 	},
-
 	{
 		"cp": "border-color",
 		"sel": ".comp.compTextBox<designType><colorScheme>._hasError, .comp.compTextBox<designType><colorScheme>._isActive._hasError, .comp.compTextBox<designType><colorScheme>._hasValue._hasError",
@@ -872,7 +865,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._label",
 		"np": true
 	},
-{
+	{
 		"gn": "Label",
 		"dn": "Label Text Transform",
 		"n": "textBoxTextTransformLabel<designType><colorScheme>",
@@ -880,7 +873,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._label",
 		"np": true
 	},
-{
+	{
 		"gn": "Icon",
 		"dn": "Icon Font Size",
 		"n": "textBoxFontSizeIcon<designType><colorScheme>",
@@ -888,7 +881,7 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._leftIcon, .comp.compTextBox<designType><colorScheme> ._rightIcon",
 		"np": true
 	},
-{
+	{
 		"gn": "Shortcut Hint",
 		"dn": "Shortcut Hint Background",
 		"de": "Background of the key chip shown while its modifier is held",
@@ -898,7 +891,7 @@
 		"dv": "<backgroundColorNine>",
 		"np": true
 	},
-{
+	{
 		"gn": "Shortcut Hint",
 		"dn": "Shortcut Hint Text Color",
 		"n": "textBoxShortcutHintColor<designType><colorScheme>",
@@ -907,7 +900,7 @@
 		"dv": "<fontColorOne>",
 		"np": true
 	},
-{
+	{
 		"gn": "Shortcut Hint",
 		"dn": "Shortcut Hint Font Size",
 		"n": "textBoxShortcutHintFontSize<designType><colorScheme>",
@@ -916,7 +909,7 @@
 		"dv": "11px",
 		"np": true
 	},
-{
+	{
 		"gn": "Shortcut Hint",
 		"dn": "Shortcut Hint Padding",
 		"n": "textBoxShortcutHintPadding<designType><colorScheme>",
@@ -931,7 +924,7 @@
 		},
 		"np": true
 	},
-{
+	{
 		"gn": "Shortcut Hint",
 		"dn": "Shortcut Hint Border Radius",
 		"n": "textBoxShortcutHintBorderRadius<designType><colorScheme>",
@@ -940,7 +933,7 @@
 		"dv": "4px",
 		"np": true
 	},
-{
+	{
 		"gn": "Shortcut Hint",
 		"dn": "Shortcut Hint Margin",
 		"n": "textBoxShortcutHintMargin<designType><colorScheme>",
@@ -948,5 +941,15 @@
 		"sel": ".comp.compTextBox<designType><colorScheme> ._shortcutHint",
 		"dv": "0px 4px",
 		"np": true
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTextBox<designType><colorScheme> input, .comp.compTextBox<designType><colorScheme> textarea, .comp.compTextBox<designType><colorScheme> select",
+		"np": true,
+		"gn": "Color",
+		"dn": "Input Value Color",
+		"de": "The value inside the control. Separate from every other colour here because form controls do not inherit `color` from their container -- without this they fall back to the UA black, which is invisible on a dark theme.",
+		"n": "textBoxInputColor<designType><colorScheme>",
+		"dv": "<fontColorOne>"
 	}
 ]
