@@ -156,11 +156,14 @@ export function InputBar({
 		[handleSend],
 	);
 
-	const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		const newText = e.target.value;
-		setText(newText);
-		onTextChange?.(newText);
-	}, [onTextChange]);
+	const handleInput = useCallback(
+		(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+			const newText = e.target.value;
+			setText(newText);
+			onTextChange?.(newText);
+		},
+		[onTextChange],
+	);
 
 	const addFileAttachment = useCallback((file: File) => {
 		const isImage = file.type.startsWith('image/');
@@ -272,14 +275,8 @@ export function InputBar({
 	const showMic = enableVoiceInput && speechSupported;
 
 	return (
-		<div
-			className="_promptInputBar"
-			style={styleProperties?.inputBar ?? {}}
-		>
-			<SubHelperComponent
-				definition={definition}
-				subComponentName="inputBar"
-			/>
+		<div className="_promptInputBar" style={styleProperties?.inputBar ?? {}}>
+			<SubHelperComponent definition={definition} subComponentName="inputBar" />
 			{attachments.length > 0 && (
 				<div className="_inputAttachments">
 					{attachments.map(att => (
@@ -362,10 +359,7 @@ export function InputBar({
 						<button
 							className="_sendButton"
 							onClick={handleSend}
-							disabled={
-								(!text.trim() && !attachments.length) ||
-								disabled
-							}
+							disabled={(!text.trim() && !attachments.length) || disabled}
 							title="Send message"
 							style={styleProperties?.sendButton ?? {}}
 						>

@@ -27,6 +27,7 @@ import { CraftCard } from './components/CraftCard';
 import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
+import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
 import { serialiseActiveData } from './editorContext';
@@ -875,6 +876,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			activeDataPath = '',
 			openDraftsPath = '',
 			draftMode = false,
+			showDraftReview = false,
 			showSessions = true,
 			sessionsMode = '_auto',
 			newChatLabel = 'New chat',
@@ -1386,6 +1388,35 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [savedObjects, setSavedObjects] = useState<
 		Array<{ kind: string; name: string; draft: boolean }>
 	>([]);
+
+	// Apps this chat has left unpublished work in. Kept in LocalStore because the
+	// draft outlives the conversation: the notice above is per-turn and
+	// dismissible, so on a surface with no editor a refresh used to erase the only
+	// hint that anything was waiting, while the server held the draft for good.
+	const pendingAppsPath = `${LOCAL_STORE_PREFIX}.promptPendingApps.${props.context.pageName}_${flattenUUID(key)}`;
+	const [pendingApps, setPendingApps] = useState<string[]>(() => {
+		const stored = getDataFromPath(pendingAppsPath, [], pageExtractor);
+		return Array.isArray(stored) ? stored.filter(a => typeof a === 'string') : [];
+	});
+	const rememberPendingApp = useCallback((appCode: string) => {
+		// Capped: this is a hint about where to look, not a history.
+		setPendingApps(prev => (prev.includes(appCode) ? prev : [appCode, ...prev].slice(0, 5)));
+	}, []);
+	const forgetPendingApps = useCallback((appCodes: string[]) => {
+		setPendingApps(prev => {
+			const next = prev.filter(a => !appCodes.includes(a));
+			return next.length === prev.length ? prev : next;
+		});
+	}, []);
+	// One writer, in an effect: persisting inside a state updater would run twice
+	// under StrictMode and is a side effect where React expects a pure function.
+	useEffect(() => {
+		setData(
+			pendingAppsPath,
+			pendingApps.length ? pendingApps : undefined,
+			props.context.pageName,
+		);
+	}, [pendingApps, pendingAppsPath, props.context.pageName]);
 	const handleObjectChanged = useCallback(
 		(data: any) => {
 			if (!data?.kind) return;
@@ -1397,6 +1428,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					? prev
 					: [...prev, { kind: data.kind, name: data.name ?? '', draft }],
 			);
+			// A drafted change needs somewhere to be reviewed from. A surface with
+			// editor tabs has one already; this remembers the app so a surface
+			// WITHOUT tabs can show a review bar, and remembers it in LocalStore so
+			// the bar comes back after a refresh. The draft outlives the tab it was
+			// announced in, so the note about it has to as well.
+			if (draft && data.app_code) rememberPendingApp(data.app_code);
 			// A parent component can take a callback; a page cannot, so it gets the
 			// same news through the store and an event. Both fire: the page editor
 			// uses the callback, the workspace uses the event, and neither knows
@@ -2882,6 +2919,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						<i className={scrollToBottomIcon} aria-hidden="true" />
 					</button>
 				</div>
+				{showDraftReview && pendingApps.length > 0 && (
+					<PendingDraftBar
+						appCodes={pendingApps}
+						getAuthHeaders={getAuthHeaders}
+						onEmpty={forgetPendingApps}
+					/>
+				)}
 				{savedObjects.length > 0 && (
 					<div className="_promptSavedNotice">
 						{/* The asymmetry made visible, and it is two asymmetries, not one.

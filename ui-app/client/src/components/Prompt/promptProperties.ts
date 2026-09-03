@@ -154,6 +154,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		// Turn ON for a chat with no editor around it. A surface with editor tabs
+		// already carries the Draft link, the per-object Publish and the pending
+		// panel, so a second set here is noise; a bare chat page has none of them,
+		// and without this it can tell somebody a change is "waiting for Publish"
+		// while offering nowhere to publish it from.
+		name: 'showDraftReview',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Draft Review Bar',
+		description:
+			'Show what the agent has left unpublished, with links to open the draft or the workspace, and buttons to publish or discard. For chat surfaces with no editor of their own.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'quickActionLayout',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Quick Action Layout',
