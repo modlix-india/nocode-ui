@@ -1045,7 +1045,20 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
 
 	// Draft state
-	const [draftText, setDraftText] = useState('');
+	// What to PUT INTO the input, and a counter saying "now".
+	//
+	// Only this component's own pushes live here: a session switch, a send that
+	// clears the box, a refused send that hands the message back. Keystrokes
+	// deliberately do NOT, because the input already holds what the user typed
+	// and mirroring it here made the two owners fight (see InputBar's
+	// `textRevision`) as well as re-rendering the whole chat on every letter.
+	const [textPush, setTextPush] = useState<{ text: string; rev: number }>({
+		text: '',
+		rev: 0,
+	});
+	const setDraftText = useCallback((text: string) => {
+		setTextPush(prev => ({ text, rev: prev.rev + 1 }));
+	}, []);
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -2225,7 +2238,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Draft change handler (debounced save to localStorage)
 	const handleDraftChange = useCallback(
 		(text: string) => {
-			setDraftText(text);
+			// Not pushed back into the input: it is already there. All this owes
+			// the keystroke is the debounced save, so the draft survives a
+			// refresh.
 			if (saveDraftTimeoutRef.current) {
 				clearTimeout(saveDraftTimeoutRef.current);
 			}
@@ -2916,7 +2931,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						onStop={handleStop}
 						definition={props.definition}
 						styleProperties={styleProperties}
-						initialText={draftText}
+						initialText={textPush.text}
+						textRevision={textPush.rev}
 						onTextChange={handleDraftChange}
 						sendIcon={sendIcon}
 						stopIcon={stopIcon}

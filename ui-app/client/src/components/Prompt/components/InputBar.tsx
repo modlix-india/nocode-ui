@@ -1,6 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+
+// Matches the textarea's max-height in PromptStyle; past this the box stops
+// growing and starts scrolling.
+const MAX_INPUT_HEIGHT = 200;
 
 interface Attachment {
 	id: string;
@@ -20,6 +24,21 @@ interface InputBarProps {
 	definition: ComponentDefinition;
 	styleProperties: any;
 	initialText?: string;
+	/**
+	 * Bumped by the host when it wants `initialText` PUT INTO the box: a session
+	 * switch, a send that clears it, a refused send that hands the message back.
+	 *
+	 * The sync is keyed on this rather than on the text because both components
+	 * hold the text, and syncing on the value made the ownership circular:
+	 * typing told the host, the host re-rendered, the new prop reset this box.
+	 * That converges only while the two agree, and during an agent turn they
+	 * did not -- the host was pushing the stored draft while this box held what
+	 * the user had typed, so each render flipped the value back and React gave
+	 * up with "Maximum update depth exceeded" (a real crash, over the whole
+	 * page, in the middle of a turn). A counter makes the loop impossible: the
+	 * text alone can never trigger a sync.
+	 */
+	textRevision?: number;
 	onTextChange?: (text: string) => void;
 	sendIcon?: string;
 	stopIcon?: string;
@@ -50,6 +69,7 @@ export function InputBar({
 	definition,
 	styleProperties,
 	initialText,
+	textRevision = 0,
 	onTextChange,
 	sendIcon = 'fa fa-arrow-up',
 	stopIcon = 'fa fa-stop',
@@ -72,10 +92,33 @@ export function InputBar({
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const recognitionRef = useRef<any>(null);
 
-	// Sync internal text when initialText changes (e.g. session switch)
+	// Take the host's text only when it says to (see `textRevision`). Reading
+	// the text through a ref keeps it out of the dependency list, so a value
+	// that changes for any other reason cannot re-run this.
+	const pushedTextRef = useRef(initialText ?? '');
+	pushedTextRef.current = initialText ?? '';
 	useEffect(() => {
-		setText(initialText ?? '');
-	}, [initialText]);
+		setText(pushedTextRef.current);
+	}, [textRevision]);
+
+	// Grow the box with its content up to the cap, then let it scroll. The
+	// overflow is toggled here instead of left on `auto` because Blink counts a
+	// wrapped placeholder towards scrollHeight: an empty input whose placeholder
+	// ran to two lines was showing a scrollbar with nothing to scroll. An empty
+	// box drops back to the stylesheet's single-row height for the same reason —
+	// scrollHeight would size it to the placeholder.
+	useLayoutEffect(() => {
+		const ta = textareaRef.current;
+		if (!ta) return;
+		if (!text) {
+			ta.style.height = '';
+			ta.style.overflowY = 'hidden';
+			return;
+		}
+		ta.style.height = 'auto';
+		ta.style.height = Math.min(ta.scrollHeight, MAX_INPUT_HEIGHT) + 'px';
+		ta.style.overflowY = ta.scrollHeight > MAX_INPUT_HEIGHT ? 'auto' : 'hidden';
+	}, [text]);
 
 	// Re-focus input when streaming completes
 	useEffect(() => {
@@ -101,9 +144,6 @@ export function InputBar({
 		onSend(trimmed, attachments.length ? attachments : undefined);
 		setText('');
 		setAttachments([]);
-		if (textareaRef.current) {
-			textareaRef.current.style.height = 'auto';
-		}
 	}, [text, attachments, disabled, isStreaming, onSend]);
 
 	const handleKeyDown = useCallback(
@@ -120,9 +160,6 @@ export function InputBar({
 		const newText = e.target.value;
 		setText(newText);
 		onTextChange?.(newText);
-		const ta = e.target;
-		ta.style.height = 'auto';
-		ta.style.height = Math.min(ta.scrollHeight, 200) + 'px';
 	}, [onTextChange]);
 
 	const addFileAttachment = useCallback((file: File) => {

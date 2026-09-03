@@ -1779,6 +1779,8 @@ export default function PromptStyle({
 			min-height: 24px;
 			max-height: 200px;
 			line-height: 1.5;
+			/* InputBar switches this to auto once the box hits max-height. */
+			overflow-y: hidden;
 			color: ${t('fontColorOne', '#1a1a1a')};
 		}
 
