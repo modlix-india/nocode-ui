@@ -1705,7 +1705,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorBackground',
 		dv: '#FFFFFF',
 		cp: 'background-color',
-		sel: '.comp.compPageEditor ._screenSizes:hover, .comp.compPageEditor ._iframeHeader, .comp.compPageEditor ._iframe iframe, .comp.compPageEditor ._selectionBar',
+		sel: '.comp.compPageEditor ._screenSizes:hover, .comp.compPageEditor ._iframeHeader, .comp.compPageEditor ._selectionBar',
 		np: true,
 	},
 	{
@@ -4368,7 +4368,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'pageEditorDarkBackground',
 		dv: '#17171A',
 		cp: 'background-color',
-		sel: '.comp.compPageEditor._dark ._screenSizes:hover, .comp.compPageEditor._dark ._iframeHeader, .comp.compPageEditor._dark ._iframe iframe, .comp.compPageEditor._dark ._selectionBar',
+		sel: '.comp.compPageEditor._dark ._screenSizes:hover, .comp.compPageEditor._dark ._iframeHeader, .comp.compPageEditor._dark ._selectionBar',
 		np: true,
 	},
 	{
