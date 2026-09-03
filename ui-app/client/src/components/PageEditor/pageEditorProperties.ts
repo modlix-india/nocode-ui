@@ -62,6 +62,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		// Publishing means "make the draft live", so with no draft there is
+		// nothing the button can do: it answered 404 and the only way to find
+		// that out was to press it. The host owns the answer because the host
+		// owns the read that carries `X-Draft-Version`.
+		//
+		// Undefined, not false, is the no-answer case: a host that wires
+		// onPublish and never sets this keeps the button it has always had.
+		// Only an explicit false hides it.
+		name: 'hasDraft',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Draft Exists',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			'Whether this page has unpublished work. False hides the Publish button; leave unset to always show it.',
+	},
+
+	{
 		name: 'pagesData',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Pages Data',
@@ -83,7 +100,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Dashboard Menu Name',
 		group: ComponentPropertyGroup.DATA,
 		description: 'Dashboard menu name.',
-		defaultValue: 'View Dashboard'
+		defaultValue: 'View Dashboard',
 	},
 
 	{
