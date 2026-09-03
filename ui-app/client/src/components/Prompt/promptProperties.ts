@@ -38,14 +38,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 	},
 	{
-		// Lets a page hand the chat its opening question, typically from the URL:
-		// /ai/<encoded prompt> with this bound to Url.pathParts[1]. Sent once, and
-		// only into an empty chat, so reopening a session never replays it.
+		// A fixed opening question. To hand one over from another page use the
+		// Pending Prompt binding instead: that one is cleared as it is sent, where
+		// this one stays put and would fire again on every fresh load. Sent once,
+		// and only into an empty chat, so reopening a session never replays it.
 		name: 'initialPrompt',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Initial Prompt',
 		description:
-			'A question to send automatically when the chat opens empty. Use it to arrive from elsewhere with the conversation already started.',
+			'A fixed question to send automatically when the chat opens empty. To carry a question in from another page, use the Pending Prompt binding, which is taken and cleared instead of resent on every load.',
 		group: ComponentPropertyGroup.BASIC,
 		translatable: false,
 	},

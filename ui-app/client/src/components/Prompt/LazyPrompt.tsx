@@ -855,7 +855,7 @@ const MAX_RECONNECT_ATTEMPTS = 3;
 
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
@@ -975,6 +975,24 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				? getPathFromLocation(bindingPath2, props.locationHistory, pageExtractor)
 				: undefined,
 		[bindingPath2, props.locationHistory, pageExtractor],
+	);
+
+	/**
+	 * Where the page that sent the user here left the question to open with.
+	 *
+	 * A handoff through the store rather than through the URL. /ai/<prompt> could
+	 * not carry a real one: a couple of paragraphs of what to build is well past
+	 * what a path segment survives, so long prompts arrived truncated or not at
+	 * all. Worse, the address bar kept holding it, so every refresh started the
+	 * whole build again in a new session. This is read once and cleared as it is
+	 * sent, which leaves a refresh nothing to fire.
+	 */
+	const pendingPromptPath = useMemo(
+		() =>
+			bindingPath3
+				? getPathFromLocation(bindingPath3, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath3, props.locationHistory, pageExtractor],
 	);
 
 	const resolvedPlaceholder = getTranslations(placeholder, props.pageDefinition.translations);
@@ -2114,16 +2132,22 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	 * user opens it from the history like any other.
 	 */
 	const restoreAttemptedRef = useRef(false);
-	const restoringRef = useRef(false);
+	// Whether the restore has had its say yet. State, not a ref, because the
+	// opening prompt below waits on it: a ref would leave that effect with no
+	// reason to run again once a restore finds nothing to rejoin, and a prompt
+	// handed over for sending would sit there unsent.
+	const [restoreSettled, setRestoreSettled] = useState(false);
 	useEffect(() => {
-		if (restoreAttemptedRef.current || readOnly) return;
+		if (restoreAttemptedRef.current) return;
 		restoreAttemptedRef.current = true;
 
-		const record = getDataFromPath(activeRunPath, [], pageExtractor);
+		const record = readOnly ? undefined : getDataFromPath(activeRunPath, [], pageExtractor);
 		const restoreSessionId = record?.sessionId;
-		if (!restoreSessionId) return;
+		if (!restoreSessionId) {
+			setRestoreSettled(true);
+			return;
+		}
 
-		restoringRef.current = true;
 		(async () => {
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
@@ -2144,7 +2168,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			} catch {
 				// Offline or the service is down. Nothing to restore into.
 			} finally {
-				restoringRef.current = false;
+				setRestoreSettled(true);
 			}
 		})();
 		// Once, on mount. Everything it reads is either a ref or stable for the
@@ -2488,20 +2512,45 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		],
 	);
 
-	// An opening question handed in by the page, e.g. arriving at /ai/<prompt> from
-	// the New view. Guarded by a ref rather than the dependency list: handleSend is
-	// rebuilt on nearly every state change, so a plain dependency would resend on
-	// each stream tick. Only ever fires into an empty chat.
+	// An opening question handed in by the page the user came from: left at
+	// `pendingPromptPath` for this chat to take, or given literally as
+	// `initialPrompt`. Guarded by a ref rather than the dependency list: handleSend
+	// is rebuilt on nearly every state change, so a plain dependency would resend
+	// on each stream tick. Only ever fires into an empty chat.
 	const initialSentRef = useRef(false);
 	useEffect(() => {
 		if (initialSentRef.current) return;
-		// A restore in flight has an empty chat too, right up to the moment the
-		// rejoined turn lands. Sending into it would start a second run.
-		if (restoringRef.current) return;
-		if (!initialPrompt || messages.length > 0 || isStreaming || readOnly) return;
+		// A restore has an empty chat too, right up to the moment the rejoined
+		// turn lands. Sending into it would start a second run.
+		if (!restoreSettled) return;
+		if (messages.length > 0 || isStreaming || readOnly) return;
+
+		// Read here rather than on mount, and cleared in the same tick as the
+		// send: a handed-over prompt is the only copy there is, so it is spent
+		// only when there is actually a send to spend it on.
+		const pending = pendingPromptPath
+			? getDataFromPath(pendingPromptPath, props.locationHistory, pageExtractor)
+			: undefined;
+		const handedOver = typeof pending === 'string' ? pending : pending?.text;
+		const text = handedOver?.trim() ? handedOver : initialPrompt;
+		if (!text) return;
+
 		initialSentRef.current = true;
-		handleSend(initialPrompt);
-	}, [initialPrompt, messages.length, isStreaming, readOnly, handleSend]);
+		if (pendingPromptPath && handedOver)
+			setData(pendingPromptPath, undefined, props.context.pageName);
+		handleSend(text);
+	}, [
+		restoreSettled,
+		initialPrompt,
+		pendingPromptPath,
+		messages.length,
+		isStreaming,
+		readOnly,
+		handleSend,
+		props.locationHistory,
+		props.context.pageName,
+		pageExtractor,
+	]);
 
 	const handleStop = useCallback(() => {
 		abortControllerRef.current?.abort();
