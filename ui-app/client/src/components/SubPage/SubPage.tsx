@@ -40,7 +40,13 @@ function SubPage(props: Readonly<ComponentProps>) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { pageName: originalPageName, appCode, clientCode, overrideThemeStyles } = {},
+		properties: {
+			pageName: originalPageName,
+			appCode,
+			clientCode,
+			overrideThemeStyles,
+			reloadOn,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -165,7 +171,9 @@ function SubPage(props: Readonly<ComponentProps>) {
 				undefined,
 				true,
 			))();
-	}, [subPage !== undefined, pageName, locationHistory.length]);
+		// `reloadOn` is how a host page asks for this to run again: it owns no
+		// part of the pane's loading and cannot reach the function that does.
+	}, [subPage !== undefined, pageName, locationHistory.length, reloadOn]);
 
 	const locHist = bindingPath
 		? [...locationHistory, { location: bindingPath, index: -1, pageName, componentKey: key }]
@@ -212,7 +220,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Parent Binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;
