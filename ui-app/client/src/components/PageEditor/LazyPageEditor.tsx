@@ -89,6 +89,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			theme,
 			onSave,
 			onPublish,
+			hasDraft,
 			onVersions,
 			onSavedVersions,
 			onChangePersonalization,
@@ -1285,7 +1286,10 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				pageName={context.pageName}
 				pageExtractor={pageExtractor}
 				onSave={saveFunction}
-				onPublish={onPublish ? publishFunction : undefined}
+				// Nothing to publish, no button. `hasDraft` is the host's answer,
+				// and only an explicit false hides it, so a host that never sets
+				// the property keeps the button it has always had.
+				onPublish={onPublish && hasDraft !== false ? publishFunction : undefined}
 				onChangePersonalization={savePersonalization}
 				desktopIframe={desktopRef}
 				tabletIframe={tabletRef}
