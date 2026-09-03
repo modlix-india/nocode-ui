@@ -219,7 +219,7 @@ interface SSEEventContext {
 	/** A write that really did save, so anything showing that object is stale. */
 	onObjectChanged: (data: any) => void;
 	/**
-	 * These events are being seen for the second time — the server is replaying
+	 * These events are being seen for the second time: the server is replaying
 	 * a turn we reattached to (see the AI service's run_manager). Everything
 	 * that merely describes the turn is applied again, which is how the message
 	 * gets rebuilt; anything that acts on the world outside this chat is not,
@@ -848,7 +848,7 @@ const SESSIONS_OVERLAY_BELOW_PX = 640;
 const STREAM_TIMEOUT_MS = 45_000;
 
 // How many times a dropped connection is rejoined before giving up and falling
-// back to polling the transcript. The run itself is unaffected either way —
+// back to polling the transcript. The run itself is unaffected either way:
 // it keeps working with nobody watching.
 const MAX_RECONNECT_ATTEMPTS = 3;
 
@@ -1692,9 +1692,24 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		[activeRunPath, props.context.pageName],
 	);
 
-	const forgetActiveRun = useCallback(() => {
-		setData(activeRunPath, undefined, props.context.pageName);
-	}, [activeRunPath, props.context.pageName]);
+	/**
+	 * Drop the note, unless it has moved on to another run.
+	 *
+	 * `expected` guards against clearing a record written after the caller
+	 * started: the restore below reads the note, asks the server about it, and
+	 * only then decides to clear, and a message sent in that window has
+	 * already replaced the note with its own run.
+	 */
+	const forgetActiveRun = useCallback(
+		(expected?: string) => {
+			if (expected) {
+				const record = getDataFromPath(activeRunPath, [], pageExtractor);
+				if (record?.sessionId && record.sessionId !== expected) return;
+			}
+			setData(activeRunPath, undefined, props.context.pageName);
+		},
+		[activeRunPath, props.context.pageName, pageExtractor],
+	);
 
 	/**
 	 * Read an agent SSE stream to its end, folding every event into the message
@@ -1703,7 +1718,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	 * Shared by the send that starts a run and the attach that rejoins one:
 	 * both carry the same event stream, and the only difference is that an
 	 * attach opens by replaying the turn so far. `replay_start` therefore wipes
-	 * this message back to empty before the replay lands — whatever it holds
+	 * this message back to empty before the replay lands, because whatever it holds
 	 * came from an earlier read of the same events, and rebuilding is what
 	 * makes reattaching idempotent.
 	 */
@@ -1801,6 +1816,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								// this is the first moment the id exists, and a
 								// refresh a second later needs it to find the run.
 								rememberActiveRun(data.session_id);
+								if (data.session_id !== initialSessionId) {
+									// A chat this new is not in the sidebar yet, and
+									// the list used to be refreshed only once the
+									// turn ended. Switching away before then left
+									// the run going with no way back to it.
+									fetchSessions();
+								}
 							}
 							continue;
 						}
@@ -1808,8 +1830,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						if (type === 'replay_end') {
 							replaying = false;
 							// The run's own done event is inside the replay when
-							// the turn is already over, so this flag — not the
-							// stream ending — is what says nothing more is coming.
+							// the turn is already over, so this flag, not the
+							// stream ending, is what says nothing more is coming.
 							if (data.running === false) ended = true;
 							continue;
 						}
@@ -1844,7 +1866,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			} catch (err: any) {
 				// Our own watchdog fired: report it as a timeout so the caller
 				// can rejoin the run. Any other abort is someone deliberately
-				// letting go — a stop, a session switch, an unmount — and must
+				// letting go (a stop, a session switch, an unmount) and must
 				// stay an abort.
 				if (!(err?.name === 'AbortError' && timedOut)) throw err;
 			} finally {
@@ -1853,7 +1875,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			return { sessionId: receivedSessionId, timedOut, ended };
 		},
-		[showToolCalls, onComplete, completeBindingPath, rememberActiveRun, setSessionId, props],
+		[
+			showToolCalls,
+			onComplete,
+			completeBindingPath,
+			rememberActiveRun,
+			fetchSessions,
+			setSessionId,
+			props,
+		],
 	);
 
 	/**
@@ -1994,7 +2024,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					// Still working? Rejoin the run, which replays the turn so
 					// far and then streams the rest live. Polling the
 					// transcript is the fallback for when there is no run left
-					// to rejoin — it finished and was forgotten, or the worker
+					// to rejoin: it finished and was forgotten, or the worker
 					// holding it died, in which case a PROCESSING session that
 					// has not been touched in a minute is simply over.
 					if (data.session?.status === 'PROCESSING') {
@@ -2053,9 +2083,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				const live: any[] = Array.isArray(data?.runs) ? data.runs : [];
 				if (!live.some(r => r.session_id === restoreSessionId)) {
 					// Over and done with while we were away.
-					forgetActiveRun();
+					forgetActiveRun(restoreSessionId);
 					return;
 				}
+				// The user got in first, typing and sending while this was still
+				// asking. Their new chat wins; restoring over it would replace
+				// what they are looking at with a different conversation.
+				if (isStreamingRef.current || sessionIdRef.current) return;
 				await handleSelectSession(restoreSessionId);
 			} catch {
 				// Offline or the service is down. Nothing to restore into.
@@ -2286,7 +2320,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				if (response.status === 409) {
 					// A run is already going on this session, started by another
 					// tab or by this one before a refresh. Rejoin it rather than
-					// putting a second agent on the same history — and hand the
+					// putting a second agent on the same history, and hand the
 					// message back, because it was not delivered.
 					setMessages(prev => prev.filter(m => m.id !== userMsg.id));
 					setDraftText(displayText ?? text);
@@ -2343,7 +2377,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				}
 			} catch (err: any) {
 				if (err.name === 'AbortError') {
-					// Someone let go on purpose — Stop, a session switch, an
+					// Someone let go on purpose: Stop, a session switch, an
 					// unmount. A dead connection never reaches here: it comes
 					// back as `timedOut` and is rejoined above.
 					return;
