@@ -430,8 +430,14 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		// Extend, never rotate. A new token value is a new hostname, which would
 		// change the canvases' origin and reload all three, losing scroll position
 		// and everything the previewed page holds in its own store. The grant dying
-		// shortly after the editor closes is the property that actually matters, and
-		// pushing the expiry forward gives that without touching the URL.
+		// shortly after the last editor holding it closes is the property that
+		// actually matters, and pushing the expiry forward gives that without
+		// touching the URL.
+		//
+		// The grant is shared: the server hands every window of this user on this app
+		// the same one, so several editors can be beating on one token. Harmless --
+		// each beat writes the same absolute expiry, and the grant simply lives as
+		// long as the last window open on it.
 		const beat = () => {
 			timer = setTimeout(async () => {
 				if (cancelled || !grant) return;
