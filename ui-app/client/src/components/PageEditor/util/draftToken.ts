@@ -28,7 +28,14 @@ function authHeaders(authToken: string | undefined) {
 }
 
 /**
- * One grant per editor session.
+ * The grant for this app, minted or reused.
+ *
+ * The server hands back whichever live grant this user already holds for the app
+ * rather than issuing a fresh one, so a refresh, a second window and a restored
+ * tab all end up on the same origin -- already resolved and cached by the gateway,
+ * and already carrying whatever the previewed pages put in browser storage for
+ * that origin. Which means this is a cheap call to make on every mount, and there
+ * is nothing worth caching on this side.
  *
  * Returns undefined rather than throwing when the mint is refused. Somebody with
  * read access can open the page editor, and their canvas should fall back to the

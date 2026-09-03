@@ -1647,6 +1647,91 @@ export default function PromptStyle({
 			opacity: 1;
 		}
 
+		/* The review bar, for a chat with no editor around it. Same tint as the
+		   notice above because it is the same news, but it stays until the work is
+		   published or discarded rather than being dismissible: the point of it is
+		   that unpublished work should not be easy to forget. */
+		${PREFIX} ._promptPendingBar {
+			max-width: 768px;
+			margin: 0 auto 8px;
+			padding: 10px 12px;
+			border-radius: 8px;
+			font-size: 12px;
+			line-height: 1.45;
+			background-color: ${t('accentTintColor', 'rgba(245, 158, 11, 0.1)')};
+			color: ${t('colorTwo', '#92400e')};
+		}
+
+		${PREFIX} ._promptPendingHead {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		${PREFIX} ._promptPendingCount {
+			flex: 1;
+			min-width: 0;
+		}
+
+		${PREFIX} ._promptPendingList {
+			margin: 4px 0 8px 22px;
+			opacity: 0.85;
+			word-break: break-word;
+		}
+
+		${PREFIX} ._promptPendingError {
+			margin: 0 0 8px 22px;
+			color: ${t('colorTwelve', '#dc3545')};
+		}
+
+		${PREFIX} ._promptPendingActions {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 6px;
+			margin-left: 22px;
+		}
+
+		${PREFIX} ._promptPendingConfirmText {
+			flex: 1 1 100%;
+			margin-bottom: 4px;
+		}
+
+		${PREFIX} ._promptPendingBtn {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			padding: 4px 9px;
+			border-radius: 999px;
+			border: 1px solid ${t('borderColorNine', 'rgba(146, 64, 14, 0.3)')};
+			background: transparent;
+			color: inherit;
+			font: inherit;
+			text-decoration: none;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._promptPendingBtn:hover {
+			background-color: ${t('accentTintColor', 'rgba(245, 158, 11, 0.18)')};
+		}
+
+		${PREFIX} ._promptPendingBtn:disabled {
+			opacity: 0.55;
+			cursor: default;
+		}
+
+		${PREFIX} ._promptPendingBtn._primary {
+			border-color: transparent;
+			background-color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('colorSeven', '#fff')};
+		}
+
+		${PREFIX} ._promptPendingBtn._danger {
+			border-color: ${t('colorTwelve', '#dc3545')};
+			color: ${t('colorTwelve', '#dc3545')};
+		}
+
 		/* ─── Input area ─── */
 		${PREFIX} ._promptInputWrapper {
 			padding: 0 16px 16px;
@@ -1779,6 +1864,8 @@ export default function PromptStyle({
 			min-height: 24px;
 			max-height: 200px;
 			line-height: 1.5;
+			/* InputBar switches this to auto once the box hits max-height. */
+			overflow-y: hidden;
 			color: ${t('fontColorOne', '#1a1a1a')};
 		}
 
