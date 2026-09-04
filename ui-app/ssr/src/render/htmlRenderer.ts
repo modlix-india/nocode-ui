@@ -167,7 +167,14 @@ function escapeHtml(str: string | undefined | null): string {
 const CRITICAL_CSS = `
 body { margin: 0; }
 .comp { box-sizing: border-box; position: relative; }
-.compPage { min-height: 100vh; }
+/* The ROOT page only. Every rule in this block outlives the first paint, because
+   nothing removes the <style>, and the client's own PageCss never writes a
+   min-height, so a single-class .compPage rule went on applying to every NESTED
+   page too. A SubPage pane is a .compPage inside the shell's .compPage, so 100vh
+   forced each pane to a full viewport below the shell header and pushed the
+   document down by the header's height: a scrollbar on workspace, org and docs,
+   which lock their height, and only on the environments serving this block. */
+#app > .comp.compPage { min-height: 100vh; }
 .compGrid { display: flex; flex-direction: column; }
 .compTable { display: flex; flex-direction: row; }
 .compTableColumns { display: table; border-spacing: 0; width: 100%; }
