@@ -269,13 +269,25 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		else setSearchText(value);
 	};
 
+	// Debounced server-side search. The ref remembers the text the event last ran for,
+	// so the same text never searches twice.
+	//
+	// It used to be assigned the searchEvent OBJECT inside the runEvent argument list
+	// (`currentSearchText.current = searchEvent`), against a ref declared as a string
+	// and compared to searchText one line above. So after the first search the guard
+	// could never be false again, and because the dependency list includes
+	// locationHistory and props.pageDefinition -- whose identity changes on any
+	// re-render of the page -- an unrelated re-render re-fired the search 500ms later
+	// with text that had not changed. Every one of those refires re-fetched the option
+	// list, which is what could drop a selected-but-unsearched row out of it.
 	React.useEffect(() => {
 		if (!onSearch) return;
 		const timer = setTimeout(() => {
+			if (searchText === currentSearchText.current) return;
+			currentSearchText.current = searchText;
 			(async () =>
-				searchText !== currentSearchText.current &&
 				await runEvent(
-					currentSearchText.current = searchEvent,
+					searchEvent,
 					key,
 					context.pageName,
 					locationHistory,
@@ -478,12 +490,25 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		return Array.isArray(selectedDataKey) ? [...selectedDataKey] : [selectedDataKey];
 	}, [moveSelectedToTop, showDropdown]);
 
-	let dropdownContainer = null;
-	if (showDropdown && wrapperRect) {
-		let options =
+	// The list actually on screen, in ONE place. The panel and the arrow-key handler
+	// each used to decide this for themselves and had drifted: the handler tested
+	// `searchText` alone, without `&& !onSearch`. With an onSearch event the server owns
+	// the filtering and searchDropdownData is never populated (the local filter effect
+	// returns early), so the moment anything was typed the handler switched to an
+	// undefined list, found no length, cleared the hover key and returned. Arrow-key
+	// navigation was dead in every server-searched dropdown, which is all of the client
+	// pickers. Sharing the decision is what stops it drifting again.
+	const visibleOptions = useMemo(
+		() =>
 			searchDropdownData?.length || (searchText && !onSearch)
 				? searchDropdownData
-				: dropdownData;
+				: dropdownData,
+		[searchDropdownData, searchText, onSearch, dropdownData],
+	);
+
+	let dropdownContainer = null;
+	if (showDropdown && wrapperRect) {
+		let options = visibleOptions;
 
 		if (sortOrder && options?.length) {
 			options = [...options].sort((a, b) => {
@@ -730,10 +755,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {
 					if (!showDropdown) setShowDropdown(true);
-					const data =
-						searchDropdownData?.length || searchText
-							? searchDropdownData
-							: dropdownData;
+					const data = visibleOptions;
 					if (!data?.length) {
 						setHoverKey(undefined);
 						return;
