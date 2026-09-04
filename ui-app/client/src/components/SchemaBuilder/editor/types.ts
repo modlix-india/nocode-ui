@@ -1,5 +1,6 @@
 import { Repository, Schema } from '@fincity/kirun-js';
 import { ReactNode } from 'react';
+import { SearchIndex } from './searchUtils';
 
 export type SchemaEditorMode = 'COMPACT' | 'EXTENDED' | 'JSON';
 
@@ -16,6 +17,12 @@ export interface TreeNodeProps {
 	label?: string;
 	lockedType?: string;
 	showNameNamespace?: boolean;
+	/**
+	 * False for the sub-schema editors embedded in details cards (additionalProperties,
+	 * propertyNames, patternProperties, contains, not, anyOf entries). childNodesOf never yields
+	 * their paths, so without this a narrowing filter would blank them out.
+	 */
+	filterable?: boolean;
 	onDelete?: () => void;
 	onMoveUp?: () => void;
 	onMoveDown?: () => void;
@@ -25,6 +32,8 @@ export interface TreeContext {
 	mode: 'COMPACT' | 'EXTENDED';
 	readOnly: boolean;
 	schemaRepository: Repository<Schema>;
+	search: SearchIndex;
+	searchQuery: string;
 	updateAt: (path: string, v: any) => void;
 	isExpanded: (path: string, depth: number) => boolean;
 	toggleExpand: (path: string) => void;

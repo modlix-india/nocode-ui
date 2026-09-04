@@ -12,13 +12,15 @@ export default function TypeSelector({
 	onChange,
 	readOnly = false,
 	lockedType,
-	disabledReason,
+	inertReason,
 }: Readonly<{
 	types: string[];
 	onChange: (types: string[]) => void;
 	readOnly?: boolean;
 	lockedType?: string;
-	disabledReason?: string;
+	// The type is still editable when it is inert; it is marked, not disabled, because clearing
+	// the keyword that overrides it is how a user brings it back to life.
+	inertReason?: string;
 }>) {
 	const [showMultiple, setShowMultiple] = useState(false);
 	const popoverRef = useRef<HTMLDivElement>(null);
@@ -75,10 +77,10 @@ export default function TypeSelector({
 	return (
 		<div className="_typeSelectorContainer">
 			<select
-				className="_typeSelector"
+				className={`_typeSelector ${inertReason ? '_inert' : ''}`}
 				value={selectValue}
-				disabled={readOnly || !!disabledReason}
-				title={disabledReason}
+				disabled={readOnly}
+				title={inertReason}
 				onChange={e => {
 					const v = e.target.value;
 					if (v === MULTIPLE) setShowMultiple(true);
