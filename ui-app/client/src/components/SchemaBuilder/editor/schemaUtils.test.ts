@@ -2,8 +2,11 @@ import {
 	addProperty,
 	applySchemaChange,
 	childNodesOf,
+	diffSchemas,
 	getEffectiveTypes,
 	joinPath,
+	mergeSchemas,
+	pickRootIdentity,
 	removeProperty,
 	renameProperty,
 	setSchemaTypes,
@@ -243,5 +246,175 @@ describe('childNodesOf', () => {
 	test('non-objects have no children', () => {
 		expect(childNodesOf(undefined, '')).toEqual([]);
 		expect(childNodesOf({ type: 'STRING' }, '')).toEqual([]);
+	});
+});
+
+describe('mergeSchemas', () => {
+	const EXISTING = {
+		type: 'OBJECT',
+		properties: {
+			name: { type: 'STRING', description: 'The full name', minLength: 2 },
+			nested: { type: 'OBJECT', properties: { a: { type: 'STRING' } } },
+		},
+		required: ['name'],
+	};
+
+	test('adds missing properties and leaves existing ones untouched', () => {
+		const out = mergeSchemas(
+			deepFreeze(EXISTING),
+			deepFreeze({
+				type: 'OBJECT',
+				properties: { name: { type: 'INTEGER' }, age: { type: 'INTEGER' } },
+			}),
+		);
+
+		// Hand-written work survives even when the sample disagrees about the type.
+		expect(out.properties.name).toEqual(EXISTING.properties.name);
+		expect(out.properties.age).toEqual({ type: 'INTEGER' });
+		expect(out.required).toEqual(['name']);
+	});
+
+	test('existing property order is preserved, new keys append', () => {
+		const out = mergeSchemas(
+			deepFreeze(EXISTING),
+			deepFreeze({
+				type: 'OBJECT',
+				properties: { age: { type: 'INTEGER' } },
+			}),
+		);
+		expect(Object.keys(out.properties)).toEqual(['name', 'nested', 'age']);
+	});
+
+	test('recurses into nested properties', () => {
+		const out = mergeSchemas(
+			deepFreeze(EXISTING),
+			deepFreeze({
+				type: 'OBJECT',
+				properties: { nested: { type: 'OBJECT', properties: { b: { type: 'INTEGER' } } } },
+			}),
+		);
+		expect(Object.keys(out.properties.nested.properties)).toEqual(['a', 'b']);
+	});
+
+	test('a ref node is returned untouched and not descended into', () => {
+		const existing = deepFreeze({ type: 'OBJECT', properties: { a: { ref: 'my.Thing' } } });
+		const out = mergeSchemas(
+			existing,
+			deepFreeze({
+				type: 'OBJECT',
+				properties: { a: { type: 'OBJECT', properties: { x: { type: 'STRING' } } } },
+			}),
+		);
+		expect(out.properties.a).toEqual({ ref: 'my.Thing' });
+	});
+
+	test('tuple items are left alone', () => {
+		const existing = deepFreeze({ type: 'ARRAY', items: [{ type: 'STRING' }] });
+		const out = mergeSchemas(
+			existing,
+			deepFreeze({ type: 'ARRAY', items: { type: 'INTEGER' } }),
+		);
+		expect(out.items).toEqual([{ type: 'STRING' }]);
+	});
+
+	test('single items merge recursively', () => {
+		const out = mergeSchemas(
+			deepFreeze({
+				type: 'ARRAY',
+				items: { type: 'OBJECT', properties: { a: { type: 'STRING' } } },
+			}),
+			deepFreeze({
+				type: 'ARRAY',
+				items: { type: 'OBJECT', properties: { b: { type: 'STRING' } } },
+			}),
+		);
+		expect(Object.keys(out.items.properties).sort()).toEqual(['a', 'b']);
+	});
+
+	test('an absent existing side yields the incoming schema', () => {
+		expect(mergeSchemas(undefined, { type: 'STRING' })).toEqual({ type: 'STRING' });
+		expect(mergeSchemas({ type: 'STRING' }, undefined)).toEqual({ type: 'STRING' });
+	});
+
+	test('never mutates its inputs', () => {
+		const existing = deepFreeze({ type: 'OBJECT', properties: { a: { type: 'STRING' } } });
+		mergeSchemas(
+			existing,
+			deepFreeze({ type: 'OBJECT', properties: { b: { type: 'STRING' } } }),
+		);
+		expect(Object.keys(existing.properties)).toEqual(['a']);
+	});
+});
+
+describe('diffSchemas', () => {
+	test('reports added, retyped and unchanged separately', () => {
+		const diff = diffSchemas(
+			deepFreeze({
+				type: 'OBJECT',
+				properties: { a: { type: 'STRING' }, b: { type: 'STRING' } },
+			}),
+			deepFreeze({
+				type: 'OBJECT',
+				properties: {
+					a: { type: 'STRING' },
+					b: { type: 'INTEGER' },
+					c: { type: 'STRING' },
+				},
+			}),
+		);
+		expect(diff.added).toEqual(['c']);
+		expect(diff.retyped).toEqual([{ path: 'b', from: 'STRING', to: 'INTEGER' }]);
+		// The three buckets are disjoint, so a retyped property is not also unchanged.
+		expect(diff.unchanged).toEqual(['a']);
+	});
+
+	test('counts every property under a newly added subtree', () => {
+		const diff = diffSchemas(
+			deepFreeze({ type: 'OBJECT' }),
+			deepFreeze({
+				type: 'OBJECT',
+				properties: { a: { type: 'OBJECT', properties: { x: { type: 'STRING' } } } },
+			}),
+		);
+		expect(diff.added).toEqual(['a', 'a.x']);
+	});
+
+	test('a ref node blocks additions beneath it', () => {
+		const diff = diffSchemas(
+			deepFreeze({ type: 'OBJECT', properties: { a: { ref: 'my.Thing' } } }),
+			deepFreeze({
+				type: 'OBJECT',
+				properties: { a: { type: 'OBJECT', properties: { x: { type: 'STRING' } } } },
+			}),
+		);
+		expect(diff.added).toEqual([]);
+	});
+
+	test('an empty sample changes nothing', () => {
+		const diff = diffSchemas(
+			deepFreeze({ type: 'OBJECT', properties: { a: {} } }),
+			deepFreeze({}),
+		);
+		expect(diff.added).toEqual([]);
+		expect(diff.retyped).toEqual([]);
+	});
+});
+
+describe('pickRootIdentity', () => {
+	test('carries the fields a wholesale replace would otherwise destroy', () => {
+		expect(
+			pickRootIdentity({
+				name: 'Address',
+				namespace: 'myapp',
+				version: 3,
+				type: 'OBJECT',
+				properties: { a: {} },
+			}),
+		).toEqual({ name: 'Address', namespace: 'myapp', version: 3 });
+	});
+
+	test('a non-object has no identity', () => {
+		expect(pickRootIdentity(undefined)).toEqual({});
+		expect(pickRootIdentity(5)).toEqual({});
 	});
 });

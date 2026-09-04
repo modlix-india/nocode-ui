@@ -14,6 +14,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import SchemaEditor from './editor/SchemaEditor';
+import { isSchemaObject } from './editor/precedence';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaBuilderProperties';
 
 let UI_SCHEMA_REPO: UISchemaRepository;
@@ -87,13 +88,14 @@ export default function SchemaBuilder(props: Readonly<ComponentProps>) {
 				rootType={rootSchemaType}
 				onChange={v => {
 					if (isReadonly) return;
-					if (rootSchemaType) {
-						v.type = rootSchemaType;
-					}
-					if (isNullValue(v.version)) {
-						v.version = 1;
-					}
-					setData(bindingPathPath!, v, pageExtractor.getPageName());
+					// JSON mode hands the raw JSON.parse result straight through, so this can be
+					// a scalar or an array. Assigning to either is wrong: on a primitive it
+					// throws, and on an array the keys are silently dropped by JSON.stringify.
+					if (!isSchemaObject(v)) return;
+					const next = { ...v };
+					if (rootSchemaType) next.type = rootSchemaType;
+					if (isNullValue(next.version)) next.version = 1;
+					setData(bindingPathPath!, next, pageExtractor.getPageName());
 				}}
 				schemaRepository={schemaRepository}
 				showNameNamespace={true}
