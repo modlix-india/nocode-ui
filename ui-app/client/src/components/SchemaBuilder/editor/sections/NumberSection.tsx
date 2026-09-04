@@ -2,6 +2,14 @@ import React from 'react';
 import NumberField from '../../components/NumberField';
 import { relChange, TreeContext } from '../types';
 
+const FIELDS: Array<[string, string]> = [
+	['multipleOf', 'Multiple Of'],
+	['minimum', 'Minimum'],
+	['maximum', 'Maximum'],
+	['exclusiveMinimum', 'Exclusive Minimum'],
+	['exclusiveMaximum', 'Exclusive Maximum'],
+];
+
 export default function NumberSection({
 	schema,
 	path,
@@ -11,36 +19,16 @@ export default function NumberSection({
 
 	return (
 		<>
-			<NumberField
-				label="Multiple Of"
-				value={schema?.multipleOf}
-				propPath="multipleOf"
-				onChange={fieldChange}
-			/>
-			<NumberField
-				label="Minimum"
-				value={schema?.minimum}
-				propPath="minimum"
-				onChange={fieldChange}
-			/>
-			<NumberField
-				label="Maximum"
-				value={schema?.maximum}
-				propPath="maximum"
-				onChange={fieldChange}
-			/>
-			<NumberField
-				label="Exclusive Minimum"
-				value={schema?.exclusiveMinimum}
-				propPath="exclusiveMinimum"
-				onChange={fieldChange}
-			/>
-			<NumberField
-				label="Exclusive Maximum"
-				value={schema?.exclusiveMaximum}
-				propPath="exclusiveMaximum"
-				onChange={fieldChange}
-			/>
+			{FIELDS.map(([key, label]) => (
+				<NumberField
+					key={key}
+					label={label}
+					value={schema?.[key]}
+					propPath={key}
+					onChange={fieldChange}
+					readOnly={ctx.readOnly}
+				/>
+			))}
 		</>
 	);
 }
