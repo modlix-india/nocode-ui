@@ -140,13 +140,24 @@ function generateETag(data: CachedPageData): string {
 //   ""        -> "authzump.ai"
 //   ".dev"    -> "dev.authzump.ai"
 //   ".stage"  -> "stage.authzump.ai"
-//   ".local"  -> "local.authzump.ai"
+//   ".local"  -> "authzump.local.modlix.com"
+//
+// Local is deliberately not "local.authzump.ai". Local hosts are <app>.local.modlix.com
+// (dnsmasq wildcards that suffix to 127.0.0.1 on a developer machine); the .ai names
+// belong to the deployed environments only. "local.authzump.ai" does resolve, to prod-lb,
+// where it is a stray vhost carrying appCode "nothing", so pointing the beacon there
+// silently broke all local SSO.
+//
+// Must stay in step with IndexHTMLService.deriveBeaconHost in nocode-saas/ui.
+const LOCAL_ENV = 'local';
+
 function deriveBeaconHost(appCodeSuffix: string | undefined | null): string {
 	if (!appCodeSuffix) return 'authzump.ai';
 	const trimmed = appCodeSuffix.startsWith('.') ? appCodeSuffix.slice(1) : appCodeSuffix;
 	const dotIdx = trimmed.indexOf('.');
 	const env = dotIdx >= 0 ? trimmed.slice(0, dotIdx) : trimmed;
-	return env ? `${env}.authzump.ai` : 'authzump.ai';
+	if (!env) return 'authzump.ai';
+	return env === LOCAL_ENV ? `authzump.${env}.modlix.com` : `${env}.authzump.ai`;
 }
 
 function escapeHtml(str: string | undefined | null): string {
