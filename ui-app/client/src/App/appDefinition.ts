@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { shortUUID } from '../util/shortUUID';
-import { ssoAttempt } from '../sso/ssoModule';
+import { consumeSsoArrival, hasAskedBeacon, isSsoEnabled, ssoBounce } from '../sso/ssoModule';
 import {
 	currentAppCode,
 	readThemeCookie,
@@ -30,6 +30,10 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 		TOKEN_EXPIRY = 'designMode_AuthTokenExpiry';
 		TOKEN_LANGUAGE = 'designMode_currentLanguage';
 	}
+
+	// A return from the beacon carries the session on the URL, and has to be banked before
+	// the token is read below. It also scrubs the one-time token off the address bar.
+	await consumeSsoArrival();
 
 	const authToken = localStorage.getItem(TOKEN_NAME);
 	const authExpiry = localStorage.getItem(TOKEN_EXPIRY);
@@ -76,19 +80,16 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 	const cookieTheme = readThemeCookie(appCode);
 	if (!urlAppCode) personalizedTheme = await readThemePersonalization(appCode);
 
-	if (
-		!auth &&
-		application?.properties?.sso3 === true
-	) {
-		// On success the iframe chain has already written AuthToken to localStorage
-		// on this origin. Whatever the platform decides to do next (reload, retry
-		// verifyToken, render unauthenticated) is the caller's choice — the
-		// bootstrap doesn't second-guess it here.
-		ssoAttempt({
+	// Cold start with no session: ask the beacon, once. `isSsoEnabled` rather than a bare
+	// `properties.sso3` check, so design mode is excluded here the way it is everywhere else;
+	// the old check fired inside the appbuilder design-mode iframe.
+	if (!auth && isSsoEnabled(application) && !hasAskedBeacon()) {
+		// Navigates, so nothing below this runs. The browser comes back to this same URL
+		// carrying either a one-time token or `sso=none`, and `consumeSsoArrival` above
+		// banks it on that second pass.
+		ssoBounce({
 			appCode: application.appCode,
 			clientCode: application.urlClientCode ?? '',
-		}).then(result => {
-			console.log('SSO attempt result:', result);
 		});
 	}
 	if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
