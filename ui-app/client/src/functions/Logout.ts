@@ -12,6 +12,7 @@ import axios from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
+import { clearBeaconMark } from '../sso/ssoModule';
 
 const SIGNATURE = new FunctionSignature('Logout')
 	.setParameters(new Map([
@@ -38,6 +39,10 @@ export class Logout extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
 		try {
 			const token = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
+
+			// Without this, signing out here and back in on another app leaves this origin
+			// convinced it already asked the beacon, so the new session is never picked up.
+			clearBeaconMark();
 
 			setData('Store.auth', undefined, undefined, true);
 			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, undefined, undefined, true);

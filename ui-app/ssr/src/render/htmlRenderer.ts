@@ -140,13 +140,24 @@ function generateETag(data: CachedPageData): string {
 //   ""        -> "authzump.ai"
 //   ".dev"    -> "dev.authzump.ai"
 //   ".stage"  -> "stage.authzump.ai"
-//   ".local"  -> "local.authzump.ai"
+//   ".local"  -> "authzump.local.modlix.com"
+//
+// Local is deliberately not "local.authzump.ai". Local hosts are <app>.local.modlix.com
+// (dnsmasq wildcards that suffix to 127.0.0.1 on a developer machine); the .ai names
+// belong to the deployed environments only. "local.authzump.ai" does resolve, to prod-lb,
+// where it is a stray vhost carrying appCode "nothing", so pointing the beacon there
+// silently broke all local SSO.
+//
+// Must stay in step with IndexHTMLService.deriveBeaconHost in nocode-saas/ui.
+const LOCAL_ENV = 'local';
+
 function deriveBeaconHost(appCodeSuffix: string | undefined | null): string {
 	if (!appCodeSuffix) return 'authzump.ai';
 	const trimmed = appCodeSuffix.startsWith('.') ? appCodeSuffix.slice(1) : appCodeSuffix;
 	const dotIdx = trimmed.indexOf('.');
 	const env = dotIdx >= 0 ? trimmed.slice(0, dotIdx) : trimmed;
-	return env ? `${env}.authzump.ai` : 'authzump.ai';
+	if (!env) return 'authzump.ai';
+	return env === LOCAL_ENV ? `authzump.${env}.modlix.com` : `${env}.authzump.ai`;
 }
 
 function escapeHtml(str: string | undefined | null): string {
@@ -167,7 +178,14 @@ function escapeHtml(str: string | undefined | null): string {
 const CRITICAL_CSS = `
 body { margin: 0; }
 .comp { box-sizing: border-box; position: relative; }
-.compPage { min-height: 100vh; }
+/* The ROOT page only. Every rule in this block outlives the first paint, because
+   nothing removes the <style>, and the client's own PageCss never writes a
+   min-height, so a single-class .compPage rule went on applying to every NESTED
+   page too. A SubPage pane is a .compPage inside the shell's .compPage, so 100vh
+   forced each pane to a full viewport below the shell header and pushed the
+   document down by the header's height: a scrollbar on workspace, org and docs,
+   which lock their height, and only on the environments serving this block. */
+#app > .comp.compPage { min-height: 100vh; }
 .compGrid { display: flex; flex-direction: column; }
 .compTable { display: flex; flex-direction: row; }
 .compTableColumns { display: table; border-spacing: 0; width: 100%; }
