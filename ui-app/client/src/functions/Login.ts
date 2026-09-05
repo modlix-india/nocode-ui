@@ -153,27 +153,34 @@ export class Login extends AbstractFunction {
 			setData('Store.application', undefined, undefined, true);
 			setData('Store.functionExecutions', {});
 
-			// The beacon seed rides the navigation the page was going to do anyway. Route it
-			// through the beacon, which is top-level there, so it writes a genuine first-party
-			// session and then drops the user exactly where the page asked for. Costs no extra
-			// hop; skipping it would mean the next app has nothing to find.
-			if (redirectUrl) {
-				const destination = absoluteDestination(redirectUrl);
+			// Seed the beacon on EVERY successful login when the app is enrolled, not only
+			// when the page named a destination. Seeding is what lets the next app sign this
+			// user in without asking again, and gating it on a parameter would mean it never
+			// happened for any page that had not been edited.
+			//
+			// It rides the navigation rather than adding one: the hop goes through the beacon,
+			// which is top-level there so it writes a genuine first-party session, and lands on
+			// `redirectUrl` when the page gave one, otherwise back on this same page.
+			//
+			// Note the consequence of coming back here: this leaves the page, so a `Navigate`
+			// step after Login in the page's own function does NOT run. Pass `redirectUrl`
+			// instead of that step.
+			const destination = redirectUrl ? absoluteDestination(redirectUrl) : window.location.href;
 
-				if (ssoOn) {
-					const seed = await seedTarget(destination, headers, response.data?.accessToken);
-					if (seed) {
-						window.location.replace(seed);
-						return new FunctionOutput([
-							EventResult.outputOf(new Map([['data', response.data]])),
-						]);
-					}
+			if (ssoOn) {
+				const seed = await seedTarget(destination, headers, response.data?.accessToken);
+				if (seed) {
+					window.location.replace(seed);
+					return new FunctionOutput([
+						EventResult.outputOf(new Map([['data', response.data]])),
+					]);
 				}
-
-				// SSO off, or the beacon token could not be minted. Go straight there: a login
-				// that worked must not strand the user because the beacon did not.
-				window.location.replace(destination);
 			}
+
+			// SSO off, or the beacon token could not be minted. A login that worked must not
+			// strand the user because the beacon did not, so go straight to the destination,
+			// and when no destination was named leave the page exactly as it behaved before.
+			if (redirectUrl) window.location.replace(destination);
 
 			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
 		} catch (err: any) {
