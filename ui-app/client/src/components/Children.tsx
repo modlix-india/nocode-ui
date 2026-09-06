@@ -47,12 +47,28 @@ function ComponentWrapper({
 	);
 }
 
+/**
+ * The page definition for the current URL, together with the page name that URL resolves to.
+ *
+ * Both are returned because they are NOT always the same string. When the platform bounces an
+ * unauthenticated request it serves the LOGIN page's definition under the REQUESTED url, so
+ * `Store.urlDetails.pageName` is (say) `allTools` while `pageDefinition.name` is `newHome`.
+ * The unwrapped render path keys `context.pageName` off the url name; the shell-wrapped path
+ * used to key it off the definition name, and `Page.tsx`'s onLoad listener drops the event
+ * when `Store.urlDetails.pageName !== context.pageName`. So a login page with
+ * `wrapShell: true` never ran its own onLoad in exactly the redirect case it exists for, and
+ * its `Page.*` writes landed under a different store key. Returning the url name here is what
+ * makes wrapped and unwrapped agree.
+ */
 const getOrLoadPageDefinition = (location: any) => {
 	let { pageName } = processLocation(location);
 	if (!pageName) {
 		pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
 	}
-	return getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
+	return {
+		urlPageName: pageName,
+		definition: getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []),
+	};
 };
 
 function processDefinitionLocationHistory(
@@ -161,7 +177,8 @@ function Children({
 					if (!Comp) Comp = Nothing.component;
 					if (!Comp) return undefined;
 					if (e.type === 'Page') {
-						const pageDef = getOrLoadPageDefinition(location);
+						const { definition: pageDef, urlPageName } =
+							getOrLoadPageDefinition(location);
 						if (pageDef)
 							return (
 								<Page
@@ -169,7 +186,7 @@ function Children({
 									pageDefinition={pageDef}
 									key={pageDef.name}
 									context={{
-										pageName: pageDef.name,
+										pageName: urlPageName ?? pageDef.name,
 										level: context.level + 1,
 										shellPageName: context.pageName,
 									}}

@@ -9,6 +9,7 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import { getHref } from '../components/util/getHref';
+import { isLeavingForBeacon } from '../sso/ssoModule';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 
 const SIGNATURE = new FunctionSignature('Navigate')
@@ -32,6 +33,13 @@ export class Navigate extends AbstractFunction {
 		const force = context.getArguments()?.get('force');
 		const removeThisPageFromHistory = context.getArguments()?.get('removeThisPageFromHistory');
 		const url = getHref(linkPath, window.location);
+
+		// A beacon hop is already committed and this page is on its way out. Navigate's
+		// history dance (pushState, back, then a forward 100ms later) would cancel that
+		// hop, and because it is a race the failure is intermittent and silent: signed in
+		// here, no session shared with anything else. Pages routinely place Navigate beside
+		// Login rather than after it, so the two run at once.
+		if (isLeavingForBeacon()) return new FunctionOutput([EventResult.outputOf(new Map())]);
 
 		if (target === '_self' && !force && !url?.startsWith("http")) {	
 			if (removeThisPageFromHistory) {

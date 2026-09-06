@@ -81,9 +81,10 @@ describe('cold-start bounce', () => {
 		mod.beginSsoBounce({ appCode: 'leadzump', clientCode: 'SYSTEM' });
 		expect(mod.hasAskedBeacon()).toBe(true);
 
-		// Two minutes later the question is worth asking again: the user may have signed in
-		// on another app in the meantime, and a permanent mark would strand them anonymous.
-		const later = Date.now() + 2 * 60 * 1000;
+		// Half a minute later the question is worth asking again. This is the real journey:
+		// open app B anonymous, go and sign in on app A, come back to B. A window long enough
+		// to cover that strands the user, which is what 60s did.
+		const later = Date.now() + 30 * 1000;
 		jest.spyOn(Date, 'now').mockReturnValue(later);
 		expect(mod.hasAskedBeacon()).toBe(false);
 		jest.restoreAllMocks();
@@ -117,6 +118,121 @@ describe('cold-start bounce', () => {
 
 		(globalThis as any).isDesignMode = true;
 		expect(mod.hasAskedBeacon()).toBe(false);
+	});
+});
+
+describe('the beacon hop cannot be cancelled by a concurrent Navigate', () => {
+	beforeEach(() => {
+		localStorage.clear();
+		(globalThis as any).__SSO_BEACON_HOST__ = BEACON;
+		(globalThis as any).isDesignMode = false;
+	});
+
+	it('is not flagged before a hop is committed', () => {
+		const mod = loadModule();
+		expect(mod.isLeavingForBeacon()).toBe(false);
+	});
+
+	// Login.ts builds the URL with beginSsoSeed and navigates ITSELF rather than calling
+	// ssoSeedBeacon, so the claim has to happen in the builder or the login seed, which is
+	// the whole reason the guard exists, is left unprotected.
+	it('beginSsoSeed claims the page, which is the path Login.ts actually takes', () => {
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/');
+
+		expect(mod.isLeavingForBeacon()).toBe(false);
+		mod.beginSsoSeed('ott-123', 'https://leadzump.local.modlix.com/deals');
+		expect(mod.isLeavingForBeacon()).toBe(true);
+	});
+
+	it('the wrapper claims it too', () => {
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/');
+
+		expect(mod.isLeavingForBeacon()).toBe(false);
+		mod.ssoSeedBeacon('ott-123', 'https://leadzump.local.modlix.com/deals');
+		// Pages put Navigate BESIDE Login, so it runs while this hop is in flight. Its
+		// pushState/back/forward would cancel the hop and silently lose the shared session.
+		expect(mod.isLeavingForBeacon()).toBe(true);
+	});
+
+	it('a cold-start bounce claims it too, via its builder', () => {
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/');
+
+		mod.beginSsoBounce({ appCode: 'leadzump', clientCode: 'SYSTEM' });
+		expect(mod.isLeavingForBeacon()).toBe(true);
+	});
+
+	it('does not claim the page when there is no beacon to go to', () => {
+		(globalThis as any).__SSO_BEACON_HOST__ = undefined;
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/');
+
+		mod.beginSsoSeed('ott-123');
+		mod.beginSsoBounce({ appCode: 'leadzump', clientCode: 'SYSTEM' });
+		expect(mod.isLeavingForBeacon()).toBe(false);
+	});
+});
+
+describe('signing out must reach the beacon', () => {
+	beforeEach(() => {
+		localStorage.clear();
+		(globalThis as any).__SSO_BEACON_HOST__ = BEACON;
+		(globalThis as any).isDesignMode = false;
+	});
+
+	it('goes to the beacon to forget it, and comes back where logout was headed', () => {
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/deals');
+
+		const href = mod.beginSsoLogout('leadzump', 'https://leadzump.local.modlix.com/');
+		expect(href).not.toBeNull();
+
+		const u = new URL(href!);
+		expect(u.host).toBe(BEACON);
+		expect(u.pathname).toBe('/hassso');
+		expect(u.searchParams.get('mode')).toBe('logout');
+		expect(u.searchParams.get('targetAppCode')).toBe('leadzump');
+		expect(u.searchParams.get('returnUrl')).toBe('https://leadzump.local.modlix.com/');
+	});
+
+	it('returns to the current page when logout named no destination', () => {
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/whatsappInbox');
+
+		const u = new URL(mod.beginSsoLogout('leadzump')!);
+		expect(u.searchParams.get('returnUrl')).toBe(
+			'https://leadzump.local.modlix.com/whatsappInbox',
+		);
+	});
+
+	it('clears the ask-mark, so the next visit re-asks instead of assuming', () => {
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/');
+
+		mod.beginSsoBounce({ appCode: 'leadzump', clientCode: 'SYSTEM' });
+		expect(mod.hasAskedBeacon()).toBe(true);
+
+		mod.beginSsoLogout('leadzump');
+		expect(mod.hasAskedBeacon()).toBe(false);
+	});
+
+	it('claims the page so a concurrent Navigate cannot cancel the hop', () => {
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/');
+
+		expect(mod.isLeavingForBeacon()).toBe(false);
+		mod.beginSsoLogout('leadzump');
+		expect(mod.isLeavingForBeacon()).toBe(true);
+	});
+
+	it('does nothing when the app is not enrolled', () => {
+		(globalThis as any).__SSO_BEACON_HOST__ = undefined;
+		const mod = loadModule();
+		setLocation('https://leadzump.local.modlix.com/');
+
+		expect(mod.beginSsoLogout('leadzump')).toBeNull();
 	});
 });
 
