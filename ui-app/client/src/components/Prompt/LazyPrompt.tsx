@@ -30,7 +30,7 @@ import { InlineDataRenderer } from './components/InlineDataRenderer';
 import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
-import { builderPageUrl } from './builderUrl';
+import { getHref } from '../util/getHref';
 import { PagePreview, type PreviewSurface } from './PagePreview';
 import { serialiseActiveData } from './editorContext';
 import {
@@ -3039,7 +3039,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								// `done` event.
 								<a
 									className="_promptOpenFullButton"
-									href={builderPageUrl(openFullPageName, sessionId)}
+									href={getHref(
+										`/${openFullPageName}/${sessionId}`,
+										window.location,
+									)}
 									target="_blank"
 									rel="noopener noreferrer"
 									title="Continue this chat on a full page"

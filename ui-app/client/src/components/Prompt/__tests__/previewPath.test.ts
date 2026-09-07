@@ -1,4 +1,4 @@
-import { parsePreviewPath } from '../PagePreview';
+import { pagePathOnHost, parsePreviewPath } from '../PagePreview';
 
 /**
  * The path box in the preview bar. Whatever someone types there means "show me
@@ -7,9 +7,10 @@ import { parsePreviewPath } from '../PagePreview';
  *
  * The pasted URL is the one with teeth. It carries an origin, and on a draft
  * preview that origin is a MINTED TOKEN hostname with a lifetime -- honouring it
- * would pin the pane to a host that stops resolving, and would also override the
- * Draft/Live toggle sitting right next to the box. So the origin is dropped and
- * the surface stays the toggle's business.
+ * as the frame's host would pin the pane to something that stops resolving. So it
+ * is reported but never used as the host: the caller matches it against the two
+ * surfaces and moves the toggle, which is what makes editing the host half of a
+ * complete URL do something truthful.
  */
 
 const APP = 'monkbars';
@@ -23,6 +24,7 @@ describe('parsePreviewPath', () => {
 			clientCode: CLIENT,
 			pageName: 'sampleAI',
 			suffix: '',
+			origin: '',
 		});
 	});
 
@@ -36,16 +38,27 @@ describe('parsePreviewPath', () => {
 			clientCode: 'ACME',
 			pageName: 'dealDetail',
 			suffix: '',
+			origin: '',
 		});
 	});
 
-	it('drops the origin of a pasted URL, so the surface stays the toggle’s call', () => {
+	it('reports a pasted origin without letting it become the host', () => {
+		// Reported so the caller can move the Draft/Live toggle to match, since the
+		// box shows complete URLs and editing the host half has to mean something.
+		// Never used as the frame's host: a draft origin is a token that expires.
 		expect(parse('https://t-9f2c.modlix.com/monkbars/SYSTEM/page/sampleAI')).toEqual({
 			appCode: APP,
 			clientCode: CLIENT,
 			pageName: 'sampleAI',
 			suffix: '',
+			origin: 'https://t-9f2c.modlix.com',
 		});
+	});
+
+	it('reports the origin of a live URL too, port and all', () => {
+		expect(parse('http://localhost:1234/monkbars/SYSTEM/page/sampleAI')?.origin).toBe(
+			'http://localhost:1234',
+		);
 	});
 
 	it('keeps a query string, because a page can need parameters', () => {
@@ -54,6 +67,7 @@ describe('parsePreviewPath', () => {
 			clientCode: CLIENT,
 			pageName: 'dealDetail',
 			suffix: '?id=42#top',
+			origin: '',
 		});
 		expect(parse('https://x.modlix.com/a/B/page/c?d=1')?.suffix).toBe('?d=1');
 	});
@@ -66,6 +80,7 @@ describe('parsePreviewPath', () => {
 			clientCode: CLIENT,
 			pageName: 'sampleAI',
 			suffix: '',
+			origin: '',
 		});
 	});
 
@@ -79,5 +94,46 @@ describe('parsePreviewPath', () => {
 		expect(parse('   ')).toBeUndefined();
 		expect(parse('///')).toBeUndefined();
 		expect(parse('https://t-9f2c.modlix.com')).toBeUndefined();
+	});
+});
+
+/**
+ * Which shape a page's path takes depends on WHICH HOST is about to serve it, and
+ * getting it wrong is silent: on an app host the first segment is the page name,
+ * so the gateway's `/<app>/<client>/page/<name>` asks for a page named after the
+ * app and the preview shows the wrong thing rather than an error.
+ */
+describe('pagePathOnHost', () => {
+	it('spells out app and client on the gateway, which serves every app', () => {
+		expect(pagePathOnHost(false, APP, CLIENT, 'sampleAI')).toBe(
+			'/monkbars/SYSTEM/page/sampleAI',
+		);
+	});
+
+	it('is just the page name on a draft or live host, which knows both from its name', () => {
+		expect(pagePathOnHost(true, APP, CLIENT, 'sampleAI')).toBe('/sampleAI');
+	});
+
+	it('carries a query string and hash on either host', () => {
+		expect(pagePathOnHost(true, APP, CLIENT, 'dealDetail', '?id=42#top')).toBe(
+			'/dealDetail?id=42#top',
+		);
+		expect(pagePathOnHost(false, APP, CLIENT, 'dealDetail', '?id=42')).toBe(
+			'/monkbars/SYSTEM/page/dealDetail?id=42',
+		);
+	});
+
+	it('is empty with no page, so the caller renders nothing rather than a bare host', () => {
+		expect(pagePathOnHost(true, APP, CLIENT, '')).toBe('');
+		expect(pagePathOnHost(false, APP, CLIENT, '')).toBe('');
+	});
+
+	it('needs no app code on an app host, because the host is the app', () => {
+		// The draft grant is minted per app, so the pane can be pointed at a page
+		// before it has resolved which app it belongs to.
+		expect(pagePathOnHost(true, '', '', 'sampleAI')).toBe('/sampleAI');
+		// ...but on the gateway an app-less path would be a page called after the
+		// client, so there is nothing honest to build.
+		expect(pagePathOnHost(false, '', CLIENT, 'sampleAI')).toBe('');
 	});
 });

@@ -40,6 +40,15 @@ export interface PreviewPathParts {
 	pageName: string;
 	/** Query and hash, kept verbatim, so a page that takes parameters can be opened. */
 	suffix: string;
+	/**
+	 * The origin that was typed, or '' when none was.
+	 *
+	 * Reported rather than acted on. The caller may recognise it as one of the
+	 * two surfaces and move the toggle, but it is never used as the frame's
+	 * host: a draft origin is a minted token with a lifetime, so pinning the
+	 * pane to a pasted one would leave it on a host that stops resolving.
+	 */
+	origin: string;
 }
 
 /**
@@ -50,11 +59,13 @@ export interface PreviewPathParts {
  * carries an origin and possibly a query string. All three mean "show me this",
  * so all three are accepted.
  *
- * The origin is dropped rather than honoured: the Draft/Live toggle is what
- * decides the host, and a pasted draft hostname is a token that may be dead by
- * now. Segments that are not the `/<app>/<client>/page/<name>` shape contribute
- * only the page name, because the app and the client are what the pane is
- * already pointed at.
+ * The origin never becomes the frame's host: the Draft/Live toggle decides that,
+ * and a pasted draft hostname is a token that may be dead by now. It is still
+ * REPORTED, because the box shows complete URLs, so someone editing the host
+ * half means something by it -- the caller matches it against the two surfaces
+ * and moves the toggle. Segments that are not the `/<app>/<client>/page/<name>`
+ * shape contribute only the page name, because the app and the client are what
+ * the pane is already pointed at.
  */
 export function parsePreviewPath(
 	text: string,
@@ -64,8 +75,9 @@ export function parsePreviewPath(
 	let rest = text.trim();
 	if (!rest) return undefined;
 
-	const origin = /^[a-z][a-z0-9+.-]*:\/\/[^/]*/i.exec(rest);
-	if (origin) rest = rest.substring(origin[0].length);
+	const found = /^[a-z][a-z0-9+.-]*:\/\/[^/]*/i.exec(rest);
+	const origin = found ? found[0] : '';
+	if (found) rest = rest.substring(found[0].length);
 
 	const cut = rest.search(/[?#]/);
 	const suffix = cut === -1 ? '' : rest.substring(cut);
@@ -82,9 +94,39 @@ export function parsePreviewPath(
 			clientCode: segments[1],
 			pageName: segments[marker + 1],
 			suffix,
+			origin,
 		};
 
-	return { appCode, clientCode, pageName: segments.at(-1)!, suffix };
+	return { appCode, clientCode, pageName: segments.at(-1)!, suffix, origin };
+}
+
+/**
+ * The path a page has ON A GIVEN HOST, which is not one answer.
+ *
+ * A draft grant (`t-<hex>.modlix.com`) and an app's own live host both resolve the
+ * app and the client from the HOSTNAME. `processLocation` takes `pathParts[0]` as
+ * the page name when the path carries no `page` marker, so on those hosts a page
+ * is `/<pageName>` and nothing more. Writing the long form there asks for a page
+ * NAMED AFTER THE APP: `https://t-9f2c.modlix.com/monkbars/SYSTEM/page/sampleAI`
+ * looks reasonable in the box and resolves to `monkbars`.
+ *
+ * The gateway host serves every app from one origin, so it cannot infer either
+ * code and the path has to spell them out.
+ *
+ * `suffix` is a query string or hash and rides along either way, because a page
+ * that takes parameters has to be openable with them.
+ */
+export function pagePathOnHost(
+	onAppHost: boolean,
+	appCode: string,
+	clientCode: string,
+	pageName: string,
+	suffix: string = '',
+): string {
+	if (!pageName) return '';
+	if (onAppHost) return `/${pageName}${suffix}`;
+	if (!appCode) return '';
+	return `/${appCode}/${clientCode}/page/${pageName}${suffix}`;
 }
 
 interface PagePreviewProps {
@@ -201,11 +243,37 @@ export function PagePreview({
 		};
 	}, [shownApp]);
 
-	const path =
-		shownApp && shownPage ? `/${shownApp}/${shownClient}/page/${shownPage}${suffix}` : '';
-	// Live is deliberately the relative path: same origin, no grant, no draft
-	// header. `previewSrc` already encodes the tri-state for the draft case.
-	const src = surface === 'draft' ? previewSrc(draftOrigin, path) : path || undefined;
+	// Two shapes for the same page, picked by which host is about to serve it.
+	const gatewayPath = pagePathOnHost(false, shownApp, shownClient, shownPage, suffix);
+	const appHostPath = pagePathOnHost(true, shownApp, shownClient, shownPage, suffix);
+
+	// Live is deliberately the relative path on THIS document's origin: same
+	// origin, no grant, no draft header. That origin is the gateway, which serves
+	// every app, so live takes the long form.
+	//
+	// Draft is a grant, and a grant is an app host, so it takes the short one.
+	// `draftOrigin` is a tri-state: undefined means still minting and the frame
+	// must not load yet (one that boots early renders live and never retries);
+	// '' means the mint was refused, and the fallback is the gateway again, so
+	// the long form comes back with it.
+	const liveOrigin = window.location.origin;
+	const draftUrl = draftOrigin === undefined ? undefined : draftOrigin || liveOrigin;
+	const draftPath = draftOrigin ? appHostPath : gatewayPath;
+
+	const src =
+		surface === 'draft'
+			? previewSrc(draftOrigin, draftPath)
+			: gatewayPath || undefined;
+
+	// The host the surface on screen resolves to. '' while a grant is still being
+	// minted -- the box then shows the path alone and fills the host in a moment
+	// later, which is honest about what is known.
+	const shownOrigin = surface === 'draft' ? draftUrl ?? '' : liveOrigin;
+	const shownPath = surface === 'draft' ? draftPath : gatewayPath;
+	// Shown complete, not as a bare path. Draft and live differ ONLY by hostname,
+	// so `/sampleAI` cannot tell you which of the two you are looking at, and it
+	// is not something you can copy into another tab either.
+	const fullUrl = shownPath ? shownOrigin + shownPath : '';
 
 	/**
 	 * Reload by asking the frame to reload itself.
@@ -249,19 +317,28 @@ export function PagePreview({
 		}
 		const parsed = parsePreviewPath(typed, appCode, clientCode);
 		if (!parsed) return;
+		// Editing the host half of a complete URL has to mean something, or the box
+		// shows a hostname, accepts a change to it, and silently puts the old one
+		// back. Recognised means one of the two surfaces; anything else is ignored
+		// rather than honoured, for the reason `parsePreviewPath` documents.
+		if (parsed.origin) {
+			const typedOrigin = parsed.origin.replace(/\/+$/, '');
+			if (typedOrigin === liveOrigin) onSurfaceChange('live');
+			else if (draftOrigin && typedOrigin === draftOrigin) onSurfaceChange('draft');
+		}
 		setOverride(parsed);
 		if (parsed.appCode !== appCode || parsed.pageName !== pageName)
 			onTargetChange?.({ appCode: parsed.appCode, pageName: parsed.pageName });
-	}, [typed, appCode, clientCode, pageName, onTargetChange]);
-
-	// The short form while the pane is on the app the host named, which is almost
-	// always; the whole path once it is not, because then the app is the news.
-	let shortPath = '';
-	if (shownPage)
-		shortPath =
-			shownApp === appCode
-				? `/${shownPage}${suffix}`
-				: `/${shownApp}/${shownClient}/page/${shownPage}${suffix}`;
+	}, [
+		typed,
+		appCode,
+		clientCode,
+		pageName,
+		onTargetChange,
+		onSurfaceChange,
+		liveOrigin,
+		draftOrigin,
+	]);
 
 	const dev = DEVICES.find(d => d.key === device) ?? DEVICES[0];
 
@@ -288,14 +365,14 @@ export function PagePreview({
 
 				<input
 					className={`_promptPreviewPath${override ? ' _pinned' : ''}`}
-					value={typed ?? shortPath}
+					value={typed ?? fullUrl}
 					placeholder="No page yet"
 					title={
-						path
-							? `${path}\nType a page name or a preview path, Enter to go. Empty follows the agent again.`
+						fullUrl
+							? `${fullUrl}\nEdit and press Enter, or click away. A page name, a path or a whole URL all work. Empty follows the agent again.`
 							: 'Type a page name to preview it'
 					}
-					aria-label="Page path"
+					aria-label="Preview URL"
 					spellCheck={false}
 					autoComplete="off"
 					onChange={e => setTyped(e.target.value)}

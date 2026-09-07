@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { builderPageUrl } from '../builderUrl';
+import { getHref } from '../../util/getHref';
 
 /**
  * What the agent has left in an app's draft, and the two ways to go and look.
@@ -102,9 +102,17 @@ function rowsOf(data: any, service: 'ui' | 'core'): PendingRow[] {
 	return out;
 }
 
-/** The workspace for one app, on the host serving this chat. */
+/**
+ * The workspace for one app, on the host serving this chat.
+ *
+ * `getHref` and nothing hand-rolled. It is the platform's own link resolver and it
+ * knows two things a path built here does not: it re-adds the `/<app>/<client>`
+ * prefix from the CURRENT location, and `urlPrefixRemoval` takes it back off again
+ * on a domain-mapped host, where the app and the client come from the hostname and
+ * spelling them into the path names the wrong page.
+ */
 function workspaceUrl(appCode: string): string {
-	return builderPageUrl('workspace', appCode);
+	return getHref(`/workspace/${appCode}`, window.location) ?? '';
 }
 
 export function PendingDraftBar({
@@ -196,11 +204,17 @@ export function PendingDraftBar({
 					setError('No draft link for this app yet, and one could not be minted.');
 					return;
 				}
-				globalThis.window?.open(
-					host.startsWith('http') ? host : `https://${host}`,
-					'_blank',
-					'noopener',
+				// `https://<draft-host>/` and nothing more. On a draft host the app and
+				// the client come from the HOSTNAME, so a page is `/<pageName>` there and
+				// the bare root is the app's default page, which is what this button
+				// means. Never `/<app>/<client>/page/...`: on that host the first
+				// segment IS the page name, so the long form asks for a page called
+				// after the app and 404s.
+				const origin = (host.startsWith('http') ? host : `https://${host}`).replace(
+					/\/*$/,
+					'',
 				);
+				globalThis.window?.open(`${origin}/`, '_blank', 'noopener');
 			} catch (e: any) {
 				setError(e?.message ?? 'Could not open the draft.');
 			} finally {
