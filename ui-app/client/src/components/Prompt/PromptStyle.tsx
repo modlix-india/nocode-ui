@@ -510,16 +510,39 @@ export default function PromptStyle({
 			font-weight: 600;
 		}
 
-		/* The page being shown. Truncates rather than wrapping: it shares one line
-		   with two button groups that must not move as the name changes. */
+		/* The page being shown, and the box it can be changed in. Reads as text
+		   until it is hovered or focused, because most of the time it is only
+		   reporting where the pane is. Truncates rather than wrapping: it shares
+		   one line with two button groups that must not move as the name changes. */
 		${PREFIX} ._promptPreviewPath {
 			flex: 1;
 			min-width: 0;
 			font-size: 12px;
+			font-family: inherit;
 			color: ${t('fontColorTwo', '#6b6b6b')};
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
+			border: 1px solid transparent;
+			border-radius: 6px;
+			background: transparent;
+			padding: 4px 6px;
+			outline: none;
+		}
+
+		${PREFIX} ._promptPreviewPath._pinned {
+			color: ${t('fontColorOne', '#1a1a1a')};
+		}
+
+		${PREFIX} ._promptPreviewPath:hover {
+			border-color: ${t('borderColorNine', '#e5e5e5')};
+		}
+
+		${PREFIX} ._promptPreviewPath:focus {
+			border-color: ${t('borderColorNine', '#e5e5e5')};
+			background: ${t('colorSeven', '#fff')};
+			color: ${t('fontColorOne', '#1a1a1a')};
+			text-overflow: clip;
 		}
 
 		${PREFIX} ._promptPreviewTools {

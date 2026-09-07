@@ -41,6 +41,7 @@ import {
 	matchDescriptor,
 	snapshotBaseline,
 } from './openDrafts';
+import { startDragShield } from '../../functions/utils';
 
 interface Message {
 	id: string;
@@ -1189,13 +1190,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				pageExtractor,
 				onLoad: data => {
 					if (data.sidebarWidth) setSidebarWidth(data.sidebarWidth);
-				if (data.previewWidth) setPreviewWidth(data.previewWidth);
-				if (data.previewSurface === 'draft' || data.previewSurface === 'live')
-					setPreviewSurface(data.previewSurface);
-				if (data.previewDevice) setPreviewDevice(data.previewDevice);
-				// Only whether the pane was wanted, never which page: that is per
-				// conversation and is restored from the session scope instead.
-				if (data.previewOpen !== undefined) preferredPreviewOpenRef.current = data.previewOpen;
+					if (data.previewWidth) setPreviewWidth(data.previewWidth);
+					if (data.previewSurface === 'draft' || data.previewSurface === 'live')
+						setPreviewSurface(data.previewSurface);
+					if (data.previewDevice) setPreviewDevice(data.previewDevice);
+					// Only whether the pane was wanted, never which page: that is per
+					// conversation and is restored from the session scope instead.
+					if (data.previewOpen !== undefined)
+						preferredPreviewOpenRef.current = data.previewOpen;
 					if (data.sidebarOpen !== undefined) {
 						preferredSidebarOpenRef.current = data.sidebarOpen;
 						// Never reopen a drawer over the chat: this arrives async, so
@@ -1216,6 +1218,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			const startX = e.clientX;
 			const startWidth = sidebarWidth;
+			// The preview pane on the other side of the chat is an iframe. Without
+			// the shield the drag freezes the moment the pointer reaches it, and the
+			// mouseup that lands in the frame never gets back here to end it.
+			const releaseShield = startDragShield('col-resize');
 
 			const handleMouseMove = (ev: MouseEvent) => {
 				if (!isResizingRef.current) return;
@@ -1228,6 +1234,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				isResizingRef.current = false;
 				document.removeEventListener('mousemove', handleMouseMove);
 				document.removeEventListener('mouseup', handleMouseUp);
+				releaseShield();
 				document.body.style.cursor = '';
 				document.body.style.userSelect = '';
 
@@ -1335,6 +1342,19 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		[savePreferences],
 	);
 
+	/**
+	 * The pane was pointed somewhere else from its path box.
+	 *
+	 * Adopted as the target rather than left inside the pane, so a write landing
+	 * on the page now being shown still reloads it, and so the button that reopens
+	 * a closed pane names the page the user last looked at.
+	 */
+	const retargetPreview = useCallback((t: { appCode: string; pageName: string }) => {
+		setPreviewTarget(prev =>
+			prev?.appCode === t.appCode && prev?.pageName === t.pageName ? prev : t,
+		);
+	}, []);
+
 	// The pane is on the right, so dragging LEFT widens it.
 	const handlePreviewResizeStart = useCallback(
 		(e: React.MouseEvent) => {
@@ -1342,6 +1362,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const startX = e.clientX;
 			const startWidth = previewRef.current?.offsetWidth ?? previewWidth;
 			let latest = startWidth;
+			// The grip sits on the pane's left edge, a few pixels from the iframe it
+			// resizes: narrowing the pane means dragging straight into that frame.
+			// The shield is what keeps the pointer in this document while it happens.
+			const releaseShield = startDragShield('col-resize');
 
 			const onMove = (ev: MouseEvent) => {
 				// Upper bound is a share of the window, not a constant: the point of
@@ -1354,6 +1378,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const onUp = () => {
 				document.removeEventListener('mousemove', onMove);
 				document.removeEventListener('mouseup', onUp);
+				releaseShield();
 				document.body.style.cursor = '';
 				document.body.style.userSelect = '';
 				savePreferences({ previewWidth: latest });
@@ -1598,21 +1623,18 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	 * effect ran AFTER the fetch that had just set this and cleared it again,
 	 * which is the whole reason the server's answer kept vanishing.
 	 */
-	const adoptSessionContext = useCallback(
-		(session: any) => {
-			const ctx = readSessionContext(session);
-			setPendingApps(ctx.apps.slice(0, 5));
-			setPreviewTarget(
-				ctx.app && ctx.page ? { appCode: ctx.app, pageName: ctx.page } : undefined,
-			);
-			// A conversation with nothing to show must not leave the pane open over
-			// the next one; with a target it may reopen, if that is the preference.
-			setPreviewOpen(!!(ctx.app && ctx.page) && !!preferredPreviewOpenRef.current);
-			// The per-turn notice belongs to the turn that produced it.
-			setSavedObjects([]);
-		},
-		[],
-	);
+	const adoptSessionContext = useCallback((session: any) => {
+		const ctx = readSessionContext(session);
+		setPendingApps(ctx.apps.slice(0, 5));
+		setPreviewTarget(
+			ctx.app && ctx.page ? { appCode: ctx.app, pageName: ctx.page } : undefined,
+		);
+		// A conversation with nothing to show must not leave the pane open over
+		// the next one; with a target it may reopen, if that is the preference.
+		setPreviewOpen(!!(ctx.app && ctx.page) && !!preferredPreviewOpenRef.current);
+		// The per-turn notice belongs to the turn that produced it.
+		setSavedObjects([]);
+	}, []);
 	const handleObjectChanged = useCallback(
 		(data: any) => {
 			if (!data?.kind) return;
@@ -2996,17 +3018,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						)}
 						<div className="_promptTopRight">
 							{enablePreview && previewTarget && !previewOpen && (
-							<button
-								className="_promptPreviewOpenButton"
-								onClick={openPreview}
-								title={`Show /${previewTarget.pageName} beside the chat`}
-								type="button"
-								aria-label="Show the page beside the chat"
-							>
-								<i className={previewIcon} aria-hidden="true" />
-							</button>
-						)}
-						{openFullPageName && sessionId && (
+								<button
+									className="_promptPreviewOpenButton"
+									onClick={openPreview}
+									title={`Show /${previewTarget.pageName} beside the chat`}
+									type="button"
+									aria-label="Show the page beside the chat"
+								>
+									<i className={previewIcon} aria-hidden="true" />
+								</button>
+							)}
+							{openFullPageName && sessionId && (
 								// An anchor, not a button: a new browser tab keeps whatever
 								// this panel is docked beside alive -- most sharply the
 								// workspace's open tab set -- and it makes the link
@@ -3292,7 +3314,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							Changed <strong>{previewTarget.pageName}</strong>. See it next to the
 							chat?
 						</span>
-						<button type="button" className="_promptPreviewOfferGo" onClick={openPreview}>
+						<button
+							type="button"
+							className="_promptPreviewOfferGo"
+							onClick={openPreview}
+						>
 							Show the page
 						</button>
 					</div>
@@ -3432,6 +3458,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						device={previewDevice}
 						onDeviceChange={changePreviewDevice}
 						reloadSignal={previewReload}
+						onTargetChange={retargetPreview}
 						onClose={closePreview}
 						reloadIcon={previewReloadIcon}
 					/>
