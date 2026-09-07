@@ -85,6 +85,7 @@ interface DnDEditorProps {
 	appCode: string | undefined;
 	sidekickEnabled: boolean;
 	sidekickAgentEndpoint: string;
+	sidekickOpenFullPageName: string;
 	sidekickDraftMode: boolean;
 	onObjectSaved: (data: any) => void;
 }
@@ -153,6 +154,7 @@ export default function DnDEditor({
 	appCode,
 	sidekickEnabled,
 	sidekickAgentEndpoint,
+	sidekickOpenFullPageName,
 	sidekickDraftMode,
 	onObjectSaved,
 }: DnDEditorProps) {
@@ -325,6 +327,7 @@ export default function DnDEditor({
 						pageOperations={pageOperations}
 						appCode={appCode}
 						agentEndpoint={sidekickAgentEndpoint}
+						openFullPageName={sidekickOpenFullPageName}
 						draftMode={sidekickDraftMode}
 						previewMode={preview}
 						enabled={sidekickEnabled}

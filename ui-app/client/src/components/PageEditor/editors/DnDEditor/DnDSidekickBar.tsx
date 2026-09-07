@@ -44,6 +44,8 @@ interface SidekickBarProps {
 	pageOperations: PageOperations;
 	appCode: string | undefined;
 	agentEndpoint: string;
+	/** Page to continue the conversation in; empty offers nothing. */
+	openFullPageName: string;
 	/** Send the agent's edits to the draft surface, where the editor saves too. */
 	draftMode: boolean;
 	previewMode: boolean;
@@ -71,6 +73,7 @@ export default function DnDSidekickBar({
 	pageOperations,
 	appCode,
 	agentEndpoint,
+	openFullPageName,
 	draftMode,
 	previewMode,
 	enabled,
@@ -131,6 +134,7 @@ export default function DnDSidekickBar({
 			type: 'Prompt',
 			properties: {
 				agentEndpoint: { value: agentEndpoint },
+				openFullPageName: { value: openFullPageName },
 				targetAppCode: { value: appCode ?? '' },
 				contextSurface: { value: 'the Modlix page editor canvas' },
 				activeObject: { value: activeObject },
@@ -150,7 +154,7 @@ export default function DnDSidekickBar({
 				showModelSelector: { value: false },
 			},
 		}),
-		[agentEndpoint, appCode, activeObject, draftsPath, draftMode],
+		[agentEndpoint, openFullPageName, appCode, activeObject, draftsPath, draftMode],
 	);
 
 	const barRef = useRef<HTMLDivElement>(null);

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+import { builderPageUrl } from '../builderUrl';
 
 /**
  * What the agent has left in an app's draft, and the two ways to go and look.
@@ -101,18 +102,9 @@ function rowsOf(data: any, service: 'ui' | 'core'): PendingRow[] {
 	return out;
 }
 
-/**
- * The builder's own address, so a workspace link points at the right host.
- *
- * Read off the current path rather than the store: the path prefix
- * `/<appCode>/<clientCode>/page/...` is the one thing that is true whichever app
- * the conversation happens to be about, and the app being drafted is NOT the app
- * hosting this chat.
- */
+/** The workspace for one app, on the host serving this chat. */
 function workspaceUrl(appCode: string): string {
-	const parts = globalThis.window?.location?.pathname?.split('/').filter(Boolean) ?? [];
-	const prefix = parts.length >= 2 ? `/${parts[0]}/${parts[1]}` : '';
-	return `${prefix}/page/workspace/${appCode}`;
+	return builderPageUrl('workspace', appCode);
 }
 
 export function PendingDraftBar({
