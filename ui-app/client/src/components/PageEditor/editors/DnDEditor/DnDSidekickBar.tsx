@@ -13,6 +13,7 @@ import {
 	RenderContext,
 } from '../../../../types/common';
 import { PageOperations } from '../../functions/PageOperations';
+import { startDragShield } from '../../../../functions/utils';
 
 /**
  * The AI panel, docked in the editor chrome.
@@ -44,6 +45,8 @@ interface SidekickBarProps {
 	pageOperations: PageOperations;
 	appCode: string | undefined;
 	agentEndpoint: string;
+	/** Page to continue the conversation in; empty offers nothing. */
+	openFullPageName: string;
 	/** Send the agent's edits to the draft surface, where the editor saves too. */
 	draftMode: boolean;
 	previewMode: boolean;
@@ -71,6 +74,7 @@ export default function DnDSidekickBar({
 	pageOperations,
 	appCode,
 	agentEndpoint,
+	openFullPageName,
 	draftMode,
 	previewMode,
 	enabled,
@@ -131,6 +135,7 @@ export default function DnDSidekickBar({
 			type: 'Prompt',
 			properties: {
 				agentEndpoint: { value: agentEndpoint },
+				openFullPageName: { value: openFullPageName },
 				targetAppCode: { value: appCode ?? '' },
 				contextSurface: { value: 'the Modlix page editor canvas' },
 				activeObject: { value: activeObject },
@@ -150,7 +155,7 @@ export default function DnDSidekickBar({
 				showModelSelector: { value: false },
 			},
 		}),
-		[agentEndpoint, appCode, activeObject, draftsPath, draftMode],
+		[agentEndpoint, openFullPageName, appCode, activeObject, draftsPath, draftMode],
 	);
 
 	const barRef = useRef<HTMLDivElement>(null);
@@ -160,6 +165,10 @@ export default function DnDSidekickBar({
 			e.preventDefault();
 			const startX = e.clientX;
 			const startWidth = barRef.current?.getBoundingClientRect().width ?? width;
+			// Widening this panel means dragging INTO the canvas, which is an iframe:
+			// without the shield the pointer leaves this document and the drag both
+			// freezes and never ends.
+			const releaseShield = startDragShield('col-resize');
 
 			const onMove = (ev: MouseEvent) => {
 				// The panel is on the right, so dragging left widens it.
@@ -172,6 +181,7 @@ export default function DnDSidekickBar({
 			const onUp = (ev: MouseEvent) => {
 				document.removeEventListener('mousemove', onMove);
 				document.removeEventListener('mouseup', onUp);
+				releaseShield();
 				const next = Math.min(
 					MAX_WIDTH,
 					Math.max(MIN_WIDTH, startWidth + (startX - ev.clientX)),

@@ -39,7 +39,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorPro
 import { performanceMonitor } from './util/performanceMonitor';
 import { updateMultipleComponentsInPageDefinition } from './util/targetedPageUpdate';
 import { messageThrottler } from './util/messageThrottler';
-import { DraftGrant, extendDraftToken, heartbeatDelay, mintDraftToken } from './util/draftToken';
+import { DraftGrant, extendDraftToken, heartbeatDelay, mintDraftToken } from '../util/draftToken';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -111,6 +111,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			defaultZoomPercentage,
 			sidekickEnabled,
 			sidekickAgentEndpoint,
+			sidekickOpenFullPageName,
 			sidekickDraftMode,
 		} = {},
 	} = useDefinition(
@@ -1362,6 +1363,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				appCode={appDefinition?.appCode ?? editPageDefinition?.appCode}
 				sidekickEnabled={sidekickEnabled === true}
 				sidekickAgentEndpoint={sidekickAgentEndpoint ?? '/api/ai/appbuilder/chat'}
+				sidekickOpenFullPageName={sidekickOpenFullPageName ?? ''}
 				sidekickDraftMode={sidekickDraftMode !== false}
 				onObjectSaved={handleObjectSaved}
 			/>
