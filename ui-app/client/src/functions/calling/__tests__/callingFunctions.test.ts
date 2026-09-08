@@ -156,6 +156,26 @@ describe('MakeCall', () => {
 		expect(facade.dial).toHaveBeenCalledWith('501', undefined);
 	});
 
+	it('accepts a numeric deal id, which is what Page.ticket.id actually is', async () => {
+		facade.dial.mockResolvedValue({ code: 'abc123' });
+
+		// The regression this guards: declared String alone, this threw before the function ran -
+		// "Expected a string but found 3458" - because a deal's id is a number in this platform.
+		const output = await new MakeCall().execute(params({ ticketId: 3458 }));
+
+		expect(eventNames(output)).toEqual([Event.OUTPUT]);
+		// Coerced once, here, so the facade and the URL only ever see one form.
+		expect(facade.dial).toHaveBeenCalledWith('3458', undefined);
+	});
+
+	it('still accepts the deal code, which is a string', async () => {
+		facade.dial.mockResolvedValue({ code: 'abc123' });
+
+		await new MakeCall().execute(params({ ticketId: '05UfYlD4AXAeInVMVLjXmH' }));
+
+		expect(facade.dial).toHaveBeenCalledWith('05UfYlD4AXAeInVMVLjXmH', undefined);
+	});
+
 	it('reports why a dial was refused, with a code a page can branch on', async () => {
 		facade.dial.mockRejectedValue({
 			code: 'DIAL_REJECTED',
