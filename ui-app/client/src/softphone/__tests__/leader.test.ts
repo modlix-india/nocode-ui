@@ -73,6 +73,7 @@ function handlers(over: Partial<LeaderHandlers> = {}): LeaderHandlers {
 		onStateRequest: () => ({ ...INITIAL_STATE }),
 		onAction: async () => true,
 		onSnapshot: () => {},
+		onOutboundPlaced: () => {},
 		onLeaderStale: () => {},
 		...over,
 	};

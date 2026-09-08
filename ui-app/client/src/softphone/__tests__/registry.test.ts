@@ -1,3 +1,4 @@
+import { LeaderChannel } from '../leader';
 import type { ICallProvider, ProviderInit } from '../providers/ICallProvider';
 import type { SoftphoneEvent, SoftphoneState } from '../types';
 
@@ -15,7 +16,6 @@ const api = {
 	fetchStatus: jest.fn(),
 	fetchToken: jest.fn(),
 	dialTicket: jest.fn(),
-	fetchCallLog: jest.fn(),
 };
 
 /** Fires when the registry's own listener on `Store.auth` should fire. */
@@ -88,6 +88,21 @@ function loadRegistry() {
 
 const settle = () => new Promise(resolve => setTimeout(resolve, 0));
 
+/** Channels a test opened directly, so afterEach can release their locks and timers. */
+const channels: LeaderChannel[] = [];
+
+/** BroadcastChannel delivery has no guaranteed timing, so poll rather than wait a fixed spell. */
+async function waitFor(condition: () => boolean, timeoutMs = 2_000): Promise<void> {
+	const deadline = Date.now() + timeoutMs;
+	while (!condition()) {
+		if (Date.now() > deadline) throw new Error('Timed out waiting for the expected state.');
+		await new Promise(resolve => setTimeout(resolve, 5));
+	}
+}
+
+/** There is no built-in default any more, so every test that expects a phone must name a URL. */
+const SDK = 'api/files/static/file/SYSTEM/jslib/exotelBundle/crmBundle.js';
+
 describe('softphoneRegistry', () => {
 	let restoreChannel: () => void;
 
@@ -114,14 +129,18 @@ describe('softphoneRegistry', () => {
 	afterEach(() => {
 		// The leader's announce interval and its BroadcastChannel both hold the event loop open,
 		// which is correct in a tab and would hang the runner.
+		channels.splice(0).forEach(c => c.stop());
 		loaded.splice(0).forEach(r => r.stop());
 		restoreChannel();
 	});
 
 	function provisioned() {
+		// Lowercase, because that is what the backend actually sends:
+		// ConnectionSubType.getProvider() returns name().toLowerCase(). Mocking it uppercase hid a
+		// real bug - the adapter lookup missed and the phone never started.
 		api.fetchStatus.mockResolvedValue({
 			provisioned: true,
-			provider: 'EXOTEL',
+			provider: 'exotel',
 			providerUserId: 'agent@example.com',
 			virtualNumber: '+911234567890',
 		});
@@ -129,15 +148,15 @@ describe('softphoneRegistry', () => {
 			token: 'agent-token',
 			providerUserId: 'agent@example.com',
 			expiresIn: 7776000,
-			provider: 'EXOTEL',
+			provider: 'exotel',
 		});
 	}
 
 	it('mints no token and loads no provider for an agent who is not provisioned', async () => {
-		api.fetchStatus.mockResolvedValue({ provisioned: false, provider: 'EXOTEL' });
+		api.fetchStatus.mockResolvedValue({ provisioned: false, provider: 'exotel' });
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		// The important half is what did *not* happen: no credential minted, no vendor bundle
@@ -152,7 +171,7 @@ describe('softphoneRegistry', () => {
 		provisioned();
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		expect(api.fetchToken).toHaveBeenCalledWith('exotelConnection');
@@ -160,8 +179,118 @@ describe('softphoneRegistry', () => {
 			token: 'agent-token',
 			providerUserId: 'agent@example.com',
 			autoRegister: true,
+			sdkUrl: SDK,
 		});
 		expect(registry.getState()).toMatchObject({ provisioned: true, isLeader: true });
+	});
+
+	it('finds the adapter for the name the backend actually sends', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		// The regression this guards: keyed on the enum name, this lookup missed, bringUpPhone
+		// bailed before minting a token, and the vendor bundle was never fetched.
+		expect(FakeProvider.last).toBeDefined();
+		expect(api.fetchToken).toHaveBeenCalled();
+		expect(registry.getState().lastError).toBeNull();
+	});
+
+	it('finds the adapter whatever case the provider name arrives in', async () => {
+		provisioned();
+		api.fetchStatus.mockResolvedValue({
+			provisioned: true,
+			provider: 'ExOtEl',
+			providerUserId: 'agent@example.com',
+			virtualNumber: '+911234567890',
+		});
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		expect(FakeProvider.last).toBeDefined();
+		// And the store gets one predictable form regardless, so a page can compare against it.
+		expect(registry.getState().provider).toBe('exotel');
+	});
+
+	it('says so plainly when there is genuinely no adapter', async () => {
+		api.fetchStatus.mockResolvedValue({
+			provisioned: true,
+			provider: 'twilio',
+			providerUserId: 'agent@example.com',
+		});
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		expect(FakeProvider.last).toBeUndefined();
+		expect(api.fetchToken).not.toHaveBeenCalled();
+		expect(registry.getState().lastError).toMatchObject({ code: 'INIT_FAILED' });
+	});
+
+	it('passes a configured library URL through to the adapter', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, 'api/files/x/crmBundle.js');
+		await settle();
+
+		expect(FakeProvider.last?.init).toHaveBeenCalledWith(
+			expect.objectContaining({ sdkUrl: 'api/files/x/crmBundle.js' }),
+		);
+	});
+
+	it('refuses to start, and mints no token, when no library URL is configured', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection');
+		await settle();
+
+		// Checked before the token is minted: every mint is a call to the provider, and burning
+		// one to then fail on a missing URL is waste with a worse error.
+		expect(api.fetchToken).not.toHaveBeenCalled();
+		expect(FakeProvider.last).toBeUndefined();
+		expect(registry.getState().lastError).toMatchObject({ code: 'SDK_LOAD_FAILED' });
+	});
+
+	it('brings the phone up again when the library URL changes', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, 'api/files/wrong/crmBundle.js');
+		await settle();
+		const first = FakeProvider.last;
+
+		// The case an author hits while getting the URL right: the first load 404d, they correct
+		// it, and it has to actually be retried rather than noted and ignored.
+		await registry.start('exotelConnection', true, 'api/files/right/crmBundle.js');
+		await settle();
+
+		expect(first?.destroy).toHaveBeenCalled();
+		expect(FakeProvider.last).not.toBe(first);
+		expect(FakeProvider.last?.init).toHaveBeenCalledWith(
+			expect.objectContaining({ sdkUrl: 'api/files/right/crmBundle.js' }),
+		);
+	});
+
+	it('does not restart when nothing that identifies the session changed', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, 'api/files/x/crmBundle.js');
+		await settle();
+		const first = FakeProvider.last;
+
+		await registry.start('exotelConnection', true, 'api/files/x/crmBundle.js');
+		await settle();
+
+		expect(FakeProvider.last).toBe(first);
+		expect(first?.destroy).not.toHaveBeenCalled();
 	});
 
 	it('does nothing at all in the page editor', async () => {
@@ -169,7 +298,7 @@ describe('softphoneRegistry', () => {
 		(globalThis as { isDesignMode?: boolean }).isDesignMode = true;
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		expect(api.fetchStatus).not.toHaveBeenCalled();
@@ -190,7 +319,7 @@ describe('softphoneRegistry', () => {
 		(globalThis as { isDesignMode?: boolean }).isDesignMode = true;
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		expect(api.fetchStatus).not.toHaveBeenCalled();
@@ -200,7 +329,7 @@ describe('softphoneRegistry', () => {
 		provisioned();
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		const provider = FakeProvider.last;
@@ -222,7 +351,7 @@ describe('softphoneRegistry', () => {
 		api.dialTicket.mockResolvedValue({ code: 'abc123', callStatus: 'ORIGINATE' });
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		await registry.current()?.dial('501');
@@ -236,7 +365,7 @@ describe('softphoneRegistry', () => {
 		api.dialTicket.mockRejectedValue(new Error('No number on this deal.'));
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		await expect(registry.current()?.dial('501')).rejects.toMatchObject({
@@ -250,7 +379,7 @@ describe('softphoneRegistry', () => {
 		FakeProvider.initFailure = { code: 'MIC_DENIED', message: 'Microphone access is blocked.' };
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		// Sticky, because "you blocked the microphone once and Chrome remembered" needs saying
@@ -267,7 +396,7 @@ describe('softphoneRegistry', () => {
 		const seen: SoftphoneState[] = [];
 		registry.subscribe(s => seen.push(s));
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		const provider = FakeProvider.last!;
@@ -300,11 +429,297 @@ describe('softphoneRegistry', () => {
 		expect(seen.length).toBeGreaterThan(1);
 	});
 
+	it('answers the agent leg of a call the agent placed, so dialling is one click', async () => {
+		provisioned();
+		api.dialTicket.mockResolvedValue({ code: 'abc123' });
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		await registry.current()?.dial('501');
+
+		// The provider rings the customer and pushes a SIP INVITE to the agent's browser, which the
+		// SDK reports as an ordinary incoming call. Without auto-answer the agent is asked to
+		// answer the call they just asked for.
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919876543210' });
+
+		expect(provider.answer).toHaveBeenCalledTimes(1);
+		expect(registry.getState()).toMatchObject({ direction: 'outbound', inCall: true });
+	});
+
+	it('tells the other tabs about a dial, so the leader can answer its leg', async () => {
+		provisioned();
+		api.dialTicket.mockResolvedValue({ code: 'abc123' });
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+
+		// A second tab, driven through the real channel rather than a stub: only the leader ever
+		// sees the INVITE, so a dial from anywhere else has to reach it over the channel. Without
+		// that, the agent's own call was labelled inbound and they answered their own dial by hand.
+		const announced: string[] = [];
+		const otherTab = new LeaderChannel();
+		channels.push(otherTab);
+		otherTab.start({
+			onBecameLeader: () => {},
+			onEvent: () => {},
+			onStateRequest: () => registry.getState(),
+			onAction: async () => true,
+			onSnapshot: () => {},
+			onOutboundPlaced: ticketId => announced.push(ticketId),
+			onLeaderStale: () => {},
+		});
+		// Driven through dial(), not by calling announce directly - otherwise this would pass with
+		// the announce removed and prove only that the receiving half works.
+		await registry.current()?.dial('777');
+		await waitFor(() => announced.length > 0);
+
+		expect(announced).toEqual(['777']);
+
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+91000' });
+		expect(provider.answer).toHaveBeenCalledTimes(1);
+
+		provider.emit({ type: 'ENDED', callId: 'c1' });
+		expect(registry.getState().lastCall).toMatchObject({ ticketId: '777' });
+	});
+
+	it('does not answer a genuine inbound call', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919876543210' });
+
+		expect(provider.answer).not.toHaveBeenCalled();
+		expect(registry.getState()).toMatchObject({ direction: 'inbound', from: '+919876543210' });
+	});
+
+	it('claims only one leg per dial', async () => {
+		provisioned();
+		api.dialTicket.mockResolvedValue({ code: 'abc123' });
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		await registry.current()?.dial('501');
+
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+91000' });
+		provider.emit({ type: 'ENDED', callId: 'c1' });
+
+		// A customer calling back inside the same 20-second window must not be picked up on the
+		// agent's behalf just because they dialled recently.
+		provider.emit({ type: 'INCOMING', callId: 'c2', from: '+919876543210' });
+
+		expect(provider.answer).toHaveBeenCalledTimes(1);
+		expect(registry.getState()).toMatchObject({ direction: 'inbound', from: '+919876543210' });
+	});
+
+	it('survives an auto-answer that throws, because it runs inside the SDK callback', async () => {
+		provisioned();
+		api.dialTicket.mockResolvedValue({ code: 'abc123' });
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		provider.answer.mockImplementation(() => {
+			throw { code: 'NO_ACTIVE_CALL', message: 'There is no call in progress.' };
+		});
+		const logged = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+		await registry.current()?.dial('501');
+
+		expect(() =>
+			provider.emit({ type: 'INCOMING', callId: 'c1', from: '+91000' }),
+		).not.toThrow();
+		expect(logged).toHaveBeenCalled();
+		expect(registry.getState().inCall).toBe(true);
+
+		logged.mockRestore();
+	});
+
+	it('summarises an answered inbound call as it ends', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919701191800' });
+		provider.emit({
+			type: 'CONNECTED',
+			callId: 'c1',
+			startedAt: new Date(Date.now() - 15_000).toISOString(),
+		});
+		provider.emit({ type: 'ENDED', callId: 'c1', reason: 'normal' });
+
+		expect(registry.getState().lastCall).toMatchObject({
+			callId: 'c1',
+			direction: 'inbound',
+			phoneNumber: '+919701191800',
+			agent: 'agent@example.com',
+			answered: true,
+			endReason: 'normal',
+		});
+		// Snapshotted at the moment it ended, not measured when a card is drawn.
+		expect(registry.getState().lastCall?.durationSeconds).toBeGreaterThanOrEqual(14);
+		expect(registry.getState().lastCall?.durationSeconds).toBeLessThanOrEqual(17);
+	});
+
+	it('summarises a call that was never answered', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		provider.emit({ type: 'INCOMING', callId: 'c2', from: '+919701191800' });
+		provider.emit({ type: 'ENDED', callId: 'c2', reason: 'cancelled' });
+
+		expect(registry.getState().lastCall).toMatchObject({
+			answered: false,
+			durationSeconds: 0,
+			phoneNumber: '+919701191800',
+		});
+		expect(registry.getState().lastCall?.startedAt).toBeUndefined();
+	});
+
+	it('names the deal on an outbound call, and no number', async () => {
+		provisioned();
+		api.dialTicket.mockResolvedValue({ code: 'abc123' });
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		await registry.current()?.dial('501');
+		provider.emit({ type: 'INCOMING', callId: 'c3', from: '+91000' });
+		provider.emit({ type: 'ENDED', callId: 'c3' });
+
+		// The customer's number is read from the deal on the server and never sent to the browser,
+		// so there is none to show. The deal is what a redial needs anyway.
+		expect(registry.getState().lastCall).toMatchObject({
+			direction: 'outbound',
+			ticketId: '501',
+		});
+		expect(registry.getState().lastCall?.phoneNumber).toBeUndefined();
+	});
+
+	it('keeps the summary after the call state is cleared', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		provider.emit({ type: 'INCOMING', callId: 'c4', from: '+919701191800' });
+		provider.emit({ type: 'ENDED', callId: 'c4' });
+
+		const state = registry.getState();
+		// The live fields go, the record stays - that is the whole point of holding it here.
+		expect(state).toMatchObject({ inCall: false, callId: undefined, from: undefined });
+		expect(state.lastCall?.phoneNumber).toBe('+919701191800');
+	});
+
+	it('has no summary before the first call', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		expect(registry.getState().lastCall).toBeNull();
+	});
+
+	it('survives the provider sending every call event twice', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		const startedAt = new Date(Date.now() - 30_000).toISOString();
+
+		// This is what the bundle actually does - each event is delivered twice.
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919701191800' });
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919701191800' });
+		provider.emit({ type: 'CONNECTED', callId: 'c1', startedAt });
+		provider.emit({ type: 'CONNECTED', callId: 'c1', startedAt: new Date().toISOString() });
+
+		// The second CONNECTED carries a later timestamp; taking it would restart the agent's
+		// timer mid-conversation.
+		expect(registry.getState().startedAt).toBe(startedAt);
+
+		provider.emit({ type: 'ENDED', callId: 'c1', reason: 'normal' });
+		provider.emit({ type: 'ENDED', callId: 'c1', reason: 'normal' });
+
+		// The regression this guards: the second ENDED re-summarised after the fields were
+		// cleared, overwriting a good record with one that had no direction, no number, and
+		// reported every call as unanswered and zero-length.
+		const lastCall = registry.getState().lastCall;
+		expect(lastCall).toMatchObject({
+			direction: 'inbound',
+			phoneNumber: '+919701191800',
+			answered: true,
+		});
+		expect(lastCall?.durationSeconds).toBeGreaterThanOrEqual(29);
+	});
+
+	it('keeps the live timer when INCOMING repeats after the call connected', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		const startedAt = new Date(Date.now() - 10_000).toISOString();
+
+		provider.emit({ type: 'INCOMING', callId: 'c9', from: '+91000' });
+		provider.emit({ type: 'CONNECTED', callId: 'c9', startedAt });
+		provider.emit({ type: 'INCOMING', callId: 'c9', from: '+91000' });
+
+		expect(registry.getState().startedAt).toBe(startedAt);
+		expect(registry.getState().inCall).toBe(true);
+	});
+
+	it('reports an unimplemented control as an error, not a success', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		// What a newer follower relaying to an older leader looks like. `control` reads any result
+		// other than false as success, so falling through would have told the page it worked.
+		const relay = (registry as unknown as { performLocally(a: string): Promise<unknown> })
+			.performLocally;
+		await expect(relay.call(registry, 'transferCall' as never)).rejects.toMatchObject({
+			code: 'UNSUPPORTED_CONTROL',
+		});
+	});
+
 	it('does not write a duration into the store', async () => {
 		provisioned();
 		const registry = loadRegistry();
 
-		await registry.start('exotelConnection');
+		await registry.start('exotelConnection', true, SDK);
 		await settle();
 
 		FakeProvider.last!.emit({

@@ -28,6 +28,7 @@ export type RelayAction =
 	'answer' | 'hangup' | 'toggleHold' | 'toggleMute' | 'sendDtmf' | 'setAvailability';
 
 type LeaderMessage =
+	| { kind: 'OUTBOUND_PLACED'; ticketId: string }
 	| { kind: 'CALL_EVENT'; event: SoftphoneEvent }
 	| { kind: 'LEADER_ANNOUNCE'; at: number }
 	| { kind: 'STATE_REQUEST'; from: string }
@@ -53,6 +54,15 @@ export interface LeaderHandlers {
 	onAction: (action: RelayAction, arg?: unknown) => Promise<unknown>;
 	/** The leader sent a full picture. Followers adopt it. */
 	onSnapshot: (state: SoftphoneState) => void;
+	/**
+	 * Another tab placed an outbound call.
+	 *
+	 * Dialling is a backend call and works from any tab, but the SIP INVITE for it only ever
+	 * arrives at the leader. Without being told, the leader sees that leg as an ordinary inbound
+	 * call - labels it inbound, and leaves the agent to answer their own dial by hand.
+	 */
+	onOutboundPlaced: (ticketId: string) => void;
+
 	/**
 	 * The leader has gone quiet without releasing its lock.
 	 *
@@ -176,6 +186,17 @@ export class LeaderChannel {
 		});
 	}
 
+	/**
+	 * Tells every other tab that this one just placed a call.
+	 *
+	 * Not leader-gated, unlike `broadcastEvent`: the point is that a follower can dial, and the
+	 * leader has to hear about it before the INVITE lands. BroadcastChannel does not echo to the
+	 * sender, so the dialling tab records its own claim directly.
+	 */
+	announceOutboundDial(ticketId: string): void {
+		this.post({ kind: 'OUTBOUND_PLACED', ticketId });
+	}
+
 	/** Follower only. Asks for the current picture, so a tab opened mid-call shows the call. */
 	requestSnapshot(): void {
 		if (this.leader) return;
@@ -224,6 +245,10 @@ export class LeaderChannel {
 				this.staleReported = false;
 				return;
 
+			case 'OUTBOUND_PLACED':
+				handlers.onOutboundPlaced(message.ticketId);
+				return;
+
 			case 'CALL_EVENT':
 				if (!this.leader) handlers.onEvent(message.event);
 				return;
@@ -259,6 +284,18 @@ export class LeaderChannel {
 							message: 'The control failed in the tab holding the call.',
 						},
 					);
+				return;
+			}
+
+			default: {
+				// Exhaustiveness: a new message kind without a case here is a compile error.
+				const unhandled: never = message;
+
+				// Ignored rather than thrown, for the reason this channel exists at all: messages
+				// come from another tab, which after a deploy may be running newer code and
+				// sending a kind this build has never heard of. This runs inside the channel's
+				// onmessage, where a throw is an unhandled error rather than anything actionable.
+				console.warn('Ignoring an unrecognised softphone tab message', unhandled);
 				return;
 			}
 		}

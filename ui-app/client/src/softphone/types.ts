@@ -34,7 +34,16 @@ export type SoftphoneErrorCode =
 	/** A control was relayed to the leader tab and it never answered. */
 	| 'RELAY_TIMEOUT'
 	/** A control was called with no call in progress. */
-	| 'NO_ACTIVE_CALL';
+	| 'NO_ACTIVE_CALL'
+	/**
+	 * A control this build does not implement was asked for.
+	 *
+	 * Reachable across a deploy: a follower tab running newer code can relay an action a leader
+	 * running older code has no case for. Reported rather than ignored, because `control` reads
+	 * anything other than `false` as success - so an unimplemented control would otherwise tell
+	 * the page its hangup worked.
+	 */
+	| 'UNSUPPORTED_CONTROL';
 
 export interface SoftphoneError {
 	code: SoftphoneErrorCode;
@@ -54,13 +63,68 @@ export type SoftphoneEvent =
 export type CallDirection = 'inbound' | 'outbound';
 
 /**
- * Everything a page can bind to.
+ * What the last call was, captured the moment it ended.
  *
- * Deliberately has no `durationSeconds`. A ticking counter here would be a store write every
- * second, and store writes fan out synchronously to every listener on the path - including
- * anything bound to `Store.softphone` as a whole, which in a CRM means a data grid re-rendering
- * for the length of every call. `startedAt` is written once; whatever renders the clock ticks in
- * its own local state.
+ * Snapshotted in the registry rather than computed by a page, because the fields it needs -
+ * direction, the other party, when audio started - are cleared the instant the call ends, and a
+ * page has no reliable moment to read them. It is one store write per call, not a tick.
+ */
+export interface SoftphoneCallSummary {
+	/** The provider's call id, when it gave us one. */
+	callId?: string;
+	direction?: CallDirection;
+
+	/**
+	 * The other party's number: the caller on an inbound call.
+	 *
+	 * **Absent on outbound**, and that is by design rather than an omission. The customer's number
+	 * is read from the deal on the server and never sent to the browser, so there is nothing here
+	 * to show. Use `ticketId` for outbound - it names the deal, which is more useful on screen than
+	 * digits and is what a redial needs.
+	 */
+	phoneNumber?: string;
+
+	/**
+	 * The deal this call was placed against. Outbound only; what a Redial control should pass.
+	 *
+	 * Recorded by the tab that placed the call, which is the tab the agent clicked in and so the
+	 * one showing them the wrap-up. Another tab watching the same call renders the call fine but
+	 * has no deal to name, because it never placed it.
+	 */
+	ticketId?: string;
+
+	/** The agent's identity at the provider. */
+	agent?: string;
+
+	/** ISO, when audio started. Undefined when the call was never answered in this browser. */
+	startedAt?: string;
+	/** ISO, when the call ended. */
+	endedAt: string;
+
+	/** Seconds of connected audio. Zero when never answered. */
+	durationSeconds: number;
+
+	/**
+	 * Whether audio was ever established **in this browser**.
+	 *
+	 * Not the same as "the customer picked up". On an outbound call the agent's own leg is answered
+	 * as soon as the provider bridges it, before the far end rings out - so a call the customer
+	 * never took still reads as answered here. Whether the customer answered is known only to the
+	 * server, from the provider's callback, and belongs to the deal's call log.
+	 */
+	answered: boolean;
+
+	/** The provider's own reason for the call ending, when it gives one. */
+	endReason?: string;
+}
+
+/**
+ * What the registry owns, and most of what a page binds to.
+ *
+ * Deliberately has no live duration. `startedAt` is written once, when audio begins, and the
+ * clock that counts from it is owned by the component and written to `Store.softphone.duration` -
+ * a path the registry never touches, so a tick cannot be clobbered by an unrelated state change.
+ * That is the one part of `Store.softphone` not described by this type.
  */
 export interface SoftphoneState {
 	/** Whether the backend holds a browser endpoint for this agent. Undefined until asked. */
@@ -80,7 +144,13 @@ export interface SoftphoneState {
 	direction?: CallDirection;
 	/** Customer's number on an inbound call. */
 	from?: string;
-	/** Dialled number on an outbound call, when the backend tells us one. */
+	/**
+	 * Dialled number on an outbound call.
+	 *
+	 * Always undefined today, and by design: the customer's number is read from the deal on the
+	 * server and never sent to the browser. Kept because a future provider may report the leg it
+	 * placed; a page wanting to name an outbound call should use the deal, not this.
+	 */
 	to?: string;
 	remoteName?: string;
 	/** ISO, written once when the call connects. */
@@ -92,6 +162,14 @@ export interface SoftphoneState {
 	micDenied: boolean;
 
 	lastError: SoftphoneError | null;
+
+	/**
+	 * The call that just ended, or null before the first one.
+	 *
+	 * Survives the call being cleared, so a page can render a wrap-up card, offer a redial, or log
+	 * an outcome after the fact.
+	 */
+	lastCall: SoftphoneCallSummary | null;
 }
 
 export const INITIAL_STATE: SoftphoneState = {
@@ -103,6 +181,7 @@ export const INITIAL_STATE: SoftphoneState = {
 	isOnHold: false,
 	micDenied: false,
 	lastError: null,
+	lastCall: null,
 };
 
 /**

@@ -1,4 +1,5 @@
-import { SoftphoneError, SoftphoneEvent } from '../types';
+import getSrcUrl from '../../components/util/getSrcUrl';
+import { SoftphoneError, SoftphoneErrorCode, SoftphoneEvent } from '../types';
 import { ICallProvider, ProviderInit } from './ICallProvider';
 
 /**
@@ -7,36 +8,6 @@ import { ICallProvider, ProviderInit } from './ICallProvider';
  * Everything vendor-shaped stops here: the global the UMD bundle defines, its five event literals,
  * its toggle-only controls, and the several places it fails quietly.
  */
-
-/**
- * Where the bundle lives.
- *
- * `/api/files/static/file/**` is the download route on the files service - the shorter
- * `/api/files/static/**` is the *directory listing* handler and returns JSON, which fails as a
- * script with a confusing error.
- *
- * The version is in the path because a vendor bundle silently replaced under a stable filename is
- * an unpleasant way to lose a phone system.
- *
- * This must be the rebuilt bundle, not the one from the vendor's release page. The published build
- * sets webpack's `publicPath` to `./target/`, so it resolves its four audio files against the
- * *page* URL: on `/deals/501` it asks for `/deals/target/ringtone.wav`. That does not even 404 -
- * the UI service answers every non-`/api/` path with `index.html` and HTTP 200, so the audio
- * element is handed HTML, fails to decode, and leaves nothing in the network tab to look at.
- * Rebuild with `publicPath` set to SDK_BASE and upload the four `.wav` files beside the bundle.
- */
-const SDK_BASE = '/api/files/static/file/SYSTEM/jslib/exotel/1.3.0';
-const SDK_URL = `${SDK_BASE}/crmBundle.js`;
-
-/**
- * Subresource integrity for the bundle above.
- *
- * Empty until the rebuilt bundle is hashed - an empty `integrity` attribute is not "no integrity",
- * it is a malformed one that blocks the load, so it is applied only when set. Fill it in when the
- * bundle is uploaded: this is a script that holds call credentials, and a supply-chain swap should
- * fail closed.
- */
-const SDK_INTEGRITY = '';
 
 /** The UMD bundle is built with `libraryExport: 'default'`, so the global is the class itself. */
 interface ExotelSdkConstructor {
@@ -63,41 +34,86 @@ interface ExotelPhone {
 	SendDTMF(digit: string): void;
 }
 
-/** The vendor's own payload. `callDirection` is deliberately unused: it is unverified, and the
- * event name already says which direction the call is. */
+/**
+ * What the vendor hands the call listener - its `getCallDetails()` snapshot, verified against the
+ * built bundle rather than guessed.
+ *
+ * The complete shape is `callId, remoteId, remoteDisplayName, callDirection, callState,
+ * callDuration, callStartedTime, callEstablishedTime, callEndedTime, callAnswerTime,
+ * callEndReason, sessionId, callSid, sipHeaders`, plus `callFromNumber` which the SDK copies on
+ * afterwards. Only the fields used are declared.
+ *
+ * **On an inbound call most of these are empty, and that is a defect in the bundle rather than a
+ * field-name guessing game.** `callFromNumber`, `callSid`, `callId` and `sipHeaders` are populated
+ * only by the vendor's `onRecieveInvite` handler, which reads them off the INVITE - and that
+ * handler has no call sites anywhere in the built bundle. The number does get extracted, in
+ * `newSession`, as `session.displayName = remoteIdentity.displayName || remoteIdentity.uri.user`,
+ * but onto the SIP.js session object, which is not passed to this callback. So the caller's number
+ * exists in the page and cannot be reached through the public API. The fix is one line in the
+ * vendor source we already have to fork for `publicPath`; nothing on this side can substitute.
+ *
+ * `callDirection` is deliberately unused: it is unverified, and the event name already says which
+ * direction the call is.
+ */
 interface ExotelCallEventData {
 	callId?: string;
+	/** The provider's own call identity, and what ties a call to its backend record. */
+	callSid?: string;
 	remoteId?: string;
 	remoteDisplayName?: string;
 	callFromNumber?: string;
 	callEndReason?: string;
+	/** Raw INVITE headers, when the bundle populates them - `X-Exotel-CallSid`, `From`, and so on. */
+	sipHeaders?: Record<string, string>;
 }
 
-let loadPromise: Promise<ExotelSdkConstructor> | undefined;
+/**
+ * Keyed by URL, not a single promise.
+ *
+ * Memoised so two near-simultaneous callers - a leader election racing a remount - share one
+ * script tag instead of appending two. Keyed because the URL is configuration: a single shared
+ * promise would hand the second caller the *first* caller's bundle whenever the two URLs differ,
+ * with nothing anywhere to say the requested one was never fetched.
+ */
+const loads = new Map<string, Promise<ExotelSdkConstructor>>();
 
 /**
- * Injects the bundle once per page, however many times a provider is created.
+ * Loads the vendor bundle from the URL the component was given, and only from there.
  *
- * Memoised on the promise rather than on a boolean so two near-simultaneous callers - a leader
- * election racing a remount - share one script tag instead of appending two.
+ * There is deliberately no built-in default. A default is a path that has to be true of every
+ * deployment, and the one that used to be here was true of none of them - it named a folder that
+ * had never been created, so the softphone failed with a 404 and a MIME-type complaint that read
+ * like a corrupt bundle. Requiring the URL means an unconfigured component says so plainly instead
+ * of failing somewhere three layers down.
  */
-function loadSdk(): Promise<ExotelSdkConstructor> {
-	if (loadPromise) return loadPromise;
+function loadSdk(sdkUrl?: string): Promise<ExotelSdkConstructor> {
+	const requested = sdkUrl?.trim();
 
-	loadPromise = new Promise<ExotelSdkConstructor>((resolve, reject) => {
+	if (!requested)
+		return Promise.reject(
+			err(
+				'SDK_LOAD_FAILED',
+				'No calling library URL is configured. Set the Softphone component\'s "Calling Library URL".',
+			),
+		);
+
+	const cached = loads.get(requested);
+	if (cached) return cached;
+
+	const load = new Promise<ExotelSdkConstructor>((resolve, reject) => {
 		const existing = (globalThis as Record<string, unknown>).ExotelCRMWebSDK;
 		if (existing) {
 			resolve(existing as ExotelSdkConstructor);
 			return;
 		}
 
+		// Resolved here rather than at module scope: getSrcUrl reads globalThis.cdnPrefix, which
+		// is set during boot and may not exist yet when this module is first evaluated. This is
+		// also what puts the bundle on the CDN when one is configured - the same treatment Image
+		// gives its src.
 		const script = document.createElement('script');
-		script.src = SDK_URL;
+		script.src = getSrcUrl(requested);
 		script.async = true;
-		if (SDK_INTEGRITY) {
-			script.integrity = SDK_INTEGRITY;
-			script.crossOrigin = 'anonymous';
-		}
 
 		script.onload = () => {
 			const sdk = (globalThis as Record<string, unknown>).ExotelCRMWebSDK;
@@ -111,17 +127,24 @@ function loadSdk(): Promise<ExotelSdkConstructor> {
 				);
 		};
 
-		// Let the next attempt retry rather than caching the failure forever: a bundle that 404s
-		// during a deploy should not disable the phone until the tab is reloaded.
+		// Drop the memo rather than caching the failure forever, so a corrected URL or a bundle
+		// that 404d mid-deploy can be retried without reloading the tab. This is the case an
+		// author hits while getting the URL right.
 		script.onerror = () => {
-			loadPromise = undefined;
-			reject(err('SDK_LOAD_FAILED', 'The calling library could not be loaded.'));
+			loads.delete(requested);
+			reject(
+				err(
+					'SDK_LOAD_FAILED',
+					`The calling library could not be loaded from ${requested}.`,
+				),
+			);
 		};
 
 		document.head.appendChild(script);
 	});
 
-	return loadPromise;
+	loads.set(requested, load);
+	return load;
 }
 
 /**
@@ -161,12 +184,13 @@ async function ensureMicrophone(): Promise<void> {
 	}
 }
 
-function err(code: SoftphoneError['code'], message: string): SoftphoneError {
+function err(code: SoftphoneErrorCode, message: string): SoftphoneError {
 	return { code, message };
 }
 
 export class ExotelCallProvider implements ICallProvider {
-	readonly provider = 'EXOTEL';
+	// Lowercase to match the backend's own name for it - see PROVIDERS in registry.ts.
+	readonly provider = 'exotel';
 
 	private phone?: ExotelPhone;
 	private listeners = new Set<(event: SoftphoneEvent) => void>();
@@ -180,12 +204,23 @@ export class ExotelCallProvider implements ICallProvider {
 	private onHold = false;
 	private muted = false;
 
-	/** Set on `incoming`, cleared on `callEnded`. Gates the controls that throw without a call. */
+	/**
+	 * Whether a call is in progress, tracked separately from its id.
+	 *
+	 * These are different questions and conflating them broke auto-answer. The provider does not
+	 * always give an id - `callSid` and `callId` are both empty when its INVITE reader has not
+	 * populated them - so a guard written as `if (!this.activeCallId)` treated a perfectly real
+	 * ringing call as no call, threw, and left the agent's own outbound leg ringing until the
+	 * provider timed it out.
+	 */
+	private callInProgress = false;
+
+	/** The provider's id for that call, when it gives one. Reporting only; never a presence check. */
 	private activeCallId?: string;
 
 	async init(config: ProviderInit): Promise<void> {
 		await ensureMicrophone();
-		const Sdk = await loadSdk();
+		const Sdk = await loadSdk(config.sdkUrl);
 
 		const sdk = new Sdk(config.token, config.providerUserId, config.autoRegister);
 
@@ -263,6 +298,7 @@ export class ExotelCallProvider implements ICallProvider {
 		}
 		this.phone = undefined;
 		this.listeners.clear();
+		this.callInProgress = false;
 		this.activeCallId = undefined;
 		this.onHold = false;
 		this.muted = false;
@@ -274,26 +310,53 @@ export class ExotelCallProvider implements ICallProvider {
 	}
 
 	private requireCall(): void {
-		if (!this.activeCallId) throw err('NO_ACTIVE_CALL', 'There is no call in progress.');
+		if (!this.callInProgress) throw err('NO_ACTIVE_CALL', 'There is no call in progress.');
 	}
 
 	private emit(event: SoftphoneEvent): void {
 		this.listeners.forEach(l => l(event));
 	}
 
+	/**
+	 * The provider's own identity for the call, preferred over the SIP dialog id.
+	 *
+	 * `callSid` is what the backend records and what a callback arrives with, so it is the value
+	 * worth putting in front of a page. `callId` is the SIP Call-ID and only a fallback.
+	 */
+	private static identify(data: ExotelCallEventData): string {
+		return data?.callSid || data?.callId || '';
+	}
+
+	/**
+	 * The caller's number, from whichever field the bundle actually filled in.
+	 *
+	 * Every source here is a real field on the vendor's snapshot - no speculative names. On the
+	 * current bundle all of them are empty for an inbound call; see ExotelCallEventData.
+	 */
+	private static callerNumber(data: ExotelCallEventData): string {
+		return (
+			data?.callFromNumber ||
+			data?.remoteId ||
+			data?.sipHeaders?.['From'] ||
+			data?.sipHeaders?.['P-Asserted-Identity'] ||
+			''
+		);
+	}
+
 	/** Turns the vendor's five literals into our union. */
 	private onVendorCallEvent(event: string, data: ExotelCallEventData): void {
-		const callId = data?.callId ?? '';
+		const callId = ExotelCallProvider.identify(data);
 
 		switch (event) {
 			case 'incoming':
+				this.callInProgress = true;
 				this.activeCallId = callId;
 				this.onHold = false;
 				this.muted = false;
 				this.emit({
 					type: 'INCOMING',
 					callId,
-					from: data?.callFromNumber ?? data?.remoteId ?? '',
+					from: ExotelCallProvider.callerNumber(data),
 					displayName: data?.remoteDisplayName,
 				});
 				return;
@@ -315,6 +378,7 @@ export class ExotelCallProvider implements ICallProvider {
 					callId: callId || (this.activeCallId ?? ''),
 					reason: data?.callEndReason,
 				});
+				this.callInProgress = false;
 				this.activeCallId = undefined;
 				this.onHold = false;
 				this.muted = false;

@@ -6,6 +6,7 @@ import { ExotelCallProvider } from './providers/exotel';
 import { ICallProvider } from './providers/ICallProvider';
 import {
 	INITIAL_STATE,
+	SoftphoneCallSummary,
 	SoftphoneError,
 	SoftphoneEvent,
 	SoftphoneFacade,
@@ -24,10 +25,36 @@ import {
  * The component is one subscriber to this, not its owner.
  */
 
-/** One line per provider. The backend picks which by returning `provider` from /browser/status. */
+/**
+ * One line per provider. The backend picks which by returning `provider` from /browser/status.
+ *
+ * Keyed lowercase because that is the backend's canonical form, not a formatting choice:
+ * `ConnectionSubType.getProvider()` returns `name().toLowerCase()`, and the same value is what the
+ * provider columns are queried and stored with. Keying this map on the enum name instead cost an
+ * afternoon - the lookup missed, `bringUpPhone` bailed with "no softphone for exotel" before
+ * minting a token, and the vendor bundle was never fetched, which reads like a broken integration
+ * rather than a typo.
+ */
 const PROVIDERS: Record<string, () => ICallProvider> = {
-	EXOTEL: () => new ExotelCallProvider(),
+	exotel: () => new ExotelCallProvider(),
 };
+
+/**
+ * Resolves a provider name to its adapter, whatever case it arrives in.
+ *
+ * The backend's form is lowercase today. Matching case-insensitively means a provider that ever
+ * arrives as `EXOTEL` - a different serialiser, a second service, a hand-written connection - still
+ * finds its adapter rather than failing in a way that points at the wrong thing.
+ */
+function providerFor(name: string | undefined): (() => ICallProvider) | undefined {
+	if (!name) return undefined;
+	return PROVIDERS[name.toLowerCase()];
+}
+
+/** The canonical form written to `Store.softphone.provider`, so a page can compare against it. */
+function normaliseProvider(name: string | undefined): string | undefined {
+	return name ? name.toLowerCase() : undefined;
+}
 
 /**
  * Design mode covers two globals that are not interchangeable.
@@ -60,9 +87,12 @@ const NOOP_FACADE: SoftphoneFacade = {
  * is visible on screen and in the call log.
  *
  * Confirm against a live outbound call and then simplify: if the provider distinguishes the two,
- * use whatever it sends and delete this. Two open questions go with it - whether that leg should
- * be answered automatically, since the agent already asked for the call, and what
- * `callDirection` actually contains.
+ * use whatever it sends and delete this. One open question goes with it - what `callDirection`
+ * actually contains.
+ *
+ * The claim is consumed the first time it matches, so one dial can claim at most one leg. It is
+ * also what triggers auto-answering that leg, which is why claiming too eagerly would be worse
+ * than a wrong label: it would pick up a customer's inbound call on the agent's behalf.
  */
 const OUTBOUND_CLAIM_WINDOW_MS = 20_000;
 
@@ -72,6 +102,7 @@ class SoftphoneRegistry {
 
 	private connectionName?: string;
 	private autoRegister = true;
+	private sdkUrl?: string;
 	private started = false;
 
 	private provider?: ICallProvider;
@@ -89,7 +120,8 @@ class SoftphoneRegistry {
 	 */
 
 	private outboundClaimUntil = 0;
-	private pendingTo?: string;
+	/** The deal the current outbound call was placed against, for the summary and for a redial. */
+	private pendingTicketId?: string;
 
 	// -------------------------------------------------------------- lifecycle
 
@@ -100,11 +132,14 @@ class SoftphoneRegistry {
 	 * fetched, and no microphone prompt appears. Most users in a tenant are not agents, and none of
 	 * that should happen to them.
 	 */
-	async start(connectionName: string, autoRegister = true): Promise<void> {
+	async start(connectionName: string, autoRegister = true, sdkUrl?: string): Promise<void> {
 		if (inDesigner()) return;
 		if (!connectionName) return;
 
-		if (this.started && this.connectionName === connectionName) {
+		// The library URL is part of what identifies this session, not just a detail of it: a
+		// changed one has to bring the phone up again rather than be quietly noted. That is the
+		// case an author hits while getting the URL right, when the first load 404d.
+		if (this.started && this.connectionName === connectionName && this.sdkUrl === sdkUrl) {
 			this.autoRegister = autoRegister;
 			return;
 		}
@@ -114,6 +149,7 @@ class SoftphoneRegistry {
 		this.started = true;
 		this.connectionName = connectionName;
 		this.autoRegister = autoRegister;
+		this.sdkUrl = sdkUrl;
 
 		this.watchAuth();
 
@@ -134,7 +170,9 @@ class SoftphoneRegistry {
 
 		this.patch({
 			provisioned: status.provisioned,
-			provider: status.provider,
+			// Normalised here rather than passed through, so everything downstream - the adapter
+			// lookup, `Store.softphone.provider`, and any page binding to it - agrees on one form.
+			provider: normaliseProvider(status.provider),
 			providerUserId: status.providerUserId,
 			virtualNumber: status.virtualNumber,
 		});
@@ -151,6 +189,7 @@ class SoftphoneRegistry {
 			onStateRequest: () => this.state,
 			onAction: (action, arg) => this.performLocally(action, arg),
 			onSnapshot: snapshot => this.adoptSnapshot(snapshot),
+			onOutboundPlaced: ticketId => this.claimOutbound(ticketId),
 			onLeaderStale: () =>
 				this.patch({
 					lastError: {
@@ -173,8 +212,9 @@ class SoftphoneRegistry {
 	stop(): void {
 		this.started = false;
 		this.connectionName = undefined;
+		this.sdkUrl = undefined;
 		this.outboundClaimUntil = 0;
-		this.pendingTo = undefined;
+		this.pendingTicketId = undefined;
 
 		this.unsubscribeProvider?.();
 		this.unsubscribeProvider = undefined;
@@ -221,7 +261,18 @@ class SoftphoneRegistry {
 		const providerName = this.state.provider;
 		if (!connectionName || !providerName) return;
 
-		const create = PROVIDERS[providerName];
+		// Checked before a token is minted, not at the point of use: every mint is a call to the
+		// provider, and burning one to then fail on a missing URL is waste with a worse error.
+		if (!this.sdkUrl?.trim()) {
+			this.fail({
+				code: 'SDK_LOAD_FAILED',
+				message:
+					'No calling library URL is configured. Set the Softphone component\'s "Calling Library URL".',
+			});
+			return;
+		}
+
+		const create = providerFor(providerName);
 		if (!create) {
 			this.fail({
 				code: 'INIT_FAILED',
@@ -244,6 +295,7 @@ class SoftphoneRegistry {
 				token: credential.token,
 				providerUserId: credential.providerUserId ?? this.state.providerUserId ?? '',
 				autoRegister: this.autoRegister,
+				sdkUrl: this.sdkUrl,
 			});
 
 			if (!this.started || this.connectionName !== connectionName) {
@@ -296,6 +348,74 @@ class SoftphoneRegistry {
 		});
 	}
 
+	/**
+	 * Records that an outbound call was placed, in whichever tab is reading this.
+	 *
+	 * Called directly by the tab that dialled and over the channel in every other tab, so the
+	 * leader - the only tab the SIP INVITE reaches - knows the next incoming leg is the agent's own
+	 * even when the click happened somewhere else. Without it, dialling from a second tab labelled
+	 * the call inbound and made the agent answer their own dial by hand.
+	 */
+	private claimOutbound(ticketId: string): void {
+		this.outboundClaimUntil = Date.now() + OUTBOUND_CLAIM_WINDOW_MS;
+		this.pendingTicketId = ticketId;
+		this.patch({ direction: 'outbound', lastError: null });
+	}
+
+	/**
+	 * Answers the agent's own leg of a call they just placed, so dialling is one click.
+	 *
+	 * The provider rings the customer over PSTN and, in parallel, pushes a SIP INVITE to the
+	 * agent's browser. The SDK reports that as an ordinary `incoming` call, so without this the
+	 * agent clicks Call and is then asked to answer the call they just asked for.
+	 *
+	 * Only in the leader tab: `applyEvent` also runs in followers, from the broadcast, and a
+	 * follower has no provider to answer with.
+	 *
+	 * Failures are swallowed on purpose. This runs inside the vendor's own event callback, and
+	 * `answer()` throws; letting it escape would surface as an exception inside the SDK rather than
+	 * as anything a page could act on. The call is still ringing and still answerable by hand, so
+	 * recording the reason is worth more than propagating it.
+	 */
+	private answerOwnDial(): void {
+		if (!this.channel?.isLeader || !this.provider) return;
+		try {
+			this.provider.answer();
+		} catch (e) {
+			console.error('Could not auto-answer the agent leg of an outbound call', e);
+		}
+	}
+
+	/**
+	 * Snapshots the call that is ending.
+	 *
+	 * Duration is computed here rather than at render time. Measured when the card is drawn it
+	 * would drift with however long the page took to get there, and keep drifting if the card
+	 * stays open - so it is taken once, at the only moment it is correct.
+	 *
+	 * The authoritative duration is still the server's, from the provider's callback. This is what
+	 * the browser saw, which is enough for a wrap-up card and is available immediately.
+	 */
+	private summarise(callId?: string, endReason?: string): SoftphoneCallSummary {
+		const state = this.state;
+		const startedAt = state.startedAt;
+
+		return {
+			callId: callId || state.callId,
+			direction: state.direction,
+			phoneNumber: state.direction === 'outbound' ? state.to : state.from,
+			ticketId: this.pendingTicketId,
+			agent: state.providerUserId,
+			startedAt,
+			endedAt: new Date().toISOString(),
+			durationSeconds: startedAt
+				? Math.max(0, Math.round((Date.now() - Date.parse(startedAt)) / 1000))
+				: 0,
+			answered: !!startedAt,
+			endReason,
+		};
+	}
+
 	/** The one place a call event becomes state, in the leader and in every follower alike. */
 	private applyEvent(event: SoftphoneEvent): void {
 		switch (event.type) {
@@ -304,19 +424,33 @@ class SoftphoneRegistry {
 				return;
 
 			case 'INCOMING': {
+				// The provider delivers each call event twice. A repeated INCOMING would reset
+				// isMuted, isOnHold and - worst - startedAt, stopping the live timer on a call
+				// that is already connected.
+				if (this.state.inCall && this.state.callId === event.callId) return;
+
 				const claimedByDial = Date.now() < this.outboundClaimUntil;
+
+				// Consume the claim. Without this, any genuinely inbound call arriving inside the
+				// window would also be treated as ours and auto-answered - a customer's call picked
+				// up without the agent choosing to. One dial can claim at most one leg.
+				if (claimedByDial) this.outboundClaimUntil = 0;
+
 				this.patch({
 					inCall: true,
 					callId: event.callId,
 					direction: claimedByDial ? 'outbound' : 'inbound',
 					from: claimedByDial ? undefined : event.from,
-					to: claimedByDial ? this.pendingTo : undefined,
+					// Always undefined: the server never sends the customer's number here.
+					to: undefined,
 					remoteName: event.displayName,
 					isMuted: false,
 					isOnHold: false,
 					startedAt: undefined,
 					lastError: null,
 				});
+
+				if (claimedByDial) this.answerOwnDial();
 				return;
 			}
 
@@ -324,13 +458,25 @@ class SoftphoneRegistry {
 				this.patch({
 					inCall: true,
 					callId: event.callId || this.state.callId,
-					startedAt: event.startedAt,
+					// First one wins. A repeated CONNECTED carries a later timestamp, which would
+					// silently restart the agent's call timer mid-conversation.
+					startedAt: this.state.startedAt ?? event.startedAt,
 				});
 				return;
 
-			case 'ENDED':
+			case 'ENDED': {
+				// Only the first ENDED counts. The provider sends two, and the second arrives
+				// after this handler has already cleared the call - so re-summarising would
+				// overwrite a good record with one missing the direction, the caller's number and
+				// the duration, making every call look unanswered and zero-length.
+				if (!this.state.inCall) return;
+
+				// Summarised before the reset, because everything it needs is about to be cleared
+				// and a page has no moment of its own to read it.
+				const lastCall = this.summarise(event.callId, event.reason);
+
 				this.outboundClaimUntil = 0;
-				this.pendingTo = undefined;
+				this.pendingTicketId = undefined;
 				this.patch({
 					inCall: false,
 					callId: undefined,
@@ -341,8 +487,10 @@ class SoftphoneRegistry {
 					startedAt: undefined,
 					isMuted: false,
 					isOnHold: false,
+					lastCall,
 				});
 				return;
+			}
 
 			case 'HOLD':
 				this.patch({ isOnHold: event.onHold });
@@ -355,6 +503,19 @@ class SoftphoneRegistry {
 			case 'ERROR':
 				this.fail(event.error);
 				return;
+
+			default: {
+				// Exhaustiveness. Adding a member to SoftphoneEvent without a case above is a
+				// compile error here, which is the only thing that catches it: this returns void,
+				// so a missing case would otherwise be a silent no-op.
+				const unhandled: never = event;
+
+				// Reachable at run time for one reason: events cross a BroadcastChannel, so a tab
+				// running older code can be sent an event type it has no case for after a deploy.
+				// Ignoring it is right - throwing would surface inside the provider's own callback.
+				console.warn('Ignoring an unrecognised softphone event', unhandled);
+				return;
+			}
 		}
 	}
 
@@ -393,9 +554,12 @@ class SoftphoneRegistry {
 
 			try {
 				const call = await dialTicket(ticketId, connection);
-				this.outboundClaimUntil = Date.now() + OUTBOUND_CLAIM_WINDOW_MS;
-				this.pendingTo = undefined;
-				this.patch({ direction: 'outbound', lastError: null });
+
+				// This tab, then every other one. The leader needs the claim before the INVITE
+				// arrives, and it may not be this tab.
+				this.claimOutbound(ticketId);
+				this.channel?.announceOutboundDial(ticketId);
+
 				return call;
 			} catch (e) {
 				const error = asError(
@@ -457,6 +621,19 @@ class SoftphoneRegistry {
 				if (arg === false) provider.unregister();
 				else provider.register();
 				return arg !== false;
+
+			default: {
+				// Exhaustiveness, and here it has to throw rather than warn. `control` reads any
+				// result other than `false` as success, so falling through would return undefined
+				// and tell the page the control worked. The throw lands in the existing error
+				// plumbing either way: `performForFollower` turns it into an ACTION_RESULT the
+				// follower rejects on, and a local call surfaces it as the function's error event.
+				const unhandled: never = action;
+				throw {
+					code: 'UNSUPPORTED_CONTROL',
+					message: `This build cannot perform "${String(unhandled)}".`,
+				} satisfies SoftphoneError;
+			}
 		}
 	}
 }

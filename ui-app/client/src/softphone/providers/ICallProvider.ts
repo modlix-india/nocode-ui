@@ -47,4 +47,12 @@ export interface ProviderInit {
 	token: string;
 	providerUserId: string;
 	autoRegister: boolean;
+	/**
+	 * Where to load the provider's client library from. Falls back to the adapter's own default.
+	 *
+	 * Configurable because the path differs per deployment and per bundle version, and neither is
+	 * worth a release. Resolved through `getSrcUrl` by the adapter, so a configured CDN applies to
+	 * it the same way it applies to an image.
+	 */
+	sdkUrl?: string;
 }
