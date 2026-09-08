@@ -20,6 +20,7 @@ import { ComponentProperty, PageDefinition } from '../types/common';
 import { processLocation } from '../util/locationProcessor';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
 import getPageDefinition from './pageDefinition';
+import { isLeavingForBeacon } from '../sso/ssoModule';
 
 const POSITIONS: { [key: string]: boolean } = {
 	center: true,
@@ -49,7 +50,14 @@ export const RenderEngineContainer = () => {
 				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName!));
 				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
-				if (appCode !== pDef?.appCode) {
+				// A beacon hop is already committed and this page is on its way out, so a
+				// reload here would abort it. `UIEngine.Login` deliberately clears
+				// `Store.application` on success, which leaves `appCode` undefined and makes
+				// the mismatch below look real when nothing is wrong: the reload then killed
+				// the seed navigation and the shared session was silently never established.
+				// Observed as `Host app code: undefined Page app code: modlix` immediately
+				// followed by `net::ERR_ABORTED` on the beacon request.
+				if (appCode !== pDef?.appCode && !isLeavingForBeacon()) {
 					console.error(
 						"Trying to load a page that doesn't belong to the app. Host app code:",
 						appCode,
