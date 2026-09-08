@@ -42,14 +42,65 @@ export function detectTransitions(
 }
 
 /**
- * Whether this tab should play the ringtone.
+ * Which parts of the state actually changed.
  *
- * Only the tab holding the call rings. Several tabs playing the same tone milliseconds apart is
- * worse than one, and this is the tab the call audio comes out of anyway.
+ * The store notifies a listener when the path written is that path *or an ancestor of it*, so
+ * writing the whole `Store.softphone` object notifies everything bound to any `Store.softphone.*`
+ * path - a page's caller-id label re-renders because the mute flag moved. Writing only the keys
+ * that changed keeps each binding independent, which is what makes a per-second value like a call
+ * timer affordable at all.
  *
- * Outbound calls do not ring the agent: they asked for the call, and the tone they want is the
- * ringback from the far end, which the provider's own audio supplies.
+ * Reference comparison is enough: the registry replaces `lastError` and `lastCall` wholesale when
+ * they change and leaves the same object in place when they do not.
  */
-export function shouldRing(state: SoftphoneState, ringtoneUrl: string | undefined): boolean {
-	return !!ringtoneUrl && state.isLeader && state.direction !== 'outbound';
+export function changedKeys(
+	previous: SoftphoneState | undefined,
+	next: SoftphoneState,
+): Array<keyof SoftphoneState> {
+	if (!previous) return Object.keys(next) as Array<keyof SoftphoneState>;
+
+	// The union of both key sets, not just the new one. Optional fields like `from` and
+	// `startedAt` are absent from the initial state rather than present-and-undefined, and
+	// `stop()` resets to it - so a key the previous state had and this one does not still needs
+	// writing, or a stale caller id survives the call that owned it.
+	const keys = new Set([...Object.keys(previous), ...Object.keys(next)]) as Set<
+		keyof SoftphoneState
+	>;
+
+	return [...keys].filter(key => previous[key] !== next[key]);
+}
+
+/**
+ * Turns a count of seconds into a clock.
+ *
+ * `MM:SS` up to an hour, then `HH:MM:SS`. A support call really can run past sixty minutes, and
+ * `61:04` for an hour and a minute reads as a mistake.
+ */
+export function formatDuration(totalSeconds: number): string {
+	const safe = Number.isFinite(totalSeconds) && totalSeconds > 0 ? Math.floor(totalSeconds) : 0;
+
+	const hours = Math.floor(safe / 3600);
+	const minutes = Math.floor((safe % 3600) / 60);
+	const seconds = safe % 60;
+
+	const mm = String(minutes).padStart(2, '0');
+	const ss = String(seconds).padStart(2, '0');
+
+	return hours > 0 ? `${String(hours).padStart(2, '0')}:${mm}:${ss}` : `${mm}:${ss}`;
+}
+
+/** What a page reads to show a live call timer. */
+export interface CallElapsed {
+	seconds: number;
+	formatted: string;
+}
+
+/** Elapsed connected time, from the instant audio started. Zero for anything unparseable. */
+export function elapsedSince(startedAt: string | undefined, now = Date.now()): CallElapsed {
+	const startedMs = startedAt ? Date.parse(startedAt) : NaN;
+	const seconds = Number.isFinite(startedMs)
+		? Math.max(0, Math.round((now - startedMs) / 1000))
+		: 0;
+
+	return { seconds, formatted: formatDuration(seconds) };
 }

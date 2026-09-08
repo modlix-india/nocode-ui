@@ -29,11 +29,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 	},
 	{
-		name: 'audioRingtoneUrl',
+		name: 'sdkUrl',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Ringtone URL',
+		displayName: 'Calling Library URL',
 		description:
-			'Sound to play on an incoming call. Plays only in the tab holding the call, so several open tabs do not ring at once.',
+			"Required. Where to load the calling provider's browser library from, for example api/files/static/file/SYSTEM/jslib/exotelBundle/crmBundle.js. There is no default: a built-in path would have to be true of every deployment. A configured CDN is applied automatically, the same way it is for an image. Changing it takes effect on the next page load.",
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{

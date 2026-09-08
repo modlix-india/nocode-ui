@@ -1,5 +1,10 @@
 import { INITIAL_STATE, SoftphoneError, SoftphoneState } from '../../../softphone/types';
-import { detectTransitions, shouldRing } from '../softphoneTransitions';
+import {
+	changedKeys,
+	detectTransitions,
+	elapsedSince,
+	formatDuration,
+} from '../softphoneTransitions';
 
 function state(over: Partial<SoftphoneState> = {}): SoftphoneState {
 	return { ...INITIAL_STATE, ...over };
@@ -100,22 +105,82 @@ describe('detectTransitions', () => {
 	});
 });
 
-describe('shouldRing', () => {
-	it('rings in the tab holding the call', () => {
-		expect(shouldRing(ringing, '/ring.mp3')).toBe(true);
+describe('changedKeys', () => {
+	it('writes every key on the first reading, so the store gets a full shape', () => {
+		expect(changedKeys(undefined, state())).toEqual(Object.keys(state()));
 	});
 
-	it('stays silent in the other tabs', () => {
-		// Otherwise every open CRM tab plays the same tone milliseconds apart.
-		expect(shouldRing(state({ ...ringing, isLeader: false }), '/ring.mp3')).toBe(false);
+	it('writes nothing when nothing moved', () => {
+		expect(changedKeys(connected, connected)).toEqual([]);
 	});
 
-	it('does not ring the agent for a call the agent placed', () => {
-		expect(shouldRing(state({ ...ringing, direction: 'outbound' }), '/ring.mp3')).toBe(false);
+	it('writes only what moved', () => {
+		const muted = state({ ...connected, isMuted: true });
+
+		// The point of the whole exercise: a caller-id label bound to `from` must not re-render
+		// because the mute flag changed.
+		expect(changedKeys(connected, muted)).toEqual(['isMuted']);
 	});
 
-	it('stays silent when no ringtone is configured', () => {
-		expect(shouldRing(ringing, undefined)).toBe(false);
-		expect(shouldRing(ringing, '')).toBe(false);
+	it('includes a key that became undefined, so the store deletes it', () => {
+		const idle = state({ provisioned: true, registered: true, isLeader: true });
+
+		// `from` going from a number to undefined has to be written, or a stale caller id stays
+		// on screen after the call ends.
+		expect(changedKeys(connected, idle)).toContain('from');
+		expect(changedKeys(connected, idle)).toContain('startedAt');
+	});
+
+	it('treats an unchanged object field as unchanged', () => {
+		const error = { code: 'MIC_DENIED' as const, message: 'Blocked.' };
+		const first = state({ provisioned: true, lastError: error });
+		const second = state({ provisioned: true, lastError: error, registered: true });
+
+		// Reference comparison is only safe because the registry replaces these wholesale.
+		expect(changedKeys(first, second)).toEqual(['registered']);
+	});
+});
+
+describe('formatDuration', () => {
+	it('pads to MM:SS', () => {
+		expect(formatDuration(0)).toBe('00:00');
+		expect(formatDuration(5)).toBe('00:05');
+		expect(formatDuration(95)).toBe('01:35');
+		expect(formatDuration(3599)).toBe('59:59');
+	});
+
+	it('switches to hours past the hour, so 01:01:04 is not shown as 61:04', () => {
+		expect(formatDuration(3600)).toBe('01:00:00');
+		expect(formatDuration(3664)).toBe('01:01:04');
+	});
+
+	it('never renders nonsense for nonsense input', () => {
+		expect(formatDuration(-5)).toBe('00:00');
+		expect(formatDuration(NaN)).toBe('00:00');
+		expect(formatDuration(Infinity)).toBe('00:00');
+	});
+});
+
+describe('elapsedSince', () => {
+	const now = Date.parse('2026-09-07T12:00:00.000Z');
+
+	it('counts from the moment audio started', () => {
+		expect(elapsedSince('2026-09-07T11:58:25.000Z', now)).toEqual({
+			seconds: 95,
+			formatted: '01:35',
+		});
+	});
+
+	it('reads zero before a call connects', () => {
+		expect(elapsedSince(undefined, now)).toEqual({ seconds: 0, formatted: '00:00' });
+	});
+
+	it('does not trip over an unparseable timestamp', () => {
+		// Better a zero clock than NaN:NaN on screen.
+		expect(elapsedSince('not a date', now)).toEqual({ seconds: 0, formatted: '00:00' });
+	});
+
+	it('never counts backwards if the clock disagrees with the server', () => {
+		expect(elapsedSince('2026-09-07T12:00:10.000Z', now).seconds).toBe(0);
 	});
 });

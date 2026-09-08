@@ -9,7 +9,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './softphoneProperties';
-import { detectTransitions, shouldRing } from './softphoneTransitions';
+import { changedKeys, detectTransitions, elapsedSince } from './softphoneTransitions';
 
 /**
  * Binds the softphone to the page.
@@ -28,6 +28,23 @@ import { detectTransitions, shouldRing } from './softphoneTransitions';
  */
 const SOFTPHONE_PATH = `${STORE_PREFIX}.softphone`;
 
+/**
+ * The live call clock: `{ seconds, formatted }`, updated once a second while a call is connected.
+ *
+ * Owned by this component rather than by the registry, and deliberately not part of
+ * `SoftphoneState`. Two reasons. An interval needs tearing down when the thing that started it
+ * goes away, which a component has and a module singleton does not. And keeping it out of the
+ * registry's state means the per-key write never touches this path, so a tick cannot be clobbered
+ * by an unrelated state change - a mute toggle mid-call would otherwise blank the clock until the
+ * next second.
+ *
+ * A page binds a text component straight to `Store.softphone.duration.formatted`. Nothing else is
+ * needed: no Timer component, no event function, no date arithmetic.
+ */
+const DURATION_PATH = `${SOFTPHONE_PATH}.duration`;
+
+const IDLE_DURATION = { seconds: 0, formatted: '00:00' };
+
 export default function Softphone(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
 
@@ -38,7 +55,7 @@ export default function Softphone(props: Readonly<ComponentProps>) {
 		properties: {
 			connectionName,
 			autoRegister = true,
-			audioRingtoneUrl,
+			sdkUrl,
 			onIncomingCall,
 			onCallConnected,
 			onCallEnded,
@@ -79,18 +96,18 @@ export default function Softphone(props: Readonly<ComponentProps>) {
 		pageName: context.pageName,
 	};
 
-	const ringtoneRef = useRef<string | undefined>(audioRingtoneUrl);
-	ringtoneRef.current = audioRingtoneUrl;
-
 	const previousRef = useRef<SoftphoneState | undefined>(undefined);
-	const audioRef = useRef<HTMLAudioElement | undefined>(undefined);
+
+	const tickRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+	/** Which call the clock is currently running for, so a new one restarts it. */
+	const tickingForRef = useRef<string | undefined>(undefined);
 
 	useEffect(() => {
 		if (!connectionName) return;
-		void softphoneRegistry.start(connectionName, autoRegister !== false);
+		void softphoneRegistry.start(connectionName, autoRegister !== false, sdkUrl || undefined);
 		// Deliberately no teardown. The phone is meant to outlive this component; the registry ends
 		// the session itself when the user's own session ends.
-	}, [connectionName, autoRegister]);
+	}, [connectionName, autoRegister, sdkUrl]);
 
 	useEffect(() => {
 		if (!connectionName) return;
@@ -101,13 +118,27 @@ export default function Softphone(props: Readonly<ComponentProps>) {
 		previousRef.current = undefined;
 
 		const unsubscribe = softphoneRegistry.subscribe(state => {
-			// The store is written before any event runs, so an event function can read
-			// Store.softphone rather than needing the state handed to it - which is how every
-			// other component in this codebase passes information to a page.
-			setData(SOFTPHONE_PATH, state);
-
 			const previous = previousRef.current;
+
+			// Per key once there is something to compare against, but one write for the first
+			// reading.
+			//
+			// The store notifies a listener when the written path is that path or an ancestor of
+			// it. So a write of `Store.softphone` wakes everything bound to any part of it - a
+			// caller-id label re-rendering because the mute flag moved - which is why updates go
+			// key by key. But the first reading has every key "changed", and writing nine of them
+			// separately notifies a whole-object binding nine times instead of once. One write is
+			// strictly better there, and the isolation only matters once calls start.
+			//
+			// The store deletes a key written as undefined, so either path produces the same shape.
+			if (!previous) setData(SOFTPHONE_PATH, state);
+			else
+				for (const key of changedKeys(previous, state))
+					setData(`${SOFTPHONE_PATH}.${key}`, state[key]);
+
 			previousRef.current = state;
+
+			syncClock(state);
 
 			const events = eventsRef.current;
 
@@ -117,49 +148,82 @@ export default function Softphone(props: Readonly<ComponentProps>) {
 						fire(events.onRegistrationChange, events);
 						break;
 					case 'incomingCall':
-						startRinging(state);
 						fire(events.onIncomingCall, events);
 						break;
 					case 'callConnected':
-						stopRinging();
 						fire(events.onCallConnected, events);
 						break;
 					case 'callEnded':
-						stopRinging();
 						fire(events.onCallEnded, events);
 						break;
 					case 'error':
 						fire(events.onError, events);
 						break;
+					default: {
+						// Exhaustiveness: a new transition without a case here is a compile error,
+						// which is the only thing that catches it - the loop would otherwise skip
+						// the transition and simply not fire the page's event.
+						//
+						// Not thrown: this runs inside the registry's subscriber, and throwing
+						// would take the remaining subscribers and the store write down with it.
+						const unhandled: never = transition;
+						console.warn('Ignoring an unrecognised softphone transition', unhandled);
+					}
 				}
 			}
 		});
 
+		// After subscribing, not before: `subscribe` calls back synchronously, and that first
+		// whole-object write replaces `Store.softphone` - deleting a `duration` written earlier.
+		// Established here so a label bound to it reads 00:00 rather than blank before any call.
+		setData(DURATION_PATH, IDLE_DURATION);
+
 		return () => {
 			unsubscribe();
-			stopRinging();
+
+			// Nothing maintains the clock once this unmounts, and a frozen 01:23 reads as live in a
+			// way 00:00 does not. Navigating to a page that opts out of the shell is the case.
+			stopClock();
+			tickingForRef.current = undefined;
+			setData(DURATION_PATH, IDLE_DURATION);
 		};
 	}, [connectionName]);
 
-	function startRinging(state: SoftphoneState) {
-		const url = ringtoneRef.current;
-		if (!shouldRing(state, url)) return;
+	/**
+	 * Starts, restarts or stops the clock to match the call.
+	 *
+	 * Driven off the state rather than off specific events, so every path is covered by
+	 * construction - answered, ended, a second call, a logout, a tab that opened mid-call and
+	 * adopted a snapshot.
+	 */
+	function syncClock(state: SoftphoneState) {
+		const startedAt = state.inCall ? state.startedAt : undefined;
 
-		stopRinging();
-		const audio = new Audio(url);
-		audio.loop = true;
-		audioRef.current = audio;
-		// Autoplay can be refused when the agent has not interacted with the page yet. The call is
-		// still ringing on screen, so a silent ring is a degradation, not a failure.
-		audio.play().catch(() => {});
+		if (!startedAt) {
+			if (tickingForRef.current === undefined) return;
+			stopClock();
+			tickingForRef.current = undefined;
+			setData(DURATION_PATH, IDLE_DURATION);
+			return;
+		}
+
+		// Keyed on the timestamp: a new call must restart the clock rather than keep counting
+		// from the previous one.
+		if (tickingForRef.current === startedAt) return;
+
+		stopClock();
+		tickingForRef.current = startedAt;
+
+		// Written immediately as well as on the interval, so the clock reads 00:00 the moment the
+		// call connects instead of staying blank for a second.
+		setData(DURATION_PATH, elapsedSince(startedAt));
+		tickRef.current = setInterval(() => setData(DURATION_PATH, elapsedSince(startedAt)), 1000);
 	}
 
-	function stopRinging() {
-		const audio = audioRef.current;
-		if (!audio) return;
-		audio.pause();
-		audio.currentTime = 0;
-		audioRef.current = undefined;
+	function stopClock() {
+		if (!tickRef.current) return;
+		clearInterval(tickRef.current);
+		tickRef.current = undefined;
 	}
 
 	const ref = useRef<HTMLDivElement>(null);
