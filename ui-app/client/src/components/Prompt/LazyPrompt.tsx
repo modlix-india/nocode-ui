@@ -30,6 +30,8 @@ import { InlineDataRenderer } from './components/InlineDataRenderer';
 import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
+import { getHref } from '../util/getHref';
+import { PagePreview, type PreviewSurface } from './PagePreview';
 import { serialiseActiveData } from './editorContext';
 import {
 	DraftDescriptor,
@@ -39,6 +41,7 @@ import {
 	matchDescriptor,
 	snapshotBaseline,
 } from './openDrafts';
+import { startDragShield } from '../../functions/utils';
 
 interface Message {
 	id: string;
@@ -706,6 +709,39 @@ function SuggestionButtons({
 	);
 }
 
+/**
+ * What a conversation is about, as the server recorded it.
+ *
+ * The agent stamps the app and page its writes landed on onto the session, so
+ * this is the durable answer to "what was this chat working on" -- durable in a
+ * way the browser is not. `context_json` arrives as a JSON STRING rather than an
+ * object, which is easy to miss: reading `session.context` finds nothing and
+ * fails silently, leaving every reopened chat with no context.
+ *
+ * Everything here is best-effort. A session that predates these keys, or one
+ * whose context will not parse, simply has no context to offer.
+ */
+function readSessionContext(session: any): { app?: string; page?: string; apps: string[] } {
+	const raw = session?.context_json ?? session?.context;
+	let ctx: any = raw;
+	if (typeof raw === 'string') {
+		try {
+			ctx = JSON.parse(raw);
+		} catch {
+			return { apps: [] };
+		}
+	}
+	if (!ctx || typeof ctx !== 'object') return { apps: [] };
+	const app = typeof ctx.focus_app_code === 'string' ? ctx.focus_app_code.trim() : '';
+	const page = typeof ctx.focus_page_name === 'string' ? ctx.focus_page_name.trim() : '';
+	// Every app this conversation wrote to, which is what the pending-draft bar
+	// wants: the focus app is only the most recent of them.
+	const apps = Array.isArray(ctx.written_app_codes)
+		? ctx.written_app_codes.filter((a: any) => typeof a === 'string' && a.trim()).map(String)
+		: [];
+	return { app: app || undefined, page: page || undefined, apps };
+}
+
 function extractUsageFromSession(session: any): TokenUsage | null {
 	if (!session) return null;
 	const input = session.total_input_tokens ?? 0;
@@ -868,6 +904,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			placeholder = 'Ask anything',
 			welcomeMessage = 'What can I help with?',
 			initialPrompt = '',
+			openFullPageName = '',
+			initialSessionId = '',
+			enablePreview = false,
 			contextSurface = '',
 			targetAppCode = '',
 			activeObject = '',
@@ -890,6 +929,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			messagesPerPage = 20,
 			sidebarToggleIcon = 'fa fa-bars',
 			newChatTopIcon = 'fa fa-pen-to-square',
+			openFullIcon = 'fa fa-up-right-and-down-left-from-center',
+			previewIcon = 'fa fa-window-restore',
+			previewReloadIcon = 'fa fa-rotate-right',
 			newChatSidebarIcon = 'fa fa-plus',
 			sendIcon = 'fa fa-arrow-up',
 			stopIcon = 'fa fa-stop',
@@ -1148,6 +1190,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				pageExtractor,
 				onLoad: data => {
 					if (data.sidebarWidth) setSidebarWidth(data.sidebarWidth);
+					if (data.previewWidth) setPreviewWidth(data.previewWidth);
+					if (data.previewSurface === 'draft' || data.previewSurface === 'live')
+						setPreviewSurface(data.previewSurface);
+					if (data.previewDevice) setPreviewDevice(data.previewDevice);
+					// Only whether the pane was wanted, never which page: that is per
+					// conversation and is restored from the session scope instead.
+					if (data.previewOpen !== undefined)
+						preferredPreviewOpenRef.current = data.previewOpen;
 					if (data.sidebarOpen !== undefined) {
 						preferredSidebarOpenRef.current = data.sidebarOpen;
 						// Never reopen a drawer over the chat: this arrives async, so
@@ -1168,6 +1218,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			const startX = e.clientX;
 			const startWidth = sidebarWidth;
+			// The preview pane on the other side of the chat is an iframe. Without
+			// the shield the drag freezes the moment the pointer reaches it, and the
+			// mouseup that lands in the frame never gets back here to end it.
+			const releaseShield = startDragShield('col-resize');
 
 			const handleMouseMove = (ev: MouseEvent) => {
 				if (!isResizingRef.current) return;
@@ -1180,6 +1234,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				isResizingRef.current = false;
 				document.removeEventListener('mousemove', handleMouseMove);
 				document.removeEventListener('mouseup', handleMouseUp);
+				releaseShield();
 				document.body.style.cursor = '';
 				document.body.style.userSelect = '';
 
@@ -1208,6 +1263,133 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			document.body.style.userSelect = 'none';
 		},
 		[sidebarWidth, personalizationBindingPath, props.locationHistory, pageExtractor],
+	);
+
+	// ── Page preview ────────────────────────────────────────────────────────
+	// The page the agent is working on, rendered beside the chat. State lives here
+	// rather than in the pane so it survives the pane being closed and reopened,
+	// and so one place decides what is being previewed.
+	const [previewOpen, setPreviewOpen] = useState(false);
+	const [previewWidth, setPreviewWidth] = useState(720);
+	const [previewSurface, setPreviewSurface] = useState<PreviewSurface>('draft');
+	const [previewDevice, setPreviewDevice] = useState('desktop');
+	// What the agent last touched, which is what the preview points at.
+	const [previewTarget, setPreviewTarget] = useState<
+		{ appCode: string; pageName: string } | undefined
+	>();
+	// Bumped whenever a write lands on the page being shown, so the pane reloads.
+	const [previewReload, setPreviewReload] = useState(0);
+	const previewRef = useRef<HTMLDivElement>(null);
+	// The preview URL carries a clientCode segment. The logged-in client is the
+	// right one: it is whose copy of the app the agent has been writing to.
+	const previewClientCode = (getDataFromPath(
+		'Store.auth.loggedInClientCode',
+		[],
+		pageExtractor,
+	) ?? 'SYSTEM') as string;
+	const previewOpenRef = useRef(previewOpen);
+	// What personalization said, applied only once a target exists.
+	const preferredPreviewOpenRef = useRef<boolean | undefined>(undefined);
+	previewOpenRef.current = previewOpen;
+	const previewTargetRef = useRef(previewTarget);
+	previewTargetRef.current = previewTarget;
+
+	/** Merge one patch into the personalization document. */
+	const savePreferences = useCallback(
+		(patch: Record<string, any>) => {
+			if (!personalizationBindingPath) return;
+			const current =
+				getDataFromPath(personalizationBindingPath, props.locationHistory, pageExtractor) ??
+				{};
+			setStoreData(
+				personalizationBindingPath,
+				{ ...current, ...patch },
+				pageExtractor.getPageName(),
+			);
+		},
+		[personalizationBindingPath, props.locationHistory, pageExtractor],
+	);
+
+	const openPreview = useCallback(() => {
+		setPreviewOpen(true);
+		// Kiran's call: the sessions list has to go. Three columns in one pane
+		// leaves the chat too narrow to read, and the list is the one of the three
+		// nobody is looking at while they watch a page being built. Routed through
+		// the ref rather than the preference so reopening the chat later still
+		// restores whatever the user actually chose.
+		setSidebarOpen(false);
+		savePreferences({ previewOpen: true });
+	}, [savePreferences]);
+
+	const closePreview = useCallback(() => {
+		setPreviewOpen(false);
+		savePreferences({ previewOpen: false });
+	}, [savePreferences]);
+
+	const changePreviewSurface = useCallback(
+		(s: PreviewSurface) => {
+			setPreviewSurface(s);
+			savePreferences({ previewSurface: s });
+		},
+		[savePreferences],
+	);
+
+	const changePreviewDevice = useCallback(
+		(d: string) => {
+			setPreviewDevice(d);
+			savePreferences({ previewDevice: d });
+		},
+		[savePreferences],
+	);
+
+	/**
+	 * The pane was pointed somewhere else from its path box.
+	 *
+	 * Adopted as the target rather than left inside the pane, so a write landing
+	 * on the page now being shown still reloads it, and so the button that reopens
+	 * a closed pane names the page the user last looked at.
+	 */
+	const retargetPreview = useCallback((t: { appCode: string; pageName: string }) => {
+		setPreviewTarget(prev =>
+			prev?.appCode === t.appCode && prev?.pageName === t.pageName ? prev : t,
+		);
+	}, []);
+
+	// The pane is on the right, so dragging LEFT widens it.
+	const handlePreviewResizeStart = useCallback(
+		(e: React.MouseEvent) => {
+			e.preventDefault();
+			const startX = e.clientX;
+			const startWidth = previewRef.current?.offsetWidth ?? previewWidth;
+			let latest = startWidth;
+			// The grip sits on the pane's left edge, a few pixels from the iframe it
+			// resizes: narrowing the pane means dragging straight into that frame.
+			// The shield is what keeps the pointer in this document while it happens.
+			const releaseShield = startDragShield('col-resize');
+
+			const onMove = (ev: MouseEvent) => {
+				// Upper bound is a share of the window, not a constant: the point of
+				// the drag is to trade chat for page, and a fixed 1400 would leave no
+				// chat at all on a laptop.
+				const max = Math.max(420, window.innerWidth - 380);
+				latest = Math.max(360, Math.min(max, startWidth + (startX - ev.clientX)));
+				setPreviewWidth(latest);
+			};
+			const onUp = () => {
+				document.removeEventListener('mousemove', onMove);
+				document.removeEventListener('mouseup', onUp);
+				releaseShield();
+				document.body.style.cursor = '';
+				document.body.style.userSelect = '';
+				savePreferences({ previewWidth: latest });
+			};
+
+			document.addEventListener('mousemove', onMove);
+			document.addEventListener('mouseup', onUp);
+			document.body.style.cursor = 'col-resize';
+			document.body.style.userSelect = 'none';
+		},
+		[previewWidth, savePreferences],
 	);
 
 	// Sidebar toggle with personalization
@@ -1407,15 +1589,21 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		Array<{ kind: string; name: string; draft: boolean }>
 	>([]);
 
-	// Apps this chat has left unpublished work in. Kept in LocalStore because the
-	// draft outlives the conversation: the notice above is per-turn and
-	// dismissible, so on a surface with no editor a refresh used to erase the only
-	// hint that anything was waiting, while the server held the draft for good.
-	const pendingAppsPath = `${LOCAL_STORE_PREFIX}.promptPendingApps.${props.context.pageName}_${flattenUUID(key)}`;
-	const [pendingApps, setPendingApps] = useState<string[]>(() => {
-		const stored = getDataFromPath(pendingAppsPath, [], pageExtractor);
-		return Array.isArray(stored) ? stored.filter(a => typeof a === 'string') : [];
-	});
+	// Apps this chat has left unpublished work in, and the page the preview shows.
+	//
+	// Both are facts about a CONVERSATION, so both live on the session and nowhere
+	// else. They were in LocalStore, keyed by component, which broke twice over: a
+	// brand-new chat opened announcing "1 change waiting in the monkbars draft"
+	// about work another chat had done, and the same key would have restored a
+	// preview of a page this conversation never touched. Keying by session id
+	// fixed the first but not the second: the browser is not where a conversation
+	// lives, so reopening the same chat anywhere else still came back blank.
+	//
+	// The server already records both -- `focus_app_code`, `focus_page_name` and
+	// `written_app_codes` on the session -- so that is the only source. In memory
+	// during a live turn, read back from the session on resume, and there is
+	// deliberately no browser copy to go stale or leak sideways.
+	const [pendingApps, setPendingApps] = useState<string[]>([]);
 	const rememberPendingApp = useCallback((appCode: string) => {
 		// Capped: this is a hint about where to look, not a history.
 		setPendingApps(prev => (prev.includes(appCode) ? prev : [appCode, ...prev].slice(0, 5)));
@@ -1426,15 +1614,27 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			return next.length === prev.length ? prev : next;
 		});
 	}, []);
-	// One writer, in an effect: persisting inside a state updater would run twice
-	// under StrictMode and is a side effect where React expects a pure function.
-	useEffect(() => {
-		setData(
-			pendingAppsPath,
-			pendingApps.length ? pendingApps : undefined,
-			props.context.pageName,
+
+	/**
+	 * Adopt the context of the conversation being opened, or clear it.
+	 *
+	 * Called from the two places the conversation changes -- opening one and
+	 * starting a new one -- rather than from an effect on the session id. An
+	 * effect ran AFTER the fetch that had just set this and cleared it again,
+	 * which is the whole reason the server's answer kept vanishing.
+	 */
+	const adoptSessionContext = useCallback((session: any) => {
+		const ctx = readSessionContext(session);
+		setPendingApps(ctx.apps.slice(0, 5));
+		setPreviewTarget(
+			ctx.app && ctx.page ? { appCode: ctx.app, pageName: ctx.page } : undefined,
 		);
-	}, [pendingApps, pendingAppsPath, props.context.pageName]);
+		// A conversation with nothing to show must not leave the pane open over
+		// the next one; with a target it may reopen, if that is the preference.
+		setPreviewOpen(!!(ctx.app && ctx.page) && !!preferredPreviewOpenRef.current);
+		// The per-turn notice belongs to the turn that produced it.
+		setSavedObjects([]);
+	}, []);
 	const handleObjectChanged = useCallback(
 		(data: any) => {
 			if (!data?.kind) return;
@@ -1452,6 +1652,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			// the bar comes back after a refresh. The draft outlives the tab it was
 			// announced in, so the note about it has to as well.
 			if (draft && data.app_code) rememberPendingApp(data.app_code);
+
+			// A page write is the one thing the preview can show. Aim it at that
+			// page, and if the pane is already open on the same page, reload it so
+			// the change appears without anyone asking.
+			//
+			// Only when `enablePreview` is on: on a docked sidekick this state would
+			// be maintained for a pane that never renders.
+			if (enablePreview && data.kind === 'page' && data.app_code && data.name) {
+				const next = { appCode: String(data.app_code), pageName: String(data.name) };
+				const prev = previewTargetRef.current;
+				const samePage = prev?.appCode === next.appCode && prev?.pageName === next.pageName;
+				if (!samePage) setPreviewTarget(next);
+				// A drafted write is only visible on the draft surface, so follow it
+				// there rather than leaving the pane on Live showing the old page and
+				// looking like the change did not happen.
+				if (draft) setPreviewSurface('draft');
+				if (previewOpenRef.current) setPreviewReload(n => n + 1);
+				else if (preferredPreviewOpenRef.current) openPreview();
+			}
 			// A parent component can take a callback; a page cannot, so it gets the
 			// same news through the store and an event. Both fire: the page editor
 			// uses the callback, the workspace uses the event, and neither knows
@@ -1502,6 +1721,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			onObjectSaved,
 			onObjectSavedEvent,
 			changedBindingPath,
+			enablePreview,
+			openPreview,
 			props.locationHistory,
 			props.context.pageName,
 			props.pageDefinition,
@@ -2052,7 +2273,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Select a session and load its history
 	const handleSelectSession = useCallback(
 		async (selectedSessionId: string) => {
-			if (selectedSessionId === sessionId) return; // Already viewing this session
+			// Already viewing this session, which counts as landed: a URL naming the
+			// chat that is already open has got what it asked for.
+			if (selectedSessionId === sessionId) return true;
 
 			stopPolling();
 			// Let go of whatever this panel was watching. Only the view ends:
@@ -2084,6 +2307,19 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					setTotalMessages(data.total_history ?? history.length);
 					setMessagesOffset(0);
 					setUsage(extractUsageFromSession(data.session));
+
+					// What this conversation was about, taken from the SESSION rather
+					// than from this browser. The agent records the app and page its
+					// writes landed on, so reopening a chat anywhere -- another browser,
+					// another machine -- gets its context back. LocalStore is only a
+					// same-browser fast path, and the server wins over it.
+					// What this conversation is about, from the SESSION. The agent
+					// records the app and page its writes landed on, so reopening a chat
+					// anywhere -- another browser, another machine -- gets its context
+					// back. `context_json` arrives as a JSON STRING, not an object, which
+					// is easy to miss: reading `session.context` finds nothing and fails
+					// silently, leaving every reopened chat blank.
+					adoptSessionContext(data.session);
 					// Same as handleNewChat: the previous session's panel must
 					// not carry over into the one being opened.
 					setCrafts(new Map());
@@ -2106,13 +2342,20 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							}
 						}
 					}
+					return true;
 				}
 			} catch {
 				// Silently fail
 			}
+			// Reported rather than thrown. The sessions list has always ignored a
+			// failed open and can afford to: the chat the user was already looking
+			// at is still there. A session named in a URL has nothing to fall back
+			// to, so that caller has to be able to tell it did not land.
+			return false;
 		},
 		[
 			sessionId,
+			adoptSessionContext,
 			agentEndpoint,
 			getAuthHeaders,
 			messagesPerPage,
@@ -2176,6 +2419,53 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	// A session handed over in the URL, by the `openFullPageName` link on a docked
+	// sidekick. Reopens that conversation here, and if the agent is still working
+	// `handleSelectSession` rejoins the run, so handing over mid-turn replays the
+	// turn so far and then carries on live.
+	//
+	// Sequenced after the restore above for the same reason the initial prompt is:
+	// a restore also starts from an empty chat, and both racing to open a session
+	// would attach twice. Once the restore settles, either it found a live run of
+	// its own -- in which case `sessionIdRef` is set and this stands down -- or
+	// there was nothing to rejoin and the URL wins.
+	// Settles exactly like `restoreSettled`, and for the same reason: the initial
+	// prompt must not fire into the empty chat of a session that is still loading,
+	// or a handed-over conversation gains a question nobody asked.
+	const [urlSessionSettled, setUrlSessionSettled] = useState(false);
+	const urlSessionOpenedRef = useRef(false);
+	useEffect(() => {
+		if (urlSessionOpenedRef.current) return;
+		if (!restoreSettled) return;
+		const wanted = initialSessionId?.trim();
+		// Nothing to open, or nowhere to open it: settle so the initial prompt and
+		// the handed-over prompt are not held up behind a session that is not coming.
+		if (!wanted || readOnly || isStreamingRef.current || sessionIdRef.current) {
+			setUrlSessionSettled(true);
+			return;
+		}
+
+		urlSessionOpenedRef.current = true;
+		(async () => {
+			try {
+				if (await handleSelectSession(wanted)) return;
+				// Someone else's session, a deleted one, or a typo. Say so in the
+				// transcript, the way a stream error is reported, rather than leaving
+				// an empty chat that looks like a new one and silently is.
+				setMessages([
+					{
+						id: `sys-${Date.now()}`,
+						role: 'assistant',
+						content:
+							'*That conversation could not be opened. It may have been deleted, or it belongs to someone else. This is a new chat.*',
+					},
+				]);
+			} finally {
+				setUrlSessionSettled(true);
+			}
+		})();
+	}, [restoreSettled, readOnly, initialSessionId, handleSelectSession]);
+
 	const handleNewChat = useCallback(() => {
 		stopPolling();
 		// As in handleSelectSession: stop watching, do not stop the run.
@@ -2196,6 +2486,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		// old panel over the fresh chat until the next craft event replaced it.
 		setCrafts(new Map());
 		setActiveCraftId(null);
+		// Context belongs to the conversation being left. Nothing to erase from
+		// storage: it was never written anywhere, so clearing the state is the
+		// whole job.
+		setPreviewTarget(undefined);
+		setPreviewOpen(false);
+		setPendingApps([]);
+		setSavedObjects([]);
 	}, [stopPolling, overlaySessions]);
 
 	// Delete a session
@@ -2521,8 +2818,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (initialSentRef.current) return;
 		// A restore has an empty chat too, right up to the moment the rejoined
-		// turn lands. Sending into it would start a second run.
-		if (!restoreSettled) return;
+		// turn lands. Sending into it would start a second run. A session named in
+		// the URL is the same hazard: it is still loading and still looks empty.
+		if (!restoreSettled || !urlSessionSettled) return;
 		if (messages.length > 0 || isStreaming || readOnly) return;
 
 		// Read here rather than on mount, and cleared in the same tick as the
@@ -2541,6 +2839,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		handleSend(text);
 	}, [
 		restoreSettled,
+		urlSessionSettled,
 		initialPrompt,
 		pendingPromptPath,
 		messages.length,
@@ -2717,17 +3016,53 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								<i className={sidebarToggleIcon} aria-hidden="true" />
 							</button>
 						)}
-						{sessionId && (
-							<button
-								className="_newChatTopButton"
-								onClick={handleNewChat}
-								title="New chat"
-								type="button"
-								aria-label="New chat"
-							>
-								<i className={newChatTopIcon} aria-hidden="true" />
-							</button>
-						)}
+						<div className="_promptTopRight">
+							{enablePreview && previewTarget && !previewOpen && (
+								<button
+									className="_promptPreviewOpenButton"
+									onClick={openPreview}
+									title={`Show /${previewTarget.pageName} beside the chat`}
+									type="button"
+									aria-label="Show the page beside the chat"
+								>
+									<i className={previewIcon} aria-hidden="true" />
+								</button>
+							)}
+							{openFullPageName && sessionId && (
+								// An anchor, not a button: a new browser tab keeps whatever
+								// this panel is docked beside alive -- most sharply the
+								// workspace's open tab set -- and it makes the link
+								// ctrl-clickable and middle-clickable for free.
+								//
+								// Gated on `sessionId` because there is nothing to hand over
+								// before one exists: the id arrives with the first turn's
+								// `done` event.
+								<a
+									className="_promptOpenFullButton"
+									href={getHref(
+										`/${openFullPageName}/${sessionId}`,
+										window.location,
+									)}
+									target="_blank"
+									rel="noopener noreferrer"
+									title="Continue this chat on a full page"
+									aria-label="Continue this chat on a full page"
+								>
+									<i className={openFullIcon} aria-hidden="true" />
+								</a>
+							)}
+							{sessionId && (
+								<button
+									className="_newChatTopButton"
+									onClick={handleNewChat}
+									title="New chat"
+									type="button"
+									aria-label="New chat"
+								>
+									<i className={newChatTopIcon} aria-hidden="true" />
+								</button>
+							)}
+						</div>
 					</div>
 				)}
 
@@ -2975,6 +3310,22 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						onEmpty={forgetPendingApps}
 					/>
 				)}
+				{enablePreview && previewTarget && !previewOpen && (
+					<div className="_promptPreviewOffer">
+						<i className="fa fa-window-restore" aria-hidden="true" />
+						<span>
+							Changed <strong>{previewTarget.pageName}</strong>. See it next to the
+							chat?
+						</span>
+						<button
+							type="button"
+							className="_promptPreviewOfferGo"
+							onClick={openPreview}
+						>
+							Show the page
+						</button>
+					</div>
+				)}
 				{savedObjects.length > 0 && (
 					<div className="_promptSavedNotice">
 						{/* The asymmetry made visible, and it is two asymmetries, not one.
@@ -3090,6 +3441,32 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					</div>
 				)}
 			</div>
+			{enablePreview && previewOpen && previewTarget && (
+				<div
+					className="_promptPreviewPane"
+					ref={previewRef}
+					style={{ width: `${previewWidth}px` }}
+				>
+					<button
+						className="_promptPreviewResizer"
+						onMouseDown={handlePreviewResizeStart}
+						aria-label="Resize the preview"
+					/>
+					<PagePreview
+						appCode={previewTarget.appCode}
+						pageName={previewTarget.pageName}
+						clientCode={previewClientCode}
+						surface={previewSurface}
+						onSurfaceChange={changePreviewSurface}
+						device={previewDevice}
+						onDeviceChange={changePreviewDevice}
+						reloadSignal={previewReload}
+						onTargetChange={retargetPreview}
+						onClose={closePreview}
+						reloadIcon={previewReloadIcon}
+					/>
+				</div>
+			)}
 			{activeCraft && (
 				<CraftPanel
 					craft={activeCraft}

@@ -50,6 +50,59 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		translatable: false,
 	},
+	{
+		// The escape hatch out of a docked panel. A sidekick in a 320px rail can
+		// hold a conversation but cannot show the thing being built, so it offers
+		// to continue the SAME session somewhere with room for both.
+		//
+		// The session id travels in the URL rather than in storage, which is what
+		// makes the link shareable, bookmarkable and openable in a second tab. The
+		// receiving page picks it up through `initialSessionId`.
+		//
+		// Unset means no icon at all, so adding this property changes nothing on a
+		// surface that has not opted in.
+		name: 'openFullPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Full Page Name',
+		description:
+			'Page to continue this conversation in, e.g. `ai`. Shows an icon in the top right that opens <page>/<sessionId> in a new browser tab, carrying the session with it. Leave empty to show no icon.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: false,
+	},
+	{
+		// The receiving half of `openFullPageName`. Set it as an EXPRESSION on
+		// `Store.urlDetails.pathParts[N]` to take the id out of the URL.
+		//
+		// `Store.urlDetails` rather than `Url.*`: the latter is a per-context
+		// extractor that resolves against whichever page frame is asking, which has
+		// already produced conditions that silently matched nothing.
+		name: 'initialSessionId',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Initial Session Id',
+		description:
+			'A session to reopen when the chat loads, normally an EXPRESSION on Store.urlDetails.pathParts. Loads that transcript and rejoins the run if the agent is still working. Ignored once a chat is open, so it never interrupts one in progress.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: false,
+	},
+	{
+		// Render the page the agent is working on, beside the chat.
+		//
+		// Off by default. It is only meaningful on a surface wide enough to give
+		// half the screen away, and a docked sidekick in a 320px rail is not one:
+		// that one offers `openFullPageName` instead and sends the conversation
+		// somewhere it fits.
+		//
+		// The pane is not opened automatically. The agent's first page write puts a
+		// prompt on screen and the person decides, because a preview appearing
+		// unasked would halve the chat mid-sentence.
+		name: 'enablePreview',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Offer A Page Preview',
+		description:
+			"Offer to render the page the agent changed next to the chat, with a Draft/Live toggle and width presets. The pane is draggable and its size is remembered. Needs room: leave off for a docked panel and use Open Full Page Name there instead.",
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
 	// ── Editor context ──────────────────────────────────────────────────────
 	// What the surrounding page has open. Sent with every message as
 	// `editor_context`, so the agent can answer about the thing in front of the
@@ -340,6 +393,33 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'New Chat Top Icon',
 		description: 'Icon class for the new chat button in top bar.',
 		defaultValue: 'fa fa-pen-to-square',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'openFullIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Full Page Icon',
+		description: 'Icon class for the button that continues this session full page.',
+		defaultValue: 'fa fa-up-right-and-down-left-from-center',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'previewIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Preview Icon',
+		description: 'Icon class for the button that opens the page preview.',
+		defaultValue: 'fa fa-window-restore',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'previewReloadIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Preview Reload Icon',
+		description: "Icon class for the preview's reload button.",
+		defaultValue: 'fa fa-rotate-right',
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},

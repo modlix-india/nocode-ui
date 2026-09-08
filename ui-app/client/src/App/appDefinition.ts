@@ -185,10 +185,22 @@ async function makeVerifyTokenCall(
 			axiosOptions = {};
 		}
 		return { auth: response?.data, axiosOptions, language };
-	} catch (e) {
+	} catch (e: any) {
 		console.error('Unable to verify token:', e);
-		// localStorage.removeItem(TOKEN_NAME);
-		// localStorage.removeItem(TOKEN_EXPIRY);
+		// A 401/403 is the server saying this token is dead, and it is the ONLY path that
+		// gets here for one: axios throws on those, so the non-200 branch above never runs.
+		// With the removal commented out, a revoked-but-not-yet-expired token stayed in
+		// localStorage forever -- the bootstrap only drops a token whose CLOCK expiry has
+		// passed. Signing out of one app revokes the session everywhere, so every other app
+		// was left holding a dead token string and reporting itself as still having one.
+		//
+		// Only an actual auth rejection clears it. A network blip or a 5xx must not, or a
+		// flaky connection would sign the user out.
+		const status = e?.response?.status;
+		if (status === 401 || status === 403) {
+			localStorage.removeItem(TOKEN_NAME);
+			localStorage.removeItem(TOKEN_EXPIRY);
+		}
 		axiosOptions = { headers: {} };
 		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
 	}
