@@ -9,11 +9,17 @@ declare global {
 //
 // It is a timestamp rather than a flag because the two failure modes pull in opposite
 // directions. A redirect loop happens in under a second, so that is all the guard has to
-// outlast. But a permanent mark strands anyone who opens this app before signing in anywhere,
-// signs in on another app, and comes back: no bounce, anonymous forever. Re-asking after a
-// minute costs at most one extra hop and fixes that.
+// outlast. A mark that lingers strands anyone who opens this app before signing in anywhere,
+// goes and signs in on another app, and comes back: no bounce, still anonymous.
+//
+// That second journey is the common one, and it is why this is SHORT. Ten seconds is an age
+// next to a redirect round trip and an instant next to a human signing in somewhere else. It
+// was 60s and that was long enough to break exactly the case it exists to serve.
+//
+// Note this only gates FULL page loads: in-app routing never re-runs the bootstrap, so an
+// anonymous visitor clicking around a site is not affected by it either way.
 const SSO_CHECKED_KEY = 'ssoCheckedAt';
-const SSO_RECHECK_AFTER_MS = 60 * 1000;
+const SSO_RECHECK_AFTER_MS = 10 * 1000;
 
 // What the beacon hands back on the URL.
 const PARAM_TOKEN = 'ott';
@@ -79,6 +85,24 @@ function markAskedBeacon(): void {
  */
 export function clearBeaconMark(): void {
 	removeLocal(keyFor(SSO_CHECKED_KEY));
+}
+
+// Set the instant we commit to leaving for the beacon.
+//
+// `UIEngine.Navigate` is routinely a SIBLING of `UIEngine.Login` in a page's function rather
+// than downstream of it, so the two run concurrently. Navigate does
+// `pushState -> back() -> setTimeout(forward(), 100)`, and that deferred forward cancels an
+// in-flight `location.replace`, which nginx logs as a 499 with zero bytes sent. The user is
+// signed in locally and lands on the page, so it looks like it worked, but the beacon was
+// never seeded and the next app gets no SSO. Silent, and intermittent because it is a race.
+//
+// Fixing the page definitions would work too, but only for the ones anybody remembers to fix.
+// This holds for every page, including ones not written yet.
+let leavingForBeacon = false;
+
+/** True once a beacon hop has been committed to. Navigation after that point is moot. */
+export function isLeavingForBeacon(): boolean {
+	return leavingForBeacon;
 }
 
 export function getBeaconURL(): string | null {
@@ -238,6 +262,7 @@ export function beginSsoBounce(args: { appCode: string; clientCode: string }): s
 	if (!beaconURL) return null;
 
 	markAskedBeacon();
+	leavingForBeacon = true;
 
 	return (
 		`${beaconURL}/hassso?mode=bounce` +
@@ -263,6 +288,37 @@ export function ssoSeedBeacon(token: string, redirectUrl?: string): void {
 	if (target) window.location.replace(target);
 }
 
+/**
+ * Forget the session on the beacon origin as part of signing out.
+ *
+ * Without this, logout is theatre: the app clears its own storage, the next cold load bounces
+ * to the beacon, and the beacon still holds a session and hands back a fresh token. The user is
+ * signed straight back in, which reads as "logout does not clear the token".
+ *
+ * Navigates, so nothing after the call runs.
+ */
+export function ssoLogoutBeacon(appCode: string, returnUrl?: string): void {
+	const target = beginSsoLogout(appCode, returnUrl);
+	if (target) window.location.replace(target);
+}
+
+/** As {@link beginSsoBounce}, the address without the navigation, so it can be tested. */
+export function beginSsoLogout(appCode: string, returnUrl?: string): string | null {
+	const beaconURL = getBeaconURL();
+	if (!beaconURL) return null;
+
+	// Signing out must not leave this origin thinking it already asked and need not again.
+	clearBeaconMark();
+	leavingForBeacon = true;
+
+	const back = returnUrl ?? window.location.href;
+	return (
+		`${beaconURL}/hassso?mode=logout` +
+		`&targetAppCode=${encodeURIComponent(appCode)}` +
+		`&returnUrl=${encodeURIComponent(back)}`
+	);
+}
+
 /** As {@link beginSsoBounce}, the address without the navigation, so it can be tested. */
 export function beginSsoSeed(token: string, redirectUrl?: string): string | null {
 	const beaconURL = getBeaconURL();
@@ -270,6 +326,7 @@ export function beginSsoSeed(token: string, redirectUrl?: string): string | null
 
 	// A fresh session is worth asking about again wherever the old answer was "none".
 	clearBeaconMark();
+	leavingForBeacon = true;
 
 	const back = redirectUrl ?? window.location.href;
 	return `${beaconURL}/sso/${encodeURIComponent(token)}?redirectUrl=${encodeURIComponent(back)}`;

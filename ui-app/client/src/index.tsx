@@ -5,6 +5,7 @@ import { AppDefinitionResponse, getAppDefinition } from './App/appDefinition';
 import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
 import { processLocation } from './util/locationProcessor';
+import { consumeSsoArrival } from './sso/ssoModule';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 import DraftBanner from './components/DraftBanner';
 
@@ -15,8 +16,8 @@ import DraftBanner from './components/DraftBanner';
 // globalThis.cdnResizeOptionsType = 'cloudflare';
 
 // TEST SSO3
-// globalThis.__SSO_BEACON_HOST__ = 'local.authzump.ai';
-// globalThis.__SOCIAL_LOGIN_HOST__ = 'local.authzump.ai';
+// globalThis.__SSO_BEACON_HOST__ = 'authzump.local.modlix.com';
+// globalThis.__SOCIAL_LOGIN_HOST__ = 'authzump.local.modlix.com';
 
 declare global {
 	var nodeDev: boolean;
@@ -183,6 +184,18 @@ if (!app) {
 } else {
 	(async function () {
 		const pageName = processLocation(window.location)?.pageName;
+
+		// A return from the SSO beacon carries the session as a one-time token on the URL,
+		// and it has to be banked BEFORE either call below starts. `getAppDefinition` does
+		// this itself, but the two run under one `Promise.all`, and `getPageDefinition`
+		// reads `localStorage.AuthToken` on its first synchronous line -- so it raced the
+		// redeem, went out anonymous, was answered 403, and the app fell back to its login
+		// page with a perfectly good session already in hand. That is why an arrival from
+		// the beacon rendered the sign-in screen and only a second load showed the real
+		// page. Awaiting it here is a no-op on every other load: the arrival params are
+		// scrubbed off the URL once consumed, so the call inside `getAppDefinition`
+		// returns immediately on the second pass.
+		await consumeSsoArrival();
 
 		let appDefinitionResponse, pageDefinitionResponse;
 		if (pageName) {
