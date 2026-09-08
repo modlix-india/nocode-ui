@@ -216,6 +216,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'fullUrl',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Store the full URL',
+		description:
+			'Store an absolute URL instead of the files-API path: the CDN host when one ' +
+			'is configured, otherwise this page\'s own origin. Needed wherever the value ' +
+			'leaves the app, such as a PWA manifest, an email or an API payload. It also ' +
+			'makes both design types agree: browsing stores a string either way, where ' +
+			'the upload design otherwise stores the whole response object.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'validation',
 		schema: SCHEMA_VALIDATION,
 		displayName: 'Validation',

@@ -23,6 +23,17 @@ export function Messages() {
 
 	const msgComps = msgs.map((e: any, i: number) => {
 		const isObject = typeof e.msg === 'object';
+		// `UIEngine.Message` declares its four types as ERROR | WARNING | INFO |
+		// SUCCESS (`functions/Message.ts`), and a value outside that enum is
+		// rejected before the step runs -- so INFO is the only informational type
+		// a page definition can ask for. This component spells the same meaning
+		// INFORMATION, in `MESSAGE_TYPE`, in `ICONS`, and in the theme's
+		// `._message.INFORMATION` selector. The two never met: an INFO toast got
+		// `ICONS['INFO']`, which is undefined, so it rendered `class="fa-xl
+		// undefined"` with no glyph and fell through to the untinted `._message`
+		// ground. Normalised on the way in rather than by widening the function's
+		// enum, because the definitions already stored say INFO.
+		const type = e.type === 'INFO' ? MESSAGE_TYPE.INFORMATION : e.type;
 		const debugMessageCaret =
 			isObject && e.msg.debugMessage ? (
 				<i
@@ -65,7 +76,7 @@ export function Messages() {
 			const msg = msgs.find((e: any) => e.id === showStackTraceId);
 			if (msg)
 				stackTrace = (
-					<div className={`_msgStackTrace ${e.type}`}>
+					<div className={`_msgStackTrace ${type}`}>
 						<div className="_stackTrace">{e.msg.stackTrace}</div>
 					</div>
 				);
@@ -73,8 +84,8 @@ export function Messages() {
 
 		return (
 			<React.Fragment key={e.id}>
-				<div key={e.id} data-custom={e.id} className={`_message ${e.type}`}>
-					<i className={`fa-xl ${ICONS[e.type]} _msgIcon`} />
+				<div key={e.id} data-custom={e.id} className={`_message ${type}`}>
+					<i className={`fa-xl ${ICONS[type]} _msgIcon`} />
 					<div className="_msgStringContainer">
 						<div className="_msgString">
 							{debugMessageCaret}

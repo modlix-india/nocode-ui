@@ -85,6 +85,117 @@ export function removeProperty(objectSchema: any, name: string): any {
 	return dup;
 }
 
+/** Root-level fields that identify a stored schema and must survive a wholesale replace. */
+const ROOT_IDENTITY = ['name', 'namespace', 'version', 'description', 'comment', 'permission'];
+
+export function pickRootIdentity(schema: any): any {
+	const out: any = {};
+	if (!schema || typeof schema !== 'object') return out;
+	for (const key of ROOT_IDENTITY) if (!isNullValue(schema[key])) out[key] = schema[key];
+	return out;
+}
+
+/**
+ * Fold an inferred schema into an existing one without overwriting anything already there.
+ *
+ * Conservative on purpose: the second run of "build from a sample" is the valuable one, and by
+ * then the schema carries hand-written descriptions, constraints and refs that a replace would
+ * destroy. Only `properties` and `items` are descended, because they are the recursion carriers;
+ * every other key on `existing` wins. Nothing is ever removed.
+ */
+export function mergeSchemas(existing: any, incoming: any): any {
+	if (isNullValue(existing) || typeof existing !== 'object') return incoming;
+	if (isNullValue(incoming) || typeof incoming !== 'object') return existing;
+
+	// A ref replaces the node's definition, so grafting inferred properties underneath it would
+	// produce a node that is both a reference and a definition.
+	if (typeof existing.ref === 'string' && existing.ref.trim()) return existing;
+
+	const out = duplicate(existing);
+
+	if (incoming.properties && typeof incoming.properties === 'object') {
+		if (!out.properties) out.properties = {};
+		for (const [key, sub] of Object.entries(incoming.properties)) {
+			out.properties[key] =
+				out.properties[key] === undefined
+					? duplicate(sub)
+					: mergeSchemas(out.properties[key], sub);
+		}
+	}
+
+	// Tuple items have no obvious merge, so leave the existing side alone.
+	if (
+		!isNullValue(incoming.items) &&
+		!Array.isArray(incoming.items) &&
+		!Array.isArray(out.items)
+	) {
+		out.items = isNullValue(out.items)
+			? duplicate(incoming.items)
+			: mergeSchemas(out.items, incoming.items);
+	}
+
+	return out;
+}
+
+export interface SchemaDiffEntry {
+	path: string;
+	from?: string;
+	to?: string;
+}
+
+export interface SchemaDiff {
+	added: string[];
+	retyped: SchemaDiffEntry[];
+	unchanged: string[];
+}
+
+/** What a merge would do, so the choice between Merge and Replace can be made on evidence. */
+export function diffSchemas(existing: any, incoming: any, base = ''): SchemaDiff {
+	const diff: SchemaDiff = { added: [], retyped: [], unchanged: [] };
+	walkDiff(existing, incoming, base, diff);
+	return diff;
+}
+
+function walkDiff(existing: any, incoming: any, base: string, diff: SchemaDiff) {
+	const incomingProps = incoming?.properties;
+	if (!incomingProps || typeof incomingProps !== 'object') return;
+
+	const existingProps = existing?.properties ?? {};
+	const refBlocked = typeof existing?.ref === 'string' && existing.ref.trim();
+
+	for (const [key, sub] of Object.entries<any>(incomingProps)) {
+		const path = base ? `${base}.${key}` : key;
+		const current = existingProps[key];
+
+		if (current === undefined && !refBlocked) {
+			diff.added.push(path);
+			countAdded(sub, path, diff);
+			continue;
+		}
+
+		const from = typeText(current?.type);
+		const to = typeText(sub?.type);
+		if (from && to && from !== to) diff.retyped.push({ path, from, to });
+		else diff.unchanged.push(path);
+
+		if (!refBlocked) walkDiff(current, sub, path, diff);
+	}
+}
+
+function countAdded(schema: any, base: string, diff: SchemaDiff) {
+	if (!schema?.properties) return;
+	for (const [key, sub] of Object.entries<any>(schema.properties)) {
+		const path = `${base}.${key}`;
+		diff.added.push(path);
+		countAdded(sub, path, diff);
+	}
+}
+
+function typeText(type: any): string {
+	if (isNullValue(type)) return '';
+	return Array.isArray(type) ? type.join(' | ') : String(type);
+}
+
 export interface SchemaChildNode {
 	key: string;
 	path: string;

@@ -44,6 +44,21 @@ export default function LabelStyle({
 
 	const css =
 		`
+	/*
+	 * The wrapper is a block, so its height comes from the line-box strut of the
+	 * INHERITED font-size, not from the text inside it. A Text whose own font is
+	 * smaller than its parent's therefore renders in a box a couple of pixels
+	 * taller than the glyphs, and the text sits visibly high of centre inside
+	 * flex rows (chips, segmented controls, toolbars). Laying the wrapper out as
+	 * a flex column kills the strut, so the box is exactly the text's height and
+	 * align-items: center on the parent lands where you expect.
+	 */
+	${PREFIX} {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
 	${PREFIX} ._textContainer {
 		width: 100%;
 		display: block;

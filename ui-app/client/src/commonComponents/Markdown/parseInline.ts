@@ -1,7 +1,7 @@
 import React from 'react';
 import { cyrb53 } from '../../util/cyrb53';
 import { MarkdowFootnotes, MarkdownParserParameters, MarkdownURLRef } from './common';
-import { makeURLnTitle, parseAttributes } from './utils';
+import { makeURLnTitle, parseAttributes, resolveMarkdownAssetUrl } from './utils';
 
 const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'code' | 'span' } = {
 	'~~': 's',
@@ -311,7 +311,7 @@ function processImageLink(
 	lineParts.push(
 		React.createElement(isVideo ? 'video' : 'img', {
 			key: cyrb53(`${actualLine}-${lineNumber}-${i}`),
-			src: linkParts.url,
+			src: resolveMarkdownAssetUrl(linkParts.url, params.location),
 			className: isVideo ? '_video' : '_images',
 			alt: linkParts.title ?? altText,
 			...(attrs ?? {}),

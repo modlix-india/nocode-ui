@@ -3,7 +3,13 @@ import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ComponentDefinitions from '..';
 import { usedComponents } from '../../App/usedComponents';
-import { LOCAL_STORE_PREFIX, PAGE_STORE_PREFIX, STORE_PREFIX } from '../../constants';
+import {
+	LOCAL_STORE_PREFIX,
+	PAGE_STORE_PREFIX,
+	STORE_PATH_THEME_PATH,
+	STORE_PREFIX,
+} from '../../constants';
+import { isDarkTheme } from '../../util/themeSelection';
 import {
 	addListenerAndCallImmediately,
 	addListenerAndCallImmediatelyWithChildrenActivity,
@@ -33,6 +39,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './pageEditorPro
 import { performanceMonitor } from './util/performanceMonitor';
 import { updateMultipleComponentsInPageDefinition } from './util/targetedPageUpdate';
 import { messageThrottler } from './util/messageThrottler';
+import { DraftGrant, extendDraftToken, heartbeatDelay, mintDraftToken } from './util/draftToken';
 
 function savePersonalizationCurry(
 	personalizationPath: string,
@@ -82,6 +89,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			theme,
 			onSave,
 			onPublish,
+			hasDraft,
 			onVersions,
 			onSavedVersions,
 			onChangePersonalization,
@@ -101,6 +109,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			sectionsCategoryList,
 			helpURL,
 			defaultZoomPercentage,
+			sidekickEnabled,
+			sidekickAgentEndpoint,
+			sidekickDraftMode,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -140,19 +151,33 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		? (getDataFromPath(personalizationPath, locationHistory, pageExtractor) ?? {})
 		: {};
 
-	// Managing theme with local state.
-	const [localTheme, setLocalTheme] = useState(personalization.theme ?? theme);
+	/**
+	 * The editor's own chrome follows the APP's theme.
+	 *
+	 * It used to have its own light/dark toggle, persisted under
+	 * `personalization.theme`. Now that the app has a theme switcher in its header
+	 * that is one decision with two controls, and the editor's copy was the one
+	 * that stuck: pick a dark app theme and the editor stayed light until you also
+	 * found the toggle in here, and a stale `_dark` left the editor dark inside a
+	 * light app forever. The toggle is gone from DnDTopBar and this reads the
+	 * theme's own ground instead, so there is nothing left to get out of step.
+	 *
+	 * `theme` (the component property) is still the fallback for a page with no
+	 * theme loaded at all, which is what it always was.
+	 */
+	const [localTheme, setLocalTheme] = useState(() =>
+		isDarkTheme(getDataFromPath(STORE_PATH_THEME_PATH, [])) ? '_dark' : theme,
+	);
 
-	// Checking if someone changed the theme
-	useEffect(() => {
-		if (!personalizationPath) return;
-
-		return addListenerAndCallImmediately(
-			pageExtractor.getPageName(),
-			(_, v) => setLocalTheme(v ?? theme),
-			`${personalizationPath}.theme`,
-		);
-	}, [personalizationPath]);
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				undefined,
+				(_, v) => setLocalTheme(isDarkTheme(v) ? '_dark' : '_light'),
+				STORE_PATH_THEME_PATH,
+			),
+		[],
+	);
 
 	useEffect(() => {
 		setData('Store.pageData._global.collapseMenu', true);
@@ -381,6 +406,64 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 
 	const appDefinition = getDataFromPath(appPath, locationHistory, pageExtractor);
 
+	// The origin the three canvases load from.
+	//
+	// undefined  still minting; the frames must not load yet, because one that
+	//            boots before the grant exists renders the live app and, since the
+	//            src never changes afterwards, stays live for the whole session.
+	// ''         no grant: the mint was refused or failed. Falls back to the
+	//            same-origin relative path, i.e. the live surface, which is what
+	//            the editor did before any of this.
+	// a host     the draft surface, for this app and whichever client is previewed.
+	const [previewOrigin, setPreviewOrigin] = useState<string | undefined>(undefined);
+	const previewAppCode = editPageDefinition?.appCode;
+
+	useEffect(() => {
+		if (!previewAppCode) return;
+
+		let cancelled = false;
+		let timer: any = null;
+		let grant: DraftGrant | undefined;
+
+		const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
+
+		// Extend, never rotate. A new token value is a new hostname, which would
+		// change the canvases' origin and reload all three, losing scroll position
+		// and everything the previewed page holds in its own store. The grant dying
+		// shortly after the last editor holding it closes is the property that
+		// actually matters, and pushing the expiry forward gives that without
+		// touching the URL.
+		//
+		// The grant is shared: the server hands every window of this user on this app
+		// the same one, so several editors can be beating on one token. Harmless --
+		// each beat writes the same absolute expiry, and the grant simply lives as
+		// long as the last window open on it.
+		const beat = () => {
+			timer = setTimeout(async () => {
+				if (cancelled || !grant) return;
+				const extended = await extendDraftToken(grant.token, authToken);
+				if (cancelled) return;
+				// A refused extension is not fatal on its own: the current grant is
+				// still live until its own expiry, so keep beating against it and let
+				// the next attempt succeed rather than dropping the canvas to live.
+				if (extended) grant = extended;
+				beat();
+			}, heartbeatDelay(grant?.expiresAt));
+		};
+
+		(async () => {
+			grant = await mintDraftToken(previewAppCode, authToken);
+			if (cancelled) return;
+			setPreviewOrigin(grant ? `https://${grant.host}` : '');
+			if (grant) beat();
+		})();
+
+		return () => {
+			cancelled = true;
+			if (timer) clearTimeout(timer);
+		};
+	}, [previewAppCode]);
+
 	useEffect(() => {
 		if (!editPageDefinition || !personalization) {
 			setUrl('');
@@ -388,9 +471,15 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			return;
 		}
 
-		if (personalization?.pageLeftAt?.[editPageDefinition.name]) {
-			setUrl(personalization.pageLeftAt[editPageDefinition.name].url);
-			setClientCode(personalization.pageLeftAt[editPageDefinition.name].clientCode);
+		// Remembered only if there is actually a url remembered. The record can
+		// exist carrying just a clientCode -- `urlChange` writes the two keys
+		// separately -- and taking the branch on the record's mere presence then set
+		// the url to undefined AND returned before building the default, leaving the
+		// URL bar permanently blank for that page.
+		const left = personalization?.pageLeftAt?.[editPageDefinition.name];
+		if (left?.url) {
+			setUrl(left.url);
+			setClientCode(left.clientCode);
 			return;
 		}
 
@@ -442,6 +531,11 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		['mobile', []]
 	]));
 	const [showDebugMenu, setShowDebugMenu] = useState<boolean>(false);
+
+	// Set when a preview refuses a definition push because it has navigated to a
+	// different page. The refusal is correct, but silence about it makes the
+	// editor look broken: edits land in the store and then visibly do nothing.
+	const [previewElsewhere, setPreviewElsewhere] = useState<string | null>(null);
 
 	const setSelectedComponent = useCallback(
 		(v: string) => {
@@ -647,6 +741,36 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		);
 	}, [personalizationPath]);
 
+	// Push the theme to the canvas iframes, not only to the template one.
+	//
+	// The slave has always known how to apply a pushed theme (EDITOR_APP_THEME
+	// sets Store.theme), which is how the ThemeEditor's preview works, but the
+	// page editor only ever sent it to the component-template iframe. That was
+	// survivable while nothing could change a theme from in here. It is not
+	// survivable now: the sidekick can, that change saves immediately because a
+	// theme is not something this screen can offer for review, and without this
+	// the user asks for a colour, is told it is done, and watches nothing happen.
+	useEffect(() => {
+		if (!themePath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
+			(_, payload) => {
+				messageThrottler.scheduleMessage(
+					'EDITOR_APP_THEME_PAGES',
+					'EDITOR_APP_THEME',
+					payload,
+					['desktop', 'tablet', 'mobile'],
+					() => ({
+						desktop: desktopRef.current,
+						tablet: tabletRef.current,
+						mobile: mobileRef.current,
+					}),
+				);
+			},
+			themePath,
+		);
+	}, [themePath, pageExtractor]);
+
 	// On app def change message to component template iframe.
 	useEffect(() => {
 		if (!appPath) return;
@@ -696,6 +820,13 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			} = e;
 
 			if (!type?.startsWith('SLAVE_') || !templateIFrame) return;
+
+			// Only the template frame itself. Comparing the source window rather than
+			// an origin string needs no allowlist and cannot be spoofed, and it
+			// matters now that the canvases are on a different origin: without it,
+			// any of them saying SLAVE_STARTED would push this app's definition into
+			// the template frame, which renders a different app entirely.
+			if (e.source !== templateIFrame.contentWindow) return;
 
 			if (type === 'SLAVE_STARTED') {
 				templateIFrame.contentWindow?.postMessage({
@@ -770,18 +901,21 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		// Small delay to ensure iframes are loaded
 		const timer = setTimeout(() => {
-			desktopRef.current?.contentWindow?.postMessage({
-				type: 'EDITOR_TYPE',
-				payload: { type: 'PAGE', screenType: 'desktop' },
-			});
-			tabletRef.current?.contentWindow?.postMessage({
-				type: 'EDITOR_TYPE',
-				payload: { type: 'PAGE', screenType: 'tablet' },
-			});
-			mobileRef.current?.contentWindow?.postMessage({
-				type: 'EDITOR_TYPE',
-				payload: { type: 'PAGE', screenType: 'mobile' },
-			});
+			// '*' required: the no-target-origin overload defaults to '/', which
+			// silently drops the message for a cross-origin frame. See the same
+			// note in masterFunctions' SLAVE_STARTED handler.
+			desktopRef.current?.contentWindow?.postMessage(
+				{ type: 'EDITOR_TYPE', payload: { type: 'PAGE', screenType: 'desktop' } },
+				'*',
+			);
+			tabletRef.current?.contentWindow?.postMessage(
+				{ type: 'EDITOR_TYPE', payload: { type: 'PAGE', screenType: 'tablet' } },
+				'*',
+			);
+			mobileRef.current?.contentWindow?.postMessage(
+				{ type: 'EDITOR_TYPE', payload: { type: 'PAGE', screenType: 'mobile' } },
+				'*',
+			);
 		}, 100);
 
 		return () => clearTimeout(timer);
@@ -823,6 +957,22 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			} = e;
 
 			if (!type?.startsWith('SLAVE_')) return;
+
+			// Only our own three canvases. This was implicit while they were
+			// same-origin; they run on their own draft-edit hostname now, so any page
+			// that can get a handle on this window could otherwise drive the editor.
+			// Comparing the source WINDOW needs no origin allowlist and cannot be
+			// spoofed.
+			//
+			// It also guards the throw below, which would let a stranger break the
+			// editor by posting an unrecognised SLAVE_ type.
+			if (
+				e.source !== desktopRef.current?.contentWindow &&
+				e.source !== tabletRef.current?.contentWindow &&
+				e.source !== mobileRef.current?.contentWindow
+			)
+				return;
+
 			if (!MASTER_FUNCTIONS.has(type)) throw Error('Unknown message from Slave : ' + type);
 
 			if (editorType && editorType !== 'PAGE') return;
@@ -866,6 +1016,8 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 								}, {} as any),
 						}}));
 					},
+					onDefinitionIgnored: detail =>
+						setPreviewElsewhere(detail?.showing ?? 'another page'),
 					onDebugExecution: (msg: any) => {
 						// Flatten executionLog to top level for easier access
 						const flattenedMsg = {
@@ -905,6 +1057,108 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		window.addEventListener('message', onMessageFromSlave);
 		return () => window.removeEventListener('message', onMessageFromSlave);
 	}, []); // Empty deps - listener uses refs for current values
+
+	// The sidekick reports every write that really did save. Only the page it has
+	// open is held back for review; a theme or style is not something this screen
+	// can show for approval, so those save outright and the canvas has to catch
+	// up. A theme we can refetch into its bound path, which feeds the push above.
+	// A style has no bound path here, so the honest option is to reload the
+	// preview rather than leave it silently wrong.
+	// A page write lands on whichever surface the agent named, and the canvas has
+	// to follow it or the user is looking at a definition that no longer exists
+	// anywhere. Refetching is the whole fix: the editor already reads the draft on
+	// load, so it only ever had to be told to read it again.
+	//
+	// Coalesced, because one turn can write the page a dozen times and each fetch
+	// pulls a definition that reaches 1.4MB and wakes every listener in the editor.
+	const pageReloadTimer = useRef<any>(null);
+	const reloadPageDefinition = useCallback(
+		(pageId: string, draft: boolean) => {
+			if (pageReloadTimer.current) clearTimeout(pageReloadTimer.current);
+			pageReloadTimer.current = setTimeout(async () => {
+				pageReloadTimer.current = null;
+				try {
+					const response = await axios.get(`/api/ui/pages/${pageId}`, {
+						params: draft ? { draft: true } : undefined,
+						headers: {
+							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+						},
+					});
+					// The store write is what drives everything downstream: the canvas
+					// iframes, the component tree and the undo stack all listen on
+					// defPath, so the previous state stays reachable with Ctrl+Z.
+					if (response.data && defPath)
+						setData(defPath, response.data, pageExtractor.getPageName());
+				} catch (error) {
+					console.error('Could not reload the page the sidekick changed:', error);
+				}
+			}, 250);
+		},
+		[defPath, pageExtractor],
+	);
+
+	useEffect(
+		() => () => {
+			if (pageReloadTimer.current) clearTimeout(pageReloadTimer.current);
+		},
+		[],
+	);
+
+	// The canvases used to be driven straight off the element --
+	// `contentWindow.location.reload()`, `contentWindow.history.back()`. They run on
+	// their own draft-edit hostname now, so that is cross-origin property access and
+	// throws. Each frame does it to itself instead.
+	const commandFrames = useCallback((type: string) => {
+		for (const frame of [desktopRef.current, tabletRef.current, mobileRef.current])
+			frame?.contentWindow?.postMessage({ type, payload: undefined }, '*');
+	}, []);
+
+	const handleObjectSaved = useCallback(
+		(data: any) => {
+			if (data?.kind === 'page') {
+				// Only the page this editor has open. The agent is free to touch
+				// others, and pulling one of those over the canvas would replace
+				// what the user is working on with an unrelated document.
+				const current: any = defPath
+					? getDataFromPath(defPath, locationHistory, pageExtractor)
+					: undefined;
+				const pageId = String(data.id ?? '');
+				if (!pageId || !current?.id || String(current.id) !== pageId) return;
+				reloadPageDefinition(pageId, data.draft === true);
+				return;
+			}
+			if (data?.kind === 'style') {
+				commandFrames('EDITOR_RELOAD');
+				return;
+			}
+			if (data?.kind !== 'theme' || !themePath) return;
+
+			const current: any = getDataFromPath(themePath, locationHistory, pageExtractor);
+			const themeId = data.id || current?.id;
+			if (!themeId) return;
+
+			// Same surface the write landed on, for the same reason the page refetch
+			// above follows it: reading live after a drafted theme change pulls the
+			// OLD theme onto the canvas, so the user watches their change undo itself.
+			const themeDraft = data.draft === true;
+
+			(async () => {
+				try {
+					const response = await axios.get(`/api/ui/themes/${themeId}`, {
+						params: themeDraft ? { draft: true } : undefined,
+						headers: {
+							Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
+						},
+					});
+					if (response.data)
+						setData(themePath, response.data, pageExtractor.getPageName());
+				} catch (error) {
+					console.error('Could not reload the theme the sidekick changed:', error);
+				}
+			})();
+		},
+		[themePath, defPath, locationHistory, pageExtractor, reloadPageDefinition],
+	);
 
 	const undoStackRef = useRef<Array<PageDefinition>>([]);
 	const redoStackRef = useRef<Array<PageDefinition>>([]);
@@ -1002,14 +1256,46 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	return (
 		<div className={`comp compPageEditor ${localTheme}`} style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />
+			{previewElsewhere && (
+				<div className="_peStaleCanvasNotice">
+					<i className="fa fa-triangle-exclamation" aria-hidden="true" />
+					<span>
+						The preview has navigated to <strong>{previewElsewhere}</strong>, so it is
+						not showing your edits to this page. They are still here and still
+						unsaved.
+					</span>
+					<button
+						type="button"
+						className="_peStaleCanvasAction"
+						onClick={() => {
+							setPreviewElsewhere(null);
+							commandFrames('EDITOR_RELOAD');
+						}}
+					>
+						Reload preview
+					</button>
+					<button
+						type="button"
+						className="_peStaleCanvasDismiss"
+						title="Dismiss"
+						onClick={() => setPreviewElsewhere(null)}
+					>
+						<i className="fa fa-xmark" aria-hidden="true" />
+					</button>
+				</div>
+			)}
 			<DnDEditor
+				previewOrigin={previewOrigin}
 				personalizationPath={personalizationPath}
 				defPath={defPath}
 				url={url}
 				pageName={context.pageName}
 				pageExtractor={pageExtractor}
 				onSave={saveFunction}
-				onPublish={onPublish ? publishFunction : undefined}
+				// Nothing to publish, no button. `hasDraft` is the host's answer,
+				// and only an explicit false hides it, so a host that never sets
+				// the property keeps the button it has always had.
+				onPublish={onPublish && hasDraft !== false ? publishFunction : undefined}
 				onChangePersonalization={savePersonalization}
 				desktopIframe={desktopRef}
 				tabletIframe={tabletRef}
@@ -1024,21 +1310,15 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				onSelectedComponentListChanged={(key: string) => setSelectedComponentList(key)}
 				pageOperations={operations}
 				onPageReload={() => {
-					desktopRef?.current?.contentWindow?.location.reload();
-					tabletRef?.current?.contentWindow?.location.reload();
-					mobileRef?.current?.contentWindow?.location.reload();
+					commandFrames('EDITOR_RELOAD');
 					setSelectedComponent('');
 					setSelectedSubComponent('');
 				}}
 				onPageBack={() => {
-					desktopRef?.current?.contentWindow?.history.back();
-					tabletRef?.current?.contentWindow?.history.back();
-					mobileRef?.current?.contentWindow?.history.back();
+					commandFrames('EDITOR_HISTORY_BACK');
 				}}
 				onPageForward={() => {
-					desktopRef?.current?.contentWindow?.history.forward();
-					tabletRef?.current?.contentWindow?.history.forward();
-					mobileRef?.current?.contentWindow?.history.forward();
+					commandFrames('EDITOR_HISTORY_FORWARD');
 				}}
 				theme={localTheme}
 				logo={logo}
@@ -1077,6 +1357,13 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				onDebugButtonClick={handleDebugButtonClick}
 				debugMessageCount={Math.max(debugMessages.get('desktop')?.length ?? 0,
 					debugMessages.get('tablet')?.length ?? 0, debugMessages.get('mobile')?.length ?? 0)}
+				editorPageDefinition={pageDefinition}
+				editorContext={context}
+				appCode={appDefinition?.appCode ?? editPageDefinition?.appCode}
+				sidekickEnabled={sidekickEnabled === true}
+				sidekickAgentEndpoint={sidekickAgentEndpoint ?? '/api/ai/appbuilder/chat'}
+				sidekickDraftMode={sidekickDraftMode !== false}
+				onObjectSaved={handleObjectSaved}
 			/>
 			<CodeEditor
 				showCodeEditor={showCodeEditor}

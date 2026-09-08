@@ -20,6 +20,7 @@ export default function ObjectSection({
 				path: path ? `${path}.additionalProperties` : 'additionalProperties',
 				depth: 0,
 				kind: 'sub',
+				filterable: false,
 				label: 'additionalProperties',
 				onDelete:
 					schema?.additionalProperties !== undefined
@@ -36,12 +37,14 @@ export default function ObjectSection({
 				value={schema?.minProperties}
 				propPath="minProperties"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 			<NumberField
 				label="Max Properties"
 				value={schema?.maxProperties}
 				propPath="maxProperties"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 			<SelectField
 				label="Additional Properties"
@@ -58,6 +61,7 @@ export default function ObjectSection({
 					{ label: 'True', value: true },
 					{ label: 'False', value: false },
 				]}
+				readOnly={ctx.readOnly}
 			/>
 			{additionalSchema}
 			<Row label="Property Names" hint="A string schema every property name must match">
@@ -66,6 +70,7 @@ export default function ObjectSection({
 					path: path ? `${path}.propertyNames` : 'propertyNames',
 					depth: 0,
 					kind: 'sub',
+					filterable: false,
 					label: 'propertyNames',
 					lockedType: 'STRING',
 					onDelete:
@@ -125,6 +130,7 @@ function PatternProperties({
 						path: joinPath(mapPath, key),
 						depth: 1,
 						kind: 'sub',
+						filterable: false,
 						label: key,
 					})}
 				</div>

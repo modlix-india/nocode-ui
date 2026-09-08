@@ -1,4 +1,5 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react';
+import { isSchemaObject } from './precedence';
 
 const LazyEditor = React.lazy(() =>
 	import('@monaco-editor/react').then(module => ({ default: module.default })),
@@ -23,14 +24,22 @@ export default function JsonView({
 
 	const onEdit = (t: string) => {
 		setText(t);
+		let parsed: any;
 		try {
-			const parsed = JSON.parse(t.trim() === '' ? '{}' : t);
-			setError(undefined);
-			lastEmitted.current = JSON.stringify(parsed, null, 2);
-			onChange(parsed);
+			parsed = JSON.parse(t.trim() === '' ? '{}' : t);
 		} catch {
 			setError('Invalid JSON');
+			return;
 		}
+		// A schema root has to be an object. Letting a scalar through used to throw downstream
+		// and take the component out, and an array quietly lost the keys written onto it.
+		if (!isSchemaObject(parsed)) {
+			setError('A schema must be a JSON object');
+			return;
+		}
+		setError(undefined);
+		lastEmitted.current = JSON.stringify(parsed, null, 2);
+		onChange(parsed);
 	};
 
 	return (

@@ -20,6 +20,7 @@ import Prompt from './Prompt/Prompt';
 import Popup from './Popup/Popup';
 import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
+import Shortcut from './Shortcut/Shortcut';
 import Stepper from './Stepper/Stepper';
 import SubPage from './SubPage/SubPage';
 import Svg from './Svg/Svg';
@@ -37,11 +38,13 @@ import {
 } from './TableComponents';
 
 import Tabs from './Tabs/Tabs';
+import ThemeSwitcher from './ThemeSwitcher/ThemeSwitcher';
 import Tags from './Tags/Tags';
 import Text from './Text/Text';
 import TextArea from './TextArea/TextArea';
 import TextBox from './TextBox/TextBox';
 import TextList from './TextList/TextList';
+import Tree from './Tree/Tree';
 import ToggleButton from './ToggleButton/ToggleButton';
 import Video from './Video/Video';
 import ImageWithBrowser from './ImageWithBrowser/ImageWithBrowser';
@@ -95,9 +98,12 @@ const componentMap = new Map<string, Component>([
 	[Image.name, Image],
 	[Svg.name, Svg],
 	[Tabs.name, Tabs],
+	[ThemeSwitcher.name, ThemeSwitcher],
 	[Icon.name, Icon],
 	[Text.name, Text],
 	[TextList.name, TextList],
+	[Tree.name, Tree],
+	[Shortcut.name, Shortcut],
 	[Stepper.name, Stepper],
 	[Table.name, Table],
 	[TableGrid.name, TableGrid],

@@ -2,3 +2,4 @@
 .vscode/**
 appbuilder-data/**
 node_modules/
+docs-content/

@@ -15,12 +15,13 @@ let container: HTMLDivElement;
 let root: Root;
 let latest: any;
 
-function Harness({ initial }: Readonly<{ initial: any }>) {
+function Harness({ initial, readOnly }: Readonly<{ initial: any; readOnly?: boolean }>) {
 	const [value, setValue] = useState(initial);
 	latest = value;
 	return (
 		<SchemaEditor
 			value={value}
+			readOnly={readOnly}
 			onChange={v => {
 				latest = v;
 				setValue(v);
@@ -30,10 +31,19 @@ function Harness({ initial }: Readonly<{ initial: any }>) {
 	);
 }
 
-function render(initial: any) {
+function render(initial: any, readOnly?: boolean) {
 	act(() => {
-		root.render(<Harness initial={initial} />);
+		root.render(<Harness initial={initial} readOnly={readOnly} />);
 	});
+}
+
+function click(el: Element) {
+	act(() => el.dispatchEvent(new MouseEvent('click', { bubbles: true })));
+}
+
+/** Opens the per-node details card in COMPACT mode. */
+function openDetails(name: string) {
+	click(nodeRowByName(name)!.querySelector('[title^="All settings for this field"]')!);
 }
 
 function setInputValue(input: HTMLInputElement, text: string) {
@@ -185,6 +195,220 @@ describe('SchemaEditor', () => {
 		act(() => gear.dispatchEvent(new MouseEvent('click', { bubbles: true })));
 
 		expect(container.querySelectorAll('._detailsCard').length).toBe(1);
+	});
+
+	test('the row shows what is set without opening anything', () => {
+		render({
+			type: 'OBJECT',
+			properties: {
+				email: { type: 'STRING', format: 'EMAIL', minLength: 3, defaultValue: 'a@b.c' },
+				plain: { type: 'STRING' },
+			},
+		});
+
+		const chips = Array.from(
+			nodeRowByName('email')!.querySelectorAll('._rowSummary ._badge'),
+		).map(e => e.textContent);
+		expect(chips).toContain('default "a@b.c"');
+		expect(chips).toContain('email');
+		expect(chips).toContain('len 3+');
+
+		// A bare field stays bare.
+		expect(nodeRowByName('plain')!.querySelectorAll('._rowSummary ._badge')).toHaveLength(0);
+	});
+
+	test('a ref shows its target, not the word ref', () => {
+		render({ type: 'OBJECT', properties: { a: { ref: 'myapp.Address' } } });
+		const chip = nodeRowByName('a')!.querySelector('._rowSummary ._badge');
+		expect(chip?.textContent).toBe('→ Address');
+	});
+
+	test('a ref no longer disables the type selector', () => {
+		render({ type: 'OBJECT', properties: { a: { type: 'STRING', ref: 'myapp.Address' } } });
+		const select = nodeRowByName('a')!.querySelector(
+			'select._typeSelector',
+		) as HTMLSelectElement;
+		expect(select.disabled).toBe(false);
+	});
+
+	test('constraints stay visible and live under a ref', () => {
+		render({
+			type: 'OBJECT',
+			properties: { a: { type: 'STRING', ref: 'myapp.Address', minLength: 3 } },
+		});
+		openDetails('a');
+
+		const summaries = Array.from(container.querySelectorAll('._detailsSection summary')).map(
+			s => s.textContent,
+		);
+		expect(summaries.some(s => s?.startsWith('String Constraints'))).toBe(true);
+		// Composition is what a ref actually makes unreachable.
+		const composition = Array.from(container.querySelectorAll('._detailsSection')).find(s =>
+			s.querySelector('summary')?.textContent?.startsWith('Composition'),
+		);
+		expect(composition?.className).toContain('_inert');
+	});
+
+	test('enums mark the constraints inert, because the runtime returns at the enum check', () => {
+		render({
+			type: 'OBJECT',
+			properties: { a: { type: 'STRING', enums: ['x'], minLength: 3 } },
+		});
+		openDetails('a');
+
+		const stringSection = Array.from(container.querySelectorAll('._detailsSection')).find(s =>
+			s.querySelector('summary')?.textContent?.startsWith('String Constraints'),
+		);
+		expect(stringSection?.className).toContain('_inert');
+		expect(container.querySelector('._cardNote._inert')?.textContent).toContain(
+			'Allowed values are set',
+		);
+	});
+
+	test('object constraints open when the schema already carries them', () => {
+		render({ type: 'OBJECT', properties: { a: { type: 'OBJECT', minProperties: 2 } } });
+		openDetails('a');
+
+		const objectSection = Array.from(container.querySelectorAll('._detailsSection')).find(s =>
+			s.querySelector('summary')?.textContent?.startsWith('Object Constraints'),
+		) as HTMLDetailsElement;
+		expect(objectSection.open).toBe(true);
+	});
+
+	test('an enum value is added once, not twice', () => {
+		render({ type: 'OBJECT', properties: { s: { type: 'STRING' } } });
+		openDetails('s');
+
+		const draft = container.querySelector('._enumDraft input') as HTMLInputElement;
+		expect(draft).toBeDefined();
+		setInputValue(draft, 'RED');
+		// The blur that follows an Enter used to commit the same text a second time.
+		act(() => {
+			(container.querySelector('._enumDraft input') as HTMLInputElement).dispatchEvent(
+				new FocusEvent('blur', { bubbles: true }),
+			);
+		});
+
+		expect(latest.properties.s.enums).toEqual(['RED']);
+		expect((container.querySelector('._enumDraft input') as HTMLInputElement).value).toBe('');
+	});
+
+	test('a rename onto an existing name is rejected, not silently kept', () => {
+		render({ type: 'OBJECT', properties: { a: { type: 'STRING' }, b: { type: 'STRING' } } });
+
+		const input = nodeRowByName('a')!.querySelector('input._nodeName') as HTMLInputElement;
+		setInputValue(input, 'b');
+
+		expect(Object.keys(latest.properties)).toEqual(['a', 'b']);
+		expect(input.value).toBe('a');
+	});
+
+	test('readOnly disables the fields inside a details card', () => {
+		render({ type: 'OBJECT', properties: { s: { type: 'STRING', minLength: 2 } } }, true);
+		openDetails('s');
+
+		const inputs = Array.from(
+			container.querySelectorAll('._detailsCard input, ._detailsCard select'),
+		) as Array<HTMLInputElement | HTMLSelectElement>;
+		expect(inputs.length).toBeGreaterThan(0);
+		expect(inputs.every(i => i.disabled)).toBe(true);
+	});
+
+	test('search reveals a match and tints its row without hiding the rest', () => {
+		render(SAMPLE);
+
+		const search = container.querySelector('input._searchInput') as HTMLInputElement;
+		setInputValue(search, 'city');
+
+		expect(nodeRowByName('city')!.className).toContain('_match');
+		// Reveal keeps context on screen.
+		expect(nodeRowByName('name')).toBeDefined();
+		expect(container.querySelector('._matchCount')?.textContent).toBe('1 match');
+	});
+
+	test('narrowing hides everything that is not a match or its ancestor', () => {
+		render(SAMPLE);
+
+		setInputValue(container.querySelector('input._searchInput') as HTMLInputElement, 'city');
+		click(container.querySelector('[title*="hide everything but the matches"]')!);
+
+		expect(nodeRowByName('city')).toBeDefined();
+		expect(nodeRowByName('address')).toBeDefined();
+		expect(nodeRowByName('name')).toBeUndefined();
+	});
+
+	test('a match deeper than the default depth is revealed anyway', () => {
+		render({
+			type: 'OBJECT',
+			properties: {
+				a: {
+					type: 'OBJECT',
+					properties: { b: { type: 'OBJECT', properties: { deep: {} } } },
+				},
+			},
+		});
+		// depth 2 is past COMPACT's `depth < 2` default, so this row starts hidden.
+		expect(nodeRowByName('deep')).toBeUndefined();
+
+		setInputValue(container.querySelector('input._searchInput') as HTMLInputElement, 'deep');
+		expect(nodeRowByName('deep')).toBeDefined();
+	});
+
+	test('clearing the search restores the user own expansion, not the search state', () => {
+		render(SAMPLE);
+
+		// Collapse address by hand.
+		click(nodeRowByName('address')!.querySelector('._caret')!);
+		expect(nodeRowByName('city')).toBeUndefined();
+
+		const search = container.querySelector('input._searchInput') as HTMLInputElement;
+		setInputValue(search, 'city');
+		expect(nodeRowByName('city')).toBeDefined();
+
+		setInputValue(search, '');
+		// Search never wrote to the toggle set, so the manual collapse survives.
+		expect(nodeRowByName('city')).toBeUndefined();
+	});
+
+	test('expand all opens past the depth default, and a caret still collapses one node', () => {
+		render(SAMPLE);
+		click(container.querySelector('[title="Expand all"]')!);
+		expect(nodeRowByName('city')).toBeDefined();
+
+		click(nodeRowByName('address')!.querySelector('._caret')!);
+		expect(nodeRowByName('city')).toBeUndefined();
+	});
+
+	test('a details card sub-editor survives an active narrowing filter', () => {
+		render({ type: 'OBJECT', properties: { a: { type: 'OBJECT', propertyNames: {} } } });
+
+		setInputValue(container.querySelector('input._searchInput') as HTMLInputElement, 'a');
+		click(container.querySelector('[title*="hide everything but the matches"]')!);
+		openDetails('a');
+
+		// propertyNames is not a path the search index walks, so it must not be filtered out.
+		const labels = Array.from(
+			container.querySelectorAll('._detailsCard ._nodeName._fixed'),
+		).map(e => e.textContent);
+		expect(labels).toContain('propertyNames');
+	});
+
+	test('the sample import opens and closes', () => {
+		render(SAMPLE);
+		expect(container.querySelector('._popupBackground')).toBeNull();
+
+		click(container.querySelector('[title^="Paste a sample payload"]')!);
+		expect(container.querySelector('._sampleImport')).toBeDefined();
+
+		click(container.querySelector('._popupBackground')!);
+		expect(container.querySelector('._popupBackground')).toBeNull();
+	});
+
+	test('the sample import is not offered when readOnly', () => {
+		render(SAMPLE, true);
+		expect(container.querySelector('[title^="Paste a sample payload"]')).toBeNull();
+		// Navigation stays available.
+		expect(container.querySelector('input._searchInput')).toBeDefined();
 	});
 
 	test('delete property removes it and its required entry', () => {

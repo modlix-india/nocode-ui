@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleResolutionDefinition, processStyleDefinition } from '../../util/styleProcessor';
+import { StyleResolutionDefinition, processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './fileSelectorStyleProperties';
 import { StyleResolution } from '../../types/common';
 
@@ -7,6 +7,15 @@ const PREFIX = '.comp.compFileSelector';
 export default function FileSelector({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
 		StyleResolution.TABLET_POTRAIT_SCREEN,
 	)?.minWidth;
@@ -63,7 +72,7 @@ export default function FileSelector({
 	}
 
 	${PREFIX} ._popupBackground ._popupContainer {
-		background-color: #fff;
+		background-color: ${t('colorSeven', '#fff')};
 		padding: 20px;
 		border-radius: 3px;
 		max-width: 60vw;
@@ -87,7 +96,7 @@ export default function FileSelector({
 		top: -16px;
 		width: 32px;
 		height: 32px;
-		background: #FFF;
+		background: ${t('colorSeven', '#FFF')};
 		border-radius: 50%;
 		padding: 5px;
 		box-shadow: 0px 1px 3px 0px #0000001A;
@@ -99,8 +108,8 @@ export default function FileSelector({
 	}
 
 	${PREFIX} ._progressBarfileUpload {
-        background-color:#F9FAFB;
-        border : 1px solid #DFE8F0;
+        background-color:${t('surfaceColorOne', '#F9FAFB')};
+        border : 1px solid ${t('borderColorNine', '#DFE8F0')};
         border-radius: 8px;
         height: 50px;
 		width:100%;
@@ -147,7 +156,7 @@ export default function FileSelector({
     ${PREFIX} ._progressBarUploadButton {
     border-radius: 4px;
     border: 1px solid #DFE8F099;
-    background-color:  #FFFFFF;
+    background-color:  ${t('colorSeven', '#FFFFFF')};
     padding: 0px 8px;
 	
     height:40px;
@@ -156,7 +165,7 @@ export default function FileSelector({
     justify-content: center;
     align-items: center;
     font: 600 14px/14px Inter;
-    color: #364359;
+    color: ${t('fontColorTwo', '#364359')};
     margin: 0px;
 	cursor: pointer;
     }
@@ -184,7 +193,7 @@ export default function FileSelector({
         }
     ${PREFIX} ._progressBarFileUploadText{
         font: 500 14px/14px Inter;
-        color: #364359;
+        color: ${t('fontColorTwo', '#364359')};
         width:130px;
         white-space: nowrap;
         overflow: hidden;

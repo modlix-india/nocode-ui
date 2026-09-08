@@ -85,23 +85,25 @@ export const SLAVE_FUNCTIONS = new Map<string, (payload: any) => void>([
 			setData(`${STORE_PREFIX}.theme`, p?.variables);
 		},
 	],
+
+	// The editor used to drive these three straight off the iframe element:
+	// `contentWindow.location.reload()`, `contentWindow.history.back()`. Once the
+	// preview moved onto its own draft-edit hostname those became cross-origin
+	// property access and throw, so the frame does it to itself instead. It is also
+	// the more honest shape -- navigating this document was never the parent's to do.
+	['EDITOR_RELOAD', () => window.location.reload()],
+	['EDITOR_HISTORY_BACK', () => window.history.back()],
+	['EDITOR_HISTORY_FORWARD', () => window.history.forward()],
 ]);
 
 if (globalThis.isDesignMode) {
-	globalThis.determineRightClickPosition = e => {
-		const iframe = parent.window.document.getElementById(globalThis.screenType);
-		if (!iframe) return { x: 0, y: 0 };
-
-		const iframeRect = iframe.getBoundingClientRect();
-		const sf = iframe.dataset.scaleFactor ? parseInt(iframe.dataset.scaleFactor) : 1;
-
-		let top = iframeRect.top;
-		let left = iframeRect.left;
-
-		const point = {
-			x: e.clientX * sf + left,
-			y: e.clientY * sf + top,
-		};
-		return point;
-	};
+	/**
+	 * Raw viewport coordinates, for the master to translate.
+	 *
+	 * This used to reach up into `parent.window.document` for the iframe's rect and
+	 * scale factor, which is cross-origin once the preview is on its own hostname.
+	 * The master has the element and the layout, so it does the arithmetic -- see
+	 * `toMasterPosition` in the page editor's masterFunctions.
+	 */
+	globalThis.determineRightClickPosition = e => ({ x: e.clientX, y: e.clientY });
 }

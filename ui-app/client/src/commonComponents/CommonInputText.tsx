@@ -9,6 +9,7 @@ type CommonInputType = {
 	focusHandler?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	blurHandler?: (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	keyUpHandler?: (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+	keyDownHandler?: (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 	clearContentHandler?: () => void;
 	id: string;
 	noFloat?: boolean;
@@ -55,6 +56,16 @@ type CommonInputType = {
 	editCancelIcon?: any;
 	onEditRequest?: (editMode: boolean, canceled: boolean) => void;
 	analyticsLabel?: string;
+	/** W3C aria-keyshortcuts token for the input itself. */
+	ariaKeyShortcuts?: string;
+	/**
+	 * The key chip from useComponentShortcut. Rendered as a flex item just before the
+	 * right icons, so it stays clear of the clear, password, error and success icons
+	 * however many of them are live, and is centred by the row's own alignment.
+	 */
+	shortcutHint?: React.ReactNode;
+	/** Appended to the wrapper tooltip, e.g. ' (Ctrl+K)'. */
+	shortcutTooltip?: string;
 };
 
 function CommonInputText(props: CommonInputType) {
@@ -76,6 +87,7 @@ function CommonInputText(props: CommonInputType) {
 		focusHandler,
 		blurHandler,
 		keyUpHandler,
+		keyDownHandler,
 		clearContentHandler,
 		validationMessages,
 		supportingText,
@@ -109,6 +121,9 @@ function CommonInputText(props: CommonInputType) {
 		editCancelIcon,
 		analyticsLabel,
 		onEditRequest,
+		ariaKeyShortcuts,
+		shortcutTooltip,
+		shortcutHint,
 	} = props;
 	const [focus, setFocus] = React.useState(false);
 	const [showPassword, setShowPassowrd] = React.useState(false);
@@ -168,13 +183,22 @@ function CommonInputText(props: CommonInputType) {
 	let inputStyle = computedStyles.inputBox ?? {};
 	if (!handleChange) inputStyle = { ...inputStyle, caretColor: 'transparent' };
 
-	const keyDownEvent = maxChars
+	const maxCharsKeyDown = maxChars
 		? (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 				if (e.currentTarget.value.length < maxChars) return;
 				if (e.metaKey || e.shiftKey || e.ctrlKey || e.key.length > 2) return;
 				e.preventDefault();
 			}
 		: undefined;
+
+	const keyDownEvent =
+		maxCharsKeyDown || keyDownHandler
+			? (e: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+					maxCharsKeyDown?.(e);
+					if (e.defaultPrevented) return;
+					keyDownHandler?.(e);
+				}
+			: undefined;
 
 	const [editModeOriginal, setEditModeOriginal] = useState(!showEditRequest);
 
@@ -218,6 +242,7 @@ function CommonInputText(props: CommonInputType) {
 				autoFocus={autoFocus}
 				autoComplete={autoComplete}
 				onKeyDown={keyDownEvent}
+				aria-keyshortcuts={ariaKeyShortcuts}
 			/>
 		) : (
 			<textarea
@@ -247,6 +272,7 @@ function CommonInputText(props: CommonInputType) {
 				autoComplete={autoComplete}
 				onKeyDown={keyDownEvent}
 				rows={rows}
+				aria-keyshortcuts={ariaKeyShortcuts}
 			/>
 		);
 
@@ -326,7 +352,11 @@ function CommonInputText(props: CommonInputType) {
 			onMouseLeave={onMouseLeave}
 			onMouseEnter={onMouseEnter}
 			onKeyUp={updDownHandler}
-			title={isPassword ? undefined : (title ?? value)}
+			title={
+				isPassword
+					? undefined
+					: `${title ?? value ?? ''}${shortcutTooltip ?? ''}` || undefined
+			}
 			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
@@ -344,6 +374,7 @@ function CommonInputText(props: CommonInputType) {
 				</i>
 			) : undefined}
 			{inputControl}
+			{shortcutHint}
 			{!hideClearContentIcon && value?.toString()?.length && !readOnly && !isPassword ? (
 				<i
 					style={computedStyles.rightIcon ?? {}}

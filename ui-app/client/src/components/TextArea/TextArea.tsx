@@ -1,8 +1,10 @@
 import { isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect } from 'react';
 import CommonInputText from '../../commonComponents/CommonInputText';
+import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
 import {
 	PageStoreExtractor,
+	addListener,
 	addListenerAndCallImmediately,
 	getDataFromPath,
 	getPathFromLocation,
@@ -56,6 +58,8 @@ function TextArea(props: Readonly<ComponentProps>) {
 			label,
 			noFloat,
 			onChange,
+			onEnter,
+			submitOnEnter,
 			validation,
 			placeholder,
 			messageDisplay,
@@ -149,6 +153,27 @@ function TextArea(props: Readonly<ComponentProps>) {
 	}, [value, validation]);
 
 	const updateStoreImmediately = upStoreImm || autoComplete === 'on';
+
+	const enterEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
+
+	const enterSpinnerPath = onEnter
+		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
+				onEnter,
+			)}.isRunning`
+		: undefined;
+
+	const [isEnterRunning, setIsEnterRunning] = React.useState(
+		getDataFromPath(enterSpinnerPath, props.locationHistory, pageExtractor) ?? false,
+	);
+
+	useEffect(() => {
+		if (!enterSpinnerPath) return;
+		return addListener(
+			props.context.pageName,
+			(_, value) => setIsEnterRunning(value),
+			enterSpinnerPath,
+		);
+	}, [enterSpinnerPath]);
 
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
@@ -252,6 +277,24 @@ function TextArea(props: Readonly<ComponentProps>) {
 		if (!updateStoreImmediately) setValue(text);
 	};
 
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		if (!submitOnEnter || !enterEvent || event.key !== 'Enter' || event.shiftKey) return;
+		// Shift+Enter falls through to the browser and inserts a new line.
+		event.preventDefault();
+		if (isEnterRunning) return;
+		if (!updateStoreImmediately) {
+			handleBlur(event as unknown as React.FocusEvent<HTMLTextAreaElement>);
+		}
+		(async () =>
+			await runEvent(
+				enterEvent,
+				onEnter,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	};
+
 	return (
 		<CommonInputText
 			cssPrefix="comp compTextArea"
@@ -269,6 +312,7 @@ function TextArea(props: Readonly<ComponentProps>) {
 			handleChange={handleChange}
 			clearContentHandler={handleClickClose}
 			blurHandler={handleBlur}
+			keyDownHandler={handleKeyDown}
 			focusHandler={() => handleInputFocus()}
 			supportingText={supportingText}
 			messageDisplay={messageDisplay}

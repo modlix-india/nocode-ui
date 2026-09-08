@@ -64,8 +64,8 @@ function Popover(props: Readonly<ComponentProps>) {
 	const [tipPosition, setTipPosition] = useState('');
 	const [tipStyle, setTipStyle] = useState({});
 	const [margin, setMargin] = useState({});
-	const boxRef = React.createRef<HTMLDivElement>();
-	const popoverRef = React.createRef<HTMLDivElement>();
+	const boxRef = React.useRef<HTMLDivElement>(null);
+	const popoverRef = React.useRef<HTMLDivElement>(null);
 	const popChildren = Object.keys(children ?? {})
 		.map(e => pageDefinition.componentDefinition[e])
 		.sort((a: any, b: any) => {
@@ -76,17 +76,26 @@ function Popover(props: Readonly<ComponentProps>) {
 	const popController = popChildren[0];
 	const popover = popChildren[1];
 
-	React.useEffect(() => {
-		if (!boxRef.current || !popoverRef.current || !show) return;
-		const boxRect = boxRef.current?.getBoundingClientRect();
-		const popoverRect = popoverRef.current?.getBoundingClientRect();
+	const isOpen = (globalThis.designMode == 'PAGE' && showInDesign === true) || show;
+
+	// Layout effect and not an effect : the popover is portalled to the end of the body, so an
+	// unpositioned absolute box would be painted at the bottom of the document for a frame,
+	// growing the scroll height and flashing a scrollbar before the coordinates land.
+	React.useLayoutEffect(() => {
+		if (!isOpen) {
+			setCoords(undefined);
+			return;
+		}
+		if (!boxRef.current || !popoverRef.current) return;
+		const boxRect = boxRef.current.getBoundingClientRect();
+		const popoverRect = popoverRef.current.getBoundingClientRect();
 
 		let positions = getPositions(position, boxRect, popoverRect)!;
 		setCoords(positions.coords);
 		setTipPosition(positions.tipPosition);
 		setMargin(positions.marginContainer);
 		setTipStyle(positions.tipStyle!);
-	}, [show, boxRef.current, popoverRef.current, position]);
+	}, [isOpen, position, showTip]);
 
 	const showPopover = (e: React.MouseEvent<HTMLElement>) => {
 		setShow(!show);
@@ -139,14 +148,18 @@ function Popover(props: Readonly<ComponentProps>) {
 						context={{ ...context, isReadonly }}
 						locationHistory={locationHistory}
 					/>
-					{(globalThis.designMode == 'PAGE' && showInDesign === true) || show ? (
+					{isOpen ? (
 						<Portal>
 							<div
 								ref={popoverRef}
 								onClick={e => e.stopPropagation()}
 								style={{
-									position: 'absolute',
-									...coords,
+									position: 'fixed',
+									...(coords ?? {
+										top: 0,
+										left: 0,
+										visibility: 'hidden',
+									}),
 								}}
 								className="comp compPopover popover"
 							>

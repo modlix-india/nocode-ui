@@ -5,10 +5,16 @@ import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../../context/StoreContext';
 import { IconHelper } from '../../../util/IconHelper';
+import { previewSrc } from '../../util/draftToken';
 
 interface DnDIFrameProps {
 	personalizationPath: string | undefined;
 	url: string;
+	/**
+	 * Origin the canvases load from: the draft-edit host, '' for the live surface
+	 * when no grant was issued, undefined while one is still being minted.
+	 */
+	previewOrigin: string | undefined;
 	pageExtractor: PageStoreExtractor;
 	desktopIframe: React.RefObject<HTMLIFrameElement | null>;
 	tabletIframe: React.RefObject<HTMLIFrameElement | null>;
@@ -171,6 +177,7 @@ const DEVICES = {
 
 export default function DnDIFrame({
 	url,
+	previewOrigin,
 	personalizationPath,
 	pageExtractor,
 	desktopIframe,
@@ -181,6 +188,12 @@ export default function DnDIFrame({
 	defaultZoomPercentage,
 }: Readonly<DnDIFrameProps>) {
 	const [theme, setTheme] = useState('_light');
+
+	// The address bar edits a path; the origin is the draft-edit host the editor
+	// was granted. Kept apart so what the user types and what personalization
+	// remembers stay portable: a hostname belongs to one editing session, and a
+	// remembered one would come back stale on the next open.
+	const frameSrc = previewSrc(previewOrigin, url);
 
 	useEffect(() => {
 		if (!personalizationPath) return;
@@ -273,7 +286,7 @@ export default function DnDIFrame({
 					allow="display-capture"
 					title="Desktop"
 					ref={desktopIframe}
-					src={url}
+					src={frameSrc}
 					height={desktopDevice.height}
 					width={desktopDevice.width}
 				/>
@@ -310,7 +323,7 @@ export default function DnDIFrame({
 					allow="display-capture"
 					title="Tablet"
 					ref={tabletIframe}
-					src={url}
+					src={frameSrc}
 					height={tabletDevice.height}
 					width={tabletDevice.width}
 				/>
@@ -347,7 +360,7 @@ export default function DnDIFrame({
 					allow="display-capture"
 					title="Mobile"
 					ref={mobileIframe}
-					src={url}
+					src={frameSrc}
 					height={mobileDevice.height}
 					width={mobileDevice.width}
 				/>

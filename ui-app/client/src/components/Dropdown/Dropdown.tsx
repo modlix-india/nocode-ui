@@ -36,6 +36,10 @@ import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 import { styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
 
+// Grace period before a closeOnMouseLeave dropdown actually closes. Long enough to
+// cross the gap between the control and its panel, or to glance away and come back.
+const MOUSE_LEAVE_CLOSE_DELAY = 1000;
+
 function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [searchDropdownData, setSearchDropdownData] = useState<
@@ -254,18 +258,36 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		}
 	};
 
+	// The box is a controlled input off searchText, and searchText only follows the
+	// store when bindingPath2 is set. Returning early without one froze the field at
+	// '' — isSearchable rendered a search box that could not be typed in. The binding
+	// is what makes the text readable from the page (and what an onSearch event needs),
+	// so it stays authoritative when present; without one the local state is enough.
 	const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
-		if (!searchBindingPath) return;
-		setData(searchBindingPath, event.target.value, context.pageName);
+		const value = event.target.value;
+		if (searchBindingPath) setData(searchBindingPath, value, context.pageName);
+		else setSearchText(value);
 	};
 
+	// Debounced server-side search. The ref remembers the text the event last ran for,
+	// so the same text never searches twice.
+	//
+	// It used to be assigned the searchEvent OBJECT inside the runEvent argument list
+	// (`currentSearchText.current = searchEvent`), against a ref declared as a string
+	// and compared to searchText one line above. So after the first search the guard
+	// could never be false again, and because the dependency list includes
+	// locationHistory and props.pageDefinition -- whose identity changes on any
+	// re-render of the page -- an unrelated re-render re-fired the search 500ms later
+	// with text that had not changed. Every one of those refires re-fetched the option
+	// list, which is what could drop a selected-but-unsearched row out of it.
 	React.useEffect(() => {
 		if (!onSearch) return;
 		const timer = setTimeout(() => {
+			if (searchText === currentSearchText.current) return;
+			currentSearchText.current = searchText;
 			(async () =>
-				searchText !== currentSearchText.current &&
 				await runEvent(
-					currentSearchText.current = searchEvent,
+					searchEvent,
 					key,
 					context.pageName,
 					locationHistory,
@@ -349,6 +371,31 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		callClickEvent,
 		runEventOnDropDownClose,
 	]);
+
+	// closeOnMouseLeave used to shut the panel the instant the cursor left it, which
+	// makes the control hostile to aim: the gap between the box and the panel, or a
+	// short detour off the edge while scanning a long list, threw the selection away.
+	// Leaving now only ARMS a close, and re-entering either the box or the panel
+	// disarms it, so a brief wander costs nothing.
+	const closeTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+	const cancelPendingClose = useCallback(() => {
+		if (closeTimerRef.current === undefined) return;
+		clearTimeout(closeTimerRef.current);
+		closeTimerRef.current = undefined;
+	}, []);
+
+	const schedulePendingClose = useCallback(() => {
+		cancelPendingClose();
+		closeTimerRef.current = setTimeout(() => {
+			closeTimerRef.current = undefined;
+			// The cursor may have come back after the timer was armed but before it
+			// fired; the ref is the live answer, the state would be a frame stale.
+			if (!mouseIsInsideRef.current) handleClose();
+		}, MOUSE_LEAVE_CLOSE_DELAY);
+	}, [cancelPendingClose, handleClose]);
+
+	useEffect(() => cancelPendingClose, [cancelPendingClose]);
 
 	const getLabel = useCallback(() => {
 		let label = '';
@@ -443,12 +490,25 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		return Array.isArray(selectedDataKey) ? [...selectedDataKey] : [selectedDataKey];
 	}, [moveSelectedToTop, showDropdown]);
 
-	let dropdownContainer = null;
-	if (showDropdown && wrapperRect) {
-		let options =
+	// The list actually on screen, in ONE place. The panel and the arrow-key handler
+	// each used to decide this for themselves and had drifted: the handler tested
+	// `searchText` alone, without `&& !onSearch`. With an onSearch event the server owns
+	// the filtering and searchDropdownData is never populated (the local filter effect
+	// returns early), so the moment anything was typed the handler switched to an
+	// undefined list, found no length, cleared the hover key and returned. Arrow-key
+	// navigation was dead in every server-searched dropdown, which is all of the client
+	// pickers. Sharing the decision is what stops it drifting again.
+	const visibleOptions = useMemo(
+		() =>
 			searchDropdownData?.length || (searchText && !onSearch)
 				? searchDropdownData
-				: dropdownData;
+				: dropdownData,
+		[searchDropdownData, searchText, onSearch, dropdownData],
+	);
+
+	let dropdownContainer = null;
+	if (showDropdown && wrapperRect) {
+		let options = visibleOptions;
 
 		if (sortOrder && options?.length) {
 			options = [...options].sort((a, b) => {
@@ -465,10 +525,13 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
 				style={{ pointerEvents: 'auto', ...(computedStyles.dropDownContainer ?? {}) }}
 				onScroll={scrollEndEvent}
-				onMouseEnter={() => setMouseInside(true)}
+				onMouseEnter={() => {
+					setMouseInside(true);
+					cancelPendingClose();
+				}}
 				onMouseLeave={() => {
 					setMouseInside(false);
-					if (closeOnMouseLeave) handleClose();
+					if (closeOnMouseLeave) schedulePendingClose();
 				}}
 				ref={element => {
 					if (!element || searchText) return;
@@ -586,6 +649,15 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					height: wrapperRect.height,
 					pointerEvents: 'none',
 					zIndex: 9999,
+					// This div only exists to anchor the panel and to carry the
+					// comp/designType/colorScheme classes the panel's selectors need. Without
+					// these, the theme's .comp.compDropdown box (background, border, padding,
+					// shadow) paints an empty copy of the control over the real one, hiding the
+					// selected label and the right icon.
+					background: 'transparent',
+					border: 'none',
+					boxShadow: 'none',
+					padding: 0,
 				}}
 			>
 				{!closeOnMouseLeave && (
@@ -663,14 +735,13 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			leftIcon={leftIcon}
 			//rightIcon = {rightIcon} 'fa-solid fa-angle-up'
 			showDropdown={showDropdown}
-			onMouseEnter={() => setMouseInside(true)}
+			onMouseEnter={() => {
+				setMouseInside(true);
+				cancelPendingClose();
+			}}
 			onMouseLeave={() => {
 				setMouseInside(false);
-				if (closeOnMouseLeave) {
-					setTimeout(() => {
-						if (!mouseIsInsideRef.current) handleClose();
-					}, 0);
-				}
+				if (closeOnMouseLeave) schedulePendingClose();
 			}}
 			showMandatoryAsterisk={
 				!!(
@@ -684,10 +755,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			updDownHandler={e => {
 				if (e.key.startsWith('Arrow')) {
 					if (!showDropdown) setShowDropdown(true);
-					const data =
-						searchDropdownData?.length || searchText
-							? searchDropdownData
-							: dropdownData;
+					const data = visibleOptions;
 					if (!data?.length) {
 						setHoverKey(undefined);
 						return;

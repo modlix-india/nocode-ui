@@ -224,6 +224,10 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		// The popover is a floating panel; without effects a page can set its
+		// border and radius but not the shadow that separates it from the form.
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	leftIcon: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,

@@ -1,11 +1,21 @@
+import { StyleResolution } from '../../types/common';
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './themeEditorStyleProperties';
 
 const PREFIX = '.comp.compThemeEditor';
 export default function ThemeEditorStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const css =
 		`
     ${PREFIX} {
@@ -26,7 +36,9 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._iframeContainer._DESKTOP {
         justify-content: flex-start;
-        align-items: flex-start;
+        align-items: stretch;
+        overflow-x: auto;
+        overflow-y: hidden;
     }
 
     ${PREFIX} iframe {
@@ -35,9 +47,8 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} iframe._DESKTOP {
         min-width: 1280px;
-        min-height: 1024px;
-        max-height: 1024px;
         width: 100%;
+        height: 100%;
     }
     
     ${PREFIX} iframe._TABLET {
@@ -55,8 +66,9 @@ export default function ThemeEditorStyle({
     }
 
     ${PREFIX} ._variableContainer {
-        width: 600px;
-        border-right: 1px solid #eee;
+        flex: 0 0 auto;
+        min-width: 300px;
+        border-right: 1px solid ${t('borderColorNine', '#eee')};
         display: flex;
         flex-direction: column;
     }
@@ -91,11 +103,11 @@ export default function ThemeEditorStyle({
         height: 30px;
         cursor: pointer;
         font: 12px Inter;
-        color: #555;
+        color: ${t('fontColorTwo', '#555')};
     }
 
     ${PREFIX} ._component:hover, ${PREFIX} ._component._active {
-        background-color: #8e90a41a;
+        background-color: ${t('colorNine', '#8e90a41a')};
     }
 
     ${PREFIX} ._component svg._iconHelperSVG {
@@ -115,12 +127,12 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._icon:hover,
     ${PREFIX} ._icon._selected {
-        background-color: #8e90a41a;
+        background-color: ${t('colorNine', '#8e90a41a')};
     }
 
     ${PREFIX} select {
         height: 24px;
-        border: 2px solid #EEE;
+        border: 2px solid ${t('borderColorNine', '#EEE')};
         border-radius: 4px;
         font: 12px Inter;
         color: #777;
@@ -158,9 +170,9 @@ export default function ThemeEditorStyle({
         font: 13px Inter;
         font-weight: 600;
         padding-bottom: 5px;
-        border-bottom: 2px solid #EEE8;
+        border-bottom: 2px solid ${t('borderColorNine', '#EEE8')};
         margin-bottom: 5px;
-        color: #555;
+        color: ${t('fontColorTwo', '#555')};
         display: flex;
         align-items: center;
         gap: 4px;
@@ -175,7 +187,7 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._caret path {
         stroke-width: 12px;
-        stroke: #555;
+        stroke: ${t('fontColorTwo', '#555')};
     }
 
     ${PREFIX} ._caret._open {
@@ -192,17 +204,149 @@ export default function ThemeEditorStyle({
         background: none;
         cursor: pointer;
         font: 11px Inter;
-        color: #555;
+        color: ${t('fontColorTwo', '#555')};
     }
 
      ${PREFIX} ._variable > * {
         flex: 1;
      }
 
+    ${PREFIX} ._variableValue {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+    }
+
+    ${PREFIX} ._valueRow {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    ${PREFIX} ._valueRow input[type="text"] {
+        flex: 1;
+        min-width: 0;
+    }
+
+    /* A variable set on this theme, rather than inherited from its base or the
+       component default. Without this every box looks equally authored. */
+    ${PREFIX} ._setMarker {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        flex: 0 0 auto;
+        background: transparent;
+    }
+
+    ${PREFIX} ._variable._overridden ._setMarker {
+        background: ${t('colorOne', '#F59E0B')};
+    }
+
+    ${PREFIX} ._variable._overridden ._variableName {
+        color: ${t('fontColorOne', '#333')};
+        font-weight: 600;
+    }
+
+    ${PREFIX} ._variableName {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        min-width: 0;
+    }
+
+    ${PREFIX} ._colorPicker {
+        flex: 0 0 auto;
+        width: 22px;
+        height: 22px;
+        padding: 0;
+        border: 1px solid ${t('borderColorEleven', '#8e90a433')};
+        border-radius: 3px;
+        background: none;
+        cursor: pointer;
+    }
+
+    ${PREFIX} ._colorSwatch {
+        flex: 0 0 auto;
+        width: 22px;
+        height: 22px;
+        border: 1px solid ${t('borderColorEleven', '#8e90a433')};
+        border-radius: 3px;
+    }
+
+    /* What a <var> value actually paints, once the indirection is followed. */
+    ${PREFIX} ._resolvedHint {
+        font: 10px/13px Inter;
+        color: ${t('fontColorThree', '#999')};
+        padding-left: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    ${PREFIX} ._hitCount {
+        margin-left: auto;
+        font: 10px Inter;
+        color: ${t('fontColorThree', '#999')};
+        flex: 0 0 auto;
+    }
+
+    ${PREFIX} ._componentTitle {
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        border-bottom: 2px solid ${t('borderColorNine', '#EEE8')};
+        font: 13px Inter;
+        font-weight: 600;
+        color: ${t('fontColorTwo', '#555')};
+        cursor: pointer;
+    }
+
+    ${PREFIX} ._componentTitle:hover {
+        color: ${t('colorTwo', '#B45309')};
+    }
+
+    ${PREFIX} ._noHits {
+        padding: 14px 12px;
+        font: 11px/16px Inter;
+        color: ${t('fontColorThree', '#999')};
+    }
+
+    ${PREFIX} ._scopeButton,
+    ${PREFIX} ._overrideButton {
+        width: auto;
+        min-width: 20px;
+        padding: 0 5px;
+        font: 10px Inter;
+        color: ${t('fontColorTwo', '#555')};
+        border: 1px solid ${t('borderColorEleven', '#8e90a433')};
+    }
+
+    ${PREFIX} ._scopeButton._selected,
+    ${PREFIX} ._overrideButton._selected {
+        background-color: rgba(245, 158, 11, .16);
+        border-color: ${t('colorOne', '#F59E0B')};
+        color: ${t('colorTwo', '#B45309')};
+    }
+
+    ${PREFIX} ._overrideButton ._dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        border: 1px solid ${t('borderColorEleven', '#999')};
+    }
+
+    ${PREFIX} ._overrideButton._selected ._dot {
+        background: ${t('colorOne', '#F59E0B')};
+        border-color: ${t('colorOne', '#F59E0B')};
+    }
+
      ${PREFIX} input {
         border: 2px solid #8e90a41a;
         border-radius: 3px;
-        color: #333;
+        color: ${t('fontColorOne', '#333')};
         font: 12px inter;
         padding: 5px;
     }
@@ -211,7 +355,7 @@ export default function ThemeEditorStyle({
         display: flex;
         gap: 10px;
         padding: 10px;
-        border-bottom: 2px solid #EEE8;
+        border-bottom: 2px solid ${t('borderColorNine', '#EEE8')};
         flex-direction: column;
     }
 
@@ -236,7 +380,7 @@ export default function ThemeEditorStyle({
     }
 
      ${PREFIX} ._smallButton:hover {
-        background-color: #8e90a41a;
+        background-color: ${t('colorNine', '#8e90a41a')};
      }
 
     ${PREFIX} ._smallButton svg {
@@ -246,19 +390,29 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._smallButton svg path {
         stroke-width: 2px;
-        stroke: #555;
+        stroke: ${t('fontColorTwo', '#555')};
     }
 
     ${PREFIX} ._editorContainer {
         display: flex;
         flex-direction: column;
         height: 100%;
+        flex: 0 0 auto;
+        min-width: 300px;
+        overflow: hidden;
     }
     
     ${PREFIX} ._editorWrapper {
         flex: 1;
         display: flex;
+        min-height: 0;
+        min-width: 0;
+        overflow: hidden;
+    }
 
+    ${PREFIX} ._editorWrapper > * {
+        flex: 1;
+        min-width: 0;
     }
 
     ${PREFIX} ._editorTopBar {
@@ -270,6 +424,21 @@ export default function ThemeEditorStyle({
         gap: 10px;
     }
     
+    ${PREFIX} ._panelResizer {
+        flex: 0 0 auto;
+        width: 5px;
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: col-resize;
+        align-self: stretch;
+    }
+
+    ${PREFIX} ._panelResizer:hover,
+    ${PREFIX} ._panelResizer:active {
+        background: rgba(245, 158, 11, .35);
+    }
+
     ${PREFIX} ._iframeWrapper {
         flex: 1;
         display:flex;
@@ -283,8 +452,8 @@ export default function ThemeEditorStyle({
 
     ${PREFIX} ._separator {
         height: 50%;
-        border-left: 1px solid #EEE;
-        border-right: 1px solid #EEE;
+        border-left: 1px solid ${t('borderColorNine', '#EEE')};
+        border-right: 1px solid ${t('borderColorNine', '#EEE')};
         border-radius: 2px;
     }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

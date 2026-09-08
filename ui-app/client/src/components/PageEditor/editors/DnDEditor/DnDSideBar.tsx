@@ -27,6 +27,9 @@ interface DnDSideBarProps {
 	helpURL: string | undefined;
 	onDebugButtonClick: () => void;
 	debugMessageCount: number;
+	sidekickEnabled: boolean;
+	sidekickOpen: boolean;
+	onSidekickButtonClick: () => void;
 }
 
 export default function DnDSideBar({
@@ -46,6 +49,9 @@ export default function DnDSideBar({
 	helpURL,
 	onDebugButtonClick,
 	debugMessageCount,
+	sidekickEnabled,
+	sidekickOpen,
+	onSidekickButtonClick,
 }: Readonly<DnDSideBarProps>) {
 	const [noSelection, setNoSelection] = useState<boolean>(false);
 	const [componentTree, setComponentTree] = useState<boolean>(false);
@@ -245,6 +251,25 @@ export default function DnDSideBar({
 						</IconHelper>
 						{debugMessageCount > 0 && <span className="_executionCount">{debugMessageCount}</span>}
 					</button>
+					{sidekickEnabled && (
+						<button
+							className={`_iconMenu ${sidekickOpen ? '_selected' : ''}`}
+							onClick={onSidekickButtonClick}
+							title={sidekickOpen ? 'Hide the AI panel' : 'Ask the AI about this page'}
+						>
+							<IconHelper viewBox="0 0 24 24">
+								<path
+									d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9L12 3z"
+									fill="currentColor"
+								/>
+								<path
+									d="M18.5 14.5l.95 2.3 2.3.95-2.3.95-.95 2.3-.95-2.3-2.3-.95 2.3-.95.95-2.3z"
+									fill="currentColor"
+									fillOpacity={0.5}
+								/>
+							</IconHelper>
+						</button>
+					)}
 					<button
 						className="_iconMenu"
 						tabIndex={0}

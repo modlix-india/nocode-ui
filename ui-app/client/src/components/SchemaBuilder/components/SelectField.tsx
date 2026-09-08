@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 
 export default function SelectField({
 	label,
@@ -8,7 +8,8 @@ export default function SelectField({
 	undefinedOnEmpty = true,
 	propPath,
 	options = [],
-}: {
+	readOnly = false,
+}: Readonly<{
 	label: string;
 	value: any;
 	helpText?: string;
@@ -16,12 +17,8 @@ export default function SelectField({
 	onChange: (propPath: string, v: any | undefined) => void;
 	undefinedOnEmpty?: boolean;
 	options?: { value: any; label: string }[];
-}) {
-	const [inValue, setInValue] = React.useState<string>(value ?? '');
-
-	useEffect(() => {
-		setInValue(value ?? '');
-	}, [value]);
+	readOnly?: boolean;
+}>) {
 	const labelComp = label ? <label className="_rightJustify">{label} :</label> : <></>;
 	const helpTextComp = helpText ? <span className="_helptext">{helpText}</span> : <></>;
 	return (
@@ -30,6 +27,7 @@ export default function SelectField({
 			<div className="_leftJustify _flexRow">
 				<select
 					value={value ?? ''}
+					disabled={readOnly}
 					onChange={e => {
 						if (e.target.value === value) return;
 						onChange(

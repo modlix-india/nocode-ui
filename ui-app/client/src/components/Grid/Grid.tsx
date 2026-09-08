@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { STORE_PATH_FUNCTION_EXECUTION } from '../../constants';
+import { STORE_PATH_FUNCTION_EXECUTION, STORE_PREFIX } from '../../constants';
 import {
 	PageStoreExtractor,
 	addListener,
@@ -14,9 +14,11 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getHref } from '../util/getHref';
+import { onMouseDownDragStartCurry } from '../../functions/utils';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
+import { personalizationEvent } from '../util/personalization';
 import GridStyle from './GridStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './gridProperties';
 import { isNullValue } from '@fincity/kirun-js';
@@ -30,7 +32,7 @@ function Grid(props: Readonly<ComponentProps>) {
 	const ref = React.useRef(null);
 	const { definition, pageDefinition, locationHistory, context } = props;
 	const {
-		definition: { bindingPath, bindingPath2, bindingPath3 },
+		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
@@ -61,6 +63,10 @@ function Grid(props: Readonly<ComponentProps>) {
 			dropDataType,
 			onDropData,
 			padding,
+			resizeHandle = '_NONE',
+			resizeMin = 80,
+			resizeMax = 2000,
+			enablePersonalization = true,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -120,6 +126,114 @@ function Grid(props: Readonly<ComponentProps>) {
 	const bindingPathPath3 = bindingPath3
 		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
 		: undefined;
+
+	// ── Resizable pane ──────────────────────────────────────────────────────
+	// The dragged size is remembered the way Table remembers its column layout:
+	// one personalization document per component key. Gated on resizeHandle as
+	// well as the flag, because a Grid with no grip has nothing to remember and
+	// there are dozens of Grids on a page.
+	const isResizable = resizeHandle !== '_NONE';
+	const isVerticalResize = resizeHandle === '_TOP' || resizeHandle === '_BOTTOM';
+
+	const personalizationBindingPath =
+		isResizable && enablePersonalization
+			? ((bindingPath4 &&
+					getPathFromLocation(bindingPath4, locationHistory, pageExtractor)) ??
+				`${STORE_PREFIX}.personalization.${context.pageName}.${flattenUUID(key)}`)
+			: undefined;
+
+	const [resizeSize, setResizeSize] = useState<number | undefined>(() =>
+		personalizationBindingPath
+			? getDataFromPath(`${personalizationBindingPath}.resizeSize`, locationHistory)
+			: undefined,
+	);
+
+	useEffect(
+		() =>
+			personalizationEvent({
+				prefix: 'grid',
+				personalizationBindingPath,
+				key,
+				locationHistory,
+				pageExtractor,
+				onLoad: data => setResizeSize(data.resizeSize),
+			}),
+		[personalizationBindingPath],
+	);
+
+	// Built on onMouseDownDragStartCurry rather than hand-rolled listeners: it bails
+	// when the button is no longer held and also tears down on mouseleave, so a
+	// mouseup the page never sees cannot leave the grid stuck to the pointer.
+	const onResizeStart = (e: React.MouseEvent) => {
+		const el = ref.current as HTMLElement | null;
+		if (!el) return;
+
+		const startSize = isVerticalResize ? el.offsetHeight : el.offsetWidth;
+		// A grip on the left or top edge grows the box when dragged towards the
+		// origin, so the delta runs the other way.
+		const direction = resizeHandle === '_LEFT' || resizeHandle === '_TOP' ? -1 : 1;
+		const dimension = isVerticalResize ? 'height' : 'width';
+
+		const previousCursor = document.body.style.cursor;
+		const previousSelect = document.body.style.userSelect;
+		document.body.style.cursor = isVerticalResize ? 'row-resize' : 'col-resize';
+		document.body.style.userSelect = 'none';
+
+		const sizeFrom = (diffX: number, diffY: number) =>
+			Math.max(
+				resizeMin,
+				Math.min(resizeMax, startSize + (isVerticalResize ? diffY : diffX) * direction),
+			);
+
+		let size = startSize;
+
+		onMouseDownDragStartCurry(
+			0,
+			0,
+			(_x, _y, diffX, diffY) => {
+				size = sizeFrom(diffX, diffY);
+				// Straight to the DOM while dragging. A store write here would
+				// re-evaluate every expression on the page on every mouse move.
+				el.style[dimension] = `${size}px`;
+			},
+			(_x, _y, diffX, diffY) => {
+				size = sizeFrom(diffX, diffY);
+				document.body.style.cursor = previousCursor;
+				document.body.style.userSelect = previousSelect;
+
+				setResizeSize(size);
+				if (personalizationBindingPath) {
+					const current =
+						getDataFromPath(
+							personalizationBindingPath,
+							locationHistory,
+							pageExtractor,
+						) ?? {};
+					// The personalization listener picks this up and POSTs it, debounced.
+					setData(
+						personalizationBindingPath,
+						{ ...current, resizeSize: size },
+						context.pageName,
+					);
+				}
+			},
+		)(e);
+	};
+
+	const resizeStyle =
+		isResizable && resizeSize
+			? { [isVerticalResize ? 'height' : 'width']: `${resizeSize}px` }
+			: undefined;
+
+	const resizeGrip = isResizable ? (
+		<div
+			key={`${key}_resize`}
+			className={`_gridResizeHandle ${resizeHandle}`}
+			onMouseDown={onResizeStart}
+			role="separator"
+			aria-orientation={isVerticalResize ? 'horizontal' : 'vertical'}
+		/>
+	) : undefined;
 
 	const spinnerPath = `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
 		key,
@@ -373,8 +487,8 @@ function Grid(props: Readonly<ComponentProps>) {
 			draggable: !!dragData,
 			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${
 				sepStyle ? `_${key}_grid_css` : ''
-			}`,
-			style: resolvedStyles.comp ?? {},
+			}${isResizable ? ' _resizableGrid' : ''}`,
+			style: { ...(resolvedStyles.comp ?? {}), ...resizeStyle },
 
 			onClick: ev => {
 				if (stopPropagation) ev.stopPropagation();
@@ -386,6 +500,7 @@ function Grid(props: Readonly<ComponentProps>) {
 		[
 			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />,
 			styleComp,
+			resizeGrip,
 			childs,
 		],
 	);
@@ -408,6 +523,7 @@ const component: Component = {
 		bindingPath: { name: 'Grid X Scroll Percentage Binding' },
 		bindingPath2: { name: 'Grid Y Scroll Percentage Binding' },
 		bindingPath3: { name: 'Dropped Data Binding' },
+		bindingPath4: { name: 'Personalization Binding' },
 	},
 	defaultTemplate: {
 		key: '',
@@ -420,7 +536,7 @@ const component: Component = {
 			pageName: 'grid',
 		},
 	],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -72,6 +72,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			UploadPlaceholderText,
 			label,
 			analyticsLabel,
+			fullUrl,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -116,6 +117,24 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		type: string;
 		directory: boolean;
 	}>();
+
+	// What actually lands on the binding path. By default that is exactly what
+	// the browser or the upload handed back; with `fullUrl` it is an absolute
+	// URL, because a value that leaves the app - a PWA manifest entry, an email,
+	// an API payload - is read by something that has no idea what this app's
+	// origin is. getSrcUrl gives the CDN host when one is configured and returns
+	// its input untouched when none is, so the page origin is the floor.
+	const toStoredValue = React.useCallback(
+		(value: FileSelectorValue | any): any => {
+			if (!fullUrl || !value) return value;
+			const raw = typeof value === 'string' ? value : (value?.url ?? '');
+			if (!raw) return value;
+			const cdn = getSrcUrl(raw);
+			if (/^[a-z]+:\/\//i.test(cdn)) return cdn;
+			return window.location.origin + (cdn.startsWith('/') ? cdn : '/' + cdn);
+		},
+		[fullUrl],
+	);
 
 	function getFileUrl(selectedFile: FileSelectorValue): string {
 		if (typeof selectedFile === 'object' && selectedFile !== null) {
@@ -179,7 +198,12 @@ function FileSelector(props: Readonly<ComponentProps>) {
 
 	const onChangeSelection = async (file: string, type: string, directory: boolean) => {
 		if (!bindingPathPath) return;
-		setData(bindingPathPath, selectedFile === file ? undefined : file, context.pageName, true);
+		setData(
+			bindingPathPath,
+			selectedFile === file ? undefined : toStoredValue(file),
+			context.pageName,
+			true,
+		);
 		setShowBrowser(false);
 		setRecentlySelected({ file, type, directory });
 		setIsDirty(true);
@@ -428,7 +452,6 @@ function FileSelector(props: Readonly<ComponentProps>) {
 	} else {
 		content = (
 			<>
-				{renderLabel}
 				<div className="_progressBarfileUpload">
 					{showFileUploadButton && (
 						<div className="_InnerProgressBarContainer">
@@ -515,7 +538,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 
 											setData(
 												bindingPathPath!,
-												response.data,
+												toStoredValue(response.data),
 												context?.pageName,
 											);
 
@@ -749,6 +772,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			data-analytics-label={analyticsLabel || undefined}
 		>
 			<HelperComponent context={props.context} definition={definition} />
+			{renderLabel}
 			{content}
 			{validationsOrSupportText}
 		</div>

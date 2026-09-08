@@ -25,6 +25,7 @@ export default function ArraySection({
 					path: path ? `${path}.additionalItems` : 'additionalItems',
 					depth: 0,
 					kind: 'sub',
+					filterable: false,
 					label: 'additionalItems',
 					onDelete:
 						schema?.additionalItems !== undefined
@@ -57,23 +58,27 @@ export default function ArraySection({
 					{ label: 'Single', value: 'single' },
 					{ label: 'Tuple', value: 'tuple' },
 				]}
+				readOnly={ctx.readOnly}
 			/>
 			<NumberField
 				label="Min Items"
 				value={schema?.minItems}
 				propPath="minItems"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 			<NumberField
 				label="Max Items"
 				value={schema?.maxItems}
 				propPath="maxItems"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 			<Row label="Unique Items" hint="Whether all items must be distinct">
 				<CommonTriStateCheckbox
 					value={schema?.uniqueItems}
-					onChange={v => (ctx.readOnly ? undefined : fieldChange('uniqueItems', v))}
+					onChange={v => fieldChange('uniqueItems', v)}
+					isReadOnly={ctx.readOnly}
 					states={3}
 				/>
 			</Row>
@@ -93,6 +98,7 @@ export default function ArraySection({
 						{ label: 'True', value: true },
 						{ label: 'False', value: false },
 					]}
+					readOnly={ctx.readOnly}
 				/>
 			)}
 			{additionalSchema}
@@ -102,6 +108,7 @@ export default function ArraySection({
 					path: path ? `${path}.contains` : 'contains',
 					depth: 0,
 					kind: 'sub',
+					filterable: false,
 					label: 'contains',
 					onDelete:
 						schema?.contains !== undefined
@@ -116,12 +123,14 @@ export default function ArraySection({
 						value={schema?.minContains}
 						propPath="minContains"
 						onChange={fieldChange}
+						readOnly={ctx.readOnly}
 					/>
 					<NumberField
 						label="Max Contains"
 						value={schema?.maxContains}
 						propPath="maxContains"
 						onChange={fieldChange}
+						readOnly={ctx.readOnly}
 					/>
 				</>
 			)}

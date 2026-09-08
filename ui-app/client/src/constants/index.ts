@@ -19,8 +19,18 @@ export const NAMESPACE_UI_COMPONENT = 'UIEngine.component';
 export const STORE_PATH_FUNCTION_EXECUTION = 'Store.functionExecutions';
 export const STORE_PATH_THEME_PATH = 'Store.theme';
 export const STORE_PATH_STYLE_PATH = 'Store.style';
+/**
+ * The name of the theme currently applied, always one that actually resolved.
+ * `Store.theme` holds its variables; this holds which of `Store.application
+ * .properties.themes` they came from, so a switcher can mark the active one.
+ */
+export const STORE_PATH_SELECTED_THEME = 'Store.selectedTheme';
 export const STORE_PATH_APP = 'Store.application';
 export const STORE_PATH_MESSAGES = 'Store.messages';
+export const STORE_PATH_SHORTCUT_CHOOSER = 'Store.shortcutChooser';
+export const STORE_PATH_SHORTCUT_ANNOUNCE = 'Store.shortcutAnnounce';
+/** Read-only mirror of live shortcuts, so a page can display its own key hints. */
+export const STORE_PATH_SHORTCUTS = 'Store.shortcuts';
 export const STORE_PATH_APP_MESSAGE_TIMEOUT = 'Store.application.properties.messageTimeout';
 
 export const SCHEMA_DATA_LOCATION = Schema.ofRef(`${NAMESPACE_UI_ENGINE}.DataLocation`);

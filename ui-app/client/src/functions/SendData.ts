@@ -55,7 +55,20 @@ const SIGNATURE = new FunctionSignature('SendData')
 	)
 	.setEvents(
 		new Map([
-			Event.eventMapEntry(Event.OUTPUT, new Map([['data', Schema.ofAny('data')]])),
+			// `headers` and `status` are on the success event as well as the error
+			// one. Without them a page can read a response body and nothing else, so
+			// an ETag, a Content-Disposition, a pagination header or the
+			// X-Draft-Version a draft write hands back are all unreachable. Axios
+			// lowercases header names, and a bare hyphen parses as subtraction in an
+			// expression, so read them as headers['x-draft-version'].
+			Event.eventMapEntry(
+				Event.OUTPUT,
+				new Map([
+					['data', Schema.ofAny('data')],
+					['headers', Schema.ofAny('headers')],
+					['status', Schema.ofNumber('status')],
+				]),
+			),
 			Event.eventMapEntry(
 				Event.ERROR,
 				new Map([
@@ -67,7 +80,7 @@ const SIGNATURE = new FunctionSignature('SendData')
 		]),
 	)
 	.setDescription('Sends data to the server using a specified HTTP method with support for file uploads and downloads')
-	.setDocumentation('# UIEngine.SendData\n\nMakes an HTTP request with a specified method (POST, PUT, PATCH, etc.) and payload. Automatically detects File objects in the payload and converts to FormData for file uploads. Supports downloading the response as a file.\n\n## Parameters\n\n- **url** (String, required): The endpoint URL to send data to\n- **method** (String, required): HTTP method to use (e.g., POST, PUT, PATCH)\n- **queryParams** (UrlParameters, optional): Key-value pairs appended as query string parameters\n- **pathParams** (UrlParameters, optional): Key-value pairs substituted into path placeholders in the URL\n- **payload** (Any, required): The request body data. If it contains File objects, automatically converts to FormData\n- **downloadAsAFile** (Boolean, optional, default: false): If true, downloads the response as a file in the browser\n- **downloadFileName** (String, optional, default: \'\'): Custom filename for the downloaded file. Falls back to Content-Disposition header\n- **headers** (UrlParameters, optional): HTTP request headers\n  - Default includes `Authorization` (from `LocalStore.AuthToken`) and `clientCode` (from `Store.auth.loggedInClientCode`)\n\n## Events\n\n- **output**: Triggered on successful response\n  - `data` (Any): The response body from the server\n- **error**: Triggered on request failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **Form Submission**: Submit form data to create or update records\n- **File Upload**: Upload images, documents, or other files\n- **File Download**: Generate and download reports, exports, or documents\n- **API Integration**: Send data to external APIs with various HTTP methods\n- **Bulk Operations**: Send batch update or create requests');
+	.setDocumentation('# UIEngine.SendData\n\nMakes an HTTP request with a specified method (POST, PUT, PATCH, etc.) and payload. Automatically detects File objects in the payload and converts to FormData for file uploads. Supports downloading the response as a file.\n\n## Parameters\n\n- **url** (String, required): The endpoint URL to send data to\n- **method** (String, required): HTTP method to use (e.g., POST, PUT, PATCH)\n- **queryParams** (UrlParameters, optional): Key-value pairs appended as query string parameters\n- **pathParams** (UrlParameters, optional): Key-value pairs substituted into path placeholders in the URL\n- **payload** (Any, required): The request body data. If it contains File objects, automatically converts to FormData\n- **downloadAsAFile** (Boolean, optional, default: false): If true, downloads the response as a file in the browser\n- **downloadFileName** (String, optional, default: \'\'): Custom filename for the downloaded file. Falls back to Content-Disposition header\n- **headers** (UrlParameters, optional): HTTP request headers\n  - Default includes `Authorization` (from `LocalStore.AuthToken`) and `clientCode` (from `Store.auth.loggedInClientCode`)\n\n## Events\n\n- **output**: Triggered on successful response, and also on failure with a null `data`\n  - `data` (Any): The response body from the server, null when the request failed\n  - `headers` (Any): Response headers, lower-cased. Read them as `headers[\'x-my-header\']` - a bare hyphen parses as subtraction\n  - `status` (Number): HTTP status code\n- **error**: Triggered on request failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **Form Submission**: Submit form data to create or update records\n- **File Upload**: Upload images, documents, or other files\n- **File Download**: Generate and download reports, exports, or documents\n- **API Integration**: Send data to external APIs with various HTTP methods\n- **Bulk Operations**: Send batch update or create requests');
 
 const FILE_NAME = 'filename=';
 
@@ -179,18 +192,40 @@ export class SendData extends AbstractFunction {
 				document.body.removeChild(aTag);
 			}
 
-			return new FunctionOutput([EventResult.outputOf(new Map([['data', response.data]]))]);
+			return new FunctionOutput([
+				EventResult.outputOf(
+					new Map<string, any>([
+						['data', response.data],
+						['headers', response.headers],
+						['status', response.status],
+					]),
+				),
+			]);
 		} catch (err: any) {
+			// A request that never got a response at all - network down, CORS, an
+			// abort - has no `err.response`, so reading through it threw inside the
+			// catch and the caller got a TypeError instead of the error event.
+			const res = err?.response;
 			return new FunctionOutput([
 				EventResult.of(
 					Event.ERROR,
-					new Map([
-						['data', err.response.data],
-						['headers', err.response.headers],
-						['status', err.response.status],
+					new Map<string, any>([
+						['data', res?.data],
+						['headers', res?.headers],
+						['status', res?.status],
 					]),
 				),
-				EventResult.outputOf(new Map([['data', null]])),
+				// `output` fires on failure too, with a null `data`, which is why every
+				// success chain has to guard on the data rather than on the event.
+				// Carrying the status here lets that guard tell a 412 from a 403
+				// without reaching into the error branch.
+				EventResult.outputOf(
+					new Map<string, any>([
+						['data', null],
+						['headers', res?.headers],
+						['status', res?.status],
+					]),
+				),
 			]);
 		}
 	}

@@ -1,5 +1,5 @@
 import { isNullValue } from '@fincity/kirun-js';
-import React from 'react';
+import React, { useState } from 'react';
 import NumberField from '../../components/NumberField';
 import StringField from '../../components/StringField';
 import RefPicker from '../RefPicker';
@@ -24,18 +24,26 @@ export default function GeneralSection({
 
 	const nameNamespace = showNameNamespace ? (
 		<>
-			<StringField label="Name" value={schema?.name} propPath="name" onChange={fieldChange} />
+			<StringField
+				label="Name"
+				value={schema?.name}
+				propPath="name"
+				onChange={fieldChange}
+				readOnly={ctx.readOnly}
+			/>
 			<StringField
 				label="Namespace"
 				value={schema?.namespace}
 				propPath="namespace"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 			<NumberField
 				label="Version"
 				value={schema?.version ?? 1}
 				propPath="version"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 		</>
 	) : undefined;
@@ -87,12 +95,14 @@ export default function GeneralSection({
 				textArea={true}
 				propPath="description"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 			<StringField
 				label="Comment"
 				value={schema?.comment}
 				propPath="comment"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 		</>
 	);
@@ -160,19 +170,37 @@ function EnumEditor({
 					)}
 				</div>
 			))}
-			{!readOnly && (
-				<div className="_enumValue _enumDraft">
-					<ValueEditor
-						value={undefined}
-						types={types}
-						readOnly={false}
-						onChange={nv => {
-							if (!isNullValue(nv)) onChange([...list, nv]);
-						}}
-					/>
-					<span className="_hint">Type a value and press Enter to add</span>
-				</div>
-			)}
+			{!readOnly && <EnumDraft types={types} onAdd={nv => onChange([...list, nv])} />}
+		</div>
+	);
+}
+
+/**
+ * The draft row for a new enum value.
+ *
+ * ValueEditor's text inputs keep their own state and resync only when the `value` prop changes.
+ * The draft's value is permanently undefined, so committing never cleared the box, and the blur
+ * that followed an Enter committed the same text a second time. Remounting on each commit is
+ * what resets it; the counter lives here so EnumEditor keeps one job.
+ */
+function EnumDraft({ types, onAdd }: Readonly<{ types: string[]; onAdd: (v: any) => void }>) {
+	const [seq, setSeq] = useState(0);
+
+	return (
+		<div className="_enumValue _enumDraft">
+			<ValueEditor
+				key={seq}
+				value={undefined}
+				types={types}
+				autoFocus={seq > 0}
+				readOnly={false}
+				onChange={nv => {
+					if (isNullValue(nv)) return;
+					onAdd(nv);
+					setSeq(s => s + 1);
+				}}
+			/>
+			<span className="_hint">Type a value and press Enter to add</span>
 		</div>
 	);
 }

@@ -208,14 +208,21 @@ function resolveGroupName(node: ts.Expression): string | undefined {
 /**
  * Extract a single property definition from an object literal AST node.
  */
-function extractPropertyFromObject(obj: ts.ObjectLiteralExpression): CatalogProperty | null {
+/**
+ * `base` carries the common property a `{ ...COMMON_COMPONENT_PROPERTIES.x, ... }`
+ * spread refers to. Its fields are the starting point and anything written
+ * alongside the spread overrides them — which is exactly what the spread means
+ * at runtime. Without a base, the literal must name itself.
+ */
+function extractPropertyFromObject(
+	obj: ts.ObjectLiteralExpression,
+	base?: CatalogProperty,
+): CatalogProperty | null {
 	const nameNode = getObjectProperty(obj, 'name');
-	if (!nameNode) return null;
-
-	const name = getStringLiteral(nameNode);
+	const name = nameNode ? getStringLiteral(nameNode) : base?.name;
 	if (!name) return null;
 
-	const prop: CatalogProperty = { name };
+	const prop: CatalogProperty = base ? { ...base, name } : { name };
 
 	const displayNameNode = getObjectProperty(obj, 'displayName');
 	if (displayNameNode) prop.displayName = getStringLiteral(displayNameNode);
@@ -281,8 +288,66 @@ function extractCommonPropReference(node: ts.Expression): string | undefined {
 	return undefined;
 }
 
-// Well-known common properties (from util/properties.ts)
-const COMMON_PROPERTIES: Record<string, CatalogProperty> = {
+/**
+ * Read COMMON_COMPONENT_PROPERTIES straight out of util/properties.ts.
+ *
+ * Components pull shared properties by reference (`COMMON_COMPONENT_PROPERTIES.layout`),
+ * so the catalog can only describe them if it knows what they are. This used to be
+ * a hand-maintained copy below, and it drifted: 13 of the 27 properties components
+ * actually reference were missing, so the catalog silently omitted them. A consumer
+ * validating against it — the AppBuilder agent, modlix-mcp — then rejects `layout`
+ * on a Grid or `datatype` on a Dropdown as unknown, though both are perfectly valid.
+ *
+ * Parsing the real table keeps them in step. The literal below stays as a fallback
+ * for the case where properties.ts moves or fails to parse.
+ */
+function loadCommonProperties(): Record<string, CatalogProperty> {
+	const filePath = path.join(COMPONENTS_DIR, 'util', 'properties.ts');
+	const sourceFile = parseFile(filePath);
+	if (!sourceFile) {
+		console.warn(`  ! Could not parse ${filePath}; using the built-in common properties`);
+		return { ...COMMON_PROPERTIES_FALLBACK };
+	}
+
+	const found: Record<string, CatalogProperty> = {};
+
+	function visit(node: ts.Node) {
+		if (
+			ts.isVariableDeclaration(node) &&
+			ts.isIdentifier(node.name) &&
+			node.name.text === 'COMMON_COMPONENT_PROPERTIES' &&
+			node.initializer &&
+			ts.isObjectLiteralExpression(node.initializer)
+		) {
+			for (const member of node.initializer.properties) {
+				if (!ts.isPropertyAssignment(member)) continue;
+				if (!ts.isObjectLiteralExpression(member.initializer)) continue;
+
+				// Components reference the KEY (`...linkTargetFeatures`), but a page
+				// stores the inner `name` (`features`). Index by key, emit the name.
+				const key = ts.isIdentifier(member.name)
+					? member.name.text
+					: getStringLiteral(member.name);
+				if (!key) continue;
+
+				const prop = extractPropertyFromObject(member.initializer);
+				if (prop) found[key] = prop;
+			}
+		}
+		ts.forEachChild(node, visit);
+	}
+
+	visit(sourceFile);
+
+	if (!Object.keys(found).length) {
+		console.warn('  ! COMMON_COMPONENT_PROPERTIES not found; using the built-in copy');
+		return { ...COMMON_PROPERTIES_FALLBACK };
+	}
+	return { ...COMMON_PROPERTIES_FALLBACK, ...found };
+}
+
+// Fallback copy, used only when util/properties.ts cannot be parsed.
+const COMMON_PROPERTIES_FALLBACK: Record<string, CatalogProperty> = {
 	onClick: {
 		name: 'onClick',
 		displayName: 'On Click',
@@ -410,6 +475,10 @@ const COMMON_PROPERTIES: Record<string, CatalogProperty> = {
 	},
 };
 
+// The table components are resolved against: parsed from source, with the
+// fallback filling any gap.
+const COMMON_PROPERTIES: Record<string, CatalogProperty> = loadCommonProperties();
+
 // ── Component Group Assignment ─────────────────────────────────
 // Controls how much detail the AI agent receives per component.
 //
@@ -421,6 +490,10 @@ const COMMON_PROPERTIES: Record<string, CatalogProperty> = {
 // "internal"    → omitted from AI prompt
 
 const COMPONENT_TIERS: Record<string, ComponentTier> = {
+	Tree: 'data',
+	// Non-visual, but the agent has to know its props to wire a shortcut at all.
+	// At the default tier it rendered as a one-line description with no properties.
+	Shortcut: 'common',
 	// ── common: primary building blocks ──
 	Button: 'common',
 	Grid: 'common',
@@ -509,6 +582,8 @@ const DEFAULT_TIER: ComponentTier = 'specialized';
 // AI agent understands what it does and when to use it.
 
 const COMPONENT_BRIEFS: Record<string, string> = {
+	Tree:
+		'Renders hierarchical data, repeating ONE child template at every depth. dataShape accepts NESTED (children array), FLAT (idKey + parentKey), OBJECT_MAP (object keyed by id) or RAW_JSON (structure inferred). treeDesign picks indented list, accordion, org chart or Finder-style columns. Inside the node template, Parent.<field> is the current node and Parent.Parent.<field> is its parent, at every depth. bindingPath2 holds the selection (single or multi), bindingPath3 the expanded node keys, bindingPath4 the active path for the columns design. Set editable to allow drag reorder, drag reparent, add and delete; RAW_JSON is read only.',
 	Animator:
 		'Animation wrapper that starts animations based on an intersection observer. Used in sites for scroll-triggered entrance effects.',
 	ArrayRepeater:
@@ -637,6 +712,28 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 // in stylePropertiesDefinition across components.
 
 const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
+	viewport: 'Scrolling area inside the tree root',
+	nodeContainer: 'Wrapper for one node and its children; the panel frame in the accordion design',
+	nodeRow: 'The clickable row for one node; the box in the org chart design',
+	nodeContent: 'Container holding the authored node template',
+	nodeActions: 'Container for the per-node add and delete buttons',
+	toggle: 'Expand/collapse button',
+	toggleExpanded: 'Expand/collapse button while the node is open',
+	toggleCollapsed: 'Expand/collapse button while the node is closed',
+	guideLine: 'Guide and connector lines between a parent and its children',
+	leafSpacer: 'Spacer keeping leaf rows aligned with rows that have a toggle',
+	childrenContainer: 'Container holding a node\'s child nodes',
+	dragHandle: 'Grab handle for dragging a node',
+	dropBefore: 'Indicator shown when a drag will drop above a node',
+	dropAfter: 'Indicator shown when a drag will drop below a node',
+	dropInto: 'Indicator shown when a drag will drop onto a node to reparent it',
+	buttonAdd: 'Per-node add button',
+	buttonDelete: 'Per-node delete button',
+	column: 'One column in the columns design',
+	columnHeaderPart: 'Header at the top of a column',
+	columnDividerLine: 'Divider between two columns',
+	columnChevronIcon: 'Chevron marking a column row that has children',
+	emptyState: 'Shown when the bound data yields no nodes',
 	inputBox: 'The text input element',
 	label: 'Label text above/beside the input',
 	leftIcon: 'Icon on the left side of the input',
@@ -706,6 +803,8 @@ const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
 //  ... repeated elements
 
 const COMPONENT_STRUCTURES: Record<string, string> = {
+	Tree:
+		'viewport → nodes[ node[ nodeRow[toggle | checkBox? | nodeContent(childTemplate) | nodeActions?] → children[ node... ] ] ] | columns[ column[columnHeader? → nodeRow...]... ]',
 	TextBox:
 		'[label + asterisk?] → [leftIcon? | inputBox | rightIcon?] → supportText? → errorText?',
 	Dropdown:
@@ -762,6 +861,14 @@ const COMPONENT_STRUCTURES: Record<string, string> = {
 // can choose the right variant. Shared across components.
 
 const DESIGN_TYPE_DESCRIPTIONS: Record<string, string> = {
+	indented:
+		'File-explorer tree — one indent step per depth, with optional dotted guide lines and elbow connectors.',
+	accordion:
+		'Full-width stacked panels; expanding slides the children block open beneath the header. No guide lines.',
+	orgChart:
+		'Boxes laid out top-down (or left-to-right) with connector lines between a parent and its children. Scrolls horizontally when wide.',
+	columns:
+		'Finder-style Miller columns — one scrolling column per level of the active path, driven by bindingPath4.',
 	default:
 		'Standard appearance — solid background, minimal border, 32px height, 4px border-radius.',
 	outlined:
@@ -841,17 +948,26 @@ function extractPropertiesFromFile(filePath: string): CatalogProperty[] {
 					continue;
 				}
 
-				// Object literal (inline property definition)
+				// Object literal — either a self-contained definition, or a
+				// spread of a common property with overrides:
+				//   { ...COMMON_COMPONENT_PROPERTIES.linkPath, group: BASIC }
+				//
+				// The spread form used to fall through `extractPropertyFromObject`,
+				// which requires a `name` the literal doesn't carry, and the
+				// property was dropped from the catalog entirely. That is how
+				// Link lost `linkPath` — its only means of navigating anywhere.
 				if (ts.isObjectLiteralExpression(element)) {
-					const prop = extractPropertyFromObject(element);
+					const spreadRef = element.properties
+						.filter(ts.isSpreadAssignment)
+						.map((s) => extractCommonPropReference(s.expression))
+						.find((ref): ref is string => !!ref && !!COMMON_PROPERTIES[ref]);
+
+					const prop = extractPropertyFromObject(
+						element,
+						spreadRef ? COMMON_PROPERTIES[spreadRef] : undefined,
+					);
 					if (prop) properties.push(prop);
 					continue;
-				}
-
-				// Spread of common property with overrides:
-				// { ...COMMON_COMPONENT_PROPERTIES.designType, enumValues: [...] }
-				if (ts.isObjectLiteralExpression(element)) {
-					// Already handled above
 				}
 			}
 		}

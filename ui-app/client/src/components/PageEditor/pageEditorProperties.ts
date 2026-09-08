@@ -1,4 +1,9 @@
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_NUM_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -57,6 +62,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		// Publishing means "make the draft live", so with no draft there is
+		// nothing the button can do: it answered 404 and the only way to find
+		// that out was to press it. The host owns the answer because the host
+		// owns the read that carries `X-Draft-Version`.
+		//
+		// Undefined, not false, is the no-answer case: a host that wires
+		// onPublish and never sets this keeps the button it has always had.
+		// Only an explicit false hides it.
+		name: 'hasDraft',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Draft Exists',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			'Whether this page has unpublished work. False hides the Publish button; leave unset to always show it.',
+	},
+
+	{
 		name: 'pagesData',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Pages Data',
@@ -78,7 +100,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Dashboard Menu Name',
 		group: ComponentPropertyGroup.DATA,
 		description: 'Dashboard menu name.',
-		defaultValue: 'View Dashboard'
+		defaultValue: 'View Dashboard',
 	},
 
 	{
@@ -226,6 +248,40 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		description: 'Default zoom percentage for the editor canvas (e.g. 100 for 100%).',
 		defaultValue: 100,
+	},
+	{
+		// Off unless a host asks for it. The panel talks to an AI service that only
+		// the appbuilder deployment runs, so defaulting it on would put a dead chat
+		// in every other embedder's editor.
+		name: 'sidekickEnabled',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Enable AI Sidekick',
+		group: ComponentPropertyGroup.BASIC,
+		description:
+			'Show the docked AI panel. Its edits to this page land on the canvas unsaved, for review before Save; anything else it touches is saved as usual.',
+		defaultValue: false,
+	},
+	{
+		// On by default, because the editor itself now saves and loads the draft
+		// surface: an agent still writing live would be editing a different copy
+		// of the page than the one on the canvas. The agent probes the deployment
+		// and falls back to live writes where there is no draft surface, so this
+		// is safe to leave on.
+		name: 'sidekickDraftMode',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'AI Edits On The Draft Surface',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			"Send the AI panel's edits to the app's draft surface, matching where the editor itself saves.",
+		defaultValue: true,
+	},
+	{
+		name: 'sidekickAgentEndpoint',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'AI Sidekick Endpoint',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'SSE endpoint the docked AI panel talks to.',
+		defaultValue: '/api/ai/appbuilder/chat',
 	},
 ];
 

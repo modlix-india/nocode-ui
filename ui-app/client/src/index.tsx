@@ -6,6 +6,7 @@ import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
 import { processLocation } from './util/locationProcessor';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
+import DraftBanner from './components/DraftBanner';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
@@ -54,12 +55,20 @@ declare global {
 		application: any;
 		pageDefinition: any;
 		theme: any;
+		/** Which theme `theme` is. Absent means the app's default. */
+		themeName?: string;
 		urlDetails: any;
 	}
+	/**
+	 * The app this page belongs to, stamped by IndexHTMLService. Read this rather
+	 * than `domainAppCode`, which getHref.ts overwrites on import.
+	 */
+	var __mlxAppCode: string;
 	var appDefinitionResponse: AppDefinitionResponse;
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;
 	var debugContext: any;
+	var isDraftMode: boolean;
 	// var d3: typeof import('d3/index');
 }
 
@@ -85,6 +94,36 @@ globalThis.isDesignMode = (() => {
 
 // To enable debug mode, add ?debug to the URL
 globalThis.isDebugMode = window.location.search.indexOf('debug') != -1;
+
+// Whether this page is being served from the app's draft surface.
+//
+// Derived from the response, not from the URL. The gateway resolves the hostname
+// and stamps every request, so the server is the authority on which surface this
+// is and the client only needs to know for its own chrome. Reading it from a
+// query parameter would make it look settable from here, which it is not.
+globalThis.isDraftMode = (() => {
+	try {
+		if (document.documentElement.getAttribute('data-draft') === 'true') return true;
+
+		// Local dev only, and it exists because the two cannot both be had: the
+		// webpack dev server serves its own index.html, so `data-draft` is never
+		// stamped, and routing the document to the ui service instead would serve
+		// the CDN bundle and throw away every local change. So on the dev shell
+		// alone, fall back to the two shapes the platform mints: `d` plus 32 hex
+		// for the permanent draft link, `t-` plus 32 hex for an editing session's
+		// grant.
+		//
+		// `nodeDev` is set in src/index.html and nowhere else, so this branch
+		// cannot exist in a real deployment, where the stamp above is the only
+		// answer and the gateway remains the only thing that decides.
+		if (globalThis.nodeDev === true)
+			return /^(d|t-)[0-9a-f]{32}\./.test(window.location.hostname);
+
+		return false;
+	} catch (e) {
+		return false;
+	}
+})();
 
 // To check if the app is being interacted with
 globalThis.lastInteracted = Date.now();
@@ -214,6 +253,7 @@ if (!app) {
 			<ErrorBoundary>
 				<AppStyle />
 				<App />
+				<DraftBanner />
 			</ErrorBoundary>
 		);
 		if (window.localStorage.getItem(AUTH_TOKEN) || !rendered) createRoot(app).render(reactNode);

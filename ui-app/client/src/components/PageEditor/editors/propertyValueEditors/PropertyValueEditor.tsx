@@ -25,6 +25,7 @@ import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
 import SectionPropertyValueEditor from './SectionPropertyValueEditor';
 import { SvgContentEditor } from './SvgContentEditor';
+import { ShortcutKeyEditor } from './ShortcutKeyEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -208,6 +209,19 @@ function makeValueEditor(
 				propDef={propDef}
 				onChange={e => onChange({ ...value, value: e })}
 				pageExtractor={pageOperations.getPageExtractor()}
+			/>
+		);
+	}
+
+	if (propDef.editor === ComponentPropertyEditor.SHORTCUT_KEY) {
+		return (
+			<ShortcutKeyEditor
+				value={chngValue === '' ? undefined : chngValue}
+				onChange={v => {
+					const newValue: ComponentProperty<any> = { ...(value ?? {}), value: v };
+					if (isNullValue(v) || v === '') delete newValue.value;
+					onChange(newValue);
+				}}
 			/>
 		);
 	}

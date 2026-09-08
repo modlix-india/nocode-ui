@@ -3,19 +3,17 @@ import { ComponentPropertyDefinition, ComponentProps } from '../../types/common'
 import {
 	PageStoreExtractor,
 	UrlDetailsExtractor,
-	addListenerAndCallImmediatelyWithChildrenActivity,
 	getDataFromPath,
 	getPathFromLocation,
 	setData,
 	setData as setStoreData,
 } from '../../context/StoreContext';
-import axios from 'axios';
-import { deepEqual, duplicate } from '@fincity/kirun-js';
 import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { propertiesDefinition, stylePropertiesDefinition } from './promptProperties';
+import { useComponentShortcut } from '../../shortcuts/useComponentShortcut';
 import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
@@ -29,7 +27,18 @@ import { CraftCard } from './components/CraftCard';
 import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
+import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
+import { personalizationEvent } from '../util/personalization';
+import { serialiseActiveData } from './editorContext';
+import {
+	DraftDescriptor,
+	applyDraftPatch,
+	collectDescriptors,
+	draftPayload,
+	matchDescriptor,
+	snapshotBaseline,
+} from './openDrafts';
 
 interface Message {
 	id: string;
@@ -101,7 +110,31 @@ interface TokenUsage {
 	context_used: number;
 	context_limit: number;
 	context_percent: number;
+	cache_read_tokens?: number;
 	turns: number;
+}
+
+// Fallback only — the server sends the real limit with every usage payload
+// (CONTEXT_LIMIT_DEFAULT). DeepSeek V4 documents a 1M window; the old 48000
+// here dated from the 64K era and made the bar read far fuller than it was.
+const DEFAULT_CONTEXT_LIMIT = 1_000_000;
+
+/** "64,228 of 1,000,000 tokens in context" — the absolute numbers behind the bar. */
+function formatContextTitle(used: number, limit: number): string {
+	return `${used.toLocaleString()} of ${limit.toLocaleString()} tokens in context`;
+}
+
+/**
+ * Total tokens read across the whole session, and how many of them were served
+ * from the provider's prompt cache. The agent re-sends the conversation on every
+ * tool round-trip, so the total runs far ahead of the context size — the cache
+ * share is what shows that most of those re-reads were cheap.
+ */
+function formatTokensTitle(total: number, cacheRead?: number): string {
+	const base = `${total.toLocaleString()} tokens read this session`;
+	if (!cacheRead) return base;
+	const pct = total > 0 ? Math.round((cacheRead / total) * 100) : 0;
+	return `${base}\n${cacheRead.toLocaleString()} (${pct}%) served from prompt cache`;
 }
 
 function fileToBase64(file: File): Promise<string> {
@@ -182,6 +215,18 @@ interface SSEEventContext {
 	completeBindingPath?: string;
 	props: Readonly<ComponentProps>;
 	runEvent: any;
+	/** Apply a change the agent held in an open draft instead of saving. */
+	onDraftPatch: (data: any) => void;
+	/** A write that really did save, so anything showing that object is stale. */
+	onObjectChanged: (data: any) => void;
+	/**
+	 * These events are being seen for the second time: the server is replaying
+	 * a turn we reattached to (see the AI service's run_manager). Everything
+	 * that merely describes the turn is applied again, which is how the message
+	 * gets rebuilt; anything that acts on the world outside this chat is not,
+	 * because it already happened when the events first went out.
+	 */
+	replaying: boolean;
 }
 
 // Helper: update the assistant message with current toolCalls + agentSpans state.
@@ -367,19 +412,21 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				const input = u.input_tokens ?? 0;
 				const output = u.output_tokens ?? 0;
 				const contextUsed = u.context_used ?? 0;
-				const contextLimit = u.context_limit ?? 48000;
+				const contextLimit = u.context_limit ?? DEFAULT_CONTEXT_LIMIT;
 				const contextPercent =
 					u.context_percent ??
 					(contextLimit > 0
 						? Math.min(Math.round((contextUsed / contextLimit) * 100), 100)
 						: 0);
+				const cacheRead = u.cache_read_tokens ?? 0;
 				ctx.setUsage({
 					input_tokens: input,
 					output_tokens: output,
-					total_tokens: u.total_tokens ?? input + output,
+					total_tokens: u.total_tokens ?? input + cacheRead + output,
 					context_used: contextUsed,
 					context_limit: contextLimit,
 					context_percent: contextPercent,
+					cache_read_tokens: cacheRead,
 					turns: u.turns ?? 0,
 				});
 			}
@@ -423,6 +470,11 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 		case 'complete': {
+			// A one-shot: onComplete is what redirects the page or persists the
+			// result. Reattaching to a turn that already completed must not fire
+			// it a second time.
+			if (ctx.replaying) break;
+
 			// Automatically update the store if a binding path is provided
 			if (ctx.completeBindingPath) {
 				setData(ctx.completeBindingPath, data, ctx.props.context.pageName);
@@ -526,6 +578,14 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					);
 				});
 			}
+			break;
+		}
+		case 'draft_patch': {
+			ctx.onDraftPatch(data);
+			break;
+		}
+		case 'object_changed': {
+			ctx.onObjectChanged(data);
 			break;
 		}
 		case 'confirmation_request': {
@@ -651,7 +711,7 @@ function extractUsageFromSession(session: any): TokenUsage | null {
 	const input = session.total_input_tokens ?? 0;
 	const output = session.total_output_tokens ?? 0;
 	const contextUsed = session.context_tokens_used ?? 0;
-	const contextLimit = session.context_limit ?? 48000;
+	const contextLimit = session.context_limit ?? DEFAULT_CONTEXT_LIMIT;
 	const contextPercent = contextLimit > 0 ? Math.round((contextUsed / contextLimit) * 100) : 0;
 	if (input === 0 && output === 0 && (session.turn_count ?? 0) === 0) return null;
 	return {
@@ -675,14 +735,27 @@ function UsageBar({ usage }: Readonly<{ usage: TokenUsage }>) {
 	const contextClass = `_usageContext${getContextLevel(usage.context_percent)}`;
 	return (
 		<div className="_usageBar">
-			<span className="_usageTokens">{usage.total_tokens.toLocaleString()} tokens</span>
+			<span
+				className="_usageTokens"
+				title={formatTokensTitle(usage.total_tokens, usage.cache_read_tokens)}
+			>
+				{usage.total_tokens.toLocaleString()} tokens
+			</span>
 			<span className="_usageSeparator" />
 			<span className="_usageTurns">
 				{usage.turns} {usage.turns === 1 ? 'turn' : 'turns'}
 			</span>
 			<span className="_usageSeparator" />
-			<span className={contextClass}>{usage.context_percent}% context</span>
-			<div className="_usageContextBar">
+			<span
+				className={contextClass}
+				title={formatContextTitle(usage.context_used, usage.context_limit)}
+			>
+				{usage.context_percent}% context
+			</span>
+			<div
+				className="_usageContextBar"
+				title={formatContextTitle(usage.context_used, usage.context_limit)}
+			>
 				<div
 					className="_usageContextFill"
 					style={{ width: `${Math.min(usage.context_percent, 100)}%` }}
@@ -766,9 +839,23 @@ function ModelSelector({
 
 const SCROLL_BOTTOM_THRESHOLD_PX = 50;
 
+// Below this the session sidebar stops being a column beside the chat and becomes a
+// drawer over it. 640px leaves ~380px of conversation next to a 260px sidebar, which
+// is about the narrowest that still reads as two panes.
+const SESSIONS_OVERLAY_BELOW_PX = 640;
+
+// Silence longer than this means the connection is dead, not the agent quiet:
+// the service sends a keepalive every 15s while a run is attached.
+const STREAM_TIMEOUT_MS = 45_000;
+
+// How many times a dropped connection is rejoined before giving up and falling
+// back to polling the transcript. The run itself is unaffected either way:
+// it keeps working with nobody watching.
+const MAX_RECONNECT_ATTEMPTS = 3;
+
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
@@ -780,7 +867,18 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			agentEndpoint = '/api/ai/appbuilder/chat',
 			placeholder = 'Ask anything',
 			welcomeMessage = 'What can I help with?',
+			initialPrompt = '',
+			contextSurface = '',
+			targetAppCode = '',
+			activeObject = '',
+			openTabs = '',
+			openTabIds = '',
+			activeDataPath = '',
+			openDraftsPath = '',
+			draftMode = false,
+			showDraftReview = false,
 			showSessions = true,
+			sessionsMode = '_auto',
 			newChatLabel = 'New chat',
 			yourChatsLabel = 'Your chats',
 			deleteConfirmMessage = 'Delete this chat? This action cannot be undone.',
@@ -822,6 +920,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			onMessage,
 			onError,
 			onComplete,
+			// Named apart from the React `onObjectSaved` escape hatch below: that
+			// one is a callback a parent COMPONENT passes, this one is an event
+			// function a PAGE names, and a page definition cannot carry a function.
+			onObjectSaved: onObjectSavedEvent,
+			shortcutKey,
+			shortcutScope,
+			shortcutPriority,
+			shortcutGroup,
+			shortcutAction,
+			onShortcut,
+			allowInInput,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -832,12 +941,58 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		pageExtractor,
 		urlExtractor,
 	);
+	// The textarea lives inside InputBar; hand it a ref so a shortcut can focus it
+	// rather than letting resolveFocusTarget guess at the first focusable descendant,
+	// which would be a toolbar button.
+	const promptInputRef = useRef<HTMLTextAreaElement>(null);
+
+	const { aria: shortcutAria, hint: shortcutHint } = useComponentShortcut({
+		props,
+		componentKey: key,
+		shortcutKey,
+		shortcutScope,
+		shortcutPriority,
+		shortcutGroup,
+		shortcutAction,
+		onShortcut,
+		allowInInput,
+		fallbackLabel: 'Prompt',
+		disabled: !!readOnly,
+		elementRef: promptInputRef,
+	});
+
 	const completeBindingPath = useMemo(
 		() =>
 			bindingPath
 				? getPathFromLocation(bindingPath, props.locationHistory, pageExtractor)
 				: undefined,
 		[bindingPath, props.locationHistory, pageExtractor],
+	);
+
+	const changedBindingPath = useMemo(
+		() =>
+			bindingPath2
+				? getPathFromLocation(bindingPath2, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath2, props.locationHistory, pageExtractor],
+	);
+
+	/**
+	 * Where the page that sent the user here left the question to open with.
+	 *
+	 * A handoff through the store rather than through the URL. /ai/<prompt> could
+	 * not carry a real one: a couple of paragraphs of what to build is well past
+	 * what a path segment survives, so long prompts arrived truncated or not at
+	 * all. Worse, the address bar kept holding it, so every refresh started the
+	 * whole build again in a new session. This is read once and cleared as it is
+	 * sent, which leaves a refresh nothing to fire.
+	 */
+	const pendingPromptPath = useMemo(
+		() =>
+			bindingPath3
+				? getPathFromLocation(bindingPath3, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath3, props.locationHistory, pageExtractor],
 	);
 
 	const resolvedPlaceholder = getTranslations(placeholder, props.pageDefinition.translations);
@@ -888,7 +1043,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Derive activeCraft from the crafts Map so it never drifts out of sync.
 	// (Previously a separate useState updated inside setCrafts' updater — a
 	// React anti-pattern that caused appended blocks to occasionally drop.)
-	const activeCraft = activeCraftId ? crafts.get(activeCraftId) ?? null : null;
+	const activeCraft = activeCraftId ? (crafts.get(activeCraftId) ?? null) : null;
 
 	// Model selector state
 	const [availableModels, setAvailableModels] = useState<{ id: string; name: string }[]>([]);
@@ -910,7 +1065,20 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
 
 	// Draft state
-	const [draftText, setDraftText] = useState('');
+	// What to PUT INTO the input, and a counter saying "now".
+	//
+	// Only this component's own pushes live here: a session switch, a send that
+	// clears the box, a refused send that hands the message back. Keystrokes
+	// deliberately do NOT, because the input already holds what the user typed
+	// and mirroring it here made the two owners fight (see InputBar's
+	// `textRevision`) as well as re-rendering the whole chat on every letter.
+	const [textPush, setTextPush] = useState<{ text: string; rev: number }>({
+		text: '',
+		rev: 0,
+	});
+	const setDraftText = useCallback((text: string) => {
+		setTextPush(prev => ({ text, rev: prev.rev + 1 }));
+	}, []);
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -929,75 +1097,68 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const isResizingRef = useRef(false);
 	const sidebarRef = useRef<HTMLDivElement>(null);
 
+	// Sessions layout. The sidebar is a 260px column, so beside a chat docked in a
+	// side panel there is nothing left for the conversation. Measure the component
+	// rather than the viewport: a 340px panel on a 2560px screen is narrow, and no
+	// media query can see that.
+	const rootRef = useRef<HTMLDivElement>(null);
+	const [isNarrow, setIsNarrow] = useState(false);
+
+	useEffect(() => {
+		if (sessionsMode !== '_auto' || !rootRef.current) return;
+		const observer = new ResizeObserver(entries => {
+			const width = entries[0]?.contentRect.width ?? 0;
+			// Only act on a real measurement: a hidden or unmounted panel reports 0
+			// and must not flip the layout underneath the user.
+			if (width > 0) setIsNarrow(width < SESSIONS_OVERLAY_BELOW_PX);
+		});
+		observer.observe(rootRef.current);
+		return () => observer.disconnect();
+	}, [sessionsMode]);
+
+	const overlaySessions = sessionsMode === '_overlay' || (sessionsMode === '_auto' && isNarrow);
+
+	// Whether the sidebar was left open is a preference worth remembering, but only
+	// as a sidebar. As a drawer it sits ON TOP of the conversation, so restoring it
+	// open would hide the chat behind the history every time the panel is opened.
+	// Kept here so the preference survives for when there is room for a column again.
+	const preferredSidebarOpenRef = useRef<boolean | undefined>(undefined);
+	// Read from the personalization callback, which fires outside render.
+	const overlaySessionsRef = useRef(overlaySessions);
+	overlaySessionsRef.current = overlaySessions;
+
+	useEffect(() => {
+		if (overlaySessions) setSidebarOpen(false);
+		else if (preferredSidebarOpenRef.current !== undefined)
+			setSidebarOpen(preferredSidebarOpenRef.current);
+	}, [overlaySessions]);
+
 	// Personalization: persist sidebar width
 	const personalizationBindingPath = enablePersonalization
 		? `${STORE_PREFIX}.personalization.${props.context.pageName}.${flattenUUID(key)}`
 		: undefined;
 
-	useEffect(() => {
-		if (!personalizationBindingPath) return;
-
-		const appCode = getDataFromPath(
-			`${STORE_PREFIX}.application.appCode`,
-			props.locationHistory,
-			pageExtractor,
-		);
-		const url = `api/ui/personalization/${appCode}/prompt_${pageExtractor.getPageName()}_${key}`;
-		let currentObject: any;
-
-		(async () => {
-			try {
-				const po = await axios.get(url, {
-					headers: {
-						Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-					},
-				});
-				if (po.data) {
-					setStoreData(personalizationBindingPath, po.data, pageExtractor.getPageName());
-					if (po.data.sidebarWidth) {
-						setSidebarWidth(po.data.sidebarWidth);
+	useEffect(
+		() =>
+			personalizationEvent({
+				prefix: 'prompt',
+				personalizationBindingPath,
+				key,
+				locationHistory: props.locationHistory,
+				pageExtractor,
+				onLoad: data => {
+					if (data.sidebarWidth) setSidebarWidth(data.sidebarWidth);
+					if (data.sidebarOpen !== undefined) {
+						preferredSidebarOpenRef.current = data.sidebarOpen;
+						// Never reopen a drawer over the chat: this arrives async, so
+						// it would otherwise undo the close above whenever the GET
+						// resolves after the layout has settled on overlay.
+						if (!overlaySessionsRef.current) setSidebarOpen(data.sidebarOpen);
 					}
-					if (po.data.sidebarOpen !== undefined) {
-						setSidebarOpen(po.data.sidebarOpen);
-					}
-				}
-				currentObject = duplicate(po.data);
-			} catch {
-				// Silently fail — personalization is optional
-			}
-		})();
-
-		let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
-		const unsub = addListenerAndCallImmediatelyWithChildrenActivity(
-			pageExtractor.getPageName(),
-			(_, v) => {
-				if (timeoutHandle) clearTimeout(timeoutHandle);
-				if (deepEqual(currentObject, v) || currentObject === undefined) return;
-				currentObject = duplicate(v);
-
-				timeoutHandle = setTimeout(() => {
-					(async () => {
-						try {
-							await axios.post(url, v, {
-								headers: {
-									Authorization: getDataFromPath(
-										`${LOCAL_STORE_PREFIX}.AuthToken`,
-										[],
-									),
-								},
-							});
-						} catch {
-							// Silently fail
-						}
-						timeoutHandle = undefined;
-					})();
-				}, 2000);
-			},
-			personalizationBindingPath,
-		);
-
-		return unsub;
-	}, [personalizationBindingPath]);
+				},
+			}),
+		[personalizationBindingPath],
+	);
 
 	// Sidebar resize handlers
 	const handleResizeStart = useCallback(
@@ -1071,8 +1232,16 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	}, [personalizationBindingPath, props.locationHistory, pageExtractor]);
 
 	const getAuthHeaders = useCallback(() => {
-		const token = getDataFromPath('Store.auth.token', [], pageExtractor) ?? '';
-		const clientCode = getDataFromPath('Store.auth.clientCode', [], pageExtractor) ?? '';
+		// Store.auth carries `accessToken` / `loggedInClientCode`; there is no `token`
+		// or `clientCode` on it. Reading those sent an empty Authorization on every AI
+		// call, which only ever worked because the gateway fell back to the auth
+		// cookie — so anywhere the cookie is absent the whole chat 401s.
+		const token =
+			getDataFromPath('Store.auth.accessToken', [], pageExtractor) ??
+			getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []) ??
+			'';
+		const clientCode =
+			getDataFromPath('Store.auth.loggedInClientCode', [], pageExtractor) ?? '';
 		const appCode =
 			getDataFromPath(
 				`${STORE_PREFIX}.application.appCode`,
@@ -1087,13 +1256,289 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		};
 	}, [pageExtractor, props.locationHistory]);
 
+	// What the hosting page has open. Rebuilt on every render so it always reflects
+	// the tab the user is on now, not the one they were on when the chat mounted.
+	// Built per send rather than memoised: the tab's rows change underneath us as
+	// the user filters and pages, and the agent should be told what is on screen
+	// now, not what was there when the chat last rendered.
+	const buildEditorContext = useCallback(() => {
+		const ctx: Record<string, string> = {};
+		if (contextSurface) ctx.surface = contextSurface;
+		if (targetAppCode) ctx.app_code = targetAppCode;
+		if (activeObject) ctx.active_object = activeObject;
+		if (openTabs) ctx.open_tabs = openTabs;
+		if (openTabIds) ctx.open_tab_ids = openTabIds;
+
+		if (activeDataPath) {
+			const data = serialiseActiveData(
+				getDataFromPath(activeDataPath, props.locationHistory, pageExtractor),
+			);
+			if (data) ctx.active_data = data;
+		}
+		return Object.keys(ctx).length ? ctx : undefined;
+	}, [
+		contextSurface,
+		targetAppCode,
+		activeObject,
+		openTabs,
+		openTabIds,
+		activeDataPath,
+		props.locationHistory,
+		pageExtractor,
+	]);
+
+	// ── Open drafts ──────────────────────────────────────────────────────────
+	// What the surrounding surface has open and unsaved. The agent reads these
+	// instead of the saved versions and holds its writes in them, so the user can
+	// look at a change before committing it. A surface that declares nothing gets
+	// exactly the behaviour this component always had.
+
+	// An escape hatch for a host that renders this component directly in React
+	// rather than from a page definition (the page editor's docked panel), so it
+	// can react to a write that really did save. A definition cannot carry a
+	// callback, and this is not worth a store round trip.
+	const onObjectSaved = (props as any).onObjectSaved as ((d: any) => void) | undefined;
+
+	// The saved version of each open object, to measure the user's edits against.
+	// Deep copies on purpose: the store hands out live references, and a baseline
+	// that moves with the thing it measures reports everything as clean.
+	const draftBaselines = useRef<Map<string, { id: string; version: any; doc: any }>>(new Map());
+
+	const readDescriptors = useCallback(
+		(): DraftDescriptor[] =>
+			openDraftsPath
+				? collectDescriptors(
+						getDataFromPath(openDraftsPath, props.locationHistory, pageExtractor),
+						openDraftsPath,
+					)
+				: [],
+		[openDraftsPath, props.locationHistory, pageExtractor],
+	);
+
+	// Prefer a baseline the surface already keeps (the workspace stores the saved
+	// copy of each tab next to its draft). It is the same thing this component
+	// would otherwise snapshot, but it is maintained by whatever does the saving,
+	// so it cannot drift the way an inferred one can.
+	const baselineFor = useCallback(
+		(d: DraftDescriptor, doc: any) => {
+			if (d.baselinePath) {
+				const held = getDataFromPath(d.baselinePath, props.locationHistory, pageExtractor);
+				if (held) return held;
+			}
+			// Re-snapshot when a different object arrives, or when this one was saved
+			// underneath us. Without the version check, everything the user saves
+			// stays in the overlay forever and is re-sent as unsaved work.
+			const held = draftBaselines.current.get(d.path);
+			if (!held || held.id !== String(doc.id) || held.version !== doc.version)
+				draftBaselines.current.set(d.path, {
+					id: String(doc.id),
+					version: doc.version,
+					doc: snapshotBaseline(doc),
+				});
+			return draftBaselines.current.get(d.path)?.doc;
+		},
+		[props.locationHistory, pageExtractor],
+	);
+
+	const buildOpenDrafts = useCallback(() => {
+		const out: any[] = [];
+		for (const d of readDescriptors()) {
+			const doc = getDataFromPath(d.path, props.locationHistory, pageExtractor);
+			if (!doc?.id) continue;
+			const payload = draftPayload(d, doc, baselineFor(d, doc));
+			if (payload) out.push(payload);
+		}
+		return out;
+	}, [readDescriptors, baselineFor, props.locationHistory, pageExtractor]);
+
+	// Patches arrive one per tool call, and a single turn can make a dozen. Applied
+	// as they land, each is a separate write of a document that reaches 1.4MB, and
+	// every write wakes every store listener in the editor. That is wasteful on its
+	// own and it is the most likely source of the intermittent "maximum update
+	// depth" React throws mid-turn. So they are queued and flushed once a frame:
+	// the user cannot perceive the difference, and the editor sees one update.
+	const pendingPatches = useRef<Map<string, any[]>>(new Map());
+	const flushHandle = useRef<number | null>(null);
+
+	const flushDraftPatches = useCallback(() => {
+		flushHandle.current = null;
+		const queued = pendingPatches.current;
+		pendingPatches.current = new Map();
+
+		for (const [path, patches] of queued) {
+			const current = getDataFromPath(path, props.locationHistory, pageExtractor);
+			let next = current;
+			for (const patch of patches) next = applyDraftPatch(next, patch);
+			if (next === current) continue;
+			setData(path, next, props.context.pageName);
+		}
+	}, [props.locationHistory, props.context.pageName, pageExtractor]);
+
+	const handleDraftPatch = useCallback(
+		(data: any) => {
+			const target = matchDescriptor(readDescriptors(), data, path =>
+				getDataFromPath(path, props.locationHistory, pageExtractor),
+			);
+			if (!target || !data?.patch) return;
+
+			const queue = pendingPatches.current.get(target.path) ?? [];
+			queue.push(data.patch);
+			pendingPatches.current.set(target.path, queue);
+
+			if (flushHandle.current === null)
+				flushHandle.current = requestAnimationFrame(flushDraftPatches);
+		},
+		[readDescriptors, flushDraftPatches, props.locationHistory, pageExtractor],
+	);
+
+	// Never strand a patch: a turn that ends between the queue and the frame would
+	// otherwise leave the canvas one edit behind what the agent says it did.
+	useEffect(
+		() => () => {
+			if (flushHandle.current !== null) cancelAnimationFrame(flushHandle.current);
+		},
+		[],
+	);
+
+	// A write that really did save. Nothing to apply, but the surface may be
+	// showing the object, and the sharpest case is a theme edited from the page
+	// editor: saved app-wide, invisible on the canvas until something refetches it.
+	const [savedObjects, setSavedObjects] = useState<
+		Array<{ kind: string; name: string; draft: boolean }>
+	>([]);
+
+	// Apps this chat has left unpublished work in. Kept in LocalStore because the
+	// draft outlives the conversation: the notice above is per-turn and
+	// dismissible, so on a surface with no editor a refresh used to erase the only
+	// hint that anything was waiting, while the server held the draft for good.
+	const pendingAppsPath = `${LOCAL_STORE_PREFIX}.promptPendingApps.${props.context.pageName}_${flattenUUID(key)}`;
+	const [pendingApps, setPendingApps] = useState<string[]>(() => {
+		const stored = getDataFromPath(pendingAppsPath, [], pageExtractor);
+		return Array.isArray(stored) ? stored.filter(a => typeof a === 'string') : [];
+	});
+	const rememberPendingApp = useCallback((appCode: string) => {
+		// Capped: this is a hint about where to look, not a history.
+		setPendingApps(prev => (prev.includes(appCode) ? prev : [appCode, ...prev].slice(0, 5)));
+	}, []);
+	const forgetPendingApps = useCallback((appCodes: string[]) => {
+		setPendingApps(prev => {
+			const next = prev.filter(a => !appCodes.includes(a));
+			return next.length === prev.length ? prev : next;
+		});
+	}, []);
+	// One writer, in an effect: persisting inside a state updater would run twice
+	// under StrictMode and is a side effect where React expects a pure function.
+	useEffect(() => {
+		setData(
+			pendingAppsPath,
+			pendingApps.length ? pendingApps : undefined,
+			props.context.pageName,
+		);
+	}, [pendingApps, pendingAppsPath, props.context.pageName]);
+	const handleObjectChanged = useCallback(
+		(data: any) => {
+			if (!data?.kind) return;
+			const draft = data.draft === true;
+			setSavedObjects(prev =>
+				prev.some(
+					o => o.kind === data.kind && o.name === (data.name ?? '') && o.draft === draft,
+				)
+					? prev
+					: [...prev, { kind: data.kind, name: data.name ?? '', draft }],
+			);
+			// A drafted change needs somewhere to be reviewed from. A surface with
+			// editor tabs has one already; this remembers the app so a surface
+			// WITHOUT tabs can show a review bar, and remembers it in LocalStore so
+			// the bar comes back after a refresh. The draft outlives the tab it was
+			// announced in, so the note about it has to as well.
+			if (draft && data.app_code) rememberPendingApp(data.app_code);
+			// A parent component can take a callback; a page cannot, so it gets the
+			// same news through the store and an event. Both fire: the page editor
+			// uses the callback, the workspace uses the event, and neither knows
+			// about the other.
+			onObjectSaved?.(data);
+
+			if (changedBindingPath) {
+				// Append, reading the CURRENT store value rather than replaying
+				// component state, because the handler drains the list and the
+				// component's own `savedObjects` never shrinks. Read-modify-write is
+				// safe here: SSE events arrive one at a time on one connection.
+				const existing = getDataFromPath(
+					changedBindingPath,
+					props.locationHistory,
+					pageExtractor,
+				);
+				const queue = Array.isArray(existing) ? existing : [];
+				setData(
+					changedBindingPath,
+					[
+						...queue,
+						{
+							kind: data.kind,
+							id: data.id ?? '',
+							name: data.name ?? '',
+							appCode: data.app_code ?? '',
+							operation: data.operation ?? '',
+							draft,
+						},
+					],
+					props.context.pageName,
+				);
+			}
+
+			if (onObjectSavedEvent) {
+				const savedEvent = props.pageDefinition.eventFunctions?.[onObjectSavedEvent];
+				if (savedEvent)
+					runEvent(
+						savedEvent,
+						onObjectSavedEvent,
+						props.context.pageName,
+						props.locationHistory,
+						props.pageDefinition,
+					);
+			}
+		},
+		[
+			onObjectSaved,
+			onObjectSavedEvent,
+			changedBindingPath,
+			props.locationHistory,
+			props.context.pageName,
+			props.pageDefinition,
+			pageExtractor,
+		],
+	);
+
+	// handleSend closes over these four, and they are rebuilt whenever the declared
+	// descriptors or the page definition change. Naming them in handleSend's
+	// dependency array fixes the stale closure but makes handleSend itself churn,
+	// and that churn reached InputBar as a "Maximum update depth exceeded" crash.
+	// Refs give the current value with a stable identity, which is what this
+	// actually needs: the send should use whatever is true when it runs.
+	const buildOpenDraftsRef = useRef(buildOpenDrafts);
+	const draftModeRef = useRef(draftMode);
+	const handleDraftPatchRef = useRef(handleDraftPatch);
+	const handleObjectChangedRef = useRef(handleObjectChanged);
+	buildOpenDraftsRef.current = buildOpenDrafts;
+	draftModeRef.current = draftMode;
+	handleDraftPatchRef.current = handleDraftPatch;
+	handleObjectChangedRef.current = handleObjectChanged;
+
+	// Sessions are scoped per user + client + agent server side. When the chat is
+	// working on a specific app, narrow the history to that app so each workspace
+	// gets its own list instead of one shared pile.
+	const sessionScopeQuery = targetAppCode ? `&app_code=${encodeURIComponent(targetAppCode)}` : '';
+
 	// Fetch sessions list
 	const fetchSessions = useCallback(async () => {
 		try {
 			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
-			const response = await fetch(`${baseUrl}/sessions?limit=${sessionsPerPage}`, {
-				headers: getAuthHeaders(),
-			});
+			const response = await fetch(
+				`${baseUrl}/sessions?limit=${sessionsPerPage}${sessionScopeQuery}`,
+				{
+					headers: getAuthHeaders(),
+				},
+			);
 			if (response.ok) {
 				const data = await response.json();
 				let items: Session[] = [];
@@ -1105,7 +1550,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		} catch {
 			// Silently fail - sessions are optional
 		}
-	}, [agentEndpoint, getAuthHeaders, sessionsPerPage]);
+	}, [agentEndpoint, getAuthHeaders, sessionsPerPage, sessionScopeQuery]);
 
 	useEffect(() => {
 		fetchSessions();
@@ -1232,7 +1677,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const newOffset = sessions.length;
 			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
 			const response = await fetch(
-				`${baseUrl}/sessions?limit=${sessionsPerPage}&offset=${newOffset}`,
+				`${baseUrl}/sessions?limit=${sessionsPerPage}&offset=${newOffset}${sessionScopeQuery}`,
 				{ headers: getAuthHeaders() },
 			);
 			if (response.ok) {
@@ -1253,6 +1698,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		sessionsPerPage,
 		getAuthHeaders,
 		totalSessions,
+		sessionScopeQuery,
 	]);
 
 	// Stop polling for a PROCESSING session
@@ -1301,16 +1747,327 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		[agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, fetchSessions],
 	);
 
+	// Which session this surface was last watching a run on. The sidekick is on
+	// four pages (page editor, workspace, org, ai) and each keeps its own note,
+	// so reopening one rejoins the run it was showing rather than whichever run
+	// of the user's happens to be newest.
+	const activeRunPath = `${LOCAL_STORE_PREFIX}.promptActiveRuns.${props.context.pageName}_${flattenUUID(key)}`;
+
+	const rememberActiveRun = useCallback(
+		(runSessionId: string) => {
+			setData(activeRunPath, { sessionId: runSessionId }, props.context.pageName);
+		},
+		[activeRunPath, props.context.pageName],
+	);
+
+	/**
+	 * Drop the note, unless it has moved on to another run.
+	 *
+	 * `expected` guards against clearing a record written after the caller
+	 * started: the restore below reads the note, asks the server about it, and
+	 * only then decides to clear, and a message sent in that window has
+	 * already replaced the note with its own run.
+	 */
+	const forgetActiveRun = useCallback(
+		(expected?: string) => {
+			if (expected) {
+				const record = getDataFromPath(activeRunPath, [], pageExtractor);
+				if (record?.sessionId && record.sessionId !== expected) return;
+			}
+			setData(activeRunPath, undefined, props.context.pageName);
+		},
+		[activeRunPath, props.context.pageName, pageExtractor],
+	);
+
+	/**
+	 * Read an agent SSE stream to its end, folding every event into the message
+	 * on screen.
+	 *
+	 * Shared by the send that starts a run and the attach that rejoins one:
+	 * both carry the same event stream, and the only difference is that an
+	 * attach opens by replaying the turn so far. `replay_start` therefore wipes
+	 * this message back to empty before the replay lands, because whatever it holds
+	 * came from an earlier read of the same events, and rebuilding is what
+	 * makes reattaching idempotent.
+	 */
+	const consumeStream = useCallback(
+		async (
+			response: Response,
+			assistantMsgId: string,
+			initialSessionId: string | null,
+		): Promise<{ sessionId: string | null; timedOut: boolean; ended: boolean }> => {
+			const reader = response.body?.getReader();
+			if (!reader) throw new Error('No response body');
+
+			const decoder = new TextDecoder();
+			let buffer = '';
+			let assistantText = '';
+			let toolCalls = new Map<string, ToolCall>();
+			let agentSpans = new Map<string, AgentSpan>();
+			let receivedSessionId = initialSessionId;
+			let replaying = false;
+			let ended = false;
+			let timedOut = false;
+
+			// Watchdog: detect dead connections (server keepalives every 15s)
+			let lastDataAt = Date.now();
+			const watchdog = setInterval(() => {
+				if (Date.now() - lastDataAt > STREAM_TIMEOUT_MS) {
+					timedOut = true;
+					abortControllerRef.current?.abort();
+					clearInterval(watchdog);
+				}
+			}, 5_000);
+
+			// eventType is preserved across reader.read() chunks because a
+			// single SSE event ("event: foo\ndata: ...\n\n") can be split
+			// at any byte boundary. Resetting per-chunk dropped the data
+			// line whenever a network read landed between the header and
+			// the data, intermittently silently losing craft events.
+			let eventType = '';
+			try {
+				while (true) {
+					const { done, value } = await reader.read();
+					if (done) break;
+					lastDataAt = Date.now();
+
+					buffer += decoder.decode(value, { stream: true });
+					const lines = buffer.split('\n');
+					buffer = lines.pop() ?? '';
+
+					for (const line of lines) {
+						if (line.startsWith('event: ')) {
+							eventType = line.slice(7).trim();
+							continue;
+						}
+						if (line === '') {
+							eventType = '';
+							continue;
+						}
+						if (!line.startsWith('data: ') || !eventType) continue;
+
+						let data: any;
+						try {
+							data = JSON.parse(line.slice(6));
+						} catch {
+							eventType = '';
+							continue;
+						}
+						const type = eventType;
+						eventType = '';
+
+						if (data.session_id) receivedSessionId = data.session_id;
+
+						if (type === 'replay_start') {
+							replaying = true;
+							assistantText = '';
+							toolCalls = new Map();
+							agentSpans = new Map();
+							setMessages(prev =>
+								prev.map(m =>
+									m.id === assistantMsgId
+										? {
+												...m,
+												content: '',
+												thinking: undefined,
+												toolCalls: [],
+												agentSpans: [],
+												suggestions: undefined,
+												data: undefined,
+											}
+										: m,
+								),
+							);
+							if (data.session_id) {
+								setSessionId(data.session_id);
+								// Noted as early as possible: for a brand new chat
+								// this is the first moment the id exists, and a
+								// refresh a second later needs it to find the run.
+								rememberActiveRun(data.session_id);
+								if (data.session_id !== initialSessionId) {
+									// A chat this new is not in the sidebar yet, and
+									// the list used to be refreshed only once the
+									// turn ended. Switching away before then left
+									// the run going with no way back to it.
+									fetchSessions();
+								}
+							}
+							continue;
+						}
+
+						if (type === 'replay_end') {
+							replaying = false;
+							// The run's own done event is inside the replay when
+							// the turn is already over, so this flag, not the
+							// stream ending, is what says nothing more is coming.
+							if (data.running === false) ended = true;
+							continue;
+						}
+
+						if (type === 'done') ended = true;
+
+						processSSEEvent(type, data, {
+							assistantMsgId,
+							currentText: assistantText,
+							toolCalls,
+							agentSpans,
+							setText: (newText: string) => {
+								assistantText = newText;
+							},
+							setMessages,
+							setSessionId,
+							setUsage,
+							showToolCalls,
+							setFeedbackTurn: turn => setFeedbackTurn(turn),
+							setCrafts,
+							setActiveCraftId,
+							onComplete,
+							completeBindingPath,
+							props,
+							runEvent,
+							onDraftPatch: handleDraftPatchRef.current,
+							onObjectChanged: handleObjectChangedRef.current,
+							replaying,
+						});
+					}
+				}
+			} catch (err: any) {
+				// Our own watchdog fired: report it as a timeout so the caller
+				// can rejoin the run. Any other abort is someone deliberately
+				// letting go (a stop, a session switch, an unmount) and must
+				// stay an abort.
+				if (!(err?.name === 'AbortError' && timedOut)) throw err;
+			} finally {
+				clearInterval(watchdog);
+			}
+
+			return { sessionId: receivedSessionId, timedOut, ended };
+		},
+		[
+			showToolCalls,
+			onComplete,
+			completeBindingPath,
+			rememberActiveRun,
+			fetchSessions,
+			setSessionId,
+			props,
+		],
+	);
+
+	/**
+	 * Rejoin a run already in progress on the server.
+	 *
+	 * The agent keeps working with nobody attached, so a refresh, a closed
+	 * panel or a switch to another session costs only the view of it. This is
+	 * how that view comes back: the service replays the turn so far and then
+	 * streams the rest live.
+	 *
+	 * Returns false when there is nothing to rejoin (it finished and was
+	 * forgotten, or the worker holding it died), which is the caller's cue to
+	 * fall back to the persisted transcript.
+	 */
+	const attachToRun = useCallback(
+		async (attachSessionId: string): Promise<boolean> => {
+			if (!attachSessionId) return false;
+			stopPolling();
+
+			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			let assistantMsgId = '';
+			let attempt = 0;
+			// Polling owns the streaming state once it takes over, so the
+			// cleanup below must not immediately unset what it just set.
+			let handedOff = false;
+
+			try {
+				while (attempt <= MAX_RECONNECT_ATTEMPTS) {
+					abortControllerRef.current = new AbortController();
+					const response = await fetch(`${baseUrl}/attach`, {
+						method: 'POST',
+						headers: getAuthHeaders(),
+						body: JSON.stringify({ session_id: attachSessionId }),
+						signal: abortControllerRef.current.signal,
+					});
+
+					if (!response.ok) {
+						// 404 is the ordinary answer for "that run is over".
+						if (response.status === 404) forgetActiveRun();
+						return false;
+					}
+
+					setIsStreaming(true);
+					shouldAutoScrollRef.current = true;
+					setIsAtBottom(true);
+
+					if (!assistantMsgId) {
+						assistantMsgId = `asst_attach_${Date.now()}`;
+						setMessages(prev => [
+							...prev,
+							{
+								id: assistantMsgId,
+								role: 'assistant',
+								content: '',
+								toolCalls: [],
+								agentSpans: [],
+							},
+						]);
+					}
+
+					const result = await consumeStream(response, assistantMsgId, attachSessionId);
+					if (!result.timedOut) break;
+
+					// The connection died, not the run. Rejoin it: the replay
+					// rebuilds this message, so nothing is shown twice.
+					attempt += 1;
+					if (attempt > MAX_RECONNECT_ATTEMPTS) {
+						handedOff = true;
+						startPolling(attachSessionId);
+						return true;
+					}
+				}
+
+				forgetActiveRun();
+				await fetchSessions();
+				return true;
+			} catch (err: any) {
+				// Deliberately let go of. The run is untouched and whoever
+				// aborted us owns what happens next.
+				if (err?.name === 'AbortError') return true;
+				return false;
+			} finally {
+				if (!handedOff) setIsStreaming(false);
+				abortControllerRef.current = null;
+			}
+		},
+		[
+			agentEndpoint,
+			getAuthHeaders,
+			consumeStream,
+			stopPolling,
+			startPolling,
+			fetchSessions,
+			forgetActiveRun,
+		],
+	);
+
 	// Select a session and load its history
 	const handleSelectSession = useCallback(
 		async (selectedSessionId: string) => {
 			if (selectedSessionId === sessionId) return; // Already viewing this session
 
 			stopPolling();
+			// Let go of whatever this panel was watching. Only the view ends:
+			// the run it was attached to carries on, and picking that session
+			// again rejoins it.
+			abortControllerRef.current?.abort();
+			abortControllerRef.current = null;
 			setIsStreaming(false);
 			shouldAutoScrollRef.current = true;
 			isNavigatingRef.current = true;
 			setIsAtBottom(true);
+			// A drawer has done its job once a chat is picked, and it is sitting on
+			// top of that chat. Not routed through handleSidebarToggle: this is not a
+			// preference to remember.
+			if (overlaySessions) setSidebarOpen(false);
 
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
@@ -1332,15 +2089,21 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					setCrafts(new Map());
 					setActiveCraftId(null);
 
-					// If session is currently being processed and was recently
-					// updated, poll for updates. Stale PROCESSING sessions
-					// (e.g. server crashed or stop was hit) are treated as done.
+					// Still working? Rejoin the run, which replays the turn so
+					// far and then streams the rest live. Polling the
+					// transcript is the fallback for when there is no run left
+					// to rejoin: it finished and was forgotten, or the worker
+					// holding it died, in which case a PROCESSING session that
+					// has not been touched in a minute is simply over.
 					if (data.session?.status === 'PROCESSING') {
-						const updatedAt = data.session?.updated_at;
-						const isStale =
-							updatedAt && Date.now() - new Date(updatedAt).getTime() > 60_000;
-						if (!isStale) {
-							startPolling(selectedSessionId);
+						const attached = await attachToRun(selectedSessionId);
+						if (!attached) {
+							const updatedAt = data.session?.updated_at;
+							const isStale =
+								updatedAt && Date.now() - new Date(updatedAt).getTime() > 60_000;
+							if (!isStale) {
+								startPolling(selectedSessionId);
+							}
 						}
 					}
 				}
@@ -1348,11 +2111,77 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				// Silently fail
 			}
 		},
-		[sessionId, agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, startPolling],
+		[
+			sessionId,
+			agentEndpoint,
+			getAuthHeaders,
+			messagesPerPage,
+			stopPolling,
+			startPolling,
+			attachToRun,
+			overlaySessions,
+		],
 	);
+
+	/**
+	 * Rejoin the run this surface was watching when it went away.
+	 *
+	 * The agent does not stop when the panel does, so a refresh, a navigation
+	 * or a closed sidekick costs only the view of the turn. Runs, not sessions,
+	 * are what gets restored: a chat that had finished is left alone, and the
+	 * user opens it from the history like any other.
+	 */
+	const restoreAttemptedRef = useRef(false);
+	// Whether the restore has had its say yet. State, not a ref, because the
+	// opening prompt below waits on it: a ref would leave that effect with no
+	// reason to run again once a restore finds nothing to rejoin, and a prompt
+	// handed over for sending would sit there unsent.
+	const [restoreSettled, setRestoreSettled] = useState(false);
+	useEffect(() => {
+		if (restoreAttemptedRef.current) return;
+		restoreAttemptedRef.current = true;
+
+		const record = readOnly ? undefined : getDataFromPath(activeRunPath, [], pageExtractor);
+		const restoreSessionId = record?.sessionId;
+		if (!restoreSessionId) {
+			setRestoreSettled(true);
+			return;
+		}
+
+		(async () => {
+			try {
+				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const response = await fetch(`${baseUrl}/runs`, { headers: getAuthHeaders() });
+				if (!response.ok) return;
+				const data = await response.json();
+				const live: any[] = Array.isArray(data?.runs) ? data.runs : [];
+				if (!live.some(r => r.session_id === restoreSessionId)) {
+					// Over and done with while we were away.
+					forgetActiveRun(restoreSessionId);
+					return;
+				}
+				// The user got in first, typing and sending while this was still
+				// asking. Their new chat wins; restoring over it would replace
+				// what they are looking at with a different conversation.
+				if (isStreamingRef.current || sessionIdRef.current) return;
+				await handleSelectSession(restoreSessionId);
+			} catch {
+				// Offline or the service is down. Nothing to restore into.
+			} finally {
+				setRestoreSettled(true);
+			}
+		})();
+		// Once, on mount. Everything it reads is either a ref or stable for the
+		// life of the component.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const handleNewChat = useCallback(() => {
 		stopPolling();
+		// As in handleSelectSession: stop watching, do not stop the run.
+		abortControllerRef.current?.abort();
+		abortControllerRef.current = null;
+		if (overlaySessions) setSidebarOpen(false);
 		setIsStreaming(false);
 		shouldAutoScrollRef.current = true;
 		isNavigatingRef.current = true;
@@ -1367,7 +2196,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		// old panel over the fresh chat until the next craft event replaced it.
 		setCrafts(new Map());
 		setActiveCraftId(null);
-	}, [stopPolling]);
+	}, [stopPolling, overlaySessions]);
 
 	// Delete a session
 	const handleDeleteSession = useCallback(
@@ -1470,7 +2299,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Draft change handler (debounced save to localStorage)
 	const handleDraftChange = useCallback(
 		(text: string) => {
-			setDraftText(text);
+			// Not pushed back into the input: it is already there. All this owes
+			// the keystroke is the debounced save, so the draft survives a
+			// refresh.
 			if (saveDraftTimeoutRef.current) {
 				clearTimeout(saveDraftTimeoutRef.current);
 			}
@@ -1522,16 +2353,21 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			setData(`LocalStore.promptDrafts.${draftKey}`, undefined, props.context.pageName);
 
 			const headers = getAuthHeaders();
-			let streamTimedOut = false;
 			let receivedSessionId = sessionId;
 
 			try {
 				abortControllerRef.current = new AbortController();
 
+				const editorContext = buildEditorContext();
+				const drafts = buildOpenDraftsRef.current();
 				const body: any = {
 					message: text,
 					session_id: sessionId,
 					...(selectedModel ? { model: selectedModel } : {}),
+					...(targetAppCode ? { app_code: targetAppCode } : {}),
+					...(editorContext ? { editor_context: editorContext } : {}),
+					...(drafts.length ? { open_drafts: drafts } : {}),
+					...(draftModeRef.current ? { draft_mode: true } : {}),
 				};
 
 				if (attachments?.length) {
@@ -1557,20 +2393,23 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					signal: abortControllerRef.current.signal,
 				});
 
+				if (response.status === 409) {
+					// A run is already going on this session, started by another
+					// tab or by this one before a refresh. Rejoin it rather than
+					// putting a second agent on the same history, and hand the
+					// message back, because it was not delivered.
+					setMessages(prev => prev.filter(m => m.id !== userMsg.id));
+					setDraftText(displayText ?? text);
+					setIsStreaming(false);
+					await attachToRun(sessionId ?? '');
+					return;
+				}
+
 				if (!response.ok) {
 					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 				}
 
-				const reader = response.body?.getReader();
-				if (!reader) throw new Error('No response body');
-
-				const decoder = new TextDecoder();
-				let buffer = '';
-				let assistantText = '';
-				const toolCalls = new Map<string, ToolCall>();
-				const agentSpans = new Map<string, AgentSpan>();
 				const assistantMsgId = `asst_${Date.now()}`;
-
 				setMessages(prev => [
 					...prev,
 					{
@@ -1582,80 +2421,20 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					},
 				]);
 
-				// Watchdog: detect dead connections (server keepalives every 15s)
-				const STREAM_TIMEOUT_MS = 45_000;
-				let lastDataAt = Date.now();
-				const watchdog = setInterval(() => {
-					if (Date.now() - lastDataAt > STREAM_TIMEOUT_MS) {
-						streamTimedOut = true;
-						abortControllerRef.current?.abort();
-						clearInterval(watchdog);
+				const result = await consumeStream(response, assistantMsgId, sessionId);
+				receivedSessionId = result.sessionId;
+
+				// The connection died, not the run: it is still working on the
+				// server, so rejoin it instead of settling for a polled
+				// transcript. Polling is what attachToRun falls back to.
+				if (result.timedOut && receivedSessionId) {
+					if (!(await attachToRun(receivedSessionId))) {
+						startPolling(receivedSessionId);
 					}
-				}, 5_000);
-
-				// eventType is preserved across reader.read() chunks because a
-				// single SSE event ("event: foo\ndata: ...\n\n") can be split
-				// at any byte boundary. Resetting per-chunk dropped the data
-				// line whenever a network read landed between the header and
-				// the data, intermittently silently losing craft events.
-				let eventType = '';
-				try {
-					while (true) {
-						const { done, value } = await reader.read();
-						if (done) break;
-						lastDataAt = Date.now();
-
-						buffer += decoder.decode(value, { stream: true });
-						const lines = buffer.split('\n');
-						buffer = lines.pop() ?? '';
-
-						for (const line of lines) {
-							if (line.startsWith('event: ')) {
-								eventType = line.slice(7).trim();
-							} else if (line.startsWith('data: ') && eventType) {
-								try {
-									const data = JSON.parse(line.slice(6));
-									if (eventType === 'done' && data.session_id) {
-										receivedSessionId = data.session_id;
-									}
-									processSSEEvent(eventType, data, {
-										assistantMsgId,
-										currentText: assistantText,
-										toolCalls,
-										agentSpans,
-										setText: (newText: string) => {
-											assistantText = newText;
-										},
-										setMessages,
-										setSessionId,
-										setUsage,
-										showToolCalls,
-										setFeedbackTurn: turn => setFeedbackTurn(turn),
-										setCrafts,
-										setActiveCraftId,
-										onComplete,
-										completeBindingPath,
-										props,
-										runEvent,
-									});
-								} catch {
-									// Skip unparseable data
-								}
-								eventType = '';
-							} else if (line === '') {
-								eventType = '';
-							}
-						}
-					}
-				} finally {
-					clearInterval(watchdog);
-				}
-
-				// If stream timed out, fall back to polling the session
-				if (streamTimedOut && receivedSessionId) {
-					startPolling(receivedSessionId);
 					return;
 				}
+
+				forgetActiveRun();
 
 				// Refresh sessions after a message exchange
 				await fetchSessions();
@@ -1674,10 +2453,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				}
 			} catch (err: any) {
 				if (err.name === 'AbortError') {
-					// Timeout-triggered abort: fall back to polling the session
-					if (streamTimedOut && receivedSessionId) {
-						startPolling(receivedSessionId);
-					}
+					// Someone let go on purpose: Stop, a session switch, an
+					// unmount. A dead connection never reaches here: it comes
+					// back as `timedOut` and is rejoined above.
 					return;
 				}
 
@@ -1711,6 +2489,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			agentEndpoint,
 			sessionId,
 			selectedModel,
+			targetAppCode,
+			buildEditorContext,
+			// buildOpenDrafts, draftMode, handleDraftPatch and handleObjectChanged
+			// are deliberately NOT here: they are read through refs above, which is
+			// what keeps the send current without rebuilding it on every render.
 			showToolCalls,
 			onMessage,
 			onError,
@@ -1720,19 +2503,66 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			fetchSessions,
 			startPolling,
 			stopPolling,
+			consumeStream,
+			attachToRun,
+			forgetActiveRun,
 			props.context.pageName,
 			props.locationHistory,
 			props.pageDefinition,
 		],
 	);
 
+	// An opening question handed in by the page the user came from: left at
+	// `pendingPromptPath` for this chat to take, or given literally as
+	// `initialPrompt`. Guarded by a ref rather than the dependency list: handleSend
+	// is rebuilt on nearly every state change, so a plain dependency would resend
+	// on each stream tick. Only ever fires into an empty chat.
+	const initialSentRef = useRef(false);
+	useEffect(() => {
+		if (initialSentRef.current) return;
+		// A restore has an empty chat too, right up to the moment the rejoined
+		// turn lands. Sending into it would start a second run.
+		if (!restoreSettled) return;
+		if (messages.length > 0 || isStreaming || readOnly) return;
+
+		// Read here rather than on mount, and cleared in the same tick as the
+		// send: a handed-over prompt is the only copy there is, so it is spent
+		// only when there is actually a send to spend it on.
+		const pending = pendingPromptPath
+			? getDataFromPath(pendingPromptPath, props.locationHistory, pageExtractor)
+			: undefined;
+		const handedOver = typeof pending === 'string' ? pending : pending?.text;
+		const text = handedOver?.trim() ? handedOver : initialPrompt;
+		if (!text) return;
+
+		initialSentRef.current = true;
+		if (pendingPromptPath && handedOver)
+			setData(pendingPromptPath, undefined, props.context.pageName);
+		handleSend(text);
+	}, [
+		restoreSettled,
+		initialPrompt,
+		pendingPromptPath,
+		messages.length,
+		isStreaming,
+		readOnly,
+		handleSend,
+		props.locationHistory,
+		props.context.pageName,
+		pageExtractor,
+	]);
+
 	const handleStop = useCallback(() => {
 		abortControllerRef.current?.abort();
 		stopPolling();
 		setIsStreaming(false);
 		abortControllerRef.current = null;
+		// Deliberately ended, so there is nothing to rejoin on the next load.
+		forgetActiveRun();
 
-		// Tell the backend to stop the agent loop
+		// Tell the backend to stop the agent loop. This is now the ONLY thing
+		// that ends a run: dropping the stream leaves it working, which is what
+		// lets the panel close and the page refresh without losing the turn.
 		const sid = sessionIdRef.current;
 		if (sid) {
 			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
@@ -1742,10 +2572,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				body: JSON.stringify({ session_id: sid }),
 			}).catch(() => {});
 		}
-	}, [stopPolling, agentEndpoint, getAuthHeaders]);
+	}, [stopPolling, agentEndpoint, getAuthHeaders, forgetActiveRun]);
 
 	useEffect(() => {
 		return () => {
+			// Stop watching, on purpose, without a /stop: the run outlives this
+			// component and the note in LocalStore is what finds it again.
 			abortControllerRef.current?.abort();
 			stopPolling();
 			if (saveDraftTimeoutRef.current) {
@@ -1834,7 +2666,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className="comp compPrompt"
+			ref={rootRef}
+			className={`comp compPrompt${overlaySessions ? ' _overlaySessions' : ''}`}
 			style={styleProperties.comp ?? {}}
 			onMouseEnter={() => setHover(true)}
 			onMouseLeave={() => setHover(false)}
@@ -2135,6 +2968,53 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						<i className={scrollToBottomIcon} aria-hidden="true" />
 					</button>
 				</div>
+				{showDraftReview && pendingApps.length > 0 && (
+					<PendingDraftBar
+						appCodes={pendingApps}
+						getAuthHeaders={getAuthHeaders}
+						onEmpty={forgetPendingApps}
+					/>
+				)}
+				{savedObjects.length > 0 && (
+					<div className="_promptSavedNotice">
+						{/* The asymmetry made visible, and it is two asymmetries, not one.
+						    A drafted write is reviewable and waits for Publish; a live one
+						    is already in front of everyone. Collapsing them into a single
+						    "saved" line was the more alarming of the two claims applied to
+						    both. */}
+						<i className="fa fa-circle-info" aria-hidden="true" />
+						<span>
+							{savedObjects.some(o => o.draft) && (
+								<>
+									In the draft, waiting for Publish:{' '}
+									{savedObjects
+										.filter(o => o.draft)
+										.map(o => `${o.kind} ${o.name}`.trim())
+										.join(', ')}
+								</>
+							)}
+							{savedObjects.some(o => o.draft) &&
+								savedObjects.some(o => !o.draft) && <br />}
+							{savedObjects.some(o => !o.draft) && (
+								<>
+									Live already, not waiting for review:{' '}
+									{savedObjects
+										.filter(o => !o.draft)
+										.map(o => `${o.kind} ${o.name}`.trim())
+										.join(', ')}
+								</>
+							)}
+						</span>
+						<button
+							type="button"
+							className="_promptSavedDismiss"
+							title="Dismiss"
+							onClick={() => setSavedObjects([])}
+						>
+							<i className="fa fa-xmark" aria-hidden="true" />
+						</button>
+					</div>
+				)}
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}
@@ -2144,7 +3024,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						onStop={handleStop}
 						definition={props.definition}
 						styleProperties={styleProperties}
-						initialText={draftText}
+						initialText={textPush.text}
+						textRevision={textPush.rev}
 						onTextChange={handleDraftChange}
 						sendIcon={sendIcon}
 						stopIcon={stopIcon}
@@ -2154,6 +3035,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						enableVoiceInput={enableVoiceInput}
 						microphoneIcon={microphoneIcon}
 						microphoneActiveIcon={microphoneActiveIcon}
+						textareaRef={promptInputRef}
+						ariaKeyShortcuts={shortcutAria}
+						shortcutHint={shortcutHint?.(styleProperties?.shortcutHint)}
 					/>
 					<div className="_promptBottomBar">
 						{showModelSelector && filteredModels.length > 0 && (

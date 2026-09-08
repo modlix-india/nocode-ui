@@ -271,9 +271,27 @@ export async function invalidateCache(pattern: string): Promise<number> {
 export function generateCacheKey(
 	appCode: string,
 	clientCode: string,
-	pageName: string
+	pageName: string,
+	/**
+	 * The draft surface renders different content from the live one, so the two
+	 * must never share a pre-rendered entry. Defaulted rather than required so
+	 * every existing call site keeps producing exactly the key it produced before.
+	 */
+	draft: boolean = false,
+	/**
+	 * The visitor's selected theme, which the pre-rendered HTML carries in its
+	 * bootstrap. Same reasoning as `draft`: two themes render different documents.
+	 *
+	 * This must be the theme as *requested* (the raw cookie), not as resolved.
+	 * Callers look the key up before they have an application definition to
+	 * resolve against, so keying on the resolved name would mean the lookup and
+	 * the store used different keys and nothing ever hit.
+	 */
+	theme?: string | null
 ): string {
-	return `${appCode}:${clientCode}:${pageName}`;
+	return `${appCode}:${clientCode}:${pageName}${draft ? ':draft' : ''}${
+		theme ? `:theme:${theme}` : ''
+	}`;
 }
 
 /**
