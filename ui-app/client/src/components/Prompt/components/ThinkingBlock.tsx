@@ -38,6 +38,8 @@ interface ToolCallInfo {
 	summary: string;
 	success?: boolean;
 	isRunning: boolean;
+	startedAt?: number;
+	endedAt?: number;
 	updates?: string[];
 }
 
@@ -76,9 +78,7 @@ function SingleToolRow({
 						onClick={() => setExpanded(prev => !prev)}
 					>
 						<span className="_statusDotStatic" />
-						<span className="_agentToolLabel">
-							Tool(<span className="_agentToolName">{label}</span>)
-						</span>
+						<span className="_agentToolName">{label}</span>
 						{!expanded && (
 							<span className="_agentToolSummary">
 								{tc.summary.length > 80
@@ -91,9 +91,7 @@ function SingleToolRow({
 				) : (
 					<div className="_agentToolHeader">
 						<span className="_statusDotStatic" />
-						<span className="_agentToolLabel">
-							Tool(<span className="_agentToolName">{label}</span>)
-						</span>
+						<span className="_agentToolName">{label}</span>
 					</div>
 				)}
 				{expanded && (tc.updates?.length ? (

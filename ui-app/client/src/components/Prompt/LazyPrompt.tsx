@@ -73,6 +73,7 @@ interface ToolCall {
 	isRunning: boolean;
 	agentId?: string; // sub-agent that produced this tool call (if any)
 	startedAt?: number;
+	endedAt?: number;
 	updates?: string[]; // accumulated tool_update messages (mini-log)
 }
 
@@ -402,6 +403,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				existing.summary = data.summary ?? '';
 				existing.success = data.success;
 				existing.isRunning = false;
+				existing.endedAt = Date.now();
 				flushMessageState(ctx);
 			}
 			break;

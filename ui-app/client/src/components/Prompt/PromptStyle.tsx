@@ -1017,18 +1017,17 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._thinkingReasoning {
-			padding: 8px 12px;
+			padding: 2px 12px;
 			font-size: 12px;
 			line-height: 1.6;
-			color: ${t('fontColorTwo', '#666')};
-			background: ${t('surfaceColorTwo', '#f5f5f5')};
-			border-radius: 6px;
+			color: ${t('fontColorThree', '#8c8a80')};
+			font-style: italic;
 			margin: 0 8px 4px;
 			white-space: pre-wrap;
 			word-break: break-word;
 			max-height: 400px;
 			overflow-y: auto;
-			border-left: 3px solid ${t('borderColorTen', '#d0d0d0')};
+			border-left: 2px solid ${t('borderColorNine', '#e2e1db')};
 		}
 
 		${PREFIX} ._thinkingToolDetail {
@@ -1089,15 +1088,27 @@ export default function PromptStyle({
 			align-self: flex-start;
 		}
 
-		${PREFIX} ._agentRow {
-			margin: 2px 0;
+		/* ─── Agent activity card ─── */
+		${PREFIX} ._agentCard {
+			max-width: 768px;
+			align-self: stretch;
+			background: ${t('surfaceColorOne', '#fbfbf9')};
+			border: 1px solid ${t('borderColorNine', '#ececec')};
+			border-radius: 14px;
+			overflow: hidden;
+			margin-bottom: 4px;
+			font-size: 13px;
 		}
 
-		${PREFIX} ._agentRowHeader {
+		${PREFIX} ._agentCard._done {
+			background: ${t('backgroundColorOne', '#fff')};
+		}
+
+		${PREFIX} ._agentCardHead {
 			display: flex;
 			align-items: center;
-			gap: 8px;
-			padding: 6px 8px;
+			gap: 10px;
+			padding: 10px 14px;
 			border: none;
 			background: none;
 			font: inherit;
@@ -1105,45 +1116,213 @@ export default function PromptStyle({
 			width: 100%;
 			text-align: left;
 			cursor: pointer;
-			border-radius: 8px;
 		}
 
-		${PREFIX} ._agentRowHeader:hover {
+		${PREFIX} ._agentCardHead:hover {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
 		}
 
-		${PREFIX} ._agentRowHeader > i {
-			font-size: 10px;
-			color: ${t('fontColorThree', '#9b9b9b')};
+		${PREFIX} ._agentCardSpin {
+			width: 13px;
+			height: 13px;
+			border: 2px solid ${t('borderColorNine', '#e2e1db')};
+			border-top-color: ${t('fontColorOne', '#1a1a1a')};
+			border-radius: 50%;
+			animation: promptAgentSpin 0.9s linear infinite;
 			flex-shrink: 0;
 		}
 
-		${PREFIX} ._agentRowLabel {
-			font-size: 13px;
-			color: ${t('fontColorThree', '#8b8b8b')};
+		@keyframes promptAgentSpin {
+			to { transform: rotate(360deg); }
 		}
 
-		${PREFIX} ._agentRowName {
-			color: ${t('fontColorOne', '#1a1a1a')};
+		${PREFIX} ._agentCardCheck {
+			width: 15px;
+			height: 15px;
+			border-radius: 50%;
+			background: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('backgroundColorOne', '#fff')};
+			font-size: 9px;
+			font-weight: 700;
+			display: grid;
+			place-items: center;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._agentCardTitle {
 			font-weight: 600;
+			color: ${t('fontColorOne', '#1a1a1a')};
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
-		${PREFIX} ._agentRowRight {
+		${PREFIX} ._agentCardTime {
 			margin-left: auto;
+			font-size: 11px;
+			color: ${t('fontColorThree', '#8c8a80')};
+			background: ${t('surfaceColorTwo', '#f4f3ee')};
+			border: 1px solid ${t('borderColorNine', '#e6e5df')};
+			border-radius: 999px;
+			padding: 2px 8px;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._agentCardChevron {
+			font-size: 10px;
+			color: ${t('fontColorThree', '#b6b4a9')};
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._agentCardBody {
+			border-top: 1px solid ${t('borderColorNine', '#f2f1ec')};
+		}
+
+		/* one agent inside the card */
+		${PREFIX} ._agentItem {
+			padding: 10px 14px 11px;
+			border-bottom: 1px solid ${t('borderColorNine', '#f2f1ec')};
+		}
+
+		${PREFIX} ._agentItem:last-child {
+			border-bottom: none;
+		}
+
+		${PREFIX} ._agentItemHead {
+			display: flex;
+			align-items: center;
+			gap: 9px;
+		}
+
+		${PREFIX} ._agentItemName {
+			font-weight: 600;
+			color: ${t('fontColorOne', '#1a1a1a')};
+		}
+
+		${PREFIX} ._agentItemDur {
+			margin-left: auto;
+			font-size: 11px;
+			color: ${t('fontColorThree', '#b6b4a9')};
+			white-space: nowrap;
+		}
+
+		/* live progress / final outcome line under the agent name */
+		${PREFIX} ._agentDoing {
+			margin: 3px 0 0 17px;
+			font-size: 12.5px;
+			color: ${t('fontColorTwo', '#5b5a53')};
+		}
+
+		${PREFIX} ._agentItem._success ._agentDoing,
+		${PREFIX} ._agentItem._error ._agentDoing {
+			color: ${t('fontColorThree', '#8c8a80')};
+		}
+
+		${PREFIX} ._agentDoingCursor {
+			display: inline-block;
+			width: 6px;
+			height: 11px;
+			background: ${t('fontColorThree', '#b6b4a9')};
+			margin-left: 3px;
+			vertical-align: -1px;
+			animation: promptStatusDotPulse 0.9s steps(2) infinite;
+		}
+
+		/* sub-agent thinking: quiet quote, tail visible while streaming */
+		${PREFIX} ._agentThink {
+			margin: 7px 0 0 17px;
+			border-left: 2px solid ${t('borderColorNine', '#e2e1db')};
+			padding: 2px 10px;
 			font-size: 12px;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			line-height: 1.5;
+			color: ${t('fontColorThree', '#8c8a80')};
+			font-style: italic;
+			max-height: 54px;
+			overflow: hidden;
+			cursor: pointer;
+			white-space: pre-wrap;
+			word-break: break-word;
+		}
+
+		${PREFIX} ._agentThink._expanded {
+			max-height: 400px;
+			overflow-y: auto;
+		}
+
+		${PREFIX} ._agentThink:hover {
+			border-left-color: ${t('fontColorThree', '#b6b4a9')};
+		}
+
+		/* tool lifecycle rows: appear on start, line swaps on update, settle on result */
+		${PREFIX} ._agentTools {
+			margin: 6px 0 0 17px;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+		}
+
+		${PREFIX} ._agentToolHead {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 3px 8px 3px 0;
+			font-size: 12.5px;
+			border: none;
+			background: none;
+			font: inherit;
+			text-align: left;
+			width: 100%;
+			border-radius: 8px;
+			color: ${t('fontColorTwo', '#666')};
+		}
+
+		${PREFIX} ._agentToolHead._clickable {
+			cursor: pointer;
+		}
+
+		${PREFIX} ._agentToolHead._clickable:hover {
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+		}
+
+		${PREFIX} ._agentToolLive {
+			color: ${t('fontColorTwo', '#5b5a53')};
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			flex: 1;
+			min-width: 0;
+		}
+
+		${PREFIX} ._agentTool._settled ._agentToolLive {
+			color: ${t('fontColorThree', '#8c8a80')};
+		}
+
+		${PREFIX} ._agentToolDur {
+			margin-left: auto;
+			font-size: 10.5px;
+			color: ${t('fontColorThree', '#b6b4a9')};
 			white-space: nowrap;
 			flex-shrink: 0;
 		}
 
-		${PREFIX} ._agentRowBody {
-			padding-left: 24px;
-			margin: 0 0 4px;
-			border-left: 1px solid ${t('borderColorNine', '#e5e5e5')};
-			margin-left: 12px;
-			display: flex;
-			flex-direction: column;
-			gap: 1px;
+		${PREFIX} ._agentToolHist {
+			margin: 2px 0 4px 22px;
+			border-left: 1px solid ${t('borderColorNine', '#f2f1ec')};
+			padding: 2px 0 2px 10px;
+		}
+
+		${PREFIX} ._agentToolHistLine {
+			font-size: 11.5px;
+			line-height: 1.6;
+			color: ${t('fontColorThree', '#b6b4a9')};
+		}
+
+		${PREFIX} ._agentToolHistFinal {
+			font-size: 11.5px;
+			line-height: 1.6;
+			color: ${t('fontColorThree', '#8c8a80')};
+			white-space: pre-wrap;
+			word-break: break-word;
 		}
 
 		${PREFIX} ._agentToolRow {
@@ -1164,11 +1343,6 @@ export default function PromptStyle({
 			text-align: left;
 			width: 100%;
 			border-radius: 6px;
-		}
-
-		${PREFIX} ._agentToolLabel {
-			font-size: 12px;
-			color: ${t('fontColorThree', '#8b8b8b')};
 		}
 
 		${PREFIX} ._agentToolName {
@@ -1216,13 +1390,6 @@ export default function PromptStyle({
 			word-break: break-word;
 			max-height: 200px;
 			overflow-y: auto;
-		}
-
-		${PREFIX} ._agentStatusText {
-			padding: 3px 8px;
-			font-size: 12px;
-			color: ${t('fontColorThree', '#9b9b9b')};
-			font-style: italic;
 		}
 
 		${PREFIX} ._agentToolUpdates {
