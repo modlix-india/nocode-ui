@@ -296,7 +296,15 @@
 	flex: 1;
 }
 
-.comp.compPageEditor button,
+/* The docked AI panel embeds the ordinary Prompt component, which brings its own
+   styling. The bare-element rules below are written for editor chrome, and a
+   selector like `.comp.compPageEditor i.fa` outranks any component's own
+   class-scoped rule, so it reached inside and repainted the chat: every icon
+   forced to black 18px (the stop button rendered black-on-black, a featureless
+   circle) and every button given grey uppercase editor chrome. The exclusion
+   uses :where() so it narrows what these match without changing their
+   specificity, which would otherwise upset rules like `button._iconOnly`. */
+.comp.compPageEditor button:not(:where(._peSidekickBar *)),
 .comp.compPageEditor ._popupButtons button {
 	color: #555;
 	background-color: #eee;
@@ -531,8 +539,8 @@ input._peInput[type='number'] {
 	margin-bottom: 10px;
 }
 
-.comp.compPageEditor button:hover,
-.comp.compPageEditor select:hover,
+.comp.compPageEditor button:hover:not(:where(._peSidekickBar *)),
+.comp.compPageEditor select:hover:not(:where(._peSidekickBar *)),
 .comp.compPageEditor ._iconMenuOption:hover,
 .comp.compPageEditor ._popupButtons button:hover {
 	background-color: rgba(77, 127, 238, 0.05);
@@ -556,7 +564,7 @@ input._peInput[type='number'] {
 	height: 16px;
 }
 
-.comp.compPageEditor i.fa {
+.comp.compPageEditor i.fa:not(:where(._peSidekickBar *)) {
 	color: #000000;
 	font-size: 18px;
 }
@@ -2122,6 +2130,12 @@ input._peInput[type='number'] {
 	flex-direction: column;
 	width: calc(100% - 70px);
 	position: relative;
+	/* Without this the canvas column cannot shrink below its content's
+	   min-content width (the 1280px design iframe), so a docked panel beside it
+	   pushes the whole editor wider than the window and the side rail scrolls
+	   out of view. Only bites when something competes for the width; with no
+	   panel open, flex:1 still fills the row exactly as before. */
+	min-width: 0;
 }
 
 .comp.compPageEditor ._selectionBar {
@@ -6979,7 +6993,7 @@ input._peInput[type='number'] {
 	background-color: #555;
 }
 
-.comp.compPageEditor._dark button,
+.comp.compPageEditor._dark button:not(:where(._peSidekickBar *)),
 .comp.compPageEditor ._dark select._peSelect,
 .comp.compPageEditor ._dark ._peSelect,
 .comp.compPageEditor ._dark ._simpleEditorSelect._peSelect,
@@ -7040,12 +7054,12 @@ input._peInput[type='number'] {
 	border: none;
 }
 
-.comp.compPageEditor._dark i.fa {
+.comp.compPageEditor._dark i.fa:not(:where(._peSidekickBar *)) {
 	color: #aaa;
 }
 
-.comp.compPageEditor._dark button:hover,
-.comp.compPageEditor._dark select:hover,
+.comp.compPageEditor._dark button:hover:not(:where(._peSidekickBar *)),
+.comp.compPageEditor._dark select:hover:not(:where(._peSidekickBar *)),
 .comp.compPageEditor._dark ._iconMenuOption:hover,
 .comp.compPageEditor ._popupMenuBackground._dark ._popupMenuItem:hover,
 .comp.compPageEditor ._popupMenuBackground._dark ._popupMenuItem.active,
@@ -8056,4 +8070,161 @@ input._peInput[type='number'] {
 	color: white;
 	height: 20px;
 	width: 20px;
+}
+/* ── AI sidekick panel ──────────────────────────────────────────────────────
+   Docked to the right of the canvas, inside the editor chrome. Sits in
+   _dndContentContainer as a sibling of _dndIframeContentContainer, so it is a
+   flex row peer of the canvas column and shrinking it is the canvas's problem,
+   not the layout's. It renders the ordinary Prompt component, which brings its
+   own styling; everything here is the frame around it. */
+
+.comp.compPageEditor ._peSidekickBar {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	min-width: 0;
+	height: 100%;
+	overflow: hidden;
+	background-color: #fff;
+	border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* A hit area wider than the line it draws: a 1px grab target is a 1px grab
+   target no matter how good the cursor is. */
+.comp.compPageEditor ._peSidekickResizer {
+	position: absolute;
+	top: 0;
+	left: -3px;
+	width: 7px;
+	height: 100%;
+	padding: 0;
+	border: none;
+	background: transparent;
+	cursor: col-resize;
+	z-index: 2;
+}
+
+.comp.compPageEditor ._peSidekickResizer:hover {
+	background-color: rgba(0, 0, 0, 0.06);
+}
+
+.comp.compPageEditor ._peSidekickHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-shrink: 0;
+	height: 36px;
+	padding: 0 8px 0 12px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.comp.compPageEditor ._peSidekickTitle {
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	opacity: 0.7;
+}
+
+.comp.compPageEditor ._peSidekickClose {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+	padding: 0;
+	border: none;
+	border-radius: 4px;
+	background: transparent;
+	cursor: pointer;
+	opacity: 0.6;
+}
+
+.comp.compPageEditor ._peSidekickClose:hover {
+	background-color: rgba(0, 0, 0, 0.06);
+	opacity: 1;
+}
+
+/* min-height:0 so the chat's own scroller wins the height fight instead of the
+   flex item growing to fit its content and pushing the input bar off-screen. */
+.comp.compPageEditor ._peSidekickBody {
+	display: flex;
+	flex: 1;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.comp.compPageEditor ._peSidekickBody > .comp {
+	flex: 1;
+	min-width: 0;
+	min-height: 0;
+}
+
+/* The chat's welcome line is sized for a full-width page. Docked at 380px it is
+   three lines of display type before anyone has typed a word. */
+.comp.compPageEditor ._peSidekickBar ._emptyTitle {
+	font-size: 15px;
+	font-weight: 500;
+	line-height: 1.5;
+	opacity: 0.75;
+}
+
+/* ── Stale preview notice ───────────────────────────────────────────────────
+   The preview iframe refuses a definition push when it has navigated to a
+   different page, which is correct: applying it would overwrite an unrelated
+   page. Silence about it was not. Floated over the editor rather than pushed
+   into the layout, so it cannot reflow the canvas on appearing. */
+
+.comp.compPageEditor ._peStaleCanvasNotice {
+	position: absolute;
+	top: 78px;
+	left: 50%;
+	transform: translateX(-50%);
+	z-index: 6;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	max-width: min(640px, calc(100% - 32px));
+	padding: 8px 10px 8px 14px;
+	border-radius: 8px;
+	font-size: 12px;
+	line-height: 1.45;
+	color: #92400e;
+	background-color: #fef3c7;
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+}
+
+.comp.compPageEditor ._peStaleCanvasNotice > span {
+	flex: 1;
+	min-width: 0;
+}
+
+.comp.compPageEditor ._peStaleCanvasAction {
+	flex-shrink: 0;
+	padding: 4px 10px;
+	border: 1px solid currentColor;
+	border-radius: 6px;
+	background: transparent;
+	color: inherit;
+	font-size: 12px;
+	cursor: pointer;
+}
+
+.comp.compPageEditor ._peStaleCanvasAction:hover {
+	background-color: rgba(146, 64, 14, 0.1);
+}
+
+.comp.compPageEditor ._peStaleCanvasDismiss {
+	flex-shrink: 0;
+	padding: 0 2px;
+	border: none;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	opacity: 0.7;
+}
+
+.comp.compPageEditor ._peStaleCanvasDismiss:hover {
+	opacity: 1;
 }

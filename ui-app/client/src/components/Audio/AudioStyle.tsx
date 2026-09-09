@@ -1,5 +1,6 @@
+import { StyleResolution } from '../../types/common';
 import React, { useEffect, useState } from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { StylePropertyDefinition } from '../../types/common';
 import {
 	findPropertyDefinitions,
@@ -14,6 +15,15 @@ const NAME = 'Audio';
 export default function AudioStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const [_, setReRender] = useState<number>(Date.now());
 
 	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
@@ -102,8 +112,8 @@ ${PREFIX} ._seekTimeTextOnHover {
     left: 50%;
     transform: translateX(-50%);
     padding: 8px 12px;
-    background-color: #ffffff;
-    color: #333;
+    background-color: ${t('colorSeven', '#ffffff')};
+    color: ${t('fontColorOne', '#333')};
     border-radius: 4px;
 	border: 1px solid #1133891A
 }
@@ -119,7 +129,7 @@ ${PREFIX} ._seekTimeTextOnHover::after {
     height: 0;
     border-left: 6px solid transparent;
     border-right: 6px solid transparent;
-    border-top: 10px solid #ffffff;
+    border-top: 10px solid ${t('colorSeven', '#ffffff')};
 	
 }
 

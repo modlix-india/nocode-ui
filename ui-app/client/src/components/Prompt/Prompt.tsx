@@ -30,6 +30,14 @@ const component: Component = {
 	stylePseudoStates: ['hover'],
 	bindingPaths: {
 		bindingPath: { name: 'Complete Binding' },
+		// Objects the agent really SAVED, as a queue rather than a latest-value
+		// slot: one turn writes many, and a page that only sees the last one has
+		// silently missed the rest. The handler drains it.
+		bindingPath2: { name: 'Changed Objects Binding' },
+		// Where another page leaves the question this chat should open with.
+		// Point it at a LocalStore path so the handoff survives the navigation,
+		// and expect it to be empty afterwards: the chat takes the prompt.
+		bindingPath3: { name: 'Pending Prompt Binding' },
 	},
 	defaultTemplate: {
 		key: '',

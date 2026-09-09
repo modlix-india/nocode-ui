@@ -72,6 +72,7 @@ export enum ComponentPropertyEditor {
 	SECTION_PROPERTIES_EDITOR,
 	TEXT_EDITOR,
 	SVG,
+	SHORTCUT_KEY,
 }
 
 export enum ComponentPropertyGroup {

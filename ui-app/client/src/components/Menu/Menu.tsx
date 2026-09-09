@@ -10,6 +10,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
+import { isBrowserHandledLinkClick } from '../util/isBrowserHandledLinkClick';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import MenuStyle from './MenuStyle';
@@ -326,6 +327,12 @@ function Menu(props: Readonly<ComponentProps>) {
 				onMouseEnter={() => setIsHovered(true)}
 				onMouseLeave={() => setIsHovered(false)}
 				onClick={e => {
+					// Cmd/Ctrl, Shift or Alt click on a real link is the browser's gesture to open
+					// it in a new tab or window. Every branch below hijacks the anchor with a
+					// preventDefault, so hand the event back untouched and leave this page alone:
+					// the click was never meant to act here.
+					if (linkPath && isBrowserHandledLinkClick(e)) return;
+
 					if ((!target || target === '_self') && linkPath) {
 						e.stopPropagation();
 						e.preventDefault();
@@ -339,6 +346,12 @@ function Menu(props: Readonly<ComponentProps>) {
 					} else if (!onClick) {
 						menuToggle(e);
 					}
+
+					// A menu with no linkPath is an action, not a link, and must not navigate.
+					// getHref defaults an absent path to '' and does not special-case it, so it
+					// resolves to the current page: without this the browser follows the anchor and
+					// the page reloads, which looks like the onClick did nothing even though it ran.
+					if (!linkPath) e.preventDefault();
 
 					const func = onClick
 						? props.pageDefinition?.eventFunctions?.[onClick]

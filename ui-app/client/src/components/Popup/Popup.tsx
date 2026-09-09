@@ -20,6 +20,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { styleProperties, styleDefaults } from './popupStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { popLayer, pushLayer } from '../../shortcuts/layerStack';
 
 function Popup(props: Readonly<ComponentProps>) {
 	const [isActive, setIsActive] = React.useState(false);
@@ -127,6 +128,15 @@ function Popup(props: Readonly<ComponentProps>) {
 			document.body.removeEventListener('keyup', escapeHandler);
 		};
 	}, [isActive, handleClose]);
+
+	// While this popup is open, shortcuts registered inside it sit on their own layer
+	// and shortcuts on the page behind stop firing. An open dialog owns Ctrl+S outright
+	// rather than competing with the page for it.
+	React.useEffect(() => {
+		if (!isActive) return;
+		const layer = pushLayer();
+		return () => popLayer(layer);
+	}, [isActive]);
 
 	const closeIcon = (
 		<i

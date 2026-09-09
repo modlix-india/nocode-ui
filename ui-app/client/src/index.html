@@ -46,9 +46,23 @@
 				"
 			></div>
 		</div>
-		<link rel="stylesheet" id="serviceStyle" />
+		<link rel="stylesheet" id="mlxAppStyle" />
 		<script>
-			document.getElementById('serviceStyle').setAttribute('href', 'api/ui/style');
+			// The dev-server twin of the block IndexHTMLService emits. The link is
+			// href-less so no request starts before the theme cookie is read; the
+			// appCode comes from the URL here because nothing stamps it in this build.
+			(function () {
+				var i = window.location.pathname.indexOf('/page');
+				var app =
+					window.__mlxAppCode ||
+					(i === -1 ? '' : window.location.pathname.substring(0, i).split('/')[1]);
+				var m = app
+					? document.cookie.match(new RegExp('(?:^|;\\s*)mlxTheme_' + app + '=([^;]*)'))
+					: null;
+				document
+					.getElementById('mlxAppStyle')
+					.setAttribute('href', 'api/ui/style' + (m ? '?theme=' + m[1] : ''));
+			})();
 		</script>
 	</body>
 </html>

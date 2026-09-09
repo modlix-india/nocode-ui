@@ -9,6 +9,15 @@ export default function TemplateEditorStyle({
 }: Readonly<{
 	theme: Map<string, Map<string, string>>;
 }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 	const border = processStyleValueWithFunction(values.get('fontColorEight'), values) || '#e0e0e0';
 	// Lighter hairline for internal dividers, to keep the editor from looking busy.
@@ -35,7 +44,7 @@ export default function TemplateEditorStyle({
 		min-height: 0;
 		border-radius: 8px;
 		overflow: hidden;
-		background: #fff;
+		background: ${t('colorSeven', '#fff')};
 	}
 
 	/* Toolbar */
@@ -55,7 +64,7 @@ export default function TemplateEditorStyle({
 		flex-direction: column;
 		font-size: 11px;
 		gap: 3px;
-		color: #666;
+		color: ${t('fontColorTwo', '#666')};
 	}
 	${PREFIX} ._teSelect select {
 		padding: 5px 8px;
@@ -71,10 +80,10 @@ export default function TemplateEditorStyle({
 		background: transparent;
 		cursor: pointer;
 		font-size: 13px;
-		color: #6b7280;
+		color: ${t('fontColorThree', '#6b7280')};
 	}
-	${PREFIX} ._teTab:hover { background: #f3f4f6; }
-	${PREFIX} ._teTab._active { background: #eef2ff; color: #4338ca; }
+	${PREFIX} ._teTab:hover { background: ${t('surfaceColorTwo', '#f3f4f6')}; }
+	${PREFIX} ._teTab._active { background: ${t('accentWashColor', '#eef2ff')}; color: ${t('colorTwo', '#4338ca')}; }
 
 	/* Body: editor | preview | right panel */
 	${PREFIX} ._teBody {
@@ -115,9 +124,9 @@ export default function TemplateEditorStyle({
 		background: transparent;
 		cursor: pointer;
 		font-size: 13px;
-		color: #6b7280;
+		color: ${t('fontColorThree', '#6b7280')};
 	}
-	${PREFIX} ._partTab._active { color: #4338ca; border-bottom-color: #6366f1; font-weight: 600; }
+	${PREFIX} ._partTab._active { color: ${t('colorTwo', '#4338ca')}; border-bottom-color: ${t('colorOne', '#6366f1')}; font-weight: 600; }
 
 	${PREFIX} ._partEditor {
 		display: flex;
@@ -132,7 +141,7 @@ export default function TemplateEditorStyle({
 		padding: 6px 8px;
 		gap: 8px;
 	}
-	${PREFIX} ._partLabel { font-size: 12px; color: #666; font-weight: 600; }
+	${PREFIX} ._partLabel { font-size: 12px; color: ${t('fontColorTwo', '#666')}; font-weight: 600; }
 	${PREFIX} ._htmlEditor { flex: 1; min-height: 0; }
 	${PREFIX} ._textPart {
 		flex: 1;
@@ -144,7 +153,7 @@ export default function TemplateEditorStyle({
 		font-size: 13px;
 		resize: none;
 	}
-	${PREFIX} ._editorLoading { padding: 12px; color: #888; }
+	${PREFIX} ._editorLoading { padding: 12px; color: ${t('fontColorThree', '#888')}; }
 
 	/* Variable picker */
 	${PREFIX} ._varPicker { position: relative; }
@@ -152,7 +161,7 @@ export default function TemplateEditorStyle({
 		padding: 4px 10px;
 		border: 1px solid ${border};
 		border-radius: 4px;
-		background: #fff;
+		background: ${t('colorSeven', '#fff')};
 		cursor: pointer;
 		font-size: 12px;
 	}
@@ -161,7 +170,7 @@ export default function TemplateEditorStyle({
 		right: 0;
 		top: 110%;
 		z-index: 20;
-		background: #fff;
+		background: ${t('colorSeven', '#fff')};
 		border: 1px solid ${border};
 		border-radius: 4px;
 		box-shadow: 0 4px 16px rgba(0,0,0,0.12);
@@ -181,10 +190,10 @@ export default function TemplateEditorStyle({
 		cursor: pointer;
 		font-size: 12px;
 	}
-	${PREFIX} ._varItem:hover { background: #f2f6ff; }
+	${PREFIX} ._varItem:hover { background: ${t('accentWashColor', '#f2f6ff')}; }
 	${PREFIX} ._varPath { font-family: monospace; }
-	${PREFIX} ._varType { color: #999; font-size: 11px; }
-	${PREFIX} ._varEmpty { padding: 10px; font-size: 12px; color: #888; max-width: 240px; }
+	${PREFIX} ._varType { color: ${t('fontColorThree', '#999')}; font-size: 11px; }
+	${PREFIX} ._varEmpty { padding: 10px; font-size: 12px; color: ${t('fontColorThree', '#888')}; max-width: 240px; }
 
 	/* Preview */
 	${PREFIX} ._previewPane {
@@ -200,20 +209,20 @@ export default function TemplateEditorStyle({
 		padding: 6px 10px;
 		border-bottom: 1px solid ${border};
 	}
-	${PREFIX} ._previewTitle { font-size: 12px; font-weight: 600; color: #666; }
+	${PREFIX} ._previewTitle { font-size: 12px; font-weight: 600; color: ${t('fontColorTwo', '#666')}; }
 	${PREFIX} ._refreshButton {
 		padding: 4px 10px;
 		border: 1px solid ${border};
 		border-radius: 4px;
-		background: #fff;
+		background: ${t('colorSeven', '#fff')};
 		cursor: pointer;
 		font-size: 12px;
 	}
-	${PREFIX} ._previewLoading { font-size: 12px; color: #3b82f6; }
+	${PREFIX} ._previewLoading { font-size: 12px; color: ${t('colorFive', '#3b82f6')}; }
 	${PREFIX} ._previewError {
 		padding: 8px 10px;
-		background: #fef2f2;
-		color: #b91c1c;
+		background: ${t('errorWashColor', '#fef2f2')};
+		color: ${t('colorTwelve', '#b91c1c')};
 		font-size: 12px;
 		white-space: pre-wrap;
 	}
@@ -224,80 +233,80 @@ export default function TemplateEditorStyle({
 		background: transparent; border: none;
 	}
 	${PREFIX} ._deviceSizes ._icon._selected,
-	${PREFIX} ._deviceSizes ._icon:hover { background-color: #f0f0f0; }
+	${PREFIX} ._deviceSizes ._icon:hover { background-color: ${t('surfaceColorTwo', '#f0f0f0')}; }
 
-	${PREFIX} ._previewBody { flex: 1; min-height: 0; overflow: auto; background: #f5f5f5; display: flex; justify-content: center; }
+	${PREFIX} ._previewBody { flex: 1; min-height: 0; overflow: auto; background: ${t('surfaceColorTwo', '#f5f5f5')}; display: flex; justify-content: center; }
 	${PREFIX} ._pdfPreview { width: 100%; height: 100%; border: none; }
 	${PREFIX} ._htmlPreviewWrap { display: flex; flex-direction: column; width: 100%; }
-	${PREFIX} ._previewSubject { padding: 8px 12px; background: #fff; border-bottom: 1px solid ${border}; font-size: 13px; }
-	${PREFIX} ._previewSubject span { color: #999; margin-right: 6px; }
-	${PREFIX} ._htmlPreview { border: none; background: #fff; flex: 1; width: 100%; height: 100%; }
+	${PREFIX} ._previewSubject { padding: 8px 12px; background: ${t('colorSeven', '#fff')}; border-bottom: 1px solid ${border}; font-size: 13px; }
+	${PREFIX} ._previewSubject span { color: ${t('fontColorThree', '#999')}; margin-right: 6px; }
+	${PREFIX} ._htmlPreview { border: none; background: ${t('colorSeven', '#fff')}; flex: 1; width: 100%; height: 100%; }
 	${PREFIX} ._htmlPreview.DESKTOP { }
 	${PREFIX} ._htmlPreviewWrap.TABLET { max-width: 768px; }
 	${PREFIX} ._htmlPreviewWrap.MOBILE { max-width: 400px; }
 	${PREFIX} ._textPreview {
-		padding: 16px; margin: 16px; background: #fff; border-radius: 8px;
+		padding: 16px; margin: 16px; background: ${t('colorSeven', '#fff')}; border-radius: 8px;
 		white-space: pre-wrap; font-size: 14px; align-self: flex-start; max-width: 400px;
 		box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 	}
-	${PREFIX} ._previewPlaceholder { padding: 20px; color: #999; font-size: 13px; }
+	${PREFIX} ._previewPlaceholder { padding: 20px; color: ${t('fontColorThree', '#999')}; font-size: 13px; }
 
 	/* Right panels */
 	${PREFIX} ._panelHint { font-size: 12px; color: #777; margin-bottom: 10px; }
 	${PREFIX} ._jsonEditor { height: 320px; border: 1px solid ${border}; border-radius: 4px; }
-	${PREFIX} ._sampleDataError { color: #b91c1c; font-size: 12px; margin-top: 6px; }
+	${PREFIX} ._sampleDataError { color: ${t('colorTwelve', '#b91c1c')}; font-size: 12px; margin-top: 6px; }
 	${PREFIX} ._settingsPanel { display: flex; flex-direction: column; gap: 12px; }
-	${PREFIX} ._field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #666; }
+	${PREFIX} ._field { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: ${t('fontColorTwo', '#666')}; }
 	${PREFIX} ._field input {
 		padding: 6px 8px; border: 1px solid ${border}; border-radius: 4px; font-size: 13px;
 	}
-	${PREFIX} ._pdfHint { font-size: 12px; color: #666; }
+	${PREFIX} ._pdfHint { font-size: 12px; color: ${t('fontColorTwo', '#666')}; }
 	${PREFIX} ._pdfHint pre {
-		background: #f5f5f5; padding: 10px; border-radius: 4px; overflow: auto; font-size: 11px;
+		background: ${t('surfaceColorTwo', '#f5f5f5')}; padding: 10px; border-radius: 4px; overflow: auto; font-size: 11px;
 	}
 
 	/* Mode toggle (Visual / Code) */
 	${PREFIX} ._modeToggle { display: flex; gap: 4px; padding: 8px 8px 0 8px; }
 	${PREFIX} ._modeBtn {
 		padding: 5px 12px; border: 1px solid ${border}; border-radius: 4px;
-		background: #fff; cursor: pointer; font-size: 12px;
+		background: ${t('colorSeven', '#fff')}; cursor: pointer; font-size: 12px;
 	}
-	${PREFIX} ._modeBtn._active { background: #111827; color: #fff; border-color: #111827; }
+	${PREFIX} ._modeBtn._active { background: ${t('fontColorOne', '#111827')}; color: ${t('colorSeven', '#fff')}; border-color: ${t('fontColorOne', '#111827')}; }
 
 	/* Visual area = palette + canvas */
 	${PREFIX} ._visualArea { display: flex; flex: 1; min-height: 0; }
 	${PREFIX} ._blockPalette {
 		flex: 0 0 132px; border-right: 1px solid ${border}; padding: 8px; overflow: auto;
-		display: flex; flex-direction: column; gap: 6px; background: #fafafa;
+		display: flex; flex-direction: column; gap: 6px; background: ${t('surfaceColorOne', '#fafafa')};
 	}
-	${PREFIX} ._paletteTitle { font-size: 11px; text-transform: uppercase; color: #999; margin-bottom: 2px; }
+	${PREFIX} ._paletteTitle { font-size: 11px; text-transform: uppercase; color: ${t('fontColorThree', '#999')}; margin-bottom: 2px; }
 	${PREFIX} ._paletteItem {
 		display: flex; align-items: center; gap: 8px; padding: 8px; border: 1px solid ${border};
-		border-radius: 4px; background: #fff; cursor: grab; font-size: 12px;
+		border-radius: 4px; background: ${t('colorSeven', '#fff')}; cursor: grab; font-size: 12px;
 	}
-	${PREFIX} ._paletteItem:hover { border-color: #3b82f6; }
-	${PREFIX} ._paletteItem i { width: 14px; text-align: center; color: #555; }
+	${PREFIX} ._paletteItem:hover { border-color: ${t('colorFive', '#3b82f6')}; }
+	${PREFIX} ._paletteItem i { width: 14px; text-align: center; color: ${t('fontColorTwo', '#555')}; }
 
-	${PREFIX} ._blockCanvas { flex: 1; min-height: 0; overflow: auto; padding: 8px 16px; background: #f5f5f5; }
+	${PREFIX} ._blockCanvas { flex: 1; min-height: 0; overflow: auto; padding: 8px 16px; background: ${t('surfaceColorTwo', '#f5f5f5')}; }
 	${PREFIX} ._canvasEmpty, ${PREFIX} ._canvasNote {
-		padding: 20px; text-align: center; color: #888; font-size: 13px;
-		border: 1px dashed ${border}; border-radius: 6px; background: #fff; margin: 8px 0;
+		padding: 20px; text-align: center; color: ${t('fontColorThree', '#888')}; font-size: 13px;
+		border: 1px dashed ${border}; border-radius: 6px; background: ${t('colorSeven', '#fff')}; margin: 8px 0;
 	}
 	${PREFIX} ._canvasNote p { margin: 0 0 12px; line-height: 1.6; }
 	${PREFIX} ._importBtn {
 		display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; cursor: pointer;
-		border: 1px solid #6366f1; border-radius: 6px; background: #eef2ff; color: #4338ca;
+		border: 1px solid ${t('colorOne', '#6366f1')}; border-radius: 6px; background: ${t('accentWashColor', '#eef2ff')}; color: ${t('colorTwo', '#4338ca')};
 		font-size: 13px; font-weight: 600;
 	}
-	${PREFIX} ._importBtn:hover { background: #6366f1; color: #fff; }
+	${PREFIX} ._importBtn:hover { background: ${t('colorOne', '#6366f1')}; color: ${t('colorSeven', '#fff')}; }
 	${PREFIX} ._dropGap { height: 8px; border-radius: 4px; transition: all 0.08s; }
-	${PREFIX} ._dropGap._active { height: 20px; background: #bfdbfe; border: 1px dashed #3b82f6; }
+	${PREFIX} ._dropGap._active { height: 20px; background: ${t('infoBorderColor', '#bfdbfe')}; border: 1px dashed ${t('colorFive', '#3b82f6')}; }
 	${PREFIX} ._blockRow {
-		position: relative; background: #fff; border: 1px solid transparent; border-radius: 6px;
+		position: relative; background: ${t('colorSeven', '#fff')}; border: 1px solid transparent; border-radius: 6px;
 		cursor: pointer; overflow: hidden;
 	}
-	${PREFIX} ._blockRow:hover { border-color: #cbd5e1; }
-	${PREFIX} ._blockRow._selected { border-color: #3b82f6; box-shadow: 0 0 0 1px #3b82f6; }
+	${PREFIX} ._blockRow:hover { border-color: ${t('borderColorEleven', '#cbd5e1')}; }
+	${PREFIX} ._blockRow._selected { border-color: ${t('colorFive', '#3b82f6')}; box-shadow: 0 0 0 1px ${t('colorFive', '#3b82f6')}; }
 	${PREFIX} ._blockPreview { pointer-events: none; }
 	${PREFIX} ._blockActions {
 		position: absolute; top: 4px; right: 4px; display: none; gap: 4px; align-items: center;
@@ -305,10 +314,10 @@ export default function TemplateEditorStyle({
 	}
 	${PREFIX} ._blockRow:hover ._blockActions, ${PREFIX} ._blockRow._selected ._blockActions { display: flex; }
 	${PREFIX} ._blockActions button {
-		border: none; background: transparent; cursor: pointer; color: #555; padding: 2px 4px; font-size: 12px;
+		border: none; background: transparent; cursor: pointer; color: ${t('fontColorTwo', '#555')}; padding: 2px 4px; font-size: 12px;
 	}
-	${PREFIX} ._blockActions button:hover { color: #111; }
-	${PREFIX} ._blockTypeTag { font-size: 10px; color: #999; text-transform: uppercase; margin-right: 4px; }
+	${PREFIX} ._blockActions button:hover { color: ${t('fontColorOne', '#111')}; }
+	${PREFIX} ._blockTypeTag { font-size: 10px; color: ${t('fontColorThree', '#999')}; text-transform: uppercase; margin-right: 4px; }
 
 	/* Block properties panel */
 	${PREFIX} ._blockProps { display: flex; flex-direction: column; gap: 10px; }
@@ -316,8 +325,8 @@ export default function TemplateEditorStyle({
 		display: flex; align-items: center; justify-content: space-between;
 		font-weight: 600; font-size: 13px; padding-bottom: 6px; border-bottom: 1px solid ${border};
 	}
-	${PREFIX} ._bpClose { border: none; background: transparent; cursor: pointer; color: #888; }
-	${PREFIX} ._bpField { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #666; }
+	${PREFIX} ._bpClose { border: none; background: transparent; cursor: pointer; color: ${t('fontColorThree', '#888')}; }
+	${PREFIX} ._bpField { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: ${t('fontColorTwo', '#666')}; }
 	${PREFIX} ._bpInput { padding: 6px 8px; border: 1px solid ${border}; border-radius: 4px; font-size: 13px; }
 	${PREFIX} ._bpTextarea { min-height: 70px; resize: vertical; font-family: inherit; }
 	${PREFIX} ._bpColor { display: flex; gap: 6px; align-items: center; }
@@ -325,13 +334,13 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._bpColor ._bpInput { flex: 1; }
 	${PREFIX} ._bpCode { border: 1px solid ${border}; border-radius: 4px; overflow: hidden; }
 	${PREFIX} ._bpVars { margin-top: 4px; }
-	${PREFIX} ._bpVarsToggle { border: none; background: transparent; color: #3b82f6; cursor: pointer; font-size: 12px; padding: 4px 0; }
+	${PREFIX} ._bpVarsToggle { border: none; background: transparent; color: ${t('colorFive', '#3b82f6')}; cursor: pointer; font-size: 12px; padding: 4px 0; }
 	${PREFIX} ._bpVarsList { display: flex; flex-direction: column; gap: 2px; max-height: 180px; overflow: auto; }
 	${PREFIX} ._bpVarItem {
 		display: flex; justify-content: space-between; gap: 8px; border: none; background: transparent;
 		cursor: pointer; padding: 4px 6px; font-size: 12px; text-align: left; border-radius: 3px;
 	}
-	${PREFIX} ._bpVarItem:hover { background: #f2f6ff; }
+	${PREFIX} ._bpVarItem:hover { background: ${t('accentWashColor', '#f2f6ff')}; }
 	${PREFIX} ._bpCodeArea {
 		min-height: 160px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 		font-size: 12px; line-height: 1.5;
@@ -341,7 +350,7 @@ export default function TemplateEditorStyle({
 		border-top: 1px solid ${border}; padding-top: 10px; margin-top: 2px;
 	}
 	${PREFIX} ._bpSectionToggle {
-		border: none; background: transparent; color: #374151; cursor: pointer;
+		border: none; background: transparent; color: ${t('fontColorTwo', '#374151')}; cursor: pointer;
 		font-size: 12px; font-weight: 600; padding: 2px 0; text-align: left;
 	}
 	${PREFIX} ._rootSettings ._panelHint { margin-bottom: 2px; }
@@ -352,16 +361,16 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._aiExamples { display: flex; flex-direction: column; gap: 6px; }
 	${PREFIX} ._aiExample {
 		text-align: left; border: 1px dashed ${border}; background: #fafbfc; border-radius: 8px;
-		padding: 8px 10px; font-size: 12px; color: #555; cursor: pointer;
+		padding: 8px 10px; font-size: 12px; color: ${t('fontColorTwo', '#555')}; cursor: pointer;
 	}
-	${PREFIX} ._aiExample:hover { background: #f2f6ff; border-color: #c7d2fe; }
+	${PREFIX} ._aiExample:hover { background: ${t('accentWashColor', '#f2f6ff')}; border-color: #c7d2fe; }
 	${PREFIX} ._aiMsg {
 		padding: 8px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5;
 		max-width: 92%; white-space: pre-wrap; word-break: break-word;
 	}
-	${PREFIX} ._aiMsg._user { align-self: flex-end; background: #eef2ff; color: #3730a3; }
-	${PREFIX} ._aiMsg._assistant { align-self: flex-start; background: #f3f4f6; color: #374151; }
-	${PREFIX} ._aiMsg._aiLoading { color: #6b7280; font-style: italic; }
+	${PREFIX} ._aiMsg._user { align-self: flex-end; background: ${t('accentWashColor', '#eef2ff')}; color: #3730a3; }
+	${PREFIX} ._aiMsg._assistant { align-self: flex-start; background: ${t('surfaceColorTwo', '#f3f4f6')}; color: ${t('fontColorTwo', '#374151')}; }
+	${PREFIX} ._aiMsg._aiLoading { color: ${t('fontColorThree', '#6b7280')}; font-style: italic; }
 	${PREFIX} ._aiComposer { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid ${line}; padding-top: 10px; }
 	${PREFIX} ._aiInput {
 		min-height: 72px; resize: vertical; border: 1px solid ${border}; border-radius: 8px;
@@ -369,7 +378,7 @@ export default function TemplateEditorStyle({
 	}
 	${PREFIX} ._aiSend {
 		align-self: flex-end; display: inline-flex; align-items: center; gap: 6px;
-		background: #4338ca; color: #fff; border: none; border-radius: 8px;
+		background: ${t('colorOne', '#4338ca')}; color: ${t('colorSeven', '#fff')}; border: none; border-radius: 8px;
 		padding: 8px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
 	}
 	${PREFIX} ._aiSend:disabled { opacity: 0.5; cursor: default; }
@@ -395,32 +404,32 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._teType, ${PREFIX} ._teTypeChip {
 		display: inline-flex; align-items: center; gap: 6px;
 		padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600;
-		background: #eef2ff; color: #4338ca; border: 1px solid #e0e7ff;
+		background: ${t('accentWashColor', '#eef2ff')}; color: ${t('colorTwo', '#4338ca')}; border: 1px solid #e0e7ff;
 	}
 	${PREFIX} ._teTypeChip i { font-size: 12px; }
 
 	/* Side panels */
 	${PREFIX} ._panel { display: flex; flex-direction: column; gap: 12px; height: 100%; }
-	${PREFIX} ._panelHint { font-size: 12px; color: #6b7280; line-height: 1.5; margin: 0; }
-	${PREFIX} ._panelError { color: #b91c1c; font-size: 12px; background: #fef2f2; padding: 6px 8px; border-radius: 4px; }
-	${PREFIX} ._muted { color: #9ca3af; font-size: 12px; }
+	${PREFIX} ._panelHint { font-size: 12px; color: ${t('fontColorThree', '#6b7280')}; line-height: 1.5; margin: 0; }
+	${PREFIX} ._panelError { color: ${t('colorTwelve', '#b91c1c')}; font-size: 12px; background: ${t('errorWashColor', '#fef2f2')}; padding: 6px 8px; border-radius: 4px; }
+	${PREFIX} ._muted { color: ${t('fontColorTen', '#9ca3af')}; font-size: 12px; }
 
 	/* Segmented control */
-	${PREFIX} ._segmented { display: inline-flex; background: #f3f4f6; border-radius: 8px; padding: 3px; gap: 2px; }
+	${PREFIX} ._segmented { display: inline-flex; background: ${t('surfaceColorTwo', '#f3f4f6')}; border-radius: 8px; padding: 3px; gap: 2px; }
 	${PREFIX} ._segmented button {
 		border: none; background: transparent; padding: 6px 14px; border-radius: 6px;
-		font-size: 12px; cursor: pointer; color: #6b7280; font-weight: 500;
+		font-size: 12px; cursor: pointer; color: ${t('fontColorThree', '#6b7280')}; font-weight: 500;
 	}
-	${PREFIX} ._segmented button._on { background: #fff; color: #111827; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+	${PREFIX} ._segmented button._on { background: ${t('colorSeven', '#fff')}; color: ${t('fontColorOne', '#111827')}; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
 
 	${PREFIX} ._modeBody { display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; }
 
 	/* Fields */
 	${PREFIX} ._fld {
 		width: 100%; padding: 8px 10px; border: 1px solid ${border}; border-radius: 6px;
-		font-size: 13px; background: #fff; box-sizing: border-box;
+		font-size: 13px; background: ${t('colorSeven', '#fff')}; box-sizing: border-box;
 	}
-	${PREFIX} ._fld:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+	${PREFIX} ._fld:focus { outline: none; border-color: ${t('colorOne', '#6366f1')}; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
 	${PREFIX} ._kvRow { display: flex; gap: 6px; align-items: center; }
 	${PREFIX} ._kvRow ._fld { flex: 1; }
 	${PREFIX} ._fldType { flex: 0 0 110px; }
@@ -428,22 +437,22 @@ export default function TemplateEditorStyle({
 	/* Buttons */
 	${PREFIX} ._addBtn {
 		align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
-		padding: 6px 12px; border: 1px dashed ${border}; border-radius: 6px; background: #fff;
+		padding: 6px 12px; border: 1px dashed ${border}; border-radius: 6px; background: ${t('colorSeven', '#fff')};
 		cursor: pointer; font-size: 12px; color: #4b5563;
 	}
-	${PREFIX} ._addBtn:hover { border-color: #6366f1; color: #4338ca; }
-	${PREFIX} ._iconBtn { border: none; background: transparent; cursor: pointer; color: #9ca3af; padding: 6px; }
-	${PREFIX} ._iconBtn:hover { color: #ef4444; }
+	${PREFIX} ._addBtn:hover { border-color: ${t('colorOne', '#6366f1')}; color: ${t('colorTwo', '#4338ca')}; }
+	${PREFIX} ._iconBtn { border: none; background: transparent; cursor: pointer; color: ${t('fontColorTen', '#9ca3af')}; padding: 6px; }
+	${PREFIX} ._iconBtn:hover { color: ${t('colorTwelve', '#ef4444')}; }
 	${PREFIX} ._ghostBtn {
 		display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid ${border};
-		border-radius: 5px; background: #fff; cursor: pointer; font-size: 12px; color: #4b5563;
+		border-radius: 5px; background: ${t('colorSeven', '#fff')}; cursor: pointer; font-size: 12px; color: #4b5563;
 	}
-	${PREFIX} ._ghostBtn:hover { border-color: #6366f1; color: #4338ca; }
+	${PREFIX} ._ghostBtn:hover { border-color: ${t('colorOne', '#6366f1')}; color: ${t('colorTwo', '#4338ca')}; }
 
 	/* Field summary + nested note */
 	${PREFIX} ._fieldSummary { display: flex; flex-direction: column; gap: 4px; }
-	${PREFIX} ._fieldRow { display: flex; justify-content: space-between; padding: 5px 8px; background: #f9fafb; border-radius: 4px; font-size: 12px; }
-	${PREFIX} ._fieldRow code { font-family: monospace; color: #111827; }
+	${PREFIX} ._fieldRow { display: flex; justify-content: space-between; padding: 5px 8px; background: ${t('surfaceColorOne', '#f9fafb')}; border-radius: 4px; font-size: 12px; }
+	${PREFIX} ._fieldRow code { font-family: monospace; color: ${t('fontColorOne', '#111827')}; }
 	${PREFIX} ._nestedNote { font-style: italic; }
 
 	/* JSON editor box */
@@ -456,11 +465,11 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._previewToolbar { border-bottom: 1px solid ${line}; }
 	${PREFIX} ._subjectLine {
 		display: flex; align-items: center; gap: 10px; padding: 9px 14px;
-		border-bottom: 1px solid ${line}; background: #fff;
+		border-bottom: 1px solid ${line}; background: ${t('colorSeven', '#fff')};
 	}
-	${PREFIX} ._subjectLine span { font-size: 11px; text-transform: uppercase; color: #9ca3af; letter-spacing: 0.04em; }
+	${PREFIX} ._subjectLine span { font-size: 11px; text-transform: uppercase; color: ${t('fontColorTen', '#9ca3af')}; letter-spacing: 0.04em; }
 	${PREFIX} ._subjectLine input {
-		flex: 1; border: none; outline: none; font-size: 14px; font-weight: 600; color: #111827; background: transparent;
+		flex: 1; border: none; outline: none; font-size: 14px; font-weight: 600; color: ${t('fontColorOne', '#111827')}; background: transparent;
 	}
 
 	/* Embedded schema builder (Custom variables) */

@@ -1,5 +1,6 @@
+import { StyleResolution } from '../../types/common';
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './markdownEditorStyleProperties';
 
 const PREFIX = '.comp.compMarkdownEditor';
@@ -8,6 +9,15 @@ export default function MarkdownEditorStyle({
 }: Readonly<{
 	theme: Map<string, Map<string, string>>;
 }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const css =
 		`
 		${PREFIX} {
@@ -25,7 +35,7 @@ export default function MarkdownEditorStyle({
 			display: flex;
 			align-items: center;
 			justify-content: left;
-			background-color: #F8FAFC;
+			background-color: ${t('surfaceColorOne', '#F8FAFC')};
 			border-top-left-radius: 2px;
 			border-top-right-radius: 2px;
 			padding: 10px 20px;
@@ -48,7 +58,7 @@ export default function MarkdownEditorStyle({
 			height:80%;
 			margin-left:13px;
 			margin-right: 13px;
-			border-right: 1px solid #DFE8F0;
+			border-right: 1px solid ${t('borderColorNine', '#DFE8F0')};
 		}
 
 		${PREFIX} ._tabBar ._tab._write._active {
@@ -69,7 +79,7 @@ export default function MarkdownEditorStyle({
 			resize: none;
 			outline: none;
 			border-radius: 0px;
-			border: 1px solid #DFE8F0;
+			border: 1px solid ${t('borderColorNine', '#DFE8F0')};
 			border-top: none;
 			padding: 4px;
 		}
@@ -82,7 +92,7 @@ export default function MarkdownEditorStyle({
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			background-color: #ffffff;
+			background-color: ${t('colorSeven', '#ffffff')};
 			border-radius: 6px;
 			box-shadow: 0px 20px 6px 0px rgba(0, 0, 0, 0.00), 0px 13px 5px 0px rgba(0, 0, 0, 0.01), 0px 7px 4px 0px rgba(0, 0, 0, 0.03), 0px 3px 3px 0px rgba(0, 0, 0, 0.04), 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
 			padding: 0px 8px;
@@ -118,13 +128,13 @@ export default function MarkdownEditorStyle({
 		
 	
 		${PREFIX} ._formatbutton._active {
-			background-color: #EFF1F3;
+			background-color: ${t('surfaceColorTwo', '#EFF1F3')};
 			color: white;
-			border-color: #EFF1F3;
+			border-color: ${t('borderColorNine', '#EFF1F3')};
 		  }
 	  
 		  ${PREFIX} ._formatbutton:hover {
-			background-color: #f0f0f0;
+			background-color: ${t('surfaceColorTwo', '#f0f0f0')};
 		  }
 			
 		${PREFIX} ._buttonSeperator {
@@ -148,7 +158,7 @@ export default function MarkdownEditorStyle({
 		}
 
 		${PREFIX} ._linkDialog {
-			background-color: #ffffff;
+			background-color: ${t('colorSeven', '#ffffff')};
 			border-radius: 8px;
 			padding: 20px;
 			width: 400px;
@@ -160,7 +170,7 @@ export default function MarkdownEditorStyle({
 			margin-top: 0;
 			margin-bottom: 16px;
 			font-size: 18px;
-			color: #333;
+			color: ${t('fontColorOne', '#333')};
 			}
 
 		${PREFIX}._linkInputContainer {
@@ -172,14 +182,14 @@ export default function MarkdownEditorStyle({
 			width: 100%;
 			padding: 10px 12px;
 			margin-bottom: 12px;
-			border: 1px solid #ddd;
+			border: 1px solid ${t('borderColorTen', '#ddd')};
 			border-radius: 4px;
 			font-size: 14px;
 		}
 
 		${PREFIX} ._linkInput:focus {
 			outline: none;
-			border-color: #4a90e2;
+			border-color: ${t('colorOne', '#4a90e2')};
 			box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
 			}
 
@@ -196,14 +206,14 @@ export default function MarkdownEditorStyle({
 		border-radius: 4px;
 		font-size: 14px;
 		cursor: pointer;
-		border: 1px solid #ddd;
-		background-color: #f5f5f5;
+		border: 1px solid ${t('borderColorTen', '#ddd')};
+		background-color: ${t('surfaceColorTwo', '#f5f5f5')};
 		}
 
 		${PREFIX} ._primaryButton {
-		background-color: #4a90e2 !important;
+		background-color: ${t('colorOne', '#4a90e2')} !important;
 		color: white !important;
-		border-color: #4a90e2 !important;
+		border-color: ${t('colorOne', '#4a90e2')} !important;
 		}
 
 		${PREFIX} ._floatingToolbar {
@@ -253,7 +263,7 @@ export default function MarkdownEditorStyle({
 			padding: 6px;
 			margin: 12px;
 			font-size: 14px;
-			color: #555;
+			color: ${t('fontColorTwo', '#555')};
 		}
 
 		${PREFIX} ._linkDialogFooter {
@@ -267,7 +277,7 @@ export default function MarkdownEditorStyle({
 		border-radius: 4px;
 		font-size: 14px;
 		cursor: pointer;
-		border: 1px solid #ddd;
+		border: 1px solid ${t('borderColorTen', '#ddd')};
 		background-color: #ff0000;
 		}
 
@@ -276,8 +286,8 @@ export default function MarkdownEditorStyle({
 			border-radius: 4px;
 			font-size: 14px;
 			cursor: pointer;
-			border: 1px solid #ddd;
-			background-color: #4a90e2;
+			border: 1px solid ${t('borderColorTen', '#ddd')};
+			background-color: ${t('colorOne', '#4a90e2')};
 		}
 
 		${PREFIX} ._addButton {
@@ -285,9 +295,9 @@ export default function MarkdownEditorStyle({
 		border-radius: 4px;
 		font-size: 14px;
 		cursor: pointer;
-		background-color: #4a90e2;
+		background-color: ${t('colorOne', '#4a90e2')};
 		color: white;
-		border: 1px solid #4a90e2;
+		border: 1px solid ${t('colorOne', '#4a90e2')};
 		}
 
 		${PREFIX} ._addLinkButton:disabled {
@@ -306,7 +316,7 @@ export default function MarkdownEditorStyle({
 			left: 0;
 			z-index: 1000;
 			min-width: 180px;
-			background-color: #ffffff;
+			background-color: ${t('colorSeven', '#ffffff')};
 			border-radius: 6px;
 			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0px 7px 6px -5px rgba(0,0,0,0.15);
 			padding: 8px 8px;
@@ -350,8 +360,8 @@ export default function MarkdownEditorStyle({
 		}
 
 		${PREFIX} ._dropdownItem:hover {
-			background-color: #f5f5f5;
-		color: #333;	
+			background-color: ${t('surfaceColorTwo', '#f5f5f5')};
+		color: ${t('fontColorOne', '#333')};	
 			}
 
 			${PREFIX} ._dropdownItem svg path,
@@ -422,9 +432,9 @@ export default function MarkdownEditorStyle({
 		}
 		
 		${PREFIX} ._addButton:hover {
-			background: #e0e0e0;
+			background: ${t('surfaceColorThree', '#e0e0e0')};
 			transform: scale(1.05);
-			color: #333;
+			color: ${t('fontColorOne', '#333')};
 		}
 		
 		${PREFIX} ._componentPopup {
@@ -439,7 +449,7 @@ export default function MarkdownEditorStyle({
 			max-height: 400px;
 			padding: 12px;
 			z-index: 10000;
-			background-color: #fff;
+			background-color: ${t('colorSeven', '#fff')};
 		}
 
 		
@@ -452,7 +462,7 @@ export default function MarkdownEditorStyle({
 			display: flex;
 			width: 100%;
 			padding: 8px;
-			border: 1px solid #ddd;
+			border: 1px solid ${t('borderColorTen', '#ddd')};
 			border-radius: 4px;
 			font-size: 14px;
 		}
@@ -474,7 +484,7 @@ export default function MarkdownEditorStyle({
 			hieght: 70px;
 			align-items: center;
 			padding: 12px;
-			border: 1px solid #eee;
+			border: 1px solid ${t('borderColorNine', '#eee')};
 			border-radius: 4px;
 			background: white;
 			cursor: pointer;
@@ -482,7 +492,7 @@ export default function MarkdownEditorStyle({
 		}
 		
 		${PREFIX} ._componentButton:hover {
-			background-color: #f5f5f5;
+			background-color: ${t('surfaceColorTwo', '#f5f5f5')};
 		}
 		
 		${PREFIX} ._componentIcon {
@@ -496,7 +506,7 @@ export default function MarkdownEditorStyle({
 		}
 		
 		${PREFIX} ._footer {
-			border-top: 1px solid #eee;
+			border-top: 1px solid ${t('borderColorNine', '#eee')};
 			background: #000000;
 			border-radius: 6px 6px;
 		}

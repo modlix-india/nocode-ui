@@ -33,6 +33,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Override Themes and Styles',
 		group: ComponentPropertyGroup.BASIC,
 	},
+	{
+		// A host page cannot make its sub page reload. `_.<fn>` does not cross the
+		// boundary, so the host cannot call the pane's loader, and the pane has no
+		// way to watch a store value. That left the host with only bad options:
+		// copy the pane's whole load function into itself, or flip `pageName` to
+		// something else and back to force a remount.
+		//
+		// This is the honest version of the same intent. Bind it to a value the
+		// host bumps, and the sub page re-runs its OWN onLoadEvent, which is the
+		// function that already knows how to load that pane.
+		name: 'reloadOn',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Reload On',
+		description:
+			'Re-run the sub page’s own onLoadEvent whenever this value changes. Bind it to a counter or timestamp the host page updates when the pane’s data has gone stale.',
+		group: ComponentPropertyGroup.ADVANCED,
+		translatable: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

@@ -61,5 +61,13 @@
 		"gn": "Border Left",
 		"dn": "BorderLeft",
 		"n": "tableColumnBorderLeft<tableDesign><colorScheme>"
+	},
+	{
+		"gn": "Font",
+		"dn": "Font Size",
+		"n": "tableColumnFontSize<tableDesign><colorScheme>",
+		"cp": "font-size",
+		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableColumn",
+		"np": true
 	}
 ]

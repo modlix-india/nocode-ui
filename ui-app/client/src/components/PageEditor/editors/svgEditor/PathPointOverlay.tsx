@@ -19,7 +19,7 @@ export function PathPointOverlay({
 	d,
 	onMove,
 }: Readonly<{
-	canvasRef: React.RefObject<HTMLDivElement>;
+	canvasRef: React.RefObject<HTMLDivElement | null>;
 	editId: string;
 	d: string;
 	onMove: (pt: PathPoint, x: number, y: number, phase: DragPhase) => void;

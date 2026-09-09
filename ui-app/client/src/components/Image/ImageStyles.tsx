@@ -1,5 +1,6 @@
+import { StyleResolution } from '../../types/common';
 import React from 'react';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleDefaults, styleProperties } from './imageStyleProperties';
 
 const PREFIX = '.comp.compImage';
@@ -7,6 +8,15 @@ const PREFIX = '.comp.compImage';
 export default function ImageStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const css =
 		`
         ${PREFIX} ._onclicktrue {
@@ -27,7 +37,7 @@ export default function ImageStyle({
 
         ${PREFIX} ._zoomPreview {
             position: absolute;
-            border: 2px solid #ccc;
+            border: 2px solid ${t('borderColorTen', '#ccc')};
             overflow: hidden;
             z-index: 10;
             display: none;
@@ -72,7 +82,7 @@ export default function ImageStyle({
             top: 0;
             height: 100%;
             width: 4px;
-            background: #fff;
+            background: ${t('colorSeven', '#fff')};
             cursor: ew-resize;
             transform: translateX(-50%);
             z-index: 3;
@@ -89,7 +99,7 @@ export default function ImageStyle({
             transform: translate(-50%, -50%);
             width: 30px;
             height: 30px;
-            background: #fff;
+            background: ${t('colorSeven', '#fff')};
             border-radius: 50%;
             display: flex;
             align-items: center;

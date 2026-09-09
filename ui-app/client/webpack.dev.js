@@ -1,7 +1,5 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const ReactRefreshTypeScript = require('react-refresh-typescript');
 const webpack = require('webpack');
 
 module.exports = {
@@ -22,9 +20,6 @@ module.exports = {
           {
             loader: require.resolve('ts-loader'),
             options: {
-              getCustomTransformers: () => ({
-                before: [ReactRefreshTypeScript()],
-              }),
               transpileOnly: true,
             },
           },
@@ -68,7 +63,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html')
     }),
-    new ReactRefreshWebpackPlugin(),
     new webpack.EvalSourceMapDevToolPlugin({}),
   ],
   devServer: {
@@ -86,11 +80,13 @@ module.exports = {
         target: "https://apps.dev.modlix.com",
         secure: true,
         changeOrigin: true,
-        onProxyRes: (proxyRes, _req, res) => {
-          // Disable buffering for SSE responses to enable real-time streaming
-          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
-            res.flushHeaders();
-          }
+        on: {
+          proxyRes: (proxyRes, _req, res) => {
+            // Disable buffering for SSE responses to enable real-time streaming
+            if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+              res.flushHeaders();
+            }
+          },
         },
       }
     ]

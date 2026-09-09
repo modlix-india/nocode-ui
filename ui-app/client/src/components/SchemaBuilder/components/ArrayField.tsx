@@ -2,9 +2,7 @@ import React, { ReactNode, useCallback } from 'react';
 import StringField from './StringField';
 import NumberField from './NumberField';
 import AnyField from './AnyField';
-import { Repository, Schema } from '@fincity/kirun-js';
-import { shortUUID } from '../../../util/shortUUID';
-import { duplicate } from '@fincity/kirun-js';
+import { duplicate, Repository, Schema } from '@fincity/kirun-js';
 import SelectField from './SelectField';
 
 interface ArrayFieldProps {
@@ -16,6 +14,7 @@ interface ArrayFieldProps {
 	options?: { label: string; value: any }[];
 	schemaRepository: Repository<Schema>;
 	children?: ReactNode;
+	readOnly?: boolean;
 }
 
 export default function ArrayField({
@@ -26,7 +25,8 @@ export default function ArrayField({
 	type = 'ANY',
 	schemaRepository,
 	options,
-}: ArrayFieldProps) {
+	readOnly = false,
+}: Readonly<ArrayFieldProps>) {
 	const elements: ReactNode[] = [];
 
 	const moveUpDown = useCallback(
@@ -53,21 +53,29 @@ export default function ArrayField({
 	if (value?.length) {
 		for (let i = 0; i < value.length; i++) {
 			elements.push(
-				<div className="_eachValue" key={shortUUID()}>
+				// A fresh key per render remounted every row on every parent render, which closed
+				// any open value popup and threw away half-typed text. The index is a safe key
+				// here: reorder and delete both write a whole new array through onChange.
+				<div className="_eachValue" key={`${propPath}[${i}]`}>
 					<EachOne
 						type={type}
 						value={value[i]}
 						onChange={onChange}
 						propPath={`${propPath}[${i}]`}
 						schemaRepository={schemaRepository}
-						moveUp={() => moveUpDown(i, true)}
-						moveDown={() => moveUpDown(i, false)}
-						deleteItem={() => {
-							const newValues = duplicate(value);
-							newValues.splice(i, 1);
-							if (newValues.length === 0) onChange(propPath, undefined);
-							else onChange(propPath, newValues);
-						}}
+						readOnly={readOnly}
+						moveUp={readOnly ? undefined : () => moveUpDown(i, true)}
+						moveDown={readOnly ? undefined : () => moveUpDown(i, false)}
+						deleteItem={
+							readOnly
+								? undefined
+								: () => {
+										const newValues = duplicate(value);
+										newValues.splice(i, 1);
+										if (newValues.length === 0) onChange(propPath, undefined);
+										else onChange(propPath, newValues);
+									}
+						}
 						options={options}
 					/>
 				</div>,
@@ -75,7 +83,7 @@ export default function ArrayField({
 		}
 	}
 
-	const newOne = (
+	const newOne = readOnly ? undefined : (
 		<div className="_eachValue">
 			<EachOne
 				type={type}
@@ -109,6 +117,7 @@ interface EachOneProps {
 	moveDown?: () => void | undefined;
 	deleteItem?: () => void | undefined;
 	options?: { label: string; value: any }[];
+	readOnly?: boolean;
 }
 
 function EachOne({
@@ -121,15 +130,28 @@ function EachOne({
 	moveDown,
 	deleteItem,
 	options,
-}: EachOneProps) {
+	readOnly = false,
+}: Readonly<EachOneProps>) {
 	let valueComp = null;
 	if (type === 'STRING') {
 		valueComp = (
-			<StringField label={''} value={value} onChange={onChange} propPath={propPath} />
+			<StringField
+				label={''}
+				value={value}
+				onChange={onChange}
+				propPath={propPath}
+				readOnly={readOnly}
+			/>
 		);
 	} else if (type === 'NUMBER') {
 		valueComp = (
-			<NumberField label={''} value={value} onChange={onChange} propPath={propPath} />
+			<NumberField
+				label={''}
+				value={value}
+				onChange={onChange}
+				propPath={propPath}
+				readOnly={readOnly}
+			/>
 		);
 	} else if (type === 'SELECT') {
 		valueComp = (
@@ -139,6 +161,7 @@ function EachOne({
 				onChange={onChange}
 				propPath={propPath}
 				options={options}
+				readOnly={readOnly}
 			/>
 		);
 	}

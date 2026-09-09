@@ -154,19 +154,19 @@ function Video(props: Readonly<ComponentProps>) {
 	const [isFirstTimePlay, setIsFirstTimePlay] = useState<boolean>(true);
 
 	//videoRef
-	const video = useRef<any>();
+	const video = useRef<any>(undefined);
 	//InputProgressBarRef
-	const progressBarRef = useRef<any>();
+	const progressBarRef = useRef<any>(undefined);
 	//VolumeInput ref
 	const [volume, setVolume] = useState<string>('1');
 	//
-	const volumeButton = useRef<any>();
+	const volumeButton = useRef<any>(undefined);
 	//fullScreen
-	const fullScreen = useRef<any>();
+	const fullScreen = useRef<any>(undefined);
 	//containerRef
-	const videoContainer = useRef<any>();
+	const videoContainer = useRef<any>(undefined);
 	//Pip ref
-	const pipRef = useRef<any>();
+	const pipRef = useRef<any>(undefined);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		pageDefinition,

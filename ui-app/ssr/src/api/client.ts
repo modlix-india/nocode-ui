@@ -14,6 +14,24 @@ interface FetchOptions {
 	appCode: string;
 	clientCode: string;
 	authToken?: string | null;
+	/**
+	 * The hostname the browser actually asked for.
+	 *
+	 * This is how the draft surface reaches the backend, and it replaces an earlier
+	 * attempt that forwarded an `x-draft` header. That did not work: GatewayFilter
+	 * strips `x-draft` from EVERY request, including this server-to-server hop, and
+	 * then re-derives the surface from the connection it sees, which is
+	 * `gateway-server:8080` and never matches a DRAFT row. A draft host therefore
+	 * got a live pre-render, cached under a draft key.
+	 *
+	 * Forwarding the host instead lets the gateway resolve the surface itself, the
+	 * same way it does for a direct browser request, and keeps it the single
+	 * authority on what is a draft. GatewayFilter.getSchemeHostPort already reads
+	 * exactly these three headers.
+	 */
+	forwardedHost?: string | null;
+	forwardedProto?: string | null;
+	forwardedPort?: string | null;
 }
 
 /**
@@ -31,6 +49,19 @@ async function fetchApi<T>(
 
 	if (options.authToken) {
 		headers['Authorization'] = options.authToken;
+	}
+
+	// Deliberately no x-draft here. The gateway strips it on arrival and derives
+	// the surface from the forwarded host below, so sending it would be both
+	// useless and misleading about where the decision is made.
+	if (options.forwardedHost) {
+		headers['X-Forwarded-Host'] = options.forwardedHost;
+	}
+	if (options.forwardedProto) {
+		headers['X-Forwarded-Proto'] = options.forwardedProto;
+	}
+	if (options.forwardedPort) {
+		headers['X-Forwarded-Port'] = options.forwardedPort;
 	}
 
 	try {
@@ -66,8 +97,12 @@ export interface ApplicationDefinition {
 		fillerValues?: Record<string, unknown>;
 		fontPacks?: string[];
 		iconPacks?: string[];
-		themes?: Record<string, { name: string }>;
-		styles?: Record<string, { name: string }>;
+		/**
+		 * Selectable appearances, exactly one active at a time. Only `name` is
+		 * required; every other field is optional and degrades.
+		 */
+		themes?: Record<string, ThemeEntry>;
+		styles?: Record<string, { name: string; order?: number }>;
 		codeParts?: {
 			cdnPrefix?: string;
 			[key: string]: string | undefined;
@@ -80,6 +115,17 @@ export interface ApplicationDefinition {
 		cspReport?: string | Record<string, string>;
 		analytics?: AnalyticsConfig;
 	};
+}
+
+export interface ThemeEntry {
+	/** Theme document name. The identifier, everywhere. */
+	name: string;
+	displayName?: string;
+	icon?: string;
+	iconColor?: string;
+	/** Style document loaded only while this theme is active. Optional. */
+	style?: string;
+	order?: number;
 }
 
 export interface AnalyticsConfig {
@@ -176,9 +222,42 @@ export async function fetchPage(
  * Fetch theme
  */
 export async function fetchTheme(
-	options: FetchOptions
+	options: FetchOptions,
+	themeName?: string | null
 ): Promise<ThemeDefinition | null> {
-	return fetchApi<ThemeDefinition>('/api/ui/theme', options);
+	const query = themeName ? `?theme=${encodeURIComponent(themeName)}` : '';
+	return fetchApi<ThemeDefinition>(`/api/ui/theme${query}`, options);
+}
+
+/**
+ * The theme to render with: the visitor's stored choice if it is still listed,
+ * otherwise the app's default (lowest `order`).
+ *
+ * This is the same rule as `resolveThemeName` in the client's themeSelection.ts
+ * and `themeCandidates` in EngineService, and all three have to agree. If SSR
+ * picked a different theme from the one the client resolves to, the client would
+ * throw away the bootstrap theme and refetch, costing a round trip on every SSR
+ * page load.
+ *
+ * Only knows what is listed. A listed theme whose document has been deleted is
+ * caught by the ui service, which is why the name is passed on rather than
+ * verified here.
+ */
+export function resolveThemeName(
+	application: ApplicationDefinition | null,
+	requested?: string | null
+): string | undefined {
+	const themes = application?.properties?.themes;
+	if (!themes) return undefined;
+
+	const entries = Object.values(themes)
+		.filter((e) => e?.name)
+		.sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
+
+	if (!entries.length) return undefined;
+	if (requested && entries.some((e) => e.name === requested)) return requested;
+
+	return entries[0].name;
 }
 
 /**
@@ -187,11 +266,14 @@ export async function fetchTheme(
  */
 export async function fetchAllPageData(
 	pageName: string,
-	options: FetchOptions
+	options: FetchOptions,
+	/** The visitor's stored theme, from their cookie. */
+	requestedTheme?: string | null
 ): Promise<{
 	application: ApplicationDefinition | null;
 	page: PageDefinition | null;
 	theme: ThemeDefinition | null;
+	themeName?: string;
 	resolvedPageName: string;
 }> {
 	// First fetch application (need it for defaultPage and it's always needed)
@@ -210,9 +292,10 @@ export async function fetchAllPageData(
 	}
 
 	// Now fetch page and theme in parallel
+	const themeName = resolveThemeName(application, requestedTheme);
 	const [page, theme] = await Promise.all([
 		fetchPage(actualPageName, options),
-		fetchTheme(options),
+		fetchTheme(options, themeName),
 	]);
 
 	logger.debug('Fetched page data', {
@@ -223,5 +306,5 @@ export async function fetchAllPageData(
 		hasTheme: !!theme,
 	});
 
-	return { application, page, theme, resolvedPageName: actualPageName };
+	return { application, page, theme, themeName, resolvedPageName: actualPageName };
 }

@@ -63,7 +63,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Gap between children',
 		de: 'Gap between children of grid.',
 		dv: '5px',
-		sel: '.comp.compGrid ._anchorGrid, .comp.compGrid._noAnchorGrid',
+		sel: '.comp.compGrid._noAnchorGrid, .comp.compGrid ._anchorGrid',
+		np: true,
 	},
 	{
 		gn: 'Border',
@@ -71,7 +72,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderLight',
 		dv: '1px solid',
 		cp: 'border',
-		sel: '._LIGHT',
+		sel: '.comp.compGrid._noAnchorGrid._LIGHT, .comp.compGrid ._anchorGrid._LIGHT',
+		np: true,
 	},
 	{
 		gn: 'Border',
@@ -79,7 +81,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderMedium',
 		dv: '3px solid',
 		cp: 'border',
-		sel: '._MEDIUM',
+		sel: '.comp.compGrid._noAnchorGrid._MEDIUM, .comp.compGrid ._anchorGrid._MEDIUM',
+		np: true,
 	},
 	{
 		gn: 'Border',
@@ -87,7 +90,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderHigh',
 		dv: '5px solid',
 		cp: 'border',
-		sel: '._HEAVY',
+		sel: '.comp.compGrid._noAnchorGrid._HEAVY, .comp.compGrid ._anchorGrid._HEAVY',
+		np: true,
 	},
 	{
 		gn: 'Border',
@@ -95,7 +99,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderExtreme',
 		dv: '8px solid',
 		cp: 'border',
-		sel: '._EXTREME',
+		sel: '.comp.compGrid._noAnchorGrid._EXTREME, .comp.compGrid ._anchorGrid._EXTREME',
+		np: true,
 	},
 	{
 		gn: 'Border',
@@ -103,7 +108,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderUltra',
 		dv: '10px solid',
 		cp: 'border',
-		sel: '._ULTRA',
+		sel: '.comp.compGrid._noAnchorGrid._ULTRA, .comp.compGrid ._anchorGrid._ULTRA',
+		np: true,
 	},
 	{
 		gn: 'Border',
@@ -111,7 +117,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderMaximum',
 		dv: '12px solid',
 		cp: 'border',
-		sel: '._MAXIMUM',
+		sel: '.comp.compGrid._noAnchorGrid._MAXIMUM, .comp.compGrid ._anchorGrid._MAXIMUM',
+		np: true,
 	},
 
 	{
@@ -120,7 +127,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderRadiusStraight',
 		dv: '0px ',
 		cp: 'border-radius',
-		sel: '._STRAIGHT',
+		sel: '.comp.compGrid._noAnchorGrid._STRAIGHT, .comp.compGrid ._anchorGrid._STRAIGHT',
+		np: true,
 	},
 	{
 		gn: 'Border Radius',
@@ -128,7 +136,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderRadiusSlightRound',
 		dv: '5px',
 		cp: 'border-radius',
-		sel: '._SLIGHTROUND',
+		sel: '.comp.compGrid._noAnchorGrid._SLIGHTROUND, .comp.compGrid ._anchorGrid._SLIGHTROUND',
+		np: true,
 	},
 	{
 		gn: 'Border Radius',
@@ -136,7 +145,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderRadiusRound',
 		dv: '10px',
 		cp: 'border-radius',
-		sel: '._ROUND',
+		sel: '.comp.compGrid._noAnchorGrid._ROUND, .comp.compGrid ._anchorGrid._ROUND',
+		np: true,
 	},
 	{
 		gn: 'Border Radius',
@@ -144,7 +154,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderRadiusExtraRound',
 		dv: '15px',
 		cp: 'border-radius',
-		sel: '._EXTRAROUND',
+		sel: '.comp.compGrid._noAnchorGrid._EXTRAROUND, .comp.compGrid ._anchorGrid._EXTRAROUND',
+		np: true,
 	},
 	{
 		gn: 'Border Radius',
@@ -152,7 +163,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderRadiusVeryRound',
 		dv: '20px ',
 		cp: 'border-radius',
-		sel: '._VERYROUND',
+		sel: '.comp.compGrid._noAnchorGrid._VERYROUND, .comp.compGrid ._anchorGrid._VERYROUND',
+		np: true,
 	},
 	{
 		gn: 'Border Radius',
@@ -160,7 +172,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'borderRadiusFullRound',
 		dv: '30px',
 		cp: 'border-radius',
-		sel: '._FULLROUND',
+		sel: '.comp.compGrid._noAnchorGrid._FULLROUND, .comp.compGrid ._anchorGrid._FULLROUND',
+		np: true,
 	},
 
 	{
@@ -169,7 +182,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'boxShadowDarkLow',
 		dv: '0px 3px 10px 0px rgba(255, 255, 255, 0.10)',
 		cp: 'box-shadow',
-		sel: '._DARKLOW',
+		sel: '.comp.compGrid._noAnchorGrid._DARKLOW, .comp.compGrid ._anchorGrid._DARKLOW',
+		np: true,
 	},
 	{
 		gn: 'Box Shadow',
@@ -177,7 +191,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'boxShadowDarkMedium',
 		dv: '0px 5px 20px 0px rgba(255, 255, 255, 0.20)',
 		cp: 'box-shadow',
-		sel: '._DARKMEDIUM',
+		sel: '.comp.compGrid._noAnchorGrid._DARKMEDIUM, .comp.compGrid ._anchorGrid._DARKMEDIUM',
+		np: true,
 	},
 	{
 		gn: 'Box Shadow',
@@ -185,7 +200,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'boxShadowDarkHigh',
 		dv: '0px 5px 30px 0px rgba(255, 255, 255, 0.30)',
 		cp: 'box-shadow',
-		sel: '._DARKHIGH',
+		sel: '.comp.compGrid._noAnchorGrid._DARKHIGH, .comp.compGrid ._anchorGrid._DARKHIGH',
+		np: true,
 	},
 	{
 		gn: 'Box Shadow',
@@ -193,7 +209,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'boxShadowLightLow',
 		dv: '0px 3px 10px 0px rgba(0, 0, 0, 0.10)',
 		cp: 'box-shadow',
-		sel: '._LIGHTLOW',
+		sel: '.comp.compGrid._noAnchorGrid._LIGHTLOW, .comp.compGrid ._anchorGrid._LIGHTLOW',
+		np: true,
 	},
 	{
 		gn: 'Box Shadow',
@@ -201,7 +218,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'boxShadowLightMedium',
 		dv: '0px 5px 20px 0px rgba(0, 0, 0, 0.20)',
 		cp: 'box-shadow',
-		sel: '._LIGHTMEDIUM',
+		sel: '.comp.compGrid._noAnchorGrid._LIGHTMEDIUM, .comp.compGrid ._anchorGrid._LIGHTMEDIUM',
+		np: true,
 	},
 	{
 		gn: 'Box Shadow',
@@ -209,7 +227,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'boxShadowLightHigh',
 		dv: '0px 5px 30px 0px rgba(0, 0, 0, 0.30)',
 		cp: 'box-shadow',
-		sel: '._LIGHTHIGH',
+		sel: '.comp.compGrid._noAnchorGrid._LIGHTHIGH, .comp.compGrid ._anchorGrid._LIGHTHIGH',
+		np: true,
 	},
 	{
 		gn: 'Padding',
@@ -217,7 +236,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'paddingDesignOne',
 		dv: '10px 10px 10px 10px',
 		cp: 'padding',
-		sel: '._PADDINGONE',
+		sel: '.comp.compGrid._noAnchorGrid._PADDINGONE, .comp.compGrid ._anchorGrid._PADDINGONE',
+		np: true,
 	},
 	{
 		gn: 'Padding',
@@ -225,7 +245,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'paddingDesignTwo',
 		dv: '20px 20px 20px 20px',
 		cp: 'padding',
-		sel: '._PADDINGTWO',
+		sel: '.comp.compGrid._noAnchorGrid._PADDINGTWO, .comp.compGrid ._anchorGrid._PADDINGTWO',
+		np: true,
 	},
 	{
 		gn: 'Padding',
@@ -233,7 +254,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'paddingDesignThree',
 		dv: '30px 30px 30px 30px',
 		cp: 'padding',
-		sel: '._PADDINGTHREE',
+		sel: '.comp.compGrid._noAnchorGrid._PADDINGTHREE, .comp.compGrid ._anchorGrid._PADDINGTHREE',
+		np: true,
 	},
 	{
 		gn: 'Padding',
@@ -241,7 +263,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'paddingDesignFour',
 		dv: '40px 40px 40px 40px',
 		cp: 'padding',
-		sel: '._PADDINGFOUR',
+		sel: '.comp.compGrid._noAnchorGrid._PADDINGFOUR, .comp.compGrid ._anchorGrid._PADDINGFOUR',
+		np: true,
 	},
 	{
 		gn: 'Padding',
@@ -249,7 +272,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'paddingDesignFive',
 		dv: '50px 50px 50px 50px',
 		cp: 'padding',
-		sel: '._PADDINGFIVE',
+		sel: '.comp.compGrid._noAnchorGrid._PADDINGFIVE, .comp.compGrid ._anchorGrid._PADDINGFIVE',
+		np: true,
 	},
 	{
 		gn: 'Padding',
@@ -257,7 +281,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'paddingDesignSix',
 		dv: '60px 60px 60px 60px ',
 		cp: 'padding',
-		sel: '._PADDINGSIX',
+		sel: '.comp.compGrid._noAnchorGrid._PADDINGSIX, .comp.compGrid ._anchorGrid._PADDINGSIX',
+		np: true,
 	},
 ];
 

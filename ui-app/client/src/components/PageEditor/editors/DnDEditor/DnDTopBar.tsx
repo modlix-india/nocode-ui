@@ -283,13 +283,31 @@ export default function DnDTopBar({
 		);
 	}, [defPath, pageExtractor]);
 
+	const inputRef = useRef<HTMLInputElement>(null);
+
+	/**
+	 * Follow the `url` prop when it changes.
+	 *
+	 * `localUrl` was seeded by `useState(url)` and never resynced. `url` starts as
+	 * `''` in LazyPageEditor and is filled by an effect once the page definition and
+	 * the personalization are both in the store, so whether the URL bar showed
+	 * anything at all came down to whether that had already happened by the time
+	 * this component first rendered -- a race, which is why the bar rendered its
+	 * text sometimes and stayed blank other times.
+	 *
+	 * Skipped while the field has focus, so this cannot yank a half-typed URL out
+	 * from under whoever is typing it.
+	 */
+	useEffect(() => {
+		if (document.activeElement === inputRef.current) return;
+		setLocalUrl(url ?? '');
+	}, [url]);
+
 	const changeUrl = useCallback(() => {
 		if (url === localUrl) return;
 
 		onUrlChange(localUrl);
 	}, [localUrl]);
-
-	const inputRef = useRef<HTMLInputElement>(null);
 
 	const updatePageProperties = useCallback(
 		(
@@ -892,46 +910,14 @@ export default function DnDTopBar({
 							</defs>
 						</IconHelper>
 					</button>
-					<div
-						className="_tab"
-						onClick={() =>
-							onChangePersonalization(
-								'theme',
-								theme === '_light' ? '_dark' : '_light',
-							)
-						}
-						onKeyDown={e =>
-							(e.key === 'Enter' || e.key === ' ') &&
-							onChangePersonalization(
-								'theme',
-								theme === '_light' ? '_dark' : '_light',
-							)
-						}
-						title="Theme"
-					>
-						<IconHelper viewBox="0 0 22 22">
-							<path
-								className="_blackGradient"
-								d="M11.0014 1.00002C9.0234 0.999746 7.08995 1.58603 5.44527 2.68465C3.80055 3.78326 2.51857 5.34499 1.7616 7.17221C1.00451 8.99943 0.806275 11.0101 1.19201 12.95C1.57769 14.8898 2.53003 16.6719 3.92851 18.0705C5.32699 19.4692 7.10886 20.4218 9.04858 20.8077C10.9885 21.1937 12.9991 20.9958 14.8265 20.2389C16.6539 19.4821 18.2157 18.2004 19.3146 16.5559C20.4135 14.9114 21 12.978 21 11C20.9971 8.34906 19.9428 5.80729 18.0684 3.9326C16.1939 2.05791 13.6525 1.0033 11.0015 1L11.0014 1.00002ZM1.68284 11C1.68569 8.52954 2.6684 6.16093 4.41534 4.41402C6.16225 2.66712 8.53087 1.68449 11.0014 1.68153V20.3171C8.53104 20.3146 6.16242 19.3323 4.41551 17.5855C2.66861 15.8388 1.6858 13.4703 1.68284 11Z"
-								fill="currentColor"
-								stroke="currentColor"
-								strokeWidth="0.6"
-							/>
-							<defs>
-								<linearGradient
-									id="blackGradient"
-									x1="11"
-									y1="1"
-									x2="11"
-									y2="21"
-									gradientUnits="userSpaceOnUse"
-								>
-									<stop stopColor="#606060" />
-									<stop offset="1" stopColor="#303030" />
-								</linearGradient>
-							</defs>
-						</IconHelper>
-					</div>
+					{/*
+					 * The light/dark toggle that used to sit here is gone. The app
+					 * itself now has a theme switcher in its header, and the editor
+					 * chrome follows whichever theme is active (LazyPageEditor derives
+					 * `_light`/`_dark` from the theme's own ground). Two controls for
+					 * one decision meant the editor could sit light inside a dark app,
+					 * and the editor's copy was the one that persisted and won.
+					 */}
 					<div className="_tab _iconMenu _personalize">
 						<IconHelper viewBox="0 0 20 20">
 							<path

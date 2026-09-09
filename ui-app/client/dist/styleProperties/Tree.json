@@ -1,0 +1,587 @@
+[
+	{
+		"n": "treeIndentSize<treeDesign>",
+		"cp": "--_treeIndent",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Indent Size",
+		"de": "Horizontal offset per depth level. Drives both the indentation and the guide-line geometry, so they can never drift apart.",
+		"spv": {
+			"_indented": "16px",
+			"_accordion": "0px",
+			"_orgChart": "0px",
+			"_columns": "0px"
+		}
+	},
+	{
+		"n": "treeToggleSize<treeDesign>",
+		"cp": "--_treeToggleSize",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Toggle Size",
+		"de": "Width and height of the expand/collapse button, and of the spacer that keeps leaf rows aligned with it.",
+		"spv": {
+			"_indented": "18px",
+			"_accordion": "24px",
+			"_orgChart": "20px",
+			"_columns": "0px"
+		}
+	},
+	{
+		"n": "treeRowGap<treeDesign>",
+		"cp": "--_treeRowGap",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Row Gap",
+		"de": "Gap between the toggle, the node content and the action buttons inside a row.",
+		"spv": {
+			"_indented": "6px",
+			"_accordion": "10px",
+			"_orgChart": "8px",
+			"_columns": "8px"
+		}
+	},
+	{
+		"n": "treeGuideAnchor<treeDesign>",
+		"cp": "--_treeRowAnchor",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Guide Anchor Offset",
+		"de": "Distance from the top of a row where guide lines meet it. Measured from the top rather than centred so elbows stay aligned with the toggle when a node template renders more than one line.",
+		"dv": "calc(var(--_treeToggleSize) / 2 + 4px)"
+	},
+	{
+		"n": "treeOrgGapHorizontal<treeDesign>",
+		"cp": "--_treeOrgHGap",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Org Chart Sibling Gap",
+		"spv": {
+			"_orgChart": "24px"
+		}
+	},
+	{
+		"n": "treeOrgGapVertical<treeDesign>",
+		"cp": "--_treeOrgVGap",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Org Chart Level Gap",
+		"spv": {
+			"_orgChart": "32px"
+		}
+	},
+	{
+		"n": "treeConnectorRadius<treeDesign>",
+		"cp": "--_treeConnectorRadius",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Connector Corner Radius",
+		"de": "Rounds the elbows of guide lines and org-chart connectors. 0 for square corners.",
+		"spv": {
+			"_indented": "0px",
+			"_orgChart": "6px"
+		}
+	},
+	{
+		"n": "treeColumnWidth<treeDesign>",
+		"cp": "--_treeColumnWidth",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Column Width",
+		"spv": {
+			"_columns": "240px"
+		}
+	},
+	{
+		"n": "treeAnimationDuration<treeDesign>",
+		"cp": "--_treeAnimDuration",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Tree Geometry",
+		"dn": "Animation Duration",
+		"spv": {
+			"_indented": "0.18s",
+			"_accordion": "0.28s",
+			"_orgChart": "0.2s",
+			"_columns": "0.2s"
+		}
+	},
+	{
+		"n": "treeGuideWidth<treeDesign>",
+		"cp": "--_treeGuideWidth",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Guide Lines",
+		"dn": "Guide Line Width",
+		"spv": {
+			"_indented": "1px",
+			"_orgChart": "1px"
+		}
+	},
+	{
+		"n": "treeGuideStyle<treeDesign>",
+		"cp": "--_treeGuideStyle",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Guide Lines",
+		"dn": "Guide Line Style",
+		"de": "solid, dotted or dashed.",
+		"spv": {
+			"_indented": "dotted",
+			"_orgChart": "solid"
+		}
+	},
+	{
+		"n": "treeGuideColor<treeDesign><colorScheme>",
+		"cp": "--_treeGuideColor",
+		"sel": ".comp.compTree<treeDesign><colorScheme>",
+		"np": true,
+		"gn": "Guide Lines",
+		"dn": "Guide Line Color",
+		"dv": "<borderColorSix>"
+	},
+	{
+		"n": "treeAccentColor<colorScheme>",
+		"cp": "--_treeAccentColor",
+		"sel": ".comp.compTree<colorScheme>",
+		"np": true,
+		"gn": "Accent",
+		"dn": "Accent Color",
+		"de": "Used for the drop indicator and the keyboard focus ring.",
+		"spv": {
+			"_primary": "<backgroundColorOne>",
+			"_secondary": "<backgroundColorTwo>",
+			"_tertiary": "<backgroundColorThree>",
+			"_quaternary": "<backgroundColorFour>",
+			"_quinary": "<backgroundColorFive>"
+		}
+	},
+	{
+		"n": "treeFont<treeDesign>",
+		"cp": "font",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Font",
+		"dn": "Font",
+		"dv": "<primaryFont>"
+	},
+	{
+		"n": "treeColor<treeDesign><colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTree<treeDesign><colorScheme>",
+		"np": true,
+		"gn": "Color",
+		"dn": "Text Color",
+		"dv": "<fontColorOne>"
+	},
+	{
+		"n": "treePadding<treeDesign>",
+		"cp": "padding",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Padding",
+		"dn": "Padding",
+		"spv": {
+			"_indented": "4px",
+			"_accordion": "0px",
+			"_orgChart": "20px 16px",
+			"_columns": "0px"
+		}
+	},
+	{
+		"n": "treeBorder<treeDesign>",
+		"cp": "border",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Border",
+		"dn": "Border",
+		"spv": {
+			"_columns": "1px solid <borderColorSix>"
+		}
+	},
+	{
+		"n": "treeBorderRadius<treeDesign>",
+		"cp": "border-radius",
+		"sel": ".comp.compTree<treeDesign>",
+		"np": true,
+		"gn": "Border Radius",
+		"dn": "Border Radius",
+		"spv": {
+			"_columns": "6px"
+		}
+	},
+	{
+		"n": "treeBackground<treeDesign><colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTree<treeDesign><colorScheme>",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background",
+		"spv": {
+			"_columns-": "<backgroundColorSeven>"
+		}
+	},
+	{
+		"n": "treeNodeContainerBorder<treeDesign>",
+		"cp": "border",
+		"sel": ".comp.compTree<treeDesign> ._node",
+		"np": true,
+		"gn": "Node Panel",
+		"dn": "Panel Border",
+		"spv": {
+			"_accordion": "1px solid <borderColorSix>"
+		}
+	},
+	{
+		"n": "treeNodeContainerBorderRadius<treeDesign>",
+		"cp": "border-radius",
+		"sel": ".comp.compTree<treeDesign> ._node",
+		"np": true,
+		"gn": "Node Panel",
+		"dn": "Panel Border Radius",
+		"spv": {
+			"_accordion": "6px"
+		}
+	},
+	{
+		"n": "treeNodeContainerBackground<treeDesign><colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTree<treeDesign><colorScheme> ._node",
+		"np": true,
+		"gn": "Node Panel",
+		"dn": "Panel Background",
+		"spv": {
+			"_accordion-": "<backgroundColorSeven>"
+		}
+	},
+	{
+		"n": "treeNodeContainerMargin<treeDesign>",
+		"cp": "margin",
+		"sel": ".comp.compTree<treeDesign> ._nodes > ._node",
+		"np": true,
+		"gn": "Node Panel",
+		"dn": "Panel Margin",
+		"spv": {
+			"_accordion": "0 0 6px 0"
+		}
+	},
+	{
+		"n": "treeNodeRowPadding<treeDesign>",
+		"cp": "padding",
+		"sel": ".comp.compTree<treeDesign> ._nodeRow",
+		"np": true,
+		"gn": "Node Row",
+		"dn": "Row Padding",
+		"spv": {
+			"_indented": "3px 6px",
+			"_accordion": "12px 14px",
+			"_orgChart": "10px 14px",
+			"_columns": "6px 10px"
+		}
+	},
+	{
+		"n": "treeNodeRowMinHeight<treeDesign>",
+		"cp": "min-height",
+		"sel": ".comp.compTree<treeDesign> ._nodeRow",
+		"np": true,
+		"gn": "Node Row",
+		"dn": "Row Minimum Height",
+		"spv": {
+			"_indented": "28px",
+			"_accordion": "44px",
+			"_orgChart": "40px",
+			"_columns": "32px"
+		}
+	},
+	{
+		"n": "treeNodeRowBorderRadius<treeDesign>",
+		"cp": "border-radius",
+		"sel": ".comp.compTree<treeDesign> ._nodeRow",
+		"np": true,
+		"gn": "Node Row",
+		"dn": "Row Border Radius",
+		"spv": {
+			"_indented": "4px",
+			"_accordion": "0px",
+			"_orgChart": "6px",
+			"_columns": "4px"
+		}
+	},
+	{
+		"n": "treeNodeRowBorder<treeDesign>",
+		"cp": "border",
+		"sel": ".comp.compTree<treeDesign> ._nodeRow",
+		"np": true,
+		"gn": "Node Row",
+		"dn": "Row Border",
+		"spv": {
+			"_orgChart": "1px solid <borderColorSix>"
+		}
+	},
+	{
+		"n": "treeNodeRowBackground<treeDesign><colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTree<treeDesign><colorScheme> ._nodeRow",
+		"np": true,
+		"gn": "Node Row",
+		"dn": "Row Background",
+		"spv": {
+			"_orgChart-": "<backgroundColorSeven>"
+		}
+	},
+	{
+		"n": "treeNodeRowBoxShadow<treeDesign>",
+		"cp": "box-shadow",
+		"sel": ".comp.compTree<treeDesign> ._nodeRow",
+		"np": true,
+		"gn": "Node Row",
+		"dn": "Row Box Shadow",
+		"spv": {
+			"_orgChart": "0 1px 3px #0000001F"
+		}
+	},
+	{
+		"n": "treeNodeRowTransition<treeDesign>",
+		"cp": "transition",
+		"sel": ".comp.compTree<treeDesign> ._nodeRow",
+		"np": true,
+		"gn": "Node Row",
+		"dn": "Row Transition",
+		"dv": "background var(--_treeAnimDuration) ease, color var(--_treeAnimDuration) ease"
+	},
+	{
+		"n": "treeNodeRowBackgroundHover<treeDesign><colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTree<treeDesign><colorScheme> ._nodeRow:hover",
+		"np": true,
+		"gn": "Node Row Hover",
+		"dn": "Row Background (Hover)",
+		"spv": {
+			"-_primary": "<backgroundHoverColorOne>",
+			"-_secondary": "<backgroundHoverColorTwo>",
+			"-_tertiary": "<backgroundHoverColorThree>",
+			"-_quaternary": "<backgroundHoverColorFour>",
+			"-_quinary": "<backgroundHoverColorFive>"
+		}
+	},
+	{
+		"n": "treeNodeRowBackgroundSelected<treeDesign><colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTree<treeDesign><colorScheme> ._nodeRow._selected",
+		"np": true,
+		"gn": "Node Row Selected",
+		"dn": "Row Background (Selected)",
+		"de": "The list-like designs use a light tint so dark label text stays legible; the panel designs use the solid accent, where a bold fill reads well against white text.",
+		"spv": {
+			"_indented-_primary": "<backgroundHoverColorOne>",
+			"_indented-_secondary": "<backgroundHoverColorTwo>",
+			"_indented-_tertiary": "<backgroundHoverColorThree>",
+			"_indented-_quaternary": "<backgroundHoverColorFour>",
+			"_indented-_quinary": "<backgroundHoverColorFive>",
+			"_columns-_primary": "<backgroundHoverColorOne>",
+			"_columns-_secondary": "<backgroundHoverColorTwo>",
+			"_columns-_tertiary": "<backgroundHoverColorThree>",
+			"_columns-_quaternary": "<backgroundHoverColorFour>",
+			"_columns-_quinary": "<backgroundHoverColorFive>",
+			"_accordion-_primary": "<backgroundColorOne>",
+			"_accordion-_secondary": "<backgroundColorTwo>",
+			"_accordion-_tertiary": "<backgroundColorThree>",
+			"_accordion-_quaternary": "<backgroundColorFour>",
+			"_accordion-_quinary": "<backgroundColorFive>",
+			"_orgChart-_primary": "<backgroundColorOne>",
+			"_orgChart-_secondary": "<backgroundColorTwo>",
+			"_orgChart-_tertiary": "<backgroundColorThree>",
+			"_orgChart-_quaternary": "<backgroundColorFour>",
+			"_orgChart-_quinary": "<backgroundColorFive>"
+		}
+	},
+	{
+		"n": "treeNodeRowColorSelected<treeDesign><colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTree<treeDesign><colorScheme> ._nodeRow._selected",
+		"np": true,
+		"gn": "Node Row Selected",
+		"dn": "Row Text Color (Selected)",
+		"de": "Paired with the selected background so both halves of the contrast decision move together.",
+		"spv": {
+			"_indented-": "<fontColorOne>",
+			"_columns-": "<fontColorOne>",
+			"_accordion-": "<fontColorTwo>",
+			"_orgChart-": "<fontColorTwo>"
+		}
+	},
+	{
+		"n": "treeNodeRowBackgroundActive<treeDesign><colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTree<treeDesign><colorScheme> ._nodeRow._active:not(._selected)",
+		"np": true,
+		"gn": "Node Row Selected",
+		"dn": "Row Background (On Active Path)",
+		"de": "Columns design: the row whose children are shown in the next column.",
+		"spv": {
+			"_columns-": "<backgroundColorNine>"
+		}
+	},
+	{
+		"n": "treeToggleColor<treeDesign><colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTree<treeDesign><colorScheme> ._toggle",
+		"np": true,
+		"gn": "Toggle",
+		"dn": "Toggle Color",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"n": "treeToggleFontSize<treeDesign>",
+		"cp": "font-size",
+		"sel": ".comp.compTree<treeDesign> ._toggle",
+		"np": true,
+		"gn": "Toggle",
+		"dn": "Toggle Icon Size",
+		"spv": {
+			"_indented": "10px",
+			"_accordion": "12px",
+			"_orgChart": "10px"
+		}
+	},
+	{
+		"n": "treeToggleBorderRadius<treeDesign>",
+		"cp": "border-radius",
+		"sel": ".comp.compTree<treeDesign> ._toggle",
+		"np": true,
+		"gn": "Toggle",
+		"dn": "Toggle Border Radius",
+		"dv": "3px"
+	},
+	{
+		"n": "treeToggleBackgroundHover<treeDesign>",
+		"cp": "background",
+		"sel": ".comp.compTree<treeDesign> ._toggle:hover",
+		"np": true,
+		"gn": "Toggle",
+		"dn": "Toggle Background (Hover)",
+		"dv": "#0000000F"
+	},
+	{
+		"n": "treeButtonAddColor<colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTree<colorScheme> ._buttonAdd",
+		"np": true,
+		"gn": "Actions",
+		"dn": "Add Button Color",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"n": "treeButtonDeleteColor<colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTree<colorScheme> ._buttonDelete",
+		"np": true,
+		"gn": "Actions",
+		"dn": "Delete Button Color",
+		"dv": "<errorColor>"
+	},
+	{
+		"n": "treeDragHandleColor<colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTree<colorScheme> ._dragHandle",
+		"np": true,
+		"gn": "Actions",
+		"dn": "Drag Handle Color",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"n": "treeActionsFontSize",
+		"cp": "font-size",
+		"sel": "._buttonAdd, .comp.compTree ._buttonDelete, .comp.compTree ._dragHandle",
+		"gn": "Actions",
+		"dn": "Action Icon Size",
+		"dv": "12px"
+	},
+	{
+		"n": "treeColumnPadding<treeDesign>",
+		"cp": "padding",
+		"sel": ".comp.compTree<treeDesign> ._column",
+		"np": true,
+		"gn": "Column",
+		"dn": "Column Padding",
+		"spv": {
+			"_columns": "6px"
+		}
+	},
+	{
+		"n": "treeColumnDividerBackground<colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTree<colorScheme> ._columnDivider",
+		"np": true,
+		"gn": "Column",
+		"dn": "Column Divider Color",
+		"dv": "<borderColorSix>"
+	},
+	{
+		"n": "treeColumnHeaderFont",
+		"cp": "font",
+		"sel": "._columnHeader",
+		"gn": "Column",
+		"dn": "Column Header Font",
+		"dv": "<quaternaryFont>"
+	},
+	{
+		"n": "treeColumnHeaderColor<colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTree<colorScheme> ._columnHeader",
+		"np": true,
+		"gn": "Column",
+		"dn": "Column Header Color",
+		"dv": "<fontColorEight>"
+	},
+	{
+		"n": "treeColumnHeaderPadding",
+		"cp": "padding",
+		"sel": "._columnHeader",
+		"gn": "Column",
+		"dn": "Column Header Padding",
+		"dv": "8px 10px"
+	},
+	{
+		"n": "treeColumnHeaderBackground<colorScheme>",
+		"cp": "background",
+		"sel": ".comp.compTree<colorScheme> ._columnHeader",
+		"np": true,
+		"gn": "Column",
+		"dn": "Column Header Background",
+		"dv": "<backgroundColorSeven>"
+	},
+	{
+		"n": "treeEmptyStatePadding",
+		"cp": "padding",
+		"sel": "._treeEmpty",
+		"gn": "Empty State",
+		"dn": "Empty State Padding",
+		"dv": "24px"
+	},
+	{
+		"n": "treeEmptyStateFont",
+		"cp": "font",
+		"sel": "._treeEmpty",
+		"gn": "Empty State",
+		"dn": "Empty State Font",
+		"dv": "<quaternaryFont>"
+	},
+	{
+		"n": "treeEmptyStateColor<colorScheme>",
+		"cp": "color",
+		"sel": ".comp.compTree<colorScheme> ._treeEmpty",
+		"np": true,
+		"gn": "Empty State",
+		"dn": "Empty State Color",
+		"dv": "<fontColorEight>"
+	}
+]

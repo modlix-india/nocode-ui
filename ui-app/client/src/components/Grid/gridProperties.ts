@@ -1,4 +1,8 @@
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -245,6 +249,69 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Prevent default of click event',
 		description: 'Prevent default of click event.',
 		defaultValue: false,
+	},
+	{
+		// Turns the grid into a user-resizable pane. Set it as an EXPRESSION to switch
+		// resizing off in states where the size is not the user's to choose, e.g. a
+		// collapsed rail: `Page.ui.sidekickCollapsed = true ? '_NONE' : '_LEFT'`.
+		name: 'resizeHandle',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Resize Handle',
+		description:
+			'Which edge carries a drag grip. The opposite edge stays put, so dragging that edge grows or shrinks the grid.',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: '_NONE',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: '_NONE', displayName: 'None', description: 'Not resizable' },
+			{
+				name: '_LEFT',
+				displayName: 'Left',
+				description: 'Grip on the left edge, resizes width',
+			},
+			{
+				name: '_RIGHT',
+				displayName: 'Right',
+				description: 'Grip on the right edge, resizes width',
+			},
+			{
+				name: '_TOP',
+				displayName: 'Top',
+				description: 'Grip on the top edge, resizes height',
+			},
+			{
+				name: '_BOTTOM',
+				displayName: 'Bottom',
+				description: 'Grip on the bottom edge, resizes height',
+			},
+		],
+	},
+	{
+		name: 'resizeMin',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Resize Minimum (px)',
+		description: 'Smallest size the grid can be dragged to.',
+		defaultValue: 80,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'resizeMax',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Resize Maximum (px)',
+		description: 'Largest size the grid can be dragged to.',
+		defaultValue: 2000,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		// Only consulted when a resize handle is set: a grid with no handle has no
+		// preference to remember, and Grid is common enough that fetching a
+		// personalization document for every one of them would flood a page load.
+		name: 'enablePersonalization',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Enable Personalization for the dragged size',
+		description: 'Remember the size this user dragged the grid to, per user, per grid.',
+		defaultValue: true,
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,

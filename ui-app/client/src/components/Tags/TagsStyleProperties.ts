@@ -212,6 +212,31 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '.containerWithInput',
 		dv: '',
 	},
+	// The three below carry no default on purpose: a definition the theme
+	// doesn't set emits nothing, so existing screens keep the layout they
+	// have. They exist so a theme can size the control like its text boxes
+	// instead of every page patching the sub-component by hand.
+	{
+		n: 'outerContainerMinHeightWithInput',
+		cp: 'min-height',
+		dn: 'min height of outer container with input',
+		de: 'The height the control keeps when it holds no tags. Set it to the text box height to make the two line up.',
+		sel: '.containerWithInput',
+	},
+	{
+		n: 'outerContainerPaddingWithInput',
+		cp: 'padding',
+		dn: 'padding of outer container with input',
+		de: 'The padding inside the outer container with input.',
+		sel: '.containerWithInput',
+	},
+	{
+		n: 'outerContainerGapWithInput',
+		cp: 'gap',
+		dn: 'gap of outer container with input',
+		de: 'The space between the tags and the input inside the outer container.',
+		sel: '.containerWithInput',
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

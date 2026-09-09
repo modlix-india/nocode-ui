@@ -17,7 +17,7 @@ export default function RefPicker({
 	const [inValue, setInValue] = useState(value ?? '');
 	const [suggestions, setSuggestions] = useState<string[] | undefined>();
 	const requestId = useRef(0);
-	const debounce = useRef<ReturnType<typeof setTimeout>>();
+	const debounce = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
 	useEffect(() => setInValue(value ?? ''), [value]);
 	useEffect(() => () => clearTimeout(debounce.current), []);

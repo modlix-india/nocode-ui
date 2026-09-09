@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';

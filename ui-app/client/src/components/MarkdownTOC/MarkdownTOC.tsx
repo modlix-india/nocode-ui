@@ -1,3 +1,4 @@
+import type { JSX } from 'react';
 import React, { useMemo, useState } from 'react';
 import { parseInline } from '../../commonComponents/Markdown/parseInline';
 import { makeId } from '../../commonComponents/Markdown/utils';

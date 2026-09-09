@@ -1,3 +1,6 @@
+import { Location as ReactLocation } from 'react-router-dom';
+import { getHref } from '../../components/util/getHref';
+import getSrcUrl from '../../components/util/getSrcUrl';
 import { MarkdownFootnoteRef, MarkdownURLRef } from './common';
 
 const URL_TITLE_REGEX = /^(.*?)\s+"(.*)"$/;
@@ -114,4 +117,15 @@ export function makeURLnTitle(text: string): MarkdownURLRef {
 	const match = trimmed.match(URL_TITLE_REGEX);
 	if (!match) return { url: trimmed };
 	return { url: match[1].trim(), title: match[2] };
+}
+
+// Resolves an asset URL found in markdown (image / video src) through the same
+// rules the Image component uses: getHref makes app relative paths absolute for
+// the current page, getSrcUrl swaps a static file API path for the CDN one.
+export function resolveMarkdownAssetUrl(
+	url: string,
+	location: ReactLocation | Location | undefined,
+): string {
+	if (!url) return url;
+	return getSrcUrl(getHref(url, location ?? window.location)) ?? url;
 }

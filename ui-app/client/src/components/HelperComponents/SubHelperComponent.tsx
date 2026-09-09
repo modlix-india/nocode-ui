@@ -40,7 +40,9 @@ function SubHelperComponentInternal({
 		editingPageDefinition: { name = '', componentDefinition = {} } = {},
 		selectedComponents,
 		selectedSubComponent = '',
-		personalization: { slave: { highlightColor = '#3fa4d3', noSelection = false } = {} } = {},
+		// Kept a different hue from the component outline so a sub-component
+		// selection stays tellable apart at 2px. See PageEditorHelperComponent.
+		personalization: { slave: { highlightColor = '#3B82F6', noSelection = false } = {} } = {},
 	} = globalThis.pageEditor ?? {};
 
 	const currentPage = getDataFromPath(`Store.urlDetails.pageName`, []);

@@ -115,6 +115,20 @@ export default function CheckBoxStyle({
         transform: scale(0.8);
     }
     
+    /*
+     * The root is a block holding one inline-flex label, so its height came
+     * from the INHERITED font's line-height strut, not from the label. Where
+     * the surrounding text is larger than the checkbox's own, that left a few
+     * pixels of dead space below the content, the label and box sat in the top
+     * of the wrapper, and anything centred beside it in a flex row (a help
+     * icon, say) came out low. Laying the root out as flex kills the strut, so
+     * the wrapper is exactly the label's height.
+     */
+    ${PREFIX} {
+        display: flex;
+        align-items: center;
+    }
+
     ${PREFIX} .checkbox {
         display: inline-flex;
         gap: 5px;

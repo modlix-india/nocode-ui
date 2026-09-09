@@ -39,6 +39,22 @@ export const stylePropertiesForTheme: Array<StylePropertyDefinition> = [
 		n: 'checkBoxBorderCommonCheckbox<designType><colorScheme>',
 	},
 	{
+		// The box's corner rounding was hard-coded at 2px in CheckBoxStyle.tsx, so a
+		// theme could restyle everything about the checkbox except its shape. The
+		// default here is that same 2px, so no existing screen moves.
+		cp: 'border-radius',
+		sel: '.comp.compCheckbox<designType><colorScheme> .commonCheckbox',
+		np: true,
+		spv: {
+			'_default-': '2px',
+			'_outlined-': '2px',
+			'_filled-': '2px',
+		},
+		gn: 'Border',
+		dn: 'Border Radius CommonCheckbox',
+		n: 'checkBoxBorderRadiusCommonCheckbox<designType><colorScheme>',
+	},
+	{
 		cp: 'border-color',
 		sel: '.comp.compCheckbox<designType><colorScheme> .commonCheckbox',
 		np: true,

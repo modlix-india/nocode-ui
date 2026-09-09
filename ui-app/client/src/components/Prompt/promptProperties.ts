@@ -9,10 +9,7 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import {
-	COMMON_COMPONENT_PROPERTIES,
-	COMPONENT_STYLE_GROUP_PROPERTIES,
-} from '../util/properties';
+import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
@@ -39,6 +36,190 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 'What can I help with?',
 		group: ComponentPropertyGroup.BASIC,
 		translatable: true,
+	},
+	{
+		// A fixed opening question. To hand one over from another page use the
+		// Pending Prompt binding instead: that one is cleared as it is sent, where
+		// this one stays put and would fire again on every fresh load. Sent once,
+		// and only into an empty chat, so reopening a session never replays it.
+		name: 'initialPrompt',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Initial Prompt',
+		description:
+			'A fixed question to send automatically when the chat opens empty. To carry a question in from another page, use the Pending Prompt binding, which is taken and cleared instead of resent on every load.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: false,
+	},
+	{
+		// The escape hatch out of a docked panel. A sidekick in a 320px rail can
+		// hold a conversation but cannot show the thing being built, so it offers
+		// to continue the SAME session somewhere with room for both.
+		//
+		// The session id travels in the URL rather than in storage, which is what
+		// makes the link shareable, bookmarkable and openable in a second tab. The
+		// receiving page picks it up through `initialSessionId`.
+		//
+		// Unset means no icon at all, so adding this property changes nothing on a
+		// surface that has not opted in.
+		name: 'openFullPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Full Page Name',
+		description:
+			'Page to continue this conversation in, e.g. `ai`. Shows an icon in the top right that opens <page>/<sessionId> in a new browser tab, carrying the session with it. Leave empty to show no icon.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: false,
+	},
+	{
+		// The receiving half of `openFullPageName`. Set it as an EXPRESSION on
+		// `Store.urlDetails.pathParts[N]` to take the id out of the URL.
+		//
+		// `Store.urlDetails` rather than `Url.*`: the latter is a per-context
+		// extractor that resolves against whichever page frame is asking, which has
+		// already produced conditions that silently matched nothing.
+		name: 'initialSessionId',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Initial Session Id',
+		description:
+			'A session to reopen when the chat loads, normally an EXPRESSION on Store.urlDetails.pathParts. Loads that transcript and rejoins the run if the agent is still working. Ignored once a chat is open, so it never interrupts one in progress.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: false,
+	},
+	{
+		// Render the page the agent is working on, beside the chat.
+		//
+		// Off by default. It is only meaningful on a surface wide enough to give
+		// half the screen away, and a docked sidekick in a 320px rail is not one:
+		// that one offers `openFullPageName` instead and sends the conversation
+		// somewhere it fits.
+		//
+		// The pane is not opened automatically. The agent's first page write puts a
+		// prompt on screen and the person decides, because a preview appearing
+		// unasked would halve the chat mid-sentence.
+		name: 'enablePreview',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Offer A Page Preview',
+		description:
+			"Offer to render the page the agent changed next to the chat, with a Draft/Live toggle and width presets. The pane is draggable and its size is remembered. Needs room: leave off for a docked panel and use Open Full Page Name there instead.",
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	// ── Editor context ──────────────────────────────────────────────────────
+	// What the surrounding page has open. Sent with every message as
+	// `editor_context`, so the agent can answer about the thing in front of the
+	// user without spending a tool round-trip discovering it first. Plain
+	// properties rather than one bound object, so what gets sent is visible by
+	// name in the property editor. Set them as EXPRESSIONs.
+	{
+		// Without this the agent has to guess what kind of thing the names in
+		// activeObject are. An org section called "Invites" reads exactly like a
+		// page called "Invites", and the agent goes hunting with the page tools.
+		name: 'contextSurface',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Context Surface',
+		description:
+			'What kind of screen this chat is embedded in, e.g. "the organization admin console". Tells the agent how to read the other context fields.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'targetAppCode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Target App Code',
+		description:
+			'The app the user is working on, when it differs from the app hosting this chat. Scopes both the conversation and the session history to that app.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'activeObject',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Active Object',
+		description:
+			'What the user is looking at right now, e.g. "storage:Lead". Told to the agent as the current focus.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'openTabs',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Tabs',
+		description: 'Everything else the user has open, as a comma separated list.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'openTabIds',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Tab Ids',
+		description:
+			'Ids of the open objects, comma separated, so the agent can read them directly instead of searching by name.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// A PATH rather than the value, for two reasons. The expression engine
+		// cannot resolve a dynamic root (`Page[Page.sk.ns]` comes back as the
+		// literal string), and reading the path fresh on each send means the agent
+		// gets the rows as they are now, not as they were when the tab was opened.
+		// Point it at whatever the open tab keeps, warts and all: the payload is
+		// serialised within a fixed budget, credential-looking values are redacted,
+		// and the bulkiest entries are dropped first (dropdown option lists are
+		// routinely bigger than the rows themselves).
+		name: 'activeDataPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Active Tab Data Path',
+		description:
+			'Store path holding what the open tab is showing, e.g. "Page.pnInvites". Read fresh on every message and sent as JSON: capped, with anything named like a credential redacted.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// Objects the surrounding surface has open and unsaved. For exactly these,
+		// the agent reads the user's copy and holds its writes there instead of
+		// saving, so the change can be looked at before it is committed. Everything
+		// else the agent touches is saved as it always was.
+		//
+		// A path rather than the descriptors themselves, for the same reason as
+		// activeDataPath: read fresh on every message, so the agent gets the drafts
+		// as they are now and not as they were when the chat mounted.
+		//
+		// Point it at a store path holding an array of {kind, path}, where `path`
+		// names where that object's document lives. Everything else (id, name,
+		// appCode) is read off the document, so there is nothing to keep in step.
+		// Leave it unset and nothing is held, which is right for a chat that is not
+		// embedded in an editor.
+		name: 'openDraftsPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Drafts Path',
+		description:
+			'Store path holding [{kind, path}] for the objects this surface has open and unsaved. The agent edits those in place instead of saving them. Declare only what this screen can show the user for review.',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// Send the agent's definition edits to the app's DRAFT surface rather than
+		// live, so the user gets a reviewable copy AND the agent can screenshot its
+		// own work. That second half is why this exists: a change held in the
+		// browser is invisible to a screenshot, which renders the live app out of
+		// the database, so the agent looks at its own edit and sees nothing.
+		//
+		// Safe to leave on: the agent probes the deployment and keeps writing live
+		// when there is no draft surface, rather than claiming a review step that
+		// does not exist.
+		name: 'draftMode',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Edit On The Draft Surface',
+		description:
+			"Send the agent's edits to the app's draft surface instead of live, so they can be reviewed and published deliberately.",
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// Turn ON for a chat with no editor around it. A surface with editor tabs
+		// already carries the Draft link, the per-object Publish and the pending
+		// panel, so a second set here is noise; a bare chat page has none of them,
+		// and without this it can tell somebody a change is "waiting for Publish"
+		// while offering nowhere to publish it from.
+		name: 'showDraftReview',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Draft Review Bar',
+		description:
+			'Show what the agent has left unpublished, with links to open the draft or the workspace, and buttons to publish or discard. For chat surfaces with no editor of their own.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	{
 		name: 'quickActionLayout',
@@ -90,6 +271,27 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Show the session history sidebar.',
 		defaultValue: true,
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// The sidebar is a 260px column, which is most of the room in a docked side
+		// panel. Auto measures the component (not the viewport) and floats the list
+		// over the chat once there is no room to sit beside it.
+		name: 'sessionsMode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sessions Layout',
+		description: 'Whether the session history sits beside the chat or floats over it.',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: '_auto',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: '_auto',
+				displayName: 'Auto',
+				description: 'Beside the chat when there is room, over it when there is not',
+			},
+			{ name: '_sidebar', displayName: 'Sidebar', description: 'Always beside the chat' },
+			{ name: '_overlay', displayName: 'Overlay', description: 'Always over the chat' },
+		],
 	},
 	{
 		name: 'newChatLabel',
@@ -191,6 +393,33 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'New Chat Top Icon',
 		description: 'Icon class for the new chat button in top bar.',
 		defaultValue: 'fa fa-pen-to-square',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'openFullIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Full Page Icon',
+		description: 'Icon class for the button that continues this session full page.',
+		defaultValue: 'fa fa-up-right-and-down-left-from-center',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'previewIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Preview Icon',
+		description: 'Icon class for the button that opens the page preview.',
+		defaultValue: 'fa fa-window-restore',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'previewReloadIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Preview Reload Icon',
+		description: "Icon class for the preview's reload button.",
+		defaultValue: 'fa fa-rotate-right',
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
@@ -407,6 +636,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.EVENT_SELECTOR,
 		group: ComponentPropertyGroup.EVENTS,
 	},
+	{
+		// Writes the agent really committed, as opposed to the ones it held back
+		// for review because `openDraftsPath` declared the object open. A surface
+		// that shows an object it did not declare has to refetch it or it is
+		// looking at a definition that no longer matches what is stored.
+		//
+		// The entry lands on the Changed Objects binding BEFORE this fires, and it
+		// appends rather than replaces, because one turn can write a dozen objects
+		// and a handler that only ever sees the last one silently loses the rest.
+		// Drain the list in the handler.
+		name: 'onObjectSaved',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Object Saved',
+		description:
+			'Event fired when the agent saves an object for real. The object lands on the Changed Objects binding as {kind, id, name, appCode, operation, draft}; the handler should drain that list.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	COMMON_COMPONENT_PROPERTIES.shortcutKey,
+	COMMON_COMPONENT_PROPERTIES.shortcutAction,
+	COMMON_COMPONENT_PROPERTIES.onShortcut,
+	COMMON_COMPONENT_PROPERTIES.shortcutScope,
+	COMMON_COMPONENT_PROPERTIES.shortcutPriority,
+	COMMON_COMPONENT_PROPERTIES.shortcutGroup,
+	COMMON_COMPONENT_PROPERTIES.allowInInput,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
@@ -463,6 +717,12 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	shortcutHint: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	sessionSidebar: [

@@ -21,6 +21,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Outline Button',
 				description: 'Outline Button type',
 			},
+			// An outlined button has exactly one size, so an app that needs a
+			// compact secondary action inside a table row has nowhere to put it and
+			// ends up sizing every one of them inline. This is that size as a
+			// variant: same chrome as `_outlined`, its own height, padding and font.
+			{
+				name: '_smallOutlined',
+				displayName: 'Small Outline Button',
+				description: 'Compact outline button, for in-row and toolbar actions',
+			},
 			{ name: '_text', displayName: 'Text Button', description: 'Outline Button type' },
 			{ name: '_iconButton', displayName: 'Icon Button', description: 'Icon Button type' },
 			{
@@ -118,6 +127,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Prevent default of click event.',
 		defaultValue: false,
 	},
+	COMMON_COMPONENT_PROPERTIES.shortcutKey,
+	COMMON_COMPONENT_PROPERTIES.shortcutScope,
+	COMMON_COMPONENT_PROPERTIES.shortcutPriority,
+	COMMON_COMPONENT_PROPERTIES.shortcutGroup,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
@@ -153,6 +166,12 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	activeRightImage: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
+	shortcutHint: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 };
 

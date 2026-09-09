@@ -274,14 +274,15 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	};
 
 	useEffect(() => {
+		// Only the comparison slider needs document level tracking, and only while a
+		// drag is actually in progress. Attaching unconditionally meant every Image on
+		// the page ran four document listeners on every mouse move just to fail this
+		// same check.
+		if (!isDragging || enhancementType !== 'comparison' || !actualComparisonSrc) return;
+
 		const handleGlobalMouseUp = () => setIsDragging(false);
 		const handleGlobalMouseMove = (e: MouseEvent) => {
-			if (
-				isDragging &&
-				enhancementType === 'comparison' &&
-				actualComparisonSrc &&
-				containerRef.current
-			) {
+			if (containerRef.current) {
 				const { left, top, width, height } = containerRef.current.getBoundingClientRect();
 				let newPosition;
 
@@ -297,12 +298,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 		const handleGlobalTouchEnd = () => setIsDragging(false);
 		const handleGlobalTouchMove = (e: TouchEvent) => {
-			if (
-				isDragging &&
-				enhancementType === 'comparison' &&
-				actualComparisonSrc &&
-				containerRef.current
-			) {
+			if (containerRef.current) {
 				e.preventDefault();
 				const touch = e.touches[0];
 				if (!touch) return;

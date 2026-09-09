@@ -195,7 +195,9 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 						!isNullValue(e) && (
 							<div
 								key={e}
-								ref={el => (tabRefs.current[i] = el)}
+								ref={el => {
+									tabRefs.current[i] = el;
+								}}
 								className={`tabDiv ${tabNameOrientation} ${
 									hover === i || (hover === -1 && activeTab === e)
 										? '_active'

@@ -18,10 +18,23 @@ import { getAppDefinition } from './appDefinition';
 import { usedComponents } from './usedComponents';
 import DebugWindow from '../debug/DebugWindow';
 import { AnalyticsConsentBanner } from './AnalyticsConsentBanner';
+import { ShortcutChooser } from '../shortcuts/ShortcutChooser';
+import { ShortcutModifierHold } from '../shortcuts/ShortcutModifierHold';
+import { ShortcutCheatSheet } from '../shortcuts/ShortcutCheatSheet';
 
 // In design mode we are listening to the messages from editor
 
 function onMessageFromEditor(event: MessageEvent) {
+	// Only the page that embedded us. This was implicit while the preview was
+	// same-origin with the editor; on its own draft-edit hostname it is not, and
+	// any page on the internet can post here. Comparing the source WINDOW rather
+	// than an origin string needs no allowlist and cannot be spoofed: only the
+	// embedder can be window.parent.
+	//
+	// It also guards the throw below, which would otherwise let a stranger stop
+	// the preview by posting an unrecognised EDITOR_ type.
+	if (event.source !== window.parent) return;
+
 	const { data: { type, payload } = {} } = event;
 	if (!type?.startsWith('EDITOR_')) return;
 
@@ -31,7 +44,19 @@ function onMessageFromEditor(event: MessageEvent) {
 	if (type === 'EDITOR_DEFINITION') {
 		if (!payload?.name) return;
 		const storePage = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${payload.name}`, []);
-		if (storePage?.name !== payload.name) return;
+		if (storePage?.name !== payload.name) {
+			// This preview is showing something else, so the definition is not ours
+			// to apply. The guard is right to drop it: applying it would overwrite
+			// an unrelated page. What was wrong was dropping it in silence, which
+			// makes the editor look broken. Every edit lands in the master's store
+			// and then visibly does nothing, and there is no way to tell from here
+			// that the preview simply wandered off.
+			messageToMaster({
+				type: 'SLAVE_DEFINITION_IGNORED',
+				payload: { wanted: payload.name, showing: storePage?.name ?? null },
+			});
+			return;
+		}
 		innerSetData(`${STORE_PREFIX}.pageDefinition.${payload.name}`, payload);
 	}
 }
@@ -108,7 +133,10 @@ function processFontPacks(fontPacks: any) {
 const ICON_PACKS = new Map<string, string>([
 	[
 		'FREE_FONT_AWESOME_ALL',
-		'<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />',
+		// Keep in step with FONT_AWESOME_VERSION in nocode-ui-icon-packs: the pack
+		// lists the classes this stylesheet defines, and a class the loaded
+		// stylesheet does not define renders nothing at all.
+		'<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet" />',
 	],
 
 	[
@@ -128,27 +156,27 @@ const ICON_PACKS = new Map<string, string>([
 
 	[
 		'MATERIAL_ICONS_FILLED',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 
 	[
 		'MATERIAL_ICONS_OUTLINED',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Outlined" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 
 	[
 		'MATERIAL_ICONS_ROUNDED',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Round" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 
 	[
 		'MATERIAL_ICONS_SHARP',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Sharp" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 
 	[
 		'MATERIAL_ICONS_TWO_TONE',
-		'<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Two+Tone" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
+		'<link href="https://fonts.googleapis.com/css2?family=Material+Icons+Two+Tone" rel="stylesheet"><link href="https://cdn.jsdelivr.net/gh/fincity-india/nocode-ui-icon-packs@master/dist/fonts/MATERIAL_ICONS/font.css" rel="stylesheet" />',
 	],
 ]);
 
@@ -180,12 +208,21 @@ export function App() {
 				undefined,
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						const { auth, application, isApplicationLoadFailed, theme } =
-							await getAppDefinition();
+						const {
+							auth,
+							application,
+							isApplicationLoadFailed,
+							theme,
+							selectedTheme,
+						} = await getAppDefinition();
 						setData(`${STORE_PREFIX}.application`, application);
 						setData(`${STORE_PREFIX}.auth`, auth);
 						setData(`${STORE_PREFIX}.isApplicationLoadFailed`, isApplicationLoadFailed);
 						setData(`${STORE_PREFIX}.theme`, theme);
+						// Without this the switcher on this path would mark the wrong
+						// theme active, or none at all. This is the fallback branch,
+						// taken when the store was not pre-seeded.
+						setData(`${STORE_PREFIX}.selectedTheme`, selectedTheme);
 
 						return;
 					}
@@ -242,17 +279,15 @@ export function App() {
 
 	return (
 		<>
-			<BrowserRouter
-				future={{
-					v7_startTransition: true,
-					v7_relativeSplatPath: true,
-				}}
-			>
+			<BrowserRouter>
 				<Routes>
 					<Route path="/*" element={<RenderEngineContainer />} />
 				</Routes>
 			</BrowserRouter>
 			<Messages />
+			<ShortcutChooser />
+			<ShortcutModifierHold />
+			<ShortcutCheatSheet />
 			<AnalyticsConsentBanner />
 			<div id="_rendered" data-used-components={usedComps} />
 			<DebugWindow />
@@ -346,6 +381,16 @@ function setDeviceType() {
 
 	setBaseDeviceTypes(size, newDevices);
 	setSmallDeviceTypes(size, newDevices);
+
+	// Above the early return below, unlike everything else here. The rest of this function describes
+	// the viewport and only has to be republished when the device class actually changes; the time
+	// zone has nothing to do with the viewport and would simply never be written on any run where
+	// the class was unchanged.
+	//
+	// This is the only way to learn the viewer's real zone. A timestamp carries an offset, not a
+	// zone, so anything derived from one gives "UTC+5:30" rather than "Asia/Kolkata" and cannot
+	// survive a daylight-saving boundary in the countries this platform is meant to grow into.
+	setData('Store.window.timeZone', Intl.DateTimeFormat().resolvedOptions().timeZone);
 
 	let devicesString = JSON.stringify(newDevices);
 

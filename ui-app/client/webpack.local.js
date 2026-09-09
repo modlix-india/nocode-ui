@@ -1,7 +1,5 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const ReactRefreshTypeScript = require('react-refresh-typescript');
 const webpack = require('webpack');
 
 module.exports = {
@@ -22,9 +20,6 @@ module.exports = {
           {
             loader: require.resolve('ts-loader'),
             options: {
-              getCustomTransformers: () => ({
-                before: [ReactRefreshTypeScript()],
-              }),
               transpileOnly: true,
             },
           },
@@ -68,12 +63,22 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html')
     }),
-    new ReactRefreshWebpackPlugin(),
     new webpack.EvalSourceMapDevToolPlugin({}),
   ],
   devServer: {
 
     allowedHosts: "all",
+    client: {
+      // Point the HMR socket at the PAGE's own origin instead of the dev
+      // server's port. Served through nginx on https:443, the default resolves
+      // to wss://<host>:1234/ws -- a TLS handshake against a plain-HTTP port
+      // that always fails, so live reload never worked and the console filled
+      // with ERR_SSL_PROTOCOL_ERROR. `auto://0.0.0.0:0` means "take the
+      // protocol, host and port from the page", which is right on
+      // https://apps.local.modlix.com AND on http://localhost:1234.
+      // nginx proxies /ws to this server (dbs/nginx/.../local.modlix.com.conf).
+      webSocketURL: 'auto://0.0.0.0:0/ws',
+    },
     static: {
       directory: path.join(__dirname, 'dist') // If you have static files like index.html
     },
@@ -86,11 +91,35 @@ module.exports = {
         target: "http://localhost:8080/",
         secure: false,
         changeOrigin: true,
-        onProxyRes: (proxyRes, _req, res) => {
-          // Disable buffering for SSE responses to enable real-time streaming
-          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
-            res.flushHeaders();
-          }
+        on: {
+          proxyReq: (proxyReq, req) => {
+            // `changeOrigin` rewrites Host to localhost:8080, so the only record of the host the
+            // browser actually asked for is the X-Forwarded-* set. nginx populates these when it
+            // proxies to this dev server (dbs/nginx/.../local.modlix.com.conf), and the gateway
+            // and the services behind it resolve appCode / clientCode from them, so they have to
+            // survive this hop verbatim. When the dev server is hit directly on :1234 there is no
+            // nginx in front, so derive the same values from this request instead.
+            const host = req.headers['x-forwarded-host'] || req.headers.host || '';
+            const proto =
+              req.headers['x-forwarded-proto'] ||
+              (req.socket && req.socket.encrypted ? 'https' : 'http');
+            const port =
+              req.headers['x-forwarded-port'] ||
+              // An IPv6 literal host is bracketed, so only a colon after the closing
+              // bracket -- or in a plain host -- is the port separator.
+              host.slice(host.lastIndexOf(']') + 1).split(':')[1] ||
+              (proto === 'https' ? '443' : '80');
+
+            if (host) proxyReq.setHeader('X-Forwarded-Host', host);
+            proxyReq.setHeader('X-Forwarded-Proto', proto);
+            proxyReq.setHeader('X-Forwarded-Port', port);
+          },
+          proxyRes: (proxyRes, _req, res) => {
+            // Disable buffering for SSE responses to enable real-time streaming
+            if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+              res.flushHeaders();
+            }
+          },
         },
       }
     ]

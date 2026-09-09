@@ -82,7 +82,7 @@ export default function ColorPickerStyle({
             color: inherit;
             min-width: 20px;
             cursor: pointer;
-            border: 1px solid;
+            border: 1px solid rgba(0, 0, 0, 0.12);
             padding: 3px 10px;
         }
     
@@ -192,6 +192,144 @@ export default function ColorPickerStyle({
 		${PREFIX}._boxSquareDesign {
 			cursor: pointer;
 			position: relative;
+		}
+
+		/*
+		 * The popover.
+		 *
+		 * _colorPickerBody is markup SHARED with the page editor, and
+		 * dist/css/App.css describes it as the editor uses it: a script
+		 * positioned FIXED panel, 250px wide, pulled left of its trigger with
+		 * margin-left: -240px and floored at min-height: 250px. Here the
+		 * same markup is an ABSOLUTE dropdown anchored under the field, so
+		 * every one of those has to be undone or the panel lands 240px to the
+		 * left of its own input. Everything below is geometry only; colour,
+		 * border and radius stay with the theme, whose rules carry a higher
+		 * specificity and are appended after this block.
+		 */
+		${PREFIX} ._dropdownContainer._colorPickerBody {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			margin: 4px 0 0 0;
+			width: 248px;
+			min-width: 248px;
+			max-width: 248px;
+			min-height: 0;
+			box-sizing: border-box;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			cursor: default;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._combineEditors {
+			padding: 0;
+			gap: 8px;
+			align-items: center;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._saturation_value_picker {
+			width: 100%;
+			height: 132px;
+			flex: 0 0 auto;
+			cursor: crosshair;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._hue_picker {
+			margin-bottom: 0;
+			flex: 0 0 auto;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._alpha_picker {
+			margin-right: 0;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._thumb {
+			width: 14px;
+			height: 14px;
+			border-width: 2px;
+			box-sizing: border-box;
+			margin-left: -7px;
+			top: -2px;
+			z-index: 2;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._saturation_value_picker ._thumb {
+			margin-top: -7px;
+			top: auto;
+		}
+
+		/*
+		 * Hex on its own line, then the format toggle and the three channels as
+		 * one row. Stacked, the five lines were taller than the colour square
+		 * they belong to.
+		 */
+		${PREFIX} ._dropdownContainer._colorPickerBody ._colorValues {
+			display: grid;
+			grid-template-columns: auto 1fr 1fr 1fr;
+			align-items: center;
+			gap: 6px;
+			width: 100%;
+			margin: 0;
+			padding: 0;
+			border: none;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._colorValues > ._colorValueline:first-child {
+			grid-column: 1 / -1;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._colorValueline {
+			min-width: 0;
+			gap: 4px;
+			font-size: 11px;
+			opacity: 0.7;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._colorSchemeType {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			height: 26px;
+			padding: 0 8px;
+			border-radius: 5px;
+			background: rgba(0, 0, 0, 0.05);
+			font-size: 10.5px;
+			font-weight: 600;
+			letter-spacing: 0.6px;
+			cursor: pointer;
+			user-select: none;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody input {
+			width: 100%;
+			min-width: 0;
+			height: 26px;
+			min-height: 26px;
+			padding: 0 6px;
+			border-radius: 5px;
+			font-size: 11.5px;
+			text-align: center;
+			cursor: text;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody ._hexInput {
+			font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+			letter-spacing: 0.4px;
+			text-transform: uppercase;
+		}
+
+		/* The channel boxes are 1fr wide; spinners eat half of that. */
+		${PREFIX} ._dropdownContainer._colorPickerBody input[type='number'] {
+			-moz-appearance: textfield;
+			appearance: textfield;
+		}
+
+		${PREFIX} ._dropdownContainer._colorPickerBody input[type='number']::-webkit-outer-spin-button,
+		${PREFIX} ._dropdownContainer._colorPickerBody input[type='number']::-webkit-inner-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
 		}
 
  	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);

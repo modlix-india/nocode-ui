@@ -40,7 +40,13 @@ function SubPage(props: Readonly<ComponentProps>) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { pageName: originalPageName, appCode, clientCode, overrideThemeStyles } = {},
+		properties: {
+			pageName: originalPageName,
+			appCode,
+			clientCode,
+			overrideThemeStyles,
+			reloadOn,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -132,10 +138,18 @@ function SubPage(props: Readonly<ComponentProps>) {
 			const headers: AxiosHeaders = {} as AxiosHeaders;
 			if (appCode) headers['appCode'] = appCode;
 			if (clientCode) headers['clientCode'] = clientCode;
+
+			// The embedded app's own default theme, not this one's: the selected
+			// name belongs to the host app's theme list and would mean nothing over
+			// there. Sending no `theme` lets the other app pick its own default.
 			const theme = (await axios.get('api/ui/theme', { headers }))?.data;
 
 			if (!theme) return;
 
+			// Store.theme is global, so this replaces the host app's variables for
+			// the whole page, not just the sub page. That is pre-existing behaviour
+			// and the reason Store.selectedTheme is deliberately left alone: it
+			// tracks the host app's choice, which the switcher still has to reflect.
 			setData(`Store.theme`, theme);
 		})();
 	}, [appCode, clientCode, overrideThemeStyles]);
@@ -157,7 +171,9 @@ function SubPage(props: Readonly<ComponentProps>) {
 				undefined,
 				true,
 			))();
-	}, [subPage !== undefined, pageName, locationHistory.length]);
+		// `reloadOn` is how a host page asks for this to run again: it owns no
+		// part of the pane's loading and cannot reach the function that does.
+	}, [subPage !== undefined, pageName, locationHistory.length, reloadOn]);
 
 	const locHist = bindingPath
 		? [...locationHistory, { location: bindingPath, index: -1, pageName, componentKey: key }]
@@ -204,7 +220,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Parent Binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

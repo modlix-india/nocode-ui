@@ -10,6 +10,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
 import { IconHelper } from '../util/IconHelper';
+import { isBrowserHandledLinkClick } from '../util/isBrowserHandledLinkClick';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -150,6 +151,12 @@ function Link(props: Readonly<ComponentProps>) {
 				target={target}
 				data-analytics-label={analyticsLabel || undefined}
 				onClick={e => {
+					// Cmd/Ctrl, Shift or Alt click on a real link is the browser's gesture to open
+					// it in a new tab or window. Every branch below hijacks the anchor with a
+					// preventDefault, so hand the event back untouched and leave this page alone:
+					// the click was never meant to act here.
+					if (linkPath && isBrowserHandledLinkClick(e)) return;
+
 					if (resolvedLink?.startsWith('tel') || resolvedLink?.startsWith('mailto')) {
 						window.open(resolvedLink, target);
 					} else if (!target || target === '_self') {

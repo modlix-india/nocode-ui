@@ -1,7 +1,5 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const ReactRefreshTypeScript = require('react-refresh-typescript');
 const webpack = require('webpack');
 
 module.exports = {
@@ -22,9 +20,6 @@ module.exports = {
           {
             loader: require.resolve('ts-loader'),
             options: {
-              getCustomTransformers: () => ({
-                before: [ReactRefreshTypeScript()],
-              }),
               transpileOnly: true,
             },
           },
@@ -68,7 +63,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src', 'index.html')
     }),
-    new ReactRefreshWebpackPlugin(),
     new webpack.EvalSourceMapDevToolPlugin({}),
   ],
   devServer: {
@@ -87,20 +81,22 @@ module.exports = {
         secure: false,
         changeOrigin: true,
         pathRewrite: (path) => path.replace(/^.*?(\/api\/ai\/)/, '$1'),
-        onProxyReq: (proxyReq, req) => {
-          // Extract /{appCode}/{clientCode}/page prefix from the Referer header
-          // (the browser URL), since fetch calls use relative paths without the prefix.
-          // e.g. Referer: http://localhost:1234/appbuilder/SYSTEM/page/...
-          const referer = req.headers.referer || '';
-          const refMatch = referer.match(/\/([^/]+)\/([^/]+)\/page/);
-          if (refMatch) {
-            proxyReq.setHeader('X-Path-Prefix', `/${refMatch[1]}/${refMatch[2]}/page`);
-          }
-        },
-        onProxyRes: (proxyRes, _req, res) => {
-          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
-            res.flushHeaders();
-          }
+        on: {
+          proxyReq: (proxyReq, req) => {
+            // Extract /{appCode}/{clientCode}/page prefix from the Referer header
+            // (the browser URL), since fetch calls use relative paths without the prefix.
+            // e.g. Referer: http://localhost:1234/appbuilder/SYSTEM/page/...
+            const referer = req.headers.referer || '';
+            const refMatch = referer.match(/\/([^/]+)\/([^/]+)\/page/);
+            if (refMatch) {
+              proxyReq.setHeader('X-Path-Prefix', `/${refMatch[1]}/${refMatch[2]}/page`);
+            }
+          },
+          proxyRes: (proxyRes, _req, res) => {
+            if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+              res.flushHeaders();
+            }
+          },
         },
       },
       {
@@ -108,10 +104,12 @@ module.exports = {
         target: "https://apps.dev.modlix.com",
         secure: true,
         changeOrigin: true,
-        onProxyRes: (proxyRes, _req, res) => {
-          if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
-            res.flushHeaders();
-          }
+        on: {
+          proxyRes: (proxyRes, _req, res) => {
+            if (proxyRes.headers['content-type']?.includes('text/event-stream')) {
+              res.flushHeaders();
+            }
+          },
         },
       }
     ]

@@ -1,5 +1,6 @@
 import { deepEqual } from '@fincity/kirun-js';
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { cyrb53 } from '../../util/cyrb53';
 import { shortUUID } from '../../util/shortUUID';
 import { parseFootNotesSection } from './parseFootNotesSection';
@@ -23,6 +24,7 @@ export function MarkdownParser({
 }>) {
 	const [_, setStyleState] = React.useState(styles);
 	const [key, setKey] = React.useState(shortUUID());
+	const location = useLocation();
 
 	React.useEffect(() => {
 		setStyleState((existing: any) => {
@@ -47,6 +49,7 @@ export function MarkdownParser({
 			styles,
 			footNotes,
 			urlRefs,
+			location,
 		});
 		i = lineNumber;
 		if (Array.isArray(comp)) comps.push(...comp);
@@ -62,6 +65,7 @@ export function MarkdownParser({
 			styles,
 			footNotes,
 			urlRefs,
+			location,
 		}),
 	);
 

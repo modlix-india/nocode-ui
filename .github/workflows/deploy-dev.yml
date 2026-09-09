@@ -24,7 +24,7 @@ jobs:
       - name: Setting up node
         uses: actions/setup-node@v4
         with:
-          node-version: 21.7.3
+          node-version: 24.18.1
 
       - name: Install Client Dependencies
         working-directory: ./ui-app/client
@@ -108,7 +108,7 @@ jobs:
       - name: Setting up node
         uses: actions/setup-node@v4
         with:
-          node-version: 21.7.3
+          node-version: 24.18.1
 
       - name: Install Client Dependencies
         working-directory: ./ui-app/client

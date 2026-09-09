@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleResolution } from '../../types/common';
-import { processStyleDefinition } from '../../util/styleProcessor';
+import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 
 import { styleProperties, styleDefaults } from './smallCarouselStyleProperties';
 const PREFIX = '.comp.compSmallCarousel';
@@ -8,6 +8,15 @@ const PREFIX = '.comp.compSmallCarousel';
 export default function SmallCarouselStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// Theme value for this component's own chrome, falling back to the literal it
+	// replaced. The fallback is what makes this safe on a theme that predates the
+	// variable: an absent value renders exactly as the hardcoded CSS did. Resolved
+	// through processStyleValueWithFunction so a theme value that is itself a
+	// `<var>` reference still resolves.
+	const all = theme.get(StyleResolution.ALL) ?? new Map<string, string>();
+	const t = (variable: string, fallback: string) =>
+		all.get(variable) ? processStyleValueWithFunction(`<${variable}>`, all) : fallback;
+
 	const css =
 		`
     ${PREFIX} {
@@ -148,14 +157,14 @@ export default function SmallCarouselStyle({
         font-size: 0.2em;
     }
 
-    ${PREFIX} .carousel-indicators > div[style*='background: #888'] {
+    ${PREFIX} .carousel-indicators > div[style*='background: ${t('fontColorThree', '#888')}'] {
         box-shadow: 0 0 0 2px #8884, 0 2px 8px #0002;
     }
 
     ${PREFIX} .indicator-nav-btn {
         background: none;
         border: none;
-        color: #888;
+        color: ${t('fontColorThree', '#888')};
         border-radius: 0;
         width: auto;
         height: auto;
@@ -171,7 +180,7 @@ export default function SmallCarouselStyle({
         padding: 0;
     }
     ${PREFIX} .indicator-nav-btn:hover, ${PREFIX} .indicator-nav-btn:focus {
-        color: #333;
+        color: ${t('fontColorOne', '#333')};
     }
     ${PREFIX} .carousel-indicators.position-left .indicator-nav-btn,
     ${PREFIX} .carousel-indicators.position-right .indicator-nav-btn {
@@ -192,21 +201,21 @@ export default function SmallCarouselStyle({
         justify-content: center;
         align-items: center;
         border: 2px solid #E3E6EA;
-        color: #18398A;
+        color: ${t('colorTwo', '#18398A')};
         font-weight: normal;
         cursor: pointer;
         margin: 2px;
         box-sizing: border-box;
         outline: none;
-        background: #fff;
+        background: ${t('colorSeven', '#fff')};
         transition: background 0.25s, color 0.25s, border 0.25s, box-shadow 0.25s;
         box-shadow: none;
     }
     ${PREFIX} .indicator-button.active {
-        background: #18398A;
-        color: #fff;
+        background: ${t('colorOne', '#18398A')};
+        color: ${t('colorSeven', '#fff')};
         font-weight: bold;
-        border-color: #18398A;
+        border-color: ${t('colorOne', '#18398A')};
         box-shadow: 0 4px 24px 0 #18398A22;
         outline: none;
     }
@@ -228,7 +237,7 @@ export default function SmallCarouselStyle({
         height: 16px;
     }
     ${PREFIX} .indicator-button.fill-outline {
-        background: #fff;
+        background: ${t('colorSeven', '#fff')};
     }
     ${PREFIX} .indicator-button.fill-solid:not(.active) {
         background: #E3E6EA;

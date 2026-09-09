@@ -36,9 +36,33 @@ interface CachedPageData {
 	application: ApplicationDefinition;
 	page: PageDefinition;
 	theme: ThemeDefinition | null;
+	/** Which theme `theme` is, so the client can tell whether it matches its own. */
+	themeName?: string;
 	codes: { appCode: string; clientCode: string };
 	pageName: string;
 	cachedAt: number;
+}
+
+/**
+ * The visitor's selected theme, from the cookie the client writes.
+ *
+ * The name must match IndexHTMLService.THEME_COOKIE_PREFIX and the client's
+ * themeSelection.ts. One cookie per app, because a single host can serve several
+ * apps under /appCode/clientCode/page and they do not share a theme.
+ */
+function readThemeCookie(header: string | undefined, appCode: string): string | undefined {
+	if (!header) return undefined;
+
+	const match = new RegExp(String.raw`(?:^|;\s*)mlxTheme_` + appCode + '=([^;]*)').exec(header);
+	if (!match) return undefined;
+
+	try {
+		return decodeURIComponent(match[1]) || undefined;
+	} catch {
+		// Not a value we wrote. Treat it as absent rather than keying the cache on
+		// something malformed.
+		return undefined;
+	}
 }
 
 /**
@@ -116,13 +140,24 @@ function generateETag(data: CachedPageData): string {
 //   ""        -> "authzump.ai"
 //   ".dev"    -> "dev.authzump.ai"
 //   ".stage"  -> "stage.authzump.ai"
-//   ".local"  -> "local.authzump.ai"
+//   ".local"  -> "authzump.local.modlix.com"
+//
+// Local is deliberately not "local.authzump.ai". Local hosts are <app>.local.modlix.com
+// (dnsmasq wildcards that suffix to 127.0.0.1 on a developer machine); the .ai names
+// belong to the deployed environments only. "local.authzump.ai" does resolve, to prod-lb,
+// where it is a stray vhost carrying appCode "nothing", so pointing the beacon there
+// silently broke all local SSO.
+//
+// Must stay in step with IndexHTMLService.deriveBeaconHost in nocode-saas/ui.
+const LOCAL_ENV = 'local';
+
 function deriveBeaconHost(appCodeSuffix: string | undefined | null): string {
 	if (!appCodeSuffix) return 'authzump.ai';
 	const trimmed = appCodeSuffix.startsWith('.') ? appCodeSuffix.slice(1) : appCodeSuffix;
 	const dotIdx = trimmed.indexOf('.');
 	const env = dotIdx >= 0 ? trimmed.slice(0, dotIdx) : trimmed;
-	return env ? `${env}.authzump.ai` : 'authzump.ai';
+	if (!env) return 'authzump.ai';
+	return env === LOCAL_ENV ? `authzump.${env}.modlix.com` : `${env}.authzump.ai`;
 }
 
 function escapeHtml(str: string | undefined | null): string {
@@ -143,7 +178,14 @@ function escapeHtml(str: string | undefined | null): string {
 const CRITICAL_CSS = `
 body { margin: 0; }
 .comp { box-sizing: border-box; position: relative; }
-.compPage { min-height: 100vh; }
+/* The ROOT page only. Every rule in this block outlives the first paint, because
+   nothing removes the <style>, and the client's own PageCss never writes a
+   min-height, so a single-class .compPage rule went on applying to every NESTED
+   page too. A SubPage pane is a .compPage inside the shell's .compPage, so 100vh
+   forced each pane to a full viewport below the shell header and pushed the
+   document down by the header's height: a scrollbar on workspace, org and docs,
+   which lock their height, and only on the environments serving this block. */
+#app > .comp.compPage { min-height: 100vh; }
 .compGrid { display: flex; flex-direction: column; }
 .compTable { display: flex; flex-direction: row; }
 .compTableColumns { display: table; border-spacing: 0; width: 100%; }
@@ -362,11 +404,20 @@ function extractCodeParts(
  */
 function generateHtml(
 	data: CachedPageData | null,
-	codes: { appCode: string; clientCode: string },
+	// `urlType` is part of the object every caller already passes; it was the
+	// TYPE here that hid it, which is why the draft marker never reached the
+	// shell. Taking it off `codes` rather than adding a parameter means none of
+	// the six call sites can forget it -- the way they all did.
+	codes: { appCode: string; clientCode: string; urlType?: string },
 	pageName: string,
 	cdn: CDNConfig,
 	error?: string
 ): string {
+	// The client reads this to know which surface it is on, and SSR is the only
+	// thing that writes the shell on this path -- IndexHTMLService never runs
+	// here, so without this a draft host gets drafted content, a draft-keyed
+	// cache entry and no banner.
+	const draftAttr = codes.urlType === 'DRAFT' ? ' data-draft="true"' : '';
 	const cdnUrl = `https://${cdn.hostName}/js/dist/`;
 	const application = data?.application || null;
 	const page = data?.page || null;
@@ -379,11 +430,17 @@ function generateHtml(
 		'Modlix';
 
 	// Bootstrap data for client hydration
+	// Which theme `theme` is. Without it the client cannot tell whether this
+	// bootstrap matches its own resolution, and taking a mismatched one applies
+	// the wrong theme permanently rather than for a frame.
+	const themeName = data?.themeName;
+
 	const bootstrapData = data
 		? {
 				application,
 				pageDefinition: { [pageName]: page },
 				theme,
+				themeName,
 				urlDetails: {
 					pageName,
 					appCode: codes.appCode,
@@ -433,7 +490,7 @@ function generateHtml(
 	].join('\n\t\t');
 
 	return `<!DOCTYPE html>
-<html lang="en">
+<html lang="en"${draftAttr}>
 	<head>
 		${beforeHeadParts ? `${beforeHeadParts}\n\t\t` : ''}${metaTags}
 		<title>${escapeHtml(pageTitle)}</title>
@@ -460,6 +517,12 @@ function generateHtml(
 			${bootstrapData ? `window.__APP_BOOTSTRAP__ = ${JSON.stringify(removeCodeParts(bootstrapData))};` : ''}
 			window.domainAppCode = '${escapeHtml(codes.appCode)}';
 			window.domainClientCode = '${escapeHtml(codes.clientCode)}';
+			// Read by the client's themeSelection.ts to name the theme cookie and the
+			// personalization row. Separate from domainAppCode because getHref.ts
+			// overwrites that one with a hardcoded value on import, and because a
+			// domain-mapped host has no app code in its path for the client to parse:
+			// without this stamp a theme the visitor picks here is never remembered.
+			window.__mlxAppCode = '${escapeHtml(codes.appCode)}';
 			window.cdnPrefix = '${escapeHtml(cdn.hostName)}';
 			window.cdnStripAPIPrefix = ${cdn.stripAPIPrefix};
 			window.cdnReplacePlus = ${cdn.replacePlus};
@@ -471,8 +534,8 @@ function generateHtml(
 		<!-- Main app container -->
 		<div id="app">${error ? `<div style="padding:20px;color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;margin:20px;">${escapeHtml(error)}</div>` : ''}</div>
 
-		<!-- Application style from style service -->
-		<link rel="stylesheet" href="/${escapeHtml(codes.appCode)}/${escapeHtml(codes.clientCode)}/page/api/ui/style" />
+		<!-- Application style from style service, for the resolved theme -->
+		<link rel="stylesheet" id="mlxAppStyle" href="/${escapeHtml(codes.appCode)}/${escapeHtml(codes.clientCode)}/page/api/ui/style${themeName ? `?theme=${encodeURIComponent(themeName)}` : ''}" />
 
 		<!-- External scripts from application -->
 		${externalScripts}
@@ -574,6 +637,26 @@ export async function handlePageRequest(
 	const authToken = getAuthToken(request);
 	const isAuthenticated = !!authToken;
 
+	// The gateway set this from the resolved hostname before the request reached
+	// us, and it is the only trustworthy signal of which surface this is: SSR
+	// talks to the gateway server to server, so the original host is not
+	// recoverable downstream.
+	// The surface comes from resolving the hostname, NOT from an inbound header.
+	// An x-draft on the incoming request is caller-supplied and is ignored: the
+	// gateway is the only thing allowed to decide this, and codes.urlType comes
+	// from the same security-service lookup the gateway itself uses.
+	const isDraft = codes.urlType === 'DRAFT';
+
+	// The visitor's selected theme. A cookie rather than localStorage precisely so
+	// that this server can see it: the pre-rendered HTML carries the theme in its
+	// bootstrap, and getting it wrong here means the client throws that away and
+	// refetches on every load.
+	//
+	// Cached per theme. Apps have one or two, so this multiplies the entry count by
+	// one or two, and the alternative is serving every visitor the default.
+	const cookieTheme = readThemeCookie(req.headers.cookie, codes.appCode);
+
+
 	logger.info('SSR page request', {
 		url: url.pathname,
 		appCode: codes.appCode,
@@ -600,7 +683,7 @@ export async function handlePageRequest(
 
 	// Check HTML cache first for non-authenticated requests (fastest path)
 	if (!isAuthenticated) {
-		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName);
+		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft, cookieTheme);
 
 		// Check if client accepts gzip
 		const acceptEncoding = req.headers['accept-encoding'] || '';
@@ -648,7 +731,7 @@ export async function handlePageRequest(
 
 	// Check cache for non-authenticated, non-index requests (legacy object cache)
 	if (urlPageName !== 'index' && !isAuthenticated) {
-		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName);
+		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft, cookieTheme);
 		const cached = await getCachedData<CachedPageData>(cacheKey);
 		if (cached) {
 			logger.info('Cache hit', { cacheKey, pageName: urlPageName });
@@ -675,13 +758,18 @@ export async function handlePageRequest(
 		appCode: codes.appCode,
 		clientCode: codes.clientCode,
 		authToken,
-	});
+		// Let the gateway resolve the surface from the host, as it does for a
+		// direct browser request.
+		forwardedHost: headers.get('x-forwarded-host') ?? url.host,
+		forwardedProto: headers.get('x-forwarded-proto') ?? url.protocol.replace(':', ''),
+		forwardedPort: headers.get('x-forwarded-port') ?? url.port,
+	}, cookieTheme);
 
 	const actualPageName = data.resolvedPageName;
 
 	// Check HTML cache for resolved page name (when index was resolved to default page)
 	if (urlPageName === 'index' && !isAuthenticated) {
-		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
+		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft, cookieTheme);
 
 		// Check if client accepts gzip
 		const acceptEncoding = req.headers['accept-encoding'] || '';
@@ -758,6 +846,7 @@ export async function handlePageRequest(
 		application: data.application,
 		page: data.page,
 		theme: data.theme as ThemeDefinition | null,
+		themeName: data.themeName,
 		codes,
 		pageName: actualPageName,
 		cachedAt: Date.now(),
@@ -767,7 +856,7 @@ export async function handlePageRequest(
 	const generatedHtml = generateHtml(result, codes, actualPageName, cdn);
 
 	// Cache HTML for unauthenticated requests (primary cache)
-	const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName);
+	const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft, cookieTheme);
 	if (!isAuthenticated) {
 		// Cache the rendered HTML (fast serving)
 		await setCachedHtml(htmlCacheKey, generatedHtml, config.cache.ttlSeconds);

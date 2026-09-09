@@ -181,9 +181,19 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 
+	COMMON_COMPONENT_PROPERTIES.onEnter,
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	COMMON_COMPONENT_PROPERTIES.onBlur,
 	COMMON_COMPONENT_PROPERTIES.onFocus,
+	{
+		name: 'submitOnEnter',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Submit on Enter',
+		description:
+			'Enter triggers the On Enter event instead of inserting a new line. Shift + Enter inserts a new line. When off, Enter always inserts a new line.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	{
 		name: 'maxChars',
 		schema: SCHEMA_NUM_COMP_PROP,
