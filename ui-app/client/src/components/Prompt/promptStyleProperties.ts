@@ -287,6 +287,71 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		np: true,
 	},
 
+	// ─── Icons (composer + quick actions; send icon is Prompt Accent) ───
+	{
+		gn: 'Prompt Icons',
+		dn: 'Attachment Icon Color',
+		n: 'promptAttachmentIconColor',
+		dv: '#6b6b6b',
+		cp: 'color',
+		sel: '.comp.compPrompt ._addAttachmentButton',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Attachment Icon Hover Color',
+		n: 'promptAttachmentIconHoverColor',
+		dv: '#1a1a1a',
+		cp: 'color',
+		sel: '.comp.compPrompt ._addAttachmentButton:hover',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Attachment Button Border Color',
+		n: 'promptAttachmentBorderColor',
+		dv: '#e0e0e0',
+		cp: 'border-color',
+		sel: '.comp.compPrompt ._addAttachmentButton',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Quick Action Icon Color',
+		n: 'promptQuickActionIconColor',
+		dv: '#6b6b6b',
+		cp: 'color',
+		sel: '.comp.compPrompt ._quickActionIcon',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Microphone Icon Color',
+		n: 'promptMicIconColor',
+		dv: '#6b6b6b',
+		cp: 'color',
+		sel: '.comp.compPrompt ._micButton',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Microphone Icon Hover Color',
+		n: 'promptMicIconHoverColor',
+		dv: '#1a1a1a',
+		cp: 'color',
+		sel: '.comp.compPrompt ._micButton:hover',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Microphone Recording Color',
+		n: 'promptMicRecordingColor',
+		dv: '#ef4444',
+		cp: 'color',
+		sel: '.comp.compPrompt ._micButton._recording',
+		np: true,
+	},
+
 	// ─── Agent activity card ───
 	// Monochrome by design rule: state is carried by fill and motion, never hue.
 	// These defaults deliberately override the generic palette tokens the base
