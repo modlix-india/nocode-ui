@@ -46,6 +46,7 @@ const SOCIAL_ARRIVAL_PARAMS = [
 	'platform',
 	'appCode',
 	'clientCode',
+	'clientType',
 	'redirectUrl',
 ];
 
@@ -172,6 +173,7 @@ export function buildSocialLoginURL(
 	platform: 'GOOGLE' | 'META',
 	application: { appCode?: string; clientCode?: string } | null,
 	redirectUrl?: string,
+	clientType?: string,
 ): string | null {
 	const host = globalThis.__SOCIAL_LOGIN_HOST__;
 	if (!host || !application?.appCode) return null;
@@ -179,12 +181,21 @@ export function buildSocialLoginURL(
 	// destination and falls back to the broker's own login page. `InitiateSocialLogin` resolves
 	// it; this only defaults it.
 	const back = redirectUrl ?? window.location.href;
-	// The callback echoes these back on the return leg, where `consumeSocialArrival` reads them.
+
+	// The callback echoes every one of these back on the return leg, which is how
+	// `consumeSocialArrival` gets them. That round trip is why anything registration needs has
+	// to be said HERE: the click is the app's last word before the browser leaves for the
+	// provider and comes back on a fresh page load, with no page state and no way to ask again.
+	//
+	// `clientType` is appended only when the app said something. Absent means absent all the
+	// way through, so the registration behaves exactly as it does when a page calls the
+	// registration endpoint itself without naming a type. Nothing here invents one.
 	return (
 		`https://${host}/api/security/clients/socialRegister/evoke` +
 		`?platform=${platform}` +
 		`&appCode=${encodeURIComponent(application.appCode)}` +
 		`&clientCode=${encodeURIComponent(application.clientCode ?? 'SYSTEM')}` +
+		(clientType ? `&clientType=${encodeURIComponent(clientType)}` : '') +
 		`&redirectUrl=${encodeURIComponent(back)}`
 	);
 }
@@ -375,7 +386,7 @@ async function redeemSocialState(
 		phoneNumber: params.get('phoneNumber') ?? undefined,
 		localeCode: params.get('localeCode') ?? undefined,
 		clientName: [firstName, lastName].filter(Boolean).join(' ') || userName,
-		businessClient: false,
+		...businessClientOf(params.get('clientType')),
 		socialRegisterState: state,
 		// The browser is the only thing that knows the zone, and an offset cannot survive a
 		// daylight-saving boundary, so the platform asks for it by name.
@@ -393,6 +404,24 @@ async function redeemSocialState(
 	// than an error, which is a registered user and no session: worth failing on, so the caller
 	// falls through to the app's own sign-in rather than looking signed in and not being.
 	return bankSession(register.body?.authentication);
+}
+
+/**
+ * The client type the app chose on the button, as the registration endpoint wants it.
+ *
+ * Whether a new client is a business or an individual is a decision only the app can make, and
+ * on some apps it is the user's own choice on the signup form, so this is carried from the
+ * click rather than worked out here. It matters: an app's registration rules grant profiles and
+ * roles per client type, so the wrong one creates an account that is active and signed in and
+ * granted nothing, which reads as "you don't have access to this page".
+ *
+ * Said nothing means send nothing, and the endpoint then does what it does for any other caller
+ * that omits it. Guessing here would just move the same failure somewhere less visible.
+ */
+function businessClientOf(clientType: string | null): { businessClient?: boolean } {
+	if (clientType === 'BUSINESS') return { businessClient: true };
+	if (clientType === 'INDIVIDUAL') return { businessClient: false };
+	return {};
 }
 
 function resolvedTimeZone(): string | undefined {
