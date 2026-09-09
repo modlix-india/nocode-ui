@@ -29,6 +29,7 @@ export type RelayAction =
 
 type LeaderMessage =
 	| { kind: 'OUTBOUND_PLACED'; ticketId: string }
+	| { kind: 'OUTBOUND_FAILED' }
 	| { kind: 'CALL_EVENT'; event: SoftphoneEvent }
 	| { kind: 'LEADER_ANNOUNCE'; at: number }
 	| { kind: 'STATE_REQUEST'; from: string }
@@ -63,6 +64,9 @@ export interface LeaderHandlers {
 	 */
 	onOutboundPlaced: (ticketId: string) => void;
 
+	/** That dial did not happen after all, so the claim it made should be dropped. */
+	onOutboundFailed: () => void;
+
 	/**
 	 * The leader has gone quiet without releasing its lock.
 	 *
@@ -85,12 +89,18 @@ export class LeaderChannel {
 
 	private announceTimer?: ReturnType<typeof setInterval>;
 	private staleTimer?: ReturnType<typeof setInterval>;
+	/** Set only between a resign and this tab's next attempt at the lock. */
+	private requeueTimer?: ReturnType<typeof setTimeout>;
 	private lastLeaderSeen = 0;
 	private staleReported = false;
 
 	private readonly pending = new Map<
 		string,
-		{ resolve: (v: unknown) => void; reject: (e: SoftphoneError) => void; timer: number }
+		{
+			resolve: (v: unknown) => void;
+			reject: (e: SoftphoneError) => void;
+			timer: ReturnType<typeof setTimeout>;
+		}
 	>();
 
 	get isLeader(): boolean {
@@ -113,11 +123,60 @@ export class LeaderChannel {
 			return;
 		}
 
+		this.requestLock();
+		this.watchForStaleLeader();
+	}
+
+	/**
+	 * Steps down without shutting the channel down, for a tab that won the election but cannot
+	 * actually run a phone.
+	 *
+	 * Holding the lock with no phone is worse than not holding it: every other tab stays a
+	 * follower and relays its controls to a leader that can neither place nor answer a call, so
+	 * one tab's failure becomes every tab's. Releasing it lets a tab that can register take over.
+	 *
+	 * @param requeueAfterMs go back in the queue for the lock after this long. Omitted, this tab
+	 * stops competing - right when the failure is configuration rather than a blip, since being
+	 * re-elected every few seconds would only repeat it.
+	 * @returns whether leadership was actually given up, so the caller's own state can agree.
+	 */
+	resign(requeueAfterMs?: number): boolean {
+		if (!this.leader) return false;
+
+		// Nothing to hand over on a browser with no Web Locks. Leadership there is not won, it is
+		// assumed - there is no queue and no other candidate - so standing down would leave this
+		// tab without a phone and nobody in a position to start one. The failure is on the state
+		// either way; a reload is the recovery.
+		if (!navigator.locks) return false;
+
+		this.leader = false;
+
+		if (this.announceTimer) clearInterval(this.announceTimer);
+		this.announceTimer = undefined;
+
+		this.releaseLock?.();
+		this.releaseLock = undefined;
+
+		// A follower again, so the stale-leader watch matters again: whoever takes the lock next
+		// might go quiet too.
+		this.watchForStaleLeader();
+
+		if (requeueAfterMs !== undefined)
+			this.requeueTimer = setTimeout(() => {
+				this.requeueTimer = undefined;
+				if (this.handlers) this.requestLock();
+			}, requeueAfterMs);
+
+		return true;
+	}
+
+	private requestLock(): void {
 		navigator.locks
 			.request(LOCK_NAME, () => {
 				this.becomeLeader();
 				// Holding the lock *is* being the leader, so this promise never settles. It is
-				// resolved by stop(), and released by the browser if this tab dies first.
+				// resolved by stop() or resign(), and released by the browser if this tab dies
+				// first.
 				return new Promise<void>(resolve => {
 					this.releaseLock = resolve;
 				});
@@ -125,8 +184,6 @@ export class LeaderChannel {
 			.catch(() => {
 				/* The lock request was aborted, which only happens on teardown. */
 			});
-
-		this.watchForStaleLeader();
 	}
 
 	stop(): void {
@@ -134,8 +191,10 @@ export class LeaderChannel {
 
 		if (this.announceTimer) clearInterval(this.announceTimer);
 		if (this.staleTimer) clearInterval(this.staleTimer);
+		if (this.requeueTimer) clearTimeout(this.requeueTimer);
 		this.announceTimer = undefined;
 		this.staleTimer = undefined;
+		this.requeueTimer = undefined;
 
 		for (const [, p] of this.pending) {
 			clearTimeout(p.timer);
@@ -173,7 +232,7 @@ export class LeaderChannel {
 		const id = shortUUID();
 
 		return new Promise<unknown>((resolve, reject) => {
-			const timer = window.setTimeout(() => {
+			const timer = setTimeout(() => {
 				this.pending.delete(id);
 				reject({
 					code: 'RELAY_TIMEOUT',
@@ -195,6 +254,11 @@ export class LeaderChannel {
 	 */
 	announceOutboundDial(ticketId: string): void {
 		this.post({ kind: 'OUTBOUND_PLACED', ticketId });
+	}
+
+	/** Withdraws a claim announced for a dial that then failed. */
+	announceOutboundFailed(): void {
+		this.post({ kind: 'OUTBOUND_FAILED' });
 	}
 
 	/** Follower only. Asks for the current picture, so a tab opened mid-call shows the call. */
@@ -222,6 +286,9 @@ export class LeaderChannel {
 
 	private watchForStaleLeader(): void {
 		this.lastLeaderSeen = Date.now();
+		this.staleReported = false;
+
+		if (this.staleTimer) clearInterval(this.staleTimer);
 		this.staleTimer = setInterval(() => {
 			if (this.leader) return;
 			if (Date.now() - this.lastLeaderSeen < LEADER_STALE_MS) return;
@@ -247,6 +314,10 @@ export class LeaderChannel {
 
 			case 'OUTBOUND_PLACED':
 				handlers.onOutboundPlaced(message.ticketId);
+				return;
+
+			case 'OUTBOUND_FAILED':
+				handlers.onOutboundFailed();
 				return;
 
 			case 'CALL_EVENT':

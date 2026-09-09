@@ -1,3 +1,4 @@
+import { BroadcastChannel as NodeBroadcastChannel } from 'node:worker_threads';
 import { LeaderChannel, LeaderHandlers, RelayAction } from '../leader';
 import { INITIAL_STATE, SoftphoneEvent, SoftphoneState } from '../types';
 
@@ -14,8 +15,6 @@ import { INITIAL_STATE, SoftphoneEvent, SoftphoneState } from '../types';
  * up here. `BroadcastChannel` is Node's own rather than a hand-rolled fake - it is the same spec,
  * including the part that matters most, that a sender never receives its own message.
  */
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { BroadcastChannel: NodeBroadcastChannel } = require('node:worker_threads');
 
 function installBroadcastChannel() {
 	const had = 'BroadcastChannel' in globalThis;
@@ -74,6 +73,7 @@ function handlers(over: Partial<LeaderHandlers> = {}): LeaderHandlers {
 		onAction: async () => true,
 		onSnapshot: () => {},
 		onOutboundPlaced: () => {},
+		onOutboundFailed: () => {},
 		onLeaderStale: () => {},
 		...over,
 	};
@@ -129,6 +129,17 @@ describe('LeaderChannel', () => {
 	it('leads immediately when the browser has no Web Locks', () => {
 		restoreLocks();
 		expect(open().isLeader).toBe(true);
+	});
+
+	it('keeps the post when there are no Web Locks, because nobody else can take it', () => {
+		restoreLocks();
+		const only = open();
+
+		// Leadership there is assumed rather than won: no lock, no queue, no second candidate. A
+		// tab that stood down would be left with no phone and nothing able to start one, so it
+		// says plainly that it did not - and the registry leaves `isLeader` alone on that answer.
+		expect(only.resign(1_000)).toBe(false);
+		expect(only.isLeader).toBe(true);
 	});
 
 	it('relays a control to the leader and returns what it produced', async () => {
@@ -247,6 +258,26 @@ describe('LeaderChannel', () => {
 		// which is also why a crashed tab recovers: the browser releases the lock for it.
 		expect(follower.isLeader).toBe(true);
 		expect(promoted).toBe(true);
+	});
+
+	it('promotes another tab when the leader resigns, and keeps its channel usable', async () => {
+		let promoted = 0;
+
+		const leader = open();
+		const follower = open({ onBecameLeader: () => (promoted += 1) });
+
+		// A tab that wins the election but cannot bring a phone up resigns. Without this the lock
+		// stays with a tab that has no phone, and every other tab dutifully relays its controls
+		// there - so one tab's failure to register silently breaks calling in all of them.
+		leader.resign();
+		await waitFor(() => follower.isLeader);
+
+		expect(leader.isLeader).toBe(false);
+		expect(promoted).toBe(1);
+
+		// Resigning is not shutting down: the resigned tab is a follower now, so it must still be
+		// able to reach the new leader.
+		await expect(leader.relay('hangup')).resolves.toBe(true);
 	});
 
 	it('fails pending controls when the softphone shuts down mid-relay', async () => {

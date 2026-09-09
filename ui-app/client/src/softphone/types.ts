@@ -36,12 +36,19 @@ export type SoftphoneErrorCode =
 	/** A control was called with no call in progress. */
 	| 'NO_ACTIVE_CALL'
 	/**
+	 * A control was given something it cannot act on - a DTMF key that is not a key, say.
+	 *
+	 * Separate from NO_ACTIVE_CALL because the answer is different: there is a call, and the page
+	 * passed a value that has to change. Reported as "no active call" it sent an author looking
+	 * at the phone instead of at their own expression.
+	 */
+	| 'INVALID_INPUT'
+	/**
 	 * A control this build does not implement was asked for.
 	 *
 	 * Reachable across a deploy: a follower tab running newer code can relay an action a leader
-	 * running older code has no case for. Reported rather than ignored, because `control` reads
-	 * anything other than `false` as success - so an unimplemented control would otherwise tell
-	 * the page its hangup worked.
+	 * running older code has no case for. Reported rather than ignored, because a control that
+	 * quietly does nothing tells the page its hangup worked.
 	 */
 	| 'UNSUPPORTED_CONTROL';
 

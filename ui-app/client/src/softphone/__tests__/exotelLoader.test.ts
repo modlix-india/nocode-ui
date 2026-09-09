@@ -45,11 +45,18 @@ const phone = {
 /** The call listener the adapter registers, so a test can drive the vendor's own events. */
 let vendorListener: ((event: string, data: unknown) => void) | undefined;
 
+/** The registration listener, whose strings are the vendor's and undocumented. */
+let vendorRegisterListener: ((state: string) => void) | undefined;
+
 function fakeSdk() {
 	return function ExotelCRMWebSDK() {
 		return {
-			Initialize: async (callListener: (event: string, data: unknown) => void) => {
+			Initialize: async (
+				callListener: (event: string, data: unknown) => void,
+				registerListener: (state: string) => void,
+			) => {
 				vendorListener = callListener;
+				vendorRegisterListener = registerListener;
 				return phone;
 			},
 		};
@@ -59,6 +66,9 @@ function fakeSdk() {
 function loadProviderModule() {
 	let mod!: typeof import('../providers/exotel');
 	jest.isolateModules(() => {
+		// A fresh instance per call is the point, and only require() can ask for one - an import
+		// is hoisted out of the callback and evaluated once for the whole file.
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		mod = require('../providers/exotel');
 	});
 	return mod;
@@ -70,6 +80,7 @@ describe('exotel bundle loading', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		vendorListener = undefined;
+		vendorRegisterListener = undefined;
 
 		(globalThis as { isSecureContext?: boolean }).isSecureContext = true;
 		Object.defineProperty(navigator, 'mediaDevices', {
@@ -81,8 +92,10 @@ describe('exotel bundle loading', () => {
 			},
 		});
 
-		// The loader short-circuits on an already-defined global, so each case starts without one.
+		// The loader reuses a bundle already on the page when it came from the same URL, so each
+		// case starts with neither the global nor the note of where it came from.
 		delete (globalThis as Record<string, unknown>).ExotelCRMWebSDK;
+		delete (globalThis as Record<string, unknown>).__modlixExotelSdkSource;
 		delete (globalThis as { cdnPrefix?: string }).cdnPrefix;
 	});
 
@@ -171,6 +184,33 @@ describe('exotel bundle loading', () => {
 		expect(capture.appended).toHaveLength(1);
 	});
 
+	it('fetches a second URL instead of reusing the bundle already on the page', async () => {
+		const { ExotelCallProvider } = loadProviderModule();
+		const capture = captureScripts(script => {
+			(globalThis as Record<string, unknown>).ExotelCRMWebSDK = fakeSdk();
+			script.onload?.(new Event('load'));
+		});
+		restoreScripts = capture.restore;
+
+		const init = (sdkUrl: string) =>
+			new ExotelCallProvider().init({
+				token: 't',
+				providerUserId: 'a@b.c',
+				autoRegister: true,
+				sdkUrl,
+			});
+
+		await init('api/files/static/file/SYSTEM/jslib/exotelBundle/crmBundle.js');
+		await init('api/files/static/file/CLIENT/jslib/forked/crmBundle.js');
+
+		// The global is a page-wide name; the URL is per-component configuration. Reusing the
+		// bundle merely because the name is taken silently serves the first URL's bundle to
+		// everyone after it - so an author who corrects the path, or a second app on a forked
+		// build, keeps running code they did not ask for and nothing says so.
+		expect(capture.appended).toHaveLength(2);
+		expect(capture.appended[1].src).toContain('/CLIENT/jslib/forked/crmBundle.js');
+	});
+
 	it('retries after a failed load rather than caching the failure', async () => {
 		const { ExotelCallProvider } = loadProviderModule();
 
@@ -241,8 +281,10 @@ describe('call presence, separately from the call id', () => {
 			},
 		});
 		delete (globalThis as Record<string, unknown>).ExotelCRMWebSDK;
+		delete (globalThis as Record<string, unknown>).__modlixExotelSdkSource;
 		jest.clearAllMocks();
 		vendorListener = undefined;
+		vendorRegisterListener = undefined;
 	});
 
 	afterEach(() => restore());
@@ -286,6 +328,113 @@ describe('call presence, separately from the call id', () => {
 		// The guard has to keep working - ToggleMute is not optional-chained inside the SDK and
 		// throws on its own without a call.
 		expect(() => provider.toggleMute()).toThrow();
+	});
+
+	it('holds and mutes by what was asked for, not by counting the confirmations', async () => {
+		const provider = await ringing('c1');
+		const seen: Array<{ type: string; value: boolean }> = [];
+		provider.on(event => {
+			if (event.type === 'HOLD') seen.push({ type: 'HOLD', value: event.onHold });
+			if (event.type === 'MUTE') seen.push({ type: 'MUTE', value: event.muted });
+		});
+
+		provider.toggleHold();
+		// The bundle delivers its call events more than once - the reason INCOMING, CONNECTED and
+		// ENDED are all idempotent - and its confirmation says only that a toggle happened. A
+		// second one used to invert the flag, leaving the call held while the button offered to
+		// hold it, so the agent's next press unheld a call they thought was live.
+		vendorListener?.('holdtoggle', {});
+		vendorListener?.('holdtoggle', {});
+
+		provider.toggleMute();
+		vendorListener?.('mutetoggle', {});
+		vendorListener?.('mutetoggle', {});
+
+		expect(seen).toEqual([
+			{ type: 'HOLD', value: true },
+			{ type: 'HOLD', value: true },
+			{ type: 'MUTE', value: true },
+			{ type: 'MUTE', value: true },
+		]);
+
+		// And a real second press still comes back off hold.
+		provider.toggleHold();
+		vendorListener?.('holdtoggle', {});
+
+		expect(seen.at(-1)).toEqual({ type: 'HOLD', value: false });
+	});
+
+	it('forgets a hold that the SDK refused', async () => {
+		const provider = await ringing('c1');
+		phone.ToggleHold.mockImplementationOnce(() => {
+			throw new Error('no session');
+		});
+
+		expect(() => provider.toggleHold()).toThrow();
+
+		// The request never reached the SDK, so it must not be waiting to be asserted by whatever
+		// confirmation arrives next.
+		const seen: boolean[] = [];
+		provider.on(event => {
+			if (event.type === 'HOLD') seen.push(event.onHold);
+		});
+		vendorListener?.('holdtoggle', {});
+
+		expect(seen).toEqual([false]);
+	});
+
+	it('reads the registration strings that mean the opposite of registered', async () => {
+		const provider = await ringing('c1');
+		const readings = new Map<string, boolean>();
+		provider.on(event => {
+			if (event.type === 'REGISTRATION') readings.set(event.detail ?? '', event.registered);
+		});
+
+		// The vendor's strings are undocumented, so this matches loosely - but every string that
+		// means "not registered" contains the word "registered", and a substring match called
+		// them all registered. That is the worst way for it to be wrong: the agent is shown as
+		// available by a phone the provider has just dropped, and their calls go nowhere.
+		for (const value of [
+			'registered',
+			'REGISTERED',
+			'sip registered',
+			'unregistered',
+			'deregistered',
+			'not registered',
+			'not_registered',
+			'registration_failed',
+			'registering',
+			'',
+		])
+			vendorRegisterListener?.(value);
+
+		expect(Object.fromEntries(readings)).toEqual({
+			registered: true,
+			REGISTERED: true,
+			'sip registered': true,
+			unregistered: false,
+			deregistered: false,
+			'not registered': false,
+			not_registered: false,
+			registration_failed: false,
+			registering: false,
+			'': false,
+		});
+	});
+
+	it('separates a key it cannot dial from having no call at all', async () => {
+		const provider = await ringing('c1');
+
+		// Two different answers for two different problems. Reported as NO_ACTIVE_CALL, a typo in
+		// an author's expression sent them looking at the phone - which was working - instead of
+		// at the value they were passing.
+		expect(() => provider.sendDtmf('A')).toThrow(
+			expect.objectContaining({ code: 'INVALID_INPUT' }),
+		);
+		expect(phone.SendDTMF).not.toHaveBeenCalled();
+
+		provider.sendDtmf('#');
+		expect(phone.SendDTMF).toHaveBeenCalledWith('#');
 	});
 
 	it('refuses again once the call has ended', async () => {

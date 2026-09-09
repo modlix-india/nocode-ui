@@ -96,6 +96,16 @@ const NOOP_FACADE: SoftphoneFacade = {
  */
 const OUTBOUND_CLAIM_WINDOW_MS = 20_000;
 
+/**
+ * How many times a tab will win the lock and try to bring the phone up before it stops competing
+ * for leadership, and how long it waits between attempts.
+ *
+ * Three is enough to ride out a token endpoint that is briefly unreachable without turning a
+ * misconfigured connection into an endless election.
+ */
+const TAKE_UP_ATTEMPTS = 3;
+const TAKE_UP_RETRY_MS = 5_000;
+
 class SoftphoneRegistry {
 	private state: SoftphoneState = { ...INITIAL_STATE };
 	private readonly subscribers = new Set<(state: SoftphoneState) => void>();
@@ -119,6 +129,8 @@ class SoftphoneRegistry {
 	 * (page-load minting is the whole policy), so the copy would be pure exposure.
 	 */
 
+	/** Consecutive failures to bring the phone up after winning the lock. */
+	private takeUpFailures = 0;
 	private outboundClaimUntil = 0;
 	/** The deal the current outbound call was placed against, for the summary and for a redial. */
 	private pendingTicketId?: string;
@@ -183,13 +195,14 @@ class SoftphoneRegistry {
 		this.channel.start({
 			onBecameLeader: () => {
 				this.patch({ isLeader: true });
-				void this.bringUpPhone();
+				void this.takeUpPhone();
 			},
 			onEvent: event => this.applyEvent(event),
 			onStateRequest: () => this.state,
 			onAction: (action, arg) => this.performLocally(action, arg),
 			onSnapshot: snapshot => this.adoptSnapshot(snapshot),
 			onOutboundPlaced: ticketId => this.claimOutbound(ticketId),
+			onOutboundFailed: () => this.releaseOutboundClaim(),
 			onLeaderStale: () =>
 				this.patch({
 					lastError: {
@@ -256,10 +269,10 @@ class SoftphoneRegistry {
 	}
 
 	/** Leader only: mint a credential, load the adapter, register. */
-	private async bringUpPhone(): Promise<void> {
+	private async bringUpPhone(): Promise<boolean> {
 		const connectionName = this.connectionName;
 		const providerName = this.state.provider;
-		if (!connectionName || !providerName) return;
+		if (!connectionName || !providerName) return false;
 
 		// Checked before a token is minted, not at the point of use: every mint is a call to the
 		// provider, and burning one to then fail on a missing URL is waste with a worse error.
@@ -269,7 +282,7 @@ class SoftphoneRegistry {
 				message:
 					'No calling library URL is configured. Set the Softphone component\'s "Calling Library URL".',
 			});
-			return;
+			return false;
 		}
 
 		const create = providerFor(providerName);
@@ -278,14 +291,15 @@ class SoftphoneRegistry {
 				code: 'INIT_FAILED',
 				message: `This app has no softphone for "${providerName}".`,
 			});
-			return;
+			return false;
 		}
 
+		let provider: ICallProvider | undefined;
 		try {
 			const credential = await fetchToken(connectionName);
-			if (!this.started || this.connectionName !== connectionName) return;
+			if (!this.started || this.connectionName !== connectionName) return false;
 
-			const provider = create();
+			provider = create();
 			this.unsubscribeProvider = provider.on(event => {
 				this.applyEvent(event);
 				this.channel?.broadcastEvent(event);
@@ -299,14 +313,57 @@ class SoftphoneRegistry {
 			});
 
 			if (!this.started || this.connectionName !== connectionName) {
-				provider.destroy();
-				return;
+				this.discardProvider(provider);
+				return false;
 			}
 
 			this.provider = provider;
+			return true;
 		} catch (e) {
+			// Torn down rather than left hanging: this path is retried, and a half-built provider
+			// left behind would stack a listener and a SIP stack on every attempt.
+			this.discardProvider(provider);
 			this.fail(asError(e, 'TOKEN_FAILED', 'The phone could not be started.'));
+			return false;
 		}
+	}
+
+	/** Detaches and destroys a provider this tab decided not to keep. */
+	private discardProvider(provider: ICallProvider | undefined): void {
+		this.unsubscribeProvider?.();
+		this.unsubscribeProvider = undefined;
+		try {
+			provider?.destroy();
+		} catch {
+			/* Nothing useful to do about a provider that will not shut down. */
+		}
+	}
+
+	/**
+	 * Brings the phone up now that this tab is the leader, and steps down if it cannot.
+	 *
+	 * Staying leader without a phone is the one outcome that breaks every tab at once: the others
+	 * remain followers and relay their controls here, where there is nothing to relay them to.
+	 */
+	private async takeUpPhone(): Promise<void> {
+		if (await this.bringUpPhone()) {
+			this.takeUpFailures = 0;
+			return;
+		}
+
+		this.takeUpFailures += 1;
+
+		// Retried a few times, for a token endpoint that is momentarily down, and then left to a
+		// reload. A failure that survives the retries is configuration, and taking the lock again
+		// every few seconds would only mint tokens that cannot be used.
+		const steppedDown = this.channel?.resign(
+			this.takeUpFailures < TAKE_UP_ATTEMPTS ? TAKE_UP_RETRY_MS : undefined,
+		);
+
+		// Only when the channel actually gave the post up. A browser with no Web Locks has no
+		// second candidate and so keeps it, and saying otherwise here would have the page read
+		// `isLeader: false` about the tab that is still holding the session.
+		if (steppedDown) this.patch({ isLeader: false });
 	}
 
 	// -------------------------------------------------------------- state
@@ -360,6 +417,13 @@ class SoftphoneRegistry {
 		this.outboundClaimUntil = Date.now() + OUTBOUND_CLAIM_WINDOW_MS;
 		this.pendingTicketId = ticketId;
 		this.patch({ direction: 'outbound', lastError: null });
+	}
+
+	/** Undoes a claim whose dial turned out not to happen. */
+	private releaseOutboundClaim(): void {
+		this.outboundClaimUntil = 0;
+		this.pendingTicketId = undefined;
+		if (!this.state.inCall) this.patch({ direction: undefined });
 	}
 
 	/**
@@ -455,6 +519,16 @@ class SoftphoneRegistry {
 			}
 
 			case 'CONNECTED':
+				// The provider sends each event twice and in no guaranteed order, so a CONNECTED
+				// can arrive after its own call's ENDED has already been handled. Taken at face
+				// value that puts the phone back in a call that is over: the card stays up, the
+				// timer runs, and Hangup has nothing left to hang up.
+				//
+				// Narrowed to a call known to have ended rather than to `!inCall` in general -
+				// a provider that reports a call as connected without ringing it first is not
+				// something this has been able to verify, and dropping that would be silent too.
+				if (!this.state.inCall && this.state.lastCall?.callId === event.callId) return;
+
 				this.patch({
 					inCall: true,
 					callId: event.callId || this.state.callId,
@@ -552,16 +626,21 @@ class SoftphoneRegistry {
 			if (!connection) throw dialError('No calling connection is configured on this page.');
 			if (!ticketId) throw dialError('No deal was given to call.');
 
+			// Claimed before the request, not after it. The provider pushes the SIP INVITE over an
+			// already-open WebSocket while our HTTP response is still travelling back, so the
+			// INVITE can easily arrive first - and an unclaimed one is treated as a stranger
+			// calling in: labelled inbound, and left for the agent to answer by hand.
+			this.claimOutbound(ticketId);
+			this.channel?.announceOutboundDial(ticketId);
+
 			try {
-				const call = await dialTicket(ticketId, connection);
-
-				// This tab, then every other one. The leader needs the claim before the INVITE
-				// arrives, and it may not be this tab.
-				this.claimOutbound(ticketId);
-				this.channel?.announceOutboundDial(ticketId);
-
-				return call;
+				return await dialTicket(ticketId, connection);
 			} catch (e) {
+				// The dial never happened, so release the claim rather than leaving a window in
+				// which a genuine inbound call would be auto-answered as though it were ours.
+				this.releaseOutboundClaim();
+				this.channel?.announceOutboundFailed();
+
 				const error = asError(
 					e,
 					'DIAL_REJECTED',
@@ -573,17 +652,22 @@ class SoftphoneRegistry {
 		},
 	};
 
-	/** Acts here when this tab holds the session, and asks the tab that does when it does not. */
+	/**
+	 * Acts here when this tab holds the session, and asks the tab that does when it does not.
+	 *
+	 * The result is passed through rather than read as success or failure. Failure here is a
+	 * throw - the provider throws locally, and the relay rejects with the leader's own error - so
+	 * there is no sentinel to interpret, and interpreting one anyway made `false` mean two things
+	 * at once: "off hold" and "the control did not work" arrived indistinguishable.
+	 */
 	private async control(action: RelayAction, arg?: unknown): Promise<boolean> {
 		if (!this.channel) throw noPhone();
 
-		if (!this.channel.isLeader) {
-			const result = await this.channel.relay(action, arg);
-			return result !== false;
-		}
+		// Narrowed rather than cast: the value has crossed a BroadcastChannel, so it is whatever
+		// the tab at the other end sent and not whatever this build's types say it should be.
+		if (!this.channel.isLeader) return (await this.channel.relay(action, arg)) === true;
 
-		const result = await this.performLocally(action, arg);
-		return result !== false;
+		return this.performLocally(action, arg);
 	}
 
 	/**
@@ -591,8 +675,11 @@ class SoftphoneRegistry {
 	 *
 	 * Returns the resulting state for the toggles. The vendor fires its toggle event synchronously
 	 * from inside the toggle call, so our state is already updated by the time this reads it.
+	 *
+	 * Every branch answers with a boolean and every failure throws, which is what lets `control`
+	 * hand the answer straight to the page.
 	 */
-	private async performLocally(action: RelayAction, arg?: unknown): Promise<unknown> {
+	private async performLocally(action: RelayAction, arg?: unknown): Promise<boolean> {
 		const provider = this.provider;
 		if (!provider) throw noPhone();
 
@@ -623,11 +710,11 @@ class SoftphoneRegistry {
 				return arg !== false;
 
 			default: {
-				// Exhaustiveness, and here it has to throw rather than warn. `control` reads any
-				// result other than `false` as success, so falling through would return undefined
-				// and tell the page the control worked. The throw lands in the existing error
-				// plumbing either way: `performForFollower` turns it into an ACTION_RESULT the
-				// follower rejects on, and a local call surfaces it as the function's error event.
+				// Exhaustiveness, and here it has to throw rather than warn: a control nobody
+				// implemented has to fail loudly, because the alternative is a page that reports
+				// a hangup it never performed. The throw lands in the existing error plumbing
+				// either way - `performForFollower` turns it into an ACTION_RESULT the follower
+				// rejects on, and a local call surfaces it as the function's error event.
 				const unhandled: never = action;
 				throw {
 					code: 'UNSUPPORTED_CONTROL',

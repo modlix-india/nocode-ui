@@ -78,6 +78,25 @@ interface ExotelCallEventData {
 const loads = new Map<string, Promise<ExotelSdkConstructor>>();
 
 /**
+ * Where the bundle currently occupying `globalThis.ExotelCRMWebSDK` came from.
+ *
+ * Kept on the global rather than in a module variable because it has to answer a question about
+ * the page, not about this module: the global outlives any module instance, so provenance held
+ * beside `loads` would be forgotten in exactly the case the check exists for. The global is a
+ * page-wide name while the URL is per-component configuration, so the global being defined says
+ * nothing about *which* bundle is defined - and reusing it on that basis hands a component a
+ * bundle from a URL it never asked for, with nothing anywhere to say so.
+ */
+const SDK_SOURCE_KEY = '__modlixExotelSdkSource';
+
+function sdkOnPage(url: string): ExotelSdkConstructor | undefined {
+	const globals = globalThis as Record<string, unknown>;
+	const sdk = globals.ExotelCRMWebSDK;
+	if (!sdk || globals[SDK_SOURCE_KEY] !== url) return undefined;
+	return sdk as ExotelSdkConstructor;
+}
+
+/**
  * Loads the vendor bundle from the URL the component was given, and only from there.
  *
  * There is deliberately no built-in default. A default is a path that has to be true of every
@@ -101,9 +120,11 @@ function loadSdk(sdkUrl?: string): Promise<ExotelSdkConstructor> {
 	if (cached) return cached;
 
 	const load = new Promise<ExotelSdkConstructor>((resolve, reject) => {
-		const existing = (globalThis as Record<string, unknown>).ExotelCRMWebSDK;
+		// Only when it is this URL's bundle. A different one has to be fetched, even though that
+		// overwrites the global: whichever bundle is asked for last is the one the page keeps.
+		const existing = sdkOnPage(requested);
 		if (existing) {
-			resolve(existing as ExotelSdkConstructor);
+			resolve(existing);
 			return;
 		}
 
@@ -117,8 +138,10 @@ function loadSdk(sdkUrl?: string): Promise<ExotelSdkConstructor> {
 
 		script.onload = () => {
 			const sdk = (globalThis as Record<string, unknown>).ExotelCRMWebSDK;
-			if (sdk) resolve(sdk as ExotelSdkConstructor);
-			else
+			if (sdk) {
+				(globalThis as Record<string, unknown>)[SDK_SOURCE_KEY] = requested;
+				resolve(sdk as ExotelSdkConstructor);
+			} else
 				reject(
 					err(
 						'SDK_LOAD_FAILED',
@@ -184,6 +207,18 @@ async function ensureMicrophone(): Promise<void> {
 	}
 }
 
+/**
+ * "registered" standing on its own, rather than as part of a longer word.
+ *
+ * `(?![a-z])` instead of `\b` on the tail so that "registered_at" and "registered-ok" still count:
+ * `_` is a word character to a regex, and this is matching provider strings whose shape is a
+ * guess, not identifiers.
+ */
+const REGISTERED = /(?:^|[^a-z])registered(?![a-z])/;
+
+/** The same word carrying a negation - "not registered", "un-registered", "de registered". */
+const NOT_REGISTERED = /(?:^|[^a-z])(?:not|non|un|de)[^a-z]*registered(?![a-z])/;
+
 function err(code: SoftphoneErrorCode, message: string): SoftphoneError {
 	return { code, message };
 }
@@ -203,6 +238,23 @@ export class ExotelCallProvider implements ICallProvider {
 	 */
 	private onHold = false;
 	private muted = false;
+
+	/**
+	 * What the outstanding hold/mute request asked for, until the SDK confirms it.
+	 *
+	 * The confirmation carries no state, and this is a bundle that already delivers its call
+	 * events more than once - which is why INCOMING, CONNECTED and ENDED are all idempotent in
+	 * the registry. Flipping a boolean per event would take a duplicated `holdtoggle` and land it
+	 * exactly the wrong way round: the call stays held while the button offers to hold it, and
+	 * pressing that button unholds a call the agent believes is already live. Asserting the value
+	 * that was asked for instead makes the second event a no-op.
+	 *
+	 * A confirmation with nothing outstanding therefore re-states the current value rather than
+	 * inverting it: the toggles have no other cause today, and a stale reading is recoverable in a
+	 * way an inverted one is not.
+	 */
+	private requestedHold?: boolean;
+	private requestedMute?: boolean;
 
 	/**
 	 * Whether a call is in progress, tracked separately from its id.
@@ -269,7 +321,15 @@ export class ExotelCallProvider implements ICallProvider {
 
 	toggleHold(): void {
 		this.requireCall();
-		this.phone?.ToggleHold();
+		this.requestedHold = !this.onHold;
+		try {
+			this.phone?.ToggleHold();
+		} catch (e) {
+			// Nothing was asked of the SDK after all, so leave no assertion behind for the next
+			// confirmation to pick up.
+			this.requestedHold = undefined;
+			throw e;
+		}
 	}
 
 	/**
@@ -280,13 +340,19 @@ export class ExotelCallProvider implements ICallProvider {
 	 */
 	toggleMute(): void {
 		this.requireCall();
-		this.phone?.ToggleMute();
+		this.requestedMute = !this.muted;
+		try {
+			this.phone?.ToggleMute();
+		} catch (e) {
+			this.requestedMute = undefined;
+			throw e;
+		}
 	}
 
 	sendDtmf(digit: string): void {
 		this.requireCall();
 		if (!/^[0-9*#]$/.test(digit))
-			throw err('NO_ACTIVE_CALL', `"${digit}" is not a dialable key.`);
+			throw err('INVALID_INPUT', `"${digit}" is not a dialable key.`);
 		this.phone?.SendDTMF(digit);
 	}
 
@@ -300,8 +366,7 @@ export class ExotelCallProvider implements ICallProvider {
 		this.listeners.clear();
 		this.callInProgress = false;
 		this.activeCallId = undefined;
-		this.onHold = false;
-		this.muted = false;
+		this.resetCallControls();
 	}
 
 	on(listener: (event: SoftphoneEvent) => void): () => void {
@@ -343,6 +408,14 @@ export class ExotelCallProvider implements ICallProvider {
 		);
 	}
 
+	/** Clears hold and mute, and any request still waiting on a confirmation, between calls. */
+	private resetCallControls(): void {
+		this.onHold = false;
+		this.muted = false;
+		this.requestedHold = undefined;
+		this.requestedMute = undefined;
+	}
+
 	/** Turns the vendor's five literals into our union. */
 	private onVendorCallEvent(event: string, data: ExotelCallEventData): void {
 		const callId = ExotelCallProvider.identify(data);
@@ -351,8 +424,7 @@ export class ExotelCallProvider implements ICallProvider {
 			case 'incoming':
 				this.callInProgress = true;
 				this.activeCallId = callId;
-				this.onHold = false;
-				this.muted = false;
+				this.resetCallControls();
 				this.emit({
 					type: 'INCOMING',
 					callId,
@@ -380,17 +452,18 @@ export class ExotelCallProvider implements ICallProvider {
 				});
 				this.callInProgress = false;
 				this.activeCallId = undefined;
-				this.onHold = false;
-				this.muted = false;
+				this.resetCallControls();
 				return;
 
 			case 'holdtoggle':
-				this.onHold = !this.onHold;
+				this.onHold = this.requestedHold ?? this.onHold;
+				this.requestedHold = undefined;
 				this.emit({ type: 'HOLD', onHold: this.onHold });
 				return;
 
 			case 'mutetoggle':
-				this.muted = !this.muted;
+				this.muted = this.requestedMute ?? this.muted;
+				this.requestedMute = undefined;
 				this.emit({ type: 'MUTE', muted: this.muted });
 				return;
 		}
@@ -402,11 +475,17 @@ export class ExotelCallProvider implements ICallProvider {
 	 * So this matches loosely and passes the raw value through as `detail`, rather than testing for
 	 * one literal and reporting "offline" for every string nobody predicted. Tighten it once a
 	 * prototype run has recorded what actually arrives.
+	 *
+	 * Loosely, but not carelessly: the strings that mean the opposite of registered all contain
+	 * the word. A substring match read "deregistered", "unregistered" and "not registered" as
+	 * registered - the worst reading available, since it leaves the UI saying the agent is
+	 * available to a queue that has just dropped them.
 	 */
 	private onVendorRegisterEvent(state: string): void {
 		const value = (state ?? '').toString();
-		const registered = /^registered$/i.test(value) || /(^|[^n])registered/i.test(value);
-		const failed = /fail|error|reject/i.test(value);
+		const normalised = value.toLowerCase();
+		const registered = REGISTERED.test(normalised) && !NOT_REGISTERED.test(normalised);
+		const failed = /fail|error|reject/.test(normalised);
 
 		this.emit({ type: 'REGISTRATION', registered: registered && !failed, detail: value });
 

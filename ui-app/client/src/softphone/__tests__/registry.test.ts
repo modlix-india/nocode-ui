@@ -1,3 +1,4 @@
+import { BroadcastChannel as NodeBroadcastChannel } from 'node:worker_threads';
 import { LeaderChannel } from '../leader';
 import type { ICallProvider, ProviderInit } from '../providers/ICallProvider';
 import type { SoftphoneEvent, SoftphoneState } from '../types';
@@ -9,8 +10,6 @@ import type { SoftphoneEvent, SoftphoneState } from '../types';
  * logout, a microphone prompt shown to someone who cannot take calls, a real call placed from the
  * page editor - so each is worth a test that would notice.
  */
-
-const { BroadcastChannel: NodeBroadcastChannel } = require('node:worker_threads');
 
 const api = {
 	fetchStatus: jest.fn(),
@@ -80,6 +79,9 @@ function loadRegistry() {
 	// so state would otherwise leak between cases.
 	let registry!: typeof import('../registry').softphoneRegistry;
 	jest.isolateModules(() => {
+		// require(), because an import would be hoisted out of this callback and evaluated once -
+		// which is the single module instance these tests exist to avoid.
+		// eslint-disable-next-line @typescript-eslint/no-require-imports
 		registry = require('../registry').softphoneRegistry;
 	});
 	loaded.push(registry);
@@ -87,6 +89,40 @@ function loadRegistry() {
 }
 
 const settle = () => new Promise(resolve => setTimeout(resolve, 0));
+
+/**
+ * jsdom has no Web Locks, and the production fallback for that is "assume a single tab and lead".
+ *
+ * Which is right in such a browser and useless for testing leadership: a tab that cannot hand the
+ * post to anyone has to keep it. Installed only in the tests where stepping down is the point.
+ */
+function installLockManager() {
+	const held = new Set<string>();
+	const queued = new Map<string, Array<() => void>>();
+
+	const grant = (name: string, callback: () => Promise<void>): Promise<void> => {
+		held.add(name);
+		return Promise.resolve(callback()).finally(() => {
+			held.delete(name);
+			queued.get(name)?.shift()?.();
+		});
+	};
+
+	(navigator as unknown as { locks: unknown }).locks = {
+		request: (name: string, callback: () => Promise<void>) => {
+			if (!held.has(name)) return grant(name, callback);
+			return new Promise<void>((resolve, reject) => {
+				const waiters = queued.get(name) ?? [];
+				waiters.push(() => grant(name, callback).then(resolve, reject));
+				queued.set(name, waiters);
+			});
+		},
+	};
+
+	return () => {
+		delete (navigator as unknown as { locks?: unknown }).locks;
+	};
+}
 
 /** Channels a test opened directly, so afterEach can release their locks and timers. */
 const channels: LeaderChannel[] = [];
@@ -374,6 +410,27 @@ describe('softphoneRegistry', () => {
 		expect(registry.getState().lastError).toMatchObject({ code: 'DIAL_REJECTED' });
 	});
 
+	it('gives up leadership when it cannot bring the phone up', async () => {
+		provisioned();
+		FakeProvider.initFailure = { code: 'INIT_FAILED', message: 'The SIP stack did not start.' };
+		const restoreLocks = installLockManager();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+		await settle();
+		restoreLocks();
+
+		// A leader with no phone is not a leader: the other tabs keep relaying their controls to
+		// it, so its failure to register becomes a failure to call anywhere. Standing down is what
+		// lets a tab that can register take the lock instead.
+		expect(registry.getState()).toMatchObject({
+			isLeader: false,
+			lastError: { code: 'INIT_FAILED' },
+		});
+		expect(FakeProvider.last!.destroy).toHaveBeenCalled();
+	});
+
 	it('surfaces a refused microphone as its own answer', async () => {
 		provisioned();
 		FakeProvider.initFailure = { code: 'MIC_DENIED', message: 'Microphone access is blocked.' };
@@ -449,6 +506,69 @@ describe('softphoneRegistry', () => {
 		expect(registry.getState()).toMatchObject({ direction: 'outbound', inCall: true });
 	});
 
+	it('ignores a CONNECTED that arrives after the call it belongs to has ended', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919876543210' });
+		provider.emit({ type: 'CONNECTED', callId: 'c1', startedAt: '2026-09-04T10:00:00.000Z' });
+		provider.emit({ type: 'ENDED', callId: 'c1', reason: 'completed' });
+
+		// Every event arrives twice and in no promised order, so the duplicate CONNECTED can land
+		// after the call is over. Trusting it puts the agent back in a call that has ended: the
+		// card stays up, the timer keeps counting, and Hangup has nothing to hang up.
+		provider.emit({ type: 'CONNECTED', callId: 'c1', startedAt: '2026-09-04T10:00:00.000Z' });
+
+		expect(registry.getState()).toMatchObject({ inCall: false, callId: undefined });
+	});
+
+	it('claims the call before the dial request, not after it', async () => {
+		provisioned();
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		// The INVITE travels over a socket that is already open, so it can land before the dial's
+		// own HTTP response gets back. Claiming after the await leaves that gap, and a call that
+		// falls into it is treated as a stranger ringing in.
+		api.dialTicket.mockImplementation(async () => {
+			provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919876543210' });
+			return { code: 'abc123' };
+		});
+
+		await registry.current()?.dial('501');
+
+		expect(provider.answer).toHaveBeenCalledTimes(1);
+		expect(registry.getState()).toMatchObject({ direction: 'outbound', inCall: true });
+	});
+
+	it('drops the claim when the dial fails, so the next inbound call still rings', async () => {
+		provisioned();
+		api.dialTicket.mockRejectedValue(new Error('no credit'));
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		const provider = FakeProvider.last!;
+		await expect(registry.current()?.dial('501')).rejects.toMatchObject({
+			code: 'DIAL_REJECTED',
+		});
+
+		// Claiming early means a failed dial has to give the claim back. Otherwise a customer who
+		// rings in during the claim window is answered without the agent touching anything.
+		provider.emit({ type: 'INCOMING', callId: 'c9', from: '+919876543210' });
+
+		expect(provider.answer).not.toHaveBeenCalled();
+		expect(registry.getState()).toMatchObject({ direction: 'inbound', inCall: true });
+	});
+
 	it('tells the other tabs about a dial, so the leader can answer its leg', async () => {
 		provisioned();
 		api.dialTicket.mockResolvedValue({ code: 'abc123' });
@@ -472,6 +592,7 @@ describe('softphoneRegistry', () => {
 			onAction: async () => true,
 			onSnapshot: () => {},
 			onOutboundPlaced: ticketId => announced.push(ticketId),
+			onOutboundFailed: () => {},
 			onLeaderStale: () => {},
 		});
 		// Driven through dial(), not by calling announce directly - otherwise this would pass with
