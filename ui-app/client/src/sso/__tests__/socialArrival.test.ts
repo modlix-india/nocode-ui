@@ -138,8 +138,24 @@ describe('social arrival', () => {
 			// `register` refuses a request with no passType, and only a request with no password
 			// takes the social branch. This pair is the only one that satisfies both.
 			passType: 'PASSWORD',
+			// The app said nothing, and an app's registration rules are almost always written
+			// for business clients. Registering as an individual instead creates the account and
+			// grants it nothing.
+			businessClient: true,
 		});
 		expect(calls[1].body.password).toBeUndefined();
+	});
+
+	it('registers an individual when the app asked for one', async () => {
+		const calls = mockFetch({
+			'authenticate/social': { status: 403 },
+			'clients/socialRegister': { status: 200, body: { authentication: SESSION } },
+		});
+		const mod = loadModule();
+		setLocation(`${ARRIVAL}&businessClient=false`);
+
+		await expect(mod.consumeSocialArrival()).resolves.toBe(true);
+		expect(calls[1].body.businessClient).toBe(false);
 	});
 
 	it('does not try to register when the refusal was not "unknown user"', async () => {
@@ -303,6 +319,23 @@ describe('buildSocialLoginURL', () => {
 		expect(url.searchParams.get('redirectUrl')).toBe(
 			'https://sitezump.local.modlix.com/signIn',
 		);
+	});
+
+	it('carries the client type, since the return leg is a page load away', () => {
+		const mod = loadModule();
+
+		// The evoke call is the app's only chance to say anything: everything after it happens
+		// on the provider's site and then on a fresh page load, so whatever registration needs
+		// has to make the round trip on the URL.
+		const asBusiness = new URL(
+			mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' }, undefined)!,
+		);
+		expect(asBusiness.searchParams.get('businessClient')).toBe('true');
+
+		const asIndividual = new URL(
+			mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' }, undefined, false)!,
+		);
+		expect(asIndividual.searchParams.get('businessClient')).toBe('false');
 	});
 
 	it('is null when social login is not configured', () => {

@@ -46,6 +46,7 @@ const SOCIAL_ARRIVAL_PARAMS = [
 	'platform',
 	'appCode',
 	'clientCode',
+	'businessClient',
 	'redirectUrl',
 ];
 
@@ -172,6 +173,7 @@ export function buildSocialLoginURL(
 	platform: 'GOOGLE' | 'META',
 	application: { appCode?: string; clientCode?: string } | null,
 	redirectUrl?: string,
+	businessClient: boolean = true,
 ): string | null {
 	const host = globalThis.__SOCIAL_LOGIN_HOST__;
 	if (!host || !application?.appCode) return null;
@@ -179,12 +181,15 @@ export function buildSocialLoginURL(
 	// destination and falls back to the broker's own login page. `InitiateSocialLogin` resolves
 	// it; this only defaults it.
 	const back = redirectUrl ?? window.location.href;
-	// The callback echoes these back on the return leg, where `consumeSocialArrival` reads them.
+	// The callback echoes every one of these back on the return leg, which is how
+	// `consumeSocialArrival` gets them: the evoke call is the only chance the app has to say
+	// anything, because the provider's round trip is a full page load away.
 	return (
 		`https://${host}/api/security/clients/socialRegister/evoke` +
 		`?platform=${platform}` +
 		`&appCode=${encodeURIComponent(application.appCode)}` +
 		`&clientCode=${encodeURIComponent(application.clientCode ?? 'SYSTEM')}` +
+		`&businessClient=${businessClient}` +
 		`&redirectUrl=${encodeURIComponent(back)}`
 	);
 }
@@ -375,7 +380,14 @@ async function redeemSocialState(
 		phoneNumber: params.get('phoneNumber') ?? undefined,
 		localeCode: params.get('localeCode') ?? undefined,
 		clientName: [firstName, lastName].filter(Boolean).join(' ') || userName,
-		businessClient: false,
+		// Sent by the app on the outbound leg and echoed back here, the same way a page sends
+		// it when it calls the registration endpoint itself. It decides whether the new client
+		// is BUS or INDV, and an app's registration rules are written against one of those: get
+		// it wrong and the account is created, signed in, and granted nothing, which reads as
+		// "no access to this page" rather than as a registration problem. Absent means business,
+		// which is what every app with a social integration registered today expects; a B2C app
+		// says otherwise on the button.
+		businessClient: params.get('businessClient') !== 'false',
 		socialRegisterState: state,
 		// The browser is the only thing that knows the zone, and an offset cannot survive a
 		// daylight-saving boundary, so the platform asks for it by name.
