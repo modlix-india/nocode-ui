@@ -11,6 +11,7 @@ import {
 import { NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath } from '../context/StoreContext';
 import { buildSocialLoginURL } from '../sso/ssoModule';
+import { absoluteDestination } from '../util/absoluteDestination';
 
 const SIGNATURE = new FunctionSignature('InitiateSocialLogin')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -33,7 +34,7 @@ const SIGNATURE = new FunctionSignature('InitiateSocialLogin')
 		]),
 	)
 	.setDescription('Navigates to authzump social-login (Google/Meta) for the current or specified app')
-	.setDocumentation('# UIEngine.InitiateSocialLogin\n\nKicks off the SSO3 social-login flow by doing a top-level redirect to authzump\'s social-register evoke endpoint. The user is taken through the OAuth provider, and authzump\'s callback redirects them back to this app fully authenticated via the chained `/sso/{token}` flow.\n\n## Parameters\n\n- **platform** (String, required): `GOOGLE` or `META`\n- **redirectUrl** (String, optional): Where to land after social login completes. Defaults to the current page URL.\n- **appCode** (String, optional): Override the target app code. Defaults to the current app from `Store.application.appCode`.\n- **clientCode** (String, optional): Override the target client code. Defaults to the current app\'s client code or `SYSTEM`.\n\n## Events\n\n- **output**: Fires after navigation is initiated\n- **error**: Fires when SSO is not configured (no `__SSO_BEACON_HOST__` injected) or no app code is available\n\n## Notes\n\nRequires `application.properties.sso3 === true` so that `IndexHTMLService` injects the beacon host. If SSO isn\'t configured, this function emits an error event without navigating.');
+	.setDocumentation('# UIEngine.InitiateSocialLogin\n\nStarts social login by doing a top-level redirect to the platform\'s social-register evoke endpoint on authzump, which holds the Google and Meta OAuth credentials for every app. The user goes through the provider, and the callback brings them back to `redirectUrl` on THIS app with the provider-verified profile and a single-use state.\n\nThe return leg needs no page wiring: the client bootstrap redeems that state against this app\'s own origin, signing the user in or registering them here first, then continues to `redirectUrl`. Do not add a `SocialLogin` step of your own after this one.\n\n## Parameters\n\n- **platform** (String, required): `GOOGLE` or `META`\n- **redirectUrl** (String, optional): Where to land once social login completes. A relative path is resolved the way page links are, so `/accountHome` works. Defaults to the current page URL.\n- **appCode** (String, optional): Override the target app code. Defaults to the current app from `Store.application.appCode`.\n- **clientCode** (String, optional): Override the target client code. Defaults to the current app\'s client code or `SYSTEM`.\n\n## Events\n\n- **output**: Fires after navigation is initiated\n- **error**: Fires when social login is not configured (no `__SOCIAL_LOGIN_HOST__` injected) or no app code is available\n\n## Notes\n\nIndependent of `application.properties.sso3`: an app can offer social login without taking part in cross-app SSO. The app does need a Google or Meta integration registered for it, and `redirectUrl` must be one of the app\'s own hosts, which is what resolving a relative path gives you.');
 
 export class InitiateSocialLogin extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
@@ -65,10 +66,16 @@ export class InitiateSocialLogin extends AbstractFunction {
 			]);
 		}
 
+		// The redirect has to leave here ABSOLUTE. The platform's callback refuses a
+		// scheme-less destination as an open redirect and falls back to the OAuth broker's own
+		// login page, which is a different app on a different host: the user lands somewhere
+		// that knows nothing about this app and the sign-in silently ends there. Pages write
+		// `/accountHome`, the way every other link in a page is written, so resolving it is
+		// this function's job, not the page author's.
 		const url = buildSocialLoginURL(
 			platformArg,
 			{ appCode, clientCode },
-			redirectUrlArg || undefined,
+			redirectUrlArg ? absoluteDestination(redirectUrlArg) : undefined,
 		);
 
 		if (!url) {
