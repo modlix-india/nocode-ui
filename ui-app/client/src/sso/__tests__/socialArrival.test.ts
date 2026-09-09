@@ -138,24 +138,27 @@ describe('social arrival', () => {
 			// `register` refuses a request with no passType, and only a request with no password
 			// takes the social branch. This pair is the only one that satisfies both.
 			passType: 'PASSWORD',
-			// The app said nothing, and an app's registration rules are almost always written
-			// for business clients. Registering as an individual instead creates the account and
-			// grants it nothing.
-			businessClient: true,
 		});
 		expect(calls[1].body.password).toBeUndefined();
+
+		// The app named no client type, so none is sent. Inventing one here would decide, out
+		// of sight, which registration rules the new client matches.
+		expect('businessClient' in calls[1].body).toBe(false);
 	});
 
-	it('registers an individual when the app asked for one', async () => {
+	it.each([
+		['BUSINESS', true],
+		['INDIVIDUAL', false],
+	])('registers a %s client when the app said so on the button', async (clientType, expected) => {
 		const calls = mockFetch({
 			'authenticate/social': { status: 403 },
 			'clients/socialRegister': { status: 200, body: { authentication: SESSION } },
 		});
 		const mod = loadModule();
-		setLocation(`${ARRIVAL}&businessClient=false`);
+		setLocation(`${ARRIVAL}&clientType=${clientType}`);
 
 		await expect(mod.consumeSocialArrival()).resolves.toBe(true);
-		expect(calls[1].body.businessClient).toBe(false);
+		expect(calls[1].body.businessClient).toBe(expected);
 	});
 
 	it('does not try to register when the refusal was not "unknown user"', async () => {
@@ -327,15 +330,14 @@ describe('buildSocialLoginURL', () => {
 		// The evoke call is the app's only chance to say anything: everything after it happens
 		// on the provider's site and then on a fresh page load, so whatever registration needs
 		// has to make the round trip on the URL.
-		const asBusiness = new URL(
-			mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' }, undefined)!,
+		const chosen = new URL(
+			mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' }, undefined, 'BUSINESS')!,
 		);
-		expect(asBusiness.searchParams.get('businessClient')).toBe('true');
+		expect(chosen.searchParams.get('clientType')).toBe('BUSINESS');
 
-		const asIndividual = new URL(
-			mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' }, undefined, false)!,
-		);
-		expect(asIndividual.searchParams.get('businessClient')).toBe('false');
+		// And when the app says nothing, nothing is sent. No default is manufactured here.
+		const unsaid = new URL(mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' })!);
+		expect(unsaid.searchParams.has('clientType')).toBe(false);
 	});
 
 	it('is null when social login is not configured', () => {
