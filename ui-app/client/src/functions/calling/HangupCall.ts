@@ -1,7 +1,6 @@
 import {
 	AbstractFunction,
 	Event,
-	FunctionExecutionParameters,
 	FunctionOutput,
 	FunctionSignature,
 	Schema,
@@ -31,9 +30,7 @@ const SIGNATURE = new FunctionSignature('HangupCall')
 	);
 
 export class HangupCall extends AbstractFunction {
-	protected async internalExecute(
-		_context: FunctionExecutionParameters,
-	): Promise<FunctionOutput> {
+	protected async internalExecute(): Promise<FunctionOutput> {
 		return runSoftphoneControl(phone => phone.hangup());
 	}
 

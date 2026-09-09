@@ -5,6 +5,7 @@ import {
 	FunctionOutput,
 	FunctionSignature,
 	Parameter,
+	isNullValue,
 	Schema,
 	SchemaType,
 } from '@fincity/kirun-js';
@@ -64,7 +65,7 @@ export class MakeCall extends AbstractFunction {
 		const connectionName: string = context.getArguments()?.get('connectionName');
 
 		return runSoftphoneControl(phone =>
-			phone.dial(ticketId == null ? '' : String(ticketId), connectionName || undefined),
+			phone.dial(isNullValue(ticketId) ? '' : String(ticketId), connectionName || undefined),
 		);
 	}
 

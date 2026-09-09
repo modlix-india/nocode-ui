@@ -26,7 +26,11 @@ export function detectTransitions(
 
 	if (previous.registered !== next.registered) transitions.push('registrationChange');
 
-	if (!previous.inCall && next.inCall) transitions.push('incomingCall');
+	// Inbound only. `inCall` turns true for the agent's own outbound call the moment its leg
+	// starts ringing, so without the direction check a page that opens a ringing toast, plays a
+	// ringtone or pops an accept dialog does all of it to the agent who just pressed Call.
+	if (!previous.inCall && next.inCall && next.direction !== 'outbound')
+		transitions.push('incomingCall');
 
 	// Keyed on `startedAt` appearing rather than on `inCall`, because an outbound call is already
 	// `inCall` while it rings. `startedAt` is written once, when audio actually starts.

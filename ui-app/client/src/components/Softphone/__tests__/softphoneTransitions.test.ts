@@ -51,6 +51,16 @@ describe('detectTransitions', () => {
 		expect(detectTransitions(ringing, muted)).toEqual([]);
 	});
 
+	it("does not report the agent's own outbound call as an incoming one", () => {
+		const idle = state({ provisioned: true, registered: true, isLeader: true });
+		const dialling = state({ ...idle, inCall: true, callId: 'c3', direction: 'outbound' });
+
+		// `inCall` turns true as soon as the agent's own leg starts ringing, so this fired for a
+		// call they had just placed themselves - a ringing toast, a ringtone and an Accept button
+		// for their own dial.
+		expect(detectTransitions(idle, dialling)).toEqual([]);
+	});
+
 	it('separates answering from ringing', () => {
 		// An outbound call is already inCall while it rings, so `inCall` cannot mean "connected".
 		// `startedAt` appearing is what means audio started.
