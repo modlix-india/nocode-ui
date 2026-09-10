@@ -83,7 +83,7 @@ export default function PromptStyle({
 			gap: 8px;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			font-size: 14px;
 			font-weight: 500;
 			cursor: pointer;
@@ -110,7 +110,7 @@ export default function PromptStyle({
 		${PREFIX} ._sessionGroupLabel {
 			font-size: 11px;
 			font-weight: 600;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			text-transform: uppercase;
 			letter-spacing: 0.5px;
 			padding: 8px 8px 6px;
@@ -128,7 +128,7 @@ export default function PromptStyle({
 			text-align: left;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			font-size: 14px;
 			padding: 10px 12px;
 			border-radius: 8px;
@@ -160,7 +160,7 @@ export default function PromptStyle({
 			text-align: center;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			font-size: 13px;
 			padding: 10px 12px;
 			cursor: pointer;
@@ -170,7 +170,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._loadMoreSessions:hover {
 			background: ${t('surfaceColorThree', '#ececec')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._loadMoreSessions:disabled {
@@ -199,7 +199,7 @@ export default function PromptStyle({
 			height: 24px;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			cursor: pointer;
 			border-radius: 4px;
 			display: flex;
@@ -212,7 +212,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._renameSessionButton:hover {
 			background: ${t('surfaceColorThree', '#ddd')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._deleteSessionButton:hover {
@@ -228,7 +228,7 @@ export default function PromptStyle({
 			padding: 4px 8px;
 			font-size: 14px;
 			font-family: inherit;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			background: ${t('colorSeven', '#fff')};
 			outline: none;
 		}
@@ -259,7 +259,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._deleteConfirmText {
 			font-size: 14px;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			margin: 0 0 16px;
 			line-height: 1.5;
 		}
@@ -283,7 +283,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._deleteConfirmCancel {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._deleteConfirmCancel:hover {
@@ -413,7 +413,7 @@ export default function PromptStyle({
 			height: 36px;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			cursor: pointer;
 			border-radius: 8px;
 			display: flex;
@@ -432,7 +432,7 @@ export default function PromptStyle({
 		${PREFIX} ._promptPreviewOpenButton:hover,
 		${PREFIX} ._promptOpenFullButton:hover {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		/* ─── Page preview ─── */
@@ -497,7 +497,7 @@ export default function PromptStyle({
 		${PREFIX} ._promptPreviewTab {
 			border: none;
 			background: transparent;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			font-size: 12px;
 			padding: 4px 10px;
 			border-radius: 6px;
@@ -506,7 +506,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._promptPreviewTab._active {
 			background: ${t('colorSeven', '#fff')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			font-weight: 600;
 		}
 
@@ -519,7 +519,7 @@ export default function PromptStyle({
 			min-width: 0;
 			font-size: 12px;
 			font-family: inherit;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			white-space: nowrap;
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -531,7 +531,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._promptPreviewPath._pinned {
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._promptPreviewPath:hover {
@@ -541,7 +541,7 @@ export default function PromptStyle({
 		${PREFIX} ._promptPreviewPath:focus {
 			border-color: ${t('borderColorNine', '#e5e5e5')};
 			background: ${t('colorSeven', '#fff')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			text-overflow: clip;
 		}
 
@@ -557,7 +557,7 @@ export default function PromptStyle({
 			height: 28px;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			cursor: pointer;
 			border-radius: 6px;
 			display: flex;
@@ -571,7 +571,7 @@ export default function PromptStyle({
 		${PREFIX} ._promptPreviewTool:hover,
 		${PREFIX} ._promptPreviewTool._active {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		/* Centres a narrowed device frame and lets a wide one scroll rather than
@@ -597,7 +597,7 @@ export default function PromptStyle({
 			padding: 24px;
 			text-align: center;
 			font-size: 13px;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 		}
 
 		/* The offer, above the composer with the other post-turn notices. */
@@ -610,7 +610,7 @@ export default function PromptStyle({
 			border-radius: 8px;
 			font-size: 12px;
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 		}
 
 		${PREFIX} ._promptPreviewOfferGo {
@@ -622,7 +622,7 @@ export default function PromptStyle({
 			font-size: 12px;
 			font-weight: 600;
 			cursor: pointer;
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			color: ${t('colorSeven', '#fff')};
 		}
 
@@ -685,7 +685,7 @@ export default function PromptStyle({
 		${PREFIX} ._emptyTitle {
 			font-size: 24px;
 			font-weight: 600;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			margin: 0;
 			line-height: 1.4;
 			text-align: center;
@@ -727,7 +727,7 @@ export default function PromptStyle({
 			background: transparent;
 			cursor: pointer;
 			font-size: 14px;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			text-align: left;
 			transition: background 0.15s, border-color 0.15s;
 		}
@@ -750,7 +750,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._quickActionIcon {
 			font-size: 16px;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			width: 20px;
 			text-align: center;
 			flex-shrink: 0;
@@ -765,7 +765,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._quickActionBadge {
 			font-size: 11px;
-			color: ${t('fontColorThree', '#999')};
+			color: ${t('promptTertiaryFontColor', '#999')};
 			background: ${t('surfaceColorTwo', '#f0f0f0')};
 			padding: 2px 8px;
 			border-radius: 10px;
@@ -778,7 +778,7 @@ export default function PromptStyle({
 			text-align: center;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			font-size: 13px;
 			padding: 10px 12px;
 			cursor: pointer;
@@ -789,7 +789,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._loadEarlierMessages:hover {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._loadEarlierMessages:disabled {
@@ -803,7 +803,7 @@ export default function PromptStyle({
 			max-width: 75%;
 			padding: 10px 16px;
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			border-radius: 20px;
 			font-size: 15px;
 			line-height: 1.6;
@@ -826,7 +826,7 @@ export default function PromptStyle({
 			min-width: 0;
 			font-size: 15px;
 			line-height: 1.7;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._assistantContent p {
@@ -846,7 +846,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._assistantContent pre {
-			background: ${t('fontColorOne', '#1e1e1e')};
+			background: ${t('promptFontColor', '#1e1e1e')};
 			color: ${t('fontColorTen', '#d4d4d4')};
 			padding: 16px;
 			border-radius: 8px;
@@ -904,7 +904,7 @@ export default function PromptStyle({
 		${PREFIX} ._thinkingHeader i,
 		${PREFIX} ._thinkingChevron {
 			font-size: 10px;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 		}
 
 		${PREFIX} ._thinkingChevron {
@@ -920,7 +920,7 @@ export default function PromptStyle({
 			width: 6px;
 			height: 6px;
 			border-radius: 50%;
-			background: ${t('fontColorThree', '#8b8b8b')};
+			background: ${t('promptTertiaryFontColor', '#8b8b8b')};
 			animation: promptThinkingBounce 1.4s ease-in-out infinite;
 		}
 
@@ -939,7 +939,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._thinkingLabel {
 			font-size: 13px;
-			color: ${t('fontColorThree', '#8b8b8b')};
+			color: ${t('promptTertiaryFontColor', '#8b8b8b')};
 			font-style: italic;
 		}
 
@@ -961,7 +961,7 @@ export default function PromptStyle({
 			gap: 8px;
 			padding: 4px 8px;
 			font-size: 12px;
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 			border: none;
 			background: none;
 			font: inherit;
@@ -984,24 +984,24 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._thinkingToolEntry._running ._thinkingToolIcon {
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._thinkingToolEntry._success ._thinkingToolIcon {
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._thinkingToolEntry._error ._thinkingToolIcon {
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._thinkingToolName {
 			font-weight: 500;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._thinkingToolSummary {
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -1011,7 +1011,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._thinkingToolToggle {
 			font-size: 9px;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			flex-shrink: 0;
 			margin-left: auto;
 		}
@@ -1020,7 +1020,7 @@ export default function PromptStyle({
 			padding: 2px 12px;
 			font-size: 12px;
 			line-height: 1.6;
-			color: ${t('fontColorThree', '#8c8a80')};
+			color: ${t('promptTertiaryFontColor', '#8c8a80')};
 			font-style: italic;
 			margin: 0 8px 4px;
 			white-space: pre-wrap;
@@ -1034,7 +1034,7 @@ export default function PromptStyle({
 			padding: 6px 12px 8px 26px;
 			font-size: 12px;
 			line-height: 1.5;
-			color: ${t('fontColorTwo', '#555')};
+			color: ${t('promptSecondaryFontColor', '#555')};
 			background: ${t('surfaceColorOne', '#f9f9f9')};
 			border-radius: 0 0 6px 6px;
 			margin: 0 8px 4px;
@@ -1052,15 +1052,15 @@ export default function PromptStyle({
 			box-sizing: border-box;
 		}
 		${PREFIX} ._statusDot._running {
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			animation: promptStatusDotPulse 1.2s ease-in-out infinite;
 		}
 		${PREFIX} ._statusDot._success {
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 		}
 		${PREFIX} ._statusDot._error {
 			background: transparent;
-			border: 1.5px solid ${t('fontColorOne', '#1a1a1a')};
+			border: 1.5px solid ${t('promptFontColor', '#1a1a1a')};
 		}
 		${PREFIX} ._statusDot._sm {
 			width: 6px;
@@ -1077,7 +1077,7 @@ export default function PromptStyle({
 			height: 7px;
 			border-radius: 50%;
 			flex-shrink: 0;
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		/* ─── Agent group (single agent = no wrapper, multi = group) ─── */
@@ -1126,7 +1126,7 @@ export default function PromptStyle({
 			width: 13px;
 			height: 13px;
 			border: 2px solid ${t('borderColorNine', '#e2e1db')};
-			border-top-color: ${t('fontColorOne', '#1a1a1a')};
+			border-top-color: ${t('promptFontColor', '#1a1a1a')};
 			border-radius: 50%;
 			animation: promptAgentSpin 0.9s linear infinite;
 			flex-shrink: 0;
@@ -1140,7 +1140,7 @@ export default function PromptStyle({
 			width: 15px;
 			height: 15px;
 			border-radius: 50%;
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			color: ${t('backgroundColorOne', '#fff')};
 			font-size: 9px;
 			font-weight: 700;
@@ -1151,7 +1151,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._agentCardTitle {
 			font-weight: 600;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -1160,7 +1160,7 @@ export default function PromptStyle({
 		${PREFIX} ._agentCardTime {
 			margin-left: auto;
 			font-size: 11px;
-			color: ${t('fontColorThree', '#8c8a80')};
+			color: ${t('promptTertiaryFontColor', '#8c8a80')};
 			background: ${t('surfaceColorTwo', '#f4f3ee')};
 			border: 1px solid ${t('borderColorNine', '#e6e5df')};
 			border-radius: 999px;
@@ -1170,7 +1170,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._agentCardChevron {
 			font-size: 10px;
-			color: ${t('fontColorThree', '#b6b4a9')};
+			color: ${t('promptTertiaryFontColor', '#b6b4a9')};
 			flex-shrink: 0;
 		}
 
@@ -1196,13 +1196,13 @@ export default function PromptStyle({
 
 		${PREFIX} ._agentItemName {
 			font-weight: 600;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._agentItemDur {
 			margin-left: auto;
 			font-size: 11px;
-			color: ${t('fontColorThree', '#b6b4a9')};
+			color: ${t('promptTertiaryFontColor', '#b6b4a9')};
 			white-space: nowrap;
 		}
 
@@ -1210,19 +1210,19 @@ export default function PromptStyle({
 		${PREFIX} ._agentDoing {
 			margin: 3px 0 0 17px;
 			font-size: 12.5px;
-			color: ${t('fontColorTwo', '#5b5a53')};
+			color: ${t('promptSecondaryFontColor', '#5b5a53')};
 		}
 
 		${PREFIX} ._agentItem._success ._agentDoing,
 		${PREFIX} ._agentItem._error ._agentDoing {
-			color: ${t('fontColorThree', '#8c8a80')};
+			color: ${t('promptTertiaryFontColor', '#8c8a80')};
 		}
 
 		${PREFIX} ._agentDoingCursor {
 			display: inline-block;
 			width: 6px;
 			height: 11px;
-			background: ${t('fontColorThree', '#b6b4a9')};
+			background: ${t('promptTertiaryFontColor', '#b6b4a9')};
 			margin-left: 3px;
 			vertical-align: -1px;
 			animation: promptStatusDotPulse 0.9s steps(2) infinite;
@@ -1235,7 +1235,7 @@ export default function PromptStyle({
 			padding: 2px 10px;
 			font-size: 12px;
 			line-height: 1.5;
-			color: ${t('fontColorThree', '#8c8a80')};
+			color: ${t('promptTertiaryFontColor', '#8c8a80')};
 			font-style: italic;
 			max-height: 54px;
 			overflow: hidden;
@@ -1250,7 +1250,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._agentThink:hover {
-			border-left-color: ${t('fontColorThree', '#b6b4a9')};
+			border-left-color: ${t('promptTertiaryFontColor', '#b6b4a9')};
 		}
 
 		/* tool lifecycle rows: appear on start, line swaps on update, settle on result */
@@ -1273,7 +1273,7 @@ export default function PromptStyle({
 			text-align: left;
 			width: 100%;
 			border-radius: 8px;
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 		}
 
 		${PREFIX} ._agentToolHead._clickable {
@@ -1285,7 +1285,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._agentToolLive {
-			color: ${t('fontColorTwo', '#5b5a53')};
+			color: ${t('promptSecondaryFontColor', '#5b5a53')};
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -1294,13 +1294,13 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._agentTool._settled ._agentToolLive {
-			color: ${t('fontColorThree', '#8c8a80')};
+			color: ${t('promptTertiaryFontColor', '#8c8a80')};
 		}
 
 		${PREFIX} ._agentToolDur {
 			margin-left: auto;
 			font-size: 10.5px;
-			color: ${t('fontColorThree', '#b6b4a9')};
+			color: ${t('promptTertiaryFontColor', '#b6b4a9')};
 			white-space: nowrap;
 			flex-shrink: 0;
 		}
@@ -1314,13 +1314,13 @@ export default function PromptStyle({
 		${PREFIX} ._agentToolHistLine {
 			font-size: 11.5px;
 			line-height: 1.6;
-			color: ${t('fontColorThree', '#b6b4a9')};
+			color: ${t('promptTertiaryFontColor', '#b6b4a9')};
 		}
 
 		${PREFIX} ._agentToolHistFinal {
 			font-size: 11.5px;
 			line-height: 1.6;
-			color: ${t('fontColorThree', '#8c8a80')};
+			color: ${t('promptTertiaryFontColor', '#8c8a80')};
 			white-space: pre-wrap;
 			word-break: break-word;
 		}
@@ -1336,7 +1336,7 @@ export default function PromptStyle({
 			gap: 8px;
 			padding: 3px 8px;
 			font-size: 12px;
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 			border: none;
 			background: none;
 			font: inherit;
@@ -1346,12 +1346,12 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._agentToolName {
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			font-weight: 500;
 		}
 
 		${PREFIX} ._agentToolSummary {
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			flex: 1;
 			min-width: 0;
 			font-size: 12px;
@@ -1369,12 +1369,12 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._agentToolHeader._clickable:hover ._agentToolName {
-			color: ${t('fontColorOne', '#000')};
+			color: ${t('promptFontColor', '#000')};
 		}
 
 		${PREFIX} ._agentToolToggle {
 			font-size: 10px;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			flex-shrink: 0;
 			margin-left: auto;
 		}
@@ -1383,7 +1383,7 @@ export default function PromptStyle({
 			padding: 6px 8px;
 			font-size: 11px;
 			line-height: 1.5;
-			color: ${t('fontColorTwo', '#555')};
+			color: ${t('promptSecondaryFontColor', '#555')};
 			background: ${t('surfaceColorTwo', '#f5f5f5')};
 			border-radius: 6px;
 			white-space: pre-wrap;
@@ -1399,7 +1399,7 @@ export default function PromptStyle({
 		${PREFIX} ._agentToolUpdateLine {
 			font-size: 11px;
 			line-height: 1.6;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 		}
 
 		/* Streaming cursor */
@@ -1407,7 +1407,7 @@ export default function PromptStyle({
 			display: inline-block;
 			width: 2px;
 			height: 18px;
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			margin-left: 2px;
 			vertical-align: text-bottom;
 			animation: promptBlink 1s step-end infinite;
@@ -1430,7 +1430,7 @@ export default function PromptStyle({
 			height: 28px;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			cursor: pointer;
 			border-radius: 6px;
 			display: flex;
@@ -1443,11 +1443,11 @@ export default function PromptStyle({
 
 		${PREFIX} ._actionButton:hover {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._feedbackButton._active {
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			background: ${t('surfaceColorThree', '#e8e8e8')};
 		}
 
@@ -1469,7 +1469,7 @@ export default function PromptStyle({
 			border: 1px solid ${t('borderColorTen', '#ddd')};
 			border-radius: 18px;
 			background: ${t('colorSeven', '#fff')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			font-size: 14px;
 			cursor: pointer;
 			transition: background 0.15s, border-color 0.15s;
@@ -1491,13 +1491,13 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._suggestionsConfirm {
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			color: ${t('colorSeven', '#fff')};
-			border-color: ${t('fontColorOne', '#1a1a1a')};
+			border-color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._suggestionsConfirm:hover {
-			background: ${t('fontColorOne', '#333')};
+			background: ${t('promptFontColor', '#333')};
 		}
 
 		/* ─── Craft Card (inline in chat) ─── */
@@ -1525,7 +1525,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftCardIcon {
 			font-size: 16px;
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 			flex-shrink: 0;
 		}
 
@@ -1546,7 +1546,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftCardSubtitle {
 			font-size: 12px;
-			color: ${t('fontColorThree', '#888')};
+			color: ${t('promptTertiaryFontColor', '#888')};
 		}
 
 		${PREFIX} ._craftCardChevron {
@@ -1606,7 +1606,7 @@ export default function PromptStyle({
 			border-radius: 50%;
 			background: ${t('colorSeven', '#fff')};
 			border: 1px solid ${t('borderColorTen', '#ddd')};
-			color: ${t('fontColorOne', '#333')};
+			color: ${t('promptFontColor', '#333')};
 			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 			cursor: pointer;
 			display: flex;
@@ -1650,7 +1650,7 @@ export default function PromptStyle({
 			height: 28px;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorThree', '#999')};
+			color: ${t('promptTertiaryFontColor', '#999')};
 			cursor: pointer;
 			border-radius: 6px;
 			display: flex;
@@ -1661,7 +1661,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftPanelClose:hover {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._craftPanelBody {
@@ -1701,7 +1701,7 @@ export default function PromptStyle({
 			font-size: 12px;
 			font-weight: 500;
 			background: ${t('surfaceColorTwo', '#f0f0f0')};
-			color: ${t('fontColorTwo', '#555')};
+			color: ${t('promptSecondaryFontColor', '#555')};
 			width: fit-content;
 		}
 
@@ -1718,7 +1718,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._craftKvKey {
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 			min-width: 100px;
 			flex-shrink: 0;
 		}
@@ -1750,7 +1750,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftImageCaption {
 			font-size: 12px;
-			color: ${t('fontColorThree', '#888')};
+			color: ${t('promptTertiaryFontColor', '#888')};
 			margin-top: 4px;
 			display: block;
 		}
@@ -1770,7 +1770,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftTable th {
 			font-weight: 600;
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 			font-size: 12px;
 			text-transform: uppercase;
 		}
@@ -1789,7 +1789,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftMetricLabel {
 			font-size: 12px;
-			color: ${t('fontColorThree', '#888')};
+			color: ${t('promptTertiaryFontColor', '#888')};
 		}
 
 		${PREFIX} ._craftMetricValue {
@@ -1799,7 +1799,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftMetricDetail {
 			font-size: 12px;
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 		}
 
 		${PREFIX} ._craftMetricTrend._up { color: #34a853; }
@@ -1820,7 +1820,7 @@ export default function PromptStyle({
 			padding-left: 20px;
 			font-size: 14px;
 			line-height: 1.8;
-			color: ${t('fontColorOne', '#333')};
+			color: ${t('promptFontColor', '#333')};
 		}
 
 		${PREFIX} ._craftRow {
@@ -1863,17 +1863,17 @@ export default function PromptStyle({
 			border: none;
 			cursor: pointer;
 			font-size: 13px;
-			color: ${t('fontColorTwo', '#555')};
+			color: ${t('promptSecondaryFontColor', '#555')};
 			text-align: left;
 		}
 
 		${PREFIX} ._craftCollapsibleToggle:hover {
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._craftCollapsibleGlyph {
 			font-size: 14px;
-			color: ${t('fontColorThree', '#888')};
+			color: ${t('promptTertiaryFontColor', '#888')};
 			line-height: 1;
 		}
 
@@ -1913,7 +1913,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftCollapsibleChevron {
 			font-size: 16px;
-			color: ${t('fontColorThree', '#999')};
+			color: ${t('promptTertiaryFontColor', '#999')};
 			line-height: 1;
 			transition: transform 0.15s ease;
 			display: inline-block;
@@ -2077,8 +2077,8 @@ export default function PromptStyle({
 		/* Dark variant of the thumbnail tile — for white/transparent content
 		   that would otherwise vanish on a light background. */
 		${PREFIX} ._craftImage._thumbnail._dark a {
-			background: ${t('fontColorOne', '#1a1a1a')};
-			border-color: ${t('fontColorOne', '#333')};
+			background: ${t('promptFontColor', '#1a1a1a')};
+			border-color: ${t('promptFontColor', '#333')};
 		}
 
 		/* Cover variant — for photo-style images that should fill the tile
@@ -2135,7 +2135,7 @@ export default function PromptStyle({
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
 			border-radius: 8px;
 			font-size: 13px;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		/* ─── Saved-outright notice ───
@@ -2252,7 +2252,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._promptPendingBtn._primary {
 			border-color: transparent;
-			background-color: ${t('fontColorOne', '#1a1a1a')};
+			background-color: ${t('promptFontColor', '#1a1a1a')};
 			color: ${t('colorSeven', '#fff')};
 		}
 
@@ -2303,7 +2303,7 @@ export default function PromptStyle({
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
 			border-radius: 8px;
 			font-size: 12px;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			max-width: 150px;
 		}
 
@@ -2359,7 +2359,7 @@ export default function PromptStyle({
 			border: 1px solid ${t('borderColorNine', '#e0e0e0')};
 			border-radius: 50%;
 			background: transparent;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			cursor: pointer;
 			display: flex;
 			align-items: center;
@@ -2372,7 +2372,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._addAttachmentButton:hover {
 			background: ${t('surfaceColorThree', '#ececec')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			border-color: ${t('borderColorTen', '#ccc')};
 		}
 
@@ -2395,11 +2395,11 @@ export default function PromptStyle({
 			line-height: 1.5;
 			/* InputBar switches this to auto once the box hits max-height. */
 			overflow-y: hidden;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._inputContainer textarea::placeholder {
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 		}
 
 		${PREFIX} ._inputActions {
@@ -2415,7 +2415,7 @@ export default function PromptStyle({
 			height: 32px;
 			border: none;
 			border-radius: 50%;
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			color: ${t('colorSeven', '#fff')};
 			cursor: pointer;
 			display: flex;
@@ -2442,7 +2442,7 @@ export default function PromptStyle({
 			height: 32px;
 			border: none;
 			border-radius: 50%;
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			color: ${t('colorSeven', '#fff')};
 			cursor: pointer;
 			display: flex;
@@ -2464,7 +2464,7 @@ export default function PromptStyle({
 			border-radius: 50%;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 			cursor: pointer;
 			display: flex;
 			align-items: center;
@@ -2477,7 +2477,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._micButton:hover {
 			background: ${t('surfaceColorThree', '#ececec')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._micButton._recording {
@@ -2516,7 +2516,7 @@ export default function PromptStyle({
 			gap: 6px;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			font-size: 12px;
 			font-family: inherit;
 			cursor: pointer;
@@ -2528,7 +2528,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._modelSelectorButton:hover {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._modelSelectorButton:disabled {
@@ -2566,7 +2566,7 @@ export default function PromptStyle({
 			width: 100%;
 			border: none;
 			background: transparent;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			font-size: 13px;
 			font-family: inherit;
 			text-align: left;
@@ -2592,7 +2592,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._modelOptionCheck {
 			font-size: 11px;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			flex-shrink: 0;
 		}
 
@@ -2602,7 +2602,7 @@ export default function PromptStyle({
 			align-items: center;
 			gap: 8px;
 			font-size: 11px;
-			color: ${t('fontColorThree', '#9b9b9b')};
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			margin-left: auto;
 		}
 
@@ -2634,7 +2634,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._usageContextFill {
 			height: 100%;
-			background: ${t('fontColorThree', '#9b9b9b')};
+			background: ${t('promptTertiaryFontColor', '#9b9b9b')};
 			border-radius: 2px;
 			transition: width 0.3s ease;
 		}
@@ -2677,12 +2677,12 @@ export default function PromptStyle({
 		${PREFIX} ._confirmationTitle {
 			font-size: 14px;
 			font-weight: 600;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 
 		${PREFIX} ._confirmationMessage {
 			font-size: 13px;
-			color: ${t('fontColorTwo', '#444')};
+			color: ${t('promptSecondaryFontColor', '#444')};
 			line-height: 1.5;
 			margin: 0 0 12px;
 			white-space: pre-wrap;
@@ -2703,7 +2703,7 @@ export default function PromptStyle({
 			cursor: pointer;
 			border: 1px solid ${t('borderColorTen', '#d0d0d0')};
 			background: ${t('colorSeven', '#fff')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			transition: background 0.15s, border-color 0.15s;
 		}
 
@@ -2774,7 +2774,7 @@ export default function PromptStyle({
 		/* Details list */
 		${PREFIX} ._confirmationDetails {
 			font-size: 12px;
-			color: ${t('fontColorTwo', '#555')};
+			color: ${t('promptSecondaryFontColor', '#555')};
 			line-height: 1.5;
 			margin: 0 0 12px;
 			padding-left: 18px;
@@ -2806,7 +2806,7 @@ export default function PromptStyle({
 			border: 1px solid ${t('borderColorEleven', '#cbd5e1')};
 			border-radius: 8px;
 			font-size: 13px;
-			color: ${t('fontColorOne', '#1e293b')};
+			color: ${t('promptFontColor', '#1e293b')};
 			outline: none;
 			transition: border-color 0.2s;
 		}
@@ -2818,7 +2818,7 @@ export default function PromptStyle({
 			right: 20px;
 			top: 20px;
 			font-size: 11px;
-			color: ${t('fontColorThree', '#64748b')};
+			color: ${t('promptTertiaryFontColor', '#64748b')};
 		}
 		${PREFIX} ._mapSuggestionsList {
 			position: absolute;
@@ -2841,7 +2841,7 @@ export default function PromptStyle({
 			padding: 8px 12px;
 			border: none;
 			background: ${t('colorSeven', '#ffffff')} !important;
-			color: ${t('fontColorOne', '#1e293b')} !important;
+			color: ${t('promptFontColor', '#1e293b')} !important;
 			text-align: left;
 			cursor: pointer;
 			font-size: 13px;
@@ -2852,11 +2852,11 @@ export default function PromptStyle({
 		}
 		${PREFIX} ._mapSugName {
 			font-weight: 500;
-			color: ${t('fontColorOne', '#1e293b')};
+			color: ${t('promptFontColor', '#1e293b')};
 		}
 		${PREFIX} ._mapSugType {
 			font-size: 11px;
-			color: ${t('fontColorThree', '#64748b')};
+			color: ${t('promptTertiaryFontColor', '#64748b')};
 			background: ${t('surfaceColorTwo', '#f1f5f9')};
 			padding: 2px 6px;
 			border-radius: 4px;
@@ -2877,7 +2877,7 @@ export default function PromptStyle({
 			align-items: center;
 			justify-content: center;
 			background: ${t('surfaceColorOne', 'rgba(248, 250, 252, 0.9)')};
-			color: ${t('fontColorThree', '#64748b')};
+			color: ${t('promptTertiaryFontColor', '#64748b')};
 			font-size: 13px;
 		}
 		${PREFIX} ._mapTooltip {
@@ -2913,11 +2913,11 @@ export default function PromptStyle({
 		${PREFIX} ._mapFooterName {
 			font-size: 13px;
 			font-weight: 600;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 		}
 		${PREFIX} ._mapFooterMeta {
 			font-size: 11px;
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 			margin-top: 2px;
 		}
 		${PREFIX} ._mapFooterDelete {
@@ -2933,7 +2933,7 @@ export default function PromptStyle({
 		}
 		${PREFIX} ._mapFooterHint {
 			font-size: 11px;
-			color: ${t('fontColorThree', '#888')};
+			color: ${t('promptTertiaryFontColor', '#888')};
 			font-style: italic;
 			text-align: center;
 			width: 100%;
@@ -2965,7 +2965,7 @@ export default function PromptStyle({
 			box-shadow: 0 1px 6px rgba(0,0,0,0.10);
 			transition: opacity 0.25s ease, transform 0.25s ease, background 0.15s;
 			opacity: 1;
-			color: ${t('fontColorTwo', '#6b6b6b')};
+			color: ${t('promptSecondaryFontColor', '#6b6b6b')};
 		}
 
 		${PREFIX} ._scrollToBottom._hidden {
@@ -2976,7 +2976,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._scrollToBottom:hover:not(._hidden) {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			transform: translateX(-50%) scale(1.05);
 		}
 
@@ -2994,7 +2994,7 @@ export default function PromptStyle({
 			padding: 8px 14px;
 			font-size: 13px;
 			font-weight: 600;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			background: ${t('surfaceColorOne', '#fafafa')};
 		}
 		${PREFIX} ._pLocationMapWrap {
@@ -3012,7 +3012,7 @@ export default function PromptStyle({
 			justify-content: center;
 			padding: 0 24px;
 			text-align: center;
-			color: ${t('fontColorTwo', '#666')};
+			color: ${t('promptSecondaryFontColor', '#666')};
 			font-size: 13px;
 			background: ${t('surfaceColorTwo', 'rgba(244, 244, 244, 0.85)')};
 			pointer-events: none;
@@ -3026,7 +3026,7 @@ export default function PromptStyle({
 			border-top: 1px solid ${t('borderColorNine', '#e5e5e5')};
 			background: ${t('surfaceColorOne', '#fafafa')};
 		}
-		${PREFIX} ._pLocationHint { font-size: 12px; color: ${t('fontColorTwo', '#666')}; }
+		${PREFIX} ._pLocationHint { font-size: 12px; color: ${t('promptSecondaryFontColor', '#666')}; }
 		${PREFIX} ._pLocationActions { display: flex; gap: 8px; }
 		${PREFIX} ._pLocationConfirmBtn {
 			padding: 5px 14px;
@@ -3035,7 +3035,7 @@ export default function PromptStyle({
 			font-weight: 500;
 			cursor: pointer;
 			border: 1px solid transparent;
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			color: ${t('colorSeven', '#fff')};
 		}
 		${PREFIX} ._pLocationConfirmBtn:hover { opacity: 0.85; }
@@ -3081,7 +3081,7 @@ export default function PromptStyle({
 			height: 18px;
 			flex: 0 0 18px;
 			border-radius: 999px;
-			background: ${t('fontColorOne', '#1a1a1a')};
+			background: ${t('promptFontColor', '#1a1a1a')};
 			color: ${t('colorSeven', '#fff')};
 		}
 		${PREFIX} ._pLocationConfirmedAddr {
@@ -3089,7 +3089,7 @@ export default function PromptStyle({
 			min-width: 0;
 			font-size: 12px;
 			font-weight: 500;
-			color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('promptFontColor', '#1a1a1a')};
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;

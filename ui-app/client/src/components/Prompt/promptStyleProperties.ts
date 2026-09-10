@@ -11,8 +11,29 @@ import { StylePropertyDefinition } from '../../types/common';
  *
  * Every default is the literal the component ships today, so an app that sets
  * none of these looks exactly as it did. Theming is opt-in per key.
+ *
+ * INVARIANT: PromptStyle text colors resolve ONLY from prompt-scoped keys
+ * (promptFontColor / promptSecondaryFontColor / promptTertiaryFontColor),
+ * never from the app-wide palette (fontColorOne/Two/Three). The adzump theme
+ * sets fontColorTwo to #FFFFFF for its dark marketing surfaces, which made
+ * every secondary line in the chat white-on-white (live 2026-09-10). The chat
+ * owns its readability; apps recolor it only through these named keys.
  */
 export const styleProperties: Array<StylePropertyDefinition> = [
+	// ─── Text tones (no sel/cp: resolved inline by PromptStyle's t(), declared
+	// here so the Theme Editor lists them) ───
+	{
+		gn: 'Prompt Surface',
+		dn: 'Secondary Font Color',
+		de: 'Labels, tool rows, craft-panel entries - all mid-emphasis text',
+		n: 'promptSecondaryFontColor',
+	},
+	{
+		gn: 'Prompt Surface',
+		dn: 'Tertiary Font Color',
+		de: 'Timestamps, placeholders, muted hints - all low-emphasis text',
+		n: 'promptTertiaryFontColor',
+	},
 	// ─── Shell ───
 	{
 		gn: 'Prompt Surface',
