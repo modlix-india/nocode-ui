@@ -1174,6 +1174,17 @@ export default function PromptStyle({
 			flex-shrink: 0;
 		}
 
+		${PREFIX} ._agentCardProgress {
+			height: 3px;
+			background: ${t('borderColorNine', '#f2f1ec')};
+		}
+
+		${PREFIX} ._agentCardProgress > div {
+			height: 100%;
+			background: ${t('promptFontColor', '#1a1a1a')};
+			transition: width 0.5s ease;
+		}
+
 		${PREFIX} ._agentCardBody {
 			border-top: 1px solid ${t('borderColorNine', '#f2f1ec')};
 		}

@@ -250,13 +250,14 @@ export function AgentGroup({
 	const now = Date.now();
 	const count = spans.length;
 
-	// Card title: the agent's own name when alone, a count otherwise.
+	// Card title: the agent's own name when alone, live progress otherwise.
+	const doneCount = spans.filter(s => s.status !== 'running').length;
 	const title =
 		count === 1
 			? spans[0].label
 			: anyRunning
-				? `Working — ${count} assistants`
-				: `Finished — ${count} assistants`;
+				? `Working — ${doneCount}/${count} done`
+				: `Finished — ${count} tasks`;
 
 	// Group clock: first start to last end (or now while running).
 	const groupStart = Math.min(...spans.map(s => s.startedAt));
@@ -278,6 +279,12 @@ export function AgentGroup({
 					aria-hidden="true"
 				/>
 			</button>
+
+			{count > 1 && anyRunning && (
+				<div className="_agentCardProgress">
+					<div style={{ width: `${(doneCount / count) * 100}%` }} />
+				</div>
+			)}
 
 			{groupExpanded && (
 				<div className="_agentCardBody">
