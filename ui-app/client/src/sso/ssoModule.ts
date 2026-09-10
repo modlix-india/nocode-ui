@@ -57,6 +57,26 @@ const SOCIAL_ARRIVAL_PARAMS = [
 // are two different journeys.
 const SOCIAL_TRIED_KEY = 'socialStateTried';
 
+/**
+ * The authzump host, which the platform stamps into the page and the dev server does not.
+ *
+ * Local dev only, and it exists for the same reason as the `nodeDev` branch in index.tsx: the
+ * webpack dev server serves its own `src/index.html`, and the two things that stamp this host
+ * are `IndexHTMLService` and the SSR renderer, so on local neither global is ever set. Without
+ * a fallback, `isSsoEnabled` is false on every local app, no bounce or seeding ever happens, and
+ * social login reports itself unconfigured: SSO cannot be tested locally at all.
+ *
+ * The value is what `IndexHTMLService.deriveBeaconHost` returns for the `.local` suffix, and
+ * that host is served locally, `/hassso` included. `nodeDev` is set in `src/index.html` and
+ * nowhere else, so this cannot exist in a real deployment, where the stamp is the only answer.
+ */
+const LOCAL_DEV_AUTHZUMP_HOST = 'authzump.local.modlix.com';
+
+function authzumpHost(stamped: string | undefined): string | undefined {
+	if (stamped) return stamped;
+	return globalThis.nodeDev === true ? LOCAL_DEV_AUTHZUMP_HOST : undefined;
+}
+
 // NOTE: ssoModule loads before React mounts. Anything here must avoid touching
 // the path-reactive store (StoreContext / getDataFromPath / setData), since
 // reading a not-yet-initialised path corrupts the store and triggers spurious
@@ -64,7 +84,7 @@ const SOCIAL_TRIED_KEY = 'socialStateTried';
 // they have; this module only reads runtime globals and direct localStorage.
 export function isSsoEnabled(application?: { properties?: { sso3?: boolean } } | null): boolean {
 	if (globalThis.isDesignMode) return false;
-	if (!globalThis.__SSO_BEACON_HOST__) return false;
+	if (!authzumpHost(globalThis.__SSO_BEACON_HOST__)) return false;
 	if (application && application.properties?.sso3 !== true) return false;
 	return true;
 }
@@ -155,7 +175,7 @@ export function isLeavingForBeacon(): boolean {
 }
 
 export function getBeaconURL(): string | null {
-	const host = globalThis.__SSO_BEACON_HOST__;
+	const host = authzumpHost(globalThis.__SSO_BEACON_HOST__);
 	if (!host) return null;
 	return `https://${host}`;
 }
@@ -175,7 +195,7 @@ export function buildSocialLoginURL(
 	redirectUrl?: string,
 	clientType?: string,
 ): string | null {
-	const host = globalThis.__SOCIAL_LOGIN_HOST__;
+	const host = authzumpHost(globalThis.__SOCIAL_LOGIN_HOST__);
 	if (!host || !application?.appCode) return null;
 	// `redirectUrl` must already be absolute: the platform's callback refuses a scheme-less
 	// destination and falls back to the broker's own login page. `InitiateSocialLogin` resolves
@@ -355,7 +375,11 @@ async function redeemSocialState(
 	// An sso3 app wants the cookie set, so a later cold start on another domain has something
 	// to find. `isSsoEnabled` needs the application object, which does not exist this early, so
 	// this keys off the beacon host, which is injected only for sso3 apps.
-	const cookie = !!globalThis.__SSO_BEACON_HOST__;
+	//
+	// Through the same resolver as everything else on purpose: reading the raw global here
+	// would ask for no cookie on the dev server and then still try to seed the beacon a moment
+	// later, since that decision does go through the resolver.
+	const cookie = !!authzumpHost(globalThis.__SSO_BEACON_HOST__);
 
 	const login = await postJSON('api/security/authenticate/social', {
 		userName,
