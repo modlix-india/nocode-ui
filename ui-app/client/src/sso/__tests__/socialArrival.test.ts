@@ -347,3 +347,65 @@ describe('buildSocialLoginURL', () => {
 		expect(mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' })).toBeNull();
 	});
 });
+
+/**
+ * The webpack dev server serves its own index.html, and the only two things that stamp the
+ * authzump host are IndexHTMLService and the SSR renderer. Without a fallback, SSO and social
+ * login are both simply off on every local app, which is not a thing anyone can test around.
+ */
+describe('local dev fallback for the authzump host', () => {
+	const LOCAL_HOST = 'authzump.local.modlix.com';
+
+	beforeEach(() => {
+		localStorage.clear();
+		(globalThis as any).isDesignMode = false;
+		(globalThis as any).__SSO_BEACON_HOST__ = undefined;
+		(globalThis as any).__SOCIAL_LOGIN_HOST__ = undefined;
+		delete (globalThis as any).nodeDev;
+	});
+
+	afterEach(() => {
+		delete (globalThis as any).nodeDev;
+	});
+
+	it('is off when nothing is stamped and this is not the dev server', () => {
+		const mod = loadModule();
+
+		expect(mod.isSsoEnabled()).toBe(false);
+		expect(mod.getBeaconURL()).toBeNull();
+		expect(mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' })).toBeNull();
+	});
+
+	it('falls back to the local host on the dev server', () => {
+		(globalThis as any).nodeDev = true;
+		const mod = loadModule();
+
+		expect(mod.isSsoEnabled()).toBe(true);
+		expect(mod.getBeaconURL()).toBe(`https://${LOCAL_HOST}`);
+		expect(new URL(mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' })!).host).toBe(
+			LOCAL_HOST,
+		);
+	});
+
+	it('still honours the app flag on the dev server', () => {
+		(globalThis as any).nodeDev = true;
+		const mod = loadModule();
+
+		// The fallback supplies a host, not a decision: an app that has not opted into sso3
+		// must not start bouncing just because it is being run locally.
+		expect(mod.isSsoEnabled({ properties: { sso3: false } })).toBe(false);
+		expect(mod.isSsoEnabled({ properties: { sso3: true } })).toBe(true);
+	});
+
+	it('never overrides a stamped host', () => {
+		(globalThis as any).nodeDev = true;
+		(globalThis as any).__SSO_BEACON_HOST__ = 'dev.authzump.ai';
+		(globalThis as any).__SOCIAL_LOGIN_HOST__ = 'dev.authzump.ai';
+		const mod = loadModule();
+
+		expect(mod.getBeaconURL()).toBe('https://dev.authzump.ai');
+		expect(new URL(mod.buildSocialLoginURL('GOOGLE', { appCode: 'sitezump' })!).host).toBe(
+			'dev.authzump.ai',
+		);
+	});
+});
