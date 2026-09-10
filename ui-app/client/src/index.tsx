@@ -5,7 +5,7 @@ import { AppDefinitionResponse, getAppDefinition } from './App/appDefinition';
 import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
 import { processLocation } from './util/locationProcessor';
-import { consumeSsoArrival } from './sso/ssoModule';
+import { consumeSocialArrival, consumeSsoArrival } from './sso/ssoModule';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 import DraftBanner from './components/DraftBanner';
 
@@ -196,6 +196,14 @@ if (!app) {
 		// scrubbed off the URL once consumed, so the call inside `getAppDefinition`
 		// returns immediately on the second pass.
 		await consumeSsoArrival();
+
+		// A return from a social-login callback is the same problem with a different token:
+		// the provider-verified profile and a single-use state arrive on the URL, and the
+		// session has to exist before the two calls below go out. This is also the only place
+		// the social return leg is handled at all, so it works the same on every app rather
+		// than only on the ones whose pages were wired for it. A no-op without a `sessionId`
+		// param, which is every ordinary load.
+		await consumeSocialArrival();
 
 		let appDefinitionResponse, pageDefinitionResponse;
 		if (pageName) {
