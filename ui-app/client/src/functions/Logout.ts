@@ -12,7 +12,7 @@ import axios from 'axios';
 import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
-import { clearBeaconMark } from '../sso/ssoModule';
+import { isSsoEnabled, ssoLogoutBeacon } from '../sso/ssoModule';
 
 const SIGNATURE = new FunctionSignature('Logout')
 	.setParameters(new Map([
@@ -40,12 +40,15 @@ export class Logout extends AbstractFunction {
 		try {
 			const token = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 
-			// Without this, signing out here and back in on another app leaves this origin
-			// convinced it already asked the beacon, so the new session is never picked up.
-			clearBeaconMark();
+			const application = getDataFromPath('Store.application', []);
+			const ssoOn = isSsoEnabled(application);
+			const appCode: string = application?.appCode ?? '';
 
 			setData('Store.auth', undefined, undefined, true);
 			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, undefined, undefined, true);
+			// The expiry was being left behind. On its own that is only litter, but the pair
+			// is what every reader treats as "there is a session here", so clear both.
+			setData(`${LOCAL_STORE_PREFIX}.AuthTokenExpiry`, undefined, undefined, true);
 			setData('Store.pageDefinition', {});
 			setData('Store.messages', []);
 			setData('Store.validations', {});
@@ -65,6 +68,15 @@ export class Logout extends AbstractFunction {
 				method: 'GET',
 				headers,
 			});
+
+			// Clearing this origin is only half of signing out. The beacon holds its own
+			// session on its own origin, and while it does, the next cold load bounces there
+			// and is handed a fresh token, i.e. the user is signed straight back in. Go and
+			// forget it, then continue to wherever logout was headed anyway.
+			if (ssoOn && appCode) {
+				ssoLogoutBeacon(appCode, redirectUrl && redirectUrl !== '' ? redirectUrl : undefined);
+				return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
+			}
 
 			if (redirectUrl && redirectUrl !== '') {
 				setTimeout(() => {

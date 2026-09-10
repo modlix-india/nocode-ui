@@ -283,6 +283,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'SSE endpoint the docked AI panel talks to.',
 		defaultValue: '/api/ai/appbuilder/chat',
 	},
+	{
+		// A property rather than a constant inside the panel, for the same reason
+		// the endpoint above is one: this component is embeddable by any app, and
+		// the name of a page in the appbuilder app is not something it should know.
+		// Empty by default, which is what hides the icon.
+		name: 'sidekickOpenFullPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'AI Sidekick Full Page',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			'Page the docked AI panel offers to continue the conversation in, carrying the session in the URL. Leave empty to offer nothing.',
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
