@@ -808,6 +808,11 @@ export default function PromptStyle({
 			font-size: 15px;
 			line-height: 1.6;
 			word-wrap: break-word;
+			/* The bubble is a plain <span>; without pre-wrap HTML collapses the
+			   user's typed newlines into spaces (a formatted competitor LIST
+			   rendered as one paragraph, live 2026-09-11). Data was never lost -
+			   display only. */
+			white-space: pre-wrap;
 			position: relative;
 		}
 
