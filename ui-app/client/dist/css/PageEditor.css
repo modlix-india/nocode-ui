@@ -478,11 +478,30 @@ input._peInput[type='number'] {
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	flex-shrink: 0;
+	border-radius: 50%;
+	cursor: pointer;
 }
 
+/* The glyph is a filled disc, so a wash behind it would sit under the disc and
+   read as a smudge. These recolour the disc itself instead. */
 .comp.compPageEditor ._urlInput ._urlInputIcon svg {
 	color: #99999973;
 	fill: black;
+	transition: color 0.15s ease;
+}
+
+.comp.compPageEditor ._urlInput ._urlInputIcon:hover svg {
+	color: #8e90a4;
+}
+
+.comp.compPageEditor ._urlInput ._urlInputIcon:active svg {
+	color: #333333;
+}
+
+.comp.compPageEditor ._urlInput ._urlInputIcon:focus-visible {
+	outline: 2px solid #000000;
+	outline-offset: 2px;
 }
 
 .comp.compPageEditor ._urlInput._peInput svg {
@@ -515,6 +534,7 @@ input._peInput[type='number'] {
 	background: #f9f9f9;
 	color: #fff;
 	border: none;
+	transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .comp.compPageEditor ._sideBar ._seperator {
@@ -553,6 +573,19 @@ input._peInput[type='number'] {
 	color: #000;
 }
 
+/* One class deeper than the shared `button:hover` rule above, so the menu rows
+   can take a wash you can actually see without repainting every button in the
+   editor with it. */
+.comp.compPageEditor ._iconMenuBody ._iconMenuOption:hover,
+.comp.compPageEditor ._popupMenuBackground ._popupMenuItem:hover {
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+.comp.compPageEditor ._iconMenuBody ._iconMenuOption:active,
+.comp.compPageEditor ._popupMenuBackground ._popupMenuItem:active {
+	background-color: rgba(0, 0, 0, 0.09);
+}
+
 .comp.compPageEditor ._sideBar ._iconMenu._active svg._iconHelperSVG,
 .comp.compPageEditor ._sideBar ._iconMenu:hover svg._iconHelperSVG {
 	color: #ffffff;
@@ -577,24 +610,46 @@ input._peInput[type='number'] {
 	color: #1893e9;
 }
 
+/* The IconHelper SVGs used to sit inert while the font-awesome icons next to
+   them took the accent on hover. Same control, same feedback. The side bar
+   keeps its own inverted treatment -- that selector is one class deeper and
+   still wins -- and `._active` is left to the rule above, which paints it the
+   primary font colour on purpose. Gradient-filled glyphs (_blueGradient,
+   _yellow1Gradient) are painted through `fill`, so `color` leaves them alone. */
+.comp.compPageEditor ._iconMenu:hover svg._iconHelperSVG {
+	color: #1893e9;
+}
+
+/* These are the menu's only interactive rows, so they sit at the secondary text
+   tier, not the faint one they used to share with tree guides and empty-state
+   copy. At #96a1b4 on white they read as disabled. */
 .comp.compPageEditor ._iconMenuOption,
 .comp.compPageEditor ._popupMenuBackground ._popupMenuItem {
 	padding: 10px 15px;
-	color: #96a1b4;
+	color: #555555;
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	white-space: nowrap;
 	cursor: pointer;
-	margin-bottom: 2px;
+	margin: 0 4px 2px 4px;
+	border-radius: 4px;
 	font-family: Inter;
 	border: none;
 	background-color: transparent;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.comp.compPageEditor ._iconMenuOption:focus-visible,
+.comp.compPageEditor ._popupMenuBackground ._popupMenuItem:focus-visible {
+	outline: 2px solid #000000;
+	outline-offset: -2px;
 }
 
 .comp.compPageEditor ._iconMenuBody ._iconMenuOption i.fa,
 .comp.compPageEditor ._iconMenuBody ._iconMenuOption svg._iconHelperSVG {
-	color: #96a1b4;
+	color: #8e90a4;
+	transition: color 0.15s ease;
 }
 
 .comp.compPageEditor ._iconMenuBody {
@@ -637,6 +692,12 @@ input._peInput[type='number'] {
 	padding: 0 5px;
 	width: 36px;
 	border-radius: 8px;
+	transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.comp.compPageEditor ._iconMenu:focus-visible {
+	outline: 2px solid #000000;
+	outline-offset: 1px;
 }
 
 .comp.compPageEditor ._iconMenu:hover ._iconMenuBody {
@@ -647,8 +708,16 @@ input._peInput[type='number'] {
 	top: 100%;
 }
 
+/* Was the same 5%-blue tint as ._active, which on white is close to nothing --
+   the icon recolour was doing all the work. Hover now takes the neutral wash so
+   it is legible on its own, and ._active keeps the blue tint so a pinned panel
+   still reads differently from the one under the cursor. */
 .comp.compPageEditor ._iconMenu:hover {
-	background-color: rgba(77, 127, 238, 0.05);
+	background-color: rgba(0, 0, 0, 0.05);
+}
+
+.comp.compPageEditor ._iconMenu:active {
+	background-color: rgba(0, 0, 0, 0.09);
 }
 
 .comp.compPageEditor ._selectionBar ._iconMenu:hover {
@@ -681,6 +750,7 @@ input._peInput[type='number'] {
 	width: 32px;
 	height: 32px;
 	text-align: center;
+	transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 .comp.compPageEditor ._buttonBar i.fa:not(:last-child),
@@ -694,6 +764,17 @@ input._peInput[type='number'] {
 .comp.compPageEditor ._buttonBar svg:hover {
 	background-color: rgba(77, 127, 238, 0.05);
 	color: #1893e9;
+}
+
+.comp.compPageEditor ._buttonBar i.fa:active,
+.comp.compPageEditor ._buttonBar svg:active {
+	background-color: rgba(0, 0, 0, 0.09);
+}
+
+.comp.compPageEditor ._buttonBar i.fa:focus-visible,
+.comp.compPageEditor ._buttonBar svg:focus-visible {
+	outline: 2px solid #000000;
+	outline-offset: 1px;
 }
 
 .comp.compPageEditor ._screenSizes i.fa,
@@ -3325,7 +3406,9 @@ input._peInput[type='number'] {
 
 .comp.compPageEditor ._tabContainer ._tab {
 	padding: 6px 10px;
-	transition: background-color 0.5s;
+	/* 0.5s meant the wash was still fading in after the pointer had moved on. */
+	transition: background-color 0.15s ease, color 0.15s ease;
+	border-radius: 4px;
 	border: none;
 	background: none;
 	font-family: 'Inter';
@@ -3352,10 +3435,30 @@ input._peInput[type='number'] {
 	padding: 5px 5px 7px 5px;
 }
 
+/* `background: none` left the reload/undo/redo icons with no hover feedback at
+   all -- only the text tabs, which change weight, showed anything. */
 .comp.compPageEditor ._tabContainer ._tab:hover {
-	background: none;
+	background-color: rgba(0, 0, 0, 0.05);
 	color: #333333;
 	font-weight: 600;
+}
+
+.comp.compPageEditor ._tabContainer ._tab:active {
+	background-color: rgba(0, 0, 0, 0.09);
+}
+
+.comp.compPageEditor ._tabContainer ._tab:focus-visible {
+	outline: 2px solid #000000;
+	outline-offset: -2px;
+}
+
+/* Undo/redo with an empty stack. The click is a no-op, so stop offering it a
+   hover wash, an accent swap and a pointer cursor. */
+.comp.compPageEditor ._tabContainer ._tab._inActive,
+.comp.compPageEditor ._tabContainer ._tab._inActive:hover,
+.comp.compPageEditor ._tabContainer ._tab._inActive:active {
+	background-color: transparent;
+	cursor: default;
 }
 
 .comp.compPageEditor ._tabContainer ._tab._selected {

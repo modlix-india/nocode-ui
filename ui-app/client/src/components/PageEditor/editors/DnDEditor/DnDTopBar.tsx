@@ -607,6 +607,8 @@ export default function DnDTopBar({
 						}
 						onClick={() => window.open(getHref(dashboardPageName, location), '_self')}
 						className="_iconMenuOption"
+						role="button"
+						tabIndex={0}
 					>
 						{dashboardPageMenuName ?? 'View Dashboard'}
 					</div>
@@ -619,6 +621,8 @@ export default function DnDTopBar({
 						}
 						onClick={() => window.open(getHref(pagesPageUrl, location), '_self')}
 						className="_iconMenuOption"
+						role="button"
+						tabIndex={0}
 					>
 						{pagesPageMenuName ?? 'Pages'}
 					</div>
@@ -631,6 +635,8 @@ export default function DnDTopBar({
 							window.open(getHref(settingsPageName, location), '_self')
 						}
 						className="_iconMenuOption"
+						role="button"
+						tabIndex={0}
 					>
 						{settingsPageMenuName ?? 'Settings'}
 					</div>
@@ -700,6 +706,9 @@ export default function DnDTopBar({
 					/>
 					<div
 						className="_urlInputIcon"
+						role="button"
+						tabIndex={0}
+						title="Back"
 						onClick={onPageBack}
 						onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onPageBack()}
 					>
@@ -717,6 +726,9 @@ export default function DnDTopBar({
 					</div>
 					<div
 						className="_urlInputIcon"
+						role="button"
+						tabIndex={0}
+						title="Forward"
 						onClick={onPageForward}
 						onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && onPageForward()}
 					>
@@ -738,6 +750,8 @@ export default function DnDTopBar({
 		pageProperties = (
 			<div
 				className="_iconMenuOption"
+				role="button"
+				tabIndex={0}
 				onClick={() => setShowProperties(true)}
 				onKeyDown={e => (e.key === 'Enter' || e.key === ' ') && setShowProperties(true)}
 			>
@@ -943,6 +957,8 @@ export default function DnDTopBar({
 						<div className="_iconMenuBody _bottom _right">
 							<div
 								className="_iconMenuOption"
+								role="button"
+								tabIndex={0}
 								onClick={onDeletePersonalization}
 								onKeyDown={e =>
 									(e.key === 'Enter' || e.key === ' ') &&
@@ -961,6 +977,8 @@ export default function DnDTopBar({
 							{pageProperties}
 							<div
 								className="_iconMenuOption"
+								role="button"
+								tabIndex={0}
 								onClick={handleClearLocalStorage}
 								onKeyDown={e =>
 									(e.key === 'Enter' || e.key === ' ') &&
