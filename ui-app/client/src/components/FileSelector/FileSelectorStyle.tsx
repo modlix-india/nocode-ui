@@ -141,9 +141,9 @@ export default function FileSelector({
     }
       ${PREFIX} ._hidden {
         visibility: hidden;
-        width: 100%;
+        width: 0;
         position: absolute;
-        height: 100%;
+        height: 0;
     }
       ${PREFIX} ._leftSection {
         display: flex;

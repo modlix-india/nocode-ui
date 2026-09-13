@@ -62,6 +62,12 @@ interface Message {
 	dataConfirmedMeta?: Record<string, any>;
 	craftIds?: string[];
 	confirmationActions?: ConfirmationAction[];
+	/**
+	 * A steer (a message sent mid-run) that the agent has not acknowledged yet.
+	 * Drawn faded: it is on its way to a turn already in progress, and only the
+	 * agent can say whether it arrived in time to be read.
+	 */
+	pending?: boolean;
 }
 
 interface ToolCall {
@@ -902,6 +908,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		properties: {
 			agentEndpoint = '/api/ai/appbuilder/chat',
 			placeholder = 'Ask anything',
+			steerPlaceholder = 'Send a message to steer the agent...',
 			welcomeMessage = 'What can I help with?',
 			initialPrompt = '',
 			openFullPageName = '',
@@ -916,6 +923,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			openDraftsPath = '',
 			draftMode = false,
 			showDraftReview = false,
+			draftWorkspaceUrl = '/workspace/{{appCode}}',
+			draftWorkspaceLabel = 'Open in workspace',
 			showSessions = true,
 			sessionsMode = '_auto',
 			newChatLabel = 'New chat',
@@ -1039,6 +1048,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 	const resolvedPlaceholder = getTranslations(placeholder, props.pageDefinition.translations);
 
+	const resolvedSteerPlaceholder = getTranslations(
+		steerPlaceholder,
+		props.pageDefinition.translations,
+	);
+
 	const resolvedWelcomeMessage = getTranslations(
 		welcomeMessage,
 		props.pageDefinition.translations,
@@ -1118,9 +1132,47 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		text: '',
 		rev: 0,
 	});
+	// What the box holds right now, wherever it came from: our own pushes and
+	// the user's keystrokes both land here. Needed because text handed BACK to
+	// the box (a steer the agent never read) must not wipe out something typed
+	// since. See `handBackText`.
+	const liveInputRef = useRef('');
 	const setDraftText = useCallback((text: string) => {
+		liveInputRef.current = text;
 		setTextPush(prev => ({ text, rev: prev.rev + 1 }));
 	}, []);
+
+	/**
+	 * Steers this tab has sent on the current run and the agent has not yet
+	 * acknowledged: id → text.
+	 *
+	 * Queued is not delivered. The agent emits a `steer` event when the text
+	 * actually reaches the model, and that is what promotes the faded bubble to
+	 * a real one. Anything still in here when the run ends never got read, so
+	 * the text goes back to the input box rather than sitting on screen looking
+	 * like part of the conversation.
+	 */
+	const pendingSteersRef = useRef<Map<string, string>>(new Map());
+
+	/**
+	 * A message that missed its run entirely: the server said there was nothing
+	 * in progress to steer. Sent as an ordinary message as soon as this tab
+	 * agrees the run is over.
+	 */
+	const queuedSendRef = useRef<string>('');
+
+	/**
+	 * Put text the agent never read back where the user can send it again,
+	 * without wiping out whatever they have typed since it left the box.
+	 */
+	const handBackText = useCallback(
+		(text: string) => {
+			if (!text) return;
+			const current = liveInputRef.current.trim();
+			setDraftText(current ? `${current}\n\n${text}` : text);
+		},
+		[setDraftText],
+	);
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -2029,6 +2081,16 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			let replaying = false;
 			let ended = false;
 			let timedOut = false;
+			// The assistant message being written INTO, which is not always the
+			// one this stream opened with: a steer closes the current bubble and
+			// starts another underneath it, so the conversation reads in the
+			// order it happened.
+			let liveAssistantMsgId = assistantMsgId;
+			// Messages this stream added after that opening one (a steer's bubble
+			// and the assistant bubble that follows it). A replay rebuilds the
+			// turn from nothing, so these are torn down first and recreated as
+			// the same events come round again.
+			let spawned: string[] = [];
 
 			// Watchdog: detect dead connections (server keepalives every 15s)
 			let lastDataAt = Date.now();
@@ -2084,20 +2146,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							assistantText = '';
 							toolCalls = new Map();
 							agentSpans = new Map();
+							const stale = spawned;
+							spawned = [];
+							liveAssistantMsgId = assistantMsgId;
 							setMessages(prev =>
-								prev.map(m =>
-									m.id === assistantMsgId
-										? {
-												...m,
-												content: '',
-												thinking: undefined,
-												toolCalls: [],
-												agentSpans: [],
-												suggestions: undefined,
-												data: undefined,
-											}
-										: m,
-								),
+								prev
+									.filter(m => !stale.includes(m.id))
+									.map(m =>
+										m.id === assistantMsgId
+											? {
+													...m,
+													content: '',
+													thinking: undefined,
+													toolCalls: [],
+													agentSpans: [],
+													suggestions: undefined,
+													data: undefined,
+												}
+											: m,
+									),
 							);
 							if (data.session_id) {
 								setSessionId(data.session_id);
@@ -2125,10 +2192,70 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							continue;
 						}
 
+						if (type === 'steer') {
+							const steerId = data.id ?? '';
+							const steerText = data.text ?? '';
+							const queuedText = pendingSteersRef.current.get(steerId);
+
+							if (data.applied === false) {
+								// It never reached the model. Only this tab's own
+								// unanswered steers are acted on: one replayed
+								// from an earlier attach has already been dealt
+								// with, and taking it again would put old text
+								// back in the box.
+								if (queuedText !== undefined) {
+									pendingSteersRef.current.delete(steerId);
+									setMessages(prev => prev.filter(m => m.id !== steerId));
+									handBackText(queuedText);
+								}
+								continue;
+							}
+
+							pendingSteersRef.current.delete(steerId);
+							const nextAssistantId = `${assistantMsgId}_after_${steerId}`;
+							setMessages(prev => {
+								// Confirm the faded bubble, or draw it for the
+								// first time: an attach, or another tab's steer,
+								// arrives with no bubble on screen at all.
+								const withSteer = prev.some(m => m.id === steerId)
+									? prev.map(m =>
+											m.id === steerId
+												? { ...m, content: steerText, pending: false }
+												: m,
+										)
+									: [
+											...prev,
+											{
+												id: steerId,
+												role: 'user' as const,
+												content: steerText,
+											},
+										];
+								if (withSteer.some(m => m.id === nextAssistantId)) return withSteer;
+								return [
+									...withSteer,
+									{
+										id: nextAssistantId,
+										role: 'assistant' as const,
+										content: '',
+										toolCalls: [],
+										agentSpans: [],
+									},
+								];
+							});
+							// Everything after this belongs to the new bubble.
+							spawned = [...spawned, steerId, nextAssistantId];
+							liveAssistantMsgId = nextAssistantId;
+							assistantText = '';
+							toolCalls = new Map();
+							agentSpans = new Map();
+							continue;
+						}
+
 						if (type === 'done') ended = true;
 
 						processSSEEvent(type, data, {
-							assistantMsgId,
+							assistantMsgId: liveAssistantMsgId,
 							currentText: assistantText,
 							toolCalls,
 							agentSpans,
@@ -2162,6 +2289,20 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				clearInterval(watchdog);
 			}
 
+			// A steer with no verdict by the time the run is genuinely over was
+			// never read: the worker died, or it arrived in the gap between the
+			// agent's last check and the end of the stream. Hand it back rather
+			// than leaving a faded bubble on screen forever. Only on a real end
+			// A timed-out connection is about to reattach and replay, and the
+			// verdict may be in what it replays.
+			if (ended && pendingSteersRef.current.size) {
+				const orphaned = Array.from(pendingSteersRef.current.entries());
+				pendingSteersRef.current.clear();
+				const ids = new Set(orphaned.map(([id]) => id));
+				setMessages(prev => prev.filter(m => !ids.has(m.id)));
+				handBackText(orphaned.map(([, text]) => text).join('\n\n'));
+			}
+
 			return { sessionId: receivedSessionId, timedOut, ended };
 		},
 		[
@@ -2171,6 +2312,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			rememberActiveRun,
 			fetchSessions,
 			setSessionId,
+			handBackText,
 			props,
 		],
 	);
@@ -2284,6 +2426,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			abortControllerRef.current?.abort();
 			abortControllerRef.current = null;
 			setIsStreaming(false);
+			// Steers belong to the run they were sent into. Rejoining that chat
+			// replays them with the agent's verdict; carrying them across to
+			// this one would attach them to the wrong conversation.
+			pendingSteersRef.current.clear();
 			shouldAutoScrollRef.current = true;
 			isNavigatingRef.current = true;
 			setIsAtBottom(true);
@@ -2598,7 +2744,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		(text: string) => {
 			// Not pushed back into the input: it is already there. All this owes
 			// the keystroke is the debounced save, so the draft survives a
-			// refresh.
+			// refresh, and a note of what the box holds for handBackText.
+			liveInputRef.current = text;
 			if (saveDraftTimeoutRef.current) {
 				clearTimeout(saveDraftTimeoutRef.current);
 			}
@@ -2809,6 +2956,100 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		],
 	);
 
+	/**
+	 * Send a message into the turn that is already running.
+	 *
+	 * POST /chat is not an option here: it answers 409 for the whole length of a
+	 * run, because two agents interleaving tool calls and history writes on one
+	 * session corrupt both. So this rides the control channel instead, and the
+	 * agent folds the text into the conversation at its next turn boundary.
+	 *
+	 * The bubble drawn here is faded until the agent acknowledges it with a
+	 * `steer` event, which is the only proof the model actually read it. Text
+	 * that never earns one comes back to the input box.
+	 */
+	const handleSteer = useCallback(
+		async (text: string) => {
+			const trimmed = text.trim();
+			if (!trimmed || readOnly) return;
+
+			const sid = sessionIdRef.current;
+			if (!sid) {
+				// A brand new chat whose id has not come back yet: there is no
+				// run to address. Send it the moment this one is over.
+				queuedSendRef.current = trimmed;
+				return;
+			}
+
+			const steerId = `steer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+			pendingSteersRef.current.set(steerId, trimmed);
+			setMessages(prev => [
+				...prev,
+				{ id: steerId, role: 'user', content: trimmed, pending: true },
+			]);
+			shouldAutoScrollRef.current = true;
+			setIsAtBottom(true);
+
+			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			try {
+				const response = await fetch(`${baseUrl}/steer`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({
+						session_id: sid,
+						message: trimmed,
+						steer_id: steerId,
+					}),
+				});
+
+				if (response.ok) return;
+
+				pendingSteersRef.current.delete(steerId);
+				setMessages(prev => prev.filter(m => m.id !== steerId));
+				if (response.status === 404) {
+					// The run finished between the user typing and pressing
+					// send. Nothing was steered and nothing was lost: send it as
+					// an ordinary message once this tab agrees it is over.
+					queuedSendRef.current = trimmed;
+					return;
+				}
+				handBackText(trimmed);
+			} catch {
+				pendingSteersRef.current.delete(steerId);
+				setMessages(prev => prev.filter(m => m.id !== steerId));
+				handBackText(trimmed);
+			}
+		},
+		[readOnly, agentEndpoint, getAuthHeaders, handBackText],
+	);
+
+	/**
+	 * One send for the input box: a new message when nothing is running, a steer
+	 * when something is. Attachments ride only the first: /steer carries text.
+	 */
+	const handleUserSend = useCallback(
+		(text: string, attachments?: Attachment[]) => {
+			liveInputRef.current = '';
+			if (isStreaming) {
+				handleSteer(text);
+				return;
+			}
+			handleSend(text, attachments);
+		},
+		[isStreaming, handleSteer, handleSend],
+	);
+
+	// Flush a message that missed its run (see `queuedSendRef`) the moment this
+	// tab sees the run end. Deliberately not sent while streaming: that is the
+	// 409 this whole path exists to avoid.
+	useEffect(() => {
+		if (isStreaming || readOnly) return;
+		const queued = queuedSendRef.current;
+		if (!queued) return;
+		queuedSendRef.current = '';
+		handleSend(queued);
+	}, [isStreaming, readOnly, handleSend]);
+
 	// An opening question handed in by the page the user came from: left at
 	// `pendingPromptPath` for this chat to take, or given literally as
 	// `initialPrompt`. Guarded by a ref rather than the dependency list: handleSend
@@ -2856,6 +3097,17 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		stopPolling();
 		setIsStreaming(false);
 		abortControllerRef.current = null;
+
+		// Letting go of the stream here means the agent's verdict on any steer
+		// in flight will never be seen, so settle them now: a stopped run reads
+		// nothing more, and the text belongs back in the box.
+		if (pendingSteersRef.current.size) {
+			const orphaned = Array.from(pendingSteersRef.current.entries());
+			pendingSteersRef.current.clear();
+			const ids = new Set(orphaned.map(([id]) => id));
+			setMessages(prev => prev.filter(m => !ids.has(m.id)));
+			handBackText(orphaned.map(([, text]) => text).join('\n\n'));
+		}
 		// Deliberately ended, so there is nothing to rejoin on the next load.
 		forgetActiveRun();
 
@@ -2871,7 +3123,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				body: JSON.stringify({ session_id: sid }),
 			}).catch(() => {});
 		}
-	}, [stopPolling, agentEndpoint, getAuthHeaders, forgetActiveRun]);
+	}, [stopPolling, agentEndpoint, getAuthHeaders, forgetActiveRun, handBackText]);
 
 	useEffect(() => {
 		return () => {
@@ -3203,6 +3455,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								<ChatMessage
 									role={msg.role}
 									content={msg.content}
+									pending={msg.pending}
 									componentKey={key ?? ''}
 									styles={styleProperties}
 									isStreaming={
@@ -3308,6 +3561,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						appCodes={pendingApps}
 						getAuthHeaders={getAuthHeaders}
 						onEmpty={forgetPendingApps}
+						workspaceUrlPattern={draftWorkspaceUrl}
+						workspaceLabel={draftWorkspaceLabel}
 					/>
 				)}
 				{enablePreview && previewTarget && !previewOpen && (
@@ -3369,9 +3624,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}
+						steerPlaceholder={resolvedSteerPlaceholder ?? steerPlaceholder}
 						disabled={!!readOnly}
 						isStreaming={isStreaming}
-						onSend={handleSend}
+						onSend={handleUserSend}
 						onStop={handleStop}
 						definition={props.definition}
 						styleProperties={styleProperties}

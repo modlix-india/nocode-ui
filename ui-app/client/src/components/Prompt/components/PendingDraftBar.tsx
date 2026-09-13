@@ -49,6 +49,19 @@ interface PendingDraftBarProps {
 	discardIcon?: string;
 	openDraftIcon?: string;
 	openWorkspaceIcon?: string;
+	/**
+	 * Where "open the editor" goes, with `{{appCode}}` substituted.
+	 *
+	 * A property rather than the constant it used to be, for the same reason the
+	 * icons above are: this component is embeddable by any app, and `/workspace`
+	 * is a page in appbuilder and nowhere else. sitezump has no workspace at all;
+	 * its per-app equivalent is the site's page list, from which each page opens
+	 * in editPage. Pointing a host at its own editor is a one-line property; it
+	 * used to require the host not to exist.
+	 */
+	workspaceUrlPattern?: string;
+	/** Label for that link. "workspace" is appbuilder's word for it, not every app's. */
+	workspaceLabel?: string;
 }
 
 // objectType -> the collection it lives in, per service. Discarding one draft is
@@ -111,8 +124,8 @@ function rowsOf(data: any, service: 'ui' | 'core'): PendingRow[] {
  * on a domain-mapped host, where the app and the client come from the hostname and
  * spelling them into the path names the wrong page.
  */
-function workspaceUrl(appCode: string): string {
-	return getHref(`/workspace/${appCode}`, window.location) ?? '';
+function workspaceUrl(appCode: string, pattern: string): string {
+	return getHref(pattern.replaceAll('{{appCode}}', appCode), window.location) ?? '';
 }
 
 export function PendingDraftBar({
@@ -123,6 +136,8 @@ export function PendingDraftBar({
 	discardIcon = 'fa fa-trash-can',
 	openDraftIcon = 'fa fa-flask',
 	openWorkspaceIcon = 'fa fa-table-columns',
+	workspaceUrlPattern = '/workspace/{{appCode}}',
+	workspaceLabel = 'Open in workspace',
 }: Readonly<PendingDraftBarProps>) {
 	const [pending, setPending] = useState<Record<string, PendingRow[]>>({});
 	const [busy, setBusy] = useState<string>('');
@@ -350,13 +365,13 @@ export function PendingDraftBar({
 								</button>
 								<a
 									className="_promptPendingBtn"
-									href={workspaceUrl(appCode)}
+									href={workspaceUrl(appCode, workspaceUrlPattern)}
 									target="_blank"
 									rel="noopener noreferrer"
-									title="Open the workspace for this app, where each object has its own editor"
+									title="Open this app's editor, where each object can be reviewed and published on its own"
 								>
 									<i className={openWorkspaceIcon} aria-hidden="true" />
-									<span>Open in workspace</span>
+									<span>{workspaceLabel}</span>
 								</a>
 								<button
 									type="button"
