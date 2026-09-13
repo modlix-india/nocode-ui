@@ -6,11 +6,14 @@ const PREFIX = '.comp.compMessages';
 export default function MessageStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
+	// No z-index in the CSS below: it is the messagesZIndex style property in
+	// messageStyleProperies.ts, whose default is 10000. Hard-coding it at 12 meant
+	// toasts painted behind popups and portals with no way for a theme to say
+	// otherwise.
 	const css =
 		`
 		${PREFIX} {
 			position: fixed;
-			z-index: 12;
 		}
 
 		${PREFIX} ._message {
