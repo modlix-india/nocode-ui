@@ -811,6 +811,18 @@ export default function PromptStyle({
 			position: relative;
 		}
 
+		/*
+		 * A steer: sent into a turn that is already running, and not yet
+		 * acknowledged by the agent. Faded and dashed because it is not part of
+		 * the conversation until the agent says it read it, at which point the
+		 * class comes off and it looks like any other message.
+		 */
+		${PREFIX} ._promptMessage._user._pending {
+			opacity: 0.6;
+			border: 1px dashed ${t('fontColorThree', '#9b9b9b')};
+			background: transparent;
+		}
+
 		/* ─── Assistant message ─── */
 		${PREFIX} ._promptMessage._assistant {
 			display: flex;
@@ -2117,6 +2129,17 @@ export default function PromptStyle({
 			background: ${t('surfaceColorThree', '#d0d0d0')};
 			cursor: not-allowed;
 			opacity: 1;
+		}
+
+		/*
+		 * Send, while a turn is running: it steers the run rather than starting
+		 * one, and sits beside Stop rather than replacing it. Outlined, so the
+		 * filled button next to it still reads as the one that ends the turn.
+		 */
+		${PREFIX} ._sendButton._steerButton {
+			background: transparent;
+			color: ${t('fontColorOne', '#1a1a1a')};
+			border: 1px solid ${t('fontColorOne', '#1a1a1a')};
 		}
 
 		${PREFIX} ._stopButton {
