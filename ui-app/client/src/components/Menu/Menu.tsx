@@ -343,7 +343,14 @@ function Menu(props: Readonly<ComponentProps>) {
 						e.stopPropagation();
 						e.preventDefault();
 						window.open(resolvedLink, target, features);
-					} else if (!onClick) {
+					} else if (!onClick && !linkPath) {
+						// `!linkPath` matters: menuToggle preventDefaults, so without it a
+						// link with an explicit target and no `features` -- target="_blank"
+						// being the ordinary way to say "open this in a new tab" -- landed
+						// here and had its navigation cancelled. It looked like a dead menu
+						// item. Nothing above claims that case, and nothing needs to: the
+						// anchor already carries both href and target, so the right move is
+						// to leave the click alone and let the browser open the tab.
 						menuToggle(e);
 					}
 

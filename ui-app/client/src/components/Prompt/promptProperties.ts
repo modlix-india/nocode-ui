@@ -29,6 +29,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 	},
 	{
+		name: 'steerPlaceholder',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Steer Placeholder',
+		description:
+			'Placeholder shown while the agent is working, when a message steers the run in progress instead of starting a new one.',
+		defaultValue: 'Send a message to steer the agent...',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: true,
+	},
+	{
 		name: 'welcomeMessage',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Welcome Message',
@@ -220,6 +230,28 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'Show what the agent has left unpublished, with links to open the draft or the workspace, and buttons to publish or discard. For chat surfaces with no editor of their own.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// The draft review bar's second link. `/workspace` is a page in appbuilder
+		// and nowhere else, so hosting this chat in another app used to offer a
+		// link to a page that does not exist. sitezump has no workspace; its
+		// per-app equivalent is '/pages/site/{{appCode}}', the site's page list,
+		// and each page opens from there in editPage.
+		name: 'draftWorkspaceUrl',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Draft Review Editor URL',
+		description:
+			"Where the draft review bar's editor link goes. {{appCode}} is replaced with the app being drafted into.",
+		defaultValue: '/workspace/{{appCode}}',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'draftWorkspaceLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Draft Review Editor Label',
+		description: "Label on that link. 'workspace' is appbuilder's word for it, not every app's.",
+		defaultValue: 'Open in workspace',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'quickActionLayout',
