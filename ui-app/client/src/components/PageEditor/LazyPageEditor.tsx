@@ -30,6 +30,7 @@ import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
 import PageEditorDebugWindow from './components/PageEditorDebugWindow';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
+import { toDraftMode } from '../Prompt/draftMode';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import {
 	PageOperations,
@@ -1364,7 +1365,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				sidekickEnabled={sidekickEnabled === true}
 				sidekickAgentEndpoint={sidekickAgentEndpoint ?? '/api/ai/appbuilder/chat'}
 				sidekickOpenFullPageName={sidekickOpenFullPageName ?? ''}
-				sidekickDraftMode={sidekickDraftMode !== false}
+				sidekickDraftMode={toDraftMode(sidekickDraftMode)}
 				onObjectSaved={handleObjectSaved}
 			/>
 			<CodeEditor
