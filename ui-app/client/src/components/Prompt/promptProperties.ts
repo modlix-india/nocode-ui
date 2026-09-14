@@ -209,12 +209,38 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		// Safe to leave on: the agent probes the deployment and keeps writing live
 		// when there is no draft surface, rather than claiming a review step that
 		// does not exist.
+		// Three settings rather than a switch, because the products embedding this
+		// do not agree about what a draft is. AppBuilder drafts everything and has
+		// a pending bar to publish it. A page editor that publishes one page at a
+		// time has no UI for a pending storage, so drafting one there would strand
+		// the change with nothing able to ship it.
 		name: 'draftMode',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Edit On The Draft Surface',
+		schema: SCHEMA_STRING_COMP_PROP,
+		editor: ComponentPropertyEditor.ENUM,
+		displayName: 'Where AI Edits Land',
 		description:
-			"Send the agent's edits to the app's draft surface instead of live, so they can be reviewed and published deliberately.",
-		defaultValue: false,
+			"Which of the agent's edits go to the app's draft surface instead of live, so they can be reviewed and published deliberately.",
+		defaultValue: 'DRAFT',
+		enumValues: [
+			{
+				name: 'DRAFT',
+				displayName: 'Draft Everything',
+				description:
+					'Every definition edit waits on the draft surface until someone publishes it.',
+			},
+			{
+				name: 'PAGE_ONLY_DRAFT',
+				displayName: 'Draft Pages Only',
+				description:
+					'Pages, styles and themes wait for review. Storages, connections, schemas and functions go live immediately.',
+			},
+			{
+				name: 'LIVE',
+				displayName: 'Write Live',
+				description:
+					'Every edit goes straight to the live app, with no review step.',
+			},
+		],
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{

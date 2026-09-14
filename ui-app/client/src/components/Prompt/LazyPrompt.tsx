@@ -41,6 +41,7 @@ import {
 	matchDescriptor,
 	snapshotBaseline,
 } from './openDrafts';
+import { toDraftMode } from './draftMode';
 import { startDragShield } from '../../functions/utils';
 
 interface Message {
@@ -921,7 +922,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			openTabIds = '',
 			activeDataPath = '',
 			openDraftsPath = '',
-			draftMode = false,
+			draftMode = 'DRAFT',
 			showDraftReview = false,
 			draftWorkspaceUrl = '/workspace/{{appCode}}',
 			draftWorkspaceLabel = 'Open in workspace',
@@ -1789,11 +1790,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Refs give the current value with a stable identity, which is what this
 	// actually needs: the send should use whatever is true when it runs.
 	const buildOpenDraftsRef = useRef(buildOpenDrafts);
-	const draftModeRef = useRef(draftMode);
+	// Normalized here rather than at the send, so a page definition still holding
+	// the old boolean cannot put a `false` on the wire, where the server would
+	// read it as DRAFT and quietly start drafting a surface that asked for live.
+	const draftModeRef = useRef(toDraftMode(draftMode));
 	const handleDraftPatchRef = useRef(handleDraftPatch);
 	const handleObjectChangedRef = useRef(handleObjectChanged);
 	buildOpenDraftsRef.current = buildOpenDrafts;
-	draftModeRef.current = draftMode;
+	draftModeRef.current = toDraftMode(draftMode);
 	handleDraftPatchRef.current = handleDraftPatch;
 	handleObjectChangedRef.current = handleObjectChanged;
 
@@ -2811,7 +2815,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					...(targetAppCode ? { app_code: targetAppCode } : {}),
 					...(editorContext ? { editor_context: editorContext } : {}),
 					...(drafts.length ? { open_drafts: drafts } : {}),
-					...(draftModeRef.current ? { draft_mode: true } : {}),
+					// ALWAYS sent, never omitted. The server defaults an absent or
+					// unrecognised value to DRAFT, so leaving this out would silently
+					// draft the edits of a surface that asked to write live.
+					draft_mode: draftModeRef.current,
 				};
 
 				if (attachments?.length) {
