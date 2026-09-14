@@ -13,6 +13,7 @@ import { ContextMenuDetails } from '../../components/ContextMenu';
 import DnDPropertyBar from './DnDPropertyBar';
 import DnDNavigationBar from './DnDNavigationBar';
 import DnDSidekickBar from './DnDSidekickBar';
+import { DraftMode } from '../../../Prompt/draftMode';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
@@ -86,7 +87,7 @@ interface DnDEditorProps {
 	sidekickEnabled: boolean;
 	sidekickAgentEndpoint: string;
 	sidekickOpenFullPageName: string;
-	sidekickDraftMode: boolean;
+	sidekickDraftMode: DraftMode;
 	onObjectSaved: (data: any) => void;
 }
 

@@ -14,6 +14,7 @@ import {
 } from '../../../../types/common';
 import { PageOperations } from '../../functions/PageOperations';
 import { startDragShield } from '../../../../functions/utils';
+import { DraftMode } from '../../../Prompt/draftMode';
 
 /**
  * The AI panel, docked in the editor chrome.
@@ -32,6 +33,13 @@ import { startDragShield } from '../../../../functions/utils';
  * exist only in LazyPageEditor's React state.
  */
 
+const WELCOME_BY_DRAFT_MODE: Record<DraftMode, string> = {
+	DRAFT: 'Changes go to this app’s draft. Review them, then publish.',
+	PAGE_ONLY_DRAFT:
+		'Page changes go to this app’s draft. Anything else goes live straight away.',
+	LIVE: 'Changes land on the canvas unsaved. Review, then Save.',
+};
+
 interface SidekickBarProps {
 	defPath: string | undefined;
 	personalizationPath: string | undefined;
@@ -48,7 +56,7 @@ interface SidekickBarProps {
 	/** Page to continue the conversation in; empty offers nothing. */
 	openFullPageName: string;
 	/** Send the agent's edits to the draft surface, where the editor saves too. */
-	draftMode: boolean;
+	draftMode: DraftMode;
 	previewMode: boolean;
 	enabled: boolean;
 	/** Held by DnDEditor, because the side rail's toggle needs the same bit. */
@@ -111,11 +119,16 @@ export default function DnDSidekickBar({
 	// has made and not yet saved, because those exist only in this browser. Saving
 	// is cheap now -- it goes to the draft, not to live -- so the answer is to save
 	// first, not to hold the write.
+	//
+	// Keyed on "does this scope draft PAGES", not on the scope being DRAFT: a
+	// page-only turn still sends this page to the server draft, so holding it in
+	// the browser as well would be the same double-booking.
+	const pageIsServerDrafted = draftMode !== 'LIVE';
 	useEffect(() => {
-		if (!enabled || !defPath || draftMode) return;
+		if (!enabled || !defPath || pageIsServerDrafted) return;
 		setData(draftsPath, [{ kind: 'page', path: defPath }], context.pageName);
 		return () => setData(draftsPath, undefined, context.pageName);
-	}, [enabled, defPath, draftsPath, context.pageName, draftMode]);
+	}, [enabled, defPath, draftsPath, context.pageName, pageIsServerDrafted]);
 
 	// Name the selection the way a person would, so the agent can act on "make
 	// this red" without being handed a bare uuid it has to go and look up.
@@ -143,9 +156,7 @@ export default function DnDSidekickBar({
 				draftMode: { value: draftMode },
 				placeholder: { value: 'Describe a change to this page...' },
 				welcomeMessage: {
-					value: draftMode
-						? 'Changes go to this app\u2019s draft. Review them, then publish.'
-						: 'Changes land on the canvas unsaved. Review, then Save.',
+					value: WELCOME_BY_DRAFT_MODE[draftMode] ?? WELCOME_BY_DRAFT_MODE.DRAFT,
 				},
 				showSessions: { value: true },
 				sessionsMode: { value: '_overlay' },
