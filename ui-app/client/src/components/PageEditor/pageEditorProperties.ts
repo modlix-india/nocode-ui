@@ -262,18 +262,43 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
-		// On by default, because the editor itself now saves and loads the draft
-		// surface: an agent still writing live would be editing a different copy
-		// of the page than the one on the canvas. The agent probes the deployment
-		// and falls back to live writes where there is no draft surface, so this
-		// is safe to leave on.
+		// Drafting by default, because the editor itself now saves and loads the
+		// draft surface: an agent still writing live would be editing a different
+		// copy of the page than the one on the canvas. The agent probes the
+		// deployment and falls back to live writes where there is no draft
+		// surface, so this is safe to leave on.
+		//
+		// An editor that publishes one page at a time wants 'PAGE_ONLY_DRAFT': it
+		// has a review step for the page, and none for a storage or a connection,
+		// so drafting one of those would strand it unpublished.
 		name: 'sidekickDraftMode',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'AI Edits On The Draft Surface',
+		schema: SCHEMA_STRING_COMP_PROP,
+		editor: ComponentPropertyEditor.ENUM,
+		displayName: 'Where AI Edits Land',
 		group: ComponentPropertyGroup.ADVANCED,
 		description:
-			"Send the AI panel's edits to the app's draft surface, matching where the editor itself saves.",
-		defaultValue: true,
+			"Which of the AI panel's edits go to the app's draft surface, matching where the editor itself saves.",
+		defaultValue: 'DRAFT',
+		enumValues: [
+			{
+				name: 'DRAFT',
+				displayName: 'Draft Everything',
+				description:
+					'Every definition edit waits on the draft surface until someone publishes it.',
+			},
+			{
+				name: 'PAGE_ONLY_DRAFT',
+				displayName: 'Draft Pages Only',
+				description:
+					'Pages, styles and themes wait for review. Storages, connections, schemas and functions go live immediately.',
+			},
+			{
+				name: 'LIVE',
+				displayName: 'Write Live',
+				description:
+					'Every edit goes straight to the live app, with no review step.',
+			},
+		],
 	},
 	{
 		name: 'sidekickAgentEndpoint',
