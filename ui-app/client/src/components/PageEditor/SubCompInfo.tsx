@@ -58,6 +58,7 @@ import MarkdownEditor from '../MarkdownEditor/MarkdownEditor';
 import MarkdownTOC from '../MarkdownTOC/MarkdownTOC';
 import Audio from '../Audio/Audio';
 import SSEventListener from '../SSEventListener/SSEventListener';
+import Softphone from '../Softphone/Softphone';
 import Chart from '../Chart/Chart';
 import FileSelector from '../FileSelector/FileSelector';
 import FillerDefinitionEditor from '../FillerDefinitionEditor/FillerDefinitionEditor';
@@ -3249,6 +3250,42 @@ export const SubComponentDefinitions: Record<
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
 					<path d="M15 0L5 10V20L15 30L25 20V10L15 0Z" fill="#FF7599" />
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+	],
+
+	[Softphone.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+
+			// A handset with signal arcs. The arcs are what separate it from a plain telephone
+			// glyph and from Audio's speaker, and they read at the 16px the bottom bar renders at.
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<g transform="translate(-0.55 9.15) scale(0.85)">
+						<path
+							d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"
+							fill="#02B694"
+						/>
+					</g>
+					<path
+						d="M19 12.5A5 5 0 0 0 14 7.5"
+						stroke="#CFD8DD"
+						strokeWidth="2"
+						strokeLinecap="round"
+						fill="none"
+					/>
+					<path
+						d="M22.5 12.5A8.5 8.5 0 0 0 14 4"
+						stroke="#CFD8DD"
+						strokeWidth="2"
+						strokeLinecap="round"
+						fill="none"
+					/>
 				</IconHelper>
 			),
 			mainComponent: true,

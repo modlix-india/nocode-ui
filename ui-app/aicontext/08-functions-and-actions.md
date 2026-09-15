@@ -864,6 +864,173 @@ Execute a JavaScript function by name.
 
 ---
 
+## Calling Functions
+
+Drive the browser softphone. All seven need a `Softphone` component mounted (in the shell) and a
+user the calling connection has provisioned; without either they report `NOT_PROVISIONED` rather
+than failing silently.
+
+They work from any tab. When an agent has several open, one holds the phone session and the others
+relay to it, so a Hangup button works wherever the agent happens to be looking - the audio just
+comes out of the tab holding the session. Every one of them waits for that tab to confirm, so a
+control that did not happen is reported as an error instead of an optimistic success.
+
+Read the phone's state from `Store.softphone` - see
+[22-component-reference.md](22-component-reference.md#softphone) for the whole branch.
+
+### MakeCall
+
+Place a call to the customer on a deal.
+
+**Namespace**: `UIEngine`  
+**Name**: `MakeCall`
+
+**The number is never passed from the page.** It is read from the deal on the server, which is what
+keeps an agent from dialling arbitrary numbers through the company's account - and is why this
+takes a deal id and not a phone number.
+
+**Parameters**:
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `ticketId` | string \| integer | Yes | - | The deal (ticket) to call. `Page.ticket.id` is a number, so numbers are accepted and coerced |
+| `connectionName` | string | No | `""` | Overrides the component's connection. Rarely needed |
+
+**Events**: `output` (`result`: the server's dial response), `error` (`data`, `code`, `message`)
+
+`code` is `NOT_PROVISIONED` when the user has no browser calling, `DIAL_REJECTED` when the server
+refused - no access to the deal, no number on it, or the provider said no.
+
+The agent's own leg is answered automatically, so dialling is one click. `Store.softphone.direction`
+becomes `outbound` and `onIncomingCall` does **not** fire for it.
+
+**Example**:
+
+```json
+{
+  "name": "MakeCall",
+  "namespace": "UIEngine",
+  "parameterMap": {
+    "ticketId": {
+      "p1": { "type": "EXPRESSION", "expression": "Page.ticket.id", "order": 1 }
+    }
+  }
+}
+```
+
+---
+
+### AnswerCall
+
+Answer the call that is ringing.
+
+**Namespace**: `UIEngine`  
+**Name**: `AnswerCall`
+
+**Parameters**: None. There is only ever one call to answer.
+
+**Events**: `output` (`result`: true), `error` (`data`, `code`, `message`)
+
+`code` is `NO_ACTIVE_CALL` when nothing is ringing, `RELAY_TIMEOUT` when the tab holding the call
+did not respond.
+
+---
+
+### HangupCall
+
+End the call in progress, whether it was answered or is still ringing.
+
+**Namespace**: `UIEngine`  
+**Name**: `HangupCall`
+
+**Parameters**: None.
+
+**Events**: `output` (`result`: true), `error` (`data`, `code`, `message`)
+
+The call record, its duration and its recording are written by the server from the provider's own
+report, which arrives after the call ends. Do not read them in the same flow - read them from the
+deal's call log. `Store.softphone.lastCall` is available immediately for a wrap-up card.
+
+---
+
+### ToggleHold
+
+Put the call on hold if it is not, take it off hold if it is.
+
+**Namespace**: `UIEngine`  
+**Name**: `ToggleHold`
+
+**A toggle, not a setting.** The provider offers no set-hold, and a parameter that silently did
+nothing half the time would be worse than an honest toggle.
+
+**Parameters**: None.
+
+**Events**: `output` (`result`: the new hold state - true when the call is now on hold), `error`
+(`data`, `code`, `message`)
+
+Bind the button's appearance to `Store.softphone.isOnHold` rather than tracking it in the page.
+
+---
+
+### ToggleMute
+
+Mute the agent's microphone if it is live, unmute it if it is muted. The customer is not muted.
+
+**Namespace**: `UIEngine`  
+**Name**: `ToggleMute`
+
+**Parameters**: None.
+
+**Events**: `output` (`result`: the new mute state), `error` (`data`, `code`, `message`)
+
+Bind to `Store.softphone.isMuted`. Asking for mute with no call is an error rather than a no-op: a
+mute button that appears to work while the microphone is still live is worth failing loudly for.
+
+---
+
+### SendDTMF
+
+Press one keypad key on the call, as though on a desk phone - for working through an automated menu
+on the far end, an extension, or a conference PIN.
+
+**Namespace**: `UIEngine`  
+**Name**: `SendDTMF`
+
+**Parameters**:
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `digit` | string | Yes | - | One key: `0`-`9`, `*` or `#`. Anything else is rejected |
+
+**Events**: `output` (`result`: true), `error` (`data`, `code`, `message`)
+
+`code` is `INVALID_INPUT` when the key is not one of the twelve, `NO_ACTIVE_CALL` when there is no
+call. One key per call of this function; call it once per key to send a sequence.
+
+---
+
+### SetSoftphoneAvailability
+
+Take the agent online or offline without closing tabs.
+
+**Namespace**: `UIEngine`  
+**Name**: `SetSoftphoneAvailability`
+
+**Parameters**:
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `available` | boolean | No | `true` | `true` registers the device, `false` unregisters it |
+
+**Events**: `output` (`result`: the availability that was applied), `error` (`data`, `code`,
+`message`)
+
+Not persisted: a reload starts from the component's `autoRegister` again. Bind the control to
+`Store.softphone.registered`, which follows what the provider actually accepted rather than what
+was asked for.
+
+---
+
 ## Function Chaining Pattern
 
 Multiple functions can be chained in a single event:
@@ -934,3 +1101,4 @@ Multiple functions can be chained in a single event:
 - [06-state-management.md](06-state-management.md) - Store prefixes
 - [21-kirun-system-functions.md](21-kirun-system-functions.md) - KIRun System functions
 - [14-api-reference.md](14-api-reference.md) - API endpoints
+- [22-component-reference.md](22-component-reference.md#softphone) - The Softphone component and the `Store.softphone` branch the calling functions drive
