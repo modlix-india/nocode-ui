@@ -52,6 +52,14 @@ interface SidekickBarProps {
 	selectedSubComponent: string;
 	pageOperations: PageOperations;
 	appCode: string | undefined;
+	/**
+	 * The page on the canvas. NOT `pageDefinition` above, which is the host page
+	 * this editor is drawn on and only exists here to satisfy ComponentProps.
+	 * Without these the agent is told it is looking at "the page editor canvas"
+	 * and nothing else, so "this page" has no referent and it goes hunting.
+	 */
+	editedPageName: string;
+	editedPageId: string;
 	agentEndpoint: string;
 	/** Page to continue the conversation in; empty offers nothing. */
 	openFullPageName: string;
@@ -81,6 +89,8 @@ export default function DnDSidekickBar({
 	selectedSubComponent,
 	pageOperations,
 	appCode,
+	editedPageName,
+	editedPageId,
 	agentEndpoint,
 	openFullPageName,
 	draftMode,
@@ -130,16 +140,38 @@ export default function DnDSidekickBar({
 		return () => setData(draftsPath, undefined, context.pageName);
 	}, [enabled, defPath, draftsPath, context.pageName, pageIsServerDrafted]);
 
-	// Name the selection the way a person would, so the agent can act on "make
-	// this red" without being handed a bare uuid it has to go and look up.
+	// What the user is looking at, named the way a person would, so the agent can
+	// act on "make this red" without being handed a bare uuid it has to go and
+	// look up.
+	//
+	// The PAGE leads and is sent whether or not anything is selected: "this page"
+	// is what people say most, and a panel that only ever named the selection left
+	// the agent with "the page editor canvas" and no page, guessing from a text
+	// search which page it was being asked about. The id goes with the name
+	// because the page tools take either, and a name is only unique within an app.
 	const activeObject = useMemo(() => {
-		if (!selectedComponent) return '';
-		const comp = pageOperations.getComponentDefinition(selectedComponent);
-		if (!comp) return '';
+		let page = '';
+		if (editedPageName) {
+			page = `page '${editedPageName}'`;
+			if (editedPageId) page += ` (id ${editedPageId})`;
+		}
+
+		const comp = selectedComponent
+			? pageOperations.getComponentDefinition(selectedComponent)
+			: undefined;
+		if (!comp) return page;
+
 		const sub = selectedSubComponent?.split(':')[1];
-		const label = `${comp.type} '${comp.name ?? comp.key}' (key ${comp.key})`;
-		return sub ? `${label}, sub-part '${sub}'` : label;
-	}, [selectedComponent, selectedSubComponent, pageOperations]);
+		let label = `${comp.type} '${comp.name ?? comp.key}' (key ${comp.key})`;
+		if (sub) label = `${label}, sub-part '${sub}'`;
+		return page ? `${page}, with ${label} selected` : label;
+	}, [
+		editedPageName,
+		editedPageId,
+		selectedComponent,
+		selectedSubComponent,
+		pageOperations,
+	]);
 
 	const definition = useMemo<ComponentDefinition>(
 		() => ({
