@@ -84,6 +84,9 @@ interface DnDEditorProps {
 	editorPageDefinition: PageDefinition;
 	editorContext: RenderContext;
 	appCode: string | undefined;
+	/** The page on the canvas, which `editorPageDefinition` is not. */
+	editedPageName: string;
+	editedPageId: string;
 	sidekickEnabled: boolean;
 	sidekickAgentEndpoint: string;
 	sidekickOpenFullPageName: string;
@@ -153,6 +156,8 @@ export default function DnDEditor({
 	editorPageDefinition,
 	editorContext,
 	appCode,
+	editedPageName,
+	editedPageId,
 	sidekickEnabled,
 	sidekickAgentEndpoint,
 	sidekickOpenFullPageName,
@@ -327,6 +332,8 @@ export default function DnDEditor({
 						selectedSubComponent={selectedSubComponent}
 						pageOperations={pageOperations}
 						appCode={appCode}
+						editedPageName={editedPageName}
+						editedPageId={editedPageId}
 						agentEndpoint={sidekickAgentEndpoint}
 						openFullPageName={sidekickOpenFullPageName}
 						draftMode={sidekickDraftMode}
