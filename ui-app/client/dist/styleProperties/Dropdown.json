@@ -874,6 +874,15 @@
 		"n": "dropdownColorSelected<designType><colorScheme>"
 	},
 	{
+		"cp": "background",
+		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownItem._selected",
+		"np": true,
+		"gn": "Background",
+		"dn": "Background Selected",
+		"de": "Background of the option that is currently selected. No default: unset, the selected row keeps the panel background, which is how every existing app renders today.",
+		"n": "dropdownBackgroundSelected<designType><colorScheme>"
+	},
+	{
 		"cp": "height",
 		"sel": ".comp.compDropdown<designType><colorScheme> ._dropdownSearchBox",
 		"np": true,
