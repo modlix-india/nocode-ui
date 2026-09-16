@@ -176,13 +176,72 @@ describe('social arrival', () => {
 		// nothing and reporting success would leave the user looking signed in and not being.
 		mockFetch({
 			'authenticate/social': { status: 403 },
-			'clients/socialRegister': { status: 200, body: { created: true, authentication: null } },
+			'clients/socialRegister': {
+				status: 200,
+				body: { created: true, authentication: null },
+			},
 		});
 		const mod = loadModule();
 		setLocation(ARRIVAL);
 
 		await expect(mod.consumeSocialArrival()).resolves.toBe(false);
 		expect(localStorage.getItem('AuthToken')).toBeNull();
+	});
+
+	// Both calls failing is the shape of the bug this is for: sign-in cannot see the account
+	// because its lookup is scoped to the app, registration can see it because its duplicate
+	// check is not, and the user used to be dropped on a sign-in page with nothing said.
+	it('keeps what the platform said when registration refuses too', async () => {
+		const refusal =
+			'User someone@example.com already exists. Please try to login / reset your password.';
+		mockFetch({
+			'authenticate/social': { status: 403 },
+			'clients/socialRegister': { status: 409, body: { message: refusal } },
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await expect(mod.consumeSocialArrival()).resolves.toBe(false);
+		expect(mod.takeSocialArrivalMessage()).toBe(refusal);
+	});
+
+	it('hands the message over exactly once', async () => {
+		mockFetch({
+			'authenticate/social': { status: 403 },
+			'clients/socialRegister': { status: 409, body: { message: 'anything' } },
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await mod.consumeSocialArrival();
+
+		expect(mod.takeSocialArrivalMessage()).toBe('anything');
+		// A message that survived being shown would reappear on the next mount, long after the
+		// sign-in it belonged to.
+		expect(mod.takeSocialArrivalMessage()).toBeNull();
+	});
+
+	it('still says something useful when the refusal carried no message', async () => {
+		mockFetch({
+			'authenticate/social': { status: 403 },
+			'clients/socialRegister': { status: 409, body: {} },
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await mod.consumeSocialArrival();
+
+		expect(mod.takeSocialArrivalMessage()).toContain('password');
+	});
+
+	it('leaves nothing to show when the sign-in worked', async () => {
+		mockFetch({ 'authenticate/social': { status: 200, body: SESSION } });
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await mod.consumeSocialArrival();
+
+		expect(mod.takeSocialArrivalMessage()).toBeNull();
 	});
 
 	it('takes the profile off the address bar once it has been spent', async () => {
