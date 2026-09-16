@@ -6,6 +6,7 @@ import {
 	setData,
 } from '../../context/StoreContext';
 import { duplicate } from '@fincity/kirun-js';
+import { takeSocialArrivalMessage } from '../../sso/ssoModule';
 
 export function Messages() {
 	const [msgs, setMsgs] = useState<any[]>([]);
@@ -20,6 +21,16 @@ export function Messages() {
 			),
 		[],
 	);
+
+	// A social sign-in that could not be turned into a session has no way to say so itself:
+	// `ssoModule` runs before React, where `addMessage` would write the store during the
+	// bootstrap and leave `App.tsx` acting on empty values. It parks the text instead, and this
+	// is the first moment it is safe to show. Taken once, so it does not reappear on a later
+	// mount belonging to a different sign-in.
+	useEffect(() => {
+		const pending = takeSocialArrivalMessage();
+		if (pending) addMessage(MESSAGE_TYPE.ERROR, pending, true, '');
+	}, []);
 
 	const msgComps = msgs.map((e: any, i: number) => {
 		const isObject = typeof e.msg === 'object';
