@@ -109,7 +109,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Offer A Page Preview',
 		description:
-			"Offer to render the page the agent changed next to the chat, with a Draft/Live toggle and width presets. The pane is draggable and its size is remembered. Needs room: leave off for a docked panel and use Open Full Page Name there instead.",
+			'Offer to render the page the agent changed next to the chat, with a Draft/Live toggle and width presets. The pane is draggable and its size is remembered. Needs room: leave off for a docked panel and use Open Full Page Name there instead.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
@@ -237,8 +237,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'LIVE',
 				displayName: 'Write Live',
-				description:
-					'Every edit goes straight to the live app, with no review step.',
+				description: 'Every edit goes straight to the live app, with no review step.',
 			},
 		],
 		group: ComponentPropertyGroup.BASIC,
@@ -275,7 +274,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'draftWorkspaceLabel',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Draft Review Editor Label',
-		description: "Label on that link. 'workspace' is appbuilder's word for it, not every app's.",
+		description:
+			"Label on that link. 'workspace' is appbuilder's word for it, not every app's.",
 		defaultValue: 'Open in workspace',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
@@ -532,6 +532,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'File Icon',
 		description: 'Icon class for file attachments.',
 		defaultValue: 'fa fa-file',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'expiredAttachmentIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Expired Attachment Icon',
+		description:
+			'Icon class shown in place of an attachment that has passed its retention period and been deleted.',
+		defaultValue: 'fa fa-clock-rotate-left',
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},

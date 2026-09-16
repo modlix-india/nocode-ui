@@ -1,19 +1,14 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+// Shared with LazyPrompt rather than declared again here. The two copies were
+// byte-identical until history gained `expired`, at which point one of them
+// would have been silently wrong.
+import { Attachment } from '../attachments';
 
 // Matches the textarea's max-height in PromptStyle; past this the box stops
 // growing and starts scrolling.
 const MAX_INPUT_HEIGHT = 200;
-
-interface Attachment {
-	id: string;
-	type: 'image' | 'file';
-	name: string;
-	url: string;
-	mimeType: string;
-	file?: File;
-}
 
 interface InputBarProps {
 	placeholder: string;
