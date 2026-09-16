@@ -1832,6 +1832,25 @@ export default function PromptStyle({
 			color: ${t('fontColorOne', '#1a1a1a')};
 		}
 
+		/* An image that has not arrived yet. A secured attachment is fetched
+		   with an auth header rather than served straight to the <img>, so
+		   there is a real gap to fill; without a box of the right size the
+		   whole transcript reflows when each one lands. */
+		${PREFIX} ._attachmentImage._attachmentLoading {
+			width: 120px;
+			height: 90px;
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+		}
+
+		/* A chat attachment is kept for ninety days and then deleted by the
+		   retention job. This is what stands in its place afterwards — said
+		   plainly, because a broken image icon reads as a bug rather than as
+		   the documented behaviour it is. */
+		${PREFIX} ._attachmentPreview._attachmentExpired ._attachmentFile {
+			color: ${t('fontColorThree', '#9b9b9b')};
+			font-style: italic;
+		}
+
 		/* ─── Saved-outright notice ───
 		   Objects the user does not have open are written straight to the
 		   database, unlike the ones on screen which wait for their Save. Nothing
