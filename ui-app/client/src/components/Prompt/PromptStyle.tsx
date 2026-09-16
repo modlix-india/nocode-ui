@@ -1842,6 +1842,15 @@ export default function PromptStyle({
 		${PREFIX} ._craftRow {
 			display: flex;
 			gap: 16px;
+			/* Children that can't shrink (fixed-size asset tiles) must scroll,
+			   never spill past the panel edge (an 11-image assets_row rendered
+			   half off-screen with no way to reach the tail, live 2026-09-16).
+			   Rows whose children CAN flex (metric trios) never overflow, so
+			   this stays invisible for them. Same thin-scrollbar treatment as
+			   ._craftCarousel. */
+			overflow-x: auto;
+			scrollbar-width: thin;
+			padding-bottom: 4px;
 		}
 
 		${PREFIX} ._craftRow > * {
