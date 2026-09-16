@@ -27,6 +27,8 @@ import { CraftCard } from './components/CraftCard';
 import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
+import AttachmentThumb from './components/AttachmentThumb';
+import { Attachment, splitTurnAttachments } from './attachments';
 import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
@@ -104,15 +106,6 @@ interface AgentSpan {
 	statusText?: string; // live progress text from tool_update (e.g. "Analyzing results…")
 }
 
-interface Attachment {
-	id: string;
-	type: 'image' | 'file';
-	name: string;
-	url: string;
-	mimeType: string;
-	file?: File;
-}
-
 interface TokenUsage {
 	input_tokens: number;
 	output_tokens: number;
@@ -168,12 +161,14 @@ function mapHistoryToMessages(history: any[]): Message[] {
 	for (let i = 0; i < sorted.length; i++) {
 		const h = sorted[i];
 		const turnNumber = h.turn_number ?? i + 1;
+		const attached = splitTurnAttachments(h.attachments, i);
 		if (h.user_instruction) {
 			msgs.push({
 				id: `hist_user_${i}`,
 				role: 'user',
 				content: h.user_instruction,
 				turnNumber,
+				attachments: attached.user,
 			});
 		}
 		if (h.assistant_summary) {
@@ -202,6 +197,7 @@ function mapHistoryToMessages(history: any[]): Message[] {
 				toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
 				turnNumber,
 				feedbackRating: h.feedback_rating,
+				attachments: attached.assistant,
 			});
 		}
 	}
@@ -896,6 +892,11 @@ const STREAM_TIMEOUT_MS = 45_000;
 // it keeps working with nobody watching.
 const MAX_RECONNECT_ATTEMPTS = 3;
 
+// Multiplied by the attempt number, so the gaps are 1s, 2s, 3s. Long enough
+// for a blip to pass, short enough that a rejoin still feels like the stream
+// never stopped.
+const RECONNECT_BACKOFF_MS = 1_000;
+
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
 		definition: { bindingPath, bindingPath2, bindingPath3 },
@@ -948,6 +949,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			addAttachmentIcon = 'fa fa-plus',
 			removeAttachmentIcon = 'fa fa-xmark',
 			fileIcon = 'fa fa-file',
+			expiredAttachmentIcon = 'fa fa-clock-rotate-left',
 			copyIcon = 'fa fa-clone',
 			copySuccessIcon = 'fa fa-check',
 			renameIcon = 'fa fa-pen',
@@ -1178,6 +1180,26 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	const abortControllerRef = useRef<AbortController | null>(null);
+	/**
+	 * True while the stream is being let go of ON PURPOSE: Stop, a session
+	 * switch, a new chat, an unmount.
+	 *
+	 * This is the ONLY thing that distinguishes deliberate from accidental,
+	 * and the distinction decides whether the run is rejoined or reported as a
+	 * failure. It cannot be read off the error: a dropped socket surfaces as
+	 * `TypeError: network error` in Chrome, `Load failed` in Safari and an
+	 * AbortError when our own watchdog pulls the plug, so an error-name test
+	 * would have to enumerate every browser's wording and would still fail
+	 * open on the next one. Anything that reaches a catch with this flag down
+	 * is a lost connection to a run that is still working.
+	 */
+	const deliberateAbortRef = useRef(false);
+	/** Let go of the current stream without ending the run behind it. */
+	const releaseStream = useCallback(() => {
+		deliberateAbortRef.current = true;
+		abortControllerRef.current?.abort();
+		abortControllerRef.current = null;
+	}, []);
 	const shouldAutoScrollRef = useRef(true);
 	const prevMessageCountRef = useRef(0);
 	const lastTouchYRef = useRef(0);
@@ -2114,7 +2136,35 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			let eventType = '';
 			try {
 				while (true) {
-					const { done, value } = await reader.read();
+					// The read is guarded on its own, not by the catch around
+					// the whole loop, so that only a failure of the CONNECTION
+					// is read as one. A throw from the event handling below is
+					// a bug in this file and must stay an error: swallowing it
+					// here would reattach, replay the same event, throw again,
+					// and turn a crash into a reconnect loop.
+					let chunk: ReadableStreamReadResult<Uint8Array>;
+					try {
+						chunk = await reader.read();
+					} catch (err: any) {
+						// Deliberate: Stop, a session switch, an unmount. The
+						// caller asked for this and owns what happens next.
+						if (deliberateAbortRef.current) throw err;
+						// Everything else is the connection dying under a run
+						// that is still working — our watchdog's abort on
+						// silence, or the socket simply going away mid-read
+						// (`TypeError: network error` in Chrome, `Load failed`
+						// in Safari). Report it as a timeout so the caller
+						// rejoins and replays.
+						//
+						// This used to rethrow, which made an ordinary blip
+						// terminal: an "Error: network error" bubble, an idle
+						// panel, and a 409 on the user's next message because
+						// the run they had been told had failed was still
+						// going.
+						timedOut = true;
+						break;
+					}
+					const { done, value } = chunk;
 					if (done) break;
 					lastDataAt = Date.now();
 
@@ -2283,12 +2333,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						});
 					}
 				}
-			} catch (err: any) {
-				// Our own watchdog fired: report it as a timeout so the caller
-				// can rejoin the run. Any other abort is someone deliberately
-				// letting go (a stop, a session switch, an unmount) and must
-				// stay an abort.
-				if (!(err?.name === 'AbortError' && timedOut)) throw err;
 			} finally {
 				clearInterval(watchdog);
 			}
@@ -2347,6 +2391,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			try {
 				while (attempt <= MAX_RECONNECT_ATTEMPTS) {
+					// A new stream: nobody has asked to let go of THIS one yet.
+					deliberateAbortRef.current = false;
 					abortControllerRef.current = new AbortController();
 					const response = await fetch(`${baseUrl}/attach`, {
 						method: 'POST',
@@ -2390,6 +2436,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						startPolling(attachSessionId);
 						return true;
 					}
+					// Back off before retrying. A timeout used to be the only
+					// way here and took 45s to notice, which spaced the
+					// attempts on its own; a socket that dies mid-read reports
+					// instantly, and without this a connection that is flapping
+					// would spend all three attempts inside a second and fall
+					// through to polling while the network was still settling.
+					await new Promise(resolve =>
+						setTimeout(resolve, RECONNECT_BACKOFF_MS * attempt),
+					);
 				}
 
 				forgetActiveRun();
@@ -2427,8 +2482,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			// Let go of whatever this panel was watching. Only the view ends:
 			// the run it was attached to carries on, and picking that session
 			// again rejoins it.
-			abortControllerRef.current?.abort();
-			abortControllerRef.current = null;
+			releaseStream();
 			setIsStreaming(false);
 			// Steers belong to the run they were sent into. Rejoining that chat
 			// replays them with the agent's verdict; carrying them across to
@@ -2513,6 +2567,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			startPolling,
 			attachToRun,
 			overlaySessions,
+			releaseStream,
 		],
 	);
 
@@ -2619,8 +2674,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const handleNewChat = useCallback(() => {
 		stopPolling();
 		// As in handleSelectSession: stop watching, do not stop the run.
-		abortControllerRef.current?.abort();
-		abortControllerRef.current = null;
+		releaseStream();
 		if (overlaySessions) setSidebarOpen(false);
 		setIsStreaming(false);
 		shouldAutoScrollRef.current = true;
@@ -2643,7 +2697,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		setPreviewOpen(false);
 		setPendingApps([]);
 		setSavedObjects([]);
-	}, [stopPolling, overlaySessions]);
+	}, [stopPolling, overlaySessions, releaseStream]);
 
 	// Delete a session
 	const handleDeleteSession = useCallback(
@@ -2804,6 +2858,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			let receivedSessionId = sessionId;
 
 			try {
+				// A new stream: nobody has asked to let go of THIS one yet.
+				deliberateAbortRef.current = false;
 				abortControllerRef.current = new AbortController();
 
 				const editorContext = buildEditorContext();
@@ -2852,7 +2908,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					setMessages(prev => prev.filter(m => m.id !== userMsg.id));
 					setDraftText(displayText ?? text);
 					setIsStreaming(false);
-					await attachToRun(sessionId ?? '');
+					// Polling is the fallback, exactly as on the timed-out path
+					// below: the attach itself can fail on the same bad
+					// connection that sent us here, and dropping it silently
+					// left the panel idle in front of a run still working.
+					const rejoined = await attachToRun(sessionId ?? '');
+					if (!rejoined && sessionId) startPolling(sessionId);
 					return;
 				}
 
@@ -2883,6 +2944,21 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						startPolling(receivedSessionId);
 					}
 					return;
+				}
+
+				if (result.timedOut) {
+					// Died before anything came back that named the session, so
+					// there is no run to rejoin and nothing to poll. This is the
+					// one case where a lost connection is still worth reporting.
+					// Both bubbles come back out and the text goes to the box,
+					// as on the 409 path: the message never reached a run, so
+					// the honest state is the one before it was sent.
+					forgetActiveRun();
+					setMessages(prev =>
+						prev.filter(m => m.id !== assistantMsgId && m.id !== userMsg.id),
+					);
+					handBackText(displayText ?? text);
+					throw new Error('Connection lost before the chat started');
 				}
 
 				forgetActiveRun();
@@ -2957,6 +3033,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			consumeStream,
 			attachToRun,
 			forgetActiveRun,
+			handBackText,
 			props.context.pageName,
 			props.locationHistory,
 			props.pageDefinition,
@@ -3100,10 +3177,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	]);
 
 	const handleStop = useCallback(() => {
-		abortControllerRef.current?.abort();
+		releaseStream();
 		stopPolling();
 		setIsStreaming(false);
-		abortControllerRef.current = null;
 
 		// Letting go of the stream here means the agent's verdict on any steer
 		// in flight will never be seen, so settle them now: a stopped run reads
@@ -3130,19 +3206,19 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				body: JSON.stringify({ session_id: sid }),
 			}).catch(() => {});
 		}
-	}, [stopPolling, agentEndpoint, getAuthHeaders, forgetActiveRun, handBackText]);
+	}, [stopPolling, agentEndpoint, getAuthHeaders, forgetActiveRun, handBackText, releaseStream]);
 
 	useEffect(() => {
 		return () => {
 			// Stop watching, on purpose, without a /stop: the run outlives this
 			// component and the note in LocalStore is what finds it again.
-			abortControllerRef.current?.abort();
+			releaseStream();
 			stopPolling();
 			if (saveDraftTimeoutRef.current) {
 				clearTimeout(saveDraftTimeoutRef.current);
 			}
 		};
-	}, [stopPolling]);
+	}, [stopPolling, releaseStream]);
 
 	// Feedback handler — calls POST /api/ai/learning/feedback
 	const handleFeedback = useCallback(
@@ -3360,20 +3436,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								{msg.attachments?.length ? (
 									<div className="_messageAttachments">
 										{msg.attachments.map(att => (
-											<div key={att.id} className="_attachmentPreview">
-												{att.type === 'image' ? (
-													<img
-														src={att.url}
-														alt={att.name}
-														className="_attachmentImage"
-													/>
-												) : (
-													<div className="_attachmentFile">
-														<i className={fileIcon} />
-														<span>{att.name}</span>
-													</div>
-												)}
-											</div>
+											<AttachmentThumb
+												key={att.id}
+												type={att.type}
+												name={att.name}
+												url={att.url}
+												expired={att.expired}
+												fileIcon={fileIcon}
+												expiredIcon={expiredAttachmentIcon}
+											/>
 										))}
 									</div>
 								) : null}
