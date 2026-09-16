@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
 	addListenerAndCallImmediately,
-	getDataFromPath,
 	PageStoreExtractor,
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
@@ -18,22 +17,11 @@ import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './imageProperties';
 import { styleProperties, styleDefaults } from './imageStyleProperties';
 import ImageStyle from './ImageStyles';
-import { LOCAL_STORE_PREFIX } from '../../constants';
-import { shortUUID } from '../../util/shortUUID';
-import axios from 'axios';
+// Was a private helper here until the chat needed the same thing for its
+// attachments. Same behaviour, plus one shared blob per URL instead of one per
+// render — see the note in that module.
+import secureImage, { isSecuredUrl } from '../util/secureImage';
 // import { onMouseDownDragStartCurry } from '../../functions/utils';
-
-async function secureImage(src: string) {
-	const headers: any = {
-		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-	};
-	if (globalThis.isDebugMode)
-		headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
-
-	return await axios
-		.get(src, { responseType: 'blob', headers })
-		.then(res => URL.createObjectURL(res.data));
-}
 
 function ImageComponent(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
@@ -155,7 +143,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		: undefined;
 
 	useEffect(() => {
-		if (!computedUrl.includes('api/files/secured')) {
+		if (!isSecuredUrl(computedUrl)) {
 			setActualSrc(computedUrl);
 			return;
 		}
@@ -163,7 +151,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	}, [computedUrl]);
 
 	useEffect(() => {
-		if (!computedComparisonUrl || !computedComparisonUrl.includes('api/files/secured')) {
+		if (!isSecuredUrl(computedComparisonUrl)) {
 			setActualComparisonSrc(computedComparisonUrl);
 			return;
 		}
@@ -631,7 +619,7 @@ const component: Component = {
 			alt: { value: 'Image' },
 		},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

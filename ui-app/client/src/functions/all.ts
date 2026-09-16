@@ -5,6 +5,7 @@ export * from './SetStore';
 export * from './GetStoreData';
 export * from './Login';
 export * from './Logout';
+export * from './SsoSeed';
 export * from './Message';
 export * from './Navigate';
 export * from './ShortUniqueId';
