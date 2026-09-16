@@ -60,7 +60,8 @@ describe('heartbeatDelay', () => {
 	it('beats at half the remaining life, clamped at both ends', () => {
 		const inMinutes = (m: number) => new Date(Date.now() + m * 60 * 1000).toISOString();
 
-		expect(heartbeatDelay(inMinutes(10))).toBe(5 * 60 * 1000);
+		// Not exact: the clock moves between building the timestamp and reading it.
+		expect(heartbeatDelay(inMinutes(10))).toBeCloseTo(5 * 60 * 1000, -3);
 		// Clamped up: a grant with seconds left must not busy-beat.
 		expect(heartbeatDelay(inMinutes(0.2))).toBe(30 * 1000);
 		// Clamped down: a 30 minute grant beats every 10, not every 15.
