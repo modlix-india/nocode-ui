@@ -491,6 +491,10 @@ const COMMON_PROPERTIES: Record<string, CatalogProperty> = loadCommonProperties(
 
 const COMPONENT_TIERS: Record<string, ComponentTier> = {
 	Tree: 'data',
+	// The agent authors pages that HOST this, and has to wire three binding
+	// paths and seven events to do it. At the default tier it would reach the
+	// prompt as a one-liner with no properties at all.
+	BlueprintEditor: 'data',
 	// Non-visual, but the agent has to know its props to wire a shortcut at all.
 	// At the default tier it rendered as a one-line description with no properties.
 	Shortcut: 'common',
@@ -582,6 +586,8 @@ const DEFAULT_TIER: ComponentTier = 'specialized';
 // AI agent understands what it does and when to use it.
 
 const COMPONENT_BRIEFS: Record<string, string> = {
+	BlueprintEditor:
+		"Renders an application's PLAN as a board: objects of one kind side by side as columns, the kinds stacked as bands. A band is an object kind, a column is one object, a card is one entry of that object's blueprint (a section of a page, a field of a storage). It builds itself from the app's own definitions, so it renders a real board for an app that has NO blueprint at all, with each card titled by what it is and the second line left empty until somebody says what it is for. bindingPath takes the sources the host fetched ({appBlueprint?, pages[], storages[]}), bindingPath2 a per-entry status map of clean|pending|drifted supplied by the host, and bindingPath3 the selection, which it WRITES as well as reads so a Prompt beside it can use the selection as context. Pair it with a Prompt in the same Grid. mode _prose shows a name and one line per card; _advanced adds uids, kinds and order inline without changing the layout.",
 	Tree:
 		'Renders hierarchical data, repeating ONE child template at every depth. dataShape accepts NESTED (children array), FLAT (idKey + parentKey), OBJECT_MAP (object keyed by id) or RAW_JSON (structure inferred). treeDesign picks indented list, accordion, org chart or Finder-style columns. Inside the node template, Parent.<field> is the current node and Parent.Parent.<field> is its parent, at every depth. bindingPath2 holds the selection (single or multi), bindingPath3 the expanded node keys, bindingPath4 the active path for the columns design. Set editable to allow drag reorder, drag reparent, add and delete; RAW_JSON is read only.',
 	Animator:
@@ -803,6 +809,8 @@ const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
 //  ... repeated elements
 
 const COMPONENT_STRUCTURES: Record<string, string> = {
+	BlueprintEditor:
+		'boardHeader[boardTitle + boardDescription] → emptyState? → lensRow[lensLabel + lensChip[lensChipCount?]...] → band[bandHeading + bandSubLine? → rail[ railColumn[ columnHeader[columnIcon + columnName + columnRollup + columnMenu?] → planCard[cardTitle + cardDescription? + statusMark[statusDot]? + cardMenu? → cardDetail[fieldRow[fieldLabel + fieldValue + fieldHint?]... + optionChipRow[optionChip...]? + previewFrame[previewBody + previewCaption]? + actionRow[actionButton...]]?]... → addCardBox? ]... → addColumnBox? ]]...',
 	Tree:
 		'viewport → nodes[ node[ nodeRow[toggle | checkBox? | nodeContent(childTemplate) | nodeActions?] → children[ node... ] ] ] | columns[ column[columnHeader? → nodeRow...]... ]',
 	TextBox:
