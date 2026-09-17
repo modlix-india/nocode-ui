@@ -1,6 +1,7 @@
 import { Component } from '../types/common';
 import Animator from './Animator/Animator';
 import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
+import BlueprintEditor from './BlueprintEditor/BlueprintEditor';
 import Button from './Button/Button';
 import ButtonBar from './Buttonbar/ButtonBar';
 import Carousel from './Carousel/Carousel';
@@ -81,6 +82,7 @@ import TemplateEditor from './TemplateEditor/TemplateEditor';
 import TextEditor from './TextEditor/TextEditor';
 
 const componentMap = new Map<string, Component>([
+	[BlueprintEditor.name, BlueprintEditor],
 	[Button.name, Button],
 	[ButtonBar.name, ButtonBar],
 	[Grid.name, Grid],
