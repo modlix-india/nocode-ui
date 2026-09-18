@@ -161,6 +161,36 @@ describe('social arrival', () => {
 		expect(calls[1].body.businessClient).toBe(expected);
 	});
 
+	// The duplicate-client loop, from the browser's side: sign-in refused, so the browser
+	// registered, which made another client, which made the next sign-in refuse again. A 409
+	// says the platform recognised this identity and it already owns a client, so registering
+	// is the one thing not to do.
+	it('does not register when the identity already owns a client', async () => {
+		const refusal =
+			'This account already belongs to an organisation. Please request access to this application instead of signing up again.';
+		const calls = mockFetch({
+			'authenticate/social': { status: 409, body: { message: refusal } },
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await expect(mod.consumeSocialArrival()).resolves.toBe(false);
+
+		expect(calls).toHaveLength(1);
+		expect(calls[0].url).toContain('authenticate/social');
+		expect(mod.takeSocialArrivalMessage()).toBe(refusal);
+		expect(localStorage.getItem('AuthToken')).toBeNull();
+	});
+
+	it('still says something when a 409 carried no message', async () => {
+		mockFetch({ 'authenticate/social': { status: 409, body: {} } });
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await mod.consumeSocialArrival();
+		expect(mod.takeSocialArrivalMessage()).toContain('request access');
+	});
+
 	it('does not try to register when the refusal was not "unknown user"', async () => {
 		const calls = mockFetch({ 'authenticate/social': { status: 500 } });
 		const mod = loadModule();
