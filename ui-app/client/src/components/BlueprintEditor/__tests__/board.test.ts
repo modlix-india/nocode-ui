@@ -1,4 +1,12 @@
-import { buildBoard, sectionsOf, readableName, tileDate } from '../board';
+import {
+	absoluteUrl,
+	buildBoard,
+	connectionIndex,
+	sectionsOf,
+	readableName,
+	streamUrlFor,
+	tileDate,
+} from '../board';
 import { ComponentDefinition } from '../../../types/common';
 
 /** A page shaped the way the platform stores one: a root whose children are the sections. */
@@ -664,5 +672,296 @@ describe('things that have not been built', () => {
 			},
 		});
 		expect(m.bands[0].columns[0].purpose).toContain('nervous first-timer');
+	});
+});
+
+describe('objects whose names contain a dot', () => {
+	it('finds a namespaced function that the store nested rather than keyed', () => {
+		// A server function is called `crumbco.createBlogPost`. The host writes it
+		// with a path built by concatenation, and a store path is split on '.',
+		// so it landed as loaded.function.crumbco.createBlogPost — four nested
+		// objects. Read back as one key it found nothing, so every function
+		// column stayed empty however many times it was opened.
+		const m = buildBoard({
+			objects: { function: [{ name: 'crumbco.createBlogPost' }] },
+			loaded: {
+				function: {
+					crumbco: {
+						createBlogPost: { definition: { steps: { save: {}, mail: {} } } },
+					},
+				},
+			},
+		});
+		expect(m.bands[0].columns[0].cards.map(c => c.title)).toEqual(['save', 'mail']);
+	});
+
+	it('still finds an ordinary one-segment name', () => {
+		const m = buildBoard({
+			objects: { storage: [{ name: 'orderRequest' }] },
+			loaded: { storage: { orderRequest: { schema: { properties: { email: {} } } } } },
+		});
+		expect(m.bands[0].columns[0].cards.map(c => c.title)).toEqual(['email']);
+	});
+});
+
+describe('what Build is allowed to offer', () => {
+	function planWith(pending: number) {
+		return {
+			objects: { page: [{ name: 'blogList' }] },
+			appBlueprint: {
+				plan: {
+					objects: {
+						o1: { order: 1000, kind: 'page', name: 'blogList', status: 'built', pending },
+					},
+				},
+			},
+		};
+	}
+
+	it('counts unbuilt work inside a column nobody has opened', () => {
+		// A column's cards arrive only when it is opened, so on a freshly
+		// loaded board the component can see that a page exists and cannot see
+		// that three of its sections were never built. Build then says
+		// "nothing to build" over a plan with outstanding work, which is the
+		// worst sentence that button has.
+		expect(buildBoard(planWith(3)).outstanding).toBe(3);
+	});
+
+	it('trusts the cards over the index once a column is open', () => {
+		// Never both: an opened column would be counted twice, once from what
+		// it has and once from what the last sweep recorded about it.
+		const m = buildBoard({
+			...planWith(3),
+			loaded: {
+				page: {
+					blogList: {
+						...page('blogList', [{ key: 'cHero', name: 'Hero' }]),
+						blueprint: {
+							plan: {
+								sections: {
+									s1: { order: 1000, name: 'Hero', componentKey: 'cHero' },
+									s2: { order: 2000, name: 'Later' },
+								},
+							},
+						},
+					},
+				},
+			},
+		});
+		expect(m.outstanding).toBe(1);
+	});
+
+	it('offers nothing when there is nothing outstanding', () => {
+		expect(buildBoard(planWith(0)).outstanding).toBe(0);
+	});
+
+	it('never counts an address or a refused request as work', () => {
+		const m = buildBoard({
+			appBlueprint: {
+				plan: {
+					delivery: { d1: { order: 1000, host: 'x.example' } },
+					objects: {
+						a1: { order: 1000, kind: 'asset', name: 'favicon', asset: { use: 'Favicon' } },
+					},
+				},
+				decisions: {
+					dec1: { order: 1000, choice: 'Customer logins', because: 'not a site', status: 'rejected' },
+				},
+			},
+		});
+		// An address is not waiting to be built, and a request the product
+		// turned down is never going to be.
+		expect(m.outstanding).toBe(0);
+	});
+});
+
+describe('the decisions view', () => {
+	const appBlueprint = {
+		plan: {},
+		decisions: {
+			d1: {
+				order: 1000,
+				choice: 'Teal and slate, no stock photographs',
+				because: 'Every other practice nearby uses the same smiling stock images',
+				status: 'active',
+				area: 'The look',
+				by: 'You · 12 September',
+			},
+			d2: {
+				order: 2000,
+				choice: 'A separate page for each service',
+				because: 'Five thin pages with almost nothing on each',
+				status: 'superseded',
+				area: 'The pages',
+			},
+			d3: {
+				order: 3000,
+				choice: 'Customers sign in to see past orders',
+				because: 'A site has no accounts',
+				status: 'rejected',
+				area: 'Accounts',
+			},
+		},
+	};
+
+	it('keeps every decision, whatever became of it', () => {
+		// A replaced decision is the most useful thing anybody can know before
+		// proposing it again, which is exactly what deleting it destroys.
+		const m = buildBoard({ appBlueprint });
+		expect(m.decisions.map(d => d.status)).toEqual(['active', 'superseded', 'rejected']);
+		expect(m.decisions[0].attribution).toBe('You · 12 September');
+		expect(m.decisions[0].area).toBe('The look');
+	});
+
+	it('still shows only the refusals on the board itself', () => {
+		// The boundary band is about a product boundary somebody keeps walking
+		// into. The full record is a different screen.
+		const m = buildBoard({ appBlueprint });
+		const band = m.bands.find(b => b.kind === 'boundary');
+		expect(band?.columns.map(c => c.title)).toEqual(['Customers sign in to see past orders']);
+	});
+
+	it('has no decisions to show when the plan records none', () => {
+		expect(buildBoard({ appBlueprint: { plan: {} } }).decisions).toEqual([]);
+	});
+});
+
+describe('links the host hands in', () => {
+	it('makes a bare hostname absolute', () => {
+		// The platform's draft record is a hostname, and an href with no scheme
+		// is a RELATIVE path — so the link went to a page inside the studio and
+		// still looked like a working button.
+		expect(absoluteUrl('d919c9caa0589913175cc4b86fd4832cd.local.modlix.com')).toBe(
+			'https://d919c9caa0589913175cc4b86fd4832cd.local.modlix.com',
+		);
+	});
+
+	it('leaves a real url alone', () => {
+		expect(absoluteUrl('https://crumbco.sitezump.ai')).toBe('https://crumbco.sitezump.ai');
+		expect(absoluteUrl('http://localhost:8080/x')).toBe('http://localhost:8080/x');
+	});
+
+	it('leaves a root-relative path alone', () => {
+		expect(absoluteUrl('/sitezump/SYSTEM/page/home')).toBe('/sitezump/SYSTEM/page/home');
+	});
+
+	it('gives nothing back for nothing', () => {
+		expect(absoluteUrl('')).toBe('');
+		expect(absoluteUrl('   ')).toBe('');
+	});
+});
+
+
+describe('the connection graph', () => {
+	const relations = {
+		r1: {
+			order: 1000,
+			from: 'page:orderForm',
+			to: 'storage:orderRequest',
+			how: 'writes to',
+			where: 'submit/save',
+		},
+		r2: {
+			order: 2000,
+			from: 'function:crumbco.dailyDigest',
+			to: 'storage:orderRequest',
+			how: 'reads',
+			where: 'readPage',
+		},
+		r3: { order: 3000, from: 'page:home', to: 'page:orderForm', how: 'goes to', where: 'nav' },
+	};
+
+	it('indexes both ends of every edge', () => {
+		const index = connectionIndex(relations);
+		// The storage knows what reaches it, which is the question people ask
+		// and the direction no object can work out about itself.
+		const incoming = index.get('storage:orderRequest')!;
+		expect(incoming.map(c => `${c.name} ${c.how}`).sort()).toEqual([
+			'crumbco.dailyDigest reads',
+			'orderForm writes to',
+		]);
+		expect(incoming.every(c => c.direction === 'in')).toBe(true);
+
+		// And the page knows both: what it writes to, and that home links to it.
+		const both = index.get('page:orderForm')!;
+		expect(both.map(c => c.direction)).toEqual(['out', 'in']);
+	});
+
+	it('keeps the verb rather than collapsing it to "connected"', () => {
+		// A page that READS a storage survives it being emptied; one that
+		// DELETES from it is the reason it empties. Same edge shape, opposite
+		// answer to "can we drop this".
+		const index = connectionIndex(relations);
+		const hows = index.get('storage:orderRequest')!.map(c => c.how);
+		expect(new Set(hows)).toEqual(new Set(['writes to', 'reads']));
+	});
+
+	it('carries where it was found, so a connection can be checked', () => {
+		const index = connectionIndex(relations);
+		expect(index.get('page:orderForm')![0].where).toBe('submit/save');
+	});
+
+	it('survives a graph that is missing or malformed', () => {
+		expect(connectionIndex(undefined).size).toBe(0);
+		// A half-written edge is dropped rather than rendered as a connection to
+		// nothing, which would read as a dependency nobody can find.
+		expect(connectionIndex({ bad: { from: 'page:home' }, worse: {} } as any).size).toBe(0);
+	});
+
+	it('puts a column\'s connections on the column', () => {
+		const model = buildBoard({
+			pages: [page('orderForm', [{ key: 'form', name: 'Form' }])],
+			storages: [{ name: 'orderRequest', schema: { properties: { email: {} } } }],
+			appBlueprint: { plan: { relations } },
+		} as any);
+
+		const pageColumn = model.bands
+			.find(b => b.kind === 'page')!
+			.columns.find(c => c.name === 'orderForm')!;
+		expect(pageColumn.connections.map(c => c.name)).toEqual(['orderRequest', 'home']);
+
+		const storageColumn = model.bands.find(b => b.kind === 'storage')!.columns[0];
+		expect(storageColumn.connections.map(c => c.direction)).toEqual(['in', 'in']);
+	});
+
+	it('gives every column an empty list when no graph has been derived', () => {
+		// Empty is a real answer — nothing in the app names it — and must not be
+		// undefined, or every render site needs its own guard.
+		const model = buildBoard({ pages: [page('home', [])] } as any);
+		expect(model.bands.find(b => b.kind === 'page')!.columns[0].connections).toEqual([]);
+	});
+});
+
+
+describe('which stream watches a job', () => {
+	const PLAN = '/api/ai/blueprint/plan/{job}/stream';
+	const BUILD = '/api/ai/blueprint/build/{job}/stream';
+
+	it('sends a build to the build stream', () => {
+		// Measured against the running service: /plan/{a build job}/stream is a
+		// 404 and /build/{the same job}/stream is a 200. They are separate
+		// registries and a job id from one means nothing to the other.
+		expect(streamUrlFor({ kind: 'build', job: 'abc' }, PLAN, BUILD)).toBe(
+			'/api/ai/blueprint/build/abc/stream',
+		);
+	});
+
+	it('sends a sweep to the plan stream', () => {
+		expect(streamUrlFor({ job: 'abc' }, PLAN, BUILD)).toBe(
+			'/api/ai/blueprint/plan/abc/stream',
+		);
+		expect(streamUrlFor({ kind: 'plan', job: 'abc' }, PLAN, BUILD)).toBe(
+			'/api/ai/blueprint/plan/abc/stream',
+		);
+	});
+
+	it('asks for nothing when there is no job', () => {
+		expect(streamUrlFor(undefined, PLAN, BUILD)).toBe('');
+		expect(streamUrlFor({ kind: 'build' }, PLAN, BUILD)).toBe('');
+	});
+
+	it('asks for nothing when the host configured no endpoint', () => {
+		// Better than fetching the literal "{job}" and reporting a lost job.
+		expect(streamUrlFor({ kind: 'build', job: 'abc' }, PLAN, '')).toBe('');
 	});
 });
