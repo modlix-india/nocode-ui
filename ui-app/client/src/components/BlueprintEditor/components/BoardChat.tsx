@@ -69,6 +69,20 @@ interface BoardChatProps {
 	/** Streaming state, so the board can disable what must not be touched. */
 	onStreamingChange?: (streaming: boolean) => void;
 	/**
+	 * Text to drop into the box, from an affordance elsewhere on the board.
+	 *
+	 * Pressing Add on a column used to write a sentence to `Page.pendingPrompt`,
+	 * which only the separate `Prompt` component ever read — and the chat moved
+	 * INTO this component, so nothing on the screen read it any more. Every Add
+	 * button on the board did nothing at all, silently.
+	 *
+	 * It seeds the box rather than sending: what somebody wants added is a
+	 * sentence they should be able to edit before it costs a turn.
+	 */
+	seedText?: string;
+	/** Bumped on every press, so the same sentence twice still seeds twice. */
+	seedKey?: number;
+	/**
 	 * Hand the typed text to the host instead of streaming it to the agent.
 	 *
 	 * The gate needs this and the board does not, and the difference is not
@@ -145,6 +159,8 @@ export default function BoardChat({
 	onTurnEnd,
 	onStreamingChange,
 	onSubmitText,
+	seedText,
+	seedKey = 0,
 }: Readonly<BoardChatProps>) {
 	const [draft, setDraft] = useState('');
 	const [streaming, setStreaming] = useState(false);
@@ -155,6 +171,16 @@ export default function BoardChat({
 	const sessionRef = useRef<string | null>(null);
 	const abortRef = useRef<AbortController | null>(null);
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
+
+	// Keyed on the PRESS, not on the sentence. Two presses of the same Add write
+	// the same words, and comparing text would silently ignore the second.
+	const lastSeed = useRef(0);
+	useEffect(() => {
+		if (!seedKey || seedKey === lastSeed.current || !seedText) return;
+		lastSeed.current = seedKey;
+		setDraft(seedText);
+		inputRef.current?.focus();
+	}, [seedKey, seedText]);
 
 	useEffect(() => onStreamingChange?.(streaming), [streaming, onStreamingChange]);
 
@@ -259,6 +285,21 @@ export default function BoardChat({
 							case 'tool_start':
 								setDoing(data.display_name || data.tool_name || 'working');
 								break;
+							// A reasoning model spends most of a turn here and
+							// says nothing else while it does. One real turn:
+							// 1711 `thinking` events against 256 `text` ones,
+							// and this component had no case for the first —
+							// so for about five sixths of every turn the screen
+							// showed a finished-looking box with nothing in it
+							// and no sign anything was happening.
+							//
+							// The text is NOT rendered. It is chain-of-thought,
+							// it is enormous, and showing it is the wall of
+							// transcript this component exists to avoid. What
+							// is worth showing is that it is thinking at all.
+							case 'thinking':
+								setDoing(current => current || 'Thinking');
+								break;
 							case 'object_changed':
 								if (data.name) onObjectChanged?.(data.name);
 								break;
@@ -319,6 +360,10 @@ export default function BoardChat({
 			})),
 		);
 		setAttachments([]);
+		// Before the request, not after the first event. The gap between
+		// pressing send and the model's first token is seconds, and an
+		// unmarked gap reads as a button that did not work.
+		setDoing('Thinking');
 		try {
 			const response = await fetch(agentEndpoint, {
 				method: 'POST',

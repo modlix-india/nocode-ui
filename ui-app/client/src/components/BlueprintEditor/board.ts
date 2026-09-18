@@ -108,6 +108,27 @@ export interface BoardCard {
 	unplanned: boolean;
 }
 
+/**
+ * One object reaching another, as the board draws it.
+ *
+ * Both directions are carried on both columns, and the direction is the part
+ * that matters. What an object REACHES says what it is made of; what REACHES IT
+ * says what breaks if it goes. A board that showed only the first answers the
+ * easy question and hides the one people are actually asking when they point at
+ * a column and say "can we get rid of this".
+ */
+export interface BoardConnection {
+	/** The other end. */
+	kind: BoardKind;
+	name: string;
+	/** The verb, in the app's own words: reads, writes to, runs, goes to. */
+	how: string;
+	/** The statement or component it was found in. What makes it checkable. */
+	where: string;
+	/** `out` — this object reaches the other. `in` — the other reaches this. */
+	direction: 'out' | 'in';
+}
+
 export interface BoardColumn {
 	uid: string;
 	kind: BoardKind;
@@ -120,6 +141,44 @@ export interface BoardColumn {
 	/** True when the plan says this should exist but no definition does yet. */
 	planned: boolean;
 	cards: BoardCard[];
+	/**
+	 * How much of this object's plan is unbuilt, as the app plan's index
+	 * recorded it.
+	 *
+	 * The index is the only place this can be read before a column is opened. A
+	 * column's cards come from that object's own document, fetched when somebody
+	 * opens it — so on a freshly loaded board the component can see that a page
+	 * EXISTS and cannot see that three of its sections were never built. Build
+	 * then offers "nothing to build" over a plan with nine outstanding sections.
+	 *
+	 * Undefined means the index has not been written yet (no sweep has run), and
+	 * is not the same as 0: one is "unknown", the other is "nothing to do".
+	 */
+	indexedPending?: number;
+	/**
+	 * How many parts this object HAS, as the app plan's index recorded it.
+	 *
+	 * Distinct from `cards.length`, which is 0 until the column is opened and its
+	 * document fetched. Without this a column nobody had clicked showed a blank
+	 * where its count goes — correct, because 0 would have claimed the page was
+	 * empty, but it left a board where only the one column you had opened said
+	 * anything about its size.
+	 */
+	indexedParts?: number;
+	/**
+	 * What this object reaches and what reaches it, from the app plan's graph.
+	 *
+	 * Read from the APP plan, not the object's own, and that is deliberate: no
+	 * object can know what reaches it — only something holding every definition
+	 * at once can work that out — so the incoming half exists nowhere else. It
+	 * arrives with the board's first load, which means a column shows its
+	 * dependants before anybody opens it.
+	 *
+	 * Empty is a real answer and not a missing one: nothing in the app names
+	 * this object. For a page that means nothing links to it, which is worth
+	 * seeing.
+	 */
+	connections: BoardConnection[];
 	order: number;
 }
 
@@ -130,11 +189,46 @@ export interface BoardBand {
 	columns: BoardColumn[];
 }
 
+/**
+ * One recorded decision: what was chosen, why, and whether it still stands.
+ *
+ * `status` is the whole of it. `active` is what the site is built on, `rejected`
+ * is something asked for and turned down, and `superseded` is a decision that
+ * was real and has been replaced — struck through rather than deleted, because
+ * "we tried that and moved off it" is the single most useful thing to know
+ * before proposing it again.
+ */
+export interface BoardDecision {
+	uid: string;
+	choice: string;
+	because: string;
+	/** active | rejected | superseded */
+	status: string;
+	/** The area it belongs to, which becomes the column heading. */
+	area: string;
+	/** Who decided and when, as one line. Shown quietly under the card. */
+	attribution: string;
+	/** The uid of the decision this one replaced, if any. */
+	supersedes?: string;
+	order: number;
+}
+
 export interface BoardModel {
 	title: string;
 	description: string;
 	features: Array<{ uid: string; name: string; intent?: string; count: number }>;
 	bands: BoardBand[];
+	/** Every decision on record, for the "why these choices" view. */
+	decisions: BoardDecision[];
+	/**
+	 * How many planned things have nothing built answering to them.
+	 *
+	 * This is what the Build button counts, and it is the honest form of the
+	 * question "is there anything to do": a plan with nothing outstanding should
+	 * not offer to build, because pressing a button that does nothing is how
+	 * people learn to distrust the next one.
+	 */
+	outstanding: number;
 	/** True when no blueprint was supplied at all. Drives the empty offer. */
 	unplannedApp: boolean;
 }
@@ -206,6 +300,15 @@ export interface BoardSources {
 	 */
 	progress?: {
 		job?: string;
+		/**
+		 * plan | build. Which kind of work this is.
+		 *
+		 * Both report the same shape on purpose — one renderer, one stream
+		 * reader, one set of step states — so this is the only thing that says
+		 * whether the site is being READ or being CHANGED. Those are different
+		 * enough that a bar which does not distinguish them is worse than none.
+		 */
+		kind?: string;
 		/** running | done | failed */
 		state?: string;
 		done?: number;
@@ -215,6 +318,10 @@ export interface BoardSources {
 		current?: { kind?: string; name?: string; label?: string; detail?: string };
 		steps?: Array<{
 			kind?: string;
+			/** make | fill, on a build. Absent on a planning sweep. */
+			phase?: string;
+			/** The plan entry this step is about, when it is about one. */
+			uid?: string;
 			name?: string;
 			label?: string;
 			/** waiting | working | done | failed */
@@ -488,6 +595,7 @@ function pageColumn(
 	index: number,
 	status: BoardSources['status'],
 	appObject?: any,
+	connections: BoardConnection[] = [],
 ): BoardColumn {
 	const plan = page.blueprint?.plan;
 	const sections = byOrder<any>(plan?.sections);
@@ -527,7 +635,11 @@ function pageColumn(
 		if (usedPlanKeys.has(uid)) continue;
 		cards.push({
 			uid,
-			title: p?.name?.trim() || 'Untitled',
+			// `kind` before 'Untitled'. A plan written by a model carries
+			// `kind: "hero"` even when it forgot a name, and "hero" is a card
+			// somebody can read where "Untitled" is a column of identical
+			// anonymous cards each describing itself in the line below.
+			title: p?.name?.trim() || p?.kind?.trim() || 'Untitled',
 			description: (p?.purpose ?? p?.describes ?? '').trim(),
 			stated: !!p?.purpose,
 			chrome: false,
@@ -549,6 +661,9 @@ function pageColumn(
 		feature: appObject?.feature,
 		planned: false,
 		cards,
+		indexedPending: appObject?.pending,
+		indexedParts: appObject?.parts,
+		connections,
 		order: appObject?.order ?? (index + 1) * 1000,
 	};
 }
@@ -558,6 +673,7 @@ function storageColumn(
 	index: number,
 	status: BoardSources['status'],
 	appObject?: any,
+	connections: BoardConnection[] = [],
 ): BoardColumn {
 	const plan = storage.blueprint?.plan;
 	const planned = byOrder<any>(plan?.fields);
@@ -622,6 +738,9 @@ function storageColumn(
 		feature: appObject?.feature,
 		planned: false,
 		cards,
+		indexedPending: appObject?.pending,
+		indexedParts: appObject?.parts,
+		connections,
 		order: appObject?.order ?? (index + 1) * 1000,
 	};
 }
@@ -650,6 +769,7 @@ function partsColumn(
 	index: number,
 	status: BoardSources['status'],
 	appObject?: any,
+	connections: BoardConnection[] = [],
 ): BoardColumn {
 	const [collection, matchOn] = collectionFor(kind);
 	const plan = row.blueprint?.plan;
@@ -708,8 +828,40 @@ function partsColumn(
 		feature: appObject?.feature,
 		planned: false,
 		cards,
+		indexedPending: appObject?.pending,
+		indexedParts: appObject?.parts,
+		connections,
 		order: appObject?.order ?? (index + 1) * 1000,
 	};
+}
+
+/**
+ * One lazily loaded document, out of the store the host wrote it to.
+ *
+ * ── Why this is not `loaded[kind][name]` ─────────────────────────────────
+ *
+ * A server function is called `crumbco.createBlogPost`. Its name CONTAINS A
+ * DOT, and every core function's does — the namespace is part of the name.
+ *
+ * The host writes each document with a store path built by concatenation, and a
+ * Modlix store path is split on `.`, so `Page.board.loaded.function.` plus that
+ * name does not write one key. It writes FOUR nested objects:
+ * `loaded.function.crumbco.createBlogPost`. Reading it back as a single key then
+ * finds nothing, so every function column stayed empty no matter how many times
+ * it was opened — and `onNeedObject` fired again on every click, because the
+ * check for "already have it" was looking in the same wrong place.
+ *
+ * So the name is walked as a path, which is what the store did with it. One
+ * segment for an ordinary page, two for a namespaced function, and a flat
+ * `loaded[name]` is still read for a host that has not been updated.
+ */
+export function loadedDetail(
+	loaded: BoardSources['loaded'], kind: BoardKind, name: string,
+): any {
+	if (!loaded) return undefined;
+	const walk = (from: any) =>
+		name.split('.').reduce((node, segment) => node?.[segment], from);
+	return walk(loaded[kind]) ?? walk(loaded) ?? loaded[name] ?? undefined;
 }
 
 /**
@@ -745,9 +897,70 @@ function specCards(kind: BoardKind, object: any): BoardCard[] {
  * Pure, so it is unit-testable without a store, a page or a network call, and
  * so the "no blueprint anywhere" path is the one the tests exercise first.
  */
+/**
+ * The app's connection graph, indexed by both ends.
+ *
+ * Built once per render rather than scanned per column: a graph of a few hundred
+ * edges against sixty columns is sixty full scans, and the board redraws on
+ * every selection.
+ *
+ * Endpoints are `kind:name` strings in the plan, which is what makes this a
+ * lookup rather than a search.
+ */
+export function connectionIndex(
+	relations: Record<string, any> | undefined,
+): Map<string, BoardConnection[]> {
+	const index = new Map<string, BoardConnection[]>();
+	if (!relations) return index;
+
+	const add = (at: string, connection: BoardConnection) => {
+		const list = index.get(at);
+		if (list) list.push(connection);
+		else index.set(at, [connection]);
+	};
+
+	for (const edge of Object.values(relations)) {
+		const from = typeof edge?.from === 'string' ? edge.from : '';
+		const to = typeof edge?.to === 'string' ? edge.to : '';
+		if (!from || !to) continue;
+		const how = String(edge.how ?? 'uses');
+		const where = String(edge.where ?? '');
+		const [toKind, ...toRest] = to.split(':');
+		const [fromKind, ...fromRest] = from.split(':');
+		add(from, {
+			kind: toKind as BoardKind,
+			name: toRest.join(':'),
+			how,
+			where,
+			direction: 'out',
+		});
+		add(to, {
+			kind: fromKind as BoardKind,
+			name: fromRest.join(':'),
+			how,
+			where,
+			direction: 'in',
+		});
+	}
+
+	// Outgoing first, then by the other end's name, so a column's connections
+	// read the same way every render. An order that shuffles between renders
+	// makes a stable list look like it is changing.
+	for (const list of index.values())
+		list.sort(
+			(a, b) =>
+				(a.direction === b.direction ? 0 : a.direction === 'out' ? -1 : 1) ||
+				a.name.localeCompare(b.name),
+		);
+	return index;
+}
+
 export function buildBoard(sources: BoardSources): BoardModel {
 	const appPlan = sources.appBlueprint?.plan;
 	const objects = byOrder<any>(appPlan?.objects);
+	const connections = connectionIndex(appPlan?.relations);
+	const connectionsOf = (kind: BoardKind, name: string) =>
+		connections.get(`${kind}:${name}`) ?? [];
 
 	// The app plan's `objects` map is the INDEX: it names every object and its
 	// purpose, so the rail and every relation render without opening a single
@@ -763,8 +976,7 @@ export function buildBoard(sources: BoardSources): BoardModel {
 	// Kind AND name. A site with a `blog` page and a `blog` storage put both
 	// documents at the same key, so opening the second overwrote the first and
 	// one column redrew itself with the other's parts.
-	const detail = (kind: BoardKind, name: string) =>
-		sources.loaded?.[kind]?.[name] ?? sources.loaded?.[name] ?? undefined;
+	const detail = (kind: BoardKind, name: string) => loadedDetail(sources.loaded, kind, name);
 
 	// Every kind the app has, from the generic `objects` map when the host sends
 	// one and from the two named lists otherwise. Both shapes are accepted
@@ -783,9 +995,11 @@ export function buildBoard(sources: BoardSources): BoardModel {
 		const columns = rowsFor(kind).map((row, i) => {
 			const merged = { ...row, ...detail(kind, row.name) };
 			const appObject = objectByName.get(`${kind}:${row.name}`);
-			if (kind === 'page') return pageColumn(merged, i, sources.status, appObject);
-			if (kind === 'storage') return storageColumn(merged, i, sources.status, appObject);
-			return partsColumn(kind, merged, i, sources.status, appObject);
+			const edges = connectionsOf(kind, row.name);
+			if (kind === 'page') return pageColumn(merged, i, sources.status, appObject, edges);
+			if (kind === 'storage')
+				return storageColumn(merged, i, sources.status, appObject, edges);
+			return partsColumn(kind, merged, i, sources.status, appObject, edges);
 		});
 		columnsByKind.set(kind, columns);
 	}
@@ -814,6 +1028,11 @@ export function buildBoard(sources: BoardSources): BoardModel {
 			feature: o.feature,
 			planned: true,
 			cards: specCards(kind, o),
+			// A planned object has no definition, so it reaches nothing yet. It
+			// can still be REACHED — the graph is asked rather than assumed
+			// empty, because a nav link to a page somebody has planned is the
+			// most useful thing to know about that page.
+			connections: connectionsOf(kind, o.name),
 			order: o.order ?? 999000,
 		});
 	}
@@ -867,6 +1086,7 @@ export function buildBoard(sources: BoardSources): BoardModel {
 			columns: [
 				{
 					uid: 'asset:tomake',
+					connections: [],
 					kind: 'asset',
 					name: 'assets',
 					title: 'To be made',
@@ -918,6 +1138,7 @@ export function buildBoard(sources: BoardSources): BoardModel {
 	if (deliveryCards.length)
 		deliveryColumns.push({
 			uid: 'delivery:address',
+					connections: [],
 			kind: 'delivery',
 			name: 'address',
 			title: 'The address',
@@ -929,6 +1150,7 @@ export function buildBoard(sources: BoardSources): BoardModel {
 	if (audienceCards.length)
 		deliveryColumns.push({
 			uid: 'delivery:audience',
+					connections: [],
 			kind: 'delivery',
 			name: 'audience',
 			title: 'Who sees it',
@@ -964,6 +1186,7 @@ export function buildBoard(sources: BoardSources): BoardModel {
 				uid,
 				kind: 'boundary' as BoardKind,
 				name: uid,
+				connections: [],
 				title: (d?.choice ?? 'Asked for').trim(),
 				purpose: (d?.because ?? '').trim(),
 				planned: true,
@@ -1001,14 +1224,61 @@ export function buildBoard(sources: BoardSources): BoardModel {
 		count: claimed.get(uid) ?? 0,
 	}));
 
+	// Every decision, not only the refusals. The `boundary` band above shows the
+	// rejected ones because those are a product boundary a person keeps walking
+	// into; this is the full record, for the view whose subject IS the record.
+	const decisions: BoardDecision[] = byOrder<any>(sources.appBlueprint?.decisions).map(
+		([uid, d], i) => ({
+			uid,
+			choice: (d?.choice ?? 'A decision').trim(),
+			because: (d?.because ?? '').trim(),
+			status: (d?.status ?? 'active').trim(),
+			area: (d?.area ?? d?.feature ?? 'The site').trim(),
+			attribution: (d?.by ?? d?.attribution ?? '').trim(),
+			supersedes: d?.supersedes,
+			order: d?.order ?? (i + 1) * 1000,
+		}),
+	);
+
+	// What Build would actually do: a planned column with nothing built, or a
+	// card the plan claims and the definition does not answer to.
+	let outstanding = 0;
+	for (const band of bands) {
+		if (DERIVED_KINDS.has(band.kind)) continue;
+		for (const column of band.columns) {
+			if (column.planned) {
+				outstanding += 1;
+				continue;
+			}
+			// The cards when they are loaded, the index when they are not.
+			// Never both: an opened column would otherwise be counted twice,
+			// once from what it actually has and once from what the last sweep
+			// recorded about it.
+			if (column.cards.length)
+				outstanding += column.cards.filter(c => c.status === 'pending').length;
+			else outstanding += column.indexedPending ?? 0;
+		}
+	}
+
 	return {
 		title: (appPlan?.title ?? sources.appTitle ?? sources.appName ?? '').trim(),
 		description: (appPlan?.intent ?? '').trim(),
 		features,
 		bands,
+		decisions,
+		outstanding,
 		unplannedApp: !sources.appBlueprint,
 	};
 }
+
+/**
+ * Bands that are read off the plan rather than off objects.
+ *
+ * Nothing in them is buildable, so they must not be counted as work: an address
+ * a site will answer on is not "not built yet", and a request the product
+ * turned down is certainly not something Build should offer to make.
+ */
+const DERIVED_KINDS = new Set<BoardKind>(['asset', 'delivery', 'boundary']);
 
 /**
  * The date on a site tile, from either of the two shapes that reach it.
@@ -1037,4 +1307,50 @@ export function tileDate(raw: string): Date | undefined {
 		date = new Date(text);
 	}
 	return Number.isNaN(date.getTime()) ? undefined : date;
+}
+
+/**
+ * A link a host handed in, made safe to put in an href.
+ *
+ * The platform's draft record is a bare HOSTNAME — `d<32 hex>.local.modlix.com`
+ * — and an href with no scheme is a RELATIVE path, so such a link resolves to a
+ * page inside the studio rather than to the site. It still looks like a working
+ * button, which is the part that makes it worth a function and a test.
+ */
+export function absoluteUrl(url: string): string {
+	const trimmed = (url ?? '').trim();
+	if (!trimmed) return '';
+	// A scheme, or root-relative on purpose. Anything else is a hostname.
+	if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed) || trimmed.startsWith('/')) return trimmed;
+	return `https://${trimmed}`;
+}
+
+
+/**
+ * Which stream watches this job, and why it is not one endpoint.
+ *
+ * A plan sweep and a build are separate jobs in separate registries behind
+ * separate routes, and a job id from one means nothing to the other:
+ *
+ *     GET /api/ai/blueprint/plan/{a build job}/stream   -> 404
+ *     GET /api/ai/blueprint/build/{a build job}/stream  -> 200
+ *
+ * The board computed the right endpoint and then fetched the other one, so
+ * every Build started a real build, lost sight of it at once, and reported
+ * "Lost track of this job" about a job that was running perfectly well. It is a
+ * pure function here so it can be tested: the bug was a computed value that
+ * nothing used, which reads as correct at every glance.
+ *
+ * `kind` comes from the job payload the server answered with, not from which
+ * button was pressed — the button is the client's belief and the payload is the
+ * job's own account of itself.
+ */
+export function streamUrlFor(
+	progress: { kind?: string; job?: string } | undefined,
+	planEndpoint: string,
+	buildEndpoint: string,
+): string {
+	if (!progress?.job) return '';
+	const endpoint = progress.kind === 'build' ? buildEndpoint : planEndpoint;
+	return endpoint ? endpoint.replace('{job}', progress.job) : '';
 }
