@@ -4,7 +4,11 @@ import {
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import {
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../constants';
 import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -184,6 +188,69 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'The label on the prompt button once a plan exists.',
 		defaultValue: '',
 		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'buildEndpoint',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Build Progress Stream',
+		description:
+			'Where to watch a build, with {job} where the job id goes. Same contract as the plan stream, and a separate property because a build reports different work and a host may put the two behind different routes.',
+		defaultValue: '/api/ai/blueprint/build/{job}/stream',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'buildLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Build Label',
+		description:
+			'The action that turns the plan into real objects. Shown with a count of what is outstanding, and disabled when there is nothing to make.',
+		defaultValue: 'Build it',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'viewSiteLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'View Site Label',
+		defaultValue: 'View site',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'whyLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Why These Choices Label',
+		description:
+			'Opens the record of decisions behind the site. Hidden when the plan records none, because an empty screen reached by a button is worse than no button.',
+		defaultValue: 'Why these choices',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'draftUrl',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Draft Site URL',
+		description:
+			'Where the site can be seen BEFORE it is published. Empty hides the action, which is the right answer when no draft link has been minted: minting one rotates any existing link and revokes it, so it is never something a view should do on its own.',
+		defaultValue: '',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'draftLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'View Draft Label',
+		defaultValue: 'View draft',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'siteUrl',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Site URL',
+		description:
+			'Where the site can be seen. Empty hides the action rather than offering a link to nowhere.',
+		defaultValue: '',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
@@ -388,6 +455,47 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
+		name: 'onBuild',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Build',
+		description:
+			'Turn the plan into objects that exist. The one action here that changes the site rather than the plan, so it is always an explicit press.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
+		name: 'publishLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Publish button label',
+		description:
+			'The button that puts what has been built on the site. The COUNT is appended ' +
+			'by the component, so this is the verb only: a person should read "Put on the ' +
+			'site · 5 changes" and know what they are about to do.',
+		defaultValue: 'Put on the site',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'pendingCount',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'How much is waiting to go on the site',
+		description:
+			'How many built things are not yet published, from ' +
+			'GET /api/ai/blueprint/pending. Zero HIDES the publish button rather than ' +
+			'disabling it: a button offering to publish nothing is how people learn to ' +
+			'distrust the next one.',
+		defaultValue: 0,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'onPublish',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Publish',
+		description:
+			'Make what has been built visible to the public. Separate from building on purpose: the objects existing and the world seeing them are two decisions.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
 		name: 'onRefresh',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On Refresh',
@@ -464,6 +572,13 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		effects.type,
 	],
 	columnIcon: [typography.type, spacing.type, size.type, effects.type],
+	columnHeadText: [layout.type, spacing.type, size.type],
+	columnLine: [typography.type, spacing.type, size.type],
+	// What a column touches and what touches it. Two slots, because a theme
+	// that wants the row laid out differently and one that wants the chips
+	// coloured differently are different wishes.
+	columnConnections: [layout.type, spacing.type, size.type],
+	connectionChip: [typography.type, spacing.type, background.type, border.type],
 	columnName: [typography.type, spacing.type, size.type],
 	columnRollup: [typography.type, spacing.type],
 	columnMenu: [
@@ -588,6 +703,7 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 	],
 	noteAside: [layout.type, spacing.type, typography.type, size.type, border.type],
 	planProgress: [layout.type, spacing.type, typography.type, size.type],
+	driftBanner: [layout.type, spacing.type, typography.type, background.type, border.type],
 	promptFoot: [
 		layout.type,
 		position.type,
