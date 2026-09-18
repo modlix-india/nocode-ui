@@ -437,6 +437,20 @@ async function redeemSocialState(
 
 	if (isOk(login.status)) return bankSession(login.body);
 
+	// 409 means the platform recognised this identity and it already owns a client, it just
+	// cannot reach this app. Registering would hand somebody who has a company a second one,
+	// and since the browser retries on every arrival that is a new client per sign-in attempt,
+	// which is how one dev account collected six of them in an hour. The platform's own text
+	// says what to do instead; it is the side that knows which check refused, and it is
+	// localised.
+	if (login.status === 409) {
+		stashSocialMessage(
+			login.body?.message ??
+				'This account already belongs to an organisation. Please request access to this application.',
+		);
+		return false;
+	}
+
 	// 403 is the platform's answer for both "no such user anywhere"
 	// (USER_CREDENTIALS_MISMATCHED) and "this client has no registration on this app"
 	// (NO_REGISTRATION_AVAILABLE). The texts are localised, so the status is all there is to go
