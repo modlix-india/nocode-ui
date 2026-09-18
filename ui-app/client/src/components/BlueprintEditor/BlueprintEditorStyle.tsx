@@ -202,7 +202,7 @@ ${PREFIX} ._columnHeader {
 	display: flex;
 	align-items: center;
 	gap: 9px;
-	height: 42px;
+	min-height: 42px;
 	padding: 0 13px;
 	border-radius: var(--_bpCardRadius);
 	background: var(--_bpGround);
@@ -217,15 +217,78 @@ ${PREFIX} ._columnHeader._selected {
 	background: var(--_bpSurface);
 }
 ${PREFIX} ._columnIcon { color: var(--_bpInk30); font-size: 15px; }
+/* Name over line, and the whole block takes the row's spare width so the
+   line has room to be a sentence rather than four words. */
+${PREFIX} ._columnHeadText {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 1px;
+	padding: 7px 0;
+}
 ${PREFIX} ._columnName {
 	font-weight: 600;
 	font-size: 14px;
-	flex: 1;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+/* Two lines, then an ellipsis. A summary is one sentence; anything longer
+   than this is a paragraph that belongs in the card, not the header. */
+${PREFIX} ._columnLine {
+	font-weight: 400;
+	font-size: 12px;
+	line-height: 16px;
+	color: var(--_bpInkMuted);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+/* What this object touches and what touches it.
+   Wraps, because the alternative is a single clipped row that shows one
+   connection and hides the one that matters. Kept to the muted ink so it reads
+   as a footnote under the summary rather than competing with it. */
+${PREFIX} ._columnConnections {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 3px 6px;
+	margin-top: 3px;
+}
+${PREFIX} ._connection {
+	display: inline-flex;
+	align-items: center;
+	gap: 3px;
+	font-size: 11px;
+	line-height: 14px;
+	color: var(--_bpInkMuted);
+	max-width: 100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+/* Incoming is the direction that answers "what breaks if this goes", so it
+   is the one given the weight. Outgoing is what the object is made of and is
+   the quieter fact. They are never drawn alike: "connected to orderRequest"
+   is true of a page that reads it and of a page that empties it. */
+${PREFIX} ._connection._in { color: var(--_bpInkSecondary); font-weight: 500; }
+${PREFIX} ._connection._more { font-style: italic; }
+${PREFIX} ._connectionIcon { font-size: 11px; opacity: 0.65; }
 ${PREFIX} ._columnRollup { font-size: 11.5px; font-weight: 500; color: var(--_bpInkMuted); }
+/* While a job runs the rollup is the job's word about THIS column, which is
+   what makes the board the progress view rather than something to check
+   against one. Failed must not be the same grey as a count. */
+${PREFIX} ._columnRollup._working { color: var(--_bpInk); font-weight: 600; }
+${PREFIX} ._columnRollup._done { color: var(--_bpStatusClean); }
+${PREFIX} ._columnRollup._failed { color: var(--_bpStatusFailed); font-weight: 600; }
+${PREFIX} ._columnRollup._skipped { color: var(--_bpInk30); }
+/* A column being worked on right now, so the eye finds it without reading
+   every rollup in the rail. */
+${PREFIX} ._railColumn:has(._columnRollup._working) > ._columnHeader {
+	border-color: var(--_bpInk30);
+	background: var(--_bpSurface);
+}
 ${PREFIX} ._columnMenu { color: var(--_bpInk30); opacity: 0; font-size: 15px; }
 ${PREFIX} ._railColumn:hover ._columnMenu { opacity: 1; }
 
@@ -457,6 +520,53 @@ ${PREFIX} ._actionButton._quiet {
 	color: var(--_bpInk2);
 }
 ${PREFIX} ._actionButton._quiet:hover { background: var(--_bpGround); }
+${PREFIX} a._actionButton { text-decoration: none; color: inherit; }
+${PREFIX} ._actionButton._selected { background: var(--_bpGround); border-color: var(--_bpInk30); }
+${PREFIX} ._actionIcon { font-size: 15px; }
+/* Disabled rather than hidden: a control that vanishes reads as a bug, and
+   "Nothing to build" is a useful sentence where an absent button is not. */
+${PREFIX} ._actionButton:disabled {
+	opacity: 0.45;
+	cursor: default;
+	border-color: rgba(0, 0, 0, 0.06);
+}
+${PREFIX} ._actionButton:disabled:hover { border-color: rgba(0, 0, 0, 0.06); }
+
+/* ──────────────────── where they disagree ───────────────────── */
+/* Two marks pointing opposite ways, and the banner must never offer to
+   reconcile them with one button: half the time that would overwrite the
+   hand edit it was reporting. */
+${PREFIX} ._driftBanner {
+	margin: 14px 0 0;
+	padding: 12px 14px;
+	border-radius: var(--_bpCardRadius);
+	background: var(--_bpGround);
+	border: 1px solid var(--_bpHairline);
+}
+${PREFIX} ._driftLine {
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--_bpInk2);
+}
+${PREFIX} ._driftLine b { color: var(--_bpInk); font-weight: 600; }
+${PREFIX} ._driftBanner ._actionRow:empty { display: none; }
+${PREFIX} ._driftBanner ._actionRow { margin-top: 10px; }
+
+/* ──────────────────── why these choices ───────────────────── */
+${PREFIX} ._whyColumn { flex: 0 0 420px; width: 420px; }
+${PREFIX} ._decisionCard { cursor: default; }
+${PREFIX} ._decisionCard:hover { border-color: var(--_bpBorder); box-shadow: none; }
+/* A replaced decision is kept and struck through. Deleting it would destroy
+   the most useful thing anybody can know before proposing it again. */
+${PREFIX} ._decisionCard._superseded { background: var(--_bpGround); }
+${PREFIX} ._decisionCard._superseded ._cardTitle {
+	text-decoration: line-through;
+	font-weight: 500;
+	color: var(--_bpInkMuted);
+}
+${PREFIX} ._decisionCard._rejected ._cardTitle { color: var(--_bpInk2); }
+${PREFIX} ._whyFoot { margin-top: 16px; }
 
 /* ───────────────────────────── marks ───────────────────────────── */
 ${PREFIX} ._statusMark {
@@ -543,6 +653,13 @@ ${PREFIX} ._progressStep._done { color: var(--_bpInk2); }
 ${PREFIX} ._progressStep._failed {
 	border-color: var(--_bpStatusFailed);
 	color: var(--_bpStatusFailed);
+}
+/* Skipped is not failed and must not read as it. A build skips a theme
+   because it cannot make one, which is a fact about the builder rather
+   than about the plan, and nothing went wrong. */
+${PREFIX} ._progressStep._skipped {
+	color: var(--_bpInkMuted);
+	border-style: dashed;
 }
 ${PREFIX} ._spinner {
 	width: 10px;
@@ -862,7 +979,25 @@ ${PREFIX} ._exchangeLine {
 ${PREFIX} ._exchangeLine b { font-weight: 600; color: var(--_bpInk2); }
 ${PREFIX} ._exchangeDash { color: var(--_bpInk30); }
 ${PREFIX} ._exchangeLine._failed { color: var(--_bpStatusFailed); }
-${PREFIX} ._doing { font-style: normal; color: var(--_bpInk30); margin-left: 4px; }
+/* It has to MOVE. A turn spends most of its time thinking, and static grey
+   text saying "Thinking" for forty seconds is indistinguishable from a screen
+   that has frozen — which is exactly how it read. The pulse is the only thing
+   on screen saying the wait is expected. */
+${PREFIX} ._doing {
+	font-style: normal;
+	color: var(--_bpInk30);
+	margin-left: 4px;
+	animation: _bpPulse 1.4s ease-in-out infinite;
+}
+@keyframes _bpPulse {
+	0%, 100% { opacity: 0.45; }
+	50% { opacity: 1; }
+}
+/* Somebody who has asked the browser not to animate still needs to know it is
+   working, so the motion goes and the emphasis stays. */
+@media (prefers-reduced-motion: reduce) {
+	${PREFIX} ._doing { animation: none; opacity: 1; }
+}
 
 /* What the prompt is talking about. Chips rather than prose, because the
    selection changes with every click and a sentence would not keep up. */

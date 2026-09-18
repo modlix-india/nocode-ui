@@ -19,10 +19,14 @@ import { propertiesDefinition, stylePropertiesDefinition } from './blueprintEdit
 import {
 	BoardCard,
 	BoardColumn,
+	BoardDecision,
 	BoardModel,
 	BoardSources,
+	absoluteUrl,
 	buildBoard,
 	CardStatus,
+	loadedDetail,
+	streamUrlFor,
 	tileDate,
 } from './board';
 
@@ -119,6 +123,33 @@ function scrollParentOf(el: HTMLElement): HTMLElement | null {
 const DERIVED_BANDS = new Set(['asset', 'delivery', 'boundary']);
 
 /**
+ * Connections shown on a column head before the rest are rolled into a count.
+ *
+ * Four, because the head is two lines of text and this is the third. A busy page
+ * on a real app reaches a dozen things, and a column head that lists all twelve
+ * is a column head nobody reads — while a page with no connections at all is
+ * the interesting case and stays visible either way.
+ */
+const CONNECTIONS_SHOWN = 4;
+
+/**
+ * What a card IS, per band, so Add asks for the right thing.
+ *
+ * "Add a card to orderRequest" is not a sentence anybody would say about a
+ * storage. The plan already models these separately — sections, fields, steps —
+ * and the ask should use the same word the board does.
+ */
+const CARD_WORD: Record<string, string> = {
+	page: 'a section',
+	storage: 'a field',
+	function: 'a step',
+	uifunction: 'a step',
+	uripath: 'a step',
+	template: 'a part',
+	notification: 'a channel',
+};
+
+/**
  * The icon for each object kind the board draws beyond pages and storages.
  *
  * Every class here is published by the MATERIAL_SYMBOLS pack, which is the only
@@ -179,6 +210,15 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 			regenerateLabel = 'Read the site again',
 			sendLabel = 'Send',
 			progressEndpoint = '/api/ai/blueprint/plan/{job}/stream',
+			buildEndpoint = '/api/ai/blueprint/build/{job}/stream',
+			buildLabel = 'Build it',
+			viewSiteLabel = 'View site',
+			publishLabel = 'Put on the site',
+			pendingCount = 0,
+			whyLabel = 'Why these choices',
+			siteUrl = '',
+			draftUrl = '',
+			draftLabel = 'View draft',
 			noteMessage = '',
 			pageIcon = 'ms material-symbols-outlined mso-description',
 			storageIcon = 'ms material-symbols-outlined mso-database',
@@ -198,6 +238,8 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 			onPickApp,
 			onSearchApps,
 			onGeneratePlan,
+			onBuild,
+			onPublish,
 			onRefresh,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -232,6 +274,36 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 	const [selected, setSelected] = useState<Selected[]>([]);
 	const [expanded, setExpanded] = useState<string>('');
 	const [lens, setLens] = useState<string>('');
+	/**
+	 * Showing the decisions instead of the plan.
+	 *
+	 * A view rather than a band. A decision is about the whole site, not about
+	 * one page, and reading "why is it teal" is a different task from reading
+	 * what is on the home page — a band would put it at the bottom of a board
+	 * nobody scrolls to the bottom of.
+	 */
+	const [showWhy, setShowWhy] = useState(false);
+	/**
+	 * What an Add affordance asked for, handed to the chat below.
+	 *
+	 * Every Add on this board used to fire `onChange` and nothing else, and the
+	 * host wrote a sentence to `Page.pendingPrompt` — a path only the separate
+	 * `Prompt` component ever read, and the chat moved INTO this component. So
+	 * Add a section, Add an object and Add a field all did precisely nothing,
+	 * silently, on every press.
+	 *
+	 * Seeded rather than sent: what to add is a sentence somebody should be able
+	 * to correct before it costs a turn. The suffix makes each press distinct so
+	 * pressing the same Add twice re-seeds rather than being ignored.
+	 */
+	const [askSeed, setAskSeed] = useState<{ text: string; key: number }>({ text: '', key: 0 });
+	// The key, not the text, is what makes a press distinct. Pressing the same
+	// Add twice must re-seed the box; comparing the sentences would ignore the
+	// second press because it wrote the same words.
+	const seedAsk = useCallback(
+		(text: string) => setAskSeed(previous => ({ text, key: previous.key + 1 })),
+		[],
+	);
 	const [appQuery, setAppQuery] = useState<string>('');
 	/**
 	 * How wide the chat pane is, as a percentage of the component.
@@ -515,10 +587,11 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 				// routes are the LRO projection: no definition, no plan.
 				const name = item.name ?? item.title;
 				const kind = item.objectKind ?? 'page';
-				// Kind AND name: a site with a `blog` page and a `blog` storage
-				// would otherwise see the first one's document and never ask for
-				// the second's.
-				const already = sources.loaded?.[kind]?.[name] ?? sources.loaded?.[name];
+				// Kind AND name, and the name walked as a PATH: a core function
+				// is called `crumbco.createBlogPost`, so the store nested it
+				// rather than keying it. Looking in the wrong place made this
+				// re-fetch the same document on every single click.
+				const already = loadedDetail(sources.loaded, kind as any, name);
 				if (!already) fire(onNeedObject, { name, kind });
 			}
 		},
@@ -622,11 +695,59 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 	const [streamed, setStreamed] = useState<BoardSources['progress']>(undefined);
 	const storedProgress = sources.progress;
 	const progress = streamed && streamed.job === storedProgress?.job ? streamed : storedProgress;
-	const planning = !!progress && progress.state === 'running';
+
+	/**
+	 * A plan sweep and a build report the same shape and mean different things.
+	 *
+	 * Deliberately the same shape: one renderer, one stream reader, one set of
+	 * step states. `kind` is the only thing that differs, and it changes the
+	 * words — "Reading Home" against "Building Home" — because those are
+	 * genuinely different acts and a progress bar that does not say which is
+	 * happening is the one thing worse than no progress bar.
+	 */
+	const isBuild = progress?.kind === 'build';
+	const running = !!progress && progress.state === 'running';
+	const planning = running && !isBuild;
+	const building = running && isBuild;
+	/** Any job in flight. Every action that would collide with one is disabled. */
+	const busy = running;
+	const outstanding = model.outstanding;
+
+	/**
+	 * Which job step is about which column, so the board IS the progress view.
+	 *
+	 * The mockup's promise in its own words: "The plan is the checklist, so you
+	 * can watch it fill in. If one card fails it is one card, not the site." That
+	 * only holds if the states land on the plan rather than in a list beside it —
+	 * a separate progress panel makes somebody match names by eye while the thing
+	 * they are watching is right there.
+	 *
+	 * Keyed `kind:name`, which is what a step carries and what a column knows
+	 * about itself.
+	 */
+	const stepByColumn = useMemo(() => {
+		const out = new Map<string, { state: string; detail: string; seconds?: number }>();
+		for (const step of progress?.steps ?? []) {
+			if (!step?.name || !step?.kind) continue;
+			const key = `${step.kind}:${step.name}`;
+			const existing = out.get(key);
+			// A build has two steps per page — make, then fill — and the later
+			// one is the one worth showing: "created" is stale news the moment
+			// the sections start going on.
+			if (!existing || existing.state === 'done' || existing.state === 'skipped')
+				out.set(key, {
+					state: step.state ?? 'waiting',
+					detail: step.detail ?? '',
+					seconds: step.seconds,
+				});
+		}
+		return out;
+	}, [progress]);
 
 	const jobId = storedProgress?.state === 'running' ? storedProgress.job : undefined;
+	const streamFrom = streamUrlFor(storedProgress, progressEndpoint, buildEndpoint);
 	useEffect(() => {
-		if (!jobId || !progressEndpoint) return;
+		if (!jobId || !streamFrom) return;
 		const controller = new AbortController();
 		let stopped = false;
 
@@ -636,7 +757,16 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					getDataFromPath('Store.auth.accessToken', []) ??
 					getDataFromPath('LocalStore.AuthToken', []) ??
 					'';
-				const response = await fetch(progressEndpoint.replace('{job}', jobId), {
+				// `streamFrom`, not `progressEndpoint`.
+				//
+				// A plan job and a build job live in separate registries behind
+				// separate routes, and the job id from one means nothing to the
+				// other. Computing the right endpoint and then fetching the
+				// other one sent every BUILD to `/plan/{job}/stream`, which
+				// answered 404 — so pressing Build started a real build, lost
+				// sight of it immediately, and told the person it had lost
+				// track of a job that was at that moment running fine.
+				const response = await fetch(streamFrom, {
 					headers: {
 						Accept: 'text/event-stream',
 						Authorization: token ? `Bearer ${token}` : '',
@@ -646,7 +776,26 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					},
 					signal: controller.signal,
 				});
-				if (!response.ok || !response.body) return;
+				if (!response.ok || !response.body) {
+					// A job the service no longer knows about — aged out of the
+					// registry, or lost when the service restarted. Without this
+					// the stored payload stays on screen saying "running" for
+					// the rest of the session, which is the one thing a progress
+					// bar must never do: the work is over and the bar is lying.
+					// Its own steps are the only record of how far it got, so
+					// they stay; only the state changes.
+					// `job` is carried on purpose: the streamed copy only wins
+					// over the stored one while the two agree on which job it
+					// is, so without the id this update would be ignored and
+					// the frozen payload would stay.
+					setStreamed(current => ({
+						...(current ?? {}),
+						job: jobId,
+						state: 'failed',
+						error: 'Lost track of this job. Anything it finished is saved on the objects themselves.',
+					}));
+					return;
+				}
 				const reader = response.body.getReader();
 				const decoder = new TextDecoder();
 				let buffer = '';
@@ -681,7 +830,7 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 			stopped = true;
 			controller.abort();
 		};
-	}, [jobId, progressEndpoint]);
+	}, [jobId, streamFrom]);
 
 	// The sweep ended, so the plan under the board has changed. Asked for once,
 	// on the transition, rather than on every frame: a reload per object would
@@ -707,13 +856,14 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 		const failed = progress.failed ?? 0;
 		const current = progress.current;
 		let line: string;
+		const verb = isBuild ? 'Building' : 'Reading';
 		if (progress.state === 'running') {
-			line = current?.label ? `Reading ${current.label}` : 'Starting';
+			line = current?.label ? `${verb} ${current.label}` : 'Starting';
 			line += ` · ${done} of ${total}`;
 		} else if (progress.error) {
 			line = progress.error;
 		} else {
-			line = `${total} read`;
+			line = isBuild ? `${total} built` : `${total} read`;
 		}
 		return (
 			<div className={`_planProgress${planning ? ' _running' : ''}`}>
@@ -725,7 +875,9 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					{planning ? <span className="_spinner" /> : null}
 					<span>{line}</span>
 					{failed ? (
-						<span className="_progressFailed">{failed} could not be read</span>
+						<span className="_progressFailed">
+							{failed} {isBuild ? 'did not build' : 'could not be read'}
+						</span>
 					) : null}
 				</div>
 				{/* Every object, with what happened to it. The list is the whole
@@ -737,7 +889,7 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					<div className="_progressSteps">
 						{(progress.steps ?? []).map(step => (
 							<span
-								key={`${step.kind}:${step.name}`}
+								key={`${step.phase ?? ''}:${step.kind}:${step.name}`}
 								className={`_progressStep _${step.state ?? 'waiting'}`}
 								title={step.detail ?? ''}
 							>
@@ -746,6 +898,201 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 						))}
 					</div>
 				) : null}
+			</div>
+		);
+	};
+
+	/**
+	 * Where the site and the plan disagree, and the two ways out.
+	 *
+	 * The only thing that matters here is that the two marks point in OPPOSITE
+	 * directions, and that the buttons say which way they move things:
+	 *
+	 *   not on the site yet   you changed the plan. Building moves the SITE.
+	 *   edited on the site    somebody changed the site. Updating moves the PLAN.
+	 *
+	 * Collapsing them into one "out of sync" count with one "sync" button is the
+	 * single most destructive thing this screen could do: half the time it would
+	 * overwrite the hand edit it was reporting. So they are counted separately,
+	 * worded as directions, and never offered as one action.
+	 */
+	const drifted = useMemo(() => {
+		const out: Array<{ card: BoardCard; column: BoardColumn }> = [];
+		for (const band of model.bands)
+			for (const column of band.columns)
+				for (const card of column.cards)
+					if (card.status === 'drifted') out.push({ card, column });
+		return out;
+	}, [model.bands]);
+
+	const renderDriftBanner = () => {
+		if (!drifted.length && !outstanding) return null;
+		return (
+			<div className="_driftBanner" role="presentation" onClick={e => e.stopPropagation()}>
+				<SubHelperComponent definition={definition} subComponentName="driftBanner" />
+				<p className="_driftLine">
+					{drifted.length ? (
+						<>
+							<b>
+								{drifted.length === 1
+									? 'One card changed on the site and not here.'
+									: `${drifted.length} cards changed on the site and not here.`}
+							</b>{' '}
+							Updating the plan reads the site as it is now. It will not touch the
+							site.
+						</>
+					) : (
+						<>
+							<b>
+								{outstanding === 1
+									? 'One thing is planned and not built.'
+									: `${outstanding} things are planned and not built.`}
+							</b>{' '}
+							Building moves the site. Nothing here changes until you do.
+						</>
+					)}
+				</p>
+				<div className="_actionRow">
+					{drifted.length && onUpdatePlan ? (
+						<button
+							type="button"
+							className="_actionButton"
+							disabled={busy}
+							onClick={e => {
+								e.stopPropagation();
+								// Every drifted card at once, named, because
+								// updating one at a time across four pages is
+								// twelve clicks to say one thing.
+								fire(onUpdatePlan, {
+									all: true,
+									cards: drifted.map(({ card, column }) => ({
+										uid: card.uid,
+										object: column.name,
+										kind: column.kind,
+										componentKey: card.componentKey,
+									})),
+								});
+							}}
+						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="actionButton"
+							/>
+							<i className="_actionIcon ms material-symbols-outlined mso-sync" />
+							Update the plan from the site
+						</button>
+					) : null}
+				</div>
+			</div>
+		);
+	};
+
+	/**
+	 * The decisions behind the site, grouped by what they are about.
+	 *
+	 * Three things make this worth a view of its own rather than a list:
+	 *
+	 *  - A decision that was REPLACED is kept and struck through. "We tried that
+	 *    and moved off it" is the most useful thing anybody can know before
+	 *    proposing it again, and it is exactly what a delete would destroy.
+	 *  - Everything carries its reason. A choice without one is not a decision,
+	 *    it is a preference somebody will overturn by accident.
+	 *  - It is grouped by area, because "why is it teal" and "why is booking a
+	 *    form" are asked by different people at different moments.
+	 *
+	 * Written down once, and every later conversation about this site already
+	 * knows it: nobody is asked a second time why there are no stock photographs.
+	 */
+	const renderWhy = () => {
+		const areas = new Map<string, BoardDecision[]>();
+		const ordered = [...model.decisions].sort((a, b) => a.order - b.order);
+		// Replaced decisions go together at the end, under one heading, rather
+		// than sitting struck through inside the area they used to belong to.
+		// The history of a choice is its own subject.
+		for (const decision of ordered) {
+			const area = decision.status === 'superseded' ? 'Moved off' : decision.area || 'The site';
+			const list = areas.get(area);
+			if (list) list.push(decision);
+			else areas.set(area, [decision]);
+		}
+		return (
+			<div className="_band _whyBand">
+				<SubHelperComponent definition={definition} subComponentName="band" />
+				<h2 className="_bandHeading">
+					<SubHelperComponent definition={definition} subComponentName="bandHeading" />
+					{whyLabel}
+				</h2>
+				<p className="_bandSubLine">
+					<SubHelperComponent definition={definition} subComponentName="bandSubLine" />
+					The real decisions behind the site, with the reason. Things that were tried and
+					moved off stay here, struck through.
+				</p>
+				<div className="_rail">
+					<SubHelperComponent definition={definition} subComponentName="rail" />
+					{[...areas.entries()].map(([area, list]) => (
+						<div className="_railColumn _whyColumn" key={area}>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="railColumn"
+							/>
+							<div className="_columnHeader">
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="columnHeader"
+								/>
+								<i
+									className={`_columnIcon ${
+										area === 'Moved off'
+											? 'ms material-symbols-outlined mso-history'
+											: columnIcon('why')
+									}`}
+								/>
+								<span className="_columnName">{area}</span>
+								<span className="_columnCount">{list.length}</span>
+							</div>
+							{list.map(decision => (
+								<div
+									className={`_planCard _decisionCard _${decision.status}`}
+									key={decision.uid}
+								>
+									<SubHelperComponent
+										definition={definition}
+										subComponentName="planCard"
+									/>
+									<div className="_cardTitle">
+										<SubHelperComponent
+											definition={definition}
+											subComponentName="cardTitle"
+										/>
+										{decision.choice}
+									</div>
+									{decision.because ? (
+										<div className="_cardLine">
+											<SubHelperComponent
+												definition={definition}
+												subComponentName="cardLine"
+											/>
+											{decision.because}
+										</div>
+									) : null}
+									{decision.attribution ? (
+										<span className="_cardMark _none">
+											<SubHelperComponent
+												definition={definition}
+												subComponentName="cardMark"
+											/>
+											{decision.attribution}
+										</span>
+									) : null}
+								</div>
+							))}
+						</div>
+					))}
+				</div>
+				<p className="_bandSubLine _whyFoot">
+					Written down once, and every later conversation about this site already knows
+					it.
+				</p>
 			</div>
 		);
 	};
@@ -771,6 +1118,8 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 				onClearChips={clear}
 				onObjectChanged={name => fire(onNeedObject, { name })}
 				onTurnEnd={() => fire(onRefresh, { reason: 'turnEnd' })}
+				seedText={askSeed.text}
+				seedKey={askSeed.key}
 				// Only on the gate. What the person typed there is a brief for a
 				// PLAN, and sending it to the build agent instead would start
 				// making pages for a site nobody has agreed the shape of.
@@ -1079,6 +1428,92 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 		return KIND_ICONS[kind] ?? pageIcon;
 	};
 
+	/**
+	 * The one thing a column header says about itself, and it changes with what
+	 * is happening.
+	 *
+	 * While a job is running this is the job's word about THIS column, which is
+	 * what makes the board the progress view rather than something to check
+	 * against one. When nothing is running it is the count, or "not built" for
+	 * something the plan wants and the app does not have.
+	 *
+	 * A number only when there is something to count: the list routes carry no
+	 * definitions, so a column nobody has opened has not been READ, and printing
+	 * 0 there says the page is empty — a different and usually false statement.
+	 */
+	const columnRollup = (column: BoardColumn) => {
+		if (DERIVED_BANDS.has(column.kind)) return '';
+		const step = running ? stepByColumn.get(`${column.kind}:${column.name}`) : undefined;
+		if (step) {
+			if (step.state === 'working') return isBuild ? 'building' : 'reading';
+			if (step.state === 'failed') return 'did not work';
+			if (step.state === 'skipped') return 'nothing to do';
+			if (step.state === 'done')
+				return step.seconds ? `done · ${Math.round(step.seconds)}s` : 'done';
+			return 'waiting';
+		}
+		if (column.planned) return 'not built';
+		// What is loaded wins, because it is what the cards below actually show.
+		// Failing that, the index — which is why a column nobody has opened can
+		// now say how big it is instead of showing a blank.
+		return column.cards.length || column.indexedParts || '';
+	};
+
+	/**
+	 * What a column touches and what touches it, under its summary line.
+	 *
+	 * This is the half of a plan that was missing, and it is the half that makes
+	 * the rest worth reading. A board of forty columns each with a name and a
+	 * sentence describes forty things standing next to each other; it cannot
+	 * answer the question anybody actually arrives with, which is some form of
+	 * "what happens if I change this".
+	 *
+	 * Both directions, and OUTGOING FIRST. What an object reaches says what it
+	 * is made of; what reaches it says what breaks if it goes. The second is the
+	 * one people need and the one nothing else on the screen can tell them, so
+	 * it is never collapsed into the first — "connected to orderRequest" is true
+	 * of a page that reads it and a page that empties it.
+	 *
+	 * `title` carries the exact statement or component the reference was found
+	 * in, so a connection can be checked rather than believed. Every edge here
+	 * is read off a definition, so an empty list means nothing in the app names
+	 * this object — which for a page means nothing links to it.
+	 */
+	const renderConnections = (column: BoardColumn) => {
+		if (!column.connections.length) return null;
+		const shown = column.connections.slice(0, CONNECTIONS_SHOWN);
+		const hidden = column.connections.length - shown.length;
+		return (
+			<span className="_columnConnections">
+				<SubHelperComponent
+					definition={definition}
+					subComponentName="columnConnections"
+				/>
+				{shown.map(c => (
+					<span
+						key={`${c.direction}:${c.kind}:${c.name}:${c.how}`}
+						className={`_connection _${c.direction}`}
+						title={
+							c.where
+								? `${c.how} ${c.name}, at ${c.where}`
+								: `${c.how} ${c.name}`
+						}
+					>
+						<SubHelperComponent
+							definition={definition}
+							subComponentName="connectionChip"
+						/>
+						<i className={`_connectionIcon ${columnIcon(c.kind)}`} />
+						{c.direction === 'out' ? `${c.how} ${c.name}` : `${c.name} ${c.how} it`}
+					</span>
+				))}
+				{hidden > 0 ? (
+					<span className="_connection _more">{`and ${hidden} more`}</span>
+				) : null}
+			</span>
+		);
+	};
+
 	const renderDetail = (card: BoardCard, column: BoardColumn) => (
 		<div
 			className="_cardDetail"
@@ -1312,11 +1747,43 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 				>
 					<SubHelperComponent definition={definition} subComponentName="columnHeader" />
 					<i className={`_columnIcon ${columnIcon(column.kind)}`} />
-					<span className="_columnName">
-						<SubHelperComponent definition={definition} subComponentName="columnName" />
-						{column.title}
+					{/* Name over line. The line is the whole reason the app plan
+					    carries a summary per object: a board of forty columns
+					    showing forty bare names says what the site is MADE of and
+					    nothing about what any of it is FOR, and finding that out
+					    meant opening every column in turn. Stacked rather than
+					    beside, because a name and a sentence on one row means the
+					    sentence gets four words. */}
+					<span className="_columnHeadText">
+						<span className="_columnName">
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="columnName"
+							/>
+							{column.title}
+						</span>
+						{column.purpose ? (
+							<span className="_columnLine">
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="columnLine"
+								/>
+								{column.purpose}
+							</span>
+						) : null}
+						{renderConnections(column)}
 					</span>
-					<span className="_columnRollup">
+					<span
+						className={`_columnRollup${
+							running && stepByColumn.get(`${column.kind}:${column.name}`)
+								? ` _${stepByColumn.get(`${column.kind}:${column.name}`)!.state}`
+								: ''
+						}`}
+						title={
+							(running && stepByColumn.get(`${column.kind}:${column.name}`)?.detail) ||
+							undefined
+						}
+					>
 						<SubHelperComponent
 							definition={definition}
 							subComponentName="columnRollup"
@@ -1330,11 +1797,7 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					    does not have. On a derived band it would be a category
 					    error: an address is not waiting to be built, and a
 					    request that is not part of a site is never going to be. */}
-						{DERIVED_BANDS.has(column.kind)
-							? ''
-							: column.planned
-								? 'not built'
-								: column.cards.length || ''}
+						{columnRollup(column)}
 					</span>
 					{!readOnly ? (
 						<span className="_columnMenu">
@@ -1355,6 +1818,14 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 						className="_addCardBox"
 						onClick={e => {
 							e.stopPropagation();
+							// Seeded into this component's own chat AND fired at
+							// the host. The seed is what makes the button do
+							// something; the event is kept because a host may
+							// want to know, and removing it would break one
+							// silently.
+							seedAsk(
+								`On ${column.name}, add ${CARD_WORD[column.kind] ?? 'a part'}: `,
+							);
 							fire(onChange, { object: column.name, action: 'addCard' });
 						}}
 					>
@@ -1433,12 +1904,12 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 				    wanted to look at the plan rather than rebuild it. Disabled
 				    rather than hidden while a sweep runs, because a control that
 				    vanishes reads as a bug. */}
-					{!readOnly && onGeneratePlan ? (
-						<div className="_actionRow">
+					<div className="_actionRow">
+						{!readOnly && onGeneratePlan ? (
 							<button
 								type="button"
 								className="_actionButton"
-								disabled={planning}
+								disabled={busy}
 								onClick={e => {
 									e.stopPropagation();
 									fire(onGeneratePlan, {
@@ -1455,8 +1926,127 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 									? 'Reading the site'
 									: regenerateLabel || 'Read the site again'}
 							</button>
-						</div>
+						) : null}
+						{/* Build. The one action the whole screen exists to lead to,
+						    and the only one that changes the site rather than the
+						    plan — which is why it is worded as the act it is and not
+						    as "save". The count is what makes it honest: a button
+						    reading "Build it" on a plan with nothing outstanding is
+						    a button that does nothing, and pressing it teaches
+						    people not to trust the next one. */}
+						{!readOnly && onBuild ? (
+							<button
+								type="button"
+								className={`_actionButton${outstanding ? ' _primary' : ''}`}
+								disabled={busy || !outstanding}
+								onClick={e => {
+									e.stopPropagation();
+									fire(onBuild, { name: sources.appName, outstanding });
+								}}
+							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="actionButton"
+								/>
+								{building
+									? 'Building'
+									: outstanding
+										? `${buildLabel} · ${outstanding} to make`
+										: 'Nothing to build'}
+							</button>
+						) : null}
+						{/* Put it on the site.
+						    The step between a finished build and anything a
+						    visitor can see, and for a while it was missing
+						    entirely: everything Build makes is created
+						    unpublished and everything the builder authors lands
+						    on a draft, so a page could be correctly and
+						    completely built and still answer 404 on the live
+						    URL AND on the draft host. View site and View draft
+						    were both blank for exactly the pages just made.
+						    The count is the whole point of the label: a person
+						    should know they are putting five things on the
+						    site, not one. Nothing to publish hides it rather
+						    than offering a button that does nothing. */}
+						{onPublish && pendingCount > 0 ? (
+							<button
+								type="button"
+								className="_actionButton _primary"
+								disabled={busy}
+								onClick={e => {
+									e.stopPropagation();
+									fire(onPublish, { appCode: sources.appName ?? '' });
+								}}
+							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="actionButton"
+								/>
+								<i className="_actionIcon ms material-symbols-outlined mso-bolt" />
+								{`${publishLabel} · ${pendingCount} ${
+									pendingCount === 1 ? 'change' : 'changes'
+								}`}
+							</button>
+						) : null}
+						{/* The site itself, one click away. A plan is about
+						    something, and the thing it is about is a URL. */}
+						{siteUrl ? (
+							<a
+								className="_actionButton _quiet"
+								href={absoluteUrl(siteUrl)}
+								target="_blank"
+								rel="noreferrer noopener"
+								onClick={e => e.stopPropagation()}
+							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="actionButton"
+								/>
+								<i className="_actionIcon ms material-symbols-outlined mso-visibility" />
+								{viewSiteLabel}
+							</a>
+						) : null}
+						{/* The site as it is BEFORE anybody publishes, which is the
+					    one a person wants while a plan is still moving. Shown
+					    only when a draft link exists: minting one rotates any
+					    existing link and revokes it, so a view must never do it
+					    as a side effect of being looked at. */}
+					{draftUrl ? (
+						<a
+							className="_actionButton _quiet"
+							href={absoluteUrl(draftUrl)}
+							target="_blank"
+							rel="noreferrer noopener"
+							onClick={e => e.stopPropagation()}
+						>
+							<SubHelperComponent
+								definition={definition}
+								subComponentName="actionButton"
+							/>
+							<i className="_actionIcon ms material-symbols-outlined mso-draft" />
+							{draftLabel}
+						</a>
 					) : null}
+					{/* Why these choices. A separate view rather than a band,
+						    because a decision is about the whole site and reading
+						    them is a different task from reading the plan. */}
+						{model.decisions.length ? (
+							<button
+								type="button"
+								className={`_actionButton _quiet${showWhy ? ' _selected' : ''}`}
+								onClick={e => {
+									e.stopPropagation();
+									setShowWhy(!showWhy);
+								}}
+							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="actionButton"
+								/>
+								{showWhy ? 'Back to the plan' : whyLabel}
+							</button>
+						) : null}
+					</div>
 					{renderProgress()}
 				</div>
 
@@ -1506,7 +2096,10 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					</div>
 				) : null}
 
-				{visibleBands.map(band => (
+				{showWhy ? null : renderDriftBanner()}
+				{showWhy ? renderWhy() : null}
+
+				{(showWhy ? [] : visibleBands).map(band => (
 					<div className="_band" key={band.kind}>
 						<SubHelperComponent definition={definition} subComponentName="band" />
 						<h2 className="_bandHeading">
@@ -1534,6 +2127,7 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 									className="_addColumnBox"
 									onClick={e => {
 										e.stopPropagation();
+										seedAsk(`Add a ${band.kind} to the site: `);
 										fire(onChange, { kind: band.kind, action: 'addColumn' });
 									}}
 								>
