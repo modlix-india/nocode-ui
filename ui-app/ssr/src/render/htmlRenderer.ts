@@ -288,18 +288,9 @@ const POSTHOG_STUB =
 	'u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),' +
 	't||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},' +
 	'o="init capture register register_once unregister identify setPersonProperties group reset ' +
-	'opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing ' +
-	'startSessionRecording stopSessionRecording".split(" "),' +
+	'opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing".split(" "),' +
 	'n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}' +
 	'(document,window.posthog||[]);';
-
-const CONSENT_FALLBACK_BOOTSTRAP =
-	"window.addEventListener('DOMContentLoaded',function(){" +
-	'setTimeout(function(){' +
-	'if(!window.__MODLIX_CONSENT__||!window.__MODLIX_CONSENT__.mounted){' +
-	'window.__MODLIX_FORCE_CONSENT__=true;' +
-	"window.dispatchEvent(new CustomEvent('modlix:force-consent'));" +
-	'}},250);});';
 
 /**
  * Generate the PostHog analytics snippet. Project key + ingestion host come from
@@ -316,45 +307,24 @@ function generateAnalyticsSnippet(
 	const a = application?.properties?.analytics;
 	if (!a?.enabled) return '';
 
-	const replayEnabled = !!a.sessionReplay?.enabled;
-	const heatmapsEnabled = !!a.heatmaps?.enabled;
-	const consentRequired = a.consentRequired !== false;
-
 	const initOptions: Record<string, unknown> = {
 		api_host: ingestionHost,
 		person_profiles: 'identified_only',
 		autocapture: a.autocapture ?? true,
 		capture_pageview: a.capturePageviews ?? true,
 		capture_pageleave: a.capturePageleaves ?? true,
-		disable_session_recording: !replayEnabled,
-		enable_heatmaps: heatmapsEnabled,
-		opt_out_capturing_by_default: consentRequired,
+		// Session replay is not a feature of this platform. Recording is refused
+		// here rather than left to a per-app toggle, so no application document
+		// can turn it back on: an `analytics.sessionReplay` block is inert.
+		disable_session_recording: true,
+		enable_heatmaps: !!a.heatmaps?.enabled,
+		opt_out_capturing_by_default: a.consentRequired !== false,
 		advanced_disable_flags: true,
 	};
 
-	const rawSampleRate = a.sessionReplay?.sampleRate;
-	const sampleRate =
-		typeof rawSampleRate === 'number' && rawSampleRate >= 0 && rawSampleRate <= 1
-			? rawSampleRate
-			: 0.1;
-
-	if (replayEnabled) {
-		initOptions.session_recording = {
-			maskAllInputs: a.sessionReplay?.maskAllInputs ?? true,
-		};
-	}
-
-	const apiKeyJson = JSON.stringify(projectApiKey);
-	const optionsJson = JSON.stringify(initOptions);
-	const sampleRateLiteral = sampleRate >= 1 ? 'null' : String(sampleRate);
-
-	const initCall = replayEnabled
-		? `var __phOpts=${optionsJson};__phOpts.loaded=function(ph){try{ph.persistence.register({'$session_recording_remote_config':{enabled:true,sampleRate:${sampleRateLiteral},recorderVersion:'v2',endpoint:'/s/',linkedFlag:null,urlBlocklist:[],urlTriggers:[],eventTriggers:[]}});ph.sessionRecording&&ph.sessionRecording.startIfEnabledOrStop&&ph.sessionRecording.startIfEnabledOrStop();}catch(e){}};posthog.init(${apiKeyJson},__phOpts);`
-		: `posthog.init(${apiKeyJson},${optionsJson});`;
-
-	return `<script>${POSTHOG_STUB}${initCall}${
-		consentRequired ? CONSENT_FALLBACK_BOOTSTRAP : ''
-	}</script>`;
+	return `<script>${POSTHOG_STUB}posthog.init(${JSON.stringify(projectApiKey)},${JSON.stringify(
+		initOptions,
+	)});</script>`;
 }
 
 /**
