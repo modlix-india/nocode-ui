@@ -20,7 +20,7 @@ const component: Component = {
 	name: 'AnalyticsQuery',
 	displayName: 'Analytics Query',
 	description:
-		'Runs a PostHog query through the tenant-scoped backend proxy. Renders a counter, table, or stays invisible (data-only) and writes the result to its binding path.',
+		'Runs an analytics engine widget through the tenant-scoped backend proxy. Renders a counter, table, or stays invisible (data-only) and writes the result to its binding path.',
 	component: LoadLazyAnalyticsQuery,
 	styleComponent: AnalyticsQueryStyle,
 	styleDefaults,

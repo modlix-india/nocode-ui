@@ -27,6 +27,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		})),
 	},
 	{
+		name: 'dateFrom',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'From',
+		description:
+			'Start of an explicit range. Set both From and To to override the day count — ' +
+			'that is what a custom range on a dashboard sets. Accepts an epoch (seconds or ' +
+			'millis, as a Calendar stores it) or any parseable date string.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'dateTo',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'To',
+		description: 'End of an explicit range. Ignored unless From is set too.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
 		name: 'appCode',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'App Code',
@@ -39,6 +56,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'URL Client Code',
 		description: 'URL client code (tenant) to scope the query to. Required.',
 		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'subtitle',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Subtitle',
+		description:
+			'One line under the heading saying what the number means. Worth setting on anything ' +
+			'whose name is not self-explanatory — a reader who has to guess what a widget counts ' +
+			'will guess wrong.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: true,
 	},
 	{
 		name: 'title',
@@ -114,6 +142,10 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
 	title: [COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type],
+	subtitle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
 	table: [COMPONENT_STYLE_GROUP_PROPERTIES.border.type],
 	row: [COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type],
 	bar: [COMPONENT_STYLE_GROUP_PROPERTIES.background.type],

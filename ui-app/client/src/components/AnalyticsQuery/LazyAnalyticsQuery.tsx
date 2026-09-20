@@ -13,9 +13,11 @@ import { runEvent } from '../util/runEvent';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 
-interface HogQLLikeResponse {
-	results?: Array<Array<unknown>>;
-	columns?: Array<string>;
+/** What the analytics engine answers. See the `query` property for what to send it. */
+interface EngineResponse {
+	rows?: Array<{ label: string; events: number; visitors: number }>;
+	visitorsApproximate?: boolean;
+	rawHoursScanned?: number;
 }
 
 function authToken(): string | undefined {
@@ -75,7 +77,7 @@ export default function LazyAnalyticsQuery(props: Readonly<ComponentProps>) {
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
-	const [data, setLocal] = useState<HogQLLikeResponse | null>(null);
+	const [data, setLocal] = useState<EngineResponse | null>(null);
 	const [error, setError] = useState<string | undefined>();
 	const [loading, setLoading] = useState(false);
 
@@ -92,7 +94,7 @@ export default function LazyAnalyticsQuery(props: Readonly<ComponentProps>) {
 			const tok = authToken();
 			if (tok) headers.Authorization = tok;
 
-			const response = await axios.post<HogQLLikeResponse>(
+			const response = await axios.post<EngineResponse>(
 				'/api/ui/analytics/query',
 				query,
 				{ headers },
@@ -173,7 +175,9 @@ export default function LazyAnalyticsQuery(props: Readonly<ComponentProps>) {
 	}
 
 	if (renderAs === 'counter') {
-		const value = data?.results?.[0]?.[0];
+		// The first row's event count: a counter asks one question, and for every widget the
+		// engine answers, the answer to "how many" is the first row's events.
+		const value = data?.rows?.[0]?.events;
 		const display = value === undefined || value === null ? '—' : String(value);
 		return (
 			<div {...baseProps} key={key}>
@@ -195,8 +199,13 @@ export default function LazyAnalyticsQuery(props: Readonly<ComponentProps>) {
 	}
 
 	if (renderAs === 'table') {
-		const rows = (data?.results ?? []).slice(0, Number(tableMaxRows) || 100);
-		const cols = data?.columns ?? rows[0]?.map((_, i) => `col${i}`) ?? [];
+		const rows = (data?.rows ?? []).slice(0, Number(tableMaxRows) || 100);
+		// Visitors are only shown when the engine actually counted them, and the header says
+		// when they are estimates rather than leaving that to be discovered.
+		const hasVisitors = rows.some(r => (r.visitors ?? 0) > 0);
+		const cols = hasVisitors
+			? ['Label', 'Events', data?.visitorsApproximate ? 'Visitors (approx.)' : 'Visitors']
+			: ['Label', 'Events'];
 		return (
 			<div {...baseProps} key={key}>
 				{helper}
@@ -211,11 +220,13 @@ export default function LazyAnalyticsQuery(props: Readonly<ComponentProps>) {
 					<tbody>
 						{rows.map((row, ri) => (
 							<tr key={ri}>
-								{row.map((cell, ci) => (
-									<td key={ci} style={resolvedStyles.td ?? {}}>
-										{cell === null || cell === undefined ? '' : String(cell)}
+								<td style={resolvedStyles.td ?? {}}>{row.label || '(empty)'}</td>
+								<td style={resolvedStyles.td ?? {}}>{String(row.events ?? '')}</td>
+								{hasVisitors ? (
+									<td style={resolvedStyles.td ?? {}}>
+										{String(row.visitors ?? '')}
 									</td>
-								))}
+								) : null}
 							</tr>
 						))}
 					</tbody>

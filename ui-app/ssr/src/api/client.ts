@@ -133,7 +133,6 @@ export interface AnalyticsConfig {
 	autocapture?: boolean;
 	capturePageviews?: boolean;
 	capturePageleaves?: boolean;
-	consentRequired?: boolean;
 	consentCookieName?: string;
 	sessionReplay?: {
 		enabled?: boolean;

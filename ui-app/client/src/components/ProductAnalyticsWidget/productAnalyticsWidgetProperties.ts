@@ -27,6 +27,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		})),
 	},
 	{
+		name: 'dateFrom',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'From',
+		description:
+			'Start of an explicit range. Set both From and To to override the day count — ' +
+			'that is what a custom range on a dashboard sets. Accepts an epoch (seconds or ' +
+			'millis, as a Calendar stores it) or any parseable date string.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'dateTo',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'To',
+		description: 'End of an explicit range. Ignored unless From is set too.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
 		name: 'appCode',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'App Code',
@@ -39,6 +56,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'URL Client Code',
 		description: 'URL client code (tenant) to scope the query to. Required.',
 		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'subtitle',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Subtitle',
+		description:
+			'One line under the heading saying what the number means. Worth setting on anything ' +
+			'whose name is not self-explanatory — a reader who has to guess what a widget counts ' +
+			'will guess wrong.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: true,
 	},
 	{
 		name: 'title',
@@ -74,9 +102,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'breakdownProperty',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Breakdown Property',
-		description: 'Event property name to break down by (e.g. $current_url, plan, country). Used by Breakdown.',
+		description:
+			'Dimension to break down by. One of the engine\'s allow-list: path, page, label, ' +
+			'referrer_host, channel, utm_source, utm_medium, utm_campaign, device, browser, os, ' +
+			'platform, app_version, country, variant. Anything else is refused.',
 		group: ComponentPropertyGroup.DATA,
-		defaultValue: '$current_url',
+		defaultValue: 'path',
 	},
 	{
 		name: 'funnelSteps',
@@ -88,31 +119,29 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: [],
 	},
 	{
-		name: 'retentionTargetEvent',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Retention Target Event',
-		description: 'The action that defines the cohort (e.g. signup_completed).',
-		group: ComponentPropertyGroup.DATA,
-		defaultValue: '$pageview',
-	},
-	{
-		name: 'retentionReturningEvent',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Retention Returning Event',
-		description: 'The action that defines retention. Defaults to the target event when blank.',
-		group: ComponentPropertyGroup.DATA,
+		name: 'funnelWindowHours',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Funnel Window (hours)',
+		description:
+			'How long after the first step a visitor may still convert. Steps completed later ' +
+			'are two separate visits, not one conversion.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 24,
 	},
 	{
 		name: 'retentionPeriod',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Retention Period',
+		displayName: 'Period',
+		description: 'Cohort period for retention, stickiness and lifecycle.',
 		group: ComponentPropertyGroup.BASIC,
 		editor: ComponentPropertyEditor.ENUM,
-		defaultValue: 'Week',
+		defaultValue: 'week',
+		// Day and week only. A monthly cohort is not simply a longer week — it needs calendar
+		// month arithmetic the engine does not do — and offering an option that silently
+		// answers something else is worse than not offering it.
 		enumValues: [
-			{ name: 'Day', displayName: 'Day' },
-			{ name: 'Week', displayName: 'Week' },
-			{ name: 'Month', displayName: 'Month' },
+			{ name: 'day', displayName: 'Day' },
+			{ name: 'week', displayName: 'Week' },
 		],
 	},
 	{
@@ -162,6 +191,10 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
 	title: [COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type],
+	subtitle: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+	],
 	row: [COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type],
 	bar: [COMPONENT_STYLE_GROUP_PROPERTIES.background.type],
 	stepBar: [COMPONENT_STYLE_GROUP_PROPERTIES.background.type],

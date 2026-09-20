@@ -1,13 +1,20 @@
 /**
  * Analytics consent: the single source of truth for whether this browser has
- * agreed to be measured, and the only place that flips PostHog on or off.
+ * agreed to be measured, and the only place that flips the beacon on or off.
  *
  * Consent is a property of the BROWSER, not of the user. It lives in
  * localStorage with a cookie fallback, so signing in neither grants nor
- * revokes it — `posthog.identify()` only attaches a name to a session that
- * consent already allowed. An app whose terms of service already cover
- * measurement should set `analytics.consentRequired: false` rather than try to
- * infer consent from a login.
+ * revokes it. A login is consent to the terms, not to measurement, and the two
+ * can be withdrawn independently — so a signed-in visitor who declines is a
+ * state this has to be able to hold.
+ *
+ * **Consent is required, always, and there is no application setting that turns
+ * that off.** There used to be one, `analytics.consentRequired`, defaulting to
+ * required. It is now ignored. A per-app switch only has to be set wrong once,
+ * by anyone, for a site to measure people who were never asked — and the
+ * symptom is silence: everything works, nothing is shown, and it is found
+ * months later by someone reading a document. Documents may still carry the
+ * key; nothing reads it.
  *
  * The page-authoring surface on top of this is two KIRun functions,
  * `UIEngine.GetAnalyticsConsent` and `UIEngine.SetAnalyticsConsent`, plus the
@@ -27,7 +34,7 @@ export type ConsentStatus = 'granted' | 'denied';
 
 /**
  * `necessary` is never a real choice — it is listed so a preferences panel can
- * show it switched on and disabled. `analytics` gates PostHog. `marketing` is
+ * show it switched on and disabled. `analytics` gates the beacon. `marketing` is
  * recorded and exposed but drives nothing yet: no ad pixel reads it today, so
  * a page that offers the toggle is making a promise the platform does not keep
  * until one does.
@@ -50,7 +57,11 @@ export interface ConsentState {
 	status: ConsentStatus | null;
 	/** false while the visitor has not answered — what a consent page keys on. */
 	decided: boolean;
-	/** app-level `analytics.consentRequired`, defaulting to true. */
+	/**
+	 * Always true. Kept in the shape rather than removed, because pages bind to
+	 * it and a field that vanishes breaks them silently, where a field that is
+	 * constant simply stops being interesting.
+	 */
 	required: boolean;
 	/** app-level `analytics.enabled`. */
 	enabled: boolean;
@@ -64,7 +75,6 @@ export interface ConsentState {
 
 export interface AnalyticsAppProperties {
 	enabled?: boolean;
-	consentRequired?: boolean;
 	consentCookieName?: string;
 }
 
@@ -137,20 +147,18 @@ export function readConsentRecord(cookieName?: string): ConsentRecord | null {
 }
 
 /**
- * Push consent into the PostHog client. Safe to call before the SDK has
- * loaded: the snippet stub queues these and replays them on load.
+ * Push consent into the analytics beacon. Safe to call before the script has loaded: the
+ * snippet installs a queue that replays these on arrival.
  *
- * Nothing here touches session recording: the platform does not record
- * sessions, and the injected snippet hard-codes `disable_session_recording`.
+ * Granting is what makes the arrival itself countable — the beacon holds back the page view
+ * it would otherwise have sent, and emits it when consent is given. Revoking stops everything
+ * and discards whatever had been batched but not yet sent.
  */
-export function applyConsentToPostHog(record: ConsentRecord) {
-	const ph = (globalThis as any).posthog;
-	if (!ph) return;
+export function applyConsentToBeacon(record: ConsentRecord) {
+	const mlx = (globalThis as any).mlx;
+	if (typeof mlx !== 'function') return;
 
-	if (record.categories.analytics) ph.opt_in_capturing?.();
-	else ph.opt_out_capturing?.();
-
-	ph.register?.({ consent_marketing: !!record.categories.marketing });
+	mlx('consent', !!record.categories.analytics);
 }
 
 export function publishConsentState(): ConsentState {
@@ -159,16 +167,17 @@ export function publishConsentState(): ConsentState {
 	const state: ConsentState = {
 		status: record?.status ?? null,
 		decided: !!record,
-		// Mirrors the server: absent means required. The snippet starts PostHog
-		// opted out in that case, so an app that leaves this unset and ships no
-		// consent page captures nothing at all.
-		required: analytics?.consentRequired !== false,
+		// Not a setting. Every app asks, so an app that ships no consent page
+		// captures nothing at all — which is the right way round: a missing
+		// consent page is a visible gap, where a missing consent REQUIREMENT is
+		// an invisible one.
+		required: true,
 		enabled: !!analytics?.enabled,
 		// Once a decision exists this is that decision. Before one exists it is
 		// what a preferences panel should show, not what has been consented to:
 		// everything on, for the visitor to switch off what they do not want.
 		// Nothing is captured on the strength of it — `decided` is still false
-		// and PostHog stays opted out until `setConsent` is called.
+		// and the beacon stays opted out until `setConsent` is called.
 		categories: record?.categories ?? { ...ALL_GRANTED },
 	};
 	setData(CONSENT_STORE_PATH, state);
@@ -204,7 +213,7 @@ export function setConsent(
 	};
 
 	writeRaw(getConsentCookieName(), JSON.stringify(record));
-	applyConsentToPostHog(record);
+	applyConsentToBeacon(record);
 	return publishConsentState();
 }
 
@@ -221,7 +230,8 @@ export function resetConsent(): ConsentState {
 	}
 	document.cookie = `${cookieName}=; path=/; max-age=0; SameSite=Lax`;
 
-	(globalThis as any).posthog?.opt_out_capturing?.();
+	const mlx = (globalThis as any).mlx;
+	if (typeof mlx === 'function') mlx('consent', false);
 
 	return publishConsentState();
 }

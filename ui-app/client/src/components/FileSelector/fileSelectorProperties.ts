@@ -222,9 +222,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'Store an absolute URL instead of the files-API path: the CDN host when one ' +
 			'is configured, otherwise this page\'s own origin. Needed wherever the value ' +
-			'leaves the app, such as a PWA manifest, an email or an API payload. It also ' +
-			'makes both design types agree: browsing stores a string either way, where ' +
-			'the upload design otherwise stores the whole response object.',
+			'leaves the app, such as a PWA manifest, an email or an API payload. Either ' +
+			'way the value stored is a URL string - browsing and uploading agree.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},

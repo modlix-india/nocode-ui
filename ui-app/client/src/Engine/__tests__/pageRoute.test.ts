@@ -254,7 +254,10 @@ describe('split assignments', () => {
 		expect(resolvePageForLocation(details('pricing'))).toBe('pricing_b');
 	});
 
-	it('does not draw, or store anything, when consent was withheld', () => {
+	// Consent no longer gates the draw. It used to, on the reasoning that drawing
+	// means storing the assignment -- and the effect was that a site without a
+	// working consent banner ran no test at all. Kiran's call 2026-09-20.
+	it('draws and stores for a visitor who refused cookies', () => {
 		mockedConsent.mockReturnValue({
 			required: true,
 			decided: true,
@@ -264,25 +267,22 @@ describe('split assignments', () => {
 		});
 		store({ pageRouting: ROUTING, defaultPage: 'home' });
 
-		// Served an arm, but the FIRST one rather than a draw, and nothing stored.
 		expect(resolvePageForLocation(details('pricing'))).toBe('pricing_a');
-		expect(document.cookie).not.toContain(PAGE_ROUTE_ASSIGNMENT_COOKIE);
+		expect(document.cookie).toContain(PAGE_ROUTE_ASSIGNMENT_COOKIE);
 	});
 
-	it('treats an undecided visitor as withholding, not as agreeing', () => {
+	it('draws for a visitor who has not answered yet', () => {
 		mockedConsent.mockReturnValue({
 			required: true,
 			decided: false,
 			status: null,
 			enabled: true,
-			// Everything on, which is what a preferences panel shows before a choice
-			// is made. Reading it as agreement would draw on silence.
 			categories: { necessary: true, analytics: true, marketing: true },
 		});
 		store({ pageRouting: ROUTING, defaultPage: 'home' });
 
 		expect(resolvePageForLocation(details('pricing'))).toBe('pricing_a');
-		expect(document.cookie).not.toContain(PAGE_ROUTE_ASSIGNMENT_COOKIE);
+		expect(document.cookie).toContain(PAGE_ROUTE_ASSIGNMENT_COOKIE);
 	});
 
 	it('draws once the visitor has agreed', () => {

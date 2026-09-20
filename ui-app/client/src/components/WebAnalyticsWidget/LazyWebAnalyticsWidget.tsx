@@ -14,9 +14,19 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { WIDGET_TEMPLATES, WidgetType } from './webAnalyticsTemplates';
 
-interface HogQLLikeResponse {
-	results?: Array<Array<unknown>>;
-	columns?: Array<string>;
+/**
+ * What the analytics engine answers: one row per key, with an exact event count and an
+ * estimated visitor count.
+ */
+interface EngineResponse {
+	rows?: Array<{ label: string; events: number; visitors: number }>;
+	/**
+	 * True when any visitor figure here came from a sketch rather than a scan (~0.8% on a
+	 * headline number, ~2.3% per key). Shown rather than hidden: an estimate presented as
+	 * exact is how somebody reconciles it against another tool and concludes this is broken.
+	 */
+	visitorsApproximate?: boolean;
+	rawHoursScanned?: number;
 }
 
 function authToken(): string | undefined {
@@ -50,7 +60,10 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 			appCode,
 			clientCode,
 			title,
+			subtitle,
 			dateRangeDays,
+			dateFrom,
+			dateTo,
 			limit,
 			refreshIntervalSeconds,
 			showBars,
@@ -81,7 +94,7 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
-	const [data, setLocal] = useState<HogQLLikeResponse | null>(null);
+	const [data, setLocal] = useState<EngineResponse | null>(null);
 	const [error, setError] = useState<string | undefined>();
 	const [loading, setLoading] = useState(false);
 
@@ -100,10 +113,12 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 
 			const query = template.build({
 				dateRangeDays: Number(dateRangeDays) || 7,
+				dateFrom,
+				dateTo,
 				limit: Number(limit) || template.defaultLimit,
 			});
 
-			const response = await axios.post<HogQLLikeResponse>(
+			const response = await axios.post<EngineResponse>(
 				'/api/ui/analytics/query',
 				query,
 				{ headers },
@@ -138,6 +153,8 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 		clientCode,
 		template,
 		dateRangeDays,
+		dateFrom,
+		dateTo,
 		limit,
 		bindingPathPath,
 		context.pageName,
@@ -172,6 +189,11 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 				<div className="_title" style={resolvedStyles.title ?? {}}>
 					{heading}
 				</div>
+				{subtitle ? (
+					<div className="_subtitle" style={resolvedStyles.subtitle ?? {}}>
+						{subtitle}
+					</div>
+				) : null}
 				<div className="_error" style={resolvedStyles.error ?? {}}>
 					{error}
 				</div>
@@ -186,12 +208,17 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 				<div className="_title" style={resolvedStyles.title ?? {}}>
 					{heading}
 				</div>
+				{subtitle ? (
+					<div className="_subtitle" style={resolvedStyles.subtitle ?? {}}>
+						{subtitle}
+					</div>
+				) : null}
 				<div className="_loading">Loading…</div>
 			</div>
 		);
 	}
 
-	const rows = data?.results ?? [];
+	const rows = data?.rows ?? [];
 
 	if (rows.length === 0) {
 		return (
@@ -200,13 +227,18 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 				<div className="_title" style={resolvedStyles.title ?? {}}>
 					{heading}
 				</div>
+				{subtitle ? (
+					<div className="_subtitle" style={resolvedStyles.subtitle ?? {}}>
+						{subtitle}
+					</div>
+				) : null}
 				<div className="_empty">No data for the selected range.</div>
 			</div>
 		);
 	}
 
 	if (template.renderHint === 'timeSeries') {
-		const points = rows.map(r => Number(r[1]) || 0);
+		const points = rows.map(r => Number(r.events) || 0);
 		const max = Math.max(...points, 1);
 		return (
 			<div {...baseProps} key={key}>
@@ -214,12 +246,17 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 				<div className="_title" style={resolvedStyles.title ?? {}}>
 					{heading}
 				</div>
+				{subtitle ? (
+					<div className="_subtitle" style={resolvedStyles.subtitle ?? {}}>
+						{subtitle}
+					</div>
+				) : null}
 				<div className="_timeSeries">
 					{points.map((p, i) => (
 						<div
 							key={i}
 							className="_point"
-							title={`${rows[i][0]}: ${p}`}
+							title={`${rows[i].label}: ${p}`}
 							style={{
 								height: `${(p / max) * 100}%`,
 								...(resolvedStyles.bar ?? {}),
@@ -232,7 +269,7 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 	}
 
 	const bars = String(showBars ?? 'true') !== 'false';
-	const max = rows.reduce((m, r) => Math.max(m, Number(r[1]) || 0), 0);
+	const max = rows.reduce((m, r) => Math.max(m, Number(r.events) || 0), 0);
 
 	return (
 		<div {...baseProps} key={key}>
@@ -240,15 +277,20 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 			<div className="_title" style={resolvedStyles.title ?? {}}>
 				{heading}
 			</div>
+			{subtitle ? (
+				<div className="_subtitle" style={resolvedStyles.subtitle ?? {}}>
+					{subtitle}
+				</div>
+			) : null}
 			<table className="_table" style={resolvedStyles.table ?? {}}>
 				<tbody>
 					{rows.map((row, i) => {
-						const value = Number(row[1]) || 0;
+						const value = Number(row.events) || 0;
 						const pct = max > 0 ? (value / max) * 100 : 0;
 						return (
 							<tr key={i} style={resolvedStyles.row ?? {}}>
 								<td className="_rank">{i + 1}</td>
-								<td className="_label">{fmt(row[0]) || '(empty)'}</td>
+								<td className="_label">{fmt(row.label) || '(empty)'}</td>
 								<td className="_value">
 									{bars ? (
 										<span className="_barWrap">

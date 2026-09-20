@@ -4,7 +4,6 @@ import {
 	classifyDevice,
 	parseCookieHeader,
 	parseRouteAssignments,
-	readConsentGranted,
 	routeQueryFields,
 	resolvePageRoute,
 	serializeRouteAssignments,
@@ -375,77 +374,39 @@ describe('splits', () => {
 		expect(result.newAssignment).toEqual({ ruleKey: 'exp1', variantKey: 'a' });
 	});
 
-	it('honours a stored assignment even when consent was withheld, since that writes nothing', () => {
+	it('honours a stored assignment without redrawing, and writes nothing', () => {
 		const result = resolvePageRoute(
 			split(threeWay),
 			undefined,
-			req({ assignments: { exp1: 'b' }, consentGranted: false }),
+			req({ assignments: { exp1: 'b' } }),
 			{ random: pinned(0) },
 		);
 		expect(result.pageName).toBe('pricing_b');
 		expect(result.newAssignment).toBeUndefined();
 	});
 
-	it('serves the flagged arm rather than drawing when consent is withheld', () => {
+	// Consent used to gate the draw, on the reasoning that drawing means storing
+	// the assignment. The effect was that a site without a working consent banner
+	// -- most of them -- served one arm to everybody for ever and never rendered
+	// the second page. Kiran's call 2026-09-20: the split runs for everyone.
+	it('draws for a visitor who has refused cookies, exactly as for anyone else', () => {
 		const routing = split({
 			a: { page: 'pricing', weight: 50, order: 0 },
-			b: { page: 'pricing_b', weight: 30, order: 1 },
-			c: { page: 'pricing_c', weight: 20, order: 2, isDefault: true },
+			b: { page: 'pricing_b', weight: 50, order: 1 },
 		});
-		const result = resolvePageRoute(routing, undefined, req({ consentGranted: false }), {
-			random: pinned(0),
-		});
-		expect(result.pageName).toBe('pricing_c');
-		expect(result.variantKey).toBe('c');
-		expect(result.newAssignment).toBeUndefined();
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.1) }).pageName).toBe('pricing');
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.9) }).pageName).toBe('pricing_b');
 	});
 
-	it('honours a flagged arm even at zero weight — a flag is not an entry in the draw', () => {
-		const routing = split({
-			a: { page: 'pricing', weight: 50, order: 0 },
-			z: { page: 'pricing_safe', weight: 0, order: 1, isDefault: true },
-		});
-		expect(
-			resolvePageRoute(routing, undefined, req({ consentGranted: false })).pageName,
-		).toBe('pricing_safe');
-	});
-
-	it('picks the first arm when consent is withheld and nothing is flagged', () => {
-		const result = resolvePageRoute(split(threeWay), undefined, req({ consentGranted: false }), {
-			random: pinned(0.9),
-		});
-		// The lowest `order`, not the draw the random would have produced.
-		expect(result.pageName).toBe('pricing');
-		expect(result.ruleKey).toBe('exp1');
-		expect(result.newAssignment).toBeUndefined();
-	});
-
-	it('gives the same answer every time, since there is nowhere to record it', () => {
-		const at = (r: number) =>
-			resolvePageRoute(split(threeWay), undefined, req({ consentGranted: false }), {
-				random: pinned(r),
-			}).pageName;
-		expect([at(0), at(0.5), at(0.99)]).toEqual(['pricing', 'pricing', 'pricing']);
-	});
-
-	it('takes the lowest order when more than one arm is flagged', () => {
-		const routing = split({
-			a: { page: 'pricing', order: 2, isDefault: true },
-			b: { page: 'pricing_b', order: 0, isDefault: true },
-		});
-		expect(
-			resolvePageRoute(routing, undefined, req({ consentGranted: false })).pageName,
-		).toBe('pricing_b');
+	it('records the assignment it drew, so the arm survives the next click', () => {
+		const result = resolvePageRoute(split(threeWay), undefined, req(), { random: pinned(0.99) });
+		expect(result.newAssignment).toEqual({ ruleKey: 'exp1', variantKey: 'c' });
 	});
 
 	it('still does not apply when there is no arm that could be served', () => {
-		const result = resolvePageRoute(split({}), undefined, req({ consentGranted: false }));
+		const result = resolvePageRoute(split({}), undefined, req());
 		expect(result.pageName).toBe('pricing');
 		expect(result.ruleKey).toBeUndefined();
-	});
-
-	it('proceeds when consent is simply undetermined — only an explicit false withholds', () => {
-		expect(resolvePageRoute(split(threeWay), undefined, req(), { random: pinned(0) }).newAssignment).toBeDefined();
 	});
 
 	it('falls through to a later rule rather than shadowing it', () => {
@@ -630,48 +591,5 @@ describe('classifyDevice', () => {
 		expect(classifyDevice('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15')).toBe('DESKTOP');
 		expect(classifyDevice(undefined)).toBeUndefined();
 		expect(classifyDevice('')).toBeUndefined();
-	});
-});
-
-describe('readConsentGranted', () => {
-	const record = (analytics: boolean) =>
-		JSON.stringify({
-			status: analytics ? 'granted' : 'denied',
-			categories: { necessary: true, analytics, marketing: analytics },
-			at: '2026-09-19T00:00:00.000Z',
-			v: 1,
-		});
-
-	it('does not arise when the app requires no consent', () => {
-		expect(readConsentGranted(undefined, false)).toBeUndefined();
-		expect(readConsentGranted(record(false), false)).toBeUndefined();
-	});
-
-	it('reads the analytics category out of a decided record', () => {
-		expect(readConsentGranted(record(true), true)).toBe(true);
-		expect(readConsentGranted(record(false), true)).toBe(false);
-	});
-
-	it('accepts the legacy granted / denied values', () => {
-		expect(readConsentGranted('granted', true)).toBe(true);
-		expect(readConsentGranted('denied', true)).toBe(false);
-	});
-
-	it('falls back to status when the record carries no analytics category', () => {
-		expect(readConsentGranted('{"status":"granted"}', true)).toBe(true);
-		expect(readConsentGranted('{"status":"denied"}', true)).toBe(false);
-	});
-
-	it('withholds rather than assumes when there is no readable decision', () => {
-		expect(readConsentGranted(undefined, true)).toBe(false);
-		expect(readConsentGranted('', true)).toBe(false);
-		expect(readConsentGranted('not json', true)).toBe(false);
-		expect(readConsentGranted('{"status":"maybe"}', true)).toBe(false);
-		expect(readConsentGranted('[]', true)).toBe(false);
-	});
-
-	it('defaults to requiring consent when the app says nothing', () => {
-		expect(readConsentGranted(undefined, undefined)).toBe(false);
-		expect(readConsentGranted(record(true), undefined)).toBe(true);
 	});
 });

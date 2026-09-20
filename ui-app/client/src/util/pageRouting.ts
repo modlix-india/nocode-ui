@@ -81,16 +81,6 @@ export interface PageRouteVariant {
 	weight?: number;
 	order?: number;
 	name?: string;
-	/**
-	 * Serve this arm to a visitor whose consent was withheld, instead of leaving
-	 * them out of the test.
-	 *
-	 * A flag on the arm rather than a key named by the rule: the keys are
-	 * generated ids, so naming one meant either an unusable text box or an option
-	 * list the expression engine could not build. If more than one arm carries
-	 * it the lowest `order` wins, so the answer is never ambiguous.
-	 */
-	isDefault?: boolean;
 }
 
 export interface PageRouteRule {
@@ -135,12 +125,6 @@ export interface PageRouteRequest {
 	authenticated?: boolean;
 	/** Split assignments this visitor already carries: rule key -> variant key. */
 	assignments?: { [ruleKey: string]: string };
-	/**
-	 * Whether anything may be stored on this device. Only an explicit false
-	 * withholds: an app that requires no consent, and a caller that has not
-	 * worked out the answer yet, both leave it undefined and splits proceed.
-	 */
-	consentGranted?: boolean;
 }
 
 export interface PageRouteResolution {
@@ -367,37 +351,32 @@ function drawVariant(
 	const existing = request.assignments?.[ruleKey];
 	if (existing) {
 		const held = variants.find(([key]) => key === existing);
-		// A stored assignment is reused without regard to consent: it is already
-		// on the device, and honouring it writes nothing. If the arm it names has
-		// since been deleted the assignment is stale, and the visitor is redrawn
-		// rather than sent to a page that no longer exists.
+		// A stored assignment is honoured as it stands, and honouring it writes
+		// nothing. If the arm it names has since been deleted the assignment is
+		// stale, and the visitor is redrawn rather than sent to a page that no
+		// longer exists.
 		if (held?.[1].page) return { variantKey: existing, page: held[1].page };
 	}
 
-	if (request.consentGranted === false) {
-		// Drawing an arm means storing it, and storing is exactly what is not
-		// permitted. So an arm is chosen WITHOUT a draw: the one the author
-		// flagged, and failing that the first.
-		//
-		// Deterministic on purpose. A random pick with nowhere to record it would
-		// hand the same visitor a different page on every load, which is worse
-		// than any particular choice of arm. It also means these visitors always
-		// see something rather than falling out of the rule entirely -- they are
-		// simply never randomised, and never counted.
-		//
-		// A flagged arm is honoured whatever its weight: the flag is an explicit
-		// instruction, not an entry in the draw, so a zero-weighted arm can serve
-		// as the one everybody who declines is shown.
-		const marked = variants.find(([, variant]) => variant.isDefault === true && !!variant.page);
-		if (marked) return { variantKey: marked[0], page: marked[1].page };
-
-		const first = variants.find(
-			([, variant]) => !!variant.page && numeric(variant.weight, 1) > 0,
-		);
-		if (first) return { variantKey: first[0], page: first[1].page };
-		return undefined;
-	}
-
+	// Every visitor is drawn, whatever they answered about cookies.
+	//
+	// This used to be gated: consent withheld meant no draw, and the arm the
+	// author had flagged was served instead. The reasoning was that drawing means
+	// storing the assignment, and storing is what consent governs. The effect was
+	// that a site with no working consent banner -- which is most of them -- ran
+	// no test at all: every visitor got one arm, for ever, in silence, and the
+	// second page was never once rendered.
+	//
+	// Kiran's call, 2026-09-20: the split runs for everyone. `modlix_page_variant`
+	// is first-party, carries no identifier -- its whole content is rule key to
+	// arm key -- and exists only so the page does not change under someone between
+	// clicks. Measurement is a separate question and stays gated on consent, so an
+	// unconsenting visitor is still never counted; they are simply no longer
+	// pinned to one arm.
+	//
+	// The campaign carry-forward cookie is NOT covered by this and is still
+	// withheld, because a campaign parameter is closer to tracking than an arm
+	// index is. See `carryQueryForward` in Engine/pageRoute.ts.
 	const eligible = variants.filter(
 		([, variant]) => !!variant.page && numeric(variant.weight, 1) > 0,
 	);
@@ -440,8 +419,8 @@ function applyRoute(
 		if (rule.type === 'SPLIT') {
 			const choice = drawVariant(ruleKey, rule, request, random);
 			// A split that cannot produce an arm falls through to the next rule
-			// rather than ending resolution, so a consent-blocked or empty split
-			// does not shadow a personalization rule beneath it.
+			// rather than ending resolution, so an empty split does not shadow a
+			// personalization rule beneath it.
 			if (!choice) continue;
 			return {
 				pageName: choice.page,
@@ -608,42 +587,4 @@ export function classifyDevice(userAgent: string | undefined | null): string | u
 	if (/mobi|iphone|ipod|android|blackberry|windows phone|iemobile|opera mini/i.test(userAgent))
 		return 'MOBILE';
 	return 'DESKTOP';
-}
-
-/**
- * Whether this visitor has permitted anything to be stored on their device.
- *
- * Returns undefined when the question does not arise, which is what
- * `PageRouteRequest.consentGranted` treats as "proceed": only an explicit false
- * withholds a draw.
- *
- * The record is written by App/analyticsConsent.ts — this reads it rather than
- * importing it, because this file is copied into the SSR build and may not
- * import. It is deliberately tolerant: an unreadable record counts as no
- * decision, which withholds rather than assumes.
- *
- * Gating a split on the `analytics` category is a choice, not a law. A split is
- * measurement-adjacent, so it follows the same permission as measurement; an app
- * that sets `analytics.consentRequired: false` asks nothing and splits freely.
- */
-export function readConsentGranted(
-	raw: string | undefined | null,
-	consentRequired?: boolean,
-): boolean | undefined {
-	if (consentRequired === false) return undefined;
-	if (!raw) return false;
-
-	// The legacy form, before categories existed.
-	if (raw === 'granted') return true;
-	if (raw === 'denied') return false;
-
-	try {
-		const parsed = JSON.parse(raw);
-		if (!parsed || typeof parsed !== 'object') return false;
-		if (parsed.status !== 'granted' && parsed.status !== 'denied') return false;
-		if (typeof parsed.categories?.analytics === 'boolean') return parsed.categories.analytics;
-		return parsed.status === 'granted';
-	} catch {
-		return false;
-	}
 }

@@ -28,23 +28,25 @@ function clearStorage() {
 }
 
 describe('analytics consent', () => {
-	let posthog: any;
+	// The beacon's queue stub, which is what the page really talks to: window.mlx exists
+	// before the script has loaded, so consent decided during the first paint is not lost.
+	let beacon: jest.Mock;
+
+	/** Whether consent was last pushed as granted, denied, or not pushed at all. */
+	const lastConsent = (): boolean | undefined => {
+		const calls = beacon.mock.calls.filter(c => c[0] === 'consent');
+		return calls.length ? !!calls[calls.length - 1][1] : undefined;
+	};
 
 	beforeEach(() => {
 		clearStorage();
-		posthog = {
-			opt_in_capturing: jest.fn(),
-			opt_out_capturing: jest.fn(),
-			startSessionRecording: jest.fn(),
-			stopSessionRecording: jest.fn(),
-			register: jest.fn(),
-		};
-		(globalThis as any).posthog = posthog;
-		setAppAnalytics({ enabled: true, consentRequired: true });
+		beacon = jest.fn();
+		(globalThis as any).mlx = beacon;
+		setAppAnalytics({ enabled: true });
 	});
 
 	afterEach(() => {
-		delete (globalThis as any).posthog;
+		delete (globalThis as any).mlx;
 	});
 
 	it('starts undecided, so a consent page is asked for', () => {
@@ -62,7 +64,7 @@ describe('analytics consent', () => {
 
 	it('does not capture on the strength of those defaults', () => {
 		publishConsentState();
-		expect(posthog.opt_in_capturing).not.toHaveBeenCalled();
+		expect(lastConsent()).toBeUndefined();
 		expect(getConsentState().decided).toBe(false);
 	});
 
@@ -75,49 +77,44 @@ describe('analytics consent', () => {
 		});
 	});
 
-	it('treats a missing consentRequired as required', () => {
+	it('requires consent unconditionally, whatever the application says', () => {
+		// The app-level switch is gone. A document that still carries
+		// `consentRequired: false` — several do — must no longer be able to turn
+		// asking off, because that is the failure nobody sees: the pages render,
+		// the numbers arrive, and the banner simply never appears.
+		setAppAnalytics({ enabled: true, consentRequired: false } as any);
+		expect(publishConsentState().required).toBe(true);
+		expect(getConsentState().decided).toBe(false);
+
 		setAppAnalytics({ enabled: true });
 		expect(publishConsentState().required).toBe(true);
 	});
 
-	it('does not ask when the app turns consent off', () => {
-		setAppAnalytics({ enabled: true, consentRequired: false });
-		expect(publishConsentState().required).toBe(false);
-	});
-
-	it('grants every category and opts PostHog in', () => {
+	it('grants every category and switches the beacon on', () => {
 		const state = setConsent(true);
 		expect(state.status).toBe('granted');
 		expect(state.categories).toEqual({ necessary: true, analytics: true, marketing: true });
-		expect(posthog.opt_in_capturing).toHaveBeenCalled();
-		expect(posthog.opt_out_capturing).not.toHaveBeenCalled();
+		expect(lastConsent()).toBe(true);
 	});
 
-	it('never starts session recording, whatever the app document says', () => {
-		setAppAnalytics({ enabled: true, consentRequired: true, sessionReplay: { enabled: true } });
-		setConsent(true);
-		expect(posthog.startSessionRecording).not.toHaveBeenCalled();
-	});
-
-	it('denies and opts PostHog out', () => {
+	it('denies and switches the beacon off', () => {
 		const state = setConsent(false);
 		expect(state.status).toBe('denied');
 		expect(state.categories.analytics).toBe(false);
-		expect(posthog.opt_out_capturing).toHaveBeenCalled();
+		expect(lastConsent()).toBe(false);
 	});
 
 	it('records a grant with every category off as a denial', () => {
 		const state = setConsent(true, { analytics: false, marketing: false });
 		expect(state.status).toBe('denied');
-		expect(posthog.opt_out_capturing).toHaveBeenCalled();
+		expect(lastConsent()).toBe(false);
 	});
 
 	it('keeps analytics off but marketing on as a grant that does not capture', () => {
 		const state = setConsent(true, { analytics: false });
 		expect(state.status).toBe('granted');
 		expect(state.categories.marketing).toBe(true);
-		expect(posthog.opt_in_capturing).not.toHaveBeenCalled();
-		expect(posthog.opt_out_capturing).toHaveBeenCalled();
+		expect(lastConsent()).toBe(false);
 	});
 
 	it('never lets necessary be switched off', () => {
@@ -151,7 +148,7 @@ describe('analytics consent', () => {
 	});
 
 	it('honours a custom cookie name from the application', () => {
-		setAppAnalytics({ enabled: true, consentRequired: true, consentCookieName: 'zumpconsent' });
+		setAppAnalytics({ enabled: true, consentCookieName: 'zumpconsent' });
 		setConsent(true);
 		expect(window.localStorage.getItem('zumpconsent')).toBeTruthy();
 		expect(window.localStorage.getItem(DEFAULT_CONSENT_COOKIE_NAME)).toBeNull();
@@ -165,7 +162,7 @@ describe('analytics consent', () => {
 		expect(cleared.decided).toBe(false);
 		expect(cleared.status).toBeNull();
 		expect(readConsentRecord()).toBeNull();
-		expect(posthog.opt_out_capturing).toHaveBeenCalled();
+		expect(lastConsent()).toBe(false);
 	});
 
 	it('ignores a corrupt stored value rather than throwing', () => {

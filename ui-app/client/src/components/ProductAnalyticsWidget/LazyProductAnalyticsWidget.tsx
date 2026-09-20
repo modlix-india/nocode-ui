@@ -17,19 +17,37 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { PRODUCT_TEMPLATES, ProductWidgetType } from './productAnalyticsTemplates';
 
-interface FunnelStepData {
-	name?: string;
-	count?: number;
-	conversion?: number;
-}
-interface RetentionRow {
-	date?: string;
-	cohortSize?: number;
-	values?: Array<number>;
-}
-interface AnyResponse {
-	results?: any;
-	columns?: any;
+/**
+ * What the analytics engine answers. One shape for every widget: `rows` for anything that
+ * ranks or plots a single series, and a named array for the four analyses that cannot be
+ * expressed that way.
+ */
+interface EngineResponse {
+	rows?: Array<{ label: string; events: number; visitors: number }>;
+	funnel?: Array<{
+		step: number;
+		event: string;
+		visitors: number;
+		conversionFromPrevious: number;
+		conversionFromFirst: number;
+	}>;
+	retention?: Array<{ label: string; size: number; values: Array<number> }>;
+	stickiness?: Array<{ periods: number; visitors: number }>;
+	lifecycle?: Array<{
+		label: string;
+		new: number;
+		returning: number;
+		resurrecting: number;
+		dormant: number;
+	}>;
+	/**
+	 * True wherever a visitor count came from a sketch rather than a scan. Surfaced in the
+	 * UI rather than swallowed: presenting an estimate as exact is how someone reconciles it
+	 * against another tool and concludes the whole thing is broken.
+	 */
+	visitorsApproximate?: boolean;
+	/** How many boundary hours had to be read raw — non-zero only for half-hour zones. */
+	rawHoursScanned?: number;
 }
 
 function authToken(): string | undefined {
@@ -44,50 +62,6 @@ function fmt(value: unknown): string {
 	if (value === null || value === undefined) return '';
 	if (typeof value === 'number') return value.toLocaleString();
 	return String(value);
-}
-
-/**
- * PostHog FunnelsQuery returns either an array of step objects or a nested
- * array (one per breakdown). Normalise the simple case here; bail to raw
- * binding for breakdown funnels.
- */
-function normaliseFunnel(payload: AnyResponse): Array<FunnelStepData> | null {
-	const results = payload?.results;
-	if (!Array.isArray(results) || results.length === 0) return null;
-	const first = results[0];
-	// Simple funnel: results is an array of step objects
-	if (first && typeof first === 'object' && !Array.isArray(first) && 'count' in first) {
-		const startCount = Number(first.count) || 0;
-		return results.map((step: any) => ({
-			name: step?.custom_name ?? step?.name ?? step?.action_id ?? step?.event,
-			count: Number(step?.count) || 0,
-			conversion:
-				startCount > 0 ? ((Number(step?.count) || 0) / startCount) * 100 : 0,
-		}));
-	}
-	return null;
-}
-
-/**
- * PostHog RetentionQuery returns rows with { date, label, values: [{count}, ...] }
- * The first value in each row is the cohort size; subsequent values are
- * retention counts at each period offset.
- */
-function normaliseRetention(payload: AnyResponse): Array<RetentionRow> | null {
-	const results = payload?.results;
-	if (!Array.isArray(results) || results.length === 0) return null;
-	const first = results[0];
-	if (!first || typeof first !== 'object' || !('values' in first)) return null;
-	return results.map((row: any) => {
-		const valuesRaw: any[] = Array.isArray(row?.values) ? row.values : [];
-		const cohortSize = Number(valuesRaw[0]?.count ?? 0);
-		const values = valuesRaw.map((v: any) => Number(v?.count) || 0);
-		return {
-			date: row?.label ?? row?.date,
-			cohortSize,
-			values,
-		};
-	});
 }
 
 export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProps>) {
@@ -107,13 +81,15 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 			appCode,
 			clientCode,
 			title,
+			subtitle,
 			dateRangeDays,
+			dateFrom,
+			dateTo,
 			limit,
 			eventName,
 			breakdownProperty,
 			funnelSteps,
-			retentionTargetEvent,
-			retentionReturningEvent,
+			funnelWindowHours,
 			retentionPeriod,
 			refreshIntervalSeconds,
 			showBars,
@@ -145,7 +121,7 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
-	const [data, setLocal] = useState<AnyResponse | null>(null);
+	const [data, setLocal] = useState<EngineResponse | null>(null);
 	const [error, setError] = useState<string | undefined>();
 	const [loading, setLoading] = useState(false);
 
@@ -164,16 +140,17 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 
 			const query = template.build({
 				dateRangeDays: Number(dateRangeDays) || 30,
+				dateFrom,
+				dateTo,
 				limit: Number(limit) || template.defaultLimit,
 				eventName,
 				breakdownProperty,
 				funnelSteps: Array.isArray(funnelSteps) ? funnelSteps : [],
-				retentionTargetEvent,
-				retentionReturningEvent,
-				retentionPeriod: retentionPeriod as 'Day' | 'Week' | 'Month' | undefined,
+				funnelWindowHours: Number(funnelWindowHours) || undefined,
+				retentionPeriod: retentionPeriod as 'day' | 'week' | undefined,
 			});
 
-			const response = await axios.post<AnyResponse>(
+			const response = await axios.post<EngineResponse>(
 				'/api/ui/analytics/query',
 				query,
 				{ headers },
@@ -208,12 +185,13 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 		clientCode,
 		template,
 		dateRangeDays,
+		dateFrom,
+		dateTo,
 		limit,
 		eventName,
 		breakdownProperty,
 		funnelSteps,
-		retentionTargetEvent,
-		retentionReturningEvent,
+		funnelWindowHours,
 		retentionPeriod,
 		bindingPathPath,
 		context.pageName,
@@ -247,6 +225,11 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 			<div className="_title" style={resolvedStyles.title ?? {}}>
 				{heading}
 			</div>
+			{subtitle ? (
+				<div className="_subtitle" style={resolvedStyles.subtitle ?? {}}>
+					{subtitle}
+				</div>
+			) : null}
 			{body}
 		</div>
 	);
@@ -262,25 +245,30 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 
 	// Funnel render
 	if (template.renderHint === 'funnel') {
-		const steps = data ? normaliseFunnel(data) : null;
-		if (!steps || steps.length === 0)
+		const steps = data?.funnel ?? [];
+		if (steps.length === 0)
 			return wrapper(<div className="_empty">No funnel data for the selected range.</div>);
-		const max = steps[0]?.count || 1;
+		const max = steps[0]?.visitors || 1;
 		return wrapper(
 			<div className="_funnel">
 				{steps.map((s, i) => {
-					const pct = ((s.count ?? 0) / max) * 100;
+					const pct = ((s.visitors ?? 0) / max) * 100;
 					return (
 						<div className="_funnelStep" key={i}>
-							<div className="_funnelStepLabel">{s.name ?? `Step ${i + 1}`}</div>
+							<div className="_funnelStepLabel">{s.event || `Step ${i + 1}`}</div>
 							<div className="_funnelStepBar">
 								<div
 									className="_funnelStepFill"
 									style={{ width: `${pct}%`, ...(resolvedStyles.stepBar ?? {}) }}
 								/>
-								<span className="_funnelStepNum">{fmt(s.count)}</span>
+								<span className="_funnelStepNum">{fmt(s.visitors)}</span>
 							</div>
-							<div className="_funnelStepConv">{(s.conversion ?? 0).toFixed(1)}%</div>
+							{/* Of everyone who entered the funnel, not of the previous step: the
+							    two answer different questions, and the one people mean by
+							    "conversion" without qualifying it is this one. */}
+							<div className="_funnelStepConv">
+								{((s.conversionFromFirst ?? 0) * 100).toFixed(1)}%
+							</div>
 						</div>
 					);
 				})}
@@ -290,8 +278,8 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 
 	// Retention render
 	if (template.renderHint === 'retention') {
-		const rows = data ? normaliseRetention(data) : null;
-		if (!rows || rows.length === 0)
+		const rows = data?.retention ?? [];
+		if (rows.length === 0)
 			return wrapper(<div className="_empty">No retention data for the selected range.</div>);
 		const periodCount = rows.reduce((m, r) => Math.max(m, (r.values ?? []).length), 0);
 		return wrapper(
@@ -310,13 +298,11 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 				<tbody>
 					{rows.map((r, ri) => (
 						<tr key={ri}>
-							<td className="_date">{r.date ?? ''}</td>
-							<td className="_size">{fmt(r.cohortSize)}</td>
+							<td className="_date">{r.label ?? ''}</td>
+							<td className="_size">{fmt(r.size)}</td>
 							{(r.values ?? []).map((count, ci) => {
 								const pct =
-									(r.cohortSize ?? 0) > 0
-										? (count / (r.cohortSize ?? 1)) * 100
-										: 0;
+									(r.size ?? 0) > 0 ? (count / (r.size ?? 1)) * 100 : 0;
 								const bg =
 									ci === 0
 										? 'transparent'
@@ -326,7 +312,7 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 										key={ci}
 										className="_cohortCell"
 										style={{ background: bg, ...(resolvedStyles.cohortCell ?? {}) }}
-										title={`${count} of ${r.cohortSize} (${pct.toFixed(1)}%)`}
+										title={`${count} of ${r.size} (${pct.toFixed(1)}%)`}
 									>
 										{ci === 0 ? fmt(count) : `${pct.toFixed(0)}%`}
 									</td>
@@ -339,13 +325,22 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 		);
 	}
 
-	const rows: Array<Array<unknown>> = Array.isArray(data?.results) ? (data!.results as any) : [];
+	// Stickiness has its own array but reads as an ordinary ranked list: how many visitors
+	// were active in one period, two, three. Mapping it here keeps one table renderer.
+	const rows =
+		data?.stickiness && data.stickiness.length
+			? data.stickiness.map(b => ({
+					label: `${b.periods} ${b.periods === 1 ? 'period' : 'periods'}`,
+					events: b.visitors,
+					visitors: b.visitors,
+				}))
+			: (data?.rows ?? []);
 
 	if (rows.length === 0)
 		return wrapper(<div className="_empty">No data for the selected range.</div>);
 
 	if (template.renderHint === 'timeSeries') {
-		const points = rows.map(r => Number(r[1]) || 0);
+		const points = rows.map(r => Number(r.events) || 0);
 		const max = Math.max(...points, 1);
 		return wrapper(
 			<div className="_timeSeries">
@@ -353,7 +348,7 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 					<div
 						key={i}
 						className="_point"
-						title={`${rows[i][0]}: ${p}`}
+						title={`${rows[i].label}: ${p}`}
 						style={{
 							height: `${(p / max) * 100}%`,
 							...(resolvedStyles.bar ?? {}),
@@ -366,17 +361,17 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 
 	// table
 	const bars = String(showBars ?? 'true') !== 'false';
-	const max = rows.reduce((m, r) => Math.max(m, Number(r[1]) || 0), 0);
+	const max = rows.reduce((m, r) => Math.max(m, Number(r.events) || 0), 0);
 	return wrapper(
 		<table className="_table">
 			<tbody>
 				{rows.map((row, i) => {
-					const value = Number(row[1]) || 0;
+					const value = Number(row.events) || 0;
 					const pct = max > 0 ? (value / max) * 100 : 0;
 					return (
 						<tr key={i} style={resolvedStyles.row ?? {}}>
 							<td className="_rank">{i + 1}</td>
-							<td className="_label">{fmt(row[0]) || '(empty)'}</td>
+							<td className="_label">{fmt(row.label) || '(empty)'}</td>
 							<td className="_value">
 								{bars ? (
 									<span className="_barWrap">

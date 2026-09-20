@@ -32,7 +32,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Query',
 		description:
-			'PostHog query envelope. Example: { kind: "HogQLQuery", query: "SELECT count() FROM events WHERE event = \'$pageview\'" }',
+			'Analytics engine request. Example: { widget: "topPages", from: "2026-09-01T00:00:00Z", ' +
+			'to: "2026-09-30T00:00:00Z", limit: 10 }. There is no query language: the widget name ' +
+			'is the query. `site` and `timezone` are set by the server and are ignored here.',
 		group: ComponentPropertyGroup.DATA,
 	},
 	{

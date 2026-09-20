@@ -55,10 +55,11 @@ interface SSRConfig {
 	cache: {
 		ttlSeconds: number;
 	};
-	// Analytics (PostHog) configuration
+	// Analytics configuration. Only the host: the engine's ingest endpoint takes no key,
+	// because a key in a page snippet is public the moment it is served and therefore
+	// authenticates nothing. Origin-based site resolution and rate limiting are the controls.
 	analytics: {
 		ingestionHost: string;
-		projectApiKey: string;
 	};
 	// Security configuration (mirror of Java security.appCodeSuffix for SSO beacon host derivation)
 	security: {
@@ -102,7 +103,6 @@ const defaultConfig: SSRConfig = {
 	},
 	analytics: {
 		ingestionHost: '',
-		projectApiKey: '',
 	},
 	security: {
 		appCodeSuffix: process.env.SECURITY_APP_CODE_SUFFIX ?? '',
@@ -171,7 +171,6 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 			},
 			analytics: {
 				ingestionHost: (source['ui.analytics.ingestionHost'] as string) || defaultConfig.analytics.ingestionHost,
-				projectApiKey: (source['ui.analytics.posthog.projectApiKey'] as string) || defaultConfig.analytics.projectApiKey,
 			},
 			security: {
 				appCodeSuffix: (source['security.appCodeSuffix'] as string) ?? defaultConfig.security.appCodeSuffix,

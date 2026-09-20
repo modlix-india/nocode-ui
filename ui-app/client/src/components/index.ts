@@ -66,8 +66,6 @@ import Form from './Form/Form';
 import AnalyticsQuery from './AnalyticsQuery/AnalyticsQuery';
 import WebAnalyticsWidget from './WebAnalyticsWidget/WebAnalyticsWidget';
 import ProductAnalyticsWidget from './ProductAnalyticsWidget/ProductAnalyticsWidget';
-import SessionReplayList from './SessionReplayList/SessionReplayList';
-import SessionReplayPlayer from './SessionReplayPlayer/SessionReplayPlayer';
 
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 import ThemeEditor from './ThemeEditor/ThemeEditor';
@@ -143,8 +141,6 @@ const componentMap = new Map<string, Component>([
 	[AnalyticsQuery.name, AnalyticsQuery],
 	[WebAnalyticsWidget.name, WebAnalyticsWidget],
 	[ProductAnalyticsWidget.name, ProductAnalyticsWidget],
-	[SessionReplayList.name, SessionReplayList],
-	[SessionReplayPlayer.name, SessionReplayPlayer],
 	[FileSelector.name, FileSelector],
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FillerValueEditor.name, FillerValueEditor],

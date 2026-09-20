@@ -279,54 +279,41 @@ function generateExternalLinks(application: ApplicationDefinition | null): strin
 	return links.join('\n\t\t');
 }
 
-const POSTHOG_STUB =
-	'!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){' +
-	'function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),' +
-	't[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}' +
-	'(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",' +
-	'p.async=!0,p.src=s.api_host+"/static/array.js",' +
-	'(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;' +
-	'for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],' +
-	'u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),' +
-	't||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},' +
-	'o="init capture register register_once unregister identify setPersonProperties group reset ' +
-	'opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing".split(" "),' +
-	'n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}' +
-	'(document,window.posthog||[]);';
-
 /**
- * Generate the PostHog analytics snippet. Project key + ingestion host come from
- * env-level Spring Cloud Config; only the user-facing toggles come from the app.
- * Returns '' if env config is missing or the app has analytics disabled.
+ * The analytics beacon, as one script tag.
+ *
+ * The script itself is served by the engine that receives its events, so there is no vendor
+ * stub here and no copy of the wire format. The previous arrangement transcribed the same
+ * minified blob into this file and into IndexHTMLService.java, and the two had begun to
+ * drift; now both emit a tag and the engine owns the client.
+ *
+ * Returns '' when analytics is off for the app or no host is configured — the rendered page
+ * then carries nothing at all, rather than a script that would load and measure nobody.
  */
 function generateAnalyticsSnippet(
 	application: ApplicationDefinition | null,
-	projectApiKey: string,
 	ingestionHost: string,
 ): string {
-	if (!projectApiKey || !ingestionHost) return '';
+	if (!ingestionHost) return '';
 
 	const a = application?.properties?.analytics;
 	if (!a?.enabled) return '';
 
-	const initOptions: Record<string, unknown> = {
-		api_host: ingestionHost,
-		person_profiles: 'identified_only',
-		autocapture: a.autocapture ?? true,
-		capture_pageview: a.capturePageviews ?? true,
-		capture_pageleave: a.capturePageleaves ?? true,
-		// Session replay is not a feature of this platform. Recording is refused
-		// here rather than left to a per-app toggle, so no application document
-		// can turn it back on: an `analytics.sessionReplay` block is inert.
-		disable_session_recording: true,
-		enable_heatmaps: !!a.heatmaps?.enabled,
-		opt_out_capturing_by_default: a.consentRequired !== false,
-		advanced_disable_flags: true,
-	};
+	const host = ingestionHost.endsWith('/') ? ingestionHost.slice(0, -1) : ingestionHost;
+	const attr = (v: unknown, dflt: boolean) => String(v === undefined || v === null ? dflt : v !== false);
 
-	return `<script>${POSTHOG_STUB}posthog.init(${JSON.stringify(projectApiKey)},${JSON.stringify(
-		initOptions,
-	)});</script>`;
+	return (
+		// A queue, so an event fired before the async script arrives is not lost.
+		'<script>window.mlx=window.mlx||function(){(window.mlx.q=window.mlx.q||[]).push(arguments)};</script>' +
+		`<script async src="${escapeHtml(host)}/a.js"` +
+		` data-autocapture="${attr(a.autocapture, true)}"` +
+		` data-pageviews="${attr(a.capturePageviews, true)}"` +
+		` data-pageleaves="${attr(a.capturePageleaves, true)}"` +
+		// Unconditional. There is no application setting that turns consent off:
+		// one set wrong, once, measures people who were never asked, and nothing
+		// about that state looks wrong from the outside.
+		' data-consent="required"></script>'
+	);
 }
 
 /**
@@ -438,7 +425,6 @@ function generateHtml(
 	const externalScripts = generateExternalScripts(application);
 	const analyticsSnippet = generateAnalyticsSnippet(
 		application,
-		getConfig().analytics.projectApiKey,
 		getConfig().analytics.ingestionHost,
 	);
 

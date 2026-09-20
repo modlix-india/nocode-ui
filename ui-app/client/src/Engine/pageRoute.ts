@@ -48,6 +48,14 @@ export function resetBootstrapResolution() {
 	bootstrapResolutionUsed = false;
 }
 
+/**
+ * Whether this visitor has permitted anything to be stored on their device.
+ *
+ * Read for the campaign carry-forward cookie only. Split assignments are NOT
+ * gated on it any more — see the note in `drawVariant` — because a split that
+ * waits for consent never runs on a site without a working banner, and the
+ * second page is never rendered at all.
+ */
 function consentGranted(): boolean | undefined {
 	const state = getConsentState();
 	// Nothing to withhold when the app asks for nothing.
@@ -103,10 +111,11 @@ function queryAcrossVisit(
  * those, has no in-memory history to read at all. The cookie is the one thing
  * both sides can see.
  *
- * Gated on consent exactly as the split assignment is, and for the same reason:
- * this is storage on someone's device, and a campaign is closer to tracking than
- * a bucket index. Only an explicit refusal withholds it -- an app that requires
- * no consent stores it, one whose visitor has not answered yet does not.
+ * Gated on consent, unlike the split assignment, and that difference is the
+ * point: a campaign parameter says where someone came from and is closer to
+ * tracking than an arm index, whose whole content is which of two pages they are
+ * looking at. Only an explicit refusal withholds it -- an app that requires no
+ * consent stores it, one whose visitor has not answered yet does not.
  */
 function carryQueryForward(
 	routing: PageRouting | undefined,
@@ -176,7 +185,6 @@ export function resolvePageForLocation(details: URLDetails): string | undefined 
 		device: classifyDevice(navigator.userAgent),
 		authenticated: !!getDataFromPath(`${STORE_PREFIX}.auth.user`, []),
 		assignments: parseRouteAssignments(cookies[PAGE_ROUTE_ASSIGNMENT_COOKIE]),
-		consentGranted: consentGranted(),
 	};
 
 	const resolution = resolvePageRoute(properties.pageRouting, properties.defaultPage, request);
