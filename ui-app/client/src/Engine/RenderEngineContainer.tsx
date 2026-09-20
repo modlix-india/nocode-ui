@@ -20,6 +20,7 @@ import { ComponentProperty, PageDefinition } from '../types/common';
 import { processLocation } from '../util/locationProcessor';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
 import getPageDefinition from './pageDefinition';
+import { resolvePageForLocation } from './pageRoute';
 import { isLeavingForBeacon } from '../sso/ssoModule';
 
 const POSITIONS: { [key: string]: boolean } = {
@@ -41,16 +42,52 @@ export const RenderEngineContainer = () => {
 
 	const loadDefinition = useCallback(() => {
 		const details = processLocation(window.location);
-		let { pageName } = details;
-		setData(`${STORE_PREFIX}.urlDetails`, details);
+		// Writes `Store.urlDetails`, which is what `Url.` reads, and fills in the
+		// default page when the URL names none.
 		UrlDetailsExtractor.addDetails(details);
-		if (!pageName)
-			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+
+		// `urlDetails` stays as the URL reads, because that is what it is named
+		// for and what expressions on the page already read. The page that renders
+		// is a separate question: routing may send this URL to a different
+		// definition, and everything below -- the store namespace, the definition
+		// lookup, the fetch -- keys off that answer rather than off the URL.
+		const pageName = resolvePageForLocation(details);
+
+		// True only when routing sent this URL somewhere else. Everything below
+		// that is conditional on it leaves the ordinary path exactly as it was.
+		const routed = !!details.pageName && pageName !== details.pageName;
+
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName!));
-				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
+				let name = pageName!;
+				// A rule can name a page that has since been deleted. The SSR service
+				// falls back to the URL's own name rather than serving nothing, and an
+				// in-app navigation must not behave worse than an arrival.
+				let definition = routed
+					? await getPageDefinition(name).catch(() => undefined)
+					: await getPageDefinition(name);
+
+				if (routed && !definition) {
+					console.error(
+						'Page routing selected a page that could not be loaded, falling back to the requested page. Selected:',
+						name,
+						'Requested:',
+						details.pageName,
+					);
+					name = details.pageName!;
+					definition = await getPageDefinition(name);
+				}
+
+				// Nothing to render and nothing left to try. Returning leaves the view
+				// as it was, which is what a rejected fetch did before; the difference
+				// is that it now says so. Falling through would store `undefined` and
+				// fail the app-code check below, which reloads — and on a page that is
+				// simply missing, reloads forever.
+				if (!definition) return;
+
+				setData(`Store.pageDefinition.${name}`, definition);
+				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${name}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
 				// A beacon hop is already committed and this page is on its way out, so a
 				// reload here would abort it. `UIEngine.Login` deliberately clears
@@ -70,7 +107,7 @@ export const RenderEngineContainer = () => {
 					return;
 				}
 				setPageDefinition(processClassesForPageDefinition(pDef));
-				setCurrentPageName(pageName);
+				setCurrentPageName(name);
 			})();
 		} else {
 			setPageDefinition(processClassesForPageDefinition(pDef));

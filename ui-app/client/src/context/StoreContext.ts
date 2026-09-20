@@ -325,74 +325,84 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
 	}
 }
 
+/**
+ * `Url.` -- what the browser's address bar says, readable from anywhere on the
+ * page.
+ *
+ * There is one URL, so there is one copy of it, `Store.urlDetails`, and every
+ * context reads that. `Url.` used to resolve per context, into
+ * `Store.urlData.<context>`, which cannot work: the context is the page being
+ * rendered, and that is not the page the URL names whenever the URL names none
+ * (the default page), whenever routing resolves a URL to a different page, and
+ * for every shell (`_global`) and subpage. Those contexts read an empty object.
+ *
+ * `Store.urlData.<page>` is still written, because pages bind to it by absolute
+ * path -- and to another page's entry at that, which is how a dashboard hands a
+ * filter to the list it drills into. So it keeps what it always kept: one entry
+ * per page the URL has named, each left alone until that page is the URL again.
+ */
 export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 
-	public static readonly extractorMap: Map<string, UrlDetailsExtractor> = new Map();
-	private details: URLDetails;
 	private readonly myStore: any;
 
-	constructor(details: URLDetails, myStore: any = _store) {
+	constructor(myStore: any = _store) {
 		super();
-		this.details = details;
 		this.myStore = myStore;
-		this.setDetails(details);
-	}
-
-	public setDetails(details: URLDetails) {
-		this.details = details;
-		if (!details.pageName) {
-			details.pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
-		}
-		setData(`Store.urlData.${details.pageName!}`, details, undefined, true);
 	}
 
 	protected getValueInternal(token: string) {
 		const parts: string[] = TokenValueExtractor.splitPath(token);
-		return this.retrieveElementFrom(
-			token,
-			['urlData', this.details.pageName!, ...parts.slice(1)],
-			0,
-			this.myStore,
-		);
+		return this.retrieveElementFrom(token, ['urlDetails', ...parts.slice(1)], 0, this.myStore);
 	}
 
 	getPrefix(): string {
 		return 'Url.';
 	}
-	
+
 	public getStore(): any {
-		return this.retrieveElementFrom(
-			`Store.urlData.${this.details.pageName!}`,
-			['urlData', this.details.pageName!],
-			0,
-			_store,
-		);
+		return this.retrieveElementFrom(`${STORE_PREFIX}.urlDetails`, ['urlDetails'], 0, _store);
 	}
 
+	/** The URL showing now, which replaces the one before it. */
 	public static addDetails(details: URLDetails) {
-		if (UrlDetailsExtractor.extractorMap.has(details.pageName!)) {
-			UrlDetailsExtractor.extractorMap.get(details.pageName!)!.setDetails(details);
-			return;
-		}
-		UrlDetailsExtractor.extractorMap.set(details.pageName!, new UrlDetailsExtractor(details));
+		// A URL that names no page means the app's default page. Resolved before
+		// either write: it is the key one of them is stored under, and filling it
+		// afterwards is what stored the default page's details under `undefined`.
+		if (!details.pageName)
+			details.pageName = getDataFromPath(
+				`${STORE_PREFIX}.application.properties.defaultPage`,
+				[],
+			);
+
+		setData(`${STORE_PREFIX}.urlDetails`, details, undefined, true);
+
+		// Only this page's entry. Writing the others would put the URL showing now
+		// under the name of a page that is not showing, and the pages that read
+		// across entries are reading for a page they have navigated away from.
+		if (details.pageName)
+			setData(`${STORE_PREFIX}.urlData.${details.pageName}`, { ...details }, undefined, true);
 	}
 
-	public static getForContext(pageName: string): UrlDetailsExtractor {
-		if (UrlDetailsExtractor.extractorMap.has(pageName)) return UrlDetailsExtractor.extractorMap.get(pageName)!;
-		UrlDetailsExtractor.extractorMap.set(pageName, new UrlDetailsExtractor({ pageName, queryParameters: {}}));
-		return UrlDetailsExtractor.extractorMap.get(pageName)!;
+	/**
+	 * The context is accepted and ignored: it decides which page store `Page.`
+	 * reads, and the URL is not per page. Kept so that callers can go on pairing
+	 * this with `PageStoreExtractor.getForContext`.
+	 */
+	public static getForContext(_pageName?: string): UrlDetailsExtractor {
+		return urlDetailsExtractor;
 	}
 
 	public getPageName(): string {
-		return this.details.pageName!;
+		return getDataFromPath(`${STORE_PREFIX}.urlDetails.pageName`, []);
 	}
 }
+
+export const urlDetailsExtractor = new UrlDetailsExtractor();
 
 const pathTransformer = (e: string, pageName: string | undefined) => {
 	if (pageName && e.startsWith('Page.'))
 		return 'Store.pageData.' + pageName + e.substring(4);
-	else if (pageName && e.startsWith('Url.'))
-		return 'Store.urlData.' + pageName + e.substring(3);
+	else if (e.startsWith('Url.')) return 'Store.urlDetails' + e.substring(3);
 	if (e.startsWith(fillerExtractor.getPrefix()))
 		return 'Store.application.properties.fillerValues.' + e.substring(7);
 	return e;

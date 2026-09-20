@@ -3,11 +3,13 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { resolveCodesFromRequest, extractPageName, getAuthToken } from '../resolver/codeResolver.js';
 import {
 	fetchAllPageData,
+	fetchApplication,
 	type PageDefinition,
 	type ApplicationDefinition,
 	type ThemeDefinition,
 } from '../api/client.js';
-import { getCachedData, setCachedData, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
+import { assignmentSetCookie, resolveRoute } from '../resolver/pageRouting.js';
+import { getCachedData, setCachedData, generateAppCacheKey, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
@@ -411,6 +413,18 @@ function generateHtml(
 				pageDefinition: { [pageName]: page },
 				theme,
 				themeName,
+				/**
+				 * The page routing chose, which is not necessarily the one named in
+				 * the URL. The client reads this instead of deriving the name from
+				 * the location, so it does not discard this bootstrap and refetch.
+				 *
+				 * Only the resolved name appears here, and deliberately so: it is
+				 * exactly what the HTML cache is keyed by, so every visitor served
+				 * this cached document belongs under it. Which rule fired, and which
+				 * arm of a split they drew, are per-visitor and would be baked in for
+				 * whoever happened to miss the cache first.
+				 */
+				resolvedPageName: pageName,
 				urlDetails: {
 					pageName,
 					appCode: codes.appCode,
@@ -531,6 +545,21 @@ function removeCodeParts(def: any) : any {
 /**
  * Set response headers
  */
+const SHARED_CACHE_CONTROL = 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600';
+
+/**
+ * A response that carries a Set-Cookie must never be stored by a shared cache.
+ *
+ * The HTML body is the same for everyone who resolves to this page, so the body
+ * itself is perfectly cacheable — but replaying its Set-Cookie to the next
+ * visitor would pin the whole internet into one arm of a split. Only the first
+ * request from a given visitor draws, so only that one response is uncacheable;
+ * every one after it carries the cookie, draws nothing, and is public again.
+ */
+function cacheControlFor(drewAssignment: boolean): string {
+	return drewAssignment ? 'private, no-store' : SHARED_CACHE_CONTROL;
+}
+
 function setResponseHeaders(
 	res: ServerResponse,
 	isAuthenticated: boolean,
@@ -538,6 +567,7 @@ function setResponseHeaders(
 	etag: string | null,
 	application: ApplicationDefinition | null,
 	cdnHostName?: string,
+	drewAssignment: boolean = false,
 ): void {
 	res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
@@ -547,10 +577,7 @@ function setResponseHeaders(
 		res.setHeader('Pragma', 'no-cache');
 		res.setHeader('Expires', '0');
 	} else {
-		res.setHeader(
-			'Cache-Control',
-			'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600'
-		);
+		res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 		res.setHeader('Vary', 'Authorization, Cookie');
 	}
 
@@ -651,10 +678,78 @@ export async function handlePageRequest(
 		return;
 	}
 
-	// Check HTML cache first for non-authenticated requests (fastest path)
-	if (!isAuthenticated) {
-		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft, cookieTheme);
+	const fetchOptions = {
+		appCode: codes.appCode,
+		clientCode: codes.clientCode,
+		authToken,
+		// Let the gateway resolve the surface from the host, as it does for a
+		// direct browser request.
+		forwardedHost: headers.get('x-forwarded-host') ?? url.host,
+		forwardedProto: headers.get('x-forwarded-proto') ?? url.protocol.replace(':', ''),
+		forwardedPort: headers.get('x-forwarded-port') ?? url.port,
+	};
 
+	// The application definition must be in hand before anything else, because it
+	// carries the routing rules and routing decides which page this request
+	// renders -- which is what every cache key below is built from.
+	//
+	// Before page routing there was only one such decision, index -> defaultPage,
+	// and it was taken after the page had already been fetched. That is why the
+	// cache used to be probed twice, once on the URL's name and again on the
+	// resolved one. Deciding first collapses both into a single lookup.
+	//
+	// Cached for anonymous visitors only: the ui service varies the definition by
+	// whether the caller is authenticated, so a signed-in copy must not be shared
+	// -- and authenticated requests never reach the HTML cache anyway.
+	const appCacheKey = generateAppCacheKey(codes.appCode, codes.clientCode, isDraft);
+	let application: ApplicationDefinition | null;
+	if (isAuthenticated) {
+		application = await fetchApplication(fetchOptions);
+	} else {
+		application = await getCachedData<ApplicationDefinition>(appCacheKey);
+		if (!application) {
+			application = await fetchApplication(fetchOptions);
+			if (application) await setCachedData(appCacheKey, application, config.cache.ttlSeconds);
+		}
+	}
+
+	const route = resolveRoute(application, url, req.headers, urlPageName, isAuthenticated);
+	const actualPageName = route.pageName;
+
+	// A visitor drawn into a split for the first time. The cookie is set whether
+	// the HTML that follows comes from cache or not: the body is identical for
+	// everyone who resolves to this page, but the assignment is theirs alone.
+	const drewAssignment = !!route.assignments;
+	if (route.assignments) {
+		res.setHeader(
+			'Set-Cookie',
+			assignmentSetCookie(
+				route.assignments,
+				config.routing.assignmentCookieMaxAgeSeconds,
+				fetchOptions.forwardedProto === 'https',
+			),
+		);
+	}
+
+	if (actualPageName !== urlPageName) {
+		logger.info('Page routing resolved', {
+			requested: urlPageName,
+			resolved: actualPageName,
+			rule: route.resolution.ruleKey,
+			variant: route.resolution.variantKey,
+		});
+	}
+
+	const htmlCacheKey = generateCacheKey(
+		codes.appCode,
+		codes.clientCode,
+		actualPageName,
+		isDraft,
+		cookieTheme,
+	);
+
+	// Check HTML cache for non-authenticated requests (fastest path)
+	if (!isAuthenticated) {
 		// Check if client accepts gzip
 		const acceptEncoding = req.headers['accept-encoding'] || '';
 		const supportsGzip = acceptEncoding.includes('gzip');
@@ -665,14 +760,14 @@ export async function handlePageRequest(
 			if (cachedGzipped) {
 				logger.info('HTML cache hit (pre-compressed)', {
 					cacheKey: htmlCacheKey,
-					pageName: urlPageName,
+					pageName: actualPageName,
 					size: cachedGzipped.length
 				});
 
 				// Set headers for pre-compressed response
 				res.setHeader('Content-Type', 'text/html; charset=utf-8');
 				res.setHeader('Content-Encoding', 'gzip');
-				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+				res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
 				res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
 
@@ -685,11 +780,11 @@ export async function handlePageRequest(
 		// Fallback: serve uncompressed HTML (let Nginx compress)
 		const cachedHtml = await getCachedHtml(htmlCacheKey);
 		if (cachedHtml) {
-			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: urlPageName });
+			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: actualPageName });
 
 			// Set headers for cached response
 			res.setHeader('Content-Type', 'text/html; charset=utf-8');
-			res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+			res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 			res.setHeader('Vary', 'Authorization, Cookie');
 			res.setHeader('X-Cache-Status', 'HIT-HTML');
 
@@ -697,14 +792,11 @@ export async function handlePageRequest(
 			res.end(cachedHtml);
 			return;
 		}
-	}
 
-	// Check cache for non-authenticated, non-index requests (legacy object cache)
-	if (urlPageName !== 'index' && !isAuthenticated) {
-		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft, cookieTheme);
-		const cached = await getCachedData<CachedPageData>(cacheKey);
+		// Fallback: legacy object cache
+		const cached = await getCachedData<CachedPageData>(htmlCacheKey);
 		if (cached) {
-			logger.info('Cache hit', { cacheKey, pageName: urlPageName });
+			logger.info('Cache hit', { cacheKey: htmlCacheKey, pageName: actualPageName });
 			const etag = generateETag(cached);
 
 			// Check If-None-Match for conditional request
@@ -715,99 +807,44 @@ export async function handlePageRequest(
 				return;
 			}
 
-			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName);
+			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName, drewAssignment);
 			res.writeHead(200);
 			res.end(generateHtml(cached, codes, cached.pageName, cdn));
 			return;
 		}
 	}
 
-	// Fetch from backend
-	logger.info('Fetching page data from backend', { pageName: urlPageName });
-	const data = await fetchAllPageData(urlPageName, {
-		appCode: codes.appCode,
-		clientCode: codes.clientCode,
-		authToken,
-		// Let the gateway resolve the surface from the host, as it does for a
-		// direct browser request.
-		forwardedHost: headers.get('x-forwarded-host') ?? url.host,
-		forwardedProto: headers.get('x-forwarded-proto') ?? url.protocol.replace(':', ''),
-		forwardedPort: headers.get('x-forwarded-port') ?? url.port,
-	}, cookieTheme);
+	// Fetch from backend. The application is handed in rather than refetched: it
+	// is already loaded above, and it is what routing was decided from, so the
+	// page and the rules that chose it come from the same definition.
+	logger.info('Fetching page data from backend', { pageName: actualPageName });
+	let data = await fetchAllPageData(actualPageName, fetchOptions, cookieTheme, application);
+	let servedPageName = actualPageName;
 
-	const actualPageName = data.resolvedPageName;
-
-	// Check HTML cache for resolved page name (when index was resolved to default page)
-	if (urlPageName === 'index' && !isAuthenticated) {
-		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft, cookieTheme);
-
-		// Check if client accepts gzip
-		const acceptEncoding = req.headers['accept-encoding'] || '';
-		const supportsGzip = acceptEncoding.includes('gzip');
-
-		if (supportsGzip) {
-			// Try to serve pre-compressed content (fastest!)
-			const cachedGzipped = await getCachedGzippedHtml(resolvedHtmlCacheKey);
-			if (cachedGzipped) {
-				logger.info('HTML cache hit (resolved, pre-compressed)', {
-					cacheKey: resolvedHtmlCacheKey,
-					pageName: actualPageName,
-					size: cachedGzipped.length
-				});
-
-				res.setHeader('Content-Type', 'text/html; charset=utf-8');
-				res.setHeader('Content-Encoding', 'gzip');
-				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
-				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
-				res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED-GZIP');
-
-				res.writeHead(200);
-				res.end(cachedGzipped);
-				return;
-			}
-		}
-
-		// Fallback: serve uncompressed HTML
-		const cachedResolvedHtml = await getCachedHtml(resolvedHtmlCacheKey);
-		if (cachedResolvedHtml) {
-			logger.info('HTML cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
-
-			res.setHeader('Content-Type', 'text/html; charset=utf-8');
-			res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
-			res.setHeader('Vary', 'Authorization, Cookie');
-			res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED');
-
-			res.writeHead(200);
-			res.end(cachedResolvedHtml);
-			return;
-		}
-
-		// Fallback: check legacy object cache
-		const cached = await getCachedData<CachedPageData>(resolvedHtmlCacheKey);
-		if (cached) {
-			logger.info('Object cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
-			const etag = generateETag(cached);
-
-			const ifNoneMatch = req.headers['if-none-match'];
-			if (ifNoneMatch === etag) {
-				res.writeHead(304);
-				res.end();
-				return;
-			}
-
-			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName);
-			res.writeHead(200);
-			res.end(generateHtml(cached, codes, cached.pageName, cdn));
-			return;
+	// A rule can name a page that has since been deleted, or was never published.
+	// Falling back to the URL's own name keeps the live page working while the
+	// definition is wrong, rather than taking it down with a 404 naming a page no
+	// visitor ever asked for. Only worth trying when routing actually changed the
+	// name, and only when the app itself came back.
+	if (data.application && !data.page && actualPageName !== urlPageName) {
+		logger.warn('Routed page missing, falling back to the requested page', {
+			requested: urlPageName,
+			resolved: actualPageName,
+			rule: route.resolution.ruleKey,
+		});
+		const fallback = await fetchAllPageData(urlPageName, fetchOptions, cookieTheme, application);
+		if (fallback.page) {
+			data = fallback;
+			servedPageName = fallback.resolvedPageName;
 		}
 	}
 
 	// Handle not found
 	if (!data.application || !data.page) {
-		logger.warn('Page not found', { pageName: actualPageName, appCode: codes.appCode });
+		logger.warn('Page not found', { pageName: servedPageName, appCode: codes.appCode });
 		setResponseHeaders(res, true, false, null, null, cdn.hostName);
 		res.writeHead(404);
-		res.end(generateHtml(null, codes, actualPageName, cdn, `Page "${actualPageName}" not found`));
+		res.end(generateHtml(null, codes, servedPageName, cdn, `Page "${servedPageName}" not found`));
 		return;
 	}
 
@@ -818,27 +855,34 @@ export async function handlePageRequest(
 		theme: data.theme as ThemeDefinition | null,
 		themeName: data.themeName,
 		codes,
-		pageName: actualPageName,
+		pageName: servedPageName,
 		cachedAt: Date.now(),
 	};
 
 	// Generate HTML once
-	const generatedHtml = generateHtml(result, codes, actualPageName, cdn);
+	const generatedHtml = generateHtml(result, codes, servedPageName, cdn);
 
-	// Cache HTML for unauthenticated requests (primary cache)
-	const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft, cookieTheme);
+	// Cache HTML for unauthenticated requests (primary cache).
+	//
+	// Keyed on the page actually served, which after a fallback is not the page
+	// routing picked -- storing it under the missing name would serve the wrong
+	// document the moment that name starts resolving again.
+	const servedCacheKey =
+		servedPageName === actualPageName
+			? htmlCacheKey
+			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme);
 	if (!isAuthenticated) {
 		// Cache the rendered HTML (fast serving)
-		await setCachedHtml(htmlCacheKey, generatedHtml, config.cache.ttlSeconds);
+		await setCachedHtml(servedCacheKey, generatedHtml, config.cache.ttlSeconds);
 		logger.info('Cached HTML', {
-			cacheKey: htmlCacheKey,
-			pageName: actualPageName,
+			cacheKey: servedCacheKey,
+			pageName: servedPageName,
 			htmlSize: generatedHtml.length,
 			ttl: config.cache.ttlSeconds
 		});
 
 		// Also cache the object data (for cache warming and debugging)
-		await setCachedData(htmlCacheKey + ':data', result, config.cache.ttlSeconds);
+		await setCachedData(servedCacheKey + ':data', result, config.cache.ttlSeconds);
 	}
 
 	// Analyze key frequencies (debug mode only - set ANALYZE_KEYS=true in env)
@@ -848,10 +892,10 @@ export async function handlePageRequest(
 
 	// Generate response
 	const etag = generateETag(result);
-	setResponseHeaders(res, isAuthenticated, false, etag, data.application, cdn.hostName);
+	setResponseHeaders(res, isAuthenticated, false, etag, data.application, cdn.hostName, drewAssignment);
 
 	logger.info('SSR page rendered', {
-		pageName: actualPageName,
+		pageName: servedPageName,
 		appCode: codes.appCode,
 		fromCache: false,
 		htmlSize: generatedHtml.length,

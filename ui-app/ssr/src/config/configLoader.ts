@@ -22,6 +22,7 @@
  */
 
 import logger from './logger.js';
+import { PAGE_ROUTE_ASSIGNMENT_MAX_AGE_SECONDS } from '../shared/pageRouting.js';
 
 interface SSRConfig {
 	// Cloud Config Server configuration
@@ -63,6 +64,17 @@ interface SSRConfig {
 	security: {
 		appCodeSuffix: string;
 	};
+	// Page routing (personalization and splits)
+	routing: {
+		/**
+		 * How long a visitor's split assignment is kept on their device.
+		 *
+		 * This is a data-retention setting, not a performance one: the cookie holds
+		 * no identifier, but it is still storage on a device and a shorter life is
+		 * easier to justify. It wants to outlast a running experiment and no more.
+		 */
+		assignmentCookieMaxAgeSeconds: number;
+	};
 }
 
 // Default configuration (used in development or if config server is unavailable)
@@ -94,6 +106,11 @@ const defaultConfig: SSRConfig = {
 	},
 	security: {
 		appCodeSuffix: process.env.SECURITY_APP_CODE_SUFFIX ?? '',
+	},
+	routing: {
+		// The default lives in the shared routing module, because the browser draws
+		// arms too and both sides should write the same cookie.
+		assignmentCookieMaxAgeSeconds: PAGE_ROUTE_ASSIGNMENT_MAX_AGE_SECONDS,
 	},
 	cache: {
 		ttlSeconds: 1800, // 30 minutes
@@ -158,6 +175,11 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 			},
 			security: {
 				appCodeSuffix: (source['security.appCodeSuffix'] as string) ?? defaultConfig.security.appCodeSuffix,
+			},
+			routing: {
+				assignmentCookieMaxAgeSeconds:
+					(source['ssr.routing.assignmentCookieMaxAgeSeconds'] as number) ||
+					defaultConfig.routing.assignmentCookieMaxAgeSeconds,
 			},
 		};
 	} catch (error) {
@@ -246,6 +268,9 @@ function mergeConfigs(...configs: Array<Partial<SSRConfig> | null>): SSRConfig {
 		}
 		if (config.security) {
 			result.security = { ...result.security, ...config.security };
+		}
+		if (config.routing) {
+			result.routing = { ...result.routing, ...config.routing };
 		}
 	}
 
