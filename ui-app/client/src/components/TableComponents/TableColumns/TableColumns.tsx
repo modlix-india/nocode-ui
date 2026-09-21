@@ -1230,8 +1230,7 @@ function generateGroupedDynamicColumns(
 					: typeof _rawStageAliases === 'object'
 						? _rawStageAliases
 						: {};
-		const parentSeparator = String(propValue('parentSeparator', '›'));
-		const headerLabelFormat = String(propValue('headerLabelFormat', '{name}'));
+		const headerLabelFormat = String(propValue('headerLabelFormat', '{parentName} › {name}'));
 
 		// Page-state path holding the per-stage expanded flags. Default
 		// `Page.expandedStages` — keyed by stageId → truthy when expanded.
@@ -1276,31 +1275,12 @@ function generateGroupedDynamicColumns(
 			const alias = stageAliases?.[nname] ?? stageAliases?.[String(nid)];
 			const baseName = alias ?? nname;
 
-			const resolvedParent = parentLabel
-				? (stageAliases?.[parentLabel] ?? parentLabel)
-				: undefined;
+			if (!parentLabel) return baseName;
 
-			if (headerLabelFormat.includes('{parentName}')) {
-				let formatted = headerLabelFormat.replace(/\{name\}/g, baseName);
-				if (resolvedParent) {
-					formatted = formatted.replace(/\{parentName\}/g, resolvedParent);
-				} else {
-					formatted = formatted
-						.replace(new RegExp(`\\{parentName\\}\\s*(\\s*${parentSeparator}|[-/›:])?\\s*`, 'g'), '')
-						.replace(new RegExp(`\\s*(${parentSeparator}|[-/›:])?\\s*\\{parentName\\}`, 'g'), '')
-						.trim();
-				}
-				return formatted;
-			}
-
-			const formattedName =
-				headerLabelFormat === '{name}'
-					? baseName
-					: headerLabelFormat.replace(/\{name\}/g, baseName);
-
-			return resolvedParent
-				? `${resolvedParent} ${parentSeparator} ${formattedName}`
-				: formattedName;
+			const resolvedParent = stageAliases?.[parentLabel] ?? parentLabel;
+			return headerLabelFormat
+				.replace(/\{parentName\}/g, resolvedParent)
+				.replace(/\{name\}/g, baseName);
 		};
 
 		let order = 0;

@@ -198,21 +198,12 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
-		name: 'parentSeparator',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Parent Separator',
-		description:
-			"Separator symbol between parent stage and substage in the column header. Default: '›'. Examples: '/', '>', '→', '|'.",
-		defaultValue: '›',
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-	{
 		name: 'headerLabelFormat',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Header Label Format',
 		description:
-			"Template format for the column header label. Defaults to '{name}'. Can use '{parentName}' and '{name}' (e.g. '{parentName} › {name}' or '{name}').",
-		defaultValue: '{name}',
+			"Template format for the column header label of substages. Defaults to '{parentName} › {name}'. Can use '{parentName}' and '{name}' (e.g. '{parentName} › {name}', '{name} ({parentName})', or '{name}'). Top-level stages always use their own name.",
+		defaultValue: '{parentName} › {name}',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
