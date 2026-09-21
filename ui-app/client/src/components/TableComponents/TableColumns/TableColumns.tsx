@@ -133,6 +133,8 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				locationHistory,
 			);
 
+
+
 		const personalizationObject = context.table.enablePersonalization
 			? getDataFromPath(
 					context.table.personalizationBindingPath,
@@ -426,7 +428,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 	if (showHeaders) {
 		let checkBoxTop = undefined;
 		if (showCheckBox) {
-			checkBoxTop = <div className="comp compTableHeaderColumn">&nbsp;</div>;
+			checkBoxTop = <th className="comp compTableHeaderColumn">&nbsp;</th>;
 		}
 
 		headers = (
@@ -667,6 +669,10 @@ function resolvePropertiesOfDynamicColumns(
 				);
 				if (paths.length) listenPaths.push(...paths);
 
+				if ((groupedColumn as any).bindingPath?.value) {
+					listenPaths.push((groupedColumn as any).bindingPath.value);
+				}
+
 				// Also listen to the per-stage expanded-state path so a header
 				// click that toggles Page.expandedStages forces a re-render and
 				// the substage columns appear/disappear.
@@ -797,7 +803,7 @@ function generateRows(properties: {
 
 		rows.push(
 			<tr
-				key={key}
+				key={key ?? `row_${index}`}
 				className={rowClassName}
 				onClick={onClick}
 				tabIndex={onClick ? 0 : undefined}
@@ -1176,8 +1182,15 @@ function generateGroupedDynamicColumns(
 
 	for (const gc of groupedColumns) {
 		const key = gc.key;
-		const propValue = (name: string, dflt: any) =>
-			(gc as any).properties?.[name]?.value ?? dflt;
+		const propValue = (name: string, dflt: any) => {
+			const p = (gc as any).properties?.[name];
+			if (p === undefined || p === null) return dflt;
+			if (typeof p === 'object') {
+				if (p.value !== undefined) return p.value;
+				if (p.overrideValue !== undefined) return p.overrideValue;
+			}
+			return p ?? dflt;
+		};
 		const idField = String(propValue('idField', 'id'));
 		const labelField = String(propValue('labelField', 'name'));
 		const childrenField = String(propValue('childrenField', 'children'));
@@ -1190,6 +1203,36 @@ function generateGroupedDynamicColumns(
 			.split(',')
 			.map((s: string) => s.trim());
 
+		const disableExpand = !!propValue('disableExpand', false);
+		const layoutMode = String(propValue('layoutMode', 'SEPARATE_COLUMNS'));
+		const expandIcon = String(propValue('expandIcon', 'fa fa-solid fa-plus'));
+		const collapseIcon = String(propValue('collapseIcon', 'fa fa-solid fa-minus'));
+		// Use getData (repo standard) so stageAliases resolves correctly whether it
+		// was set as a static object, a store binding, or an expression.
+		// Also defensively parse JSON strings in case the user typed the map in the
+		// property editor (SCHEMA_ANY_COMP_PROP accepts free-form JSON text too).
+		const _rawStageAliases = getData(
+			(gc as any).properties?.stageAliases,
+			locationHistory,
+			pageExtractor,
+		);
+		const stageAliases: Record<string, string> =
+			_rawStageAliases == null
+				? {}
+				: typeof _rawStageAliases === 'string'
+					? (() => {
+							try {
+								return JSON.parse(_rawStageAliases);
+							} catch {
+								return {};
+							}
+						})()
+					: typeof _rawStageAliases === 'object'
+						? _rawStageAliases
+						: {};
+		const parentSeparator = String(propValue('parentSeparator', '›'));
+		const headerLabelFormat = String(propValue('headerLabelFormat', '{name}'));
+
 		// Page-state path holding the per-stage expanded flags. Default
 		// `Page.expandedStages` — keyed by stageId → truthy when expanded.
 		const expandedGroupsPath = String(propValue('expandedGroupsPath', 'Page.expandedStages'));
@@ -1198,29 +1241,79 @@ function generateGroupedDynamicColumns(
 
 		const bp = (gc as any).bindingPath as { type?: string; value?: string } | undefined;
 		if (!bp || !bp.value) continue;
-		const tree = getDataFromPath(bp.value, locationHistory, pageExtractor);
+		let tree = getDataFromPath(bp.value, locationHistory, pageExtractor);
 		if (!Array.isArray(tree) || tree.length === 0) continue;
 
 		const styleProperties = (gc as any).styleProperties
 			? duplicate((gc as any).styleProperties)
 			: undefined;
 
+		// Collect user-defined children (if user dropped custom Text components or Grid)
+		const userChildKeys: string[] = gc.children
+			? Object.entries(gc.children)
+					.filter(([, v]) => v)
+					.map(([k]) => k)
+			: [];
+
+		const collectSubtree = (rootKey: string, visited = new Set<string>()): string[] => {
+			if (visited.has(rootKey)) return [];
+			visited.add(rootKey);
+			const result: string[] = [rootKey];
+			const comp = cp.componentDefinition[rootKey];
+			if (!comp?.children) return result;
+			for (const [ck, cv] of Object.entries(comp.children)) {
+				if (cv) result.push(...collectSubtree(ck, visited));
+			}
+			return result;
+		};
+
+		const templateKeys = userChildKeys.flatMap(k => collectSubtree(k));
+
+		const getSafeId = (id: any): string => String(id).replace(/[^a-zA-Z0-9]/g, '');
+		const getSafeStageKey = (id: any): string => `s_${getSafeId(id)}`;
+
+		const getStageLabel = (nid: any, nname: string, parentLabel?: string): string => {
+			const alias = stageAliases?.[nname] ?? stageAliases?.[String(nid)];
+			const baseName = alias ?? nname;
+
+			const resolvedParent = parentLabel
+				? (stageAliases?.[parentLabel] ?? parentLabel)
+				: undefined;
+
+			if (headerLabelFormat.includes('{parentName}')) {
+				let formatted = headerLabelFormat.replace(/\{name\}/g, baseName);
+				if (resolvedParent) {
+					formatted = formatted.replace(/\{parentName\}/g, resolvedParent);
+				} else {
+					formatted = formatted
+						.replace(new RegExp(`\\{parentName\\}\\s*(\\s*${parentSeparator}|[-/›:])?\\s*`, 'g'), '')
+						.replace(new RegExp(`\\s*(${parentSeparator}|[-/›:])?\\s*\\{parentName\\}`, 'g'), '')
+						.trim();
+				}
+				return formatted;
+			}
+
+			const formattedName =
+				headerLabelFormat === '{name}'
+					? baseName
+					: headerLabelFormat.replace(/\{name\}/g, baseName);
+
+			return resolvedParent
+				? `${resolvedParent} ${parentSeparator} ${formattedName}`
+				: formattedName;
+		};
+
 		let order = 0;
 
-		// Synthesize a 1-step toggle event function on the page def for the
-		// given stage id. SetStore writes `not Page.expandedStages.<id>` to the
-		// same path, so the value flips between truthy and falsy on each click.
-		// Returns the synthesized event-function key so the column can wire its
-		// headerOnClick to it.
+		// Synthesize a 1-step toggle event function on the page def for the given stage id.
+		// Prefix with `s_` so numeric stage IDs don't get treated as array indices by the
+		// state management path resolver.
 		const synthToggleEventKey = (stageId: any): string => {
-			// Prefix with `s_` so numeric stage ids (e.g. 66) don't get treated as
-			// array indices by the SetStore path resolver — which would replace
-			// the expandedStages object with a sparse array.
-			const safe = `s_${String(stageId).replace(/[^a-zA-Z0-9]/g, '')}`;
-			const efKey = `__expandToggle_${key}_${safe}`;
+			const safeKey = getSafeStageKey(stageId);
+			const efKey = `__expandToggle_${key}_${safeKey}`;
 			if (!cp.eventFunctions) cp.eventFunctions = {};
 			if (!cp.eventFunctions[efKey]) {
-				const togglePath = `${expandedGroupsPath}.${safe}`;
+				const togglePath = `${expandedGroupsPath}.${safeKey}`;
 				cp.eventFunctions[efKey] = {
 					key: efKey,
 					name: efKey,
@@ -1255,88 +1348,252 @@ function generateGroupedDynamicColumns(
 			return efKey;
 		};
 
-		// Emit one TableColumn pair per (node, subField). For every parent group we
-		// emit a rollup column first, then one column per substage. Tickets often
-		// sit at the parent stage itself (not a leaf), so without the parent column
-		// the data is invisible to users.
+		const resolveNodeId = (node: any): any =>
+			node?.[idField] ??
+			(idField === 'id'
+				? (node?.stageId ?? node?._id ?? node?.code ?? node?.name)
+				: undefined);
+
+		const resolveNodeLabel = (node: any, nid: any): string =>
+			node?.[labelField] ??
+			(labelField === 'name'
+				? (node?.stageName ?? node?.label ?? node?.title ?? String(nid ?? ''))
+				: '') ?? '';
+
 		const emitColumnsFor = (
 			node: any,
 			parentLabel: string | undefined,
 			toggleEfKey: string | undefined,
 			isExpanded: boolean,
 		) => {
-			const nid = (node as any)[idField];
-			const nname = (node as any)[labelField] ?? '';
+			const nid = resolveNodeId(node);
+			const nname = resolveNodeLabel(node, nid);
 			const cellPath = cellPathTemplate.replace('{id}', String(nid));
-			const safeId = String(nid).replace(/[^a-zA-Z0-9]/g, '');
+			const safeId = getSafeId(nid);
+			const displayLabel = getStageLabel(nid, nname, parentLabel);
 
-			for (let i = 0; i < subCellFields.length; i++) {
-				const sf = subCellFields[i];
-				const sl = subCellLabels[i] ?? sf;
+			// Shallow assemble base style properties to avoid deep duplicate() recursion
+			const colStyleProperties: any = styleProperties
+				? {
+						...styleProperties,
+						...(styleProperties.comp ? { comp: { ...styleProperties.comp } } : {}),
+						...(styleProperties.header ? { header: { ...styleProperties.header } } : {}),
+					}
+				: {};
 
-				const rendererKey = `${key}_${safeId}_${sf}_renderer`;
-				cp.componentDefinition[rendererKey] = {
-					key: rendererKey,
-					type: 'Text',
-					name: `${nname}_${sf}`,
-					properties: {
-						text: {
-							location: {
-								type: 'EXPRESSION',
-								expression: `Parent.${cellPath}.${sf}`,
-							},
-						},
-					},
+			// Map groupHeader / leafHeader / cell
+			if (!parentLabel) {
+				if (styleProperties?.groupHeader) {
+					colStyleProperties.header = {
+						...colStyleProperties.header,
+						...styleProperties.groupHeader,
+					};
+				}
+			} else {
+				if (styleProperties?.leafHeader) {
+					colStyleProperties.header = {
+						...colStyleProperties.header,
+						...styleProperties.leafHeader,
+					};
+				}
+			}
+			if (styleProperties?.cell) {
+				colStyleProperties.comp = {
+					...colStyleProperties.comp,
+					...styleProperties.cell,
 				};
+			}
 
-				const colKey = `${key}_${safeId}_${sf}`;
-				// Prefix the first sub-cell column of a clickable parent with a
-				// chevron so users see the column group is expandable.
-				const chevron = toggleEfKey && i === 0 ? (isExpanded ? '▾ ' : '▸ ') : '';
-				const labelStr = parentLabel
-					? `${parentLabel} › ${nname} · ${sl}`
-					: `${chevron}${nname} · ${sl}`;
-				const colProps: any = { label: { value: labelStr } };
-				if (toggleEfKey) colProps.headerOnClick = { value: toggleEfKey };
+			const isExpandable = toggleEfKey && !disableExpand;
+			let iconClass: string | undefined = undefined;
+			if (isExpandable) {
+				iconClass = isExpanded ? collapseIcon : expandIcon;
+				if (isExpanded && styleProperties?.collapseIcon) {
+					colStyleProperties.leftIcon = {
+						...colStyleProperties.leftIcon,
+						...styleProperties.collapseIcon,
+					};
+				} else if (!isExpanded && styleProperties?.expandIcon) {
+					colStyleProperties.leftIcon = {
+						...colStyleProperties.leftIcon,
+						...styleProperties.expandIcon,
+					};
+				}
+			}
+
+			if (layoutMode === 'STACKED') {
+				let rootChildKey: string | undefined;
+
+				if (userChildKeys.length > 0) {
+					// User defined custom components (e.g. Text components dropped inside TableDynamicGroupedColumn)
+					const keyMap: { [orig: string]: string } = {};
+					for (const sk of templateKeys) {
+						keyMap[sk] = `${key}_${safeId}_${sk}`;
+					}
+					for (const [origKey, newKey] of Object.entries(keyMap)) {
+						const origComp = cp.componentDefinition[origKey];
+						if (!origComp) continue;
+						const cloned: ComponentDefinition = duplicate(origComp);
+						cloned.key = newKey;
+						if (cloned.children) {
+							const remapped: { [k: string]: boolean } = {};
+							for (const [ck, cv] of Object.entries(cloned.children)) {
+								remapped[keyMap[ck] ?? ck] = cv as boolean;
+							}
+							cloned.children = remapped;
+						}
+						cp.componentDefinition[newKey] = cloned;
+					}
+
+					const clonedRoots: { [k: string]: boolean } = {};
+					for (const origKey of userChildKeys) {
+						const newKey = keyMap[origKey];
+						if (newKey && cp.componentDefinition[newKey]) {
+							clonedRoots[newKey] = true;
+						}
+					}
+
+					const validRootKeys = Object.keys(clonedRoots);
+					if (validRootKeys.length === 1) {
+						rootChildKey = validRootKeys[0];
+					} else if (validRootKeys.length > 1) {
+						// Multiple children (e.g. 2 Text components dropped directly):
+						// TableColumn only renders 1 child, so wrap them in a vertical Grid container
+						rootChildKey = `${key}_${safeId}_stacked_container`;
+						cp.componentDefinition[rootChildKey] = {
+							key: rootChildKey,
+							type: 'Grid',
+							name: `${nname}_container`,
+							properties: {
+								layout: { value: 'SINGLECOLUMNLAYOUT' },
+							},
+							children: clonedRoots,
+						};
+					}
+				}
+
+				if (!rootChildKey) {
+					// Auto-generate composite vertical Grid (default or fallback when custom children are missing/invalid)
+					rootChildKey = `${key}_${safeId}_composite_grid`;
+					const gridChildren: { [k: string]: boolean } = {};
+
+					for (let i = 0; i < subCellFields.length; i++) {
+						const sf = subCellFields[i];
+						const rendererKey = `${key}_${safeId}_${sf}_renderer`;
+						cp.componentDefinition[rendererKey] = {
+							key: rendererKey,
+							type: 'Text',
+							name: `${nname}_${sf}`,
+							properties: {
+								text: {
+									location: {
+										type: 'EXPRESSION',
+										expression: `Parent.${sf}`,
+									},
+								},
+							},
+						};
+						gridChildren[rendererKey] = true;
+					}
+
+					cp.componentDefinition[rootChildKey] = {
+						key: rootChildKey,
+						type: 'Grid',
+						name: `${nname}_composite`,
+						properties: {
+							layout: { value: 'SINGLECOLUMNLAYOUT' },
+						},
+						children: gridChildren,
+					};
+				}
+
+				const colKey = `${key}_${safeId}`;
+				const labelStr = displayLabel;
+				const colProps: any = {
+					label: { value: labelStr },
+					dynamicChildField: { value: cellPath },
+				};
+				if (iconClass) colProps.leftIcon = { value: iconClass };
+				if (isExpandable) colProps.headerOnClick = { value: toggleEfKey };
+
 				cp.componentDefinition[colKey] = {
 					key: colKey,
 					type: 'TableColumn',
-					name: `${parentLabel ? parentLabel + '_' : ''}${nname}_${sf}`,
+					name: `${parentLabel ? parentLabel + '_' : ''}${nname}`,
 					displayOrder: order++,
 					properties: colProps,
-					styleProperties,
-					children: { [rendererKey]: true },
+					styleProperties: colStyleProperties,
+					children: { [rootChildKey]: true },
 				};
 				children[colKey] = true;
+			} else {
+				// Separate Flat Columns (Default - one column per subCellField)
+				for (let i = 0; i < subCellFields.length; i++) {
+					const sf = subCellFields[i];
+					const sl = subCellLabels[i] ?? sf;
+
+					const rendererKey = `${key}_${safeId}_${sf}_renderer`;
+					cp.componentDefinition[rendererKey] = {
+						key: rendererKey,
+						type: 'Text',
+						name: `${nname}_${sf}`,
+						properties: {
+							text: {
+								location: {
+									type: 'EXPRESSION',
+									expression: `Parent.${cellPath}.${sf}`,
+								},
+							},
+						},
+					};
+
+					const colKey = `${key}_${safeId}_${sf}`;
+					const labelStr = `${displayLabel} · ${sl}`;
+					const colProps: any = { label: { value: labelStr } };
+					if (iconClass && i === 0) colProps.leftIcon = { value: iconClass };
+					if (isExpandable) colProps.headerOnClick = { value: toggleEfKey };
+
+					cp.componentDefinition[colKey] = {
+						key: colKey,
+						type: 'TableColumn',
+						name: `${parentLabel ? parentLabel + '_' : ''}${nname}_${sf}`,
+						displayOrder: order++,
+						properties: colProps,
+						styleProperties: colStyleProperties,
+						children: { [rendererKey]: true },
+					};
+					children[colKey] = true;
+				}
 			}
 		};
 
-		// Legacy global override — when set, ignore per-stage state and force
-		// every parent to render its substages. Kept for callers that want the
-		// flat-expanded look without wiring toggle UI.
-		const forceExpandAll = !!propValue('expandSubstages', false);
+		// Legacy global override
+		const forceExpandAll = !disableExpand && !!propValue('expandSubstages', false);
 
 		for (const group of tree) {
 			if (!group) continue;
-			const gid = (group as any)[idField];
-			const gname = (group as any)[labelField] ?? '';
-			const rawLeaves = (group as any)[childrenField];
+			const gid = resolveNodeId(group);
+			const gname = resolveNodeLabel(group, gid);
+			const rawLeaves =
+				(group as any)[childrenField] ??
+				(childrenField === 'children'
+					? ((group as any).substages ?? (group as any).subStages ?? (group as any).childStages)
+					: undefined);
 			const hasLeaves = Array.isArray(rawLeaves) && rawLeaves.length > 0;
 
-			// Only wire a toggle when the parent actually has substages — clicking
-			// a leaf-only "parent" is a no-op.
-			const toggleEfKey = hasLeaves ? synthToggleEventKey(gid) : undefined;
+			// Toggle event key only when not disableExpand and parent has leaves
+			const toggleEfKey = !disableExpand && hasLeaves ? synthToggleEventKey(gid) : undefined;
 
+			const stageKey = getSafeStageKey(gid);
 			const isExpanded =
-				forceExpandAll || !!expandedMap?.[`s_${String(gid).replace(/[^a-zA-Z0-9]/g, '')}`];
+				!disableExpand &&
+				(forceExpandAll ||
+					expandedMap?.[stageKey] === true ||
+					expandedMap?.[stageKey] === 'true');
 
-			// Parent group: rollup column. Wire headerOnClick to the toggle and
-			// pass isExpanded so the chevron reflects current state.
 			emitColumnsFor(group, undefined, toggleEfKey, isExpanded);
 
-			// Substage columns only when this parent is expanded. Default state is
-			// "collapsed" — only parent rollups are visible until the user clicks.
-			if (hasLeaves && isExpanded) {
+			if (!disableExpand && hasLeaves && isExpanded) {
 				for (const leaf of rawLeaves) {
 					if (leaf) emitColumnsFor(leaf, gname, undefined, false);
 				}
@@ -1545,7 +1802,7 @@ function generateTreeRows(properties: {
 
 		rows.push(
 			<tr
-				key={row.nodeKey}
+				key={row.nodeKey ?? `treeRow_${i}`}
 				className={rowClassName}
 				onClick={onClick}
 				tabIndex={onClick ? 0 : undefined}
