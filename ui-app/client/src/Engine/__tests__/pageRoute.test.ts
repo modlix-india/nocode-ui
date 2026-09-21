@@ -51,6 +51,10 @@ function store(properties: any, user?: any, urlData?: any) {
 
 const details = (pageName?: string, queryParameters: any = {}) => ({ pageName, queryParameters });
 
+/** Everything the page told the analytics beacon during one test. */
+const mlxCalls: any[][] = [];
+const experimentCalls = () => mlxCalls.filter(c => c[0] === 'experiment');
+
 function clearCookies() {
 	for (const part of document.cookie.split(';')) {
 		const name = part.split('=')[0]?.trim();
@@ -63,6 +67,8 @@ beforeEach(() => {
 	clearCookies();
 	resetBootstrapResolution();
 	delete (globalThis as any).__APP_BOOTSTRAP__;
+	mlxCalls.length = 0;
+	(globalThis as any).mlx = (...args: any[]) => mlxCalls.push(args);
 	// The app asks for no consent unless a test says otherwise.
 	mockedConsent.mockReturnValue({
 		required: false,
@@ -297,5 +303,144 @@ describe('split assignments', () => {
 
 		expect(resolvePageForLocation(details('pricing'))).toBe('pricing_a');
 		expect(document.cookie).toContain(PAGE_ROUTE_ASSIGNMENT_COOKIE);
+	});
+});
+
+describe('telling analytics which arm was drawn', () => {
+	const SPLIT: PageRouting = {
+		pricing: {
+			rules: {
+				exp1: {
+					type: 'SPLIT',
+					variants: {
+						a: { page: 'pricing_a', order: 0 },
+						b: { page: 'pricing_b', order: 1 },
+					},
+				},
+			},
+		},
+	};
+
+	it('sends the rule key and a variant that carries it', () => {
+		store({ pageRouting: SPLIT, defaultPage: 'home' });
+
+		const page = resolvePageForLocation(details('pricing'));
+
+		expect(experimentCalls()).toEqual([['experiment', 'exp1', `exp1:${page}`]]);
+	});
+
+	// The prefix is not decoration. The engine rolls up one dimension at a time
+	// and its query has no filter, so two tests running at once would put their
+	// arms in one undifferentiated list.
+	it('makes the variant value globally unique', () => {
+		store({
+			pageRouting: {
+				pricing: { rules: { expA: { type: 'SPLIT', variants: { x: { page: 'shared' } } } } },
+				offers: { rules: { expB: { type: 'SPLIT', variants: { y: { page: 'shared' } } } } },
+			},
+		});
+
+		resolvePageForLocation(details('pricing'));
+		resolvePageForLocation(details('offers'));
+
+		const variants = experimentCalls().map(c => c[2]);
+		expect(variants).toEqual(['expA:shared', 'expB:shared']);
+		expect(new Set(variants).size).toBe(2);
+	});
+
+	it('says nothing for a personalization rule, which is not a test', () => {
+		store({ pageRouting: ROUTING, defaultPage: 'home' }, { id: 1 });
+
+		expect(resolvePageForLocation(details('home'))).toBe('home_member');
+		expect(experimentCalls()).toEqual([]);
+	});
+
+	it('says nothing when no rule applied at all', () => {
+		store({ pageRouting: SPLIT, defaultPage: 'home' });
+
+		resolvePageForLocation(details('somewhereElse'));
+
+		expect(experimentCalls()).toEqual([]);
+	});
+
+	// Re-reported on every navigation, including one that reuses a stored arm. The
+	// beacon holds the pair rather than the page holding it, and a visitor who
+	// arrives, navigates away and comes back is still in the test.
+	it('reports again when an existing assignment is reused', () => {
+		document.cookie = `${PAGE_ROUTE_ASSIGNMENT_COOKIE}=${encodeURIComponent(
+			JSON.stringify({ exp1: 'b' }),
+		)}; path=/`;
+		store({ pageRouting: SPLIT, defaultPage: 'home' });
+
+		resolvePageForLocation(details('pricing'));
+		resolvePageForLocation(details('pricing'));
+
+		expect(experimentCalls()).toEqual([
+			['experiment', 'exp1', 'exp1:pricing_b'],
+			['experiment', 'exp1', 'exp1:pricing_b'],
+		]);
+	});
+
+	// The assignment cannot come from the bootstrap -- that document is cached and
+	// shared -- so the browser re-derives it from the cookie SSR set.
+	it('reports the arm SSR served on a direct arrival', () => {
+		document.cookie = `${PAGE_ROUTE_ASSIGNMENT_COOKIE}=${encodeURIComponent(
+			JSON.stringify({ exp1: 'b' }),
+		)}; path=/`;
+		(globalThis as any).__APP_BOOTSTRAP__ = { resolvedPageName: 'pricing_b' };
+		store({ pageRouting: SPLIT, defaultPage: 'home' });
+
+		expect(resolvePageForLocation(details('pricing'))).toBe('pricing_b');
+		expect(experimentCalls()).toEqual([['experiment', 'exp1', 'exp1:pricing_b']]);
+	});
+
+	it('reports nothing when its own answer disagrees with the bootstrap', () => {
+		document.cookie = `${PAGE_ROUTE_ASSIGNMENT_COOKIE}=${encodeURIComponent(
+			JSON.stringify({ exp1: 'a' }),
+		)}; path=/`;
+		(globalThis as any).__APP_BOOTSTRAP__ = { resolvedPageName: 'pricing_b' };
+		store({ pageRouting: SPLIT, defaultPage: 'home' });
+
+		// The bootstrap still wins for what renders; only the exposure is withheld.
+		expect(resolvePageForLocation(details('pricing'))).toBe('pricing_b');
+		expect(experimentCalls()).toEqual([]);
+	});
+
+	it('does not draw or store a second arm on the bootstrap path', () => {
+		(globalThis as any).__APP_BOOTSTRAP__ = { resolvedPageName: 'pricing_a' };
+		store({ pageRouting: SPLIT, defaultPage: 'home' });
+
+		resolvePageForLocation(details('pricing'));
+
+		expect(document.cookie).not.toContain(PAGE_ROUTE_ASSIGNMENT_COOKIE);
+	});
+
+	// The webpack dev server serves a template with no beacon tag: the binder
+	// assembles one from the application definition, and that lands after routing
+	// has resolved. Dropping the tag there meant nothing was ever reported.
+	it('queues the tag when the beacon has not arrived yet', () => {
+		delete (globalThis as any).mlx;
+		store({ pageRouting: SPLIT, defaultPage: 'home' });
+
+		resolvePageForLocation(details('pricing'));
+
+		// The stub a.js replays on arrival, and its queue holds our call.
+		const stub = (globalThis as any).mlx;
+		expect(typeof stub).toBe('function');
+		const queued = [...stub.q].map((a: any) => [...a]);
+		expect(queued.length).toBe(1);
+		expect(queued[0][0]).toBe('experiment');
+		expect(queued[0][1]).toBe('exp1');
+		// Which arm is a coin toss; that it names one of this rule's is not.
+		expect(['exp1:pricing_a', 'exp1:pricing_b']).toContain(queued[0][2]);
+	});
+
+	it('uses the real beacon once it is there, rather than shadowing it', () => {
+		store({ pageRouting: SPLIT, defaultPage: 'home' });
+
+		resolvePageForLocation(details('pricing'));
+
+		expect((globalThis as any).mlx.q).toBeUndefined();
+		expect(experimentCalls().length).toBe(1);
 	});
 });

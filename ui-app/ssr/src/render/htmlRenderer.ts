@@ -309,6 +309,9 @@ function generateAnalyticsSnippet(
 		` data-autocapture="${attr(a.autocapture, true)}"` +
 		` data-pageviews="${attr(a.capturePageviews, true)}"` +
 		` data-pageleaves="${attr(a.capturePageleaves, true)}"` +
+		// Off unless the app asks: every click becomes an event, where autocapture records
+		// only the labelled ones.
+		` data-heatmaps="${attr(a.heatmaps?.enabled, false)}"` +
 		// Unconditional. There is no application setting that turns consent off:
 		// one set wrong, once, measures people who were never asked, and nothing
 		// about that state looks wrong from the outside.

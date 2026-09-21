@@ -28,8 +28,20 @@ export default function ProductAnalyticsWidgetStyle({
 		${PREFIX} ._table td._value { text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
 		${PREFIX} ._barWrap { position: relative; display: inline-block; min-width: 80px; padding: 0 8px; }
 		${PREFIX} ._bar { position: absolute; top: 0; bottom: 0; right: 0; background: ${t('accentTintColor', 'rgba(59,130,246,0.15)')}; border-radius: 2px; }
-		${PREFIX} ._timeSeries { display: flex; align-items: flex-end; gap: 3px; height: 190px; padding-top: 10px; }
-		${PREFIX} ._timeSeries ._point { background: ${t('accentTintStrongColor', 'rgba(59,130,246,0.6)')}; flex: 1; min-width: 4px; border-radius: 2px 2px 0 0; }
+		/* Same chart as WebAnalyticsWidget's, and deliberately the same markup: they had
+		   already drifted into two copies of a bar row with no axis on either. */
+		${PREFIX} ._chart { display: flex; gap: 8px; padding-top: 10px; }
+		${PREFIX} ._yAxis { display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end; height: 190px; font-size: 0.65rem; opacity: 0.45; font-variant-numeric: tabular-nums; }
+		${PREFIX} ._yUnit { writing-mode: vertical-rl; transform: rotate(180deg); opacity: 0.75; letter-spacing: .04em; }
+		${PREFIX} ._plot { flex: 1; min-width: 0; }
+		${PREFIX} ._timeSeries { display: flex; align-items: flex-end; gap: 3px; height: 190px; border-bottom: 1px solid rgba(0,0,0,0.12); }
+		${PREFIX} ._timeSeries ._point { background: ${t('accentTintStrongColor', 'rgba(59,130,246,0.6)')}; flex: 1; min-width: 4px; min-height: 2px; border-radius: 2px 2px 0 0; }
+		${PREFIX} ._timeSeries ._point._zero { background: rgba(0,0,0,0.08); }
+		${PREFIX} ._xAxis { display: grid; margin-top: 5px; font-size: 0.65rem; opacity: 0.45; }
+		${PREFIX} ._xAxis ._tick { white-space: nowrap; }
+		${PREFIX} ._xAxis ._tick:first-child { justify-self: start; }
+		${PREFIX} ._xAxis ._tick:last-child { justify-self: end; }
+		${PREFIX} ._xAxis ._tick:only-child { justify-self: center; }
 
 		${PREFIX} ._funnel { display: flex; flex-direction: column; gap: 8px; padding: 4px 0; }
 		${PREFIX} ._funnelStep { display: flex; align-items: center; gap: 12px; }

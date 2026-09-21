@@ -13,6 +13,7 @@ import { runEvent } from '../util/runEvent';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { WIDGET_TEMPLATES, WidgetType } from './webAnalyticsTemplates';
+import { axisTicks, shortDay } from '../util/analyticsChart';
 
 /**
  * What the analytics engine answers: one row per key, with an exact event count and an
@@ -240,6 +241,8 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 	if (template.renderHint === 'timeSeries') {
 		const points = rows.map(r => Number(r.events) || 0);
 		const max = Math.max(...points, 1);
+		const ticks = axisTicks(rows.length);
+
 		return (
 			<div {...baseProps} key={key}>
 				{helper}
@@ -251,18 +254,49 @@ export default function LazyWebAnalyticsWidget(props: Readonly<ComponentProps>) 
 						{subtitle}
 					</div>
 				) : null}
-				<div className="_timeSeries">
-					{points.map((p, i) => (
+				<div className="_chart">
+					{/* Two numbers, not a scale. The bars carry the shape; the axis only has
+					    to say how tall the tallest one is, or the whole thing is unitless. */}
+					<div className="_yAxis">
+						<span>{fmt(max)}</span>
+						<span className="_yUnit">{template.valueLabel}</span>
+						<span>0</span>
+					</div>
+					<div className="_plot">
+						<div className="_timeSeries">
+							{points.map((p, i) => (
+								<div
+									key={rows[i].label ?? i}
+									className={p > 0 ? '_point' : '_point _zero'}
+									title={`${rows[i].label}: ${fmt(p)} ${template.valueLabel.toLowerCase()}`}
+									style={{
+										height: `${(p / max) * 100}%`,
+										...(resolvedStyles.bar ?? {}),
+									}}
+								/>
+							))}
+						</div>
+						{/* One cell per bucket, so a tick sits under the bar it names rather
+						    than at the edge of the row. A day with no views still gets its
+						    column: the gap is the answer, and a chart that closed it up would
+						    say the quiet days never happened. */}
 						<div
-							key={i}
-							className="_point"
-							title={`${rows[i].label}: ${p}`}
-							style={{
-								height: `${(p / max) * 100}%`,
-								...(resolvedStyles.bar ?? {}),
-							}}
-						/>
-					))}
+							className="_xAxis"
+							style={{ gridTemplateColumns: `repeat(${rows.length}, 1fr)` }}
+						>
+							{rows.map((r, i) =>
+								ticks.includes(i) ? (
+									<span
+										key={r.label ?? i}
+										className="_tick"
+										style={{ gridColumn: i + 1 }}
+									>
+										{shortDay(String(r.label ?? ''))}
+									</span>
+								) : null,
+							)}
+						</div>
+					</div>
 				</div>
 			</div>
 		);

@@ -7,6 +7,7 @@ import {
 	PAGE_ROUTE_ASSIGNMENT_MAX_AGE_SECONDS,
 	PAGE_ROUTE_QUERY_COOKIE,
 	classifyDevice,
+	experimentTagFor,
 	parseCookieHeader,
 	parseRouteAssignments,
 	parseStringMap,
@@ -14,6 +15,7 @@ import {
 	routeQueryFields,
 	serializeRouteAssignments,
 	type PageRouteRequest,
+	type PageRouteResolution,
 	type PageRouting,
 } from '../util/pageRouting';
 
@@ -138,6 +140,58 @@ function carryQueryForward(
 		`; path=/; max-age=${PAGE_ROUTE_ASSIGNMENT_MAX_AGE_SECONDS}; SameSite=Lax${secure}`;
 }
 
+/**
+ * Tell the analytics beacon which arm of which test this visitor is looking at.
+ *
+ * `mlx('experiment', ...)` sets a sticky pair that rides on every event the
+ * session sends afterwards, so no separate "exposure" event is needed: the page
+ * view that follows this call already carries the assignment, and so does every
+ * conversion fired later.
+ *
+ * Ordering is why this is safe to call after `Store.urlDetails` has already been
+ * written and `AnalyticsBinder` has already sent `mlx('page', ...)`. The beacon
+ * only reads these two values when it builds an envelope, which happens on its
+ * flush timer, so a tag set in the same tick as the page event still lands on
+ * the same request. Both happen inside `loadDefinition`.
+ *
+ * Two behaviours worth stating because neither is obvious:
+ *
+ * - **It is never cleared.** Navigating on to a page with no test keeps the last
+ *   assignment, which is what makes a conversion somewhere else countable
+ *   against the arm that sent the visitor there.
+ * - **A second split overwrites the first.** The beacon holds one pair, and the
+ *   stored event has one experiment column, so a visitor who meets two tests in
+ *   one session is only attributed to the later one. Splitting the same traffic
+ *   two ways at once is a measurement question before it is a code one.
+ */
+function tagExperiment(resolution: PageRouteResolution | undefined) {
+	const tag = experimentTagFor(resolution);
+	if (!tag) return;
+
+	const host = globalThis as any;
+	// Install the beacon's own queue stub rather than giving up when the beacon
+	// is not there yet. It is the contract the engine publishes -- a.js replays
+	// `mlx.q` on arrival, BEFORE it sends its first page view -- so a tag queued
+	// here still reaches the wire on the very first event.
+	//
+	// Not a theoretical case. The webpack dev server serves a template that
+	// carries no beacon tag, so `AnalyticsBinder` assembles one from the
+	// application definition, and that lands after routing has already resolved.
+	// Skipping meant every local assignment went unreported, with nothing to see.
+	if (typeof host.mlx !== 'function') {
+		const q: unknown[] = [];
+		// `arguments` rather than a rest array, and `.q` set eagerly: the beacon
+		// replays each entry positionally and finds the queue by that property,
+		// so both shapes are the published contract and neither may drift.
+		const stub: any = function () {
+			q.push(arguments);
+		};
+		stub.q = q;
+		host.mlx = stub;
+	}
+	host.mlx('experiment', tag.experiment, tag.variant);
+}
+
 function writeAssignments(assignments: { [ruleKey: string]: string }) {
 	const secure = window.location.protocol === 'https:' ? '; Secure' : '';
 	document.cookie =
@@ -155,10 +209,14 @@ function writeAssignments(assignments: { [ruleKey: string]: string }) {
  */
 export function resolvePageForLocation(details: URLDetails): string | undefined {
 	const bootstrapped = globalThis.__APP_BOOTSTRAP__?.resolvedPageName;
-	if (!bootstrapResolutionUsed) {
-		bootstrapResolutionUsed = true;
-		if (bootstrapped) return bootstrapped;
-	}
+	// The bootstrap answers for the page NAME only. The resolution below still
+	// runs, because the experiment tag has to come from somewhere and it cannot
+	// come from the bootstrap: that document is cached and shared, so which arm
+	// one visitor drew must never be baked into it. Re-deriving here is exact
+	// rather than a second guess -- SSR sends the assignment as a Set-Cookie on
+	// every request, cache hit or not, so this reads back the arm it chose.
+	const fromBootstrap = !bootstrapResolutionUsed && !!bootstrapped;
+	bootstrapResolutionUsed = true;
 
 	const properties = getDataFromPath(`${STORE_PREFIX}.application.properties`, []);
 
@@ -166,12 +224,19 @@ export function resolvePageForLocation(details: URLDetails): string | undefined 
 	// name, and then to the default page, is exactly what this did before routing
 	// existed.
 	if (!properties)
-		return details.pageName || getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+		return fromBootstrap
+			? bootstrapped
+			: details.pageName ||
+					getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
 
 	const cookies = parseCookieHeader(document.cookie);
 	const carried = parseStringMap(cookies[PAGE_ROUTE_QUERY_COOKIE]);
 	const query = queryAcrossVisit(details, carried);
-	carryQueryForward(properties.pageRouting, query, carried);
+	// Not on an arrival SSR rendered. SSR deliberately does not write this cookie
+	// -- a Set-Cookie per campaign arrival would force those responses out of the
+	// shared HTML cache -- and writing it here on that same request would be the
+	// browser doing what the server chose not to.
+	if (!fromBootstrap) carryQueryForward(properties.pageRouting, query, carried);
 
 	const request: PageRouteRequest = {
 		pageName: details.pageName,
@@ -189,11 +254,17 @@ export function resolvePageForLocation(details: URLDetails): string | undefined 
 
 	const resolution = resolvePageRoute(properties.pageRouting, properties.defaultPage, request);
 
-	if (resolution.newAssignment)
+	if (!fromBootstrap && resolution.newAssignment)
 		writeAssignments({
 			...request.assignments,
 			[resolution.newAssignment.ruleKey]: resolution.newAssignment.variantKey,
 		});
 
-	return resolution.pageName || undefined;
+	// On the bootstrap path the two must agree, and they do whenever SSR's
+	// Set-Cookie arrived. If they ever disagree, something has moved underneath
+	// this and the honest thing is to report no exposure rather than one against
+	// an arm the visitor is not looking at.
+	if (!fromBootstrap || resolution.pageName === bootstrapped) tagExperiment(resolution);
+
+	return fromBootstrap ? bootstrapped : resolution.pageName || undefined;
 }

@@ -63,6 +63,7 @@ import SSEventListener from './SSEventListener/SSEventListener';
 import Chart from './Chart/Chart';
 import FileSelector from './FileSelector/FileSelector';
 import Form from './Form/Form';
+import AnalyticsHeatmap from './AnalyticsHeatmap/AnalyticsHeatmap';
 import AnalyticsQuery from './AnalyticsQuery/AnalyticsQuery';
 import WebAnalyticsWidget from './WebAnalyticsWidget/WebAnalyticsWidget';
 import ProductAnalyticsWidget from './ProductAnalyticsWidget/ProductAnalyticsWidget';
@@ -138,6 +139,7 @@ const componentMap = new Map<string, Component>([
 	[Audio.name, Audio],
 	[SSEventListener.name, SSEventListener],
 	[Chart.name, Chart],
+	[AnalyticsHeatmap.name, AnalyticsHeatmap],
 	[AnalyticsQuery.name, AnalyticsQuery],
 	[WebAnalyticsWidget.name, WebAnalyticsWidget],
 	[ProductAnalyticsWidget.name, ProductAnalyticsWidget],

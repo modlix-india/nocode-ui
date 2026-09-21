@@ -147,6 +147,45 @@ export interface PageRouteOptions {
 	random?: () => number;
 }
 
+/** What analytics is told about a visitor's place in a split. */
+export interface ExperimentTag {
+	/**
+	 * The rule key, not the rule's name. A name is what somebody typed and can be
+	 * edited mid-test; the key never changes, so a rename does not split one
+	 * test's numbers into two.
+	 */
+	experiment: string;
+	/**
+	 * `<ruleKey>:<page>` — deliberately carrying the experiment inside the
+	 * variant value.
+	 *
+	 * The analytics engine rolls up one dimension at a time and its query API has
+	 * no filter, so a breakdown by `variant` cannot be narrowed to one
+	 * experiment. Two tests running at once would land in a single list with no
+	 * way to tell whose arm a row was. Prefixing makes every variant value
+	 * globally unique, and the reading surface splits on the colon to show the
+	 * page name on its own.
+	 */
+	variant: string;
+}
+
+/**
+ * The experiment tag for a resolution, or undefined when there is nothing to
+ * report.
+ *
+ * Only a SPLIT produces one. A personalization rule is not a test: it shows a
+ * chosen audience a chosen page, and there is no arm to compare it against.
+ */
+export function experimentTagFor(
+	resolution: PageRouteResolution | undefined,
+): ExperimentTag | undefined {
+	if (!resolution?.ruleKey || !resolution.variantKey || !resolution.pageName) return undefined;
+	return {
+		experiment: resolution.ruleKey,
+		variant: `${resolution.ruleKey}:${resolution.pageName}`,
+	};
+}
+
 /**
  * The cookie holding this visitor's split assignments.
  *

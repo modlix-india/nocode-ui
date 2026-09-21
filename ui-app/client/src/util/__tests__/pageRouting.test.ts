@@ -1,4 +1,5 @@
 import {
+	experimentTagFor,
 	PageRouting,
 	PageRouteRequest,
 	classifyDevice,
@@ -591,5 +592,27 @@ describe('classifyDevice', () => {
 		expect(classifyDevice('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15')).toBe('DESKTOP');
 		expect(classifyDevice(undefined)).toBeUndefined();
 		expect(classifyDevice('')).toBeUndefined();
+	});
+});
+
+describe('experimentTagFor', () => {
+	it('names the rule by key, which a rename cannot move', () => {
+		const tag = experimentTagFor({ pageName: 'homeTwo', ruleKey: 'exp1', variantKey: 'b' });
+		expect(tag).toEqual({ experiment: 'exp1', variant: 'exp1:homeTwo' });
+	});
+
+	it('carries the experiment inside the variant, so two tests never collide', () => {
+		const a = experimentTagFor({ pageName: 'shared', ruleKey: 'expA', variantKey: 'x' });
+		const b = experimentTagFor({ pageName: 'shared', ruleKey: 'expB', variantKey: 'y' });
+		expect(a!.variant).not.toBe(b!.variant);
+	});
+
+	it('is nothing for a personalization rule, which has no arm to compare', () => {
+		expect(experimentTagFor({ pageName: 'home_member', ruleKey: 'm' })).toBeUndefined();
+	});
+
+	it('is nothing when no rule applied, and nothing for no resolution at all', () => {
+		expect(experimentTagFor({ pageName: 'home' })).toBeUndefined();
+		expect(experimentTagFor(undefined)).toBeUndefined();
 	});
 });

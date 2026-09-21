@@ -16,6 +16,7 @@ import { runEvent } from '../util/runEvent';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { PRODUCT_TEMPLATES, ProductWidgetType } from './productAnalyticsTemplates';
+import { axisTicks, shortDay } from '../util/analyticsChart';
 
 /**
  * What the analytics engine answers. One shape for every widget: `rows` for anything that
@@ -342,19 +343,49 @@ export default function LazyProductAnalyticsWidget(props: Readonly<ComponentProp
 	if (template.renderHint === 'timeSeries') {
 		const points = rows.map(r => Number(r.events) || 0);
 		const max = Math.max(...points, 1);
+		const ticks = axisTicks(rows.length);
 		return wrapper(
-			<div className="_timeSeries">
-				{points.map((p, i) => (
+			<div className="_chart">
+				{/* Two numbers, not a scale. The bars carry the shape; the axis only has to
+				    say how tall the tallest one is, or the whole thing is unitless. */}
+				<div className="_yAxis">
+					<span>{max.toLocaleString()}</span>
+					<span className="_yUnit">Events</span>
+					<span>0</span>
+				</div>
+				<div className="_plot">
+					<div className="_timeSeries">
+						{points.map((p, i) => (
+							<div
+								key={rows[i].label ?? i}
+								className={p > 0 ? '_point' : '_point _zero'}
+								title={`${rows[i].label}: ${p.toLocaleString()} events`}
+								style={{
+									height: `${(p / max) * 100}%`,
+									...(resolvedStyles.bar ?? {}),
+								}}
+							/>
+						))}
+					</div>
+					{/* One cell per bucket, so a tick sits under the bar it names. A bucket
+					    with nothing in it still gets its column: the gap is the answer. */}
 					<div
-						key={i}
-						className="_point"
-						title={`${rows[i].label}: ${p}`}
-						style={{
-							height: `${(p / max) * 100}%`,
-							...(resolvedStyles.bar ?? {}),
-						}}
-					/>
-				))}
+						className="_xAxis"
+						style={{ gridTemplateColumns: `repeat(${rows.length}, 1fr)` }}
+					>
+						{rows.map((r, i) =>
+							ticks.includes(i) ? (
+								<span
+									key={r.label ?? i}
+									className="_tick"
+									style={{ gridColumn: i + 1 }}
+								>
+									{shortDay(String(r.label ?? ''))}
+								</span>
+							) : null,
+						)}
+					</div>
+				</div>
 			</div>,
 		);
 	}
