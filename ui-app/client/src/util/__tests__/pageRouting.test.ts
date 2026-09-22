@@ -1,5 +1,7 @@
 import {
 	experimentTagFor,
+	isDesignRequest,
+	PAGE_ROUTE_DESIGN_PARAM,
 	PageRouting,
 	PageRouteRequest,
 	classifyDevice,
@@ -32,6 +34,66 @@ describe('resolvePageRoute — the requested name', () => {
 
 	it('leaves the name alone when there is no default page to substitute', () => {
 		expect(resolvePageRoute({}, undefined, req({ pageName: '' })).pageName).toBe('');
+	});
+});
+
+/**
+ * Looking at a page rather than visiting it.
+ *
+ * A rule is keyed by the page REQUESTED, and for a split that key is normally the control
+ * arm's own name — so asking for `home` by name is exactly the request the rule fires on, and
+ * there was no way to look at the control arm at all. Measured on crumbco before this existed:
+ * `/crumbco/FIN/page/home` rendered `homeTwo`.
+ */
+describe('resolvePageRoute — asked for as-is', () => {
+	const design = { [PAGE_ROUTE_DESIGN_PARAM]: '1' };
+	const split: PageRouting = {
+		home: {
+			rules: {
+				r1: {
+					type: 'SPLIT',
+					variants: { v1: { page: 'home', weight: 1 }, v2: { page: 'homeTwo', weight: 1 } },
+				},
+			},
+		},
+	};
+
+	it('renders the page named, where routing would have sent it elsewhere', () => {
+		const routed = resolvePageRoute(split, 'home', req({ pageName: 'home' }), {
+			random: pinned(0.99),
+		});
+		expect(routed.pageName).toBe('homeTwo');
+
+		const asked = resolvePageRoute(split, 'home', req({ pageName: 'home', query: design }), {
+			random: pinned(0.99),
+		});
+		expect(asked.pageName).toBe('home');
+	});
+
+	it('enrols nobody: no arm drawn, no assignment, no experiment to report', () => {
+		const asked = resolvePageRoute(split, 'home', req({ pageName: 'home', query: design }), {
+			random: pinned(0.99),
+		});
+		expect(asked.newAssignment).toBeUndefined();
+		expect(asked.ruleKey).toBeUndefined();
+		// No ruleKey means no tag, so a look at a page is never counted as an exposure.
+		expect(experimentTagFor(asked)).toBeUndefined();
+	});
+
+	it('still substitutes the default page when the URL names none', () => {
+		expect(
+			resolvePageRoute(split, 'home', req({ pageName: '', query: design })).pageName,
+		).toBe('home');
+	});
+
+	it('reads the flag the way a URL writes it', () => {
+		expect(isDesignRequest({ [PAGE_ROUTE_DESIGN_PARAM]: '1' })).toBe(true);
+		expect(isDesignRequest({ [PAGE_ROUTE_DESIGN_PARAM]: 'true' })).toBe(true);
+		// An explicit off is off, so a link can carry it without meaning it.
+		expect(isDesignRequest({ [PAGE_ROUTE_DESIGN_PARAM]: '0' })).toBe(false);
+		expect(isDesignRequest({ [PAGE_ROUTE_DESIGN_PARAM]: 'false' })).toBe(false);
+		expect(isDesignRequest({})).toBe(false);
+		expect(isDesignRequest(undefined)).toBe(false);
 	});
 });
 

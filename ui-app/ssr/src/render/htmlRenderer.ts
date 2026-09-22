@@ -8,7 +8,7 @@ import {
 	type ApplicationDefinition,
 	type ThemeDefinition,
 } from '../api/client.js';
-import { assignmentSetCookie, resolveRoute } from '../resolver/pageRouting.js';
+import { assignmentSetCookie, isDesignUrl, resolveRoute } from '../resolver/pageRouting.js';
 import { getCachedData, setCachedData, generateAppCacheKey, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
@@ -737,8 +737,16 @@ export async function handlePageRequest(
 		cookieTheme,
 	);
 
+	// A page asked for as-is, for somebody looking at their own heatmap. It renders the page
+	// NAMED rather than the arm routing would serve, and its HTML carries a marker telling the
+	// beacon not to count the visit — so it must never be stored under the key a real visitor
+	// reads from, or that marker would switch measurement off for everyone on that page.
+	// Neither read nor written: reading a normal copy would serve the routed arm and defeat
+	// the whole request.
+	const isDesign = isDesignUrl(url);
+
 	// Check HTML cache for non-authenticated requests (fastest path)
-	if (!isAuthenticated) {
+	if (!isAuthenticated && !isDesign) {
 		// Check if client accepts gzip
 		const acceptEncoding = req.headers['accept-encoding'] || '';
 		const supportsGzip = acceptEncoding.includes('gzip');
@@ -860,7 +868,7 @@ export async function handlePageRequest(
 		servedPageName === actualPageName
 			? htmlCacheKey
 			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme);
-	if (!isAuthenticated) {
+	if (!isAuthenticated && !isDesign) {
 		// Cache the rendered HTML (fast serving)
 		await setCachedHtml(servedCacheKey, generatedHtml, config.cache.ttlSeconds);
 		logger.info('Cached HTML', {

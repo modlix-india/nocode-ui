@@ -24,6 +24,35 @@ describe('UrlDetailsExtractor', () => {
 		).toBe('test1');
 	});
 
+	/**
+	 * The page routing chose, alongside the page the URL asked for. They differ whenever a
+	 * rule fired, and analytics is the reader that needs the difference: reporting the
+	 * requested name filed every view and every click on an A/B arm under the address.
+	 */
+	it('carries the served page name beside the requested one', () => {
+		UrlDetailsExtractor.addDetails(
+			{ queryParameters: {}, pathParts: [], pageName: 'home' },
+			'homeTwo',
+		);
+
+		// `pageName` must not move: every `Url.pageName` expression on every page reads it.
+		expect(getDataFromPath('Store.urlDetails.pageName', [])).toBe('home');
+		expect(getDataFromPath('Store.urlDetails.servedPageName', [])).toBe('homeTwo');
+	});
+
+	it('leaves the served name absent when no rule fired', () => {
+		UrlDetailsExtractor.addDetails({ queryParameters: {}, pathParts: [], pageName: 'home' });
+		expect(getDataFromPath('Store.urlDetails.servedPageName', [])).toBeUndefined();
+	});
+
+	it('fills the default page before routing sees it', () => {
+		// Routing rules are keyed by the page that was ASKED for, so a URL naming none has to
+		// have the default filled in before the resolver runs, not after.
+		const details = { queryParameters: {}, pathParts: [] };
+		UrlDetailsExtractor.fillDefaultPage(details as any);
+		expect((details as any).pageName).toBe('newHome');
+	});
+
 	it('reads the same URL from a context the URL never named', () => {
 		UrlDetailsExtractor.addDetails({
 			queryParameters: { a: '1' },

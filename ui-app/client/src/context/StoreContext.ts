@@ -363,16 +363,37 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 		return this.retrieveElementFrom(`${STORE_PREFIX}.urlDetails`, ['urlDetails'], 0, _store);
 	}
 
-	/** The URL showing now, which replaces the one before it. */
-	public static addDetails(details: URLDetails) {
-		// A URL that names no page means the app's default page. Resolved before
-		// either write: it is the key one of them is stored under, and filling it
-		// afterwards is what stored the default page's details under `undefined`.
+	/**
+	 * A URL that names no page means the app's default page.
+	 *
+	 * Split out of `addDetails` because page ROUTING has to run against a filled-in
+	 * name — its rules are keyed by the page that was asked for — and its answer
+	 * has to reach the same store write. Filling this afterwards is what once
+	 * stored the default page's details under `undefined`.
+	 */
+	public static fillDefaultPage(details: URLDetails) {
 		if (!details.pageName)
 			details.pageName = getDataFromPath(
 				`${STORE_PREFIX}.application.properties.defaultPage`,
 				[],
 			);
+	}
+
+	/**
+	 * The URL showing now, which replaces the one before it.
+	 *
+	 * `servedPageName` is the page routing actually chose, which is NOT
+	 * `pageName`: `pageName` is what the URL asked for, every expression on every
+	 * page reads it, and it must keep meaning that. They differ exactly when a
+	 * routing rule fired, and telling them apart is the difference between
+	 * analytics filing a view under the address and filing it under the page.
+	 *
+	 * Both land in ONE write. Two writes would notify every `Store.urlDetails`
+	 * listener twice, and one of those listeners reports page views.
+	 */
+	public static addDetails(details: URLDetails, servedPageName?: string) {
+		UrlDetailsExtractor.fillDefaultPage(details);
+		if (servedPageName) details.servedPageName = servedPageName;
 
 		setData(`${STORE_PREFIX}.urlDetails`, details, undefined, true);
 

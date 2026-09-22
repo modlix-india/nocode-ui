@@ -17,6 +17,7 @@ import {
 	type PageRouteRequest,
 	type PageRouteResolution,
 	type PageRouting,
+	isDesignRequest,
 } from '../util/pageRouting';
 
 /**
@@ -236,7 +237,11 @@ export function resolvePageForLocation(details: URLDetails): string | undefined 
 	// -- a Set-Cookie per campaign arrival would force those responses out of the
 	// shared HTML cache -- and writing it here on that same request would be the
 	// browser doing what the server chose not to.
-	if (!fromBootstrap) carryQueryForward(properties.pageRouting, query, carried);
+	// Not on a design request either: looking at a page is not arriving on a
+	// campaign, and writing the cookie would make the next real visit behave as
+	// though it had been.
+	if (!fromBootstrap && !isDesignRequest(query))
+		carryQueryForward(properties.pageRouting, query, carried);
 
 	const request: PageRouteRequest = {
 		pageName: details.pageName,

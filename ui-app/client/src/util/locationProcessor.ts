@@ -3,7 +3,14 @@ import { Location as ReactLocation } from 'react-router-dom';
 export interface URLDetails {
 	queryParameters: any;
 	pathParts?: Array<string> | undefined;
+	/** The page the URL asked for. Every `Url.pageName` expression reads this. */
 	pageName?: string | undefined;
+	/**
+	 * The page routing actually chose, when a rule fired. Absent when none did.
+	 * Set by `RenderEngineContainer`, not here: a location does not know the app's
+	 * routing rules.
+	 */
+	servedPageName?: string | undefined;
 	appName?: string | undefined;
 	clientCode?: string | undefined;
 	/** `app.example.com` — host and port, no scheme. */

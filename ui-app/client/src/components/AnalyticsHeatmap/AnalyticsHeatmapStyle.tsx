@@ -22,10 +22,15 @@ export default function AnalyticsHeatmapStyle({
 		${PREFIX} ._toolbar ._pick:first-child { flex: 0 1 420px; min-width: 0; text-overflow: ellipsis; }
 		${PREFIX} ._toggle { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; user-select: none; }
 		${PREFIX} ._count { margin-left: auto; opacity: 0.6; font-variant-numeric: tabular-nums; white-space: nowrap; }
-		/* A full screen of page, always. The card sits in a column that will happily squash a
-		   flex item down to nothing, and a heatmap two hundred pixels tall shows one band of
-		   a page and tells you nothing — so this one holds its height and scrolls inside. */
-		${PREFIX} ._stage { overflow: auto; min-height: 100vh; max-height: 100vh; flex-shrink: 0; border: 1px solid rgba(10,10,10,.12); border-radius: 8px; background: #fff; width: 100%; min-width: 0; }
+		/* As tall as the page it is showing, and NOT a scroller.
+		   It was capped at 100vh and scrolled inside, which put a third scrollbar on screen —
+		   the rail has one, the dashboard has one, and this one then captured the wheel
+		   whenever the pointer crossed it, so scrolling the dashboard stopped dead over the
+		   heatmap. One scrollbar, the page's own.
+		   min-height keeps a short page from collapsing the card; flex-shrink: 0 keeps the
+		   column it sits in from squashing it back down.
+		   (No backticks in this file: the whole stylesheet is one template literal.) */
+		${PREFIX} ._stage { overflow: hidden; min-height: 100vh; flex-shrink: 0; border: 1px solid rgba(10,10,10,.12); border-radius: 8px; background: #fff; width: 100%; min-width: 0; }
 		/* Holds the space the scaled frame occupies. The frame is taken out of flow so that
 		   nothing downstream depends on how the scaling is done. */
 		${PREFIX} ._scaler { position: relative; overflow: hidden; }

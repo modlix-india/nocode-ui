@@ -42,16 +42,28 @@ export const RenderEngineContainer = () => {
 
 	const loadDefinition = useCallback(() => {
 		const details = processLocation(window.location);
-		// Writes `Store.urlDetails`, which is what `Url.` reads, and fills in the
-		// default page when the URL names none.
-		UrlDetailsExtractor.addDetails(details);
+		// The default page when the URL names none. Routing is keyed by the page
+		// that was ASKED for, so this has to be filled before the resolver runs --
+		// and the store write has to come after it, so that both names travel
+		// together. See below.
+		UrlDetailsExtractor.fillDefaultPage(details);
 
-		// `urlDetails` stays as the URL reads, because that is what it is named
-		// for and what expressions on the page already read. The page that renders
-		// is a separate question: routing may send this URL to a different
+		// `urlDetails.pageName` stays as the URL reads, because that is what it is
+		// named for and what expressions on the page already read. The page that
+		// renders is a separate question: routing may send this URL to a different
 		// definition, and everything below -- the store namespace, the definition
 		// lookup, the fetch -- keys off that answer rather than off the URL.
 		const pageName = resolvePageForLocation(details);
+
+		// Writes `Store.urlDetails`, which is what `Url.` reads, carrying BOTH
+		// names. The served one used to be computed here and thrown away, which is
+		// how analytics came to file every view and every click on a routed page
+		// under the address rather than under the page: `AnalyticsBinder` reads
+		// this store, and the only name in it was the one the URL asked for.
+		//
+		// One write, deliberately. Two would notify every listener twice and the
+		// beacon would count the arrival twice.
+		UrlDetailsExtractor.addDetails(details, pageName);
 
 		// True only when routing sent this URL somewhere else. Everything below
 		// that is conditional on it leaves the ordinary path exactly as it was.

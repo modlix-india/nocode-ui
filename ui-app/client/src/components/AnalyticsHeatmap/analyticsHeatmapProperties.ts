@@ -41,7 +41,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'path',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Path',
-		description: 'The page to draw, e.g. /pricing. Leave blank to use the busiest page.',
+		description:
+			'The address to draw, e.g. /pricing. Used when no page name is given, and the ' +
+			'only way to reach clicks recorded before the platform reported page names. ' +
+			'Leave blank to use the busiest page.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'page',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Page',
+		description:
+			'The page to draw, by the application\'s own name for it. Takes precedence over ' +
+			'the path, and should: page routing serves two different pages at one address, ' +
+			'so drawing by address averages both arms of a test over one of their layouts.',
 		group: ComponentPropertyGroup.DATA,
 	},
 	{

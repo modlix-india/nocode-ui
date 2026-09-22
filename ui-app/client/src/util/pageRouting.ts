@@ -486,6 +486,38 @@ function applyRoute(
  * Returns the requested name unchanged when nothing matches, which is exactly
  * today's behaviour.
  */
+/**
+ * The parameter that says "render the page I asked for, and do not count this".
+ *
+ * A routing rule is keyed by the page REQUESTED, and for an A/B test that key is
+ * normally the control arm's own name — so naming that arm in the URL is exactly
+ * the request the rule fires on, and there was no way to look at it. Measured:
+ * `/crumbco/FIN/page/home` renders `homeTwo`.
+ *
+ * That is what the analytics click map needs. It frames the page whose clicks it
+ * is drawing, and a frame that draws its own arm shows one page with another
+ * page's clicks painted over it — a picture that looks right and is not.
+ *
+ * It is in the URL rather than a `postMessage` because it has to reach the SSR
+ * service, which decides the page server-side before any script of ours runs and
+ * bakes the answer into the HTML. A message can only arrive after that.
+ *
+ * Two consequences, and both are the point:
+ *
+ * - **No rule runs**, so no arm is drawn and no assignment is written. A visitor
+ *   who follows such a link is not enrolled in anything.
+ * - **Nothing is measured.** The beacon drops every event when it sees this, so
+ *   looking at a page does not add to the numbers being looked at. Without that,
+ *   opening the click map would inflate the very page it is showing.
+ */
+export const PAGE_ROUTE_DESIGN_PARAM = 'modlixDesign';
+
+/** Whether a request is asking for a page as-is rather than as routing would serve it. */
+export function isDesignRequest(query: { [key: string]: string } | undefined): boolean {
+	const v = query?.[PAGE_ROUTE_DESIGN_PARAM];
+	return !!v && v !== 'false' && v !== '0';
+}
+
 export function resolvePageRoute(
 	routing: PageRouting | undefined,
 	defaultPage: string | undefined,
@@ -494,6 +526,11 @@ export function resolvePageRoute(
 ): PageRouteResolution {
 	const random = options?.random ?? Math.random;
 	const requested = (request.pageName ?? '').trim();
+
+	// Asked for as-is. Before any rule, and before the default-page hop, so that a
+	// request naming no page still lands on the default rather than on nothing.
+	if (isDesignRequest(request.query))
+		return { pageName: requested || defaultPage || '' };
 
 	const direct = applyRoute(routing, requested, request, random);
 	if (direct) return direct;

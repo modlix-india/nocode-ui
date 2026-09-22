@@ -11,6 +11,7 @@ import {
 	PAGE_ROUTE_ASSIGNMENT_COOKIE,
 	PAGE_ROUTE_QUERY_COOKIE,
 	classifyDevice,
+	isDesignRequest,
 	parseCookieHeader,
 	parseRouteAssignments,
 	parseStringMap,
@@ -63,6 +64,17 @@ function flattenHeaders(headers: IncomingHttpHeaders): { [key: string]: string }
 		flat[key.toLowerCase()] = Array.isArray(value) ? value.join(', ') : String(value);
 	}
 	return flat;
+}
+
+/**
+ * Whether this request wants the page it names rather than the arm routing would serve.
+ *
+ * Exported so the renderer can keep such a response out of the shared HTML cache: its body
+ * carries a marker telling the beacon not to count the visit, and a real visitor reading that
+ * from cache would stop being measured.
+ */
+export function isDesignUrl(url: URL): boolean {
+	return isDesignRequest(queryParameters(url));
 }
 
 function queryParameters(url: URL): { [key: string]: string } {

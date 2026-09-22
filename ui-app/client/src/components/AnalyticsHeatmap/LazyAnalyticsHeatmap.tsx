@@ -6,6 +6,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './analyticsHeatmapProperties';
+import { PAGE_ROUTE_DESIGN_PARAM } from '../../util/pageRouting';
 
 /** What the engine answers for a heatmap. Coordinates are in its units, not pixels. */
 interface HeatmapResponse {
@@ -21,8 +22,20 @@ interface HeatmapResponse {
 	};
 }
 
+/**
+ * One entry the reader can pick. `page` is the application's own name for it and `path` the
+ * address it lives at; they are not the same thing, and with page routing they are not even
+ * one-to-one. `page` is empty on rows recorded before the platform reported it.
+ */
+interface PageRow {
+	label: string;
+	events: number;
+	page?: string;
+	path?: string;
+}
+
 interface PagesResponse {
-	rows?: Array<{ label: string; events: number }>;
+	rows?: Array<PageRow>;
 }
 
 function authToken(): string | undefined {
@@ -96,6 +109,7 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 			clientCode,
 			siteUrl,
 			path: pathProp,
+			page: pageProp,
 			variant: variantProp,
 			dateRangeDays,
 			dateFrom,
@@ -118,8 +132,11 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 	);
 
 	const [data, setData] = useState<HeatmapResponse['heatmap']>();
-	const [pages, setPages] = useState<Array<{ label: string; events: number }>>([]);
+	const [pages, setPages] = useState<Array<PageRow>>([]);
 	const [path, setPath] = useState<string>('');
+	// The application's name for what is being looked at. Empty means "whatever is at this
+	// address", which is all an older row can say.
+	const [page, setPage] = useState<string>('');
 	const [variant, setVariant] = useState<string>('');
 	const [width, setWidth] = useState<number>(Number(viewportProp) || 1440);
 	const [overlay, setOverlay] = useState<boolean>(showOverlayProp !== false);
@@ -128,8 +145,11 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 	const canvasRef = useRef<HTMLCanvasElement | null>(null);
 	const stageRef = useRef<HTMLDivElement | null>(null);
 	const [room, setRoom] = useState(0);
+	// How tall the framed page says it is. Nothing else can know: it is another origin.
+	const [reported, setReported] = useState(0);
 
 	useEffect(() => setPath(pathProp ?? ''), [pathProp]);
+	useEffect(() => setPage(pageProp ?? ''), [pageProp]);
 	useEffect(() => setVariant(variantProp ?? ''), [variantProp]);
 	useEffect(() => setWidth(Number(viewportProp) || 1440), [viewportProp]);
 	useEffect(() => setOverlay(showOverlayProp !== false), [showOverlayProp]);
@@ -165,7 +185,11 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 				setPages(rows);
 				// The busiest page is the useful default: an empty frame teaches nobody
 				// anything, and the alternative is asking the reader to guess a path.
-				setPath(p => p || rows[0]?.label || '');
+				const first = rows[0];
+				if (first) {
+					setPath(p => p || first.path || first.label || '');
+					setPage(g => g || first.page || '');
+				}
 			})
 			.catch(() => {
 				/* The heatmap's own error is the one worth showing. */
@@ -177,13 +201,17 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 	}, [ask, window_, appCode, clientCode]);
 
 	const load = useCallback(async () => {
-		if (!appCode || !clientCode || !path) return;
+		if (!appCode || !clientCode || (!path && !page)) return;
 		setLoading(true);
 		setError(undefined);
 		try {
 			const r = await ask({
 				widget: 'heatmap',
+				// The engine prefers the page and falls back to the address, which is the
+				// only thing a click recorded before the platform reported its page name
+				// can be found by.
 				path,
+				page: page || undefined,
 				variant: variant || undefined,
 				viewport: width,
 				...window_,
@@ -196,7 +224,7 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 		} finally {
 			setLoading(false);
 		}
-	}, [ask, path, variant, width, window_, appCode, clientCode]);
+	}, [ask, path, page, variant, width, window_, appCode, clientCode]);
 
 	useEffect(() => {
 		load();
@@ -209,8 +237,54 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 		return () => window.clearInterval(handle);
 	}, [load, refreshIntervalSeconds]);
 
-	const height = Number(frameHeight) || 2400;
-	const src = path ? `${(siteUrl ?? '').replace(/\/$/, '')}${path}` : '';
+	/**
+	 * How tall to make the frame.
+	 *
+	 * `frameHeight` is a floor, not the answer. It used to be the answer, and it was a guess:
+	 * a page taller than it got a frame that scrolled INSIDE its own overlay — a fourth
+	 * scrollbar, and the one that actually lies, because the canvas stays put while the page
+	 * under it moves. Clicks below the guess were drawn off the end of the canvas and were
+	 * simply not in the picture, with nothing saying so.
+	 *
+	 * The data already knows: the lowest recorded click is how far down the page anyone has
+	 * been. A cell's y is its top edge, so a cell height and a little air get added to it.
+	 */
+	const lowestClick = (data?.cells ?? []).reduce((m, c) => Math.max(m, c.y), 0);
+	const height = Math.min(
+		// A canvas taller than the browser allows is not a short canvas, it is a BLANK one —
+		// the context silently refuses the whole surface and every blob disappears. Chrome
+		// stops at 65535 per side and sooner on total area; this is well inside both and
+		// still twenty screens of page.
+		32000,
+		Math.max(
+			Number(frameHeight) || 2400,
+			lowestClick + (data?.cellY ?? 20) + 200,
+			reported,
+		),
+	);
+	/**
+	 * What to frame.
+	 *
+	 * **The page by NAME when there is one, not the address it was served at.** Loading the
+	 * address runs the application's page routing again and routing draws its own arm, so the
+	 * frame could show `home` with `homeTwo`'s clicks painted over it — a picture that looks
+	 * right and is not.
+	 *
+	 * **The name alone is not enough**, because routing rules are keyed by the page REQUESTED
+	 * and for a split that key is normally the control arm's own name — so asking for `home`
+	 * is exactly the request the rule fires on. Measured: `/crumbco/FIN/page/home` rendered
+	 * `homeTwo`. `modlixDesign` is the answer: the resolver runs no rule for it, and the
+	 * beacon counts nothing, so looking at a page does not add to the numbers being looked at.
+	 *
+	 * The address is the fallback, and the only thing a click recorded before the platform
+	 * reported its page name can be opened by.
+	 */
+	const base = (siteUrl ?? '').replace(/\/$/, '');
+	let src = '';
+	if (page && appCode && clientCode)
+		src = `${base}/${appCode}/${clientCode}/page/${page}?${PAGE_ROUTE_DESIGN_PARAM}=1`;
+	else if (path)
+		src = `${base}${path}${path.includes('?') ? '&' : '?'}${PAGE_ROUTE_DESIGN_PARAM}=1`;
 
 	// How much room the card actually gives us. Measured rather than assumed: this pane sits in
 	// a resizable workspace next to an explorer that opens and closes.
@@ -224,6 +298,44 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 		ro.observe(el);
 		return () => ro.disconnect();
 	}, [src]);
+
+	/**
+	 * The framed page reporting its own height.
+	 *
+	 * The beacon posts it, because the beacon is the one script already on both sides of the
+	 * origin boundary. Without it the frame is a guess — 2400px by default — and a taller page
+	 * is simply cut off part way down a heading, which is what it did.
+	 *
+	 * Only messages from the framed origin are believed, and only the one shape. A window
+	 * receives messages from anything that has a handle on it.
+	 */
+	useEffect(() => {
+		if (!src) return;
+		let origin = '';
+		try {
+			origin = new URL(src, window.location.href).origin;
+		} catch {
+			return;
+		}
+
+		const onMessage = (ev: MessageEvent) => {
+			if (ev.origin !== origin) return;
+			const d = ev.data;
+			if (!d || d.mlx !== 'height') return;
+			const h = Number(d.height);
+			if (!Number.isFinite(h) || h <= 0) return;
+			// A page only ever grows while it settles — fonts, images, a consent bar being
+			// answered. Taking the largest avoids the frame flapping shorter and back.
+			setReported(prev => (h > prev ? h : prev));
+		};
+
+		window.addEventListener('message', onMessage);
+		return () => window.removeEventListener('message', onMessage);
+	}, [src]);
+
+	// A different page is a different height, and keeping the last one would leave a tall
+	// band of nothing under a short page.
+	useEffect(() => setReported(0), [src]);
 
 	// Never scaled up: a 1440 layout blown up to 1800 is a blurry lie about the rendering.
 	const scale = room > 0 ? Math.min(1, room / width) : 1;
@@ -276,6 +388,14 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 	if (visibility === false) return null;
 
 	const variants = data?.variants ?? [];
+	// A native select needs a value it can match; the row index is the only thing that is
+	// unique when a page and an address are both part of the identity.
+	const selected = String(
+		Math.max(
+			0,
+			pages.findIndex(p => (p.page ?? '') === page && (p.path ?? p.label) === path),
+		),
+	);
 
 	return (
 		<div
@@ -286,15 +406,28 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 			<HelperComponent context={props.context} definition={definition} />
 
 			<div className="_toolbar" style={resolvedStyles.toolbar ?? {}}>
+				{/* One entry per PAGE, not per address. Two arms of a split share an address,
+				    so a list keyed on the address cannot offer them separately — it names one
+				    entry and draws both arms over whichever layout it happens to frame. The
+				    label is the page's own name where the platform reported one, and the
+				    address otherwise, which is what an older row can say. */}
 				<select
 					className="_pick"
-					value={path}
-					onChange={e => setPath(e.target.value)}
+					value={selected}
+					onChange={e => {
+						const row = pages[Number(e.target.value)];
+						if (!row) return;
+						setPage(row.page ?? '');
+						setPath(row.path ?? row.label ?? '');
+						// An arm belongs to one page now, so a variant chosen for the last
+						// page means nothing here.
+						setVariant('');
+					}}
 					title="Page"
 				>
 					{pages.length === 0 ? <option value="">No page has clicks yet</option> : null}
-					{pages.map(p => (
-						<option key={p.label} value={p.label}>
+					{pages.map((p, i) => (
+						<option key={`${p.page ?? ''}|${p.path ?? p.label}`} value={String(i)}>
 							{p.label} ({p.events})
 						</option>
 					))}
@@ -380,6 +513,11 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 								src={src}
 								width={width}
 								height={height}
+								// A frame that scrolls on its own slides the page out from
+								// under a canvas that cannot follow it, and every blob then
+								// sits on the wrong thing — convincingly. The frame is made
+								// tall enough for every click instead.
+								scrolling="no"
 								style={{ width, height, border: 0 }}
 							/>
 							<canvas
@@ -401,6 +539,7 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 			<div className="_hint">
 				A blank frame means the site refused to be embedded. Add this page's origin to{' '}
 				<code>csp.frameAncestors</code> on the application being measured.
+
 			</div>
 		</div>
 	);

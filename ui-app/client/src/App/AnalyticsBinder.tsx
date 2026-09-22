@@ -144,12 +144,18 @@ export function AnalyticsBinder() {
 			addListenerAndCallImmediately(
 				undefined,
 				(_, details) => {
-					if (!details?.pageName) return;
+					// The page that actually RENDERED, not the one the URL asked for.
+					// They differ whenever a page-routing rule fired, and reporting the
+					// requested one filed every view and every click on an A/B arm under
+					// the address instead of under the arm. `servedPageName` is absent
+					// when no rule fired, which is the ordinary case.
+					const name = details?.servedPageName ?? details?.pageName;
+					if (!name) return;
 					// The application's own name for this page, which survives a URL change
 					// in a way a path does not. The beacon also treats the first page name
 					// as the moment a view becomes meaningful.
 					const mlx = (globalThis as any).mlx;
-					if (typeof mlx === 'function') mlx('page', details.pageName);
+					if (typeof mlx === 'function') mlx('page', name);
 				},
 				`${STORE_PREFIX}.urlDetails`,
 			),
