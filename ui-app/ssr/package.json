@@ -4,8 +4,8 @@
 	"description": "SSR service for Modlix no-code platform",
 	"type": "module",
 	"scripts": {
-		"dev": "tsx watch src/server.ts",
-		"prebuild": "node scripts/generateBuildInfo.js",
+		"dev": "node scripts/copyShared.js && tsx watch src/server.ts",
+		"prebuild": "node scripts/generateBuildInfo.js && node scripts/copyShared.js",
 		"build": "tsc",
 		"start": "node dist/server.js"
 	},

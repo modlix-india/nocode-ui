@@ -22,5 +22,7 @@ export * from './SelectTheme';
 export * from './OpenWindow';
 export * from './TrackAnalyticsEvent';
 export * from './QueryAnalytics';
+export * from './GetAnalyticsConsent';
+export * from './SetAnalyticsConsent';
 export * from './InitiateSocialLogin';
 export * from './BuildLeadAdData';

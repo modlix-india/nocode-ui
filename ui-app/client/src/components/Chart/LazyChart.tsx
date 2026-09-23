@@ -43,6 +43,8 @@ import {
 	applyStylesToDatasets,
 } from './chartjs';
 import { gradientPlugin } from './chartjs/gradientPlugin';
+import { getDataFromPath } from '../../context/StoreContext';
+import type { CountryFeature, GeoBuild } from './chartjs/geo';
 
 // Register Chart.js components, controllers and plugins
 ChartJS.register(
@@ -72,6 +74,14 @@ ChartJS.register(
 	Filler,
 	gradientPlugin,
 );
+
+/** `buildGeoOptions` lives in the lazily-loaded module, so it is reached through it. */
+function buildGeoOptionsSafe(
+	geo: { mod: typeof import('./chartjs/geo') } | undefined,
+	o: Parameters<typeof import('./chartjs/geo').buildGeoOptions>[0],
+): any {
+	return geo ? geo.mod.buildGeoOptions(o) : {};
+}
 
 export default function LazyChart(props: Readonly<ComponentProps>) {
 	const {
@@ -139,8 +149,34 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 		setChartData(cd);
 	}, [oldProperties, properties, locationHistory, pageExtractor, emptyHiddenSet]);
 
+	// The world map, and only when one is asked for.
+	//
+	// `chartjs-chart-geo` plus the atlas are a few hundred kilobytes and almost
+	// no chart is a map, so the module is pulled in here rather than imported at
+	// the top of this file — a static import would put the atlas in the chunk
+	// every Chart loads.
+	const isGeo = properties.chartType === 'geo';
+	const [geo, setGeo] = React.useState<
+		{ features: Array<CountryFeature>; mod: typeof import('./chartjs/geo') } | undefined
+	>(undefined);
+
+	useEffect(() => {
+		if (!isGeo || geo) return;
+		let alive = true;
+		(async () => {
+			const mod = await import(/* webpackChunkName: "chart-geo" */ './chartjs/geo');
+			await mod.registerGeo();
+			const features = await mod.loadCountries(properties.geoResolution ?? 'coarse');
+			if (alive) setGeo({ features, mod });
+		})();
+		return () => {
+			alive = false;
+		};
+	}, [isGeo, geo, properties.geoResolution]);
+
 	// Determine Chart.js type and prepare data
 	const chartJsType = useMemo(() => {
+		if (isGeo) return 'choropleth' as any;
 		if (!chartData) return 'bar';
 		return determineChartJsType(properties, chartData);
 	}, [properties, chartData]);
@@ -150,20 +186,45 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 		return properties.dataSetLabels || [];
 	}, [properties.dataSetLabels]);
 
+	// The map's own data, built from the FIRST dataset only. A choropleth has one
+	// value per country and no second series to put anywhere.
+	const geoBuild: GeoBuild | undefined = useMemo(() => {
+		if (!isGeo || !geo || !chartData) return undefined;
+		const points = chartData.dataSetData[0]?.data ?? [];
+		return geo.mod.buildGeoData(geo.features, points, dataSetLabels[0] ?? '');
+	}, [isGeo, geo, chartData, dataSetLabels]);
+
 	// Transform data to Chart.js format and apply subcomponent styles
 	const chartJsData = useMemo(() => {
+		if (isGeo) return geoBuild?.data ?? { labels: [], datasets: [] };
 		if (!chartData) return { labels: [], datasets: [] };
 		const data = transformToChartJsData(properties, chartData, dataSetLabels);
 		// Apply subcomponent styles (bar, line, point, etc.) to datasets
 		data.datasets = applyStylesToDatasets(data.datasets, resolvedStyles, chartJsType);
 		return data;
-	}, [properties, chartData, dataSetLabels, resolvedStyles, chartJsType]);
+	}, [isGeo, geoBuild, properties, chartData, dataSetLabels, resolvedStyles, chartJsType]);
 
 	// Build Chart.js options
 	const chartJsOptions = useMemo(() => {
+		if (isGeo) {
+			// The high end is the theme's first chart colour, so a map matches the
+			// bars beside it without anyone configuring anything. The low end is a
+			// pale wash of the same hue rather than a second colour: a map shows
+			// how much, and two hues would say "which".
+			const themeHigh = getDataFromPath('Theme.chartPrimaryDataColor1', []);
+			const high = properties.geoHighColor || themeHigh || '#2a78d6';
+			return buildGeoOptionsSafe(geo, {
+				projection: properties.geoProjection || 'naturalEarth1',
+				lowColor: properties.geoLowColor || '#FFFFFF',
+				highColor: high,
+				noDataColor: properties.geoNoDataColor || 'rgba(10,10,10,.06)',
+				borderColor: 'rgba(10,10,10,.18)',
+				showLegend: properties.legendPosition !== 'none',
+			});
+		}
 		if (!chartData) return {};
 		return buildChartJsOptions(properties, chartData, chartJsType, resolvedStyles);
-	}, [properties, chartData, chartJsType, resolvedStyles]);
+	}, [isGeo, geo, properties, chartData, chartJsType, resolvedStyles]);
 
 	// Handle legend click to toggle dataset visibility
 	// Chart.js has built-in support for strikethrough on hidden datasets
@@ -194,12 +255,14 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 			}}
 		>
 			<HelperComponent context={props.context} definition={definition} />
-			<Chart
-				ref={chartRef}
-				type={chartJsType}
-				data={chartJsData}
-				options={options}
-			/>
+			{isGeo && !geo ? null : (
+				<Chart
+					ref={chartRef}
+					type={chartJsType}
+					data={chartJsData}
+					options={options}
+				/>
+			)}
 		</div>
 	);
 }

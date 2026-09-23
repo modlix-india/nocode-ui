@@ -146,6 +146,46 @@ module.exports = async (env = {}) => {
             reuseExistingChunk: true,
             chunks: 'async',  // Only include in async chunks
           },
+          // World map: the geo plugin, the topojson reader and the atlas.
+          //
+          // `chunks: 'async'` is the whole point of this group, exactly as it is
+          // for monaco above. The `vendors` group below matches all of
+          // node_modules with no `chunks` restriction, so without this the three
+          // packages are hoisted out of the dynamic import in Chart/chartjs/geo
+          // and into the INITIAL entrypoint — measured, not guessed: they landed
+          // in two initial vendors chunks the first time this was built. Every
+          // page would then pay for a world atlas it never draws.
+          //
+          // Priority must stay above `vendors` (9) or that group wins.
+          //
+          // The d3 packages are NOT optional here. They are chartjs-chart-geo's
+          // transitive dependencies, and naming only the three top-level
+          // packages left d3-geo and d3-scale-chromatic behind in `vendors` --
+          // 22KB gzipped added to the initial entrypoint for a map almost no
+          // page draws. Every package listed arrived with the geo plugin and is
+          // used by nothing else; `chunks: 'async'` means anything that ever
+          // gains an initial consumer still gets its copy through `vendors`.
+          // The atlases get a chunk EACH, above the group below, because a single
+          // shared name merges them: the coarse atlas landed in the same chunk as
+          // the plugin, so a map asking for the detailed one downloaded both and
+          // drew with one. Naming per file is what keeps `geoResolution` honest.
+          geoAtlas: {
+            test: /[\\/]node_modules[\\/]world-atlas[\\/]/,
+            name(module) {
+              const m = /countries-(\d+m)\.json/.exec(module.resource || '');
+              return m ? `chart-geo-atlas-${m[1]}` : 'chart-geo-atlas';
+            },
+            priority: 17,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
+          geo: {
+            test: /[\\/]node_modules[\\/](chartjs-chart-geo|topojson-client|d3-geo|d3-scale-chromatic|d3-interpolate|d3-color|d3-array|internmap)[\\/]/,
+            name: 'chart-geo',
+            priority: 16,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
           // KIRun runtime (large, only for lazy-loaded components)
           kirun: {
             test: /[\\/]node_modules[\\/]@fincity[\\/]kirun/,
