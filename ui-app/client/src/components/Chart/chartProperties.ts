@@ -6,6 +6,7 @@ import {
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
@@ -41,7 +42,74 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'radar', displayName: 'Radar (Circular or Polygon)' },
 			{ name: 'dot', displayName: 'Dot (Bubble or Scatter)' },
 			{ name: 'waffle', displayName: 'Waffle' },
+			{
+				name: 'geo',
+				displayName: 'World Map',
+				description:
+					'A shaded world map. The X axis expression supplies the country and the ' +
+					'Y axis expression the value. Countries are matched by their English ' +
+					'name or their ISO 3166-1 numeric code.',
+			},
 		],
+	},
+	{
+		name: 'geoProjection',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Map Projection',
+		description: 'Only used when Chart Type is World Map.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'naturalEarth1',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: 'naturalEarth1', displayName: 'Natural Earth' },
+			{ name: 'equalEarth', displayName: 'Equal Earth' },
+			{ name: 'equirectangular', displayName: 'Equirectangular' },
+			{ name: 'mercator', displayName: 'Mercator' },
+		],
+	},
+	{
+		name: 'geoResolution',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Map Detail',
+		description:
+			'Standard is 177 countries and loads quickly. Detailed is 241 and is the only '
+			+ 'one with a shape for Singapore, Hong Kong, Malta, Mauritius, Bahrain, the '
+			+ 'Maldives and Monaco \u2014 it costs about 190KB more, fetched only when a map '
+			+ 'is actually drawn.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'coarse',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: 'coarse', displayName: 'Standard (177 countries)' },
+			{ name: 'detailed', displayName: 'Detailed (241, includes small states)' },
+		],
+	},
+	{
+		name: 'geoLowColor',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Map Low Color',
+		description:
+			'The colour of the smallest value. Defaults to a pale tint of the theme’s ' +
+			'first chart colour. A map shades one hue from light to dark because it shows ' +
+			'how much, not which — do not give it two unrelated hues.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'geoHighColor',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Map High Color',
+		description:
+			'The colour of the largest value. Defaults to the theme’s first chart colour.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'geoNoDataColor',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Map No Data Color',
+		description:
+			'Countries the data said nothing about. Deliberately not the low colour: ' +
+			'"nobody visited" and "not measured" are different answers.',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 
 	{
