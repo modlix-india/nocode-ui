@@ -314,6 +314,10 @@ export interface ComponentDefinitionValues {
 	key: string;
 	properties?: any;
 	stylePropertiesWithPseudoStates?: any;
+	/** Where each declared bindingPath currently resolves to. Compared so a
+	 * component re-renders when its binding MOVES, not only when a value under
+	 * it changes. Never read for display. */
+	bindingPaths?: string;
 }
 
 export interface StyleClassDefinition {

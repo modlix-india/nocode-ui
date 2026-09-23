@@ -1,6 +1,7 @@
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../constants';
 import {
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../../types/common';
@@ -63,6 +64,20 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			"Comma-separated labels for the sub-cells, parallel to Sub-Cell Fields. Shown in the bottom header row.",
 		defaultValue: 'Count,CPL',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'layoutMode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sub-Cell Layout',
+		description:
+			'Choose between separate flat columns per metric (default) or compact stacked cells (Count & CPL in a single column).',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'SEPARATE_COLUMNS',
+		enumValues: [
+			{ name: 'SEPARATE_COLUMNS', displayName: 'Separate Columns per Metric' },
+			{ name: 'STACKED', displayName: 'Stacked (Single Column per Stage)' },
+		],
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -147,6 +162,50 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'disableExpand',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Disable Expand',
+		description:
+			'When true, substages are never rendered and column headers are not clickable toggles (parent-only rollup view).',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'expandIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Expand Icon',
+		description: 'Icon shown when a group column is collapsed and can be expanded.',
+		editor: ComponentPropertyEditor.ICON,
+		defaultValue: 'fa fa-solid fa-plus',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'collapseIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Collapse Icon',
+		description: 'Icon shown when a group column is expanded.',
+		editor: ComponentPropertyEditor.ICON,
+		defaultValue: 'fa fa-solid fa-minus',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'stageAliases',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Stage Aliases',
+		description:
+			'Key-value map or object mapping stage names or IDs to custom display labels (e.g. {"Contactable": "Qualified", "Fresh": "M-Leads"}).',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'headerLabelFormat',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Header Label Format',
+		description:
+			"Template format for the column header label of substages. Defaults to '{parentName} › {name}'. Can use '{parentName}' and '{name}' (e.g. '{parentName} › {name}', '{name} ({parentName})', or '{name}'). Top-level stages always use their own name.",
+		defaultValue: '{parentName} › {name}',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
@@ -161,6 +220,31 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	header: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	headerContainer: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	expandIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
+	],
+	collapseIcon: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 	],
 	groupHeader: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,

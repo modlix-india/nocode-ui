@@ -58,6 +58,12 @@ declare global {
 		theme: any;
 		/** Which theme `theme` is. Absent means the app's default. */
 		themeName?: string;
+		/**
+		 * The page routing resolved to, which need not be the one named in the URL.
+		 * Absent when the shell came from the Java ui service rather than SSR, in
+		 * which case the client resolves for itself.
+		 */
+		resolvedPageName?: string;
 		urlDetails: any;
 	}
 	/**
