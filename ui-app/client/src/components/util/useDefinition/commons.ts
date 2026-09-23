@@ -1,6 +1,6 @@
 import { TokenValueExtractor } from '@fincity/kirun-js';
 import { STORE_PREFIX } from '../../../constants';
-import { getDataFromPath, getData } from '../../../context/StoreContext';
+import { getDataFromPath, getData, getPathFromLocation } from '../../../context/StoreContext';
 import {
 	ComponentDefinition,
 	ComponentPropertyDefinition,
@@ -11,6 +11,38 @@ import {
 	ComponentResoltuions,
 } from '../../../types/common';
 import { makePropertiesObject } from '../make';
+
+// Every bindingPath slot a component may declare. Kept in step with
+// getPaths.ts, which watches the same list.
+const BINDING_PATH_KEYS = [
+	'bindingPath', 'bindingPath2', 'bindingPath3', 'bindingPath4', 'bindingPath5',
+	'bindingPath6', 'bindingPath7', 'bindingPath8', 'bindingPath9', 'bindingPath10',
+] as const;
+
+/** Each declared bindingPath resolved to the string the component will use. */
+function resolveBindingPaths(
+	definition: ComponentDefinition,
+	locationHistory: Array<LocationHistory>,
+	tokenExtractors: TokenValueExtractor[],
+): string | undefined {
+	let resolved: string | undefined;
+	for (const key of BINDING_PATH_KEYS) {
+		const loc = (definition as any)[key];
+		if (!loc) continue;
+		let path: string;
+		try {
+			path = getPathFromLocation(loc, locationHistory, ...tokenExtractors);
+		} catch (err) {
+			// A half-written expression must not take the component down. An
+			// unresolvable path is recorded as such, so it still differs from the
+			// path that eventually resolves and the re-render still happens.
+			path = `!${String(err)}`;
+		}
+		resolved = (resolved ? resolved + '\u0000' : '') + key + '=' + path;
+	}
+	return resolved;
+}
+
 
 export function createNewState(
 	definition: ComponentDefinition,
@@ -26,6 +58,23 @@ export function createNewState(
 		locationHistory,
 		tokenExtractors,
 	);
+
+	// Where each binding currently POINTS, not what is at the other end.
+	//
+	// A binding path can be an expression, and an expression can move:
+	// `'...links["{{Page.favIconKey}}"].href'` addresses a different entry the
+	// moment `favIconKey` is written. The component reads that path on render
+	// and subscribes to it, so if it does not re-render it stays subscribed to
+	// wherever the path pointed on mount - which, on the first render, is
+	// usually nowhere.
+	//
+	// It re-renders only when this object differs from the previous one, and
+	// until now the object held resolved PROPERTIES and styles. A path move
+	// changes neither, so the bail-out below swallowed it. sitezump's favicon
+	// field was the symptom: the value was in the store, the path was right and
+	// the listener worked, and the input stayed empty because it was still
+	// listening to the path from before `favIconKey` existed.
+	def.bindingPaths = resolveBindingPaths(definition, locationHistory, tokenExtractors);
 
 	if (definition.styleProperties) {
 		const devices = getDataFromPath(`${STORE_PREFIX}.devices`, locationHistory);

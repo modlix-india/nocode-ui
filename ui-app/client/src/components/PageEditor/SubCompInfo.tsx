@@ -29,6 +29,7 @@ import {
 	TableColumnHeader,
 	TableColumns,
 	TableDynamicColumn,
+	TableDynamicGroupedColumn,
 	TableEmptyGrid,
 	TableGrid,
 	TablePreviewGrid,
@@ -4260,6 +4261,77 @@ export const SubComponentDefinitions: Record<
 			name: 'header',
 			displayName: 'Header',
 			description: 'Header',
+			icon: 'fa-solid fa-box',
+		},
+	],
+
+	[TableDynamicGroupedColumn.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			mainComponent: true,
+			icon: (
+				<IconHelper viewBox="0 0 24 24">
+					{/* Top Grouped Header Block */}
+					<rect x="2" y="2" width="20" height="5" rx="1" fill="currentColor" />
+					{/* Left Sub-Column Header */}
+					<rect x="2" y="8" width="9.5" height="4" rx="0.8" fill="currentColor" fillOpacity="0.7" />
+					{/* Right Sub-Column Header */}
+					<rect x="12.5" y="8" width="9.5" height="4" rx="0.8" fill="currentColor" fillOpacity="0.7" />
+					{/* Left Sub-Column Body */}
+					<rect x="2" y="13" width="9.5" height="9" rx="0.8" fill="currentColor" fillOpacity="0.25" />
+					{/* Right Sub-Column Body */}
+					<rect x="12.5" y="13" width="9.5" height="9" rx="0.8" fill="currentColor" fillOpacity="0.25" />
+				</IconHelper>
+			),
+		},
+		{
+			name: 'expandIcon',
+			displayName: 'Expand Icon',
+			description: 'Expand Icon',
+			icon: 'fa-solid fa-plus',
+		},
+		{
+			name: 'collapseIcon',
+			displayName: 'Collapse Icon',
+			description: 'Collapse Icon',
+			icon: 'fa-solid fa-minus',
+		},
+		{
+			name: 'header',
+			displayName: 'Header',
+			description: 'Header',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'headerContainer',
+			displayName: 'Header Container',
+			description: 'Header Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'groupHeader',
+			displayName: 'Group Header',
+			description: 'Group Header',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'leafHeader',
+			displayName: 'Leaf Header',
+			description: 'Leaf Header',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'subCellHeader',
+			displayName: 'Sub-Cell Header',
+			description: 'Sub-Cell Header',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'cell',
+			displayName: 'Cell',
+			description: 'Cell',
 			icon: 'fa-solid fa-box',
 		},
 	],

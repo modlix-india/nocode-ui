@@ -555,6 +555,7 @@ const COMPONENT_TIERS: Record<string, ComponentTier> = {
 	TableColumnHeader: 'table',
 	TableColumns: 'table',
 	TableDynamicColumn: 'table',
+	TableDynamicGroupedColumn: 'table',
 	TableEmptyGrid: 'table',
 	TableGrid: 'table',
 	TablePreviewGrid: 'table',
@@ -683,6 +684,8 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 		'Container for dynamically generated table columns. Use when columns are data-driven rather than static.',
 	TableDynamicColumn:
 		'Column definition for dynamically generated columns inside TableColumns. Bound to column data source.',
+	TableDynamicGroupedColumn:
+		'Dynamic grouped column driven by tree binding (e.g. stage tree). Renders grouped headers with custom cell templates.',
 	TableEmptyGrid:
 		'Empty state display shown when a Table has no data. Contains child components for the empty message.',
 	TableGrid:
