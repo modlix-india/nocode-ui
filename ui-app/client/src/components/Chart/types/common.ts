@@ -39,6 +39,14 @@ export enum ChartType {
 	Radial = 'radial',
 	Radar = 'radar',
 	Waffle = 'waffle',
+	/**
+	 * A shaded world map. It takes the same X/Y axis expressions as every other
+	 * type — X is the country, Y is the value — but is drawn by `chartjs/geo`,
+	 * which `LazyChart` imports dynamically so the atlas never reaches the chunk
+	 * ordinary charts load. It has no axes, so nothing in `VALID_COMBINATIONS`
+	 * describes it.
+	 */
+	Geo = 'geo',
 }
 
 export enum DataSetStyle {
@@ -96,6 +104,14 @@ export interface ChartProperties {
 	colorScheme: string;
 	chartType: ChartType;
 	data: any; // Done.
+
+	// World map only. Everything here is optional; the colours fall back to the
+	// theme's own chart palette. See `chartjs/geo.ts`.
+	geoProjection?: string;
+	geoResolution?: 'coarse' | 'detailed';
+	geoLowColor?: string;
+	geoHighColor?: string;
+	geoNoDataColor?: string;
 
 	dataSetColors: string[]; // Done.
 	dataColorsPath?: string[]; // Done.

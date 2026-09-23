@@ -20,6 +20,7 @@ import { ComponentProperty, PageDefinition } from '../types/common';
 import { processLocation } from '../util/locationProcessor';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
 import getPageDefinition from './pageDefinition';
+import { resolvePageForLocation } from './pageRoute';
 import { isLeavingForBeacon } from '../sso/ssoModule';
 
 const POSITIONS: { [key: string]: boolean } = {
@@ -35,20 +36,70 @@ export const RenderEngineContainer = () => {
 	const [currentPageName, setCurrentPageName] = useState<string | undefined>();
 	const [shellPageDefinition, setShellPageDefinition] = useState<PageDefinition>();
 	const [pageDefinition, setPageDefinition] = useState<any>();
+	const [consentPageDefinition, setConsentPageDefinition] = useState<PageDefinition>();
+	const [askConsent, setAskConsent] = useState(false);
 	const [appTitle, setAppTitle] = useState<string>('');
 
 	const loadDefinition = useCallback(() => {
 		const details = processLocation(window.location);
-		let { pageName } = details;
-		setData(`${STORE_PREFIX}.urlDetails`, details);
-		UrlDetailsExtractor.addDetails(details);
-		if (!pageName)
-			pageName = getDataFromPath(`${STORE_PREFIX}.application.properties.defaultPage`, []);
+		// The default page when the URL names none. Routing is keyed by the page
+		// that was ASKED for, so this has to be filled before the resolver runs --
+		// and the store write has to come after it, so that both names travel
+		// together. See below.
+		UrlDetailsExtractor.fillDefaultPage(details);
+
+		// `urlDetails.pageName` stays as the URL reads, because that is what it is
+		// named for and what expressions on the page already read. The page that
+		// renders is a separate question: routing may send this URL to a different
+		// definition, and everything below -- the store namespace, the definition
+		// lookup, the fetch -- keys off that answer rather than off the URL.
+		const pageName = resolvePageForLocation(details);
+
+		// Writes `Store.urlDetails`, which is what `Url.` reads, carrying BOTH
+		// names. The served one used to be computed here and thrown away, which is
+		// how analytics came to file every view and every click on a routed page
+		// under the address rather than under the page: `AnalyticsBinder` reads
+		// this store, and the only name in it was the one the URL asked for.
+		//
+		// One write, deliberately. Two would notify every listener twice and the
+		// beacon would count the arrival twice.
+		UrlDetailsExtractor.addDetails(details, pageName);
+
+		// True only when routing sent this URL somewhere else. Everything below
+		// that is conditional on it leaves the ordinary path exactly as it was.
+		const routed = !!details.pageName && pageName !== details.pageName;
+
 		let pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
 		if (!pDef) {
 			(async () => {
-				setData(`Store.pageDefinition.${pageName}`, await getPageDefinition(pageName!));
-				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
+				let name = pageName!;
+				// A rule can name a page that has since been deleted. The SSR service
+				// falls back to the URL's own name rather than serving nothing, and an
+				// in-app navigation must not behave worse than an arrival.
+				let definition = routed
+					? await getPageDefinition(name).catch(() => undefined)
+					: await getPageDefinition(name);
+
+				if (routed && !definition) {
+					console.error(
+						'Page routing selected a page that could not be loaded, falling back to the requested page. Selected:',
+						name,
+						'Requested:',
+						details.pageName,
+					);
+					name = details.pageName!;
+					definition = await getPageDefinition(name);
+				}
+
+				// Nothing to render and nothing left to try. Returning leaves the view
+				// as it was, which is what a rejected fetch did before; the difference
+				// is that it now says so. Falling through would store `undefined` and
+				// fail the app-code check below, which reloads — and on a page that is
+				// simply missing, reloads forever.
+				if (!definition) return;
+
+				setData(`Store.pageDefinition.${name}`, definition);
+				pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${name}`, []);
 				const appCode = getDataFromPath(`${STORE_PREFIX}.application.appCode`, []);
 				// A beacon hop is already committed and this page is on its way out, so a
 				// reload here would abort it. `UIEngine.Login` deliberately clears
@@ -68,7 +119,7 @@ export const RenderEngineContainer = () => {
 					return;
 				}
 				setPageDefinition(processClassesForPageDefinition(pDef));
-				setCurrentPageName(pageName);
+				setCurrentPageName(name);
 			})();
 		} else {
 			setPageDefinition(processClassesForPageDefinition(pDef));
@@ -161,6 +212,64 @@ export const RenderEngineContainer = () => {
 			),
 		[],
 	);
+
+	// The consent page is inlined into the application document by the server
+	// the same way the shell page is, so it costs no extra round trip and is
+	// available on the very first paint of every page — including the marketing
+	// pages that opt out of the shell with `wrapShell: false`.
+	//
+	// `Store.application` is re-emitted during a page's life (auth resolving is
+	// the common one). Handing `Page` a fresh definition object each time
+	// remounts the consent page and takes its page store with it, which blanks
+	// a consent box the visitor was part way through. So a re-emit of the same
+	// version is ignored rather than passed through.
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				undefined,
+				(_, value) =>
+					setConsentPageDefinition(existing => {
+						if (isNullValue(value)) return undefined;
+						if (
+							existing &&
+							existing.name === value.name &&
+							existing.version === value.version
+						)
+							return existing;
+						return processClassesForPageDefinition(value);
+					}),
+				`${STORE_PREFIX}.application.properties.consentPageDefinition`,
+			),
+		[],
+	);
+
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				undefined,
+				(_, state) =>
+					setAskConsent(!!state?.enabled && !!state?.required && !state?.decided),
+				`${STORE_PREFIX}.analyticsConsent`,
+			),
+		[],
+	);
+
+	// `Page` runs its own onLoad only when `Store.urlDetails.pageName` matches
+	// its context, which is never true for a page rendered as an overlay. The
+	// shell page has the same problem and is handled the same way: run the
+	// onLoad here, in the consent page's own store scope, so `Page.showBar` and
+	// the preference toggles are seeded before anything is bound to them.
+	useEffect(() => {
+		if (!askConsent || !consentPageDefinition) return;
+
+		const { name, eventFunctions = {}, properties: { onLoadEvent = undefined } = {} } =
+			consentPageDefinition;
+		if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent!])) return;
+
+		runEvent(eventFunctions[onLoadEvent!], 'consentOnLoad', name, [], consentPageDefinition);
+		// Keyed on the definition object, not its name: if it ever is replaced,
+		// the page store went with it and the box has to be seeded again.
+	}, [askConsent, consentPageDefinition]);
 
 	useEffect(() => {
 		let title = appTitle ?? '';
@@ -332,6 +441,23 @@ export const RenderEngineContainer = () => {
 
 	const Page = PageComponentDefinition.component;
 
+	// Rendered alongside whichever page is showing, never inside it, so the box
+	// survives navigation between pages and is not affected by a page opting
+	// out of the shell. It is suppressed in the editor, where it would sit on
+	// top of the canvas being edited.
+	const consentOverlay =
+		askConsent && consentPageDefinition && !globalThis.designMode ? (
+			<Page
+				locationHistory={[]}
+				pageDefinition={consentPageDefinition}
+				context={{
+					pageName: consentPageDefinition.name,
+					shellPageName: shellPageDefinition?.name,
+					level: 0,
+				}}
+			/>
+		) : null;
+
 	if (currentPageName && pageDefinition) {
 		const { properties: { wrapShell = true } = {} } = pageDefinition;
 
@@ -342,6 +468,41 @@ export const RenderEngineContainer = () => {
 				!globalThis.pageEditor?.personalization?.slave?.noShell)
 		)
 			return (
+				<>
+					<Page
+						locationHistory={[]}
+						pageDefinition={shellPageDefinition}
+						context={{
+							pageName: GLOBAL_CONTEXT_NAME,
+							shellPageName: shellPageDefinition?.name,
+							level: 0,
+						}}
+					/>
+					{consentOverlay}
+				</>
+			);
+
+		return (
+			<>
+				<Page
+					locationHistory={[]}
+					pageDefinition={pageDefinition}
+					context={{
+						pageName: currentPageName,
+						shellPageName: shellPageDefinition?.name,
+						level: 0,
+					}}
+				/>
+				{consentOverlay}
+			</>
+		);
+	} else if (pageDefinition) {
+		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
+		const hasDefinitions = !!Object.keys(definitions).length;
+		if (!hasDefinitions) return <></>;
+
+		return (
+			<>
 				<Page
 					locationHistory={[]}
 					pageDefinition={shellPageDefinition}
@@ -351,34 +512,8 @@ export const RenderEngineContainer = () => {
 						level: 0,
 					}}
 				/>
-			);
-
-		return (
-			<Page
-				locationHistory={[]}
-				pageDefinition={pageDefinition}
-				context={{
-					pageName: currentPageName,
-					shellPageName: shellPageDefinition?.name,
-					level: 0,
-				}}
-			/>
-		);
-	} else if (pageDefinition) {
-		const definitions = getDataFromPath(`${STORE_PREFIX}.pageDefinition`, []) ?? {};
-		const hasDefinitions = !!Object.keys(definitions).length;
-		if (!hasDefinitions) return <></>;
-
-		return (
-			<Page
-				locationHistory={[]}
-				pageDefinition={shellPageDefinition}
-				context={{
-					pageName: GLOBAL_CONTEXT_NAME,
-					shellPageName: shellPageDefinition?.name,
-					level: 0,
-				}}
-			/>
+				{consentOverlay}
+			</>
 		);
 	} else {
 		//TODO: Need to throw an error that there is not page definition found.
