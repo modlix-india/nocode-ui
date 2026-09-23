@@ -1162,6 +1162,46 @@ function generateDynamicColumns(
 	}
 }
 
+const BARE_PATH_SEGMENT = /^[A-Za-z_$][A-Za-z0-9_$]*$|^\d+$/;
+
+/**
+ * Substitutes a stage id into the user's cell-path template.
+ *
+ * The result is interpolated straight into a KIRun expression, so an id that
+ * is not a bare path segment — a stage named "Site Visit", "Follow-up",
+ * "3.1 Review" — cannot go in as a dotted segment. It does not error: the
+ * parser reads a DIFFERENT path and the column quietly shows another stage's
+ * numbers. Quoted bracket keys are the safe form for spaces, hyphens, dots
+ * and operators, and work in every runtime.
+ *
+ * Only a placeholder that follows a dot is rewritten, since that is the one
+ * case where the id is a whole segment and a bracket can replace it.
+ */
+function buildCellPath(template: string, id: any): string {
+	const raw = String(id);
+	if (BARE_PATH_SEGMENT.test(raw)) return template.replace('{id}', raw);
+	if (!template.includes('.{id}')) return template.replace('{id}', raw);
+	const quoted = raw.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+	return template.replace('.{id}', `["${quoted}"]`);
+}
+
+/**
+ * Reads one entry of the expanded-groups map. The toggle this component
+ * synthesises writes a real boolean, but a page is free to seed the map
+ * itself, so any truthy value counts as expanded — that was the contract
+ * before the per-stage toggle existed and pages still rely on it. The
+ * string spellings of false are the one exception: a boolean that has
+ * round-tripped through a URL or a text field arrives as `'false'`, which
+ * is truthy and would pin the group open.
+ */
+function isExpandedFlag(value: any): boolean {
+	if (typeof value === 'string') {
+		const v = value.trim().toLowerCase();
+		return v !== '' && v !== 'false' && v !== '0' && v !== 'null' && v !== 'undefined';
+	}
+	return !!value;
+}
+
 /**
  * Walks the group tree binding for every TableDynamicGroupedColumn child and
  * synthesises one TableColumn per (leaf × sub-cell field) into the page
@@ -1268,7 +1308,30 @@ function generateGroupedDynamicColumns(
 
 		const templateKeys = userChildKeys.flatMap(k => collectSubtree(k));
 
-		const getSafeId = (id: any): string => String(id).replace(/[^a-zA-Z0-9]/g, '');
+		// The sanitised id feeds the synthesised component keys, the
+		// expanded-state path and the toggle event key, so it has to be unique
+		// per node. Stripping punctuation alone is not: two stages named
+		// "Site Visit" and "SiteVisit" — or any two ids differing only by
+		// punctuation — collapse onto the same key, and the second silently
+		// overwrites the first column. Disambiguate by tree order, and keep a
+		// cache so the same raw id always maps to the same safe id no matter
+		// which call site asks first.
+		const safeIdByRawId = new Map<string, string>();
+		const usedSafeIds = new Set<string>();
+		const getSafeId = (id: any): string => {
+			const raw = String(id);
+			const cached = safeIdByRawId.get(raw);
+			if (cached !== undefined) return cached;
+
+			const base = raw.replace(/[^a-zA-Z0-9]/g, '') || 'id';
+			let safe = base;
+			let suffix = 1;
+			while (usedSafeIds.has(safe)) safe = `${base}_${++suffix}`;
+
+			usedSafeIds.add(safe);
+			safeIdByRawId.set(raw, safe);
+			return safe;
+		};
 		const getSafeStageKey = (id: any): string => `s_${getSafeId(id)}`;
 
 		const getStageLabel = (nid: any, nname: string, parentLabel?: string): string => {
@@ -1348,7 +1411,7 @@ function generateGroupedDynamicColumns(
 		) => {
 			const nid = resolveNodeId(node);
 			const nname = resolveNodeLabel(node, nid);
-			const cellPath = cellPathTemplate.replace('{id}', String(nid));
+			const cellPath = buildCellPath(cellPathTemplate, nid);
 			const safeId = getSafeId(nid);
 			const displayLabel = getStageLabel(nid, nname, parentLabel);
 
@@ -1566,10 +1629,7 @@ function generateGroupedDynamicColumns(
 
 			const stageKey = getSafeStageKey(gid);
 			const isExpanded =
-				!disableExpand &&
-				(forceExpandAll ||
-					expandedMap?.[stageKey] === true ||
-					expandedMap?.[stageKey] === 'true');
+				!disableExpand && (forceExpandAll || isExpandedFlag(expandedMap?.[stageKey]));
 
 			emitColumnsFor(group, undefined, toggleEfKey, isExpanded);
 
