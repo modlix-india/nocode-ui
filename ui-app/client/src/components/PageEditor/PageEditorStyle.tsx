@@ -32,6 +32,13 @@ export default function PageEditorStyle({
 	}, [setUsed]);
 	const css =
 		`
+	/* The canvas is the page being designed, not editor chrome. It is deliberately
+	   left out of the editor's Panel Background variable so a dark editor theme
+	   never tints a page whose own body is transparent. */
+	.comp.compPageEditor ._iframe iframe{
+		background-color: #FFFFFF;
+	}
+
 	.comp.compPageEditor ._iframe.MOBILE_POTRAIT_SCREEN iframe{
 		width: ${StyleResolutionDefinition.get('MOBILE_POTRAIT_SCREEN')?.minWidth}px;
 		min-width: ${StyleResolutionDefinition.get('MOBILE_POTRAIT_SCREEN')?.minWidth}px;

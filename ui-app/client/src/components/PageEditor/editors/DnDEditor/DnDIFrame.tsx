@@ -5,7 +5,7 @@ import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
 } from '../../../../context/StoreContext';
 import { IconHelper } from '../../../util/IconHelper';
-import { previewSrc } from '../../util/draftToken';
+import { previewSrc } from '../../../util/draftToken';
 
 interface DnDIFrameProps {
 	personalizationPath: string | undefined;

@@ -75,6 +75,47 @@ export function hashCode(str: string | undefined): number {
 	return hash;
 }
 
+/**
+ * Keep a pointer drag alive while the pointer is over an iframe.
+ *
+ * A drag follows the pointer with listeners on this document, and an iframe is a
+ * document of its own: the moment the pointer is over one, `mousemove` stops
+ * arriving and the `mouseup` that should have ended the drag is delivered to the
+ * frame instead. The drag does not end, it freezes -- still armed, still stuck
+ * to the pointer. Nothing about that is an edge case for a resizable Grid or the
+ * chat's page preview: both drag ACROSS a frame by design.
+ *
+ * A transparent element pinned over the viewport, above everything, takes those
+ * events in THIS document, so the listeners keep firing wherever the pointer
+ * goes. It carries the drag cursor too, because from mousedown on, the pointer
+ * is over the shield and whatever the element beneath would have shown no longer
+ * applies.
+ *
+ * Returns the teardown. Call it on every path that ends the drag, including the
+ * ones that end it without a mouseup.
+ */
+export function startDragShield(cursor?: string): () => void {
+	if (typeof document === 'undefined' || !document.body) return () => {};
+
+	const shield = document.createElement('div');
+	shield.dataset.dragShield = 'true';
+	// Insets rather than 100vw/100vh: on a page with a scrollbar those overflow
+	// the viewport and the shield itself would add a scrollbar mid-drag.
+	// Max z-index because a popup, or the editor's floating bars, are allowed to
+	// be above the page and the shield has to be above THEM until the drag ends.
+	shield.style.cssText =
+		'position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483647;background:transparent;';
+	if (cursor && cursor !== 'auto') shield.style.cursor = cursor;
+	document.body.appendChild(shield);
+
+	let released = false;
+	return () => {
+		if (released) return;
+		released = true;
+		shield.remove();
+	};
+}
+
 export function onMouseDownDragStartCurry(
 	startX: number,
 	startY: number,
@@ -87,14 +128,27 @@ export function onMouseDownDragStartCurry(
 		e.stopPropagation();
 
 		const { clientX, clientY } = e;
+		// Read off the grip while the event is still live: the handler runs
+		// synchronously, but the element can be gone by the time the drag ends.
+		const grip = e.currentTarget as HTMLElement | null;
+		const releaseShield = startDragShield(
+			grip && typeof window !== 'undefined'
+				? window.getComputedStyle(grip).cursor
+				: undefined,
+		);
+
 		let lastData = { newX: 0, newY: 0, diffX: 0, diffY: 0 };
+		const stop = () => {
+			document.body.removeEventListener('mousemove', onMouseMove);
+			document.body.removeEventListener('mouseup', onMouseUp);
+			document.body.removeEventListener('mouseleave', onMouseUp);
+			releaseShield();
+		};
 		const onMouseMove = (ie: MouseEvent) => {
 			ie.preventDefault();
 			ie.stopPropagation();
 			if (ie.buttons !== 1) {
-				document.body.removeEventListener('mousemove', onMouseMove);
-				document.body.removeEventListener('mouseup', onMouseUp);
-				document.body.removeEventListener('mouseleave', onMouseUp);
+				stop();
 				onDragEnd?.(lastData.newX, lastData.newY, lastData.diffX, lastData.diffY, ie);
 				return;
 			}
@@ -108,9 +162,7 @@ export function onMouseDownDragStartCurry(
 			ie.preventDefault();
 			ie.stopPropagation();
 
-			document.body.removeEventListener('mousemove', onMouseMove);
-			document.body.removeEventListener('mouseup', onMouseUp);
-			document.body.removeEventListener('mouseleave', onMouseUp);
+			stop();
 			if (ie.type === 'mouseleave') return;
 			onDragEnd?.(lastData.newX, lastData.newY, lastData.diffX, lastData.diffY, ie);
 		};

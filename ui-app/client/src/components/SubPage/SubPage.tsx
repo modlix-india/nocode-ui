@@ -40,7 +40,13 @@ function SubPage(props: Readonly<ComponentProps>) {
 	const {
 		key,
 		stylePropertiesWithPseudoStates,
-		properties: { pageName: originalPageName, appCode, clientCode, overrideThemeStyles } = {},
+		properties: {
+			pageName: originalPageName,
+			appCode,
+			clientCode,
+			overrideThemeStyles,
+			reloadOn,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -148,10 +154,20 @@ function SubPage(props: Readonly<ComponentProps>) {
 		})();
 	}, [appCode, clientCode, overrideThemeStyles]);
 
+	// `subPage` lags `pageName` by a render: the listener above re-subscribes to the
+	// new path and only then sets the definition, so the render in which `pageName`
+	// changes still holds the OUTGOING pane's definition. Keying this on the
+	// definition's own name rather than on "is there a definition" is what makes it
+	// fire once, on the render where the incoming definition has actually arrived.
+	// As a boolean it missed that render entirely whenever the incoming definition
+	// was already in the store -- the flag went from true to true -- so a pane
+	// switched to from another pane never ran its own load and looked empty until a
+	// reload, while the one run that did happen carried the outgoing pane's
+	// definition and re-fired ITS load event.
 	useEffect(() => {
-		if (!subPage) return;
+		if (!subPage || subPage.name !== pageName) return;
 
-		const { name, eventFunctions = {}, properties: { onLoadEvent = undefined } = {} } = subPage;
+		const { eventFunctions = {}, properties: { onLoadEvent = undefined } = {} } = subPage;
 
 		if (!onLoadEvent || !eventFunctions[onLoadEvent]) return;
 
@@ -165,7 +181,9 @@ function SubPage(props: Readonly<ComponentProps>) {
 				undefined,
 				true,
 			))();
-	}, [subPage !== undefined, pageName, locationHistory.length]);
+		// `reloadOn` is how a host page asks for this to run again: it owns no
+		// part of the pane's loading and cannot reach the function that does.
+	}, [subPage?.name, pageName, locationHistory.length, reloadOn]);
 
 	const locHist = bindingPath
 		? [...locationHistory, { location: bindingPath, index: -1, pageName, componentKey: key }]
@@ -212,7 +230,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Parent Binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

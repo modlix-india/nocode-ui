@@ -21,7 +21,6 @@ import PageStyle from './PageStyle';
 import pageHistory from './pageHistory';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
 import { styleProperties, styleDefaults } from './pageStyleProperties';
-import axios from 'axios';
 
 const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
 
@@ -46,35 +45,6 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	);
 
 	const [, setLastChanged] = useState<number>(Date.now());
-
-	const auth = getDataFromPath(`Store.auth`, []);
-	let shouldRedirect = false;
-	if (!auth?.isAuthenticated && pageDefinition) {
-		const app = getDataFromPath(`Store.application`, []);
-		shouldRedirect =
-			app?.appCode === pageDefinition?.appCode &&
-			app?.properties?.loginPage === pageDefinition.name &&
-			app?.properties?.loginPage !== pageName &&
-			app?.properties?.sso?.redirectURL;
-	}
-
-	useEffect(() => {
-		if (!shouldRedirect) return;
-
-		(async () => {
-			const app = getDataFromPath(`Store.application`, []);
-			const redirectURL = app?.properties?.sso?.redirectURL;
-			const { appCode = '', clientCode = '' } =
-				(await axios.get('api/ui/urlDetails')).data ?? {};
-
-			const finalURL = redirectURL
-				.replace('{appCode}', appCode)
-				.replace('{clientCode}', clientCode)
-				.replace('{redirectUrl}', encodeURIComponent(window.location.href));
-
-			window.location.replace(finalURL);
-		})();
-	}, [shouldRedirect]);
 
 	useEffect(
 		() =>
@@ -189,8 +159,6 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		}
 		return fullStyle;
 	}, [pageDefinition?.properties?.classes]);
-
-	if (shouldRedirect) return <></>;
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,

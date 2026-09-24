@@ -392,8 +392,23 @@ export default function PromptStyle({
 			flex-shrink: 0;
 		}
 
+		/*
+		 * The right-hand group. Its own container with margin-left auto rather than
+		 * relying on the bar's space-between: that spreads whatever children there
+		 * happen to be, so a third button would sit in the middle, and with the
+		 * sessions toggle hidden a lone button would sit on the left.
+		 */
+		${PREFIX} ._promptTopRight {
+			display: flex;
+			align-items: center;
+			gap: 2px;
+			margin-left: auto;
+		}
+
 		${PREFIX} ._sidebarToggle,
-		${PREFIX} ._newChatTopButton {
+		${PREFIX} ._newChatTopButton,
+		${PREFIX} ._promptPreviewOpenButton,
+		${PREFIX} ._promptOpenFullButton {
 			width: 36px;
 			height: 36px;
 			border: none;
@@ -407,12 +422,208 @@ export default function PromptStyle({
 			font-size: 16px;
 			padding: 0;
 			transition: background 0.15s, color 0.15s;
+			/* It is an anchor, so it also carries link styling to undo. */
+			text-decoration: none;
+			flex-shrink: 0;
 		}
 
 		${PREFIX} ._sidebarToggle:hover,
-		${PREFIX} ._newChatTopButton:hover {
+		${PREFIX} ._newChatTopButton:hover,
+		${PREFIX} ._promptPreviewOpenButton:hover,
+		${PREFIX} ._promptOpenFullButton:hover {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
 			color: ${t('fontColorOne', '#1a1a1a')};
+		}
+
+		/* ─── Page preview ─── */
+		/*
+		 * A sibling of the chat column, not an overlay: the whole point is to see
+		 * both at once. Width comes from the host as an inline style, so this only
+		 * has to stop it growing or shrinking on its own.
+		 */
+		${PREFIX} ._promptPreviewPane {
+			position: relative;
+			height: 100%;
+			flex-shrink: 0;
+			display: flex;
+			border-left: 1px solid ${t('borderColorNine', '#e5e5e5')};
+			background: ${t('surfaceColorOne', '#f9f9f9')};
+			min-width: 0;
+		}
+
+		${PREFIX} ._promptPreviewResizer {
+			position: absolute;
+			left: -3px;
+			top: 0;
+			width: 6px;
+			height: 100%;
+			border: none;
+			padding: 0;
+			background: transparent;
+			cursor: col-resize;
+			z-index: 2;
+		}
+
+		${PREFIX} ._promptPreviewResizer:hover {
+			background: ${t('borderColorNine', '#e5e5e5')};
+		}
+
+		${PREFIX} ._promptPreview {
+			display: flex;
+			flex-direction: column;
+			width: 100%;
+			min-width: 0;
+			height: 100%;
+		}
+
+		${PREFIX} ._promptPreviewBar {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 10px;
+			flex-shrink: 0;
+			border-bottom: 1px solid ${t('borderColorNine', '#e5e5e5')};
+		}
+
+		${PREFIX} ._promptPreviewSurface {
+			display: flex;
+			gap: 2px;
+			padding: 2px;
+			border-radius: 8px;
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._promptPreviewTab {
+			border: none;
+			background: transparent;
+			color: ${t('fontColorTwo', '#6b6b6b')};
+			font-size: 12px;
+			padding: 4px 10px;
+			border-radius: 6px;
+			cursor: pointer;
+		}
+
+		${PREFIX} ._promptPreviewTab._active {
+			background: ${t('colorSeven', '#fff')};
+			color: ${t('fontColorOne', '#1a1a1a')};
+			font-weight: 600;
+		}
+
+		/* The page being shown, and the box it can be changed in. Reads as text
+		   until it is hovered or focused, because most of the time it is only
+		   reporting where the pane is. Truncates rather than wrapping: it shares
+		   one line with two button groups that must not move as the name changes. */
+		${PREFIX} ._promptPreviewPath {
+			flex: 1;
+			min-width: 0;
+			font-size: 12px;
+			font-family: inherit;
+			color: ${t('fontColorTwo', '#6b6b6b')};
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			border: 1px solid transparent;
+			border-radius: 6px;
+			background: transparent;
+			padding: 4px 6px;
+			outline: none;
+		}
+
+		${PREFIX} ._promptPreviewPath._pinned {
+			color: ${t('fontColorOne', '#1a1a1a')};
+		}
+
+		${PREFIX} ._promptPreviewPath:hover {
+			border-color: ${t('borderColorNine', '#e5e5e5')};
+		}
+
+		${PREFIX} ._promptPreviewPath:focus {
+			border-color: ${t('borderColorNine', '#e5e5e5')};
+			background: ${t('colorSeven', '#fff')};
+			color: ${t('fontColorOne', '#1a1a1a')};
+			text-overflow: clip;
+		}
+
+		${PREFIX} ._promptPreviewTools {
+			display: flex;
+			align-items: center;
+			gap: 2px;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._promptPreviewTool {
+			width: 28px;
+			height: 28px;
+			border: none;
+			background: transparent;
+			color: ${t('fontColorTwo', '#6b6b6b')};
+			cursor: pointer;
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 13px;
+			padding: 0;
+			text-decoration: none;
+		}
+
+		${PREFIX} ._promptPreviewTool:hover,
+		${PREFIX} ._promptPreviewTool._active {
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+			color: ${t('fontColorOne', '#1a1a1a')};
+		}
+
+		/* Centres a narrowed device frame and lets a wide one scroll rather than
+		   squeezing the iframe, which would misreport the viewport to the page. */
+		${PREFIX} ._promptPreviewBody {
+			flex: 1;
+			min-height: 0;
+			display: flex;
+			justify-content: center;
+			overflow: auto;
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+		}
+
+		${PREFIX} ._promptPreviewFrame {
+			width: 100%;
+			height: 100%;
+			border: none;
+			background: ${t('colorSeven', '#fff')};
+		}
+
+		${PREFIX} ._promptPreviewEmpty {
+			margin: auto;
+			padding: 24px;
+			text-align: center;
+			font-size: 13px;
+			color: ${t('fontColorTwo', '#6b6b6b')};
+		}
+
+		/* The offer, above the composer with the other post-turn notices. */
+		${PREFIX} ._promptPreviewOffer {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			margin: 0 12px 8px;
+			padding: 8px 12px;
+			border-radius: 8px;
+			font-size: 12px;
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+			color: ${t('fontColorTwo', '#6b6b6b')};
+		}
+
+		${PREFIX} ._promptPreviewOfferGo {
+			margin-left: auto;
+			flex-shrink: 0;
+			border: none;
+			border-radius: 6px;
+			padding: 5px 10px;
+			font-size: 12px;
+			font-weight: 600;
+			cursor: pointer;
+			background: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('colorSeven', '#fff')};
 		}
 
 		/* ─── Messages area ─── */
@@ -598,6 +809,18 @@ export default function PromptStyle({
 			line-height: 1.6;
 			word-wrap: break-word;
 			position: relative;
+		}
+
+		/*
+		 * A steer: sent into a turn that is already running, and not yet
+		 * acknowledged by the agent. Faded and dashed because it is not part of
+		 * the conversation until the agent says it read it, at which point the
+		 * class comes off and it looks like any other message.
+		 */
+		${PREFIX} ._promptMessage._user._pending {
+			opacity: 0.6;
+			border: 1px dashed ${t('fontColorThree', '#9b9b9b')};
+			background: transparent;
 		}
 
 		/* ─── Assistant message ─── */
@@ -1609,6 +1832,25 @@ export default function PromptStyle({
 			color: ${t('fontColorOne', '#1a1a1a')};
 		}
 
+		/* An image that has not arrived yet. A secured attachment is fetched
+		   with an auth header rather than served straight to the <img>, so
+		   there is a real gap to fill; without a box of the right size the
+		   whole transcript reflows when each one lands. */
+		${PREFIX} ._attachmentImage._attachmentLoading {
+			width: 120px;
+			height: 90px;
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+		}
+
+		/* A chat attachment is kept for ninety days and then deleted by the
+		   retention job. This is what stands in its place afterwards — said
+		   plainly, because a broken image icon reads as a bug rather than as
+		   the documented behaviour it is. */
+		${PREFIX} ._attachmentPreview._attachmentExpired ._attachmentFile {
+			color: ${t('fontColorThree', '#9b9b9b')};
+			font-style: italic;
+		}
+
 		/* ─── Saved-outright notice ───
 		   Objects the user does not have open are written straight to the
 		   database, unlike the ones on screen which wait for their Save. Nothing
@@ -1645,6 +1887,91 @@ export default function PromptStyle({
 
 		${PREFIX} ._promptSavedDismiss:hover {
 			opacity: 1;
+		}
+
+		/* The review bar, for a chat with no editor around it. Same tint as the
+		   notice above because it is the same news, but it stays until the work is
+		   published or discarded rather than being dismissible: the point of it is
+		   that unpublished work should not be easy to forget. */
+		${PREFIX} ._promptPendingBar {
+			max-width: 768px;
+			margin: 0 auto 8px;
+			padding: 10px 12px;
+			border-radius: 8px;
+			font-size: 12px;
+			line-height: 1.45;
+			background-color: ${t('accentTintColor', 'rgba(245, 158, 11, 0.1)')};
+			color: ${t('colorTwo', '#92400e')};
+		}
+
+		${PREFIX} ._promptPendingHead {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+		}
+
+		${PREFIX} ._promptPendingCount {
+			flex: 1;
+			min-width: 0;
+		}
+
+		${PREFIX} ._promptPendingList {
+			margin: 4px 0 8px 22px;
+			opacity: 0.85;
+			word-break: break-word;
+		}
+
+		${PREFIX} ._promptPendingError {
+			margin: 0 0 8px 22px;
+			color: ${t('colorTwelve', '#dc3545')};
+		}
+
+		${PREFIX} ._promptPendingActions {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 6px;
+			margin-left: 22px;
+		}
+
+		${PREFIX} ._promptPendingConfirmText {
+			flex: 1 1 100%;
+			margin-bottom: 4px;
+		}
+
+		${PREFIX} ._promptPendingBtn {
+			display: inline-flex;
+			align-items: center;
+			gap: 5px;
+			padding: 4px 9px;
+			border-radius: 999px;
+			border: 1px solid ${t('borderColorNine', 'rgba(146, 64, 14, 0.3)')};
+			background: transparent;
+			color: inherit;
+			font: inherit;
+			text-decoration: none;
+			cursor: pointer;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._promptPendingBtn:hover {
+			background-color: ${t('accentTintColor', 'rgba(245, 158, 11, 0.18)')};
+		}
+
+		${PREFIX} ._promptPendingBtn:disabled {
+			opacity: 0.55;
+			cursor: default;
+		}
+
+		${PREFIX} ._promptPendingBtn._primary {
+			border-color: transparent;
+			background-color: ${t('fontColorOne', '#1a1a1a')};
+			color: ${t('colorSeven', '#fff')};
+		}
+
+		${PREFIX} ._promptPendingBtn._danger {
+			border-color: ${t('colorTwelve', '#dc3545')};
+			color: ${t('colorTwelve', '#dc3545')};
 		}
 
 		/* ─── Input area ─── */
@@ -1779,6 +2106,8 @@ export default function PromptStyle({
 			min-height: 24px;
 			max-height: 200px;
 			line-height: 1.5;
+			/* InputBar switches this to auto once the box hits max-height. */
+			overflow-y: hidden;
 			color: ${t('fontColorOne', '#1a1a1a')};
 		}
 
@@ -1819,6 +2148,17 @@ export default function PromptStyle({
 			background: ${t('surfaceColorThree', '#d0d0d0')};
 			cursor: not-allowed;
 			opacity: 1;
+		}
+
+		/*
+		 * Send, while a turn is running: it steers the run rather than starting
+		 * one, and sits beside Stop rather than replacing it. Outlined, so the
+		 * filled button next to it still reads as the one that ends the turn.
+		 */
+		${PREFIX} ._sendButton._steerButton {
+			background: transparent;
+			color: ${t('fontColorOne', '#1a1a1a')};
+			border: 1px solid ${t('fontColorOne', '#1a1a1a')};
 		}
 
 		${PREFIX} ._stopButton {

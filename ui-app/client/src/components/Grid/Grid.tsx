@@ -162,11 +162,14 @@ function Grid(props: Readonly<ComponentProps>) {
 	);
 
 	// Built on onMouseDownDragStartCurry rather than hand-rolled listeners: it bails
-	// when the button is no longer held and also tears down on mouseleave, so a
-	// mouseup the page never sees cannot leave the grid stuck to the pointer.
+	// when the button is no longer held, tears down on mouseleave, and puts a
+	// shield over the viewport so an iframe in the layout cannot swallow the drag.
 	const onResizeStart = (e: React.MouseEvent) => {
 		const el = ref.current as HTMLElement | null;
 		if (!el) return;
+		// The same test the curry makes, made here too: everything below this line
+		// is undone by the drag ending, and a curry that bails never starts one.
+		if (e.buttons !== 1) return;
 
 		const startSize = isVerticalResize ? el.offsetHeight : el.offsetWidth;
 		// A grip on the left or top edge grows the box when dragged towards the

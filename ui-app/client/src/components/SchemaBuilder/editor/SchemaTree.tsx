@@ -2,6 +2,8 @@ import { isNullValue } from '@fincity/kirun-js';
 import React, { useEffect, useState } from 'react';
 import NodeDetailsEditor from './NodeDetailsEditor';
 import TypeSelector from './TypeSelector';
+import { inertGroups } from './precedence';
+import { summarize } from './summary';
 import {
 	addProperty,
 	childNodesOf,
@@ -24,6 +26,7 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 		label,
 		lockedType,
 		showNameNamespace,
+		filterable,
 		onDelete,
 		onMoveUp,
 		onMoveDown,
@@ -33,7 +36,12 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 	const [draftName, setDraftName] = useState<string | undefined>();
 
 	const types = getEffectiveTypes(schema);
-	const children = childNodesOf(schema, path);
+	// Narrowing hides everything that is not a match, an ancestor of one, or below one. It never
+	// applies inside a details card's sub-schema editors, whose paths the index does not walk.
+	const narrowing = ctx.search.active && ctx.search.mode === 'NARROW' && filterable !== false;
+	const children = childNodesOf(schema, path).filter(
+		c => !narrowing || ctx.search.visible.has(c.path),
+	);
 	const isObjectish = types.includes('OBJECT') || !isNullValue(schema?.properties);
 	const isArrayish = types.includes('ARRAY');
 	const canExpand = children.length > 0 || draftName !== undefined;
@@ -61,6 +69,7 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 			<PropertyName
 				name={propName!}
 				readOnly={ctx.readOnly}
+				isTaken={candidate => parentSchema?.properties?.[candidate] !== undefined}
 				onRename={newName =>
 					ctx.updateAt(parentPath ?? '', renameProperty(parentSchema, propName!, newName))
 				}
@@ -97,25 +106,26 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 		);
 	}
 
-	const badges = [];
-	if (schema?.ref)
-		badges.push(
-			<span key="ref" className="_badge" title={schema.ref}>
-				ref
-			</span>,
-		);
-	if (!isNullValue(schema?.constant))
-		badges.push(
-			<span key="const" className="_badge">
-				const
-			</span>,
-		);
-	if (schema?.enums?.length)
-		badges.push(
-			<span key="enum" className="_badge">
-				enum
-			</span>,
-		);
+	// Everything the field carries, on the row. Without this a field with a default, a format, a
+	// pattern or a bound looked exactly like a bare one, and the only way to find out was to
+	// open the gear on every row in turn.
+	const summary = summarize(schema);
+	const summaryComp = (
+		<span className="_rowSummary _rowSpacer" title={summary.title}>
+			{summary.chips.map(chip => (
+				<span
+					key={chip.key}
+					className={`_badge ${chip.muted ? '_muted' : ''} ${chip.inert ? '_inert' : ''}`}
+					title={chip.inert ? `${chip.title}. ${chip.inert.reason}` : chip.title}
+				>
+					{chip.text}
+				</span>
+			))}
+			{summary.description ? (
+				<i className="fa fa-solid fa-circle-info _docNote" title={summary.description} />
+			) : undefined}
+		</span>
+	);
 
 	let addComp;
 	if (isObjectish && !ctx.readOnly) {
@@ -141,8 +151,14 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 
 	const detailsToggle = ctx.mode === 'COMPACT' && (
 		<i
-			className={`fa fa-solid fa-gear _rowAction ${detailsOpen ? '_active' : ''}`}
-			title="All settings for this field"
+			className={`fa fa-solid fa-gear _rowAction ${detailsOpen ? '_active' : ''} ${
+				summary.hiddenCount ? '_hasContent' : ''
+			}`}
+			title={
+				summary.hiddenCount
+					? `All settings for this field (${summary.hiddenCount} more not shown)`
+					: 'All settings for this field'
+			}
 			onClick={() => ctx.toggleDetails(path)}
 		/>
 	);
@@ -171,16 +187,18 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 	}
 
 	const row = (
-		<div className={`_nodeRow ${kind === 'root' ? '_rootRow' : ''}`}>
+		<div
+			className={`_nodeRow ${kind === 'root' ? '_rootRow' : ''} ${
+				ctx.search.matched.has(path) ? '_match' : ''
+			}`}
+		>
 			{caret}
 			{nameComp}
 			<TypeSelector
 				types={types}
 				lockedType={lockedType}
 				readOnly={ctx.readOnly}
-				disabledReason={
-					schema?.ref ? 'A reference replaces this node’s own type' : undefined
-				}
+				inertReason={inertGroups(schema).get('type')?.reason}
 				onChange={t => {
 					let v: any;
 					if (t.length === 1) v = t[0];
@@ -189,8 +207,7 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 				}}
 			/>
 			{requiredComp}
-			{badges}
-			<span className="_rowSpacer" />
+			{summaryComp}
 			{onMoveUp && !ctx.readOnly && (
 				<i
 					className="fa fa-solid fa-arrow-up _rowAction"
@@ -252,6 +269,7 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 				parentSchema: schema,
 				parentPath: path,
 				label: child.kind === 'property' ? undefined : child.key,
+				filterable,
 				onDelete: childDelete(child),
 				onMoveUp:
 					child.kind === 'tupleItem' && child.index! > 0
@@ -267,7 +285,7 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 
 	const draftRow =
 		draftName !== undefined ? (
-			<div className="_nodeRow _draftRow" style={{ marginLeft: 20 }}>
+			<div className="_nodeRow _draftRow">
 				<i className="fa fa-solid fa-caret-right _caret _hidden" />
 				<DraftNameInput
 					value={draftName}
@@ -303,14 +321,25 @@ export default function SchemaTree(props: Readonly<TreeNodeProps & { ctx: TreeCo
 function PropertyName({
 	name,
 	readOnly,
+	isTaken,
 	onRename,
-}: Readonly<{ name: string; readOnly: boolean; onRename: (newName: string) => void }>) {
+}: Readonly<{
+	name: string;
+	readOnly: boolean;
+	isTaken: (candidate: string) => boolean;
+	onRename: (newName: string) => void;
+}>) {
 	const [inValue, setInValue] = useState(name);
 	useEffect(() => setInValue(name), [name]);
 
+	// renameProperty returns the parent unchanged on a collision, so the name prop never moves
+	// and the effect above never re-fires. Without rejecting here the row would keep showing a
+	// name that is not in the schema, and two siblings would appear to share it.
+	const collides = !!inValue.trim() && inValue.trim() !== name && isTaken(inValue.trim());
+
 	const commit = () => {
 		const trimmed = inValue.trim();
-		if (!trimmed || trimmed === name) {
+		if (!trimmed || trimmed === name || isTaken(trimmed)) {
 			setInValue(name);
 			return;
 		}
@@ -319,10 +348,11 @@ function PropertyName({
 
 	return (
 		<input
-			className="_nodeName"
+			className={`_nodeName ${collides ? '_invalid' : ''}`}
 			type="text"
 			value={inValue}
 			disabled={readOnly}
+			title={collides ? `A property named "${inValue.trim()}" already exists` : undefined}
 			onChange={e => setInValue(e.target.value)}
 			onKeyDown={e => {
 				if (e.key === 'Escape') setInValue(name);

@@ -263,6 +263,7 @@ export const TableDynamicGroupedColumn: Component = {
 	properties: tableDynamicGroupedColumnPropertiesDefinition,
 	styleComponent: () => <></>,
 	styleDefaults: tableColumnStyleDefaults,
+	allowedChildrenType: new Map<string, number>([['', -1]]),
 	parentType: 'TableColumns',
 	bindingPaths: {
 		bindingPath: { name: 'Group Tree' },

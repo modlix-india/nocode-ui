@@ -29,6 +29,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 	},
 	{
+		name: 'steerPlaceholder',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Steer Placeholder',
+		description:
+			'Placeholder shown while the agent is working, when a message steers the run in progress instead of starting a new one.',
+		defaultValue: 'Send a message to steer the agent...',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: true,
+	},
+	{
 		name: 'welcomeMessage',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Welcome Message',
@@ -38,16 +48,70 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 	},
 	{
-		// Lets a page hand the chat its opening question, typically from the URL:
-		// /ai/<encoded prompt> with this bound to Url.pathParts[1]. Sent once, and
-		// only into an empty chat, so reopening a session never replays it.
+		// A fixed opening question. To hand one over from another page use the
+		// Pending Prompt binding instead: that one is cleared as it is sent, where
+		// this one stays put and would fire again on every fresh load. Sent once,
+		// and only into an empty chat, so reopening a session never replays it.
 		name: 'initialPrompt',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Initial Prompt',
 		description:
-			'A question to send automatically when the chat opens empty. Use it to arrive from elsewhere with the conversation already started.',
+			'A fixed question to send automatically when the chat opens empty. To carry a question in from another page, use the Pending Prompt binding, which is taken and cleared instead of resent on every load.',
 		group: ComponentPropertyGroup.BASIC,
 		translatable: false,
+	},
+	{
+		// The escape hatch out of a docked panel. A sidekick in a 320px rail can
+		// hold a conversation but cannot show the thing being built, so it offers
+		// to continue the SAME session somewhere with room for both.
+		//
+		// The session id travels in the URL rather than in storage, which is what
+		// makes the link shareable, bookmarkable and openable in a second tab. The
+		// receiving page picks it up through `initialSessionId`.
+		//
+		// Unset means no icon at all, so adding this property changes nothing on a
+		// surface that has not opted in.
+		name: 'openFullPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Full Page Name',
+		description:
+			'Page to continue this conversation in, e.g. `ai`. Shows an icon in the top right that opens <page>/<sessionId> in a new browser tab, carrying the session with it. Leave empty to show no icon.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: false,
+	},
+	{
+		// The receiving half of `openFullPageName`. Set it as an EXPRESSION on
+		// `Store.urlDetails.pathParts[N]` to take the id out of the URL.
+		//
+		// `Store.urlDetails` rather than `Url.*`: the latter is a per-context
+		// extractor that resolves against whichever page frame is asking, which has
+		// already produced conditions that silently matched nothing.
+		name: 'initialSessionId',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Initial Session Id',
+		description:
+			'A session to reopen when the chat loads, normally an EXPRESSION on Store.urlDetails.pathParts. Loads that transcript and rejoins the run if the agent is still working. Ignored once a chat is open, so it never interrupts one in progress.',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: false,
+	},
+	{
+		// Render the page the agent is working on, beside the chat.
+		//
+		// Off by default. It is only meaningful on a surface wide enough to give
+		// half the screen away, and a docked sidekick in a 320px rail is not one:
+		// that one offers `openFullPageName` instead and sends the conversation
+		// somewhere it fits.
+		//
+		// The pane is not opened automatically. The agent's first page write puts a
+		// prompt on screen and the person decides, because a preview appearing
+		// unasked would halve the chat mid-sentence.
+		name: 'enablePreview',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Offer A Page Preview',
+		description:
+			'Offer to render the page the agent changed next to the chat, with a Draft/Live toggle and width presets. The pane is draggable and its size is remembered. Needs room: leave off for a docked panel and use Open Full Page Name there instead.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
 	},
 	// ── Editor context ──────────────────────────────────────────────────────
 	// What the surrounding page has open. Sent with every message as
@@ -145,13 +209,75 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		// Safe to leave on: the agent probes the deployment and keeps writing live
 		// when there is no draft surface, rather than claiming a review step that
 		// does not exist.
+		// Three settings rather than a switch, because the products embedding this
+		// do not agree about what a draft is. AppBuilder drafts everything and has
+		// a pending bar to publish it. A page editor that publishes one page at a
+		// time has no UI for a pending storage, so drafting one there would strand
+		// the change with nothing able to ship it.
 		name: 'draftMode',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Edit On The Draft Surface',
+		schema: SCHEMA_STRING_COMP_PROP,
+		editor: ComponentPropertyEditor.ENUM,
+		displayName: 'Where AI Edits Land',
 		description:
-			"Send the agent's edits to the app's draft surface instead of live, so they can be reviewed and published deliberately.",
+			"Which of the agent's edits go to the app's draft surface instead of live, so they can be reviewed and published deliberately.",
+		defaultValue: 'DRAFT',
+		enumValues: [
+			{
+				name: 'DRAFT',
+				displayName: 'Draft Everything',
+				description:
+					'Every definition edit waits on the draft surface until someone publishes it.',
+			},
+			{
+				name: 'PAGE_ONLY_DRAFT',
+				displayName: 'Draft Pages Only',
+				description:
+					'Pages, styles and themes wait for review. Storages, connections, schemas and functions go live immediately.',
+			},
+			{
+				name: 'LIVE',
+				displayName: 'Write Live',
+				description: 'Every edit goes straight to the live app, with no review step.',
+			},
+		],
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// Turn ON for a chat with no editor around it. A surface with editor tabs
+		// already carries the Draft link, the per-object Publish and the pending
+		// panel, so a second set here is noise; a bare chat page has none of them,
+		// and without this it can tell somebody a change is "waiting for Publish"
+		// while offering nowhere to publish it from.
+		name: 'showDraftReview',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Draft Review Bar',
+		description:
+			'Show what the agent has left unpublished, with links to open the draft or the workspace, and buttons to publish or discard. For chat surfaces with no editor of their own.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// The draft review bar's second link. `/workspace` is a page in appbuilder
+		// and nowhere else, so hosting this chat in another app used to offer a
+		// link to a page that does not exist. sitezump has no workspace; its
+		// per-app equivalent is '/pages/site/{{appCode}}', the site's page list,
+		// and each page opens from there in editPage.
+		name: 'draftWorkspaceUrl',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Draft Review Editor URL',
+		description:
+			"Where the draft review bar's editor link goes. {{appCode}} is replaced with the app being drafted into.",
+		defaultValue: '/workspace/{{appCode}}',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'draftWorkspaceLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Draft Review Editor Label',
+		description:
+			"Label on that link. 'workspace' is appbuilder's word for it, not every app's.",
+		defaultValue: 'Open in workspace',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'quickActionLayout',
@@ -329,6 +455,33 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'openFullIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Open Full Page Icon',
+		description: 'Icon class for the button that continues this session full page.',
+		defaultValue: 'fa fa-up-right-and-down-left-from-center',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'previewIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Preview Icon',
+		description: 'Icon class for the button that opens the page preview.',
+		defaultValue: 'fa fa-window-restore',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'previewReloadIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Preview Reload Icon',
+		description: "Icon class for the preview's reload button.",
+		defaultValue: 'fa fa-rotate-right',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'newChatSidebarIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'New Chat Sidebar Icon',
@@ -379,6 +532,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'File Icon',
 		description: 'Icon class for file attachments.',
 		defaultValue: 'fa fa-file',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'expiredAttachmentIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Expired Attachment Icon',
+		description:
+			'Icon class shown in place of an attachment that has passed its retention period and been deleted.',
+		defaultValue: 'fa fa-clock-rotate-left',
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},

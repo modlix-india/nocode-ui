@@ -9,6 +9,8 @@ interface ChatMessageProps {
 	componentKey: string;
 	styles?: any;
 	isStreaming?: boolean;
+	/** A steer on its way to a running turn: sent, not yet read by the agent. */
+	pending?: boolean;
 	definition: ComponentDefinition;
 	copyIcon?: string;
 	copySuccessIcon?: string;
@@ -28,6 +30,7 @@ export function ChatMessage({
 	componentKey,
 	styles,
 	isStreaming,
+	pending,
 	definition,
 	copyIcon = 'fa fa-clone',
 	copySuccessIcon = 'fa fa-check',
@@ -64,8 +67,9 @@ export function ChatMessage({
 	if (role === 'user') {
 		return (
 			<div
-				className="_promptMessage _user"
+				className={`_promptMessage _user${pending ? ' _pending' : ''}`}
 				style={styles?.userMessage ?? {}}
+				title={pending ? 'Sending to the agent...' : undefined}
 			>
 				<SubHelperComponent
 					definition={definition}

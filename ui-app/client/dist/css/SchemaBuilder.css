@@ -13,6 +13,28 @@
 .comp.compSchemaBuilder ._toolbar {
     display: flex;
     align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.comp.compSchemaBuilder ._toolbarSpacer {
+    flex: 1;
+}
+
+.comp.compSchemaBuilder ._filterBar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.comp.compSchemaBuilder input._searchInput {
+    width: 200px;
+}
+
+.comp.compSchemaBuilder ._matchCount {
+    font-size: 11px;
+    color: #999;
+    white-space: nowrap;
 }
 
 .comp.compSchemaBuilder ._segmented {
@@ -129,6 +151,88 @@
     flex: 1;
 }
 
+/* Everything the field carries, on the row itself. The row does not wrap, so the strip clips
+   and the chip count is capped in summary.ts; the strip's title always holds the full text. */
+
+.comp.compSchemaBuilder ._rowSummary {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.comp.compSchemaBuilder ._rowSummary ._badge {
+    text-transform: none;
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 0 0 auto;
+}
+
+.comp.compSchemaBuilder ._badge._muted {
+    background: transparent;
+    color: #999;
+    padding: 1px 2px;
+}
+
+.comp.compSchemaBuilder ._docNote {
+    color: #999;
+    cursor: help;
+    flex: 0 0 auto;
+}
+
+/* One inert treatment, shared by the row chips, the type select and the details sections. */
+
+.comp.compSchemaBuilder ._inert {
+    opacity: 0.55;
+    text-decoration: line-through;
+}
+
+/* text-decoration inherits into every in-flow descendant, so the bare rule above would strike
+   the whole card: the field labels, the hints, and the sentence explaining the inertness. Only
+   the section heading carries the strike; the body is merely dimmed. */
+.comp.compSchemaBuilder ._detailsSection._inert,
+.comp.compSchemaBuilder ._cardNote._inert {
+    text-decoration: none;
+    opacity: 1;
+}
+
+.comp.compSchemaBuilder ._detailsSection._inert > summary {
+    text-decoration: line-through;
+}
+
+.comp.compSchemaBuilder ._detailsSection._inert ._detailsGrid {
+    opacity: 0.55;
+}
+
+/* The reason a field is inert has to stay readable; it is not itself inert. */
+.comp.compSchemaBuilder ._cardNote._inert {
+    opacity: 0.8;
+    font-style: italic;
+}
+
+.comp.compSchemaBuilder ._inertTag {
+    margin-left: 6px;
+    font-size: 10px;
+    text-transform: uppercase;
+    text-decoration: none;
+    opacity: 0.7;
+}
+
+.comp.compSchemaBuilder ._cardNote {
+    padding: 4px 2px;
+    font-size: 12px;
+    color: #666;
+}
+
+.comp.compSchemaBuilder ._cardNote._warning {
+    color: #ff2b2b;
+    text-decoration: none;
+    opacity: 1;
+}
+
 .comp.compSchemaBuilder ._rowAction {
     cursor: pointer;
     color: #999;
@@ -139,6 +243,19 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
+}
+
+/* The gear looked identical whether a field was bare or heavily constrained. */
+.comp.compSchemaBuilder ._rowAction._hasContent::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #1a56db;
 }
 
 .comp.compSchemaBuilder ._rowAction:hover {
@@ -154,6 +271,81 @@
 
 .comp.compSchemaBuilder ._typeSelectorContainer {
     position: relative;
+}
+
+/* Without a cap the select grows to its longest option, and the "Multiple (String, Integer,
+   Long, Double)" label shoves the rest of the row off. */
+.comp.compSchemaBuilder select._typeSelector {
+    max-width: 150px;
+}
+
+.comp.compSchemaBuilder ._nodeRow._rootRow {
+    border-bottom: 1px solid #eee;
+    margin-bottom: 4px;
+}
+
+/* The name is an editable input, so a matched run cannot be highlighted inside it. The row is
+   the signal instead, which works for every node kind. */
+.comp.compSchemaBuilder ._nodeRow._match {
+    background: #f0f4ff;
+    box-shadow: inset 2px 0 0 #1a56db;
+}
+
+/* Sample import: the popup shell is already styled below, only its sizing and body differ. */
+
+/* The import dialog carries options and a summary under the editor, so it earns more room.
+   Matching ._popupBackground too, to outrank the generic container width defined further down
+   this file rather than relying on source order. */
+.comp.compSchemaBuilder ._popupBackground ._popupContainer._sampleImport {
+    width: 920px;
+}
+
+.comp.compSchemaBuilder ._popupBackground ._popupContainer._sampleImport ._jsonEditorContainer {
+    width: 100%;
+    height: 400px;
+}
+
+.comp.compSchemaBuilder ._popupTitle {
+    font-weight: 600;
+    font-size: 13px;
+    color: #555;
+}
+
+.comp.compSchemaBuilder ._importOption {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+}
+
+.comp.compSchemaBuilder ._importOption label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    cursor: pointer;
+}
+
+.comp.compSchemaBuilder ._importOptionLabel {
+    font-size: 12px;
+    color: #555;
+    font-weight: 600;
+}
+
+.comp.compSchemaBuilder ._importSummary {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.comp.compSchemaBuilder ._nodeRow._draftRow {
+    margin-left: 20px;
+}
+
+.comp.compSchemaBuilder ._enumValue._enumDraft {
+    opacity: 0.85;
 }
 
 .comp.compSchemaBuilder ._typePopover {
@@ -227,32 +419,98 @@
 /* Details card */
 
 .comp.compSchemaBuilder ._detailsCard {
-    margin: 2px 0 8px 24px;
+    margin: 2px 0 10px 24px;
     border: 1px solid #e5e5e5;
     border-radius: 6px;
-    padding: 8px;
+    padding: 4px 14px 8px;
     background: #fafafa;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+}
+
+/* Sections are stacked panels separated by a hairline, not boxes inside a box. */
+.comp.compSchemaBuilder ._detailsSection + ._detailsSection {
+    border-top: 1px solid #ececec;
 }
 
 .comp.compSchemaBuilder ._detailsSection > summary {
     cursor: pointer;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: #555;
-    padding: 4px 0;
+    padding: 9px 0;
     user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    list-style: none;
 }
 
+/* The default disclosure triangle sits outside the flex box and cannot be aligned or
+   recoloured, so it is replaced with one that can. */
+.comp.compSchemaBuilder ._detailsSection > summary::-webkit-details-marker {
+    display: none;
+}
+
+.comp.compSchemaBuilder ._detailsSection > summary::before {
+    content: '';
+    width: 0;
+    height: 0;
+    border-left: 4px solid currentColor;
+    border-top: 3.5px solid transparent;
+    border-bottom: 3.5px solid transparent;
+    opacity: 0.55;
+    transition: transform 0.15s ease;
+}
+
+.comp.compSchemaBuilder ._detailsSection[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+.comp.compSchemaBuilder ._detailsSection > summary:hover {
+    color: #222;
+}
+
+/* A settings form: one label column against one field column, no cell borders. The old
+   border-top/left plus border-bottom/right on every cell drew a spreadsheet. */
 .comp.compSchemaBuilder ._detailsGrid {
     display: grid;
-    grid-template-columns: auto 1fr;
-    background: #fff;
-    border-top: 1px solid #eee;
-    border-left: 1px solid #eee;
-    margin: 4px 0;
+    grid-template-columns: minmax(90px, 170px) minmax(0, 1fr);
+    align-items: baseline;
+    column-gap: 14px;
+    row-gap: 2px;
+    background: transparent;
+    border: none;
+    /* Padding and a radius so this reads as a deliberate inset panel wherever a theme gives it
+       a background of its own, and simply disappears where one does not. */
+    padding: 8px 12px 10px;
+    border-radius: 6px;
+    margin: 0 0 10px;
+    /* Capped so a wide pane gets a deliberate form column rather than a few fields adrift in a
+       full-width panel. Generous enough that the nested sub-schema editors in Object and Array
+       constraints still have room. */
+    max-width: 860px;
+}
+
+.comp.compSchemaBuilder ._detailsGrid > ._rightJustify {
+    justify-self: end;
+    text-align: right;
+    font-size: 12px;
+    color: #555;
+    padding: 7px 0 0;
+    width: auto;
+    border: none;
+    line-height: 1.4;
+}
+
+.comp.compSchemaBuilder ._detailsGrid > ._leftJustify {
+    justify-self: stretch;
+    min-width: 0;
+    width: 100%;
+    padding: 4px 0;
+    border: none;
 }
 
 .comp.compSchemaBuilder ._leftJustify {
@@ -263,19 +521,17 @@
     justify-self: right;
 }
 
-.comp.compSchemaBuilder ._leftJustify,
-.comp.compSchemaBuilder ._rightJustify {
-    border-bottom: 1px solid #eee;
-    border-right: 1px solid #eee;
-    padding: 5px;
-    width: 100%;
-}
-
 .comp.compSchemaBuilder ._hint,
 .comp.compSchemaBuilder ._helptext {
     font-size: 11px;
     color: #999;
     display: block;
+    line-height: 1.45;
+}
+
+/* A hint under its own field reads as part of it; one crammed against the field above does not. */
+.comp.compSchemaBuilder ._detailsGrid > ._leftJustify > ._hint {
+    margin-top: 3px;
 }
 
 .comp.compSchemaBuilder ._flexRow {
@@ -376,22 +632,50 @@
     gap: 6px;
 }
 
-.comp.compSchemaBuilder ._smallButton {
-    align-self: flex-start;
-    border: 1px solid #ccc;
+/* One treatment for all three kinds of button: the inline "+ Add ..." ones, the value editor
+   triggers that AnyValueEditor renders as a bare <button>, and the dialog actions. They were
+   three different sizes, and the dialog actions were raw browser chrome. */
+.comp.compSchemaBuilder ._smallButton,
+.comp.compSchemaBuilder ._smallEditorContainer > button,
+.comp.compSchemaBuilder ._popupButtons button {
+    border: 1px solid #d8d8d8;
     background: #fff;
     border-radius: 4px;
-    padding: 2px 8px;
+    padding: 0 10px;
+    height: 26px;
+    box-sizing: border-box;
     cursor: pointer;
     font-size: 12px;
     font-family: inherit;
-    display: flex;
-    gap: 4px;
+    color: #444;
+    white-space: nowrap;
+    display: inline-flex;
+    gap: 5px;
     align-items: center;
+    justify-content: center;
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease;
 }
 
-.comp.compSchemaBuilder ._smallButton:hover {
+.comp.compSchemaBuilder ._smallButton {
+    align-self: flex-start;
+}
+
+.comp.compSchemaBuilder ._smallButton:hover:not(:disabled),
+.comp.compSchemaBuilder ._smallEditorContainer > button:hover:not(:disabled),
+.comp.compSchemaBuilder ._popupButtons button:hover:not(:disabled) {
     background: #f0f0f0;
+    border-color: #bcbcbc;
+}
+
+.comp.compSchemaBuilder ._smallButton:disabled,
+.comp.compSchemaBuilder ._smallEditorContainer > button:disabled,
+.comp.compSchemaBuilder ._popupButtons button:disabled {
+    background: #f4f4f4;
+    border-color: #e8e8e8;
+    color: #aaa;
+    cursor: not-allowed;
 }
 
 /* JSON view */
@@ -417,23 +701,62 @@
 .comp.compSchemaBuilder input[type="text"],
 .comp.compSchemaBuilder input[type="number"],
 .comp.compSchemaBuilder textarea {
-    border: 1px solid #ccc;
+    border: 1px solid #d8d8d8;
     background-color: #fff;
     font-family: inherit;
     font-size: 12px;
-    border-radius: 3px;
-    padding: 2px 5px;
+    border-radius: 4px;
+    padding: 0 7px;
+    height: 26px;
+    box-sizing: border-box;
+    transition:
+        border-color 0.12s ease,
+        box-shadow 0.12s ease;
 }
 
-.comp.compSchemaBuilder ._detailsGrid input[type="text"],
-.comp.compSchemaBuilder ._detailsGrid textarea {
-    width: 200px;
+.comp.compSchemaBuilder select:hover,
+.comp.compSchemaBuilder input[type="text"]:hover,
+.comp.compSchemaBuilder textarea:hover {
+    border-color: #bcbcbc;
+}
+
+/* Nothing marked where the keyboard was, which is the single biggest tell that this was a
+   default-chrome form. currentColor keeps it on whatever accent the theme sets. */
+.comp.compSchemaBuilder select:focus,
+.comp.compSchemaBuilder input[type="text"]:focus,
+.comp.compSchemaBuilder textarea:focus {
+    outline: none;
+    border-color: #1a56db;
+    box-shadow: 0 0 0 3px #1a56db22;
+}
+
+.comp.compSchemaBuilder input[type="text"]:disabled,
+.comp.compSchemaBuilder select:disabled,
+.comp.compSchemaBuilder textarea:disabled {
+    background-color: #f4f4f4;
+    color: #888;
+    cursor: not-allowed;
+}
+
+/* Fields stretch to their column instead of sitting at a fixed 200px, so the card reflows with
+   the pane it is docked in. */
+.comp.compSchemaBuilder ._detailsGrid ._flexRow > input[type="text"],
+.comp.compSchemaBuilder ._detailsGrid ._flexRow > textarea {
+    flex: 1 1 160px;
+    min-width: 0;
+    max-width: 340px;
 }
 
 .comp.compSchemaBuilder textarea {
-    width: 300px;
-    height: 100px;
+    width: 100%;
+    max-width: 340px;
+    height: 62px;
+    min-height: 26px;
+    padding: 5px 7px;
+    line-height: 1.45;
+    resize: vertical;
 }
+
 
 .comp.compSchemaBuilder ._error {
     color: #ff2b2b;
@@ -455,14 +778,17 @@
     top: 0px;
 }
 
+/* A stated width, so the editor inside can be 100% of something. Without one the container
+   sized to its content and the editor sat at a fixed 400px in a much wider box. */
 .comp.compSchemaBuilder ._popupBackground ._popupContainer {
     background-color: #fff;
-    padding: 15px;
+    padding: 16px;
     border-radius: 3px;
-    max-width: 60vw;
+    width: 760px;
+    max-width: 92vw;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 14px;
 }
 
 .comp.compSchemaBuilder ._popupBackground ._popupButtons {
@@ -475,9 +801,12 @@
     border: 1px solid #eee;
     border-radius: 4px;
     padding: 2px;
-    width: 400px;
-    height: 400px;
-    transition: width 0s, height 0s;
+    width: 100%;
+    height: 420px;
+    max-height: 58vh;
+    transition:
+        width 0s,
+        height 0s;
 }
 
 .comp.compSchemaBuilder ._popupBackground ._popupContainer ._jsonEditorContainer > * {

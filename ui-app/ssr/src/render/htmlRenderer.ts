@@ -3,11 +3,13 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { resolveCodesFromRequest, extractPageName, getAuthToken } from '../resolver/codeResolver.js';
 import {
 	fetchAllPageData,
+	fetchApplication,
 	type PageDefinition,
 	type ApplicationDefinition,
 	type ThemeDefinition,
 } from '../api/client.js';
-import { getCachedData, setCachedData, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
+import { assignmentSetCookie, isDesignUrl, resolveRoute } from '../resolver/pageRouting.js';
+import { getCachedData, setCachedData, generateAppCacheKey, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
@@ -140,13 +142,24 @@ function generateETag(data: CachedPageData): string {
 //   ""        -> "authzump.ai"
 //   ".dev"    -> "dev.authzump.ai"
 //   ".stage"  -> "stage.authzump.ai"
-//   ".local"  -> "local.authzump.ai"
+//   ".local"  -> "authzump.local.modlix.com"
+//
+// Local is deliberately not "local.authzump.ai". Local hosts are <app>.local.modlix.com
+// (dnsmasq wildcards that suffix to 127.0.0.1 on a developer machine); the .ai names
+// belong to the deployed environments only. "local.authzump.ai" does resolve, to prod-lb,
+// where it is a stray vhost carrying appCode "nothing", so pointing the beacon there
+// silently broke all local SSO.
+//
+// Must stay in step with IndexHTMLService.deriveBeaconHost in nocode-saas/ui.
+const LOCAL_ENV = 'local';
+
 function deriveBeaconHost(appCodeSuffix: string | undefined | null): string {
 	if (!appCodeSuffix) return 'authzump.ai';
 	const trimmed = appCodeSuffix.startsWith('.') ? appCodeSuffix.slice(1) : appCodeSuffix;
 	const dotIdx = trimmed.indexOf('.');
 	const env = dotIdx >= 0 ? trimmed.slice(0, dotIdx) : trimmed;
-	return env ? `${env}.authzump.ai` : 'authzump.ai';
+	if (!env) return 'authzump.ai';
+	return env === LOCAL_ENV ? `authzump.${env}.modlix.com` : `${env}.authzump.ai`;
 }
 
 function escapeHtml(str: string | undefined | null): string {
@@ -167,7 +180,14 @@ function escapeHtml(str: string | undefined | null): string {
 const CRITICAL_CSS = `
 body { margin: 0; }
 .comp { box-sizing: border-box; position: relative; }
-.compPage { min-height: 100vh; }
+/* The ROOT page only. Every rule in this block outlives the first paint, because
+   nothing removes the <style>, and the client's own PageCss never writes a
+   min-height, so a single-class .compPage rule went on applying to every NESTED
+   page too. A SubPage pane is a .compPage inside the shell's .compPage, so 100vh
+   forced each pane to a full viewport below the shell header and pushed the
+   document down by the header's height: a scrollbar on workspace, org and docs,
+   which lock their height, and only on the environments serving this block. */
+#app > .comp.compPage { min-height: 100vh; }
 .compGrid { display: flex; flex-direction: column; }
 .compTable { display: flex; flex-direction: row; }
 .compTableColumns { display: table; border-spacing: 0; width: 100%; }
@@ -259,84 +279,44 @@ function generateExternalLinks(application: ApplicationDefinition | null): strin
 	return links.join('\n\t\t');
 }
 
-const POSTHOG_STUB =
-	'!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){' +
-	'function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),' +
-	't[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}' +
-	'(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",' +
-	'p.async=!0,p.src=s.api_host+"/static/array.js",' +
-	'(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;' +
-	'for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],' +
-	'u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),' +
-	't||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},' +
-	'o="init capture register register_once unregister identify setPersonProperties group reset ' +
-	'opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing ' +
-	'startSessionRecording stopSessionRecording".split(" "),' +
-	'n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}' +
-	'(document,window.posthog||[]);';
-
-const CONSENT_FALLBACK_BOOTSTRAP =
-	"window.addEventListener('DOMContentLoaded',function(){" +
-	'setTimeout(function(){' +
-	'if(!window.__MODLIX_CONSENT__||!window.__MODLIX_CONSENT__.mounted){' +
-	'window.__MODLIX_FORCE_CONSENT__=true;' +
-	"window.dispatchEvent(new CustomEvent('modlix:force-consent'));" +
-	'}},250);});';
-
 /**
- * Generate the PostHog analytics snippet. Project key + ingestion host come from
- * env-level Spring Cloud Config; only the user-facing toggles come from the app.
- * Returns '' if env config is missing or the app has analytics disabled.
+ * The analytics beacon, as one script tag.
+ *
+ * The script itself is served by the engine that receives its events, so there is no vendor
+ * stub here and no copy of the wire format. The previous arrangement transcribed the same
+ * minified blob into this file and into IndexHTMLService.java, and the two had begun to
+ * drift; now both emit a tag and the engine owns the client.
+ *
+ * Returns '' when analytics is off for the app or no host is configured — the rendered page
+ * then carries nothing at all, rather than a script that would load and measure nobody.
  */
 function generateAnalyticsSnippet(
 	application: ApplicationDefinition | null,
-	projectApiKey: string,
 	ingestionHost: string,
 ): string {
-	if (!projectApiKey || !ingestionHost) return '';
+	if (!ingestionHost) return '';
 
 	const a = application?.properties?.analytics;
 	if (!a?.enabled) return '';
 
-	const replayEnabled = !!a.sessionReplay?.enabled;
-	const heatmapsEnabled = !!a.heatmaps?.enabled;
-	const consentRequired = a.consentRequired !== false;
+	const host = ingestionHost.endsWith('/') ? ingestionHost.slice(0, -1) : ingestionHost;
+	const attr = (v: unknown, dflt: boolean) => String(v === undefined || v === null ? dflt : v !== false);
 
-	const initOptions: Record<string, unknown> = {
-		api_host: ingestionHost,
-		person_profiles: 'identified_only',
-		autocapture: a.autocapture ?? true,
-		capture_pageview: a.capturePageviews ?? true,
-		capture_pageleave: a.capturePageleaves ?? true,
-		disable_session_recording: !replayEnabled,
-		enable_heatmaps: heatmapsEnabled,
-		opt_out_capturing_by_default: consentRequired,
-		advanced_disable_flags: true,
-	};
-
-	const rawSampleRate = a.sessionReplay?.sampleRate;
-	const sampleRate =
-		typeof rawSampleRate === 'number' && rawSampleRate >= 0 && rawSampleRate <= 1
-			? rawSampleRate
-			: 0.1;
-
-	if (replayEnabled) {
-		initOptions.session_recording = {
-			maskAllInputs: a.sessionReplay?.maskAllInputs ?? true,
-		};
-	}
-
-	const apiKeyJson = JSON.stringify(projectApiKey);
-	const optionsJson = JSON.stringify(initOptions);
-	const sampleRateLiteral = sampleRate >= 1 ? 'null' : String(sampleRate);
-
-	const initCall = replayEnabled
-		? `var __phOpts=${optionsJson};__phOpts.loaded=function(ph){try{ph.persistence.register({'$session_recording_remote_config':{enabled:true,sampleRate:${sampleRateLiteral},recorderVersion:'v2',endpoint:'/s/',linkedFlag:null,urlBlocklist:[],urlTriggers:[],eventTriggers:[]}});ph.sessionRecording&&ph.sessionRecording.startIfEnabledOrStop&&ph.sessionRecording.startIfEnabledOrStop();}catch(e){}};posthog.init(${apiKeyJson},__phOpts);`
-		: `posthog.init(${apiKeyJson},${optionsJson});`;
-
-	return `<script>${POSTHOG_STUB}${initCall}${
-		consentRequired ? CONSENT_FALLBACK_BOOTSTRAP : ''
-	}</script>`;
+	return (
+		// A queue, so an event fired before the async script arrives is not lost.
+		'<script>window.mlx=window.mlx||function(){(window.mlx.q=window.mlx.q||[]).push(arguments)};</script>' +
+		`<script async src="${escapeHtml(host)}/a.js"` +
+		` data-autocapture="${attr(a.autocapture, true)}"` +
+		` data-pageviews="${attr(a.capturePageviews, true)}"` +
+		` data-pageleaves="${attr(a.capturePageleaves, true)}"` +
+		// Off unless the app asks: every click becomes an event, where autocapture records
+		// only the labelled ones.
+		` data-heatmaps="${attr(a.heatmaps?.enabled, false)}"` +
+		// Unconditional. There is no application setting that turns consent off:
+		// one set wrong, once, measures people who were never asked, and nothing
+		// about that state looks wrong from the outside.
+		' data-consent="required"></script>'
+	);
 }
 
 /**
@@ -423,6 +403,18 @@ function generateHtml(
 				pageDefinition: { [pageName]: page },
 				theme,
 				themeName,
+				/**
+				 * The page routing chose, which is not necessarily the one named in
+				 * the URL. The client reads this instead of deriving the name from
+				 * the location, so it does not discard this bootstrap and refetch.
+				 *
+				 * Only the resolved name appears here, and deliberately so: it is
+				 * exactly what the HTML cache is keyed by, so every visitor served
+				 * this cached document belongs under it. Which rule fired, and which
+				 * arm of a split they drew, are per-visitor and would be baked in for
+				 * whoever happened to miss the cache first.
+				 */
+				resolvedPageName: pageName,
 				urlDetails: {
 					pageName,
 					appCode: codes.appCode,
@@ -436,7 +428,6 @@ function generateHtml(
 	const externalScripts = generateExternalScripts(application);
 	const analyticsSnippet = generateAnalyticsSnippet(
 		application,
-		getConfig().analytics.projectApiKey,
 		getConfig().analytics.ingestionHost,
 	);
 
@@ -543,6 +534,21 @@ function removeCodeParts(def: any) : any {
 /**
  * Set response headers
  */
+const SHARED_CACHE_CONTROL = 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600';
+
+/**
+ * A response that carries a Set-Cookie must never be stored by a shared cache.
+ *
+ * The HTML body is the same for everyone who resolves to this page, so the body
+ * itself is perfectly cacheable — but replaying its Set-Cookie to the next
+ * visitor would pin the whole internet into one arm of a split. Only the first
+ * request from a given visitor draws, so only that one response is uncacheable;
+ * every one after it carries the cookie, draws nothing, and is public again.
+ */
+function cacheControlFor(drewAssignment: boolean): string {
+	return drewAssignment ? 'private, no-store' : SHARED_CACHE_CONTROL;
+}
+
 function setResponseHeaders(
 	res: ServerResponse,
 	isAuthenticated: boolean,
@@ -550,6 +556,7 @@ function setResponseHeaders(
 	etag: string | null,
 	application: ApplicationDefinition | null,
 	cdnHostName?: string,
+	drewAssignment: boolean = false,
 ): void {
 	res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
@@ -559,10 +566,7 @@ function setResponseHeaders(
 		res.setHeader('Pragma', 'no-cache');
 		res.setHeader('Expires', '0');
 	} else {
-		res.setHeader(
-			'Cache-Control',
-			'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600'
-		);
+		res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 		res.setHeader('Vary', 'Authorization, Cookie');
 	}
 
@@ -663,10 +667,86 @@ export async function handlePageRequest(
 		return;
 	}
 
-	// Check HTML cache first for non-authenticated requests (fastest path)
-	if (!isAuthenticated) {
-		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft, cookieTheme);
+	const fetchOptions = {
+		appCode: codes.appCode,
+		clientCode: codes.clientCode,
+		authToken,
+		// Let the gateway resolve the surface from the host, as it does for a
+		// direct browser request.
+		forwardedHost: headers.get('x-forwarded-host') ?? url.host,
+		forwardedProto: headers.get('x-forwarded-proto') ?? url.protocol.replace(':', ''),
+		forwardedPort: headers.get('x-forwarded-port') ?? url.port,
+	};
 
+	// The application definition must be in hand before anything else, because it
+	// carries the routing rules and routing decides which page this request
+	// renders -- which is what every cache key below is built from.
+	//
+	// Before page routing there was only one such decision, index -> defaultPage,
+	// and it was taken after the page had already been fetched. That is why the
+	// cache used to be probed twice, once on the URL's name and again on the
+	// resolved one. Deciding first collapses both into a single lookup.
+	//
+	// Cached for anonymous visitors only: the ui service varies the definition by
+	// whether the caller is authenticated, so a signed-in copy must not be shared
+	// -- and authenticated requests never reach the HTML cache anyway.
+	const appCacheKey = generateAppCacheKey(codes.appCode, codes.clientCode, isDraft);
+	let application: ApplicationDefinition | null;
+	if (isAuthenticated) {
+		application = await fetchApplication(fetchOptions);
+	} else {
+		application = await getCachedData<ApplicationDefinition>(appCacheKey);
+		if (!application) {
+			application = await fetchApplication(fetchOptions);
+			if (application) await setCachedData(appCacheKey, application, config.cache.ttlSeconds);
+		}
+	}
+
+	const route = resolveRoute(application, url, req.headers, urlPageName, isAuthenticated);
+	const actualPageName = route.pageName;
+
+	// A visitor drawn into a split for the first time. The cookie is set whether
+	// the HTML that follows comes from cache or not: the body is identical for
+	// everyone who resolves to this page, but the assignment is theirs alone.
+	const drewAssignment = !!route.assignments;
+	if (route.assignments) {
+		res.setHeader(
+			'Set-Cookie',
+			assignmentSetCookie(
+				route.assignments,
+				config.routing.assignmentCookieMaxAgeSeconds,
+				fetchOptions.forwardedProto === 'https',
+			),
+		);
+	}
+
+	if (actualPageName !== urlPageName) {
+		logger.info('Page routing resolved', {
+			requested: urlPageName,
+			resolved: actualPageName,
+			rule: route.resolution.ruleKey,
+			variant: route.resolution.variantKey,
+		});
+	}
+
+	const htmlCacheKey = generateCacheKey(
+		codes.appCode,
+		codes.clientCode,
+		actualPageName,
+		isDraft,
+		cookieTheme,
+	);
+
+	// A page asked for as-is, for somebody looking at their own heatmap. It renders the page
+	// NAMED rather than the arm routing would serve, and its HTML carries a marker telling the
+	// beacon not to count the visit — so it must never be stored under the key a real visitor
+	// reads from, or that marker would switch measurement off for everyone on that page.
+	// Neither read nor written: reading a normal copy would serve the routed arm and defeat
+	// the whole request.
+	const isDesign = isDesignUrl(url);
+
+	// Check HTML cache for non-authenticated requests (fastest path)
+	if (!isAuthenticated && !isDesign) {
 		// Check if client accepts gzip
 		const acceptEncoding = req.headers['accept-encoding'] || '';
 		const supportsGzip = acceptEncoding.includes('gzip');
@@ -677,14 +757,14 @@ export async function handlePageRequest(
 			if (cachedGzipped) {
 				logger.info('HTML cache hit (pre-compressed)', {
 					cacheKey: htmlCacheKey,
-					pageName: urlPageName,
+					pageName: actualPageName,
 					size: cachedGzipped.length
 				});
 
 				// Set headers for pre-compressed response
 				res.setHeader('Content-Type', 'text/html; charset=utf-8');
 				res.setHeader('Content-Encoding', 'gzip');
-				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+				res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
 				res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
 
@@ -697,11 +777,11 @@ export async function handlePageRequest(
 		// Fallback: serve uncompressed HTML (let Nginx compress)
 		const cachedHtml = await getCachedHtml(htmlCacheKey);
 		if (cachedHtml) {
-			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: urlPageName });
+			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: actualPageName });
 
 			// Set headers for cached response
 			res.setHeader('Content-Type', 'text/html; charset=utf-8');
-			res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+			res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 			res.setHeader('Vary', 'Authorization, Cookie');
 			res.setHeader('X-Cache-Status', 'HIT-HTML');
 
@@ -709,14 +789,11 @@ export async function handlePageRequest(
 			res.end(cachedHtml);
 			return;
 		}
-	}
 
-	// Check cache for non-authenticated, non-index requests (legacy object cache)
-	if (urlPageName !== 'index' && !isAuthenticated) {
-		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft, cookieTheme);
-		const cached = await getCachedData<CachedPageData>(cacheKey);
+		// Fallback: legacy object cache
+		const cached = await getCachedData<CachedPageData>(htmlCacheKey);
 		if (cached) {
-			logger.info('Cache hit', { cacheKey, pageName: urlPageName });
+			logger.info('Cache hit', { cacheKey: htmlCacheKey, pageName: actualPageName });
 			const etag = generateETag(cached);
 
 			// Check If-None-Match for conditional request
@@ -727,99 +804,44 @@ export async function handlePageRequest(
 				return;
 			}
 
-			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName);
+			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName, drewAssignment);
 			res.writeHead(200);
 			res.end(generateHtml(cached, codes, cached.pageName, cdn));
 			return;
 		}
 	}
 
-	// Fetch from backend
-	logger.info('Fetching page data from backend', { pageName: urlPageName });
-	const data = await fetchAllPageData(urlPageName, {
-		appCode: codes.appCode,
-		clientCode: codes.clientCode,
-		authToken,
-		// Let the gateway resolve the surface from the host, as it does for a
-		// direct browser request.
-		forwardedHost: headers.get('x-forwarded-host') ?? url.host,
-		forwardedProto: headers.get('x-forwarded-proto') ?? url.protocol.replace(':', ''),
-		forwardedPort: headers.get('x-forwarded-port') ?? url.port,
-	}, cookieTheme);
+	// Fetch from backend. The application is handed in rather than refetched: it
+	// is already loaded above, and it is what routing was decided from, so the
+	// page and the rules that chose it come from the same definition.
+	logger.info('Fetching page data from backend', { pageName: actualPageName });
+	let data = await fetchAllPageData(actualPageName, fetchOptions, cookieTheme, application);
+	let servedPageName = actualPageName;
 
-	const actualPageName = data.resolvedPageName;
-
-	// Check HTML cache for resolved page name (when index was resolved to default page)
-	if (urlPageName === 'index' && !isAuthenticated) {
-		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft, cookieTheme);
-
-		// Check if client accepts gzip
-		const acceptEncoding = req.headers['accept-encoding'] || '';
-		const supportsGzip = acceptEncoding.includes('gzip');
-
-		if (supportsGzip) {
-			// Try to serve pre-compressed content (fastest!)
-			const cachedGzipped = await getCachedGzippedHtml(resolvedHtmlCacheKey);
-			if (cachedGzipped) {
-				logger.info('HTML cache hit (resolved, pre-compressed)', {
-					cacheKey: resolvedHtmlCacheKey,
-					pageName: actualPageName,
-					size: cachedGzipped.length
-				});
-
-				res.setHeader('Content-Type', 'text/html; charset=utf-8');
-				res.setHeader('Content-Encoding', 'gzip');
-				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
-				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
-				res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED-GZIP');
-
-				res.writeHead(200);
-				res.end(cachedGzipped);
-				return;
-			}
-		}
-
-		// Fallback: serve uncompressed HTML
-		const cachedResolvedHtml = await getCachedHtml(resolvedHtmlCacheKey);
-		if (cachedResolvedHtml) {
-			logger.info('HTML cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
-
-			res.setHeader('Content-Type', 'text/html; charset=utf-8');
-			res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
-			res.setHeader('Vary', 'Authorization, Cookie');
-			res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED');
-
-			res.writeHead(200);
-			res.end(cachedResolvedHtml);
-			return;
-		}
-
-		// Fallback: check legacy object cache
-		const cached = await getCachedData<CachedPageData>(resolvedHtmlCacheKey);
-		if (cached) {
-			logger.info('Object cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
-			const etag = generateETag(cached);
-
-			const ifNoneMatch = req.headers['if-none-match'];
-			if (ifNoneMatch === etag) {
-				res.writeHead(304);
-				res.end();
-				return;
-			}
-
-			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName);
-			res.writeHead(200);
-			res.end(generateHtml(cached, codes, cached.pageName, cdn));
-			return;
+	// A rule can name a page that has since been deleted, or was never published.
+	// Falling back to the URL's own name keeps the live page working while the
+	// definition is wrong, rather than taking it down with a 404 naming a page no
+	// visitor ever asked for. Only worth trying when routing actually changed the
+	// name, and only when the app itself came back.
+	if (data.application && !data.page && actualPageName !== urlPageName) {
+		logger.warn('Routed page missing, falling back to the requested page', {
+			requested: urlPageName,
+			resolved: actualPageName,
+			rule: route.resolution.ruleKey,
+		});
+		const fallback = await fetchAllPageData(urlPageName, fetchOptions, cookieTheme, application);
+		if (fallback.page) {
+			data = fallback;
+			servedPageName = fallback.resolvedPageName;
 		}
 	}
 
 	// Handle not found
 	if (!data.application || !data.page) {
-		logger.warn('Page not found', { pageName: actualPageName, appCode: codes.appCode });
+		logger.warn('Page not found', { pageName: servedPageName, appCode: codes.appCode });
 		setResponseHeaders(res, true, false, null, null, cdn.hostName);
 		res.writeHead(404);
-		res.end(generateHtml(null, codes, actualPageName, cdn, `Page "${actualPageName}" not found`));
+		res.end(generateHtml(null, codes, servedPageName, cdn, `Page "${servedPageName}" not found`));
 		return;
 	}
 
@@ -830,27 +852,34 @@ export async function handlePageRequest(
 		theme: data.theme as ThemeDefinition | null,
 		themeName: data.themeName,
 		codes,
-		pageName: actualPageName,
+		pageName: servedPageName,
 		cachedAt: Date.now(),
 	};
 
 	// Generate HTML once
-	const generatedHtml = generateHtml(result, codes, actualPageName, cdn);
+	const generatedHtml = generateHtml(result, codes, servedPageName, cdn);
 
-	// Cache HTML for unauthenticated requests (primary cache)
-	const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft, cookieTheme);
-	if (!isAuthenticated) {
+	// Cache HTML for unauthenticated requests (primary cache).
+	//
+	// Keyed on the page actually served, which after a fallback is not the page
+	// routing picked -- storing it under the missing name would serve the wrong
+	// document the moment that name starts resolving again.
+	const servedCacheKey =
+		servedPageName === actualPageName
+			? htmlCacheKey
+			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme);
+	if (!isAuthenticated && !isDesign) {
 		// Cache the rendered HTML (fast serving)
-		await setCachedHtml(htmlCacheKey, generatedHtml, config.cache.ttlSeconds);
+		await setCachedHtml(servedCacheKey, generatedHtml, config.cache.ttlSeconds);
 		logger.info('Cached HTML', {
-			cacheKey: htmlCacheKey,
-			pageName: actualPageName,
+			cacheKey: servedCacheKey,
+			pageName: servedPageName,
 			htmlSize: generatedHtml.length,
 			ttl: config.cache.ttlSeconds
 		});
 
 		// Also cache the object data (for cache warming and debugging)
-		await setCachedData(htmlCacheKey + ':data', result, config.cache.ttlSeconds);
+		await setCachedData(servedCacheKey + ':data', result, config.cache.ttlSeconds);
 	}
 
 	// Analyze key frequencies (debug mode only - set ANALYZE_KEYS=true in env)
@@ -860,10 +889,10 @@ export async function handlePageRequest(
 
 	// Generate response
 	const etag = generateETag(result);
-	setResponseHeaders(res, isAuthenticated, false, etag, data.application, cdn.hostName);
+	setResponseHeaders(res, isAuthenticated, false, etag, data.application, cdn.hostName, drewAssignment);
 
 	logger.info('SSR page rendered', {
-		pageName: actualPageName,
+		pageName: servedPageName,
 		appCode: codes.appCode,
 		fromCache: false,
 		htmlSize: generatedHtml.length,

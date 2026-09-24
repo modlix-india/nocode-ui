@@ -19,18 +19,21 @@ export default function StringSection({
 				value={schema?.minLength}
 				propPath="minLength"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 			<NumberField
 				label="Maximum Length"
 				value={schema?.maxLength}
 				propPath="maxLength"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 			/>
 			<SelectField
 				label="Format"
 				value={schema?.format}
 				propPath="format"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 				options={[
 					{ label: 'None', value: '' },
 					...Object.values(StringFormat).map(e => ({ label: e, value: e })),
@@ -42,6 +45,7 @@ export default function StringSection({
 				helpText="A regular expression the value must match"
 				propPath="pattern"
 				onChange={fieldChange}
+				readOnly={ctx.readOnly}
 				validationLogic={v => {
 					try {
 						if (!v) return '';

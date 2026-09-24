@@ -27,8 +27,13 @@ import { CraftCard } from './components/CraftCard';
 import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
+import AttachmentThumb from './components/AttachmentThumb';
+import { Attachment, splitTurnAttachments } from './attachments';
+import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
+import { getHref } from '../util/getHref';
+import { PagePreview, type PreviewSurface } from './PagePreview';
 import { serialiseActiveData } from './editorContext';
 import {
 	DraftDescriptor,
@@ -38,6 +43,8 @@ import {
 	matchDescriptor,
 	snapshotBaseline,
 } from './openDrafts';
+import { toDraftMode } from './draftMode';
+import { startDragShield } from '../../functions/utils';
 
 interface Message {
 	id: string;
@@ -58,6 +65,12 @@ interface Message {
 	dataConfirmedMeta?: Record<string, any>;
 	craftIds?: string[];
 	confirmationActions?: ConfirmationAction[];
+	/**
+	 * A steer (a message sent mid-run) that the agent has not acknowledged yet.
+	 * Drawn faded: it is on its way to a turn already in progress, and only the
+	 * agent can say whether it arrived in time to be read.
+	 */
+	pending?: boolean;
 }
 
 interface ToolCall {
@@ -91,15 +104,6 @@ interface AgentSpan {
 	toolCalls: ToolCall[];
 	thinking?: string;
 	statusText?: string; // live progress text from tool_update (e.g. "Analyzing results…")
-}
-
-interface Attachment {
-	id: string;
-	type: 'image' | 'file';
-	name: string;
-	url: string;
-	mimeType: string;
-	file?: File;
 }
 
 interface TokenUsage {
@@ -157,12 +161,14 @@ function mapHistoryToMessages(history: any[]): Message[] {
 	for (let i = 0; i < sorted.length; i++) {
 		const h = sorted[i];
 		const turnNumber = h.turn_number ?? i + 1;
+		const attached = splitTurnAttachments(h.attachments, i);
 		if (h.user_instruction) {
 			msgs.push({
 				id: `hist_user_${i}`,
 				role: 'user',
 				content: h.user_instruction,
 				turnNumber,
+				attachments: attached.user,
 			});
 		}
 		if (h.assistant_summary) {
@@ -191,6 +197,7 @@ function mapHistoryToMessages(history: any[]): Message[] {
 				toolCalls: toolCalls.length > 0 ? toolCalls : undefined,
 				turnNumber,
 				feedbackRating: h.feedback_rating,
+				attachments: attached.assistant,
 			});
 		}
 	}
@@ -218,6 +225,14 @@ interface SSEEventContext {
 	onDraftPatch: (data: any) => void;
 	/** A write that really did save, so anything showing that object is stale. */
 	onObjectChanged: (data: any) => void;
+	/**
+	 * These events are being seen for the second time: the server is replaying
+	 * a turn we reattached to (see the AI service's run_manager). Everything
+	 * that merely describes the turn is applied again, which is how the message
+	 * gets rebuilt; anything that acts on the world outside this chat is not,
+	 * because it already happened when the events first went out.
+	 */
+	replaying: boolean;
 }
 
 // Helper: update the assistant message with current toolCalls + agentSpans state.
@@ -461,6 +476,11 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 		case 'complete': {
+			// A one-shot: onComplete is what redirects the page or persists the
+			// result. Reattaching to a turn that already completed must not fire
+			// it a second time.
+			if (ctx.replaying) break;
+
 			// Automatically update the store if a binding path is provided
 			if (ctx.completeBindingPath) {
 				setData(ctx.completeBindingPath, data, ctx.props.context.pageName);
@@ -692,6 +712,39 @@ function SuggestionButtons({
 	);
 }
 
+/**
+ * What a conversation is about, as the server recorded it.
+ *
+ * The agent stamps the app and page its writes landed on onto the session, so
+ * this is the durable answer to "what was this chat working on" -- durable in a
+ * way the browser is not. `context_json` arrives as a JSON STRING rather than an
+ * object, which is easy to miss: reading `session.context` finds nothing and
+ * fails silently, leaving every reopened chat with no context.
+ *
+ * Everything here is best-effort. A session that predates these keys, or one
+ * whose context will not parse, simply has no context to offer.
+ */
+function readSessionContext(session: any): { app?: string; page?: string; apps: string[] } {
+	const raw = session?.context_json ?? session?.context;
+	let ctx: any = raw;
+	if (typeof raw === 'string') {
+		try {
+			ctx = JSON.parse(raw);
+		} catch {
+			return { apps: [] };
+		}
+	}
+	if (!ctx || typeof ctx !== 'object') return { apps: [] };
+	const app = typeof ctx.focus_app_code === 'string' ? ctx.focus_app_code.trim() : '';
+	const page = typeof ctx.focus_page_name === 'string' ? ctx.focus_page_name.trim() : '';
+	// Every app this conversation wrote to, which is what the pending-draft bar
+	// wants: the focus app is only the most recent of them.
+	const apps = Array.isArray(ctx.written_app_codes)
+		? ctx.written_app_codes.filter((a: any) => typeof a === 'string' && a.trim()).map(String)
+		: [];
+	return { app: app || undefined, page: page || undefined, apps };
+}
+
 function extractUsageFromSession(session: any): TokenUsage | null {
 	if (!session) return null;
 	const input = session.total_input_tokens ?? 0;
@@ -830,9 +883,23 @@ const SCROLL_BOTTOM_THRESHOLD_PX = 50;
 // is about the narrowest that still reads as two panes.
 const SESSIONS_OVERLAY_BELOW_PX = 640;
 
+// Silence longer than this means the connection is dead, not the agent quiet:
+// the service sends a keepalive every 15s while a run is attached.
+const STREAM_TIMEOUT_MS = 45_000;
+
+// How many times a dropped connection is rejoined before giving up and falling
+// back to polling the transcript. The run itself is unaffected either way:
+// it keeps working with nobody watching.
+const MAX_RECONNECT_ATTEMPTS = 3;
+
+// Multiplied by the attempt number, so the gaps are 1s, 2s, 3s. Long enough
+// for a blip to pass, short enough that a rejoin still feels like the stream
+// never stopped.
+const RECONNECT_BACKOFF_MS = 1_000;
+
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
@@ -843,8 +910,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		properties: {
 			agentEndpoint = '/api/ai/appbuilder/chat',
 			placeholder = 'Ask anything',
+			steerPlaceholder = 'Send a message to steer the agent...',
 			welcomeMessage = 'What can I help with?',
 			initialPrompt = '',
+			openFullPageName = '',
+			initialSessionId = '',
+			enablePreview = false,
 			contextSurface = '',
 			targetAppCode = '',
 			activeObject = '',
@@ -852,7 +923,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			openTabIds = '',
 			activeDataPath = '',
 			openDraftsPath = '',
-			draftMode = false,
+			draftMode = 'DRAFT',
+			showDraftReview = false,
+			draftWorkspaceUrl = '/workspace/{{appCode}}',
+			draftWorkspaceLabel = 'Open in workspace',
 			showSessions = true,
 			sessionsMode = '_auto',
 			newChatLabel = 'New chat',
@@ -866,12 +940,16 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			messagesPerPage = 20,
 			sidebarToggleIcon = 'fa fa-bars',
 			newChatTopIcon = 'fa fa-pen-to-square',
+			openFullIcon = 'fa fa-up-right-and-down-left-from-center',
+			previewIcon = 'fa fa-window-restore',
+			previewReloadIcon = 'fa fa-rotate-right',
 			newChatSidebarIcon = 'fa fa-plus',
 			sendIcon = 'fa fa-arrow-up',
 			stopIcon = 'fa fa-stop',
 			addAttachmentIcon = 'fa fa-plus',
 			removeAttachmentIcon = 'fa fa-xmark',
 			fileIcon = 'fa fa-file',
+			expiredAttachmentIcon = 'fa fa-clock-rotate-left',
 			copyIcon = 'fa fa-clone',
 			copySuccessIcon = 'fa fa-check',
 			renameIcon = 'fa fa-pen',
@@ -953,7 +1031,30 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		[bindingPath2, props.locationHistory, pageExtractor],
 	);
 
+	/**
+	 * Where the page that sent the user here left the question to open with.
+	 *
+	 * A handoff through the store rather than through the URL. /ai/<prompt> could
+	 * not carry a real one: a couple of paragraphs of what to build is well past
+	 * what a path segment survives, so long prompts arrived truncated or not at
+	 * all. Worse, the address bar kept holding it, so every refresh started the
+	 * whole build again in a new session. This is read once and cleared as it is
+	 * sent, which leaves a refresh nothing to fire.
+	 */
+	const pendingPromptPath = useMemo(
+		() =>
+			bindingPath3
+				? getPathFromLocation(bindingPath3, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath3, props.locationHistory, pageExtractor],
+	);
+
 	const resolvedPlaceholder = getTranslations(placeholder, props.pageDefinition.translations);
+
+	const resolvedSteerPlaceholder = getTranslations(
+		steerPlaceholder,
+		props.pageDefinition.translations,
+	);
 
 	const resolvedWelcomeMessage = getTranslations(
 		welcomeMessage,
@@ -1023,11 +1124,82 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [loadingMoreMessages, setLoadingMoreMessages] = useState(false);
 
 	// Draft state
-	const [draftText, setDraftText] = useState('');
+	// What to PUT INTO the input, and a counter saying "now".
+	//
+	// Only this component's own pushes live here: a session switch, a send that
+	// clears the box, a refused send that hands the message back. Keystrokes
+	// deliberately do NOT, because the input already holds what the user typed
+	// and mirroring it here made the two owners fight (see InputBar's
+	// `textRevision`) as well as re-rendering the whole chat on every letter.
+	const [textPush, setTextPush] = useState<{ text: string; rev: number }>({
+		text: '',
+		rev: 0,
+	});
+	// What the box holds right now, wherever it came from: our own pushes and
+	// the user's keystrokes both land here. Needed because text handed BACK to
+	// the box (a steer the agent never read) must not wipe out something typed
+	// since. See `handBackText`.
+	const liveInputRef = useRef('');
+	const setDraftText = useCallback((text: string) => {
+		liveInputRef.current = text;
+		setTextPush(prev => ({ text, rev: prev.rev + 1 }));
+	}, []);
+
+	/**
+	 * Steers this tab has sent on the current run and the agent has not yet
+	 * acknowledged: id → text.
+	 *
+	 * Queued is not delivered. The agent emits a `steer` event when the text
+	 * actually reaches the model, and that is what promotes the faded bubble to
+	 * a real one. Anything still in here when the run ends never got read, so
+	 * the text goes back to the input box rather than sitting on screen looking
+	 * like part of the conversation.
+	 */
+	const pendingSteersRef = useRef<Map<string, string>>(new Map());
+
+	/**
+	 * A message that missed its run entirely: the server said there was nothing
+	 * in progress to steer. Sent as an ordinary message as soon as this tab
+	 * agrees the run is over.
+	 */
+	const queuedSendRef = useRef<string>('');
+
+	/**
+	 * Put text the agent never read back where the user can send it again,
+	 * without wiping out whatever they have typed since it left the box.
+	 */
+	const handBackText = useCallback(
+		(text: string) => {
+			if (!text) return;
+			const current = liveInputRef.current.trim();
+			setDraftText(current ? `${current}\n\n${text}` : text);
+		},
+		[setDraftText],
+	);
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 	const abortControllerRef = useRef<AbortController | null>(null);
+	/**
+	 * True while the stream is being let go of ON PURPOSE: Stop, a session
+	 * switch, a new chat, an unmount.
+	 *
+	 * This is the ONLY thing that distinguishes deliberate from accidental,
+	 * and the distinction decides whether the run is rejoined or reported as a
+	 * failure. It cannot be read off the error: a dropped socket surfaces as
+	 * `TypeError: network error` in Chrome, `Load failed` in Safari and an
+	 * AbortError when our own watchdog pulls the plug, so an error-name test
+	 * would have to enumerate every browser's wording and would still fail
+	 * open on the next one. Anything that reaches a catch with this flag down
+	 * is a lost connection to a run that is still working.
+	 */
+	const deliberateAbortRef = useRef(false);
+	/** Let go of the current stream without ending the run behind it. */
+	const releaseStream = useCallback(() => {
+		deliberateAbortRef.current = true;
+		abortControllerRef.current?.abort();
+		abortControllerRef.current = null;
+	}, []);
 	const shouldAutoScrollRef = useRef(true);
 	const prevMessageCountRef = useRef(0);
 	const lastTouchYRef = useRef(0);
@@ -1093,6 +1265,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				pageExtractor,
 				onLoad: data => {
 					if (data.sidebarWidth) setSidebarWidth(data.sidebarWidth);
+					if (data.previewWidth) setPreviewWidth(data.previewWidth);
+					if (data.previewSurface === 'draft' || data.previewSurface === 'live')
+						setPreviewSurface(data.previewSurface);
+					if (data.previewDevice) setPreviewDevice(data.previewDevice);
+					// Only whether the pane was wanted, never which page: that is per
+					// conversation and is restored from the session scope instead.
+					if (data.previewOpen !== undefined)
+						preferredPreviewOpenRef.current = data.previewOpen;
 					if (data.sidebarOpen !== undefined) {
 						preferredSidebarOpenRef.current = data.sidebarOpen;
 						// Never reopen a drawer over the chat: this arrives async, so
@@ -1113,6 +1293,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			const startX = e.clientX;
 			const startWidth = sidebarWidth;
+			// The preview pane on the other side of the chat is an iframe. Without
+			// the shield the drag freezes the moment the pointer reaches it, and the
+			// mouseup that lands in the frame never gets back here to end it.
+			const releaseShield = startDragShield('col-resize');
 
 			const handleMouseMove = (ev: MouseEvent) => {
 				if (!isResizingRef.current) return;
@@ -1125,6 +1309,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				isResizingRef.current = false;
 				document.removeEventListener('mousemove', handleMouseMove);
 				document.removeEventListener('mouseup', handleMouseUp);
+				releaseShield();
 				document.body.style.cursor = '';
 				document.body.style.userSelect = '';
 
@@ -1153,6 +1338,133 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			document.body.style.userSelect = 'none';
 		},
 		[sidebarWidth, personalizationBindingPath, props.locationHistory, pageExtractor],
+	);
+
+	// ── Page preview ────────────────────────────────────────────────────────
+	// The page the agent is working on, rendered beside the chat. State lives here
+	// rather than in the pane so it survives the pane being closed and reopened,
+	// and so one place decides what is being previewed.
+	const [previewOpen, setPreviewOpen] = useState(false);
+	const [previewWidth, setPreviewWidth] = useState(720);
+	const [previewSurface, setPreviewSurface] = useState<PreviewSurface>('draft');
+	const [previewDevice, setPreviewDevice] = useState('desktop');
+	// What the agent last touched, which is what the preview points at.
+	const [previewTarget, setPreviewTarget] = useState<
+		{ appCode: string; pageName: string } | undefined
+	>();
+	// Bumped whenever a write lands on the page being shown, so the pane reloads.
+	const [previewReload, setPreviewReload] = useState(0);
+	const previewRef = useRef<HTMLDivElement>(null);
+	// The preview URL carries a clientCode segment. The logged-in client is the
+	// right one: it is whose copy of the app the agent has been writing to.
+	const previewClientCode = (getDataFromPath(
+		'Store.auth.loggedInClientCode',
+		[],
+		pageExtractor,
+	) ?? 'SYSTEM') as string;
+	const previewOpenRef = useRef(previewOpen);
+	// What personalization said, applied only once a target exists.
+	const preferredPreviewOpenRef = useRef<boolean | undefined>(undefined);
+	previewOpenRef.current = previewOpen;
+	const previewTargetRef = useRef(previewTarget);
+	previewTargetRef.current = previewTarget;
+
+	/** Merge one patch into the personalization document. */
+	const savePreferences = useCallback(
+		(patch: Record<string, any>) => {
+			if (!personalizationBindingPath) return;
+			const current =
+				getDataFromPath(personalizationBindingPath, props.locationHistory, pageExtractor) ??
+				{};
+			setStoreData(
+				personalizationBindingPath,
+				{ ...current, ...patch },
+				pageExtractor.getPageName(),
+			);
+		},
+		[personalizationBindingPath, props.locationHistory, pageExtractor],
+	);
+
+	const openPreview = useCallback(() => {
+		setPreviewOpen(true);
+		// Kiran's call: the sessions list has to go. Three columns in one pane
+		// leaves the chat too narrow to read, and the list is the one of the three
+		// nobody is looking at while they watch a page being built. Routed through
+		// the ref rather than the preference so reopening the chat later still
+		// restores whatever the user actually chose.
+		setSidebarOpen(false);
+		savePreferences({ previewOpen: true });
+	}, [savePreferences]);
+
+	const closePreview = useCallback(() => {
+		setPreviewOpen(false);
+		savePreferences({ previewOpen: false });
+	}, [savePreferences]);
+
+	const changePreviewSurface = useCallback(
+		(s: PreviewSurface) => {
+			setPreviewSurface(s);
+			savePreferences({ previewSurface: s });
+		},
+		[savePreferences],
+	);
+
+	const changePreviewDevice = useCallback(
+		(d: string) => {
+			setPreviewDevice(d);
+			savePreferences({ previewDevice: d });
+		},
+		[savePreferences],
+	);
+
+	/**
+	 * The pane was pointed somewhere else from its path box.
+	 *
+	 * Adopted as the target rather than left inside the pane, so a write landing
+	 * on the page now being shown still reloads it, and so the button that reopens
+	 * a closed pane names the page the user last looked at.
+	 */
+	const retargetPreview = useCallback((t: { appCode: string; pageName: string }) => {
+		setPreviewTarget(prev =>
+			prev?.appCode === t.appCode && prev?.pageName === t.pageName ? prev : t,
+		);
+	}, []);
+
+	// The pane is on the right, so dragging LEFT widens it.
+	const handlePreviewResizeStart = useCallback(
+		(e: React.MouseEvent) => {
+			e.preventDefault();
+			const startX = e.clientX;
+			const startWidth = previewRef.current?.offsetWidth ?? previewWidth;
+			let latest = startWidth;
+			// The grip sits on the pane's left edge, a few pixels from the iframe it
+			// resizes: narrowing the pane means dragging straight into that frame.
+			// The shield is what keeps the pointer in this document while it happens.
+			const releaseShield = startDragShield('col-resize');
+
+			const onMove = (ev: MouseEvent) => {
+				// Upper bound is a share of the window, not a constant: the point of
+				// the drag is to trade chat for page, and a fixed 1400 would leave no
+				// chat at all on a laptop.
+				const max = Math.max(420, window.innerWidth - 380);
+				latest = Math.max(360, Math.min(max, startWidth + (startX - ev.clientX)));
+				setPreviewWidth(latest);
+			};
+			const onUp = () => {
+				document.removeEventListener('mousemove', onMove);
+				document.removeEventListener('mouseup', onUp);
+				releaseShield();
+				document.body.style.cursor = '';
+				document.body.style.userSelect = '';
+				savePreferences({ previewWidth: latest });
+			};
+
+			document.addEventListener('mousemove', onMove);
+			document.addEventListener('mouseup', onUp);
+			document.body.style.cursor = 'col-resize';
+			document.body.style.userSelect = 'none';
+		},
+		[previewWidth, savePreferences],
 	);
 
 	// Sidebar toggle with personalization
@@ -1351,6 +1663,53 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const [savedObjects, setSavedObjects] = useState<
 		Array<{ kind: string; name: string; draft: boolean }>
 	>([]);
+
+	// Apps this chat has left unpublished work in, and the page the preview shows.
+	//
+	// Both are facts about a CONVERSATION, so both live on the session and nowhere
+	// else. They were in LocalStore, keyed by component, which broke twice over: a
+	// brand-new chat opened announcing "1 change waiting in the monkbars draft"
+	// about work another chat had done, and the same key would have restored a
+	// preview of a page this conversation never touched. Keying by session id
+	// fixed the first but not the second: the browser is not where a conversation
+	// lives, so reopening the same chat anywhere else still came back blank.
+	//
+	// The server already records both -- `focus_app_code`, `focus_page_name` and
+	// `written_app_codes` on the session -- so that is the only source. In memory
+	// during a live turn, read back from the session on resume, and there is
+	// deliberately no browser copy to go stale or leak sideways.
+	const [pendingApps, setPendingApps] = useState<string[]>([]);
+	const rememberPendingApp = useCallback((appCode: string) => {
+		// Capped: this is a hint about where to look, not a history.
+		setPendingApps(prev => (prev.includes(appCode) ? prev : [appCode, ...prev].slice(0, 5)));
+	}, []);
+	const forgetPendingApps = useCallback((appCodes: string[]) => {
+		setPendingApps(prev => {
+			const next = prev.filter(a => !appCodes.includes(a));
+			return next.length === prev.length ? prev : next;
+		});
+	}, []);
+
+	/**
+	 * Adopt the context of the conversation being opened, or clear it.
+	 *
+	 * Called from the two places the conversation changes -- opening one and
+	 * starting a new one -- rather than from an effect on the session id. An
+	 * effect ran AFTER the fetch that had just set this and cleared it again,
+	 * which is the whole reason the server's answer kept vanishing.
+	 */
+	const adoptSessionContext = useCallback((session: any) => {
+		const ctx = readSessionContext(session);
+		setPendingApps(ctx.apps.slice(0, 5));
+		setPreviewTarget(
+			ctx.app && ctx.page ? { appCode: ctx.app, pageName: ctx.page } : undefined,
+		);
+		// A conversation with nothing to show must not leave the pane open over
+		// the next one; with a target it may reopen, if that is the preference.
+		setPreviewOpen(!!(ctx.app && ctx.page) && !!preferredPreviewOpenRef.current);
+		// The per-turn notice belongs to the turn that produced it.
+		setSavedObjects([]);
+	}, []);
 	const handleObjectChanged = useCallback(
 		(data: any) => {
 			if (!data?.kind) return;
@@ -1362,6 +1721,31 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					? prev
 					: [...prev, { kind: data.kind, name: data.name ?? '', draft }],
 			);
+			// A drafted change needs somewhere to be reviewed from. A surface with
+			// editor tabs has one already; this remembers the app so a surface
+			// WITHOUT tabs can show a review bar, and remembers it in LocalStore so
+			// the bar comes back after a refresh. The draft outlives the tab it was
+			// announced in, so the note about it has to as well.
+			if (draft && data.app_code) rememberPendingApp(data.app_code);
+
+			// A page write is the one thing the preview can show. Aim it at that
+			// page, and if the pane is already open on the same page, reload it so
+			// the change appears without anyone asking.
+			//
+			// Only when `enablePreview` is on: on a docked sidekick this state would
+			// be maintained for a pane that never renders.
+			if (enablePreview && data.kind === 'page' && data.app_code && data.name) {
+				const next = { appCode: String(data.app_code), pageName: String(data.name) };
+				const prev = previewTargetRef.current;
+				const samePage = prev?.appCode === next.appCode && prev?.pageName === next.pageName;
+				if (!samePage) setPreviewTarget(next);
+				// A drafted write is only visible on the draft surface, so follow it
+				// there rather than leaving the pane on Live showing the old page and
+				// looking like the change did not happen.
+				if (draft) setPreviewSurface('draft');
+				if (previewOpenRef.current) setPreviewReload(n => n + 1);
+				else if (preferredPreviewOpenRef.current) openPreview();
+			}
 			// A parent component can take a callback; a page cannot, so it gets the
 			// same news through the store and an event. Both fire: the page editor
 			// uses the callback, the workspace uses the event, and neither knows
@@ -1373,7 +1757,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				// component state, because the handler drains the list and the
 				// component's own `savedObjects` never shrinks. Read-modify-write is
 				// safe here: SSE events arrive one at a time on one connection.
-				const existing = getDataFromPath(changedBindingPath, props.locationHistory, pageExtractor);
+				const existing = getDataFromPath(
+					changedBindingPath,
+					props.locationHistory,
+					pageExtractor,
+				);
 				const queue = Array.isArray(existing) ? existing : [];
 				setData(
 					changedBindingPath,
@@ -1408,6 +1796,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			onObjectSaved,
 			onObjectSavedEvent,
 			changedBindingPath,
+			enablePreview,
+			openPreview,
 			props.locationHistory,
 			props.context.pageName,
 			props.pageDefinition,
@@ -1422,11 +1812,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Refs give the current value with a stable identity, which is what this
 	// actually needs: the send should use whatever is true when it runs.
 	const buildOpenDraftsRef = useRef(buildOpenDrafts);
-	const draftModeRef = useRef(draftMode);
+	// Normalized here rather than at the send, so a page definition still holding
+	// the old boolean cannot put a `false` on the wire, where the server would
+	// read it as DRAFT and quietly start drafting a surface that asked for live.
+	const draftModeRef = useRef(toDraftMode(draftMode));
 	const handleDraftPatchRef = useRef(handleDraftPatch);
 	const handleObjectChangedRef = useRef(handleObjectChanged);
 	buildOpenDraftsRef.current = buildOpenDrafts;
-	draftModeRef.current = draftMode;
+	draftModeRef.current = toDraftMode(draftMode);
 	handleDraftPatchRef.current = handleDraftPatch;
 	handleObjectChangedRef.current = handleObjectChanged;
 
@@ -1653,13 +2046,448 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		[agentEndpoint, getAuthHeaders, messagesPerPage, stopPolling, fetchSessions],
 	);
 
+	// Which session this surface was last watching a run on. The sidekick is on
+	// four pages (page editor, workspace, org, ai) and each keeps its own note,
+	// so reopening one rejoins the run it was showing rather than whichever run
+	// of the user's happens to be newest.
+	const activeRunPath = `${LOCAL_STORE_PREFIX}.promptActiveRuns.${props.context.pageName}_${flattenUUID(key)}`;
+
+	const rememberActiveRun = useCallback(
+		(runSessionId: string) => {
+			setData(activeRunPath, { sessionId: runSessionId }, props.context.pageName);
+		},
+		[activeRunPath, props.context.pageName],
+	);
+
+	/**
+	 * Drop the note, unless it has moved on to another run.
+	 *
+	 * `expected` guards against clearing a record written after the caller
+	 * started: the restore below reads the note, asks the server about it, and
+	 * only then decides to clear, and a message sent in that window has
+	 * already replaced the note with its own run.
+	 */
+	const forgetActiveRun = useCallback(
+		(expected?: string) => {
+			if (expected) {
+				const record = getDataFromPath(activeRunPath, [], pageExtractor);
+				if (record?.sessionId && record.sessionId !== expected) return;
+			}
+			setData(activeRunPath, undefined, props.context.pageName);
+		},
+		[activeRunPath, props.context.pageName, pageExtractor],
+	);
+
+	/**
+	 * Read an agent SSE stream to its end, folding every event into the message
+	 * on screen.
+	 *
+	 * Shared by the send that starts a run and the attach that rejoins one:
+	 * both carry the same event stream, and the only difference is that an
+	 * attach opens by replaying the turn so far. `replay_start` therefore wipes
+	 * this message back to empty before the replay lands, because whatever it holds
+	 * came from an earlier read of the same events, and rebuilding is what
+	 * makes reattaching idempotent.
+	 */
+	const consumeStream = useCallback(
+		async (
+			response: Response,
+			assistantMsgId: string,
+			initialSessionId: string | null,
+		): Promise<{ sessionId: string | null; timedOut: boolean; ended: boolean }> => {
+			const reader = response.body?.getReader();
+			if (!reader) throw new Error('No response body');
+
+			const decoder = new TextDecoder();
+			let buffer = '';
+			let assistantText = '';
+			let toolCalls = new Map<string, ToolCall>();
+			let agentSpans = new Map<string, AgentSpan>();
+			let receivedSessionId = initialSessionId;
+			let replaying = false;
+			let ended = false;
+			let timedOut = false;
+			// The assistant message being written INTO, which is not always the
+			// one this stream opened with: a steer closes the current bubble and
+			// starts another underneath it, so the conversation reads in the
+			// order it happened.
+			let liveAssistantMsgId = assistantMsgId;
+			// Messages this stream added after that opening one (a steer's bubble
+			// and the assistant bubble that follows it). A replay rebuilds the
+			// turn from nothing, so these are torn down first and recreated as
+			// the same events come round again.
+			let spawned: string[] = [];
+
+			// Watchdog: detect dead connections (server keepalives every 15s)
+			let lastDataAt = Date.now();
+			const watchdog = setInterval(() => {
+				if (Date.now() - lastDataAt > STREAM_TIMEOUT_MS) {
+					timedOut = true;
+					abortControllerRef.current?.abort();
+					clearInterval(watchdog);
+				}
+			}, 5_000);
+
+			// eventType is preserved across reader.read() chunks because a
+			// single SSE event ("event: foo\ndata: ...\n\n") can be split
+			// at any byte boundary. Resetting per-chunk dropped the data
+			// line whenever a network read landed between the header and
+			// the data, intermittently silently losing craft events.
+			let eventType = '';
+			try {
+				while (true) {
+					// The read is guarded on its own, not by the catch around
+					// the whole loop, so that only a failure of the CONNECTION
+					// is read as one. A throw from the event handling below is
+					// a bug in this file and must stay an error: swallowing it
+					// here would reattach, replay the same event, throw again,
+					// and turn a crash into a reconnect loop.
+					let chunk: ReadableStreamReadResult<Uint8Array>;
+					try {
+						chunk = await reader.read();
+					} catch (err: any) {
+						// Deliberate: Stop, a session switch, an unmount. The
+						// caller asked for this and owns what happens next.
+						if (deliberateAbortRef.current) throw err;
+						// Everything else is the connection dying under a run
+						// that is still working — our watchdog's abort on
+						// silence, or the socket simply going away mid-read
+						// (`TypeError: network error` in Chrome, `Load failed`
+						// in Safari). Report it as a timeout so the caller
+						// rejoins and replays.
+						//
+						// This used to rethrow, which made an ordinary blip
+						// terminal: an "Error: network error" bubble, an idle
+						// panel, and a 409 on the user's next message because
+						// the run they had been told had failed was still
+						// going.
+						timedOut = true;
+						break;
+					}
+					const { done, value } = chunk;
+					if (done) break;
+					lastDataAt = Date.now();
+
+					buffer += decoder.decode(value, { stream: true });
+					const lines = buffer.split('\n');
+					buffer = lines.pop() ?? '';
+
+					for (const line of lines) {
+						if (line.startsWith('event: ')) {
+							eventType = line.slice(7).trim();
+							continue;
+						}
+						if (line === '') {
+							eventType = '';
+							continue;
+						}
+						if (!line.startsWith('data: ') || !eventType) continue;
+
+						let data: any;
+						try {
+							data = JSON.parse(line.slice(6));
+						} catch {
+							eventType = '';
+							continue;
+						}
+						const type = eventType;
+						eventType = '';
+
+						if (data.session_id) receivedSessionId = data.session_id;
+
+						if (type === 'replay_start') {
+							replaying = true;
+							assistantText = '';
+							toolCalls = new Map();
+							agentSpans = new Map();
+							const stale = spawned;
+							spawned = [];
+							liveAssistantMsgId = assistantMsgId;
+							setMessages(prev =>
+								prev
+									.filter(m => !stale.includes(m.id))
+									.map(m =>
+										m.id === assistantMsgId
+											? {
+													...m,
+													content: '',
+													thinking: undefined,
+													toolCalls: [],
+													agentSpans: [],
+													suggestions: undefined,
+													data: undefined,
+												}
+											: m,
+									),
+							);
+							if (data.session_id) {
+								setSessionId(data.session_id);
+								// Noted as early as possible: for a brand new chat
+								// this is the first moment the id exists, and a
+								// refresh a second later needs it to find the run.
+								rememberActiveRun(data.session_id);
+								if (data.session_id !== initialSessionId) {
+									// A chat this new is not in the sidebar yet, and
+									// the list used to be refreshed only once the
+									// turn ended. Switching away before then left
+									// the run going with no way back to it.
+									fetchSessions();
+								}
+							}
+							continue;
+						}
+
+						if (type === 'replay_end') {
+							replaying = false;
+							// The run's own done event is inside the replay when
+							// the turn is already over, so this flag, not the
+							// stream ending, is what says nothing more is coming.
+							if (data.running === false) ended = true;
+							continue;
+						}
+
+						if (type === 'steer') {
+							const steerId = data.id ?? '';
+							const steerText = data.text ?? '';
+							const queuedText = pendingSteersRef.current.get(steerId);
+
+							if (data.applied === false) {
+								// It never reached the model. Only this tab's own
+								// unanswered steers are acted on: one replayed
+								// from an earlier attach has already been dealt
+								// with, and taking it again would put old text
+								// back in the box.
+								if (queuedText !== undefined) {
+									pendingSteersRef.current.delete(steerId);
+									setMessages(prev => prev.filter(m => m.id !== steerId));
+									handBackText(queuedText);
+								}
+								continue;
+							}
+
+							pendingSteersRef.current.delete(steerId);
+							const nextAssistantId = `${assistantMsgId}_after_${steerId}`;
+							setMessages(prev => {
+								// Confirm the faded bubble, or draw it for the
+								// first time: an attach, or another tab's steer,
+								// arrives with no bubble on screen at all.
+								const withSteer = prev.some(m => m.id === steerId)
+									? prev.map(m =>
+											m.id === steerId
+												? { ...m, content: steerText, pending: false }
+												: m,
+										)
+									: [
+											...prev,
+											{
+												id: steerId,
+												role: 'user' as const,
+												content: steerText,
+											},
+										];
+								if (withSteer.some(m => m.id === nextAssistantId)) return withSteer;
+								return [
+									...withSteer,
+									{
+										id: nextAssistantId,
+										role: 'assistant' as const,
+										content: '',
+										toolCalls: [],
+										agentSpans: [],
+									},
+								];
+							});
+							// Everything after this belongs to the new bubble.
+							spawned = [...spawned, steerId, nextAssistantId];
+							liveAssistantMsgId = nextAssistantId;
+							assistantText = '';
+							toolCalls = new Map();
+							agentSpans = new Map();
+							continue;
+						}
+
+						if (type === 'done') ended = true;
+
+						processSSEEvent(type, data, {
+							assistantMsgId: liveAssistantMsgId,
+							currentText: assistantText,
+							toolCalls,
+							agentSpans,
+							setText: (newText: string) => {
+								assistantText = newText;
+							},
+							setMessages,
+							setSessionId,
+							setUsage,
+							showToolCalls,
+							setFeedbackTurn: turn => setFeedbackTurn(turn),
+							setCrafts,
+							setActiveCraftId,
+							onComplete,
+							completeBindingPath,
+							props,
+							runEvent,
+							onDraftPatch: handleDraftPatchRef.current,
+							onObjectChanged: handleObjectChangedRef.current,
+							replaying,
+						});
+					}
+				}
+			} finally {
+				clearInterval(watchdog);
+			}
+
+			// A steer with no verdict by the time the run is genuinely over was
+			// never read: the worker died, or it arrived in the gap between the
+			// agent's last check and the end of the stream. Hand it back rather
+			// than leaving a faded bubble on screen forever. Only on a real end
+			// A timed-out connection is about to reattach and replay, and the
+			// verdict may be in what it replays.
+			if (ended && pendingSteersRef.current.size) {
+				const orphaned = Array.from(pendingSteersRef.current.entries());
+				pendingSteersRef.current.clear();
+				const ids = new Set(orphaned.map(([id]) => id));
+				setMessages(prev => prev.filter(m => !ids.has(m.id)));
+				handBackText(orphaned.map(([, text]) => text).join('\n\n'));
+			}
+
+			return { sessionId: receivedSessionId, timedOut, ended };
+		},
+		[
+			showToolCalls,
+			onComplete,
+			completeBindingPath,
+			rememberActiveRun,
+			fetchSessions,
+			setSessionId,
+			handBackText,
+			props,
+		],
+	);
+
+	/**
+	 * Rejoin a run already in progress on the server.
+	 *
+	 * The agent keeps working with nobody attached, so a refresh, a closed
+	 * panel or a switch to another session costs only the view of it. This is
+	 * how that view comes back: the service replays the turn so far and then
+	 * streams the rest live.
+	 *
+	 * Returns false when there is nothing to rejoin (it finished and was
+	 * forgotten, or the worker holding it died), which is the caller's cue to
+	 * fall back to the persisted transcript.
+	 */
+	const attachToRun = useCallback(
+		async (attachSessionId: string): Promise<boolean> => {
+			if (!attachSessionId) return false;
+			stopPolling();
+
+			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			let assistantMsgId = '';
+			let attempt = 0;
+			// Polling owns the streaming state once it takes over, so the
+			// cleanup below must not immediately unset what it just set.
+			let handedOff = false;
+
+			try {
+				while (attempt <= MAX_RECONNECT_ATTEMPTS) {
+					// A new stream: nobody has asked to let go of THIS one yet.
+					deliberateAbortRef.current = false;
+					abortControllerRef.current = new AbortController();
+					const response = await fetch(`${baseUrl}/attach`, {
+						method: 'POST',
+						headers: getAuthHeaders(),
+						body: JSON.stringify({ session_id: attachSessionId }),
+						signal: abortControllerRef.current.signal,
+					});
+
+					if (!response.ok) {
+						// 404 is the ordinary answer for "that run is over".
+						if (response.status === 404) forgetActiveRun();
+						return false;
+					}
+
+					setIsStreaming(true);
+					shouldAutoScrollRef.current = true;
+					setIsAtBottom(true);
+
+					if (!assistantMsgId) {
+						assistantMsgId = `asst_attach_${Date.now()}`;
+						setMessages(prev => [
+							...prev,
+							{
+								id: assistantMsgId,
+								role: 'assistant',
+								content: '',
+								toolCalls: [],
+								agentSpans: [],
+							},
+						]);
+					}
+
+					const result = await consumeStream(response, assistantMsgId, attachSessionId);
+					if (!result.timedOut) break;
+
+					// The connection died, not the run. Rejoin it: the replay
+					// rebuilds this message, so nothing is shown twice.
+					attempt += 1;
+					if (attempt > MAX_RECONNECT_ATTEMPTS) {
+						handedOff = true;
+						startPolling(attachSessionId);
+						return true;
+					}
+					// Back off before retrying. A timeout used to be the only
+					// way here and took 45s to notice, which spaced the
+					// attempts on its own; a socket that dies mid-read reports
+					// instantly, and without this a connection that is flapping
+					// would spend all three attempts inside a second and fall
+					// through to polling while the network was still settling.
+					await new Promise(resolve =>
+						setTimeout(resolve, RECONNECT_BACKOFF_MS * attempt),
+					);
+				}
+
+				forgetActiveRun();
+				await fetchSessions();
+				return true;
+			} catch (err: any) {
+				// Deliberately let go of. The run is untouched and whoever
+				// aborted us owns what happens next.
+				if (err?.name === 'AbortError') return true;
+				return false;
+			} finally {
+				if (!handedOff) setIsStreaming(false);
+				abortControllerRef.current = null;
+			}
+		},
+		[
+			agentEndpoint,
+			getAuthHeaders,
+			consumeStream,
+			stopPolling,
+			startPolling,
+			fetchSessions,
+			forgetActiveRun,
+		],
+	);
+
 	// Select a session and load its history
 	const handleSelectSession = useCallback(
 		async (selectedSessionId: string) => {
-			if (selectedSessionId === sessionId) return; // Already viewing this session
+			// Already viewing this session, which counts as landed: a URL naming the
+			// chat that is already open has got what it asked for.
+			if (selectedSessionId === sessionId) return true;
 
 			stopPolling();
+			// Let go of whatever this panel was watching. Only the view ends:
+			// the run it was attached to carries on, and picking that session
+			// again rejoins it.
+			releaseStream();
 			setIsStreaming(false);
+			// Steers belong to the run they were sent into. Rejoining that chat
+			// replays them with the agent's verdict; carrying them across to
+			// this one would attach them to the wrong conversation.
+			pendingSteersRef.current.clear();
 			shouldAutoScrollRef.current = true;
 			isNavigatingRef.current = true;
 			setIsAtBottom(true);
@@ -1683,40 +2511,170 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					setTotalMessages(data.total_history ?? history.length);
 					setMessagesOffset(0);
 					setUsage(extractUsageFromSession(data.session));
+
+					// What this conversation was about, taken from the SESSION rather
+					// than from this browser. The agent records the app and page its
+					// writes landed on, so reopening a chat anywhere -- another browser,
+					// another machine -- gets its context back. LocalStore is only a
+					// same-browser fast path, and the server wins over it.
+					// What this conversation is about, from the SESSION. The agent
+					// records the app and page its writes landed on, so reopening a chat
+					// anywhere -- another browser, another machine -- gets its context
+					// back. `context_json` arrives as a JSON STRING, not an object, which
+					// is easy to miss: reading `session.context` finds nothing and fails
+					// silently, leaving every reopened chat blank.
+					adoptSessionContext(data.session);
 					// Same as handleNewChat: the previous session's panel must
 					// not carry over into the one being opened.
 					setCrafts(new Map());
 					setActiveCraftId(null);
 
-					// If session is currently being processed and was recently
-					// updated, poll for updates. Stale PROCESSING sessions
-					// (e.g. server crashed or stop was hit) are treated as done.
+					// Still working? Rejoin the run, which replays the turn so
+					// far and then streams the rest live. Polling the
+					// transcript is the fallback for when there is no run left
+					// to rejoin: it finished and was forgotten, or the worker
+					// holding it died, in which case a PROCESSING session that
+					// has not been touched in a minute is simply over.
 					if (data.session?.status === 'PROCESSING') {
-						const updatedAt = data.session?.updated_at;
-						const isStale =
-							updatedAt && Date.now() - new Date(updatedAt).getTime() > 60_000;
-						if (!isStale) {
-							startPolling(selectedSessionId);
+						const attached = await attachToRun(selectedSessionId);
+						if (!attached) {
+							const updatedAt = data.session?.updated_at;
+							const isStale =
+								updatedAt && Date.now() - new Date(updatedAt).getTime() > 60_000;
+							if (!isStale) {
+								startPolling(selectedSessionId);
+							}
 						}
 					}
+					return true;
 				}
 			} catch {
 				// Silently fail
 			}
+			// Reported rather than thrown. The sessions list has always ignored a
+			// failed open and can afford to: the chat the user was already looking
+			// at is still there. A session named in a URL has nothing to fall back
+			// to, so that caller has to be able to tell it did not land.
+			return false;
 		},
 		[
 			sessionId,
+			adoptSessionContext,
 			agentEndpoint,
 			getAuthHeaders,
 			messagesPerPage,
 			stopPolling,
 			startPolling,
+			attachToRun,
 			overlaySessions,
+			releaseStream,
 		],
 	);
 
+	/**
+	 * Rejoin the run this surface was watching when it went away.
+	 *
+	 * The agent does not stop when the panel does, so a refresh, a navigation
+	 * or a closed sidekick costs only the view of the turn. Runs, not sessions,
+	 * are what gets restored: a chat that had finished is left alone, and the
+	 * user opens it from the history like any other.
+	 */
+	const restoreAttemptedRef = useRef(false);
+	// Whether the restore has had its say yet. State, not a ref, because the
+	// opening prompt below waits on it: a ref would leave that effect with no
+	// reason to run again once a restore finds nothing to rejoin, and a prompt
+	// handed over for sending would sit there unsent.
+	const [restoreSettled, setRestoreSettled] = useState(false);
+	useEffect(() => {
+		if (restoreAttemptedRef.current) return;
+		restoreAttemptedRef.current = true;
+
+		const record = readOnly ? undefined : getDataFromPath(activeRunPath, [], pageExtractor);
+		const restoreSessionId = record?.sessionId;
+		if (!restoreSessionId) {
+			setRestoreSettled(true);
+			return;
+		}
+
+		(async () => {
+			try {
+				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const response = await fetch(`${baseUrl}/runs`, { headers: getAuthHeaders() });
+				if (!response.ok) return;
+				const data = await response.json();
+				const live: any[] = Array.isArray(data?.runs) ? data.runs : [];
+				if (!live.some(r => r.session_id === restoreSessionId)) {
+					// Over and done with while we were away.
+					forgetActiveRun(restoreSessionId);
+					return;
+				}
+				// The user got in first, typing and sending while this was still
+				// asking. Their new chat wins; restoring over it would replace
+				// what they are looking at with a different conversation.
+				if (isStreamingRef.current || sessionIdRef.current) return;
+				await handleSelectSession(restoreSessionId);
+			} catch {
+				// Offline or the service is down. Nothing to restore into.
+			} finally {
+				setRestoreSettled(true);
+			}
+		})();
+		// Once, on mount. Everything it reads is either a ref or stable for the
+		// life of the component.
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	// A session handed over in the URL, by the `openFullPageName` link on a docked
+	// sidekick. Reopens that conversation here, and if the agent is still working
+	// `handleSelectSession` rejoins the run, so handing over mid-turn replays the
+	// turn so far and then carries on live.
+	//
+	// Sequenced after the restore above for the same reason the initial prompt is:
+	// a restore also starts from an empty chat, and both racing to open a session
+	// would attach twice. Once the restore settles, either it found a live run of
+	// its own -- in which case `sessionIdRef` is set and this stands down -- or
+	// there was nothing to rejoin and the URL wins.
+	// Settles exactly like `restoreSettled`, and for the same reason: the initial
+	// prompt must not fire into the empty chat of a session that is still loading,
+	// or a handed-over conversation gains a question nobody asked.
+	const [urlSessionSettled, setUrlSessionSettled] = useState(false);
+	const urlSessionOpenedRef = useRef(false);
+	useEffect(() => {
+		if (urlSessionOpenedRef.current) return;
+		if (!restoreSettled) return;
+		const wanted = initialSessionId?.trim();
+		// Nothing to open, or nowhere to open it: settle so the initial prompt and
+		// the handed-over prompt are not held up behind a session that is not coming.
+		if (!wanted || readOnly || isStreamingRef.current || sessionIdRef.current) {
+			setUrlSessionSettled(true);
+			return;
+		}
+
+		urlSessionOpenedRef.current = true;
+		(async () => {
+			try {
+				if (await handleSelectSession(wanted)) return;
+				// Someone else's session, a deleted one, or a typo. Say so in the
+				// transcript, the way a stream error is reported, rather than leaving
+				// an empty chat that looks like a new one and silently is.
+				setMessages([
+					{
+						id: `sys-${Date.now()}`,
+						role: 'assistant',
+						content:
+							'*That conversation could not be opened. It may have been deleted, or it belongs to someone else. This is a new chat.*',
+					},
+				]);
+			} finally {
+				setUrlSessionSettled(true);
+			}
+		})();
+	}, [restoreSettled, readOnly, initialSessionId, handleSelectSession]);
+
 	const handleNewChat = useCallback(() => {
 		stopPolling();
+		// As in handleSelectSession: stop watching, do not stop the run.
+		releaseStream();
 		if (overlaySessions) setSidebarOpen(false);
 		setIsStreaming(false);
 		shouldAutoScrollRef.current = true;
@@ -1732,7 +2690,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		// old panel over the fresh chat until the next craft event replaced it.
 		setCrafts(new Map());
 		setActiveCraftId(null);
-	}, [stopPolling, overlaySessions]);
+		// Context belongs to the conversation being left. Nothing to erase from
+		// storage: it was never written anywhere, so clearing the state is the
+		// whole job.
+		setPreviewTarget(undefined);
+		setPreviewOpen(false);
+		setPendingApps([]);
+		setSavedObjects([]);
+	}, [stopPolling, overlaySessions, releaseStream]);
 
 	// Delete a session
 	const handleDeleteSession = useCallback(
@@ -1835,7 +2800,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Draft change handler (debounced save to localStorage)
 	const handleDraftChange = useCallback(
 		(text: string) => {
-			setDraftText(text);
+			// Not pushed back into the input: it is already there. All this owes
+			// the keystroke is the debounced save, so the draft survives a
+			// refresh, and a note of what the box holds for handBackText.
+			liveInputRef.current = text;
 			if (saveDraftTimeoutRef.current) {
 				clearTimeout(saveDraftTimeoutRef.current);
 			}
@@ -1887,10 +2855,11 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			setData(`LocalStore.promptDrafts.${draftKey}`, undefined, props.context.pageName);
 
 			const headers = getAuthHeaders();
-			let streamTimedOut = false;
 			let receivedSessionId = sessionId;
 
 			try {
+				// A new stream: nobody has asked to let go of THIS one yet.
+				deliberateAbortRef.current = false;
 				abortControllerRef.current = new AbortController();
 
 				const editorContext = buildEditorContext();
@@ -1902,7 +2871,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					...(targetAppCode ? { app_code: targetAppCode } : {}),
 					...(editorContext ? { editor_context: editorContext } : {}),
 					...(drafts.length ? { open_drafts: drafts } : {}),
-					...(draftModeRef.current ? { draft_mode: true } : {}),
+					// ALWAYS sent, never omitted. The server defaults an absent or
+					// unrecognised value to DRAFT, so leaving this out would silently
+					// draft the edits of a surface that asked to write live.
+					draft_mode: draftModeRef.current,
 				};
 
 				if (attachments?.length) {
@@ -1928,20 +2900,28 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					signal: abortControllerRef.current.signal,
 				});
 
+				if (response.status === 409) {
+					// A run is already going on this session, started by another
+					// tab or by this one before a refresh. Rejoin it rather than
+					// putting a second agent on the same history, and hand the
+					// message back, because it was not delivered.
+					setMessages(prev => prev.filter(m => m.id !== userMsg.id));
+					setDraftText(displayText ?? text);
+					setIsStreaming(false);
+					// Polling is the fallback, exactly as on the timed-out path
+					// below: the attach itself can fail on the same bad
+					// connection that sent us here, and dropping it silently
+					// left the panel idle in front of a run still working.
+					const rejoined = await attachToRun(sessionId ?? '');
+					if (!rejoined && sessionId) startPolling(sessionId);
+					return;
+				}
+
 				if (!response.ok) {
 					throw new Error(`HTTP ${response.status}: ${response.statusText}`);
 				}
 
-				const reader = response.body?.getReader();
-				if (!reader) throw new Error('No response body');
-
-				const decoder = new TextDecoder();
-				let buffer = '';
-				let assistantText = '';
-				const toolCalls = new Map<string, ToolCall>();
-				const agentSpans = new Map<string, AgentSpan>();
 				const assistantMsgId = `asst_${Date.now()}`;
-
 				setMessages(prev => [
 					...prev,
 					{
@@ -1953,82 +2933,35 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					},
 				]);
 
-				// Watchdog: detect dead connections (server keepalives every 15s)
-				const STREAM_TIMEOUT_MS = 45_000;
-				let lastDataAt = Date.now();
-				const watchdog = setInterval(() => {
-					if (Date.now() - lastDataAt > STREAM_TIMEOUT_MS) {
-						streamTimedOut = true;
-						abortControllerRef.current?.abort();
-						clearInterval(watchdog);
+				const result = await consumeStream(response, assistantMsgId, sessionId);
+				receivedSessionId = result.sessionId;
+
+				// The connection died, not the run: it is still working on the
+				// server, so rejoin it instead of settling for a polled
+				// transcript. Polling is what attachToRun falls back to.
+				if (result.timedOut && receivedSessionId) {
+					if (!(await attachToRun(receivedSessionId))) {
+						startPolling(receivedSessionId);
 					}
-				}, 5_000);
-
-				// eventType is preserved across reader.read() chunks because a
-				// single SSE event ("event: foo\ndata: ...\n\n") can be split
-				// at any byte boundary. Resetting per-chunk dropped the data
-				// line whenever a network read landed between the header and
-				// the data, intermittently silently losing craft events.
-				let eventType = '';
-				try {
-					while (true) {
-						const { done, value } = await reader.read();
-						if (done) break;
-						lastDataAt = Date.now();
-
-						buffer += decoder.decode(value, { stream: true });
-						const lines = buffer.split('\n');
-						buffer = lines.pop() ?? '';
-
-						for (const line of lines) {
-							if (line.startsWith('event: ')) {
-								eventType = line.slice(7).trim();
-							} else if (line.startsWith('data: ') && eventType) {
-								try {
-									const data = JSON.parse(line.slice(6));
-									if (eventType === 'done' && data.session_id) {
-										receivedSessionId = data.session_id;
-									}
-									processSSEEvent(eventType, data, {
-										assistantMsgId,
-										currentText: assistantText,
-										toolCalls,
-										agentSpans,
-										setText: (newText: string) => {
-											assistantText = newText;
-										},
-										setMessages,
-										setSessionId,
-										setUsage,
-										showToolCalls,
-										setFeedbackTurn: turn => setFeedbackTurn(turn),
-										setCrafts,
-										setActiveCraftId,
-										onComplete,
-										completeBindingPath,
-										props,
-										runEvent,
-										onDraftPatch: handleDraftPatchRef.current,
-										onObjectChanged: handleObjectChangedRef.current,
-									});
-								} catch {
-									// Skip unparseable data
-								}
-								eventType = '';
-							} else if (line === '') {
-								eventType = '';
-							}
-						}
-					}
-				} finally {
-					clearInterval(watchdog);
-				}
-
-				// If stream timed out, fall back to polling the session
-				if (streamTimedOut && receivedSessionId) {
-					startPolling(receivedSessionId);
 					return;
 				}
+
+				if (result.timedOut) {
+					// Died before anything came back that named the session, so
+					// there is no run to rejoin and nothing to poll. This is the
+					// one case where a lost connection is still worth reporting.
+					// Both bubbles come back out and the text goes to the box,
+					// as on the 409 path: the message never reached a run, so
+					// the honest state is the one before it was sent.
+					forgetActiveRun();
+					setMessages(prev =>
+						prev.filter(m => m.id !== assistantMsgId && m.id !== userMsg.id),
+					);
+					handBackText(displayText ?? text);
+					throw new Error('Connection lost before the chat started');
+				}
+
+				forgetActiveRun();
 
 				// Refresh sessions after a message exchange
 				await fetchSessions();
@@ -2047,10 +2980,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				}
 			} catch (err: any) {
 				if (err.name === 'AbortError') {
-					// Timeout-triggered abort: fall back to polling the session
-					if (streamTimedOut && receivedSessionId) {
-						startPolling(receivedSessionId);
-					}
+					// Someone let go on purpose: Stop, a session switch, an
+					// unmount. A dead connection never reaches here: it comes
+					// back as `timedOut` and is rejoined above.
 					return;
 				}
 
@@ -2098,31 +3030,173 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			fetchSessions,
 			startPolling,
 			stopPolling,
+			consumeStream,
+			attachToRun,
+			forgetActiveRun,
+			handBackText,
 			props.context.pageName,
 			props.locationHistory,
 			props.pageDefinition,
 		],
 	);
 
-	// An opening question handed in by the page, e.g. arriving at /ai/<prompt> from
-	// the New view. Guarded by a ref rather than the dependency list: handleSend is
-	// rebuilt on nearly every state change, so a plain dependency would resend on
-	// each stream tick. Only ever fires into an empty chat.
+	/**
+	 * Send a message into the turn that is already running.
+	 *
+	 * POST /chat is not an option here: it answers 409 for the whole length of a
+	 * run, because two agents interleaving tool calls and history writes on one
+	 * session corrupt both. So this rides the control channel instead, and the
+	 * agent folds the text into the conversation at its next turn boundary.
+	 *
+	 * The bubble drawn here is faded until the agent acknowledges it with a
+	 * `steer` event, which is the only proof the model actually read it. Text
+	 * that never earns one comes back to the input box.
+	 */
+	const handleSteer = useCallback(
+		async (text: string) => {
+			const trimmed = text.trim();
+			if (!trimmed || readOnly) return;
+
+			const sid = sessionIdRef.current;
+			if (!sid) {
+				// A brand new chat whose id has not come back yet: there is no
+				// run to address. Send it the moment this one is over.
+				queuedSendRef.current = trimmed;
+				return;
+			}
+
+			const steerId = `steer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+			pendingSteersRef.current.set(steerId, trimmed);
+			setMessages(prev => [
+				...prev,
+				{ id: steerId, role: 'user', content: trimmed, pending: true },
+			]);
+			shouldAutoScrollRef.current = true;
+			setIsAtBottom(true);
+
+			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			try {
+				const response = await fetch(`${baseUrl}/steer`, {
+					method: 'POST',
+					headers: getAuthHeaders(),
+					body: JSON.stringify({
+						session_id: sid,
+						message: trimmed,
+						steer_id: steerId,
+					}),
+				});
+
+				if (response.ok) return;
+
+				pendingSteersRef.current.delete(steerId);
+				setMessages(prev => prev.filter(m => m.id !== steerId));
+				if (response.status === 404) {
+					// The run finished between the user typing and pressing
+					// send. Nothing was steered and nothing was lost: send it as
+					// an ordinary message once this tab agrees it is over.
+					queuedSendRef.current = trimmed;
+					return;
+				}
+				handBackText(trimmed);
+			} catch {
+				pendingSteersRef.current.delete(steerId);
+				setMessages(prev => prev.filter(m => m.id !== steerId));
+				handBackText(trimmed);
+			}
+		},
+		[readOnly, agentEndpoint, getAuthHeaders, handBackText],
+	);
+
+	/**
+	 * One send for the input box: a new message when nothing is running, a steer
+	 * when something is. Attachments ride only the first: /steer carries text.
+	 */
+	const handleUserSend = useCallback(
+		(text: string, attachments?: Attachment[]) => {
+			liveInputRef.current = '';
+			if (isStreaming) {
+				handleSteer(text);
+				return;
+			}
+			handleSend(text, attachments);
+		},
+		[isStreaming, handleSteer, handleSend],
+	);
+
+	// Flush a message that missed its run (see `queuedSendRef`) the moment this
+	// tab sees the run end. Deliberately not sent while streaming: that is the
+	// 409 this whole path exists to avoid.
+	useEffect(() => {
+		if (isStreaming || readOnly) return;
+		const queued = queuedSendRef.current;
+		if (!queued) return;
+		queuedSendRef.current = '';
+		handleSend(queued);
+	}, [isStreaming, readOnly, handleSend]);
+
+	// An opening question handed in by the page the user came from: left at
+	// `pendingPromptPath` for this chat to take, or given literally as
+	// `initialPrompt`. Guarded by a ref rather than the dependency list: handleSend
+	// is rebuilt on nearly every state change, so a plain dependency would resend
+	// on each stream tick. Only ever fires into an empty chat.
 	const initialSentRef = useRef(false);
 	useEffect(() => {
 		if (initialSentRef.current) return;
-		if (!initialPrompt || messages.length > 0 || isStreaming || readOnly) return;
+		// A restore has an empty chat too, right up to the moment the rejoined
+		// turn lands. Sending into it would start a second run. A session named in
+		// the URL is the same hazard: it is still loading and still looks empty.
+		if (!restoreSettled || !urlSessionSettled) return;
+		if (messages.length > 0 || isStreaming || readOnly) return;
+
+		// Read here rather than on mount, and cleared in the same tick as the
+		// send: a handed-over prompt is the only copy there is, so it is spent
+		// only when there is actually a send to spend it on.
+		const pending = pendingPromptPath
+			? getDataFromPath(pendingPromptPath, props.locationHistory, pageExtractor)
+			: undefined;
+		const handedOver = typeof pending === 'string' ? pending : pending?.text;
+		const text = handedOver?.trim() ? handedOver : initialPrompt;
+		if (!text) return;
+
 		initialSentRef.current = true;
-		handleSend(initialPrompt);
-	}, [initialPrompt, messages.length, isStreaming, readOnly, handleSend]);
+		if (pendingPromptPath && handedOver)
+			setData(pendingPromptPath, undefined, props.context.pageName);
+		handleSend(text);
+	}, [
+		restoreSettled,
+		urlSessionSettled,
+		initialPrompt,
+		pendingPromptPath,
+		messages.length,
+		isStreaming,
+		readOnly,
+		handleSend,
+		props.locationHistory,
+		props.context.pageName,
+		pageExtractor,
+	]);
 
 	const handleStop = useCallback(() => {
-		abortControllerRef.current?.abort();
+		releaseStream();
 		stopPolling();
 		setIsStreaming(false);
-		abortControllerRef.current = null;
 
-		// Tell the backend to stop the agent loop
+		// Letting go of the stream here means the agent's verdict on any steer
+		// in flight will never be seen, so settle them now: a stopped run reads
+		// nothing more, and the text belongs back in the box.
+		if (pendingSteersRef.current.size) {
+			const orphaned = Array.from(pendingSteersRef.current.entries());
+			pendingSteersRef.current.clear();
+			const ids = new Set(orphaned.map(([id]) => id));
+			setMessages(prev => prev.filter(m => !ids.has(m.id)));
+			handBackText(orphaned.map(([, text]) => text).join('\n\n'));
+		}
+		// Deliberately ended, so there is nothing to rejoin on the next load.
+		forgetActiveRun();
+
+		// Tell the backend to stop the agent loop. This is now the ONLY thing
+		// that ends a run: dropping the stream leaves it working, which is what
+		// lets the panel close and the page refresh without losing the turn.
 		const sid = sessionIdRef.current;
 		if (sid) {
 			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
@@ -2132,17 +3206,19 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				body: JSON.stringify({ session_id: sid }),
 			}).catch(() => {});
 		}
-	}, [stopPolling, agentEndpoint, getAuthHeaders]);
+	}, [stopPolling, agentEndpoint, getAuthHeaders, forgetActiveRun, handBackText, releaseStream]);
 
 	useEffect(() => {
 		return () => {
-			abortControllerRef.current?.abort();
+			// Stop watching, on purpose, without a /stop: the run outlives this
+			// component and the note in LocalStore is what finds it again.
+			releaseStream();
 			stopPolling();
 			if (saveDraftTimeoutRef.current) {
 				clearTimeout(saveDraftTimeoutRef.current);
 			}
 		};
-	}, [stopPolling]);
+	}, [stopPolling, releaseStream]);
 
 	// Feedback handler — calls POST /api/ai/learning/feedback
 	const handleFeedback = useCallback(
@@ -2275,17 +3351,53 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								<i className={sidebarToggleIcon} aria-hidden="true" />
 							</button>
 						)}
-						{sessionId && (
-							<button
-								className="_newChatTopButton"
-								onClick={handleNewChat}
-								title="New chat"
-								type="button"
-								aria-label="New chat"
-							>
-								<i className={newChatTopIcon} aria-hidden="true" />
-							</button>
-						)}
+						<div className="_promptTopRight">
+							{enablePreview && previewTarget && !previewOpen && (
+								<button
+									className="_promptPreviewOpenButton"
+									onClick={openPreview}
+									title={`Show /${previewTarget.pageName} beside the chat`}
+									type="button"
+									aria-label="Show the page beside the chat"
+								>
+									<i className={previewIcon} aria-hidden="true" />
+								</button>
+							)}
+							{openFullPageName && sessionId && (
+								// An anchor, not a button: a new browser tab keeps whatever
+								// this panel is docked beside alive -- most sharply the
+								// workspace's open tab set -- and it makes the link
+								// ctrl-clickable and middle-clickable for free.
+								//
+								// Gated on `sessionId` because there is nothing to hand over
+								// before one exists: the id arrives with the first turn's
+								// `done` event.
+								<a
+									className="_promptOpenFullButton"
+									href={getHref(
+										`/${openFullPageName}/${sessionId}`,
+										window.location,
+									)}
+									target="_blank"
+									rel="noopener noreferrer"
+									title="Continue this chat on a full page"
+									aria-label="Continue this chat on a full page"
+								>
+									<i className={openFullIcon} aria-hidden="true" />
+								</a>
+							)}
+							{sessionId && (
+								<button
+									className="_newChatTopButton"
+									onClick={handleNewChat}
+									title="New chat"
+									type="button"
+									aria-label="New chat"
+								>
+									<i className={newChatTopIcon} aria-hidden="true" />
+								</button>
+							)}
+						</div>
 					</div>
 				)}
 
@@ -2324,20 +3436,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								{msg.attachments?.length ? (
 									<div className="_messageAttachments">
 										{msg.attachments.map(att => (
-											<div key={att.id} className="_attachmentPreview">
-												{att.type === 'image' ? (
-													<img
-														src={att.url}
-														alt={att.name}
-														className="_attachmentImage"
-													/>
-												) : (
-													<div className="_attachmentFile">
-														<i className={fileIcon} />
-														<span>{att.name}</span>
-													</div>
-												)}
-											</div>
+											<AttachmentThumb
+												key={att.id}
+												type={att.type}
+												name={att.name}
+												url={att.url}
+												expired={att.expired}
+												fileIcon={fileIcon}
+												expiredIcon={expiredAttachmentIcon}
+											/>
 										))}
 									</div>
 								) : null}
@@ -2426,6 +3533,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								<ChatMessage
 									role={msg.role}
 									content={msg.content}
+									pending={msg.pending}
 									componentKey={key ?? ''}
 									styles={styleProperties}
 									isStreaming={
@@ -2526,6 +3634,31 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						<i className={scrollToBottomIcon} aria-hidden="true" />
 					</button>
 				</div>
+				{showDraftReview && pendingApps.length > 0 && (
+					<PendingDraftBar
+						appCodes={pendingApps}
+						getAuthHeaders={getAuthHeaders}
+						onEmpty={forgetPendingApps}
+						workspaceUrlPattern={draftWorkspaceUrl}
+						workspaceLabel={draftWorkspaceLabel}
+					/>
+				)}
+				{enablePreview && previewTarget && !previewOpen && (
+					<div className="_promptPreviewOffer">
+						<i className="fa fa-window-restore" aria-hidden="true" />
+						<span>
+							Changed <strong>{previewTarget.pageName}</strong>. See it next to the
+							chat?
+						</span>
+						<button
+							type="button"
+							className="_promptPreviewOfferGo"
+							onClick={openPreview}
+						>
+							Show the page
+						</button>
+					</div>
+				)}
 				{savedObjects.length > 0 && (
 					<div className="_promptSavedNotice">
 						{/* The asymmetry made visible, and it is two asymmetries, not one.
@@ -2544,9 +3677,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										.join(', ')}
 								</>
 							)}
-							{savedObjects.some(o => o.draft) && savedObjects.some(o => !o.draft) && (
-								<br />
-							)}
+							{savedObjects.some(o => o.draft) &&
+								savedObjects.some(o => !o.draft) && <br />}
 							{savedObjects.some(o => !o.draft) && (
 								<>
 									Live already, not waiting for review:{' '}
@@ -2570,13 +3702,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				<div className="_promptInputWrapper">
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}
+						steerPlaceholder={resolvedSteerPlaceholder ?? steerPlaceholder}
 						disabled={!!readOnly}
 						isStreaming={isStreaming}
-						onSend={handleSend}
+						onSend={handleUserSend}
 						onStop={handleStop}
 						definition={props.definition}
 						styleProperties={styleProperties}
-						initialText={draftText}
+						initialText={textPush.text}
+						textRevision={textPush.rev}
 						onTextChange={handleDraftChange}
 						sendIcon={sendIcon}
 						stopIcon={stopIcon}
@@ -2641,6 +3775,32 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					</div>
 				)}
 			</div>
+			{enablePreview && previewOpen && previewTarget && (
+				<div
+					className="_promptPreviewPane"
+					ref={previewRef}
+					style={{ width: `${previewWidth}px` }}
+				>
+					<button
+						className="_promptPreviewResizer"
+						onMouseDown={handlePreviewResizeStart}
+						aria-label="Resize the preview"
+					/>
+					<PagePreview
+						appCode={previewTarget.appCode}
+						pageName={previewTarget.pageName}
+						clientCode={previewClientCode}
+						surface={previewSurface}
+						onSurfaceChange={changePreviewSurface}
+						device={previewDevice}
+						onDeviceChange={changePreviewDevice}
+						reloadSignal={previewReload}
+						onTargetChange={retargetPreview}
+						onClose={closePreview}
+						reloadIcon={previewReloadIcon}
+					/>
+				</div>
+			)}
 			{activeCraft && (
 				<CraftPanel
 					craft={activeCraft}

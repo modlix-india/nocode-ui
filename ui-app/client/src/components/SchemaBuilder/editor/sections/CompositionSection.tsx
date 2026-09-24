@@ -33,6 +33,7 @@ export default function CompositionSection({
 					path: path ? `${path}.not` : 'not',
 					depth: 0,
 					kind: 'sub',
+					filterable: false,
 					label: 'not',
 					onDelete:
 						schema?.not !== undefined ? () => fieldChange('not', undefined) : undefined,
@@ -45,6 +46,7 @@ export default function CompositionSection({
 				onChange={fieldChange}
 				type="ANY"
 				schemaRepository={ctx.schemaRepository}
+				readOnly={ctx.readOnly}
 			/>
 		</>
 	);
@@ -73,6 +75,7 @@ function SchemaList({
 						path: `${path}[${i}]`,
 						depth: 1,
 						kind: 'sub',
+						filterable: false,
 						label: `#${i + 1}`,
 						onDelete: () => {
 							const next = schemas.filter((_, j) => j !== i);

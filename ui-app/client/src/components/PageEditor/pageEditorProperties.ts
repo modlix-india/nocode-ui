@@ -62,6 +62,23 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		// Publishing means "make the draft live", so with no draft there is
+		// nothing the button can do: it answered 404 and the only way to find
+		// that out was to press it. The host owns the answer because the host
+		// owns the read that carries `X-Draft-Version`.
+		//
+		// Undefined, not false, is the no-answer case: a host that wires
+		// onPublish and never sets this keeps the button it has always had.
+		// Only an explicit false hides it.
+		name: 'hasDraft',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Draft Exists',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			'Whether this page has unpublished work. False hides the Publish button; leave unset to always show it.',
+	},
+
+	{
 		name: 'pagesData',
 		schema: SCHEMA_ANY_COMP_PROP,
 		displayName: 'Pages Data',
@@ -83,7 +100,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Dashboard Menu Name',
 		group: ComponentPropertyGroup.DATA,
 		description: 'Dashboard menu name.',
-		defaultValue: 'View Dashboard'
+		defaultValue: 'View Dashboard',
 	},
 
 	{
@@ -245,18 +262,43 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
-		// On by default, because the editor itself now saves and loads the draft
-		// surface: an agent still writing live would be editing a different copy
-		// of the page than the one on the canvas. The agent probes the deployment
-		// and falls back to live writes where there is no draft surface, so this
-		// is safe to leave on.
+		// Drafting by default, because the editor itself now saves and loads the
+		// draft surface: an agent still writing live would be editing a different
+		// copy of the page than the one on the canvas. The agent probes the
+		// deployment and falls back to live writes where there is no draft
+		// surface, so this is safe to leave on.
+		//
+		// An editor that publishes one page at a time wants 'PAGE_ONLY_DRAFT': it
+		// has a review step for the page, and none for a storage or a connection,
+		// so drafting one of those would strand it unpublished.
 		name: 'sidekickDraftMode',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'AI Edits On The Draft Surface',
+		schema: SCHEMA_STRING_COMP_PROP,
+		editor: ComponentPropertyEditor.ENUM,
+		displayName: 'Where AI Edits Land',
 		group: ComponentPropertyGroup.ADVANCED,
 		description:
-			"Send the AI panel's edits to the app's draft surface, matching where the editor itself saves.",
-		defaultValue: true,
+			"Which of the AI panel's edits go to the app's draft surface, matching where the editor itself saves.",
+		defaultValue: 'DRAFT',
+		enumValues: [
+			{
+				name: 'DRAFT',
+				displayName: 'Draft Everything',
+				description:
+					'Every definition edit waits on the draft surface until someone publishes it.',
+			},
+			{
+				name: 'PAGE_ONLY_DRAFT',
+				displayName: 'Draft Pages Only',
+				description:
+					'Pages, styles and themes wait for review. Storages, connections, schemas and functions go live immediately.',
+			},
+			{
+				name: 'LIVE',
+				displayName: 'Write Live',
+				description:
+					'Every edit goes straight to the live app, with no review step.',
+			},
+		],
 	},
 	{
 		name: 'sidekickAgentEndpoint',
@@ -265,6 +307,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		description: 'SSE endpoint the docked AI panel talks to.',
 		defaultValue: '/api/ai/appbuilder/chat',
+	},
+	{
+		// A property rather than a constant inside the panel, for the same reason
+		// the endpoint above is one: this component is embeddable by any app, and
+		// the name of a page in the appbuilder app is not something it should know.
+		// Empty by default, which is what hides the icon.
+		name: 'sidekickOpenFullPageName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'AI Sidekick Full Page',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			'Page the docked AI panel offers to continue the conversation in, carrying the session in the URL. Leave empty to offer nothing.',
 	},
 ];
 

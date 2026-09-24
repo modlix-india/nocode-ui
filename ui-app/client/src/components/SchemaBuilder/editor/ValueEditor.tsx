@@ -9,25 +9,41 @@ export default function ValueEditor({
 	onChange,
 	types,
 	readOnly = false,
+	autoFocus = false,
 }: Readonly<{
 	value: any;
 	onChange: (v: any) => void;
 	types: string[];
 	readOnly?: boolean;
+	autoFocus?: boolean;
 }>) {
 	if (
 		types.length === 1 &&
 		types[0] === 'STRING' &&
 		(isNullValue(value) || typeof value === 'string')
 	)
-		return <StringValue value={value} onChange={onChange} readOnly={readOnly} />;
+		return (
+			<StringValue
+				value={value}
+				onChange={onChange}
+				readOnly={readOnly}
+				autoFocus={autoFocus}
+			/>
+		);
 
 	if (
 		types.length === 1 &&
 		NUMBER_TYPES.has(types[0]) &&
 		(isNullValue(value) || typeof value === 'number')
 	)
-		return <NumberValue value={value} onChange={onChange} readOnly={readOnly} />;
+		return (
+			<NumberValue
+				value={value}
+				onChange={onChange}
+				readOnly={readOnly}
+				autoFocus={autoFocus}
+			/>
+		);
 
 	if (
 		types.length === 1 &&
@@ -64,7 +80,13 @@ function StringValue({
 	value,
 	onChange,
 	readOnly,
-}: Readonly<{ value: string | undefined; onChange: (v: any) => void; readOnly: boolean }>) {
+	autoFocus = false,
+}: Readonly<{
+	value: string | undefined;
+	onChange: (v: any) => void;
+	readOnly: boolean;
+	autoFocus?: boolean;
+}>) {
 	const [inValue, setInValue] = useState(value ?? '');
 	useEffect(() => setInValue(value ?? ''), [value]);
 
@@ -78,6 +100,7 @@ function StringValue({
 			type="text"
 			value={inValue}
 			disabled={readOnly}
+			autoFocus={autoFocus}
 			onChange={e => setInValue(e.target.value)}
 			onKeyDown={e => {
 				if (e.key === 'Escape') setInValue(value ?? '');
@@ -92,7 +115,13 @@ function NumberValue({
 	value,
 	onChange,
 	readOnly,
-}: Readonly<{ value: number | undefined; onChange: (v: any) => void; readOnly: boolean }>) {
+	autoFocus = false,
+}: Readonly<{
+	value: number | undefined;
+	onChange: (v: any) => void;
+	readOnly: boolean;
+	autoFocus?: boolean;
+}>) {
 	const [inValue, setInValue] = useState(isNullValue(value) ? '' : '' + value);
 	useEffect(() => setInValue(isNullValue(value) ? '' : '' + value), [value]);
 
@@ -111,6 +140,7 @@ function NumberValue({
 			type="text"
 			value={inValue}
 			disabled={readOnly}
+			autoFocus={autoFocus}
 			onChange={e => setInValue(e.target.value)}
 			onKeyDown={e => {
 				if (e.key === 'Escape') setInValue(isNullValue(value) ? '' : '' + value);

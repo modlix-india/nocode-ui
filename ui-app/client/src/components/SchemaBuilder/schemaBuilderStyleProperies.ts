@@ -3,8 +3,11 @@ import { StylePropertyDefinition } from '../../types/common';
 /**
  * The schema builder's palette, as theme variables.
  *
- * `dist/css/SchemaBuilder.css` hard-codes its own grey scale, a system font
- * stack and a stock `#1a56db` blue. That is fine for a standalone form and
+ * `dist/css/SchemaBuilder.css` hard-codes its own grey scale and a stock
+ * `#1a56db` blue. (It declares no font stack of its own: every control says
+ * `font-family: inherit`, so the component already takes the page's font and
+ * `schemaBuilderFontFamily` below is an override, not a correction.) That is
+ * fine for a standalone form and
  * wrong inside an app with a design language of its own: dropped into the
  * workspace's storage editor it reads as a foreign default-blue widget sitting
  * in an amber/cream page. `SchemaBuilderStyle.tsx` appends
@@ -71,11 +74,13 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		gn: 'Schema Builder Accent',
 		dn: 'Accent Background',
-		de: 'Selected segment of the Compact / Extended / JSON switch.',
+		de: 'Selected segment of the Compact / Extended / JSON switch, and the dot marking a field whose settings panel holds more than the row shows.',
 		n: 'schemaBuilderAccentBackground',
 		dv: '#1a56db',
 		cp: 'background',
-		sel: '.comp.compSchemaBuilder ._segmented button._on',
+		sel:
+			'.comp.compSchemaBuilder ._segmented button._on, ' +
+			'.comp.compSchemaBuilder ._rowAction._hasContent::after',
 		np: true,
 	},
 	{
@@ -144,7 +149,10 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'schemaBuilderHintFontColor',
 		dv: '#999',
 		cp: 'color',
-		sel: '.comp.compSchemaBuilder ._hint, .comp.compSchemaBuilder ._helptext, .comp.compSchemaBuilder ._editorLoading',
+		sel:
+			'.comp.compSchemaBuilder ._hint, .comp.compSchemaBuilder ._helptext, ' +
+			'.comp.compSchemaBuilder ._editorLoading, .comp.compSchemaBuilder ._badge._muted, ' +
+			'.comp.compSchemaBuilder ._docNote',
 		np: true,
 	},
 	{
@@ -181,12 +189,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Border Color',
 		de: 'Every control edge: the mode switch, popovers, small buttons and form inputs.',
 		n: 'schemaBuilderBorderColor',
-		dv: '#ccc',
+		dv: '#d8d8d8',
 		cp: 'border-color',
 		sel:
 			'.comp.compSchemaBuilder ._segmented, .comp.compSchemaBuilder ._segmented button, ' +
 			'.comp.compSchemaBuilder ._typePopover, .comp.compSchemaBuilder ._refPickerList, ' +
 			'.comp.compSchemaBuilder ._smallButton, .comp.compSchemaBuilder select, ' +
+			'.comp.compSchemaBuilder ._smallEditorContainer > button, ' +
+			'.comp.compSchemaBuilder ._popupButtons button, ' +
 			'.comp.compSchemaBuilder input[type="text"], .comp.compSchemaBuilder input[type="number"], ' +
 			'.comp.compSchemaBuilder textarea',
 		np: true,
@@ -215,6 +225,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel:
 			'.comp.compSchemaBuilder ._nodeRow, .comp.compSchemaBuilder ._typePopover, ' +
 			'.comp.compSchemaBuilder ._refPickerList, .comp.compSchemaBuilder ._smallButton, ' +
+			'.comp.compSchemaBuilder ._smallEditorContainer > button, ' +
+			'.comp.compSchemaBuilder ._popupButtons button, ' +
 			'.comp.compSchemaBuilder ._patternEntry, .comp.compSchemaBuilder ._schemaListEntry, ' +
 			'.comp.compSchemaBuilder ._jsonView, ' +
 			'.comp.compSchemaBuilder ._popupBackground ._popupContainer ._jsonEditorContainer',
@@ -235,7 +247,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Small Border Radius',
 		de: 'The tightest boxes: row actions, array steppers, form inputs and the value popup.',
 		n: 'schemaBuilderSmallBorderRadius',
-		dv: '3px',
+		dv: '4px',
 		cp: 'border-radius',
 		sel:
 			'.comp.compSchemaBuilder ._rowAction, .comp.compSchemaBuilder ._eachUpDown i.fa, ' +
@@ -284,11 +296,45 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 	{
 		gn: 'Schema Builder Tree',
+		dn: 'Search Match Background',
+		de: 'Row background for a field matching the current search.',
+		n: 'schemaBuilderMatchBackground',
+		dv: '#f0f4ff',
+		cp: 'background',
+		sel: '.comp.compSchemaBuilder ._nodeRow._match',
+		np: true,
+	},
+	{
+		gn: 'Schema Builder Tree',
+		dn: 'Search Match Marker',
+		de: 'The bar down the left of a matching row. Given as a box-shadow, so an inset is what draws inside the row.',
+		n: 'schemaBuilderMatchMarker',
+		dv: 'inset 2px 0 0 #1a56db',
+		cp: 'box-shadow',
+		sel: '.comp.compSchemaBuilder ._nodeRow._match',
+		np: true,
+	},
+	{
+		gn: 'Schema Builder Tree',
+		dn: 'Property Name Width',
+		de: 'Width of the editable property name box on each tree row. Worth raising for schemas with long property names.',
+		n: 'schemaBuilderNameFieldWidth',
+		dv: '140px',
+		cp: 'width',
+		sel: '.comp.compSchemaBuilder input._nodeName',
+		np: true,
+	},
+	{
+		gn: 'Schema Builder Tree',
 		dn: 'Tree Indent',
 		n: 'schemaBuilderTreeIndent',
 		dv: '20px',
 		cp: 'margin-left',
-		sel: '.comp.compSchemaBuilder ._nodeChildren',
+		// The draft row was indented by an inline style, so raising this used to leave it
+		// misaligned with the children it sits among.
+		sel:
+			'.comp.compSchemaBuilder ._nodeChildren, ' +
+			'.comp.compSchemaBuilder ._nodeRow._draftRow',
 		np: true,
 	},
 	{
@@ -433,7 +479,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Schema Builder Inputs',
 		dn: 'Input Padding',
 		n: 'schemaBuilderInputPadding',
-		dv: '2px 5px',
+		dv: '0 7px',
 		cp: 'padding',
 		sel:
 			'.comp.compSchemaBuilder select, .comp.compSchemaBuilder input[type="text"], ' +
@@ -466,7 +512,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Schema Builder Details',
 		dn: 'Card Padding',
 		n: 'schemaBuilderCardPadding',
-		dv: '8px',
+		dv: '2px 10px 6px',
 		cp: 'padding',
 		sel: '.comp.compSchemaBuilder ._detailsCard',
 		np: true,
@@ -483,8 +529,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		gn: 'Schema Builder Details',
 		dn: 'Settings Grid Background',
+		de: 'Transparent by default so the card tint shows through and the white inputs read against it. Set a colour to make the form its own panel.',
 		n: 'schemaBuilderGridBackground',
-		dv: '#fff',
+		dv: 'transparent',
 		cp: 'background',
 		sel: '.comp.compSchemaBuilder ._detailsGrid',
 		np: true,
@@ -524,16 +571,22 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'schemaBuilderSmallButtonBackground',
 		dv: '#fff',
 		cp: 'background',
-		sel: '.comp.compSchemaBuilder ._smallButton',
+		sel:
+			'.comp.compSchemaBuilder ._smallButton, ' +
+			'.comp.compSchemaBuilder ._smallEditorContainer > button, ' +
+			'.comp.compSchemaBuilder ._popupButtons button',
 		np: true,
 	},
 	{
 		gn: 'Schema Builder Small Buttons',
 		dn: 'Small Button Padding',
 		n: 'schemaBuilderSmallButtonPadding',
-		dv: '2px 8px',
+		dv: '0 10px',
 		cp: 'padding',
-		sel: '.comp.compSchemaBuilder ._smallButton',
+		sel:
+			'.comp.compSchemaBuilder ._smallButton, ' +
+			'.comp.compSchemaBuilder ._smallEditorContainer > button, ' +
+			'.comp.compSchemaBuilder ._popupButtons button',
 		np: true,
 	},
 	{
@@ -541,7 +594,10 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Small Button Font Color',
 		n: 'schemaBuilderSmallButtonFontColor',
 		cp: 'color',
-		sel: '.comp.compSchemaBuilder ._smallButton',
+		sel:
+			'.comp.compSchemaBuilder ._smallButton, ' +
+			'.comp.compSchemaBuilder ._smallEditorContainer > button, ' +
+			'.comp.compSchemaBuilder ._popupButtons button',
 		np: true,
 	},
 	{
@@ -550,7 +606,10 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'schemaBuilderSmallButtonHoverBackground',
 		dv: '#f0f0f0',
 		cp: 'background',
-		sel: '.comp.compSchemaBuilder ._smallButton:hover',
+		sel:
+			'.comp.compSchemaBuilder ._smallButton:hover:not(:disabled), ' +
+			'.comp.compSchemaBuilder ._smallEditorContainer > button:hover:not(:disabled), ' +
+			'.comp.compSchemaBuilder ._popupButtons button:hover:not(:disabled)',
 		np: true,
 	},
 

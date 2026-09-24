@@ -1,18 +1,19 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+// Shared with LazyPrompt rather than declared again here. The two copies were
+// byte-identical until history gained `expired`, at which point one of them
+// would have been silently wrong.
+import { Attachment } from '../attachments';
 
-interface Attachment {
-	id: string;
-	type: 'image' | 'file';
-	name: string;
-	url: string;
-	mimeType: string;
-	file?: File;
-}
+// Matches the textarea's max-height in PromptStyle; past this the box stops
+// growing and starts scrolling.
+const MAX_INPUT_HEIGHT = 200;
 
 interface InputBarProps {
 	placeholder: string;
+	/** Shown instead of `placeholder` while a turn is running. */
+	steerPlaceholder?: string;
 	disabled: boolean;
 	isStreaming: boolean;
 	onSend: (message: string, attachments?: Attachment[]) => void;
@@ -20,6 +21,21 @@ interface InputBarProps {
 	definition: ComponentDefinition;
 	styleProperties: any;
 	initialText?: string;
+	/**
+	 * Bumped by the host when it wants `initialText` PUT INTO the box: a session
+	 * switch, a send that clears it, a refused send that hands the message back.
+	 *
+	 * The sync is keyed on this rather than on the text because both components
+	 * hold the text, and syncing on the value made the ownership circular:
+	 * typing told the host, the host re-rendered, the new prop reset this box.
+	 * That converges only while the two agree, and during an agent turn they
+	 * did not -- the host was pushing the stored draft while this box held what
+	 * the user had typed, so each render flipped the value back and React gave
+	 * up with "Maximum update depth exceeded" (a real crash, over the whole
+	 * page, in the middle of a turn). A counter makes the loop impossible: the
+	 * text alone can never trigger a sync.
+	 */
+	textRevision?: number;
 	onTextChange?: (text: string) => void;
 	sendIcon?: string;
 	stopIcon?: string;
@@ -43,6 +59,7 @@ const speechSupported =
 
 export function InputBar({
 	placeholder,
+	steerPlaceholder = 'Send a message to steer the agent...',
 	disabled,
 	isStreaming,
 	onSend,
@@ -50,6 +67,7 @@ export function InputBar({
 	definition,
 	styleProperties,
 	initialText,
+	textRevision = 0,
 	onTextChange,
 	sendIcon = 'fa fa-arrow-up',
 	stopIcon = 'fa fa-stop',
@@ -72,10 +90,33 @@ export function InputBar({
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const recognitionRef = useRef<any>(null);
 
-	// Sync internal text when initialText changes (e.g. session switch)
+	// Take the host's text only when it says to (see `textRevision`). Reading
+	// the text through a ref keeps it out of the dependency list, so a value
+	// that changes for any other reason cannot re-run this.
+	const pushedTextRef = useRef(initialText ?? '');
+	pushedTextRef.current = initialText ?? '';
 	useEffect(() => {
-		setText(initialText ?? '');
-	}, [initialText]);
+		setText(pushedTextRef.current);
+	}, [textRevision]);
+
+	// Grow the box with its content up to the cap, then let it scroll. The
+	// overflow is toggled here instead of left on `auto` because Blink counts a
+	// wrapped placeholder towards scrollHeight: an empty input whose placeholder
+	// ran to two lines was showing a scrollbar with nothing to scroll. An empty
+	// box drops back to the stylesheet's single-row height for the same reason —
+	// scrollHeight would size it to the placeholder.
+	useLayoutEffect(() => {
+		const ta = textareaRef.current;
+		if (!ta) return;
+		if (!text) {
+			ta.style.height = '';
+			ta.style.overflowY = 'hidden';
+			return;
+		}
+		ta.style.height = 'auto';
+		ta.style.height = Math.min(ta.scrollHeight, MAX_INPUT_HEIGHT) + 'px';
+		ta.style.overflowY = ta.scrollHeight > MAX_INPUT_HEIGHT ? 'auto' : 'hidden';
+	}, [text]);
 
 	// Re-focus input when streaming completes
 	useEffect(() => {
@@ -89,9 +130,12 @@ export function InputBar({
 		return () => recognitionRef.current?.stop();
 	}, []);
 
+	// Sends while a turn is running too: the host routes those to the agent as a
+	// steer instead of as a new message (see LazyPrompt.handleUserSend). The old
+	// `isStreaming` bail here is what made the box dead for the length of a run.
 	const handleSend = useCallback(() => {
 		const trimmed = text.trim();
-		if ((!trimmed && !attachments.length) || disabled || isStreaming) return;
+		if ((!trimmed && !attachments.length) || disabled) return;
 		// Stop listening if active
 		if (recognitionRef.current) {
 			recognitionRef.current.stop();
@@ -101,10 +145,7 @@ export function InputBar({
 		onSend(trimmed, attachments.length ? attachments : undefined);
 		setText('');
 		setAttachments([]);
-		if (textareaRef.current) {
-			textareaRef.current.style.height = 'auto';
-		}
-	}, [text, attachments, disabled, isStreaming, onSend]);
+	}, [text, attachments, disabled, onSend]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -116,14 +157,14 @@ export function InputBar({
 		[handleSend],
 	);
 
-	const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-		const newText = e.target.value;
-		setText(newText);
-		onTextChange?.(newText);
-		const ta = e.target;
-		ta.style.height = 'auto';
-		ta.style.height = Math.min(ta.scrollHeight, 200) + 'px';
-	}, [onTextChange]);
+	const handleInput = useCallback(
+		(e: React.ChangeEvent<HTMLTextAreaElement>) => {
+			const newText = e.target.value;
+			setText(newText);
+			onTextChange?.(newText);
+		},
+		[onTextChange],
+	);
 
 	const addFileAttachment = useCallback((file: File) => {
 		const isImage = file.type.startsWith('image/');
@@ -233,16 +274,11 @@ export function InputBar({
 	}, [isListening, startListening, stopListening]);
 
 	const showMic = enableVoiceInput && speechSupported;
+	const canSend = !!text.trim() || attachments.length > 0;
 
 	return (
-		<div
-			className="_promptInputBar"
-			style={styleProperties?.inputBar ?? {}}
-		>
-			<SubHelperComponent
-				definition={definition}
-				subComponentName="inputBar"
-			/>
+		<div className="_promptInputBar" style={styleProperties?.inputBar ?? {}}>
+			<SubHelperComponent definition={definition} subComponentName="inputBar" />
 			{attachments.length > 0 && (
 				<div className="_inputAttachments">
 					{attachments.map(att => (
@@ -293,7 +329,7 @@ export function InputBar({
 					onChange={handleInput}
 					onKeyDown={handleKeyDown}
 					onPaste={handlePaste}
-					placeholder={placeholder}
+					placeholder={isStreaming ? steerPlaceholder : placeholder}
 					disabled={disabled}
 					rows={1}
 					autoFocus
@@ -312,23 +348,43 @@ export function InputBar({
 							<i className={isListening ? microphoneActiveIcon : microphoneIcon} />
 						</button>
 					)}
+					{/*
+					 * Stop keeps its place while a turn runs, and send joins it
+					 * rather than replacing it: the two are different acts. Stop
+					 * ends the turn; send steers it, which is the one the user
+					 * wants when the agent is merely heading the wrong way.
+					 */}
 					{isStreaming ? (
-						<button
-							className="_stopButton"
-							onClick={onStop}
-							title="Stop generating"
-							style={styleProperties?.sendButton ?? {}}
-						>
-							<i className={stopIcon} />
-						</button>
+						<>
+							{canSend && (
+								<button
+									className="_sendButton _steerButton"
+									onClick={handleSend}
+									disabled={disabled}
+									title="Send to the agent now"
+									style={styleProperties?.sendButton ?? {}}
+								>
+									<SubHelperComponent
+										definition={definition}
+										subComponentName="sendButton"
+									/>
+									<i className={sendIcon} />
+								</button>
+							)}
+							<button
+								className="_stopButton"
+								onClick={onStop}
+								title="Stop generating"
+								style={styleProperties?.sendButton ?? {}}
+							>
+								<i className={stopIcon} />
+							</button>
+						</>
 					) : (
 						<button
 							className="_sendButton"
 							onClick={handleSend}
-							disabled={
-								(!text.trim() && !attachments.length) ||
-								disabled
-							}
+							disabled={!canSend || disabled}
 							title="Send message"
 							style={styleProperties?.sendButton ?? {}}
 						>
