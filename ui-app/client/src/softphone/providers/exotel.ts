@@ -70,7 +70,7 @@ interface ExotelCallEventData {
 /**
  * Keyed by URL, not a single promise.
  *
- * Memoised so two near-simultaneous callers - a leader election racing a remount - share one
+ * Memoized so two near-simultaneous callers - a leader election racing a remount - share one
  * script tag instead of appending two. Keyed because the URL is configuration: a single shared
  * promise would hand the second caller the *first* caller's bundle whenever the two URLs differ,
  * with nothing anywhere to say the requested one was never fetched.
