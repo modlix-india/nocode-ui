@@ -78,6 +78,9 @@ function injectBeaconInDev(analytics: Record<string, unknown> | undefined) {
 	tag.setAttribute('data-autocapture', attr(analytics?.autocapture, true));
 	tag.setAttribute('data-pageviews', attr(analytics?.capturePageviews, true));
 	tag.setAttribute('data-pageleaves', attr(analytics?.capturePageleaves, true));
+	// On unless the app says otherwise: one extra event per page view, where a heatmap is
+	// one per click, and nothing it records is about the person.
+	tag.setAttribute('data-scroll', attr(analytics?.captureScroll, true));
 	// Off unless the app asks: every click on the page becomes an event, where autocapture
 	// records only the labelled ones.
 	tag.setAttribute(
