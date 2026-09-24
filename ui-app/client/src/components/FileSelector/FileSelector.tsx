@@ -130,8 +130,15 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			const raw = typeof value === 'string' ? value : (value?.url ?? '');
 			if (!raw) return value;
 			const cdn = getSrcUrl(raw);
-			if (/^[a-z]+:\/\//i.test(cdn)) return cdn;
-			return window.location.origin + (cdn.startsWith('/') ? cdn : '/' + cdn);
+			let absoluteUrl: string;
+			if (/^[a-z]+:\/\//i.test(cdn)) absoluteUrl = cdn;
+			else absoluteUrl = window.location.origin + (cdn.startsWith('/') ? cdn : '/' + cdn);
+			// When the input is an object (e.g. FileDetail from API), preserve the
+			// full shape (name, directory, filePath, etc.) and only update the url.
+			if (typeof value === 'object' && value !== null) {
+				return { ...value, url: absoluteUrl };
+			}
+			return absoluteUrl;
 		},
 		[fullUrl],
 	);
