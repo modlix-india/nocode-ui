@@ -35,6 +35,19 @@ export default function AnalyticsHeatmapStyle({
 		   nothing downstream depends on how the scaling is done. */
 		${PREFIX} ._scaler { position: relative; overflow: hidden; }
 		${PREFIX} ._frameWrap { position: absolute; top: 0; left: 0; }
+		/* The stage is a row so the depth strip can stand beside the page at the same height
+		   rather than above it. align-items: flex-start keeps a short strip from stretching
+		   when the frame is taller than the reports it has. */
+		/* Allowed to wrap and to shrink, where ._count is not. Two nowrap items with
+		   margin-left:auto in one row push each other off the end of the toolbar, and the
+		   sentence is the one that can afford to take a second line. */
+		${PREFIX} ._depth { opacity: 0.6; min-width: 0; flex: 0 1 auto; }
+		${PREFIX} ._stage { display: flex; align-items: flex-start; }
+		/* Narrow on purpose: it is a margin note on the page, not a chart. The page is what
+		   the reader is looking at, and a strip wide enough to read values off would be
+		   claiming a precision that a percentage of a document height does not have. */
+		${PREFIX} ._scrollStrip { width: 10px; flex: 0 0 10px; display: flex; flex-direction: column; border-radius: 3px; overflow: hidden; margin: 0 8px 0 4px; }
+		${PREFIX} ._scrollBand { width: 100%; }
 		${PREFIX} ._frame { display: block; }
 		/* Never takes pointer events: the page underneath has to stay usable so somebody can
 		   sign in or open a menu while looking at where the clicks landed. */

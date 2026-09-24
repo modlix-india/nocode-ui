@@ -21,6 +21,7 @@ import {
 } from '../../context/StoreContext';
 import { ComponentProps, LocationHistory, PageDefinition } from '../../types/common';
 import { allPaths } from '../../util/allPaths';
+import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
@@ -467,6 +468,49 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			if (timer) clearTimeout(timer);
 		};
 	}, [previewAppCode]);
+
+	/**
+	 * A page with no root is given one.
+	 *
+	 * Every editing surface here attaches to `rootComponent`: the tree draws from it, a drop
+	 * resolves against it, and `DnDNavigationBar` returns early without it. A page missing it
+	 * therefore opens looking like a working editor in which nothing can be added, with no
+	 * error and nothing to click.
+	 *
+	 * Pages are supposed to arrive with one — the New view seeds it — but a page created
+	 * before that seed existed, or through any other caller that posts a bare document, has
+	 * none, and `/api/ui/pages` accepts such a document happily. This is the same repair the
+	 * editor already performs when somebody deletes the root component
+	 * (`PageOperations.deleteComponent`), applied to the case where there never was one.
+	 *
+	 * It only writes to the store. The page is not saved from here: the user has opened an
+	 * empty page and is about to put something on it, and saving on their behalf would put a
+	 * version in the history that they did not ask for.
+	 */
+	useEffect(() => {
+		if (!defPath || !editPageDefinition) return;
+
+		const root = editPageDefinition.rootComponent;
+		if (root && editPageDefinition.componentDefinition?.[root]) return;
+
+		const key = shortUUID();
+		setData(
+			defPath,
+			{
+				...editPageDefinition,
+				rootComponent: key,
+				componentDefinition: {
+					// Anything else the definition carried is kept. A page can have a
+					// componentDefinition and still name no root — a definition that lost its
+					// root to a bad merge is not a reason to throw away the rest of the tree.
+					...(editPageDefinition.componentDefinition ?? {}),
+					[key]: { key, name: 'Page Grid', type: 'Grid' },
+				},
+				eventFunctions: editPageDefinition.eventFunctions ?? {},
+			},
+			pageExtractor.getPageName(),
+		);
+	}, [defPath, editPageDefinition, pageExtractor]);
 
 	useEffect(() => {
 		if (!editPageDefinition || !personalization) {
