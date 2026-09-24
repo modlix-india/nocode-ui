@@ -309,6 +309,9 @@ function generateAnalyticsSnippet(
 		` data-autocapture="${attr(a.autocapture, true)}"` +
 		` data-pageviews="${attr(a.capturePageviews, true)}"` +
 		` data-pageleaves="${attr(a.capturePageleaves, true)}"` +
+		// On unless the app says otherwise: one extra event per page view, where a heatmap
+		// is one per click, and nothing it records is about the person.
+		` data-scroll="${attr(a.captureScroll, true)}"` +
 		// Off unless the app asks: every click becomes an event, where autocapture records
 		// only the labelled ones.
 		` data-heatmaps="${attr(a.heatmaps?.enabled, false)}"` +
