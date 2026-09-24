@@ -121,8 +121,21 @@ function FileSelector(props: Readonly<ComponentProps>) {
 
 	// Always a URL string, from both browsing and uploading. See storedValue.ts.
 	const toStoredValue = React.useCallback(
-		(value: FileSelectorValue | any): any =>
-			fileSelectorStoredValue(value, !!fullUrl, window.location.origin),
+		(value: FileSelectorValue | any): any => {
+			if (!fullUrl || !value) return value;
+			const raw = typeof value === 'string' ? value : (value?.url ?? '');
+			if (!raw) return value;
+			const cdn = getSrcUrl(raw);
+			let absoluteUrl: string;
+			if (/^[a-z]+:\/\//i.test(cdn)) absoluteUrl = cdn;
+			else absoluteUrl = window.location.origin + (cdn.startsWith('/') ? cdn : '/' + cdn);
+			// When the input is an object (e.g. FileDetail from API), preserve the
+			// full shape (name, directory, filePath, etc.) and only update the url.
+			if (typeof value === 'object' && value !== null) {
+				return { ...value, url: absoluteUrl };
+			}
+			return absoluteUrl;
+		},
 		[fullUrl],
 	);
 
