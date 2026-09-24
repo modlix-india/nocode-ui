@@ -133,7 +133,6 @@ export interface AnalyticsConfig {
 	autocapture?: boolean;
 	capturePageviews?: boolean;
 	capturePageleaves?: boolean;
-	consentRequired?: boolean;
 	consentCookieName?: string;
 	sessionReplay?: {
 		enabled?: boolean;
@@ -268,7 +267,14 @@ export async function fetchAllPageData(
 	pageName: string,
 	options: FetchOptions,
 	/** The visitor's stored theme, from their cookie. */
-	requestedTheme?: string | null
+	requestedTheme?: string | null,
+	/**
+	 * The definition the caller already holds, so page routing can be resolved
+	 * before the page is chosen without paying for a second fetch. The
+	 * application was always fetched first and awaited here anyway, so handing it
+	 * in costs nothing and saves a round trip.
+	 */
+	preloadedApplication?: ApplicationDefinition | null
 ): Promise<{
 	application: ApplicationDefinition | null;
 	page: PageDefinition | null;
@@ -277,7 +283,8 @@ export async function fetchAllPageData(
 	resolvedPageName: string;
 }> {
 	// First fetch application (need it for defaultPage and it's always needed)
-	const application = await fetchApplication(options);
+	const application =
+		preloadedApplication !== undefined ? preloadedApplication : await fetchApplication(options);
 
 	// Resolve actual page name - use defaultPage if pageName is empty or 'index'
 	let actualPageName = pageName;

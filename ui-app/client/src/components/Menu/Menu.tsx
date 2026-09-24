@@ -85,7 +85,24 @@ function Menu(props: Readonly<ComponentProps>) {
 			const lowerPath = pathname.toLowerCase();
 			hasPath = !!paths
 				.filter((e: string) => e !== '/')
-				.find((e: string) => lowerPath.indexOf('/' + e.toLowerCase()) >= 0);
+				.find((e: string) => {
+					const raw = e.trim().toLowerCase();
+					if (!raw) return false;
+					// A trailing `$` anchors to a whole path segment: `ai$` lights up
+					// on /ai and /ai/something, but NOT on /aiStudio.
+					//
+					// Opt-in rather than the new default on purpose. The plain match
+					// below is a bare substring, and around 120 menus across these apps
+					// are configured against it — `asset` is relied on to catch
+					// /assets, `campaignProductMap` to catch /campaignProductMapping.
+					// Making anchoring automatic would quietly unlight all of those, so
+					// the only menus that change are the ones that ask to.
+					if (raw.endsWith('$')) {
+						const seg = `/${raw.slice(0, -1)}`;
+						return lowerPath === seg || lowerPath.startsWith(`${seg}/`);
+					}
+					return lowerPath.indexOf(`/${raw}`) >= 0;
+				});
 		}
 		setIsMenuActive(hasPath);
 	}, [pathname, pathsActiveFor]);
@@ -343,7 +360,14 @@ function Menu(props: Readonly<ComponentProps>) {
 						e.stopPropagation();
 						e.preventDefault();
 						window.open(resolvedLink, target, features);
-					} else if (!onClick) {
+					} else if (!onClick && !linkPath) {
+						// `!linkPath` matters: menuToggle preventDefaults, so without it a
+						// link with an explicit target and no `features` -- target="_blank"
+						// being the ordinary way to say "open this in a new tab" -- landed
+						// here and had its navigation cancelled. It looked like a dead menu
+						// item. Nothing above claims that case, and nothing needs to: the
+						// anchor already carries both href and target, so the right move is
+						// to leave the click alone and let the browser open the tab.
 						menuToggle(e);
 					}
 

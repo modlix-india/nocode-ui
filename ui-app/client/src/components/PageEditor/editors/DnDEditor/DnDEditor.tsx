@@ -13,6 +13,7 @@ import { ContextMenuDetails } from '../../components/ContextMenu';
 import DnDPropertyBar from './DnDPropertyBar';
 import DnDNavigationBar from './DnDNavigationBar';
 import DnDSidekickBar from './DnDSidekickBar';
+import { DraftMode } from '../../../Prompt/draftMode';
 
 interface DnDEditorProps {
 	defPath: string | undefined;
@@ -83,10 +84,13 @@ interface DnDEditorProps {
 	editorPageDefinition: PageDefinition;
 	editorContext: RenderContext;
 	appCode: string | undefined;
+	/** The page on the canvas, which `editorPageDefinition` is not. */
+	editedPageName: string;
+	editedPageId: string;
 	sidekickEnabled: boolean;
 	sidekickAgentEndpoint: string;
 	sidekickOpenFullPageName: string;
-	sidekickDraftMode: boolean;
+	sidekickDraftMode: DraftMode;
 	onObjectSaved: (data: any) => void;
 }
 
@@ -152,6 +156,8 @@ export default function DnDEditor({
 	editorPageDefinition,
 	editorContext,
 	appCode,
+	editedPageName,
+	editedPageId,
 	sidekickEnabled,
 	sidekickAgentEndpoint,
 	sidekickOpenFullPageName,
@@ -326,6 +332,8 @@ export default function DnDEditor({
 						selectedSubComponent={selectedSubComponent}
 						pageOperations={pageOperations}
 						appCode={appCode}
+						editedPageName={editedPageName}
+						editedPageId={editedPageId}
 						agentEndpoint={sidekickAgentEndpoint}
 						openFullPageName={sidekickOpenFullPageName}
 						draftMode={sidekickDraftMode}

@@ -161,6 +161,36 @@ describe('social arrival', () => {
 		expect(calls[1].body.businessClient).toBe(expected);
 	});
 
+	// The duplicate-client loop, from the browser's side: sign-in refused, so the browser
+	// registered, which made another client, which made the next sign-in refuse again. A 409
+	// says the platform recognised this identity and it already owns a client, so registering
+	// is the one thing not to do.
+	it('does not register when the identity already owns a client', async () => {
+		const refusal =
+			'This account already belongs to an organisation. Please request access to this application instead of signing up again.';
+		const calls = mockFetch({
+			'authenticate/social': { status: 409, body: { message: refusal } },
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await expect(mod.consumeSocialArrival()).resolves.toBe(false);
+
+		expect(calls).toHaveLength(1);
+		expect(calls[0].url).toContain('authenticate/social');
+		expect(mod.takeSocialArrivalMessage()).toBe(refusal);
+		expect(localStorage.getItem('AuthToken')).toBeNull();
+	});
+
+	it('still says something when a 409 carried no message', async () => {
+		mockFetch({ 'authenticate/social': { status: 409, body: {} } });
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await mod.consumeSocialArrival();
+		expect(mod.takeSocialArrivalMessage()).toContain('request access');
+	});
+
 	it('does not try to register when the refusal was not "unknown user"', async () => {
 		const calls = mockFetch({ 'authenticate/social': { status: 500 } });
 		const mod = loadModule();
@@ -176,13 +206,72 @@ describe('social arrival', () => {
 		// nothing and reporting success would leave the user looking signed in and not being.
 		mockFetch({
 			'authenticate/social': { status: 403 },
-			'clients/socialRegister': { status: 200, body: { created: true, authentication: null } },
+			'clients/socialRegister': {
+				status: 200,
+				body: { created: true, authentication: null },
+			},
 		});
 		const mod = loadModule();
 		setLocation(ARRIVAL);
 
 		await expect(mod.consumeSocialArrival()).resolves.toBe(false);
 		expect(localStorage.getItem('AuthToken')).toBeNull();
+	});
+
+	// Both calls failing is the shape of the bug this is for: sign-in cannot see the account
+	// because its lookup is scoped to the app, registration can see it because its duplicate
+	// check is not, and the user used to be dropped on a sign-in page with nothing said.
+	it('keeps what the platform said when registration refuses too', async () => {
+		const refusal =
+			'User someone@example.com already exists. Please try to login / reset your password.';
+		mockFetch({
+			'authenticate/social': { status: 403 },
+			'clients/socialRegister': { status: 409, body: { message: refusal } },
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await expect(mod.consumeSocialArrival()).resolves.toBe(false);
+		expect(mod.takeSocialArrivalMessage()).toBe(refusal);
+	});
+
+	it('hands the message over exactly once', async () => {
+		mockFetch({
+			'authenticate/social': { status: 403 },
+			'clients/socialRegister': { status: 409, body: { message: 'anything' } },
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await mod.consumeSocialArrival();
+
+		expect(mod.takeSocialArrivalMessage()).toBe('anything');
+		// A message that survived being shown would reappear on the next mount, long after the
+		// sign-in it belonged to.
+		expect(mod.takeSocialArrivalMessage()).toBeNull();
+	});
+
+	it('still says something useful when the refusal carried no message', async () => {
+		mockFetch({
+			'authenticate/social': { status: 403 },
+			'clients/socialRegister': { status: 409, body: {} },
+		});
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await mod.consumeSocialArrival();
+
+		expect(mod.takeSocialArrivalMessage()).toContain('password');
+	});
+
+	it('leaves nothing to show when the sign-in worked', async () => {
+		mockFetch({ 'authenticate/social': { status: 200, body: SESSION } });
+		const mod = loadModule();
+		setLocation(ARRIVAL);
+
+		await mod.consumeSocialArrival();
+
+		expect(mod.takeSocialArrivalMessage()).toBeNull();
 	});
 
 	it('takes the profile off the address bar once it has been spent', async () => {

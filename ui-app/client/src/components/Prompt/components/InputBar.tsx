@@ -1,22 +1,19 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+// Shared with LazyPrompt rather than declared again here. The two copies were
+// byte-identical until history gained `expired`, at which point one of them
+// would have been silently wrong.
+import { Attachment } from '../attachments';
 
 // Matches the textarea's max-height in PromptStyle; past this the box stops
 // growing and starts scrolling.
 const MAX_INPUT_HEIGHT = 200;
 
-interface Attachment {
-	id: string;
-	type: 'image' | 'file';
-	name: string;
-	url: string;
-	mimeType: string;
-	file?: File;
-}
-
 interface InputBarProps {
 	placeholder: string;
+	/** Shown instead of `placeholder` while a turn is running. */
+	steerPlaceholder?: string;
 	disabled: boolean;
 	isStreaming: boolean;
 	onSend: (message: string, attachments?: Attachment[]) => void;
@@ -62,6 +59,7 @@ const speechSupported =
 
 export function InputBar({
 	placeholder,
+	steerPlaceholder = 'Send a message to steer the agent...',
 	disabled,
 	isStreaming,
 	onSend,
@@ -132,9 +130,12 @@ export function InputBar({
 		return () => recognitionRef.current?.stop();
 	}, []);
 
+	// Sends while a turn is running too: the host routes those to the agent as a
+	// steer instead of as a new message (see LazyPrompt.handleUserSend). The old
+	// `isStreaming` bail here is what made the box dead for the length of a run.
 	const handleSend = useCallback(() => {
 		const trimmed = text.trim();
-		if ((!trimmed && !attachments.length) || disabled || isStreaming) return;
+		if ((!trimmed && !attachments.length) || disabled) return;
 		// Stop listening if active
 		if (recognitionRef.current) {
 			recognitionRef.current.stop();
@@ -144,7 +145,7 @@ export function InputBar({
 		onSend(trimmed, attachments.length ? attachments : undefined);
 		setText('');
 		setAttachments([]);
-	}, [text, attachments, disabled, isStreaming, onSend]);
+	}, [text, attachments, disabled, onSend]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -273,6 +274,7 @@ export function InputBar({
 	}, [isListening, startListening, stopListening]);
 
 	const showMic = enableVoiceInput && speechSupported;
+	const canSend = !!text.trim() || attachments.length > 0;
 
 	return (
 		<div className="_promptInputBar" style={styleProperties?.inputBar ?? {}}>
@@ -327,7 +329,7 @@ export function InputBar({
 					onChange={handleInput}
 					onKeyDown={handleKeyDown}
 					onPaste={handlePaste}
-					placeholder={placeholder}
+					placeholder={isStreaming ? steerPlaceholder : placeholder}
 					disabled={disabled}
 					rows={1}
 					autoFocus
@@ -346,20 +348,43 @@ export function InputBar({
 							<i className={isListening ? microphoneActiveIcon : microphoneIcon} />
 						</button>
 					)}
+					{/*
+					 * Stop keeps its place while a turn runs, and send joins it
+					 * rather than replacing it: the two are different acts. Stop
+					 * ends the turn; send steers it, which is the one the user
+					 * wants when the agent is merely heading the wrong way.
+					 */}
 					{isStreaming ? (
-						<button
-							className="_stopButton"
-							onClick={onStop}
-							title="Stop generating"
-							style={styleProperties?.sendButton ?? {}}
-						>
-							<i className={stopIcon} />
-						</button>
+						<>
+							{canSend && (
+								<button
+									className="_sendButton _steerButton"
+									onClick={handleSend}
+									disabled={disabled}
+									title="Send to the agent now"
+									style={styleProperties?.sendButton ?? {}}
+								>
+									<SubHelperComponent
+										definition={definition}
+										subComponentName="sendButton"
+									/>
+									<i className={sendIcon} />
+								</button>
+							)}
+							<button
+								className="_stopButton"
+								onClick={onStop}
+								title="Stop generating"
+								style={styleProperties?.sendButton ?? {}}
+							>
+								<i className={stopIcon} />
+							</button>
+						</>
 					) : (
 						<button
 							className="_sendButton"
 							onClick={handleSend}
-							disabled={(!text.trim() && !attachments.length) || disabled}
+							disabled={!canSend || disabled}
 							title="Send message"
 							style={styleProperties?.sendButton ?? {}}
 						>

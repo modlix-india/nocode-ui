@@ -811,6 +811,18 @@ export default function PromptStyle({
 			position: relative;
 		}
 
+		/*
+		 * A steer: sent into a turn that is already running, and not yet
+		 * acknowledged by the agent. Faded and dashed because it is not part of
+		 * the conversation until the agent says it read it, at which point the
+		 * class comes off and it looks like any other message.
+		 */
+		${PREFIX} ._promptMessage._user._pending {
+			opacity: 0.6;
+			border: 1px dashed ${t('fontColorThree', '#9b9b9b')};
+			background: transparent;
+		}
+
 		/* ─── Assistant message ─── */
 		${PREFIX} ._promptMessage._assistant {
 			display: flex;
@@ -1820,6 +1832,25 @@ export default function PromptStyle({
 			color: ${t('fontColorOne', '#1a1a1a')};
 		}
 
+		/* An image that has not arrived yet. A secured attachment is fetched
+		   with an auth header rather than served straight to the <img>, so
+		   there is a real gap to fill; without a box of the right size the
+		   whole transcript reflows when each one lands. */
+		${PREFIX} ._attachmentImage._attachmentLoading {
+			width: 120px;
+			height: 90px;
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+		}
+
+		/* A chat attachment is kept for ninety days and then deleted by the
+		   retention job. This is what stands in its place afterwards — said
+		   plainly, because a broken image icon reads as a bug rather than as
+		   the documented behaviour it is. */
+		${PREFIX} ._attachmentPreview._attachmentExpired ._attachmentFile {
+			color: ${t('fontColorThree', '#9b9b9b')};
+			font-style: italic;
+		}
+
 		/* ─── Saved-outright notice ───
 		   Objects the user does not have open are written straight to the
 		   database, unlike the ones on screen which wait for their Save. Nothing
@@ -2117,6 +2148,17 @@ export default function PromptStyle({
 			background: ${t('surfaceColorThree', '#d0d0d0')};
 			cursor: not-allowed;
 			opacity: 1;
+		}
+
+		/*
+		 * Send, while a turn is running: it steers the run rather than starting
+		 * one, and sits beside Stop rather than replacing it. Outlined, so the
+		 * filled button next to it still reads as the one that ends the turn.
+		 */
+		${PREFIX} ._sendButton._steerButton {
+			background: transparent;
+			color: ${t('fontColorOne', '#1a1a1a')};
+			border: 1px solid ${t('fontColorOne', '#1a1a1a')};
 		}
 
 		${PREFIX} ._stopButton {

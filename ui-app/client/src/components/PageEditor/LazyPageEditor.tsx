@@ -30,6 +30,7 @@ import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
 import PageEditorDebugWindow from './components/PageEditorDebugWindow';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
+import { toDraftMode } from '../Prompt/draftMode';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import {
 	PageOperations,
@@ -426,8 +427,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		let timer: any = null;
 		let grant: DraftGrant | undefined;
 
-		const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
-
 		// Extend, never rotate. A new token value is a new hostname, which would
 		// change the canvases' origin and reload all three, losing scroll position
 		// and everything the previewed page holds in its own store. The grant dying
@@ -439,10 +438,14 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		// the same one, so several editors can be beating on one token. Harmless --
 		// each beat writes the same absolute expiry, and the grant simply lives as
 		// long as the last window open on it.
+		//
+		// The session token is read inside each call rather than captured here: this
+		// loop outlives the access token, which is rotated (and the old value
+		// revoked) every half hour or so.
 		const beat = () => {
 			timer = setTimeout(async () => {
 				if (cancelled || !grant) return;
-				const extended = await extendDraftToken(grant.token, authToken);
+				const extended = await extendDraftToken(grant.token);
 				if (cancelled) return;
 				// A refused extension is not fatal on its own: the current grant is
 				// still live until its own expiry, so keep beating against it and let
@@ -453,7 +456,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		};
 
 		(async () => {
-			grant = await mintDraftToken(previewAppCode, authToken);
+			grant = await mintDraftToken(previewAppCode);
 			if (cancelled) return;
 			setPreviewOrigin(grant ? `https://${grant.host}` : '');
 			if (grant) beat();
@@ -1361,10 +1364,16 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				editorPageDefinition={pageDefinition}
 				editorContext={context}
 				appCode={appDefinition?.appCode ?? editPageDefinition?.appCode}
+				// The page on the canvas, NOT `editorPageDefinition` above: that
+				// one is the host page this editor is drawn on (appbuilder's
+				// editPage), which is what the Prompt needs as ComponentProps and
+				// is never what the user means by "this page".
+				editedPageName={editPageDefinition?.name ?? ''}
+				editedPageId={editPageDefinition?.id ?? ''}
 				sidekickEnabled={sidekickEnabled === true}
 				sidekickAgentEndpoint={sidekickAgentEndpoint ?? '/api/ai/appbuilder/chat'}
 				sidekickOpenFullPageName={sidekickOpenFullPageName ?? ''}
-				sidekickDraftMode={sidekickDraftMode !== false}
+				sidekickDraftMode={toDraftMode(sidekickDraftMode)}
 				onObjectSaved={handleObjectSaved}
 			/>
 			<CodeEditor

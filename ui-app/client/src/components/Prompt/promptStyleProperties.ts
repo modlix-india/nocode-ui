@@ -286,6 +286,170 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '.comp.compPrompt ._inputActions ._shortcutHint',
 		np: true,
 	},
+
+	// ─── Notices, and the confirmation block ───
+	//
+	// These surfaces used to reach past this file for their colour and ask the
+	// app-wide `colorTwo`, `accentTintColor` and `borderColorNine` directly.
+	// That works in appbuilder, whose themes set `colorTwo` to the theme's
+	// ACCENT INK -- #B45309 in amber, #0A55A8 in coolBlue -- and it breaks
+	// anywhere that reads the same name the other way. sitezump sets `colorTwo`
+	// to #F9FAFB, its page ground, which painted the draft bar's text in
+	// near-white on a cream wash and made the confirmation icon invisible
+	// outright.
+	//
+	// So each of them gets its own name here. Every `dv` below is `<theOldOne>`,
+	// which keeps the behaviour identical for an app that set the old variable,
+	// and resolves to nothing for an app that did not -- an empty declaration,
+	// which the parser drops, leaving the literal in PromptStyle.tsx standing.
+	// Either way nothing moves until an app sets the new name.
+	{
+		gn: 'Prompt Notices',
+		dn: 'Notice Background',
+		n: 'promptNoticeBackground',
+		dv: '<accentTintColor>',
+		cp: 'background-color',
+		sel: '.comp.compPrompt ._promptSavedNotice, .comp.compPrompt ._promptPendingBar',
+		np: true,
+	},
+	{
+		gn: 'Prompt Notices',
+		dn: 'Notice Font Color',
+		n: 'promptNoticeFontColor',
+		dv: '<colorTwo>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._promptSavedNotice, .comp.compPrompt ._promptPendingBar',
+		np: true,
+	},
+	{
+		gn: 'Prompt Notices',
+		dn: 'Notice Border Radius',
+		n: 'promptNoticeBorderRadius',
+		dv: '8px',
+		cp: 'border-radius',
+		sel: '.comp.compPrompt ._promptSavedNotice, .comp.compPrompt ._promptPendingBar',
+		np: true,
+	},
+	{
+		gn: 'Prompt Notices',
+		dn: 'Notice Button Border Color',
+		n: 'promptNoticeButtonBorderColor',
+		dv: '<borderColorNine>',
+		cp: 'border-color',
+		sel: '.comp.compPrompt ._promptPendingBtn',
+		np: true,
+	},
+	{
+		gn: 'Prompt Notices',
+		dn: 'Notice Button Border Radius',
+		n: 'promptNoticeButtonBorderRadius',
+		dv: '999px',
+		cp: 'border-radius',
+		sel: '.comp.compPrompt ._promptPendingBtn',
+		np: true,
+	},
+	{
+		gn: 'Prompt Notices',
+		dn: 'Notice Button Hover Background',
+		n: 'promptNoticeButtonHoverBackground',
+		dv: '<accentTintColor>',
+		cp: 'background-color',
+		sel: '.comp.compPrompt ._promptPendingBtn:hover',
+		np: true,
+	},
+	{
+		gn: 'Prompt Notices',
+		dn: 'Warning Font Color',
+		n: 'promptWarningFontColor',
+		dv: '<colorTwo>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._usageContext._warning',
+		np: true,
+	},
+	{
+		gn: 'Prompt Confirmation',
+		dn: 'Confirmation Background',
+		n: 'promptConfirmBackground',
+		dv: '<surfaceColorOne>',
+		cp: 'background',
+		sel: '.comp.compPrompt ._confirmationPrompt',
+		np: true,
+	},
+	{
+		gn: 'Prompt Confirmation',
+		dn: 'Confirmation Border Color',
+		n: 'promptConfirmBorderColor',
+		dv: '<borderColorNine>',
+		cp: 'border-color',
+		sel: '.comp.compPrompt ._confirmationPrompt',
+		np: true,
+	},
+	{
+		gn: 'Prompt Confirmation',
+		dn: 'Confirmation Border Radius',
+		n: 'promptConfirmBorderRadius',
+		dv: '12px',
+		cp: 'border-radius',
+		sel: '.comp.compPrompt ._confirmationPrompt',
+		np: true,
+	},
+	{
+		gn: 'Prompt Confirmation',
+		dn: 'Confirmation Icon Color',
+		n: 'promptConfirmIconColor',
+		dv: '<colorTwo>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._confirmationIcon',
+		np: true,
+	},
+	{
+		// The only one of these with no variable behind it at all: the approve
+		// button is `background: #1a7f37` in PromptStyle.tsx, a literal, so no
+		// theme could reach it however it was written.
+		gn: 'Prompt Confirmation',
+		dn: 'Approve Background',
+		n: 'promptApproveBackground',
+		dv: '#1a7f37',
+		cp: 'background',
+		sel: '.comp.compPrompt ._confirmationOption._approve',
+		np: true,
+	},
+	{
+		gn: 'Prompt Confirmation',
+		dn: 'Approve Border Color',
+		n: 'promptApproveBorderColor',
+		dv: '#1a7f37',
+		cp: 'border-color',
+		sel: '.comp.compPrompt ._confirmationOption._approve',
+		np: true,
+	},
+	{
+		gn: 'Prompt Confirmation',
+		dn: 'Approve Hover Background',
+		n: 'promptApproveHoverBackground',
+		dv: '#15692e',
+		cp: 'background',
+		sel: '.comp.compPrompt ._confirmationOption._approve:hover',
+		np: true,
+	},
+	{
+		gn: 'Prompt Confirmation',
+		dn: 'Approve Font Color',
+		n: 'promptApproveFontColor',
+		dv: '<colorSeven>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._confirmationOption._approve',
+		np: true,
+	},
+	{
+		gn: 'Prompt Confirmation',
+		dn: 'Confirmation Option Border Radius',
+		n: 'promptConfirmOptionBorderRadius',
+		dv: '8px',
+		cp: 'border-radius',
+		sel: '.comp.compPrompt ._confirmationOption',
+		np: true,
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

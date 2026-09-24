@@ -58,6 +58,12 @@ declare global {
 		theme: any;
 		/** Which theme `theme` is. Absent means the app's default. */
 		themeName?: string;
+		/**
+		 * The page routing resolved to, which need not be the one named in the URL.
+		 * Absent when the shell came from the Java ui service rather than SSR, in
+		 * which case the client resolves for itself.
+		 */
+		resolvedPageName?: string;
 		urlDetails: any;
 	}
 	/**
@@ -129,8 +135,43 @@ globalThis.isDraftMode = (() => {
 // To check if the app is being interacted with
 globalThis.lastInteracted = Date.now();
 
+// Real interaction, not just page events.
+//
+// The refresher below stops renewing the session once this goes fifteen minutes
+// stale, and until now the ONLY thing that stamped it was `runEvent`, i.e. a KIRun
+// page-event function firing. That is a fair proxy for a rendered app and a bad one
+// for anything built in React on top of the engine: a whole hour in the page editor
+// -- dragging components, typing in the property panel, saving -- runs no page event
+// at all, so the session was declared idle at minute fifteen and left to die at
+// thirty while somebody was actively working in it. What that looked like was every
+// call answered 401 for up to a minute, until the tick below noticed the expiry and
+// reloaded, or the user reloaded first -- which is why a refresh always "fixed" it.
+//
+// Capture phase and passive, so this cannot be stopped by a handler that swallows
+// the event and cannot delay scrolling. `visibilitychange` counts because coming
+// back to a tab is the moment a stale session is about to be used.
+['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(name =>
+	window.addEventListener(name, () => (window.lastInteracted = Date.now()), {
+		capture: true,
+		passive: true,
+	}),
+);
+document.addEventListener('visibilitychange', () => {
+	if (document.visibilityState === 'visible') window.lastInteracted = Date.now();
+});
+
 const THREE_MINUTES = 3 * 60 * 1000;
 const FIFTEEN_MINUTES = 15 * 60 * 1000;
+
+// One refresh at a time.
+//
+// The server REVOKES the old token before issuing the new one, so a second refresh
+// started while the first is still in flight sends a value that is already dead: it
+// is answered 401, its `then` never runs, and the live token the first call returned
+// is never written. The tick is every 60s and the refresh window is the last 3
+// minutes of the token's life, so there are three chances to do that.
+let refreshInFlight = false;
+
 setInterval(async () => {
 	const AUTH_TOKEN_EXPIRY = globalThis.isDebugMode
 		? 'designMode_AuthTokenExpiry'
@@ -162,18 +203,41 @@ setInterval(async () => {
 	// Refresh token
 
 	const token = window.localStorage.getItem(AUTH_TOKEN);
-	if (!token) return;
+	if (!token || refreshInFlight) return;
 
+	refreshInFlight = true;
 	axios({
 		url: 'api/security/refreshToken',
 		method: 'GET',
 		headers: {
 			Authorization: JSON.parse(token ?? '""'),
 		},
-	}).then(response => {
-		window.localStorage.setItem(AUTH_TOKEN, JSON.stringify(response.data.accessToken));
-		window.localStorage.setItem(AUTH_TOKEN_EXPIRY, response.data.accessTokenExpiryAt);
-	});
+	})
+		.then(response => {
+			window.localStorage.setItem(AUTH_TOKEN, JSON.stringify(response.data.accessToken));
+			window.localStorage.setItem(AUTH_TOKEN_EXPIRY, response.data.accessTokenExpiryAt);
+		})
+		.catch(e => {
+			// A 401/403 means this token is already gone -- revoked by a sign-out
+			// elsewhere, or by a refresh whose reply we never received. Keeping it
+			// would leave every subsequent call answered 401 with nothing to fix it
+			// but a manual reload. Dropping it and reloading is what the user was
+			// doing by hand, and on an SSO app the beacon seeds a fresh session on
+			// the way back, so it is invisible.
+			//
+			// Anything else -- a 5xx, an offline blip -- must leave the token alone.
+			// The session is probably fine and the next tick will try again; signing
+			// somebody out over a flaky connection is the worse failure.
+			const status = e?.response?.status;
+			if (status !== 401 && status !== 403) return;
+
+			window.localStorage.removeItem(AUTH_TOKEN);
+			window.localStorage.removeItem(AUTH_TOKEN_EXPIRY);
+			window.location.reload();
+		})
+		.finally(() => {
+			refreshInFlight = false;
+		});
 }, 60000);
 
 const app = document.getElementById('app');

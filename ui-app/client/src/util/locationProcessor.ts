@@ -3,13 +3,38 @@ import { Location as ReactLocation } from 'react-router-dom';
 export interface URLDetails {
 	queryParameters: any;
 	pathParts?: Array<string> | undefined;
+	/** The page the URL asked for. Every `Url.pageName` expression reads this. */
 	pageName?: string | undefined;
+	/**
+	 * The page routing actually chose, when a rule fired. Absent when none did.
+	 * Set by `RenderEngineContainer`, not here: a location does not know the app's
+	 * routing rules.
+	 */
+	servedPageName?: string | undefined;
 	appName?: string | undefined;
 	clientCode?: string | undefined;
+	/** `app.example.com` — host and port, no scheme. */
+	host?: string | undefined;
+	/** `https://app.example.com` — what another origin has to name to allow this one. */
+	origin?: string | undefined;
 };
 
 export function processLocation(location: ReactLocation | Location) {
 	const details: URLDetails = { queryParameters: {} };
+
+	// Where the page is being served from, which `Url.` could not say before.
+	// A page that has to tell a DIFFERENT app to trust this one -- a CSP
+	// `frame-ancestors` entry, say -- cannot derive it: the environments do not
+	// agree on what a host looks like, and the server endpoints that answer for
+	// an app answer about that app, not about whoever is asking.
+	//
+	// A react-router Location carries neither, so this is undefined on the
+	// in-app navigation path and read from `window` instead. The SSR seeds its
+	// own minimal urlDetails and has no business guessing a browser's origin.
+	const anyLoc = location as Partial<Location>;
+	details.host = anyLoc.host ?? (typeof window === 'undefined' ? undefined : window.location.host);
+	details.origin =
+		anyLoc.origin ?? (typeof window === 'undefined' ? undefined : window.location.origin);
 
 	if (location.search) {
 		details.queryParameters = location.search

@@ -24,6 +24,11 @@ export interface PortalCoordinates {
 	bottom?: number;
 }
 
+// Kept identical to Dropdown's own constant on purpose: both are "the pointer left the
+// control, give it a moment to come back", and two different delays would read as two
+// different behaviours for the same gesture.
+const MOUSE_LEAVE_CLOSE_DELAY = 1000;
+
 function Popover(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
@@ -101,9 +106,41 @@ function Popover(props: Readonly<ComponentProps>) {
 		setShow(!show);
 	};
 
-	const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
-		setShow(false);
-	};
+	// `closeOnLeave` used to close on the spot, and only the TRIGGER carries the leave
+	// handler while the panel is portalled to the end of the body. So the pointer had to
+	// travel from the trigger to a panel it could not touch without crossing a gap that
+	// dismissed the thing it was heading for. The same aim-hostility Dropdown had, and
+	// the same fix (Dropdown.tsx, MOUSE_LEAVE_CLOSE_DELAY): leaving only ARMS a close a
+	// second out, and entering either the trigger or the panel disarms it, so a brief
+	// wander off the edge costs nothing.
+	const leaveClosesIt =
+		!(globalThis.designMode == 'PAGE' && showInDesign === true) && !!closeOnLeave;
+
+	const closeTimerRef = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+	const mouseIsInsideRef = React.useRef(false);
+
+	const cancelPendingClose = React.useCallback(() => {
+		mouseIsInsideRef.current = true;
+		if (closeTimerRef.current === undefined) return;
+		clearTimeout(closeTimerRef.current);
+		closeTimerRef.current = undefined;
+	}, []);
+
+	const schedulePendingClose = React.useCallback(() => {
+		mouseIsInsideRef.current = false;
+		if (closeTimerRef.current !== undefined) clearTimeout(closeTimerRef.current);
+		closeTimerRef.current = setTimeout(() => {
+			closeTimerRef.current = undefined;
+			// The pointer may have come back after the timer was armed but before it
+			// fired; the ref is the live answer, state would be a frame stale.
+			if (!mouseIsInsideRef.current) setShow(false);
+		}, MOUSE_LEAVE_CLOSE_DELAY);
+	}, []);
+
+	// An unmount mid-countdown would otherwise leave the timer holding a setState.
+	React.useEffect(() => () => {
+		if (closeTimerRef.current !== undefined) clearTimeout(closeTimerRef.current);
+	}, []);
 
 	React.useEffect(() => {
 		if (globalThis.designMode == 'PAGE' && showInDesign === true) return;
@@ -130,12 +167,11 @@ function Popover(props: Readonly<ComponentProps>) {
 					}}
 					ref={boxRef}
 					onClick={showPopover}
-					onMouseEnter={showOnHover ? showPopover : undefined}
-					onMouseLeave={
-						!(globalThis.designMode == 'PAGE' && showInDesign === true) && closeOnLeave
-							? handleMouseLeave
-							: undefined
-					}
+					onMouseEnter={e => {
+						if (leaveClosesIt) cancelPendingClose();
+						if (showOnHover) showPopover(e);
+					}}
+					onMouseLeave={leaveClosesIt ? schedulePendingClose : undefined}
 				>
 					<SubHelperComponent
 						definition={props.definition}
@@ -153,6 +189,12 @@ function Popover(props: Readonly<ComponentProps>) {
 							<div
 								ref={popoverRef}
 								onClick={e => e.stopPropagation()}
+								// Without these the panel is unreachable when closeOnLeave
+								// is set: the countdown armed on leaving the trigger would
+								// run out while the pointer sits on the panel, because the
+								// panel is portalled and shares no DOM boundary with it.
+								onMouseEnter={leaveClosesIt ? cancelPendingClose : undefined}
+								onMouseLeave={leaveClosesIt ? schedulePendingClose : undefined}
 								style={{
 									position: 'fixed',
 									...(coords ?? {

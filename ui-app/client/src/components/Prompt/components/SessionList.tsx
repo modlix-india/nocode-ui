@@ -4,7 +4,10 @@ import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 
 export interface Session {
 	session_id: string;
-	title: string;
+	// Nullable on the wire: the service's own list model has it Optional, and a
+	// session created by anything other than a typed message can arrive with no
+	// title at all. `sessionLabel` is what turns that into something readable.
+	title?: string | null;
 	status?: string;
 	updated_at?: string;
 }
@@ -32,6 +35,17 @@ interface SessionListProps {
 	newChatSidebarIcon?: string;
 	renameIcon?: string;
 	deleteIcon?: string;
+}
+
+/** What to draw for a chat that has no title.
+ *
+ * A session can reach the list unnamed — a build the agent ran on its own, a
+ * send that carried only an attachment — and an empty row is worse than a dull
+ * one: it renders as a blank line nobody can tell from the chat above it or
+ * click with any idea of what they are opening.
+ */
+function sessionLabel(session: Session): string {
+	return session.title?.trim() || 'Untitled chat';
 }
 
 export function SessionList({
@@ -86,7 +100,7 @@ export function SessionList({
 		(e: React.MouseEvent, session: Session) => {
 			e.stopPropagation();
 			setEditingId(session.session_id);
-			setEditingTitle(session.title);
+			setEditingTitle(session.title ?? '');
 		},
 		[],
 	);
@@ -185,7 +199,7 @@ export function SessionList({
 											onSelectSession(s.session_id);
 										}
 									}}
-									title={s.title}
+									title={sessionLabel(s)}
 									style={
 										styleProperties?.sessionItem ?? {}
 									}
@@ -215,7 +229,7 @@ export function SessionList({
 									) : (
 										<>
 											<span className="_sessionTitle">
-												{s.title}
+												{sessionLabel(s)}
 											</span>
 											<div className="_sessionActions">
 												<button

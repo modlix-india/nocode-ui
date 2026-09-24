@@ -57,6 +57,21 @@ const SOCIAL_ARRIVAL_PARAMS = [
 // are two different journeys.
 const SOCIAL_TRIED_KEY = 'socialStateTried';
 
+// What the platform said when a social arrival could not be turned into a session, held for
+// whoever can put it on screen.
+//
+// It cannot be shown from here. This module is in the bootstrap chain, and the message surface
+// (`addMessage`) reads and writes the path-reactive store, which at this point in the boot
+// creates empty entries that `App.tsx` then treats as real values: duplicate application and
+// theme fetches, and a race to render `page/undefined`. So the text is parked here and
+// `Messages` flushes it on mount, which is after React is up and the store is safe to touch.
+//
+// Session storage rather than a module variable because the failure path leaves the browser on
+// a page that may reload before anything renders, and the spent-state guard above means the
+// call is never made a second time: the message would be the only evidence left that anything
+// was attempted at all.
+const SOCIAL_MESSAGE_KEY = 'socialArrivalMessage';
+
 /**
  * The authzump host, which the platform stamps into the page and the dev server does not.
  *
@@ -132,6 +147,14 @@ function writeSession(key: string, value: string): void {
 		sessionStorage.setItem(key, value);
 	} catch {
 		/* nothing to do; the worst case is one wasted redeem attempt */
+	}
+}
+
+function removeSession(key: string): void {
+	try {
+		sessionStorage.removeItem(key);
+	} catch {
+		/* as above */
 	}
 }
 
@@ -333,6 +356,26 @@ function apiPrefix(): string {
 	return appName && clientCode ? `/${appName}/${clientCode}/page/` : '/';
 }
 
+/** Park a failure where the message surface can find it once React is mounted. */
+function stashSocialMessage(message: string): void {
+	if (!message) return;
+	writeSession(keyFor(SOCIAL_MESSAGE_KEY), message);
+}
+
+/**
+ * Read and clear whatever the last social arrival failed with, or null if it succeeded or was
+ * never attempted.
+ *
+ * Cleared on read: a message that outlived being shown would come back on every later mount of
+ * the message surface, long after the sign-in it belonged to.
+ */
+export function takeSocialArrivalMessage(): string | null {
+	const key = keyFor(SOCIAL_MESSAGE_KEY);
+	const message = readSession(key);
+	if (message) removeSession(key);
+	return message;
+}
+
 async function postJSON(path: string, body: unknown): Promise<{ status: number; body: any }> {
 	try {
 		const response = await fetch(`${apiPrefix()}${path}`, {
@@ -372,6 +415,9 @@ async function redeemSocialState(
 	userName: string,
 	params: URLSearchParams,
 ): Promise<boolean> {
+	// Whatever an earlier attempt in this tab failed with has been superseded by this one.
+	removeSession(keyFor(SOCIAL_MESSAGE_KEY));
+
 	// An sso3 app wants the cookie set, so a later cold start on another domain has something
 	// to find. `isSsoEnabled` needs the application object, which does not exist this early, so
 	// this keys off the beacon host, which is injected only for sso3 apps.
@@ -390,6 +436,20 @@ async function redeemSocialState(
 	});
 
 	if (isOk(login.status)) return bankSession(login.body);
+
+	// 409 means the platform recognised this identity and it already owns a client, it just
+	// cannot reach this app. Registering would hand somebody who has a company a second one,
+	// and since the browser retries on every arrival that is a new client per sign-in attempt,
+	// which is how one dev account collected six of them in an hour. The platform's own text
+	// says what to do instead; it is the side that knows which check refused, and it is
+	// localised.
+	if (login.status === 409) {
+		stashSocialMessage(
+			login.body?.message ??
+				'This account already belongs to an organisation. Please request access to this application.',
+		);
+		return false;
+	}
 
 	// 403 is the platform's answer for both "no such user anywhere"
 	// (USER_CREDENTIALS_MISMATCHED) and "this client has no registration on this app"
@@ -422,12 +482,38 @@ async function redeemSocialState(
 		passType: 'PASSWORD',
 	});
 
-	if (!isOk(register.status)) return false;
+	if (!isOk(register.status)) {
+		// Say something. Both calls failing used to end here silently, and the app then booted
+		// to its own sign-in page looking like the button had done nothing.
+		//
+		// The common case is an account that exists but cannot be resolved on THIS app:
+		// sign-in answers 403 because the user lookup is scoped to the app, registration then
+		// answers 409 because its duplicate check is not. Neither call can settle that, and
+		// until they can, the 409 already carries the only instruction that works.
+		//
+		// The platform's own text, not one invented here: it is the side that knows which
+		// check refused, and it is localised. The fallback covers a response that carried no
+		// message at all.
+		stashSocialMessage(
+			register.body?.message ??
+				'This email is already registered. Please sign in with your password, or reset your password.',
+		);
+		return false;
+	}
 
 	// A registration that could not authenticate answers with `authentication: null` rather
 	// than an error, which is a registered user and no session: worth failing on, so the caller
 	// falls through to the app's own sign-in rather than looking signed in and not being.
-	return bankSession(register.body?.authentication);
+	const banked = bankSession(register.body?.authentication);
+
+	// Silent in a different way, and the opposite advice: the account now exists, so telling
+	// this user they are already registered would be both true and useless.
+	if (!banked)
+		stashSocialMessage(
+			'Your account was created, but we could not sign you in. Please sign in with your password.',
+		);
+
+	return banked;
 }
 
 /**

@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { LOCAL_STORE_PREFIX } from '../../constants';
+import { getDataFromPath } from '../../context/StoreContext';
 
 /**
  * The editor's grant of the draft surface for the app it is editing.
@@ -23,7 +25,20 @@ export interface DraftGrant {
 	expiresAt: string;
 }
 
-function authHeaders(authToken: string | undefined) {
+/**
+ * The session's Authorization header, read at the moment of the call.
+ *
+ * Deliberately not a parameter. The heartbeat below lives for as long as an editor
+ * is open, and the access token underneath it does not: it is good for 30 minutes,
+ * and the app's refresher swaps it at the three-minute mark by calling
+ * `api/security/refreshToken`, which REVOKES the old value before handing back the
+ * new one. A caller that captured the token once at mount therefore starts sending
+ * a dead token roughly half an hour in, and every beat from then on is answered 401
+ * -- until the grant quietly expires and the canvases drop back to the live app.
+ * Only a reload fixed it, because only a reload re-read the token.
+ */
+function authHeaders() {
+	const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 	return authToken ? { Authorization: authToken } : undefined;
 }
 
@@ -41,15 +56,12 @@ function authHeaders(authToken: string | undefined) {
  * read access can open the page editor, and their canvas should fall back to the
  * live app rather than go blank.
  */
-export async function mintDraftToken(
-	appCode: string,
-	authToken: string | undefined,
-): Promise<DraftGrant | undefined> {
+export async function mintDraftToken(appCode: string): Promise<DraftGrant | undefined> {
 	try {
 		const response = await axios.post(
 			'/api/security/clienturls/draft/token',
 			undefined,
-			{ params: { appCode }, headers: authHeaders(authToken) },
+			{ params: { appCode }, headers: authHeaders() },
 		);
 		return response.data?.host ? (response.data as DraftGrant) : undefined;
 	} catch (error) {
@@ -65,15 +77,12 @@ export async function mintDraftToken(
  * change the canvases' origin and reload all three, losing scroll position and
  * whatever the previewed page holds in its own store.
  */
-export async function extendDraftToken(
-	token: string,
-	authToken: string | undefined,
-): Promise<DraftGrant | undefined> {
+export async function extendDraftToken(token: string): Promise<DraftGrant | undefined> {
 	try {
 		const response = await axios.post(
 			'/api/security/clienturls/draft/token/extend',
 			undefined,
-			{ params: { token }, headers: authHeaders(authToken) },
+			{ params: { token }, headers: authHeaders() },
 		);
 		return response.data?.host ? (response.data as DraftGrant) : undefined;
 	} catch (error) {

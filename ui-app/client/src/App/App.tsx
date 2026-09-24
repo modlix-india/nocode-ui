@@ -17,7 +17,7 @@ import { Messages } from './Messages/Messages';
 import { getAppDefinition } from './appDefinition';
 import { usedComponents } from './usedComponents';
 import DebugWindow from '../debug/DebugWindow';
-import { AnalyticsConsentBanner } from './AnalyticsConsentBanner';
+import { AnalyticsBinder } from './AnalyticsBinder';
 import { ShortcutChooser } from '../shortcuts/ShortcutChooser';
 import { ShortcutModifierHold } from '../shortcuts/ShortcutModifierHold';
 import { ShortcutCheatSheet } from '../shortcuts/ShortcutCheatSheet';
@@ -288,7 +288,7 @@ export function App() {
 			<ShortcutChooser />
 			<ShortcutModifierHold />
 			<ShortcutCheatSheet />
-			<AnalyticsConsentBanner />
+			<AnalyticsBinder />
 			<div id="_rendered" data-used-components={usedComps} />
 			<DebugWindow />
 		</>

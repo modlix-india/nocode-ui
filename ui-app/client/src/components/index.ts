@@ -1,6 +1,7 @@
 import { Component } from '../types/common';
 import Animator from './Animator/Animator';
 import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
+import BlueprintEditor from './BlueprintEditor/BlueprintEditor';
 import Button from './Button/Button';
 import ButtonBar from './Buttonbar/ButtonBar';
 import Carousel from './Carousel/Carousel';
@@ -63,11 +64,7 @@ import Softphone from './Softphone/Softphone';
 import Chart from './Chart/Chart';
 import FileSelector from './FileSelector/FileSelector';
 import Form from './Form/Form';
-import AnalyticsQuery from './AnalyticsQuery/AnalyticsQuery';
-import WebAnalyticsWidget from './WebAnalyticsWidget/WebAnalyticsWidget';
-import ProductAnalyticsWidget from './ProductAnalyticsWidget/ProductAnalyticsWidget';
-import SessionReplayList from './SessionReplayList/SessionReplayList';
-import SessionReplayPlayer from './SessionReplayPlayer/SessionReplayPlayer';
+import AnalyticsHeatmap from './AnalyticsHeatmap/AnalyticsHeatmap';
 
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 import ThemeEditor from './ThemeEditor/ThemeEditor';
@@ -82,6 +79,7 @@ import TemplateEditor from './TemplateEditor/TemplateEditor';
 import TextEditor from './TextEditor/TextEditor';
 
 const componentMap = new Map<string, Component>([
+	[BlueprintEditor.name, BlueprintEditor],
 	[Button.name, Button],
 	[ButtonBar.name, ButtonBar],
 	[Grid.name, Grid],
@@ -140,11 +138,7 @@ const componentMap = new Map<string, Component>([
 	[SSEventListener.name, SSEventListener],
 	[Softphone.name, Softphone],
 	[Chart.name, Chart],
-	[AnalyticsQuery.name, AnalyticsQuery],
-	[WebAnalyticsWidget.name, WebAnalyticsWidget],
-	[ProductAnalyticsWidget.name, ProductAnalyticsWidget],
-	[SessionReplayList.name, SessionReplayList],
-	[SessionReplayPlayer.name, SessionReplayPlayer],
+	[AnalyticsHeatmap.name, AnalyticsHeatmap],
 	[FileSelector.name, FileSelector],
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FillerValueEditor.name, FillerValueEditor],
