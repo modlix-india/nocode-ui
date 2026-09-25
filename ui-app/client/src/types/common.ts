@@ -73,6 +73,16 @@ export enum ComponentPropertyEditor {
 	TEXT_EDITOR,
 	SVG,
 	SHORTCUT_KEY,
+	/**
+	 * A bounded numeric property: slider plus number box, driven by the min,
+	 * max and step on the property definition.
+	 *
+	 * APPEND ONLY, like every member above it. This enum is numeric and
+	 * unannotated, so its members are stored as ordinals; inserting one in the
+	 * middle renumbers everything after it and silently repoints the editor for
+	 * every page definition already saved in Mongo.
+	 */
+	NUMBER_SLIDER,
 }
 
 export enum ComponentPropertyGroup {
@@ -105,6 +115,14 @@ export interface ComponentPropertyDefinition {
 	defaultValue?: any;
 	displayOrder?: number;
 	hide?: boolean;
+	/**
+	 * Bounds for a numeric property. Read by the NUMBER_SLIDER editor, and
+	 * worth setting even without it: they are the only place the legal range
+	 * of a number is written down for whoever fills the property in.
+	 */
+	min?: number;
+	max?: number;
+	step?: number;
 	validationList?: Array<{
 		name: string;
 		displayName?: string;

@@ -22,6 +22,7 @@ import { ImageEditor } from './ImageEditor';
 import { ValidationEditor } from './ValidationEditor';
 import { AnimationValueEditor } from './AnimationValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
+import { RangeWithoutUnit } from '../stylePropertyValueEditors/simpleEditors/SizeSliders';
 import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
 import SectionPropertyValueEditor from './SectionPropertyValueEditor';
 import { SvgContentEditor } from './SvgContentEditor';
@@ -376,9 +377,16 @@ function makeValueEditor(
 					}
 				/>
 				<CommonColorPickerPropertyEditor
-					color={{ value: chngValue }}
-					variableSelection={false}
-					onChange={e => onChange({ ...value, value: e.value })}
+					// `location` is passed BOTH ways on purpose. Choosing a theme
+					// colour emits a location of type EXPRESSION (`Theme.colorOne`)
+					// and no new value, so dropping it on the way in loses the
+					// selected state and dropping it on the way out makes the
+					// swatch silently do nothing. Both were dropped here before,
+					// which is why variableSelection had to be off: the theme
+					// swatches the style panel shows were unusable on a property.
+					color={{ value: chngValue, location: value?.location }}
+					variableSelection={true}
+					onChange={e => onChange({ ...value, value: e.value, location: e.location })}
 				/>
 			</div>
 		);
@@ -409,6 +417,28 @@ function makeValueEditor(
 				value={chngValue === '' ? undefined : !!chngValue}
 				defaultValue={propDef.defaultValue}
 				onChange={e => onChange({ ...value, value: e })}
+			/>
+		);
+	}
+
+	if (propDef.editor === ComponentPropertyEditor.NUMBER_SLIDER) {
+		return (
+			<RangeWithoutUnit
+				value={chngValue === undefined || chngValue === null ? '' : String(chngValue)}
+				min={propDef.min}
+				max={propDef.max}
+				step={propDef.step}
+				placeholder={showPlaceholder ? String(propDef.defaultValue ?? '') : undefined}
+				onChange={v => {
+					setChngValue(v);
+					// Cleared goes back to undefined so the component falls to
+					// its own default, rather than being pinned at 0.
+					const n = v === '' ? undefined : Number(v);
+					onChange({
+						...value,
+						value: n === undefined || Number.isNaN(n) ? undefined : n,
+					});
+				}}
 			/>
 		);
 	}

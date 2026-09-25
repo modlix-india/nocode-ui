@@ -31,6 +31,12 @@ interface CatalogProperty {
 	multiValued?: boolean;
 	enumValues?: Array<{ name: string; displayName: string }>;
 	defaultValue?: any;
+	// Bounds for a numeric property. Without these the agent sees that a
+	// property has a slider but not what range is legal, which is the half
+	// that actually stops it writing a nonsense value.
+	min?: number;
+	max?: number;
+	step?: number;
 }
 
 interface ThemeStyleCssEntry {
@@ -241,6 +247,21 @@ function extractPropertyFromObject(
 
 	const multiNode = getObjectProperty(obj, 'multiValued');
 	if (multiNode && multiNode.kind === ts.SyntaxKind.TrueKeyword) prop.multiValued = true;
+
+	for (const bound of ['min', 'max', 'step'] as const) {
+		const node = getObjectProperty(obj, bound);
+		if (!node) continue;
+		// A negative bound parses as a prefix-minus expression, not a numeric
+		// literal, so -1.5 would silently vanish without this.
+		if (ts.isNumericLiteral(node)) prop[bound] = Number(node.text);
+		else if (
+			ts.isPrefixUnaryExpression(node) &&
+			node.operator === ts.SyntaxKind.MinusToken &&
+			ts.isNumericLiteral(node.operand)
+		) {
+			prop[bound] = -Number(node.operand.text);
+		}
+	}
 
 	// Extract schema type hint
 	const schemaNode = getObjectProperty(obj, 'schema');
@@ -490,6 +511,12 @@ const COMMON_PROPERTIES: Record<string, CatalogProperty> = loadCommonProperties(
 // "internal"    → omitted from AI prompt
 
 const COMPONENT_TIERS: Record<string, ComponentTier> = {
+	// 'common' rather than the default 'specialized' on purpose. The persona
+	// has historically told the agent that WebGL is the thing to degrade into
+	// CSS, so this component has to arrive with its full property surface and
+	// its preset names visible, or the agent will keep reaching for a gradient.
+	ShaderBackground: 'common',
+	ParticleField: 'common',
 	Tree: 'data',
 	// The agent authors pages that HOST this, and has to wire three binding
 	// paths and seven events to do it. At the default tier it would reach the
@@ -593,6 +620,10 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 		'Renders hierarchical data, repeating ONE child template at every depth. dataShape accepts NESTED (children array), FLAT (idKey + parentKey), OBJECT_MAP (object keyed by id) or RAW_JSON (structure inferred). treeDesign picks indented list, accordion, org chart or Finder-style columns. Inside the node template, Parent.<field> is the current node and Parent.Parent.<field> is its parent, at every depth. bindingPath2 holds the selection (single or multi), bindingPath3 the expanded node keys, bindingPath4 the active path for the columns design. Set editable to allow drag reorder, drag reparent, add and delete; RAW_JSON is read only.',
 	Animator:
 		'Animation wrapper that starts animations based on an intersection observer. Used in sites for scroll-triggered entrance effects.',
+	ParticleField:
+		"A real WebGL particle system: thousands of points that drift and part around the cursor. Reach for this when a design calls for floating motes, a starfield, dust or an orb cloud -- it is NOT something to approximate with CSS. preset picks orbField, starfield or dust; distribution reseeds the cloud as a sphere, shell, disc or box; colorA/colorB shade the particles across a per-particle random value. pointerStrength moves particles AWAY from the cursor, and a NEGATIVE value pulls them toward it. count is capped at 200,000 because every particle costs a fragment pass and a careless value slows the whole page, not just this component. Particles draw on a transparent canvas, so set fallbackColor or they sit on whatever is behind the component. Children render above the field. Costs one WebGL context of about six on a page, loads three.js in a separate chunk, renders a single frame under prefers-reduced-motion and stops entirely when scrolled out of view.",
+	ShaderBackground:
+		"A real WebGL shader surface, for a hero backdrop or a section background. This is the component to reach for when a design calls for animated gradients, aurora, flowing colour or a living background: it is NOT something to approximate with CSS gradients. Set preset to aurora, waves or gradientMesh for a built-in, or to custom and write GLSL in fragmentShader. colorA/colorB/colorC override the preset's colours and accept theme variables. Drop children inside it and they render above the shader, so a headline or a whole Grid can sit on top; keep text readable with the overlay sub-component's background rather than dimming the shader. It costs one WebGL context out of about six on a page, loads three.js in a separate chunk so pages without it pay nothing, and falls back to the poster image or fallbackColor where WebGL is unavailable. It renders a single frame under prefers-reduced-motion and stops rendering entirely when scrolled out of view. When writing a custom shader, declare every uniform you use in the GLSL: uTime, uResolution, uPointer and uProgress are bound for you but their declarations are not added for you.",
 	ArrayRepeater:
 		'Repeats child components for each item in a bound array. Supports add, delete, and reorder operations on list data.',
 	Audio:
@@ -721,6 +752,9 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 // in stylePropertiesDefinition across components.
 
 const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
+	canvasHolder: 'The WebGL canvas holder, filling the component box',
+	poster: 'Fallback image shown when WebGL is unavailable or the context is lost',
+	overlay: 'A tint layer above the canvas and below any children; use it to keep text readable',
 	viewport: 'Scrolling area inside the tree root',
 	nodeContainer: 'Wrapper for one node and its children; the panel frame in the accordion design',
 	nodeRow: 'The clickable row for one node; the box in the org chart design',
@@ -812,6 +846,8 @@ const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
 //  ... repeated elements
 
 const COMPONENT_STRUCTURES: Record<string, string> = {
+	ShaderBackground: '[container(canvas) | poster] → overlay → content[children...]',
+	ParticleField: '[container(canvas) | poster] → overlay → content[children...]',
 	BlueprintEditor:
 		'boardHeader[boardTitle + boardDescription] → emptyState? → lensRow[lensLabel + lensChip[lensChipCount?]...] → band[bandHeading + bandSubLine? → rail[ railColumn[ columnHeader[columnIcon + columnName + columnRollup + columnMenu?] → planCard[cardTitle + cardDescription? + statusMark[statusDot]? + cardMenu? → cardDetail[fieldRow[fieldLabel + fieldValue + fieldHint?]... + optionChipRow[optionChip...]? + previewFrame[previewBody + previewCaption]? + actionRow[actionButton...]]?]... → addCardBox? ]... → addColumnBox? ]]...',
 	Tree:
