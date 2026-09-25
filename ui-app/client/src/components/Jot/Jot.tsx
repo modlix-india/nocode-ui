@@ -160,7 +160,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Jots', pageName: 'jot' }],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

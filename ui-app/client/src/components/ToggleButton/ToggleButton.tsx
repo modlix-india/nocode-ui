@@ -177,7 +177,7 @@ const component: Component = {
 	},
 	stylePseudoStates: ['hover'],
 	sections: [{ name: 'Toggle Buttons', pageName: 'togglebuttons' }],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

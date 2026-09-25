@@ -166,7 +166,7 @@ const component: Component = {
 		name: 'ProgressBar',
 	},
 	sections: [{ name: 'Default Progress Bar', pageName: 'progressBar' }],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

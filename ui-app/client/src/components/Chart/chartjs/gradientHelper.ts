@@ -135,10 +135,8 @@ export function createCanvasGradient(
 	} else {
 		const centerX = (chartArea.left + chartArea.right) / 2;
 		const centerY = (chartArea.top + chartArea.bottom) / 2;
-		const radius = Math.max(
-			chartArea.right - chartArea.left,
-			chartArea.bottom - chartArea.top,
-		) / 2;
+		const radius =
+			Math.max(chartArea.right - chartArea.left, chartArea.bottom - chartArea.top) / 2;
 
 		canvasGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
 	}

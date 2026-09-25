@@ -44,9 +44,10 @@ function countSteps(logs: LogEntry[]): number {
 function getRootFunctionName(execution: any): string {
 	// Get from definitions - the first definition is typically the root function
 	// Handle both Map (from DebugCollector) and plain object (from postMessage)
-	const definitions = execution.definitions instanceof Map
-		? execution.definitions
-		: new Map(Object.entries(execution.definitions || {}));
+	const definitions =
+		execution.definitions instanceof Map
+			? execution.definitions
+			: new Map(Object.entries(execution.definitions || {}));
 
 	const definitionKeys = Array.from(definitions.keys());
 	if (definitionKeys.length > 0) {
@@ -81,10 +82,14 @@ function getEventName(executionId: string): string {
 // Get icon class for device type
 function getDeviceIcon(device: string) {
 	switch (device.toUpperCase()) {
-		case 'DESKTOP': return <DesktopIcon isActive={true} />;
-		case 'TABLET': return <TabletIcon isActive={true} />;
-		case 'MOBILE': return <MobileIcon isActive={true} />;
-		default: return <></>;
+		case 'DESKTOP':
+			return <DesktopIcon isActive={true} />;
+		case 'TABLET':
+			return <TabletIcon isActive={true} />;
+		case 'MOBILE':
+			return <MobileIcon isActive={true} />;
+		default:
+			return <></>;
 	}
 }
 
@@ -92,7 +97,7 @@ interface PageEditorDebugWindowProps {
 	executions: any[]; // Flattened execution messages from all devices
 	onClose: () => void;
 	onClearAll: () => void;
-	slaveStore: {desktop: any, tablet: any, mobile: any};
+	slaveStore: { desktop: any; tablet: any; mobile: any };
 	// The editor's current page definition. The slave no longer re-sends the page
 	// definition per execution (it was the main memory leak); the editor supplies its own.
 	editPageDefinition?: any;
@@ -100,7 +105,15 @@ interface PageEditorDebugWindowProps {
 	personalizationPath: string | undefined;
 }
 
-export default function PageEditorDebugWindow({ executions: propsExecutions, onClose, onClearAll, slaveStore, editPageDefinition, savePersonalization, personalizationPath }: PageEditorDebugWindowProps) {
+export default function PageEditorDebugWindow({
+	executions: propsExecutions,
+	onClose,
+	onClearAll,
+	slaveStore,
+	editPageDefinition,
+	savePersonalization,
+	personalizationPath,
+}: PageEditorDebugWindowProps) {
 	if (!UI_FUN_REPO) UI_FUN_REPO = new UIFunctionRepository();
 	if (!UI_SCHEMA_REPO) UI_SCHEMA_REPO = new UISchemaRepository();
 
@@ -216,30 +229,36 @@ export default function PageEditorDebugWindow({ executions: propsExecutions, onC
 		return { grouped, sortedDevices };
 	}, [executions]);
 
-	const handleClearAll = useCallback((e: React.MouseEvent) => {
-		e.stopPropagation();
-		onClearAll();
-	}, [onClearAll]);
+	const handleClearAll = useCallback(
+		(e: React.MouseEvent) => {
+			e.stopPropagation();
+			onClearAll();
+		},
+		[onClearAll],
+	);
 
-	const handleSelectExecution = useCallback((exec: ExecutionSummary) => {
-		// Find the full execution data
-		const fullExec = propsExecutions.find(e => e.executionId === exec.executionId);
-		if (!fullExec) return;
+	const handleSelectExecution = useCallback(
+		(exec: ExecutionSummary) => {
+			// Find the full execution data
+			const fullExec = propsExecutions.find(e => e.executionId === exec.executionId);
+			if (!fullExec) return;
 
-		setSelectedExecution(exec.executionId);
+			setSelectedExecution(exec.executionId);
 
-		// Check if we have definitions
-		const definitionsObj = fullExec.definitions || {};
-		const definitionKeys = Object.keys(definitionsObj);
+			// Check if we have definitions
+			const definitionsObj = fullExec.definitions || {};
+			const definitionKeys = Object.keys(definitionsObj);
 
-		if (definitionKeys.length > 0) {
-			// Set the first function as selected
-			setSelectedFunctionName(definitionKeys[0]);
-			setShowEditor(true);
-		} else {
-			setShowEditor(false);
-		}
-	}, [propsExecutions]);
+			if (definitionKeys.length > 0) {
+				// Set the first function as selected
+				setSelectedFunctionName(definitionKeys[0]);
+				setShowEditor(true);
+			} else {
+				setShowEditor(false);
+			}
+		},
+		[propsExecutions],
+	);
 
 	const handleCloseEditor = useCallback(() => {
 		setShowEditor(false);
@@ -282,137 +301,188 @@ export default function PageEditorDebugWindow({ executions: propsExecutions, onC
 		if (!showStore || !selectedExecutionData) return null;
 		const deviceType = selectedExecutionData.screenType?.toLowerCase();
 		switch (deviceType) {
-			case 'desktop': return slaveStore?.desktop;
-			case 'tablet': return slaveStore?.tablet;
-			case 'mobile': return slaveStore?.mobile;
-			default: return null;
+			case 'desktop':
+				return slaveStore?.desktop;
+			case 'tablet':
+				return slaveStore?.tablet;
+			case 'mobile':
+				return slaveStore?.mobile;
+			default:
+				return null;
 		}
 	}, [showStore, selectedExecutionData, slaveStore]);
 
 	// Get title for the store panel based on device
 	const storePanelTitle = useMemo(() => {
 		if (!selectedExecutionData) return 'Store';
-		const deviceType = selectedExecutionData.screenType.substring(0,1).toUpperCase() + 
-		selectedExecutionData.screenType.substring(1);
+		const deviceType =
+			selectedExecutionData.screenType.substring(0, 1).toUpperCase() +
+			selectedExecutionData.screenType.substring(1);
 		return `${deviceType} Store`;
 	}, [selectedExecutionData]);
 
 	// Store panel component
-	const storeContainer = showStore && selectedExecutionData ? (
-		<StorePanel
-			storeData={currentStoreData?.store}
-			onClose={() => setShowStore(false)}
-			title={storePanelTitle}
-			initialKeyFilter={storeKeyFilter}
-			onKeyFilterChange={setStoreKeyFilter}
-		/>
-	) : null;
+	const storeContainer =
+		showStore && selectedExecutionData ? (
+			<StorePanel
+				storeData={currentStoreData?.store}
+				onClose={() => setShowStore(false)}
+				title={storePanelTitle}
+				initialKeyFilter={storeKeyFilter}
+				onKeyFilterChange={setStoreKeyFilter}
+			/>
+		) : null;
 
 	// Show editor view if an execution is selected
 	if (showEditor && selectedExecutionData) {
 		return (
 			<>
 				<div className="_popupMenuBackground" onClick={handleCloseEditor}>
-					<div className='_codeEditor show'>
-					<div className={`_codeEditorContent ${fullScreen ? '_fullScreen' : ''}`} onClick={e => e.stopPropagation()}>
-						<div className="_executionListHeader">
-						<h3>
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20v-9"></path><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"></path><path d="M14.12 3.88 16 2"></path><path d="M21 21a4 4 0 0 0-3.81-4"></path><path d="M21 5a4 4 0 0 1-3.55 3.97"></path><path d="M22 13h-4"></path><path d="M3 21a4 4 0 0 1 3.81-4"></path><path d="M3 5a4 4 0 0 0 3.55 3.97"></path><path d="M6 13H2"></path><path d="m8 2 1.88 1.88"></path><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"></path></svg>
-							Execution: {getRootFunctionName(selectedExecutionData)}
-						</h3>
-						<div className="_executionListActions">
-							<button
-								className={`_iconButton _debugButtons ${showStore ? '_active' : ''}`}
-								onClick={() => setShowStore(!showStore)}
-								title={showStore ? 'Hide Store' : 'View Store'}
-							>
-								<i className="fa fa-database" />
-							</button>
-							<button
-								className="_iconButton _debugButtons"
-								onClick={handleCloseEditor}
-								title="Back to list"
-							>
-								<i className="fa fa-arrow-left" />
-							</button>
-							<button
-								className="_iconButton _debugButtons"
-								onClick={() => setFullScreen(!fullScreen)}
-								title={fullScreen ? "Minimize" : "Maximize"}
-							>
-								<i className={`fa fa-solid ${fullScreen ? 'fa-down-left-and-up-right-to-center' : 'fa-up-right-and-down-left-from-center'}`} />
-							</button>
-							<button
-								className="_closeButton"
-								onClick={onClose}
-								title="Close"
-							>
-								×
-							</button>
-						</div>
-					</div>
+					<div className="_codeEditor show">
+						<div
+							className={`_codeEditorContent ${fullScreen ? '_fullScreen' : ''}`}
+							onClick={e => e.stopPropagation()}
+						>
+							<div className="_executionListHeader">
+								<h3>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="24"
+										height="24"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									>
+										<path d="M12 20v-9"></path>
+										<path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"></path>
+										<path d="M14.12 3.88 16 2"></path>
+										<path d="M21 21a4 4 0 0 0-3.81-4"></path>
+										<path d="M21 5a4 4 0 0 1-3.55 3.97"></path>
+										<path d="M22 13h-4"></path>
+										<path d="M3 21a4 4 0 0 1 3.81-4"></path>
+										<path d="M3 5a4 4 0 0 0 3.55 3.97"></path>
+										<path d="M6 13H2"></path>
+										<path d="m8 2 1.88 1.88"></path>
+										<path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"></path>
+									</svg>
+									Execution: {getRootFunctionName(selectedExecutionData)}
+								</h3>
+								<div className="_executionListActions">
+									<button
+										className={`_iconButton _debugButtons ${showStore ? '_active' : ''}`}
+										onClick={() => setShowStore(!showStore)}
+										title={showStore ? 'Hide Store' : 'View Store'}
+									>
+										<i className="fa fa-database" />
+									</button>
+									<button
+										className="_iconButton _debugButtons"
+										onClick={handleCloseEditor}
+										title="Back to list"
+									>
+										<i className="fa fa-arrow-left" />
+									</button>
+									<button
+										className="_iconButton _debugButtons"
+										onClick={() => setFullScreen(!fullScreen)}
+										title={fullScreen ? 'Minimize' : 'Maximize'}
+									>
+										<i
+											className={`fa fa-solid ${fullScreen ? 'fa-down-left-and-up-right-to-center' : 'fa-up-right-and-down-left-from-center'}`}
+										/>
+									</button>
+									<button
+										className="_closeButton"
+										onClick={onClose}
+										title="Close"
+									>
+										×
+									</button>
+								</div>
+							</div>
 
-					{/* Function selector when multiple definitions exist */}
-					{availableFunctions.length > 1 && (
-						<div className="_debugFunctionSelector">
-							{availableFunctions.map(funcName => (
-								<a
-									key={funcName}
-									className={`_debugFunctionTab ${funcName === selectedFunctionName ? '_selected' : ''}`}
-									onClick={() => setSelectedFunctionName(funcName)}
-								>
-									{funcName}
-								</a>
-							))}
-						</div>
-					)}
-
-					<div className="_debugEditorContainer">
-						<Suspense fallback={<div className="_debugLoading">Loading editor...</div>}>
-							{selectedDefinition ? (
-								<LazyKIRunEditor
-									context={{
-										pageName: getDataFromPath('Store.urlDetails.pageName', []) || '',
-										shellPageName: getDataFromPath('Store.urlDetails.pageName', []) || '',
-										level: 0,
-									}}
-									pageDefinition={editPageDefinition}
-									locationHistory={selectedExecutionData.locationHistory || []}
-									definition={{
-										key: uuid,
-										name: 'Code Editor',
-										type: 'KIRunEditor',
-										properties: {
-											editorType: { value: 'page' },
-										},
-										bindingPath2: {
-											type: 'VALUE',
-											value: `${personalizationPath}.debug.kirunEditor`,
-										},
-									}}
-									debugViewMode={true}
-									executionLog={selectedExecutionData}
-									functionRepository={functionRepository}
-									schemaRepository={schemaRepository}
-									tokenValueExtractors={
-										(globalThis as any).debugContext?.[selectedExecution!]?.tokenValueExtractors
-									}
-									stores={['Store', 'Page', 'Theme', 'LocalStore']}
-									functionDefinition={selectedDefinition}
-									onChangePersonalizationFunction={savePersonalization}
-								/>
-							) : (
-								<div className="_debugNoDefinition">
-									<i className="fa fa-info-circle" />
-									<span>No function definition available for this execution</span>
+							{/* Function selector when multiple definitions exist */}
+							{availableFunctions.length > 1 && (
+								<div className="_debugFunctionSelector">
+									{availableFunctions.map(funcName => (
+										<a
+											key={funcName}
+											className={`_debugFunctionTab ${funcName === selectedFunctionName ? '_selected' : ''}`}
+											onClick={() => setSelectedFunctionName(funcName)}
+										>
+											{funcName}
+										</a>
+									))}
 								</div>
 							)}
-						</Suspense>
-						{storeContainer}
-					</div>
+
+							<div className="_debugEditorContainer">
+								<Suspense
+									fallback={
+										<div className="_debugLoading">Loading editor...</div>
+									}
+								>
+									{selectedDefinition ? (
+										<LazyKIRunEditor
+											context={{
+												pageName:
+													getDataFromPath(
+														'Store.urlDetails.pageName',
+														[],
+													) || '',
+												shellPageName:
+													getDataFromPath(
+														'Store.urlDetails.pageName',
+														[],
+													) || '',
+												level: 0,
+											}}
+											pageDefinition={editPageDefinition}
+											locationHistory={
+												selectedExecutionData.locationHistory || []
+											}
+											definition={{
+												key: uuid,
+												name: 'Code Editor',
+												type: 'KIRunEditor',
+												properties: {
+													editorType: { value: 'page' },
+												},
+												bindingPath2: {
+													type: 'VALUE',
+													value: `${personalizationPath}.debug.kirunEditor`,
+												},
+											}}
+											debugViewMode={true}
+											executionLog={selectedExecutionData}
+											functionRepository={functionRepository}
+											schemaRepository={schemaRepository}
+											tokenValueExtractors={
+												(globalThis as any).debugContext?.[
+													selectedExecution!
+												]?.tokenValueExtractors
+											}
+											stores={['Store', 'Page', 'Theme', 'LocalStore']}
+											functionDefinition={selectedDefinition}
+											onChangePersonalizationFunction={savePersonalization}
+										/>
+									) : (
+										<div className="_debugNoDefinition">
+											<i className="fa fa-info-circle" />
+											<span>
+												No function definition available for this execution
+											</span>
+										</div>
+									)}
+								</Suspense>
+								{storeContainer}
+							</div>
+						</div>
 					</div>
 				</div>
-			</div>
 			</>
 		);
 	}
@@ -421,68 +491,103 @@ export default function PageEditorDebugWindow({ executions: propsExecutions, onC
 		<>
 			<div className="_popupMenuBackground" onClick={onClose}>
 				<div className="_executionListMenu" onClick={e => e.stopPropagation()}>
-				<div className="_executionListHeader">
-					<h3>
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20v-9"></path><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"></path><path d="M14.12 3.88 16 2"></path><path d="M21 21a4 4 0 0 0-3.81-4"></path><path d="M21 5a4 4 0 0 1-3.55 3.97"></path><path d="M22 13h-4"></path><path d="M3 21a4 4 0 0 1 3.81-4"></path><path d="M3 5a4 4 0 0 0 3.55 3.97"></path><path d="M6 13H2"></path><path d="m8 2 1.88 1.88"></path><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"></path></svg>
-						Debug Executions
-					</h3>
-					<div className="_executionListActions">
-						<button
-							className="_iconButton _debugButtons"
-							onClick={handleClearAll}
-							title="Clear All Executions"
-						>
-							<i className="fa fa-trash" />
-						</button>
-						<button
-							className="_closeButton"
-							onClick={onClose}
-							title="Close"
-						>
-							×
-						</button>
+					<div className="_executionListHeader">
+						<h3>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<path d="M12 20v-9"></path>
+								<path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"></path>
+								<path d="M14.12 3.88 16 2"></path>
+								<path d="M21 21a4 4 0 0 0-3.81-4"></path>
+								<path d="M21 5a4 4 0 0 1-3.55 3.97"></path>
+								<path d="M22 13h-4"></path>
+								<path d="M3 21a4 4 0 0 1 3.81-4"></path>
+								<path d="M3 5a4 4 0 0 0 3.55 3.97"></path>
+								<path d="M6 13H2"></path>
+								<path d="m8 2 1.88 1.88"></path>
+								<path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"></path>
+							</svg>
+							Debug Executions
+						</h3>
+						<div className="_executionListActions">
+							<button
+								className="_iconButton _debugButtons"
+								onClick={handleClearAll}
+								title="Clear All Executions"
+							>
+								<i className="fa fa-trash" />
+							</button>
+							<button className="_closeButton" onClick={onClose} title="Close">
+								×
+							</button>
+						</div>
+					</div>
+					<div className="_executionListContent">
+						{executions.length === 0 ? (
+							<div className="_emptyState">
+								<i
+									className="fa fa-info-circle"
+									style={{ fontSize: '24px', marginBottom: '8px' }}
+								/>
+								<div>No executions recorded</div>
+							</div>
+						) : (
+							executionsByDevice.sortedDevices.map(device => (
+								<div key={device} className="_deviceGroup">
+									<div className="_deviceHeader">
+										{getDeviceIcon(device)}
+										<span>{device.toUpperCase()}</span>
+										<span className="_deviceCount">
+											{executionsByDevice.grouped.get(device)?.length || 0}
+										</span>
+									</div>
+									{executionsByDevice.grouped.get(device)?.map(exec => (
+										<div
+											key={exec.executionId}
+											className="_executionListItem"
+											onClick={() => handleSelectExecution(exec)}
+										>
+											<span
+												className={`_status ${exec.errored ? '_error' : '_success'}`}
+											>
+												{exec.errored ? '✗' : '✓'}
+											</span>
+											<div className="_executionInfo">
+												<div className="_functionName">
+													{exec.functionName}
+												</div>
+												<div className="_eventName">
+													Event: {exec.eventName}
+												</div>
+											</div>
+											<div className="_executionMeta">
+												<span className="_timestamp">
+													{formatTime(exec.startTime)}
+												</span>
+												<span className="_duration">
+													{formatDuration(exec.duration)}
+												</span>
+												<span className="_steps">
+													{exec.stepCount} steps
+												</span>
+											</div>
+										</div>
+									))}
+								</div>
+							))
+						)}
 					</div>
 				</div>
-				<div className="_executionListContent">
-					{executions.length === 0 ? (
-						<div className="_emptyState">
-							<i className="fa fa-info-circle" style={{ fontSize: '24px', marginBottom: '8px' }} />
-							<div>No executions recorded</div>
-						</div>
-					) : (
-						executionsByDevice.sortedDevices.map(device => (
-							<div key={device} className="_deviceGroup">
-								<div className="_deviceHeader">
-									{getDeviceIcon(device)}
-									<span>{device.toUpperCase()}</span>
-									<span className="_deviceCount">{executionsByDevice.grouped.get(device)?.length || 0}</span>
-								</div>
-								{executionsByDevice.grouped.get(device)?.map(exec => (
-									<div
-										key={exec.executionId}
-										className="_executionListItem"
-										onClick={() => handleSelectExecution(exec)}
-									>
-										<span className={`_status ${exec.errored ? '_error' : '_success'}`}>
-											{exec.errored ? '✗' : '✓'}
-										</span>
-										<div className="_executionInfo">
-											<div className="_functionName">{exec.functionName}</div>
-											<div className="_eventName">Event: {exec.eventName}</div>
-										</div>
-										<div className="_executionMeta">
-											<span className="_timestamp">{formatTime(exec.startTime)}</span>
-											<span className="_duration">{formatDuration(exec.duration)}</span>
-											<span className="_steps">{exec.stepCount} steps</span>
-										</div>
-									</div>
-								))}
-							</div>
-						))
-					)}
-				</div>
 			</div>
-		</div>
 		</>
 	);
 }

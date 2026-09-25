@@ -23,7 +23,11 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 
 	if (/^https:\/\/((www\.)?youtube.com\/(watch|embed)|youtu.be\/)/i.test(line)) {
 		({ lineNumber, comp } = parseYoutubeEmbedding(params));
-	} else if (lineNumber + 1 < lines.length && nextLine.includes('|') && TABLE_REGEX.test(nextLine)) {
+	} else if (
+		lineNumber + 1 < lines.length &&
+		nextLine.includes('|') &&
+		TABLE_REGEX.test(nextLine)
+	) {
 		({ lineNumber, comp } = parseTable(params));
 	} else if (line.startsWith('```')) {
 		({ lineNumber, comp } = parseCodeBlock(params));

@@ -94,7 +94,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Tabs', pageName: 'tab' }],
-		stylePropertiesForTheme: stylePropertiesForTheme,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	propertiesForTheme: [designType, colorScheme],
 };
 

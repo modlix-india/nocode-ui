@@ -36,7 +36,7 @@ const component: Component = {
 		bindingPath: { name: 'Markdown Text' },
 	},
 	sections: [],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

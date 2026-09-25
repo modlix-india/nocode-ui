@@ -20,7 +20,9 @@ describe('UrlDetailsExtractor', () => {
 
 		expect(getDataFromPath('Store.urlDetails.pageName', [])).toBe('newHome');
 		expect(
-			UrlDetailsExtractor.getForContext('newHome').getValue('Url.queryParameters.utm_campaign'),
+			UrlDetailsExtractor.getForContext('newHome').getValue(
+				'Url.queryParameters.utm_campaign',
+			),
 		).toBe('test1');
 	});
 
@@ -62,9 +64,9 @@ describe('UrlDetailsExtractor', () => {
 
 		// The shell, the page routing resolved to, and a subpage.
 		for (const context of [GLOBAL_CONTEXT_NAME, 'somePage_b', 'someSubPage'])
-			expect(UrlDetailsExtractor.getForContext(context).getValue('Url.queryParameters.a')).toBe(
-				'1',
-			);
+			expect(
+				UrlDetailsExtractor.getForContext(context).getValue('Url.queryParameters.a'),
+			).toBe('1');
 	});
 
 	it('does not lose a query parameter to a context asking after the fact', () => {
@@ -135,7 +137,10 @@ describe('UrlDetailsExtractor', () => {
 		});
 
 		it('replaces a page entry when that page is the URL again', () => {
-			UrlDetailsExtractor.addDetails({ queryParameters: { stage: 'WON' }, pageName: 'deals' });
+			UrlDetailsExtractor.addDetails({
+				queryParameters: { stage: 'WON' },
+				pageName: 'deals',
+			});
 			UrlDetailsExtractor.addDetails({ queryParameters: {}, pageName: 'deals' });
 
 			expect(getDataFromPath('Store.urlData.deals.queryParameters', [])).toEqual({});

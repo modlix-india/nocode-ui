@@ -778,7 +778,7 @@ const COMPONENT_STYLE_GROUP_PROPERTIES: { [key: string]: ComponentStylePropertyG
 			'gridColumnStart',
 			'gridColumnEnd',
 			'gridRowStart',
-			'gridRowEnd',			
+			'gridRowEnd',
 		],
 	},
 	image: {

@@ -87,6 +87,8 @@ describe('components without an expression binding', () => {
 	it('records nothing when there is no binding at all', () => {
 		const none: any = { key: 'x', type: 'Text', properties: {} };
 		const pe = PageStoreExtractor.getForContext(PAGE);
-		expect(createNewState(none, propertyDefs, {} as any, [], [pe as any]).bindingPaths).toBeUndefined();
+		expect(
+			createNewState(none, propertyDefs, {} as any, [], [pe as any]).bindingPaths,
+		).toBeUndefined();
 	});
 });

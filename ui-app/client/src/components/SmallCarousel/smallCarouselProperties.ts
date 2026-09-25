@@ -26,7 +26,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'showArrowButtonsOnHover',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Arrow Buttons on hover',
-		description: 'This property display arrow buttons, i.e; arrows buttons, when the carousel is hovered upon.',
+		description:
+			'This property display arrow buttons, i.e; arrows buttons, when the carousel is hovered upon.',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: false,
 	},
@@ -192,8 +193,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: '_insideNavButton',
 		enumValues: [
-			{ name: '_insideNavButton', displayName: 'Inside', description: 'Slide navigations button inside placement' },
-			{ name: '_outsideNavButton', displayName: 'Outside', description: 'Slide navigations button outside placement' },
+			{
+				name: '_insideNavButton',
+				displayName: 'Inside',
+				description: 'Slide navigations button inside placement',
+			},
+			{
+				name: '_outsideNavButton',
+				displayName: 'Outside',
+				description: 'Slide navigations button outside placement',
+			},
 		],
 	},
 	{
@@ -205,8 +214,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: '_bottomNavButton',
 		enumValues: [
-			{ name: '_topNavButton', displayName: 'Top', description: 'slide navigations button positioned on top' },
-			{ name: '_bottomNavButton', displayName: 'Bottom', description: 'slide navigations button positioned on bottom' },
+			{
+				name: '_topNavButton',
+				displayName: 'Top',
+				description: 'slide navigations button positioned on top',
+			},
+			{
+				name: '_bottomNavButton',
+				displayName: 'Bottom',
+				description: 'slide navigations button positioned on bottom',
+			},
 		],
 	},
 	{
@@ -218,9 +235,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: '_middleNavigation',
 		enumValues: [
-			{ name: '_rightNavigation', displayName: 'Right', description: 'slide navigations button positioned right' },
-			{ name: '_middleNavigation', displayName: 'Middle', description: 'slide navigations button positioned Middle' },
-			{ name: '_leftNavigation', displayName: 'Left', description: 'slide navigations button positioned Left' },
+			{
+				name: '_rightNavigation',
+				displayName: 'Right',
+				description: 'slide navigations button positioned right',
+			},
+			{
+				name: '_middleNavigation',
+				displayName: 'Middle',
+				description: 'slide navigations button positioned Middle',
+			},
+			{
+				name: '_leftNavigation',
+				displayName: 'Left',
+				description: 'slide navigations button positioned Left',
+			},
 		],
 	},
 	{
@@ -232,8 +261,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: '_insideArrow',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
-			{ name: '_insideArrow', displayName: 'Inside', description: 'Arrow navigations button positioned inside' },
-			{ name: '_outsideArrow', displayName: 'Outside', description: 'Arrow navigations button positioned outside' },
+			{
+				name: '_insideArrow',
+				displayName: 'Inside',
+				description: 'Arrow navigations button positioned inside',
+			},
+			{
+				name: '_outsideArrow',
+				displayName: 'Outside',
+				description: 'Arrow navigations button positioned outside',
+			},
 		],
 	},
 	{
@@ -244,9 +281,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: '_centerArrow',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
-			{ name: '_topArrow', displayName: 'Top', description: 'Arrows are placed on the top in the vertical slider and in horizontal slider they are moved to the top based on the horizontal placement' },
-			{ name: '_centerArrow', displayName: 'Center', description: 'Arrows are placed on the either side of the vertical slider and in horizontal slider they are moved to the center based on the horizontal placement' },
-			{ name: '_bottomArrow', displayName: 'Bottom', description: 'Arrows are placed on the bottom in the vertical slider and in horizontal slider they are moved to the bottom based on the horizontal placement' },
+			{
+				name: '_topArrow',
+				displayName: 'Top',
+				description:
+					'Arrows are placed on the top in the vertical slider and in horizontal slider they are moved to the top based on the horizontal placement',
+			},
+			{
+				name: '_centerArrow',
+				displayName: 'Center',
+				description:
+					'Arrows are placed on the either side of the vertical slider and in horizontal slider they are moved to the center based on the horizontal placement',
+			},
+			{
+				name: '_bottomArrow',
+				displayName: 'Bottom',
+				description:
+					'Arrows are placed on the bottom in the vertical slider and in horizontal slider they are moved to the bottom based on the horizontal placement',
+			},
 		],
 	},
 	{
@@ -257,16 +309,32 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: '_middleArrow',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
-			{ name: '_leftArrow', displayName: 'Left', description: 'Arrows are placed on the left in the horizontal slider and in vertical slider they are moved to the left based on the vertical placement' },
-			{ name: '_middleArrow', displayName: 'Middle', description: 'Arrows are placed on the either side of the horizontal slider and in vertical slider they are moved to the middle based on the vertical placement' },
-			{ name: '_rightArrow', displayName: 'Right', description: 'Arrows are placed on the right in the horizontal slider and in vertical slider they are moved to the right based on the vertical placement' },
+			{
+				name: '_leftArrow',
+				displayName: 'Left',
+				description:
+					'Arrows are placed on the left in the horizontal slider and in vertical slider they are moved to the left based on the vertical placement',
+			},
+			{
+				name: '_middleArrow',
+				displayName: 'Middle',
+				description:
+					'Arrows are placed on the either side of the horizontal slider and in vertical slider they are moved to the middle based on the vertical placement',
+			},
+			{
+				name: '_rightArrow',
+				displayName: 'Right',
+				description:
+					'Arrows are placed on the right in the horizontal slider and in vertical slider they are moved to the right based on the vertical placement',
+			},
 		],
 	},
 	{
 		name: 'showNavigationControlsOnHover',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show navigation controls on hover',
-		description: 'This property display navigation controls, i.e; navigation and buttons, when the carousel is hovered upon.',
+		description:
+			'This property display navigation controls, i.e; navigation and buttons, when the carousel is hovered upon.',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
@@ -296,8 +364,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		...COMMON_COMPONENT_PROPERTIES.datatype,
 		enumValues: [
-			{ name: 'LIST_OF_STRINGS', displayName: 'List of strings', description: 'data has an array of strings' },
-			{ name: 'LIST_OF_OBJECTS', displayName: 'List of objects', description: 'data has an array of objects' },
+			{
+				name: 'LIST_OF_STRINGS',
+				displayName: 'List of strings',
+				description: 'data has an array of strings',
+			},
+			{
+				name: 'LIST_OF_OBJECTS',
+				displayName: 'List of objects',
+				description: 'data has an array of objects',
+			},
 		],
 	},
 	{
@@ -417,12 +493,12 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
-	indicatorNavBtnActive: [		
+	indicatorNavBtnActive: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-	],	
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

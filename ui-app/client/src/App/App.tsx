@@ -208,13 +208,8 @@ export function App() {
 				undefined,
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						const {
-							auth,
-							application,
-							isApplicationLoadFailed,
-							theme,
-							selectedTheme,
-						} = await getAppDefinition();
+						const { auth, application, isApplicationLoadFailed, theme, selectedTheme } =
+							await getAppDefinition();
 						setData(`${STORE_PREFIX}.application`, application);
 						setData(`${STORE_PREFIX}.auth`, auth);
 						setData(`${STORE_PREFIX}.isApplicationLoadFailed`, isApplicationLoadFailed);

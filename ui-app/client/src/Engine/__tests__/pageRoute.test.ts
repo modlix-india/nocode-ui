@@ -21,7 +21,12 @@ const ROUTING: PageRouting = {
 				type: 'PERSONALIZATION',
 				page: 'pricing_dentists',
 				conditions: {
-					c: { source: 'QUERY', field: 'utm_campaign', operator: 'EQUALS', value: 'dentists' },
+					c: {
+						source: 'QUERY',
+						field: 'utm_campaign',
+						operator: 'EQUALS',
+						value: 'dentists',
+					},
 				},
 			},
 			r2: { order: 1, type: 'SPLIT', variants: { a: { page: 'pricing_a' } } },
@@ -145,9 +150,9 @@ describe('query parameters across a visit', () => {
 
 	it('lets the URL showing now win over a value carried from an earlier page', () => {
 		store({ pageRouting: ROUTING, defaultPage: 'home' }, undefined, arrivedOnLanding);
-		expect(
-			resolvePageForLocation(details('pricing', { utm_campaign: 'clinics' })),
-		).toBe('pricing_a');
+		expect(resolvePageForLocation(details('pricing', { utm_campaign: 'clinics' }))).toBe(
+			'pricing_a',
+		);
 	});
 
 	it('is unaffected when nothing has been visited yet', () => {
@@ -335,7 +340,9 @@ describe('telling analytics which arm was drawn', () => {
 	it('makes the variant value globally unique', () => {
 		store({
 			pageRouting: {
-				pricing: { rules: { expA: { type: 'SPLIT', variants: { x: { page: 'shared' } } } } },
+				pricing: {
+					rules: { expA: { type: 'SPLIT', variants: { x: { page: 'shared' } } } },
+				},
 				offers: { rules: { expB: { type: 'SPLIT', variants: { y: { page: 'shared' } } } } },
 			},
 		});

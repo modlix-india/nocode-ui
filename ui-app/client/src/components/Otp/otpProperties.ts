@@ -36,7 +36,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		enumValues: [
 			{ name: 'NUMERIC', displayName: 'Numeric', description: 'Number values' },
 			{ name: 'ALPHABETICAL', displayName: 'Alphabetical', description: 'Alphabet values' },
-			{ name: 'ALPHANUMERIC', displayName: 'Alphanumeric', description: 'Alphanumeric values' },
+			{
+				name: 'ALPHANUMERIC',
+				displayName: 'Alphanumeric',
+				description: 'Alphanumeric values',
+			},
 			{ name: 'ANY', displayName: 'Any', description: 'Any values' },
 		],
 	},
@@ -131,7 +135,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'autoComplete',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Autocomplete type',
-		description: 'Autocomplete specifies what type or if any assistance that is provided to user while filling forms, uses same values as its html attribute.',
+		description:
+			'Autocomplete specifies what type or if any assistance that is provided to user while filling forms, uses same values as its html attribute.',
 		defaultValue: 'off',
 		group: ComponentPropertyGroup.BASIC,
 		enumValues: [

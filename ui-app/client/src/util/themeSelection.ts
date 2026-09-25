@@ -239,7 +239,9 @@ export function isSignedIn(): boolean {
  * document until the first switch, and an anonymous caller gets an empty object
  * back rather than a 401.
  */
-export async function readThemePersonalization(appCode: string | undefined): Promise<string | undefined> {
+export async function readThemePersonalization(
+	appCode: string | undefined,
+): Promise<string | undefined> {
 	const token = authToken();
 	if (!appCode || !token) return undefined;
 

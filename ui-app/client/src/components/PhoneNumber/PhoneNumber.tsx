@@ -770,7 +770,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Phone Number', pageName: '' }],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

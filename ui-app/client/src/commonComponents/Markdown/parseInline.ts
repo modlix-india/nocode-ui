@@ -56,7 +56,8 @@ export function parseInline(
 			const endIndex = actualLine.indexOf('}', index);
 			const attrs = parseAttributes(actualLine.substring(index, endIndex));
 			lineParts = spanParts[0].parts;
-			if (attrs) lineParts.push(React.createElement('span', { style: attrs.style }, spanPart.parts));
+			if (attrs)
+				lineParts.push(React.createElement('span', { style: attrs.style }, spanPart.parts));
 			i = endIndex;
 			continue;
 		}
@@ -76,16 +77,18 @@ export function parseInline(
 				lineNumber,
 				styles,
 			));
-		} else if ((actualLine[i] === '!' && i + 1 < actualLine.length && actualLine[i + 1] === '!')) {
+		} else if (
+			actualLine[i] === '!' &&
+			i + 1 < actualLine.length &&
+			actualLine[i + 1] === '!'
+		) {
 			let newI: number, endsAt: number, newFound: boolean;
-			({ i: newI, endsAt, current, found: newFound } = processSpan(
-				actualLine,
-				i,
+			({
+				i: newI,
+				endsAt,
 				current,
-				lineParts,
-				lineNumber,
-				styles,
-			));
+				found: newFound,
+			} = processSpan(actualLine, i, current, lineParts, lineNumber, styles));
 			if (newFound) {
 				lineParts = [];
 				spanParts.unshift({ start: newI, end: endsAt, parts: lineParts });
@@ -157,13 +160,18 @@ function processSpan(
 	lineNumber: number,
 	styles: any,
 ) {
-	if (actualLine[i] !== '!' || (i > 0 && actualLine[i - 1] === '\\') || i >= actualLine.length || actualLine[i + 1] !== '!') return { i, endsAt: i, current, found: false };
+	if (
+		actualLine[i] !== '!' ||
+		(i > 0 && actualLine[i - 1] === '\\') ||
+		i >= actualLine.length ||
+		actualLine[i + 1] !== '!'
+	)
+		return { i, endsAt: i, current, found: false };
 
 	let index = i + 2;
 	let found = 0;
 
-	while ((index = actualLine.indexOf("!!", index)) != -1) {
-
+	while ((index = actualLine.indexOf('!!', index)) != -1) {
 		if (index + 2 >= actualLine.length) break;
 
 		if (found == 0 && actualLine[index + 2] === '{') {

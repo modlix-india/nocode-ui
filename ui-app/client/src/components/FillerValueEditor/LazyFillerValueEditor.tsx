@@ -191,7 +191,7 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 		{ isUIFiller: boolean; sectionKey: string; sectionNumber: number } | undefined
 	>();
 
-	useEffect(() => {
+	(useEffect(() => {
 		if (!selection || !iframeRef.current) return;
 
 		const { isUIFiller, sectionKey } = selection;
@@ -212,7 +212,7 @@ export default function FillerValueEditor(props: Readonly<ComponentProps>) {
 			'*',
 		);
 	}),
-		[selection, iframeRef.current];
+		[selection, iframeRef.current]);
 
 	useEffect(() => setPopups([]), [selection?.sectionNumber]);
 

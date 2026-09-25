@@ -38,12 +38,7 @@ interface PanelCoordinates {
  * never point at a theme that has been deleted.
  */
 function ThemeSwitcher(props: Readonly<ComponentProps>) {
-	const {
-		definition,
-		locationHistory,
-		context,
-		pageDefinition,
-	} = props;
+	const { definition, locationHistory, context, pageDefinition } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
@@ -155,7 +150,15 @@ function ThemeSwitcher(props: Readonly<ComponentProps>) {
 					pageDefinition,
 				);
 		},
-		[readOnly, switching, selected, onChange, pageDefinition, context.pageName, locationHistory],
+		[
+			readOnly,
+			switching,
+			selected,
+			onChange,
+			pageDefinition,
+			context.pageName,
+			locationHistory,
+		],
 	);
 
 	const renderIcon = (entry: ThemeEntry) =>
@@ -275,10 +278,7 @@ function ThemeSwitcher(props: Readonly<ComponentProps>) {
 							style={{ ...(resolvedStyles.panel ?? {}), ...(coords ?? {}) }}
 							onClick={e => e.stopPropagation()}
 						>
-							<SubHelperComponent
-								definition={definition}
-								subComponentName="panel"
-							/>
+							<SubHelperComponent definition={definition} subComponentName="panel" />
 							{themes.map(e => option(e, e.name === active?.name, true))}
 						</div>
 					</Portal>

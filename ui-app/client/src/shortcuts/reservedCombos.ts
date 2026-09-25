@@ -117,10 +117,7 @@ function tablesFor(apple: boolean): Tables {
  * which covers the idiomatic web-app set: Mod+K, Mod+J, Mod+E, Mod+B, Mod+Enter,
  * most Mod+Shift+letter pairs, bare '/', and Alt+letter.
  */
-export function checkReserved(
-	spec: string | undefined,
-	apple?: boolean,
-): ReservedInfo | undefined {
+export function checkReserved(spec: string | undefined, apple?: boolean): ReservedInfo | undefined {
 	const useApple = apple ?? isApplePlatform();
 	const combo = parseCombo(spec, useApple);
 	if (!combo) return undefined;

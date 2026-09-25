@@ -18,8 +18,6 @@ interface Block {
 	[key: string]: any;
 }
 
-
-
 function HeadingBlock({ text, level = 1 }: { text: string; level?: number }) {
 	const Tag = `h${Math.min(level, 3)}` as keyof JSX.IntrinsicElements;
 	return <Tag className="_craftHeading">{text}</Tag>;
@@ -254,7 +252,6 @@ function CollapsibleBlock({
 	);
 }
 
-
 function MapBlock({
 	api_key,
 	map_id,
@@ -288,7 +285,9 @@ function MapBlock({
 	}
 	const { sessionId, agentEndpoint, onSend, getAuthHeaders } = context;
 	const [container, setContainer] = useState<HTMLDivElement | null>(null);
-	const [status, setStatus] = useState<'loading' | 'ready' | 'no-key' | 'error'>(api_key ? 'loading' : 'no-key');
+	const [status, setStatus] = useState<'loading' | 'ready' | 'no-key' | 'error'>(
+		api_key ? 'loading' : 'no-key',
+	);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [suggestions, setSuggestions] = useState<any[]>([]);
 	const [searching, setSearching] = useState(false);
@@ -360,7 +359,7 @@ function MapBlock({
 	useEffect(() => {
 		if (selectedLocation) {
 			const stillExists = target_areas.some(
-				loc => loc.lat === selectedLocation.lat && loc.lng === selectedLocation.lng
+				loc => loc.lat === selectedLocation.lat && loc.lng === selectedLocation.lng,
 			);
 			if (!stillExists) setSelectedLocation(null);
 		}
@@ -459,16 +458,28 @@ function MapBlock({
 		// markers from the previous area set linger.
 		const clearOverlays = () => {
 			featureListenersRef.current.forEach(l => {
-				try { l.remove(); } catch { /* layer already gone */ }
+				try {
+					l.remove();
+				} catch {
+					/* layer already gone */
+				}
 			});
 			featureListenersRef.current = [];
 			areaMarkersRef.current.forEach(m => {
-				try { m.setMap(null); } catch { /* marker already gone */ }
+				try {
+					m.setMap(null);
+				} catch {
+					/* marker already gone */
+				}
 			});
 			areaMarkersRef.current = [];
 			if (hasFeatureLayers) {
 				layerTypes.forEach(t => {
-					try { map.getFeatureLayer(t).style = null; } catch { /* unsupported layer */ }
+					try {
+						map.getFeatureLayer(t).style = null;
+					} catch {
+						/* unsupported layer */
+					}
 				});
 			}
 		};
@@ -481,7 +492,7 @@ function MapBlock({
 			// stops the loop immediately — prevents overlapping geocode floods.
 			for (const loc of target_areas) {
 				if (cancelled) return;
-				const query = loc.pincode ? `${loc.pincode}, India` : (loc.name || loc.city);
+				const query = loc.pincode ? `${loc.pincode}, India` : loc.name || loc.city;
 				if (!query) continue;
 				await new Promise<void>(resolve => {
 					geocoder.geocode({ address: query }, (results: any, gStatus: any) => {
@@ -507,25 +518,36 @@ function MapBlock({
 						const layer = map.getFeatureLayer(layerType);
 						featureListenersRef.current.push(
 							layer.addListener('click', (e: any) => {
-								const matchedLoc = e.features?.length > 0
-									? placeIdToLocMap.get(e.features[0].placeId)
-									: null;
+								const matchedLoc =
+									e.features?.length > 0
+										? placeIdToLocMap.get(e.features[0].placeId)
+										: null;
 								if (matchedLoc) setSelectedLocation(matchedLoc);
 							}),
 							layer.addListener('pointermove', (e: any) => {
-								const matchedLoc = e.features?.length > 0
-									? placeIdToLocMap.get(e.features[0].placeId)
-									: null;
+								const matchedLoc =
+									e.features?.length > 0
+										? placeIdToLocMap.get(e.features[0].placeId)
+										: null;
 								if (matchedLoc) {
-									setTooltipLines([
-										matchedLoc.pincode && `Pincode: ${matchedLoc.pincode}`,
-										matchedLoc.city && `City: ${matchedLoc.city}`,
-										matchedLoc.state && `State: ${matchedLoc.state}`,
-										matchedLoc.lat && matchedLoc.lng && `Coordinates: ${Number(matchedLoc.lat).toFixed(4)}, ${Number(matchedLoc.lng).toFixed(4)}`,
-										matchedLoc.google?.resourceName && `Google: ${matchedLoc.google.resourceName}`,
-										matchedLoc.meta?.key && `Meta Key: ${matchedLoc.meta.key}`,
-									].filter(Boolean) as string[]);
-									setTooltipPos({ x: e.domEvent.offsetX + 12, y: e.domEvent.offsetY + 12 });
+									setTooltipLines(
+										[
+											matchedLoc.pincode && `Pincode: ${matchedLoc.pincode}`,
+											matchedLoc.city && `City: ${matchedLoc.city}`,
+											matchedLoc.state && `State: ${matchedLoc.state}`,
+											matchedLoc.lat &&
+												matchedLoc.lng &&
+												`Coordinates: ${Number(matchedLoc.lat).toFixed(4)}, ${Number(matchedLoc.lng).toFixed(4)}`,
+											matchedLoc.google?.resourceName &&
+												`Google: ${matchedLoc.google.resourceName}`,
+											matchedLoc.meta?.key &&
+												`Meta Key: ${matchedLoc.meta.key}`,
+										].filter(Boolean) as string[],
+									);
+									setTooltipPos({
+										x: e.domEvent.offsetX + 12,
+										y: e.domEvent.offsetY + 12,
+									});
 								} else {
 									setTooltipLines([]);
 									setTooltipPos(null);
@@ -538,7 +560,13 @@ function MapBlock({
 						);
 						layer.style = (options: any) =>
 							placeIdsToStyle.has(options.feature.placeId)
-								? { strokeColor: '#1E88E5', strokeOpacity: 0.8, strokeWeight: 2, fillColor: '#1E88E5', fillOpacity: 0.25 }
+								? {
+										strokeColor: '#1E88E5',
+										strokeOpacity: 0.8,
+										strokeWeight: 2,
+										fillColor: '#1E88E5',
+										fillOpacity: 0.25,
+									}
 								: null;
 					} catch (err) {
 						console.warn('Feature layer', layerType, 'error:', err);
@@ -555,7 +583,13 @@ function MapBlock({
 			// POSTAL_CODE equivalent in Google Maps feature layers, so they stay pins.
 			const LAYER_COVERED_SCALES = new Set(['city', 'state', 'region', 'country']);
 			target_areas.forEach(area => {
-				if (area.pincode || LAYER_COVERED_SCALES.has(area.scale ?? '') || area.lat == null || area.lng == null) return;
+				if (
+					area.pincode ||
+					LAYER_COVERED_SCALES.has(area.scale ?? '') ||
+					area.lat == null ||
+					area.lng == null
+				)
+					return;
 				const marker = new google.maps.Marker({
 					position: { lat: Number(area.lat), lng: Number(area.lng) },
 					map,
@@ -575,9 +609,15 @@ function MapBlock({
 
 			const bounds = new google.maps.LatLngBounds();
 			let hasCoords = false;
-			if (center) { bounds.extend(center); hasCoords = true; }
+			if (center) {
+				bounds.extend(center);
+				hasCoords = true;
+			}
 			target_areas.forEach(area => {
-				if (area.lat && area.lng) { bounds.extend({ lat: area.lat, lng: area.lng }); hasCoords = true; }
+				if (area.lat && area.lng) {
+					bounds.extend({ lat: area.lat, lng: area.lng });
+					hasCoords = true;
+				}
 			});
 			if (hasCoords && target_areas.length > 0) {
 				map.fitBounds(bounds);
@@ -589,8 +629,13 @@ function MapBlock({
 			if (!cancelled) setStatus('ready');
 		};
 
-		run().catch(() => { if (!cancelled) setStatus('error'); });
-		return () => { cancelled = true; clearOverlays(); };
+		run().catch(() => {
+			if (!cancelled) setStatus('error');
+		});
+		return () => {
+			cancelled = true;
+			clearOverlays();
+		};
 		// `target_areas` is read live; `areasKey` is its stable-content proxy.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [mapReady, areasKey, map_id, centerLat, centerLng]);
@@ -614,10 +659,24 @@ function MapBlock({
 			// via its own platform lookup.
 			place_type: place.type,
 		};
-		onSend(`add targeting location ${JSON.stringify(payload)}`, undefined, `Adding location ${payload.name}...`);
+		onSend(
+			`add targeting location ${JSON.stringify(payload)}`,
+			undefined,
+			`Adding location ${payload.name}...`,
+		);
 	};
 
-	const handleDelete = (index?: number, loc?: { name?: string; pincode?: string; city?: string; state?: string; lat?: number; lng?: number }) => {
+	const handleDelete = (
+		index?: number,
+		loc?: {
+			name?: string;
+			pincode?: string;
+			city?: string;
+			state?: string;
+			lat?: number;
+			lng?: number;
+		},
+	) => {
 		if (index === undefined) return;
 		const name = loc?.name;
 		// Build rich context so the Location Agent can unambiguously identify the
@@ -657,7 +716,9 @@ function MapBlock({
 								onClick={() => handleAddLocation(sug)}
 								className="_mapSuggestionItem"
 							>
-								<span className="_mapSugName">{sug.canonical_name || sug.name}</span>
+								<span className="_mapSugName">
+									{sug.canonical_name || sug.name}
+								</span>
 								<span className="_mapSugType">{sug.type || 'Region'}</span>
 							</button>
 						))}
@@ -676,12 +737,15 @@ function MapBlock({
 						top: tooltipPos?.y ?? 0,
 					}}
 				>
-					{tooltipLines.map((line, i) => <div key={i}>{line}</div>)}
+					{tooltipLines.map((line, i) => (
+						<div key={i}>{line}</div>
+					))}
 				</div>
 				{status !== 'ready' && (
 					<div className="_mapCanvasOverlay">
 						{status === 'loading' && 'Loading interactive map...'}
-						{status === 'no-key' && 'Map unavailable (Google Maps API key not configured)'}
+						{status === 'no-key' &&
+							'Map unavailable (Google Maps API key not configured)'}
 						{status === 'error' && 'Failed to load interactive Google Map.'}
 					</div>
 				)}
@@ -694,13 +758,20 @@ function MapBlock({
 							<div className="_mapFooterName">{selectedLocation.name}</div>
 							<div className="_mapFooterMeta">
 								{[
-									selectedLocation.pincode && `Pincode: ${selectedLocation.pincode}`,
+									selectedLocation.pincode &&
+										`Pincode: ${selectedLocation.pincode}`,
 									selectedLocation.city && `City: ${selectedLocation.city}`,
 									selectedLocation.state && `State: ${selectedLocation.state}`,
-									selectedLocation.lat && selectedLocation.lng && `${Number(selectedLocation.lat).toFixed(4)}, ${Number(selectedLocation.lng).toFixed(4)}`,
-									selectedLocation.google?.resourceName && `Google: ${selectedLocation.google.resourceName}`,
-									selectedLocation.meta?.key && `Meta Key: ${selectedLocation.meta.key}`,
-								].filter(Boolean).join(' | ')}
+									selectedLocation.lat &&
+										selectedLocation.lng &&
+										`${Number(selectedLocation.lat).toFixed(4)}, ${Number(selectedLocation.lng).toFixed(4)}`,
+									selectedLocation.google?.resourceName &&
+										`Google: ${selectedLocation.google.resourceName}`,
+									selectedLocation.meta?.key &&
+										`Meta Key: ${selectedLocation.meta.key}`,
+								]
+									.filter(Boolean)
+									.join(' | ')}
 							</div>
 						</div>
 						<button
@@ -714,13 +785,17 @@ function MapBlock({
 								// between click and delete.
 								let idx = target_areas.indexOf(selectedLocation);
 								if (idx < 0) {
-									idx = target_areas.findIndex(loc => loc.name === selectedLocation.name);
+									idx = target_areas.findIndex(
+										loc => loc.name === selectedLocation.name,
+									);
 								}
 								if (idx < 0) {
 									idx = target_areas.findIndex(
 										loc =>
-											Math.abs((loc.lat ?? 0) - (selectedLocation.lat ?? 0)) < 0.0001 &&
-											Math.abs((loc.lng ?? 0) - (selectedLocation.lng ?? 0)) < 0.0001,
+											Math.abs((loc.lat ?? 0) - (selectedLocation.lat ?? 0)) <
+												0.0001 &&
+											Math.abs((loc.lng ?? 0) - (selectedLocation.lng ?? 0)) <
+												0.0001,
 									);
 								}
 								handleDelete(idx >= 0 ? idx : undefined, selectedLocation);
@@ -730,10 +805,11 @@ function MapBlock({
 						</button>
 					</div>
 				) : target_areas.length > 0 ? (
-					<div className="_mapFooterHint">Click a highlighted boundary or pin to view details and delete.</div>
+					<div className="_mapFooterHint">
+						Click a highlighted boundary or pin to view details and delete.
+					</div>
 				) : null}
 			</div>
-
 		</div>
 	);
 }
@@ -754,21 +830,10 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	map: MapBlock,
 };
 
-function CraftBlockRenderer({
-	block,
-	styleProperties,
-}: {
-	block: Block;
-	styleProperties?: any;
-}) {
+function CraftBlockRenderer({ block, styleProperties }: { block: Block; styleProperties?: any }) {
 	const Component = BLOCK_RENDERERS[block.type];
 	if (!Component) return null;
-	return (
-		<Component
-			{...block}
-			styleProperties={styleProperties}
-		/>
-	);
+	return <Component {...block} styleProperties={styleProperties} />;
 }
 
 export function CraftRenderer({

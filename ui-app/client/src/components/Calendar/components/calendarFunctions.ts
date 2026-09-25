@@ -1,6 +1,6 @@
 /**
  * Calendar functions - Barrel export for backward compatibility.
- * 
+ *
  * All functions have been reorganized into focused utility files under ../utils/
  * This file re-exports them to maintain backward compatibility with existing imports.
  */

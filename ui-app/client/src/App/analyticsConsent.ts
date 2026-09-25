@@ -202,8 +202,7 @@ export function setConsent(
 		...(categories ?? {}),
 		necessary: true,
 	};
-	const status: ConsentStatus =
-		merged.analytics || merged.marketing ? 'granted' : 'denied';
+	const status: ConsentStatus = merged.analytics || merged.marketing ? 'granted' : 'denied';
 
 	const record: ConsentRecord = {
 		status,

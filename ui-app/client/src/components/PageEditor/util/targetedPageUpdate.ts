@@ -153,4 +153,3 @@ export function addComponentToPageDefinition(
 	newPageDef.componentDefinition = newComponentDefinition;
 	return newPageDef;
 }
-

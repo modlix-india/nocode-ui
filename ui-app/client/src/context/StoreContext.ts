@@ -196,7 +196,6 @@ function scheduleSlaveStoreBroadcast() {
 }
 
 export function setData(path: string, value: any, context?: string, deleteKey?: boolean) {
-
 	if (path.endsWith('.')) path = path.substring(0, path.length - 1);
 
 	path = normalizePath(path);
@@ -342,7 +341,6 @@ export class PageStoreExtractor extends SpecialTokenValueExtractor {
  * per page the URL has named, each left alone until that page is the URL again.
  */
 export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
-
 	private readonly myStore: any;
 
 	constructor(myStore: any = _store) {
@@ -421,8 +419,7 @@ export class UrlDetailsExtractor extends SpecialTokenValueExtractor {
 export const urlDetailsExtractor = new UrlDetailsExtractor();
 
 const pathTransformer = (e: string, pageName: string | undefined) => {
-	if (pageName && e.startsWith('Page.'))
-		return 'Store.pageData.' + pageName + e.substring(4);
+	if (pageName && e.startsWith('Page.')) return 'Store.pageData.' + pageName + e.substring(4);
 	else if (e.startsWith('Url.')) return 'Store.urlDetails' + e.substring(3);
 	if (e.startsWith(fillerExtractor.getPrefix()))
 		return 'Store.application.properties.fillerValues.' + e.substring(7);

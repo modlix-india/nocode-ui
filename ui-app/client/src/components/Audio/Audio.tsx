@@ -629,7 +629,7 @@ const component: Component = {
 	styleComponent: AudioStyle,
 	styleDefaults: styleDefaults,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };
