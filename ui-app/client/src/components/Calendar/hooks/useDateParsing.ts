@@ -46,4 +46,3 @@ export function useDateParsingWithFormats(displayDateFormat: string, storageForm
 		storageFormat: storageFormat ?? displayDateFormat,
 	};
 }
-

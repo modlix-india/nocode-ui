@@ -15,7 +15,6 @@ function LoadLazyTextList(props: Readonly<ComponentProps>) {
 	);
 }
 
-
 const component: Component = {
 	name: 'TextList',
 	displayName: 'Text List',
@@ -35,7 +34,7 @@ const component: Component = {
 			text: { value: 'Text1,Text2,Text3' },
 		},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

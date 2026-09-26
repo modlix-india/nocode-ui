@@ -83,7 +83,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	const parseIncomingDate = useDateParsing(displayDateFormat, storageFormat);
 
 	const isEndDate = isRangeType && dateType === 'endDate';
-	
+
 	// Memoize currentDateValue to ensure React detects changes properly
 	// When dateType is 'endDate', thisDate contains the end date value (from bindingPath2)
 	// When dateType is 'startDate', thisDate contains the start date value (from bindingPath1)
@@ -202,7 +202,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		selectedYear,
 		selectedMonth,
 		validationProps,
-		reverseDayOrder
+		reverseDayOrder,
 	});
 
 	const availableHours = useHourOptions({

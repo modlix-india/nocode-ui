@@ -38,7 +38,7 @@ const component: Component = {
 		type: 'ArrayRepeater',
 		properties: {},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

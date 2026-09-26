@@ -138,9 +138,12 @@ function Popover(props: Readonly<ComponentProps>) {
 	}, []);
 
 	// An unmount mid-countdown would otherwise leave the timer holding a setState.
-	React.useEffect(() => () => {
-		if (closeTimerRef.current !== undefined) clearTimeout(closeTimerRef.current);
-	}, []);
+	React.useEffect(
+		() => () => {
+			if (closeTimerRef.current !== undefined) clearTimeout(closeTimerRef.current);
+		},
+		[],
+	);
 
 	React.useEffect(() => {
 		if (globalThis.designMode == 'PAGE' && showInDesign === true) return;
@@ -261,7 +264,7 @@ const component: Component = {
 		properties: {},
 	},
 	needShowInDesginMode: true,
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

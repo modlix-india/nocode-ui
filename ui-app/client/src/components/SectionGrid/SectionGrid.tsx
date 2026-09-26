@@ -87,7 +87,7 @@ const component: Component = {
 		name: 'Section Grid',
 		type: 'SectionGrid',
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

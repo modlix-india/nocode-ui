@@ -26,15 +26,16 @@ export default function IconStyle({
 			'colorScheme',
 		);
 
-		const fn = () => setTimeout(() => {
-			inflateAndSetStyleProps(
-				[designType, colorScheme],
-				stylePropertiesForTheme,
-				(props, _) => styleProperties.splice(0, 0, ...props),
-				styleDefaults,
-			);
-			setReRender(Date.now());
-		}, 100);
+		const fn = () =>
+			setTimeout(() => {
+				inflateAndSetStyleProps(
+					[designType, colorScheme],
+					stylePropertiesForTheme,
+					(props, _) => styleProperties.splice(0, 0, ...props),
+					styleDefaults,
+				);
+				setReRender(Date.now());
+			}, 100);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);

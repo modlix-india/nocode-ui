@@ -31,13 +31,13 @@ function TemplateEditor(props: Readonly<ComponentProps>) {
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const { properties: { templateType, aiEndpoint } = {}, stylePropertiesWithPseudoStates } =
 		useDefinition(
-		definition,
-		propertiesDefinition,
-		stylePropertiesDefinition,
-		locationHistory,
-		pageExtractor,
-		urlExtractor,
-	);
+			definition,
+			propertiesDefinition,
+			stylePropertiesDefinition,
+			locationHistory,
+			pageExtractor,
+			urlExtractor,
+		);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,

@@ -9,9 +9,7 @@ import { UndoRedoManager } from './undoRedoManager';
  * Creates refs that work with UndoRedoManager internally
  * Maintains backward compatibility with existing code that expects PageDefinition[] refs
  */
-export function createUndoRedoRefs(
-	config?: { maxStackSize?: number; maxTotalSizeMB?: number },
-): {
+export function createUndoRedoRefs(config?: { maxStackSize?: number; maxTotalSizeMB?: number }): {
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 	firstTimeRef: React.MutableRefObject<PageDefinition[]>;
@@ -122,4 +120,3 @@ export function getUndoState(manager: UndoRedoManager): PageDefinition | null {
 export function getRedoState(manager: UndoRedoManager): PageDefinition | null {
 	return manager.redo();
 }
-

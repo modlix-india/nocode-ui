@@ -17,7 +17,7 @@ export interface URLDetails {
 	host?: string | undefined;
 	/** `https://app.example.com` — what another origin has to name to allow this one. */
 	origin?: string | undefined;
-};
+}
 
 export function processLocation(location: ReactLocation | Location) {
 	const details: URLDetails = { queryParameters: {} };
@@ -32,7 +32,8 @@ export function processLocation(location: ReactLocation | Location) {
 	// in-app navigation path and read from `window` instead. The SSR seeds its
 	// own minimal urlDetails and has no business guessing a browser's origin.
 	const anyLoc = location as Partial<Location>;
-	details.host = anyLoc.host ?? (typeof window === 'undefined' ? undefined : window.location.host);
+	details.host =
+		anyLoc.host ?? (typeof window === 'undefined' ? undefined : window.location.host);
 	details.origin =
 		anyLoc.origin ?? (typeof window === 'undefined' ? undefined : window.location.origin);
 

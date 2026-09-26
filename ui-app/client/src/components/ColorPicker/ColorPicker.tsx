@@ -44,7 +44,7 @@ const component: Component = {
 		properties: {},
 	},
 	sections: [{ name: 'ColorPicker', pageName: 'colorPicker' }],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

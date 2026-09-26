@@ -262,8 +262,11 @@ export const RenderEngineContainer = () => {
 	useEffect(() => {
 		if (!askConsent || !consentPageDefinition) return;
 
-		const { name, eventFunctions = {}, properties: { onLoadEvent = undefined } = {} } =
-			consentPageDefinition;
+		const {
+			name,
+			eventFunctions = {},
+			properties: { onLoadEvent = undefined } = {},
+		} = consentPageDefinition;
 		if (isNullValue(onLoadEvent) || isNullValue(eventFunctions[onLoadEvent!])) return;
 
 		runEvent(eventFunctions[onLoadEvent!], 'consentOnLoad', name, [], consentPageDefinition);

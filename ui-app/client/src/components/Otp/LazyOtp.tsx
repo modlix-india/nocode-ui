@@ -8,11 +8,7 @@ import {
 	setData,
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
-import {
-	ComponentDefinition,
-	ComponentProps,
-	LocationHistory,
-} from '../../types/common';
+import { ComponentDefinition, ComponentProps, LocationHistory } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';

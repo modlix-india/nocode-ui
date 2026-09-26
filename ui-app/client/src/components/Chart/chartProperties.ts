@@ -72,10 +72,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Map Detail',
 		description:
-			'Standard is 177 countries and loads quickly. Detailed is 241 and is the only '
-			+ 'one with a shape for Singapore, Hong Kong, Malta, Mauritius, Bahrain, the '
-			+ 'Maldives and Monaco \u2014 it costs about 190KB more, fetched only when a map '
-			+ 'is actually drawn.',
+			'Standard is 177 countries and loads quickly. Detailed is 241 and is the only ' +
+			'one with a shape for Singapore, Hong Kong, Malta, Mauritius, Bahrain, the ' +
+			'Maldives and Monaco \u2014 it costs about 190KB more, fetched only when a map ' +
+			'is actually drawn.',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'coarse',
 		editor: ComponentPropertyEditor.ENUM,
@@ -98,8 +98,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		name: 'geoHighColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Map High Color',
-		description:
-			'The colour of the largest value. Defaults to the theme’s first chart colour.',
+		description: 'The colour of the largest value. Defaults to the theme’s first chart colour.',
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{

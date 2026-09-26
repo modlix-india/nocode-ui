@@ -61,7 +61,10 @@ export default function SampleDataPanel({
 				<button className={mode === 'event' ? '_on' : ''} onClick={() => setMode('event')}>
 					From event
 				</button>
-				<button className={mode === 'custom' ? '_on' : ''} onClick={() => setMode('custom')}>
+				<button
+					className={mode === 'custom' ? '_on' : ''}
+					onClick={() => setMode('custom')}
+				>
 					Custom
 				</button>
 				<button className={mode === 'json' ? '_on' : ''} onClick={() => setMode('json')}>
@@ -71,7 +74,11 @@ export default function SampleDataPanel({
 
 			{mode === 'event' && (
 				<div className="_modeBody">
-					<select className="_fld" defaultValue="" onChange={e => selectEvent(e.target.value)}>
+					<select
+						className="_fld"
+						defaultValue=""
+						onChange={e => selectEvent(e.target.value)}
+					>
 						<option value="">Generate sample from an event…</option>
 						{events.length > 0 && (
 							<optgroup label="App events">
@@ -95,7 +102,8 @@ export default function SampleDataPanel({
 							className="_addBtn"
 							onClick={() => onChange(sampleFromSchema(variableSchema))}
 						>
-							<i className="fa fa-solid fa-wand-magic-sparkles" /> Generate from Variables
+							<i className="fa fa-solid fa-wand-magic-sparkles" /> Generate from
+							Variables
 						</button>
 					)}
 				</div>

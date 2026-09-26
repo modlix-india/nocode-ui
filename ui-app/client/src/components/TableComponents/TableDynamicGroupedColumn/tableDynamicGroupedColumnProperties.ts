@@ -1,4 +1,8 @@
-import { SCHEMA_ANY_COMP_PROP, SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../../constants';
+import {
+	SCHEMA_ANY_COMP_PROP,
+	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_STRING_COMP_PROP,
+} from '../../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -62,7 +66,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Sub-Cell Labels',
 		description:
-			"Comma-separated labels for the sub-cells, parallel to Sub-Cell Fields. Shown in the bottom header row.",
+			'Comma-separated labels for the sub-cells, parallel to Sub-Cell Fields. Shown in the bottom header row.',
 		defaultValue: 'Count,CPL',
 		group: ComponentPropertyGroup.BASIC,
 	},
@@ -158,7 +162,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Leaf Spans Empty Group',
 		description:
-			"When a parent group has no children, treat the parent itself as a single leaf so the group header still aligns with one sub-cell pair.",
+			'When a parent group has no children, treat the parent itself as a single leaf so the group header still aligns with one sub-cell pair.',
 		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},

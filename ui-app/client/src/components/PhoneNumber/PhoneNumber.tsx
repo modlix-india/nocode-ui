@@ -769,8 +769,7 @@ const component: Component = {
 			label: { value: 'Phone Number' },
 		},
 	},
-	sections: [{ name: 'Phone Number', pageName: '' }],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

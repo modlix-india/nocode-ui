@@ -12,7 +12,11 @@ import {
 } from '../../types/common';
 import { Validation } from '../../types/validation';
 import { ParentExtractor, ParentExtractorForRunEvent } from '../../context/ParentExtractor';
-import { getDataFromPath, PageStoreExtractor ,UrlDetailsExtractor} from '../../context/StoreContext';
+import {
+	getDataFromPath,
+	PageStoreExtractor,
+	UrlDetailsExtractor,
+} from '../../context/StoreContext';
 import { GLOBAL_CONTEXT_NAME } from '../../constants';
 
 export class PathExtractor extends TokenValueExtractor {
@@ -64,7 +68,10 @@ export class PathExtractor extends TokenValueExtractor {
 
 				// Process bracket part
 				const key = bracketPart.substring(1, bracketPart.length - 1);
-				if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+				if (
+					(key.startsWith('"') && key.endsWith('"')) ||
+					(key.startsWith("'") && key.endsWith("'"))
+				) {
 					// Has quotes - normalize to double quotes
 					const unquotedKey = key.substring(1, key.length - 1);
 					result += `["${unquotedKey}"]`;
@@ -77,7 +84,10 @@ export class PathExtractor extends TokenValueExtractor {
 			} else if (part.startsWith('[')) {
 				// Pure bracket notation at start
 				const key = part.substring(1, part.length - 1);
-				if ((key.startsWith('"') && key.endsWith('"')) || (key.startsWith("'") && key.endsWith("'"))) {
+				if (
+					(key.startsWith('"') && key.endsWith('"')) ||
+					(key.startsWith("'") && key.endsWith("'"))
+				) {
 					// Has quotes - normalize to double quotes
 					const unquotedKey = key.substring(1, key.length - 1);
 					result += `["${unquotedKey}"]`;
@@ -87,7 +97,10 @@ export class PathExtractor extends TokenValueExtractor {
 				} else {
 					result += part; // Pure number, keep as-is
 				}
-			} else if ((part.startsWith('"') && part.endsWith('"')) || (part.startsWith("'") && part.endsWith("'"))) {
+			} else if (
+				(part.startsWith('"') && part.endsWith('"')) ||
+				(part.startsWith("'") && part.endsWith("'"))
+			) {
 				// Part has quotes, so it needs bracket notation - normalize to double quotes
 				const unquotedPart = part.substring(1, part.length - 1);
 				result += `["${unquotedPart}"]`;
@@ -151,7 +164,7 @@ export class ParentPathExtractor extends TokenValueExtractor {
 			this.history.length === 1 ? [] : this.history.slice(0, this.history.length - 1),
 			PageStoreExtractor.getForContext(lastHistory.pageName ?? GLOBAL_CONTEXT_NAME),
 		);
-		
+
 		// During path extraction, return 0 as placeholder for undefined/null values
 		// This allows numeric expressions like Parent.id < 10 to evaluate without errors
 		return value ?? 0;
@@ -248,7 +261,9 @@ export function getPathsFrom<T>(
 		if (isNullValue(cp.location)) return new Set();
 		const loc = cp.location!;
 		if (loc.type === 'VALUE')
-			return isNullValue(loc.value) ? new Set() : new Set<string>([normalizePath(loc.value!)]);
+			return isNullValue(loc.value)
+				? new Set()
+				: new Set<string>([normalizePath(loc.value!)]);
 		expression = loc.expression;
 	}
 
