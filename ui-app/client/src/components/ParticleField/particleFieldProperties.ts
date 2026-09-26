@@ -18,7 +18,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Preset',
 		description: 'Which built-in particle field to render.',
-		editor: ComponentPropertyEditor.ENUM,
+		editor: ComponentPropertyEditor.SCENE_PRESET,
 		defaultValue: 'orbField',
 		group: ComponentPropertyGroup.BASIC,
 		// Literal, not mapped from SCENE_PRESETS: the catalog generator reads
@@ -197,9 +197,21 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'frame. Use this to drive the field from page data.',
 		group: ComponentPropertyGroup.DATA,
 	},
+	{
+		name: 'scene',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Scene',
+		description:
+			'The full scene document. Empty while the component is still using a ' +
+			'built-in preset; opening the editor copies the preset in here and ' +
+			'clears Preset, so the page owns its scene from then on and a later ' +
+			'change to the built-in preset cannot alter it.',
+		editor: ComponentPropertyEditor.THREE_SCENE,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 	COMMON_COMPONENT_PROPERTIES.designType,
-	COMMON_COMPONENT_PROPERTIES.colorScheme,
+	COMMON_COMPONENT_PROPERTIES.sceneColorScheme,
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

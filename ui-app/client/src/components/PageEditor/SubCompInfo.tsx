@@ -82,6 +82,40 @@ export const SubComponentDefinitions: Record<
 	string,
 	Array<ComponentStyleSubComponentDefinition>
 > = {
+	ModelViewer: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect x="0" y="0" width="30" height="30" rx="3" fill="#F9F9F9" />
+					<path d="M15 4 L25 9.5 L15 15 L5 9.5 Z" fill="#7E81D6" />
+					<path d="M5 9.5 L15 15 L15 26 L5 20.5 Z" fill="#7E81D6" fillOpacity="0.6" />
+					<path d="M25 9.5 L15 15 L15 26 L25 20.5 Z" fill="#96A1B4" fillOpacity="0.8" />
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'container',
+			displayName: 'Canvas',
+			description: 'The WebGL canvas holder',
+			icon: 'fa-solid fa-cube',
+		},
+		{
+			name: 'poster',
+			displayName: 'Fallback Image',
+			description: 'Shown when WebGL is unavailable',
+			icon: 'fa-solid fa-image',
+		},
+		{
+			name: 'overlay',
+			displayName: 'Overlay',
+			description: 'A tint above the canvas, below any children',
+			icon: 'fa-solid fa-layer-group',
+		},
+	],
 	ParticleField: [
 		{
 			name: '',
@@ -99,6 +133,46 @@ export const SubComponentDefinitions: Record<
 					<circle cx="10" cy="24" r="1.8" fill="#7E81D6" fillOpacity="0.6" />
 					<circle cx="19" cy="26" r="1.1" fill="#96A1B4" />
 					<circle cx="26" cy="24" r="0.9" fill="#7E81D6" fillOpacity="0.5" />
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'container',
+			displayName: 'Canvas',
+			description: 'The WebGL canvas holder',
+			icon: 'fa-solid fa-cube',
+		},
+		{
+			name: 'poster',
+			displayName: 'Fallback Image',
+			description: 'Shown when WebGL is unavailable',
+			icon: 'fa-solid fa-image',
+		},
+		{
+			name: 'overlay',
+			displayName: 'Overlay',
+			description: 'A tint above the canvas, below any children',
+			icon: 'fa-solid fa-layer-group',
+		},
+	],
+	ScrollScene: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect x="0" y="0" width="30" height="30" rx="3" fill="#F9F9F9" />
+					<path d="M15 6 L22 10 L15 14 L8 10 Z" fill="#7E81D6" />
+					<path d="M15 13 L22 17 L15 21 L8 17 Z" fill="#7E81D6" fillOpacity="0.55" />
+					<path
+						d="M25 8 L25 22 M25 22 L22.5 19 M25 22 L27.5 19"
+						stroke="#96A1B4"
+						strokeWidth="1.6"
+						fill="none"
+						strokeLinecap="round"
+					/>
 				</IconHelper>
 			),
 			mainComponent: true,
@@ -6023,6 +6097,160 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Session Item',
 			description: 'Session Item',
 			icon: 'fa-solid fa-message',
+		},
+	],
+	AnalyticsHeatmap: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="#F9F9F9" />
+					<rect
+						x="4"
+						y="4"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.25"
+					/>
+					<rect
+						x="12"
+						y="4"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#007BFF"
+						fillOpacity="0.45"
+					/>
+					<rect
+						x="20"
+						y="4"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="4"
+						y="12"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#007BFF"
+						fillOpacity="0.7"
+					/>
+					<rect x="12" y="12" width="6" height="6" rx="1" fill="#007BFF" />
+					<rect
+						x="20"
+						y="12"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#007BFF"
+						fillOpacity="0.5"
+					/>
+					<rect
+						x="4"
+						y="20"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="12"
+						y="20"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#007BFF"
+						fillOpacity="0.35"
+					/>
+					<rect
+						x="20"
+						y="20"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.25"
+					/>
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+	],
+
+	BlueprintEditor: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="#F9F9F9" />
+					<rect
+						x="3.5"
+						y="4.5"
+						width="23"
+						height="21"
+						rx="2"
+						fill="#96A1B4"
+						fillOpacity="0.12"
+						stroke="#96A1B4"
+						strokeWidth="0.5"
+					/>
+					<rect x="6" y="7" width="7" height="4" rx="1" fill="#007BFF" />
+					<rect
+						x="6"
+						y="13"
+						width="7"
+						height="4"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.55"
+					/>
+					<rect
+						x="6"
+						y="19"
+						width="7"
+						height="4"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.35"
+					/>
+					<rect x="17" y="10" width="7" height="4" rx="1" fill="#7E81D6" />
+					<rect
+						x="17"
+						y="16"
+						width="7"
+						height="4"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.45"
+					/>
+					<path
+						d="M13 9H15V12H17"
+						stroke="#96A1B4"
+						strokeWidth="1"
+						fill="none"
+						strokeLinecap="round"
+					/>
+					<path
+						d="M13 15H15V18H17"
+						stroke="#96A1B4"
+						strokeWidth="1"
+						fill="none"
+						strokeLinecap="round"
+					/>
+				</IconHelper>
+			),
+			mainComponent: true,
 		},
 	],
 };

@@ -1,4 +1,4 @@
-import { isNullValue } from '@fincity/kirun-js';
+import { duplicate, isNullValue } from '@fincity/kirun-js';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
 	SCHEMA_ANY_COMP_PROP,
@@ -6,6 +6,7 @@ import {
 	SCHEMA_NUM_COMP_PROP,
 } from '../../../../constants';
 import {
+	ComponentDefinition,
 	ComponentProperty,
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
@@ -25,8 +26,10 @@ import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { RangeWithoutUnit } from '../stylePropertyValueEditors/simpleEditors/SizeSliders';
 import { CommonColorPickerPropertyEditor } from '../../../../commonComponents/CommonColorPicker';
 import SectionPropertyValueEditor from './SectionPropertyValueEditor';
+import { SceneContentEditor } from './SceneContentEditor';
 import { SvgContentEditor } from './SvgContentEditor';
 import { ShortcutKeyEditor } from './ShortcutKeyEditor';
+import { ScenePresetEditor } from './ScenePresetEditor';
 
 interface PropertyValueEditorProps {
 	propDef: ComponentPropertyDefinition;
@@ -119,6 +122,14 @@ export default function PropertyValueEditor({
 				pageOperations={pageOperations}
 				selectedComponent={selectedComponent}
 			/>
+		) : propDef.editor === ComponentPropertyEditor.THREE_SCENE ? (
+			<SceneContentEditor
+				value={chngValue}
+				onChange={e => onChange({ ...value, value: e })}
+				pageOperations={pageOperations}
+				selectedComponent={selectedComponent}
+				eventKeys={Object.keys(pageDefinition?.eventFunctions ?? {})}
+			/>
 		) : (
 			makeValueEditor(
 				propDef,
@@ -134,6 +145,7 @@ export default function PropertyValueEditor({
 				pageDefinition,
 				showPlaceholder,
 				appPath,
+				selectedComponent,
 			)
 		);
 
@@ -171,6 +183,7 @@ function makeValueEditor(
 	pageDef?: PageDefinition,
 	showPlaceholder = true,
 	appPath?: string,
+	selectedComponent?: string,
 ) {
 	if (propDef.editor === ComponentPropertyEditor.TEXT_EDITOR)
 		return (
@@ -221,6 +234,43 @@ function makeValueEditor(
 				onChange={v => {
 					const newValue: ComponentProperty<any> = { ...(value ?? {}), value: v };
 					if (isNullValue(v) || v === '') delete newValue.value;
+					onChange(newValue);
+				}}
+			/>
+		);
+	}
+
+	// MUST come before the ENUM branch below: that one matches on
+	// `propDef.enumValues?.length` alone, so it would swallow every
+	// preset property and render it as a plain dropdown.
+	if (propDef.editor === ComponentPropertyEditor.SCENE_PRESET && propDef.enumValues?.length) {
+		return (
+			<ScenePresetEditor
+				value={chngValue}
+				defaultValue={propDef.defaultValue}
+				options={propDef.enumValues}
+				hasStoredScene={
+					!!selectedComponent &&
+					!!pageOperations.getComponentDefinition(selectedComponent)?.properties?.scene
+						?.value
+				}
+				onClearStoredScene={() => {
+					// Picking a preset means "use this preset". With a stored
+					// scene document present the runtime prefers the document,
+					// so without clearing it the pick would appear to do
+					// nothing at all -- the same ambiguity SceneContentEditor
+					// avoids from the other direction by deleting `preset` when
+					// it writes a document.
+					if (!selectedComponent) return;
+					const def = pageOperations.getComponentDefinition(selectedComponent);
+					if (!def?.properties?.scene) return;
+					const next = duplicate(def) as ComponentDefinition;
+					delete next.properties!.scene;
+					pageOperations.componentChanged(next);
+				}}
+				onChange={v => {
+					const newValue: ComponentProperty<any> = { ...(value ?? {}), value: v };
+					if (v === propDef.defaultValue || v === '') delete newValue.value;
 					onChange(newValue);
 				}}
 			/>

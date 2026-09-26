@@ -75,3 +75,38 @@ describe('presetScene', () => {
 		expect(presetScene('nope', 'alsoNope').version).toBeGreaterThan(0);
 	});
 });
+
+describe('the at-rest pointer', () => {
+	// uPointer is parked far off-canvas before the pointer has ever arrived and
+	// again once it leaves, so that a shader which pushes AWAY from it does not
+	// start with a hole bitten out of its centre. That sentinel reads as a real
+	// position to any shader which instead pulls TOWARD the pointer: gradientMesh
+	// added it straight into its blend centres, put both blobs tens of units
+	// outside the quad, and rendered flat uColorA until the pointer first
+	// touched it. Nothing errored; the hero was just a dark rectangle.
+	// Both stages: the particle repel lives in the VERTEX shader, so checking
+	// only fragments would let exactly this bug back in on the other side.
+	const shaders = SCENE_PRESETS.flatMap(p =>
+		(p.build().shaders ?? []).flatMap(s =>
+			[
+				[`${p.name} vertex`, s.vertex ?? ''] as const,
+				[`${p.name} fragment`, s.fragment ?? ''] as const,
+			].filter(([, src]) => src.includes('uPointer')),
+		),
+	);
+
+	it.each(shaders)('%s gates uPointer on uPointerActive', (_name, src) => {
+		expect(src).toContain('uniform float uPointerActive;');
+		// Declaring it is not enough: it has to reach the maths. The body
+		// is checked separately from the declaration block, because a
+		// shader that declares the uniform and never reads it has exactly
+		// the bug this test exists to catch, and three binds the value
+		// without complaint either way.
+		const body = src
+			.split('\n')
+			.filter(l => !/^\s*(uniform|attribute|varying)\b/.test(l))
+			.filter(l => !/^\s*\/\//.test(l))
+			.join('\n');
+		expect(body).toMatch(/\buPointerActive\b/);
+	});
+});

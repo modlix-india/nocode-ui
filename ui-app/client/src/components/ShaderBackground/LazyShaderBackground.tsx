@@ -4,50 +4,11 @@ import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { SceneSurface } from '../util/three/SceneSurface';
-import { presetScene } from '../util/three/presets';
-import { resolveThemeColor, resolveThemeColors } from '../util/three/themeColor';
-import { createSceneDocument, type SceneDocument } from '../util/three/sceneDocument';
+import { colorOr, resolveThemeColor, schemePalette } from '../util/three/themeColor';
+import { resolveSceneDocument } from '../util/three/sceneDocument';
+import { shaderBackgroundDocument } from '../util/three/componentScenes';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './shaderBackgroundProperties';
-
-/** Turn this component's flat properties into a scene document. */
-function documentFor(
-	preset: string,
-	fragmentShader: string | undefined,
-	colors: Array<string | undefined>,
-): SceneDocument {
-	const doc =
-		preset === 'custom'
-			? createSceneDocument({
-					camera: { type: 'fullscreen', position: [0, 0, 1] },
-					environment: { preset: '' },
-					lights: [],
-					shaders: [{ id: 'custom', fragment: fragmentShader ?? '', uniforms: [] }],
-					objects: [
-						{
-							id: 'backdrop',
-							name: 'Backdrop',
-							source: { kind: 'quad' },
-							material: { shaderId: 'custom' },
-						},
-					],
-				} as unknown as Partial<SceneDocument>)
-			: presetScene(preset);
-
-	// Colours are overrides, not replacements: a preset that uses only two
-	// keeps its third, and an empty property leaves the preset's own value.
-	const names = ['uColorA', 'uColorB', 'uColorC'];
-	for (const shader of doc.shaders) {
-		names.forEach((name, i) => {
-			const value = colors[i];
-			if (!value) return;
-			const existing = shader.uniforms.find(u => u.name === name);
-			if (existing) existing.value = value;
-			else shader.uniforms.push({ name, type: 'color', value });
-		});
-	}
-	return doc;
-}
 
 export default function LazyShaderBackground(props: Readonly<ComponentProps>) {
 	const { definition, pageDefinition, locationHistory, context } = props;
@@ -60,6 +21,7 @@ export default function LazyShaderBackground(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 		properties: {
 			preset = 'aurora',
+			scene,
 			fragmentShader,
 			colorA,
 			colorB,
@@ -73,6 +35,7 @@ export default function LazyShaderBackground(props: Readonly<ComponentProps>) {
 			onError,
 			onClick,
 			uniforms: uniformOverrides,
+			colorScheme = '_preset',
 			visibility = true,
 		} = {},
 	} = useDefinition(
@@ -85,8 +48,21 @@ export default function LazyShaderBackground(props: Readonly<ComponentProps>) {
 	);
 
 	const doc = useMemo(
-		() => documentFor(preset, fragmentShader, resolveThemeColors([colorA, colorB, colorC])),
-		[preset, fragmentShader, colorA, colorB, colorC],
+		() =>
+			resolveSceneDocument(scene, () => {
+				// The scheme is a default under the author's own colours, not a
+				// replacement for them, so each slot falls through
+				// property -> scheme -> whatever the preset chose.
+				const scheme = schemePalette(colorScheme);
+				return shaderBackgroundDocument({
+					preset,
+					fragmentShader,
+					colorA: colorOr(colorA, scheme?.a),
+					colorB: colorOr(colorB, scheme?.b),
+					colorC: colorOr(colorC, scheme?.c),
+				});
+			}),
+		[scene, preset, fragmentShader, colorA, colorB, colorC, colorScheme],
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -100,6 +76,7 @@ export default function LazyShaderBackground(props: Readonly<ComponentProps>) {
 	return (
 		<SceneSurface
 			compClass="compShaderBackground"
+			rootClassExtra={colorScheme}
 			doc={doc}
 			definition={definition}
 			context={context}

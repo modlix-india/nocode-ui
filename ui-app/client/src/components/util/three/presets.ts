@@ -148,13 +148,19 @@ uniform vec3 uColorA;
 uniform vec3 uColorB;
 uniform vec3 uColorC;
 uniform vec2 uPointer;
+uniform float uPointerActive;
 void main() {
 	vec2 uv = vUv;
 	vec2 p = uv - 0.5;
 	// Pointer nudges the blend centres, so the surface reacts without motion
 	// that a reduced-motion user would notice on a single frame.
-	vec2 c1 = vec2(0.3, 0.35) + uPointer * 0.08 + vec2(sin(uTime * 0.21), cos(uTime * 0.17)) * 0.06;
-	vec2 c2 = vec2(0.7, 0.65) - uPointer * 0.06 + vec2(cos(uTime * 0.13), sin(uTime * 0.19)) * 0.06;
+	// Gated on uPointerActive: at rest uPointer is parked far off-canvas, and
+	// adding that raw would put both blend centres tens of units away, leaving
+	// every blob outside the quad and the whole background flat uColorA until
+	// the pointer first touched it.
+	vec2 nudge = uPointer * uPointerActive;
+	vec2 c1 = vec2(0.3, 0.35) + nudge * 0.08 + vec2(sin(uTime * 0.21), cos(uTime * 0.17)) * 0.06;
+	vec2 c2 = vec2(0.7, 0.65) - nudge * 0.06 + vec2(cos(uTime * 0.13), sin(uTime * 0.19)) * 0.06;
 	float d1 = 1.0 - smoothstep(0.0, 0.7, distance(uv, c1));
 	float d2 = 1.0 - smoothstep(0.0, 0.7, distance(uv, c2));
 	vec3 col = mix(uColorA, uColorB, clamp(d1, 0.0, 1.0));
@@ -187,6 +193,7 @@ uniform float uTime;
 uniform float uSize;
 uniform float uDepthScale;
 uniform vec2 uPointer;
+uniform float uPointerActive;
 uniform float uPointerStrength;
 varying float vSeed;
 void main() {
@@ -199,9 +206,14 @@ void main() {
 
 	vec4 mv = modelViewMatrix * vec4(p, 1.0);
 
+	// Gated rather than relying on the parked sentinel being far enough away
+	// for exp(-d*d) to underflow. That happens to hold at the current park
+	// distance and falloff, but both are numbers someone will reasonably
+	// change, and the failure it would bring back is a hole bitten out of the
+	// centre of the field before the pointer has ever been near it.
 	vec2 d = mv.xy - uPointer * 1.6;
 	float dist = max(length(d), 0.001);
-	float push = uPointerStrength * exp(-dist * dist * 1.8);
+	float push = uPointerStrength * uPointerActive * exp(-dist * dist * 1.8);
 	mv.xy += (d / dist) * push;
 
 	gl_Position = projectionMatrix * mv;
@@ -261,6 +273,54 @@ function pointsScene(
 				}
 			: { driver: 'time', duration: 4000, loop: true, tracks: [] },
 	} as unknown as Partial<SceneDocument>);
+}
+
+/**
+ * The named lighting rigs the ModelViewer offers.
+ *
+ * Real lights rather than an HDRI on purpose: an .hdr is a multi-megabyte
+ * download for what is, for most product shots, three directional lights. The
+ * HDRI path still exists for materials that genuinely need it -- metal and
+ * glass have nothing to reflect without one -- but it should be a deliberate
+ * choice rather than the price of getting a model lit at all.
+ */
+export const LIGHTING_RIGS: Record<string, SceneDocument['lights']> = {
+	studio: [
+		{ id: 'key', type: 'directional', color: '#ffffff', intensity: 2.2, position: [4, 6, 5] },
+		{ id: 'fill', type: 'directional', color: '#ffffff', intensity: 0.7, position: [-5, 1, 3] },
+		{ id: 'rim', type: 'directional', color: '#ffffff', intensity: 0.9, position: [0, 2, -6] },
+		{ id: 'ambient', type: 'ambient', color: '#ffffff', intensity: 0.5, position: [0, 0, 0] },
+	],
+	soft: [
+		{ id: 'key', type: 'directional', color: '#ffffff', intensity: 1.2, position: [2, 5, 4] },
+		{
+			id: 'sky',
+			type: 'hemisphere',
+			color: '#ffffff',
+			intensity: 1.1,
+			position: [0, 1, 0],
+		},
+		{ id: 'ambient', type: 'ambient', color: '#ffffff', intensity: 0.8, position: [0, 0, 0] },
+	],
+	dramatic: [
+		{ id: 'key', type: 'directional', color: '#ffffff', intensity: 3.4, position: [6, 4, 2] },
+		{ id: 'rim', type: 'directional', color: '#6ea8ff', intensity: 1.1, position: [-3, 1, -5] },
+		{ id: 'ambient', type: 'ambient', color: '#ffffff', intensity: 0.12, position: [0, 0, 0] },
+	],
+	warm: [
+		{ id: 'key', type: 'directional', color: '#ffb86b', intensity: 2.4, position: [5, 4, 3] },
+		{ id: 'fill', type: 'directional', color: '#6ea8ff', intensity: 0.8, position: [-4, 2, 2] },
+		{ id: 'ambient', type: 'ambient', color: '#ffd9b0', intensity: 0.45, position: [0, 0, 0] },
+	],
+};
+
+/** A rig by name, falling back to studio rather than to an unlit scene. */
+export function lightingRig(name: string | undefined): SceneDocument['lights'] {
+	// Deep-copied, because the caller puts these straight into a document that
+	// the Scene Editor may then mutate, and a shared array would leak one
+	// scene's edits into every other scene using the same rig.
+	const rig = LIGHTING_RIGS[name ?? ''] ?? LIGHTING_RIGS.studio;
+	return rig.map(l => ({ ...l, position: [...l.position] as [number, number, number] }));
 }
 
 export const SCENE_PRESETS: ScenePreset[] = [
@@ -417,6 +477,128 @@ export const SCENE_PRESETS: ScenePreset[] = [
 							keys: [
 								{ t: 0, v: -0.6 },
 								{ t: 1, v: 0.6 },
+							],
+						},
+					],
+				},
+			} as unknown as Partial<SceneDocument>),
+	},
+	{
+		name: 'scrollDolly',
+		displayName: 'Scroll Dolly',
+		description: 'The camera pushes in toward the object as the section passes.',
+		kind: 'scroll',
+		build: () =>
+			createSceneDocument({
+				camera: { position: [0, 0, 7] },
+				environment: { preset: 'studio' },
+				lights: [
+					{ id: 'key', type: 'directional', intensity: 2.4, position: [4, 5, 5] },
+					{ id: 'rim', type: 'directional', intensity: 0.9, position: [-4, 1, -4] },
+					{ id: 'ambient', type: 'ambient', intensity: 0.45 },
+				],
+				objects: [
+					{
+						id: 'hero',
+						name: 'Hero',
+						source: { kind: 'primitive', shape: 'icosahedron' },
+						material: { color: '#38bdf8', metalness: 0.5, roughness: 0.25 },
+					},
+				],
+				timeline: {
+					driver: 'scroll',
+					loop: false,
+					tracks: [
+						// The camera moves, not the object, which is what makes
+						// this read as a dolly rather than as the object growing.
+						{
+							target: 'camera.position.z',
+							ease: 'easeInOutCubic',
+							keys: [
+								{ t: 0, v: 7 },
+								{ t: 1, v: 2.6 },
+							],
+						},
+						{
+							target: 'objects.hero.rotation.x',
+							ease: 'linear',
+							keys: [
+								{ t: 0, v: 0 },
+								{ t: 1, v: 120 },
+							],
+						},
+					],
+				},
+			} as unknown as Partial<SceneDocument>),
+	},
+	{
+		name: 'scrollRise',
+		displayName: 'Scroll Rise',
+		description: 'The object rises and grows into place, then settles.',
+		kind: 'scroll',
+		build: () =>
+			createSceneDocument({
+				camera: { position: [0, 0, 4.5] },
+				environment: { preset: 'studio' },
+				lights: [
+					{ id: 'key', type: 'directional', intensity: 2.1, position: [3, 6, 4] },
+					{ id: 'fill', type: 'directional', intensity: 0.6, position: [-4, 0, 3] },
+					{ id: 'ambient', type: 'ambient', intensity: 0.55 },
+				],
+				objects: [
+					{
+						id: 'hero',
+						name: 'Hero',
+						source: { kind: 'primitive', shape: 'cylinder' },
+						material: { color: '#a78bfa', metalness: 0.3, roughness: 0.4 },
+					},
+				],
+				timeline: {
+					driver: 'scroll',
+					loop: false,
+					tracks: [
+						{
+							target: 'objects.hero.position.y',
+							ease: 'easeOutCubic',
+							keys: [
+								{ t: 0, v: -1.8 },
+								{ t: 0.7, v: 0 },
+								{ t: 1, v: 0 },
+							],
+						},
+						{
+							target: 'objects.hero.scale.x',
+							ease: 'easeOutCubic',
+							keys: [
+								{ t: 0, v: 0.35 },
+								{ t: 0.7, v: 1 },
+								{ t: 1, v: 1 },
+							],
+						},
+						{
+							target: 'objects.hero.scale.y',
+							ease: 'easeOutCubic',
+							keys: [
+								{ t: 0, v: 0.35 },
+								{ t: 0.7, v: 1 },
+								{ t: 1, v: 1 },
+							],
+						},
+						{
+							target: 'objects.hero.scale.z',
+							ease: 'easeOutCubic',
+							keys: [
+								{ t: 0, v: 0.35 },
+								{ t: 0.7, v: 1 },
+								{ t: 1, v: 1 },
+							],
+						},
+						{
+							target: 'objects.hero.rotation.y',
+							ease: 'linear',
+							keys: [
+								{ t: 0, v: -40 },
+								{ t: 1, v: 40 },
 							],
 						},
 					],

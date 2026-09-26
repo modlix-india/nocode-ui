@@ -10,7 +10,7 @@ jest.mock('../../../../context/StoreContext', () => ({
 	themeExtractor: { resolveValue: (v: string) => resolveValue(v) },
 }));
 
-import { resolveThemeColor, resolveThemeColors } from '../themeColor';
+import { colorOr, resolveThemeColor, resolveThemeColors, schemePalette } from '../themeColor';
 
 beforeEach(() => resolveValue.mockReset());
 
@@ -72,5 +72,63 @@ describe('resolveThemeColors', () => {
 	it('maps an unknown variable to undefined in place', () => {
 		resolveValue.mockReturnValue('');
 		expect(resolveThemeColors(['#111111', '<ghost>'])).toEqual(['#111111', undefined]);
+	});
+});
+
+describe('schemePalette', () => {
+	it('builds a palette from the theme colour the scheme names', () => {
+		resolveValue.mockReturnValue('#52bd94');
+		const p = schemePalette('_secondary');
+		expect(resolveValue).toHaveBeenCalledWith('<colorTwo>');
+		expect(p?.b).toBe('#52bd94');
+		expect(p?.a).not.toBe(p?.c);
+	});
+
+	it('gives nothing back for the preset scheme, without asking the theme', () => {
+		// This is the whole safety of the feature: the default value leaves
+		// every scene exactly as its preset drew it, and does not even read
+		// the theme to decide that.
+		expect(schemePalette('_preset')).toBeUndefined();
+		expect(schemePalette(undefined)).toBeUndefined();
+		expect(resolveValue).not.toHaveBeenCalled();
+	});
+
+	it('gives nothing back when the theme has no such colour', () => {
+		resolveValue.mockReturnValue('');
+		expect(schemePalette('_primary')).toBeUndefined();
+	});
+
+	it('gives nothing back when the theme colour cannot be read', () => {
+		// A theme is free to hold a named colour. Falling through to the
+		// preset is right; shading a colour we guessed at is not.
+		resolveValue.mockReturnValue('rebeccapurple');
+		expect(schemePalette('_primary')).toBeUndefined();
+	});
+});
+
+describe('colorOr', () => {
+	it('prefers the value the author typed over the scheme', () => {
+		expect(colorOr('#ff0000', '#00ff00')).toBe('#ff0000');
+		expect(resolveValue).not.toHaveBeenCalled();
+	});
+
+	it('falls back to the scheme when the property is empty', () => {
+		expect(colorOr(undefined, '#00ff00')).toBe('#00ff00');
+		expect(colorOr('', '#00ff00')).toBe('#00ff00');
+		expect(colorOr('   ', '#00ff00')).toBe('#00ff00');
+	});
+
+	it('resolves a theme reference in the property before preferring it', () => {
+		resolveValue.mockReturnValue('#123456');
+		expect(colorOr('<colorSix>', '#00ff00')).toBe('#123456');
+	});
+
+	it('falls back to the scheme when the property names a variable the theme lacks', () => {
+		resolveValue.mockReturnValue('');
+		expect(colorOr('<ghost>', '#00ff00')).toBe('#00ff00');
+	});
+
+	it('yields undefined with neither, so the preset keeps its own colour', () => {
+		expect(colorOr(undefined, undefined)).toBeUndefined();
 	});
 });

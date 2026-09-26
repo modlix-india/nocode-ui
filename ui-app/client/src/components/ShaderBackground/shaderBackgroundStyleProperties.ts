@@ -12,7 +12,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'shaderBackgroundMinHeight',
 		dv: '320px',
 		cp: 'min-height',
-		sel: '',
+		sel: '.comp.compShaderBackground',
+		np: true,
 	},
 	{
 		gn: 'Effects',
@@ -20,7 +21,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'shaderBackgroundCanvasOpacity',
 		dv: '1',
 		cp: 'opacity',
-		sel: ' ._canvasHolder',
+		sel: '.comp.compShaderBackground ._canvasHolder',
+		np: true,
 	},
 	{
 		gn: 'Effects',
@@ -29,7 +31,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'shaderBackgroundOverlayBackground',
 		dv: 'transparent',
 		cp: 'background',
-		sel: ' ._overlay',
+		sel: '.comp.compShaderBackground ._overlay',
+		np: true,
 	},
 ];
 

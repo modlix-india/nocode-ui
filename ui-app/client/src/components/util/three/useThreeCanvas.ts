@@ -52,6 +52,17 @@ export interface UseThreeCanvasOptions {
 	onError?: (error: Error) => void;
 	/** Caller-driven pause, on top of the automatic ones. */
 	paused?: boolean;
+	/**
+	 * Keep the loop running even under prefers-reduced-motion.
+	 *
+	 * For the Scene Editor's own viewport and nothing else. Freezing is right
+	 * on a page -- a visitor who asked for less motion should get a still image
+	 * -- but in an editor the author has explicitly opened a tool to watch the
+	 * animation while they change it, and a frozen preview makes the timeline
+	 * uneditable. Offscreen and hidden-tab pausing still apply, because those
+	 * are about not burning a GPU on something nobody is looking at.
+	 */
+	forceLive?: boolean;
 }
 
 export function prefersReducedMotion(): boolean {
@@ -59,6 +70,14 @@ export function prefersReducedMotion(): boolean {
 	return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
+/**
+ * True inside the page editor's canvas.
+ *
+ * No longer used to freeze a scene -- see the `staticOnly` comment below for
+ * why. Kept because it is the only way a component can tell it is being
+ * authored rather than visited, which is a distinction worth having for things
+ * like suppressing a click handler that would navigate away mid-edit.
+ */
 export function isPageEditor(): boolean {
 	return (globalThis as any).designMode === 'PAGE';
 }
@@ -93,6 +112,7 @@ export function useThreeCanvas(options: UseThreeCanvasOptions): ThreeCanvasHandl
 		onReady,
 		onError,
 		paused = false,
+		forceLive = false,
 	} = options;
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -247,9 +267,16 @@ export function useThreeCanvas(options: UseThreeCanvasOptions): ThreeCanvasHandl
 					}
 				}
 
-				// Reduced motion and the page editor both get exactly one frame:
-				// the scene is composed and correct, it simply does not animate.
-				const staticOnly = prefersReducedMotion() || isPageEditor();
+				// Only reduced motion freezes the scene now.
+				//
+				// The page editor used to get a single frame too, on the theory
+				// that six live scenes would fight the builder's canvas. In
+				// practice that made the editor the one place you could not see
+				// what you were building: a scene is MOTION, and judging it from
+				// a still is judging the wrong thing. The pauses that matter are
+				// still here -- offscreen and hidden-tab both stop the loop -- so
+				// a scene scrolled out of the canvas costs nothing either way.
+				const staticOnly = !forceLive && prefersReducedMotion();
 
 				resizeObserver = new ResizeObserver(() => {
 					applySize();

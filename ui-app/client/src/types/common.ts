@@ -83,6 +83,16 @@ export enum ComponentPropertyEditor {
 	 * every page definition already saved in Mongo.
 	 */
 	NUMBER_SLIDER,
+	/**
+	 * A visual picker for a scene preset: one card per option, each showing a
+	 * still rendered from the preset itself. Append only, as above.
+	 */
+	SCENE_PRESET,
+	/**
+	 * A whole three.js SceneDocument, edited in the Scene Editor modal.
+	 * Append only, as above.
+	 */
+	THREE_SCENE,
 }
 
 export enum ComponentPropertyGroup {

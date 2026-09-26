@@ -204,6 +204,23 @@ module.exports = async (env = {}) => {
           // group name ("Cache group X conflicts with existing chunk"), and
           // silently here. If you rename this, rebuild and check that
           // asset-manifest.json's entrypoint still has no three asset in it.
+          // The Scene Editor's drag handles. Nothing on a customer page ever
+          // reaches TransformControls, but the `three` group below matches all
+          // of node_modules/three, so without a HIGHER priority group naming
+          // this one file it lands in the chunk every page with a scene
+          // downloads — the webpackChunkName at the import site cannot
+          // override a cache group.
+          threeEditor: {
+            test: /[\\/]node_modules[\\/]three[\\/]examples[\\/]jsm[\\/]controls[\\/]TransformControls/,
+            // NOT the same string as the webpackChunkName at the import site:
+            // a magic comment and a cache group sharing a name is the
+            // collision that makes a group silently never fire, which is why
+            // the import site now carries no name at all.
+            name: 'three-gizmo',
+            priority: 19,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
           three: {
             test: /[\\/]node_modules[\\/]three[\\/]/,
             name: 'threejs',

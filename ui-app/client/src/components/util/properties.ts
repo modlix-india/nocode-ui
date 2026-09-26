@@ -478,6 +478,58 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 			},
 		],
 	},
+	sceneColorScheme: {
+		// The same property NAME as colorScheme -- the class on the root, the
+		// theme, the page definition key all stay exactly as they are -- under a
+		// different key, so the four scene components can carry one extra value
+		// without changing the scheme every other component uses.
+		//
+		// A canvas cannot take its colours from a CSS class, so on a scene the
+		// scheme is read in JS and shaded into a palette (see three/palette.ts).
+		// `_preset` is the default and means the scene keeps the colours its
+		// preset was tuned with, so nothing moves until somebody asks it to.
+		name: 'colorScheme',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Color Scheme',
+		description:
+			'Which theme colour the scene builds its palette from. The scene shades that ' +
+			'one colour into a deep, a mid and a bright tone. Any colour set on the ' +
+			'component itself still wins over the scheme.',
+		defaultValue: '_preset',
+		group: ComponentPropertyGroup.BASIC,
+		enumValues: [
+			{
+				name: '_preset',
+				displayName: "The scene's own colours",
+				description: "Leave the preset's colours alone. This is the default.",
+			},
+			{
+				name: '_primary',
+				displayName: 'Primary Color Scheme',
+				description: 'Build the palette from theme Colour One.',
+			},
+			{
+				name: '_secondary',
+				displayName: 'Secondary Color Scheme',
+				description: 'Build the palette from theme Colour Two.',
+			},
+			{
+				name: '_tertiary',
+				displayName: 'Tertiary Color Scheme',
+				description: 'Build the palette from theme Colour Three.',
+			},
+			{
+				name: '_quaternary',
+				displayName: 'Quaternary Color Scheme',
+				description: 'Build the palette from theme Colour Four.',
+			},
+			{
+				name: '_quinary',
+				displayName: 'Quinary Color Scheme',
+				description: 'Build the palette from theme Colour Five.',
+			},
+		],
+	},
 	background: {
 		name: 'background',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -649,6 +701,9 @@ const COMPONENT_STYLE_GROUPS: { [key: string]: Array<string> } = {
 		'animationDirection',
 		'animationFillMode',
 		'animationPlayState',
+		// Scroll-driven timelines, for parity with the `animation` property.
+		'animationTimeline',
+		'animationRange',
 	],
 	svg: [
 		'alignmentBaseline',
@@ -1327,14 +1382,14 @@ const ANIMATION_BASIC_PROPERTIES: Array<ComponentPropertyDefinition> = [
 	},
 ];
 
-const TIMING_FUNCTION_EXTRA = {
+const TIMING_FUNCTION_EXTRA: ComponentPropertyDefinition = {
 	name: 'timingFunctionExtra',
 	schema: SCHEMA_STRING_COMP_PROP,
 	displayName: 'Parameters',
 	description: 'Parameters of the timing function',
 };
 
-const OBESERVATION_PROP = {
+const OBESERVATION_PROP: ComponentPropertyDefinition = {
 	name: 'observation',
 	schema: SCHEMA_STRING_COMP_PROP,
 	displayName: 'Observation',
@@ -1347,7 +1402,7 @@ const OBESERVATION_PROP = {
 	],
 };
 
-const OBESERVATION_ENTERING_THRESHOLD = {
+const OBESERVATION_ENTERING_THRESHOLD: ComponentPropertyDefinition = {
 	name: 'enteringThreshold',
 	schema: SCHEMA_NUM_COMP_PROP,
 	displayName: 'Entering Threshold',
@@ -1355,7 +1410,7 @@ const OBESERVATION_ENTERING_THRESHOLD = {
 	defaultValue: 0.25,
 };
 
-const OBESERVATION_EXITING_THRESHOLD = {
+const OBESERVATION_EXITING_THRESHOLD: ComponentPropertyDefinition = {
 	name: 'exitingThreshold',
 	schema: SCHEMA_NUM_COMP_PROP,
 	displayName: 'Exiting Threshold',
@@ -1363,7 +1418,7 @@ const OBESERVATION_EXITING_THRESHOLD = {
 	defaultValue: 0.25,
 };
 
-const NUM_OF_OBSERVATIONS = {
+const NUM_OF_OBSERVATIONS: ComponentPropertyDefinition = {
 	name: 'numOfObservations',
 	schema: SCHEMA_NUM_COMP_PROP,
 	displayName: 'Number of Observations',
@@ -1372,18 +1427,140 @@ const NUM_OF_OBSERVATIONS = {
 	defaultValue: -1,
 };
 
-const ANIMATION_PROPERTIES = [
+/* -------------------------------------------------------------------------- */
+/* Scroll-driven animation                                                     */
+/*                                                                             */
+/* `timeline` defaults to 'none', and that default is the ONLY thing keeping   */
+/* this change safe. No page definition stored today carries the key, so every */
+/* existing animation resolves to exactly its current clock-driven behaviour.  */
+/* Changing that default would silently re-time every animation in production. */
+/* -------------------------------------------------------------------------- */
+
+const ANIMATION_TIMELINE_PROP: ComponentPropertyDefinition = {
+	name: 'timeline',
+	schema: SCHEMA_STRING_COMP_PROP,
+	displayName: 'Driven By',
+	description:
+		'What advances the animation. A clock plays it once on render, which is ' +
+		'what it has always done. Scroll and View scrub it to the scroll ' +
+		'position instead, so it runs backwards when the visitor scrolls back.',
+	defaultValue: 'none',
+	enumValues: [
+		{
+			name: 'none',
+			displayName: 'A clock',
+			description: 'Plays on its own timing, as it always has.',
+		},
+		{
+			name: 'view',
+			displayName: 'This element crossing the screen',
+			description:
+				'0 as the element enters the viewport, 1 as it leaves. What a ' +
+				'reveal or a parallax actually wants.',
+		},
+		{
+			name: 'scroll',
+			displayName: 'The whole scroller',
+			description:
+				'0 at the top of the scroller, 1 at the bottom. For a page-length ' +
+				'progress indicator.',
+		},
+	],
+};
+
+const ANIMATION_AXIS_PROP: ComponentPropertyDefinition = {
+	name: 'axis',
+	schema: SCHEMA_STRING_COMP_PROP,
+	displayName: 'Scroll Direction',
+	description:
+		'Which way the driving scroll runs. Horizontal is for a sideways ' +
+		'scroller such as a Carousel, a Tabs strip or a Grid with overflow-x.',
+	defaultValue: 'block',
+	enumValues: [
+		{ name: 'block', displayName: 'Vertical', description: 'The usual page scroll.' },
+		{ name: 'inline', displayName: 'Horizontal', description: 'A sideways scroller.' },
+	],
+};
+
+const ANIMATION_SCROLLER_PROP: ComponentPropertyDefinition = {
+	name: 'scroller',
+	schema: SCHEMA_STRING_COMP_PROP,
+	displayName: 'Scroller',
+	description:
+		'Which element is scrolling. Nearest walks up to the closest scrollable ' +
+		'ancestor, which is right almost always. Note that a Modlix page scrolls ' +
+		'inside its own container, not the document.',
+	defaultValue: 'nearest',
+	enumValues: [
+		{
+			name: 'nearest',
+			displayName: 'Nearest scrollable ancestor',
+			description: 'The usual choice.',
+		},
+		{ name: 'root', displayName: 'The page', description: 'The document scroll.' },
+		{
+			name: 'self',
+			displayName: 'This element',
+			description: 'Only useful when the element scrolls internally.',
+		},
+	],
+};
+
+const ANIMATION_RANGE_START: ComponentPropertyDefinition = {
+	name: 'rangeStart',
+	schema: SCHEMA_NUM_COMP_PROP,
+	displayName: 'Start At',
+	description:
+		'Where in the raw 0 to 1 travel the animation begins. Raise it to hold ' +
+		'the element still until it is properly on screen.',
+	editor: ComponentPropertyEditor.NUMBER_SLIDER,
+	defaultValue: 0,
+	min: 0,
+	max: 1,
+	step: 0.01,
+};
+
+const ANIMATION_RANGE_END: ComponentPropertyDefinition = {
+	name: 'rangeEnd',
+	schema: SCHEMA_NUM_COMP_PROP,
+	displayName: 'Finish At',
+	description:
+		'Where in the raw 0 to 1 travel the animation completes. Lower it to ' +
+		'have the animation finish before the element leaves.',
+	editor: ComponentPropertyEditor.NUMBER_SLIDER,
+	defaultValue: 1,
+	min: 0,
+	max: 1,
+	step: 0.01,
+};
+
+const ANIMATION_TIMELINE_PROPERTIES: Array<ComponentPropertyDefinition> = [
+	ANIMATION_TIMELINE_PROP,
+	ANIMATION_AXIS_PROP,
+	ANIMATION_SCROLLER_PROP,
+	ANIMATION_RANGE_START,
+	ANIMATION_RANGE_END,
+];
+
+const ANIMATION_PROPERTIES: Array<ComponentPropertyDefinition> = [
 	...ANIMATION_BASIC_PROPERTIES,
 	TIMING_FUNCTION_EXTRA,
 	OBESERVATION_PROP,
 	OBESERVATION_ENTERING_THRESHOLD,
 	OBESERVATION_EXITING_THRESHOLD,
 	NUM_OF_OBSERVATIONS,
+	...ANIMATION_TIMELINE_PROPERTIES,
 ];
 
 export {
+	ANIMATION_AXIS_PROP,
 	ANIMATION_BASIC_PROPERTIES,
 	ANIMATION_PROPERTIES,
+	ANIMATION_RANGE_END,
+	ANIMATION_RANGE_START,
+	ANIMATION_SCROLLER_PROP,
+	ANIMATION_TIMELINE_PROP,
+	ANIMATION_TIMELINE_PROPERTIES,
 	COMMON_COMPONENT_PROPERTIES,
 	COMPONENT_STYLE_GROUPS,
 	COMPONENT_STYLE_GROUP_PROPERTIES,

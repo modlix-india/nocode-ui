@@ -45,7 +45,6 @@ const component: Component = {
 			preset: { value: 'orbField' },
 		},
 	},
-	sections: [{ name: 'Particle Fields', pageName: 'particleField' }],
 	stylePropertiesForTheme: styleProperties,
 };
 

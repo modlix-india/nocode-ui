@@ -317,7 +317,6 @@ const component: Component = {
 		name: 'ThemeSwitcher',
 		properties: {},
 	},
-	sections: [{ name: 'Theme Switcher', pageName: 'themeswitcher' }],
 };
 
 export default component;

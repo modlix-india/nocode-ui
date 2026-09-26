@@ -37,6 +37,13 @@ interface CatalogProperty {
 	min?: number;
 	max?: number;
 	step?: number;
+	/**
+	 * The shape of ONE entry, for a multiValued property whose entries are
+	 * themselves objects. Only `animation` has this today. Without it the
+	 * catalog says "multiValued" and stops, and a consumer has no way to learn
+	 * which fields an entry may carry.
+	 */
+	subProperties?: CatalogProperty[];
 }
 
 interface ThemeStyleCssEntry {
@@ -83,12 +90,40 @@ interface CatalogComponent {
 	isHidden?: boolean;
 }
 
+/**
+ * The published contract for three.js scene documents.
+ *
+ * nocode-ai validates a scene the agent wrote against THIS, not against a
+ * hand-maintained Python copy of the TypeScript types. A mirror in another
+ * language is a drift bug with a date on it: the same mistake was already made
+ * with COMMON_COMPONENT_PROPERTIES, where 13 of 27 properties silently went
+ * missing until it was parsed from the real table instead of copied.
+ *
+ * Published: the closed enumerations, the hard limits, and the structural shape
+ * itself. An enum gaining a member is the change that most often breaks a
+ * validator, and `shape` is what stops the other repo needing a hand-kept copy
+ * of the interfaces -- a field renamed in TypeScript and not in the Python
+ * mirror does not error, it silently drops out of every document the agent
+ * writes. Reading the interfaces is the only version of this that stays true.
+ */
+interface SceneContract {
+	documentVersion: number;
+	enums: Record<string, string[]>;
+	limits: Record<string, number>;
+	presets: Array<{ name: string; displayName: string; kind: string; description: string }>;
+	/** Uniforms the runtime binds for every shader without being asked. */
+	sharedUniforms: string[];
+	/** Interface name -> `field: type` for every field on it. */
+	shape: Record<string, Record<string, string>>;
+}
+
 interface ComponentCatalog {
 	version: string;
 	generatedAt: string;
 	componentCount: number;
 	designTypeDescriptions: Record<string, string>;
 	components: Record<string, CatalogComponent>;
+	scenes?: SceneContract;
 }
 
 // ── Configuration ──────────────────────────────────────────────
@@ -125,6 +160,21 @@ function getStringLiteral(node: ts.Node): string | undefined {
 	if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) {
 		return node.text;
 	}
+	// A description too long for one line is written as `'a ' + 'b'`, and
+	// reading only a bare literal dropped every one of them. That is not a
+	// cosmetic loss: the catalog IS the AppBuilder agent's documentation, so a
+	// property whose description was long enough to wrap arrived at the agent
+	// with no description at all -- 274 of 1480 properties, and the longest
+	// explanations were exactly the ones that went missing.
+	if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.PlusToken) {
+		const left = getStringLiteral(node.left);
+		const right = getStringLiteral(node.right);
+		// Both halves, or nothing: half a sentence is worse than none, because
+		// it reads as complete.
+		if (left !== undefined && right !== undefined) return left + right;
+		return undefined;
+	}
+	if (ts.isParenthesizedExpression(node)) return getStringLiteral(node.expression);
 	return undefined;
 }
 
@@ -136,7 +186,11 @@ function getObjectProperty(
 	propName: string,
 ): ts.Expression | undefined {
 	for (const prop of obj.properties) {
-		if (ts.isPropertyAssignment(prop) && ts.isIdentifier(prop.name) && prop.name.text === propName) {
+		if (
+			ts.isPropertyAssignment(prop) &&
+			ts.isIdentifier(prop.name) &&
+			prop.name.text === propName
+		) {
 			return prop.initializer;
 		}
 	}
@@ -186,7 +240,10 @@ function resolveEditorName(node: ts.Expression): string | undefined {
 	if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.name)) {
 		const accessedName = node.name.text;
 		// Check if accessing ComponentPropertyEditor
-		if (ts.isIdentifier(node.expression) && node.expression.text === 'ComponentPropertyEditor') {
+		if (
+			ts.isIdentifier(node.expression) &&
+			node.expression.text === 'ComponentPropertyEditor'
+		) {
 			return accessedName;
 		}
 	}
@@ -307,6 +364,292 @@ function extractCommonPropReference(node: ts.Expression): string | undefined {
 		return node.name.text;
 	}
 	return undefined;
+}
+
+/**
+ * The fields inside ONE entry of the multi-valued `animation` property.
+ *
+ * Without these the catalog says `animation` is multiValued and stops there, so
+ * the agent has no way to learn that `animationName`, `observation` or the
+ * scroll-timeline keys exist at all. It is the component whose entire purpose is
+ * animation, and its schema was the one thing never reaching the prompt.
+ *
+ * Parsed out of the same file rather than mirrored here, because a hand-kept
+ * copy of a twelve-field schema is a drift bug with a date on it -- which is
+ * exactly what happened to COMMON_COMPONENT_PROPERTIES before it was parsed.
+ */
+/**
+ * Read the scene contract out of the real sources.
+ *
+ * Union types in sceneDocument.ts and the preset registry in presets.ts, parsed
+ * rather than mirrored, for the reason in the SceneContract comment above.
+ */
+function loadSceneContract(): SceneContract | undefined {
+	const docPath = path.join(COMPONENTS_DIR, 'util', 'three', 'sceneDocument.ts');
+	const presetPath = path.join(COMPONENTS_DIR, 'util', 'three', 'presets.ts');
+	const editsPath = path.join(COMPONENTS_DIR, 'util', 'three', 'sceneEdits.ts');
+	const docFile = parseFile(docPath);
+	if (!docFile) {
+		console.warn(`  ! Could not parse ${docPath}; the scene contract is omitted`);
+		return undefined;
+	}
+
+	// The union type aliases that close a field. Named explicitly rather than
+	// harvested, so adding an unrelated alias does not silently widen what the
+	// agent believes is legal.
+	const wantedUnions: Record<string, string> = {
+		ObjectSourceKind: 'objectSourceKind',
+		PrimitiveShape: 'primitiveShape',
+		LightType: 'lightType',
+		CameraType: 'cameraType',
+		TimelineDriver: 'timelineDriver',
+		InteractionGesture: 'interactionGesture',
+		UniformType: 'uniformType',
+		PointDistribution: 'pointDistribution',
+	};
+
+	const enums: Record<string, string[]> = {};
+	const limits: Record<string, number> = {};
+	let documentVersion = 1;
+
+	function visitDoc(node: ts.Node) {
+		if (ts.isTypeAliasDeclaration(node) && wantedUnions[node.name.text]) {
+			const members: string[] = [];
+			const t = node.type;
+			if (ts.isUnionTypeNode(t)) {
+				for (const m of t.types) {
+					if (ts.isLiteralTypeNode(m) && ts.isStringLiteral(m.literal)) {
+						members.push(m.literal.text);
+					}
+				}
+			}
+			if (members.length) enums[wantedUnions[node.name.text]] = members;
+		}
+		if (
+			ts.isVariableDeclaration(node) &&
+			ts.isIdentifier(node.name) &&
+			node.name.text === 'SCENE_DOCUMENT_VERSION' &&
+			node.initializer &&
+			ts.isNumericLiteral(node.initializer)
+		) {
+			documentVersion = Number(node.initializer.text);
+		}
+		ts.forEachChild(node, visitDoc);
+	}
+	visitDoc(docFile);
+
+	// The point-count cap. Hard limits like this are what an agent writes past
+	// without a published number to check against: a typed 20000000 reaches the
+	// GPU looking like a legitimate request. Read off the clamp itself, and the
+	// numeric separators stripped, because TypeScript writes it as `200_000`.
+	const docText = fs.readFileSync(docPath, 'utf8');
+	const capMatch = /clampNum\(src\.count,[^,]+,[^,]+,\s*([\d_]+)\)/.exec(docText);
+	if (capMatch) {
+		limits.maxPointCount = Number(capMatch[1].replace(/_/g, ''));
+	} else {
+		// Loud rather than silent: an empty `limits` reads as "no limits", and
+		// a validator built on that would wave 20 million points through.
+		console.warn('  ! point-count cap not found in sceneDocument.ts; limits omitted');
+	}
+
+	// Easing names, which timeline tracks address by string.
+	const easingFile = parseFile(path.join(COMPONENTS_DIR, 'util', 'three', 'easing.ts'));
+	if (easingFile) {
+		const names: string[] = [];
+		const visitEase = (node: ts.Node) => {
+			if (ts.isTypeAliasDeclaration(node) && node.name.text === 'EasingName') {
+				if (ts.isUnionTypeNode(node.type)) {
+					for (const m of node.type.types) {
+						if (ts.isLiteralTypeNode(m) && ts.isStringLiteral(m.literal)) {
+							names.push(m.literal.text);
+						}
+					}
+				}
+			}
+			ts.forEachChild(node, visitEase);
+		};
+		visitEase(easingFile);
+		if (names.length) enums.easing = names;
+	}
+
+	// The preset registry: name, kind and the one-line description, which is
+	// what lets the agent pick one without rendering all of them.
+	const presets: SceneContract['presets'] = [];
+	const presetFile = parseFile(presetPath);
+	if (presetFile) {
+		const visitPreset = (node: ts.Node) => {
+			if (
+				ts.isVariableDeclaration(node) &&
+				ts.isIdentifier(node.name) &&
+				node.name.text === 'SCENE_PRESETS' &&
+				node.initializer &&
+				ts.isArrayLiteralExpression(node.initializer)
+			) {
+				for (const el of node.initializer.elements) {
+					if (!ts.isObjectLiteralExpression(el)) continue;
+					const str = (key: string) => {
+						const n = getObjectProperty(el, key);
+						return n && ts.isStringLiteral(n) ? n.text : '';
+					};
+					const name = str('name');
+					if (name) {
+						presets.push({
+							name,
+							displayName: str('displayName'),
+							kind: str('kind'),
+							description: str('description'),
+						});
+					}
+				}
+			}
+			ts.forEachChild(node, visitPreset);
+		};
+		visitPreset(presetFile);
+	}
+
+	// The uniforms three binds for every shader. An agent that declares one of
+	// these in the document shadows the live value with a frozen one, so it
+	// needs to know which names are taken.
+	const sharedUniforms: string[] = [];
+	const editsText = fs.existsSync(editsPath) ? fs.readFileSync(editsPath, 'utf8') : '';
+	const sharedMatch = /SHARED_UNIFORMS = new Set\(\[([\s\S]*?)\]\)/.exec(editsText);
+	if (sharedMatch) {
+		for (const m of sharedMatch[1].matchAll(/'([^']+)'/g)) sharedUniforms.push(m[1]);
+	}
+
+	// The interfaces themselves, so the shape does not have to be re-typed in
+	// another language. Types are kept as their TypeScript source text: a
+	// reader needs to know `position` is a `Vec3` and not a number, and the
+	// spelling is more use than a translation into some neutral vocabulary.
+	const shape: Record<string, Record<string, string>> = {};
+	const visitShape = (node: ts.Node) => {
+		if (ts.isInterfaceDeclaration(node)) {
+			const fields: Record<string, string> = {};
+			for (const member of node.members) {
+				if (!ts.isPropertySignature(member) || !member.type) continue;
+				const name = ts.isIdentifier(member.name)
+					? member.name.text
+					: getStringLiteral(member.name);
+				if (!name) continue;
+				fields[name] = member.type.getText(docFile);
+			}
+			if (Object.keys(fields).length) shape[node.name.text] = fields;
+		}
+		ts.forEachChild(node, visitShape);
+	};
+	visitShape(docFile);
+	if (!shape.SceneDocument) {
+		console.warn('  ! SceneDocument interface not found; scene shape omitted');
+	}
+
+	return { documentVersion, enums, limits, presets, sharedUniforms, shape };
+}
+
+function loadAnimationFields(): CatalogProperty[] {
+	const filePath = path.join(COMPONENTS_DIR, 'util', 'properties.ts');
+	const sourceFile = parseFile(filePath);
+	if (!sourceFile) return [];
+
+	// Every declaration ANIMATION_PROPERTIES is composed of, in the order the
+	// editor shows them. Spread members and bare identifiers both appear in that
+	// array, so collecting the named declarations is simpler and more robust
+	// than trying to evaluate the array expression itself.
+	const wanted = new Set([
+		'ANIMATION_BASIC_PROPERTIES',
+		'TIMING_FUNCTION_EXTRA',
+		'OBESERVATION_PROP',
+		'OBESERVATION_ENTERING_THRESHOLD',
+		'OBESERVATION_EXITING_THRESHOLD',
+		'NUM_OF_OBSERVATIONS',
+		'ANIMATION_TIMELINE_PROPERTIES',
+		// The five ANIMATION_TIMELINE_PROPERTIES is built from. They have to be
+		// collected too, or the @ref placeholders below resolve to nothing and
+		// the scroll-timeline keys are silently dropped from the schema.
+		'ANIMATION_TIMELINE_PROP',
+		'ANIMATION_AXIS_PROP',
+		'ANIMATION_SCROLLER_PROP',
+		'ANIMATION_RANGE_START',
+		'ANIMATION_RANGE_END',
+		// The keyframes name list, so the catalog carries the real names. Every
+		// one is UNDERSCORE-PREFIXED, and an unprefixed name matches nothing and
+		// leaves the element un-animated with no error anywhere.
+		'ANIMATIONS_LIST',
+	]);
+
+	const byName = new Map<string, CatalogProperty[]>();
+
+	function visit(node: ts.Node) {
+		if (
+			ts.isVariableDeclaration(node) &&
+			ts.isIdentifier(node.name) &&
+			wanted.has(node.name.text) &&
+			node.initializer
+		) {
+			const out: CatalogProperty[] = [];
+			if (ts.isArrayLiteralExpression(node.initializer)) {
+				for (const el of node.initializer.elements) {
+					if (ts.isObjectLiteralExpression(el)) {
+						const prop = extractPropertyFromObject(el);
+						if (prop) out.push(prop);
+					} else if (ts.isIdentifier(el)) {
+						// An array built from other declarations, e.g.
+						// ANIMATION_TIMELINE_PROPERTIES. Resolved on the second
+						// pass below, once every declaration has been seen.
+						out.push({ name: `@ref:${el.text}` } as CatalogProperty);
+					}
+				}
+			} else if (ts.isObjectLiteralExpression(node.initializer)) {
+				const prop = extractPropertyFromObject(node.initializer);
+				if (prop) out.push(prop);
+			}
+			byName.set(node.name.text, out);
+		}
+		ts.forEachChild(node, visit);
+	}
+	visit(sourceFile);
+
+	// Second pass: resolve the @ref placeholders now that everything is known.
+	// Single-level, which is all the file uses; a deeper nesting would show up
+	// as a literal "@ref:" name in the catalog rather than failing silently.
+	const single = new Map<string, CatalogProperty>();
+	for (const [name, props] of byName) {
+		if (props.length === 1 && !props[0].name?.startsWith('@ref:')) {
+			single.set(name, props[0]);
+		}
+	}
+
+	// ANIMATIONS_LIST is not a property, it is the enum for animationName,
+	// which is declared as `enumValues: ANIMATIONS_LIST` -- an identifier the
+	// AST cannot evaluate, so the names would otherwise never reach the agent.
+	const animationNames = (byName.get('ANIMATIONS_LIST') ?? [])
+		.filter(e => !!e.name && !e.name.startsWith('@ref:'))
+		.map(e => ({ name: e.name, displayName: e.displayName ?? e.name }));
+
+	const order = [
+		'ANIMATION_BASIC_PROPERTIES',
+		'TIMING_FUNCTION_EXTRA',
+		'OBESERVATION_PROP',
+		'OBESERVATION_ENTERING_THRESHOLD',
+		'OBESERVATION_EXITING_THRESHOLD',
+		'NUM_OF_OBSERVATIONS',
+		'ANIMATION_TIMELINE_PROPERTIES',
+	];
+
+	const fields: CatalogProperty[] = [];
+	const seen = new Set<string>();
+	for (const name of order) {
+		for (const prop of byName.get(name) ?? []) {
+			const resolved = prop.name?.startsWith('@ref:') ? single.get(prop.name.slice(5)) : prop;
+			if (!resolved?.name || seen.has(resolved.name)) continue;
+			seen.add(resolved.name);
+			fields.push(
+				resolved.name === 'animationName' && animationNames.length
+					? { ...resolved, enumValues: animationNames }
+					: resolved,
+			);
+		}
+	}
+	return fields;
 }
 
 /**
@@ -461,9 +804,7 @@ const COMMON_PROPERTIES_FALLBACK: Record<string, CatalogProperty> = {
 		group: 'ADVANCED',
 		editor: 'ENUM',
 		type: 'string',
-		enumValues: [
-			{ name: '_default', displayName: 'Default' },
-		],
+		enumValues: [{ name: '_default', displayName: 'Default' }],
 	},
 	colorScheme: {
 		name: 'colorScheme',
@@ -472,9 +813,7 @@ const COMMON_PROPERTIES_FALLBACK: Record<string, CatalogProperty> = {
 		group: 'ADVANCED',
 		editor: 'ENUM',
 		type: 'string',
-		enumValues: [
-			{ name: '_default', displayName: 'Default' },
-		],
+		enumValues: [{ name: '_default', displayName: 'Default' }],
 	},
 	validation: {
 		name: 'validation',
@@ -499,6 +838,17 @@ const COMMON_PROPERTIES_FALLBACK: Record<string, CatalogProperty> = {
 // The table components are resolved against: parsed from source, with the
 // fallback filling any gap.
 const COMMON_PROPERTIES: Record<string, CatalogProperty> = loadCommonProperties();
+const ANIMATION_FIELDS: CatalogProperty[] = loadAnimationFields();
+
+// Attach the entry schema to the shared `animation` property, so every
+// component that references it inherits the sub-schema rather than each
+// component's catalog entry having to carry its own copy.
+if (COMMON_PROPERTIES.animation && ANIMATION_FIELDS.length) {
+	COMMON_PROPERTIES.animation = {
+		...COMMON_PROPERTIES.animation,
+		subProperties: ANIMATION_FIELDS,
+	};
+}
 
 // ── Component Group Assignment ─────────────────────────────────
 // Controls how much detail the AI agent receives per component.
@@ -516,7 +866,9 @@ const COMPONENT_TIERS: Record<string, ComponentTier> = {
 	// CSS, so this component has to arrive with its full property surface and
 	// its preset names visible, or the agent will keep reaching for a gradient.
 	ShaderBackground: 'common',
+	ModelViewer: 'common',
 	ParticleField: 'common',
+	ScrollScene: 'common',
 	Tree: 'data',
 	// The agent authors pages that HOST this, and has to wire three binding
 	// paths and seven events to do it. At the default tier it would reach the
@@ -534,7 +886,11 @@ const COMPONENT_TIERS: Record<string, ComponentTier> = {
 	Text: 'common',
 
 	// ── specialized: site-specific / occasional ──
-	Animator: 'specialized',
+	// Promoted from 'specialized', where the tier renders as exactly ONE line and
+	// its twelve-field `animation` schema never reached the prompt at all. It is
+	// the component whose whole purpose is animation, and it now carries the
+	// scroll-timeline keys too.
+	Animator: 'common',
 	Carousel: 'specialized',
 	Form: 'specialized',
 	FormEditor: 'specialized',
@@ -616,28 +972,41 @@ const DEFAULT_TIER: ComponentTier = 'specialized';
 const COMPONENT_BRIEFS: Record<string, string> = {
 	BlueprintEditor:
 		"Renders an application's PLAN as a board: objects of one kind side by side as columns, the kinds stacked as bands. A band is an object kind, a column is one object, a card is one entry of that object's blueprint (a section of a page, a field of a storage). It builds itself from the app's own definitions, so it renders a real board for an app that has NO blueprint at all, with each card titled by what it is and the second line left empty until somebody says what it is for. bindingPath takes the sources the host fetched ({appBlueprint?, pages[], storages[]}), bindingPath2 a per-entry status map of clean|pending|drifted supplied by the host, and bindingPath3 the selection, which it WRITES as well as reads so a Prompt beside it can use the selection as context. Pair it with a Prompt in the same Grid. mode _prose shows a name and one line per card; _advanced adds uids, kinds and order inline without changing the layout.",
-	Tree:
-		'Renders hierarchical data, repeating ONE child template at every depth. dataShape accepts NESTED (children array), FLAT (idKey + parentKey), OBJECT_MAP (object keyed by id) or RAW_JSON (structure inferred). treeDesign picks indented list, accordion, org chart or Finder-style columns. Inside the node template, Parent.<field> is the current node and Parent.Parent.<field> is its parent, at every depth. bindingPath2 holds the selection (single or multi), bindingPath3 the expanded node keys, bindingPath4 the active path for the columns design. Set editable to allow drag reorder, drag reparent, add and delete; RAW_JSON is read only.',
+	Tree: 'Renders hierarchical data, repeating ONE child template at every depth. dataShape accepts NESTED (children array), FLAT (idKey + parentKey), OBJECT_MAP (object keyed by id) or RAW_JSON (structure inferred). treeDesign picks indented list, accordion, org chart or Finder-style columns. Inside the node template, Parent.<field> is the current node and Parent.Parent.<field> is its parent, at every depth. bindingPath2 holds the selection (single or multi), bindingPath3 the expanded node keys, bindingPath4 the active path for the columns design. Set editable to allow drag reorder, drag reparent, add and delete; RAW_JSON is read only.',
 	Animator:
-		'Animation wrapper that starts animations based on an intersection observer. Used in sites for scroll-triggered entrance effects.',
+		'Wraps ONE child and animates it. The `animation` property is multiValued: a keyed map ' +
+		'where each entry is {key, order, property: {value: {<field>: {value: ...}}}}, and getting ' +
+		'that nesting wrong fails SILENTLY -- every field falls back to its default, so the element ' +
+		'animates _bounce for 0ms and looks like the property being ignored. animationName must be ' +
+		'UNDERSCORE-PREFIXED (_fadeInUp, NOT fadeInUp); an unprefixed name matches no keyframes and ' +
+		"the element never animates. animationIterationCount is a STRING ('1', not 1). " +
+		'`observation` (none | entering | exiting) fires the animation once when the element crosses ' +
+		"a viewport threshold. `timeline` instead SCRUBS the animation to scroll position: 'view' is " +
+		'0 as the element enters the viewport and 1 as it leaves (what a reveal or parallax wants), ' +
+		"'scroll' is 0 at the top of the scroller and 1 at the bottom (a page progress indicator), " +
+		"and 'none' is the default clock behaviour. `axis` set to 'inline' is driven by a HORIZONTAL " +
+		'scroller such as a Carousel or a Grid with overflow-x, which CSS alone cannot do here. ' +
+		'rangeStart and rangeEnd trim the 0..1 travel. A scroll timeline runs backwards when the ' +
+		'visitor scrolls back, and every existing keyframes name works with it unchanged.',
+	ModelViewer:
+		'A real WebGL 3D model viewer. Point modelUrl at a .glb or .gltf file and the visitor can drag to turn it. Reach for this whenever a design shows a product, a device or any object in three dimensions -- it is NOT something to fake with a sprite sheet or a rotating image. Models are scaled to a common size on load, because glTF carries no agreed unit and the same object arrives 1000x larger from one exporter than another, so zoom and cameraHeight mean the same thing whatever file is loaded. environmentPreset picks a lighting rig (studio, soft, dramatic, warm) built from real lights, which costs no download; set hdriUrl only when the material is metal or glass and genuinely needs something to reflect, since an .hdr is several megabytes. onMeshClick reports the clicked part as meshName, and bindingPath holds the selected part name in BOTH directions, so a page can read the selection or drive it. highlightColor tints the selected part. Setting onMeshHover makes every pointer move raycast the scene, so leave it empty unless something depends on it. Wheel zoom is deliberately off so the model does not trap the page scroll. Compressed meshes (DRACO, KTX2) are NOT supported and load as nothing. Costs one WebGL context of about six on a page, loads three.js in a separate chunk, renders a single frame under prefers-reduced-motion and stops entirely when scrolled out of view.',
 	ParticleField:
-		"A real WebGL particle system: thousands of points that drift and part around the cursor. Reach for this when a design calls for floating motes, a starfield, dust or an orb cloud -- it is NOT something to approximate with CSS. preset picks orbField, starfield or dust; distribution reseeds the cloud as a sphere, shell, disc or box; colorA/colorB shade the particles across a per-particle random value. pointerStrength moves particles AWAY from the cursor, and a NEGATIVE value pulls them toward it. count is capped at 200,000 because every particle costs a fragment pass and a careless value slows the whole page, not just this component. Particles draw on a transparent canvas, so set fallbackColor or they sit on whatever is behind the component. Children render above the field. Costs one WebGL context of about six on a page, loads three.js in a separate chunk, renders a single frame under prefers-reduced-motion and stops entirely when scrolled out of view.",
+		'A real WebGL particle system: thousands of points that drift and part around the cursor. Reach for this when a design calls for floating motes, a starfield, dust or an orb cloud -- it is NOT something to approximate with CSS. preset picks orbField, starfield or dust; distribution reseeds the cloud as a sphere, shell, disc or box; colorA/colorB shade the particles across a per-particle random value. pointerStrength moves particles AWAY from the cursor, and a NEGATIVE value pulls them toward it. count is capped at 200,000 because every particle costs a fragment pass and a careless value slows the whole page, not just this component. Particles draw on a transparent canvas, so set fallbackColor or they sit on whatever is behind the component. Children render above the field. Costs one WebGL context of about six on a page, loads three.js in a separate chunk, renders a single frame under prefers-reduced-motion and stops entirely when scrolled out of view.',
+	ScrollScene:
+		'A real WebGL scene scrubbed by SCROLL POSITION rather than by a clock: the object turns, rises or the camera pushes in exactly as far as the visitor has scrolled, and it runs backwards when they scroll back. Reach for this for scrollytelling and for a hero that reacts to the page moving. Set axis to inline to be driven by a HORIZONTAL scroller such as a carousel or a Grid with overflow-x, which is a thing CSS alone cannot do here. mode picks what progress means: view measures this component crossing the viewport (a section reveal), scroll measures the whole scroller end to end (a page progress indicator). rangeStart and rangeEnd trim the travel so the scene can finish before the section leaves. bindingPath publishes the 0 to 1 progress to page data, so other components can react to the same scroll without each measuring it again. onSceneEnter and onSceneExit fire ONCE each per mount, not per frame. Under prefers-reduced-motion it renders one still frame at reducedMotionProgress and never subscribes to scroll at all. Costs one WebGL context of about six on a page, loads three.js in a separate chunk, and stops rendering when scrolled out of view.',
 	ShaderBackground:
 		"A real WebGL shader surface, for a hero backdrop or a section background. This is the component to reach for when a design calls for animated gradients, aurora, flowing colour or a living background: it is NOT something to approximate with CSS gradients. Set preset to aurora, waves or gradientMesh for a built-in, or to custom and write GLSL in fragmentShader. colorA/colorB/colorC override the preset's colours and accept theme variables. Drop children inside it and they render above the shader, so a headline or a whole Grid can sit on top; keep text readable with the overlay sub-component's background rather than dimming the shader. It costs one WebGL context out of about six on a page, loads three.js in a separate chunk so pages without it pay nothing, and falls back to the poster image or fallbackColor where WebGL is unavailable. It renders a single frame under prefers-reduced-motion and stops rendering entirely when scrolled out of view. When writing a custom shader, declare every uniform you use in the GLSL: uTime, uResolution, uPointer and uProgress are bound for you but their declarations are not added for you.",
 	ArrayRepeater:
 		'Repeats child components for each item in a bound array. Supports add, delete, and reorder operations on list data.',
-	Audio:
-		'Audio player with playback controls, seek bar, volume, and playback speed. Use for music or audio file playback.',
-	Button:
-		'Clickable button with designType variants (default, outlined, text, fab, icon, decorative). Triggers onClick events.',
+	Audio: 'Audio player with playback controls, seek bar, volume, and playback speed. Use for music or audio file playback.',
+	Button: 'Clickable button with designType variants (default, outlined, text, fab, icon, decorative). Triggers onClick events.',
 	ButtonBar:
 		'Rarely used. Similar to Dropdown but shows options as buttons. Horizontal group of buttons for related actions.',
 	Calendar:
 		'Date picker with month/year navigation, date range selection, and weekend highlighting. Binds to a date value.',
 	Carousel:
 		'Big carousel that shows one item at a time with navigation arrows and dot indicators. Used in sites for hero sections and slideshows.',
-	Chart:
-		'Data visualization using Chart.js — supports bar, line, pie, doughnut, radar, and polar area chart types.',
+	Chart: 'Data visualization using Chart.js — supports bar, line, pie, doughnut, radar, and polar area chart types.',
 	CheckBox:
 		'Boolean toggle input with label. Renders as a checkbox with checked/unchecked states and optional indeterminate.',
 	ColorPicker:
@@ -659,8 +1028,7 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 		'Shows a series of images in a grid/masonry layout with lightbox preview. Used in sites for image collections.',
 	Grid: 'Flex/grid container for layout. The primary building block — use to arrange child components in rows, columns, or grid layouts.',
 	Icon: 'Displays an icon from the platform icon library. Only usable when icon packs are configured in the UI application definition.',
-	Iframe:
-		'Embeds an external webpage or URL inside an iframe. Used mostly in sites for third-party content.',
+	Iframe: 'Embeds an external webpage or URL inside an iframe. Used mostly in sites for third-party content.',
 	Image: 'Displays an image with responsive sizing, object-fit modes, and optional click/hover events.',
 	ImageWithBrowser:
 		'Image display with built-in file browser for selecting images from platform storage. Used mostly for blog editing and content authoring.',
@@ -681,12 +1049,10 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 		'Phone number input with country code dropdown, flag icons, and international format validation.',
 	Popover:
 		'Shows a component when hovered/clicked on the trigger component. Use for tooltips, menus, or contextual info.',
-	Popup:
-		'Modal dialog overlay with backdrop, close button, and customizable content area. Use for confirmations or forms.',
+	Popup: 'Modal dialog overlay with backdrop, close button, and customizable content area. Use for confirmations or forms.',
 	ProgressBar:
 		'Visual progress indicator showing completion percentage. Supports horizontal bar and circular variants.',
-	Prompt:
-		'AI chat interface with SSE streaming, message history, and tool call display. Connects to AI agent endpoints.',
+	Prompt: 'AI chat interface with SSE streaming, message history, and tool call display. Connects to AI agent endpoints.',
 	RadioButton:
 		'Radio button group for single-selection from multiple options. Each option has a label and value.',
 	RangeSlider:
@@ -705,8 +1071,7 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 		'Multi-step wizard/progress indicator showing numbered steps with active/done/pending states. Use for wizard-kind setups.',
 	SubPage:
 		'Used to show a page inside another page. Use for reusable page fragments and page composition.',
-	Table:
-		'Data table with pagination, sorting, filtering, column/grid view modes, and row selection. Uses TableColumn children.',
+	Table: 'Data table with pagination, sorting, filtering, column/grid view modes, and row selection. Uses TableColumn children.',
 	TableColumn:
 		'Defines a single column in a Table — specifies header, data binding, width, sortability, and cell renderer.',
 	TableColumnHeader:
@@ -743,8 +1108,7 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 	Timer: 'Calls a page event function repeatedly like setTimeout or setInterval. Use for polling or delayed actions.',
 	ToggleButton:
 		'On/off switch toggle with label. Renders as a sliding switch control with customizable track and knob.',
-	Video:
-		'Video player with playback controls, seek bar, volume, fullscreen, and playback speed. Supports multiple sources.',
+	Video: 'Video player with playback controls, seek bar, volume, fullscreen, and playback speed. Supports multiple sources.',
 };
 
 // ── Sub-Component Descriptions ─────────────────────────────────
@@ -765,7 +1129,7 @@ const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
 	toggleCollapsed: 'Expand/collapse button while the node is closed',
 	guideLine: 'Guide and connector lines between a parent and its children',
 	leafSpacer: 'Spacer keeping leaf rows aligned with rows that have a toggle',
-	childrenContainer: 'Container holding a node\'s child nodes',
+	childrenContainer: "Container holding a node's child nodes",
 	dragHandle: 'Grab handle for dragging a node',
 	dropBefore: 'Indicator shown when a drag will drop above a node',
 	dropAfter: 'Indicator shown when a drag will drop below a node',
@@ -847,11 +1211,12 @@ const SUB_COMPONENT_DESCRIPTIONS: Record<string, string> = {
 
 const COMPONENT_STRUCTURES: Record<string, string> = {
 	ShaderBackground: '[container(canvas) | poster] → overlay → content[children...]',
+	ModelViewer: '[container(canvas) | poster] → overlay → content[children...]',
 	ParticleField: '[container(canvas) | poster] → overlay → content[children...]',
+	ScrollScene: '[container(canvas) | poster] → overlay → content[children...]',
 	BlueprintEditor:
 		'boardHeader[boardTitle + boardDescription] → emptyState? → lensRow[lensLabel + lensChip[lensChipCount?]...] → band[bandHeading + bandSubLine? → rail[ railColumn[ columnHeader[columnIcon + columnName + columnRollup + columnMenu?] → planCard[cardTitle + cardDescription? + statusMark[statusDot]? + cardMenu? → cardDetail[fieldRow[fieldLabel + fieldValue + fieldHint?]... + optionChipRow[optionChip...]? + previewFrame[previewBody + previewCaption]? + actionRow[actionButton...]]?]... → addCardBox? ]... → addColumnBox? ]]...',
-	Tree:
-		'viewport → nodes[ node[ nodeRow[toggle | checkBox? | nodeContent(childTemplate) | nodeActions?] → children[ node... ] ] ] | columns[ column[columnHeader? → nodeRow...]... ]',
+	Tree: 'viewport → nodes[ node[ nodeRow[toggle | checkBox? | nodeContent(childTemplate) | nodeActions?] → children[ node... ] ] ] | columns[ column[columnHeader? → nodeRow...]... ]',
 	TextBox:
 		'[label + asterisk?] → [leftIcon? | inputBox | rightIcon?] → supportText? → errorText?',
 	Dropdown:
@@ -859,13 +1224,11 @@ const COMPONENT_STRUCTURES: Record<string, string> = {
 	Button: '[leftIcon? | label | rightIcon?]',
 	CheckBox: '[checkbox | label + text?]',
 	ToggleButton: '[knob | checkbox(hidden) | label?]',
-	Table:
-		'[modesContainer? | searchBox?] → [columnHeaders → rows...] | [gridCards...] → [pagination]',
+	Table: '[modesContainer? | searchBox?] → [columnHeaders → rows...] | [gridCards...] → [pagination]',
 	Tabs: 'tabBar[tabButton... + highlighter] → childContainer(activeTabContent)',
 	Calendar:
 		'[label + asterisk?] → [inputBox | caretIcon] → {calendar[header → weekNames → dateGrid]} → supportText?',
-	TextArea:
-		'[label + asterisk?] → [textArea | clearIcon?] → supportText? → errorText?',
+	TextArea: '[label + asterisk?] → [textArea | clearIcon?] → supportText? → errorText?',
 	PhoneNumber:
 		'[label + asterisk?] → [countryDropdown | inputBox | clearIcon?] → supportText? → errorText?',
 	Stepper: 'steps[icon + title + connectorLine]...',
@@ -877,16 +1240,13 @@ const COMPONENT_STRUCTURES: Record<string, string> = {
 	FileUpload:
 		'label? → [uploadIcon | mainText | subText?] → uploadButton? → supportText? → validationMessages?',
 	Otp: '[label + asterisk?] → [inputBox... | visibilityToggle?] → supportText? → errorText?',
-	Audio:
-		'[rewindBtn | playPauseBtn | forwardBtn | fileName? | seekSlider | timeText | volumeControls | playbackSpeed?]',
-	Video:
-		'[videoElement] → {controls[seekSlider → [playPause | timeText | volume] → [pip? | fullscreen]]}',
+	Audio: '[rewindBtn | playPauseBtn | forwardBtn | fileName? | seekSlider | timeText | volumeControls | playbackSpeed?]',
+	Video: '[videoElement] → {controls[seekSlider → [playPause | timeText | volume] → [pip? | fullscreen]]}',
 	ProgressBar:
 		'topLabel? → track[progressFill + label?] → bottomLabel? | circular: svg[trackCircle + progressCircle] + label',
 	RadioButton: 'option[radioCircle | label]...',
 	Carousel: 'indicators? → [leftArrow | slides... | rightArrow] → indicators?',
-	Gallery:
-		'{lightbox[toolbar → [leftArrow | imageSlide | rightArrow] → thumbnails?]}',
+	Gallery: '{lightbox[toolbar → [leftArrow | imageSlide | rightArrow] → thumbnails?]}',
 	Grid: 'children... (flex/grid layout)',
 	SectionGrid: '<semanticTag>children...</semanticTag>',
 	Text: '[prefixText? | mainText | suffixText?]',
@@ -899,8 +1259,7 @@ const COMPONENT_STRUCTURES: Record<string, string> = {
 	Form: 'childInputs...',
 	ColorPicker:
 		'[label + asterisk?] → [inputBox | colorPreview] → {colorPickerPanel} → supportText? → errorText?',
-	'Small Carousel':
-		'[leftArrow | visibleItems... | rightArrow] → indicators?',
+	'Small Carousel': '[leftArrow | visibleItems... | rightArrow] → indicators?',
 };
 
 // ── Design Type Visual Descriptions ────────────────────────────
@@ -920,8 +1279,7 @@ const DESIGN_TYPE_DESCRIPTIONS: Record<string, string> = {
 		'Standard appearance — solid background, minimal border, 32px height, 4px border-radius.',
 	outlined:
 		'Transparent background with visible 1px border. Pill shape (16px border-radius), extra horizontal padding.',
-	filled:
-		'Solid background color fill with subtle border. Standard 4px border-radius.',
+	filled: 'Solid background color fill with subtle border. Standard 4px border-radius.',
 	text: 'Minimal — no background, no border. Text-only appearance.',
 	bigDesign1:
 		'Large variant (60px height) with gradient background fill. Good for hero/CTA elements.',
@@ -929,11 +1287,9 @@ const DESIGN_TYPE_DESCRIPTIONS: Record<string, string> = {
 		'Invisible by default (no border/background). Reveals border and background on hover/focus.',
 	fabButton:
 		'Circular floating action button (48px, border-radius 50%). Solid background, no label.',
-	fabButtonMini:
-		'Small circular FAB variant (32px, border-radius 50%).',
+	fabButtonMini: 'Small circular FAB variant (32px, border-radius 50%).',
 	iconButton: 'Icon-only button — no label text, compact sizing.',
-	decorative:
-		'Decorative variant with hover-color background and specialized icon sections.',
+	decorative: 'Decorative variant with hover-color background and specialized icon sections.',
 };
 
 // ── Sub-Component Builder ──────────────────────────────────────
@@ -1006,7 +1362,7 @@ function extractPropertiesFromFile(filePath: string): CatalogProperty[] {
 				if (ts.isObjectLiteralExpression(element)) {
 					const spreadRef = element.properties
 						.filter(ts.isSpreadAssignment)
-						.map((s) => extractCommonPropReference(s.expression))
+						.map(s => extractCommonPropReference(s.expression))
 						.find((ref): ref is string => !!ref && !!COMMON_PROPERTIES[ref]);
 
 					const prop = extractPropertyFromObject(
@@ -1159,7 +1515,9 @@ function extractMetaFromBlock(block: string): ComponentExportMeta | null {
 		// Extract property values from within defaultTemplate block
 		const templateBlock = extractBalancedBlock(block, 'defaultTemplate');
 		if (templateBlock) {
-			const propMatches = templateBlock.matchAll(/(\w+):\s*\{\s*value:\s*['"]?([^'"}]+)['"]?\s*\}/g);
+			const propMatches = templateBlock.matchAll(
+				/(\w+):\s*\{\s*value:\s*['"]?([^'"}]+)['"]?\s*\}/g,
+			);
 			const props: Record<string, any> = {};
 			for (const m of propMatches) {
 				props[m[1]] = m[2].trim();
@@ -1175,9 +1533,7 @@ function extractMetaFromBlock(block: string): ComponentExportMeta | null {
 	const bindingBlock = extractBalancedBlock(block, 'bindingPaths');
 	if (bindingBlock) {
 		bindingPaths = {};
-		const bindings = bindingBlock.matchAll(
-			/(\w+):\s*\{\s*name:\s*['"]([^'"]+)['"]\s*\}/g,
-		);
+		const bindings = bindingBlock.matchAll(/(\w+):\s*\{\s*name:\s*['"]([^'"]+)['"]\s*\}/g);
 		for (const b of bindings) {
 			bindingPaths[b[1]] = b[2];
 		}
@@ -1221,10 +1577,7 @@ function extractComponentExportMeta(filePath: string): ComponentExportMeta | nul
 	const componentBlockMatch =
 		content.match(
 			/const\s+component\s*(?::\s*Component)?\s*=\s*\{([\s\S]*?)\};\s*\n\s*export\s+default\s+component/,
-		) ??
-		content.match(
-			/export\s+const\s+\w+\s*:\s*Component\s*=\s*\{([\s\S]*?)\};\s*\n/,
-		);
+		) ?? content.match(/export\s+const\s+\w+\s*:\s*Component\s*=\s*\{([\s\S]*?)\};\s*\n/);
 	if (!componentBlockMatch) return null;
 
 	return extractMetaFromBlock(componentBlockMatch[1]);
@@ -1389,23 +1742,36 @@ function processTableComponents(tableDir: string): Array<[string, CatalogCompone
 
 /** CSS state classes that appear in selectors but are NOT sub-element targets. */
 const SELECTOR_STATE_CLASSES = new Set([
-	'active', 'done', 'nextItem', 'previousItem', 'selected',
-	'hasValue', 'hasError', 'isActive', 'readOnly', 'editMode',
-	'lowLightWeekend', 'horizontal', 'vertical', 'textRight', 'textLeft',
-	'validationSuccess', 'dateWeekend', 'dateSelected', 'dateSelectable',
-	'dateDisabled', 'dateNotInMonth', 'dateToday', 'row',
+	'active',
+	'done',
+	'nextItem',
+	'previousItem',
+	'selected',
+	'hasValue',
+	'hasError',
+	'isActive',
+	'readOnly',
+	'editMode',
+	'lowLightWeekend',
+	'horizontal',
+	'vertical',
+	'textRight',
+	'textLeft',
+	'validationSuccess',
+	'dateWeekend',
+	'dateSelected',
+	'dateSelectable',
+	'dateDisabled',
+	'dateNotInMonth',
+	'dateToday',
+	'row',
 ]);
 
 /** Design/color-scheme class names that should NOT be treated as design types. */
-const COLOR_SCHEME_NAMES = new Set([
-	'primary', 'secondary', 'tertiary', 'quaternary', 'quinary',
-]);
+const COLOR_SCHEME_NAMES = new Set(['primary', 'secondary', 'tertiary', 'quaternary', 'quinary']);
 
 /** State classes that may appear directly on the component root in selectors. */
-const ROOT_STATE_CLASSES = new Set([
-	...SELECTOR_STATE_CLASSES,
-	...COLOR_SCHEME_NAMES,
-]);
+const ROOT_STATE_CLASSES = new Set([...SELECTOR_STATE_CLASSES, ...COLOR_SCHEME_NAMES]);
 
 interface StylePropertyEntry {
 	cp?: string;
@@ -1650,9 +2016,13 @@ function mergeThemeStyleProperties(components: Record<string, CatalogComponent>)
 			themeStyleCount++;
 			const designCount = themeProps.designTypes.length;
 			const subElCount = Object.keys(themeProps.themeStyles).length;
-			console.log(`  + ${compName} (${designCount} design types, ${subElCount} sub-elements)`);
+			console.log(
+				`  + ${compName} (${designCount} design types, ${subElCount} sub-elements)`,
+			);
 		} else {
-			console.warn(`  ? ${compName}: style properties found but no matching component in catalog`);
+			console.warn(
+				`  ? ${compName}: style properties found but no matching component in catalog`,
+			);
 		}
 	}
 
@@ -1689,7 +2059,9 @@ function main() {
 		if (result) {
 			const [name, comp] = result;
 			components[name] = comp;
-			console.log(`  ✓ ${name} (${comp.properties.length} props, ${comp.pseudoStates.length} pseudo-states)`);
+			console.log(
+				`  ✓ ${name} (${comp.properties.length} props, ${comp.pseudoStates.length} pseudo-states)`,
+			);
 		}
 	}
 
@@ -1702,6 +2074,7 @@ function main() {
 		componentCount: Object.keys(components).length,
 		designTypeDescriptions: DESIGN_TYPE_DESCRIPTIONS,
 		components,
+		scenes: loadSceneContract(),
 	};
 
 	fs.writeFileSync(OUTPUT_PATH, JSON.stringify(catalog, null, 2));

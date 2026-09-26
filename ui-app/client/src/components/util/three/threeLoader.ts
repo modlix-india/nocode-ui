@@ -20,6 +20,7 @@ import type * as THREE_NS from 'three';
 import type { GLTFLoader as GLTFLoaderType } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import type { OrbitControls as OrbitControlsType } from 'three/examples/jsm/controls/OrbitControls.js';
 import type { RGBELoader as RGBELoaderType } from 'three/examples/jsm/loaders/RGBELoader.js';
+import type { TransformControls as TransformControlsType } from 'three/examples/jsm/controls/TransformControls.js';
 
 export interface ThreeBundle {
 	THREE: typeof THREE_NS;
@@ -61,6 +62,38 @@ export function loadThree(): Promise<ThreeBundle> {
 	return pending;
 }
 
+/**
+ * The editor's drag handles, loaded separately from everything above.
+ *
+ * Separate because nothing on a customer page ever touches TransformControls,
+ * and folding it into `loadThree` would put it in the chunk every page with a
+ * scene downloads. It has its own cache group in webpack.prod.js for the same
+ * reason -- the `three` group matches all of node_modules/three, so without a
+ * higher-priority group naming this file it lands in the shared chunk whatever
+ * the import site says.
+ */
+let pendingGizmo: Promise<TransformControlsCtor> | null = null;
+
+export type TransformControlsCtor = new (
+	camera: THREE_NS.Camera,
+	domElement: HTMLElement,
+) => TransformControlsType;
+
+export function loadTransformControls(): Promise<TransformControlsCtor> {
+	if (pendingGizmo) return pendingGizmo;
+	// No webpackChunkName on purpose. The `three-gizmo` cache group in
+	// webpack.prod.js is what places this module, and a magic comment sharing
+	// a name with a cache group is the collision that makes the group silently
+	// never fire.
+	pendingGizmo = import('three/examples/jsm/controls/TransformControls.js')
+		.then(m => m.TransformControls as unknown as TransformControlsCtor)
+		.catch(e => {
+			pendingGizmo = null;
+			throw e;
+		});
+	return pendingGizmo;
+}
+
 /** True once the chunk is in memory, so a caller can skip its loading state. */
 export function isThreeLoaded(): boolean {
 	return pending !== null;
@@ -69,4 +102,5 @@ export function isThreeLoaded(): boolean {
 /** Testing seam: drop the cache between cases. */
 export function resetThreeLoaderForTests(): void {
 	pending = null;
+	pendingGizmo = null;
 }

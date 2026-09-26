@@ -1,4 +1,5 @@
 import { themeExtractor } from '../../../context/StoreContext';
+import { derivePalette, schemeThemeColor, type ScenePalette } from './palette';
 
 /**
  * Resolve a colour property that may reference theme variables.
@@ -35,3 +36,31 @@ export function resolveThemeColor(value: string | undefined): string | undefined
 /** Resolve several at once, preserving position. */
 export const resolveThemeColors = (values: Array<string | undefined>): Array<string | undefined> =>
 	values.map(resolveThemeColor);
+
+/**
+ * The palette a colour scheme resolves to, or undefined to leave the scene's
+ * own colours alone.
+ *
+ * Undefined is returned for three different situations on purpose, because the
+ * caller's response to all three is the same and it is the right one: keep what
+ * the preset chose. The scheme is `_preset`; the theme has nothing under that
+ * variable; or the theme's value is a colour `parseColor` cannot read.
+ */
+export function schemePalette(scheme: string | undefined): ScenePalette | undefined {
+	const variable = schemeThemeColor(scheme);
+	if (!variable) return undefined;
+	return derivePalette(resolveThemeColor(variable));
+}
+
+/**
+ * A colour property, the scheme's colour, or nothing -- in that order.
+ *
+ * The author's own value always wins. A scheme is a default, not an override:
+ * somebody who typed a colour into the panel and then picked a scheme expects
+ * to keep their colour, and silently discarding it is the kind of thing that
+ * reads as the colour field being broken.
+ */
+export function colorOr(explicit: string | undefined, fromScheme: string | undefined) {
+	const resolved = resolveThemeColor(explicit);
+	return resolved && resolved.trim() ? resolved : fromScheme;
+}

@@ -1,6 +1,15 @@
 import { StylePropertyDefinition } from '../../types/common';
 
-/** Inline rather than externalised: a canvas has almost no themeable surface. */
+/**
+ * Inline rather than externalised: a canvas has almost no themeable surface.
+ *
+ * A root-level rule needs `np: true` and the FULL selector. processEachResolution
+ * skips any entry whose `sel` is falsy, so `sel: ''` -- the obvious way to say
+ * "the component itself" -- emits nothing at all. That is how these components
+ * shipped with a min-height default that never applied: every one of them
+ * rendered as a zero-height box unless the page happened to carry an explicit
+ * height leaf, and nothing reported a problem.
+ */
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		gn: 'Size',
@@ -8,7 +17,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'particleFieldMinHeight',
 		dv: '320px',
 		cp: 'min-height',
-		sel: '',
+		sel: '.comp.compParticleField',
+		np: true,
 	},
 	{
 		gn: 'Effects',
@@ -16,7 +26,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'particleFieldCanvasOpacity',
 		dv: '1',
 		cp: 'opacity',
-		sel: ' ._canvasHolder',
+		sel: '.comp.compParticleField ._canvasHolder',
+		np: true,
 	},
 	{
 		gn: 'Effects',
@@ -25,7 +36,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'particleFieldOverlayBackground',
 		dv: 'transparent',
 		cp: 'background',
-		sel: ' ._overlay',
+		sel: '.comp.compParticleField ._overlay',
+		np: true,
 	},
 ];
 

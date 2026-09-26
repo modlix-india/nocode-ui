@@ -474,6 +474,23 @@ function migrate(d: Record<string, unknown>): Record<string, unknown> {
  * Normalisation has already made the document renderable, so everything here
  * is "this will not do what you meant", not "this will crash".
  */
+/**
+ * A stored scene document wins over a preset name.
+ *
+ * SceneContentEditor writes `scene` and DELETES `preset` in the same change, so
+ * in practice only one is ever set. This is the belt to that braces: a
+ * definition carrying both -- hand-edited, or written by a tool -- must resolve
+ * the same way every time rather than depending on which branch happened to run
+ * first. The document wins, because it is the one a person edited.
+ */
+export function resolveSceneDocument(
+	scene: unknown,
+	fromPreset: () => SceneDocument,
+): SceneDocument {
+	if (scene && typeof scene === 'object') return normalizeSceneDocument(scene);
+	return fromPreset();
+}
+
 export function validateSceneDocument(doc: SceneDocument): string[] {
 	const errors: string[] = [];
 

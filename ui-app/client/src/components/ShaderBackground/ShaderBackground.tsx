@@ -50,7 +50,6 @@ const component: Component = {
 			preset: { value: 'aurora' },
 		},
 	},
-	sections: [{ name: 'Shader Backgrounds', pageName: 'shaderBackground' }],
 	stylePropertiesForTheme: styleProperties,
 };
 

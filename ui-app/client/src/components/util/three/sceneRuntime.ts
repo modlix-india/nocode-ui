@@ -97,7 +97,36 @@ function buildGeometry(three: ThreeBundle, obj: SceneObject): any {
 	}
 }
 
-const CSS_COLOR = /^(#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})|rgba?\(|hsla?\(|[a-z]+)$/i;
+/**
+ * Colour forms three's `Color.setStyle` understands.
+ *
+ * The functional branches MUST consume their closing paren. The first version
+ * of this wrote `rgba?\(` inside a `^(...)$` group, so the `$` anchored the
+ * whole alternation and that branch could only ever match the literal string
+ * "rgb(" -- which is not a colour anyone writes. Every real
+ * `rgb(94, 192, 164)` fell through to the warning and rendered as the grey
+ * fallback, and since the platform's own colour picker emits exactly that
+ * form, picking a colour from the swatch silently did nothing.
+ *
+ * `[^)]*` rather than a digit pattern on purpose: it accepts the comma form,
+ * the modern space-separated form, percentages and a `/ alpha` suffix, and
+ * leaves judging the contents to three, which is the thing that actually
+ * parses them.
+ */
+const CSS_COLOR =
+	/^(#(?:[0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})|rgba?\([^)]*\)|hsla?\([^)]*\)|[a-z]+)$/i;
+
+/**
+ * Whether three will be able to read this string as a colour.
+ *
+ * Exported as its own function so the forms can be tested without a GPU: the
+ * bug above was in the pattern, and a test that needed a WebGL context would
+ * never have been written.
+ */
+export function isParsableColor(value: unknown): boolean {
+	const s = typeof value === 'string' ? value.trim() : '';
+	return !!s && CSS_COLOR.test(s);
+}
 
 /**
  * Parse a colour, loudly.
@@ -117,7 +146,7 @@ export function parseColor(three: ThreeBundle, value: unknown, fallback = '#8888
 	// ThemeExtractor -> components/index a cycle, and would pull the whole
 	// component tree into this module's unit tests.
 	const s = typeof value === 'string' ? value.trim() : '';
-	if (s && CSS_COLOR.test(s)) {
+	if (isParsableColor(s)) {
 		try {
 			return new T.Color(s);
 		} catch {
@@ -126,10 +155,11 @@ export function parseColor(three: ThreeBundle, value: unknown, fallback = '#8888
 	}
 	if (s) {
 		console.warn(
-			`[three] Cannot parse the colour "${s}". A scene colour must be a CSS colour ` +
-				`such as #1e1b4b. To use a theme variable, bind the property to an ` +
-				`expression like Theme.colorOne rather than writing <colorOne>, which is ` +
-				`style-sheet syntax and is not resolved here.`,
+			`[three] Cannot parse the colour "${s}". A scene colour must be a CSS colour: ` +
+				`#1e1b4b, rgb(30, 27, 75), hsl(248, 47%, 20%) or a named colour. To use a ` +
+				`theme variable, bind the property to an expression like Theme.colorOne ` +
+				`rather than writing <colorOne>, which is style-sheet syntax and is not ` +
+				`resolved here.`,
 		);
 	}
 	return new T.Color(fallback);
@@ -147,6 +177,13 @@ function buildShaderMaterial(three: ThreeBundle, doc: SceneDocument, shaderId: s
 		uTime: { value: 0 },
 		uResolution: { value: new T.Vector2(1, 1) },
 		uPointer: { value: new T.Vector2(0, 0) },
+		// 0 while the pointer has never been over the surface or has left it,
+		// 1 while it is on. uPointer alone cannot express this: it is parked
+		// far off-canvas at rest, which reads correctly only for a shader that
+		// pushes AWAY from the pointer. A shader that pulls TOWARD it reads the
+		// parked value as a real position and sends its effect off-screen, so
+		// it renders flat until the pointer first arrives. Gate on this instead.
+		uPointerActive: { value: 0 },
 		uProgress: { value: 0 },
 	};
 	for (const u of shader.uniforms) {
@@ -406,6 +443,20 @@ export function buildScene(three: ThreeBundle, doc: SceneDocument, aspect: numbe
 export function disposeSceneGraph(root: any): void {
 	if (!root?.traverse) return;
 	const seen = new Set<any>();
+	// An HDRI hangs off the scene itself, not off any node, so traverse never
+	// reaches it and it would survive every dispose for the life of the tab.
+	for (const slot of ['environment', 'background'] as const) {
+		const t = root[slot];
+		if (t?.isTexture && !seen.has(t)) {
+			seen.add(t);
+			try {
+				t.dispose?.();
+			} catch {
+				// Already gone.
+			}
+		}
+		if (t?.isTexture) root[slot] = null;
+	}
 	root.traverse((node: any) => {
 		if (node.geometry && !seen.has(node.geometry)) {
 			seen.add(node.geometry);
@@ -485,6 +536,7 @@ export function updateSharedUniforms(
 		width?: number;
 		height?: number;
 		pointer?: { x: number; y: number };
+		pointerActive?: boolean;
 		progress?: number;
 	},
 ): void {
@@ -498,6 +550,9 @@ export function updateSharedUniforms(
 		}
 		if (u.uPointer && values.pointer) {
 			u.uPointer.value.set(values.pointer.x, values.pointer.y);
+		}
+		if (u.uPointerActive && values.pointerActive !== undefined) {
+			u.uPointerActive.value = values.pointerActive ? 1 : 0;
 		}
 	}
 }
