@@ -38,6 +38,42 @@ interface PagesResponse {
 	rows?: Array<PageRow>;
 }
 
+/**
+ * What the engine answers for scroll depth on the same page.
+ *
+ * Drawn here rather than on a card of its own because the two answer one question together:
+ * a heatmap says a call to action is never clicked, and the depth says whether anybody ever
+ * got far enough down to see it. Splitting them across two cards with two page pickers makes
+ * the reader hold the answer in their head while they go and re-select the page.
+ */
+/**
+ * Places worth looking at, as hypotheses.
+ *
+ * Drawn as outlines over the heat rather than as more heat: heat means "clicked a lot", and a
+ * dead spot can be cold. Overloading one visual channel with two meanings is how a reader ends
+ * up believing something the data did not say.
+ */
+interface FrictionResponse {
+	friction?: {
+		rage?: Array<{ x: number; y: number; clicks: number; sessions: number }>;
+		dead?: Array<{ x: number; y: number; clicks: number; sessions: number }>;
+		clicks?: number;
+		measured?: boolean;
+		cellX?: number;
+		cellY?: number;
+	};
+}
+
+interface ScrollResponse {
+	rows?: Array<{ label: string; events: number }>;
+	scroll?: {
+		views?: number;
+		averagePct?: number;
+		medianPct?: number;
+		foldPct?: number;
+	};
+}
+
 function authToken(): string | undefined {
 	try {
 		return window.localStorage.getItem('AuthToken') || undefined;
@@ -132,6 +168,8 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 	);
 
 	const [data, setData] = useState<HeatmapResponse['heatmap']>();
+	const [scroll, setScroll] = useState<ScrollResponse | undefined>();
+	const [friction, setFriction] = useState<FrictionResponse['friction']>();
 	const [pages, setPages] = useState<Array<PageRow>>([]);
 	const [path, setPath] = useState<string>('');
 	// The application's name for what is being looked at. Empty means "whatever is at this
@@ -173,16 +211,46 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 		[appCode, clientCode],
 	);
 
-	// The page list, so somebody can pick a page without knowing one by heart.
+	/**
+	 * The page list, so somebody can pick a page without knowing one by heart.
+	 *
+	 * Both measurements, merged. Clicks are recorded only when a site switches heatmaps on and
+	 * depth is recorded unless it switches scroll off, so on most sites the two lists are
+	 * different and one of them is empty. Offering only the pages with CLICKS left this whole
+	 * card saying "no page has clicks yet" on a site that had depth for every page it served,
+	 * which is the common case rather than an edge one.
+	 */
 	useEffect(() => {
 		if (!appCode || !clientCode) return;
 		let cancelled = false;
 
-		ask({ widget: 'heatmapPages', ...window_, limit: 50 })
-			.then(r => {
+		Promise.all([
+			ask({ widget: 'heatmapPages', ...window_, limit: 50 }).catch(() => undefined),
+			ask({ widget: 'scrollPages', ...window_, limit: 50 }).catch(() => undefined),
+		])
+			.then(([clicks, scrolls]) => {
 				if (cancelled) return;
-				const rows = (r.data as PagesResponse)?.rows ?? [];
+
+				// Keyed on the pair, because a page and an address are not interchangeable:
+				// two arms of one A/B test share an address, and one page can be served at
+				// several. The engine hands back both for exactly that reason.
+				const byKey = new Map<string, PageRow>();
+				for (const r of [
+					...((clicks?.data as PagesResponse)?.rows ?? []),
+					...((scrolls?.data as PagesResponse)?.rows ?? []),
+				]) {
+					const key = `${r.page ?? ''}\n${r.path ?? ''}`;
+					const seen = byKey.get(key);
+					// Summed only to rank the list. The number is not shown as a total of
+					// anything — a click and a scroll report are not the same unit — it just
+					// puts the pages somebody is most likely to want at the top.
+					if (seen) seen.events += r.events;
+					else byKey.set(key, { ...r });
+				}
+
+				const rows = [...byKey.values()].sort((a, b) => b.events - a.events);
 				setPages(rows);
+
 				// The busiest page is the useful default: an empty frame teaches nobody
 				// anything, and the alternative is asking the reader to guess a path.
 				const first = rows[0];
@@ -217,6 +285,32 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 				...window_,
 			});
 			setData((r.data as HeatmapResponse)?.heatmap);
+
+			// Asked for separately and failing separately: a site with clicks but no scroll
+			// reports — one measuring before the beacon could report depth, or with
+			// `captureScroll` off — must still draw its heatmap rather than showing an error
+			// about a measurement it never asked for.
+			ask({
+				widget: 'clickFriction',
+				path,
+				page: page || undefined,
+				variant: variant || undefined,
+				viewport: width,
+				...window_,
+			})
+				.then(fr => setFriction((fr.data as FrictionResponse)?.friction))
+				.catch(() => setFriction(undefined));
+
+			ask({
+				widget: 'scrollDepth',
+				path,
+				page: page || undefined,
+				variant: variant || undefined,
+				viewport: width,
+				...window_,
+			})
+				.then(sr => setScroll(sr.data as ScrollResponse))
+				.catch(() => setScroll(undefined));
 		} catch (err: any) {
 			const status = err?.response?.status;
 			const detail = err?.response?.data?.message ?? err?.message ?? 'Query failed';
@@ -256,11 +350,7 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 		// stops at 65535 per side and sooner on total area; this is well inside both and
 		// still twenty screens of page.
 		32000,
-		Math.max(
-			Number(frameHeight) || 2400,
-			lowestClick + (data?.cellY ?? 20) + 200,
-			reported,
-		),
+		Math.max(Number(frameHeight) || 2400, lowestClick + (data?.cellY ?? 20) + 200, reported),
 	);
 	/**
 	 * What to frame.
@@ -340,6 +430,89 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 	// Never scaled up: a 1440 layout blown up to 1800 is a blurry lie about the rendering.
 	const scale = room > 0 ? Math.min(1, room / width) : 1;
 
+	/**
+	 * How far down the page people got, said in words.
+	 *
+	 * The median, not the average, and the fold beside it — because "half the people got 40%
+	 * down" is only actionable once you know that a screenful is 25% of the page. The two
+	 * together are what turn a number into "the button is two screens below where people
+	 * stop".
+	 *
+	 * The sample rides along rather than gating the picture. A map drawn from 23 clicks is
+	 * worth looking at as long as it says it is 23; what must not happen is an automated
+	 * conclusion drawn from them, and there is none here.
+	 */
+	const scrollSummary = useMemo(() => {
+		const sc = scroll?.scroll;
+		if (!sc?.views) return '';
+
+		// "half of 1 view" is not a sentence. One report is an anecdote and is worth saying
+		// so, rather than dressing a single observation up as a distribution.
+		const parts = [
+			sc.views === 1
+				? `1 view, and it got ${sc.medianPct ?? 0}% down`
+				: `half of ${sc.views} views got ${sc.medianPct ?? 0}% down`,
+		];
+		if (sc.foldPct) parts.push(`a screenful is ${sc.foldPct}% of the page`);
+		return parts.join(' · ');
+	}, [scroll]);
+
+	/**
+	 * Friction, in words, and never as a finding.
+	 *
+	 * "Possible", always: a run of clicks in one spot is as consistent with somebody enjoying
+	 * a slider as with somebody jabbing at a dead button, and a click on something inert is as
+	 * consistent with selecting text. The brief's own framing rule, and the reason the count of
+	 * VISITS is what leads — one visit clicking twenty times is a person having a bad minute,
+	 * and twenty visits clicking once each is a design problem.
+	 */
+	const frictionSummary = useMemo(() => {
+		const parts: Array<string> = [];
+		const dead = friction?.dead ?? [];
+		const rage = friction?.rage ?? [];
+
+		if (dead.length) {
+			const visits = dead.reduce((n, s) => n + s.sessions, 0);
+			parts.push(
+				`${dead.length} possible dead spot${dead.length === 1 ? '' : 's'} (${visits} visits)`,
+			);
+		}
+		if (rage.length) {
+			const visits = rage.reduce((n, s) => n + s.sessions, 0);
+			parts.push(
+				`${rage.length} place${rage.length === 1 ? '' : 's'} clicked repeatedly (${visits} visits)`,
+			);
+		}
+		// Said out loud when the measurement is simply absent, because an empty list and an
+		// unmeasured page look identical and one of them is a clean bill of health.
+		if (!parts.length && friction && friction.clicks && !friction.measured) {
+			return 'dead clicks were not recorded for these clicks';
+		}
+		return parts.join(' · ');
+	}, [friction]);
+
+	/**
+	 * The depth bands drawn down the edge of the frame.
+	 *
+	 * One band per gap between thresholds, shaded by the share of views that reached it, so
+	 * the strip reads as a column of colour draining away down the page. It lines up with the
+	 * frame because both are measured in the same thing: a percentage of the document's
+	 * height, which is exactly what the frame's height represents.
+	 */
+	const scrollBands = useMemo(() => {
+		const rows = scroll?.rows ?? [];
+		const views = scroll?.scroll?.views ?? 0;
+		if (!rows.length || !views) return [];
+
+		let top = 0;
+		return rows.map(r => {
+			const pct = Number.parseInt(r.label, 10) || 0;
+			const band = { top, bottom: pct, share: r.events / views, label: r.label };
+			top = pct;
+			return band;
+		});
+	}, [scroll]);
+
 	// Draw. A blob per cell, radius and alpha from the count, additively composited so that
 	// overlapping cells build into a hot region rather than each drawing over the last.
 	useEffect(() => {
@@ -377,7 +550,39 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 			ctx.arc(cx, cy, radius, 0, Math.PI * 2);
 			ctx.fill();
 		}
-	}, [data, width, height, overlay]);
+
+		/*
+		 * Friction on top, as outlines rather than as more heat.
+		 *
+		 * Heat already means "clicked a lot", and a dead spot can be cold — the whole point of
+		 * it is that people press something that does nothing, which may be rare. Drawing it
+		 * in the same channel would say something the data did not, so it gets a shape of its
+		 * own: a ring, which sits over hot and cold alike.
+		 */
+		const ring = (
+			spots: Array<{ x: number; y: number }>,
+			colour: string,
+			dash: Array<number>,
+		) => {
+			ctx.save();
+			ctx.strokeStyle = colour;
+			ctx.lineWidth = 2;
+			ctx.setLineDash(dash);
+			for (const sp of spots) {
+				const cx = (sp.x / 10000) * width + cellW / 2;
+				const cy = sp.y + (friction?.cellY ?? 20) / 2;
+				ctx.beginPath();
+				ctx.arc(cx, cy, Math.max(14, cellW * 1.2), 0, Math.PI * 2);
+				ctx.stroke();
+			}
+			ctx.restore();
+		};
+
+		// Solid for a dead click, dashed for a run of them: two hypotheses, two marks, and
+		// neither of them heat.
+		ring(friction?.dead ?? [], 'rgba(30, 30, 30, 0.75)', []);
+		ring(friction?.rage ?? [], 'rgba(160, 20, 200, 0.8)', [4, 3]);
+	}, [data, friction, width, height, overlay]);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
 		pageDefinition,
@@ -425,7 +630,7 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 					}}
 					title="Page"
 				>
-					{pages.length === 0 ? <option value="">No page has clicks yet</option> : null}
+					{pages.length === 0 ? <option value="">Nothing measured yet</option> : null}
 					{pages.map((p, i) => (
 						<option key={`${p.page ?? ''}|${p.path ?? p.label}`} value={String(i)}>
 							{p.label} ({p.events})
@@ -481,16 +686,43 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 					    somebody will otherwise measure something against it. */}
 					{scale < 1 ? ` · shown at ${Math.round(scale * 100)}%` : ''}
 				</span>
+
+				{/* The median rather than the average, and in a sentence rather than as a
+				    percentage on its own. A long page where most people read the first screen
+				    and a few read all of it has a respectable average describing nobody. */}
+				{scrollSummary ? <span className="_depth">{scrollSummary}</span> : null}
+				{frictionSummary ? <span className="_depth">{frictionSummary}</span> : null}
 			</div>
 
 			{error ? <div className="_error">{error}</div> : null}
 
 			{!src ? (
 				<div className="_empty">
-					Nothing clicked yet on this app, so there is no page to draw.
+					No page has been clicked or scrolled yet, so there is nothing to draw on.
 				</div>
 			) : (
 				<div className="_stage" ref={stageRef} style={resolvedStyles.stage ?? {}}>
+					{/* Down the left edge of the page it describes, at the same height, so a
+					    band and the content it covers are read together without anybody
+					    having to map one percentage onto another. */}
+					{scrollBands.length ? (
+						<div className="_scrollStrip" style={{ height: height * scale }}>
+							{scrollBands.map(b => (
+								<div
+									key={b.label}
+									className="_scrollBand"
+									title={`${Math.round(b.share * 100)}% of views reached ${b.label}`}
+									style={{
+										height: `${b.bottom - b.top}%`,
+										// Green where most people reach, red where few do.
+										// Hue alone carries it, so the strip stays legible
+										// against both a light and a dark page behind it.
+										background: `hsl(${Math.round(b.share * 120)} 70% 45%)`,
+									}}
+								/>
+							))}
+						</div>
+					) : null}
 					{/* Holds the space the scaled frame occupies. A transform does not change
 					    layout, so without this the card would still be sized for 1440×2400. */}
 					<div
@@ -539,7 +771,6 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 			<div className="_hint">
 				A blank frame means the site refused to be embedded. Add this page's origin to{' '}
 				<code>csp.frameAncestors</code> on the application being measured.
-
 			</div>
 		</div>
 	);

@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-	EachSimpleEditor,
-	SimpleEditorType,
-	StyleEditorsProps,
-} from './simpleEditors';
+import { EachSimpleEditor, SimpleEditorType, StyleEditorsProps } from './simpleEditors';
 import { DropdownOptions } from './simpleEditors/Dropdown';
 
 const OVERFLOW_OPTIONS: DropdownOptions = [
@@ -238,4 +234,3 @@ export function SizeEditor({
 		</>
 	);
 }
-

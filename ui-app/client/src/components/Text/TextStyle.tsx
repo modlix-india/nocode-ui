@@ -26,15 +26,16 @@ export default function LabelStyle({
 			'textColor',
 		);
 
-		const fn = () => setTimeout(() => {
-			inflateAndSetStyleProps(
-				[textContainer, textColor],
-				stylePropertiesForTheme,
-				(props, _) => styleProperties.splice(0, 0, ...props),
-				styleDefaults,
-			);
-			setReRender(Date.now());
-		}, 100);
+		const fn = () =>
+			setTimeout(() => {
+				inflateAndSetStyleProps(
+					[textContainer, textColor],
+					stylePropertiesForTheme,
+					(props, _) => styleProperties.splice(0, 0, ...props),
+					styleDefaults,
+				);
+				setReRender(Date.now());
+			}, 100);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);

@@ -33,7 +33,7 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 		this.store = store;
 	}
 
-	protected getValueInternal(token: string) {
+	private refreshDefaults(): Map<string, string> {
 		if (!this.defaults || this.currentTime != usedComponents.lastAdded()) {
 			this.currentTime = usedComponents.lastAdded();
 			this.defaults = new Map<string, string>(
@@ -43,6 +43,36 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 					.flatMap(e => Array.from(e.entries())),
 			);
 		}
+		return this.defaults;
+	}
+
+	/**
+	 * Fully resolve a value that may contain `<variable>` references, against
+	 * the live theme first and the component and app defaults behind it.
+	 *
+	 * This exists because `Theme.x` alone is not enough for a consumer that
+	 * needs a real value rather than a CSS string. getValueInternal returns the
+	 * live theme's entry VERBATIM, so a variable whose value is itself
+	 * `<anotherVar>` comes back unresolved: fine when it is about to be written
+	 * into a stylesheet, useless for anything that has to parse it, such as a
+	 * WebGL colour. Resolving against defaults only happens on the fallback
+	 * path, which is the asymmetry this method removes.
+	 *
+	 * Returns the input unchanged when there is nothing to resolve, and leaves
+	 * a genuinely unknown variable as the empty string that
+	 * processStyleValueWithFunction produces, so the caller can spot it.
+	 */
+	public resolveValue(value: string | undefined): string {
+		if (!value) return '';
+		if (!value.includes('<')) return value;
+		const merged = new Map(this.refreshDefaults());
+		const allTheme = this.store?.theme?.[StyleResolution.ALL] ?? {};
+		for (const [k, v] of Object.entries(allTheme)) merged.set(k, String(v));
+		return processStyleValueWithFunction(value, merged);
+	}
+
+	protected getValueInternal(token: string) {
+		this.refreshDefaults();
 
 		const allTheme = this.store.theme?.[StyleResolution.ALL] ?? {};
 
@@ -58,7 +88,7 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 			}
 		}
 
-		return allTheme[parts[1]] ?? processStyleValueWithFunction(`<${parts[1]}>`, this.defaults);
+		return allTheme[parts[1]] ?? processStyleValueWithFunction(`<${parts[1]}>`, this.defaults!);
 	}
 
 	getPrefix(): string {

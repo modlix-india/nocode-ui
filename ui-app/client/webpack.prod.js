@@ -186,6 +186,60 @@ module.exports = async (env = {}) => {
             reuseExistingChunk: true,
             chunks: 'async',
           },
+          // three.js (~815KB across three chunks), only ever reached through the
+          // dynamic import in util/three/threeLoader.ts. `chunks: 'async'` is
+          // what keeps it out of the initial bundle, exactly as for monaco and
+          // geo above: `vendors` below matches all of node_modules with no
+          // `chunks` restriction and is INITIAL, so anything this group fails to
+          // claim lands in the entrypoint.
+          //
+          // `name` MUST NOT be 'three'. Measured, not reasoned: with name:
+          // 'three' this group silently never fired at all -- no error, no
+          // warning, no chunk -- and all three of three's modules fell through
+          // to `vendors`, adding ~2.3MB of modules to the initial entrypoint.
+          // Renaming it to 'threejs' and changing nothing else made it work.
+          // The collision is with the chunk webpack derives for the
+          // src/components/util/three directory; the same class of bug fails
+          // loudly when a webpackChunkName magic comment collides with a cache
+          // group name ("Cache group X conflicts with existing chunk"), and
+          // silently here. If you rename this, rebuild and check that
+          // asset-manifest.json's entrypoint still has no three asset in it.
+          // The Scene Editor's drag handles. Nothing on a customer page ever
+          // reaches TransformControls, but the `three` group below matches all
+          // of node_modules/three, so without a HIGHER priority group naming
+          // this one file it lands in the chunk every page with a scene
+          // downloads — the webpackChunkName at the import site cannot
+          // override a cache group.
+          threeEditor: {
+            test: /[\\/]node_modules[\\/]three[\\/]examples[\\/]jsm[\\/]controls[\\/]TransformControls/,
+            // NOT the same string as the webpackChunkName at the import site:
+            // a magic comment and a cache group sharing a name is the
+            // collision that makes a group silently never fire, which is why
+            // the import site now carries no name at all.
+            name: 'three-gizmo',
+            priority: 19,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
+          three: {
+            test: /[\\/]node_modules[\\/]three[\\/]/,
+            name: 'threejs',
+            priority: 18,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
+          // The WebGL components themselves. Deliberately NOT matching
+          // src/components/util/three: sceneDocument.ts and easing.ts there are
+          // pure, import no three, and are read by eagerly-registered component
+          // definitions, so forcing them async-only would split them off from
+          // the code that needs them at registration time.
+          webgl: {
+            test: /[\\/]src[\\/]components[\\/](ShaderBackground|ParticleField|ModelViewer|ScrollScene)[\\/]/,
+            name: 'webgl',
+            priority: 11,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
           // KIRun runtime (large, only for lazy-loaded components)
           kirun: {
             test: /[\\/]node_modules[\\/]@fincity[\\/]kirun/,

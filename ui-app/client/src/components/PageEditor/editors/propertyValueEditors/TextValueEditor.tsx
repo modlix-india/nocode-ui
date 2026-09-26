@@ -31,7 +31,9 @@ export function TextValueEditor({ value, defaultValue, onChange }: Readonly<Text
 				>
 					<div>
 						<div className="_jsonEditorContainer">
-							<Suspense fallback={<div className="_editorLoading">Loading editor...</div>}>
+							<Suspense
+								fallback={<div className="_editorLoading">Loading editor...</div>}
+							>
 								<LazyEditor
 									language="markdown"
 									height="100%"

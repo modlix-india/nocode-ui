@@ -48,7 +48,9 @@ const SIGNATURE = new FunctionSignature('Login')
 		]),
 	)
 	.setDescription('Authenticates a user and stores session data in the application store')
-	.setDocumentation('# UIEngine.Login\n\nAuthenticates a user by calling the `/api/security/authenticate` endpoint. On success, stores authentication data in `Store.auth`, saves the access token to `LocalStore.AuthToken`, and clears all page caches to ensure a fresh session.\n\n## Parameters\n\n- **userName** (String, required): Username or email for authentication\n- **password** (String, optional, default: \'\'): User password\n- **userId** (Any, optional, default: null): User ID if available\n- **otp** (String, optional, default: \'\'): One-time password for two-factor authentication\n- **pin** (String, optional, default: \'\'): PIN code if required\n- **identifierType** (String, optional, default: \'\'): Type of identifier being used for login\n- **rememberMe** (Boolean, optional, default: false): Whether to persist the session\n- **cookie** (Boolean, optional, default: false): Whether to set an authentication cookie\n- **redirectUrl** (String, optional): Where to send the user on success. Pass this INSTEAD of a following `Navigate` step. A relative path is resolved the way page links are, so `/dashboard` works. When the app has SSO enabled this navigation is routed through the SSO beacon, which seeds the shared session at no extra cost, so other apps can sign the same user in without asking again.\n\n## Events\n\n- **output**: Triggered on successful authentication\n  - `data` (Any): Authentication response containing access token and user details\n- **error**: Triggered on authentication failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **User Authentication**: Log users into the application\n- **Multi-Factor Auth**: Support OTP and PIN-based authentication flows\n- **Session Management**: Establish and persist user sessions\n- **SSO Integration**: Authenticate via various identifier types');
+	.setDocumentation(
+		"# UIEngine.Login\n\nAuthenticates a user by calling the `/api/security/authenticate` endpoint. On success, stores authentication data in `Store.auth`, saves the access token to `LocalStore.AuthToken`, and clears all page caches to ensure a fresh session.\n\n## Parameters\n\n- **userName** (String, required): Username or email for authentication\n- **password** (String, optional, default: ''): User password\n- **userId** (Any, optional, default: null): User ID if available\n- **otp** (String, optional, default: ''): One-time password for two-factor authentication\n- **pin** (String, optional, default: ''): PIN code if required\n- **identifierType** (String, optional, default: ''): Type of identifier being used for login\n- **rememberMe** (Boolean, optional, default: false): Whether to persist the session\n- **cookie** (Boolean, optional, default: false): Whether to set an authentication cookie\n- **redirectUrl** (String, optional): Where to send the user on success. Pass this INSTEAD of a following `Navigate` step. A relative path is resolved the way page links are, so `/dashboard` works. When the app has SSO enabled this navigation is routed through the SSO beacon, which seeds the shared session at no extra cost, so other apps can sign the same user in without asking again.\n\n## Events\n\n- **output**: Triggered on successful authentication\n  - `data` (Any): Authentication response containing access token and user details\n- **error**: Triggered on authentication failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **User Authentication**: Log users into the application\n- **Multi-Factor Auth**: Support OTP and PIN-based authentication flows\n- **Session Management**: Establish and persist user sessions\n- **SSO Integration**: Authenticate via various identifier types",
+	);
 
 /**
  * Mint a one-time token for the beacon and build the URL that seeds it and then continues to
@@ -97,7 +99,8 @@ export class Login extends AbstractFunction {
 		if (pin) data.pin = pin;
 
 		const headers: any = {};
-		if (globalThis.isDebugMode) headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
+		if (globalThis.isDebugMode)
+			headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 		try {
 			const response = await axios({
@@ -149,7 +152,9 @@ export class Login extends AbstractFunction {
 			// Note the consequence of coming back here: this leaves the page, so a `Navigate`
 			// step after Login in the page's own function does NOT run. Pass `redirectUrl`
 			// instead of that step.
-			const destination = redirectUrl ? absoluteDestination(redirectUrl) : window.location.href;
+			const destination = redirectUrl
+				? absoluteDestination(redirectUrl)
+				: window.location.href;
 
 			if (ssoOn) {
 				const seed = await seedTarget(destination, headers, response.data?.accessToken);

@@ -12,7 +12,9 @@ const mockedGet = getDataFromPath as jest.Mock;
 
 beforeEach(() => {
 	jest.clearAllMocks();
-	mockedAxios.post = jest.fn().mockResolvedValue({ data: { token: 'abc', host: 't-abc.modlix.com' } });
+	mockedAxios.post = jest
+		.fn()
+		.mockResolvedValue({ data: { token: 'abc', host: 't-abc.modlix.com' } });
 });
 
 function headersOfCall(index: number) {

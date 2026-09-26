@@ -127,11 +127,11 @@ describe('draftPayload', () => {
 
 	it('sends a dirty non-page document whole', () => {
 		const doc = { id: 's1', name: 'Lead', appCode: 'orangeab', isAudited: true };
-		const payload = draftPayload(
-			{ kind: 'storage', path: 'Page.tabs.a.draft' },
-			doc,
-			{ id: 's1', name: 'Lead', appCode: 'orangeab' },
-		);
+		const payload = draftPayload({ kind: 'storage', path: 'Page.tabs.a.draft' }, doc, {
+			id: 's1',
+			name: 'Lead',
+			appCode: 'orangeab',
+		});
 		expect(payload?.doc).toBe(doc);
 		expect(payload?.dirty).toBe(true);
 		expect(payload?.overlay).toBeUndefined();
@@ -157,8 +157,9 @@ describe('draftPayload', () => {
 	});
 
 	it('skips an object with no id, which is not saved yet', () => {
-		expect(draftPayload({ kind: 'page', path: 'x' }, { name: 'draft' }, undefined))
-			.toBeUndefined();
+		expect(
+			draftPayload({ kind: 'page', path: 'x' }, { name: 'draft' }, undefined),
+		).toBeUndefined();
 	});
 });
 
@@ -259,8 +260,9 @@ describe('matchDescriptor', () => {
 	});
 
 	it('does not guess when no open document has that id', () => {
-		expect(matchDescriptor(workspaceTabs, { kind: 'storage', id: 'nope' }, read))
-			.toBeUndefined();
+		expect(
+			matchDescriptor(workspaceTabs, { kind: 'storage', id: 'nope' }, read),
+		).toBeUndefined();
 	});
 
 	it('falls back to kind when the patch carries no id', () => {

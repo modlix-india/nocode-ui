@@ -203,7 +203,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
 	styleDefaults: styleDefaults,
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

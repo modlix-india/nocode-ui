@@ -65,7 +65,7 @@ declare global {
 		 */
 		resolvedPageName?: string;
 		urlDetails: any;
-	}
+	};
 	/**
 	 * The app this page belongs to, stamped by IndexHTMLService. Read this rather
 	 * than `domainAppCode`, which getHref.ts overwrites on import.

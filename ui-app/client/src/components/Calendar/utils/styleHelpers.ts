@@ -49,4 +49,3 @@ export function removeFromToggleSetCurry(
 }
 
 export type StyleCurryFunction = ReturnType<typeof getStyleObjectCurry>;
-

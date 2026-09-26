@@ -73,6 +73,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			UploadPlaceholderText,
 			label,
 			analyticsLabel,
+			valueType,
 			fullUrl,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -119,11 +120,12 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		directory: boolean;
 	}>();
 
-	// Always a URL string, from both browsing and uploading. See storedValue.ts.
+	// `valueType` picks the shape, `fullUrl` picks how the url inside it reads.
+	// See storedValue.ts.
 	const toStoredValue = React.useCallback(
 		(value: FileSelectorValue | any): any =>
-			fileSelectorStoredValue(value, !!fullUrl, window.location.origin),
-		[fullUrl],
+			fileSelectorStoredValue(value, valueType, !!fullUrl, window.location.origin),
+		[valueType, fullUrl],
 	);
 
 	function getFileUrl(selectedFile: FileSelectorValue): string {
@@ -968,7 +970,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Selected File URL Binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

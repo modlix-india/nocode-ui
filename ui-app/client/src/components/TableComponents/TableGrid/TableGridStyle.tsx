@@ -13,14 +13,21 @@ export default function TableGridStyle({
 	const [_, setReRender] = useState<number>(Date.now());
 
 	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME])
-		styleProperties.filter((e: any) => !!e.dv)?.map(
-			({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue),
-		);
+		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
+		styleProperties
+			.filter((e: any) => !!e.dv)
+			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
 	}
 
 	useEffect(() => {
-		const fn = lazyStylePropertyLoadFunction(NAME, (props) => { styleProperties.splice(0, 0, ...props); setReRender(Date.now()) }, styleDefaults);
+		const fn = lazyStylePropertyLoadFunction(
+			NAME,
+			props => {
+				styleProperties.splice(0, 0, ...props);
+				setReRender(Date.now());
+			},
+			styleDefaults,
+		);
 
 		if (usedComponents.used(NAME)) fn();
 		usedComponents.register(NAME, fn);

@@ -492,12 +492,7 @@ class DataValueExtractor extends TokenValueExtractor {
 	protected getValueInternal(token: string): any {
 		if (token === 'Data') return this.data;
 
-		return this.retrieveElementFrom(
-			token,
-			TokenValueExtractor.splitPath(token),
-			1,
-			this.data,
-		);
+		return this.retrieveElementFrom(token, TokenValueExtractor.splitPath(token), 1, this.data);
 	}
 
 	public getStore(): any {
@@ -589,12 +584,7 @@ function createRepeaterItem({
 		const ev = new ExpressionEvaluator(filterCondition);
 		const value = ev.evaluate(valuesMap);
 
-		if (!value)
-			return (
-				<Fragment
-					key={indKeys.current.array[index] || `fragment_${index}`}
-				/>
-			);
+		if (!value) return <Fragment key={indKeys.current.array[index] || `fragment_${index}`} />;
 	}
 
 	const canDragToReSort = dataType !== 'object' || orderKey;

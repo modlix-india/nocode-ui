@@ -113,7 +113,6 @@ export default function CodeEditor({
 			}));
 	}, [editPage?.componentDefinition, changed]);
 
-
 	useEffect(() => {
 		if (showCodeEditor === selectedFunction && selectedFunction !== '') return;
 
@@ -288,11 +287,11 @@ export default function CodeEditor({
 											'text/plain': new Blob(
 												[
 													COPY_FUNCTION_KEY +
-													JSON.stringify({
-														key: selectedFunction,
-														functionDefinition:
-															eventFunctions[selectedFunction],
-													}),
+														JSON.stringify({
+															key: selectedFunction,
+															functionDefinition:
+																eventFunctions[selectedFunction],
+														}),
 												],
 												{
 													type: 'text/plain',
@@ -429,8 +428,9 @@ export default function CodeEditor({
 						<div className="_iconMenuSeperator" />
 						<div className="_buttonBar">
 							<i
-								className={`fa fa-solid fa-left-long ${undoStackRef.current.length ? 'active' : ''
-									}`}
+								className={`fa fa-solid fa-left-long ${
+									undoStackRef.current.length ? 'active' : ''
+								}`}
 								onClick={() => {
 									if (!undoStackRef.current.length || !defPath) return;
 									const x = undoStackRef.current[undoStackRef.current.length - 1];
@@ -456,8 +456,9 @@ export default function CodeEditor({
 								title="Undo"
 							/>
 							<i
-								className={`fa fa-solid fa-right-long ${redoStackRef.current.length ? 'active' : ''
-									}`}
+								className={`fa fa-solid fa-right-long ${
+									redoStackRef.current.length ? 'active' : ''
+								}`}
 								onClick={() => {
 									if (!redoStackRef.current.length || !defPath) return;
 									const x = redoStackRef.current[0];
@@ -487,10 +488,11 @@ export default function CodeEditor({
 					<div className="_codeButtons">
 						<div className="_iconMenu" onClick={() => setFullScreen(!fullScreen)}>
 							<i
-								className={`fa fa-solid ${fullScreen
-									? 'fa-down-left-and-up-right-to-center'
-									: 'fa-up-right-and-down-left-from-center'
-									}`}
+								className={`fa fa-solid ${
+									fullScreen
+										? 'fa-down-left-and-up-right-to-center'
+										: 'fa-up-right-and-down-left-from-center'
+								}`}
 							></i>
 						</div>
 						<div className="_iconMenu" onClick={() => onSetShowCodeEditor(undefined)}>

@@ -75,17 +75,27 @@ describe('comboFromEvent', () => {
 	});
 
 	it('maps digits and named codes', () => {
-		expect(comboFromEvent(keyEvent({ key: '1', code: 'Digit1', ctrlKey: true }))).toBe('ctrl+1');
-		expect(comboFromEvent(keyEvent({ key: 'ArrowDown', code: 'ArrowDown', altKey: true }))).toBe(
-			'alt+arrowdown',
+		expect(comboFromEvent(keyEvent({ key: '1', code: 'Digit1', ctrlKey: true }))).toBe(
+			'ctrl+1',
 		);
+		expect(
+			comboFromEvent(keyEvent({ key: 'ArrowDown', code: 'ArrowDown', altKey: true })),
+		).toBe('alt+arrowdown');
 	});
 
 	it('ignores bare modifier presses', () => {
-		expect(comboFromEvent(keyEvent({ key: 'Meta', code: 'MetaLeft', metaKey: true }))).toBeUndefined();
-		expect(comboFromEvent(keyEvent({ key: 'Shift', code: 'ShiftLeft', shiftKey: true }))).toBeUndefined();
-		expect(comboFromEvent(keyEvent({ key: 'Control', code: 'ControlLeft', ctrlKey: true }))).toBeUndefined();
-		expect(comboFromEvent(keyEvent({ key: 'Alt', code: 'AltLeft', altKey: true }))).toBeUndefined();
+		expect(
+			comboFromEvent(keyEvent({ key: 'Meta', code: 'MetaLeft', metaKey: true })),
+		).toBeUndefined();
+		expect(
+			comboFromEvent(keyEvent({ key: 'Shift', code: 'ShiftLeft', shiftKey: true })),
+		).toBeUndefined();
+		expect(
+			comboFromEvent(keyEvent({ key: 'Control', code: 'ControlLeft', ctrlKey: true })),
+		).toBeUndefined();
+		expect(
+			comboFromEvent(keyEvent({ key: 'Alt', code: 'AltLeft', altKey: true })),
+		).toBeUndefined();
 	});
 
 	it('ignores a key that is mid IME composition', () => {

@@ -63,8 +63,7 @@ describe('htmlToBlocks — anchors', () => {
 
 describe('htmlToBlocks — containers and fallback', () => {
 	it('descends layout tables to reach content', () => {
-		const html =
-			'<table><tr><td><h2>Hi</h2><p>Body text here</p></td></tr></table>';
+		const html = '<table><tr><td><h2>Hi</h2><p>Body text here</p></td></tr></table>';
 		expect(types(htmlToBlocks(html))).toEqual(['heading', 'text']);
 	});
 

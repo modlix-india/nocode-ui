@@ -71,44 +71,23 @@ export function ChatMessage({
 				style={styles?.userMessage ?? {}}
 				title={pending ? 'Sending to the agent...' : undefined}
 			>
-				<SubHelperComponent
-					definition={definition}
-					subComponentName="userMessage"
-				/>
+				<SubHelperComponent definition={definition} subComponentName="userMessage" />
 				<span>{content}</span>
 			</div>
 		);
 	}
 
 	return (
-		<div
-			className="_promptMessage _assistant"
-			style={styles?.assistantMessage ?? {}}
-		>
-			<SubHelperComponent
-				definition={definition}
-				subComponentName="assistantMessage"
-			/>
+		<div className="_promptMessage _assistant" style={styles?.assistantMessage ?? {}}>
+			<SubHelperComponent definition={definition} subComponentName="assistantMessage" />
 			<div className="_assistantContent">
-				<MarkdownParser
-					componentKey={componentKey}
-					text={content}
-					styles={styles ?? {}}
-				/>
+				<MarkdownParser componentKey={componentKey} text={content} styles={styles ?? {}} />
 				{isStreaming && <span className="_streamingCursor" />}
 				{children}
 				{!isStreaming && content && (
 					<div className="_messageActions">
-						<button
-							className="_actionButton"
-							onClick={handleCopy}
-							title="Copy"
-						>
-							<i
-								className={
-									copied ? copySuccessIcon : copyIcon
-								}
-							/>
+						<button className="_actionButton" onClick={handleCopy} title="Copy">
+							<i className={copied ? copySuccessIcon : copyIcon} />
 						</button>
 						{enableFeedback && turnNumber !== undefined && (
 							<>

@@ -38,7 +38,7 @@ const component: Component = {
 		name: 'Fillter Value Editor',
 		type: 'FillerValueEditor',
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

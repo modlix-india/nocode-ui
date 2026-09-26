@@ -52,7 +52,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Page',
 		description:
-			'The page to draw, by the application\'s own name for it. Takes precedence over ' +
+			"The page to draw, by the application's own name for it. Takes precedence over " +
 			'the path, and should: page routing serves two different pages at one address, ' +
 			'so drawing by address averages both arms of a test over one of their layouts.',
 		group: ComponentPropertyGroup.DATA,

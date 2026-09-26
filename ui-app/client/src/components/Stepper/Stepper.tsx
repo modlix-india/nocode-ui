@@ -54,7 +54,7 @@ const component: Component = {
 			},
 		},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 	externalStylePropsForThemeJson: true,
 };
 

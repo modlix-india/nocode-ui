@@ -24,7 +24,12 @@ import {
 	partHasHtml,
 } from './util/editorModeState';
 import AiPanel, { AiMessage } from './editors/AiPanel';
-import { fetchHtmlPreview, fetchPdfPreview, generateTemplate, PreviewHeaders } from './util/previewApi';
+import {
+	fetchHtmlPreview,
+	fetchPdfPreview,
+	generateTemplate,
+	PreviewHeaders,
+} from './util/previewApi';
 import { sampleFromSchema } from './util/schemaSample';
 import {
 	getPartValue,
@@ -309,11 +314,17 @@ export default function LazyTemplateEditor({
 			if (typeof res.subject === 'string' && typeDef.subjectKey)
 				next = setPartValue(next, activeLang, typeDef.subjectKey, res.subject);
 			if (next !== t) onChange(next);
-			setAiHistory(h => [...h, { role: 'assistant', text: res.message || 'Template updated.' }]);
+			setAiHistory(h => [
+				...h,
+				{ role: 'assistant', text: res.message || 'Template updated.' },
+			]);
 		} catch (e) {
 			const msg = extractError(e);
 			setAiError(msg);
-			setAiHistory(h => [...h, { role: 'assistant', text: `Could not update the template: ${msg}` }]);
+			setAiHistory(h => [
+				...h,
+				{ role: 'assistant', text: `Could not update the template: ${msg}` },
+			]);
 		} finally {
 			setAiLoading(false);
 		}
@@ -480,7 +491,12 @@ export default function LazyTemplateEditor({
 							typeDef.subjectKey
 								? v =>
 										onChange(
-											setPartValue(template, activeLang, typeDef.subjectKey!, v),
+											setPartValue(
+												template,
+												activeLang,
+												typeDef.subjectKey!,
+												v,
+											),
 										)
 								: undefined
 						}

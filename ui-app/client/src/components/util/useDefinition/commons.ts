@@ -15,8 +15,16 @@ import { makePropertiesObject } from '../make';
 // Every bindingPath slot a component may declare. Kept in step with
 // getPaths.ts, which watches the same list.
 const BINDING_PATH_KEYS = [
-	'bindingPath', 'bindingPath2', 'bindingPath3', 'bindingPath4', 'bindingPath5',
-	'bindingPath6', 'bindingPath7', 'bindingPath8', 'bindingPath9', 'bindingPath10',
+	'bindingPath',
+	'bindingPath2',
+	'bindingPath3',
+	'bindingPath4',
+	'bindingPath5',
+	'bindingPath6',
+	'bindingPath7',
+	'bindingPath8',
+	'bindingPath9',
+	'bindingPath10',
 ] as const;
 
 /** Each declared bindingPath resolved to the string the component will use. */
@@ -42,7 +50,6 @@ function resolveBindingPaths(
 	}
 	return resolved;
 }
-
 
 export function createNewState(
 	definition: ComponentDefinition,

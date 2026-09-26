@@ -141,9 +141,7 @@ export function AppStyle() {
 		if (!comp.styleComponent) continue;
 
 		const StyleComp = comp.styleComponent;
-		styleComps.push(
-			<StyleComp key={comp.displayName + '_stylcomps'} theme={theme} />,
-		);
+		styleComps.push(<StyleComp key={comp.displayName + '_stylcomps'} theme={theme} />);
 	}
 
 	return (

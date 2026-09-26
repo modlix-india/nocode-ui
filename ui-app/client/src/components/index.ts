@@ -21,6 +21,10 @@ import Prompt from './Prompt/Prompt';
 import Popup from './Popup/Popup';
 import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
+import ModelViewer from './ModelViewer/ModelViewer';
+import ParticleField from './ParticleField/ParticleField';
+import ScrollScene from './ScrollScene/ScrollScene';
+import ShaderBackground from './ShaderBackground/ShaderBackground';
 import Shortcut from './Shortcut/Shortcut';
 import Stepper from './Stepper/Stepper';
 import SubPage from './SubPage/SubPage';
@@ -96,6 +100,10 @@ const componentMap = new Map<string, Component>([
 	[Tags.name, Tags],
 	[Image.name, Image],
 	[Svg.name, Svg],
+	[ShaderBackground.name, ShaderBackground],
+	[ModelViewer.name, ModelViewer],
+	[ParticleField.name, ParticleField],
+	[ScrollScene.name, ScrollScene],
 	[Tabs.name, Tabs],
 	[ThemeSwitcher.name, ThemeSwitcher],
 	[Icon.name, Icon],

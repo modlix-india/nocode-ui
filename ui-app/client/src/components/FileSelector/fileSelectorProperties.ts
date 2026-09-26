@@ -156,31 +156,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.IMAGE,
 		group: ComponentPropertyGroup.BASIC,
 	},
-	 {
-  name: 'uploadButtonText',
-  schema: SCHEMA_STRING_COMP_PROP,
-  displayName: 'Upload Button Text',
-  description: 'Text to display on the upload button',
-  defaultValue: 'Upload File',
-  group: ComponentPropertyGroup.BASIC,
- },
+	{
+		name: 'uploadButtonText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Upload Button Text',
+		description: 'Text to display on the upload button',
+		defaultValue: 'Upload File',
+		group: ComponentPropertyGroup.BASIC,
+	},
 
- {
-  name: 'UploadPlaceholderText',
-  schema: SCHEMA_STRING_COMP_PROP,
-  displayName: 'Upload Placeholder Text',
-  description: 'Placeholder text for the upload area',
-  defaultValue: 'Upload documents or images',
-  group: ComponentPropertyGroup.BASIC,
- },
- 	{
+	{
+		name: 'UploadPlaceholderText',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Upload Placeholder Text',
+		description: 'Placeholder text for the upload area',
+		defaultValue: 'Upload documents or images',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'label',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Label',
 		description: 'Text label displayed above the file selector',
 		defaultValue: 'Label',
 		group: ComponentPropertyGroup.BASIC,
-    },
+	},
 	{
 		name: 'removeImage',
 		schema: SCHEMA_STRING_COMP_PROP,
@@ -216,14 +216,33 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'valueType',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Value to store',
+		description:
+			'What lands on the binding path. The file object keeps whatever the ' +
+			'selection produced, so browsing stores a URL string and uploading stores ' +
+			'the whole response with its name, size and directory. The URL stores a ' +
+			'string whichever way the file arrived, which is what a reader of the ' +
+			'binding usually wants - a favicon href, a manifest icon, an image src ' +
+			'are each a string, and an object there has to be unwrapped by the page.',
+		defaultValue: '_fileObject',
+		enumValues: [
+			{ name: '_fileObject', displayName: 'File object when there is one' },
+			{ name: '_url', displayName: 'URL only' },
+		],
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'fullUrl',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Store the full URL',
 		description:
 			'Store an absolute URL instead of the files-API path: the CDN host when one ' +
-			'is configured, otherwise this page\'s own origin. Needed wherever the value ' +
-			'leaves the app, such as a PWA manifest, an email or an API payload. Either ' +
-			'way the value stored is a URL string - browsing and uploading agree.',
+			"is configured, otherwise this page's own origin. Needed wherever the value " +
+			'leaves the app, such as a PWA manifest, an email or an API payload. This is ' +
+			'about how the URL reads, not about the shape - see Value to store for that. ' +
+			'With the file object it rewrites the url key and leaves the rest alone.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
