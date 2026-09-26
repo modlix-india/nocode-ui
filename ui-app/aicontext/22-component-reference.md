@@ -1572,6 +1572,97 @@ Compact carousel for scrolling through items.
 
 ---
 
+### Softphone
+
+Browser calling for a provisioned agent: places and receives calls without a desk phone.
+
+Renders nothing. It is a controller - it publishes the phone's state to `Store.softphone` and runs
+the page's event functions - so the visible UI (an incoming-call card, an in-call bar) is built
+from ordinary components bound to that branch, and the buttons call the `UIEngine` calling
+functions.
+
+**Belongs on the shell page, exactly once.** The shell's subtree survives navigation, so one
+instance rings whichever page the agent is on, and the call itself outlives the component: the
+session lives in a module singleton, not in React. A second instance does not start a second
+phone - it starts a second controller over the same one, and fires every page event twice.
+
+**Type**: `Softphone`
+
+**Accepts Children**: No
+
+**Pseudo-states**: None
+
+**Sub-components for styling**: None (the component has no visible output)
+
+**Properties**:
+
+| Property         | Type    | Description                                                                                                                 | Default |
+| ---------------- | ------- | --------------------------------------------------------------------------------------------------------------------------- | ------- |
+| `connectionName` | string  | The calling connection, as named in the application connections. The provider comes from it                                 | -       |
+| `autoRegister`   | boolean | Start taking calls on page load. Off means the agent goes online explicitly                                                 | true    |
+| `sdkUrl`         | string  | **Required.** Where to load the provider's browser library from. A configured CDN is applied automatically, as for an image | -       |
+
+**Events**:
+
+- `onIncomingCall` - The phone started ringing. Inbound only; a call the agent placed does not fire
+  this. `Store.softphone.from` is written before it runs
+- `onCallConnected` - Audio started
+- `onCallEnded` - The call finished. The recording is not available here; it reaches the server
+  minutes later and is read from the deal's call log
+- `onRegistrationChange` - The phone came online or went offline
+- `onError` - Something failed. `Store.softphone.lastError.code` separates a blocked microphone
+  from a broken integration
+
+**What it publishes** to `Store.softphone`:
+
+| Path                         | Type    | Description                                                                   |
+| ---------------------------- | ------- | ----------------------------------------------------------------------------- |
+| `provisioned`                | boolean | Whether this user has browser calling at all                                  |
+| `provider`                   | string  | Which provider is behind it, from the connection - lowercase, e.g. `exotel`   |
+| `providerUserId`             | string  | The agent's identity at the provider                                          |
+| `virtualNumber`              | string  | The number outbound calls show to the customer                                |
+| `registered`                 | boolean | The phone is online with the provider                                         |
+| `isLeader`                   | boolean | This tab is the one holding the session                                       |
+| `inCall`                     | boolean | True from the moment a call rings, inbound or outbound                        |
+| `callId`                     | string  | The provider's id for the call in progress, when it gives one                 |
+| `direction`                  | string  | `inbound` or `outbound`                                                       |
+| `from`                       | string  | The caller's number, on an inbound call                                       |
+| `remoteName`                 | string  | The caller's display name, when the provider sends one                        |
+| `startedAt`                  | string  | ISO timestamp of when audio started. Absent while ringing                     |
+| `isMuted`, `isOnHold`        | boolean | Current control state                                                         |
+| `micDenied`                  | boolean | The microphone was refused. Sticky, because the browser remembers the refusal |
+| `duration.seconds`           | number  | Live call length, updated once a second while connected                       |
+| `duration.formatted`         | string  | The same as `MM:SS`, or `HH:MM:SS` past the hour - bind a Text straight to it |
+| `lastError.code`, `.message` | string  | The last failure, cleared when a new call starts. `null` when nothing failed  |
+| `lastCall`                   | object  | The call that just ended - see below. `null` before the first one             |
+
+`lastCall` survives the call being cleared, so a wrap-up card, a redial or an outcome form can be
+built from it: `callId`, `direction`, `phoneNumber` (inbound only), `ticketId` (outbound only, and
+what a redial passes), `agent`, `startedAt`, `endedAt`, `durationSeconds`, `answered`, `endReason`.
+
+`answered` means audio was established **in this browser**, which on an outbound call happens when
+the provider bridges the agent's leg - before the customer picks up. Whether the customer answered
+is known only to the server and belongs to the deal's call log.
+
+There is no `to`: the customer's number is read from the deal on the server and never sent to the
+browser. Name an outbound call from the deal, not from here.
+
+`lastError` is set back to `null` when a new call begins - an inbound call ringing, or an outbound
+dial being placed - so an error banner bound to it clears itself on the next call rather than
+following the agent through the rest of their shift. It is not cleared by anything else: a phone
+that comes back online after a failed registration still reports that failure until a call starts.
+Fire the page's `onError` event to react to a failure; read this to render one.
+
+**Notes**:
+
+- Nothing happens for a user who is not provisioned: no token is minted, no library is fetched, and
+  no microphone prompt appears. Most users in a tenant are not agents
+- On a canvas in the page editor it is inert, so a Call button dropped on it cannot ring a customer
+- With several tabs open, one is elected to hold the session and the others relay to it. The
+  calling functions work from any of them; the audio comes out of the tab holding the session
+
+---
+
 ### Stepper
 
 Step wizard/progress indicator.
@@ -1845,6 +1936,7 @@ For form components:
 | PhoneNumber      | `PhoneNumber`      | No           | focus, disabled                  | dropdownSelect, inputBox, label                   |
 | SchemaForm       | `SchemaForm`       | No           | None                             | -                                                 |
 | SmallCarousel    | `Small Carousel`   | Unlimited    | None                             | slidesContainer, prevButton, nextButton           |
+| Softphone        | `Softphone`        | No           | None                             | - (renders nothing)                               |
 | Stepper          | `Stepper`          | No           | hover                            | listItem, doneListItem, activeListItem            |
 | Tags             | `Tags`             | No           | hover, disabled                  | inputBox, tagsContainer, eachTag                  |
 | TextList         | `TextList`         | No           | hover                            | listItem, listItemIcon                            |

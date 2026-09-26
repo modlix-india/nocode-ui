@@ -64,6 +64,7 @@ import Timer from './Timer/Timer';
 import MarkdownTOC from './MarkdownTOC/MarkdownTOC';
 import Audio from './Audio/Audio';
 import SSEventListener from './SSEventListener/SSEventListener';
+import Softphone from './Softphone/Softphone';
 import Chart from './Chart/Chart';
 import FileSelector from './FileSelector/FileSelector';
 import Form from './Form/Form';
@@ -143,6 +144,7 @@ const componentMap = new Map<string, Component>([
 	[MarkdownTOC.name, MarkdownTOC],
 	[Audio.name, Audio],
 	[SSEventListener.name, SSEventListener],
+	[Softphone.name, Softphone],
 	[Chart.name, Chart],
 	[AnalyticsHeatmap.name, AnalyticsHeatmap],
 	[FileSelector.name, FileSelector],
