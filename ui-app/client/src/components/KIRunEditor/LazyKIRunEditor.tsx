@@ -8,6 +8,7 @@ import {
 	TokenValueExtractor,
 } from '@fincity/kirun-js';
 import { KIRunEditor, PersonalizationData, correctStatementNames } from '@fincity/kirun-ui';
+import { registerUIEngineFunctionDocs } from '../../functions';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
 import { RemoteRepository, REPO_SERVER } from '../../Engine/RemoteRepository';
@@ -26,6 +27,14 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
 import { normalizeParameterTypes, savePersonalizationCurry } from './utils';
+
+// The documentation registry is read by kirun-ui's own help panel, which
+// only exists inside this editor. Kicking it off here rather than from
+// functions/index.ts is what keeps `@fincity/kirun-ui` -- and the whole of
+// monaco-editor that it imports on its first line -- off every page that
+// never opens an editor. This module is only reached through React.lazy,
+// and it already imports kirun-ui statically, so the call adds nothing.
+registerUIEngineFunctionDocs();
 
 let UI_FUN_REPO: Repository<Function>;
 let UI_SCHEMA_REPO: Repository<Schema>;
