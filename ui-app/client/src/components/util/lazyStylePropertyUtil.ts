@@ -86,8 +86,7 @@ export function findPropertyDefinitions(
 export function inflateStyleProps(
 	props: Array<StylePropertyDefinition>,
 	valuesNames:
-		| Array<{ propName: string; enumValues: Array<{ sel: string; name: string }> }>
-		| undefined,
+		Array<{ propName: string; enumValues: Array<{ sel: string; name: string }> }> | undefined,
 ): Array<StylePropertyDefinition> {
 	if (!valuesNames?.length) return props;
 

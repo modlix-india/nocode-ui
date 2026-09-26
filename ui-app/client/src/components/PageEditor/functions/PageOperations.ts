@@ -213,7 +213,8 @@ export class PageOperations {
 
 				const selector = this.styleSelectorPref[componentKey];
 
-				let resolution: StyleResolution = selector?.screenSize?.value ?? StyleResolution.ALL;
+				let resolution: StyleResolution =
+					selector?.screenSize?.value ?? StyleResolution.ALL;
 				if (!styleObj.resolutions[resolution]) styleObj.resolutions[resolution] = {};
 
 				let resolutionObj = styleObj.resolutions[resolution];

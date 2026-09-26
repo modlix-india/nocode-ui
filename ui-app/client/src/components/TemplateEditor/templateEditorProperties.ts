@@ -1,10 +1,5 @@
-import {
-	SCHEMA_STRING_COMP_PROP
-} from '../../constants';
-import {
-	ComponentPropertyDefinition,
-	ComponentStylePropertyDefinition
-} from '../../types/common';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { ComponentPropertyDefinition, ComponentStylePropertyDefinition } from '../../types/common';
 import { COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [

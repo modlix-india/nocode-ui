@@ -2,7 +2,14 @@
  * @jest-environment jsdom
  */
 import { transformToChartJsData, determineChartJsType } from '../dataTransformer';
-import { ChartData, ChartProperties, DataSetStyle, ChartType, PointType, AxisType } from '../../types/common';
+import {
+	ChartData,
+	ChartProperties,
+	DataSetStyle,
+	ChartType,
+	PointType,
+	AxisType,
+} from '../../types/common';
 import RepetetiveArray from '../../../../util/RepetetiveArray';
 
 // Helper to create a minimal ChartProperties object
@@ -68,17 +75,19 @@ describe('determineChartJsType', () => {
 	it('should return bar for bar charts', () => {
 		const properties = createMockProperties();
 		const chartData = createMockChartData({
-			dataSetData: [{
-				data: [{ x: 'A', y: 10 }],
-				isHidden: false,
-				dataSetStyle: DataSetStyle.Bar,
-				dataColors: createRepArray(['#FF0000']),
-				dataStrokeColors: createRepArray(['#FF0000']),
-				fillOpacity: createRepArray([1]),
-				strokeOpacity: createRepArray([1]),
-				pointType: createRepArray([PointType.Circle]),
-				pointSize: createRepArray([3]),
-			}],
+			dataSetData: [
+				{
+					data: [{ x: 'A', y: 10 }],
+					isHidden: false,
+					dataSetStyle: DataSetStyle.Bar,
+					dataColors: createRepArray(['#FF0000']),
+					dataStrokeColors: createRepArray(['#FF0000']),
+					fillOpacity: createRepArray([1]),
+					strokeOpacity: createRepArray([1]),
+					pointType: createRepArray([PointType.Circle]),
+					pointSize: createRepArray([3]),
+				},
+			],
 		});
 
 		expect(determineChartJsType(properties, chartData)).toBe('bar');
@@ -87,17 +96,19 @@ describe('determineChartJsType', () => {
 	it('should return line for line charts', () => {
 		const properties = createMockProperties();
 		const chartData = createMockChartData({
-			dataSetData: [{
-				data: [{ x: 'A', y: 10 }],
-				isHidden: false,
-				dataSetStyle: DataSetStyle.Line,
-				dataColors: createRepArray(['#FF0000']),
-				dataStrokeColors: createRepArray(['#FF0000']),
-				fillOpacity: createRepArray([1]),
-				strokeOpacity: createRepArray([1]),
-				pointType: createRepArray([PointType.Circle]),
-				pointSize: createRepArray([3]),
-			}],
+			dataSetData: [
+				{
+					data: [{ x: 'A', y: 10 }],
+					isHidden: false,
+					dataSetStyle: DataSetStyle.Line,
+					dataColors: createRepArray(['#FF0000']),
+					dataStrokeColors: createRepArray(['#FF0000']),
+					fillOpacity: createRepArray([1]),
+					strokeOpacity: createRepArray([1]),
+					pointType: createRepArray([PointType.Circle]),
+					pointSize: createRepArray([3]),
+				},
+			],
 		});
 
 		expect(determineChartJsType(properties, chartData)).toBe('line');
@@ -106,17 +117,19 @@ describe('determineChartJsType', () => {
 	it('should return scatter for dot charts', () => {
 		const properties = createMockProperties();
 		const chartData = createMockChartData({
-			dataSetData: [{
-				data: [{ x: 'A', y: 10 }],
-				isHidden: false,
-				dataSetStyle: DataSetStyle.Dot,
-				dataColors: createRepArray(['#FF0000']),
-				dataStrokeColors: createRepArray(['#FF0000']),
-				fillOpacity: createRepArray([1]),
-				strokeOpacity: createRepArray([1]),
-				pointType: createRepArray([PointType.Circle]),
-				pointSize: createRepArray([3]),
-			}],
+			dataSetData: [
+				{
+					data: [{ x: 'A', y: 10 }],
+					isHidden: false,
+					dataSetStyle: DataSetStyle.Dot,
+					dataColors: createRepArray(['#FF0000']),
+					dataStrokeColors: createRepArray(['#FF0000']),
+					fillOpacity: createRepArray([1]),
+					strokeOpacity: createRepArray([1]),
+					pointType: createRepArray([PointType.Circle]),
+					pointSize: createRepArray([3]),
+				},
+			],
 		});
 
 		expect(determineChartJsType(properties, chartData)).toBe('scatter');
@@ -125,17 +138,19 @@ describe('determineChartJsType', () => {
 	it('should return pie for radial pie charts', () => {
 		const properties = createMockProperties({ chartType: ChartType.Radial });
 		const chartData = createMockChartData({
-			dataSetData: [{
-				data: [{ x: 'A', y: 10 }],
-				isHidden: false,
-				dataSetStyle: DataSetStyle.Pie,
-				dataColors: createRepArray(['#FF0000']),
-				dataStrokeColors: createRepArray(['#FF0000']),
-				fillOpacity: createRepArray([1]),
-				strokeOpacity: createRepArray([1]),
-				pointType: createRepArray([PointType.Circle]),
-				pointSize: createRepArray([3]),
-			}],
+			dataSetData: [
+				{
+					data: [{ x: 'A', y: 10 }],
+					isHidden: false,
+					dataSetStyle: DataSetStyle.Pie,
+					dataColors: createRepArray(['#FF0000']),
+					dataStrokeColors: createRepArray(['#FF0000']),
+					fillOpacity: createRepArray([1]),
+					strokeOpacity: createRepArray([1]),
+					pointType: createRepArray([PointType.Circle]),
+					pointSize: createRepArray([3]),
+				},
+			],
 		});
 
 		expect(determineChartJsType(properties, chartData)).toBe('pie');
@@ -157,22 +172,34 @@ describe('transformToChartJsData', () => {
 				xUniqueData: [10, -20, -80, 60],
 				yUniqueData: [30, 50, 90, 80],
 				hasBar: true,
-				dataSetData: [{
-					data: [
-						{ x: 10, y: 30 },
-						{ x: -20, y: 50 },
-						{ x: -80, y: 90 },
-						{ x: 60, y: 80 },
-					],
-					isHidden: false,
-					dataSetStyle: DataSetStyle.Bar,
-					dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']),
-					dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']),
-					fillOpacity: createRepArray([1, 1, 1, 1]),
-					strokeOpacity: createRepArray([1, 1, 1, 1]),
-					pointType: createRepArray([PointType.Circle, PointType.Circle, PointType.Circle, PointType.Circle]),
-					pointSize: createRepArray([3, 3, 3, 3]),
-				}],
+				dataSetData: [
+					{
+						data: [
+							{ x: 10, y: 30 },
+							{ x: -20, y: 50 },
+							{ x: -80, y: 90 },
+							{ x: 60, y: 80 },
+						],
+						isHidden: false,
+						dataSetStyle: DataSetStyle.Bar,
+						dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']),
+						dataStrokeColors: createRepArray([
+							'#FF0000',
+							'#00FF00',
+							'#0000FF',
+							'#FFFF00',
+						]),
+						fillOpacity: createRepArray([1, 1, 1, 1]),
+						strokeOpacity: createRepArray([1, 1, 1, 1]),
+						pointType: createRepArray([
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+						]),
+						pointSize: createRepArray([3, 3, 3, 3]),
+					},
+				],
 			});
 
 			const result = transformToChartJsData(properties, chartData, ['Dataset 1']);
@@ -188,21 +215,27 @@ describe('transformToChartJsData', () => {
 				yUniqueData: [30, 50, 90],
 				hasBar: true,
 				yDataIsActuallyOrdinal: false, // Numeric data should NOT be converted
-				dataSetData: [{
-					data: [
-						{ x: 'Jan', y: 30 },
-						{ x: 'Feb', y: 50 },
-						{ x: 'Mar', y: 90 },
-					],
-					isHidden: false,
-					dataSetStyle: DataSetStyle.Bar,
-					dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
-					dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
-					fillOpacity: createRepArray([1, 1, 1]),
-					strokeOpacity: createRepArray([1, 1, 1]),
-					pointType: createRepArray([PointType.Circle, PointType.Circle, PointType.Circle]),
-					pointSize: createRepArray([3, 3, 3]),
-				}],
+				dataSetData: [
+					{
+						data: [
+							{ x: 'Jan', y: 30 },
+							{ x: 'Feb', y: 50 },
+							{ x: 'Mar', y: 90 },
+						],
+						isHidden: false,
+						dataSetStyle: DataSetStyle.Bar,
+						dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
+						dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
+						fillOpacity: createRepArray([1, 1, 1]),
+						strokeOpacity: createRepArray([1, 1, 1]),
+						pointType: createRepArray([
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+						]),
+						pointSize: createRepArray([3, 3, 3]),
+					},
+				],
 			});
 
 			const result = transformToChartJsData(properties, chartData, ['Dataset 1']);
@@ -220,21 +253,27 @@ describe('transformToChartJsData', () => {
 				yUniqueData: ['Low', 'Medium', 'High'],
 				hasBar: true,
 				yDataIsActuallyOrdinal: true,
-				dataSetData: [{
-					data: [
-						{ x: 'Jan', y: 'Low' },
-						{ x: 'Feb', y: 'High' },
-						{ x: 'Mar', y: 'Medium' },
-					],
-					isHidden: false,
-					dataSetStyle: DataSetStyle.Bar,
-					dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
-					dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
-					fillOpacity: createRepArray([1, 1, 1]),
-					strokeOpacity: createRepArray([1, 1, 1]),
-					pointType: createRepArray([PointType.Circle, PointType.Circle, PointType.Circle]),
-					pointSize: createRepArray([3, 3, 3]),
-				}],
+				dataSetData: [
+					{
+						data: [
+							{ x: 'Jan', y: 'Low' },
+							{ x: 'Feb', y: 'High' },
+							{ x: 'Mar', y: 'Medium' },
+						],
+						isHidden: false,
+						dataSetStyle: DataSetStyle.Bar,
+						dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
+						dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
+						fillOpacity: createRepArray([1, 1, 1]),
+						strokeOpacity: createRepArray([1, 1, 1]),
+						pointType: createRepArray([
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+						]),
+						pointSize: createRepArray([3, 3, 3]),
+					},
+				],
 			});
 
 			const result = transformToChartJsData(properties, chartData, ['Dataset 1']);
@@ -268,10 +307,20 @@ describe('transformToChartJsData', () => {
 						isHidden: false,
 						dataSetStyle: DataSetStyle.HorizontalBar,
 						dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']),
-						dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']),
+						dataStrokeColors: createRepArray([
+							'#FF0000',
+							'#00FF00',
+							'#0000FF',
+							'#FFFF00',
+						]),
 						fillOpacity: createRepArray([1, 1, 1, 1]),
 						strokeOpacity: createRepArray([1, 1, 1, 1]),
-						pointType: createRepArray([PointType.Circle, PointType.Circle, PointType.Circle, PointType.Circle]),
+						pointType: createRepArray([
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+						]),
 						pointSize: createRepArray([3, 3, 3, 3]),
 					},
 					// Second dataset (y2): Winter, Summer, Fall, Winter
@@ -285,16 +334,29 @@ describe('transformToChartJsData', () => {
 						isHidden: false,
 						dataSetStyle: DataSetStyle.HorizontalBar,
 						dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']),
-						dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF', '#FFFF00']),
+						dataStrokeColors: createRepArray([
+							'#FF0000',
+							'#00FF00',
+							'#0000FF',
+							'#FFFF00',
+						]),
 						fillOpacity: createRepArray([1, 1, 1, 1]),
 						strokeOpacity: createRepArray([1, 1, 1, 1]),
-						pointType: createRepArray([PointType.Circle, PointType.Circle, PointType.Circle, PointType.Circle]),
+						pointType: createRepArray([
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+						]),
 						pointSize: createRepArray([3, 3, 3, 3]),
 					},
 				],
 			});
 
-			const result = transformToChartJsData(properties, chartData, ['Dataset 1', 'Dataset 2']);
+			const result = transformToChartJsData(properties, chartData, [
+				'Dataset 1',
+				'Dataset 2',
+			]);
 
 			// Ordinal values should be converted to indices (1-based)
 			// yUniqueData order: Summer=1, Autum=2, Spring=3, Winter=4, Fall=5
@@ -312,26 +374,31 @@ describe('transformToChartJsData', () => {
 				xUniqueData: ['Jan', 'Feb'],
 				yUniqueData: [10, 20, 30, 40],
 				hasBar: true,
-				dataSetData: [{
-					data: [
-						{ x: 'Jan', y: [10, 20] },
-						{ x: 'Feb', y: [30, 40] },
-					],
-					isHidden: false,
-					dataSetStyle: DataSetStyle.Bar,
-					dataColors: createRepArray(['#FF0000', '#00FF00']),
-					dataStrokeColors: createRepArray(['#FF0000', '#00FF00']),
-					fillOpacity: createRepArray([1, 1]),
-					strokeOpacity: createRepArray([1, 1]),
-					pointType: createRepArray([PointType.Circle, PointType.Circle]),
-					pointSize: createRepArray([3, 3]),
-				}],
+				dataSetData: [
+					{
+						data: [
+							{ x: 'Jan', y: [10, 20] },
+							{ x: 'Feb', y: [30, 40] },
+						],
+						isHidden: false,
+						dataSetStyle: DataSetStyle.Bar,
+						dataColors: createRepArray(['#FF0000', '#00FF00']),
+						dataStrokeColors: createRepArray(['#FF0000', '#00FF00']),
+						fillOpacity: createRepArray([1, 1]),
+						strokeOpacity: createRepArray([1, 1]),
+						pointType: createRepArray([PointType.Circle, PointType.Circle]),
+						pointSize: createRepArray([3, 3]),
+					},
+				],
 			});
 
 			const result = transformToChartJsData(properties, chartData, ['Dataset 1']);
 
 			// Range pairs should be preserved
-			expect(result.datasets[0].data).toEqual([[10, 20], [30, 40]]);
+			expect(result.datasets[0].data).toEqual([
+				[10, 20],
+				[30, 40],
+			]);
 		});
 
 		it('should create separate datasets for multiple range pairs per category', () => {
@@ -340,19 +407,27 @@ describe('transformToChartJsData', () => {
 				xUniqueData: ['Jan'],
 				yUniqueData: [10, 20, 23, 30],
 				hasBar: true,
-				dataSetData: [{
-					data: [
-						{ x: 'Jan', y: [[10, 20], [23, 30]] },
-					],
-					isHidden: false,
-					dataSetStyle: DataSetStyle.Bar,
-					dataColors: createRepArray(['#FF0000']),
-					dataStrokeColors: createRepArray(['#FF0000']),
-					fillOpacity: createRepArray([1]),
-					strokeOpacity: createRepArray([1]),
-					pointType: createRepArray([PointType.Circle]),
-					pointSize: createRepArray([3]),
-				}],
+				dataSetData: [
+					{
+						data: [
+							{
+								x: 'Jan',
+								y: [
+									[10, 20],
+									[23, 30],
+								],
+							},
+						],
+						isHidden: false,
+						dataSetStyle: DataSetStyle.Bar,
+						dataColors: createRepArray(['#FF0000']),
+						dataStrokeColors: createRepArray(['#FF0000']),
+						fillOpacity: createRepArray([1]),
+						strokeOpacity: createRepArray([1]),
+						pointType: createRepArray([PointType.Circle]),
+						pointSize: createRepArray([3]),
+					},
+				],
 			});
 
 			const result = transformToChartJsData(properties, chartData, ['Dataset 1']);
@@ -371,21 +446,46 @@ describe('transformToChartJsData', () => {
 				xUniqueData: ['Jan', 'Feb', 'Mar'],
 				yUniqueData: [3, 5, 9, 10, 13, 14, 15, 20, 23, 24, 26, 28, 29, 30],
 				hasBar: true,
-				dataSetData: [{
-					data: [
-						{ x: 'Jan', y: [[10, 20], [24, 29]] },
-						{ x: 'Feb', y: [[13, 15], [26, 28]] },
-						{ x: 'Mar', y: [[3, 5], [9, 14], [23, 26]] },
-					],
-					isHidden: false,
-					dataSetStyle: DataSetStyle.Bar,
-					dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
-					dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
-					fillOpacity: createRepArray([1, 1, 1]),
-					strokeOpacity: createRepArray([1, 1, 1]),
-					pointType: createRepArray([PointType.Circle, PointType.Circle, PointType.Circle]),
-					pointSize: createRepArray([3, 3, 3]),
-				}],
+				dataSetData: [
+					{
+						data: [
+							{
+								x: 'Jan',
+								y: [
+									[10, 20],
+									[24, 29],
+								],
+							},
+							{
+								x: 'Feb',
+								y: [
+									[13, 15],
+									[26, 28],
+								],
+							},
+							{
+								x: 'Mar',
+								y: [
+									[3, 5],
+									[9, 14],
+									[23, 26],
+								],
+							},
+						],
+						isHidden: false,
+						dataSetStyle: DataSetStyle.Bar,
+						dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
+						dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
+						fillOpacity: createRepArray([1, 1, 1]),
+						strokeOpacity: createRepArray([1, 1, 1]),
+						pointType: createRepArray([
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+						]),
+						pointSize: createRepArray([3, 3, 3]),
+					},
+				],
 			});
 
 			const result = transformToChartJsData(properties, chartData, ['Dataset 1']);
@@ -395,9 +495,17 @@ describe('transformToChartJsData', () => {
 			// Should create 3 datasets (max ranges per category is 3 for Mar)
 			expect(result.datasets.length).toBe(3);
 			// First layer: first range from each category
-			expect(result.datasets[0].data).toEqual([[10, 20], [13, 15], [3, 5]]);
+			expect(result.datasets[0].data).toEqual([
+				[10, 20],
+				[13, 15],
+				[3, 5],
+			]);
 			// Second layer: second range from each category
-			expect(result.datasets[1].data).toEqual([[24, 29], [26, 28], [9, 14]]);
+			expect(result.datasets[1].data).toEqual([
+				[24, 29],
+				[26, 28],
+				[9, 14],
+			]);
 			// Third layer: only Mar has a third range
 			expect(result.datasets[2].data).toEqual([null, null, [23, 26]]);
 		});
@@ -410,21 +518,27 @@ describe('transformToChartJsData', () => {
 				xUniqueData: ['A', 'B', 'C'], // Already sorted in common.ts
 				yUniqueData: [30, 10, 20],
 				hasBar: true,
-				dataSetData: [{
-					data: [
-						{ x: 'C', y: 20 },
-						{ x: 'A', y: 30 },
-						{ x: 'B', y: 10 },
-					],
-					isHidden: false,
-					dataSetStyle: DataSetStyle.Bar,
-					dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
-					dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
-					fillOpacity: createRepArray([1, 1, 1]),
-					strokeOpacity: createRepArray([1, 1, 1]),
-					pointType: createRepArray([PointType.Circle, PointType.Circle, PointType.Circle]),
-					pointSize: createRepArray([3, 3, 3]),
-				}],
+				dataSetData: [
+					{
+						data: [
+							{ x: 'C', y: 20 },
+							{ x: 'A', y: 30 },
+							{ x: 'B', y: 10 },
+						],
+						isHidden: false,
+						dataSetStyle: DataSetStyle.Bar,
+						dataColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
+						dataStrokeColors: createRepArray(['#FF0000', '#00FF00', '#0000FF']),
+						fillOpacity: createRepArray([1, 1, 1]),
+						strokeOpacity: createRepArray([1, 1, 1]),
+						pointType: createRepArray([
+							PointType.Circle,
+							PointType.Circle,
+							PointType.Circle,
+						]),
+						pointSize: createRepArray([3, 3, 3]),
+					},
+				],
 			});
 
 			const result = transformToChartJsData(properties, chartData, ['Dataset 1']);
@@ -444,20 +558,22 @@ describe('transformToChartJsData', () => {
 				yUniqueData: [100, 200],
 				hasBar: true,
 				hasHorizontalBar: true,
-				dataSetData: [{
-					data: [
-						{ x: 'Category A', y: 100 },
-						{ x: 'Category B', y: 200 },
-					],
-					isHidden: false,
-					dataSetStyle: DataSetStyle.HorizontalBar,
-					dataColors: createRepArray(['#FF0000', '#00FF00']),
-					dataStrokeColors: createRepArray(['#FF0000', '#00FF00']),
-					fillOpacity: createRepArray([1, 1]),
-					strokeOpacity: createRepArray([1, 1]),
-					pointType: createRepArray([PointType.Circle, PointType.Circle]),
-					pointSize: createRepArray([3, 3]),
-				}],
+				dataSetData: [
+					{
+						data: [
+							{ x: 'Category A', y: 100 },
+							{ x: 'Category B', y: 200 },
+						],
+						isHidden: false,
+						dataSetStyle: DataSetStyle.HorizontalBar,
+						dataColors: createRepArray(['#FF0000', '#00FF00']),
+						dataStrokeColors: createRepArray(['#FF0000', '#00FF00']),
+						fillOpacity: createRepArray([1, 1]),
+						strokeOpacity: createRepArray([1, 1]),
+						pointType: createRepArray([PointType.Circle, PointType.Circle]),
+						pointSize: createRepArray([3, 3]),
+					},
+				],
 			});
 
 			const result = transformToChartJsData(properties, chartData, ['Dataset 1']);

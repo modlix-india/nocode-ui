@@ -42,7 +42,7 @@ const component: Component = {
 		properties: {},
 	},
 	sections: [{ name: 'File Upload', pageName: 'fileupload' }],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 	externalStylePropsForThemeJson: true,
 };
 

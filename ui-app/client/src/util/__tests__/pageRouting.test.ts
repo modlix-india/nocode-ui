@@ -18,7 +18,10 @@ const pinned = (...values: Array<number>) => {
 	return () => values[Math.min(i++, values.length - 1)];
 };
 
-const req = (r: Partial<PageRouteRequest> = {}): PageRouteRequest => ({ pageName: 'pricing', ...r });
+const req = (r: Partial<PageRouteRequest> = {}): PageRouteRequest => ({
+	pageName: 'pricing',
+	...r,
+});
 
 describe('resolvePageRoute — the requested name', () => {
 	it('returns the requested page when there is no routing at all', () => {
@@ -52,7 +55,10 @@ describe('resolvePageRoute — asked for as-is', () => {
 			rules: {
 				r1: {
 					type: 'SPLIT',
-					variants: { v1: { page: 'home', weight: 1 }, v2: { page: 'homeTwo', weight: 1 } },
+					variants: {
+						v1: { page: 'home', weight: 1 },
+						v2: { page: 'homeTwo', weight: 1 },
+					},
 				},
 			},
 		},
@@ -81,9 +87,9 @@ describe('resolvePageRoute — asked for as-is', () => {
 	});
 
 	it('still substitutes the default page when the URL names none', () => {
-		expect(
-			resolvePageRoute(split, 'home', req({ pageName: '', query: design })).pageName,
-		).toBe('home');
+		expect(resolvePageRoute(split, 'home', req({ pageName: '', query: design })).pageName).toBe(
+			'home',
+		);
 	});
 
 	it('reads the flag the way a URL writes it', () => {
@@ -104,7 +110,12 @@ const campaignRoute = (target: string): PageRouting => ({
 				type: 'PERSONALIZATION',
 				page: target,
 				conditions: {
-					c1: { source: 'QUERY', field: 'utm_campaign', operator: 'EQUALS', value: 'dentists' },
+					c1: {
+						source: 'QUERY',
+						field: 'utm_campaign',
+						operator: 'EQUALS',
+						value: 'dentists',
+					},
 				},
 			},
 		},
@@ -113,18 +124,26 @@ const campaignRoute = (target: string): PageRouting => ({
 
 describe('resolvePageRoute — routing outranks the page name', () => {
 	it('routes even though a page of the requested name exists', () => {
-		const result = resolvePageRoute(campaignRoute('pricing_dentists'), undefined, req({
-			query: { utm_campaign: 'dentists' },
-		}));
+		const result = resolvePageRoute(
+			campaignRoute('pricing_dentists'),
+			undefined,
+			req({
+				query: { utm_campaign: 'dentists' },
+			}),
+		);
 		expect(result.pageName).toBe('pricing_dentists');
 		expect(result.routeKey).toBe('pricing');
 		expect(result.ruleKey).toBe('r1');
 	});
 
 	it('falls back to the requested name when no rule matches', () => {
-		const result = resolvePageRoute(campaignRoute('pricing_dentists'), undefined, req({
-			query: { utm_campaign: 'clinics' },
-		}));
+		const result = resolvePageRoute(
+			campaignRoute('pricing_dentists'),
+			undefined,
+			req({
+				query: { utm_campaign: 'clinics' },
+			}),
+		);
 		expect(result.pageName).toBe('pricing');
 		expect(result.routeKey).toBeUndefined();
 	});
@@ -135,9 +154,9 @@ describe('resolvePageRoute — routing outranks the page name', () => {
 				rules: { r1: { type: 'SPLIT', variants: { a: { page: 'offer_a' } } } },
 			},
 		};
-		expect(resolvePageRoute(routing, undefined, req({ pageName: 'summer-offer' })).pageName).toBe(
-			'offer_a',
-		);
+		expect(
+			resolvePageRoute(routing, undefined, req({ pageName: 'summer-offer' })).pageName,
+		).toBe('offer_a');
 	});
 
 	it('applies a route keyed by the default page, so the home page can be personalized', () => {
@@ -179,7 +198,9 @@ describe('resolvePageRoute — routing outranks the page name', () => {
 				},
 			},
 		};
-		expect(resolvePageRoute(routing, undefined, req({ query: { x: '1' } })).pageName).toBe('pricing_b');
+		expect(resolvePageRoute(routing, undefined, req({ query: { x: '1' } })).pageName).toBe(
+			'pricing_b',
+		);
 	});
 });
 
@@ -204,12 +225,12 @@ describe('resolvePageRoute — rule selection', () => {
 	});
 
 	it('takes the first rule by `order`, not by map key', () => {
-		expect(resolvePageRoute(twoRules(1, 0), undefined, req({ query: { x: '1' } })).pageName).toBe(
-			'page_b',
-		);
-		expect(resolvePageRoute(twoRules(0, 1), undefined, req({ query: { x: '1' } })).pageName).toBe(
-			'page_a',
-		);
+		expect(
+			resolvePageRoute(twoRules(1, 0), undefined, req({ query: { x: '1' } })).pageName,
+		).toBe('page_b');
+		expect(
+			resolvePageRoute(twoRules(0, 1), undefined, req({ query: { x: '1' } })).pageName,
+		).toBe('page_a');
 	});
 
 	it('keeps written order when no rule carries one', () => {
@@ -229,14 +250,17 @@ describe('resolvePageRoute — rule selection', () => {
 				},
 			},
 		};
-		expect(resolvePageRoute(routing, undefined, req({ query: { x: '1' } })).pageName).toBe('page_a');
+		expect(resolvePageRoute(routing, undefined, req({ query: { x: '1' } })).pageName).toBe(
+			'page_a',
+		);
 	});
 
 	it('skips a disabled rule and a disabled route', () => {
 		const routing = campaignRoute('pricing_dentists');
 		routing.pricing.rules!.r1.enabled = false;
 		expect(
-			resolvePageRoute(routing, undefined, req({ query: { utm_campaign: 'dentists' } })).pageName,
+			resolvePageRoute(routing, undefined, req({ query: { utm_campaign: 'dentists' } }))
+				.pageName,
 		).toBe('pricing');
 
 		const disabledRoute = campaignRoute('pricing_dentists');
@@ -265,7 +289,9 @@ describe('resolvePageRoute — rule selection', () => {
 				},
 			},
 		};
-		expect(resolvePageRoute(routing, undefined, req({ query: { x: '1' } })).pageName).toBe('pricing');
+		expect(resolvePageRoute(routing, undefined, req({ query: { x: '1' } })).pageName).toBe(
+			'pricing',
+		);
 	});
 
 	it('requires every condition under ALL and one under ANY', () => {
@@ -297,16 +323,33 @@ describe('resolvePageRoute — rule selection', () => {
 describe('conditions', () => {
 	const match = (condition: any, request: Partial<PageRouteRequest>) =>
 		resolvePageRoute(
-			{ pricing: { rules: { r1: { type: 'PERSONALIZATION', page: 'hit', conditions: { c: condition } } } } },
+			{
+				pricing: {
+					rules: {
+						r1: { type: 'PERSONALIZATION', page: 'hit', conditions: { c: condition } },
+					},
+				},
+			},
 			undefined,
 			req(request),
 		).pageName === 'hit';
 
 	it('compares query values, folding case unless told not to', () => {
-		expect(match({ source: 'QUERY', field: 'c', operator: 'EQUALS', value: 'Dentists' }, { query: { c: 'dentists' } })).toBe(true);
 		expect(
 			match(
-				{ source: 'QUERY', field: 'c', operator: 'EQUALS', value: 'Dentists', caseSensitive: true },
+				{ source: 'QUERY', field: 'c', operator: 'EQUALS', value: 'Dentists' },
+				{ query: { c: 'dentists' } },
+			),
+		).toBe(true);
+		expect(
+			match(
+				{
+					source: 'QUERY',
+					field: 'c',
+					operator: 'EQUALS',
+					value: 'Dentists',
+					caseSensitive: true,
+				},
 				{ query: { c: 'dentists' } },
 			),
 		).toBe(false);
@@ -314,72 +357,158 @@ describe('conditions', () => {
 
 	it('lower-cases the header field name rather than trusting the author', () => {
 		expect(
-			match({ source: 'HEADER', field: 'Referer', operator: 'CONTAINS', value: 'google' }, {
-				headers: { referer: 'https://www.google.com/' },
-			}),
+			match(
+				{ source: 'HEADER', field: 'Referer', operator: 'CONTAINS', value: 'google' },
+				{
+					headers: { referer: 'https://www.google.com/' },
+				},
+			),
 		).toBe(true);
 	});
 
 	it('reads cookies, device and country', () => {
-		expect(match({ source: 'COOKIE', field: 'plan', operator: 'EQUALS', value: 'pro' }, { cookies: { plan: 'pro' } })).toBe(true);
-		expect(match({ source: 'DEVICE', operator: 'EQUALS', value: 'MOBILE' }, { device: 'MOBILE' })).toBe(true);
-		expect(match({ source: 'GEO', operator: 'IN', value: 'IN, LK, BD' }, { country: 'LK' })).toBe(true);
+		expect(
+			match(
+				{ source: 'COOKIE', field: 'plan', operator: 'EQUALS', value: 'pro' },
+				{ cookies: { plan: 'pro' } },
+			),
+		).toBe(true);
+		expect(
+			match({ source: 'DEVICE', operator: 'EQUALS', value: 'MOBILE' }, { device: 'MOBILE' }),
+		).toBe(true);
+		expect(
+			match({ source: 'GEO', operator: 'IN', value: 'IN, LK, BD' }, { country: 'LK' }),
+		).toBe(true);
 	});
 
 	it('renders AUTH as a string, and distinguishes anonymous from undetermined', () => {
-		expect(match({ source: 'AUTH', operator: 'EQUALS', value: 'true' }, { authenticated: true })).toBe(true);
-		expect(match({ source: 'AUTH', operator: 'EQUALS', value: 'false' }, { authenticated: false })).toBe(true);
+		expect(
+			match({ source: 'AUTH', operator: 'EQUALS', value: 'true' }, { authenticated: true }),
+		).toBe(true);
+		expect(
+			match({ source: 'AUTH', operator: 'EQUALS', value: 'false' }, { authenticated: false }),
+		).toBe(true);
 		expect(match({ source: 'AUTH', operator: 'EXISTS' }, { authenticated: false })).toBe(true);
 		expect(match({ source: 'AUTH', operator: 'EXISTS' }, {})).toBe(false);
 	});
 
 	it('treats an empty string as absent', () => {
-		expect(match({ source: 'QUERY', field: 'c', operator: 'EXISTS' }, { query: { c: '' } })).toBe(false);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'NOT_EXISTS' }, { query: { c: '' } })).toBe(true);
+		expect(
+			match({ source: 'QUERY', field: 'c', operator: 'EXISTS' }, { query: { c: '' } }),
+		).toBe(false);
+		expect(
+			match({ source: 'QUERY', field: 'c', operator: 'NOT_EXISTS' }, { query: { c: '' } }),
+		).toBe(true);
 	});
 
 	it('satisfies only the negative operators when the value is missing', () => {
-		expect(match({ source: 'QUERY', field: 'c', operator: 'NOT_EQUALS', value: 'x' }, {})).toBe(true);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'NOT_CONTAINS', value: 'x' }, {})).toBe(true);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'NOT_IN', value: 'x,y' }, {})).toBe(true);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'EQUALS', value: 'x' }, {})).toBe(false);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'CONTAINS', value: 'x' }, {})).toBe(false);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'STARTS_WITH', value: 'x' }, {})).toBe(false);
+		expect(match({ source: 'QUERY', field: 'c', operator: 'NOT_EQUALS', value: 'x' }, {})).toBe(
+			true,
+		);
+		expect(
+			match({ source: 'QUERY', field: 'c', operator: 'NOT_CONTAINS', value: 'x' }, {}),
+		).toBe(true);
+		expect(match({ source: 'QUERY', field: 'c', operator: 'NOT_IN', value: 'x,y' }, {})).toBe(
+			true,
+		);
+		expect(match({ source: 'QUERY', field: 'c', operator: 'EQUALS', value: 'x' }, {})).toBe(
+			false,
+		);
+		expect(match({ source: 'QUERY', field: 'c', operator: 'CONTAINS', value: 'x' }, {})).toBe(
+			false,
+		);
+		expect(
+			match({ source: 'QUERY', field: 'c', operator: 'STARTS_WITH', value: 'x' }, {}),
+		).toBe(false);
 	});
 
 	it('supports the string operators', () => {
 		const q = { query: { c: 'summer-sale-2026' } };
-		expect(match({ source: 'QUERY', field: 'c', operator: 'CONTAINS', value: 'sale' }, q)).toBe(true);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'STARTS_WITH', value: 'summer' }, q)).toBe(true);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'ENDS_WITH', value: '2026' }, q)).toBe(true);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'NOT_CONTAINS', value: 'winter' }, q)).toBe(true);
+		expect(match({ source: 'QUERY', field: 'c', operator: 'CONTAINS', value: 'sale' }, q)).toBe(
+			true,
+		);
+		expect(
+			match({ source: 'QUERY', field: 'c', operator: 'STARTS_WITH', value: 'summer' }, q),
+		).toBe(true);
+		expect(
+			match({ source: 'QUERY', field: 'c', operator: 'ENDS_WITH', value: '2026' }, q),
+		).toBe(true);
+		expect(
+			match({ source: 'QUERY', field: 'c', operator: 'NOT_CONTAINS', value: 'winter' }, q),
+		).toBe(true);
 	});
 
 	it('takes IN values from a list or a comma-separated string, trimming', () => {
-		expect(match({ source: 'QUERY', field: 'c', operator: 'IN', values: ['a', 'b'] }, { query: { c: 'b' } })).toBe(true);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'IN', value: 'a , b' }, { query: { c: 'b' } })).toBe(true);
-		expect(match({ source: 'QUERY', field: 'c', operator: 'NOT_IN', value: 'a,b' }, { query: { c: 'c' } })).toBe(true);
+		expect(
+			match(
+				{ source: 'QUERY', field: 'c', operator: 'IN', values: ['a', 'b'] },
+				{ query: { c: 'b' } },
+			),
+		).toBe(true);
+		expect(
+			match(
+				{ source: 'QUERY', field: 'c', operator: 'IN', value: 'a , b' },
+				{ query: { c: 'b' } },
+			),
+		).toBe(true);
+		expect(
+			match(
+				{ source: 'QUERY', field: 'c', operator: 'NOT_IN', value: 'a,b' },
+				{ query: { c: 'c' } },
+			),
+		).toBe(true);
 	});
 
 	it('matches a regular expression, case-insensitively by default', () => {
-		expect(match({ source: 'QUERY', field: 'c', operator: 'MATCHES', value: '^dent' }, { query: { c: 'Dentists' } })).toBe(true);
 		expect(
-			match({ source: 'QUERY', field: 'c', operator: 'MATCHES', value: '^dent', caseSensitive: true }, { query: { c: 'Dentists' } }),
+			match(
+				{ source: 'QUERY', field: 'c', operator: 'MATCHES', value: '^dent' },
+				{ query: { c: 'Dentists' } },
+			),
+		).toBe(true);
+		expect(
+			match(
+				{
+					source: 'QUERY',
+					field: 'c',
+					operator: 'MATCHES',
+					value: '^dent',
+					caseSensitive: true,
+				},
+				{ query: { c: 'Dentists' } },
+			),
 		).toBe(false);
 	});
 
 	it('does not throw on an unparseable pattern — it must not take the page down', () => {
-		expect(() => match({ source: 'QUERY', field: 'c', operator: 'MATCHES', value: '([' }, { query: { c: 'x' } })).not.toThrow();
-		expect(match({ source: 'QUERY', field: 'c', operator: 'MATCHES', value: '([' }, { query: { c: 'x' } })).toBe(false);
+		expect(() =>
+			match(
+				{ source: 'QUERY', field: 'c', operator: 'MATCHES', value: '([' },
+				{ query: { c: 'x' } },
+			),
+		).not.toThrow();
+		expect(
+			match(
+				{ source: 'QUERY', field: 'c', operator: 'MATCHES', value: '([' },
+				{ query: { c: 'x' } },
+			),
+		).toBe(false);
 	});
 
 	it('refuses an over-long pattern', () => {
-		expect(match({ source: 'QUERY', field: 'c', operator: 'MATCHES', value: 'x'.repeat(513) }, { query: { c: 'x'.repeat(513) } })).toBe(false);
+		expect(
+			match(
+				{ source: 'QUERY', field: 'c', operator: 'MATCHES', value: 'x'.repeat(513) },
+				{ query: { c: 'x'.repeat(513) } },
+			),
+		).toBe(false);
 	});
 
 	it('does not match a field-less QUERY, HEADER or COOKIE condition', () => {
 		expect(match({ source: 'QUERY', operator: 'EXISTS' }, { query: { c: '1' } })).toBe(false);
-		expect(match({ source: 'COOKIE', operator: 'EXISTS' }, { cookies: { c: '1' } })).toBe(false);
+		expect(match({ source: 'COOKIE', operator: 'EXISTS' }, { cookies: { c: '1' } })).toBe(
+			false,
+		);
 	});
 });
 
@@ -395,7 +524,8 @@ describe('splits', () => {
 	};
 
 	it('draws by weight across any number of arms', () => {
-		const at = (r: number) => resolvePageRoute(split(threeWay), undefined, req(), { random: pinned(r) });
+		const at = (r: number) =>
+			resolvePageRoute(split(threeWay), undefined, req(), { random: pinned(r) });
 
 		expect(at(0).pageName).toBe('pricing');
 		expect(at(0.49).pageName).toBe('pricing');
@@ -413,26 +543,45 @@ describe('splits', () => {
 
 	it('treats a missing weight as 1 and drops zero or negative ones', () => {
 		const routing = split({ a: { page: 'page_a', order: 0 }, b: { page: 'page_b', order: 1 } });
-		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.4) }).pageName).toBe('page_a');
-		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.6) }).pageName).toBe('page_b');
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.4) }).pageName).toBe(
+			'page_a',
+		);
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.6) }).pageName).toBe(
+			'page_b',
+		);
 
-		const zeroed = split({ a: { page: 'page_a', weight: 0, order: 0 }, b: { page: 'page_b', weight: 5, order: 1 } });
-		expect(resolvePageRoute(zeroed, undefined, req(), { random: pinned(0) }).pageName).toBe('page_b');
+		const zeroed = split({
+			a: { page: 'page_a', weight: 0, order: 0 },
+			b: { page: 'page_b', weight: 5, order: 1 },
+		});
+		expect(resolvePageRoute(zeroed, undefined, req(), { random: pinned(0) }).pageName).toBe(
+			'page_b',
+		);
 	});
 
 	it('does not draw when the visitor already holds an assignment, and writes nothing', () => {
-		const result = resolvePageRoute(split(threeWay), undefined, req({ assignments: { exp1: 'c' } }), {
-			random: pinned(0),
-		});
+		const result = resolvePageRoute(
+			split(threeWay),
+			undefined,
+			req({ assignments: { exp1: 'c' } }),
+			{
+				random: pinned(0),
+			},
+		);
 		expect(result.pageName).toBe('pricing_c');
 		expect(result.variantKey).toBe('c');
 		expect(result.newAssignment).toBeUndefined();
 	});
 
 	it('redraws when the stored arm has since been deleted', () => {
-		const result = resolvePageRoute(split(threeWay), undefined, req({ assignments: { exp1: 'gone' } }), {
-			random: pinned(0),
-		});
+		const result = resolvePageRoute(
+			split(threeWay),
+			undefined,
+			req({ assignments: { exp1: 'gone' } }),
+			{
+				random: pinned(0),
+			},
+		);
 		expect(result.pageName).toBe('pricing');
 		expect(result.newAssignment).toEqual({ ruleKey: 'exp1', variantKey: 'a' });
 	});
@@ -457,12 +606,18 @@ describe('splits', () => {
 			a: { page: 'pricing', weight: 50, order: 0 },
 			b: { page: 'pricing_b', weight: 50, order: 1 },
 		});
-		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.1) }).pageName).toBe('pricing');
-		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.9) }).pageName).toBe('pricing_b');
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.1) }).pageName).toBe(
+			'pricing',
+		);
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.9) }).pageName).toBe(
+			'pricing_b',
+		);
 	});
 
 	it('records the assignment it drew, so the arm survives the next click', () => {
-		const result = resolvePageRoute(split(threeWay), undefined, req(), { random: pinned(0.99) });
+		const result = resolvePageRoute(split(threeWay), undefined, req(), {
+			random: pinned(0.99),
+		});
 		expect(result.newAssignment).toEqual({ ruleKey: 'exp1', variantKey: 'c' });
 	});
 
@@ -486,23 +641,28 @@ describe('splits', () => {
 				},
 			},
 		};
-		expect(resolvePageRoute(routing, undefined, req({ country: 'IN' })).pageName).toBe('pricing_in');
+		expect(resolvePageRoute(routing, undefined, req({ country: 'IN' })).pageName).toBe(
+			'pricing_in',
+		);
 	});
 
 	it('can be narrowed by conditions, unlike a personalization rule', () => {
 		const routing = split(threeWay, {
 			conditions: { c: { source: 'DEVICE', operator: 'EQUALS', value: 'MOBILE' } },
 		});
-		expect(resolvePageRoute(routing, undefined, req({ device: 'DESKTOP' })).pageName).toBe('pricing');
+		expect(resolvePageRoute(routing, undefined, req({ device: 'DESKTOP' })).pageName).toBe(
+			'pricing',
+		);
 		expect(
-			resolvePageRoute(routing, undefined, req({ device: 'MOBILE' }), { random: pinned(0.6) }).pageName,
+			resolvePageRoute(routing, undefined, req({ device: 'MOBILE' }), { random: pinned(0.6) })
+				.pageName,
 		).toBe('pricing_b');
 	});
 
 	it('stays total when random returns exactly 1', () => {
-		expect(resolvePageRoute(split(threeWay), undefined, req(), { random: pinned(1) }).pageName).toBe(
-			'pricing_c',
-		);
+		expect(
+			resolvePageRoute(split(threeWay), undefined, req(), { random: pinned(1) }).pageName,
+		).toBe('pricing_c');
 	});
 
 	// A text input writes a string, and several writers reach this document. Left
@@ -514,7 +674,8 @@ describe('splits', () => {
 			a: { page: 'page_a', weight: '2' as unknown as number, order: 0 },
 			b: { page: 'page_b', weight: '1' as unknown as number, order: 1 },
 		});
-		const at = (r: number) => resolvePageRoute(routing, undefined, req(), { random: pinned(r) }).pageName;
+		const at = (r: number) =>
+			resolvePageRoute(routing, undefined, req(), { random: pinned(r) }).pageName;
 
 		expect(at(0)).toBe('page_a');
 		expect(at(0.66)).toBe('page_a');
@@ -527,7 +688,9 @@ describe('splits', () => {
 			a: { page: 'page_a', weight: '0' as unknown as number, order: 0 },
 			b: { page: 'page_b', weight: '5' as unknown as number, order: 1 },
 		});
-		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0) }).pageName).toBe('page_b');
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0) }).pageName).toBe(
+			'page_b',
+		);
 	});
 
 	it('falls back to one for a weight that is not a number at all', () => {
@@ -535,8 +698,12 @@ describe('splits', () => {
 			a: { page: 'page_a', weight: 'lots' as unknown as number, order: 0 },
 			b: { page: 'page_b', weight: 1, order: 1 },
 		});
-		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.4) }).pageName).toBe('page_a');
-		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.6) }).pageName).toBe('page_b');
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.4) }).pageName).toBe(
+			'page_a',
+		);
+		expect(resolvePageRoute(routing, undefined, req(), { random: pinned(0.6) }).pageName).toBe(
+			'page_b',
+		);
 	});
 
 	it('orders arms written with string orders numerically, not as text', () => {
@@ -586,8 +753,18 @@ describe('routeQueryFields', () => {
 						type: 'PERSONALIZATION',
 						page: 'x',
 						conditions: {
-							a: { source: 'QUERY', field: 'utm_campaign', operator: 'EQUALS', value: 'd' },
-							b: { source: 'HEADER', field: 'referer', operator: 'CONTAINS', value: 'g' },
+							a: {
+								source: 'QUERY',
+								field: 'utm_campaign',
+								operator: 'EQUALS',
+								value: 'd',
+							},
+							b: {
+								source: 'HEADER',
+								field: 'referer',
+								operator: 'CONTAINS',
+								value: 'g',
+							},
 							c: { source: 'GEO', operator: 'EQUALS', value: 'IN' },
 						},
 					},
@@ -638,20 +815,28 @@ describe('parseCookieHeader', () => {
 describe('classifyDevice', () => {
 	it('calls an Android tablet a tablet, since it also matches the phone patterns', () => {
 		expect(
-			classifyDevice('Mozilla/5.0 (Linux; Android 13; SM-X710) AppleWebKit/537.36 Safari/537.36'),
+			classifyDevice(
+				'Mozilla/5.0 (Linux; Android 13; SM-X710) AppleWebKit/537.36 Safari/537.36',
+			),
 		).toBe('TABLET');
-		expect(classifyDevice('Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) Safari/605.1.15')).toBe('TABLET');
+		expect(
+			classifyDevice('Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) Safari/605.1.15'),
+		).toBe('TABLET');
 	});
 
 	it('recognises phones', () => {
-		expect(classifyDevice('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) Safari/604.1')).toBe('MOBILE');
+		expect(classifyDevice('Mozilla/5.0 (iPhone; CPU iPhone OS 17_0) Safari/604.1')).toBe(
+			'MOBILE',
+		);
 		expect(
 			classifyDevice('Mozilla/5.0 (Linux; Android 13; Pixel 7) Mobile Safari/537.36'),
 		).toBe('MOBILE');
 	});
 
 	it('falls back to desktop, and says nothing without a user agent', () => {
-		expect(classifyDevice('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15')).toBe('DESKTOP');
+		expect(
+			classifyDevice('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Safari/605.1.15'),
+		).toBe('DESKTOP');
 		expect(classifyDevice(undefined)).toBeUndefined();
 		expect(classifyDevice('')).toBeUndefined();
 	});

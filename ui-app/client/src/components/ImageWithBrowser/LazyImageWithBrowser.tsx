@@ -156,7 +156,11 @@ export default function ImageWithBrowser(props: Readonly<ComponentProps>) {
 	);
 
 	return (
-		<div className="comp compImageWithBrowser" style={resolvedStyles.comp ?? {}} data-analytics-label={analyticsLabel || undefined}>
+		<div
+			className="comp compImageWithBrowser"
+			style={resolvedStyles.comp ?? {}}
+			data-analytics-label={analyticsLabel || undefined}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			{img}
 			<SubHelperComponent

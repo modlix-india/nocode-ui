@@ -32,9 +32,9 @@ describe('the file object shape', () => {
 	});
 
 	it('is what an unset property falls back to', () => {
-		expect(
-			fileSelectorStoredValue(uploadResponse, undefined as any, false, ORIGIN),
-		).toBe(uploadResponse);
+		expect(fileSelectorStoredValue(uploadResponse, undefined as any, false, ORIGIN)).toBe(
+			uploadResponse,
+		);
 	});
 });
 

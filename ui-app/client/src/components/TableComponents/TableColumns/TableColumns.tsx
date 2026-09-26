@@ -133,8 +133,6 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 				locationHistory,
 			);
 
-
-
 		const personalizationObject = context.table.enablePersonalization
 			? getDataFromPath(
 					context.table.personalizationBindingPath,
@@ -1401,7 +1399,8 @@ function generateGroupedDynamicColumns(
 			node?.[labelField] ??
 			(labelField === 'name'
 				? (node?.stageName ?? node?.label ?? node?.title ?? String(nid ?? ''))
-				: '') ?? '';
+				: '') ??
+			'';
 
 		const emitColumnsFor = (
 			node: any,
@@ -1420,7 +1419,9 @@ function generateGroupedDynamicColumns(
 				? {
 						...styleProperties,
 						...(styleProperties.comp ? { comp: { ...styleProperties.comp } } : {}),
-						...(styleProperties.header ? { header: { ...styleProperties.header } } : {}),
+						...(styleProperties.header
+							? { header: { ...styleProperties.header } }
+							: {}),
 					}
 				: {};
 
@@ -1620,7 +1621,9 @@ function generateGroupedDynamicColumns(
 			const rawLeaves =
 				(group as any)[childrenField] ??
 				(childrenField === 'children'
-					? ((group as any).substages ?? (group as any).subStages ?? (group as any).childStages)
+					? ((group as any).substages ??
+						(group as any).subStages ??
+						(group as any).childStages)
 					: undefined);
 			const hasLeaves = Array.isArray(rawLeaves) && rawLeaves.length > 0;
 

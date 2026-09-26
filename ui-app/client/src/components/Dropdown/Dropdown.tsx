@@ -825,7 +825,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Dropdown', pageName: 'dropdown' }],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

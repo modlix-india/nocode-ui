@@ -106,13 +106,7 @@ export function FilterPanelButtons({
 	};
 
 	type DropdownType =
-		| 'alignment'
-		| 'heading'
-		| 'list'
-		| 'more'
-		| 'fontStyle'
-		| 'fontSize'
-		| 'color';
+		'alignment' | 'heading' | 'list' | 'more' | 'fontStyle' | 'fontSize' | 'color';
 
 	const closeAllDropdowns = () => {
 		setShowAlignmentDropdown(false);

@@ -113,7 +113,9 @@ describe('LazyTemplateEditor wiring', () => {
 		});
 		await flush();
 
-		const monaco = container.querySelector('[data-testid="monaco"]') as HTMLTextAreaElement | null;
+		const monaco = container.querySelector(
+			'[data-testid="monaco"]',
+		) as HTMLTextAreaElement | null;
 		expect(monaco).not.toBeNull();
 		expect(monaco!.value).toContain('<!DOCTYPE html>');
 		expect(monaco!.value).toContain('${fullName}');
@@ -125,7 +127,9 @@ describe('LazyTemplateEditor wiring', () => {
 		root = render(container, emailTemplate());
 		await flush();
 
-		const monaco = container.querySelector('[data-testid="monaco"]') as HTMLTextAreaElement | null;
+		const monaco = container.querySelector(
+			'[data-testid="monaco"]',
+		) as HTMLTextAreaElement | null;
 		expect(monaco).not.toBeNull();
 		expect(monaco!.value).toContain('<body>Hello ${fullName}');
 	});

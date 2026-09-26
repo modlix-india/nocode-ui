@@ -19,18 +19,13 @@ export interface ConfirmationAction {
 
 interface ActionBlockProps {
 	action: ConfirmationAction;
-	onRespond: (
-		confirmationId: string,
-		approved: boolean,
-		selectedValue: string,
-	) => void;
+	onRespond: (confirmationId: string, approved: boolean, selectedValue: string) => void;
 }
 
 function formatDetails(details: Record<string, any>): string[] {
 	const lines: string[] = [];
 	const objType = details.object_type;
-	const name =
-		details.name || details.page_name || details.id || '';
+	const name = details.name || details.page_name || details.id || '';
 
 	if (objType) lines.push(`Type: ${objType}`);
 	if (name) lines.push(`Name: ${name}`);
@@ -39,27 +34,17 @@ function formatDetails(details: Record<string, any>): string[] {
 		const ops = details.operations;
 		const summary = ops
 			.slice(0, 4)
-			.map(
-				(op: any) =>
-					`${op.op || '?'} ${op.component_key || op.parent_key || ''}`,
-			)
+			.map((op: any) => `${op.op || '?'} ${op.component_key || op.parent_key || ''}`)
 			.join(', ');
-		lines.push(
-			`Operations: ${summary}${ops.length > 4 ? ` +${ops.length - 4} more` : ''}`,
-		);
+		lines.push(`Operations: ${summary}${ops.length > 4 ? ` +${ops.length - 4} more` : ''}`);
 	}
 
 	if (details.event_function) {
-		lines.push(
-			`Event: ${details.event_function.function_name || '?'}`,
-		);
+		lines.push(`Event: ${details.event_function.function_name || '?'}`);
 	}
 
 	if (details.definition) lines.push('Includes definition update');
-	if (details.properties)
-		lines.push(
-			`Properties: ${Object.keys(details.properties).join(', ')}`,
-		);
+	if (details.properties) lines.push(`Properties: ${Object.keys(details.properties).join(', ')}`);
 	if (details.variables) lines.push('Includes theme variables');
 
 	return lines;
@@ -121,9 +106,7 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 		<div className="_confirmationPrompt">
 			<div className="_confirmationHeader">
 				<i className="_confirmationIcon fa fa-shield-halved" />
-				<span className="_confirmationTitle">
-					{action.displayName || action.toolName}
-				</span>
+				<span className="_confirmationTitle">{action.displayName || action.toolName}</span>
 			</div>
 
 			<p className="_confirmationMessage">{action.message}</p>

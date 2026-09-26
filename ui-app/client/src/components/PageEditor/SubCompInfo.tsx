@@ -82,6 +82,164 @@ export const SubComponentDefinitions: Record<
 	string,
 	Array<ComponentStyleSubComponentDefinition>
 > = {
+	ModelViewer: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect x="0" y="0" width="30" height="30" rx="3" fill="#F9F9F9" />
+					<path d="M15 4 L25 9.5 L15 15 L5 9.5 Z" fill="#7E81D6" />
+					<path d="M5 9.5 L15 15 L15 26 L5 20.5 Z" fill="#7E81D6" fillOpacity="0.6" />
+					<path d="M25 9.5 L15 15 L15 26 L25 20.5 Z" fill="#96A1B4" fillOpacity="0.8" />
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'container',
+			displayName: 'Canvas',
+			description: 'The WebGL canvas holder',
+			icon: 'fa-solid fa-cube',
+		},
+		{
+			name: 'poster',
+			displayName: 'Fallback Image',
+			description: 'Shown when WebGL is unavailable',
+			icon: 'fa-solid fa-image',
+		},
+		{
+			name: 'overlay',
+			displayName: 'Overlay',
+			description: 'A tint above the canvas, below any children',
+			icon: 'fa-solid fa-layer-group',
+		},
+	],
+	ParticleField: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect x="0" y="0" width="30" height="30" rx="3" fill="#F9F9F9" />
+					<circle cx="8" cy="9" r="2.1" fill="#7E81D6" />
+					<circle cx="17" cy="6" r="1.3" fill="#96A1B4" />
+					<circle cx="23" cy="11" r="1.7" fill="#7E81D6" fillOpacity="0.75" />
+					<circle cx="6" cy="18" r="1.2" fill="#96A1B4" />
+					<circle cx="14" cy="15" r="2.6" fill="#7E81D6" />
+					<circle cx="22" cy="20" r="1.4" fill="#96A1B4" />
+					<circle cx="10" cy="24" r="1.8" fill="#7E81D6" fillOpacity="0.6" />
+					<circle cx="19" cy="26" r="1.1" fill="#96A1B4" />
+					<circle cx="26" cy="24" r="0.9" fill="#7E81D6" fillOpacity="0.5" />
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'container',
+			displayName: 'Canvas',
+			description: 'The WebGL canvas holder',
+			icon: 'fa-solid fa-cube',
+		},
+		{
+			name: 'poster',
+			displayName: 'Fallback Image',
+			description: 'Shown when WebGL is unavailable',
+			icon: 'fa-solid fa-image',
+		},
+		{
+			name: 'overlay',
+			displayName: 'Overlay',
+			description: 'A tint above the canvas, below any children',
+			icon: 'fa-solid fa-layer-group',
+		},
+	],
+	ScrollScene: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect x="0" y="0" width="30" height="30" rx="3" fill="#F9F9F9" />
+					<path d="M15 6 L22 10 L15 14 L8 10 Z" fill="#7E81D6" />
+					<path d="M15 13 L22 17 L15 21 L8 17 Z" fill="#7E81D6" fillOpacity="0.55" />
+					<path
+						d="M25 8 L25 22 M25 22 L22.5 19 M25 22 L27.5 19"
+						stroke="#96A1B4"
+						strokeWidth="1.6"
+						fill="none"
+						strokeLinecap="round"
+					/>
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'container',
+			displayName: 'Canvas',
+			description: 'The WebGL canvas holder',
+			icon: 'fa-solid fa-cube',
+		},
+		{
+			name: 'poster',
+			displayName: 'Fallback Image',
+			description: 'Shown when WebGL is unavailable',
+			icon: 'fa-solid fa-image',
+		},
+		{
+			name: 'overlay',
+			displayName: 'Overlay',
+			description: 'A tint above the canvas, below any children',
+			icon: 'fa-solid fa-layer-group',
+		},
+	],
+	ShaderBackground: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect x="0" y="0" width="30" height="30" rx="3" fill="#F9F9F9" />
+					<path
+						d="M2 20 C 7 12, 11 26, 16 18 S 25 10, 28 16 L 28 27 C 28 27.55 27.55 28 27 28 L 3 28 C 2.45 28 2 27.55 2 27 Z"
+						fill="#7E81D6"
+						fillOpacity="0.85"
+					/>
+					<path
+						d="M2 15 C 7 7, 11 21, 16 13 S 25 5, 28 11"
+						stroke="#96A1B4"
+						strokeWidth="1.6"
+						fill="none"
+						strokeLinecap="round"
+					/>
+					<circle cx="22" cy="7" r="2.4" fill="#7E81D6" fillOpacity="0.5" />
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+		{
+			name: 'container',
+			displayName: 'Canvas',
+			description: 'The WebGL canvas holder',
+			icon: 'fa-solid fa-cube',
+		},
+		{
+			name: 'poster',
+			displayName: 'Fallback Image',
+			description: 'Shown when WebGL is unavailable',
+			icon: 'fa-solid fa-image',
+		},
+		{
+			name: 'overlay',
+			displayName: 'Overlay',
+			description: 'A tint above the canvas, below any children',
+			icon: 'fa-solid fa-layer-group',
+		},
+	],
 	Animator: [
 		{
 			name: '',
@@ -4276,13 +4434,45 @@ export const SubComponentDefinitions: Record<
 					{/* Top Grouped Header Block */}
 					<rect x="2" y="2" width="20" height="5" rx="1" fill="currentColor" />
 					{/* Left Sub-Column Header */}
-					<rect x="2" y="8" width="9.5" height="4" rx="0.8" fill="currentColor" fillOpacity="0.7" />
+					<rect
+						x="2"
+						y="8"
+						width="9.5"
+						height="4"
+						rx="0.8"
+						fill="currentColor"
+						fillOpacity="0.7"
+					/>
 					{/* Right Sub-Column Header */}
-					<rect x="12.5" y="8" width="9.5" height="4" rx="0.8" fill="currentColor" fillOpacity="0.7" />
+					<rect
+						x="12.5"
+						y="8"
+						width="9.5"
+						height="4"
+						rx="0.8"
+						fill="currentColor"
+						fillOpacity="0.7"
+					/>
 					{/* Left Sub-Column Body */}
-					<rect x="2" y="13" width="9.5" height="9" rx="0.8" fill="currentColor" fillOpacity="0.25" />
+					<rect
+						x="2"
+						y="13"
+						width="9.5"
+						height="9"
+						rx="0.8"
+						fill="currentColor"
+						fillOpacity="0.25"
+					/>
 					{/* Right Sub-Column Body */}
-					<rect x="12.5" y="13" width="9.5" height="9" rx="0.8" fill="currentColor" fillOpacity="0.25" />
+					<rect
+						x="12.5"
+						y="13"
+						width="9.5"
+						height="9"
+						rx="0.8"
+						fill="currentColor"
+						fillOpacity="0.25"
+					/>
 				</IconHelper>
 			),
 		},
@@ -5267,8 +5457,24 @@ export const SubComponentDefinitions: Record<
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
 					<rect id="_treeRoot" x="1" y="2" width="12" height="6" rx="1" fill="#3aad6c" />
-					<rect id="_treeChildOne" x="13" y="12" width="12" height="6" rx="1" fill="#008FDD" />
-					<rect id="_treeChildTwo" x="13" y="22" width="12" height="6" rx="1" fill="#008FDD" />
+					<rect
+						id="_treeChildOne"
+						x="13"
+						y="12"
+						width="12"
+						height="6"
+						rx="1"
+						fill="#008FDD"
+					/>
+					<rect
+						id="_treeChildTwo"
+						x="13"
+						y="22"
+						width="12"
+						height="6"
+						rx="1"
+						fill="#008FDD"
+					/>
 					<path
 						id="_treeConnectors"
 						d="M5 8 V25 H13 M5 15 H13"
@@ -5279,29 +5485,144 @@ export const SubComponentDefinitions: Record<
 				</IconHelper>
 			),
 		},
-		{ name: 'viewport', displayName: 'Scroll Area', description: 'Scroll Area', icon: 'fa-solid fa-box' },
-		{ name: 'nodeContainer', displayName: 'Node / Panel', description: 'Node / Panel', icon: 'fa-solid fa-box' },
-		{ name: 'nodeRow', displayName: 'Node Row / Box', description: 'Node Row / Box', icon: 'fa-solid fa-box' },
-		{ name: 'nodeContent', displayName: 'Node Content', description: 'Node Content', icon: 'fa-solid fa-box' },
-		{ name: 'nodeActions', displayName: 'Node Actions', description: 'Node Actions', icon: 'fa-solid fa-box' },
-		{ name: 'toggle', displayName: 'Toggle Button', description: 'Toggle Button', icon: 'fa-solid fa-caret-right' },
-		{ name: 'toggleExpanded', displayName: 'Toggle (Expanded)', description: 'Toggle when expanded', icon: 'fa-solid fa-caret-down' },
-		{ name: 'toggleCollapsed', displayName: 'Toggle (Collapsed)', description: 'Toggle when collapsed', icon: 'fa-solid fa-caret-right' },
-		{ name: 'guideLine', displayName: 'Guide / Connector Line', description: 'Guide and connector lines', icon: 'fa-solid fa-sitemap' },
-		{ name: 'leafSpacer', displayName: 'Leaf Spacer', description: 'Spacer aligning leaf rows with rows that have a toggle', icon: 'fa-solid fa-indent' },
-		{ name: 'childrenContainer', displayName: 'Children Container', description: 'Children Container', icon: 'fa-solid fa-box' },
-		{ name: 'checkBox', displayName: 'Check Box', description: 'Multi select check box', icon: 'fa-solid fa-square-check' },
-		{ name: 'dragHandle', displayName: 'Drag Handle', description: 'Drag Handle', icon: 'fa-solid fa-grip-vertical' },
-		{ name: 'dropBefore', displayName: 'Drop Indicator (Before)', description: 'Shown when dropping above a node', icon: 'fa-solid fa-minus' },
-		{ name: 'dropAfter', displayName: 'Drop Indicator (After)', description: 'Shown when dropping below a node', icon: 'fa-solid fa-minus' },
-		{ name: 'dropInto', displayName: 'Drop Indicator (Into)', description: 'Shown when dropping onto a node to reparent', icon: 'fa-solid fa-square' },
-		{ name: 'buttonAdd', displayName: 'Add Button', description: 'Add Button', icon: 'fa-solid fa-circle-plus' },
-		{ name: 'buttonDelete', displayName: 'Delete Button', description: 'Delete Button', icon: 'fa-solid fa-circle-minus' },
-		{ name: 'column', displayName: 'Column', description: 'Column in the columns design', icon: 'fa-solid fa-table-columns' },
-		{ name: 'columnHeaderPart', displayName: 'Column Header', description: 'Column Header', icon: 'fa-solid fa-box' },
-		{ name: 'columnDividerLine', displayName: 'Column Divider', description: 'Column Divider', icon: 'fa-solid fa-grip-lines-vertical' },
-		{ name: 'columnChevronIcon', displayName: 'Column Chevron', description: 'Chevron marking a node with children', icon: 'fa-solid fa-chevron-right' },
-		{ name: 'emptyState', displayName: 'Empty State', description: 'Shown when there are no nodes', icon: 'fa-solid fa-box' },
+		{
+			name: 'viewport',
+			displayName: 'Scroll Area',
+			description: 'Scroll Area',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'nodeContainer',
+			displayName: 'Node / Panel',
+			description: 'Node / Panel',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'nodeRow',
+			displayName: 'Node Row / Box',
+			description: 'Node Row / Box',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'nodeContent',
+			displayName: 'Node Content',
+			description: 'Node Content',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'nodeActions',
+			displayName: 'Node Actions',
+			description: 'Node Actions',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'toggle',
+			displayName: 'Toggle Button',
+			description: 'Toggle Button',
+			icon: 'fa-solid fa-caret-right',
+		},
+		{
+			name: 'toggleExpanded',
+			displayName: 'Toggle (Expanded)',
+			description: 'Toggle when expanded',
+			icon: 'fa-solid fa-caret-down',
+		},
+		{
+			name: 'toggleCollapsed',
+			displayName: 'Toggle (Collapsed)',
+			description: 'Toggle when collapsed',
+			icon: 'fa-solid fa-caret-right',
+		},
+		{
+			name: 'guideLine',
+			displayName: 'Guide / Connector Line',
+			description: 'Guide and connector lines',
+			icon: 'fa-solid fa-sitemap',
+		},
+		{
+			name: 'leafSpacer',
+			displayName: 'Leaf Spacer',
+			description: 'Spacer aligning leaf rows with rows that have a toggle',
+			icon: 'fa-solid fa-indent',
+		},
+		{
+			name: 'childrenContainer',
+			displayName: 'Children Container',
+			description: 'Children Container',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'checkBox',
+			displayName: 'Check Box',
+			description: 'Multi select check box',
+			icon: 'fa-solid fa-square-check',
+		},
+		{
+			name: 'dragHandle',
+			displayName: 'Drag Handle',
+			description: 'Drag Handle',
+			icon: 'fa-solid fa-grip-vertical',
+		},
+		{
+			name: 'dropBefore',
+			displayName: 'Drop Indicator (Before)',
+			description: 'Shown when dropping above a node',
+			icon: 'fa-solid fa-minus',
+		},
+		{
+			name: 'dropAfter',
+			displayName: 'Drop Indicator (After)',
+			description: 'Shown when dropping below a node',
+			icon: 'fa-solid fa-minus',
+		},
+		{
+			name: 'dropInto',
+			displayName: 'Drop Indicator (Into)',
+			description: 'Shown when dropping onto a node to reparent',
+			icon: 'fa-solid fa-square',
+		},
+		{
+			name: 'buttonAdd',
+			displayName: 'Add Button',
+			description: 'Add Button',
+			icon: 'fa-solid fa-circle-plus',
+		},
+		{
+			name: 'buttonDelete',
+			displayName: 'Delete Button',
+			description: 'Delete Button',
+			icon: 'fa-solid fa-circle-minus',
+		},
+		{
+			name: 'column',
+			displayName: 'Column',
+			description: 'Column in the columns design',
+			icon: 'fa-solid fa-table-columns',
+		},
+		{
+			name: 'columnHeaderPart',
+			displayName: 'Column Header',
+			description: 'Column Header',
+			icon: 'fa-solid fa-box',
+		},
+		{
+			name: 'columnDividerLine',
+			displayName: 'Column Divider',
+			description: 'Column Divider',
+			icon: 'fa-solid fa-grip-lines-vertical',
+		},
+		{
+			name: 'columnChevronIcon',
+			displayName: 'Column Chevron',
+			description: 'Chevron marking a node with children',
+			icon: 'fa-solid fa-chevron-right',
+		},
+		{
+			name: 'emptyState',
+			displayName: 'Empty State',
+			description: 'Shown when there are no nodes',
+			icon: 'fa-solid fa-box',
+		},
 	],
 	[TextList.name]: [
 		{
@@ -5776,6 +6097,160 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Session Item',
 			description: 'Session Item',
 			icon: 'fa-solid fa-message',
+		},
+	],
+	AnalyticsHeatmap: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="#F9F9F9" />
+					<rect
+						x="4"
+						y="4"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.25"
+					/>
+					<rect
+						x="12"
+						y="4"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#007BFF"
+						fillOpacity="0.45"
+					/>
+					<rect
+						x="20"
+						y="4"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="4"
+						y="12"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#007BFF"
+						fillOpacity="0.7"
+					/>
+					<rect x="12" y="12" width="6" height="6" rx="1" fill="#007BFF" />
+					<rect
+						x="20"
+						y="12"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#007BFF"
+						fillOpacity="0.5"
+					/>
+					<rect
+						x="4"
+						y="20"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.2"
+					/>
+					<rect
+						x="12"
+						y="20"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#007BFF"
+						fillOpacity="0.35"
+					/>
+					<rect
+						x="20"
+						y="20"
+						width="6"
+						height="6"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.25"
+					/>
+				</IconHelper>
+			),
+			mainComponent: true,
+		},
+	],
+
+	BlueprintEditor: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: (
+				<IconHelper viewBox="0 0 30 30">
+					<rect width="30" height="30" rx="4" fill="#F9F9F9" />
+					<rect
+						x="3.5"
+						y="4.5"
+						width="23"
+						height="21"
+						rx="2"
+						fill="#96A1B4"
+						fillOpacity="0.12"
+						stroke="#96A1B4"
+						strokeWidth="0.5"
+					/>
+					<rect x="6" y="7" width="7" height="4" rx="1" fill="#007BFF" />
+					<rect
+						x="6"
+						y="13"
+						width="7"
+						height="4"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.55"
+					/>
+					<rect
+						x="6"
+						y="19"
+						width="7"
+						height="4"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.35"
+					/>
+					<rect x="17" y="10" width="7" height="4" rx="1" fill="#7E81D6" />
+					<rect
+						x="17"
+						y="16"
+						width="7"
+						height="4"
+						rx="1"
+						fill="#96A1B4"
+						fillOpacity="0.45"
+					/>
+					<path
+						d="M13 9H15V12H17"
+						stroke="#96A1B4"
+						strokeWidth="1"
+						fill="none"
+						strokeLinecap="round"
+					/>
+					<path
+						d="M13 15H15V18H17"
+						stroke="#96A1B4"
+						strokeWidth="1"
+						fill="none"
+						strokeLinecap="round"
+					/>
+				</IconHelper>
+			),
+			mainComponent: true,
 		},
 	],
 };

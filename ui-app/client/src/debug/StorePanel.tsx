@@ -1,7 +1,17 @@
 import React, { useState, useCallback } from 'react';
 
 // JSON Tree Node component for collapsible/expandable tree view
-export function JsonTreeNode({ name, value, depth = 0, keyFilter = '' }: { name?: string; value: any; depth?: number; keyFilter?: string }) {
+export function JsonTreeNode({
+	name,
+	value,
+	depth = 0,
+	keyFilter = '',
+}: {
+	name?: string;
+	value: any;
+	depth?: number;
+	keyFilter?: string;
+}) {
 	const [expanded, setExpanded] = useState(depth < 2); // Auto-expand first 2 levels
 
 	const isObject = value !== null && typeof value === 'object';
@@ -60,9 +70,10 @@ export function JsonTreeNode({ name, value, depth = 0, keyFilter = '' }: { name?
 		? Object.entries(value)
 		: Object.entries(value).sort(([a], [b]) => a.localeCompare(b));
 
-	const entries = depth === 0 && keyFilter
-		? allEntries.filter(([key, val]) => matchesFilter(key, val, keyFilter))
-		: allEntries;
+	const entries =
+		depth === 0 && keyFilter
+			? allEntries.filter(([key, val]) => matchesFilter(key, val, keyFilter))
+			: allEntries;
 
 	return (
 		<div className="_jsonTreeNode">
@@ -125,10 +136,13 @@ export default function StorePanel({
 }: StorePanelProps) {
 	const [keyFilter, setKeyFilter] = useState(initialKeyFilter);
 
-	const handleKeyFilterChange = useCallback((value: string) => {
-		setKeyFilter(value);
-		onKeyFilterChange?.(value);
-	}, [onKeyFilterChange]);
+	const handleKeyFilterChange = useCallback(
+		(value: string) => {
+			setKeyFilter(value);
+			onKeyFilterChange?.(value);
+		},
+		[onKeyFilterChange],
+	);
 
 	return (
 		<div className="_debugStorePanel">

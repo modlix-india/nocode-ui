@@ -59,7 +59,7 @@ describe('resolveThemeName', () => {
 		expect(resolveThemeName(two, { cookie: 'dark' })).toBe('dark');
 	});
 
-	it("defaults to the lowest `order` when nothing is chosen", () => {
+	it('defaults to the lowest `order` when nothing is chosen', () => {
 		expect(resolveThemeName(two, {})).toBe('light');
 	});
 

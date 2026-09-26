@@ -295,8 +295,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'LIVE',
 				displayName: 'Write Live',
-				description:
-					'Every edit goes straight to the live app, with no review step.',
+				description: 'Every edit goes straight to the live app, with no review step.',
 			},
 		],
 	},

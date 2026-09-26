@@ -57,8 +57,7 @@ let listenerInstalled = false;
 const warnedReserved = new Set<string>();
 const warnedConflicts = new Set<string>();
 
-const EDITABLE_SELECTOR =
-	'input, textarea, select, [contenteditable=""], [contenteditable="true"]';
+const EDITABLE_SELECTOR = 'input, textarea, select, [contenteditable=""], [contenteditable="true"]';
 
 function notifyChange() {
 	for (const listener of changeListeners) {

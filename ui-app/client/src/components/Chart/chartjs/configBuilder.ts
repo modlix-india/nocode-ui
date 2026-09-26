@@ -81,7 +81,14 @@ function createLegendGradient(
 	} else {
 		// Create a radial gradient for the legend swatch
 		const halfSize = size / 2;
-		canvasGradient = ctx.createRadialGradient(halfSize, halfSize, 0, halfSize, halfSize, halfSize);
+		canvasGradient = ctx.createRadialGradient(
+			halfSize,
+			halfSize,
+			0,
+			halfSize,
+			halfSize,
+			halfSize,
+		);
 	}
 
 	parsed.stops.forEach(stop => {
@@ -98,7 +105,9 @@ function createLegendGradient(
 /**
  * Parses a CSS gradient string for legend rendering
  */
-function parseGradientForLegend(gradientStr: string): { angle?: number; stops: { offset: number; color: string }[] } | null {
+function parseGradientForLegend(
+	gradientStr: string,
+): { angle?: number; stops: { offset: number; color: string }[] } | null {
 	const linearMatch = gradientStr.match(/linear-gradient\(([^)]+)\)/i);
 	const radialMatch = gradientStr.match(/radial-gradient\(([^)]+)\)/i);
 
@@ -218,12 +227,13 @@ export function buildChartJsOptions(
 		indexAxis: isHorizontalBar ? 'y' : 'x',
 
 		// Animation
-		animation: properties.animationTime > 0
-			? {
-					duration: properties.animationTime,
-					easing: mapEasingFunction(properties.animationTimingFunction) as any,
-				}
-			: false,
+		animation:
+			properties.animationTime > 0
+				? {
+						duration: properties.animationTime,
+						easing: mapEasingFunction(properties.animationTimingFunction) as any,
+					}
+				: false,
 
 		// Plugins
 		plugins: {
@@ -240,7 +250,12 @@ export function buildChartJsOptions(
 
 	// Add scales for non-radial charts
 	if (!isRadial && !isRadar) {
-		(options as any).scales = buildScalesOptions(properties, chartData, isStacked, isHorizontalBar);
+		(options as any).scales = buildScalesOptions(
+			properties,
+			chartData,
+			isStacked,
+			isHorizontalBar,
+		);
 	}
 
 	// Radar-specific options
@@ -285,7 +300,8 @@ function buildLegendOptions(
 	if (gradients && gradients.size > 0 && originalDatasetColors.length > 0) {
 		legendOptions.labels.generateLabels = (chart: any) => {
 			// Get default labels from Chart.js
-			const defaultLabels = chart.constructor.defaults.plugins.legend.labels.generateLabels(chart);
+			const defaultLabels =
+				chart.constructor.defaults.plugins.legend.labels.generateLabels(chart);
 			const ctx = chart.ctx;
 
 			// Process each label to create gradient swatches
@@ -318,8 +334,7 @@ function buildLegendOptions(
  * Builds tooltip configuration
  */
 function buildTooltipOptions(properties: ChartProperties): any {
-	const tooltipMode =
-		properties.tooltipData === 'allDataSets' ? 'index' : 'nearest';
+	const tooltipMode = properties.tooltipData === 'allDataSets' ? 'index' : 'nearest';
 	const intersect = properties.tooltipTrigger !== 'hoverOnAxis';
 	const alignment = getTooltipAlignment(properties.tooltipPosition);
 
@@ -402,27 +417,33 @@ function buildScalesOptions(
 	}
 
 	// Build custom ticks for ordinal Y values
-	const xAxisOrdinalTicks = isHorizontalBar && hasOrdinalYValues ? {
-		display: !properties.xAxisHideLabels,
-		stepSize: 1,
-		callback: function(value: number) {
-			// Show ordinal labels at positions 1, 2, 3, etc. (index 0 is the origin)
-			if (value === 0) return '';
-			const index = value - 1;
-			return chartData.yUniqueData[index] || '';
-		},
-	} : { display: !properties.xAxisHideLabels };
+	const xAxisOrdinalTicks =
+		isHorizontalBar && hasOrdinalYValues
+			? {
+					display: !properties.xAxisHideLabels,
+					stepSize: 1,
+					callback: function (value: number) {
+						// Show ordinal labels at positions 1, 2, 3, etc. (index 0 is the origin)
+						if (value === 0) return '';
+						const index = value - 1;
+						return chartData.yUniqueData[index] || '';
+					},
+				}
+			: { display: !properties.xAxisHideLabels };
 
-	const yAxisOrdinalTicks = !isHorizontalBar && chartData.hasBar && hasOrdinalYValues ? {
-		display: !properties.yAxisHideLabels,
-		stepSize: 1,
-		callback: function(value: number) {
-			// Show ordinal labels at positions 1, 2, 3, etc. (index 0 is the origin)
-			if (value === 0) return '';
-			const index = value - 1;
-			return chartData.yUniqueData[index] || '';
-		},
-	} : { display: !properties.yAxisHideLabels };
+	const yAxisOrdinalTicks =
+		!isHorizontalBar && chartData.hasBar && hasOrdinalYValues
+			? {
+					display: !properties.yAxisHideLabels,
+					stepSize: 1,
+					callback: function (value: number) {
+						// Show ordinal labels at positions 1, 2, 3, etc. (index 0 is the origin)
+						if (value === 0) return '';
+						const index = value - 1;
+						return chartData.yUniqueData[index] || '';
+					},
+				}
+			: { display: !properties.yAxisHideLabels };
 
 	const scales: Record<string, any> = {
 		x: {
@@ -432,10 +453,12 @@ function buildScalesOptions(
 			reverse: !!properties.xAxisReverse, // Ensure boolean
 			stacked: effectiveStacked,
 			// For horizontal bars with ordinal Y values, set min/max for linear scale
-			...(isHorizontalBar && hasOrdinalYValues ? {
-				min: 0,
-				max: chartData.yUniqueData.length + 1,
-			} : {}),
+			...(isHorizontalBar && hasOrdinalYValues
+				? {
+						min: 0,
+						max: chartData.yUniqueData.length + 1,
+					}
+				: {}),
 			title: {
 				display: !!chartData.xAxisTitle,
 				text: chartData.xAxisTitle || '',
@@ -454,10 +477,12 @@ function buildScalesOptions(
 			reverse: !!properties.yAxisReverse, // Ensure boolean
 			stacked: effectiveStacked,
 			// For vertical bars with ordinal Y values, set min/max for linear scale
-			...(!isHorizontalBar && chartData.hasBar && hasOrdinalYValues ? {
-				min: 0,
-				max: chartData.yUniqueData.length + 1,
-			} : {}),
+			...(!isHorizontalBar && chartData.hasBar && hasOrdinalYValues
+				? {
+						min: 0,
+						max: chartData.yUniqueData.length + 1,
+					}
+				: {}),
 			title: {
 				display: !!chartData.yAxisTitle,
 				text: chartData.yAxisTitle || '',
