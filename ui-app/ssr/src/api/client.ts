@@ -133,6 +133,19 @@ export interface AnalyticsConfig {
 	autocapture?: boolean;
 	capturePageviews?: boolean;
 	capturePageleaves?: boolean;
+	/**
+	 * Scroll-depth capture. On unless the app turns it off, which is the
+	 * default both renderers apply.
+	 *
+	 * This interface is a hand-kept mirror of the analytics block the UI
+	 * service returns, so a key added to the beacon and not added here does
+	 * not fail where it was written. It fails `tsc` in the SSR image build,
+	 * which is what happened: htmlRenderer started emitting `data-scroll`
+	 * and every deploy from master, cf-development and cf-stage stopped
+	 * building, while cf-production kept working only because it did not
+	 * have the beacon change yet.
+	 */
+	captureScroll?: boolean;
 	consentCookieName?: string;
 	sessionReplay?: {
 		enabled?: boolean;
