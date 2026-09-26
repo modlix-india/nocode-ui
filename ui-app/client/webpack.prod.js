@@ -36,8 +36,16 @@ module.exports = async (env = {}) => {
 
         // Extract Application/ApplicationStyle chunks for preloading
         // Use actual filenames (with contenthash) so the server generates correct script tags
+        //
+        // `components-common` is listed alongside them because it is NOT
+        // optional: it holds the modules Application and ApplicationStyle
+        // share, so the app cannot render without it. Matching on the name
+        // `Application` alone is what made this easy to get wrong -- the
+        // chunk is still fetched by webpack's runtime either way, but without
+        // a preload tag it arrives one round trip later, which would hand
+        // back as latency most of what splitting it saved in bytes.
         const applicationChunks = files
-          .filter(f => /^Application.*\.js$/.test(f.name))
+          .filter(f => /^(Application|components-common).*\.js$/.test(f.name))
           .map(f => f.path.split('/').pop());
 
         const applicationStyleChunks = files
@@ -296,6 +304,29 @@ module.exports = async (env = {}) => {
             test: /[\\/]src[\\/](Engine|context|util)[\\/]/,
             name: 'app-common',
             priority: 8,
+            reuseExistingChunk: true,
+            minChunks: 2,
+          },
+          // Everything the component REGISTRY drags in, shared rather than
+          // copied into both chunks that need it.
+          //
+          // `default` below only splits a module out once THREE chunks want
+          // it. Application and ApplicationStyle are exactly two -- AppStyle
+          // iterates the component map to emit styles, so it reaches every
+          // component the app itself reaches -- so every module common to the
+          // pair matched no group at all and was emitted TWICE. Measured on a
+          // stats build: 130 modules, 2,028KB of parsed source duplicated
+          // across the startup set. The largest copies were PageEditor
+          // (278KB) and SubCompInfo (213KB), neither of which most pages ever
+          // render.
+          //
+          // minChunks: 2 is the whole fix. The priority sits above `default`
+          // and below every named group above it, so nothing already placed
+          // moves.
+          componentsCommon: {
+            test: /[\\/]src[\\/](components|commonComponents|functions)[\\/]/,
+            name: 'components-common',
+            priority: 7,
             reuseExistingChunk: true,
             minChunks: 2,
           },
