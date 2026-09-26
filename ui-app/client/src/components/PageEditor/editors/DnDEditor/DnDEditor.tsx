@@ -63,7 +63,7 @@ interface DnDEditorProps {
 	undoStackRef: React.MutableRefObject<PageDefinition[]>;
 	redoStackRef: React.MutableRefObject<PageDefinition[]>;
 	latestVersion: React.MutableRefObject<number>;
-	slaveStore: {desktop: any, tablet: any, mobile: any};
+	slaveStore: { desktop: any; tablet: any; mobile: any };
 	editPageName: string | undefined;
 	selectedSubComponent: string;
 	onSelectedSubComponentChanged: (key: string) => void;

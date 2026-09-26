@@ -26,7 +26,6 @@ function CommonCheckbox({
 	focusHandler,
 	blurHandler,
 	definition,
-	
 }: CommonCheckboxType) {
 	const sh = definition ? (
 		<SubHelperComponent definition={definition} subComponentName="checkbox" />
@@ -36,7 +35,7 @@ function CommonCheckbox({
 		<SubHelperComponent definition={definition} subComponentName="thumb" zIndex={6} />
 	) : undefined;
 	const handleClick = (e: React.MouseEvent) => {
-			e.stopPropagation();
+		e.stopPropagation();
 		if (isReadOnly) return;
 		onChange?.(!isChecked);
 	};

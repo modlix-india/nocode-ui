@@ -157,10 +157,12 @@ export default function DnDBottomBar({
 											});
 										}}
 									>
-										{typeof SubComponentDefinitions[defMap[f].type]?.[0].icon === 'string' ? (
+										{typeof SubComponentDefinitions[defMap[f].type]?.[0]
+											.icon === 'string' ? (
 											<i
 												className={`fa ${
-													SubComponentDefinitions[defMap[f].type]?.[0].icon
+													SubComponentDefinitions[defMap[f].type]?.[0]
+														.icon
 												}`}
 											/>
 										) : (

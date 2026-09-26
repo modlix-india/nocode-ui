@@ -35,8 +35,7 @@ import { DraftMode } from '../../../Prompt/draftMode';
 
 const WELCOME_BY_DRAFT_MODE: Record<DraftMode, string> = {
 	DRAFT: 'Changes go to this app’s draft. Review them, then publish.',
-	PAGE_ONLY_DRAFT:
-		'Page changes go to this app’s draft. Anything else goes live straight away.',
+	PAGE_ONLY_DRAFT: 'Page changes go to this app’s draft. Anything else goes live straight away.',
 	LIVE: 'Changes land on the canvas unsaved. Review, then Save.',
 };
 
@@ -165,13 +164,7 @@ export default function DnDSidekickBar({
 		let label = `${comp.type} '${comp.name ?? comp.key}' (key ${comp.key})`;
 		if (sub) label = `${label}, sub-part '${sub}'`;
 		return page ? `${page}, with ${label} selected` : label;
-	}, [
-		editedPageName,
-		editedPageId,
-		selectedComponent,
-		selectedSubComponent,
-		pageOperations,
-	]);
+	}, [editedPageName, editedPageId, selectedComponent, selectedSubComponent, pageOperations]);
 
 	const definition = useMemo<ComponentDefinition>(
 		() => ({

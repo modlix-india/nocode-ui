@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -10,6 +10,22 @@ import AnimatorStyle from './AnimatorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './animatorProperties';
 import { styleProperties, styleDefaults } from './animatorStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import {
+	observeScrollProgress,
+	type ScrollAxis,
+	type ScrollMode,
+	type ScrollerRef,
+} from '../util/scroll/scrollDriver';
+import {
+	isScrollDriven,
+	prefersReducedMotion,
+	rangeValue,
+	REDUCED_MOTION_PROGRESS,
+	scrubDelay,
+	supportsScrollTimeline,
+	timelineValue,
+	type AnimationEntry,
+} from '../util/scroll/scrollAnimation';
 
 function makeAnimationString(animations: any[]): string {
 	if (!animations?.length) return '';
@@ -18,6 +34,21 @@ function makeAnimationString(animations: any[]): string {
 		.map(a => makeOneAnimationString(a))
 		.filter(a => !!a)
 		.join(', ');
+}
+
+/**
+ * The animations that are actually on this element, in the order the `animation`
+ * shorthand lists them.
+ *
+ * Every per-animation longhand below (`animation-timeline`, `animation-range`,
+ * `animation-delay`) is a COMMA LIST positionally matched against that
+ * shorthand. Building them from a differently filtered list would silently
+ * apply one animation's timeline to another.
+ */
+function activeAnimations(animations: any[]): AnimationEntry[] {
+	return (animations ?? []).filter(
+		a => a.observation === 'none' && a.condition && makeOneAnimationString(a),
+	);
 }
 
 function makeOneAnimationString(a: any): string {
@@ -67,20 +98,26 @@ function Animator(props: Readonly<ComponentProps>) {
 
 	const [observations, setObservations] = React.useState<any[]>([]);
 
+	// Every animation on the element, observation-triggered ones included once
+	// they have fired, in shorthand order.
+	const allAnimations = useMemo(
+		() => [...animation, ...observations.map((e: any) => ({ ...e, observation: 'none' }))],
+		[animation, observations],
+	);
+	const active = useMemo(() => activeAnimations(allAnimations), [allAnimations]);
+	const scrollDriven = useMemo(() => active.filter(isScrollDriven), [active]);
+
+	// One entry per ACTIVE animation, positionally aligned with the shorthand.
+	// Clock-driven entries keep a progress of null, which is how the style
+	// builder below knows to leave their delay and play state alone.
+	const [progress, setProgress] = useState<Array<number | null>>([]);
+
 	const ref = React.useRef<HTMLDivElement>(null);
 
 	const animationCount = React.useRef<{ [key: string]: number }>({});
 
 	useEffect(() => {
-		console.log('[Animator] effect run', { key, animation, hasRef: !!ref.current });
-		if (!animation?.length || !ref.current) {
-			console.log('[Animator] bailing — no animations or no ref', {
-				key,
-				animationsLen: animation?.length,
-				hasRef: !!ref.current,
-			});
-			return;
-		}
+		if (!animation?.length || !ref.current) return;
 
 		const threshold: number[] = [];
 
@@ -101,29 +138,10 @@ function Animator(props: Readonly<ComponentProps>) {
 			}
 		}
 
-		console.log('[Animator] observer setup', {
-			key,
-			thresholds: Array.from(new Set(threshold)),
-			enteringKeys: Array.from(entering.keys()),
-			exitingKeys: Array.from(exiting.keys()),
-			enteringCount: Array.from(entering.values()).reduce((s, a) => s + a.length, 0),
-			exitingCount: Array.from(exiting.values()).reduce((s, a) => s + a.length, 0),
-		});
-
 		try {
 			const io = new IntersectionObserver(
 				entries => {
-					console.log('[Animator] IO fired', {
-						key,
-						entriesCount: entries.length,
-					});
-					if (entries.length !== 1) {
-						console.log('[Animator] skipping — entries.length !== 1', {
-							key,
-							entriesCount: entries.length,
-						});
-						return;
-					}
+					if (entries.length !== 1) return;
 					const entry = entries[0];
 
 					let isEntering =
@@ -132,18 +150,9 @@ function Animator(props: Readonly<ComponentProps>) {
 						entry.isIntersecting;
 
 					const th = entry.intersectionRatio;
-					console.log('[Animator] entry', {
-						key,
-						intersectionRatio: th,
-						isIntersecting: entry.isIntersecting,
-						top: entry.boundingClientRect.top,
-						left: entry.boundingClientRect.left,
-						isEntering,
-					});
 					const closest = Array.from((isEntering ? entering : exiting).keys()).filter(
 						e => Math.abs(e - th) < 0.08,
 					);
-					console.log('[Animator] closest thresholds', { key, closest, isEntering });
 					const currentAnimations: any[] = [];
 
 					for (let each of closest) {
@@ -161,24 +170,102 @@ function Animator(props: Readonly<ComponentProps>) {
 						}
 					}
 
-					closest.flatMap(e => (isEntering ? entering : exiting).get(e));
-
-					console.log('[Animator] applying animations', {
-						key,
-						count: currentAnimations.length,
-						names: currentAnimations.map(a => a.animationName),
-					});
 					setObservations(currentAnimations);
 				},
 				{ threshold: Array.from(new Set(threshold)) },
 			);
 			io.observe(ref.current);
-			console.log('[Animator] observing', { key });
 			return () => (ref.current ? io.unobserve(ref.current!) : undefined);
 		} catch (e) {
 			console.error('[Animator] observer setup failed', { key, error: e });
 		}
 	}, [animation, ref.current, setObservations]);
+
+	// The JS fallback. Only runs where the browser cannot drive the animation
+	// itself, because the native path is off the main thread and this is not.
+	const native = useMemo(() => supportsScrollTimeline(), []);
+
+	useEffect(() => {
+		if (!scrollDriven.length || native || !ref.current) return;
+
+		const el = ref.current;
+		// Reduced motion is pinned to the END of each animation rather than
+		// animated. The start frame of a reveal is usually "invisible", so
+		// pinning to 0 would hide the content from exactly the people who asked
+		// for less motion.
+		if (prefersReducedMotion()) {
+			setProgress(active.map(a => (isScrollDriven(a) ? REDUCED_MOTION_PROGRESS : null)));
+			return;
+		}
+
+		const latest: Array<number | null> = active.map(a => (isScrollDriven(a) ? 0 : null));
+		setProgress([...latest]);
+
+		const stops = active.map((a, i) => {
+			if (!isScrollDriven(a)) return () => {};
+			return observeScrollProgress(
+				{
+					target: el,
+					axis: (a.axis === 'inline' ? 'inline' : 'block') as ScrollAxis,
+					mode: (a.timeline === 'scroll' ? 'scroll' : 'view') as ScrollMode,
+					scroller: (a.scroller ?? 'nearest') as ScrollerRef,
+					rangeStart: a.rangeStart ?? 0,
+					rangeEnd: a.rangeEnd ?? 1,
+				},
+				p => {
+					latest[i] = p;
+					// A fresh array, because React compares by reference and a
+					// mutated one would never re-render.
+					setProgress([...latest]);
+				},
+			);
+		});
+
+		return () => stops.forEach(stop => stop());
+		// `active` is rebuilt whenever the animation list or the observations
+		// change, which is exactly when the subscriptions need rebuilding.
+	}, [active, scrollDriven.length, native]);
+
+	/**
+	 * The per-animation longhands, as comma lists aligned with the shorthand.
+	 *
+	 * Returns an empty object when nothing on the element is scroll-driven, so a
+	 * page that has never touched the timeline properties gets byte-identical
+	 * styles to before. That, plus `timeline` defaulting to 'none', is the whole
+	 * of the backward-compatibility story.
+	 */
+	const scrollStyles: React.CSSProperties = useMemo(() => {
+		if (!scrollDriven.length) return {};
+
+		if (native) {
+			return {
+				animationTimeline: active
+					.map(a => (isScrollDriven(a) ? timelineValue(a) : 'auto'))
+					.join(', '),
+				animationRange: active
+					.map(a => (isScrollDriven(a) ? rangeValue(a) : 'normal'))
+					.join(', '),
+			};
+		}
+
+		// Fallback: park each scroll-driven animation at its progress with a
+		// negative delay, and pause it so the clock never advances past that.
+		return {
+			animationPlayState: active
+				.map(a => (isScrollDriven(a) ? 'paused' : 'running'))
+				.join(', '),
+			animationDelay: active
+				.map((a, i) =>
+					isScrollDriven(a)
+						? scrubDelay(a, progress[i] ?? 0)
+						: `${a.animationDelay ?? 0}ms`,
+				)
+				.join(', '),
+			// Held at both ends, or an animation parked at progress 0 or 1 would
+			// snap back to the element's un-animated state at the edges.
+			animationFillMode: active.map(() => 'both').join(', '),
+		};
+	}, [active, scrollDriven.length, native, progress]);
 
 	return (
 		<div className="comp compAnimator" style={resolvedStyles.comp ?? {}} ref={ref}>
@@ -187,10 +274,8 @@ function Animator(props: Readonly<ComponentProps>) {
 				className="_childContainer"
 				style={{
 					...(resolvedStyles.container ?? {}),
-					animation: makeAnimationString([
-						...animation,
-						...observations.map(e => ({ ...e, observation: 'none' })),
-					]),
+					animation: makeAnimationString(allAnimations),
+					...scrollStyles,
 				}}
 			>
 				<SubHelperComponent

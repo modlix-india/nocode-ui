@@ -166,7 +166,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Checkbox', pageName: 'checkbox' }],
-		stylePropertiesForTheme: stylePropertiesForTheme,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	propertiesForTheme: [designType, colorScheme],
 };
 

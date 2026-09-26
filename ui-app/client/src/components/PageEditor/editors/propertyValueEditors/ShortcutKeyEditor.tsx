@@ -60,7 +60,9 @@ export function ShortcutKeyEditor({
 		const className = blocked ? '_shortcutKeyBlocked' : '_shortcutKeyRisky';
 		const prefix = blocked ? 'This will never fire.' : 'This works, but note:';
 		return (
-			<div className={`_shortcutKeyFeedback ${className}`}>{`${prefix} ${reserved.reason}`}</div>
+			<div
+				className={`_shortcutKeyFeedback ${className}`}
+			>{`${prefix} ${reserved.reason}`}</div>
 		);
 	})();
 

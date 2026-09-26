@@ -96,15 +96,18 @@ function SingleToolRow({
 						</span>
 					</div>
 				)}
-				{expanded && (tc.updates?.length ? (
-					<div className="_agentToolUpdates">
-						{tc.updates.map((u, i) => (
-							<div key={i} className="_agentToolUpdateLine">{u}</div>
-						))}
-					</div>
-				) : hasSummary ? (
-					<div className="_agentToolDetail">{tc.summary}</div>
-				) : null)}
+				{expanded &&
+					(tc.updates?.length ? (
+						<div className="_agentToolUpdates">
+							{tc.updates.map((u, i) => (
+								<div key={i} className="_agentToolUpdateLine">
+									{u}
+								</div>
+							))}
+						</div>
+					) : hasSummary ? (
+						<div className="_agentToolDetail">{tc.summary}</div>
+					) : null)}
 			</div>
 		</div>
 	);
@@ -153,12 +156,19 @@ export function ThinkingBlock({
 		});
 	}, []);
 
-	if (!isActive && !wasEverActiveRef.current && !toolCalls.length && !reasoningContent) return null;
+	if (!isActive && !wasEverActiveRef.current && !toolCalls.length && !reasoningContent)
+		return null;
 
 	const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
 
 	const toolStatusClass = (tc: ToolCallInfo) =>
-		tc.isRunning ? '_running' : tc.success ? '_success' : tc.success === false ? '_error' : '_success';
+		tc.isRunning
+			? '_running'
+			: tc.success
+				? '_success'
+				: tc.success === false
+					? '_error'
+					: '_success';
 
 	const toolGlyph = (tc: ToolCallInfo) => (
 		<span className={`_statusDot ${toolStatusClass(tc)}`} />
@@ -167,11 +177,7 @@ export function ThinkingBlock({
 	// Single tool, not active, no reasoning → render flat, no wrapper.
 	if (!isActive && toolCalls.length === 1 && !reasoningContent) {
 		return (
-			<SingleToolRow
-				tc={toolCalls[0]}
-				expandIcon={expandIcon}
-				collapseIcon={collapseIcon}
-			/>
+			<SingleToolRow tc={toolCalls[0]} expandIcon={expandIcon} collapseIcon={collapseIcon} />
 		);
 	}
 
@@ -217,7 +223,10 @@ export function ThinkingBlock({
 						const hasSummary = !!tc.summary;
 
 						return (
-							<div key={tc.id} className={`_thinkingToolEntry ${toolStatusClass(tc)}`}>
+							<div
+								key={tc.id}
+								className={`_thinkingToolEntry ${toolStatusClass(tc)}`}
+							>
 								{hasSummary ? (
 									<button
 										type="button"
@@ -233,7 +242,9 @@ export function ThinkingBlock({
 													: tc.summary}
 											</span>
 										)}
-										<i className={`_thinkingToolToggle ${isToolExpanded ? collapseIcon : expandIcon}`} />
+										<i
+											className={`_thinkingToolToggle ${isToolExpanded ? collapseIcon : expandIcon}`}
+										/>
 									</button>
 								) : (
 									<div className="_thinkingToolRow">
@@ -241,17 +252,18 @@ export function ThinkingBlock({
 										<span className="_thinkingToolName">{label}</span>
 									</div>
 								)}
-								{isToolExpanded && (tc.updates?.length ? (
-									<div className="_agentToolUpdates">
-										{tc.updates.map((u, i) => (
-											<div key={i} className="_agentToolUpdateLine">{u}</div>
-										))}
-									</div>
-								) : hasSummary ? (
-									<div className="_thinkingToolDetail">
-										{tc.summary}
-									</div>
-								) : null)}
+								{isToolExpanded &&
+									(tc.updates?.length ? (
+										<div className="_agentToolUpdates">
+											{tc.updates.map((u, i) => (
+												<div key={i} className="_agentToolUpdateLine">
+													{u}
+												</div>
+											))}
+										</div>
+									) : hasSummary ? (
+										<div className="_thinkingToolDetail">{tc.summary}</div>
+									) : null)}
 							</div>
 						);
 					})}

@@ -52,7 +52,9 @@ export function ObjectValueEditor({
 		);
 	}
 
-	const propertyEntries = Array.from(properties.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+	const propertyEntries = Array.from(properties.entries()).sort((a, b) =>
+		a[0].localeCompare(b[0]),
+	);
 
 	return (
 		<div className="_singleSchema">

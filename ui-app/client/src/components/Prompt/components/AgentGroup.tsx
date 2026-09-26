@@ -96,19 +96,14 @@ function AgentRow({
 	let rightMeta = `${elapsed}s`;
 	const finalText = sp.status !== 'running' ? sp.summary || sp.statusText : '';
 	if (finalText) {
-		const s = finalText.length > SUMMARY_CAP
-			? finalText.slice(0, SUMMARY_CAP - 1) + '…'
-			: finalText;
+		const s =
+			finalText.length > SUMMARY_CAP ? finalText.slice(0, SUMMARY_CAP - 1) + '…' : finalText;
 		rightMeta = `${s}  ${elapsed}s`;
 	}
 
 	return (
 		<div className="_agentRow">
-			<button
-				type="button"
-				className="_agentRowHeader"
-				onClick={toggle}
-			>
+			<button type="button" className="_agentRowHeader" onClick={toggle}>
 				<span className={`_statusDot ${statusDotClass(sp.status)}`} />
 				<span className="_agentRowLabel">
 					Agent(<span className="_agentRowName">{sp.label}</span>)
@@ -125,7 +120,7 @@ function AgentRow({
 						const label = tc.displayName || tc.toolName;
 						const updates = tc.updates ?? [];
 						const latest = updates.length ? updates[updates.length - 1] : '';
-						const inlineText = tc.isRunning ? latest : (tc.summary || latest);
+						const inlineText = tc.isRunning ? latest : tc.summary || latest;
 						const canExpand =
 							!tc.isRunning &&
 							(updates.length > 1 ||
@@ -137,7 +132,9 @@ function AgentRow({
 							tc.isRunning && '_running',
 							canExpand && '_expandable',
 							isOpen && '_open',
-						].filter(Boolean).join(' ');
+						]
+							.filter(Boolean)
+							.join(' ');
 						const headerInner = (
 							<>
 								{tc.isRunning && <span className="_statusDot _running _sm" />}
@@ -245,9 +242,7 @@ export function AgentGroup({
 
 	// Multiple agents: wrap in "Used N agents" group.
 	const count = spans.length;
-	const headerLabel = anyRunning
-		? `Running ${count} agents…`
-		: `Used ${count} agents`;
+	const headerLabel = anyRunning ? `Running ${count} agents…` : `Used ${count} agents`;
 
 	return (
 		<div className={`_thinkingBlock ${anyRunning ? '_active' : '_done'}`}>

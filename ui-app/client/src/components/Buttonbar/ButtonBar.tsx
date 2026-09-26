@@ -215,7 +215,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'ButtonBar', pageName: 'buttonbar' }],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 	propertiesForTheme: [buttonBarDesign, colorScheme],
 };
 

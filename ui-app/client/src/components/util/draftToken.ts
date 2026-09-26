@@ -58,14 +58,16 @@ function authHeaders() {
  */
 export async function mintDraftToken(appCode: string): Promise<DraftGrant | undefined> {
 	try {
-		const response = await axios.post(
-			'/api/security/clienturls/draft/token',
-			undefined,
-			{ params: { appCode }, headers: authHeaders() },
-		);
+		const response = await axios.post('/api/security/clienturls/draft/token', undefined, {
+			params: { appCode },
+			headers: authHeaders(),
+		});
 		return response.data?.host ? (response.data as DraftGrant) : undefined;
 	} catch (error) {
-		console.error('Could not mint a draft-edit token; the preview will show the live app:', error);
+		console.error(
+			'Could not mint a draft-edit token; the preview will show the live app:',
+			error,
+		);
 		return undefined;
 	}
 }

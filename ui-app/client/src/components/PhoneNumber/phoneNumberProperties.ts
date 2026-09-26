@@ -2,7 +2,7 @@ import {
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
-	SCHEMA_VALIDATION
+	SCHEMA_VALIDATION,
 } from '../../constants';
 import {
 	ComponentENUM,
@@ -197,7 +197,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 
-
 	{
 		name: 'autoFocus',
 		displayName: 'Auto Focus',
@@ -311,7 +310,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{ name: '_filled', displayName: 'Filled Textbox', description: 'Filled Textbox type' },
 			{ name: '_bigDesign1', displayName: 'Big Design 1', description: 'Big Design 1 type' },
-			{ name: '_editOnReq', displayName: 'Edit on Request', description: 'Edit on Request type' },
+			{
+				name: '_editOnReq',
+				displayName: 'Edit on Request',
+				description: 'Edit on Request type',
+			},
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,

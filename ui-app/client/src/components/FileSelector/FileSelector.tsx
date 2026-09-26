@@ -970,7 +970,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Selected File URL Binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

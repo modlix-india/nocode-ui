@@ -461,7 +461,9 @@ describe('the kinds beyond pages and storages', () => {
 	it("draws a function's steps as its cards, with no plan and no AI call", () => {
 		const m = buildBoard({
 			objects: { function: [{ name: 'sendEnquiry' }] },
-			loaded: { function: { sendEnquiry: { definition: { steps: { load: {}, mail: {} } } } } },
+			loaded: {
+				function: { sendEnquiry: { definition: { steps: { load: {}, mail: {} } } } },
+			},
 		});
 		const column = m.bands[0].columns[0];
 		expect(column.cards.map(c => c.title)).toEqual(['load', 'mail']);
@@ -569,7 +571,11 @@ describe('things that have not been built', () => {
 							spec: {
 								sections: {
 									s1: { order: 1000, name: 'Latest', purpose: 'Newest three' },
-									s2: { order: 2000, name: 'Archive', purpose: 'Everything else' },
+									s2: {
+										order: 2000,
+										name: 'Archive',
+										purpose: 'Everything else',
+									},
 								},
 							},
 						},
@@ -615,8 +621,12 @@ describe('things that have not been built', () => {
 			appBlueprint: {
 				plan: {
 					objects: {
-						a1: { order: 1000, kind: 'asset', name: 'favicon',
-							asset: { use: 'Favicon', intent: 'x', assetId: 'f-1' } },
+						a1: {
+							order: 1000,
+							kind: 'asset',
+							name: 'favicon',
+							asset: { use: 'Favicon', intent: 'x', assetId: 'f-1' },
+						},
 					},
 				},
 			},
@@ -630,7 +640,12 @@ describe('things that have not been built', () => {
 			appBlueprint: {
 				plan: {
 					objects: {
-						a1: { order: 1000, kind: 'asset', name: 'favicon', asset: { use: 'Favicon' } },
+						a1: {
+							order: 1000,
+							kind: 'asset',
+							name: 'favicon',
+							asset: { use: 'Favicon' },
+						},
 						a2: { order: 2000, kind: 'asset', name: 'logo', asset: { use: 'Logo' } },
 					},
 				},
@@ -649,8 +664,12 @@ describe('things that have not been built', () => {
 			appBlueprint: {
 				plan: {
 					objects: {
-						o1: { order: 1000, kind: 'page', name: 'home',
-							summary: 'The front door, pushing people to book' },
+						o1: {
+							order: 1000,
+							kind: 'page',
+							name: 'home',
+							summary: 'The front door, pushing people to book',
+						},
 					},
 				},
 			},
@@ -664,9 +683,13 @@ describe('things that have not been built', () => {
 			appBlueprint: {
 				plan: {
 					objects: {
-						o1: { order: 1000, kind: 'page', name: 'home',
+						o1: {
+							order: 1000,
+							kind: 'page',
+							name: 'home',
 							purpose: 'So a nervous first-timer books without scrolling twice',
-							summary: 'A hero, three cards and a form' },
+							summary: 'A hero, three cards and a form',
+						},
 					},
 				},
 			},
@@ -711,7 +734,13 @@ describe('what Build is allowed to offer', () => {
 			appBlueprint: {
 				plan: {
 					objects: {
-						o1: { order: 1000, kind: 'page', name: 'blogList', status: 'built', pending },
+						o1: {
+							order: 1000,
+							kind: 'page',
+							name: 'blogList',
+							status: 'built',
+							pending,
+						},
 					},
 				},
 			},
@@ -761,11 +790,21 @@ describe('what Build is allowed to offer', () => {
 				plan: {
 					delivery: { d1: { order: 1000, host: 'x.example' } },
 					objects: {
-						a1: { order: 1000, kind: 'asset', name: 'favicon', asset: { use: 'Favicon' } },
+						a1: {
+							order: 1000,
+							kind: 'asset',
+							name: 'favicon',
+							asset: { use: 'Favicon' },
+						},
 					},
 				},
 				decisions: {
-					dec1: { order: 1000, choice: 'Customer logins', because: 'not a site', status: 'rejected' },
+					dec1: {
+						order: 1000,
+						choice: 'Customer logins',
+						because: 'not a site',
+						status: 'rejected',
+					},
 				},
 			},
 		});
@@ -851,7 +890,6 @@ describe('links the host hands in', () => {
 	});
 });
 
-
 describe('the connection graph', () => {
 	const relations = {
 		r1: {
@@ -908,7 +946,7 @@ describe('the connection graph', () => {
 		expect(connectionIndex({ bad: { from: 'page:home' }, worse: {} } as any).size).toBe(0);
 	});
 
-	it('puts a column\'s connections on the column', () => {
+	it("puts a column's connections on the column", () => {
 		const model = buildBoard({
 			pages: [page('orderForm', [{ key: 'form', name: 'Form' }])],
 			storages: [{ name: 'orderRequest', schema: { properties: { email: {} } } }],
@@ -932,7 +970,6 @@ describe('the connection graph', () => {
 	});
 });
 
-
 describe('which stream watches a job', () => {
 	const PLAN = '/api/ai/blueprint/plan/{job}/stream';
 	const BUILD = '/api/ai/blueprint/build/{job}/stream';
@@ -947,9 +984,7 @@ describe('which stream watches a job', () => {
 	});
 
 	it('sends a sweep to the plan stream', () => {
-		expect(streamUrlFor({ job: 'abc' }, PLAN, BUILD)).toBe(
-			'/api/ai/blueprint/plan/abc/stream',
-		);
+		expect(streamUrlFor({ job: 'abc' }, PLAN, BUILD)).toBe('/api/ai/blueprint/plan/abc/stream');
 		expect(streamUrlFor({ kind: 'plan', job: 'abc' }, PLAN, BUILD)).toBe(
 			'/api/ai/blueprint/plan/abc/stream',
 		);

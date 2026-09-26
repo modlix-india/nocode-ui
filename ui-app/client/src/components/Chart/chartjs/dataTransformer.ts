@@ -3,7 +3,8 @@ import RepetetiveArray from '../../../util/RepetetiveArray';
 import { ChartData, ChartProperties, DataSetData, DataSetStyle, Gradient } from '../types/common';
 import { mapPointType, isFilledPointType } from './pointStyleMapper';
 
-export type ChartJsType = 'line' | 'bar' | 'pie' | 'doughnut' | 'radar' | 'scatter' | 'polarArea' | 'bubble';
+export type ChartJsType =
+	'line' | 'bar' | 'pie' | 'doughnut' | 'radar' | 'scatter' | 'polarArea' | 'bubble';
 
 /**
  * Determines the primary Chart.js chart type based on the dataset styles
@@ -63,7 +64,11 @@ function isLineStyle(style: DataSetStyle): boolean {
 /**
  * Converts RepetetiveArray to a regular array with safety checks
  */
-function repArrayToArray<T>(repArray: RepetetiveArray<T> | undefined | null, length: number, defaultValue: T): T[] {
+function repArrayToArray<T>(
+	repArray: RepetetiveArray<T> | undefined | null,
+	length: number,
+	defaultValue: T,
+): T[] {
 	const result: T[] = [];
 	if (length <= 0) {
 		return result;
@@ -123,8 +128,12 @@ function getSteppedConfig(style: DataSetStyle): false | 'before' | 'after' | 'mi
  * Checks if a value is a range pair [start, end]
  */
 function isRangePair(value: any): value is [number, number] {
-	return Array.isArray(value) && value.length === 2 &&
-		typeof value[0] === 'number' && typeof value[1] === 'number';
+	return (
+		Array.isArray(value) &&
+		value.length === 2 &&
+		typeof value[0] === 'number' &&
+		typeof value[1] === 'number'
+	);
 }
 
 /**
@@ -202,7 +211,7 @@ function transformRegularData(
 
 	// Check if any dataset has multiple range pairs that need to be split into multiple datasets
 	const hasMultipleRangePairs = chartData.dataSetData.some(dataSet =>
-		dataSet.data.some(d => isMultipleRangePairs(d.y))
+		dataSet.data.some(d => isMultipleRangePairs(d.y)),
 	);
 
 	if (hasMultipleRangePairs) {
@@ -226,7 +235,9 @@ function transformRegularData(
 
 		const datasetType = getDatasetType(dataSet.dataSetStyle);
 		const isLine = isLineStyle(dataSet.dataSetStyle);
-		const isBar = dataSet.dataSetStyle === DataSetStyle.Bar || dataSet.dataSetStyle === DataSetStyle.HorizontalBar;
+		const isBar =
+			dataSet.dataSetStyle === DataSetStyle.Bar ||
+			dataSet.dataSetStyle === DataSetStyle.HorizontalBar;
 		const stepped = getSteppedConfig(dataSet.dataSetStyle);
 		const tension = dataSet.dataSetStyle === DataSetStyle.SmoothLine ? 0.4 : 0;
 
@@ -341,7 +352,9 @@ function transformRegularData(
 			pointRadius,
 			pointHoverRadius,
 			pointHitRadius,
-			pointBackgroundColor: isLine ? hoverPointBackgroundColors[0] : hoverPointBackgroundColors,
+			pointBackgroundColor: isLine
+				? hoverPointBackgroundColors[0]
+				: hoverPointBackgroundColors,
 			pointBorderColor: isLine ? borderColors[0] : borderColors,
 			pointHoverBackgroundColor: isLine ? borderColors[0] : borderColors,
 			pointHoverBorderColor: isLine ? borderColors[0] : borderColors,
@@ -451,9 +464,10 @@ function transformMultiRangeData(
 			// Only add dataset if it has at least one non-null value
 			if (layerData.some(v => v !== null)) {
 				const dataset: any = {
-					label: maxRangePairs > 1
-						? `${dataSetLabels[dataSetIndex] || `Dataset ${dataSetIndex + 1}`} (Range ${layerIndex + 1})`
-						: dataSetLabels[dataSetIndex] || `Dataset ${dataSetIndex + 1}`,
+					label:
+						maxRangePairs > 1
+							? `${dataSetLabels[dataSetIndex] || `Dataset ${dataSetIndex + 1}`} (Range ${layerIndex + 1})`
+							: dataSetLabels[dataSetIndex] || `Dataset ${dataSetIndex + 1}`,
 					data: layerData,
 					backgroundColor: backgroundColors,
 					borderColor: borderColors,
@@ -501,10 +515,12 @@ function transformRadialData(
 		: firstDataSet.data.map((_, i) => `Item ${i + 1}`);
 
 	const dataLength = firstDataSet.data.length;
-	const colors = repArrayToArray(firstDataSet.dataColors, dataLength, '#666666')
-		.map(c => resolveGradientRef(c, chartData.gradients));
-	const strokeColors = repArrayToArray(firstDataSet.dataStrokeColors, dataLength, '#666666')
-		.map(c => resolveGradientRef(c, chartData.gradients));
+	const colors = repArrayToArray(firstDataSet.dataColors, dataLength, '#666666').map(c =>
+		resolveGradientRef(c, chartData.gradients),
+	);
+	const strokeColors = repArrayToArray(firstDataSet.dataStrokeColors, dataLength, '#666666').map(
+		c => resolveGradientRef(c, chartData.gradients),
+	);
 
 	return {
 		labels,
@@ -532,10 +548,12 @@ function transformRadarData(
 		// Don't skip hidden datasets - Chart.js handles visibility via legend clicks
 
 		const dataLength = dataSet.data.length;
-		const colors = repArrayToArray(dataSet.dataColors, dataLength, '#666666')
-			.map(c => resolveGradientRef(c, chartData.gradients));
-		const strokeColors = repArrayToArray(dataSet.dataStrokeColors, dataLength, '#666666')
-			.map(c => resolveGradientRef(c, chartData.gradients));
+		const colors = repArrayToArray(dataSet.dataColors, dataLength, '#666666').map(c =>
+			resolveGradientRef(c, chartData.gradients),
+		);
+		const strokeColors = repArrayToArray(dataSet.dataStrokeColors, dataLength, '#666666').map(
+			c => resolveGradientRef(c, chartData.gradients),
+		);
 		const fillOpacities = repArrayToArray(dataSet.fillOpacity, dataLength, 0.2);
 
 		const backgroundColor = applyOpacity(colors[0] || '#000', fillOpacities[0]);
