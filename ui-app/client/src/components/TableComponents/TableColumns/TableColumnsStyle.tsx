@@ -211,7 +211,8 @@ export default function TableColumnsStyle({
 		${PREFIX} ._row._dataRow {
 			animation: _tableRowFadeIn 0.25s ease-out both;
 		}
-	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+	` +
+		processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="TableColumnsCss">{css}</style>;
 }

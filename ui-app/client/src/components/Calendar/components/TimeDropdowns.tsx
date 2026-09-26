@@ -166,10 +166,15 @@ export function TimeDropdowns({
 						definition={definition}
 						subComponentName="ampmDropdownWrapper"
 					/>
-					{renderDropdown(getAmPm(), availableAmPm, onAmPmChange, 'ampmDropdown', labels.ampm)}
+					{renderDropdown(
+						getAmPm(),
+						availableAmPm,
+						onAmPmChange,
+						'ampmDropdown',
+						labels.ampm,
+					)}
 				</div>
 			)}
 		</>
 	);
 }
-

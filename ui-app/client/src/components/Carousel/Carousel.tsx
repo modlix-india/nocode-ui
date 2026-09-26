@@ -5,9 +5,7 @@ import CarouselStyle from './CarouselStyle';
 import { styleProperties, styleDefaults } from './carouselStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 
-const LazyCarousel = React.lazy(
-	() => import(/* webpackChunkName: "Carousel" */ './LazyCarousel'),
-);
+const LazyCarousel = React.lazy(() => import(/* webpackChunkName: "Carousel" */ './LazyCarousel'));
 function LoadLazyCarousel(props: Readonly<ComponentProps>) {
 	return (
 		<Suspense fallback={<>...</>}>
@@ -28,7 +26,7 @@ const component: Component = {
 	propertyValidation: (_props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	allowedChildrenType: new Map<string, number>([['', -1]]),
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -35,7 +35,7 @@ const component = {
 		name: 'SSEventListener',
 		properties: {},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

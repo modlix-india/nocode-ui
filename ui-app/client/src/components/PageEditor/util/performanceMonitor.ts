@@ -36,7 +36,8 @@ class PerformanceMonitor {
 		// Enable monitoring in development or when explicitly enabled
 		this.enabled =
 			typeof window !== 'undefined' &&
-			(globalThis.isDebugMode || localStorage.getItem('pageEditor_perfMonitoring') === 'true');
+			(globalThis.isDebugMode ||
+				localStorage.getItem('pageEditor_perfMonitoring') === 'true');
 	}
 
 	/**
@@ -122,11 +123,9 @@ class PerformanceMonitor {
 
 			// Sample first, middle, and last items to estimate size
 			if (stackSize > 0) {
-				const sampleIndices = [
-					0,
-					Math.floor(stackSize / 2),
-					stackSize - 1,
-				].filter((idx, pos, arr) => arr.indexOf(idx) === pos);
+				const sampleIndices = [0, Math.floor(stackSize / 2), stackSize - 1].filter(
+					(idx, pos, arr) => arr.indexOf(idx) === pos,
+				);
 
 				for (const idx of sampleIndices) {
 					const itemStr = JSON.stringify(stack[idx]);
@@ -244,4 +243,3 @@ export const performanceMonitor = new PerformanceMonitor();
 if (typeof window !== 'undefined') {
 	(window as any).__pageEditorPerfMonitor = performanceMonitor;
 }
-

@@ -1010,7 +1010,8 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 		// than sitting struck through inside the area they used to belong to.
 		// The history of a choice is its own subject.
 		for (const decision of ordered) {
-			const area = decision.status === 'superseded' ? 'Moved off' : decision.area || 'The site';
+			const area =
+				decision.status === 'superseded' ? 'Moved off' : decision.area || 'The site';
 			const list = areas.get(area);
 			if (list) list.push(decision);
 			else areas.set(area, [decision]);
@@ -1485,19 +1486,12 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 		const hidden = column.connections.length - shown.length;
 		return (
 			<span className="_columnConnections">
-				<SubHelperComponent
-					definition={definition}
-					subComponentName="columnConnections"
-				/>
+				<SubHelperComponent definition={definition} subComponentName="columnConnections" />
 				{shown.map(c => (
 					<span
 						key={`${c.direction}:${c.kind}:${c.name}:${c.how}`}
 						className={`_connection _${c.direction}`}
-						title={
-							c.where
-								? `${c.how} ${c.name}, at ${c.where}`
-								: `${c.how} ${c.name}`
-						}
+						title={c.where ? `${c.how} ${c.name}, at ${c.where}` : `${c.how} ${c.name}`}
 					>
 						<SubHelperComponent
 							definition={definition}
@@ -1780,7 +1774,8 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 								: ''
 						}`}
 						title={
-							(running && stepByColumn.get(`${column.kind}:${column.name}`)?.detail) ||
+							(running &&
+								stepByColumn.get(`${column.kind}:${column.name}`)?.detail) ||
 							undefined
 						}
 					>
@@ -2011,23 +2006,23 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					    only when a draft link exists: minting one rotates any
 					    existing link and revokes it, so a view must never do it
 					    as a side effect of being looked at. */}
-					{draftUrl ? (
-						<a
-							className="_actionButton _quiet"
-							href={absoluteUrl(draftUrl)}
-							target="_blank"
-							rel="noreferrer noopener"
-							onClick={e => e.stopPropagation()}
-						>
-							<SubHelperComponent
-								definition={definition}
-								subComponentName="actionButton"
-							/>
-							<i className="_actionIcon ms material-symbols-outlined mso-draft" />
-							{draftLabel}
-						</a>
-					) : null}
-					{/* Why these choices. A separate view rather than a band,
+						{draftUrl ? (
+							<a
+								className="_actionButton _quiet"
+								href={absoluteUrl(draftUrl)}
+								target="_blank"
+								rel="noreferrer noopener"
+								onClick={e => e.stopPropagation()}
+							>
+								<SubHelperComponent
+									definition={definition}
+									subComponentName="actionButton"
+								/>
+								<i className="_actionIcon ms material-symbols-outlined mso-draft" />
+								{draftLabel}
+							</a>
+						) : null}
+						{/* Why these choices. A separate view rather than a band,
 						    because a decision is about the whole site and reading
 						    them is a different task from reading the plan. */}
 						{model.decisions.length ? (

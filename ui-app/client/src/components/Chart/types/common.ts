@@ -217,12 +217,7 @@ class DataValueExtractor extends TokenValueExtractor {
 	protected getValueInternal(token: string): any {
 		if (token === 'Data') return this.data;
 
-		return this.retrieveElementFrom(
-			token,
-			TokenValueExtractor.splitPath(token),
-			1,
-			this.data,
-		);
+		return this.retrieveElementFrom(token, TokenValueExtractor.splitPath(token), 1, this.data);
 	}
 
 	public getStore(): any {
@@ -304,7 +299,11 @@ export function makeChartDataFromProperties(
 	let yAxisType = findDerivedType(yUniqueData, properties.yAxisType);
 
 	// Sort xUniqueData if requested
-	if (properties.xAxisLabelsSort && properties.xAxisLabelsSort !== 'none' && xUniqueData.length > 0) {
+	if (
+		properties.xAxisLabelsSort &&
+		properties.xAxisLabelsSort !== 'none' &&
+		xUniqueData.length > 0
+	) {
 		if (xAxisType === 'value' || xAxisType === 'log') {
 			// Numeric sort for value/log axis
 			xUniqueData.sort((a, b) => {
@@ -332,7 +331,11 @@ export function makeChartDataFromProperties(
 	}
 
 	// Sort yUniqueData if requested
-	if (properties.yAxisLabelsSort && properties.yAxisLabelsSort !== 'none' && yUniqueData.length > 0) {
+	if (
+		properties.yAxisLabelsSort &&
+		properties.yAxisLabelsSort !== 'none' &&
+		yUniqueData.length > 0
+	) {
 		if (yAxisType === 'value' || yAxisType === 'log') {
 			// Numeric sort for value/log axis
 			yUniqueData.sort((a, b) => {
@@ -471,8 +474,9 @@ export function makeChartDataFromProperties(
 	// Determine if Y data actually contains ordinal (string) values, regardless of configured type
 	// This is used to decide whether to apply ordinal-to-index mapping in dataTransformer
 	// Even if yAxisType is configured as 'ordinal', we shouldn't map numeric values to indices
-	const yDataIsActuallyOrdinal = yUniqueData.some((val: any) =>
-		typeof val === 'string' && Number.isNaN(Number.parseFloat(val)));
+	const yDataIsActuallyOrdinal = yUniqueData.some(
+		(val: any) => typeof val === 'string' && Number.isNaN(Number.parseFloat(val)),
+	);
 
 	if ((hasBar && !axisInverted) || (hasHorizontalBar && axisInverted)) xAxisType = 'ordinal';
 	else if ((hasHorizontalBar && !axisInverted) || (hasBar && axisInverted)) yAxisType = 'ordinal';
@@ -574,7 +578,9 @@ function extractPaths(pathProperty: any): string[] {
 
 	// Already an array of strings
 	if (Array.isArray(pathProperty)) {
-		return pathProperty.map(p => (typeof p === 'string' ? p : p?.property?.value ?? p?.value ?? p));
+		return pathProperty.map(p =>
+			typeof p === 'string' ? p : (p?.property?.value ?? p?.value ?? p),
+		);
 	}
 
 	// Single string path
@@ -641,8 +647,12 @@ function makeYAxisData(
 						// Check if this is an array of range pairs (e.g., [[10,20],[23,30]])
 						// or a single value/pair that needs flattening
 						const firstElement = e[0];
-						if (Array.isArray(firstElement) && firstElement.length === 2 &&
-							typeof firstElement[0] === 'number' && typeof firstElement[1] === 'number') {
+						if (
+							Array.isArray(firstElement) &&
+							firstElement.length === 2 &&
+							typeof firstElement[0] === 'number' &&
+							typeof firstElement[1] === 'number'
+						) {
 							// This is an array of [start, end] pairs - keep them intact
 							return e;
 						}
@@ -659,8 +669,12 @@ function makeYAxisData(
 					if (Array.isArray(rangeData[index])) {
 						// Check if range data contains [start, end] pairs
 						const firstElement = rangeData[index][0];
-						if (Array.isArray(firstElement) && firstElement.length === 2 &&
-							typeof firstElement[0] === 'number' && typeof firstElement[1] === 'number') {
+						if (
+							Array.isArray(firstElement) &&
+							firstElement.length === 2 &&
+							typeof firstElement[0] === 'number' &&
+							typeof firstElement[1] === 'number'
+						) {
 							// Preserve range pairs - don't flatten
 							return val.concat(rangeData[index]);
 						}

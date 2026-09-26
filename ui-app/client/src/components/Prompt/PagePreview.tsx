@@ -261,15 +261,12 @@ export function PagePreview({
 	const draftUrl = draftOrigin === undefined ? undefined : draftOrigin || liveOrigin;
 	const draftPath = draftOrigin ? appHostPath : gatewayPath;
 
-	const src =
-		surface === 'draft'
-			? previewSrc(draftOrigin, draftPath)
-			: gatewayPath || undefined;
+	const src = surface === 'draft' ? previewSrc(draftOrigin, draftPath) : gatewayPath || undefined;
 
 	// The host the surface on screen resolves to. '' while a grant is still being
 	// minted -- the box then shows the path alone and fills the host in a moment
 	// later, which is honest about what is known.
-	const shownOrigin = surface === 'draft' ? draftUrl ?? '' : liveOrigin;
+	const shownOrigin = surface === 'draft' ? (draftUrl ?? '') : liveOrigin;
 	const shownPath = surface === 'draft' ? draftPath : gatewayPath;
 	// Shown complete, not as a bare path. Draft and live differ ONLY by hostname,
 	// so `/sampleAI` cannot tell you which of the two you are looking at, and it

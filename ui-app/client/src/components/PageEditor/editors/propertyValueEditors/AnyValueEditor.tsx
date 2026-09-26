@@ -40,7 +40,9 @@ export function AnyValueEditor({
 			<div className={`_popupBackground`} onClick={() => setShowEditor(false)}>
 				<div className="_popupContainer" onClick={e => e.stopPropagation()}>
 					<div className="_jsonEditorContainer">
-						<Suspense fallback={<div className="_editorLoading">Loading editor...</div>}>
+						<Suspense
+							fallback={<div className="_editorLoading">Loading editor...</div>}
+						>
 							<LazyEditor
 								language="json"
 								height="100%"
@@ -48,7 +50,8 @@ export function AnyValueEditor({
 								onChange={ev => {
 									setEditorValue(ev ?? '');
 									try {
-										if (ev !== 'undefined' && ev !== 'null' && ev) JSON.parse(ev);
+										if (ev !== 'undefined' && ev !== 'null' && ev)
+											JSON.parse(ev);
 										setEnableOk(true);
 									} catch (err) {
 										setEnableOk(false);

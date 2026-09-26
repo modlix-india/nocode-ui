@@ -52,7 +52,10 @@ export interface ModeDecision {
 export function decideMode(input: ModeDecisionInput): ModeDecision {
 	const preferred = preferredMode(input.hasHtml, input.hasDesign);
 	if (input.prevTargetKey !== input.targetKey) {
-		return { targetChanged: true, mode: preferred !== input.currentMode ? preferred : undefined };
+		return {
+			targetChanged: true,
+			mode: preferred !== input.currentMode ? preferred : undefined,
+		};
 	}
 	if (!input.userPicked && input.currentMode === 'visual' && preferred === 'code') {
 		return { targetChanged: false, mode: 'code' };

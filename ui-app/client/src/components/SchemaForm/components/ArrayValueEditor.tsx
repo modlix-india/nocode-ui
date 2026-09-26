@@ -59,7 +59,9 @@ export function ArrayValueEditor({
 		<div className="_singleSchema">
 			<div className="_arraySchema">
 				<div className="_arrayHeader">
-					<span>{headerLabel} ({items.length})</span>
+					<span>
+						{headerLabel} ({items.length})
+					</span>
 					<button className="_arrayAddBtn" onClick={addItem} type="button">
 						<i className="fa fa-solid fa-plus" /> Add
 					</button>

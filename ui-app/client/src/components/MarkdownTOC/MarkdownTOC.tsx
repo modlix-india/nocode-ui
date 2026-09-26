@@ -430,7 +430,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	stylePseudoStates: ['hover', 'visited'],
 	styleProperties: stylePropertiesDefinition,
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

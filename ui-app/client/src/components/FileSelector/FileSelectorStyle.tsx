@@ -1,5 +1,9 @@
 import React from 'react';
-import { StyleResolutionDefinition, processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
+import {
+	StyleResolutionDefinition,
+	processStyleDefinition,
+	processStyleValueWithFunction,
+} from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './fileSelectorStyleProperties';
 import { StyleResolution } from '../../types/common';
 

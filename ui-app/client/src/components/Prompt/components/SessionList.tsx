@@ -77,13 +77,10 @@ export function SessionList({
 	const [editingTitle, setEditingTitle] = useState('');
 	const renameInputRef = useRef<HTMLInputElement>(null);
 
-	const handleDeleteClick = useCallback(
-		(e: React.MouseEvent, sessionId: string) => {
-			e.stopPropagation();
-			setConfirmDeleteId(sessionId);
-		},
-		[],
-	);
+	const handleDeleteClick = useCallback((e: React.MouseEvent, sessionId: string) => {
+		e.stopPropagation();
+		setConfirmDeleteId(sessionId);
+	}, []);
 
 	const handleConfirmDelete = useCallback(() => {
 		if (confirmDeleteId) {
@@ -96,14 +93,11 @@ export function SessionList({
 		setConfirmDeleteId(null);
 	}, []);
 
-	const handleRenameClick = useCallback(
-		(e: React.MouseEvent, session: Session) => {
-			e.stopPropagation();
-			setEditingId(session.session_id);
-			setEditingTitle(session.title ?? '');
-		},
-		[],
-	);
+	const handleRenameClick = useCallback((e: React.MouseEvent, session: Session) => {
+		e.stopPropagation();
+		setEditingId(session.session_id);
+		setEditingTitle(session.title ?? '');
+	}, []);
 
 	const handleRenameConfirm = useCallback(() => {
 		if (editingId && editingTitle.trim()) {
@@ -146,18 +140,9 @@ export function SessionList({
 					...(sidebarWidth && isOpen ? { width: `${sidebarWidth}px` } : {}),
 				}}
 			>
-				<SubHelperComponent
-					definition={definition}
-					subComponentName="sessionSidebar"
-				/>
-				<div
-					className="_sidebarHeader"
-					style={styleProperties?.sidebarHeader ?? {}}
-				>
-					<SubHelperComponent
-						definition={definition}
-						subComponentName="sidebarHeader"
-					/>
+				<SubHelperComponent definition={definition} subComponentName="sessionSidebar" />
+				<div className="_sidebarHeader" style={styleProperties?.sidebarHeader ?? {}}>
+					<SubHelperComponent definition={definition} subComponentName="sidebarHeader" />
 					<button
 						className="_newChatButton"
 						onClick={onNewChat}
@@ -171,38 +156,28 @@ export function SessionList({
 						<i className={newChatSidebarIcon} />
 						<span>{newChatLabel}</span>
 					</button>
-					</div>
+				</div>
 
 				{sessions.length > 0 && (
 					<div className="_sessionGroup">
-						<div className="_sessionGroupLabel">
-							{yourChatsLabel}
-						</div>
+						<div className="_sessionGroupLabel">{yourChatsLabel}</div>
 						<div className="_sessionItems">
 							{sessions.map(s => (
 								<div
 									key={s.session_id}
 									className={`_sessionItem ${
-										s.session_id === activeSessionId
-											? '_active'
-											: ''
+										s.session_id === activeSessionId ? '_active' : ''
 									}`}
 									onClick={() =>
-										editingId !== s.session_id &&
-										onSelectSession(s.session_id)
+										editingId !== s.session_id && onSelectSession(s.session_id)
 									}
 									onKeyDown={e => {
-										if (
-											e.key === 'Enter' &&
-											editingId !== s.session_id
-										) {
+										if (e.key === 'Enter' && editingId !== s.session_id) {
 											onSelectSession(s.session_id);
 										}
 									}}
 									title={sessionLabel(s)}
-									style={
-										styleProperties?.sessionItem ?? {}
-									}
+									style={styleProperties?.sessionItem ?? {}}
 									role="button"
 									tabIndex={0}
 								>
@@ -215,31 +190,18 @@ export function SessionList({
 											ref={renameInputRef}
 											className="_sessionRenameInput"
 											value={editingTitle}
-											onChange={e =>
-												setEditingTitle(
-													e.target.value,
-												)
-											}
+											onChange={e => setEditingTitle(e.target.value)}
 											onKeyDown={handleRenameKeyDown}
 											onBlur={handleRenameConfirm}
-											onClick={e =>
-												e.stopPropagation()
-											}
+											onClick={e => e.stopPropagation()}
 										/>
 									) : (
 										<>
-											<span className="_sessionTitle">
-												{sessionLabel(s)}
-											</span>
+											<span className="_sessionTitle">{sessionLabel(s)}</span>
 											<div className="_sessionActions">
 												<button
 													className="_renameSessionButton"
-													onClick={e =>
-														handleRenameClick(
-															e,
-															s,
-														)
-													}
+													onClick={e => handleRenameClick(e, s)}
 													title="Rename session"
 												>
 													<i className={renameIcon} />
@@ -247,10 +209,7 @@ export function SessionList({
 												<button
 													className="_deleteSessionButton"
 													onClick={e =>
-														handleDeleteClick(
-															e,
-															s.session_id,
-														)
+														handleDeleteClick(e, s.session_id)
 													}
 													title="Delete session"
 												>
@@ -267,9 +226,7 @@ export function SessionList({
 									onClick={onLoadMore}
 									disabled={loadingMore}
 								>
-									{loadingMore
-										? 'Loading...'
-										: 'Load more'}
+									{loadingMore ? 'Loading...' : 'Load more'}
 								</button>
 							)}
 						</div>
@@ -285,13 +242,7 @@ export function SessionList({
 				)}
 			</div>
 
-			{isOpen && (
-				<div
-					className="_sidebarOverlay"
-					onClick={onToggle}
-					role="presentation"
-				/>
-			)}
+			{isOpen && <div className="_sidebarOverlay" onClick={onToggle} role="presentation" />}
 
 			{confirmDeleteId && (
 				<div
@@ -305,20 +256,12 @@ export function SessionList({
 						role="dialog"
 						aria-modal="true"
 					>
-						<p className="_deleteConfirmText">
-							{deleteConfirmMessage}
-						</p>
+						<p className="_deleteConfirmText">{deleteConfirmMessage}</p>
 						<div className="_deleteConfirmActions">
-							<button
-								className="_deleteConfirmCancel"
-								onClick={handleCancelDelete}
-							>
+							<button className="_deleteConfirmCancel" onClick={handleCancelDelete}>
 								Cancel
 							</button>
-							<button
-								className="_deleteConfirmDelete"
-								onClick={handleConfirmDelete}
-							>
+							<button className="_deleteConfirmDelete" onClick={handleConfirmDelete}>
 								Delete
 							</button>
 						</div>

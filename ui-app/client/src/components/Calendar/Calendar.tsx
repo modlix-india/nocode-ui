@@ -59,7 +59,7 @@ const component: Component = {
 		},
 	},
 	sections: [],
-		validations: {
+	validations: {
 		DATE: function (
 			validation: any,
 			value: any,

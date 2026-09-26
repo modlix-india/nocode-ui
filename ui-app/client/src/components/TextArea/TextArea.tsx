@@ -384,7 +384,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Text Area', pageName: 'textArea' }],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

@@ -70,6 +70,7 @@
 		"@types/node": "^22.10.2",
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.4",
+		"@types/three": "0.186.0",
 		"babel-loader": "^10.1.1",
 		"buffer": "^6.0.3",
 		"css-loader": "^7.1.4",
@@ -109,6 +110,7 @@
 		"react-chartjs-2": "^5.3.1",
 		"react-dom": "^19.2.8",
 		"react-router-dom": "^7.18.2",
+		"three": "0.186.1",
 		"topojson-client": "^3.1.0",
 		"world-atlas": "^2.0.2"
 	},

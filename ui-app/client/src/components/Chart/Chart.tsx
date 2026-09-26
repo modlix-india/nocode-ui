@@ -29,7 +29,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Selection Binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

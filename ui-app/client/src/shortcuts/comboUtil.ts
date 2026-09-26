@@ -221,10 +221,7 @@ export function comboFromEvent(e: KeyboardEvent): Combo | undefined {
 
 	if (!base) return undefined;
 
-	return buildCombo(
-		{ ctrl: e.ctrlKey, meta: e.metaKey, alt: e.altKey, shift: e.shiftKey },
-		base,
-	);
+	return buildCombo({ ctrl: e.ctrlKey, meta: e.metaKey, alt: e.altKey, shift: e.shiftKey }, base);
 }
 
 const APPLE_MODIFIER_GLYPHS: Array<[string, string]> = [

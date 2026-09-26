@@ -275,7 +275,9 @@ export default function SingleSchema({
 			case SchemaType.OBJECT:
 				return (
 					<ObjectValueEditor
-						value={typeof value === 'object' && !Array.isArray(value) ? value : undefined}
+						value={
+							typeof value === 'object' && !Array.isArray(value) ? value : undefined
+						}
 						schema={schema}
 						onChange={onChange}
 						schemaRepository={schemaRepository}

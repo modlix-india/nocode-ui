@@ -72,29 +72,37 @@ function getRootFunctionName(execution: ExecutionLog): string {
 
 let handle: NodeJS.Timeout | null = null;
 function savePersonalization() {
-    if (!getDataFromPath('Store.auth', [])) return;
+	if (!getDataFromPath('Store.auth', [])) return;
 
-    if (handle) clearTimeout(handle);
-    const appName = getDataFromPath('Store.application.appCode', []);
-    const token = getDataFromPath('Store.auth.accessToken', []);
+	if (handle) clearTimeout(handle);
+	const appName = getDataFromPath('Store.application.appCode', []);
+	const token = getDataFromPath('Store.auth.accessToken', []);
 
-    handle = setTimeout(() => axios.post(`api/ui/personalization/${appName}/debugger`,
-        getDataFromPath('Store.debug.personalization', []),
-        { headers: { Authorization: token } }
-    ), 3000);
+	handle = setTimeout(
+		() =>
+			axios.post(
+				`api/ui/personalization/${appName}/debugger`,
+				getDataFromPath('Store.debug.personalization', []),
+				{ headers: { Authorization: token } },
+			),
+		3000,
+	);
 }
 
 function loadPersonalization() {
-    if (!getDataFromPath('Store.auth', [])) return;
+	if (!getDataFromPath('Store.auth', [])) return;
 
-    const appName = getDataFromPath('Store.application.appCode', []);
-    const token = getDataFromPath('Store.auth.accessToken', []);
+	const appName = getDataFromPath('Store.application.appCode', []);
+	const token = getDataFromPath('Store.auth.accessToken', []);
 
-    axios.get(`api/ui/personalization/${appName}/debugger`, {headers : {
-        Authorization: token
-    }}).then(response => 
-        setData('Store.debug.personalization', response.data),
-    ).catch(() => {});
+	axios
+		.get(`api/ui/personalization/${appName}/debugger`, {
+			headers: {
+				Authorization: token,
+			},
+		})
+		.then(response => setData('Store.debug.personalization', response.data))
+		.catch(() => {});
 }
 
 export default function LazyDebugWindow() {
@@ -108,9 +116,9 @@ export default function LazyDebugWindow() {
 	);
 	const [selectedFunctionName, setSelectedFunctionName] = useState<string | undefined>(undefined);
 	const [showEditor, setShowEditor] = useState(false);
-    const [showStore, setShowStore] = useState(false);
-    const [storeKeyFilter, setStoreKeyFilter] = useState(
-		() => getDataFromPath('Store.debug.preferences.storeKeyFilter', []) || ''
+	const [showStore, setShowStore] = useState(false);
+	const [storeKeyFilter, setStoreKeyFilter] = useState(
+		() => getDataFromPath('Store.debug.preferences.storeKeyFilter', []) || '',
 	);
 
 	const handleStoreKeyFilterChange = useCallback((value: string) => {
@@ -237,8 +245,7 @@ export default function LazyDebugWindow() {
 
 	// Get function definition from execution log's definitions
 	const selectedDefinition = useMemo(() => {
-		if (!selectedExecutionLog || !selectedFunctionName) 
-            return undefined;
+		if (!selectedExecutionLog || !selectedFunctionName) return undefined;
 		return selectedExecutionLog.definitions.get(selectedFunctionName);
 	}, [selectedExecutionId, selectedExecutionLog, selectedFunctionName]);
 
@@ -258,14 +265,36 @@ export default function LazyDebugWindow() {
 		}
 	}, [showStore]);
 
-    useEffect(() => loadPersonalization(), [getDataFromPath('Store.auth', [])]);
+	useEffect(() => loadPersonalization(), [getDataFromPath('Store.auth', [])]);
 
 	if (isCollapsed) {
 		return (
 			<>
 				<DebugWindowStyle />
 				<button className="_debugWindowCollapsed" onClick={() => setIsCollapsed(false)}>
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="M12 20v-9"/><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"/><path d="M14.12 3.88 16 2"/><path d="M21 21a4 4 0 0 0-3.81-4"/><path d="M21 5a4 4 0 0 1-3.55 3.97"/><path d="M22 13h-4"/><path d="M3 21a4 4 0 0 1 3.81-4"/><path d="M3 5a4 4 0 0 0 3.55 3.97"/><path d="M6 13H2"/><path d="m8 2 1.88 1.88"/><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"/></svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="white"
+						strokeWidth="2"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+					>
+						<path d="M12 20v-9" />
+						<path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z" />
+						<path d="M14.12 3.88 16 2" />
+						<path d="M21 21a4 4 0 0 0-3.81-4" />
+						<path d="M21 5a4 4 0 0 1-3.55 3.97" />
+						<path d="M22 13h-4" />
+						<path d="M3 21a4 4 0 0 1 3.81-4" />
+						<path d="M3 5a4 4 0 0 0 3.55 3.97" />
+						<path d="M6 13H2" />
+						<path d="m8 2 1.88 1.88" />
+						<path d="M9 7.13V6a3 3 0 1 1 6 0v1.13" />
+					</svg>
 					{executions.length > 0 && (
 						<span className="_executionCount">{executions.length}</span>
 					)}
@@ -291,7 +320,29 @@ export default function LazyDebugWindow() {
 				<div className="_debugWindowExpanded">
 					<div className="_debugHeader">
 						<div className="_debugTitle">
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="M12 20v-9"/><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"/><path d="M14.12 3.88 16 2"/><path d="M21 21a4 4 0 0 0-3.81-4"/><path d="M21 5a4 4 0 0 1-3.55 3.97"/><path d="M22 13h-4"/><path d="M3 21a4 4 0 0 1 3.81-4"/><path d="M3 5a4 4 0 0 0 3.55 3.97"/><path d="M6 13H2"/><path d="m8 2 1.88 1.88"/><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"/></svg>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<path d="M12 20v-9" />
+								<path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z" />
+								<path d="M14.12 3.88 16 2" />
+								<path d="M21 21a4 4 0 0 0-3.81-4" />
+								<path d="M21 5a4 4 0 0 1-3.55 3.97" />
+								<path d="M22 13h-4" />
+								<path d="M3 21a4 4 0 0 1 3.81-4" />
+								<path d="M3 5a4 4 0 0 0 3.55 3.97" />
+								<path d="M6 13H2" />
+								<path d="m8 2 1.88 1.88" />
+								<path d="M9 7.13V6a3 3 0 1 1 6 0v1.13" />
+							</svg>
 							<span>{selectedFunctionName || selectedExecution.functionName}</span>
 							<span className="_executionDuration">
 								{formatDuration(selectedExecution.duration)}
@@ -363,10 +414,10 @@ export default function LazyDebugWindow() {
 										properties: {
 											editorType: { value: 'page' },
 										},
-                                        bindingPath2: {
-                                            type: 'VALUE',
-                                            value: 'Store.debug.personalization.kirunEditor',
-                                        },
+										bindingPath2: {
+											type: 'VALUE',
+											value: 'Store.debug.personalization.kirunEditor',
+										},
 									}}
 									debugViewMode={true}
 									executionLog={selectedExecutionLog}
@@ -383,8 +434,8 @@ export default function LazyDebugWindow() {
 											?.tokenValueExtractors
 									}
 									stores={['Store', 'Page', 'Theme', 'LocalStore']}
-                                    functionDefinition = {selectedDefinition}
-                                    onChangePersonalizationFunction={savePersonalization}
+									functionDefinition={selectedDefinition}
+									onChangePersonalizationFunction={savePersonalization}
 								/>
 							) : (
 								<div className="_debugNoDefinition">
@@ -393,7 +444,7 @@ export default function LazyDebugWindow() {
 								</div>
 							)}
 						</Suspense>
-                        {storeContainer}
+						{storeContainer}
 					</div>
 				</div>
 			</>
@@ -406,7 +457,29 @@ export default function LazyDebugWindow() {
 			<div className="_debugWindow">
 				<div className="_debugHeader">
 					<div className="_debugTitle">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" ><path d="M12 20v-9"/><path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z"/><path d="M14.12 3.88 16 2"/><path d="M21 21a4 4 0 0 0-3.81-4"/><path d="M21 5a4 4 0 0 1-3.55 3.97"/><path d="M22 13h-4"/><path d="M3 21a4 4 0 0 1 3.81-4"/><path d="M3 5a4 4 0 0 0 3.55 3.97"/><path d="M6 13H2"/><path d="m8 2 1.88 1.88"/><path d="M9 7.13V6a3 3 0 1 1 6 0v1.13"/></svg>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
+							<path d="M12 20v-9" />
+							<path d="M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z" />
+							<path d="M14.12 3.88 16 2" />
+							<path d="M21 21a4 4 0 0 0-3.81-4" />
+							<path d="M21 5a4 4 0 0 1-3.55 3.97" />
+							<path d="M22 13h-4" />
+							<path d="M3 21a4 4 0 0 1 3.81-4" />
+							<path d="M3 5a4 4 0 0 0 3.55 3.97" />
+							<path d="M6 13H2" />
+							<path d="m8 2 1.88 1.88" />
+							<path d="M9 7.13V6a3 3 0 1 1 6 0v1.13" />
+						</svg>
 						<span>Debug Executions</span>
 					</div>
 					<div className="_debugActions">

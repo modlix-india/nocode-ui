@@ -256,12 +256,7 @@ export default function LazyChart(props: Readonly<ComponentProps>) {
 		>
 			<HelperComponent context={props.context} definition={definition} />
 			{isGeo && !geo ? null : (
-				<Chart
-					ref={chartRef}
-					type={chartJsType}
-					data={chartJsData}
-					options={options}
-				/>
+				<Chart ref={chartRef} type={chartJsType} data={chartJsData} options={options} />
 			)}
 		</div>
 	);

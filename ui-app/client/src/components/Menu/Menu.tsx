@@ -437,7 +437,7 @@ const component: Component = {
 		{ name: 'Horizontal Menu', pageName: 'horizontalMenu' },
 		{ name: 'Vertical Menu', pageName: 'verticalMenu' },
 	],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

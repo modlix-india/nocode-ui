@@ -824,7 +824,13 @@ function partsColumn(
 		kind,
 		name: row.name,
 		title: (appObject?.name ?? '').trim() || row.title?.trim() || row.name,
-		purpose: (appObject?.purpose ?? plan?.intent ?? appObject?.summary ?? row.description ?? '').trim(),
+		purpose: (
+			appObject?.purpose ??
+			plan?.intent ??
+			appObject?.summary ??
+			row.description ??
+			''
+		).trim(),
 		feature: appObject?.feature,
 		planned: false,
 		cards,
@@ -855,12 +861,9 @@ function partsColumn(
  * segment for an ordinary page, two for a namespaced function, and a flat
  * `loaded[name]` is still read for a host that has not been updated.
  */
-export function loadedDetail(
-	loaded: BoardSources['loaded'], kind: BoardKind, name: string,
-): any {
+export function loadedDetail(loaded: BoardSources['loaded'], kind: BoardKind, name: string): any {
 	if (!loaded) return undefined;
-	const walk = (from: any) =>
-		name.split('.').reduce((node, segment) => node?.[segment], from);
+	const walk = (from: any) => name.split('.').reduce((node, segment) => node?.[segment], from);
 	return walk(loaded[kind]) ?? walk(loaded) ?? loaded[name] ?? undefined;
 }
 
@@ -1138,7 +1141,7 @@ export function buildBoard(sources: BoardSources): BoardModel {
 	if (deliveryCards.length)
 		deliveryColumns.push({
 			uid: 'delivery:address',
-					connections: [],
+			connections: [],
 			kind: 'delivery',
 			name: 'address',
 			title: 'The address',
@@ -1150,7 +1153,7 @@ export function buildBoard(sources: BoardSources): BoardModel {
 	if (audienceCards.length)
 		deliveryColumns.push({
 			uid: 'delivery:audience',
-					connections: [],
+			connections: [],
 			kind: 'delivery',
 			name: 'audience',
 			title: 'Who sees it',
@@ -1324,7 +1327,6 @@ export function absoluteUrl(url: string): string {
 	if (/^[a-z][a-z0-9+.-]*:/i.test(trimmed) || trimmed.startsWith('/')) return trimmed;
 	return `https://${trimmed}`;
 }
-
 
 /**
  * Which stream watches this job, and why it is not one endpoint.

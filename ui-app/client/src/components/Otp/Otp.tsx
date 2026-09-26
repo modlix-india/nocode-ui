@@ -48,7 +48,7 @@ const component: Component = {
 		MANDATORY,
 	},
 	sections: [{ name: 'Otp', pageName: 'otp' }],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

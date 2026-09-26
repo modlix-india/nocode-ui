@@ -22,7 +22,16 @@ describe('checkReserved', () => {
 	});
 
 	it('passes the idiomatic web app combos with no warning', () => {
-		for (const spec of ['Mod+K', 'Mod+J', 'Mod+E', 'Mod+B', 'Mod+Enter', 'Mod+Shift+P', 'Alt+D', '/']) {
+		for (const spec of [
+			'Mod+K',
+			'Mod+J',
+			'Mod+E',
+			'Mod+B',
+			'Mod+Enter',
+			'Mod+Shift+P',
+			'Alt+D',
+			'/',
+		]) {
 			expect(checkReserved(spec, false)).toBeUndefined();
 			expect(checkReserved(spec, true)).toBeUndefined();
 		}

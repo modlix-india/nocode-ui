@@ -573,11 +573,13 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
 
 	// Debug viewer state
-	const [debugMessages, setDebugMessages] = useState<Map<string, any[]>>(new Map([
-		['desktop', []],
-		['tablet', []],
-		['mobile', []]
-	]));
+	const [debugMessages, setDebugMessages] = useState<Map<string, any[]>>(
+		new Map([
+			['desktop', []],
+			['tablet', []],
+			['mobile', []],
+		]),
+	);
 	const [showDebugMenu, setShowDebugMenu] = useState<boolean>(false);
 
 	// Set when a preview refuses a definition push because it has navigated to a
@@ -686,13 +688,14 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	}, []);
 
 	const handleClearAllDebug = useCallback(() => {
-		setDebugMessages(new Map([
-			['desktop', []],
-			['tablet', []],
-			['mobile', []]
-		]));
+		setDebugMessages(
+			new Map([
+				['desktop', []],
+				['tablet', []],
+				['mobile', []],
+			]),
+		);
 	}, []);
-
 
 	const [styleSelectorPref, setStyleSelectorPref] = useState<any>({});
 
@@ -970,7 +973,11 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	}, []); // Empty deps - only run once on mount
 
 	// This will be used to store slave store.
-	const [slaveStore, setSlaveStore] = useState<{desktop: any, tablet: any, mobile: any}>({desktop: {}, tablet: {}, mobile: {}});
+	const [slaveStore, setSlaveStore] = useState<{ desktop: any; tablet: any; mobile: any }>({
+		desktop: {},
+		tablet: {},
+		mobile: {},
+	});
 
 	// Effect to listen to all the messages from the iframe/slave of the page iframes.
 	// Use refs to avoid recreating listener on every render
@@ -1045,24 +1052,27 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					operations: operationsRef.current!,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
 					onSlaveStore: (screenType: string, store: any) => {
-						setSlaveStore((obj) => ({...obj, [screenType]: {
-							store,
-							localStore: Object.entries(window.localStorage)
-								.filter((e: [string, string]) => e[0].startsWith('designMode_'))
-								.reduce((a, c: [string, string]) => {
-									let key = c[0].substring('designMode_'.length);
-									if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
-										try {
-											a[key] = JSON.parse(c[1]);
-										} catch (e) {
+						setSlaveStore(obj => ({
+							...obj,
+							[screenType]: {
+								store,
+								localStore: Object.entries(window.localStorage)
+									.filter((e: [string, string]) => e[0].startsWith('designMode_'))
+									.reduce((a, c: [string, string]) => {
+										let key = c[0].substring('designMode_'.length);
+										if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
+											try {
+												a[key] = JSON.parse(c[1]);
+											} catch (e) {
+												a[key] = c[1];
+											}
+										} else {
 											a[key] = c[1];
 										}
-									} else {
-										a[key] = c[1];
-									}
-									return a;
-								}, {} as any),
-						}}));
+										return a;
+									}, {} as any),
+							},
+						}));
 					},
 					onDefinitionIgnored: detail =>
 						setPreviewElsewhere(detail?.showing ?? 'another page'),
@@ -1081,7 +1091,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 							const deviceMessages = updated.get(flattenedMsg.screenType) || [];
 
 							// Check if execution with same ID already exists
-							const existingIndex = deviceMessages.findIndex(m => m.executionId === flattenedMsg.executionId);
+							const existingIndex = deviceMessages.findIndex(
+								m => m.executionId === flattenedMsg.executionId,
+							);
 
 							let newMessages;
 							if (existingIndex !== -1) {
@@ -1245,7 +1257,8 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.localStore,
 					allPaths(
 						PAGE_STORE_PREFIX,
-						(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.store?.pageData?.[editPageDefinition?.name ?? ''],
+						(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.store
+							?.pageData?.[editPageDefinition?.name ?? ''],
 					),
 				),
 			),
@@ -1309,8 +1322,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					<i className="fa fa-triangle-exclamation" aria-hidden="true" />
 					<span>
 						The preview has navigated to <strong>{previewElsewhere}</strong>, so it is
-						not showing your edits to this page. They are still here and still
-						unsaved.
+						not showing your edits to this page. They are still here and still unsaved.
 					</span>
 					<button
 						type="button"
@@ -1403,8 +1415,11 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				helpURL={helpURL}
 				defaultZoomPercentage={defaultZoomPercentage}
 				onDebugButtonClick={handleDebugButtonClick}
-				debugMessageCount={Math.max(debugMessages.get('desktop')?.length ?? 0,
-					debugMessages.get('tablet')?.length ?? 0, debugMessages.get('mobile')?.length ?? 0)}
+				debugMessageCount={Math.max(
+					debugMessages.get('desktop')?.length ?? 0,
+					debugMessages.get('tablet')?.length ?? 0,
+					debugMessages.get('mobile')?.length ?? 0,
+				)}
 				editorPageDefinition={pageDefinition}
 				editorContext={context}
 				appCode={appDefinition?.appCode ?? editPageDefinition?.appCode}

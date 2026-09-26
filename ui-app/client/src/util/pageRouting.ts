@@ -37,13 +37,7 @@
  * ---------------------------------------------------------------------------
  */
 
-export type PageRouteConditionSource =
-	| 'QUERY'
-	| 'HEADER'
-	| 'COOKIE'
-	| 'DEVICE'
-	| 'AUTH'
-	| 'GEO';
+export type PageRouteConditionSource = 'QUERY' | 'HEADER' | 'COOKIE' | 'DEVICE' | 'AUTH' | 'GEO';
 
 export type PageRouteConditionOperator =
 	| 'EQUALS'
@@ -328,7 +322,8 @@ function matchCondition(condition: PageRouteCondition, request: PageRouteRequest
 	}
 
 	const value = fold(actual as string, condition.caseSensitive);
-	const expected = condition.value === undefined ? undefined : fold(condition.value, condition.caseSensitive);
+	const expected =
+		condition.value === undefined ? undefined : fold(condition.value, condition.caseSensitive);
 	const list = new Set(candidateValues(condition).map(e => fold(e, condition.caseSensitive)));
 
 	switch (condition.operator) {
@@ -425,7 +420,12 @@ function drawVariant(
 	let point = random() * total;
 	for (const [key, variant] of eligible) {
 		point -= numeric(variant.weight, 1);
-		if (point < 0) return { variantKey: key, page: variant.page, newAssignment: { ruleKey, variantKey: key } };
+		if (point < 0)
+			return {
+				variantKey: key,
+				page: variant.page,
+				newAssignment: { ruleKey, variantKey: key },
+			};
 	}
 
 	// Only reachable if `random` returns exactly 1, or through floating point
@@ -529,8 +529,7 @@ export function resolvePageRoute(
 
 	// Asked for as-is. Before any rule, and before the default-page hop, so that a
 	// request naming no page still lands on the default rather than on nothing.
-	if (isDesignRequest(request.query))
-		return { pageName: requested || defaultPage || '' };
+	if (isDesignRequest(request.query)) return { pageName: requested || defaultPage || '' };
 
 	const direct = applyRoute(routing, requested, request, random);
 	if (direct) return direct;
@@ -551,7 +550,9 @@ export function resolvePageRoute(
  *
  * The caller passes the already URI-decoded value.
  */
-export function parseRouteAssignments(raw: string | undefined | null): { [ruleKey: string]: string } {
+export function parseRouteAssignments(raw: string | undefined | null): {
+	[ruleKey: string]: string;
+} {
 	return parseStringMap(raw);
 }
 
