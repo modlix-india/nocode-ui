@@ -248,6 +248,29 @@ module.exports = async (env = {}) => {
             reuseExistingChunk: true,
             chunks: 'async',
           },
+          // @fincity/kirun-ui must never share a chunk with anything the boot
+          // path fetches.
+          //
+          // Its dist/module.js is a single 104KB bundle whose FIRST import is
+          // `monaco-editor` -- the whole package, every language. It declares
+          // no `sideEffects`, so webpack cannot drop that import even when the
+          // only thing used from the module is one documentation helper at the
+          // far end of the file. Executing the chunk fetches ~12.9MB.
+          //
+          // The group below matched `@fincity/kirun` and so swept kirun-ui in
+          // with kirun-js, which the runtime genuinely does need eagerly.
+          // Measured on dev: the bootstrap's own chunk list was clean, and
+          // monaco was still pulled milliseconds later because kirun-ui rode
+          // into an eager `kirun-*` chunk. `chunks: 'async'` is what keeps it
+          // out; the higher priority is what stops the broader group claiming
+          // it first.
+          kirunUi: {
+            test: /[\\/]node_modules[\\/]@fincity[\\/]kirun-ui[\\/]/,
+            name: 'kirun-ui',
+            priority: 15,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
           // KIRun runtime (large, only for lazy-loaded components)
           kirun: {
             test: /[\\/]node_modules[\\/]@fincity[\\/]kirun/,
