@@ -829,7 +829,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Validation Message',
 		dn: 'Validation Message Text Align',
 		n: 'validationMessageTextAlign',
-		cp: 'textAlign',
+		cp: 'text-align',
 		sel: '._validationMessages',
 		np: true,
 	},

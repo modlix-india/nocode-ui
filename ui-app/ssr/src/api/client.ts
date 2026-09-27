@@ -108,13 +108,97 @@ export interface ApplicationDefinition {
 			[key: string]: string | undefined;
 		};
 		links?: Record<string, { rel: string; href: string }>;
-		scripts?: Array<{ src: string }>;
-		metas?: Array<{ name?: string; content?: string; property?: string; httpEquiv?: string }>;
+		/**
+		 * Head tags, stored as a KEYED MAP, not an array.
+		 *
+		 * These were typed here as arrays and consumed with `for...of`, which
+		 * throws `TypeError: not iterable` on the shape the platform actually
+		 * stores -- so every app that had ever used the Head tags pane rendered
+		 * as a bare 500 from SSR. The map is what the Java renderer reads
+		 * (`IndexHTMLService.processTagType` iterates `.values()`), what the
+		 * React client reads (`App.tsx` `Object.entries`), and what the
+		 * appbuilder Settings pane writes. The array arm stays accepted because
+		 * nothing guarantees which shape a given document is in.
+		 *
+		 * `order` sorts ASCENDING, matching the Java `MapWithOrderComparator`.
+		 * The client sorts descending and SSR used not to sort at all; prod is
+		 * rendered by this file and the Java one, so those two are the pair
+		 * worth agreeing.
+		 */
+		scripts?: HeadTagCollection<{ src?: string; order?: number }>;
+		metas?: HeadTagCollection<MetaTag>;
+		/**
+		 * Site-wide Open Graph defaults. Every page of the app inherits these
+		 * unless its own `properties.seo` overrides the same property.
+		 *
+		 * This is a subtree of its own rather than entries in `metas` because a
+		 * meta may only carry `charset`, `name`, `http-equiv` and `content` on
+		 * the Java path, and Open Graph needs `property`. An og tag expressed
+		 * through `metas` renders there as `<meta content="...">`, which is
+		 * nothing at all.
+		 */
+		og?: OpenGraphDefaults;
 		notFoundPage?: string;
 		csp?: string | Record<string, string>;
 		cspReport?: string | Record<string, string>;
 		analytics?: AnalyticsConfig;
 	};
+}
+
+/**
+ * A head tag collection as stored: a map keyed by the tag's generated id. The
+ * array arm is tolerated because older documents and hand-written fixtures use
+ * it, and a renderer that throws on one of two shapes is worse than one that
+ * reads both.
+ */
+export type HeadTagCollection<T> = Record<string, T> | T[];
+
+export interface MetaTag {
+	name?: string;
+	content?: string;
+	property?: string;
+	/**
+	 * Stored under the HTML attribute name, `http-equiv`. `httpEquiv` is
+	 * accepted too: it is what this file used to declare, so a fixture or a
+	 * caller written against the old type keeps working.
+	 */
+	'http-equiv'?: string;
+	httpEquiv?: string;
+	charset?: string;
+	order?: number | string;
+}
+
+/** An og:image and its structured properties, per ogp.me. */
+export interface OpenGraphImage {
+	url?: string;
+	alt?: string;
+	width?: number | string;
+	height?: number | string;
+	type?: string;
+}
+
+export interface OpenGraphDefaults {
+	siteName?: string;
+	title?: string;
+	description?: string;
+	/** An ogp.me global type. Defaults to `website`, which is also ogp.me's default. */
+	type?: string;
+	locale?: string;
+	localeAlternate?: string[];
+	/** One of `a`, `an`, `the`, `""`, `auto`. */
+	determiner?: string;
+	/**
+	 * The origin every canonical URL is built from, e.g. `https://sitezump.ai`.
+	 *
+	 * Deliberately configured rather than taken from the request host: the HTML
+	 * cache key carries no host, so an app reachable on two domains shares one
+	 * cached document and a host-derived `og:url` would bake whichever host
+	 * missed the cache first into everyone's card.
+	 */
+	canonicalBase?: string;
+	image?: OpenGraphImage;
+	twitter?: { card?: string; site?: string; creator?: string };
+	fbAppId?: string;
 }
 
 export interface ThemeEntry {
@@ -173,14 +257,59 @@ export interface PageDefinition {
 		title?: { name?: { value?: string }; append?: { value?: boolean } };
 		onLoadEvent?: string;
 		wrapShell?: boolean;
-		seo?: {
-			description?: { value?: string };
-			keywords?: { value?: string };
-			ogTitle?: { value?: string };
-			ogDescription?: { value?: string };
-			ogImage?: { value?: string };
-		};
+		/**
+		 * Per-page metadata. Every value is a ComponentProperty, but only
+		 * `.value` is ever read here: there is no store, no TokenValueExtractor
+		 * and no getData in this process, so an expression-bound field is filled
+		 * in by the client long after any crawler has read the document. The
+		 * authoring surfaces write plain values for that reason.
+		 *
+		 * The index signature matches the client's own type and keeps unknown
+		 * keys readable rather than dropping them.
+		 */
+		seo?: SeoProperties;
 	};
+}
+
+/** A page SEO value. Only `value` is server-rendered; see `seo` above. */
+export interface SeoValue {
+	value?: string;
+}
+
+export interface SeoProperties {
+	description?: SeoValue;
+	keywords?: SeoValue;
+	robots?: SeoValue;
+	charset?: SeoValue;
+	author?: SeoValue;
+	applicationName?: SeoValue;
+	generator?: SeoValue;
+
+	ogTitle?: SeoValue;
+	ogDescription?: SeoValue;
+	ogImage?: SeoValue;
+	ogImageAlt?: SeoValue;
+	ogImageWidth?: SeoValue;
+	ogImageHeight?: SeoValue;
+	ogImageType?: SeoValue;
+	ogType?: SeoValue;
+	ogUrl?: SeoValue;
+	ogLocale?: SeoValue;
+	ogDeterminer?: SeoValue;
+	ogSiteName?: SeoValue;
+
+	twitterCard?: SeoValue;
+	twitterSite?: SeoValue;
+	twitterCreator?: SeoValue;
+
+	/** Emitted only when `ogType` is `article`, per ogp.me's type-specific set. */
+	articlePublishedTime?: SeoValue;
+	articleModifiedTime?: SeoValue;
+	articleAuthor?: SeoValue;
+	articleSection?: SeoValue;
+	articleTag?: SeoValue;
+
+	[key: string]: SeoValue | undefined;
 }
 
 export interface ComponentDefinition {

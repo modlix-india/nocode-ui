@@ -78,6 +78,8 @@ function processTagType(headTags: any, tag: string) {
 		});
 }
 
+import { processFontPacks } from './fontPacks';
+
 const addedKeySet = new Set<string>();
 
 function processCodeParts(codeParts: any) {
@@ -111,22 +113,6 @@ function processCodeParts(codeParts: any) {
 				Array.from(div.children).forEach(cp => document.body.appendChild(cp));
 
 			addedKeySet.add(setKey);
-		});
-}
-
-function processFontPacks(fontPacks: any) {
-	if (!fontPacks) return;
-
-	Object.entries(fontPacks)
-		.sort((a: any[], b: any[]) => (a[1]?.order ?? 0) - (b[1]?.order ?? 0))
-		.forEach(([key, fontPack]: [string, any]) => {
-			const setKey = `FONT_${key}`;
-			if (addedKeySet.has(setKey)) return;
-
-			let div = document.createElement('div');
-			div.innerHTML = fontPack.code.trim();
-
-			Array.from(div.children).forEach(cp => document.head.appendChild(cp));
 		});
 }
 
