@@ -25,13 +25,29 @@ import {
 } from './components/ThemeEditorIcons';
 import { propertiesDefinition, stylePropertiesDefinition } from './themeEditorProperties';
 import { Variables } from './components/Variables';
-import { APP_KEY, MESSAGE_KEY, themableComponents } from './components/themableComponents';
+import {
+	APP_KEY,
+	MESSAGE_KEY,
+	SHORTCUT_KEY,
+	themableComponents,
+} from './components/themableComponents';
 import Editor from '@monaco-editor/react';
 import { SubComponentDefinitions } from '../PageEditor/SubCompInfo';
+import ShortcutIcon from '../Shortcut/ShortcutIcon';
 
 const PANEL_WIDTH_KEY = 'modlixThemeEditorPanelWidth';
 const PANEL_MIN = 300;
 const PANEL_DEFAULT = 600;
+
+/**
+ * The rail's pseudo-entries are not components, so they have no
+ * SubComponentDefinitions entry to take an icon from.
+ */
+const PSEUDO_ICONS: Record<string, React.ReactNode> = {
+	[APP_KEY]: <ModlixIcon />,
+	[MESSAGE_KEY]: <ModlixIcon />,
+	[SHORTCUT_KEY]: <ShortcutIcon />,
+};
 
 export default function ThemeEditor(props: Readonly<ComponentProps>) {
 	const {
@@ -286,13 +302,10 @@ export default function ThemeEditor(props: Readonly<ComponentProps>) {
 									onClick={() => setCurrentComponent(comp.key)}
 									className={`_component ${comp.key === currentComponent ? '_active' : ''}`}
 								>
-									{comp.key === APP_KEY || comp.key === MESSAGE_KEY ? (
-										<ModlixIcon />
-									) : (
+									{PSEUDO_ICONS[comp.key] ??
 										SubComponentDefinitions[comp.key]?.find(
 											e => e.mainComponent,
-										)?.icon
-									)}
+										)?.icon}
 									{comp.displayName}
 								</button>
 							))}

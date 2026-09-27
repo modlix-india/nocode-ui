@@ -380,6 +380,19 @@ export interface PageDefinition {
 		onLoadEvent?: string;
 		loadStrategy?: string;
 		wrapShell?: boolean;
+		/**
+		 * Per-page metadata.
+		 *
+		 * The og, twitter and article keys are emitted by the SSR renderer under
+		 * their real tag names, and og/article are addressed by `property`
+		 * rather than `name`. Anything added here has to be added to
+		 * `SEO_TAG_NAMES` in RenderEngineContainer as well, or hydration writes
+		 * a second tag beside the server's rather than finding it.
+		 *
+		 * Only `.value` is ever server-rendered: SSR has no store and no
+		 * expression evaluation, so an expression-bound field is filled in after
+		 * hydration, long after any crawler has read the document.
+		 */
 		seo?: {
 			description?: ComponentProperty<string>;
 			keywords?: ComponentProperty<string>;
@@ -388,6 +401,30 @@ export interface PageDefinition {
 			author?: ComponentProperty<string>;
 			applicationName?: ComponentProperty<string>;
 			generator?: ComponentProperty<string>;
+
+			ogTitle?: ComponentProperty<string>;
+			ogDescription?: ComponentProperty<string>;
+			ogImage?: ComponentProperty<string>;
+			ogImageAlt?: ComponentProperty<string>;
+			ogImageWidth?: ComponentProperty<string>;
+			ogImageHeight?: ComponentProperty<string>;
+			ogImageType?: ComponentProperty<string>;
+			ogType?: ComponentProperty<string>;
+			ogUrl?: ComponentProperty<string>;
+			ogLocale?: ComponentProperty<string>;
+			ogDeterminer?: ComponentProperty<string>;
+			ogSiteName?: ComponentProperty<string>;
+
+			twitterCard?: ComponentProperty<string>;
+			twitterSite?: ComponentProperty<string>;
+			twitterCreator?: ComponentProperty<string>;
+
+			articlePublishedTime?: ComponentProperty<string>;
+			articleModifiedTime?: ComponentProperty<string>;
+			articleAuthor?: ComponentProperty<string>;
+			articleSection?: ComponentProperty<string>;
+			articleTag?: ComponentProperty<string>;
+
 			[key: string]: ComponentProperty<string> | undefined;
 		};
 		classes?: { [key: string]: StyleClassDefinition };
