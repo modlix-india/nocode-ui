@@ -18,7 +18,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getTranslations } from '../util/getTranslations';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
-import { styleProperties, styleDefaults } from './buttonBarStyleProperties';
+import { styleDefaults, stylePropertiesForTheme } from './buttonBarStyleProperties';
 import { IconHelper } from '../util/IconHelper';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 
@@ -215,7 +215,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'ButtonBar', pageName: 'buttonbar' }],
-	stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	propertiesForTheme: [buttonBarDesign, colorScheme],
 };
 
