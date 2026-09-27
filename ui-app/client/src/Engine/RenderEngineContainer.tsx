@@ -30,6 +30,50 @@ const POSITIONS: { [key: string]: boolean } = {
 	start: true,
 };
 
+/**
+ * Page SEO keys whose tag name is not simply the key.
+ *
+ * Open Graph and the `article` set are addressed by `property`; twitter's are
+ * `name` like any other meta. Keys absent from here are emitted as
+ * `name="<key>"`, which is what every plain meta wants.
+ *
+ * This has to agree with the SSR renderer's own mapping, or hydration writes a
+ * second tag beside the server's instead of finding it.
+ */
+const SEO_TAG_NAMES: Record<string, string> = {
+	applicationName: 'application-name',
+
+	ogTitle: 'og:title',
+	ogDescription: 'og:description',
+	ogImage: 'og:image',
+	ogImageAlt: 'og:image:alt',
+	ogImageWidth: 'og:image:width',
+	ogImageHeight: 'og:image:height',
+	ogImageType: 'og:image:type',
+	ogType: 'og:type',
+	ogUrl: 'og:url',
+	ogLocale: 'og:locale',
+	ogDeterminer: 'og:determiner',
+	ogSiteName: 'og:site_name',
+
+	twitterCard: 'twitter:card',
+	twitterSite: 'twitter:site',
+	twitterCreator: 'twitter:creator',
+
+	articlePublishedTime: 'article:published_time',
+	articleModifiedTime: 'article:modified_time',
+	articleAuthor: 'article:author',
+	articleSection: 'article:section',
+	articleTag: 'article:tag',
+};
+
+/** Which attribute a page SEO key is addressed by, and the value it carries. */
+function seoTagFor(key: string): { attribute: 'name' | 'property'; tagName: string } {
+	const tagName = SEO_TAG_NAMES[key] ?? key;
+	const attribute = tagName.startsWith('og:') || tagName.startsWith('article:') ? 'property' : 'name';
+	return { attribute, tagName };
+}
+
 export const RenderEngineContainer = () => {
 	const location = useLocation();
 	const pathParams = useParams();
@@ -346,28 +390,42 @@ export const RenderEngineContainer = () => {
 
 		if (!seo) return returnFunction;
 
-		const metas = Array.from(document.getElementsByTagName('meta'));
-
 		Object.entries(seo).forEach(e => {
-			let value = getData(e[1] as ComponentProperty<string>, [], ...tve);
+			const value = getData(e[1] as ComponentProperty<string>, [], ...tve);
 			if (!value) return;
 
-			if (e[0] === 'charset') {
-				let tag = metas.find(e => e.getAttribute('charset'));
+			const key = e[0];
+
+			if (key === 'charset') {
+				// The element is found by the attribute it carries, and a charset
+				// meta has no name. Returning here matters: without it this key
+				// fell through and also produced a meaningless
+				// `<meta name="charset" content="utf-8">` beside the real one.
+				let tag = document.head.querySelector('meta[charset]');
 				if (!tag) {
 					tag = document.createElement('meta');
 					document.head.appendChild(tag);
 				}
 				tag.setAttribute('charset', value);
+				return;
 			}
 
-			let name = e[0];
-			if (name === 'applicationName') name = 'application-name';
-			let tag = metas.find(e => e.getAttribute('name') === name);
+			// Open Graph is addressed by `property`, not `name`. Emitting
+			// `<meta name="ogTitle">` says nothing to any consumer, and because
+			// the lookup below matches on `name` it could never find the
+			// `property=`-keyed tag SSR had already written -- so every og key on
+			// a page produced a second, useless tag beside the correct one.
+			const { attribute, tagName } = seoTagFor(key);
+
+			// Queried per key rather than from one snapshot taken before the
+			// loop: a tag this loop creates has to be visible to later
+			// iterations, or two keys mapping to one tag each append their own.
+			const selector = `meta[${attribute}="${CSS.escape(tagName)}"]`;
+			let tag = document.head.querySelector(selector);
 			if (!tag) {
 				tag = document.createElement('meta');
+				tag.setAttribute(attribute, tagName);
 				document.head.appendChild(tag);
-				tag.setAttribute('name', name);
 			}
 			if (tag.getAttribute('content') !== value) tag.setAttribute('content', value);
 		});

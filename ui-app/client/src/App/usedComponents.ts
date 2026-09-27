@@ -35,4 +35,11 @@ export const usedComponents = {
 	deRegisterGlobalListener,
 	lastAdded: () => lastAdded,
 	used: (name: string) => usedSet.has(name),
+	/**
+	 * Everything seen so far. AppStyle needs the whole set, not a membership
+	 * test, because it decides which style blocks to emit at all -- and on the
+	 * first render it has to catch up with whatever rendered before it
+	 * subscribed.
+	 */
+	names: () => Array.from(usedSet),
 };
