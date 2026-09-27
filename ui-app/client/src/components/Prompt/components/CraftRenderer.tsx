@@ -37,8 +37,10 @@ function BadgeBlock({
 	variant?: string;
 	styleProperties?: any;
 }) {
+	const isPreview = label?.toLowerCase().includes('preview');
 	return (
-		<span className="_craftBadge" style={styleProperties?.craftBadge ?? {}}>
+		<span className={`_craftBadge ${isPreview ? '_craftBadgePreview' : ''}`} style={styleProperties?.craftBadge ?? {}}>
+			{isPreview && <i className="fa-regular fa-eye" style={{ marginRight: '6px' }} />}
 			{label}
 		</span>
 	);
@@ -1002,12 +1004,19 @@ function TargetingManagerBlock({
 	);
 }
 
-function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_phone_sms_verify_enabled }: { payload: any; page_id?: string; page_logo_url?: string; cover_image_url?: string; is_phone_sms_verify_enabled?: boolean }) {
+function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_phone_sms_verify_enabled, published: blockPublished, meta_form_id }: { payload: any; page_id?: string; page_logo_url?: string; cover_image_url?: string; is_phone_sms_verify_enabled?: boolean; published?: boolean; meta_form_id?: string }) {
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
 	const context = useContext(CraftContext);
 	const [isPublishing, setIsPublishing] = useState(false);
 	const [publishError, setPublishError] = useState<string | null>(null);
-	const [published, setPublished] = useState(false);
+	const [published, setPublished] = useState(Boolean(blockPublished));
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+	useEffect(() => {
+		if (blockPublished) {
+			setPublished(true);
+		}
+	}, [blockPublished]);
 
 	if (!payload) return null;
 
@@ -1027,16 +1036,17 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 	const handleNext = () => setCurrentStepIndex(idx => Math.min(sequence.length - 1, idx + 1));
 	const handlePrev = () => setCurrentStepIndex(idx => Math.max(0, idx - 1));
 
-	const handlePublish = async () => {
+	const handleConfirmPublish = async () => {
 		if (!context?.sessionId || !page_id) {
 			setPublishError('Missing session or page configuration. Cannot publish.');
+			setShowConfirmModal(false);
 			return;
 		}
 		setIsPublishing(true);
 		setPublishError(null);
+		setShowConfirmModal(false);
 		try {
-			await context.onSend('Publish the lead form to page ' + page_id, [], 'Publish to Meta');
-			setPublished(true);
+			await context.onSend('Publish the lead form to Meta', [], 'Publish lead form to Meta');
 		} catch (err: any) {
 			setPublishError(err.message || 'An unexpected error occurred.');
 		} finally {
@@ -1044,8 +1054,53 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 		}
 	};
 
+	const handleDiscard = async () => {
+		if (!context?.sessionId) {
+			setShowConfirmModal(false);
+			return;
+		}
+		setShowConfirmModal(false);
+		try {
+			await context.onSend('Discard the form instead', [], 'Discard the form');
+		} catch (err: any) {
+			setPublishError(err.message || 'An unexpected error occurred.');
+		}
+	};
+
 	return (
 		<div className="_craftLeadFormWrapper">
+			{/* Top Action Bar: Preview badge with eye icon + Publish to Meta button */}
+			<div className="_lfTopActionBar">
+				<div className="_lfBadgePill">
+					<i className="fa-regular fa-eye" />
+					<span>Instant Form Preview</span>
+				</div>
+				{published ? (
+					<div className="_lfPublishedPill" title={meta_form_id ? `Meta Form ID: ${meta_form_id}` : undefined}>
+						<i className="fa-solid fa-circle-check" /> Form Published
+					</div>
+				) : (
+					<button
+						type="button"
+						className="_lfTopPublishBtn"
+						onClick={() => setShowConfirmModal(true)}
+						disabled={isPublishing}
+					>
+						{isPublishing ? (
+							<><i className="fa-solid fa-spinner fa-spin" /> Publishing...</>
+						) : (
+							<><i className="fa-brands fa-meta" /> Publish to Meta</>
+						)}
+					</button>
+				)}
+			</div>
+
+			{publishError && (
+				<div className="_craftCallout _error" style={{ marginBottom: '10px', maxWidth: '480px' }}>
+					<strong>Error publishing to Meta:</strong> {publishError}
+				</div>
+			)}
+
 			{/* Preview type label */}
 			<div className="_lfPreviewLabel">
 				<i className="fa-solid fa-mobile-screen" />
@@ -1100,7 +1155,6 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 								{payload.context_card?.content?.map((text: string, i: number) => (
 									<p key={i} className="_lfBodyText">{text}</p>
 								))}
-								<button type="button" className="_lfNextBtn" onClick={handleNext}>Next</button>
 							</div>
 						</div>
 					)}
@@ -1128,10 +1182,6 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 									)}
 								</div>
 							))}
-							<div className="_lfNavRow">
-								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
-								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>Next</button>
-							</div>
 						</div>
 					)}
 
@@ -1154,10 +1204,6 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 								</div>
 							))}
 							<p className="_lfDisclaimer">The business may contact you to follow up.</p>
-							<div className="_lfNavRow">
-								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
-								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>Next</button>
-							</div>
 						</div>
 					)}
 
@@ -1209,10 +1255,6 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 									) : <div key={idx} />
 								))}
 							</div>
-							<div className="_lfNavRow">
-								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
-								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>Next</button>
-							</div>
 						</div>
 					)}
 
@@ -1236,12 +1278,6 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 							{payload.custom_disclaimer?.body?.text && (
 								<p className="_lfDisclaimer">{payload.custom_disclaimer.body.text}</p>
 							)}
-							<div className="_lfNavRow">
-								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
-								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>
-									{payload.is_higher_intent ? 'Continue' : 'Submit'}
-								</button>
-							</div>
 						</div>
 					)}
 
@@ -1259,10 +1295,6 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 										<span className="_lfReviewValue">Your answer</span>
 									</div>
 								))}
-							</div>
-							<div className="_lfNavRow">
-								<button type="button" className="_lfBackBtn" onClick={handlePrev}>Back</button>
-								<button type="button" className="_lfNextBtn _lfNextBtnInline" onClick={handleNext}>Submit</button>
 							</div>
 						</div>
 					)}
@@ -1301,32 +1333,87 @@ function LeadFormBlock({ payload, page_id, page_logo_url, cover_image_url, is_ph
 					)}
 
 				</div>{/* /_lfScreenArea */}
-			</div>{/* /_lfCard */}
 
-			{/* Publish controls — sits below the preview card */}
-			<div className="_lfPublishControls">
-				{publishError && (
-					<div className="_craftCallout _error" style={{ marginBottom: '8px' }}>
-						<strong>Error publishing to Meta:</strong> {publishError}
+				{/* Pinned Bottom Navigation Footer (Sticky, always visible) */}
+				{currentStepId !== 'thankyou' && (
+					<div className="_lfCardFooter">
+						{currentStepIndex > 0 && (
+							<button type="button" className="_lfBackBtn" onClick={handlePrev}>
+								Back
+							</button>
+						)}
+						<button
+							type="button"
+							className={`_lfNextBtn ${currentStepIndex > 0 ? '_lfNextBtnInline' : ''}`}
+							onClick={handleNext}
+						>
+							{currentStepId === 'privacy'
+								? (payload.is_higher_intent || payload.is_optimized_for_quality ? 'Continue' : 'Submit')
+								: currentStepId === 'review'
+								? 'Submit'
+								: 'Next'}
+						</button>
 					</div>
 				)}
-				{published ? (
-					<div className="_craftCallout _success" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-						<i className="fa-solid fa-circle-check" /> Form published successfully!
+			</div>{/* /_lfCard */}
+			{/* Publish Confirmation Modal */}
+			{showConfirmModal && (
+				<div className="_lfConfirmOverlay" onClick={() => !isPublishing && setShowConfirmModal(false)}>
+					<div className="_lfConfirmDialog" onClick={e => e.stopPropagation()}>
+						<div className="_lfConfirmHeader">
+							<i className="fa-brands fa-meta" />
+							<span>Publish Lead Form to Meta</span>
+						</div>
+						<div className="_lfConfirmFormName">
+							Form Name: <strong>{payload.name || 'Instant Lead Form'}</strong>
+						</div>
+						<div className="_lfConfirmWarning">
+							<i className="fa-solid fa-triangle-exclamation" />
+							<div>
+								<strong>Important:</strong> Once published to Meta, this form cannot be edited or deleted.
+							</div>
+						</div>
+						<div style={{ fontSize: '13px', color: '#65676B', lineHeight: '1.4' }}>
+							Are you sure you want to publish this form to your Meta page now, or would you like to discard it?
+						</div>
+						<div className="_lfConfirmActions">
+							<button
+								type="button"
+								className="_lfConfirmPublishBtn"
+								onClick={handleConfirmPublish}
+								disabled={isPublishing}
+							>
+								{isPublishing ? (
+									<><i className="fa-solid fa-spinner fa-spin" /> Publishing...</>
+								) : (
+									<><i className="fa-solid fa-cloud-arrow-up" /> Publish lead form to Meta</>
+								)}
+							</button>
+							<div className="_lfConfirmActionsRow">
+								<button
+									type="button"
+									className="_lfConfirmCancelBtn"
+									onClick={() => setShowConfirmModal(false)}
+									disabled={isPublishing}
+								>
+									Cancel
+								</button>
+								<button
+									type="button"
+									className="_lfConfirmDiscardBtn"
+									onClick={handleDiscard}
+									disabled={isPublishing}
+								>
+									<i className="fa-solid fa-trash-can" /> Discard form
+								</button>
+							</div>
+						</div>
 					</div>
-				) : (
-					<button
-						type="button"
-						className="_lfPublishBtn"
-						onClick={handlePublish}
-						disabled={isPublishing}
-					>
-						{isPublishing
-							? <><i className="fa-solid fa-spinner fa-spin" style={{ marginRight: '8px' }} />Publishing...</>
-							: <><i className="fa-brands fa-meta" style={{ marginRight: '8px' }} />Publish to Meta</>}
-					</button>
-				)}
-			</div>
+				</div>
+			)}
+
+
+
 		</div>
 	);
 }
@@ -1387,13 +1474,18 @@ export function CraftRenderer({
 		<CraftContext.Provider value={{ sessionId, agentEndpoint, onSend, getAuthHeaders }}>
 			<div className="_craftContent" style={styleProperties?.craftContent ?? {}}>
 				<SubHelperComponent definition={definition} subComponentName="craftContent" />
-				{blocks.map((block, i) => (
-					<CraftBlockRenderer
-						key={(block as any).id ?? i}
-						block={block}
-						styleProperties={styleProperties}
-					/>
-				))}
+				{blocks.map((block, i) => {
+					if (block.type === 'badge' && block.label === 'Instant Form Preview' && blocks.some(b => b.type === 'lead_form')) {
+						return null;
+					}
+					return (
+						<CraftBlockRenderer
+							key={(block as any).id ?? i}
+							block={block}
+							styleProperties={styleProperties}
+						/>
+					);
+				})}
 			</div>
 		</CraftContext.Provider>
 	);

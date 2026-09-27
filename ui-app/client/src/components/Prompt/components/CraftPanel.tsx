@@ -38,6 +38,10 @@ export function CraftPanel({
 	// pill shown ⇔ content below; no pill = you're at the end
 	const [belowFold, setBelowFold] = useState(false);
 
+	const leadFormBlock = craft.blocks?.find(b => b.type === 'lead_form');
+	const isLeadForm = Boolean(leadFormBlock);
+	const isPublished = Boolean(leadFormBlock?.published || craft.title?.toLowerCase().includes('published'));
+
 	const measure = () => {
 		const el = bodyRef.current;
 		if (!el) return;
@@ -75,7 +79,17 @@ export function CraftPanel({
 					definition={definition}
 					subComponentName="craftPanelHeader"
 				/>
-				<span className="_craftPanelTitle">{craft.title}</span>
+				<div className="_craftPanelTitleGroup">
+					<span className="_craftPanelTitle">{craft.title}</span>
+					{isLeadForm && (
+						<div className="_lfStatusIndicator">
+							<span className={`_lfStatusDot ${isPublished ? '_published' : '_draft'}`} />
+							<span className="_lfStatusText">
+								<strong>{isPublished ? 'Published' : 'Draft'}</strong> &middot; {isPublished ? 'Live on Meta' : 'Not published yet'}
+							</span>
+						</div>
+					)}
+				</div>
 				<button
 					type="button"
 					className="_craftPanelClose"

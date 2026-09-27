@@ -1521,6 +1521,114 @@ export default function PromptStyle({
 			margin: 10px 0;
 		}
 
+		/* ─── Header Status Indicator ─── */
+		${PREFIX} ._craftPanelTitleGroup {
+			display: flex;
+			flex-direction: column;
+			gap: 3px;
+		}
+
+		${PREFIX} ._lfStatusIndicator {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			font-size: 13px;
+			color: #65676B;
+		}
+
+		${PREFIX} ._lfStatusDot {
+			width: 8px;
+			height: 8px;
+			border-radius: 50%;
+			display: inline-block;
+			background: #31A24C;
+			flex-shrink: 0;
+		}
+
+		${PREFIX} ._lfStatusDot._published {
+			background: #1877F2;
+		}
+
+		${PREFIX} ._lfStatusText {
+			color: #65676B;
+			font-size: 12px;
+		}
+
+		${PREFIX} ._lfStatusText strong {
+			color: #050505;
+			font-weight: 600;
+		}
+
+		/* ─── Top Action Bar ─── */
+		${PREFIX} ._lfTopActionBar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 12px;
+			max-width: 480px;
+			width: 100%;
+		}
+
+		${PREFIX} ._lfBadgePill {
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			padding: 7px 14px;
+			border-radius: 20px;
+			font-size: 13px;
+			font-weight: 600;
+			background: #f0f2f5;
+			color: #050505;
+		}
+
+		${PREFIX} ._lfBadgePill i {
+			color: #65676B;
+			font-size: 14px;
+		}
+
+		${PREFIX} ._craftBadgePreview {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+		}
+
+		${PREFIX} ._lfTopPublishBtn {
+			background: #0866FF;
+			color: white;
+			border: none;
+			border-radius: 8px;
+			padding: 8px 18px;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			transition: background 0.15s ease, opacity 0.15s ease;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+		}
+
+		${PREFIX} ._lfTopPublishBtn:hover:not(:disabled) {
+			background: #0056e0;
+		}
+
+		${PREFIX} ._lfTopPublishBtn:disabled {
+			opacity: 0.65;
+			cursor: not-allowed;
+		}
+
+		${PREFIX} ._lfPublishedPill {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 7px 14px;
+			border-radius: 8px;
+			background: #e7f3ff;
+			color: #1877F2;
+			font-size: 13px;
+			font-weight: 600;
+		}
+
 		${PREFIX} ._lfPreviewLabel {
 			color: #65676B;
 			font-size: 13px;
@@ -1680,19 +1788,34 @@ export default function PromptStyle({
 			margin: 0;
 		}
 
+		/* ─── Pinned Card Footer ─── */
+		${PREFIX} ._lfCardFooter {
+			background: white;
+			border-top: 1px solid #e4e6eb;
+			box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+			padding: 12px 16px;
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			flex-shrink: 0;
+			z-index: 2;
+			border-bottom-left-radius: 12px;
+			border-bottom-right-radius: 12px;
+		}
+
 		/* ─── Buttons ─── */
 		${PREFIX} ._lfNextBtn {
-			background: #1877F2;
+			background: #0866FF;
 			color: white;
 			border: none;
-			border-radius: 6px;
+			border-radius: 8px;
 			padding: 11px 20px;
 			font-size: 15px;
 			font-weight: 600;
 			cursor: pointer;
 			width: 100%;
-			margin-top: 4px;
-			transition: background 0.15s;
+			margin: 0;
+			transition: background 0.15s ease;
 			text-align: center;
 			text-decoration: none;
 			display: block;
@@ -1700,13 +1823,13 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._lfNextBtn:hover {
-			background: #166fe5;
+			background: #0056e0;
 		}
 
 		${PREFIX} ._lfNextBtnInline {
 			width: auto;
 			flex: 1;
-			margin-top: 0;
+			margin: 0;
 		}
 
 		${PREFIX} ._lfCtaBtn {
@@ -1715,20 +1838,23 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._lfBackBtn {
-			background: none;
+			background: white;
 			border: 1px solid #ccd0d5;
-			border-radius: 6px;
+			border-radius: 8px;
 			color: #050505;
-			padding: 10px 20px;
-			font-size: 14px;
-			font-weight: 500;
+			padding: 10px 24px;
+			font-size: 15px;
+			font-weight: 600;
 			cursor: pointer;
-			transition: background 0.15s;
+			transition: background 0.15s ease, border-color 0.15s ease;
 			white-space: nowrap;
+			min-width: 90px;
+			text-align: center;
 		}
 
 		${PREFIX} ._lfBackBtn:hover {
 			background: #f0f2f5;
+			border-color: #bec3c9;
 		}
 
 		${PREFIX} ._lfNavRow {
@@ -1954,12 +2080,6 @@ export default function PromptStyle({
 		${PREFIX} ._lfOtpBoxActive {
 			border-color: #1877F2;
 			background: white;
-			animation: _lfBlink 1s infinite;
-		}
-
-		@keyframes _lfBlink {
-			0%, 100% { opacity: 1; }
-			50% { opacity: 0; }
 		}
 
 		${PREFIX} ._lfOtpMeta {
@@ -2025,6 +2145,160 @@ export default function PromptStyle({
 				max-width: 100%;
 			}
 		}
+
+		/* ── Lead Form Publish Confirmation Modal ── */
+		 ._lfConfirmOverlay {
+			position: fixed;
+			inset: 0;
+			z-index: 10000;
+			background: rgba(0, 0, 0, 0.48);
+			backdrop-filter: blur(2px);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		 ._lfConfirmDialog {
+			background: #ffffff;
+			border-radius: 14px;
+			padding: 22px 24px;
+			max-width: 440px;
+			width: 90%;
+			box-shadow: 0 12px 36px rgba(0, 0, 0, 0.22);
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+			animation: _lfFadeIn 0.18s ease-out;
+		}
+
+		@keyframes _lfFadeIn {
+			from { opacity: 0; transform: scale(0.96); }
+			to { opacity: 1; transform: scale(1); }
+		}
+
+		 ._lfConfirmHeader {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			font-size: 16px;
+			font-weight: 700;
+			color: #050505;
+		}
+
+		 ._lfConfirmHeader i {
+			color: #0866FF;
+			font-size: 20px;
+		}
+
+		 ._lfConfirmFormName {
+			font-size: 13.5px;
+			color: #65676B;
+			line-height: 1.4;
+		}
+
+		 ._lfConfirmFormName strong {
+			color: #050505;
+		}
+
+		 ._lfConfirmWarning {
+			background: #FFF9E6;
+			border: 1px solid #FFE082;
+			border-radius: 8px;
+			padding: 10px 12px;
+			display: flex;
+			gap: 10px;
+			font-size: 13px;
+			color: #795548;
+			line-height: 1.45;
+		}
+
+		 ._lfConfirmWarning i {
+			color: #F57C00;
+			font-size: 16px;
+			margin-top: 1px;
+			flex-shrink: 0;
+		}
+
+		 ._lfConfirmActions {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			margin-top: 4px;
+		}
+
+		 ._lfConfirmActionsRow {
+			display: flex;
+			gap: 8px;
+			justify-content: flex-end;
+		}
+
+		 ._lfConfirmPublishBtn {
+			background: #0866FF;
+			color: white;
+			border: none;
+			border-radius: 8px;
+			padding: 10px 16px;
+			font-size: 14px;
+			font-weight: 600;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 8px;
+			transition: background 0.15s ease;
+		}
+
+		 ._lfConfirmPublishBtn:hover:not(:disabled) {
+			background: #0056e0;
+		}
+
+		 ._lfConfirmPublishBtn:disabled {
+			opacity: 0.65;
+			cursor: not-allowed;
+		}
+
+		 ._lfConfirmDiscardBtn {
+			background: #fee7eb;
+			color: #d81c3b;
+			border: 1px solid #f9bec7;
+			border-radius: 8px;
+			padding: 8px 14px;
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			transition: background 0.15s ease, color 0.15s ease;
+		}
+
+		 ._lfConfirmDiscardBtn:hover:not(:disabled) {
+			background: #f02849;
+			color: white;
+			border-color: #f02849;
+		}
+
+		 ._lfConfirmCancelBtn {
+			background: #E4E6EB;
+			color: #050505;
+			border: none;
+			border-radius: 8px;
+			padding: 8px 14px;
+			font-size: 13px;
+			font-weight: 600;
+			cursor: pointer;
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			transition: background 0.15s ease;
+		}
+
+		 ._lfConfirmCancelBtn:hover:not(:disabled) {
+			background: #D8DADF;
+		}
+
 
 		/* ─── Message attachments ─── */
 		${PREFIX} ._messageAttachments {
