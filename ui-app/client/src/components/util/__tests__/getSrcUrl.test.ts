@@ -87,6 +87,13 @@ describe('getSrcUrl leaves alone what it must', () => {
 		);
 	});
 
+	// Every one of these reaches getSrcUrl from a real caller: an Image with no
+	// src set, a Video with no poster, a Table with no pager arrow configured.
+	it.each([[undefined], [null], ['']])('hands %p straight back', value => {
+		expect(getSrcUrl(value)).toBe(value);
+		expect(getSrcSet(value)).toBeUndefined();
+	});
+
 	it('does nothing to a URL that is not a static file', () => {
 		expect(getSrcUrl('https://example.com/a.png')).toBe('https://example.com/a.png');
 	});
@@ -99,6 +106,21 @@ describe('getSrcUrl leaves alone what it must', () => {
 	it('does not transform when the CDN is not the one with a transformer', () => {
 		g.cdnResizeOptionsType = 'something-else';
 		expect(getSrcUrl(PNG)).toBe(`${CDN}/FIN/CoevolveMisty/secondary-logo.png`);
+	});
+
+	// Padding round a stored value was harmless while this only swapped a prefix.
+	// Once spaces became %20 a trailing one encoded into the URL, which breaks the
+	// request AND moves the extension off the end of the string, so RESIZABLE
+	// stops matching and the file silently stops being transformed at all.
+	it.each([
+		['trailing', `${PNG} `],
+		['leading', ` ${PNG}`],
+		['both', `  ${PNG}  `],
+		['a newline', `\n${PNG}\n`],
+	])('ignores %s whitespace around the stored value', (_label, padded) => {
+		expect(getSrcUrl(padded)).toBe(
+			`${CDN}/cdn-cgi/image/format=auto/FIN/CoevolveMisty/secondary-logo.png`,
+		);
 	});
 
 	it('encodes a literal space in a stored path', () => {
@@ -140,6 +162,17 @@ describe('getSrcSet', () => {
 			expect(url).not.toContain(' ');
 			expect(descriptor).toMatch(/^\d+w$/);
 		}
+	});
+
+	it.each([
+		['trailing', `${PNG} `],
+		['leading', ` ${PNG}`],
+	])('still emits a ladder with %s whitespace on the stored value', (_label, padded) => {
+		const set = getSrcSet(padded);
+
+		expect(set).toBeDefined();
+		expect(set!.split(', ')).toHaveLength(5);
+		expect(set).not.toContain('%20 ');
 	});
 
 	it('takes an explicit ladder', () => {
@@ -220,8 +253,11 @@ describe('rewriteCssUrls', () => {
 		expect(rewriteCssUrls(css)).toBe(css);
 	});
 
-	it('is unbothered by an empty block', () => {
-		expect(rewriteCssUrls('')).toBe('');
+	// A truthy non-string used to reach `.replace` and throw, which in a style
+	// value takes the whole render down instead of leaving one background alone.
+	it.each([[''], [undefined], [null], [{}], [42]])('hands %p back rather than throwing', value => {
+		expect(() => rewriteCssUrls(value as any)).not.toThrow();
+		expect(rewriteCssUrls(value as any)).toBe(value);
 	});
 });
 
