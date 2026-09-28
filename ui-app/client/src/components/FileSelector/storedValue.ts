@@ -52,7 +52,10 @@ export function fileSelectorStoredValue(
 
 	if (!fullUrl) return raw;
 
-	const cdn = getSrcUrl(raw);
+	// transform off: this value is the file, not a rendering of it. It goes into
+	// a binding, a manifest or an API payload, where naming a resized derivative
+	// would hand the reader a thumbnail in place of the original.
+	const cdn = getSrcUrl(raw, { transform: false });
 	let absolute = cdn;
 	if (!/^[a-z]+:\/\//i.test(cdn)) {
 		absolute = cdn.startsWith('/') ? origin + cdn : origin + '/' + cdn;
