@@ -101,6 +101,12 @@ describe('getSrcUrl leaves alone what it must', () => {
 		expect(getSrcUrl(PNG)).toBe(`${CDN}/FIN/CoevolveMisty/secondary-logo.png`);
 	});
 
+	it('encodes a literal space in a stored path', () => {
+		expect(getSrcUrl('/api/files/static/file/FIN/Raja IRA/Yoga 1.jpg')).toBe(
+			`${CDN}/cdn-cgi/image/format=auto/FIN/Raja%20IRA/Yoga%201.jpg`,
+		);
+	});
+
 	it('still replaces + before building the option list', () => {
 		expect(getSrcUrl('/api/files/static/file/FIN/x/main+shot.jpg')).toBe(
 			`${CDN}/cdn-cgi/image/format=auto/FIN/x/main%20shot.jpg`,
@@ -119,6 +125,21 @@ describe('getSrcSet', () => {
 		);
 		expect(entries[4]).toContain('width=1920,format=auto');
 		expect(entries[4].endsWith(' 1920w')).toBe(true);
+	});
+
+	// Found in production on rajaira.com: `FIN/Raja IRA/...` produced candidates
+	// like `.../FIN/Raja IRA/Yoga%201.jpg 320w`. A srcset entry is split on
+	// whitespace, so the raw space ended the URL, the list failed to parse, and
+	// every one of the 21 affected images quietly fell back to src.
+	it('emits no raw whitespace inside a candidate URL', () => {
+		const set = getSrcSet('/api/files/static/file/FIN/Raja IRA/Yoga 1.jpg')!;
+
+		for (const candidate of set.split(', ')) {
+			const [url, descriptor, ...extra] = candidate.split(' ');
+			expect(extra).toHaveLength(0);
+			expect(url).not.toContain(' ');
+			expect(descriptor).toMatch(/^\d+w$/);
+		}
 	});
 
 	it('takes an explicit ladder', () => {
