@@ -45,7 +45,7 @@ interface Message {
 		options: Array<{ label: string; value: string }>;
 		mode: 'single' | 'multi';
 	};
-	data?: Array<{ type: string; [k: string]: any }>;
+	data?: Array<{ type: string;[k: string]: any }>;
 	dataConfirmed?: boolean;
 	dataConfirmedMeta?: Record<string, any>;
 	craftIds?: string[];
@@ -521,9 +521,9 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				options: Array.isArray(data.options)
 					? data.options
 					: [
-							{ label: 'Approve', value: 'approve' },
-							{ label: 'Deny', value: 'deny' },
-						],
+						{ label: 'Approve', value: 'approve' },
+						{ label: 'Deny', value: 'deny' },
+					],
 				toolUseId: data.tool_use_id ?? '',
 				status: 'pending',
 			};
@@ -531,9 +531,9 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				prev.map(m =>
 					m.id === ctx.assistantMsgId
 						? {
-								...m,
-								confirmationActions: [...(m.confirmationActions ?? []), action],
-							}
+							...m,
+							confirmationActions: [...(m.confirmationActions ?? []), action],
+						}
 						: m,
 				),
 			);
@@ -1050,7 +1050,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 	const getAuthHeaders = useCallback(() => {
 		const token = getDataFromPath('Store.auth.token', [], pageExtractor) ?? '';
-		const clientCode = getDataFromPath('Store.auth.clientCode', [], pageExtractor) ?? '';
+		const clientCode = getDataFromPath('Store.auth.client.code', [], pageExtractor) ?? '';
 		const appCode =
 			getDataFromPath(
 				`${STORE_PREFIX}.application.appCode`,
@@ -1708,7 +1708,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				method: 'POST',
 				headers: getAuthHeaders(),
 				body: JSON.stringify({ session_id: sid }),
-			}).catch(() => {});
+			}).catch(() => { });
 		}
 	}, [stopPolling, agentEndpoint, getAuthHeaders]);
 
@@ -1769,10 +1769,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					confirmationActions: m.confirmationActions?.map(a =>
 						a.confirmationId === confirmationId
 							? {
-									...a,
-									status: newStatus as ConfirmationAction['status'],
-									selectedValue,
-								}
+								...a,
+								status: newStatus as ConfirmationAction['status'],
+								selectedValue,
+							}
 							: a,
 					),
 				})),
@@ -2040,10 +2040,10 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 													prev.map(m =>
 														m.id === msg.id
 															? {
-																	...m,
-																	dataConfirmed: true,
-																	dataConfirmedMeta: meta,
-																}
+																...m,
+																dataConfirmed: true,
+																dataConfirmedMeta: meta,
+															}
 															: m,
 													),
 												);

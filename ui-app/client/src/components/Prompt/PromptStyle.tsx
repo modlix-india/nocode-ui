@@ -2449,20 +2449,23 @@ export default function PromptStyle({
 		}
 		${PREFIX} ._craftTargetingList {
 			display: flex;
-			flex-wrap: wrap;
+			flex-direction: column;
 			gap: 8px;
+			width: 100%;
 		}
 		${PREFIX} ._craftTargetingChip {
-			display: inline-flex;
+			display: flex;
 			align-items: center;
-			gap: 6px;
+			justify-content: space-between;
 			background-color: #f3f4f6;
 			border: 1px solid #e5e7eb;
 			border-radius: 6px;
-			padding: 4px 8px;
+			padding: 6px 12px;
 			font-size: 13px;
 			color: #1f2937;
 			transition: all 0.15s ease;
+			width: 100%;
+			box-sizing: border-box;
 		}
 		${PREFIX} ._craftTargetingChip:hover {
 			background-color: #e5e7eb;
