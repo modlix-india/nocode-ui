@@ -44,6 +44,31 @@ function splitQuery(url: string): [string, string] {
 }
 
 /**
+ * The stored value as a trimmed string.
+ *
+ * Padding around a stored path is common and used to be harmless, because the
+ * only thing done with it was a prefix swap. It stopped being harmless once
+ * spaces became %20: a trailing one encodes into the URL, which both breaks the
+ * request and pushes the extension away from the end of the string, so the
+ * `RESIZABLE` test fails and the file quietly stops being transformed at all.
+ *
+ * Trimming has to happen before `indexOf`, not after. The prefix offset is taken
+ * from this string and used to slice it, so trimming in between shifts the path
+ * out from under an offset already measured against the untrimmed form.
+ */
+function normalize(urlAny: any): string {
+	if (typeof urlAny === 'string') return urlAny.trim();
+
+	// Both callers guard on `!urlAny` before reaching here, so this is unreachable
+	// today. It is spelled out anyway because this function's whole job is
+	// coercion: `'' + undefined` is the string "undefined", a nine-character value
+	// that looks like a path to everything downstream and fails far from here.
+	if (urlAny === null || urlAny === undefined) return '';
+
+	return ('' + urlAny).trim();
+}
+
+/**
  * The `/cdn-cgi/image/<options>/<path>` form the transformer answers on.
  *
  * Options are comma separated, and the leading `?` of the authored query is
@@ -71,7 +96,7 @@ function transformed(path: string, authored: string, width?: number): string {
 
 export default function getSrcUrl(urlAny: any, options?: SrcUrlOptions) {
 	if (globalThis.isDebugMode || !globalThis.cdnPrefix || !urlAny) return urlAny;
-	let url = typeof urlAny !== 'string' ? '' + urlAny : urlAny;
+	let url = normalize(urlAny);
 
 	const index = url.indexOf(STATIC_FILE_API_PREFIX);
 
@@ -118,7 +143,7 @@ export function getSrcSet(urlAny: any, widths: number[] = SRCSET_WIDTHS): string
 	if (globalThis.isDebugMode || !globalThis.cdnPrefix || !urlAny) return undefined;
 	if (globalThis.cdnResizeOptionsType !== 'cloudflare') return undefined;
 
-	const url = typeof urlAny !== 'string' ? '' + urlAny : urlAny;
+	const url = normalize(urlAny);
 	if (!url.includes(STATIC_FILE_API_PREFIX)) return undefined;
 
 	const [path, query] = splitQuery(url);
@@ -162,7 +187,11 @@ const CSS_QUOTED = /^(['"])([\s\S]*)\1$/;
  * what the layout actually needs.
  */
 export function rewriteCssUrls(css: string): string {
-	if (!globalThis.cdnPrefix || !css) return css;
+	// typeof rather than falsiness: a truthy non-string reaches `.replace` and
+	// throws, which for a style value would take the whole render down rather
+	// than leaving one background unrewritten. It covers the empty string too,
+	// where replace is a no-op anyway.
+	if (!globalThis.cdnPrefix || typeof css !== 'string') return css;
 
 	return css.replace(CSS_URL, (whole, inner: string) => {
 		const trimmed = inner.trim();
