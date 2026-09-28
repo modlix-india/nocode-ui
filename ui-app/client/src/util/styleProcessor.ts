@@ -1,3 +1,4 @@
+import { rewriteCssUrls } from '../components/util/getSrcUrl';
 import { EMPTY_STRING } from '../constants';
 import {
 	PageDefinition,
@@ -346,6 +347,16 @@ function processCDN(style: any) {
 
 			const index = v.indexOf(STATIC_FILE_API_PREFIX);
 			if (index == -1) continue;
+
+			// The normal shape, and the only one that can carry anything after the
+			// url() -- `no-repeat center` on a background shorthand, a second layer
+			// after a comma. Rewriting in place keeps all of it, and picks up the
+			// automatic format=auto that the branch below only ever applied to a
+			// value whose author had hand-written a query string.
+			if (v.includes('url(')) {
+				value[k] = rewriteCssUrls(v);
+				continue;
+			}
 
 			const marker = v.indexOf("'") != -1 ? "'" : '"';
 			let lastPart = v.substring(index + STATIC_FILE_API_PREFIX_LENGTH).trim();
