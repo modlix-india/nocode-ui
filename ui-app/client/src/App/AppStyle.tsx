@@ -12,6 +12,7 @@ import ShortcutStyle from '../shortcuts/ShortcutStyle';
 import ComponentDefinitions from '../components';
 import { usedComponents } from './usedComponents';
 import { hasNewNames, styledComponents } from './styleFloor';
+import { COMMON_CHECKBOX_CSS } from '../commonComponents/commonCheckboxCss';
 
 export function AppStyle() {
 	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
@@ -119,6 +120,8 @@ export function AppStyle() {
 		background: url('${getHref('api/files/static/file/SYSTEM/jslib/flags/flags.png', window.location)}') no-repeat;
 		background-size: 100%;
 	}
+
+	${COMMON_CHECKBOX_CSS}
 
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
