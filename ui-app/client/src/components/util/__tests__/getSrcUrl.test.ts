@@ -101,6 +101,21 @@ describe('getSrcUrl leaves alone what it must', () => {
 		expect(getSrcUrl(PNG)).toBe(`${CDN}/FIN/CoevolveMisty/secondary-logo.png`);
 	});
 
+	// Padding round a stored value was harmless while this only swapped a prefix.
+	// Once spaces became %20 a trailing one encoded into the URL, which breaks the
+	// request AND moves the extension off the end of the string, so RESIZABLE
+	// stops matching and the file silently stops being transformed at all.
+	it.each([
+		['trailing', `${PNG} `],
+		['leading', ` ${PNG}`],
+		['both', `  ${PNG}  `],
+		['a newline', `\n${PNG}\n`],
+	])('ignores %s whitespace around the stored value', (_label, padded) => {
+		expect(getSrcUrl(padded)).toBe(
+			`${CDN}/cdn-cgi/image/format=auto/FIN/CoevolveMisty/secondary-logo.png`,
+		);
+	});
+
 	it('encodes a literal space in a stored path', () => {
 		expect(getSrcUrl('/api/files/static/file/FIN/Raja IRA/Yoga 1.jpg')).toBe(
 			`${CDN}/cdn-cgi/image/format=auto/FIN/Raja%20IRA/Yoga%201.jpg`,
@@ -140,6 +155,17 @@ describe('getSrcSet', () => {
 			expect(url).not.toContain(' ');
 			expect(descriptor).toMatch(/^\d+w$/);
 		}
+	});
+
+	it.each([
+		['trailing', `${PNG} `],
+		['leading', ` ${PNG}`],
+	])('still emits a ladder with %s whitespace on the stored value', (_label, padded) => {
+		const set = getSrcSet(padded);
+
+		expect(set).toBeDefined();
+		expect(set!.split(', ')).toHaveLength(5);
+		expect(set).not.toContain('%20 ');
 	});
 
 	it('takes an explicit ladder', () => {

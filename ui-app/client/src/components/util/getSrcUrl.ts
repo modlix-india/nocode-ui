@@ -44,6 +44,23 @@ function splitQuery(url: string): [string, string] {
 }
 
 /**
+ * The stored value as a trimmed string.
+ *
+ * Padding around a stored path is common and used to be harmless, because the
+ * only thing done with it was a prefix swap. It stopped being harmless once
+ * spaces became %20: a trailing one encodes into the URL, which both breaks the
+ * request and pushes the extension away from the end of the string, so the
+ * `RESIZABLE` test fails and the file quietly stops being transformed at all.
+ *
+ * Trimming has to happen before `indexOf`, not after. The prefix offset is taken
+ * from this string and used to slice it, so trimming in between shifts the path
+ * out from under an offset already measured against the untrimmed form.
+ */
+function normalize(urlAny: any): string {
+	return (typeof urlAny !== 'string' ? '' + urlAny : urlAny).trim();
+}
+
+/**
  * The `/cdn-cgi/image/<options>/<path>` form the transformer answers on.
  *
  * Options are comma separated, and the leading `?` of the authored query is
@@ -71,7 +88,7 @@ function transformed(path: string, authored: string, width?: number): string {
 
 export default function getSrcUrl(urlAny: any, options?: SrcUrlOptions) {
 	if (globalThis.isDebugMode || !globalThis.cdnPrefix || !urlAny) return urlAny;
-	let url = typeof urlAny !== 'string' ? '' + urlAny : urlAny;
+	let url = normalize(urlAny);
 
 	const index = url.indexOf(STATIC_FILE_API_PREFIX);
 
@@ -118,7 +135,7 @@ export function getSrcSet(urlAny: any, widths: number[] = SRCSET_WIDTHS): string
 	if (globalThis.isDebugMode || !globalThis.cdnPrefix || !urlAny) return undefined;
 	if (globalThis.cdnResizeOptionsType !== 'cloudflare') return undefined;
 
-	const url = typeof urlAny !== 'string' ? '' + urlAny : urlAny;
+	const url = normalize(urlAny);
 	if (!url.includes(STATIC_FILE_API_PREFIX)) return undefined;
 
 	const [path, query] = splitQuery(url);
