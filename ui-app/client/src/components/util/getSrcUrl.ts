@@ -57,7 +57,15 @@ function splitQuery(url: string): [string, string] {
  * out from under an offset already measured against the untrimmed form.
  */
 function normalize(urlAny: any): string {
-	return (typeof urlAny !== 'string' ? '' + urlAny : urlAny).trim();
+	if (typeof urlAny === 'string') return urlAny.trim();
+
+	// Both callers guard on `!urlAny` before reaching here, so this is unreachable
+	// today. It is spelled out anyway because this function's whole job is
+	// coercion: `'' + undefined` is the string "undefined", a nine-character value
+	// that looks like a path to everything downstream and fails far from here.
+	if (urlAny === null || urlAny === undefined) return '';
+
+	return ('' + urlAny).trim();
 }
 
 /**
@@ -179,7 +187,11 @@ const CSS_QUOTED = /^(['"])([\s\S]*)\1$/;
  * what the layout actually needs.
  */
 export function rewriteCssUrls(css: string): string {
-	if (!globalThis.cdnPrefix || !css) return css;
+	// typeof rather than falsiness: a truthy non-string reaches `.replace` and
+	// throws, which for a style value would take the whole render down rather
+	// than leaving one background unrewritten. It covers the empty string too,
+	// where replace is a no-op anyway.
+	if (!globalThis.cdnPrefix || typeof css !== 'string') return css;
 
 	return css.replace(CSS_URL, (whole, inner: string) => {
 		const trimmed = inner.trim();

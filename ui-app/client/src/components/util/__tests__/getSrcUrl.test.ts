@@ -87,6 +87,13 @@ describe('getSrcUrl leaves alone what it must', () => {
 		);
 	});
 
+	// Every one of these reaches getSrcUrl from a real caller: an Image with no
+	// src set, a Video with no poster, a Table with no pager arrow configured.
+	it.each([[undefined], [null], ['']])('hands %p straight back', value => {
+		expect(getSrcUrl(value)).toBe(value);
+		expect(getSrcSet(value)).toBeUndefined();
+	});
+
 	it('does nothing to a URL that is not a static file', () => {
 		expect(getSrcUrl('https://example.com/a.png')).toBe('https://example.com/a.png');
 	});
@@ -246,8 +253,11 @@ describe('rewriteCssUrls', () => {
 		expect(rewriteCssUrls(css)).toBe(css);
 	});
 
-	it('is unbothered by an empty block', () => {
-		expect(rewriteCssUrls('')).toBe('');
+	// A truthy non-string used to reach `.replace` and throw, which in a style
+	// value takes the whole render down instead of leaving one background alone.
+	it.each([[''], [undefined], [null], [{}], [42]])('hands %p back rather than throwing', value => {
+		expect(() => rewriteCssUrls(value as any)).not.toThrow();
+		expect(rewriteCssUrls(value as any)).toBe(value);
 	});
 });
 
