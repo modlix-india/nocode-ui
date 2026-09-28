@@ -86,6 +86,14 @@ export default function getSrcUrl(urlAny: any, options?: SrcUrlOptions) {
 		url = url.replaceAll('+', '%20');
 	}
 
+	// A literal space is legal in a stored path -- `FIN/Raja IRA/Yoga 1.jpg` is a
+	// real one -- and it survives in `src`, because the browser encodes it on the
+	// way out. A srcset candidate is `<url> <descriptor>`, so there the same space
+	// ends the URL early, the whole candidate list fails to parse, and the browser
+	// silently falls back to src. Nothing looks broken and the ladder simply never
+	// applies, which is exactly how this got shipped.
+	url = url.replaceAll(' ', '%20');
+
 	if (options?.transform !== false) {
 		const [path, query] = splitQuery(url);
 		url = transformed(path, query, options?.width);
