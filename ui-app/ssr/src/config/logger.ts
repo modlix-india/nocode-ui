@@ -133,10 +133,91 @@ function formatMessage(
 	let formattedMessage = `${timestamp} [${level}] [${environment}/${instanceId}] ${message}`;
 
 	if (meta && Object.keys(meta).length > 0) {
-		formattedMessage += ` ${JSON.stringify(meta)}`;
+		try {
+			formattedMessage += ` ${JSON.stringify(meta)}`;
+		} catch {
+			// JSON.stringify throws on a circular reference, and this ran on the request path
+			// with no guard: logger.info('...', someObjectWithACycle) would take down the
+			// request it was describing. Logging a request must never be able to fail it.
+			formattedMessage += ' [meta could not be serialised]';
+		}
 	}
 
 	return formattedMessage;
+}
+
+/** GELF severity numbers, so the file is a valid GELF record and not merely JSON. */
+const GELF_LEVELS: Record<LogLevel, number> = {
+	ERROR: 3,
+	WARN: 4,
+	INFO: 6,
+	DEBUG: 7,
+};
+
+/**
+ * The FILE line, as GELF - deliberately a different shape from the console line above.
+ *
+ * Alloy tails /var/log/apps/*.log and runs one `stage.json` over every line, mapping
+ * `_level_name` -> the `level` label, `host` -> `service` and `instanceId` -> `instance_id`.
+ * The JVM services emit GELF to file and a plain pattern to the console, so those three labels
+ * populate for them. This process wrote the SAME plain text to both, so every one of its lines
+ * arrived unlabelled: on 2026-09-29 that was 232,000 of production's 269,000 unlabelled lines a
+ * day, about 95% of the host's log volume, and an SSR error was invisible to every level-based
+ * query, dashboard and alert.
+ *
+ * The field names below are not free choices - they are the three `stage.json` expressions in
+ * `oci-config/scripts/monitoring/alloy/config-base.alloy`. Renaming one here silently stops that
+ * label populating; nothing errors, the label just disappears. `host` is the SERVICE name in this
+ * contract (the machine is already on the stream as the `host` LABEL, applied by Alloy), which is
+ * why it reads "ssr" rather than a hostname.
+ *
+ * Meta keys are prefixed with `_` per the GELF spec for additional fields, and `id` is skipped
+ * because GELF forbids it. Anything unserialisable must not take the process down for a log line,
+ * so a failure falls back to the plain text.
+ */
+export function formatFileMessage(
+	level: LogLevel,
+	message: string,
+	meta?: Record<string, unknown>
+): string {
+	try {
+		const record: Record<string, unknown> = {
+			version: '1.1',
+			host: 'ssr',
+			short_message: message,
+			timestamp: Date.now() / 1000,
+			level: GELF_LEVELS[level],
+			_level_name: level,
+			instanceId: process.env.INSTANCE_ID || 'default',
+			_environment: process.env.INSTANCE_ENVIRONMENT || 'Local',
+		};
+
+		if (meta) {
+			for (const [key, value] of Object.entries(meta)) {
+				if (key === 'id') continue;
+				record[key.startsWith('_') ? key : `_${key}`] = value;
+			}
+		}
+
+		return JSON.stringify(record);
+	} catch {
+		// Something in meta would not serialise - a circular reference is the usual one. Drop
+		// the metadata and keep the record: the labels still populate and the line is still
+		// found by a level query, which is most of its value. Falling back to the console's
+		// plain text would throw here too (formatMessage stringifies meta as well) and would
+		// arrive unlabelled even if it did not.
+		return JSON.stringify({
+			version: '1.1',
+			host: 'ssr',
+			short_message: message,
+			timestamp: Date.now() / 1000,
+			level: GELF_LEVELS[level],
+			_level_name: level,
+			instanceId: process.env.INSTANCE_ID || 'default',
+			_environment: process.env.INSTANCE_ENVIRONMENT || 'Local',
+			_meta_dropped: 'metadata could not be serialised',
+		});
+	}
 }
 
 /**
@@ -171,10 +252,10 @@ function writeLog(
 		}
 	}
 
-	// File logging
+	// File logging. GELF, not the console's pattern: this file is what Alloy ships to Loki.
 	if (config.enableFileLogging && logStream) {
 		rotateLogIfNeeded();
-		logStream.write(formattedMessage + '\n');
+		logStream.write(formatFileMessage(level, message, meta) + '\n');
 	}
 }
 
