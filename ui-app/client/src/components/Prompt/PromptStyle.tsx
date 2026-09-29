@@ -2611,6 +2611,71 @@ export default function PromptStyle({
 			background-color: #0284c7;
 			color: #ffffff;
 		}
+		${PREFIX} ._craftSearchResultAddBtn:disabled {
+			opacity: 0.4;
+			cursor: not-allowed;
+		}
+
+		${PREFIX} ._craftStatusBanner {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 12px;
+			margin-bottom: 12px;
+			background-color: #eff6ff;
+			border: 1px solid #bfdbfe;
+			border-radius: 6px;
+			color: #1d4ed8;
+			font-size: 12px;
+			font-weight: 500;
+		}
+		${PREFIX} ._craftTargetingSubheading {
+			margin: 0 0 12px 0;
+			font-size: 13px;
+			color: #6b7280;
+			text-align: left;
+			line-height: 1.5;
+		}
+		${PREFIX} ._craftTargetingCount {
+			padding: 0 12px 8px 12px;
+			font-size: 13px;
+			font-weight: bold;
+			color: #374151;
+		}
+		${PREFIX} ._craftChipType {
+			font-size: 10px;
+			margin-left: 6px;
+			background: #e5e7eb;
+			color: #374151;
+			padding: 2px 6px;
+			border-radius: 4px;
+			text-transform: capitalize;
+			display: inline-block;
+			vertical-align: middle;
+		}
+		${PREFIX} ._craftSearchResultType {
+			font-size: 11px;
+			color: #9ca3af;
+			text-transform: capitalize;
+			text-align: left;
+			margin-top: 1px;
+		}
+		${PREFIX} ._craftTargetingChip._disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+		${PREFIX} ._craftTargetingChip._disabled ._craftChipDeleteBtn {
+			cursor: not-allowed;
+			opacity: 0.4;
+		}
+		${PREFIX} ._craftSearchResultRow._disabled {
+			opacity: 0.6;
+			cursor: not-allowed;
+		}
+		${PREFIX} ._craftSearchResultRow._disabled ._craftSearchResultAddBtn {
+			cursor: not-allowed;
+			opacity: 0.4;
+		}
 
 		/* Popovers styles */
 		${PREFIX} ._craftPopoverHeader {

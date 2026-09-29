@@ -2184,6 +2184,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					agentEndpoint={agentEndpoint}
 					onSend={handleSend}
 					getAuthHeaders={getAuthHeaders}
+					isStreaming={isStreaming}
 				/>
 			)}
 		</div>

@@ -8,6 +8,7 @@ interface CraftContextValue {
 	agentEndpoint: string;
 	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
 	getAuthHeaders: () => Record<string, string>;
+	isStreaming?: boolean;
 }
 
 const CraftContext = createContext<CraftContextValue | null>(null);
@@ -697,19 +698,27 @@ interface TargetingItem {
 	category?: string;
 }
 
-function TargetingChip({
+const TargetingChip = React.memo(function TargetingChip({
 	item,
 	onDelete,
+	disabled = false,
 }: {
 	item: TargetingItem;
-	onDelete: () => void;
+	onDelete: (id: string | number) => void;
+	disabled?: boolean;
 }) {
+	const handleDelete = useCallback(() => {
+		if (!disabled) {
+			onDelete(item.id);
+		}
+	}, [disabled, onDelete, item.id]);
+
 	return (
-		<div className="_craftTargetingChip">
+		<div className={`_craftTargetingChip${disabled ? ' _disabled' : ''}`}>
 			<span className="_craftChipText">
 				<span className="_craftChipName">{item.name}</span>
 				{item.type && (
-					<span className="_craftChipType" style={{ fontSize: '10px', marginLeft: '6px', background: '#e5e7eb', color: '#374151', padding: '2px 6px', borderRadius: '4px', textTransform: 'capitalize', display: 'inline-block', verticalAlign: 'middle' }}>
+					<span className="_craftChipType">
 						{item.type.replace(/_/g, ' ')}
 					</span>
 				)}
@@ -717,26 +726,35 @@ function TargetingChip({
 			<button
 				type="button"
 				className="_craftChipDeleteBtn"
-				onClick={onDelete}
-				title={`Delete ${item.name}`}
+				onClick={handleDelete}
+				disabled={disabled}
+				title={disabled ? 'Cannot delete while agent is running or operation is in progress' : `Delete ${item.name}`}
 			>
 				<i className="fa-regular fa-trash-can" />
 			</button>
 		</div>
 	);
-}
+});
 
-function SearchResultRow({
+const SearchResultRow = React.memo(function SearchResultRow({
 	item,
 	onAdd,
+	disabled = false,
 }: {
 	item: TargetingItem;
-	onAdd: () => void;
+	onAdd: (item: TargetingItem) => void;
+	disabled?: boolean;
 }) {
+	const handleAdd = useCallback(() => {
+		if (!disabled) {
+			onAdd(item);
+		}
+	}, [disabled, onAdd, item]);
+
 	const typeLabel = (item.type || 'Segment').replace(/_/g, ' ');
 
 	return (
-		<div className="_craftSearchResultRow">
+		<div className={`_craftSearchResultRow${disabled ? ' _disabled' : ''}`}>
 			<div className="_craftSearchResultInfo">
 				<div className="_craftSearchResultNameLine">
 					<span className="_craftSearchResultName">{item.name}</span>
@@ -746,20 +764,22 @@ function SearchResultRow({
 						</span>
 					)}
 				</div>
-				<div className="_craftSearchResultType" style={{ fontSize: '11px', color: '#9ca3af', textTransform: 'capitalize', textAlign: 'left', marginTop: '1px' }}>
+				<div className="_craftSearchResultType">
 					{typeLabel}
 				</div>
 			</div>
 			<button
 				type="button"
 				className="_craftSearchResultAddBtn"
-				onClick={onAdd}
+				onClick={handleAdd}
+				disabled={disabled}
+				title={disabled ? 'Cannot add while agent is running' : 'Add segment'}
 			>
 				Add
 			</button>
 		</div>
 	);
-}
+});
 
 function TargetingManagerBlock({
 	entities = [],
@@ -772,14 +792,26 @@ function TargetingManagerBlock({
 	if (!context) {
 		throw new Error('TargetingManagerBlock must be used within a CraftRenderer');
 	}
-	const { onSend, sessionId, agentEndpoint, getAuthHeaders } = context;
+	const { sessionId, agentEndpoint, getAuthHeaders, isStreaming } = context;
 	const [localEntities, setLocalEntities] = useState<TargetingItem[]>(entities);
 	const [searchQuery, setSearchQuery] = useState('');
 	const [searchLoading, setSearchLoading] = useState(false);
 	const [toast, setToast] = useState<{ message: string; type: 'success' | 'info' | 'error' } | null>(null);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [localSearchResults, setLocalSearchResults] = useState<TargetingItem[]>(searchResults || []);
+	const [actingId, setActingId] = useState<string | number | null>(null);
+
 	const containerRef = useRef<HTMLDivElement | null>(null);
+	const abortControllerRef = useRef<AbortController | null>(null);
+	const mountedRef = useRef(true);
+
+	useEffect(() => {
+		mountedRef.current = true;
+		return () => {
+			mountedRef.current = false;
+			abortControllerRef.current?.abort();
+		};
+	}, []);
 
 	useEffect(() => {
 		setLocalEntities(entities);
@@ -788,7 +820,7 @@ function TargetingManagerBlock({
 	useEffect(() => {
 		if (!toast) return;
 		const timer = setTimeout(() => {
-			setToast(null);
+			if (mountedRef.current) setToast(null);
 		}, 3000);
 		return () => clearTimeout(timer);
 	}, [toast]);
@@ -821,29 +853,43 @@ function TargetingManagerBlock({
 		? `${agentEndpoint.replace(/\/chat$/, '')}/sessions/${sessionId}/detailed-targeting`
 		: `/api/ai/adzump/sessions/${sessionId}/detailed-targeting`;
 
+	const isLocked = Boolean(isStreaming || actingId !== null);
+
+	// Search handler with AbortController cancellation for race-condition prevention
 	const handleSearch = useCallback(async () => {
+		if (isLocked) return;
 		const trimmed = searchQuery.trim();
 		if (!trimmed) return;
+
+		abortControllerRef.current?.abort();
+		const controller = new AbortController();
+		abortControllerRef.current = controller;
+
 		setSearchLoading(true);
 		try {
 			const res = await fetch(
 				`${targetingBase}/search?q=${encodeURIComponent(trimmed)}`,
-				{ headers: getAuthHeaders() }
+				{ headers: getAuthHeaders(), signal: controller.signal }
 			);
 			if (!res.ok) throw new Error(`Search failed: ${res.status}`);
 			const data: TargetingItem[] = await res.json();
+			if (!mountedRef.current) return;
 			setLocalSearchResults(data);
 			setShowDropdown(data.length > 0);
 			if (data.length === 0) {
 				setToast({ message: 'No results found for that keyword.', type: 'info' });
 			}
-		} catch (err) {
-			setToast({ message: 'Search failed. Please try again.', type: 'error' });
+		} catch (err: any) {
+			if (err?.name === 'AbortError') return;
+			if (mountedRef.current) {
+				setToast({ message: 'Search failed. Please try again.', type: 'error' });
+			}
 		} finally {
-			setSearchLoading(false);
-			setSearchQuery('');
+			if (mountedRef.current) {
+				setSearchLoading(false);
+			}
 		}
-	}, [searchQuery, targetingBase, getAuthHeaders]);
+	}, [isLocked, searchQuery, targetingBase, getAuthHeaders]);
 
 	const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter') {
@@ -852,6 +898,72 @@ function TargetingManagerBlock({
 			setShowDropdown(false);
 		}
 	}, [handleSearch]);
+
+	// Stable Deletion Callback
+	const handleDelete = useCallback(async (id: string | number) => {
+		if (isStreaming || actingId !== null) return;
+		const targetItem = localEntities.find(e => e.id === id);
+		if (!targetItem) return;
+
+		// Capture original array for accurate rollback
+		const previousEntities = [...localEntities];
+
+		setActingId(id);
+		// Optimistic UI: remove immediately from local state
+		setLocalEntities(prev => prev.filter(e => e.id !== id));
+		setToast({ message: `Removed "${targetItem.name}" successfully!`, type: 'info' });
+
+		try {
+			const res = await fetch(
+				`${targetingBase}/segments/${encodeURIComponent(String(id))}`,
+				{ method: 'DELETE', headers: getAuthHeaders() }
+			);
+			if (!res.ok) throw new Error(`Delete failed: ${res.status}`);
+		} catch {
+			if (mountedRef.current) {
+				// Rollback optimistic update on failure
+				setLocalEntities(previousEntities);
+				setToast({ message: `Failed to remove "${targetItem.name}". Please try again.`, type: 'error' });
+			}
+		} finally {
+			if (mountedRef.current) setActingId(null);
+		}
+	}, [isStreaming, actingId, localEntities, targetingBase, getAuthHeaders]);
+
+	// Stable Add Callback
+	const handleAdd = useCallback(async (item: TargetingItem) => {
+		if (isStreaming || actingId !== null) return;
+
+		setActingId(item.id);
+		// Optimistic UI: add immediately to local state
+		setLocalEntities(prev =>
+			prev.some(e => e.id === item.id) ? prev : [...prev, item]
+		);
+		setShowDropdown(false);
+		setSearchQuery('');
+		setLocalSearchResults([]);
+		setToast({ message: `Added "${item.name}" successfully!`, type: 'success' });
+
+		try {
+			const res = await fetch(
+				`${targetingBase}/segments`,
+				{
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
+					body: JSON.stringify({ id: item.id, name: item.name, type: item.type }),
+				}
+			);
+			if (!res.ok) throw new Error(`Add failed: ${res.status}`);
+		} catch {
+			if (mountedRef.current) {
+				// Rollback on failure
+				setLocalEntities(prev => prev.filter(e => e.id !== item.id));
+				setToast({ message: `Failed to add "${item.name}". Please try again.`, type: 'error' });
+			}
+		} finally {
+			if (mountedRef.current) setActingId(null);
+		}
+	}, [isStreaming, actingId, targetingBase, getAuthHeaders]);
 
 	const renderList = (list: TargetingItem[]) => {
 		if (!list || list.length === 0) {
@@ -868,21 +980,8 @@ function TargetingManagerBlock({
 						<TargetingChip
 							key={item.id}
 							item={item}
-							onDelete={async () => {
-								// Optimistic UI: remove immediately from local state
-								setLocalEntities(prev => prev.filter(e => e.id !== item.id));
-								setToast({ message: `Removed "${item.name}" successfully!`, type: 'info' });
-								try {
-									await fetch(
-										`${targetingBase}/segments/${encodeURIComponent(String(item.id))}`,
-										{ method: 'DELETE', headers: getAuthHeaders() }
-									);
-								} catch {
-									// Rollback optimistic update on failure
-									setLocalEntities(prev => [...prev, item]);
-									setToast({ message: `Failed to remove "${item.name}". Please try again.`, type: 'error' });
-								}
-							}}
+							disabled={isLocked}
+							onDelete={handleDelete}
 						/>
 					))}
 				</div>
@@ -892,10 +991,16 @@ function TargetingManagerBlock({
 
 	return (
 		<div className="_craftTargetingManager" ref={containerRef}>
+			{isStreaming && (
+				<div className="_craftStatusBanner" role="status">
+					<i className="fa-solid fa-spinner fa-spin" style={{ color: '#2563eb' }} />
+					<span>AI agent is running & updating targeting. Editing and deletions are temporarily disabled.</span>
+				</div>
+			)}
 			{/* Sticky header containing subheading, search input, and inline results */}
 			<div className="_craftTargetingStickyHeader">
 				<h3 className="_craftHeading" style={{ margin: '0 0 4px 0', fontSize: '18px', fontWeight: 'bold' }}>Detailed Targeting</h3>
-				<p className="_craftText" style={{ margin: '0 0 12px 0', fontSize: '13px', color: '#6b7280', textAlign: 'left', lineHeight: '1.5' }}>
+				<p className="_craftTargetingSubheading">
 					Meta Ads detailed targeting segments. Review, delete, or search and add new segments directly below:
 				</p>
 
@@ -910,13 +1015,14 @@ function TargetingManagerBlock({
 						value={searchQuery}
 						onChange={e => setSearchQuery(e.target.value)}
 						onKeyDown={handleKeyDown}
-						placeholder="Add demographics, interests or behaviours"
+						placeholder={isStreaming ? "Editing locked while agent is running..." : "Add demographics, interests or behaviours"}
+						disabled={isLocked}
 					/>
 					<button
 						type="button"
 						className="_craftTargetingSearchBtn"
 						onClick={handleSearch}
-						disabled={!searchQuery.trim() || searchLoading}
+						disabled={isLocked || !searchQuery.trim() || searchLoading}
 					>
 						{searchLoading ? 'Searching…' : 'Search'}
 					</button>
@@ -930,28 +1036,8 @@ function TargetingManagerBlock({
 								<SearchResultRow
 									key={item.id}
 									item={item}
-									onAdd={async () => {
-										// Optimistic UI: add immediately to local state
-										setLocalEntities(prev =>
-											prev.some(e => e.id === item.id) ? prev : [...prev, item]
-										);
-										setShowDropdown(false);
-										setToast({ message: `Added "${item.name}" successfully!`, type: 'success' });
-										try {
-											await fetch(
-												`${targetingBase}/segments`,
-												{
-													method: 'POST',
-													headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
-													body: JSON.stringify({ id: item.id, name: item.name, type: item.type }),
-												}
-											);
-										} catch {
-											// Rollback on failure
-											setLocalEntities(prev => prev.filter(e => e.id !== item.id));
-											setToast({ message: `Failed to add "${item.name}". Please try again.`, type: 'error' });
-										}
-									}}
+									disabled={isLocked}
+									onAdd={handleAdd}
 								/>
 							))}
 						</div>
@@ -960,7 +1046,7 @@ function TargetingManagerBlock({
 			</div>
 
 			<div className="_craftTargetingTabContent">
-				<div style={{ padding: '0 12px 8px 12px', fontSize: '13px', fontWeight: 'bold', color: '#374151' }}>
+				<div className="_craftTargetingCount">
 					Selected Segments ({localEntities.length})
 				</div>
 				{renderList(localEntities)}
@@ -976,7 +1062,6 @@ function TargetingManagerBlock({
 		</div>
 	);
 }
-
 const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	heading: HeadingBlock,
 	text: TextBlock,
@@ -1019,6 +1104,7 @@ export function CraftRenderer({
 	agentEndpoint,
 	onSend,
 	getAuthHeaders,
+	isStreaming,
 }: Readonly<{
 	blocks: Block[];
 	definition: ComponentDefinition;
@@ -1027,9 +1113,10 @@ export function CraftRenderer({
 	agentEndpoint: string;
 	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
 	getAuthHeaders: () => Record<string, string>;
+	isStreaming?: boolean;
 }>) {
 	return (
-		<CraftContext.Provider value={{ sessionId, agentEndpoint, onSend, getAuthHeaders }}>
+		<CraftContext.Provider value={{ sessionId, agentEndpoint, onSend, getAuthHeaders, isStreaming }}>
 			<div className="_craftContent" style={styleProperties?.craftContent ?? {}}>
 				<SubHelperComponent definition={definition} subComponentName="craftContent" />
 				{blocks.map((block, i) => (

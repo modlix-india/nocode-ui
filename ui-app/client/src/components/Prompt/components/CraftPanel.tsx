@@ -19,6 +19,7 @@ interface CraftPanelProps {
 	agentEndpoint: string;
 	onSend: (text: string, attachments?: any[], displayText?: string) => Promise<void>;
 	getAuthHeaders: () => Record<string, string>;
+	isStreaming?: boolean;
 }
 
 export function CraftPanel({
@@ -30,6 +31,7 @@ export function CraftPanel({
 	agentEndpoint,
 	onSend,
 	getAuthHeaders,
+	isStreaming,
 }: Readonly<CraftPanelProps>) {
 	const bodyRef = useRef<HTMLDivElement>(null);
 	const craftIdRef = useRef<string | null>(null);
@@ -93,7 +95,7 @@ export function CraftPanel({
 					sessionId={sessionId}
 					agentEndpoint={agentEndpoint}
 					onSend={onSend}
-					getAuthHeaders={getAuthHeaders}
+					getAuthHeaders={getAuthHeaders} isStreaming={isStreaming}
 				/>
 			</div>
 			{belowFold && (
