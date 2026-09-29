@@ -23,6 +23,28 @@ function getRedisUrl(): string {
 	}
 }
 
+/**
+ * Where the invalidation channel lives, which is not always where the cache
+ * lives.
+ *
+ * Falls back to the cache URL, so every single-region deployment keeps exactly
+ * the behaviour it has today and needs no configuration.
+ *
+ * They separate when an SSR node sits close to its visitors and far from the
+ * services that write definitions. The Mumbai node caches in a local Redis, so
+ * a hit never crosses a region; the publisher is the ui service in Ashburn,
+ * measured at ~200ms away. Paying that on one subscribe is nothing. Paying it
+ * on every cache read would make the node slower than the origin it was built
+ * to get in front of.
+ */
+function getInvalidationRedisUrl(): string {
+	try {
+		return getConfig().redis.invalidationUrl || getConfig().redis.url;
+	} catch {
+		return process.env.REDIS_INVALIDATION_URL || getRedisUrl();
+	}
+}
+
 export function getRedisClient(): Redis {
 	if (!redisClient) {
 		const redisUrl = getRedisUrl();
@@ -91,7 +113,7 @@ export async function initCacheInvalidationSubscriber(): Promise<void> {
 	}
 
 	try {
-		const redisUrl = getRedisUrl();
+		const redisUrl = getInvalidationRedisUrl();
 		subscriberClient = new Redis(redisUrl, {
 			maxRetriesPerRequest: 10,
 			enableOfflineQueue: true, // Allow queuing during brief disconnections for pub/sub reliability
@@ -133,12 +155,39 @@ export async function initCacheInvalidationSubscriber(): Promise<void> {
 			}
 		});
 
-		// Subscribe to cache invalidation channel
-		await subscriberClient.subscribe(SSR_CACHE_INVALIDATION_CHANNEL);
-		logger.info('✅ Subscribed to cache invalidation channel', {
-			channel: SSR_CACHE_INVALIDATION_CHANNEL,
-			offlineQueueEnabled: true
-		});
+		// Subscribe to the cache invalidation channel. Deliberately NOT awaited.
+		//
+		// ioredis with `enableOfflineQueue: true` QUEUES a command issued while the
+		// client is disconnected rather than rejecting it, so this promise does not
+		// settle until a connection exists -- which, for a host that cannot be
+		// resolved, is never. Awaiting it blocked this function forever, and because
+		// the function swallows its own errors, no caller's try/catch could ever see
+		// that happen: it simply never returned.
+		//
+		// That is not hypothetical. It stopped the Mumbai node's HTTP server from
+		// ever calling listen(), so every health check failed and every deploy rolled
+		// back, while every dependency the node actually needed was reachable and the
+		// only broken thing was a name lookup for a channel it can run without.
+		//
+		// Nothing is lost by not waiting: the `ready` handler above subscribes on
+		// every connection including the first, so the subscription is established as
+		// soon as one exists and re-established after every drop. Not awaiting also
+		// means the `message` handler below is registered even when the channel is
+		// unreachable at boot, which the old ordering silently skipped.
+		subscriberClient
+			.subscribe(SSR_CACHE_INVALIDATION_CHANNEL)
+			.then(() =>
+				logger.info('✅ Subscribed to cache invalidation channel', {
+					channel: SSR_CACHE_INVALIDATION_CHANNEL,
+					offlineQueueEnabled: true,
+				})
+			)
+			.catch((error) =>
+				logger.error('Initial subscribe failed; the ready handler will retry (non-fatal)', {
+					channel: SSR_CACHE_INVALIDATION_CHANNEL,
+					error: String(error),
+				})
+			);
 
 		// Handle incoming messages
 		subscriberClient.on('message', async (channel, message) => {
