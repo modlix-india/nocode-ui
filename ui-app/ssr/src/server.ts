@@ -151,13 +151,19 @@ async function startServer(): Promise<void> {
 		await loadConfig();
 		logger.info('Configuration loaded');
 
-		// Initialize Redis cache invalidation subscriber (non-blocking)
-		try {
-			await initCacheInvalidationSubscriber();
-			logger.info('Cache invalidation subscriber initialized');
-		} catch (error) {
-			logger.error('Failed to initialize cache subscriber (continuing anyway)', { error: String(error) });
-		}
+		// Cache invalidation subscriber: started, not awaited.
+		//
+		// This used to `await` inside a try/catch that claimed to be non-blocking and
+		// was neither. initCacheInvalidationSubscriber swallows its own errors, so the
+		// catch was unreachable code; and it could block indefinitely, which put the
+		// listen() call below behind the reachability of a Redis the server does not
+		// need in order to serve a single page. An SSR node whose invalidation channel
+		// is unreachable should serve slightly stale pages, not refuse to start.
+		//
+		// The subscriber retries in the background for as long as the process lives,
+		// so dropping the await costs nothing beyond a short window at boot where an
+		// invalidation would be missed -- during which there is also nothing cached.
+		void initCacheInvalidationSubscriber();
 
 		const server = createServer(async (req, res) => {
 			try {
