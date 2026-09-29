@@ -54,6 +54,9 @@ interface ThinkingBlockProps {
 	collapseIcon?: string;
 }
 
+// How close to the bottom (px) still counts as reading the newest thinking.
+const FOLLOW_TAIL_SLACK = 24;
+
 // Single tool row with Tool(name) label — used when exactly 1 tool, no wrapper.
 function SingleToolRow({
 	tc,
@@ -94,15 +97,18 @@ function SingleToolRow({
 						<span className="_agentToolName">{label}</span>
 					</div>
 				)}
-				{expanded && (tc.updates?.length ? (
-					<div className="_agentToolUpdates">
-						{tc.updates.map((u, i) => (
-							<div key={i} className="_agentToolUpdateLine">{u}</div>
-						))}
-					</div>
-				) : hasSummary ? (
-					<div className="_agentToolDetail">{tc.summary}</div>
-				) : null)}
+				{expanded &&
+					(tc.updates?.length ? (
+						<div className="_agentToolUpdates">
+							{tc.updates.map((u, i) => (
+								<div key={i} className="_agentToolUpdateLine">
+									{u}
+								</div>
+							))}
+						</div>
+					) : hasSummary ? (
+						<div className="_agentToolDetail">{tc.summary}</div>
+					) : null)}
 			</div>
 		</div>
 	);
@@ -112,9 +118,6 @@ export function ThinkingBlock({
 	isActive,
 	toolCalls,
 	reasoningContent,
-	toolRunningIcon,
-	toolSuccessIcon,
-	toolErrorIcon,
 	expandIcon = 'fa fa-chevron-down',
 	collapseIcon = 'fa fa-chevron-up',
 }: Readonly<ThinkingBlockProps>) {
@@ -125,6 +128,22 @@ export function ThinkingBlock({
 	);
 	const startTimeRef = useRef(Date.now());
 	const wasEverActiveRef = useRef(isActive);
+	const reasoningRef = useRef<HTMLDivElement>(null);
+	const followTailRef = useRef(true);
+
+	// Keep the newest thinking in view while it streams, unless the user
+	// scrolled up to read (live 2026-09-29: the box filled and stopped moving).
+	useEffect(() => {
+		const box = reasoningRef.current;
+		if (box && followTailRef.current) box.scrollTop = box.scrollHeight;
+	}, [reasoningContent]);
+
+	const onReasoningScroll = useCallback(() => {
+		const box = reasoningRef.current;
+		if (!box) return;
+		followTailRef.current =
+			box.scrollHeight - box.scrollTop - box.clientHeight <= FOLLOW_TAIL_SLACK;
+	}, []);
 
 	useEffect(() => {
 		if (isActive) {
@@ -151,12 +170,19 @@ export function ThinkingBlock({
 		});
 	}, []);
 
-	if (!isActive && !wasEverActiveRef.current && !toolCalls.length && !reasoningContent) return null;
+	if (!isActive && !wasEverActiveRef.current && !toolCalls.length && !reasoningContent)
+		return null;
 
 	const elapsed = Math.round((Date.now() - startTimeRef.current) / 1000);
 
 	const toolStatusClass = (tc: ToolCallInfo) =>
-		tc.isRunning ? '_running' : tc.success ? '_success' : tc.success === false ? '_error' : '_success';
+		tc.isRunning
+			? '_running'
+			: tc.success
+				? '_success'
+				: tc.success === false
+					? '_error'
+					: '_success';
 
 	const toolGlyph = (tc: ToolCallInfo) => (
 		<span className={`_statusDot ${toolStatusClass(tc)}`} />
@@ -165,11 +191,7 @@ export function ThinkingBlock({
 	// Single tool, not active, no reasoning → render flat, no wrapper.
 	if (!isActive && toolCalls.length === 1 && !reasoningContent) {
 		return (
-			<SingleToolRow
-				tc={toolCalls[0]}
-				expandIcon={expandIcon}
-				collapseIcon={collapseIcon}
-			/>
+			<SingleToolRow tc={toolCalls[0]} expandIcon={expandIcon} collapseIcon={collapseIcon} />
 		);
 	}
 
@@ -207,7 +229,13 @@ export function ThinkingBlock({
 			{expanded && hasContent && (
 				<div className="_thinkingBody">
 					{reasoningContent && (
-						<div className="_thinkingReasoning">{reasoningContent}</div>
+						<div
+							ref={reasoningRef}
+							className="_thinkingReasoning"
+							onScroll={onReasoningScroll}
+						>
+							{reasoningContent}
+						</div>
 					)}
 					{toolCalls.map(tc => {
 						const isToolExpanded = expandedTools.has(tc.id);
@@ -215,7 +243,10 @@ export function ThinkingBlock({
 						const hasSummary = !!tc.summary;
 
 						return (
-							<div key={tc.id} className={`_thinkingToolEntry ${toolStatusClass(tc)}`}>
+							<div
+								key={tc.id}
+								className={`_thinkingToolEntry ${toolStatusClass(tc)}`}
+							>
 								{hasSummary ? (
 									<button
 										type="button"
@@ -231,7 +262,9 @@ export function ThinkingBlock({
 													: tc.summary}
 											</span>
 										)}
-										<i className={`_thinkingToolToggle ${isToolExpanded ? collapseIcon : expandIcon}`} />
+										<i
+											className={`_thinkingToolToggle ${isToolExpanded ? collapseIcon : expandIcon}`}
+										/>
 									</button>
 								) : (
 									<div className="_thinkingToolRow">
@@ -239,17 +272,18 @@ export function ThinkingBlock({
 										<span className="_thinkingToolName">{label}</span>
 									</div>
 								)}
-								{isToolExpanded && (tc.updates?.length ? (
-									<div className="_agentToolUpdates">
-										{tc.updates.map((u, i) => (
-											<div key={i} className="_agentToolUpdateLine">{u}</div>
-										))}
-									</div>
-								) : hasSummary ? (
-									<div className="_thinkingToolDetail">
-										{tc.summary}
-									</div>
-								) : null)}
+								{isToolExpanded &&
+									(tc.updates?.length ? (
+										<div className="_agentToolUpdates">
+											{tc.updates.map((u, i) => (
+												<div key={i} className="_agentToolUpdateLine">
+													{u}
+												</div>
+											))}
+										</div>
+									) : hasSummary ? (
+										<div className="_thinkingToolDetail">{tc.summary}</div>
+									) : null)}
 							</div>
 						);
 					})}
