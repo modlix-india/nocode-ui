@@ -38,7 +38,23 @@ interface SSRConfig {
 	};
 	// Redis configuration
 	redis: {
+		/** Where rendered HTML is cached. Must be local to this node. */
 		url: string;
+		/**
+		 * Where cache invalidations are published, when that is somewhere other
+		 * than the cache itself.
+		 *
+		 * An SSR node close to its visitors but far from the services that write
+		 * definitions needs these to differ. The Mumbai node caches locally, so a
+		 * hit never leaves the region; invalidations are published by the ui
+		 * service in Ashburn, ~200ms away, which is irrelevant for a message that
+		 * arrives a handful of times a day and fatal for a cache read on every
+		 * request.
+		 *
+		 * Unset means "same as the cache", which is every single-region
+		 * deployment and is why nothing else has to change.
+		 */
+		invalidationUrl?: string;
 	};
 	// Gateway configuration
 	gateway: {
@@ -149,25 +165,46 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 		// Spring Cloud Config returns format: { name, profiles, propertySources: [{ source: {...} }] }
 		const source = data.propertySources?.[0]?.source || {};
 
+		/**
+		 * Read an SSR key for the region this node runs in, falling back to the
+		 * shared `ssr.` value.
+		 *
+		 * A regional deployment differs from the shared one in only a few keys, so
+		 * `ssr-in.redis.url` overrides while `ssr-in.cache.ttlSeconds` need not
+		 * exist at all. That keeps one profile per environment rather than a full
+		 * copy per region, and means a new region is a handful of added keys
+		 * instead of a file that drifts.
+		 *
+		 * SSR_REGION is unset in Ashburn, so `prefix` is `ssr` and every lookup
+		 * below behaves exactly as it did before this existed.
+		 */
+		const region = (process.env.SSR_REGION ?? '').trim();
+		const prefix = region ? `ssr-${region}` : 'ssr';
+		const ssr = <T>(key: string): T | undefined =>
+			(source[`${prefix}.${key}`] ?? source[`ssr.${key}`]) as T | undefined;
+
+		if (region) logger.info('SSR regional config in use', { region, prefix });
+
 		// SSR-specific config takes priority, fallback to shared config
 		return {
 			server: {
-				port: (source['ssr.server.port'] as number) || (source['server.port'] as number) || defaultConfig.server.port,
+				port: ssr<number>('server.port') || (source['server.port'] as number) || defaultConfig.server.port,
 			},
 			redis: {
-				url: (source['ssr.redis.url'] as string) || defaultConfig.redis.url,
+				url: ssr<string>('redis.url') || defaultConfig.redis.url,
+				invalidationUrl: ssr<string>('redis.invalidationUrl') || defaultConfig.redis.invalidationUrl,
 			},
 			gateway: {
-				url: (source['ssr.gateway.url'] as string) || (source['gateway.url'] as string) || defaultConfig.gateway.url,
+				url: ssr<string>('gateway.url') || (source['gateway.url'] as string) || defaultConfig.gateway.url,
 			},
 			cdn: {
-				hostName: (source['ssr.cdn.hostName'] as string) || (source['ui.cdnHostName'] as string) || defaultConfig.cdn.hostName,
-				stripAPIPrefix: (source['ssr.cdn.stripAPIPrefix'] as boolean) ?? (source['ui.cdnStripAPIPrefix'] as boolean) ?? defaultConfig.cdn.stripAPIPrefix,
-				replacePlus: (source['ssr.cdn.replacePlus'] as boolean) ?? (source['ui.cdnReplacePlus'] as boolean) ?? defaultConfig.cdn.replacePlus,
-				resizeOptionsType: (source['ssr.cdn.resizeOptionsType'] as string) || (source['ui.cdnResizeOptionsType'] as string) || defaultConfig.cdn.resizeOptionsType,
+				hostName: ssr<string>('cdn.hostName') || (source['ui.cdnHostName'] as string) || defaultConfig.cdn.hostName,
+				stripAPIPrefix: ssr<boolean>('cdn.stripAPIPrefix') ?? (source['ui.cdnStripAPIPrefix'] as boolean) ?? defaultConfig.cdn.stripAPIPrefix,
+				replacePlus: ssr<boolean>('cdn.replacePlus') ?? (source['ui.cdnReplacePlus'] as boolean) ?? defaultConfig.cdn.replacePlus,
+				resizeOptionsType: ssr<string>('cdn.resizeOptionsType') || (source['ui.cdnResizeOptionsType'] as string) || defaultConfig.cdn.resizeOptionsType,
 			},
 			cache: {
-				ttlSeconds: (source['ssr.cache.ttlSeconds'] as number) || defaultConfig.cache.ttlSeconds,
+				ttlSeconds: ssr<number>('cache.ttlSeconds') || defaultConfig.cache.ttlSeconds,
 			},
 			analytics: {
 				ingestionHost: (source['ui.analytics.ingestionHost'] as string) || defaultConfig.analytics.ingestionHost,
@@ -177,7 +214,7 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 			},
 			routing: {
 				assignmentCookieMaxAgeSeconds:
-					(source['ssr.routing.assignmentCookieMaxAgeSeconds'] as number) ||
+					ssr<number>('routing.assignmentCookieMaxAgeSeconds') ||
 					defaultConfig.routing.assignmentCookieMaxAgeSeconds,
 			},
 		};
