@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { ComponentProps } from '../../types/common';
 import {
 	PageStoreExtractor,
 	UrlDetailsExtractor,
@@ -18,6 +18,7 @@ import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import { ChatMessage } from './components/ChatMessage';
+import { replyParts, type CardMark } from './replyParts';
 import { ThinkingBlock } from './components/ThinkingBlock';
 import { AgentGroup } from './components/AgentGroup';
 import { ActionBlock, ConfirmationAction } from './components/ActionBlock';
@@ -62,6 +63,8 @@ interface Message {
 	dataConfirmedMeta?: Record<string, any>;
 	craftIds?: string[];
 	confirmationActions?: ConfirmationAction[];
+	/** Where the text and thinking stood as each sub-agent card started (replyParts). */
+	cardMarks?: CardMark[];
 }
 
 interface ToolCall {
@@ -78,6 +81,8 @@ interface ToolCall {
 }
 
 interface AgentSpan {
+	/** The per-spawn key it is stored under, which its card mark names. */
+	key: string;
 	agentId: string;
 	label: string;
 	parentId: string;
@@ -260,6 +265,17 @@ function spanForAgent(ctx: SSEEventContext, agentId?: string): AgentSpan | undef
 	return latestRunning ?? latest;
 }
 
+// The orchestrator's own tool rows: a sub-agent's tools render inside its card,
+// and the tool that spawned an agent is replaced by that card.
+function orchestratorToolCalls(msg: Message): ToolCall[] {
+	const hidden = new Set<string>();
+	for (const sp of msg.agentSpans ?? []) {
+		for (const tc of sp.toolCalls) hidden.add(tc.id);
+		if (sp.parentToolUseId) hidden.add(sp.parentToolUseId);
+	}
+	return (msg.toolCalls ?? []).filter(tc => !hidden.has(tc.id));
+}
+
 function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 	switch (eventType) {
 		case 'text': {
@@ -295,6 +311,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			// span (its card vanished and its spawn tool row un-suppressed).
 			const spanKey = data.agent_tool_use_id || data.parent_tool_use_id || agentId;
 			ctx.agentSpans.set(spanKey, {
+				key: spanKey,
 				agentId,
 				label: data.label ?? agentId,
 				parentId: data.parent_id ?? 'root',
@@ -305,6 +322,24 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				toolCalls: [],
 			});
 			flushMessageState(ctx);
+			// So text written before this card is drawn above it (replyParts).
+			ctx.setMessages(prev =>
+				prev.map(m =>
+					m.id === ctx.assistantMsgId
+						? {
+								...m,
+								cardMarks: [
+									...(m.cardMarks ?? []),
+									{
+										spanKey,
+										contentLength: m.content.length,
+										thinkingLength: (m.thinking ?? '').length,
+									},
+								],
+							}
+						: m,
+				),
+			);
 			break;
 		}
 		case 'agent_finished': {
@@ -2095,6 +2130,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												thinking: undefined,
 												toolCalls: [],
 												agentSpans: [],
+												cardMarks: undefined,
 												suggestions: undefined,
 												data: undefined,
 											}
@@ -2734,6 +2770,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				}
 
 				forgetActiveRun();
+				// The reply is done: settle it now, not after the session list
+				// below comes back (its chips and copy buttons waited on that).
+				setIsStreaming(false);
 
 				// Refresh sessions after a message exchange
 				await fetchSessions();
@@ -3098,171 +3137,166 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								</h2>
 							</div>
 						)}
-						{messages.map(msg => (
-							<React.Fragment key={msg.id}>
-								{msg.attachments?.length ? (
-									<div className="_messageAttachments">
-										{msg.attachments.map(att => (
-											<div key={att.id} className="_attachmentPreview">
-												{att.type === 'image' ? (
-													<img
-														src={att.url}
-														alt={att.name}
-														className="_attachmentImage"
-													/>
-												) : (
-													<div className="_attachmentFile">
-														<i className={fileIcon} />
-														<span>{att.name}</span>
-													</div>
-												)}
-											</div>
-										))}
-									</div>
-								) : null}
-								{msg.role === 'assistant' &&
-									(() => {
-										// 1. Tools owned by a sub-agent render
-										//    inside that agent's row, not the
-										//    orchestrator's group.
-										// 2. Tools that *spawned* an agent
-										//    (parent_tool_use_id) are suppressed
-										//    from the orchestrator group — the
-										//    agent row replaces them.
-										const subAgentToolIds = new Set<string>();
-										const spawnToolIds = new Set<string>();
-										for (const sp of msg.agentSpans ?? []) {
-											for (const tc of sp.toolCalls)
-												subAgentToolIds.add(tc.id);
-											if (sp.parentToolUseId)
-												spawnToolIds.add(sp.parentToolUseId);
-										}
-										const orchestratorToolCalls = (msg.toolCalls ?? []).filter(
-											tc =>
-												!subAgentToolIds.has(tc.id) &&
-												!spawnToolIds.has(tc.id),
-										);
-										// Render blocks in chronological order —
-										// whichever happened first appears first.
-										const firstToolAt = orchestratorToolCalls
-											.map(tc => tc.startedAt ?? Infinity)
-											.reduce((a, b) => Math.min(a, b), Infinity);
-										const firstAgentAt = (msg.agentSpans ?? [])
-											.map(sp => sp.startedAt ?? Infinity)
-											.reduce((a, b) => Math.min(a, b), Infinity);
-										const agentsFirst = firstAgentAt < firstToolAt;
-
-										// Hide the thinking indicator while an agent is running —
-										// the agent's pulsing dot already signals activity.
-										const anyAgentRunning = (msg.agentSpans ?? []).some(
-											sp => sp.status === 'running',
-										);
-										const thinkingBlock = (
-											<ThinkingBlock
-												isActive={
-													!anyAgentRunning &&
-													isStreaming &&
-													msg.id === messages.at(-1)?.id &&
-													(!msg.content ||
-														(msg.toolCalls?.some(tc => tc.isRunning) ??
-															false))
-												}
-												toolCalls={
-													showToolCalls ? orchestratorToolCalls : []
-												}
-												reasoningContent={msg.thinking}
-												toolRunningIcon={toolRunningIcon}
-												toolSuccessIcon={toolSuccessIcon}
-												toolErrorIcon={toolErrorIcon}
-												expandIcon={expandIcon}
-												collapseIcon={collapseIcon}
-											/>
-										);
-										const agentGroup =
-											(msg.agentSpans ?? []).length > 0 ? (
-												<AgentGroup
-													spans={msg.agentSpans ?? []}
+						{messages.map(msg => {
+							const isLive =
+								isStreaming &&
+								msg.role === 'assistant' &&
+								msg.id === messages.at(-1)?.id;
+							const parts =
+								msg.role === 'assistant'
+									? replyParts(
+											msg.content,
+											msg.thinking ?? '',
+											orchestratorToolCalls(msg),
+											msg.agentSpans ?? [],
+											msg.cardMarks ?? [],
+										)
+									: [];
+							const answer = parts.at(-1);
+							const agentRunning = (msg.agentSpans ?? []).some(
+								sp => sp.status === 'running',
+							);
+							// A tool or sub-agent is running: its row or card shows the
+							// work, so no typing cursor meanwhile.
+							const working =
+								agentRunning || (msg.toolCalls ?? []).some(tc => tc.isRunning);
+							return (
+								<React.Fragment key={msg.id}>
+									{msg.attachments?.length ? (
+										<div className="_messageAttachments">
+											{msg.attachments.map(att => (
+												<div key={att.id} className="_attachmentPreview">
+													{att.type === 'image' ? (
+														<img
+															src={att.url}
+															alt={att.name}
+															className="_attachmentImage"
+														/>
+													) : (
+														<div className="_attachmentFile">
+															<i className={fileIcon} />
+															<span>{att.name}</span>
+														</div>
+													)}
+												</div>
+											))}
+										</div>
+									) : null}
+									{parts.map((part, i) => {
+										const isAnswer = i === parts.length - 1;
+										return (
+											<React.Fragment key={`${msg.id}-part-${i}`}>
+												<ThinkingBlock
+													isActive={
+														// The card's pulsing dot shows a running agent.
+														isAnswer &&
+														isLive &&
+														!agentRunning &&
+														(!part.content ||
+															part.toolCalls.some(tc => tc.isRunning))
+													}
+													toolCalls={showToolCalls ? part.toolCalls : []}
+													reasoningContent={part.thinking || undefined}
+													toolRunningIcon={toolRunningIcon}
+													toolSuccessIcon={toolSuccessIcon}
+													toolErrorIcon={toolErrorIcon}
 													expandIcon={expandIcon}
 													collapseIcon={collapseIcon}
 												/>
-											) : null;
-										return (
-											<>
-												{agentsFirst ? (
-													<>
-														{agentGroup}
-														{thinkingBlock}
-													</>
-												) : (
-													<>
-														{thinkingBlock}
-														{agentGroup}
-													</>
+												{!isAnswer && part.content && (
+													<ChatMessage
+														role="assistant"
+														content={part.content}
+														componentKey={key ?? ''}
+														styles={styleProperties}
+														definition={props.definition}
+														showActions={false}
+													/>
 												)}
-											</>
+												{part.spans.length > 0 && (
+													<AgentGroup
+														spans={part.spans}
+														expandIcon={expandIcon}
+														collapseIcon={collapseIcon}
+													/>
+												)}
+											</React.Fragment>
 										);
-									})()}
-								<ChatMessage
-									role={msg.role}
-									content={msg.content}
-									componentKey={key ?? ''}
-									styles={styleProperties}
-									isStreaming={
-										isStreaming &&
-										msg.role === 'assistant' &&
-										msg.id === messages.at(-1)?.id
-									}
-									definition={props.definition}
-									copyIcon={copyIcon}
-									copySuccessIcon={copySuccessIcon}
-									enableFeedback={!!enableFeedback}
-									feedbackRating={msg.feedbackRating}
-									turnNumber={msg.turnNumber}
-									messageId={msg.id}
-									onFeedback={handleFeedback}
-									thumbsUpIcon={thumbsUpIcon}
-									thumbsDownIcon={thumbsDownIcon}
-								>
-									{msg.suggestions && (
-										<SuggestionButtons
-											suggestions={msg.suggestions}
-											onSelect={handleSend}
-											disabled={isStreaming || msg.id !== messages.at(-1)?.id}
-										/>
-									)}
-									{msg.data?.map((payload, i) => (
-										<InlineDataRenderer
-											key={`${msg.id}-data-${i}`}
-											payload={payload}
-											confirmed={msg.dataConfirmed}
-											confirmedMeta={msg.dataConfirmedMeta}
-											disabled={isStreaming || msg.id !== messages.at(-1)?.id}
-											onRespond={(sendText, displayText, meta) => {
-												setMessages(prev =>
-													prev.map(m =>
-														m.id === msg.id
-															? {
-																	...m,
-																	dataConfirmed: true,
-																	dataConfirmedMeta: meta,
-																}
-															: m,
-													),
-												);
-												handleSend(sendText, undefined, displayText);
-											}}
+									})}
+									<ChatMessage
+										role={msg.role}
+										content={answer ? answer.content : msg.content}
+										copyText={
+											parts.length > 1
+												? parts
+														.map(part => part.content)
+														.filter(Boolean)
+														.join('\n\n')
+												: undefined
+										}
+										componentKey={key ?? ''}
+										styles={styleProperties}
+										isStreaming={isLive}
+										typing={isLive && !working && !!answer?.content}
+										definition={props.definition}
+										copyIcon={copyIcon}
+										copySuccessIcon={copySuccessIcon}
+										enableFeedback={!!enableFeedback}
+										feedbackRating={msg.feedbackRating}
+										turnNumber={msg.turnNumber}
+										messageId={msg.id}
+										onFeedback={handleFeedback}
+										thumbsUpIcon={thumbsUpIcon}
+										thumbsDownIcon={thumbsDownIcon}
+										footer={
+											msg.suggestions && (
+												<SuggestionButtons
+													suggestions={msg.suggestions}
+													onSelect={handleSend}
+													disabled={
+														isStreaming ||
+														msg.id !== messages.at(-1)?.id
+													}
+												/>
+											)
+										}
+									>
+										{msg.data?.map((payload, i) => (
+											<InlineDataRenderer
+												key={`${msg.id}-data-${i}`}
+												payload={payload}
+												confirmed={msg.dataConfirmed}
+												confirmedMeta={msg.dataConfirmedMeta}
+												disabled={
+													isStreaming || msg.id !== messages.at(-1)?.id
+												}
+												onRespond={(sendText, displayText, meta) => {
+													setMessages(prev =>
+														prev.map(m =>
+															m.id === msg.id
+																? {
+																		...m,
+																		dataConfirmed: true,
+																		dataConfirmedMeta: meta,
+																	}
+																: m,
+														),
+													);
+													handleSend(sendText, undefined, displayText);
+												}}
+											/>
+										))}
+									</ChatMessage>
+									{msg.confirmationActions?.map(action => (
+										<ActionBlock
+											key={action.confirmationId}
+											action={action}
+											onRespond={handleActionResponse}
 										/>
 									))}
-								</ChatMessage>
-								{msg.confirmationActions?.map(action => (
-									<ActionBlock
-										key={action.confirmationId}
-										action={action}
-										onRespond={handleActionResponse}
-									/>
-								))}
-							</React.Fragment>
-						))}
+								</React.Fragment>
+							);
+						})}
 						{isStreaming && messages.at(-1)?.role === 'user' && (
 							<ThinkingBlock
 								isActive={true}

@@ -1,14 +1,22 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { MarkdownParser } from '../../../commonComponents/Markdown/MarkdownParser';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import { useTypedText } from '../useTypedText';
 
 interface ChatMessageProps {
 	role: 'user' | 'assistant';
 	content: string;
 	componentKey: string;
 	styles?: any;
+	/** The reply is still running: its copy and feedback buttons wait. */
 	isStreaming?: boolean;
+	/** Text is arriving right now: show the typing cursor. */
+	typing?: boolean;
+	/** False for a part of a reply drawn above a sub-agent card. */
+	showActions?: boolean;
+	/** What Copy copies, when it's more than this part (the whole reply). */
+	copyText?: string;
 	definition: ComponentDefinition;
 	copyIcon?: string;
 	copySuccessIcon?: string;
@@ -19,7 +27,10 @@ interface ChatMessageProps {
 	onFeedback?: (messageId: string, turnNumber: number, rating: number) => void;
 	thumbsUpIcon?: string;
 	thumbsDownIcon?: string;
+	/** Shown as the reply arrives (a map, an upload request). */
 	children?: React.ReactNode;
+	/** Shown with the copy buttons once the reply has settled (its chips). */
+	footer?: React.ReactNode;
 }
 
 export function ChatMessage({
@@ -28,6 +39,9 @@ export function ChatMessage({
 	componentKey,
 	styles,
 	isStreaming,
+	typing,
+	showActions = true,
+	copyText,
 	definition,
 	copyIcon = 'fa fa-clone',
 	copySuccessIcon = 'fa fa-check',
@@ -39,15 +53,27 @@ export function ChatMessage({
 	thumbsUpIcon = 'fa fa-thumbs-up',
 	thumbsDownIcon = 'fa fa-thumbs-down',
 	children,
+	footer,
 }: Readonly<ChatMessageProps>) {
 	const [copied, setCopied] = useState(false);
+	const copyValue = copyText ?? content;
+	const shown = useTypedText(content, !!isStreaming);
+	const revealing = shown.length < content.length;
+	// Chips and copy buttons arrive together, once, after the last word.
+	const settled = !isStreaming && !revealing;
+	const withActions = showActions && !!copyValue;
+	// Only a reply that was live here fades in; opening an old chat doesn't.
+	const [wasLive, setWasLive] = useState(!!isStreaming);
+	useEffect(() => {
+		if (isStreaming) setWasLive(true);
+	}, [isStreaming]);
 
 	const handleCopy = useCallback(() => {
-		navigator.clipboard.writeText(content).then(() => {
+		navigator.clipboard.writeText(copyValue).then(() => {
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
 		});
-	}, [content]);
+	}, [copyValue]);
 
 	const handleThumbsUp = useCallback(() => {
 		if (!onFeedback || !messageId || turnNumber === undefined) return;
@@ -63,66 +89,47 @@ export function ChatMessage({
 
 	if (role === 'user') {
 		return (
-			<div
-				className="_promptMessage _user"
-				style={styles?.userMessage ?? {}}
-			>
-				<SubHelperComponent
-					definition={definition}
-					subComponentName="userMessage"
-				/>
+			<div className="_promptMessage _user" style={styles?.userMessage ?? {}}>
+				<SubHelperComponent definition={definition} subComponentName="userMessage" />
 				<span>{content}</span>
 			</div>
 		);
 	}
 
 	return (
-		<div
-			className="_promptMessage _assistant"
-			style={styles?.assistantMessage ?? {}}
-		>
-			<SubHelperComponent
-				definition={definition}
-				subComponentName="assistantMessage"
-			/>
+		<div className="_promptMessage _assistant" style={styles?.assistantMessage ?? {}}>
+			<SubHelperComponent definition={definition} subComponentName="assistantMessage" />
 			<div className="_assistantContent">
-				<MarkdownParser
-					componentKey={componentKey}
-					text={content}
-					styles={styles ?? {}}
-				/>
-				{isStreaming && <span className="_streamingCursor" />}
+				<MarkdownParser componentKey={componentKey} text={shown} styles={styles ?? {}} />
+				{(typing || revealing) && <span className="_streamingCursor" />}
 				{children}
-				{!isStreaming && content && (
-					<div className="_messageActions">
-						<button
-							className="_actionButton"
-							onClick={handleCopy}
-							title="Copy"
-						>
-							<i
-								className={
-									copied ? copySuccessIcon : copyIcon
-								}
-							/>
-						</button>
-						{enableFeedback && turnNumber !== undefined && (
-							<>
-								<button
-									className={`_actionButton _feedbackButton${feedbackRating === 1 ? ' _active' : ''}`}
-									onClick={handleThumbsUp}
-									title="Good response"
-								>
-									<i className={thumbsUpIcon} />
+				{settled && (footer || withActions) && (
+					<div className={wasLive ? '_replySettled _entering' : '_replySettled'}>
+						{footer}
+						{withActions && (
+							<div className="_messageActions">
+								<button className="_actionButton" onClick={handleCopy} title="Copy">
+									<i className={copied ? copySuccessIcon : copyIcon} />
 								</button>
-								<button
-									className={`_actionButton _feedbackButton${feedbackRating === -1 ? ' _active' : ''}`}
-									onClick={handleThumbsDown}
-									title="Bad response"
-								>
-									<i className={thumbsDownIcon} />
-								</button>
-							</>
+								{enableFeedback && turnNumber !== undefined && (
+									<>
+										<button
+											className={`_actionButton _feedbackButton${feedbackRating === 1 ? ' _active' : ''}`}
+											onClick={handleThumbsUp}
+											title="Good response"
+										>
+											<i className={thumbsUpIcon} />
+										</button>
+										<button
+											className={`_actionButton _feedbackButton${feedbackRating === -1 ? ' _active' : ''}`}
+											onClick={handleThumbsDown}
+											title="Bad response"
+										>
+											<i className={thumbsDownIcon} />
+										</button>
+									</>
+								)}
+							</div>
 						)}
 					</div>
 				)}

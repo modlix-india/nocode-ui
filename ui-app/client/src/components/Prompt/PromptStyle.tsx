@@ -1471,6 +1471,16 @@ export default function PromptStyle({
 			background: ${t('surfaceColorThree', '#ddd')};
 		}
 
+		/* A settled reply's chips and copy buttons: one gentle entrance */
+		${PREFIX} ._replySettled._entering {
+			animation: promptSettleIn 0.22s ease-out;
+		}
+
+		@keyframes promptSettleIn {
+			from { opacity: 0; transform: translateY(4px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+
 		/* ─── Suggestion buttons ─── */
 		${PREFIX} ._suggestions {
 			display: flex;
