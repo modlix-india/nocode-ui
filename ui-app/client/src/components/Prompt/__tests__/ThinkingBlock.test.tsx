@@ -1,15 +1,15 @@
-import React, { act } from 'react';
-import { createRoot, Root } from 'react-dom/client';
-import { ThinkingBlock } from '../components/ThinkingBlock';
-
-(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
-
 /**
  * The thinking box stops growing at its max height and scrolls inside itself.
  * While thinking streams it must keep the newest text in view, and never pull
  * a reader who scrolled up back down (live 2026-09-29: the box filled and the
  * new text streamed out of sight).
  */
+
+import React, { act } from 'react';
+import { createRoot, Root } from 'react-dom/client';
+import { ThinkingBlock } from '../components/ThinkingBlock';
+
+(globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
 
 let container: HTMLDivElement;
 let root: Root;
@@ -46,21 +46,23 @@ afterEach(() => {
 	container.remove();
 });
 
-test('follows the newest thinking while it streams', () => {
-	render('first thought');
-	const el = box();
-	render('first thought, then more');
-	expect(el.scrollTop).toBe(1000);
-});
+describe('ThinkingBlock', () => {
+	it('follows the newest thinking while it streams', () => {
+		render('first thought');
+		const el = box();
+		render('first thought, then more');
+		expect(el.scrollTop).toBe(1000);
+	});
 
-test('a reader who scrolled up stays put, and following resumes at the bottom', () => {
-	render('first thought');
-	const el = box();
-	scrollTo(el, 100);
-	render('first thought, then more');
-	expect(el.scrollTop).toBe(100);
+	it('leaves a reader who scrolled up where they are, and follows again at the bottom', () => {
+		render('first thought');
+		const el = box();
+		scrollTo(el, 100);
+		render('first thought, then more');
+		expect(el.scrollTop).toBe(100);
 
-	scrollTo(el, 600); // back at the bottom: 1000 - 600 - 400 = 0
-	render('first thought, then more, and more');
-	expect(el.scrollTop).toBe(1000);
+		scrollTo(el, 600); // back at the bottom: 1000 - 600 - 400 = 0
+		render('first thought, then more, and more');
+		expect(el.scrollTop).toBe(1000);
+	});
 });

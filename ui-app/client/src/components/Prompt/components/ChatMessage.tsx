@@ -11,8 +11,8 @@ interface ChatMessageProps {
 	styles?: any;
 	/** The reply is still running: its copy and feedback buttons wait. */
 	isStreaming?: boolean;
-	/** Text is arriving right now: show the typing cursor. */
-	typing?: boolean;
+	/** A tool or sub-agent is running: its row or card shows the work, so no typing cursor. */
+	working?: boolean;
 	/** False for a part of a reply drawn above a sub-agent card. */
 	showActions?: boolean;
 	/** What Copy copies, when it's more than this part (the whole reply). */
@@ -41,7 +41,7 @@ export function ChatMessage({
 	componentKey,
 	styles,
 	isStreaming,
-	typing,
+	working,
 	showActions = true,
 	copyText,
 	pending,
@@ -65,6 +65,7 @@ export function ChatMessage({
 	if (isStreaming && !wasLive) setWasLive(true);
 	const shown = useTypedText(content, wasLive);
 	const catchingUp = shown.length < content.length;
+	const showCursor = (isStreaming && !working && !!content) || catchingUp;
 	// Chips and copy buttons arrive together, once, after the last word.
 	const settled = !isStreaming && !catchingUp;
 	const withActions = showActions && !!copyValue;
@@ -106,7 +107,7 @@ export function ChatMessage({
 			<SubHelperComponent definition={definition} subComponentName="assistantMessage" />
 			<div className="_assistantContent">
 				<MarkdownParser componentKey={componentKey} text={shown} styles={styles ?? {}} />
-				{(typing || catchingUp) && <span className="_streamingCursor" />}
+				{showCursor && <span className="_streamingCursor" />}
 				{children}
 				{settled && (footer || withActions) && (
 					<div className={wasLive ? '_replySettled _entering' : '_replySettled'}>

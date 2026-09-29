@@ -13,6 +13,8 @@ interface ToolCallInfo {
 }
 
 export interface AgentSpanInfo {
+	/** Unique per spawn: one agent can run twice in a turn. */
+	key: string;
 	agentId: string;
 	label: string;
 	parentId: string;
@@ -29,6 +31,9 @@ export interface AgentSpanInfo {
 	thinking?: string;
 	statusText?: string;
 }
+
+// Long enough to see every agent's final state before the card folds.
+const FOLD_AFTER_FINISH_MS = 1200;
 
 interface AgentGroupProps {
 	spans: AgentSpanInfo[];
@@ -81,12 +86,14 @@ function ToolRow({
 	const headerInner = (
 		<>
 			<span className={`_statusDot _sm ${dotClass}`} />
-			<span className="_agentToolName">{label}</span>
-			{!open && liveText && <span className="_agentToolLive">{liveText}</span>}
-			{duration != null && duration > 0 && <span className="_agentToolDur">{duration}s</span>}
+			<span className="_agentCardToolName">{label}</span>
+			{!open && liveText && <span className="_agentCardToolLive">{liveText}</span>}
+			{duration != null && duration > 0 && (
+				<span className="_agentCardToolDur">{duration}s</span>
+			)}
 			{canExpand && (
 				<i
-					className={`_agentToolToggle ${open ? collapseIcon : expandIcon}`}
+					className={`_agentCardToolToggle ${open ? collapseIcon : expandIcon}`}
 					aria-hidden="true"
 				/>
 			)}
@@ -94,27 +101,27 @@ function ToolRow({
 	);
 
 	return (
-		<div className={`_agentTool ${tc.isRunning ? '_live' : '_settled'}`}>
+		<div className={`_agentCardTool ${tc.isRunning ? '_live' : '_settled'}`}>
 			{canExpand ? (
 				<button
 					type="button"
-					className="_agentToolHead _clickable"
+					className="_agentCardToolHead _clickable"
 					onClick={onToggle}
 					aria-expanded={open}
 				>
 					{headerInner}
 				</button>
 			) : (
-				<div className="_agentToolHead">{headerInner}</div>
+				<div className="_agentCardToolHead">{headerInner}</div>
 			)}
 			{canExpand && open && (
-				<div className="_agentToolHist">
+				<div className="_agentCardToolHist">
 					{updates.map((u, i) => (
-						<div key={i} className="_agentToolHistLine">
+						<div key={i} className="_agentCardToolHistLine">
 							{u}
 						</div>
 					))}
-					{tc.summary && <div className="_agentToolHistFinal">{tc.summary}</div>}
+					{tc.summary && <div className="_agentCardToolHistFinal">{tc.summary}</div>}
 				</div>
 			)}
 		</div>
@@ -161,7 +168,7 @@ function AgentRow({
 }) {
 	const isRunning = sp.status === 'running';
 	// Tool rows clicked open to view their update history. Running rows are
-	// never in this set — progress is ephemeral and shouldn't expand.
+	// never in this set: progress is ephemeral and should not expand.
 	const [openTools, setOpenTools] = useState<Set<string>>(new Set());
 
 	const toggleTool = useCallback((id: string) => {
@@ -193,7 +200,7 @@ function AgentRow({
 			)}
 			{sp.thinking && <ThinkingQuote text={sp.thinking} />}
 			{sp.toolCalls.length > 0 && (
-				<div className="_agentTools">
+				<div className="_agentCardTools">
 					{sp.toolCalls.map(tc => (
 						<ToolRow
 							key={tc.id}
@@ -232,7 +239,7 @@ export function AgentGroup({
 	useEffect(() => {
 		if (userToggledGroup) return;
 		if (!anyRunning && prevAnyRunning.current) {
-			const t = setTimeout(() => setGroupExpanded(false), 1200);
+			const t = setTimeout(() => setGroupExpanded(false), FOLD_AFTER_FINISH_MS);
 			return () => clearTimeout(t);
 		}
 		prevAnyRunning.current = anyRunning;
@@ -254,8 +261,8 @@ export function AgentGroup({
 		count === 1
 			? spans[0].label
 			: anyRunning
-				? `Working — ${doneCount}/${count} done`
-				: `Finished — ${count} tasks`;
+				? `Working - ${doneCount}/${count} done`
+				: `Finished - ${count} agents`;
 
 	// Group clock: first start to last end (or now while running).
 	const groupStart = Math.min(...spans.map(s => s.startedAt));
@@ -288,7 +295,7 @@ export function AgentGroup({
 				<div className="_agentCardBody">
 					{spans.map(sp => (
 						<AgentRow
-							key={sp.agentId + '_' + sp.startedAt}
+							key={sp.key}
 							sp={sp}
 							now={now}
 							expandIcon={expandIcon}

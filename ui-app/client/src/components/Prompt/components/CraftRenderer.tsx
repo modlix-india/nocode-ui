@@ -82,7 +82,8 @@ function ImageBlock({
 	size?: 'thumbnail';
 	background?: 'dark' | 'light';
 	fit?: 'cover' | 'contain';
-	badges?: Array<{ label: string; tone?: string }>;
+	/** `tone` picks the badge color: an ad still running, or one that has stopped. */
+	badges?: Array<{ label: string; tone?: 'active' | 'paused' }>;
 	meta?: string;
 }) {
 	if (!url && !thumb_url) return null;
@@ -287,6 +288,12 @@ function CollapsibleBlock({
 	);
 }
 
+// Sub-pixel scroll positions never quite reach the edge, so an arrow hides
+// once it is this close.
+const ARROW_EDGE_SLACK_PX = 4;
+// An arrow click pages by most of a view, so the last ad seen stays in sight.
+const PAGE_SCROLL_FRACTION = 0.8;
+
 function CarouselBlock({
 	children = [],
 	styleProperties,
@@ -301,8 +308,8 @@ function CarouselBlock({
 	const updateArrows = useCallback(() => {
 		const el = scrollRef.current;
 		if (!el) return;
-		setCanLeft(el.scrollLeft > 4);
-		setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+		setCanLeft(el.scrollLeft > ARROW_EDGE_SLACK_PX);
+		setCanRight(el.scrollLeft + el.clientWidth < el.scrollWidth - ARROW_EDGE_SLACK_PX);
 	}, []);
 
 	useEffect(() => {
@@ -316,7 +323,11 @@ function CarouselBlock({
 
 	const scrollByPage = (direction: number) => {
 		const el = scrollRef.current;
-		if (el) el.scrollBy({ left: direction * el.clientWidth * 0.8, behavior: 'smooth' });
+		if (el)
+			el.scrollBy({
+				left: direction * el.clientWidth * PAGE_SCROLL_FRACTION,
+				behavior: 'smooth',
+			});
 	};
 
 	if (!children.length) return null;

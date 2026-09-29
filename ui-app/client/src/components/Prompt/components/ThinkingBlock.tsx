@@ -38,8 +38,6 @@ interface ToolCallInfo {
 	summary: string;
 	success?: boolean;
 	isRunning: boolean;
-	startedAt?: number;
-	endedAt?: number;
 	updates?: string[];
 }
 
@@ -57,7 +55,7 @@ interface ThinkingBlockProps {
 // How close to the bottom (px) still counts as reading the newest thinking.
 const FOLLOW_TAIL_SLACK = 24;
 
-// Single tool row with Tool(name) label — used when exactly 1 tool, no wrapper.
+// A lone tool drawn as one flat Tool(name) row, with no thinking box around it.
 function SingleToolRow({
 	tc,
 	expandIcon,
@@ -81,7 +79,9 @@ function SingleToolRow({
 						onClick={() => setExpanded(prev => !prev)}
 					>
 						<span className="_statusDotStatic" />
-						<span className="_agentToolName">{label}</span>
+						<span className="_agentToolLabel">
+							Tool(<span className="_agentToolName">{label}</span>)
+						</span>
 						{!expanded && (
 							<span className="_agentToolSummary">
 								{tc.summary.length > 80
@@ -94,7 +94,9 @@ function SingleToolRow({
 				) : (
 					<div className="_agentToolHeader">
 						<span className="_statusDotStatic" />
-						<span className="_agentToolName">{label}</span>
+						<span className="_agentToolLabel">
+							Tool(<span className="_agentToolName">{label}</span>)
+						</span>
 					</div>
 				)}
 				{expanded &&

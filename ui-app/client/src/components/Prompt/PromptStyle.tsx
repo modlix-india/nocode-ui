@@ -1097,7 +1097,7 @@ export default function PromptStyle({
 			background: ${t('promptFontColor', '#1a1a1a')};
 		}
 
-		/* ─── Agent group (single agent = no wrapper, multi = group) ─── */
+		/* ─── Flat single-tool row (ThinkingBlock's lone tool, no wrapper) ─── */
 		${PREFIX} ._agentGroupSingle {
 			max-width: 768px;
 			font-size: 13px;
@@ -1282,14 +1282,14 @@ export default function PromptStyle({
 		}
 
 		/* tool lifecycle rows: appear on start, line swaps on update, settle on result */
-		${PREFIX} ._agentTools {
+		${PREFIX} ._agentCardTools {
 			margin: 6px 0 0 17px;
 			display: flex;
 			flex-direction: column;
 			gap: 2px;
 		}
 
-		${PREFIX} ._agentToolHead {
+		${PREFIX} ._agentCardToolHead {
 			display: flex;
 			align-items: center;
 			gap: 8px;
@@ -1304,15 +1304,27 @@ export default function PromptStyle({
 			color: ${t('promptSecondaryFontColor', '#666')};
 		}
 
-		${PREFIX} ._agentToolHead._clickable {
+		${PREFIX} ._agentCardToolHead._clickable {
 			cursor: pointer;
 		}
 
-		${PREFIX} ._agentToolHead._clickable:hover {
+		${PREFIX} ._agentCardToolHead._clickable:hover {
 			background: ${t('surfaceColorTwo', '#f4f4f4')};
 		}
 
-		${PREFIX} ._agentToolLive {
+		${PREFIX} ._agentCardToolName {
+			color: ${t('promptFontColor', '#1a1a1a')};
+			font-weight: 500;
+		}
+
+		${PREFIX} ._agentCardToolToggle {
+			font-size: 10px;
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
+			flex-shrink: 0;
+			margin-left: auto;
+		}
+
+		${PREFIX} ._agentCardToolLive {
 			color: ${t('promptSecondaryFontColor', '#5b5a53')};
 			overflow: hidden;
 			text-overflow: ellipsis;
@@ -1321,11 +1333,11 @@ export default function PromptStyle({
 			min-width: 0;
 		}
 
-		${PREFIX} ._agentTool._settled ._agentToolLive {
+		${PREFIX} ._agentCardTool._settled ._agentCardToolLive {
 			color: ${t('promptTertiaryFontColor', '#8c8a80')};
 		}
 
-		${PREFIX} ._agentToolDur {
+		${PREFIX} ._agentCardToolDur {
 			margin-left: auto;
 			font-size: 10.5px;
 			color: ${t('promptTertiaryFontColor', '#b6b4a9')};
@@ -1333,19 +1345,19 @@ export default function PromptStyle({
 			flex-shrink: 0;
 		}
 
-		${PREFIX} ._agentToolHist {
+		${PREFIX} ._agentCardToolHist {
 			margin: 2px 0 4px 22px;
 			border-left: 1px solid ${t('borderColorNine', '#f2f1ec')};
 			padding: 2px 0 2px 10px;
 		}
 
-		${PREFIX} ._agentToolHistLine {
+		${PREFIX} ._agentCardToolHistLine {
 			font-size: 11.5px;
 			line-height: 1.6;
 			color: ${t('promptTertiaryFontColor', '#b6b4a9')};
 		}
 
-		${PREFIX} ._agentToolHistFinal {
+		${PREFIX} ._agentCardToolHistFinal {
 			font-size: 11.5px;
 			line-height: 1.6;
 			color: ${t('promptTertiaryFontColor', '#8c8a80')};
@@ -1371,6 +1383,11 @@ export default function PromptStyle({
 			text-align: left;
 			width: 100%;
 			border-radius: 6px;
+		}
+
+		${PREFIX} ._agentToolLabel {
+			font-size: 12px;
+			color: ${t('promptTertiaryFontColor', '#8b8b8b')};
 		}
 
 		${PREFIX} ._agentToolName {
@@ -1948,7 +1965,7 @@ export default function PromptStyle({
 			padding: 6px 8px;
 			font-size: 13px;
 			line-height: 1;
-			color: #888;
+			color: ${t('promptTertiaryFontColor', '#888')};
 			text-decoration: none;
 			border-radius: 6px;
 		}
@@ -2028,7 +2045,7 @@ export default function PromptStyle({
 			border: 1px solid #e2e2e2;
 			background: rgba(255, 255, 255, 0.95);
 			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-			color: #444;
+			color: ${t('promptSecondaryFontColor', '#444')};
 			font-size: 18px;
 			line-height: 1;
 			cursor: pointer;
@@ -2040,7 +2057,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftCarouselArrow:hover {
 			background: #fff;
-			color: #111;
+			color: ${t('promptFontColor', '#111')};
 		}
 
 		${PREFIX} ._craftCarouselArrow._left {
@@ -2083,7 +2100,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._craftImageMeta {
 			font-size: 11px;
-			color: #999;
+			color: ${t('promptTertiaryFontColor', '#999')};
 			margin-top: 2px;
 			display: block;
 			overflow: hidden;

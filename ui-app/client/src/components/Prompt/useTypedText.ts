@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
 
+// Each frame shows a fifteenth of what is still hidden, so a long block lands in
+// about a second at 60fps, and never fewer than two characters, so the tail of a
+// reply does not crawl.
+const CATCH_UP_DIVISOR = 15;
+const MIN_CHARS_PER_FRAME = 2;
+
 /**
  * Show a reply's text a little more every frame, so it types out.
  *
@@ -34,5 +40,5 @@ export function useTypedText(text: string, typeOut: boolean): string {
 
 /** How many characters to reveal in one frame, when `behind` are still hidden. */
 export function typingStep(behind: number): number {
-	return Math.max(2, Math.ceil(behind / 15));
+	return Math.max(MIN_CHARS_PER_FRAME, Math.ceil(behind / CATCH_UP_DIVISOR));
 }

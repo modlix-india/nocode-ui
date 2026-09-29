@@ -1216,6 +1216,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
+	const messagesInnerRef = useRef<HTMLDivElement>(null);
 	const abortControllerRef = useRef<AbortController | null>(null);
 	/**
 	 * True while the stream is being let go of ON PURPOSE: Stop, a session
@@ -1970,6 +1971,22 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			}
 		});
 	}, [messages]);
+
+	// Follow the conversation as it grows, not only when a message changes. A
+	// reply keeps typing after its last event, and its chips and copy buttons
+	// arrive once it has, so none of that touches `messages` and the effect above
+	// never sees it (live 2026-09-29: the chips were left under the input box).
+	// Images and cards that open late grow it the same way.
+	useEffect(() => {
+		const container = messagesContainerRef.current;
+		const inner = messagesInnerRef.current;
+		if (!container || !inner) return;
+		const observer = new ResizeObserver(() => {
+			if (shouldAutoScrollRef.current) container.scrollTo({ top: container.scrollHeight });
+		});
+		observer.observe(inner);
+		return () => observer.disconnect();
+	}, []);
 
 	// Only human-initiated wheel/touch un-stick auto-scroll — programmatic
 	// scrollTo never fires them, so the smooth-scroll race can't happen.
@@ -2894,11 +2911,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			const headers = getAuthHeaders();
 			let receivedSessionId = sessionId;
+			const controller = new AbortController();
 
 			try {
 				// A new stream: nobody has asked to let go of THIS one yet.
 				deliberateAbortRef.current = false;
-				abortControllerRef.current = new AbortController();
+				abortControllerRef.current = controller;
 
 				const editorContext = buildEditorContext();
 				const drafts = buildOpenDraftsRef.current();
@@ -2935,7 +2953,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					method: 'POST',
 					headers,
 					body: JSON.stringify(body),
-					signal: abortControllerRef.current.signal,
+					signal: controller.signal,
 				});
 
 				if (response.status === 409) {
@@ -3047,8 +3065,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					}
 				}
 			} finally {
-				setIsStreaming(false);
-				abortControllerRef.current = null;
+				// Only while this send still owns the stream. The reply settles
+				// before the session list refreshes, so a chip click or a queued
+				// steer can start the next send in between, and resetting here
+				// would switch that run off while it streams. Stop, a new chat and
+				// a rejoin let go themselves and leave nothing to reset.
+				if (abortControllerRef.current === controller) {
+					setIsStreaming(false);
+					abortControllerRef.current = null;
+				}
 			}
 		},
 		[
@@ -3455,7 +3480,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						definition={props.definition}
 						subComponentName="messagesContainer"
 					/>
-					<div className="_promptMessagesInner">
+					<div className="_promptMessagesInner" ref={messagesInnerRef}>
 						{hasEarlierMessages && (
 							<button
 								className="_loadEarlierMessages"
@@ -3473,10 +3498,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							</div>
 						)}
 						{messages.map(msg => {
-							const isLive =
-								isStreaming &&
-								msg.role === 'assistant' &&
-								msg.id === messages.at(-1)?.id;
+							const isLatest = msg.id === messages.at(-1)?.id;
+							const isLive = isStreaming && msg.role === 'assistant' && isLatest;
 							const parts =
 								msg.role === 'assistant'
 									? splitReply(
@@ -3493,8 +3516,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							const agentRunning = (msg.agentSpans ?? []).some(
 								sp => sp.status === 'running',
 							);
-							// A tool or sub-agent is running: its row or card shows the
-							// work, so no typing cursor meanwhile.
 							const working =
 								agentRunning || (msg.toolCalls ?? []).some(tc => tc.isRunning);
 							return (
@@ -3529,9 +3550,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 													}
 													toolCalls={showToolCalls ? part.toolCalls : []}
 													reasoningContent={part.thinking || undefined}
-													toolRunningIcon={toolRunningIcon}
-													toolSuccessIcon={toolSuccessIcon}
-													toolErrorIcon={toolErrorIcon}
 													expandIcon={expandIcon}
 													collapseIcon={collapseIcon}
 												/>
@@ -3559,18 +3577,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 										role={msg.role}
 										content={answer ? answer.content : msg.content}
 										pending={msg.pending}
-										copyText={
-											parts.length > 1
-												? parts
-														.map(part => part.content)
-														.filter(Boolean)
-														.join('\n\n')
-												: undefined
-										}
+										copyText={parts
+											.map(part => part.content)
+											.filter(Boolean)
+											.join('\n\n')}
 										componentKey={key ?? ''}
 										styles={styleProperties}
 										isStreaming={isLive}
-										typing={isLive && !working && !!answer?.content}
+										working={working}
 										definition={props.definition}
 										copyIcon={copyIcon}
 										copySuccessIcon={copySuccessIcon}
@@ -3586,10 +3600,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												<SuggestionButtons
 													suggestions={msg.suggestions}
 													onSelect={handleSend}
-													disabled={
-														isStreaming ||
-														msg.id !== messages.at(-1)?.id
-													}
+													disabled={isStreaming || !isLatest}
 												/>
 											)
 										}
@@ -3600,9 +3611,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												payload={payload}
 												confirmed={msg.dataConfirmed}
 												confirmedMeta={msg.dataConfirmedMeta}
-												disabled={
-													isStreaming || msg.id !== messages.at(-1)?.id
-												}
+												disabled={isStreaming || !isLatest}
 												onRespond={(sendText, displayText, meta) => {
 													setMessages(prev =>
 														prev.map(m =>

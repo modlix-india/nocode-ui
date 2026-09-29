@@ -71,20 +71,23 @@ describe('splitReply', () => {
 				thinking: firstThought,
 				content: leadIn + answer,
 				toolCalls: [],
-				agentSpans: [agent('a', 10), agent('b', 11)],
+				agentSpans: [agent('analyst', 10), agent('researcher', 11)],
 			},
-			[afterLeadIn('a'), afterLeadIn('b')],
+			[afterLeadIn('analyst'), afterLeadIn('researcher')],
 		);
-		expect(parts.map(p => p.agentSpans.map(a => a.key))).toEqual([['a', 'b'], []]);
+		expect(parts.map(p => p.agentSpans.map(a => a.key))).toEqual([
+			['analyst', 'researcher'],
+			[],
+		]);
 	});
 
 	it('still draws a card whose start was never recorded, with the answer', () => {
 		const parts = splitReply(
-			{ thinking: '', content: answer, toolCalls: [], agentSpans: [agent('a', 10)] },
+			{ thinking: '', content: answer, toolCalls: [], agentSpans: [agent('analyst', 10)] },
 			[],
 		);
 		expect(summarise(parts)).toEqual([
-			{ thinking: '', content: answer, toolCalls: [], agentSpans: ['a'] },
+			{ thinking: '', content: answer, toolCalls: [], agentSpans: ['analyst'] },
 		]);
 	});
 });

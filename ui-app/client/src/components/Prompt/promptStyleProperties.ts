@@ -12,12 +12,13 @@ import { StylePropertyDefinition } from '../../types/common';
  * Every default is the literal the component ships today, so an app that sets
  * none of these looks exactly as it did. Theming is opt-in per key.
  *
- * INVARIANT: PromptStyle text colors resolve ONLY from prompt-scoped keys
- * (promptFontColor / promptSecondaryFontColor / promptTertiaryFontColor),
- * never from the app-wide palette (fontColorOne/Two/Three). The adzump theme
- * sets fontColorTwo to #FFFFFF for its dark marketing surfaces, which made
- * every secondary line in the chat white-on-white (live 2026-09-10). The chat
- * owns its readability; apps recolor it only through these named keys.
+ * The chat's text colors resolve from its own keys (promptFontColor /
+ * promptSecondaryFontColor / promptTertiaryFontColor), not from the app-wide
+ * palette (fontColorOne/Two/Three). The adzump theme sets fontColorTwo to
+ * #FFFFFF for its dark marketing surfaces, which made every secondary line in
+ * the chat white-on-white (live 2026-09-10). Two rules still read the app
+ * palette and should move over when next touched: the expired attachment chip
+ * (fontColorThree) and the steer button (fontColorOne).
  */
 export const styleProperties: Array<StylePropertyDefinition> = [
 	// ─── Text tones (no sel/cp: resolved inline by PromptStyle's t(), declared
@@ -31,7 +32,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	{
 		gn: 'Prompt Surface',
 		dn: 'Tertiary Font Color',
-		de: 'Timestamps, placeholders, muted hints - all low-emphasis text',
+		de: 'Timestamps, durations, muted hints - all low-emphasis text',
 		n: 'promptTertiaryFontColor',
 	},
 	// ─── Shell ───
@@ -309,11 +310,14 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 	},
 
 	// ─── Icons (composer + quick actions; send icon is Prompt Accent) ───
+	// Each `dv` points at the text tone the icon is drawn in, so an app that sets
+	// the tone recolors the icon with it, and one that sets neither keeps the
+	// literal in PromptStyle.tsx (see Prompt Notices below for how that resolves).
 	{
 		gn: 'Prompt Icons',
 		dn: 'Attachment Icon Color',
 		n: 'promptAttachmentIconColor',
-		dv: '#6b6b6b',
+		dv: '<promptSecondaryFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._addAttachmentButton',
 		np: true,
@@ -322,7 +326,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Icons',
 		dn: 'Attachment Icon Hover Color',
 		n: 'promptAttachmentIconHoverColor',
-		dv: '#1a1a1a',
+		dv: '<promptFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._addAttachmentButton:hover',
 		np: true,
@@ -340,7 +344,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Icons',
 		dn: 'Quick Action Icon Color',
 		n: 'promptQuickActionIconColor',
-		dv: '#6b6b6b',
+		dv: '<promptSecondaryFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._quickActionIcon',
 		np: true,
@@ -349,7 +353,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Icons',
 		dn: 'Microphone Icon Color',
 		n: 'promptMicIconColor',
-		dv: '#6b6b6b',
+		dv: '<promptSecondaryFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._micButton',
 		np: true,
@@ -358,7 +362,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Icons',
 		dn: 'Microphone Icon Hover Color',
 		n: 'promptMicIconHoverColor',
-		dv: '#1a1a1a',
+		dv: '<promptFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._micButton:hover',
 		np: true,
@@ -375,9 +379,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 
 	// ─── Agent activity card ───
 	// Monochrome by design rule: state is carried by fill and motion, never hue.
-	// These defaults deliberately override the generic palette tokens the base
-	// stylesheet resolves (an app theme that colors fontColorThree must not tint
-	// the activity card); tint per app by setting these keys instead.
+	// Text colors default to the chat's text tones, so setting a tone recolors
+	// the card with the rest of the chat; these keys tint just the card. Fills
+	// and borders keep literal defaults, so the app-wide palette never tints it.
 	{
 		gn: 'Prompt Agent Activity',
 		dn: 'Agent Card Background',
@@ -409,7 +413,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Agent Activity',
 		dn: 'Agent Card Title Font Color',
 		n: 'promptAgentCardTitleFontColor',
-		dv: '#1a1a1a',
+		dv: '<promptFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._agentCardTitle',
 		np: true,
@@ -427,7 +431,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Agent Activity',
 		dn: 'Agent Card Time Chip Font Color',
 		n: 'promptAgentCardTimeFontColor',
-		dv: '#8c8a80',
+		dv: '<promptTertiaryFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._agentCardTime',
 		np: true,
@@ -463,7 +467,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Agent Activity',
 		dn: 'Agent Name Font Color',
 		n: 'promptAgentNameFontColor',
-		dv: '#1a1a1a',
+		dv: '<promptFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._agentItemName',
 		np: true,
@@ -473,7 +477,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Agent Progress Font Color',
 		de: 'The live doing-line under an agent name, and the settled outcome line',
 		n: 'promptAgentDoingFontColor',
-		dv: '#5b5a53',
+		dv: '<promptSecondaryFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._agentDoing',
 		np: true,
@@ -483,7 +487,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Agent Thinking Font Color',
 		de: 'The streamed sub-agent reasoning quote',
 		n: 'promptAgentThinkingFontColor',
-		dv: '#8c8a80',
+		dv: '<promptTertiaryFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._agentThink',
 		np: true,
@@ -501,9 +505,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Agent Activity',
 		dn: 'Tool Name Font Color',
 		n: 'promptAgentToolNameFontColor',
-		dv: '#1a1a1a',
+		dv: '<promptFontColor>',
 		cp: 'color',
-		sel: '.comp.compPrompt ._agentToolName',
+		sel: '.comp.compPrompt ._agentCardToolName',
 		np: true,
 	},
 	{
@@ -511,9 +515,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Tool Progress Font Color',
 		de: 'The in-place tool_update line while a tool runs',
 		n: 'promptAgentToolLiveFontColor',
-		dv: '#5b5a53',
+		dv: '<promptSecondaryFontColor>',
 		cp: 'color',
-		sel: '.comp.compPrompt ._agentTool._live ._agentToolLive',
+		sel: '.comp.compPrompt ._agentCardTool._live ._agentCardToolLive',
 		np: true,
 	},
 	{
@@ -521,9 +525,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Tool Result Font Color',
 		de: 'The settled summary line after tool_result',
 		n: 'promptAgentToolResultFontColor',
-		dv: '#8c8a80',
+		dv: '<promptTertiaryFontColor>',
 		cp: 'color',
-		sel: '.comp.compPrompt ._agentTool._settled ._agentToolLive',
+		sel: '.comp.compPrompt ._agentCardTool._settled ._agentCardToolLive',
 		np: true,
 	},
 	{
@@ -531,9 +535,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Tool History Font Color',
 		de: 'Past tool_update lines revealed by expanding a settled tool row',
 		n: 'promptAgentToolHistoryFontColor',
-		dv: '#b6b4a9',
+		dv: '<promptTertiaryFontColor>',
 		cp: 'color',
-		sel: '.comp.compPrompt ._agentToolHistLine',
+		sel: '.comp.compPrompt ._agentCardToolHistLine',
 		np: true,
 	},
 	{
@@ -562,7 +566,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Thinking',
 		dn: 'Thinking Label Font Color',
 		n: 'promptThinkingLabelFontColor',
-		dv: '#8b8b8b',
+		dv: '<promptTertiaryFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._thinkingLabel',
 		np: true,
@@ -571,7 +575,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Prompt Thinking',
 		dn: 'Thinking Reasoning Font Color',
 		n: 'promptThinkingReasoningFontColor',
-		dv: '#8c8a80',
+		dv: '<promptTertiaryFontColor>',
 		cp: 'color',
 		sel: '.comp.compPrompt ._thinkingReasoning',
 		np: true,
