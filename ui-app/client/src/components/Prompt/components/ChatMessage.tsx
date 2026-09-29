@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { MarkdownParser } from '../../../commonComponents/Markdown/MarkdownParser';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
@@ -60,16 +60,14 @@ export function ChatMessage({
 }: Readonly<ChatMessageProps>) {
 	const [copied, setCopied] = useState(false);
 	const copyValue = copyText ?? content;
-	const shown = useTypedText(content, !!isStreaming);
-	const revealing = shown.length < content.length;
-	// Chips and copy buttons arrive together, once, after the last word.
-	const settled = !isStreaming && !revealing;
-	const withActions = showActions && !!copyValue;
-	// Only a reply that was live here fades in; opening an old chat doesn't.
+	// Only a reply that was live here types out and fades in; an old chat shows at once.
 	const [wasLive, setWasLive] = useState(!!isStreaming);
-	useEffect(() => {
-		if (isStreaming) setWasLive(true);
-	}, [isStreaming]);
+	if (isStreaming && !wasLive) setWasLive(true);
+	const shown = useTypedText(content, wasLive);
+	const catchingUp = shown.length < content.length;
+	// Chips and copy buttons arrive together, once, after the last word.
+	const settled = !isStreaming && !catchingUp;
+	const withActions = showActions && !!copyValue;
 
 	const handleCopy = useCallback(() => {
 		navigator.clipboard.writeText(copyValue).then(() => {
@@ -108,7 +106,7 @@ export function ChatMessage({
 			<SubHelperComponent definition={definition} subComponentName="assistantMessage" />
 			<div className="_assistantContent">
 				<MarkdownParser componentKey={componentKey} text={shown} styles={styles ?? {}} />
-				{(typing || revealing) && <span className="_streamingCursor" />}
+				{(typing || catchingUp) && <span className="_streamingCursor" />}
 				{children}
 				{settled && (footer || withActions) && (
 					<div className={wasLive ? '_replySettled _entering' : '_replySettled'}>

@@ -18,7 +18,7 @@ import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import { ChatMessage } from './components/ChatMessage';
-import { replyParts, type CardMark } from './replyParts';
+import { splitReply, type AgentStart } from './replyParts';
 import { ThinkingBlock } from './components/ThinkingBlock';
 import { AgentGroup } from './components/AgentGroup';
 import { ActionBlock, ConfirmationAction } from './components/ActionBlock';
@@ -66,8 +66,8 @@ interface Message {
 	dataConfirmedMeta?: Record<string, any>;
 	craftIds?: string[];
 	confirmationActions?: ConfirmationAction[];
-	/** Where the text and thinking stood as each sub-agent card started (replyParts). */
-	cardMarks?: CardMark[];
+	/** How far this reply had got as each sub-agent started, so its card is drawn there. */
+	agentStarts?: AgentStart[];
 	/**
 	 * A steer (a message sent mid-run) that the agent has not acknowledged yet.
 	 * Drawn faded: it is on its way to a turn already in progress, and only the
@@ -90,7 +90,7 @@ interface ToolCall {
 }
 
 interface AgentSpan {
-	/** The per-spawn key it is stored under, which its card mark names. */
+	/** The per-spawn key it is stored under, and that its AgentStart names. */
 	key: string;
 	agentId: string;
 	label: string;
@@ -325,14 +325,14 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				toolCalls: [],
 			});
 			flushMessageState(ctx);
-			// So text written before this card is drawn above it (replyParts).
+			// Recorded so the text written before this card is drawn above it.
 			ctx.setMessages(prev =>
 				prev.map(m =>
 					m.id === ctx.assistantMsgId
 						? {
 								...m,
-								cardMarks: [
-									...(m.cardMarks ?? []),
+								agentStarts: [
+									...(m.agentStarts ?? []),
 									{
 										spanKey,
 										contentLength: m.content.length,
@@ -2251,7 +2251,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 													thinking: undefined,
 													toolCalls: [],
 													agentSpans: [],
-													cardMarks: undefined,
+													agentStarts: undefined,
 													suggestions: undefined,
 													data: undefined,
 												}
@@ -3479,12 +3479,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								msg.id === messages.at(-1)?.id;
 							const parts =
 								msg.role === 'assistant'
-									? replyParts(
-											msg.content,
-											msg.thinking ?? '',
-											orchestratorToolCalls(msg),
-											msg.agentSpans ?? [],
-											msg.cardMarks ?? [],
+									? splitReply(
+											{
+												thinking: msg.thinking ?? '',
+												content: msg.content,
+												toolCalls: orchestratorToolCalls(msg),
+												agentSpans: msg.agentSpans ?? [],
+											},
+											msg.agentStarts ?? [],
 										)
 									: [];
 							const answer = parts.at(-1);
@@ -3543,9 +3545,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 														showActions={false}
 													/>
 												)}
-												{part.spans.length > 0 && (
+												{part.agentSpans.length > 0 && (
 													<AgentGroup
-														spans={part.spans}
+														spans={part.agentSpans}
 														expandIcon={expandIcon}
 														collapseIcon={collapseIcon}
 													/>

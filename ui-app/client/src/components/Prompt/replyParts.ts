@@ -1,98 +1,101 @@
 /**
- * A reply drawn in the order it happened. The stream keeps one text string and
- * one thinking string per reply, so each sub-agent card records where both
- * stood when it started (a CardMark). The reply then splits at those marks:
+ * A reply cut into the parts it is drawn as, so it reads in the order it happened.
  *
- *   part 1: thinking, tool rows and text before the first card, then that card
- *   part 2: what came after it, up to the next card, then that card
- *   ...
- *   last:   what came after the last card (the answer, its chips)
+ * Split out of LazyPrompt because the cut has rules worth testing on their own.
  *
- * Cards that start with no new text or thinking between them (parallel or
- * nested sub-agents) share one part. A reply with no cards is one part.
+ * A message keeps all the orchestrator's text as one string and all its thinking
+ * as another, however many sub-agents ran in between. Drawn as stored, the text
+ * written before a sub-agent's card landed under it, and the text on either side
+ * of the card ran together ("for you.Here are"). So each sub-agent records how
+ * far the reply had got when it started (an AgentStart), and the reply is cut
+ * there.
  */
 
-export interface CardMark {
+/** How far a reply had got when one of its sub-agents started. */
+export interface AgentStart {
+	/** The started agent's `AgentSpan.key`. */
 	spanKey: string;
+	/** Length of the reply's text at that moment. */
 	contentLength: number;
+	/** Length of the reply's thinking at that moment. */
 	thinkingLength: number;
 }
 
-export interface ReplyPart<T, S> {
+/**
+ * One part of a reply, drawn top to bottom: its thinking and tool rows, its
+ * text, then the cards of the sub-agents that started after that text.
+ *
+ * The fields are named as on LazyPrompt's Message, so a whole reply is a part
+ * too: the one `splitReply` starts from.
+ */
+export interface ReplyPart<Tool, Agent> {
 	thinking: string;
 	content: string;
-	toolCalls: T[];
-	/** Cards drawn after this part's text. */
-	spans: S[];
+	/** The orchestrator's own tool rows. A sub-agent's are drawn inside its card. */
+	toolCalls: Tool[];
+	/** Sub-agents in the order they started. */
+	agentSpans: Agent[];
 }
 
-interface Boundary {
-	contentLength: number;
-	thinkingLength: number;
-	startedAt: number;
-	spanKeys: Set<string>;
-}
+/**
+ * Cut a reply at the points its sub-agents started.
+ *
+ * Every part but the last ends with the cards that started there; the last part
+ * is the answer. Sub-agents that started with nothing written between them
+ * (several at once, or one starting another) share a part, so their cards are
+ * drawn as one group. A reply with no sub-agents comes back as one part.
+ *
+ * Tool rows are placed by time rather than position: a tool belongs to the part
+ * that was being written when it started.
+ */
+export function splitReply<
+	Tool extends { startedAt?: number },
+	Agent extends { key: string; startedAt: number },
+>(reply: ReplyPart<Tool, Agent>, starts: AgentStart[]): ReplyPart<Tool, Agent>[] {
+	const parts: ReplyPart<Tool, Agent>[] = [];
+	// A sub-agent with no recorded start is not expected, but its card still
+	// shows, with the answer, rather than silently disappearing.
+	const unplaced: Agent[] = [];
+	// Where the part being cut begins.
+	let contentFrom = 0;
+	let thinkingFrom = 0;
+	let timeFrom = -Infinity;
 
-export function replyParts<
-	T extends { startedAt?: number },
-	S extends { key: string; startedAt: number },
->(
-	content: string,
-	thinking: string,
-	toolCalls: T[],
-	spans: S[],
-	marks: CardMark[],
-): ReplyPart<T, S>[] {
-	const spanByKey = new Map(spans.map(sp => [sp.key, sp]));
-	const boundaries: Boundary[] = [];
-	const marked = new Set<string>();
-	for (const mark of marks) {
-		const span = spanByKey.get(mark.spanKey);
-		if (!span || marked.has(mark.spanKey)) continue;
-		marked.add(mark.spanKey);
-		const last = boundaries.at(-1);
-		if (
-			last &&
-			last.contentLength === mark.contentLength &&
-			last.thinkingLength === mark.thinkingLength
-		) {
-			last.spanKeys.add(mark.spanKey);
+	for (const agent of reply.agentSpans) {
+		const start = starts.find(s => s.spanKey === agent.key);
+		if (!start) {
+			unplaced.push(agent);
 			continue;
 		}
-		boundaries.push({
-			contentLength: mark.contentLength,
-			thinkingLength: mark.thinkingLength,
-			startedAt: span.startedAt,
-			spanKeys: new Set([mark.spanKey]),
+
+		const nothingWrittenSince =
+			start.contentLength === contentFrom && start.thinkingLength === thinkingFrom;
+		if (nothingWrittenSince && parts.length) {
+			parts[parts.length - 1].agentSpans.push(agent);
+			continue;
+		}
+
+		parts.push({
+			thinking: reply.thinking.slice(thinkingFrom, start.thinkingLength),
+			content: reply.content.slice(contentFrom, start.contentLength),
+			toolCalls: reply.toolCalls.filter(
+				tc => startTime(tc) >= timeFrom && startTime(tc) < agent.startedAt,
+			),
+			agentSpans: [agent],
 		});
+		contentFrom = start.contentLength;
+		thinkingFrom = start.thinkingLength;
+		timeFrom = agent.startedAt;
 	}
 
-	const parts: ReplyPart<T, S>[] = [];
-	let from = { content: 0, thinking: 0, startedAt: -Infinity };
-	const placed = new Set<string>();
-	for (const b of boundaries) {
-		parts.push({
-			thinking: thinking.slice(from.thinking, b.thinkingLength),
-			content: content.slice(from.content, b.contentLength),
-			toolCalls: toolCalls.filter(
-				tc => startedAt(tc) >= from.startedAt && startedAt(tc) < b.startedAt,
-			),
-			spans: spans.filter(sp => b.spanKeys.has(sp.key)),
-		});
-		b.spanKeys.forEach(k => placed.add(k));
-		from = { content: b.contentLength, thinking: b.thinkingLength, startedAt: b.startedAt };
-	}
 	parts.push({
-		thinking: thinking.slice(from.thinking),
-		content: content.slice(from.content),
-		toolCalls: toolCalls.filter(tc => startedAt(tc) >= from.startedAt),
-		// A card with no mark (never expected) still shows, in the last part.
-		spans: spans.filter(sp => !placed.has(sp.key)),
+		thinking: reply.thinking.slice(thinkingFrom),
+		content: reply.content.slice(contentFrom),
+		toolCalls: reply.toolCalls.filter(tc => startTime(tc) >= timeFrom),
+		agentSpans: unplaced,
 	});
 	return parts;
 }
 
-// A tool with no start time belongs to the last part.
-function startedAt(tc: { startedAt?: number }): number {
-	return tc.startedAt ?? Infinity;
-}
+// A tool with no start time counts as the latest, so it lands in the last part.
+const startTime = (tc: { startedAt?: number }) => tc.startedAt ?? Infinity;
