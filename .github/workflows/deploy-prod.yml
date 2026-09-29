@@ -94,4 +94,36 @@ jobs:
       - name: Deploy to production server
         run: |
           ssh -i /home/ubuntu/keys/prod-internal.key opc@${{ secrets.PROD_SERVER_IP }} \
-            "bash /home/opc/scripts/keepup.sh deploy ssr-server ocir.us-ashburn-1.oci.oraclecloud.com/idfmutpuhiky/prod-ssr-server:${{ needs.build-and-deploy.outputs.image_tag }} 2>&1 | tee -a /var/log/keepup.log"
+            "set -o pipefail; bash /home/opc/scripts/keepup.sh deploy ssr-server ocir.us-ashburn-1.oci.oraclecloud.com/idfmutpuhiky/prod-ssr-server:${{ needs.build-and-deploy.outputs.image_tag }} 2>&1 | tee -a /var/log/keepup.log"
+
+  # Regional SSR nodes. A separate job per region rather than a matrix, because
+  # the `secrets` context is not available inside `strategy.matrix`, and rather
+  # than extra steps in the job above, because a region that fails to deploy must
+  # not mark the Ashburn deployment as failed or block the next region.
+  #
+  # The image is the same one Ashburn runs, pulled from the Ashburn registry --
+  # prod-in-bridge-01 already does exactly this from Mumbai, so the path is
+  # proven. What differs per region is the SSR_REGION the container starts with,
+  # which selects the `ssr-<region>.` block in the config server; that lives in
+  # the region's compose file, not here.
+  #
+  # No ProxyJump, for the same reason the whatsapp-bridge workflow documents: the
+  # self-hosted runner IS the jumphost (172.16.0.107), so a -J hop would make it
+  # connect to its own public IP and time out. Mumbai's subnet admits SSH from
+  # 172.16.0.0/16 over the DRG peering, which is exactly where the runner sits.
+  deploy-ssr-in:
+    needs: build-and-deploy
+    runs-on: self-hosted
+
+    steps:
+      # prod-external.key, not the prod-internal.key the Ashburn job above uses.
+      # The two hosts trust different keys and are deliberately kept that way, so
+      # a key that reaches one does not reach the other. This key must be present
+      # on the runner at the path below; it is the only prerequisite this job has
+      # beyond the PROD_IN_LB_IP secret.
+      - name: Deploy to Mumbai SSR node
+        run: |
+          ssh -o StrictHostKeyChecking=accept-new \
+              -i /home/ubuntu/keys/prod-external.key \
+              opc@${{ secrets.PROD_IN_LB_IP }} \
+            "set -o pipefail; bash /home/opc/scripts/keepup.sh deploy ssr-server ocir.us-ashburn-1.oci.oraclecloud.com/idfmutpuhiky/prod-ssr-server:${{ needs.build-and-deploy.outputs.image_tag }} 2>&1 | tee -a /var/log/keepup.log"
