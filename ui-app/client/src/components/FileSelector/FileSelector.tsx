@@ -22,6 +22,7 @@ import { flattenUUID } from '../util/uuid';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import getSrcUrl from '../util/getSrcUrl';
+import { fileSelectorStoredValue } from './storedValue';
 import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 
@@ -72,6 +73,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			UploadPlaceholderText,
 			label,
 			analyticsLabel,
+			valueType,
 			fullUrl,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -118,22 +120,12 @@ function FileSelector(props: Readonly<ComponentProps>) {
 		directory: boolean;
 	}>();
 
-	// What actually lands on the binding path. By default that is exactly what
-	// the browser or the upload handed back; with `fullUrl` it is an absolute
-	// URL, because a value that leaves the app - a PWA manifest entry, an email,
-	// an API payload - is read by something that has no idea what this app's
-	// origin is. getSrcUrl gives the CDN host when one is configured and returns
-	// its input untouched when none is, so the page origin is the floor.
+	// `valueType` picks the shape, `fullUrl` picks how the url inside it reads.
+	// See storedValue.ts.
 	const toStoredValue = React.useCallback(
-		(value: FileSelectorValue | any): any => {
-			if (!fullUrl || !value) return value;
-			const raw = typeof value === 'string' ? value : (value?.url ?? '');
-			if (!raw) return value;
-			const cdn = getSrcUrl(raw);
-			if (/^[a-z]+:\/\//i.test(cdn)) return cdn;
-			return window.location.origin + (cdn.startsWith('/') ? cdn : '/' + cdn);
-		},
-		[fullUrl],
+		(value: FileSelectorValue | any): any =>
+			fileSelectorStoredValue(value, valueType, !!fullUrl, window.location.origin),
+		[valueType, fullUrl],
 	);
 
 	function getFileUrl(selectedFile: FileSelectorValue): string {
@@ -978,7 +970,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Selected File URL Binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

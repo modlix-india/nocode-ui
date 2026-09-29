@@ -33,7 +33,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'value binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

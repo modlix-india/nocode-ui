@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { LOCAL_STORE_PREFIX } from '../../constants';
-import { getDataFromPath } from '../../context/StoreContext';
 import {
 	DraftGrant,
 	extendDraftToken,
@@ -215,15 +213,18 @@ export function PagePreview({
 		let cancelled = false;
 		let timer: any = null;
 		let grant: DraftGrant | undefined;
-		const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
 
 		// Extend, never rotate: the token IS the hostname, so a new value is a new
 		// origin and would reload the frame, losing scroll and anything the
 		// previewed page holds in its own store.
+		//
+		// The session token is read inside each call rather than captured here: this
+		// loop outlives the access token, which is rotated (and the old value
+		// revoked) every half hour or so.
 		const beat = () => {
 			timer = setTimeout(async () => {
 				if (cancelled || !grant) return;
-				const extended = await extendDraftToken(grant.token, authToken);
+				const extended = await extendDraftToken(grant.token);
 				if (cancelled) return;
 				if (extended) grant = extended;
 				beat();
@@ -231,7 +232,7 @@ export function PagePreview({
 		};
 
 		(async () => {
-			grant = await mintDraftToken(shownApp, authToken);
+			grant = await mintDraftToken(shownApp);
 			if (cancelled) return;
 			setDraftOrigin(grant ? `https://${grant.host}` : '');
 			if (grant) beat();
@@ -260,15 +261,12 @@ export function PagePreview({
 	const draftUrl = draftOrigin === undefined ? undefined : draftOrigin || liveOrigin;
 	const draftPath = draftOrigin ? appHostPath : gatewayPath;
 
-	const src =
-		surface === 'draft'
-			? previewSrc(draftOrigin, draftPath)
-			: gatewayPath || undefined;
+	const src = surface === 'draft' ? previewSrc(draftOrigin, draftPath) : gatewayPath || undefined;
 
 	// The host the surface on screen resolves to. '' while a grant is still being
 	// minted -- the box then shows the path alone and fills the host in a moment
 	// later, which is honest about what is known.
-	const shownOrigin = surface === 'draft' ? draftUrl ?? '' : liveOrigin;
+	const shownOrigin = surface === 'draft' ? (draftUrl ?? '') : liveOrigin;
 	const shownPath = surface === 'draft' ? draftPath : gatewayPath;
 	// Shown complete, not as a bare path. Draft and live differ ONLY by hostname,
 	// so `/sampleAI` cannot tell you which of the two you are looking at, and it

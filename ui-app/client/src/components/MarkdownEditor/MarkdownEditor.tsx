@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
-import { styleProperties, styleDefaults } from './markdownEditorStyleProperties';
+import { styleDefaults, stylePropertiesForTheme } from './markdownEditorStyleProperties';
 
 const LazyMarkdownEditor = React.lazy(
 	() => import(/* webpackChunkName: "MarkdownEditor" */ './LazyMarkdownEditor'),
@@ -36,7 +36,7 @@ const component: Component = {
 		bindingPath: { name: 'Markdown Text' },
 	},
 	sections: [],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 };
 
 export default component;

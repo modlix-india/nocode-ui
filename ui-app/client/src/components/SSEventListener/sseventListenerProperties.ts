@@ -3,7 +3,7 @@ import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
 	ComponentPropertyGroup,
-	ComponentStylePropertyDefinition
+	ComponentStylePropertyDefinition,
 } from '../../types/common';
 
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
@@ -47,7 +47,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 0,
 		hide: true,
-	},	
+	},
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {

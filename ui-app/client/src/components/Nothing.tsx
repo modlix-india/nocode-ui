@@ -21,7 +21,7 @@ const component: Component = {
 	properties: [],
 	isHidden: true,
 	styleDefaults: new Map<string, string>(),
-	stylePropertiesForTheme: []
+	stylePropertiesForTheme: [],
 };
 
 export default component;

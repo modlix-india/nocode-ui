@@ -4,10 +4,11 @@
 	"description": "SSR service for Modlix no-code platform",
 	"type": "module",
 	"scripts": {
-		"dev": "tsx watch src/server.ts",
-		"prebuild": "node scripts/generateBuildInfo.js",
+		"dev": "node scripts/copyShared.js && tsx watch src/server.ts",
+		"prebuild": "node scripts/generateBuildInfo.js && node scripts/copyShared.js",
 		"build": "tsc",
-		"start": "node dist/server.js"
+		"start": "node dist/server.js",
+		"test": "node --import tsx --test \"src/**/__tests__/*.test.ts\""
 	},
 	"dependencies": {
 		"ioredis": "^5.4.1"

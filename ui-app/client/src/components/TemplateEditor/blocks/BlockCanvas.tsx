@@ -78,13 +78,14 @@ export default function BlockCanvas({
 			{htmlWithoutDesign && list.length === 0 && (
 				<div className="_canvasNote">
 					<p>
-						This part is authored as HTML. Import it into editable blocks (custom layout is
-						simplified; your content is kept), keep editing in <strong>Code</strong>, or drop
-						a block below to start fresh.
+						This part is authored as HTML. Import it into editable blocks (custom layout
+						is simplified; your content is kept), keep editing in <strong>Code</strong>,
+						or drop a block below to start fresh.
 					</p>
 					{onImportHtml && (
 						<button type="button" className="_importBtn" onClick={onImportHtml}>
-							<i className="fa fa-solid fa-wand-magic-sparkles" /> Import HTML into blocks
+							<i className="fa fa-solid fa-wand-magic-sparkles" /> Import HTML into
+							blocks
 						</button>
 					)}
 				</div>

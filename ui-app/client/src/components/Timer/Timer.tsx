@@ -156,7 +156,7 @@ const component = {
 			repeatCount: { value: -1 },
 		},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -17,6 +17,8 @@ interface ChatMessageProps {
 	showActions?: boolean;
 	/** What Copy copies, when it's more than this part (the whole reply). */
 	copyText?: string;
+	/** A steer on its way to a running turn: sent, not yet read by the agent. */
+	pending?: boolean;
 	definition: ComponentDefinition;
 	copyIcon?: string;
 	copySuccessIcon?: string;
@@ -42,6 +44,7 @@ export function ChatMessage({
 	typing,
 	showActions = true,
 	copyText,
+	pending,
 	definition,
 	copyIcon = 'fa fa-clone',
 	copySuccessIcon = 'fa fa-check',
@@ -89,7 +92,11 @@ export function ChatMessage({
 
 	if (role === 'user') {
 		return (
-			<div className="_promptMessage _user" style={styles?.userMessage ?? {}}>
+			<div
+				className={`_promptMessage _user${pending ? ' _pending' : ''}`}
+				style={styles?.userMessage ?? {}}
+				title={pending ? 'Sending to the agent...' : undefined}
+			>
 				<SubHelperComponent definition={definition} subComponentName="userMessage" />
 				<span>{content}</span>
 			</div>

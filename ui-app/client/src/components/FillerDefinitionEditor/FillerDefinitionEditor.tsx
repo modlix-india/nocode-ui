@@ -38,7 +38,7 @@ const component: Component = {
 		name: 'Filler Definition Editor',
 		type: 'FillerDefinitionEditor',
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

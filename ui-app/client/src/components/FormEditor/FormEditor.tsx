@@ -31,7 +31,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Form Schema Binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

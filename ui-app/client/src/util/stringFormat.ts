@@ -509,7 +509,7 @@ const FORMATTING_FUNCTIONS = new Map<string, (str: string, additionalProps?: any
 ]);
 
 function numberFormattingCurry(format: string) {
-	return (str: any, additionalProps:any = {}) => {
+	return (str: any, additionalProps: any = {}) => {
 		let numb = typeof str === 'number' ? str : parseFloat(str);
 		if (isNaN(numb)) return str;
 		const formatter = new Intl.NumberFormat(format, { style: 'decimal', ...additionalProps });
@@ -517,7 +517,7 @@ function numberFormattingCurry(format: string) {
 	};
 }
 
-export function formatString(str: string, format: string, additionalProps:any={}): string {
+export function formatString(str: string, format: string, additionalProps: any = {}): string {
 	if (!format || !str) return str;
 	const formattingFunction = FORMATTING_FUNCTIONS.get(format);
 	return formattingFunction ? formattingFunction(str, additionalProps) : str;

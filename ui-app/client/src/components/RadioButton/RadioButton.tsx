@@ -276,7 +276,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Radio Button', pageName: 'radioButton' }],
-		stylePropertiesForTheme: stylePropertiesForTheme,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	propertiesForTheme: [designType, colorScheme],
 };
 

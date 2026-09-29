@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { VariableEntry } from '../util/variableUtils';
-import { Block, BLOCK_TYPES, BlockPropField, COMMON_STYLE_FIELDS, NO_STYLE_WRAPPER } from './blockTypes';
+import {
+	Block,
+	BLOCK_TYPES,
+	BlockPropField,
+	COMMON_STYLE_FIELDS,
+	NO_STYLE_WRAPPER,
+} from './blockTypes';
 
 interface BlockPropertiesPanelProps {
 	block: Block;
@@ -30,7 +36,9 @@ function Field({
 					className="_bpInput"
 					type="number"
 					value={value ?? ''}
-					onChange={e => onChange(e.target.value === '' ? undefined : Number(e.target.value))}
+					onChange={e =>
+						onChange(e.target.value === '' ? undefined : Number(e.target.value))
+					}
 				/>
 			);
 		case 'color':
@@ -107,7 +115,11 @@ export default function BlockPropertiesPanel({
 			{def.fields.map(f => (
 				<label className="_bpField" key={f.key}>
 					<span>{f.label}</span>
-					<Field field={f} value={block.props?.[f.key]} onChange={v => onChange({ [f.key]: v })} />
+					<Field
+						field={f}
+						value={block.props?.[f.key]}
+						onChange={v => onChange({ [f.key]: v })}
+					/>
 				</label>
 			))}
 

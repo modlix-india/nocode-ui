@@ -239,7 +239,12 @@ export function applyDefaultTime(
 			break;
 		case 'now':
 			const now = new Date();
-			result.setHours(now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds());
+			result.setHours(
+				now.getHours(),
+				now.getMinutes(),
+				now.getSeconds(),
+				now.getMilliseconds(),
+			);
 			break;
 		default:
 			result.setHours(0, 0, 0, 0);
@@ -247,4 +252,3 @@ export function applyDefaultTime(
 
 	return result;
 }
-

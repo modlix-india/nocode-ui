@@ -17,7 +17,7 @@ import {
 	localStoreExtractor,
 	setData,
 	storeExtractor,
-	themeExtractor
+	themeExtractor,
 } from '../../context/StoreContext';
 import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 import { UIFunctionRepository } from '../../functions';
@@ -57,7 +57,7 @@ if (typeof globalThis !== 'undefined') {
 // Add listener for debug executions to send to PageEditor
 // Only add listener if in design mode or debug mode
 if (typeof globalThis !== 'undefined' && (globalThis.isDesignMode || globalThis.isDebugMode)) {
-	DebugCollector.getInstance().addEventListener((event) => {
+	DebugCollector.getInstance().addEventListener(event => {
 		// Only send executionEnd events when in PAGE design mode
 		if (event.type === 'executionEnd' && globalThis.designMode === 'PAGE') {
 			try {
@@ -175,37 +175,32 @@ export const runEvent = async (
 
 		const eid = `${key}_${shortUUID()}`;
 		const functionRepository = new HybridRepository(
-				UI_FUN_REPO,
-				new PageDefintionFunctionsRepository(pageDefinition),
-				RemoteRepository.getRemoteFunctionRepository(
-					undefined,
-					undefined,
-					false,
-					REPO_SERVER.CORE,
-				),
-				RemoteRepository.getRemoteFunctionRepository(
-					undefined,
-					undefined,
-					false,
-					REPO_SERVER.UI,
-				),
-			);
+			UI_FUN_REPO,
+			new PageDefintionFunctionsRepository(pageDefinition),
+			RemoteRepository.getRemoteFunctionRepository(
+				undefined,
+				undefined,
+				false,
+				REPO_SERVER.CORE,
+			),
+			RemoteRepository.getRemoteFunctionRepository(
+				undefined,
+				undefined,
+				false,
+				REPO_SERVER.UI,
+			),
+		);
 
 		const schemaRepository = new HybridRepository(
-				UI_SCHEMA_REPO,
-				RemoteRepository.getRemoteSchemaRepository(
-					undefined,
-					undefined,
-					false,
-					REPO_SERVER.CORE,
-				),
-				RemoteRepository.getRemoteSchemaRepository(
-					undefined,
-					undefined,
-					false,
-					REPO_SERVER.UI,
-				),
-			);
+			UI_SCHEMA_REPO,
+			RemoteRepository.getRemoteSchemaRepository(
+				undefined,
+				undefined,
+				false,
+				REPO_SERVER.CORE,
+			),
+			RemoteRepository.getRemoteSchemaRepository(undefined, undefined, false, REPO_SERVER.UI),
+		);
 
 		const runtime = new KIRuntime(def, isDesignMode || isDebugMode);
 		const fep = new FunctionExecutionParameters(
@@ -216,14 +211,14 @@ export const runEvent = async (
 		if (args) {
 			fep.setArguments(args);
 		}
-		
+
 		if (runSequentially) {
 			while (getDataFromPath(isRunningPath, locationHistory)) {
 				await new Promise(resolve => setTimeout(resolve, 100));
 			}
 		}
 
-		if (isDebugMode || isDesignMode){
+		if (isDebugMode || isDesignMode) {
 			if (!globalThis.debugContext) globalThis.debugContext = {};
 			// In the Page Editor the master already holds the page definition and nothing
 			// reads the repositories back out of debugContext, so keep only the lightweight
@@ -231,16 +226,16 @@ export const runEvent = async (
 			globalThis.debugContext[eid] =
 				globalThis.designMode === 'PAGE'
 					? {
-						locationHistory,
-						tokenValueExtractors: valuesMap,
-					}
+							locationHistory,
+							tokenValueExtractors: valuesMap,
+						}
 					: {
-						pageDefinition,
-						functionRepository,
-						schemaRepository,
-						locationHistory,
-						tokenValueExtractors: valuesMap,
-					};
+							pageDefinition,
+							functionRepository,
+							schemaRepository,
+							locationHistory,
+							tokenValueExtractors: valuesMap,
+						};
 			// Bound the map: drop the oldest entries once we exceed the cap.
 			debugContextOrder.push(eid);
 			while (debugContextOrder.length > DEBUG_CONTEXT_MAX) {

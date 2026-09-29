@@ -1,7 +1,11 @@
 import { StyleResolution } from '../../types/common';
 import { useEffect, useState } from 'react';
 import { usedComponents } from '../../App/usedComponents';
-import { processStyleDefinition, StyleResolutionDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
+import {
+	processStyleDefinition,
+	StyleResolutionDefinition,
+	processStyleValueWithFunction,
+} from '../../util/styleProcessor';
 import { lazyCSSURL } from '../util/lazyStylePropertyUtil';
 import { styleDefaults, styleProperties } from './pageEditorStyleProperties';
 

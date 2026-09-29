@@ -159,8 +159,7 @@ const component: Component = {
 			jot: { value: 'fa-solid fa-jots' },
 		},
 	},
-	sections: [{ name: 'Jots', pageName: 'jot' }],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

@@ -16,7 +16,13 @@ interface AiPanelProps {
 // Prompt-driven authoring for the current template. Presentational: the parent runs the request and
 // applies the result to the template (which updates the live preview on the right). Cmd/Ctrl+Enter
 // submits.
-export default function AiPanel({ history, loading, error, typeName, onSubmit }: Readonly<AiPanelProps>) {
+export default function AiPanel({
+	history,
+	loading,
+	error,
+	typeName,
+	onSubmit,
+}: Readonly<AiPanelProps>) {
 	const [prompt, setPrompt] = useState('');
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 
@@ -47,12 +53,17 @@ export default function AiPanel({ history, loading, error, typeName, onSubmit }:
 								)
 							}
 						>
-							“A welcome email with a blue header, a greeting and a Get started button.”
+							“A welcome email with a blue header, a greeting and a Get started
+							button.”
 						</button>
 						<button
 							type="button"
 							className="_aiExample"
-							onClick={() => setPrompt('Make the header darker and add a footer with an unsubscribe link.')}
+							onClick={() =>
+								setPrompt(
+									'Make the header darker and add a footer with an unsubscribe link.',
+								)
+							}
 						>
 							“Make the header darker and add a footer with an unsubscribe link.”
 						</button>
@@ -88,7 +99,8 @@ export default function AiPanel({ history, loading, error, typeName, onSubmit }:
 					onClick={submit}
 					disabled={loading || !prompt.trim()}
 				>
-					<i className="fa fa-solid fa-wand-magic-sparkles" /> {loading ? 'Working…' : 'Generate'}
+					<i className="fa fa-solid fa-wand-magic-sparkles" />{' '}
+					{loading ? 'Working…' : 'Generate'}
 				</button>
 			</div>
 		</div>

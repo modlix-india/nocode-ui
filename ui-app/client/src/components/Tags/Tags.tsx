@@ -35,7 +35,7 @@ const component: Component = {
 		name: 'Tags',
 		properties: {},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

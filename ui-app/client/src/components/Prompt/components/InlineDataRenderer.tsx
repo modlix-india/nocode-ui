@@ -30,7 +30,8 @@ export function InlineDataRenderer({
 				disabled={disabled}
 				onConfirm={(coords, address) => {
 					if (coords) {
-						const label = address || `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
+						const label =
+							address || `${coords.lat.toFixed(4)}, ${coords.lng.toFixed(4)}`;
 						onRespond(
 							JSON.stringify({
 								type: 'location_update',

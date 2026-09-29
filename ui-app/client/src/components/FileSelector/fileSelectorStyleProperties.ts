@@ -1,12 +1,16 @@
-import { StyleGroupDefinition, StylePropertyDefinition } from '../../types/common';
+import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
 	{
+		gn: 'File Selector',
 		dn: 'File Selector Font',
 		n: 'fileSelectorFont',
 		dv: '<primaryFont>',
 		cp: 'font',
 		sel: '.comp.compFileSelector',
+		// Without np the processor prepends the prefix again, giving
+		// `.comp.compFileSelector .comp.compFileSelector`, which matches nothing.
+		np: true,
 	},
 
 	{
@@ -58,8 +62,8 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		gn: 'Background Color of the Progress Bar',
 		dn: 'Progress Bar Background Color',
 		n: 'progressBarBackgroundColor',
-		cp: 'backgroundColor',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
+		cp: 'background-color',
+		sel: '.comp.compFileSelector ._progressBarfileUpload',
 		np: true,
 	},
 	{
@@ -67,23 +71,23 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Border of the Progress Bar',
 		n: 'progressBarBorder',
 		cp: 'border',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarfileUpload',
 		np: true,
 	},
 	{
 		gn: 'Progress Bar Border Radius',
 		dn: 'Border Radius of the Progress Bar',
 		n: 'progressBarBorderRadius',
-		cp: 'borderRadius',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
+		cp: 'border-radius',
+		sel: '.comp.compFileSelector ._progressBarfileUpload',
 		np: true,
 	},
 	{
 		gn: 'Progress Bar Minimum Width',
 		dn: 'Minimum Width of the Progress Bar',
 		n: 'progressBarMinWidth',
-		cp: 'minWidth',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
+		cp: 'min-width',
+		sel: '.comp.compFileSelector ._progressBarfileUpload',
 		np: true,
 	},
 	{
@@ -91,7 +95,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Height of the Progress Bar',
 		n: 'progressBarHeight',
 		cp: 'height',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarfileUpload',
 		np: true,
 	},
 	{
@@ -99,7 +103,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Margin of the Progress Bar',
 		n: 'progressBarMargin',
 		cp: 'margin',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarfileUpload',
 		np: true,
 	},
 	{
@@ -107,23 +111,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Padding of the Progress Bar',
 		n: 'progressBarPadding',
 		cp: 'padding',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarfileUpload',
 		np: true,
 	},
 	{
 		gn: 'Progress Bar Box Shadow',
 		dn: 'Box Shadow of the Progress Bar',
 		n: 'progressBarBoxShadow',
-		cp: 'boxShadow',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
-		np: true,
-	},
-	{
-		gn: 'Progress Bar Box Shadow',
-		dn: 'Box Shadow of the Progress Bar',
-		n: 'progressBarBoxShadow',
-		cp: 'boxShadow',
-		sel: '.comp.compFileSelector._progressBarfileUpload<colorScheme>',
+		cp: 'box-shadow',
+		sel: '.comp.compFileSelector ._progressBarfileUpload',
 		np: true,
 	},
 	{
@@ -131,25 +127,28 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Upload Button of the Progress Bar',
 		n: 'progressBarUploadButton',
 		cp: 'border',
-		sel: '.comp.compFileSelector._progressBarUploadButton<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarUploadButton',
 		np: true,
 	},
 	{
 		gn: 'Progress Bar Upload Button',
 		dn: 'Border Radius of the Upload Button',
 		n: 'progressBarUploadButtonBorderRadius',
-		cp: 'borderRadius',
+		cp: 'border-radius',
 		dv: '4px',
-		sel: '.comp.compFileSelector._progressBarUploadButton<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarUploadButton',
 		np: true,
 	},
 	{
 		gn: 'Progress Bar Upload Button',
 		dn: 'Background Color of the Upload Button',
 		n: 'progressBarUploadButtonBgColor',
-		cp: 'backgroundColor',
-		dv: '#FFFFFF',
-		sel: '.comp.compFileSelector._progressBarUploadButton<colorScheme>',
+		cp: 'background-color',
+		// The base rule reads `<colorSeven>` with #FFFFFF only as its fallback.
+		// Now that this entry emits, a literal here would force white over a
+		// dark theme's surface, so it has to track the same variable.
+		dv: '<colorSeven>',
+		sel: '.comp.compFileSelector ._progressBarUploadButton',
 		np: true,
 	},
 	{
@@ -158,7 +157,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'progressBarUploadButtonPadding',
 		cp: 'padding',
 		dv: '0px 8px',
-		sel: '.comp.compFileSelector._progressBarUploadButton<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarUploadButton',
 		np: true,
 	},
 	{
@@ -167,7 +166,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'progressBarUploadButtonHeight',
 		cp: 'height',
 		dv: '40px',
-		sel: '.comp.compFileSelector._progressBarUploadButton<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarUploadButton',
 		np: true,
 	},
 	{
@@ -176,7 +175,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'progressBarUploadButtonFont',
 		cp: 'font',
 		dv: '600 14px/14px Inter',
-		sel: '.comp.compFileSelector._progressBarUploadButton<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarUploadButton',
 		np: true,
 	},
 	{
@@ -184,8 +183,9 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Color of the Upload Button Text',
 		n: 'progressBarUploadButtonColor',
 		cp: 'color',
-		dv: '#364359',
-		sel: '.comp.compFileSelector._progressBarUploadButton<colorScheme>',
+		// Same as the background above: the base rule reads `<fontColorTwo>`.
+		dv: '<fontColorTwo>',
+		sel: '.comp.compFileSelector ._progressBarUploadButton',
 		np: true,
 	},
 	{
@@ -194,7 +194,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'progressBarUploadButtonMargin',
 		cp: 'margin',
 		dv: '0px',
-		sel: '.comp.compFileSelector._progressBarUploadButton<colorScheme>',
+		sel: '.comp.compFileSelector ._progressBarUploadButton',
 		np: true,
 	},
 	{
@@ -202,7 +202,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Placeholder Text of the File Selector',
 		n: 'fileSelectorPlaceholderText',
 		cp: 'font',
-		sel: '.comp.compFileSelector._fileUploadPlaceholderText<colorScheme>',
+		sel: '.comp.compFileSelector ._fileUploadPlaceholderText',
 		np: true,
 	},
 	{
@@ -210,7 +210,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Placeholder Text Color of the File Selector',
 		n: 'fileSelectorPlaceholderTextColor',
 		cp: 'color',
-		sel: '.comp.compFileSelector._fileUploadPlaceholderText<colorScheme>',
+		sel: '.comp.compFileSelector ._fileUploadPlaceholderText',
 		np: true,
 	},
 	{
@@ -218,7 +218,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Outer Container Upload Status of the File Selector',
 		n: 'fileSelectorOuterContainerUploadStatus',
 		cp: 'height',
-		sel: '.comp.compFileSelector._outerContainerUploadStatus<colorScheme>',
+		sel: '.comp.compFileSelector ._outerContainerUploadStatus',
 		np: true,
 	},
 	{
@@ -227,7 +227,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'fileSelectorOuterContainerUploadStatusWidth',
 		cp: 'width',
 
-		sel: '.comp.compFileSelector._outerContainerUploadStatus<colorScheme>',
+		sel: '.comp.compFileSelector ._outerContainerUploadStatus',
 		np: true,
 	},
 	{
@@ -235,7 +235,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Inner Progress Bar Container Height of the File Selector',
 		n: 'fileSelectorInnerProgressBarContainerHeight',
 		cp: 'height',
-		sel: '.comp.compFileSelector_InnerProgressBarContainer<colorScheme>',
+		sel: '.comp.compFileSelector ._InnerProgressBarContainer',
 		np: true,
 	},
 	{
@@ -243,15 +243,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Inner Progress Bar Container padding of the File Selector',
 		n: 'fileSelectorInnerProgressBarContainerPadding',
 		cp: 'padding',
-		sel: '.comp.compFileSelector_InnerProgressBarContainer<colorScheme>',
+		sel: '.comp.compFileSelector ._InnerProgressBarContainer',
 		np: true,
 	},
 	{
 		gn: 'File Selector Outer Container Upload Status',
 		dn: 'Outer Container Upload Status Border Radius of the File Selector',
 		n: 'fileSelectorOuterContainerUploadStatusBorderRadius',
-		cp: 'borderRadius',
-		sel: '.comp.compFileSelector._outerContainerUploadStatus<colorScheme>',
+		cp: 'border-radius',
+		sel: '.comp.compFileSelector ._outerContainerUploadStatus',
 		np: true,
 	},
 	{
@@ -260,7 +260,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'fileSelectorOuterContainerUploadStatusMargin',
 		cp: 'margin',
 
-		sel: '.comp.compFileSelector._outerContainerUploadStatus<colorScheme>',
+		sel: '.comp.compFileSelector ._outerContainerUploadStatus',
 		np: true,
 	},
 	{
@@ -269,7 +269,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'fileSelectorInnerContainerUploadStatusHeight',
 		cp: 'height',
 
-		sel: '.comp.compFileSelector._InnerContainerUploadStatus<colorScheme>',
+		sel: '.comp.compFileSelector ._InnerContainerUploadStatus',
 		np: true,
 	},
 	{
@@ -278,43 +278,43 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'fileSelectorInnerContainerUploadStatusWidth',
 		cp: 'width',
 
-		sel: '.comp.compFileSelector._InnerContainerUploadStatus<colorScheme>',
+		sel: '.comp.compFileSelector ._InnerContainerUploadStatus',
 		np: true,
 	},
 	{
 		gn: 'File Selector Inner Container Upload Status',
 		dn: 'Inner Container Upload Status Background Color of the File Selector',
 		n: 'fileSelectorInnerContainerUploadStatusBgColor',
-		cp: 'backgroundColor',
+		cp: 'background-color',
 
-		sel: '.comp.compFileSelector._InnerContainerUploadStatus<colorScheme>',
+		sel: '.comp.compFileSelector ._InnerContainerUploadStatus',
 		np: true,
 	},
 	{
 		gn: 'File Selector Inner Container Upload Status',
 		dn: 'Inner Container Upload Status Border Radius of the File Selector',
 		n: 'fileSelectorInnerContainerUploadStatusBorderRadius',
-		cp: 'borderRadius',
+		cp: 'border-radius',
 
-		sel: '.comp.compFileSelector._InnerContainerUploadStatus<colorScheme>',
+		sel: '.comp.compFileSelector ._InnerContainerUploadStatus',
 		np: true,
 	},
 	{
 		gn: 'Image Preview Placeholder',
 		dn: 'Background Color of Preview Placeholder',
 		n: 'imagePreviewPlaceholderBgColor',
-		cp: 'backgroundColor',
+		cp: 'background-color',
 
-		sel: '.comp.compFileSelector._ImagePreviewPlaceholder<colorScheme>',
+		sel: '.comp.compFileSelector ._ImagePreviewPlaceholder',
 		np: true,
 	},
 	{
 		gn: 'Image Preview Placeholder',
 		dn: 'Border Radius of Preview Placeholder',
 		n: 'imagePreviewPlaceholderBorderRadius',
-		cp: 'borderRadius',
+		cp: 'border-radius',
 
-		sel: '.comp.compFileSelector._ImagePreviewPlaceholder<colorScheme>',
+		sel: '.comp.compFileSelector ._ImagePreviewPlaceholder',
 		np: true,
 	},
 	{
@@ -323,7 +323,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'imagePreviewPlaceholderWidth',
 		cp: 'width',
 
-		sel: '.comp.compFileSelector._ImagePreviewPlaceholder<colorScheme>',
+		sel: '.comp.compFileSelector ._ImagePreviewPlaceholder',
 		np: true,
 	},
 	{
@@ -331,7 +331,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Height of Preview Placeholder',
 		n: 'imagePreviewPlaceholderHeight',
 		cp: 'height',
-		sel: '.comp.compFileSelector._ImagePreviewPlaceholder<colorScheme>',
+		sel: '.comp.compFileSelector ._ImagePreviewPlaceholder',
 		np: true,
 	},
 	{
@@ -340,7 +340,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'imagePreviewPlaceholderMargin',
 		cp: 'margin',
 
-		sel: '.comp.compFileSelector._ImagePreviewPlaceholder<colorScheme>',
+		sel: '.comp.compFileSelector ._ImagePreviewPlaceholder',
 		np: true,
 	},
 
@@ -349,7 +349,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Width of Preview Container and Image',
 		n: 'previewContainerWidth',
 		cp: 'width',
-		sel: '.comp.compFileSelector._previewImageContainer<colorScheme>, .comp.compFileSelector._previewImage<colorScheme>',
+		sel: '.comp.compFileSelector ._previewImageContainer, .comp.compFileSelector ._previewImage',
 		np: true,
 	},
 	{
@@ -357,7 +357,7 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dn: 'Height of Preview Container and Image',
 		n: 'previewContainerHeight',
 		cp: 'height',
-		sel: '.comp.compFileSelector._previewImageContainer<colorScheme>, .comp.compFileSelector._previewImage<colorScheme>',
+		sel: '.comp.compFileSelector ._previewImageContainer, .comp.compFileSelector ._previewImage',
 		np: true,
 	},
 	{
@@ -366,91 +366,90 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		n: 'previewContainerMargin',
 		cp: 'margin',
 
-		sel: '.comp.compFileSelector._previewImageContainer<colorScheme>',
+		sel: '.comp.compFileSelector ._previewImageContainer',
 		np: true,
 	},
 	{
-    gn: 'Progress Bar File Upload Text',
-    dn: 'Font of File Upload Text',
-    n: 'progressBarFileUploadTextFont',
-    cp: 'font',
-    sel: '.comp.compFileSelector._progressBarFileUploadText<colorScheme>',
-    np: true,
-},
-{
-    gn: 'Progress Bar File Upload Text',
-    dn: 'Color of File Upload Text',
-    n: 'progressBarFileUploadTextColor',
-    cp: 'color',
-    sel: '.comp.compFileSelector._progressBarFileUploadText<colorScheme>',
-    np: true,
-},
+		gn: 'Progress Bar File Upload Text',
+		dn: 'Font of File Upload Text',
+		n: 'progressBarFileUploadTextFont',
+		cp: 'font',
+		sel: '.comp.compFileSelector ._progressBarFileUploadText',
+		np: true,
+	},
+	{
+		gn: 'Progress Bar File Upload Text',
+		dn: 'Color of File Upload Text',
+		n: 'progressBarFileUploadTextColor',
+		cp: 'color',
+		sel: '.comp.compFileSelector ._progressBarFileUploadText',
+		np: true,
+	},
 
-{
-    gn: 'Progress Bar File Upload Text',
-    dn: 'Width of File Upload Text',
-    n: 'progressBarFileUploadTextWidth',
-    cp: 'width',
-    sel: '.comp.compFileSelector._progressBarFileUploadText<colorScheme>',
-    np: true,
-},
-{
-    gn: 'Progress Bar upload status',
-    dn: 'Background Color of the Progress Bar uploading status',
-    n: 'progressBarFileUploadUploadingStatusBgColor',
-    cp: 'backgroundColor',
-    sel: '.comp.compFileSelector._uploadingBackgroundColor<colorScheme>',
-    np: true,
-},
-{
-    gn: 'Progress Bar Upload status',
-	dn: 'Background Color of the Progress Bar done status',
-    n: 'progressBarFileUploadDoneStatusBgColor',
-    cp: 'backgroundColor',
-    sel: '.comp.compFileSelector._doneBackgroundColor<colorScheme>',
-    np: true,
-},
-{
-    gn: 'Download Icon Color',
-	dn: 'Color of the Download Icon',
-    n: 'downloadIconColor',
-    cp: 'stroke',
-    sel: '.comp.compFileSelector._downloadIcon<colorScheme>',
-    np: true,
-},
-{
-    gn: 'Delete Icon Color',
-	dn: 'Color of the Delete Icon',
-    n: 'deleteIconColor',
-    cp: 'stroke',
-    sel: '.comp.compFileSelector._deleteIcon<colorScheme>',
-    np: true,
-},
-{
-    gn: 'Progress Bar File Upload Label',
-    dn: 'Progress Bar File Upload Label Text',
-    n: 'progressBarFileUploadLabelTextFont',
-    cp: 'font',
-    sel: '.comp.compFileSelector._label',
-    np: true,
-},
-{
-    gn: 'Progress Bar File Upload Label',
-    dn: 'Progress Bar File Upload Label color',
-    n: 'progressBarFileUploadLabelTextColor',
-    cp: 'color',
-    sel: '.comp.compFileSelector._label',
-    np: true,
-},
-{
-    gn: 'Progress Bar File Upload Label',
-    dn: 'Progress Bar File Upload Label margin',
-    n: 'progressBarFileUploadLabelTextMargin',
-    cp: 'margin',
-    sel: '.comp.compFileSelector._label',
-    np: true,
-}
-
+	{
+		gn: 'Progress Bar File Upload Text',
+		dn: 'Width of File Upload Text',
+		n: 'progressBarFileUploadTextWidth',
+		cp: 'width',
+		sel: '.comp.compFileSelector ._progressBarFileUploadText',
+		np: true,
+	},
+	{
+		gn: 'Progress Bar upload status',
+		dn: 'Background Color of the Progress Bar uploading status',
+		n: 'progressBarFileUploadUploadingStatusBgColor',
+		cp: 'background-color',
+		sel: '.comp.compFileSelector ._uploadingBackgroundColor',
+		np: true,
+	},
+	{
+		gn: 'Progress Bar Upload status',
+		dn: 'Background Color of the Progress Bar done status',
+		n: 'progressBarFileUploadDoneStatusBgColor',
+		cp: 'background-color',
+		sel: '.comp.compFileSelector ._doneBackgroundColor',
+		np: true,
+	},
+	{
+		gn: 'Download Icon Color',
+		dn: 'Color of the Download Icon',
+		n: 'downloadIconColor',
+		cp: 'stroke',
+		sel: '.comp.compFileSelector ._downloadIcon',
+		np: true,
+	},
+	{
+		gn: 'Delete Icon Color',
+		dn: 'Color of the Delete Icon',
+		n: 'deleteIconColor',
+		cp: 'stroke',
+		sel: '.comp.compFileSelector ._deleteIcon',
+		np: true,
+	},
+	{
+		gn: 'Progress Bar File Upload Label',
+		dn: 'Progress Bar File Upload Label Text',
+		n: 'progressBarFileUploadLabelTextFont',
+		cp: 'font',
+		sel: '.comp.compFileSelector ._label',
+		np: true,
+	},
+	{
+		gn: 'Progress Bar File Upload Label',
+		dn: 'Progress Bar File Upload Label color',
+		n: 'progressBarFileUploadLabelTextColor',
+		cp: 'color',
+		sel: '.comp.compFileSelector ._label',
+		np: true,
+	},
+	{
+		gn: 'Progress Bar File Upload Label',
+		dn: 'Progress Bar File Upload Label margin',
+		n: 'progressBarFileUploadLabelTextMargin',
+		cp: 'margin',
+		sel: '.comp.compFileSelector ._label',
+		np: true,
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

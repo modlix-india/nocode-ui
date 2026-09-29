@@ -121,7 +121,7 @@ const component: Component = {
 		type: 'Iframe',
 		properties: {},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

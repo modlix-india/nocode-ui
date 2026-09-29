@@ -70,11 +70,16 @@ const MAP_STYLES = [
 	{ featureType: 'water', elementType: 'geometry', stylers: [{ color: '#cfe2f3' }] },
 ];
 
-
-async function geocodeQuery(google: any, query: string): Promise<{ lat: number; lng: number; address: string } | null> {
+async function geocodeQuery(
+	google: any,
+	query: string,
+): Promise<{ lat: number; lng: number; address: string } | null> {
 	if (!query) return null;
 	const geocoder = new google.maps.Geocoder();
-	const parts = query.split(',').map((s: string) => s.trim()).filter(Boolean);
+	const parts = query
+		.split(',')
+		.map((s: string) => s.trim())
+		.filter(Boolean);
 	for (let i = 0; i < parts.length; i++) {
 		const candidate = parts.slice(i).join(', ');
 		try {
@@ -130,7 +135,9 @@ export function LocationMap({
 		'Detected location';
 
 	const [container, setContainer] = useState<HTMLDivElement | null>(null);
-	const [status, setStatus] = useState<'loading' | 'ready' | 'no-key' | 'error'>(apiKey ? 'loading' : 'no-key');
+	const [status, setStatus] = useState<'loading' | 'ready' | 'no-key' | 'error'>(
+		apiKey ? 'loading' : 'no-key',
+	);
 	const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
 		location.coordinates ?? null,
 	);
@@ -237,7 +244,8 @@ export function LocationMap({
 		const addr = confirmedMeta?.address || display;
 		const lat = confirmedMeta?.lat;
 		const lng = confirmedMeta?.lng;
-		const snapshot = apiKey && lat != null && lng != null ? staticMapUrl(lat, lng, apiKey) : null;
+		const snapshot =
+			apiKey && lat != null && lng != null ? staticMapUrl(lat, lng, apiKey) : null;
 		return (
 			<div className="_pLocationConfirmedCard" role="status">
 				{snapshot && (
@@ -275,7 +283,8 @@ export function LocationMap({
 					<div className="_pLocationMapOverlay">
 						{status === 'loading' && 'Loading map…'}
 						{status === 'no-key' && 'Map unavailable (API key not configured)'}
-						{status === 'error' && 'Couldn’t load map. You can still confirm the detected location.'}
+						{status === 'error' &&
+							'Couldn’t load map. You can still confirm the detected location.'}
 					</div>
 				)}
 			</div>

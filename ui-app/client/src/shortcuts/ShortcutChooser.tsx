@@ -196,7 +196,9 @@ export function ShortcutChooser() {
 								>
 									<span className="_shortcutOptionIndex">{index + 1}</span>
 									<span className="_shortcutOptionLabel">{option.label}</span>
-									<span className="_shortcutOptionScope">{option.scopeLabel}</span>
+									<span className="_shortcutOptionScope">
+										{option.scopeLabel}
+									</span>
 								</button>
 							))}
 						</div>

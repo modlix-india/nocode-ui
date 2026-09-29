@@ -186,7 +186,7 @@ function Video(props: Readonly<ComponentProps>) {
 			observer = new IntersectionObserver(
 				([entry]) => {
 					if (entry.isIntersecting) {
-						video.current?.play().catch(() => { });
+						video.current?.play().catch(() => {});
 					} else {
 						video.current?.pause();
 					}
@@ -669,8 +669,9 @@ function Video(props: Readonly<ComponentProps>) {
 										...(resolvedStyles.seekTimeTextOnHover ?? {}),
 									}}
 									className="_toolTip"
-								>{`${seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''}${seekToolTip.minutes
-									}:${seekToolTip.seconds}`}</div>
+								>{`${seekToolTip.hours != '00' ? seekToolTip.hours + ':' : ''}${
+									seekToolTip.minutes
+								}:${seekToolTip.seconds}`}</div>
 							)}
 						</div>
 					)}
@@ -680,20 +681,24 @@ function Video(props: Readonly<ComponentProps>) {
 								<time
 									className="_timeElapsed"
 									id="time-elapsed"
-									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${timElapsed.minutes != '00' ? timElapsed.minutes : ''
-										}${timElapsed.seconds}`}
+									dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''}${
+										timElapsed.minutes != '00' ? timElapsed.minutes : ''
+									}${timElapsed.seconds}`}
 									style={resolvedStyles.timeText ?? {}}
-								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${timElapsed.minutes
-									}:${timElapsed.seconds}`}</time>
+								>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''}${
+									timElapsed.minutes
+								}:${timElapsed.seconds}`}</time>
 								<span className="_timeSplitter">/</span>
 								<time
 									className="_duration"
 									id="duration"
-									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${duration.minutes != '00' ? duration.minutes : ''
-										}:${duration.seconds}`}
+									dateTime={`${duration.hours != '00' ? duration.hours : ''}:${
+										duration.minutes != '00' ? duration.minutes : ''
+									}:${duration.seconds}`}
 									style={resolvedStyles.timeText ?? {}}
-								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${duration.minutes
-									}:${duration.seconds}`}</time>
+								>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
+									duration.minutes
+								}:${duration.seconds}`}</time>
 							</div>
 						)}
 						{videoDesign != '_videoDesign3' ? (
@@ -707,22 +712,28 @@ function Video(props: Readonly<ComponentProps>) {
 										<time
 											className="_timeElapsed"
 											id="time-elapsed"
-											dateTime={`${timElapsed.hours != '00' ? timElapsed.hours : ''
-												}${timElapsed.minutes != '00' ? timElapsed.minutes : ''
-												}${timElapsed.seconds}`}
+											dateTime={`${
+												timElapsed.hours != '00' ? timElapsed.hours : ''
+											}${
+												timElapsed.minutes != '00' ? timElapsed.minutes : ''
+											}${timElapsed.seconds}`}
 											style={resolvedStyles.timeText ?? {}}
-										>{`${timElapsed.hours != '00' ? timElapsed.hours + ':' : ''
-											}${timElapsed.minutes}:${timElapsed.seconds}`}</time>
+										>{`${
+											timElapsed.hours != '00' ? timElapsed.hours + ':' : ''
+										}${timElapsed.minutes}:${timElapsed.seconds}`}</time>
 										<span className="_timeSplitter">/</span>
 										<time
 											className="_duration"
 											id="duration"
-											dateTime={`${duration.hours != '00' ? duration.hours : ''
-												}:${duration.minutes != '00' ? duration.minutes : ''}:${duration.seconds
-												}`}
+											dateTime={`${
+												duration.hours != '00' ? duration.hours : ''
+											}:${duration.minutes != '00' ? duration.minutes : ''}:${
+												duration.seconds
+											}`}
 											style={resolvedStyles.timeText ?? {}}
-										>{`${duration.hours != '00' ? duration.hours + ':' : ''}${duration.minutes
-											}:${duration.seconds}`}</time>
+										>{`${duration.hours != '00' ? duration.hours + ':' : ''}${
+											duration.minutes
+										}:${duration.seconds}`}</time>
 									</div>
 								)}
 								{showAudioControls && (

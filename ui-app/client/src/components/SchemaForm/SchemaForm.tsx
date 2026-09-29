@@ -3,7 +3,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { IconHelper } from '../util/IconHelper';
 import { propertiesDefinition, stylePropertiesDefinition } from './schemaFormProperties';
 import SchemaFormStyle from './SchemaFormStyle';
-import { styleProperties, styleDefaults } from './schemaFormStyleProperies';
+import { styleDefaults, stylePropertiesForTheme } from './schemaFormStyleProperies';
 
 const LazySchemaForm = React.lazy(
 	() => import(/* webpackChunkName: "SchemaForm" */ './LazySchemaForm'),
@@ -35,7 +35,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Schema value binding' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 };
 
 export default component;

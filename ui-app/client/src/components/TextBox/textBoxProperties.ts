@@ -287,7 +287,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 			{ name: '_filled', displayName: 'Filled Textbox', description: 'Filled Textbox type' },
 			{ name: '_bigDesign1', displayName: 'Big Design 1', description: 'Big Design 1 type' },
-			{ name: '_editOnReq', displayName: 'Edit on Request', description: 'Edit on Request type' },
+			{
+				name: '_editOnReq',
+				displayName: 'Edit on Request',
+				description: 'Edit on Request type',
+			},
 		],
 	},
 	COMMON_COMPONENT_PROPERTIES.colorScheme,

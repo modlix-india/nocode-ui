@@ -76,12 +76,25 @@ export const PLATFORM_EVENT_CATALOG: PlatformEvent[] = [
 			pdfFileKey: S,
 		}),
 	},
-	{ name: 'WALLET_LOW_BALANCE', schema: obj({ walletId: S, appCode: S, clientCode: S, balance: D }) },
-	{ name: 'WALLET_SUSPENDED', schema: obj({ walletId: S, appCode: S, clientCode: S, balance: D }) },
+	{
+		name: 'WALLET_LOW_BALANCE',
+		schema: obj({ walletId: S, appCode: S, clientCode: S, balance: D }),
+	},
+	{
+		name: 'WALLET_SUSPENDED',
+		schema: obj({ walletId: S, appCode: S, clientCode: S, balance: D }),
+	},
 	{ name: 'CLIENT_REGISTERED', schema: obj({ client: CLIENT, subDomain: S, urlPrefix: S }) },
 	{
 		name: 'USER_REGISTERED',
-		schema: obj({ client: CLIENT, subDomain: S, urlPrefix: S, user: USER, token: S, passwordUsed: S }),
+		schema: obj({
+			client: CLIENT,
+			subDomain: S,
+			urlPrefix: S,
+			user: USER,
+			token: S,
+			passwordUsed: S,
+		}),
 	},
 	{ name: 'USER_PASSWORD_CHANGED', schema: obj({ user: USER }) },
 	{ name: 'USER_PASSWORD_RESET_DONE', schema: obj({ user: USER }) },

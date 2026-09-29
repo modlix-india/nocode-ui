@@ -49,7 +49,12 @@ function Harness({
 		onActivate,
 	});
 	return (
-		<button ref={ref} data-display={display ?? ''} data-aria={aria ?? ''} data-title={titleSuffix ?? ''}>
+		<button
+			ref={ref}
+			data-display={display ?? ''}
+			data-aria={aria ?? ''}
+			data-title={titleSuffix ?? ''}
+		>
 			Save
 			{hint?.({ background: 'red' })}
 		</button>
@@ -172,11 +177,7 @@ describe('the key chip', () => {
 	it('answers to either modifier when the combo uses two', () => {
 		act(() =>
 			root.render(
-				<Harness
-					locationHistory={[]}
-					onActivate={jest.fn()}
-					shortcutKey="Mod+Alt+K"
-				/>,
+				<Harness locationHistory={[]} onActivate={jest.fn()} shortcutKey="Mod+Alt+K" />,
 			),
 		);
 		expect(chip()?.className).toBe('_shortcutHint _needsCtrl _needsAlt');
@@ -202,9 +203,7 @@ describe('the key chip', () => {
 
 	it('renders nothing for a bare key, which no modifier hold could reveal', () => {
 		act(() =>
-			root.render(
-				<Harness locationHistory={[]} onActivate={jest.fn()} shortcutKey="F2" />,
-			),
+			root.render(<Harness locationHistory={[]} onActivate={jest.fn()} shortcutKey="F2" />),
 		);
 		expect(chip()).toBeNull();
 	});

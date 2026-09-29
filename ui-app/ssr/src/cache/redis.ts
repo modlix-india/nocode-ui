@@ -295,6 +295,25 @@ export function generateCacheKey(
 }
 
 /**
+ * Cache key for an app's definition, held separately from any page so that
+ * routing can be resolved before a page is chosen.
+ *
+ * It sits inside the `{appCode}:{clientCode}:` namespace deliberately. The Java
+ * ui service already publishes an app-code eviction on every application write
+ * (ApplicationService -> SSRCacheEvictionService.evictByAppCode), which arrives
+ * here as the pattern `{appCode}:*` — so this entry is invalidated by machinery
+ * that already exists, and a page-level eviction, which is narrower, correctly
+ * leaves it alone.
+ *
+ * Only ever used for unauthenticated requests: the ui service varies the
+ * definition by whether the caller is authenticated, so a signed-in visitor's
+ * copy must not be shared.
+ */
+export function generateAppCacheKey(appCode: string, clientCode: string, draft: boolean = false): string {
+	return `${appCode}:${clientCode}:__app${draft ? ':draft' : ''}`;
+}
+
+/**
  * Get cached HTML string (for rendered HTML caching)
  * Returns null if Redis is unavailable or HTML not found
  * Supports both raw HTML and gzipped HTML (for faster serving)

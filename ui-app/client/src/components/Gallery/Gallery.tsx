@@ -37,7 +37,7 @@ const component: Component = {
 		name: 'Gallery',
 	},
 	needShowInDesginMode: true,
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

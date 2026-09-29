@@ -44,7 +44,8 @@ function getUrlPrefix(): string {
 		console.log('[RemoteRepository] getUrlPrefix - url from store:', url);
 	}
 
-	const prefix = url?.appCode && url?.clientCode ? `/${url.appCode}/${url.clientCode}/page/repos/` : '';
+	const prefix =
+		url?.appCode && url?.clientCode ? `/${url.appCode}/${url.clientCode}/page/repos/` : '';
 
 	// Only cache if we have a valid (non-empty) prefix
 	if (prefix !== '') {

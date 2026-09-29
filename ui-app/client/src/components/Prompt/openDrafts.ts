@@ -191,13 +191,11 @@ export function matchDescriptor(
 	patchData: { id?: string | number; kind?: string } | undefined,
 	readDoc: (path: string) => any,
 ): DraftDescriptor | undefined {
-	const wanted = patchData?.id !== undefined && patchData.id !== null
-		? String(patchData.id)
-		: undefined;
+	const wanted =
+		patchData?.id !== undefined && patchData.id !== null ? String(patchData.id) : undefined;
 
 	if (wanted) {
-		for (const d of descriptors)
-			if (String(readDoc(d.path)?.id) === wanted) return d;
+		for (const d of descriptors) if (String(readDoc(d.path)?.id) === wanted) return d;
 		return undefined;
 	}
 

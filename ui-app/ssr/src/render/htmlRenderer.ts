@@ -3,11 +3,14 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { resolveCodesFromRequest, extractPageName, getAuthToken } from '../resolver/codeResolver.js';
 import {
 	fetchAllPageData,
+	fetchApplication,
 	type PageDefinition,
 	type ApplicationDefinition,
 	type ThemeDefinition,
+	type HeadTagCollection,
 } from '../api/client.js';
-import { getCachedData, setCachedData, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
+import { assignmentSetCookie, isDesignUrl, resolveRoute } from '../resolver/pageRouting.js';
+import { getCachedData, setCachedData, generateAppCacheKey, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
@@ -214,48 +217,330 @@ body { margin: 0; }
 `;
 
 /**
- * Generate meta tags HTML
+ * A head-tag collection as it is really stored: a map keyed by generated id.
+ *
+ * Every consumer but this one already knew that. Java iterates `.values()`, the
+ * React client does `Object.entries`, and the appbuilder Settings pane writes a
+ * map. SSR declared an array and used `for...of`, which throws
+ * `TypeError: not iterable` on an object -- and the throw is caught up in the
+ * request handler, so an app that had ever saved a head tag served a bare 500
+ * with nothing in it pointing here.
+ *
+ * `order` sorts ascending, matching Java's `MapWithOrderComparator`. A
+ * non-numeric order sorts as 0 rather than throwing, which is the one place
+ * this is deliberately laxer than Java (that one raises NumberFormatException).
  */
-function generateMetaTags(
+export function headTagValues<T extends { order?: number | string }>(
+	collection: HeadTagCollection<T> | undefined
+): T[] {
+	if (!collection) return [];
+	const values = Array.isArray(collection) ? [...collection] : Object.values(collection);
+	return values
+		.filter((v): v is T => !!v && typeof v === 'object')
+		.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+}
+
+/** Trim one side's slashes with string ops; the regex forms backtrack. */
+function trimSlashes(value: string, side: 'start' | 'end'): string {
+	let from = 0;
+	let to = value.length;
+	if (side === 'start') while (from < to && value[from] === '/') from++;
+	else while (to > from && value[to - 1] === '/') to--;
+	return value.slice(from, to);
+}
+
+/**
+ * Resolve a stored URL to an absolute one.
+ *
+ * Stored image values are root-relative files-API paths, and there is no
+ * `getSrcUrl` on this side -- `cdn.hostName` here only ever addresses script and
+ * preload tags. Facebook, X and Slack all reject a relative `og:image`, so a
+ * value that is not already absolute is resolved against the configured
+ * canonical base. With no base configured there is nothing honest to prepend,
+ * so the tag is dropped rather than emitted broken.
+ */
+function absolutise(value: string, canonicalBase: string): string {
+	const v = value.trim();
+	if (!v) return '';
+	const lower = v.toLowerCase();
+	if (lower.startsWith('http://') || lower.startsWith('https://') || v.startsWith('//')) return v;
+	// A data: URI is self-contained but no consumer accepts one for og:image,
+	// and it would blow the document up besides. Treated as unusable.
+	if (lower.startsWith('data:')) return '';
+	if (!canonicalBase) return '';
+	return `${trimSlashes(canonicalBase, 'end')}/${trimSlashes(v, 'start')}`;
+}
+
+/** Page SEO keys that are plain `name=` metas, and the attribute each emits under. */
+const PLAIN_META_KEYS: Array<[string, string]> = [
+	['description', 'description'],
+	['keywords', 'keywords'],
+	['robots', 'robots'],
+	['author', 'author'],
+	// The HTML attribute is hyphenated; the stored key is not. The client makes
+	// the same translation, so the two agree on what lands in the document.
+	['applicationName', 'application-name'],
+	['generator', 'generator'],
+];
+
+/** Page SEO keys that map to a `twitter:` name, in emission order. */
+const TWITTER_KEYS: Array<[string, string]> = [
+	['twitterCard', 'twitter:card'],
+	['twitterSite', 'twitter:site'],
+	['twitterCreator', 'twitter:creator'],
+];
+
+/** ogp.me's `article` type-specific properties, emitted only for `og:type=article`. */
+const ARTICLE_KEYS: Array<[string, string]> = [
+	['articlePublishedTime', 'article:published_time'],
+	['articleModifiedTime', 'article:modified_time'],
+	['articleAuthor', 'article:author'],
+	['articleSection', 'article:section'],
+	['articleTag', 'article:tag'],
+];
+
+export interface MetaRenderContext {
+	pageName?: string;
+	appCode?: string;
+	clientCode?: string;
+}
+
+/** First non-blank candidate, trimmed. The whole fallback chain is built on it. */
+function firstOf(...candidates: Array<string | number | undefined | null>): string {
+	for (const c of candidates) {
+		const v = (c ?? '').toString().trim();
+		if (v) return v;
+	}
+	return '';
+}
+
+/**
+ * Everything the head needs to say about this page, with inheritance already
+ * applied: the page's own `properties.seo` first, the application's
+ * `properties.og` behind it, and the title chain the `<title>` tag uses behind
+ * that.
+ */
+export interface ResolvedOg {
+	charset: string;
+	title: string;
+	type: string;
+	image: string;
+	imageAlt: string;
+	imageType: string;
+	imageWidth: string;
+	imageHeight: string;
+	url: string;
+	description: string;
+	siteName: string;
+	locale: string;
+	localeAlternate: string[];
+	determiner: string;
+	twitterCard: string;
+	twitterSite: string;
+	twitterCreator: string;
+	fbAppId: string;
+	article: Array<[string, string]>;
+	plain: Array<[string, string]>;
+	/** False when there is nothing worth a card, so no og block is emitted. */
+	present: boolean;
+}
+
+export function resolveOg(
 	page: PageDefinition | null,
-	application: ApplicationDefinition | null
-): string {
-	const tags: string[] = [
-		'<meta charset="utf-8">',
-		'<meta name="viewport" content="width=device-width, initial-scale=1">',
-	];
-
+	application: ApplicationDefinition | null,
+	ctx: MetaRenderContext = {}
+): ResolvedOg {
 	const seo = page?.properties?.seo;
-	if (seo?.description?.value) {
-		tags.push(`<meta name="description" content="${escapeHtml(seo.description.value)}">`);
-	}
-	if (seo?.keywords?.value) {
-		tags.push(`<meta name="keywords" content="${escapeHtml(seo.keywords.value)}">`);
-	}
-	if (seo?.ogTitle?.value) {
-		tags.push(`<meta property="og:title" content="${escapeHtml(seo.ogTitle.value)}">`);
-	}
-	if (seo?.ogDescription?.value) {
-		tags.push(`<meta property="og:description" content="${escapeHtml(seo.ogDescription.value)}">`);
-	}
-	if (seo?.ogImage?.value) {
-		tags.push(`<meta property="og:image" content="${escapeHtml(seo.ogImage.value)}">`);
+	const og = application?.properties?.og;
+	const appTitle = application?.properties?.title;
+	const s = (key: string): string => (seo?.[key]?.value ?? '').toString().trim();
+
+	const canonicalBase = trimSlashes((og?.canonicalBase ?? '').toString().trim(), 'end');
+
+	const image = absolutise(firstOf(s('ogImage'), og?.image?.url), canonicalBase);
+	const title = firstOf(s('ogTitle'), og?.title, page?.properties?.title?.name?.value, appTitle);
+	const description = firstOf(s('ogDescription'), s('description'), og?.description);
+
+	// A page reached at its own path, expressed against the canonical origin
+	// rather than the host that happened to ask. The HTML cache key carries no
+	// host, so one cached document is served to every domain the app answers on,
+	// and a host-derived value would be whichever host missed the cache first.
+	const ownUrl = absolutise(s('ogUrl'), canonicalBase);
+	const path = ctx.pageName ? `/${ctx.pageName}` : '/';
+
+	return {
+		// The encoding declaration has to be in the document's first 1024 bytes
+		// and is a lone attribute rather than a name plus content, so it is
+		// emitted separately from everything else here.
+		charset: firstOf(s('charset'), 'utf-8'),
+		title,
+		type: firstOf(s('ogType'), og?.type, 'website'),
+		image,
+		imageAlt: firstOf(s('ogImageAlt'), og?.image?.alt),
+		imageType: firstOf(s('ogImageType'), og?.image?.type),
+		imageWidth: firstOf(s('ogImageWidth'), og?.image?.width),
+		imageHeight: firstOf(s('ogImageHeight'), og?.image?.height),
+		url: firstOf(ownUrl, canonicalBase ? `${canonicalBase}${path}` : ''),
+		description,
+		siteName: firstOf(s('ogSiteName'), og?.siteName, appTitle),
+		locale: firstOf(s('ogLocale'), og?.locale),
+		localeAlternate: (og?.localeAlternate ?? []).map(a => (a ?? '').toString().trim()).filter(Boolean),
+		determiner: firstOf(s('ogDeterminer'), og?.determiner),
+		// X reads og:* for everything except the card layout, which only
+		// twitter:card selects. Defaulted from whether an image resolved,
+		// because summary_large_image with no image renders as a blank plate.
+		twitterCard: firstOf(s('twitterCard'), og?.twitter?.card, image ? 'summary_large_image' : 'summary'),
+		twitterSite: firstOf(s('twitterSite'), og?.twitter?.site),
+		twitterCreator: firstOf(s('twitterCreator'), og?.twitter?.creator),
+		fbAppId: firstOf(og?.fbAppId),
+		article: ARTICLE_KEYS.map(([key, tag]) => [tag, s(key)] as [string, string]).filter(e => !!e[1]),
+		plain: PLAIN_META_KEYS.map(([key, name]) => {
+			const value = firstOf(s(key), key === 'description' ? description : '');
+			return [name, value] as [string, string];
+		}).filter(e => !!e[1]),
+		// Nothing to say at all means nothing is said. A card built from an empty
+		// title and no image is worse than no card: the consumer then falls back
+		// to the page's own <title>, which is usually right.
+		present: !!(title || image || description),
+	};
+}
+
+/** Collects `<meta>` tags, refusing a property that has already been said. */
+class MetaSink {
+	readonly tags: string[] = [];
+	// ogp.me gives the first tag precedence on a conflict, but LinkedIn and
+	// Teams do not document that they follow it, so a document is never given
+	// two of the same property to choose between.
+	private readonly seen = new Set<string>();
+
+	add(attr: 'name' | 'property', key: string, value: string): void {
+		const v = (value ?? '').toString().trim();
+		if (!v || this.seen.has(key)) return;
+		this.seen.add(key);
+		this.tags.push(`<meta ${attr}="${escapeHtml(key)}" content="${escapeHtml(v)}">`);
 	}
 
-	// Application-level meta tags
-	const externalMetas = application?.properties?.metas || [];
-	for (const meta of externalMetas) {
-		const attrs: string[] = [];
-		if (meta.name) attrs.push(`name="${escapeHtml(meta.name)}"`);
-		if (meta.property) attrs.push(`property="${escapeHtml(meta.property)}"`);
-		if (meta.httpEquiv) attrs.push(`http-equiv="${escapeHtml(meta.httpEquiv)}"`);
-		if (meta.content) attrs.push(`content="${escapeHtml(meta.content)}"`);
-		if (attrs.length > 0) {
-			tags.push(`<meta ${attrs.join(' ')}>`);
+	/** For ogp.me's repeated properties, which are meant to appear more than once. */
+	addRepeated(attr: 'name' | 'property', key: string, value: string): void {
+		this.tags.push(`<meta ${attr}="${escapeHtml(key)}" content="${escapeHtml(value)}">`);
+	}
+
+	has(key: string): boolean {
+		return this.seen.has(key);
+	}
+
+	claim(key: string): void {
+		this.seen.add(key);
+	}
+
+	raw(tag: string): void {
+		this.tags.push(tag);
+	}
+}
+
+/** The og block, in the order ogp.me lays it out. */
+function emitOg(sink: MetaSink, r: ResolvedOg): void {
+	if (!r.present) return;
+
+	// The four required properties come first.
+	sink.add('property', 'og:title', r.title);
+	sink.add('property', 'og:type', r.type);
+
+	if (r.image) {
+		sink.add('property', 'og:image', r.image);
+		// ogp.me: "Put structured properties after you declare their root tag.
+		// Whenever another root element is parsed, that structured property is
+		// considered to be done." So these sit directly under og:image; moved
+		// below og:site_name they would attach to nothing.
+		if (r.image.toLowerCase().startsWith('https://')) {
+			sink.add('property', 'og:image:secure_url', r.image);
 		}
+		sink.add('property', 'og:image:alt', r.imageAlt);
+		sink.add('property', 'og:image:type', r.imageType);
+		sink.add('property', 'og:image:width', r.imageWidth);
+		sink.add('property', 'og:image:height', r.imageHeight);
 	}
 
-	return tags.join('\n\t\t');
+	sink.add('property', 'og:url', r.url);
+
+	sink.add('property', 'og:description', r.description);
+	sink.add('property', 'og:site_name', r.siteName);
+	sink.add('property', 'og:locale', r.locale);
+	// The one repeated property in the set: ogp.me says to put multiple versions
+	// of the same tag on the page, so this deliberately bypasses the dedupe.
+	if (r.localeAlternate.length) sink.claim('og:locale:alternate');
+	for (const alt of r.localeAlternate) sink.addRepeated('property', 'og:locale:alternate', alt);
+	sink.add('property', 'og:determiner', r.determiner);
+
+	if (r.type === 'article') {
+		for (const [tag, value] of r.article) sink.add('property', tag, value);
+	}
+
+	sink.add('name', 'twitter:card', r.twitterCard);
+	sink.add('name', 'twitter:site', r.twitterSite);
+	sink.add('name', 'twitter:creator', r.twitterCreator);
+	sink.add('property', 'fb:app_id', r.fbAppId);
+}
+
+/**
+ * Application-level head metas, last and never duplicating.
+ *
+ * These are the free-form escape hatch. The typed blocks above are the ones the
+ * product can preview, so they win, and an entry here that names something
+ * already said is dropped rather than appended.
+ */
+function emitAppMetas(sink: MetaSink, application: ApplicationDefinition | null): void {
+	for (const m of headTagValues(application?.properties?.metas)) {
+		if (m.charset) continue; // already emitted, and only one is legal
+
+		const property = m.property?.trim();
+		const name = m.name?.trim();
+		const httpEquiv = (m['http-equiv'] ?? m.httpEquiv)?.trim();
+
+		const key = property || name || httpEquiv;
+		if (!key || sink.has(key)) continue;
+		sink.claim(key);
+
+		const attrs: string[] = [];
+		if (name) attrs.push(`name="${escapeHtml(name)}"`);
+		if (property) attrs.push(`property="${escapeHtml(property)}"`);
+		if (httpEquiv) attrs.push(`http-equiv="${escapeHtml(httpEquiv)}"`);
+		// `order` is bookkeeping, not an attribute. The React client emits it as
+		// a literal `<meta order="1">`; this one does not.
+		if (m.content) attrs.push(`content="${escapeHtml(m.content)}"`);
+		if (attrs.length > 0) sink.raw(`<meta ${attrs.join(' ')}>`);
+	}
+}
+
+/**
+ * Resolve and emit the document head's metadata.
+ *
+ * A page's own `properties.seo` wins, the application's `properties.og` fills
+ * the gaps, and the free-form `properties.metas` comes last for anything
+ * neither covers. ogp.me makes og:title, og:type, og:image and og:url all
+ * required, so all four are emitted whenever there is anything to say at all.
+ */
+export function generateMetaTags(
+	page: PageDefinition | null,
+	application: ApplicationDefinition | null,
+	ctx: MetaRenderContext = {}
+): string {
+	const resolved = resolveOg(page, application, ctx);
+	const sink = new MetaSink();
+
+	sink.raw(`<meta charset="${escapeHtml(resolved.charset)}">`);
+	sink.raw('<meta name="viewport" content="width=device-width, initial-scale=1">');
+
+	emitOg(sink, resolved);
+
+	// `robots`, `author`, `applicationName` and `generator` have been authored by
+	// the page editor's SEO panel since it existed and were never rendered, so
+	// the panel promised something it did not deliver.
+	for (const [name, value] of resolved.plain) sink.add('name', name, value);
+
+	emitAppMetas(sink, application);
+
+	return sink.tags.join('\n\t\t');
 }
 
 /**
@@ -277,84 +562,47 @@ function generateExternalLinks(application: ApplicationDefinition | null): strin
 	return links.join('\n\t\t');
 }
 
-const POSTHOG_STUB =
-	'!function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){' +
-	'function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),' +
-	't[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}' +
-	'(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",' +
-	'p.async=!0,p.src=s.api_host+"/static/array.js",' +
-	'(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;' +
-	'for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],' +
-	'u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),' +
-	't||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},' +
-	'o="init capture register register_once unregister identify setPersonProperties group reset ' +
-	'opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing ' +
-	'startSessionRecording stopSessionRecording".split(" "),' +
-	'n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}' +
-	'(document,window.posthog||[]);';
-
-const CONSENT_FALLBACK_BOOTSTRAP =
-	"window.addEventListener('DOMContentLoaded',function(){" +
-	'setTimeout(function(){' +
-	'if(!window.__MODLIX_CONSENT__||!window.__MODLIX_CONSENT__.mounted){' +
-	'window.__MODLIX_FORCE_CONSENT__=true;' +
-	"window.dispatchEvent(new CustomEvent('modlix:force-consent'));" +
-	'}},250);});';
-
 /**
- * Generate the PostHog analytics snippet. Project key + ingestion host come from
- * env-level Spring Cloud Config; only the user-facing toggles come from the app.
- * Returns '' if env config is missing or the app has analytics disabled.
+ * The analytics beacon, as one script tag.
+ *
+ * The script itself is served by the engine that receives its events, so there is no vendor
+ * stub here and no copy of the wire format. The previous arrangement transcribed the same
+ * minified blob into this file and into IndexHTMLService.java, and the two had begun to
+ * drift; now both emit a tag and the engine owns the client.
+ *
+ * Returns '' when analytics is off for the app or no host is configured — the rendered page
+ * then carries nothing at all, rather than a script that would load and measure nobody.
  */
 function generateAnalyticsSnippet(
 	application: ApplicationDefinition | null,
-	projectApiKey: string,
 	ingestionHost: string,
 ): string {
-	if (!projectApiKey || !ingestionHost) return '';
+	if (!ingestionHost) return '';
 
 	const a = application?.properties?.analytics;
 	if (!a?.enabled) return '';
 
-	const replayEnabled = !!a.sessionReplay?.enabled;
-	const heatmapsEnabled = !!a.heatmaps?.enabled;
-	const consentRequired = a.consentRequired !== false;
+	const host = ingestionHost.endsWith('/') ? ingestionHost.slice(0, -1) : ingestionHost;
+	const attr = (v: unknown, dflt: boolean) => String(v === undefined || v === null ? dflt : v !== false);
 
-	const initOptions: Record<string, unknown> = {
-		api_host: ingestionHost,
-		person_profiles: 'identified_only',
-		autocapture: a.autocapture ?? true,
-		capture_pageview: a.capturePageviews ?? true,
-		capture_pageleave: a.capturePageleaves ?? true,
-		disable_session_recording: !replayEnabled,
-		enable_heatmaps: heatmapsEnabled,
-		opt_out_capturing_by_default: consentRequired,
-		advanced_disable_flags: true,
-	};
-
-	const rawSampleRate = a.sessionReplay?.sampleRate;
-	const sampleRate =
-		typeof rawSampleRate === 'number' && rawSampleRate >= 0 && rawSampleRate <= 1
-			? rawSampleRate
-			: 0.1;
-
-	if (replayEnabled) {
-		initOptions.session_recording = {
-			maskAllInputs: a.sessionReplay?.maskAllInputs ?? true,
-		};
-	}
-
-	const apiKeyJson = JSON.stringify(projectApiKey);
-	const optionsJson = JSON.stringify(initOptions);
-	const sampleRateLiteral = sampleRate >= 1 ? 'null' : String(sampleRate);
-
-	const initCall = replayEnabled
-		? `var __phOpts=${optionsJson};__phOpts.loaded=function(ph){try{ph.persistence.register({'$session_recording_remote_config':{enabled:true,sampleRate:${sampleRateLiteral},recorderVersion:'v2',endpoint:'/s/',linkedFlag:null,urlBlocklist:[],urlTriggers:[],eventTriggers:[]}});ph.sessionRecording&&ph.sessionRecording.startIfEnabledOrStop&&ph.sessionRecording.startIfEnabledOrStop();}catch(e){}};posthog.init(${apiKeyJson},__phOpts);`
-		: `posthog.init(${apiKeyJson},${optionsJson});`;
-
-	return `<script>${POSTHOG_STUB}${initCall}${
-		consentRequired ? CONSENT_FALLBACK_BOOTSTRAP : ''
-	}</script>`;
+	return (
+		// A queue, so an event fired before the async script arrives is not lost.
+		'<script>window.mlx=window.mlx||function(){(window.mlx.q=window.mlx.q||[]).push(arguments)};</script>' +
+		`<script async src="${escapeHtml(host)}/a.js"` +
+		` data-autocapture="${attr(a.autocapture, true)}"` +
+		` data-pageviews="${attr(a.capturePageviews, true)}"` +
+		` data-pageleaves="${attr(a.capturePageleaves, true)}"` +
+		// On unless the app says otherwise: one extra event per page view, where a heatmap
+		// is one per click, and nothing it records is about the person.
+		` data-scroll="${attr(a.captureScroll, true)}"` +
+		// Off unless the app asks: every click becomes an event, where autocapture records
+		// only the labelled ones.
+		` data-heatmaps="${attr(a.heatmaps?.enabled, false)}"` +
+		// Unconditional. There is no application setting that turns consent off:
+		// one set wrong, once, measures people who were never asked, and nothing
+		// about that state looks wrong from the outside.
+		' data-consent="required"></script>'
+	);
 }
 
 /**
@@ -362,7 +610,9 @@ function generateAnalyticsSnippet(
  */
 function generateExternalScripts(application: ApplicationDefinition | null): string {
 	const scripts: string[] = [];
-	const externalScripts = application?.properties?.scripts || [];
+	// Same keyed-map shape as `metas`, and the same `for...of` throw before this
+	// went through `headTagValues`. See its comment.
+	const externalScripts = headTagValues(application?.properties?.scripts);
 
 	for (const script of externalScripts) {
 		// Skip scripts without src
@@ -441,6 +691,18 @@ function generateHtml(
 				pageDefinition: { [pageName]: page },
 				theme,
 				themeName,
+				/**
+				 * The page routing chose, which is not necessarily the one named in
+				 * the URL. The client reads this instead of deriving the name from
+				 * the location, so it does not discard this bootstrap and refetch.
+				 *
+				 * Only the resolved name appears here, and deliberately so: it is
+				 * exactly what the HTML cache is keyed by, so every visitor served
+				 * this cached document belongs under it. Which rule fired, and which
+				 * arm of a split they drew, are per-visitor and would be baked in for
+				 * whoever happened to miss the cache first.
+				 */
+				resolvedPageName: pageName,
 				urlDetails: {
 					pageName,
 					appCode: codes.appCode,
@@ -449,12 +711,18 @@ function generateHtml(
 		  }
 		: null;
 
-	const metaTags = generateMetaTags(page, application);
+	// `pageName` here is the page actually served, which is what the canonical
+	// URL has to name: a routing split that resolved to a variant still belongs
+	// under the URL the visitor asked for, and that is the name this carries.
+	const metaTags = generateMetaTags(page, application, {
+		pageName,
+		appCode: codes.appCode,
+		clientCode: codes.clientCode,
+	});
 	const externalLinks = generateExternalLinks(application);
 	const externalScripts = generateExternalScripts(application);
 	const analyticsSnippet = generateAnalyticsSnippet(
 		application,
-		getConfig().analytics.projectApiKey,
 		getConfig().analytics.ingestionHost,
 	);
 
@@ -561,6 +829,21 @@ function removeCodeParts(def: any) : any {
 /**
  * Set response headers
  */
+const SHARED_CACHE_CONTROL = 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600';
+
+/**
+ * A response that carries a Set-Cookie must never be stored by a shared cache.
+ *
+ * The HTML body is the same for everyone who resolves to this page, so the body
+ * itself is perfectly cacheable — but replaying its Set-Cookie to the next
+ * visitor would pin the whole internet into one arm of a split. Only the first
+ * request from a given visitor draws, so only that one response is uncacheable;
+ * every one after it carries the cookie, draws nothing, and is public again.
+ */
+function cacheControlFor(drewAssignment: boolean): string {
+	return drewAssignment ? 'private, no-store' : SHARED_CACHE_CONTROL;
+}
+
 function setResponseHeaders(
 	res: ServerResponse,
 	isAuthenticated: boolean,
@@ -568,6 +851,7 @@ function setResponseHeaders(
 	etag: string | null,
 	application: ApplicationDefinition | null,
 	cdnHostName?: string,
+	drewAssignment: boolean = false,
 ): void {
 	res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
@@ -577,10 +861,7 @@ function setResponseHeaders(
 		res.setHeader('Pragma', 'no-cache');
 		res.setHeader('Expires', '0');
 	} else {
-		res.setHeader(
-			'Cache-Control',
-			'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600'
-		);
+		res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 		res.setHeader('Vary', 'Authorization, Cookie');
 	}
 
@@ -681,10 +962,86 @@ export async function handlePageRequest(
 		return;
 	}
 
-	// Check HTML cache first for non-authenticated requests (fastest path)
-	if (!isAuthenticated) {
-		const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft, cookieTheme);
+	const fetchOptions = {
+		appCode: codes.appCode,
+		clientCode: codes.clientCode,
+		authToken,
+		// Let the gateway resolve the surface from the host, as it does for a
+		// direct browser request.
+		forwardedHost: headers.get('x-forwarded-host') ?? url.host,
+		forwardedProto: headers.get('x-forwarded-proto') ?? url.protocol.replace(':', ''),
+		forwardedPort: headers.get('x-forwarded-port') ?? url.port,
+	};
 
+	// The application definition must be in hand before anything else, because it
+	// carries the routing rules and routing decides which page this request
+	// renders -- which is what every cache key below is built from.
+	//
+	// Before page routing there was only one such decision, index -> defaultPage,
+	// and it was taken after the page had already been fetched. That is why the
+	// cache used to be probed twice, once on the URL's name and again on the
+	// resolved one. Deciding first collapses both into a single lookup.
+	//
+	// Cached for anonymous visitors only: the ui service varies the definition by
+	// whether the caller is authenticated, so a signed-in copy must not be shared
+	// -- and authenticated requests never reach the HTML cache anyway.
+	const appCacheKey = generateAppCacheKey(codes.appCode, codes.clientCode, isDraft);
+	let application: ApplicationDefinition | null;
+	if (isAuthenticated) {
+		application = await fetchApplication(fetchOptions);
+	} else {
+		application = await getCachedData<ApplicationDefinition>(appCacheKey);
+		if (!application) {
+			application = await fetchApplication(fetchOptions);
+			if (application) await setCachedData(appCacheKey, application, config.cache.ttlSeconds);
+		}
+	}
+
+	const route = resolveRoute(application, url, req.headers, urlPageName, isAuthenticated);
+	const actualPageName = route.pageName;
+
+	// A visitor drawn into a split for the first time. The cookie is set whether
+	// the HTML that follows comes from cache or not: the body is identical for
+	// everyone who resolves to this page, but the assignment is theirs alone.
+	const drewAssignment = !!route.assignments;
+	if (route.assignments) {
+		res.setHeader(
+			'Set-Cookie',
+			assignmentSetCookie(
+				route.assignments,
+				config.routing.assignmentCookieMaxAgeSeconds,
+				fetchOptions.forwardedProto === 'https',
+			),
+		);
+	}
+
+	if (actualPageName !== urlPageName) {
+		logger.info('Page routing resolved', {
+			requested: urlPageName,
+			resolved: actualPageName,
+			rule: route.resolution.ruleKey,
+			variant: route.resolution.variantKey,
+		});
+	}
+
+	const htmlCacheKey = generateCacheKey(
+		codes.appCode,
+		codes.clientCode,
+		actualPageName,
+		isDraft,
+		cookieTheme,
+	);
+
+	// A page asked for as-is, for somebody looking at their own heatmap. It renders the page
+	// NAMED rather than the arm routing would serve, and its HTML carries a marker telling the
+	// beacon not to count the visit — so it must never be stored under the key a real visitor
+	// reads from, or that marker would switch measurement off for everyone on that page.
+	// Neither read nor written: reading a normal copy would serve the routed arm and defeat
+	// the whole request.
+	const isDesign = isDesignUrl(url);
+
+	// Check HTML cache for non-authenticated requests (fastest path)
+	if (!isAuthenticated && !isDesign) {
 		// Check if client accepts gzip
 		const acceptEncoding = req.headers['accept-encoding'] || '';
 		const supportsGzip = acceptEncoding.includes('gzip');
@@ -695,14 +1052,14 @@ export async function handlePageRequest(
 			if (cachedGzipped) {
 				logger.info('HTML cache hit (pre-compressed)', {
 					cacheKey: htmlCacheKey,
-					pageName: urlPageName,
+					pageName: actualPageName,
 					size: cachedGzipped.length
 				});
 
 				// Set headers for pre-compressed response
 				res.setHeader('Content-Type', 'text/html; charset=utf-8');
 				res.setHeader('Content-Encoding', 'gzip');
-				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+				res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
 				res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
 
@@ -715,11 +1072,11 @@ export async function handlePageRequest(
 		// Fallback: serve uncompressed HTML (let Nginx compress)
 		const cachedHtml = await getCachedHtml(htmlCacheKey);
 		if (cachedHtml) {
-			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: urlPageName });
+			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: actualPageName });
 
 			// Set headers for cached response
 			res.setHeader('Content-Type', 'text/html; charset=utf-8');
-			res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
+			res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 			res.setHeader('Vary', 'Authorization, Cookie');
 			res.setHeader('X-Cache-Status', 'HIT-HTML');
 
@@ -727,14 +1084,11 @@ export async function handlePageRequest(
 			res.end(cachedHtml);
 			return;
 		}
-	}
 
-	// Check cache for non-authenticated, non-index requests (legacy object cache)
-	if (urlPageName !== 'index' && !isAuthenticated) {
-		const cacheKey = generateCacheKey(codes.appCode, codes.clientCode, urlPageName, isDraft, cookieTheme);
-		const cached = await getCachedData<CachedPageData>(cacheKey);
+		// Fallback: legacy object cache
+		const cached = await getCachedData<CachedPageData>(htmlCacheKey);
 		if (cached) {
-			logger.info('Cache hit', { cacheKey, pageName: urlPageName });
+			logger.info('Cache hit', { cacheKey: htmlCacheKey, pageName: actualPageName });
 			const etag = generateETag(cached);
 
 			// Check If-None-Match for conditional request
@@ -745,99 +1099,44 @@ export async function handlePageRequest(
 				return;
 			}
 
-			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName);
+			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName, drewAssignment);
 			res.writeHead(200);
 			res.end(generateHtml(cached, codes, cached.pageName, cdn));
 			return;
 		}
 	}
 
-	// Fetch from backend
-	logger.info('Fetching page data from backend', { pageName: urlPageName });
-	const data = await fetchAllPageData(urlPageName, {
-		appCode: codes.appCode,
-		clientCode: codes.clientCode,
-		authToken,
-		// Let the gateway resolve the surface from the host, as it does for a
-		// direct browser request.
-		forwardedHost: headers.get('x-forwarded-host') ?? url.host,
-		forwardedProto: headers.get('x-forwarded-proto') ?? url.protocol.replace(':', ''),
-		forwardedPort: headers.get('x-forwarded-port') ?? url.port,
-	}, cookieTheme);
+	// Fetch from backend. The application is handed in rather than refetched: it
+	// is already loaded above, and it is what routing was decided from, so the
+	// page and the rules that chose it come from the same definition.
+	logger.info('Fetching page data from backend', { pageName: actualPageName });
+	let data = await fetchAllPageData(actualPageName, fetchOptions, cookieTheme, application);
+	let servedPageName = actualPageName;
 
-	const actualPageName = data.resolvedPageName;
-
-	// Check HTML cache for resolved page name (when index was resolved to default page)
-	if (urlPageName === 'index' && !isAuthenticated) {
-		const resolvedHtmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft, cookieTheme);
-
-		// Check if client accepts gzip
-		const acceptEncoding = req.headers['accept-encoding'] || '';
-		const supportsGzip = acceptEncoding.includes('gzip');
-
-		if (supportsGzip) {
-			// Try to serve pre-compressed content (fastest!)
-			const cachedGzipped = await getCachedGzippedHtml(resolvedHtmlCacheKey);
-			if (cachedGzipped) {
-				logger.info('HTML cache hit (resolved, pre-compressed)', {
-					cacheKey: resolvedHtmlCacheKey,
-					pageName: actualPageName,
-					size: cachedGzipped.length
-				});
-
-				res.setHeader('Content-Type', 'text/html; charset=utf-8');
-				res.setHeader('Content-Encoding', 'gzip');
-				res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
-				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
-				res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED-GZIP');
-
-				res.writeHead(200);
-				res.end(cachedGzipped);
-				return;
-			}
-		}
-
-		// Fallback: serve uncompressed HTML
-		const cachedResolvedHtml = await getCachedHtml(resolvedHtmlCacheKey);
-		if (cachedResolvedHtml) {
-			logger.info('HTML cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
-
-			res.setHeader('Content-Type', 'text/html; charset=utf-8');
-			res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=1800, stale-while-revalidate=3600');
-			res.setHeader('Vary', 'Authorization, Cookie');
-			res.setHeader('X-Cache-Status', 'HIT-HTML-RESOLVED');
-
-			res.writeHead(200);
-			res.end(cachedResolvedHtml);
-			return;
-		}
-
-		// Fallback: check legacy object cache
-		const cached = await getCachedData<CachedPageData>(resolvedHtmlCacheKey);
-		if (cached) {
-			logger.info('Object cache hit (resolved page)', { cacheKey: resolvedHtmlCacheKey, pageName: actualPageName });
-			const etag = generateETag(cached);
-
-			const ifNoneMatch = req.headers['if-none-match'];
-			if (ifNoneMatch === etag) {
-				res.writeHead(304);
-				res.end();
-				return;
-			}
-
-			setResponseHeaders(res, isAuthenticated, true, etag, cached.application, cdn.hostName);
-			res.writeHead(200);
-			res.end(generateHtml(cached, codes, cached.pageName, cdn));
-			return;
+	// A rule can name a page that has since been deleted, or was never published.
+	// Falling back to the URL's own name keeps the live page working while the
+	// definition is wrong, rather than taking it down with a 404 naming a page no
+	// visitor ever asked for. Only worth trying when routing actually changed the
+	// name, and only when the app itself came back.
+	if (data.application && !data.page && actualPageName !== urlPageName) {
+		logger.warn('Routed page missing, falling back to the requested page', {
+			requested: urlPageName,
+			resolved: actualPageName,
+			rule: route.resolution.ruleKey,
+		});
+		const fallback = await fetchAllPageData(urlPageName, fetchOptions, cookieTheme, application);
+		if (fallback.page) {
+			data = fallback;
+			servedPageName = fallback.resolvedPageName;
 		}
 	}
 
 	// Handle not found
 	if (!data.application || !data.page) {
-		logger.warn('Page not found', { pageName: actualPageName, appCode: codes.appCode });
+		logger.warn('Page not found', { pageName: servedPageName, appCode: codes.appCode });
 		setResponseHeaders(res, true, false, null, null, cdn.hostName);
 		res.writeHead(404);
-		res.end(generateHtml(null, codes, actualPageName, cdn, `Page "${actualPageName}" not found`));
+		res.end(generateHtml(null, codes, servedPageName, cdn, `Page "${servedPageName}" not found`));
 		return;
 	}
 
@@ -848,27 +1147,34 @@ export async function handlePageRequest(
 		theme: data.theme as ThemeDefinition | null,
 		themeName: data.themeName,
 		codes,
-		pageName: actualPageName,
+		pageName: servedPageName,
 		cachedAt: Date.now(),
 	};
 
 	// Generate HTML once
-	const generatedHtml = generateHtml(result, codes, actualPageName, cdn);
+	const generatedHtml = generateHtml(result, codes, servedPageName, cdn);
 
-	// Cache HTML for unauthenticated requests (primary cache)
-	const htmlCacheKey = generateCacheKey(codes.appCode, codes.clientCode, actualPageName, isDraft, cookieTheme);
-	if (!isAuthenticated) {
+	// Cache HTML for unauthenticated requests (primary cache).
+	//
+	// Keyed on the page actually served, which after a fallback is not the page
+	// routing picked -- storing it under the missing name would serve the wrong
+	// document the moment that name starts resolving again.
+	const servedCacheKey =
+		servedPageName === actualPageName
+			? htmlCacheKey
+			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme);
+	if (!isAuthenticated && !isDesign) {
 		// Cache the rendered HTML (fast serving)
-		await setCachedHtml(htmlCacheKey, generatedHtml, config.cache.ttlSeconds);
+		await setCachedHtml(servedCacheKey, generatedHtml, config.cache.ttlSeconds);
 		logger.info('Cached HTML', {
-			cacheKey: htmlCacheKey,
-			pageName: actualPageName,
+			cacheKey: servedCacheKey,
+			pageName: servedPageName,
 			htmlSize: generatedHtml.length,
 			ttl: config.cache.ttlSeconds
 		});
 
 		// Also cache the object data (for cache warming and debugging)
-		await setCachedData(htmlCacheKey + ':data', result, config.cache.ttlSeconds);
+		await setCachedData(servedCacheKey + ':data', result, config.cache.ttlSeconds);
 	}
 
 	// Analyze key frequencies (debug mode only - set ANALYZE_KEYS=true in env)
@@ -878,10 +1184,10 @@ export async function handlePageRequest(
 
 	// Generate response
 	const etag = generateETag(result);
-	setResponseHeaders(res, isAuthenticated, false, etag, data.application, cdn.hostName);
+	setResponseHeaders(res, isAuthenticated, false, etag, data.application, cdn.hostName, drewAssignment);
 
 	logger.info('SSR page rendered', {
-		pageName: actualPageName,
+		pageName: servedPageName,
 		appCode: codes.appCode,
 		fromCache: false,
 		htmlSize: generatedHtml.length,

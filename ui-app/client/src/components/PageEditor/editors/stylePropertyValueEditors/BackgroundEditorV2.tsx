@@ -178,11 +178,7 @@ const BACKGROUND_STANDARD_PROPS = [
 ];
 
 type BackgroundImageType =
-	| 'URL'
-	| 'LINEAR_GRADIENT'
-	| 'RADIAL_GRADIENT'
-	| 'CONIC_GRADIENT'
-	| 'CUSTOM';
+	'URL' | 'LINEAR_GRADIENT' | 'RADIAL_GRADIENT' | 'CONIC_GRADIENT' | 'CUSTOM';
 
 type BackgroundSizeMode = 'auto' | 'cover' | 'contain' | 'custom';
 

@@ -21,6 +21,7 @@ import {
 } from '../../context/StoreContext';
 import { ComponentProps, LocationHistory, PageDefinition } from '../../types/common';
 import { allPaths } from '../../util/allPaths';
+import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
@@ -30,6 +31,7 @@ import { ContextMenu, ContextMenuDetails } from './components/ContextMenu';
 import PageEditorDebugWindow from './components/PageEditorDebugWindow';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
+import { toDraftMode } from '../Prompt/draftMode';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import {
 	PageOperations,
@@ -426,8 +428,6 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		let timer: any = null;
 		let grant: DraftGrant | undefined;
 
-		const authToken = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
-
 		// Extend, never rotate. A new token value is a new hostname, which would
 		// change the canvases' origin and reload all three, losing scroll position
 		// and everything the previewed page holds in its own store. The grant dying
@@ -439,10 +439,14 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		// the same one, so several editors can be beating on one token. Harmless --
 		// each beat writes the same absolute expiry, and the grant simply lives as
 		// long as the last window open on it.
+		//
+		// The session token is read inside each call rather than captured here: this
+		// loop outlives the access token, which is rotated (and the old value
+		// revoked) every half hour or so.
 		const beat = () => {
 			timer = setTimeout(async () => {
 				if (cancelled || !grant) return;
-				const extended = await extendDraftToken(grant.token, authToken);
+				const extended = await extendDraftToken(grant.token);
 				if (cancelled) return;
 				// A refused extension is not fatal on its own: the current grant is
 				// still live until its own expiry, so keep beating against it and let
@@ -453,7 +457,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		};
 
 		(async () => {
-			grant = await mintDraftToken(previewAppCode, authToken);
+			grant = await mintDraftToken(previewAppCode);
 			if (cancelled) return;
 			setPreviewOrigin(grant ? `https://${grant.host}` : '');
 			if (grant) beat();
@@ -464,6 +468,49 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 			if (timer) clearTimeout(timer);
 		};
 	}, [previewAppCode]);
+
+	/**
+	 * A page with no root is given one.
+	 *
+	 * Every editing surface here attaches to `rootComponent`: the tree draws from it, a drop
+	 * resolves against it, and `DnDNavigationBar` returns early without it. A page missing it
+	 * therefore opens looking like a working editor in which nothing can be added, with no
+	 * error and nothing to click.
+	 *
+	 * Pages are supposed to arrive with one — the New view seeds it — but a page created
+	 * before that seed existed, or through any other caller that posts a bare document, has
+	 * none, and `/api/ui/pages` accepts such a document happily. This is the same repair the
+	 * editor already performs when somebody deletes the root component
+	 * (`PageOperations.deleteComponent`), applied to the case where there never was one.
+	 *
+	 * It only writes to the store. The page is not saved from here: the user has opened an
+	 * empty page and is about to put something on it, and saving on their behalf would put a
+	 * version in the history that they did not ask for.
+	 */
+	useEffect(() => {
+		if (!defPath || !editPageDefinition) return;
+
+		const root = editPageDefinition.rootComponent;
+		if (root && editPageDefinition.componentDefinition?.[root]) return;
+
+		const key = shortUUID();
+		setData(
+			defPath,
+			{
+				...editPageDefinition,
+				rootComponent: key,
+				componentDefinition: {
+					// Anything else the definition carried is kept. A page can have a
+					// componentDefinition and still name no root — a definition that lost its
+					// root to a bad merge is not a reason to throw away the rest of the tree.
+					...(editPageDefinition.componentDefinition ?? {}),
+					[key]: { key, name: 'Page Grid', type: 'Grid' },
+				},
+				eventFunctions: editPageDefinition.eventFunctions ?? {},
+			},
+			pageExtractor.getPageName(),
+		);
+	}, [defPath, editPageDefinition, pageExtractor]);
 
 	useEffect(() => {
 		if (!editPageDefinition || !personalization) {
@@ -526,11 +573,13 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	const [selectedComponentsList, setSelectedComponentsListOriginal] = useState<string[]>([]);
 
 	// Debug viewer state
-	const [debugMessages, setDebugMessages] = useState<Map<string, any[]>>(new Map([
-		['desktop', []],
-		['tablet', []],
-		['mobile', []]
-	]));
+	const [debugMessages, setDebugMessages] = useState<Map<string, any[]>>(
+		new Map([
+			['desktop', []],
+			['tablet', []],
+			['mobile', []],
+		]),
+	);
 	const [showDebugMenu, setShowDebugMenu] = useState<boolean>(false);
 
 	// Set when a preview refuses a definition push because it has navigated to a
@@ -639,13 +688,14 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	}, []);
 
 	const handleClearAllDebug = useCallback(() => {
-		setDebugMessages(new Map([
-			['desktop', []],
-			['tablet', []],
-			['mobile', []]
-		]));
+		setDebugMessages(
+			new Map([
+				['desktop', []],
+				['tablet', []],
+				['mobile', []],
+			]),
+		);
 	}, []);
-
 
 	const [styleSelectorPref, setStyleSelectorPref] = useState<any>({});
 
@@ -923,7 +973,11 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	}, []); // Empty deps - only run once on mount
 
 	// This will be used to store slave store.
-	const [slaveStore, setSlaveStore] = useState<{desktop: any, tablet: any, mobile: any}>({desktop: {}, tablet: {}, mobile: {}});
+	const [slaveStore, setSlaveStore] = useState<{ desktop: any; tablet: any; mobile: any }>({
+		desktop: {},
+		tablet: {},
+		mobile: {},
+	});
 
 	// Effect to listen to all the messages from the iframe/slave of the page iframes.
 	// Use refs to avoid recreating listener on every render
@@ -998,24 +1052,27 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					operations: operationsRef.current!,
 					onContextMenu: (m: ContextMenuDetails) => setContextMenu(m),
 					onSlaveStore: (screenType: string, store: any) => {
-						setSlaveStore((obj) => ({...obj, [screenType]: {
-							store,
-							localStore: Object.entries(window.localStorage)
-								.filter((e: [string, string]) => e[0].startsWith('designMode_'))
-								.reduce((a, c: [string, string]) => {
-									let key = c[0].substring('designMode_'.length);
-									if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
-										try {
-											a[key] = JSON.parse(c[1]);
-										} catch (e) {
+						setSlaveStore(obj => ({
+							...obj,
+							[screenType]: {
+								store,
+								localStore: Object.entries(window.localStorage)
+									.filter((e: [string, string]) => e[0].startsWith('designMode_'))
+									.reduce((a, c: [string, string]) => {
+										let key = c[0].substring('designMode_'.length);
+										if (c[1].length && (c[1][0] === '[' || c[1][0] === '{')) {
+											try {
+												a[key] = JSON.parse(c[1]);
+											} catch (e) {
+												a[key] = c[1];
+											}
+										} else {
 											a[key] = c[1];
 										}
-									} else {
-										a[key] = c[1];
-									}
-									return a;
-								}, {} as any),
-						}}));
+										return a;
+									}, {} as any),
+							},
+						}));
 					},
 					onDefinitionIgnored: detail =>
 						setPreviewElsewhere(detail?.showing ?? 'another page'),
@@ -1034,7 +1091,9 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 							const deviceMessages = updated.get(flattenedMsg.screenType) || [];
 
 							// Check if execution with same ID already exists
-							const existingIndex = deviceMessages.findIndex(m => m.executionId === flattenedMsg.executionId);
+							const existingIndex = deviceMessages.findIndex(
+								m => m.executionId === flattenedMsg.executionId,
+							);
 
 							let newMessages;
 							if (existingIndex !== -1) {
@@ -1198,7 +1257,8 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.localStore,
 					allPaths(
 						PAGE_STORE_PREFIX,
-						(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.store?.pageData?.[editPageDefinition?.name ?? ''],
+						(slaveStore?.desktop ?? slaveStore?.tablet ?? slaveStore?.mobile)?.store
+							?.pageData?.[editPageDefinition?.name ?? ''],
 					),
 				),
 			),
@@ -1262,8 +1322,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					<i className="fa fa-triangle-exclamation" aria-hidden="true" />
 					<span>
 						The preview has navigated to <strong>{previewElsewhere}</strong>, so it is
-						not showing your edits to this page. They are still here and still
-						unsaved.
+						not showing your edits to this page. They are still here and still unsaved.
 					</span>
 					<button
 						type="button"
@@ -1356,15 +1415,24 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 				helpURL={helpURL}
 				defaultZoomPercentage={defaultZoomPercentage}
 				onDebugButtonClick={handleDebugButtonClick}
-				debugMessageCount={Math.max(debugMessages.get('desktop')?.length ?? 0,
-					debugMessages.get('tablet')?.length ?? 0, debugMessages.get('mobile')?.length ?? 0)}
+				debugMessageCount={Math.max(
+					debugMessages.get('desktop')?.length ?? 0,
+					debugMessages.get('tablet')?.length ?? 0,
+					debugMessages.get('mobile')?.length ?? 0,
+				)}
 				editorPageDefinition={pageDefinition}
 				editorContext={context}
 				appCode={appDefinition?.appCode ?? editPageDefinition?.appCode}
+				// The page on the canvas, NOT `editorPageDefinition` above: that
+				// one is the host page this editor is drawn on (appbuilder's
+				// editPage), which is what the Prompt needs as ComponentProps and
+				// is never what the user means by "this page".
+				editedPageName={editPageDefinition?.name ?? ''}
+				editedPageId={editPageDefinition?.id ?? ''}
 				sidekickEnabled={sidekickEnabled === true}
 				sidekickAgentEndpoint={sidekickAgentEndpoint ?? '/api/ai/appbuilder/chat'}
 				sidekickOpenFullPageName={sidekickOpenFullPageName ?? ''}
-				sidekickDraftMode={sidekickDraftMode !== false}
+				sidekickDraftMode={toDraftMode(sidekickDraftMode)}
 				onObjectSaved={handleObjectSaved}
 			/>
 			<CodeEditor

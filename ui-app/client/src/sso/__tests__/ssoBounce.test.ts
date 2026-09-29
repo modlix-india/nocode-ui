@@ -303,7 +303,9 @@ describe('arrival with a token', () => {
 		const mod = loadModule();
 		setLocation('https://leadzump.local.modlix.com/?ott=stale');
 
-		(globalThis as any).fetch = jest.fn().mockResolvedValue({ ok: false, json: async () => ({}) });
+		(globalThis as any).fetch = jest
+			.fn()
+			.mockResolvedValue({ ok: false, json: async () => ({}) });
 
 		expect(await mod.consumeSsoArrival()).toBe(false);
 		expect(localStorage.getItem('AuthToken')).toBeNull();

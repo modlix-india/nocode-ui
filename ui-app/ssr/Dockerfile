@@ -13,6 +13,14 @@ RUN npm ci
 # Copy SSR source code
 COPY ui-app/ssr/ ./
 
+# The SSR prebuild step runs scripts/copyShared.js, which copies the files SSR
+# and the browser client must agree on (currently util/pageRouting.ts) out of
+# the client tree at /app/client/src. That tree has to exist in the image even
+# though only SSR is built here, or the build dies with ENOENT. Copying the
+# whole util directory rather than the single file so that adding another entry
+# to SHARED_FILES from it does not break this image again.
+COPY ui-app/client/src/util/ /app/client/src/util/
+
 # Build SSR application (TypeScript compilation)
 RUN npm run build
 

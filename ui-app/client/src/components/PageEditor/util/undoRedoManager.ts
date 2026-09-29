@@ -54,7 +54,7 @@ class UndoRedoManager {
 	/**
 	 * Push a new state to undo stack
 	 */
-		pushState(
+	pushState(
 		state: PageDefinition,
 		previousState?: PageDefinition,
 		onPersist?: (entry: UndoRedoEntry) => void,
@@ -76,10 +76,8 @@ class UndoRedoManager {
 
 		// Store full snapshot every 5 entries to ensure we have checkpoints
 		// This makes reconstruction simpler and more reliable
-		const shouldStoreSnapshot = 
-			!this.config.useDiffs || 
-			!lastState ||
-			this.undoStack.length % 5 === 0;
+		const shouldStoreSnapshot =
+			!this.config.useDiffs || !lastState || this.undoStack.length % 5 === 0;
 
 		if (shouldStoreSnapshot) {
 			// Store full snapshot
@@ -135,7 +133,7 @@ class UndoRedoManager {
 
 		// Pop the current state entry
 		const currentEntry = this.undoStack.pop()!;
-		
+
 		// Move current entry to redo stack
 		this.redoStack.push(currentEntry);
 
@@ -158,10 +156,10 @@ class UndoRedoManager {
 
 		// Pop the entry from redo stack
 		const entry = this.redoStack.pop()!;
-		
+
 		// Move back to undo stack
 		this.undoStack.push(entry);
-		
+
 		// Return the state from this entry (which is now the current state)
 		const combinedStack = [...this.undoStack];
 		return this.getStateFromEntry(entry, combinedStack);
@@ -183,7 +181,10 @@ class UndoRedoManager {
 	 * Get state from an entry (reconstructing from diff if needed)
 	 * For diff entries, find the nearest snapshot and apply all diffs up to this entry
 	 */
-	private getStateFromEntry(entry: UndoRedoEntry, stackForLookup?: UndoRedoEntry[]): PageDefinition | null {
+	private getStateFromEntry(
+		entry: UndoRedoEntry,
+		stackForLookup?: UndoRedoEntry[],
+	): PageDefinition | null {
 		if (entry.snapshot) {
 			return duplicate(entry.snapshot);
 		}
@@ -192,13 +193,16 @@ class UndoRedoManager {
 			// Use provided stack or default to undo stack
 			const stack = stackForLookup || this.undoStack;
 			const entryIndex = stack.indexOf(entry);
-			
+
 			if (entryIndex === -1) {
 				// Entry not in provided stack, try with redo stack
 				const redoIndex = this.redoStack.indexOf(entry);
 				if (redoIndex !== -1) {
 					// Entry is in redo stack - need to reconstruct from undo stack + redo up to this point
-					const combinedStack = [...this.undoStack, ...this.redoStack.slice(0, redoIndex + 1)];
+					const combinedStack = [
+						...this.undoStack,
+						...this.redoStack.slice(0, redoIndex + 1),
+					];
 					return this.reconstructStateFromStack(combinedStack, combinedStack.length - 1);
 				}
 				return null;
@@ -214,7 +218,10 @@ class UndoRedoManager {
 	/**
 	 * Reconstruct state at a given index in the stack
 	 */
-	private reconstructStateFromStack(stack: UndoRedoEntry[], targetIndex: number): PageDefinition | null {
+	private reconstructStateFromStack(
+		stack: UndoRedoEntry[],
+		targetIndex: number,
+	): PageDefinition | null {
 		// Find the nearest snapshot before or at targetIndex
 		let snapshotIndex = -1;
 		for (let i = targetIndex; i >= 0; i--) {
@@ -403,4 +410,3 @@ class UndoRedoManager {
 
 export { UndoRedoManager };
 export type { UndoRedoEntry };
-

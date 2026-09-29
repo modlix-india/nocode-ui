@@ -12,6 +12,12 @@ const ANIMATION_PROPS = [
 	'animationDirection', //normal
 	'animationFillMode', //none
 	'animationPlayState', //running
+	// Scroll-driven timelines. Present here so the style side can express what
+	// the `animation` PROPERTY side can: without them an author who reaches for
+	// the style editor instead has no way to scrub an animation to scroll, and
+	// the two surfaces disagree about what the platform can do.
+	'animationTimeline', //auto
+	'animationRange', //normal
 ];
 
 const ICONS = [
@@ -947,6 +953,35 @@ export function AnimationEditor({
 							{ name: 'paused', displayName: 'Paused' },
 						],
 						default: 'running',
+					},
+					{
+						name: 'animationTimeline',
+						displayName: 'Driven By',
+						type: 'dropdown',
+						dropdownOptions: [
+							{ name: 'auto', displayName: 'A clock' },
+							{ name: 'view(block)', displayName: 'Crossing the screen' },
+							{
+								name: 'view(inline)',
+								displayName: 'Crossing the screen, sideways',
+							},
+							{ name: 'scroll(nearest block)', displayName: 'The scroller' },
+							{
+								name: 'scroll(nearest inline)',
+								displayName: 'The scroller, sideways',
+							},
+							{ name: 'scroll(root block)', displayName: 'The page' },
+						],
+						default: 'auto',
+					},
+					{
+						// Free text: animation-range takes percentages as well
+						// as the entry/exit/cover keyword forms, and a dropdown
+						// could only offer a handful of the useful combinations.
+						name: 'animationRange',
+						displayName: 'Range',
+						type: 'text',
+						default: 'normal',
 					},
 				]}
 			/>

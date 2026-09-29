@@ -36,8 +36,16 @@ module.exports = async (env = {}) => {
 
         // Extract Application/ApplicationStyle chunks for preloading
         // Use actual filenames (with contenthash) so the server generates correct script tags
+        //
+        // `components-common` is listed alongside them because it is NOT
+        // optional: it holds the modules Application and ApplicationStyle
+        // share, so the app cannot render without it. Matching on the name
+        // `Application` alone is what made this easy to get wrong -- the
+        // chunk is still fetched by webpack's runtime either way, but without
+        // a preload tag it arrives one round trip later, which would hand
+        // back as latency most of what splitting it saved in bytes.
         const applicationChunks = files
-          .filter(f => /^Application.*\.js$/.test(f.name))
+          .filter(f => /^(Application|components-common).*\.js$/.test(f.name))
           .map(f => f.path.split('/').pop());
 
         const applicationStyleChunks = files
@@ -146,6 +154,123 @@ module.exports = async (env = {}) => {
             reuseExistingChunk: true,
             chunks: 'async',  // Only include in async chunks
           },
+          // World map: the geo plugin, the topojson reader and the atlas.
+          //
+          // `chunks: 'async'` is the whole point of this group, exactly as it is
+          // for monaco above. The `vendors` group below matches all of
+          // node_modules with no `chunks` restriction, so without this the three
+          // packages are hoisted out of the dynamic import in Chart/chartjs/geo
+          // and into the INITIAL entrypoint — measured, not guessed: they landed
+          // in two initial vendors chunks the first time this was built. Every
+          // page would then pay for a world atlas it never draws.
+          //
+          // Priority must stay above `vendors` (9) or that group wins.
+          //
+          // The d3 packages are NOT optional here. They are chartjs-chart-geo's
+          // transitive dependencies, and naming only the three top-level
+          // packages left d3-geo and d3-scale-chromatic behind in `vendors` --
+          // 22KB gzipped added to the initial entrypoint for a map almost no
+          // page draws. Every package listed arrived with the geo plugin and is
+          // used by nothing else; `chunks: 'async'` means anything that ever
+          // gains an initial consumer still gets its copy through `vendors`.
+          // The atlases get a chunk EACH, above the group below, because a single
+          // shared name merges them: the coarse atlas landed in the same chunk as
+          // the plugin, so a map asking for the detailed one downloaded both and
+          // drew with one. Naming per file is what keeps `geoResolution` honest.
+          geoAtlas: {
+            test: /[\\/]node_modules[\\/]world-atlas[\\/]/,
+            name(module) {
+              const m = /countries-(\d+m)\.json/.exec(module.resource || '');
+              return m ? `chart-geo-atlas-${m[1]}` : 'chart-geo-atlas';
+            },
+            priority: 17,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
+          geo: {
+            test: /[\\/]node_modules[\\/](chartjs-chart-geo|topojson-client|d3-geo|d3-scale-chromatic|d3-interpolate|d3-color|d3-array|internmap)[\\/]/,
+            name: 'chart-geo',
+            priority: 16,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
+          // three.js (~815KB across three chunks), only ever reached through the
+          // dynamic import in util/three/threeLoader.ts. `chunks: 'async'` is
+          // what keeps it out of the initial bundle, exactly as for monaco and
+          // geo above: `vendors` below matches all of node_modules with no
+          // `chunks` restriction and is INITIAL, so anything this group fails to
+          // claim lands in the entrypoint.
+          //
+          // `name` MUST NOT be 'three'. Measured, not reasoned: with name:
+          // 'three' this group silently never fired at all -- no error, no
+          // warning, no chunk -- and all three of three's modules fell through
+          // to `vendors`, adding ~2.3MB of modules to the initial entrypoint.
+          // Renaming it to 'threejs' and changing nothing else made it work.
+          // The collision is with the chunk webpack derives for the
+          // src/components/util/three directory; the same class of bug fails
+          // loudly when a webpackChunkName magic comment collides with a cache
+          // group name ("Cache group X conflicts with existing chunk"), and
+          // silently here. If you rename this, rebuild and check that
+          // asset-manifest.json's entrypoint still has no three asset in it.
+          // The Scene Editor's drag handles. Nothing on a customer page ever
+          // reaches TransformControls, but the `three` group below matches all
+          // of node_modules/three, so without a HIGHER priority group naming
+          // this one file it lands in the chunk every page with a scene
+          // downloads — the webpackChunkName at the import site cannot
+          // override a cache group.
+          threeEditor: {
+            test: /[\\/]node_modules[\\/]three[\\/]examples[\\/]jsm[\\/]controls[\\/]TransformControls/,
+            // NOT the same string as the webpackChunkName at the import site:
+            // a magic comment and a cache group sharing a name is the
+            // collision that makes a group silently never fire, which is why
+            // the import site now carries no name at all.
+            name: 'three-gizmo',
+            priority: 19,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
+          three: {
+            test: /[\\/]node_modules[\\/]three[\\/]/,
+            name: 'threejs',
+            priority: 18,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
+          // The WebGL components themselves. Deliberately NOT matching
+          // src/components/util/three: sceneDocument.ts and easing.ts there are
+          // pure, import no three, and are read by eagerly-registered component
+          // definitions, so forcing them async-only would split them off from
+          // the code that needs them at registration time.
+          webgl: {
+            test: /[\\/]src[\\/]components[\\/](ShaderBackground|ParticleField|ModelViewer|ScrollScene)[\\/]/,
+            name: 'webgl',
+            priority: 11,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
+          // @fincity/kirun-ui must never share a chunk with anything the boot
+          // path fetches.
+          //
+          // Its dist/module.js is a single 104KB bundle whose FIRST import is
+          // `monaco-editor` -- the whole package, every language. It declares
+          // no `sideEffects`, so webpack cannot drop that import even when the
+          // only thing used from the module is one documentation helper at the
+          // far end of the file. Executing the chunk fetches ~12.9MB.
+          //
+          // The group below matched `@fincity/kirun` and so swept kirun-ui in
+          // with kirun-js, which the runtime genuinely does need eagerly.
+          // Measured on dev: the bootstrap's own chunk list was clean, and
+          // monaco was still pulled milliseconds later because kirun-ui rode
+          // into an eager `kirun-*` chunk. `chunks: 'async'` is what keeps it
+          // out; the higher priority is what stops the broader group claiming
+          // it first.
+          kirunUi: {
+            test: /[\\/]node_modules[\\/]@fincity[\\/]kirun-ui[\\/]/,
+            name: 'kirun-ui',
+            priority: 15,
+            reuseExistingChunk: true,
+            chunks: 'async',
+          },
           // KIRun runtime (large, only for lazy-loaded components)
           kirun: {
             test: /[\\/]node_modules[\\/]@fincity[\\/]kirun/,
@@ -202,6 +327,29 @@ module.exports = async (env = {}) => {
             test: /[\\/]src[\\/](Engine|context|util)[\\/]/,
             name: 'app-common',
             priority: 8,
+            reuseExistingChunk: true,
+            minChunks: 2,
+          },
+          // Everything the component REGISTRY drags in, shared rather than
+          // copied into both chunks that need it.
+          //
+          // `default` below only splits a module out once THREE chunks want
+          // it. Application and ApplicationStyle are exactly two -- AppStyle
+          // iterates the component map to emit styles, so it reaches every
+          // component the app itself reaches -- so every module common to the
+          // pair matched no group at all and was emitted TWICE. Measured on a
+          // stats build: 130 modules, 2,028KB of parsed source duplicated
+          // across the startup set. The largest copies were PageEditor
+          // (278KB) and SubCompInfo (213KB), neither of which most pages ever
+          // render.
+          //
+          // minChunks: 2 is the whole fix. The priority sits above `default`
+          // and below every named group above it, so nothing already placed
+          // moves.
+          componentsCommon: {
+            test: /[\\/]src[\\/](components|commonComponents|functions)[\\/]/,
+            name: 'components-common',
+            priority: 7,
             reuseExistingChunk: true,
             minChunks: 2,
           },

@@ -27,8 +27,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: '_popover',
 				displayName: 'Popover',
-				description:
-					'A button showing the active theme, opening a list of all of them.',
+				description: 'A button showing the active theme, opening a list of all of them.',
 			},
 		],
 	},
@@ -39,7 +38,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			"Show each theme's display name on the control itself. Off shows icons " +
 			'alone, which needs every theme to have an icon set. The Popover design ' +
-			"labels the rows in its open list either way, because a list of icons alone " +
+			'labels the rows in its open list either way, because a list of icons alone ' +
 			'cannot say which theme is which.',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,

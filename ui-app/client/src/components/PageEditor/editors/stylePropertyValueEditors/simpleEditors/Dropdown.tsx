@@ -123,7 +123,10 @@ export function Dropdown({
 		}
 
 		const searchBox = isSearchEnabled ? (
-			<div className="_simpleEditorDropdownSearchContainer" onClick={e => e.stopPropagation()}>
+			<div
+				className="_simpleEditorDropdownSearchContainer"
+				onClick={e => e.stopPropagation()}
+			>
 				<input
 					ref={searchInputRef}
 					type="text"
@@ -147,8 +150,9 @@ export function Dropdown({
 					{options.map((o, i) => (
 						<div
 							key={o.name}
-							className={`_simpleEditorDropdownOption ${i === currentOption ? '_hovered' : ''
-								} ${selection.has(o.name) ? '_selected' : ''}`}
+							className={`_simpleEditorDropdownOption ${
+								i === currentOption ? '_hovered' : ''
+							} ${selection.has(o.name) ? '_selected' : ''}`}
 							onMouseDown={e => {
 								if (e.button != 0) return;
 

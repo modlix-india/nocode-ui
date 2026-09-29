@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
 	addListenerAndCallImmediately,
-	getDataFromPath,
 	PageStoreExtractor,
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
@@ -11,29 +10,18 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
-import getSrcUrl from '../util/getSrcUrl';
+import getSrcUrl, { getSizesFromStyle, getSrcSet } from '../util/getSrcUrl';
 import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './imageProperties';
 import { styleProperties, styleDefaults } from './imageStyleProperties';
 import ImageStyle from './ImageStyles';
-import { LOCAL_STORE_PREFIX } from '../../constants';
-import { shortUUID } from '../../util/shortUUID';
-import axios from 'axios';
+// Was a private helper here until the chat needed the same thing for its
+// attachments. Same behaviour, plus one shared blob per URL instead of one per
+// render — see the note in that module.
+import secureImage, { isSecuredUrl } from '../util/secureImage';
 // import { onMouseDownDragStartCurry } from '../../functions/utils';
-
-async function secureImage(src: string) {
-	const headers: any = {
-		Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-	};
-	if (globalThis.isDebugMode)
-		headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
-
-	return await axios
-		.get(src, { responseType: 'blob', headers })
-		.then(res => URL.createObjectURL(res.data));
-}
 
 function ImageComponent(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
@@ -149,13 +137,14 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 	const [actualSrc, setActualSrc] = useState<string | undefined>();
 	const [actualComparisonSrc, setActualComparisonSrc] = useState<string | undefined>();
-	const computedUrl = getSrcUrl(getHref(src ?? defaultSrc, location)!);
+	const rawSrc = getHref(src ?? defaultSrc, location)!;
+	const computedUrl = getSrcUrl(rawSrc);
 	const computedComparisonUrl = comparisonSrc
 		? getSrcUrl(getHref(comparisonSrc, location)!)
 		: undefined;
 
 	useEffect(() => {
-		if (!computedUrl.includes('api/files/secured')) {
+		if (!isSecuredUrl(computedUrl)) {
 			setActualSrc(computedUrl);
 			return;
 		}
@@ -163,7 +152,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	}, [computedUrl]);
 
 	useEffect(() => {
-		if (!computedComparisonUrl || !computedComparisonUrl.includes('api/files/secured')) {
+		if (!isSecuredUrl(computedComparisonUrl)) {
 			setActualComparisonSrc(computedComparisonUrl);
 			return;
 		}
@@ -338,6 +327,12 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	let imageTag = undefined;
 
 	if (actualSrc) {
+		// A secured file is fetched and swapped for a token form, and the ladder
+		// entries carry no such token. Offer a srcset only while the src being
+		// rendered is still the one built from the CDN path.
+		const srcSet = actualSrc === computedUrl ? getSrcSet(rawSrc) : undefined;
+		const sizes = srcSet ? getSizesFromStyle(resolvedStyles.image) : undefined;
+
 		const actualImage = useObjectToRender ? (
 			<object type="image/svg+xml" data={actualSrc} style={resolvedStyles.image ?? {}} />
 		) : (
@@ -361,6 +356,8 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 				className={onClickEvent ? '_onclicktrue' : ''}
 				style={resolvedStyles.image ?? {}}
 				src={actualSrc}
+				srcSet={srcSet}
+				sizes={sizes}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
 				loading={imgLazyLoading ? 'lazy' : 'eager'}
@@ -631,7 +628,7 @@ const component: Component = {
 			alt: { value: 'Image' },
 		},
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

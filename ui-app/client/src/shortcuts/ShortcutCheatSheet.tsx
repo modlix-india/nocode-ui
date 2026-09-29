@@ -29,7 +29,6 @@ export function ShortcutCheatSheet() {
 	const close = useCallback(() => setOpen(false), []);
 
 	const buildGroups = useCallback(() => {
-
 		const layer = currentLayer();
 		const byGroup = new Map<string, Array<Row>>();
 		const seen = new Set<string>();
@@ -112,9 +111,10 @@ export function ShortcutCheatSheet() {
 		return () => window.removeEventListener('keydown', onKeyDown, true);
 	}, [open, close, buildGroups]);
 
-	useEffect(() => (open ? shortcutRegistry.subscribe(() => setVersion(v => v + 1)) : undefined), [
-		open,
-	]);
+	useEffect(
+		() => (open ? shortcutRegistry.subscribe(() => setVersion(v => v + 1)) : undefined),
+		[open],
+	);
 
 	useEffect(() => {
 		if (!open) return;
@@ -122,7 +122,6 @@ export function ShortcutCheatSheet() {
 		panelRef.current?.focus();
 		return () => returnFocusRef.current?.focus?.();
 	}, [open]);
-
 
 	// `version` re-reads when a registration changes while the sheet is open.
 	const groups = useMemo(() => (open ? buildGroups() : []), [open, buildGroups, version]);
@@ -150,14 +149,14 @@ export function ShortcutCheatSheet() {
 					</div>
 					<div className="_shortcutCheatSheetBody">
 						{groups.map(group => (
-								<div className="_shortcutGroup" key={group.name}>
-									<div className="_shortcutGroupHeader">{group.name}</div>
-									{group.rows.map(row => (
-										<div className="_shortcutRow" key={row.id}>
-											<span className="_shortcutKeyCap">{row.display}</span>
-											<span className="_shortcutRowLabel">{row.label}</span>
-										</div>
-									))}
+							<div className="_shortcutGroup" key={group.name}>
+								<div className="_shortcutGroupHeader">{group.name}</div>
+								{group.rows.map(row => (
+									<div className="_shortcutRow" key={row.id}>
+										<span className="_shortcutKeyCap">{row.display}</span>
+										<span className="_shortcutRowLabel">{row.label}</span>
+									</div>
+								))}
 							</div>
 						))}
 					</div>

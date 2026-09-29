@@ -70,6 +70,7 @@
 		"@types/node": "^22.10.2",
 		"@types/react": "^19.2.18",
 		"@types/react-dom": "^19.2.4",
+		"@types/three": "0.186.0",
 		"babel-loader": "^10.1.1",
 		"buffer": "^6.0.3",
 		"css-loader": "^7.1.4",
@@ -102,12 +103,16 @@
 		"@monaco-editor/react": "^4.7.0",
 		"axios": "^1.18.1",
 		"chart.js": "^4.5.1",
+		"chartjs-chart-geo": "^4.3.6",
 		"luxon": "^3.7.2",
 		"monaco-editor": "^0.56.0",
 		"react": "^19.2.8",
 		"react-chartjs-2": "^5.3.1",
 		"react-dom": "^19.2.8",
-		"react-router-dom": "^7.18.2"
+		"react-router-dom": "^7.18.2",
+		"three": "0.186.1",
+		"topojson-client": "^3.1.0",
+		"world-atlas": "^2.0.2"
 	},
 	"jest": {
 		"transform": {

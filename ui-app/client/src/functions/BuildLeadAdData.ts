@@ -12,9 +12,7 @@ import { NAMESPACE_UI_ENGINE } from '../constants';
 const SIGNATURE = new FunctionSignature('BuildLeadAdData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
 	.setEvents(
-		new Map([
-			Event.eventMapEntry(Event.OUTPUT, new Map([['adData', Schema.ofAny('adData')]])),
-		]),
+		new Map([Event.eventMapEntry(Event.OUTPUT, new Map([['adData', Schema.ofAny('adData')]]))]),
 	)
 	.setDescription(
 		'Builds the adData object (gclid/wbraid/gbraid/fbc/fbp) for lead-form submissions from URL params + Meta Pixel cookies. Persists click identifiers to first-party cookies so they survive navigation between landing and form pages.',

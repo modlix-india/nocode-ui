@@ -208,7 +208,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Links', pageName: 'link' }],
-		stylePropertiesForTheme: stylePropertiesForTheme,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	propertiesForTheme: [designType, colorScheme],
 };
 

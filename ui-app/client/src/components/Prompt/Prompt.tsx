@@ -4,9 +4,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './promptPropert
 import PromptStyle from './PromptStyle';
 import { styleDefaults, stylePropertiesForTheme } from './promptStyleProperties';
 
-const LazyPrompt = React.lazy(
-	() => import(/* webpackChunkName: "Prompt" */ './LazyPrompt'),
-);
+const LazyPrompt = React.lazy(() => import(/* webpackChunkName: "Prompt" */ './LazyPrompt'));
 
 function LoadLazyPrompt(props: Readonly<ComponentProps>) {
 	return (

@@ -64,6 +64,18 @@ module.exports = {
       template: path.join(__dirname, 'src', 'index.html')
     }),
     new webpack.EvalSourceMapDevToolPlugin({}),
+    // Where the analytics beacon is loaded from and where it sends events, for the
+    // dev server ONLY. The Java ui service and the SSR renderer each stamp this tag
+    // into the document from `ui.analytics.ingestionHost`; this template cannot,
+    // because one static HTML serves every app and host here and it knows neither the
+    // ingestion host nor the app's analytics settings. AnalyticsBinder injects the tag
+    // at runtime instead, and this is the one piece it cannot work out for itself.
+    // Must match dbs/nginx/nginx/myconf.d/local.engine.modlix.com.conf.
+    new webpack.DefinePlugin({
+      __ANALYTICS_INGESTION_HOST__: JSON.stringify(
+        process.env.ANALYTICS_INGESTION_HOST || 'https://engine.local.modlix.com',
+      ),
+    }),
   ],
   devServer: {
 

@@ -165,12 +165,36 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: 'Bottom',
 		enumValues: [
-			{ name: 'Top', displayName: 'Top', description: 'slide navigations button positioned on top' },
-			{ name: 'Right', displayName: 'Right', description: 'slide navigations button positioned on right' },
-			{ name: 'Bottom', displayName: 'Bottom', description: 'slide navigations button positioned on bottom' },
-			{ name: 'Left', displayName: 'Left', description: 'slide navigations button positioned on left' },
-			{ name: 'OutsideBottom', displayName: 'OutsideBottom', description: 'slide navigations button positioned on outside bottom' },
-			{ name: 'OutsideTop', displayName: 'OutsideTop', description: 'slide navigations button positioned on outside Top' },
+			{
+				name: 'Top',
+				displayName: 'Top',
+				description: 'slide navigations button positioned on top',
+			},
+			{
+				name: 'Right',
+				displayName: 'Right',
+				description: 'slide navigations button positioned on right',
+			},
+			{
+				name: 'Bottom',
+				displayName: 'Bottom',
+				description: 'slide navigations button positioned on bottom',
+			},
+			{
+				name: 'Left',
+				displayName: 'Left',
+				description: 'slide navigations button positioned on left',
+			},
+			{
+				name: 'OutsideBottom',
+				displayName: 'OutsideBottom',
+				description: 'slide navigations button positioned on outside bottom',
+			},
+			{
+				name: 'OutsideTop',
+				displayName: 'OutsideTop',
+				description: 'slide navigations button positioned on outside Top',
+			},
 		],
 	},
 	{
@@ -182,22 +206,59 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: 'Middle',
 		group: ComponentPropertyGroup.ADVANCED,
 		enumValues: [
-			{ name: 'Middle', displayName: 'Center', description: 'arrow navigations button positioned on middle' },
-			{ name: 'LeftTop', displayName: 'top left', description: 'arrow navigations button positioned on top-Left' },
-			{ name: 'RightTop', displayName: 'top right', description: 'arrow navigations button positioned on top-right ' },
-			{ name: 'LeftBottom', displayName: 'bottom left', description: 'arrow navigations button positioned on bottom-left' },
-			{ name: 'RightBottom', displayName: 'bottom right', description: 'arrow navigations button positioned on  Bottom-right' },
-			{ name: 'OutsideBottomLeft', displayName: 'Outside-Bottom-Left', description: 'arrow navigations button positioned on outside-bottom-left' },
-			{ name: 'OutsideBottomRight', displayName: 'Outside-Bottom-Right', description: 'arrow navigations button positioned on outside-bottom-right' },
-			{ name: 'OutsideTopLeft', displayName: 'Outside-Top-Left', description: 'arrow navigations button positioned on outside-Top-left' },
-			{ name: 'OutsideTopRight', displayName: 'Outside-Top-Right', description: 'arrow navigations button positioned on outside-Top-right' },
+			{
+				name: 'Middle',
+				displayName: 'Center',
+				description: 'arrow navigations button positioned on middle',
+			},
+			{
+				name: 'LeftTop',
+				displayName: 'top left',
+				description: 'arrow navigations button positioned on top-Left',
+			},
+			{
+				name: 'RightTop',
+				displayName: 'top right',
+				description: 'arrow navigations button positioned on top-right ',
+			},
+			{
+				name: 'LeftBottom',
+				displayName: 'bottom left',
+				description: 'arrow navigations button positioned on bottom-left',
+			},
+			{
+				name: 'RightBottom',
+				displayName: 'bottom right',
+				description: 'arrow navigations button positioned on  Bottom-right',
+			},
+			{
+				name: 'OutsideBottomLeft',
+				displayName: 'Outside-Bottom-Left',
+				description: 'arrow navigations button positioned on outside-bottom-left',
+			},
+			{
+				name: 'OutsideBottomRight',
+				displayName: 'Outside-Bottom-Right',
+				description: 'arrow navigations button positioned on outside-bottom-right',
+			},
+			{
+				name: 'OutsideTopLeft',
+				displayName: 'Outside-Top-Left',
+				description: 'arrow navigations button positioned on outside-Top-left',
+			},
+			{
+				name: 'OutsideTopRight',
+				displayName: 'Outside-Top-Right',
+				description: 'arrow navigations button positioned on outside-Top-right',
+			},
 		],
 	},
 	{
 		name: 'showNavigationControlsOnHover',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show navigation controls on hover',
-		description: 'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
+		description:
+			'This property display navigation controls, i.e; arrows and buttons, when the carousel is hovered upon.',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
@@ -213,8 +274,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		...COMMON_COMPONENT_PROPERTIES.datatype,
 		enumValues: [
-			{ name: 'LIST_OF_STRINGS', displayName: 'List of strings', description: 'data has an array of strings' },
-			{ name: 'LIST_OF_OBJECTS', displayName: 'List of objects', description: 'data has an array of objects' },
+			{
+				name: 'LIST_OF_STRINGS',
+				displayName: 'List of strings',
+				description: 'data has an array of strings',
+			},
+			{
+				name: 'LIST_OF_OBJECTS',
+				displayName: 'List of objects',
+				description: 'data has an array of objects',
+			},
 		],
 	},
 	{
@@ -323,12 +392,12 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 	],
-	indicatorNavBtnActive: [	
+	indicatorNavBtnActive: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-	],	
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

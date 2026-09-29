@@ -77,7 +77,10 @@ export function DateDropdowns({
 				className="_yearDropdownWrapper"
 				style={curry('yearDropdownWrapper', new Set(), new Set())}
 			>
-				<SubHelperComponent definition={definition} subComponentName="yearDropdownWrapper" />
+				<SubHelperComponent
+					definition={definition}
+					subComponentName="yearDropdownWrapper"
+				/>
 				{renderDropdown(
 					getCurrentValue(selectedYear),
 					availableYears,
@@ -122,4 +125,3 @@ export function DateDropdowns({
 		</>
 	);
 }
-

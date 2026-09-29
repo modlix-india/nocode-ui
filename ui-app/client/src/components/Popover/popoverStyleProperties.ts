@@ -57,6 +57,21 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		de: 'Popover Tip Border Radius.',
 		sel: '.popoverTip::before',
 	},
+
+	// The panel is portalled to the end of the body and positioned `fixed`, and a fixed
+	// element is a stacking context whatever its z-index. So every z-index set INSIDE the
+	// panel - on popoverContainer, on the tip - is sealed in and cannot lift the panel over
+	// page chrome; only a z-index on the panel itself can. `np` because this targets the
+	// portalled root, which is not a descendant of the component's own prefix.
+	{
+		n: 'popoverZIndex',
+		dv: '1000',
+		cp: 'z-index',
+		dn: 'Popover Z Index',
+		de: 'Stacking order of the popover panel against the rest of the app.',
+		sel: '.comp.compPopover.popover',
+		np: true,
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(

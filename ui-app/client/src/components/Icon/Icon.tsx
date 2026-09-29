@@ -14,15 +14,17 @@ function Icon(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
-	const { properties: { icon, designType, colorScheme, analyticsLabel } = {}, stylePropertiesWithPseudoStates } =
-		useDefinition(
-			definition,
-			propertiesDefinition,
-			stylePropertiesDefinition,
-			locationHistory,
-			pageExtractor,
-			urlExtractor,
-		);
+	const {
+		properties: { icon, designType, colorScheme, analyticsLabel } = {},
+		stylePropertiesWithPseudoStates,
+	} = useDefinition(
+		definition,
+		propertiesDefinition,
+		stylePropertiesDefinition,
+		locationHistory,
+		pageExtractor,
+		urlExtractor,
+	);
 
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
@@ -67,7 +69,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Icons', pageName: 'icon' }],
-		stylePropertiesForTheme: stylePropertiesForTheme,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	propertiesForTheme: [designType, colorScheme],
 };
 

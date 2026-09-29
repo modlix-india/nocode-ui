@@ -1,11 +1,8 @@
-import {
-	SCHEMA_ANY_COMP_PROP,
-	SCHEMA_BOOL_COMP_PROP
-} from '../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_BOOL_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyEditor,
-	ComponentStylePropertyDefinition
+	ComponentStylePropertyDefinition,
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
@@ -15,7 +12,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'Schema',
 		description: 'Schema to generate form',
 		schema: SCHEMA_ANY_COMP_PROP,
-		editor: ComponentPropertyEditor.SCHEMA
+		editor: ComponentPropertyEditor.SCHEMA,
 	},
 	{
 		name: 'useServerSchemas',

@@ -124,4 +124,3 @@ export function computeWeekNumberOfYear(date: Date): number {
 
 	return Math.ceil(pastDaysOfYear / 7) + 1;
 }
-

@@ -6,10 +6,7 @@ import {
 	setData,
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
-import {
-	ComponentDefinition,
-	ComponentProps,
-} from '../../types/common';
+import { ComponentDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';

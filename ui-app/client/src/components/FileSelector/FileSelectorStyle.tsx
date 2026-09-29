@@ -1,5 +1,9 @@
 import React from 'react';
-import { StyleResolutionDefinition, processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
+import {
+	StyleResolutionDefinition,
+	processStyleDefinition,
+	processStyleValueWithFunction,
+} from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './fileSelectorStyleProperties';
 import { StyleResolution } from '../../types/common';
 
@@ -141,9 +145,9 @@ export default function FileSelector({
     }
       ${PREFIX} ._hidden {
         visibility: hidden;
-        width: 100%;
+        width: 0;
         position: absolute;
-        height: 100%;
+        height: 0;
     }
       ${PREFIX} ._leftSection {
         display: flex;
@@ -229,7 +233,7 @@ export default function FileSelector({
  
    
 
-		@media screen and (max-width: ${TABLET_MIN_WIDTH}px) {®
+		@media screen and (max-width: ${TABLET_MIN_WIDTH}px) {
 		${PREFIX} ._popupBackground ._popupContainer {
 			min-width: 90vw;
 			max-width: 90vw;

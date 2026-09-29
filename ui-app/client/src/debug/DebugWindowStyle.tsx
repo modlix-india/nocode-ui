@@ -6,8 +6,10 @@ const NAME = 'DebugWindow';
 
 export default function DebugWindowStyle() {
 	usedComponents.using('KIRun Editor');
-	return <>
-		<link rel="stylesheet" href={lazyCSSURL(NAME)} />
-		<KIRunEditorStyle theme={new Map()}/>
-	</>;
+	return (
+		<>
+			<link rel="stylesheet" href={lazyCSSURL(NAME)} />
+			<KIRunEditorStyle theme={new Map()} />
+		</>
+	);
 }

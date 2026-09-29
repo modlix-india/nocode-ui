@@ -3,6 +3,7 @@ import {
 	getThemeEntry,
 	readThemeCookie,
 	resolveThemeName,
+	swapThemeStylesheet,
 	themeEntries,
 	writeThemeCookie,
 } from '../themeSelection';
@@ -59,7 +60,7 @@ describe('resolveThemeName', () => {
 		expect(resolveThemeName(two, { cookie: 'dark' })).toBe('dark');
 	});
 
-	it("defaults to the lowest `order` when nothing is chosen", () => {
+	it('defaults to the lowest `order` when nothing is chosen', () => {
 		expect(resolveThemeName(two, {})).toBe('light');
 	});
 
@@ -156,5 +157,95 @@ describe('currentAppCode', () => {
 	it('is undefined on a custom-domain URL with nothing stamped', () => {
 		window.history.replaceState({}, '', '/some/other/path');
 		expect(currentAppCode()).toBeUndefined();
+	});
+});
+
+describe('swapThemeStylesheet', () => {
+	// The path IndexHTMLService and the SSR renderer both stamp. Every production
+	// document arrives with this shape; only the webpack dev index.html differs.
+	const SERVED = '/mistyshores/FIN/page/api/ui/style';
+
+	const links = () =>
+		Array.from(document.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[];
+
+	/** jsdom never fires `load` on an inserted <link>, so the swap would hang. */
+	const swap = (name?: string) => {
+		const done = swapThemeStylesheet(name);
+		links().forEach(l => l.dispatchEvent(new Event('load')));
+		return done;
+	};
+
+	const serve = (href?: string) => {
+		document.head.innerHTML = `<link rel="stylesheet" id="mlxAppStyle"${
+			href === undefined ? '' : ` href="${href}"`
+		} />`;
+	};
+
+	afterEach(() => {
+		document.head.innerHTML = '';
+	});
+
+	// The regression. Both sides agree on the theme (there isn't one), but the
+	// hrefs never matched as strings, so a second <link> was created on every
+	// cold load and the sheet was fetched twice, serially, before first paint.
+	it('does nothing when the served sheet already carries the requested theme', async () => {
+		serve(SERVED);
+		await swap(undefined);
+
+		expect(links()).toHaveLength(1);
+		expect(links()[0].getAttribute('href')).toBe(SERVED);
+	});
+
+	it('does nothing when the served sheet already carries a named theme', async () => {
+		serve(`${SERVED}?theme=dark`);
+		await swap('dark');
+
+		expect(links()).toHaveLength(1);
+		expect(links()[0].getAttribute('href')).toBe(`${SERVED}?theme=dark`);
+	});
+
+	// A relative href would resolve against `/` on a domain-mapped host, landing
+	// on a different url that the gateway routes to the same handler: it works,
+	// so nothing fails, and the sheet is simply fetched twice forever.
+	it('keeps the served path when the theme does change', async () => {
+		serve(`${SERVED}?theme=dark`);
+		await swap('light');
+
+		expect(links()).toHaveLength(1);
+		expect(links()[0].getAttribute('href')).toBe(`${SERVED}?theme=light`);
+	});
+
+	it('drops the theme param rather than naming a theme of ""', async () => {
+		serve(`${SERVED}?theme=dark`);
+		await swap(undefined);
+
+		expect(links()[0].getAttribute('href')).toBe(SERVED);
+	});
+
+	// The dev index.html emits the link href-less and fills it from a script. If
+	// that script has not run, "no theme either side" must not read as a match.
+	it('writes an href onto an href-less link instead of treating it as a match', async () => {
+		serve(undefined);
+		await swap(undefined);
+
+		expect(links()).toHaveLength(1);
+		expect(links()[0].getAttribute('href')).toBe('api/ui/style');
+	});
+
+	it('falls back to the relative path when no link was served at all', async () => {
+		document.head.innerHTML = '';
+		await swap('dark');
+
+		expect(links()).toHaveLength(1);
+		expect(links()[0].getAttribute('href')).toBe('api/ui/style?theme=dark');
+	});
+
+	it('carries the id over to the replacement so the next swap still finds it', async () => {
+		serve(SERVED);
+		await swap('dark');
+
+		expect(document.getElementById('mlxAppStyle')?.getAttribute('href')).toBe(
+			`${SERVED}?theme=dark`,
+		);
 	});
 });

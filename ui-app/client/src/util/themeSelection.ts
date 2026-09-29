@@ -171,8 +171,38 @@ export function resolveThemeName(
 	return entries[0].name;
 }
 
-function styleHref(appCode: string | undefined, name: string | undefined): string {
-	const base = 'api/ui/style';
+/**
+ * The theme an already-installed stylesheet link is wearing, or undefined for the
+ * app default.
+ *
+ * Read from the href's own query string rather than from any state of ours,
+ * because the link we are asked about was usually written by the server and this
+ * is the only record of what it asked for.
+ */
+function themeOfHref(href: string | null | undefined): string | undefined {
+	if (!href) return undefined;
+	const q = href.indexOf('?');
+	if (q === -1) return undefined;
+	return new URLSearchParams(href.substring(q + 1)).get('theme') ?? undefined;
+}
+
+/**
+ * The href for `name`, keeping whatever PATH the document was served with.
+ *
+ * The three emitters do not agree on that path. IndexHTMLService and the SSR
+ * renderer both stamp `/<appCode>/<clientCode>/page/api/ui/style`; the webpack
+ * dev index.html stamps a bare relative `api/ui/style`. Building one fixed shape
+ * here means disagreeing with two of the three, and on a domain-mapped host the
+ * relative form resolves against `/` into a DIFFERENT url that the gateway
+ * happens to route to the same handler -- so the mismatch never fails, it just
+ * silently fetches the sheet a second time.
+ *
+ * Deriving the path from the link in the document instead makes this correct for
+ * all three without knowing which one served the page.
+ */
+function styleHref(currentHref: string | null | undefined, name: string | undefined): string {
+	const q = currentHref?.indexOf('?') ?? -1;
+	const base = !currentHref ? 'api/ui/style' : q === -1 ? currentHref : currentHref.substring(0, q);
 	return name ? `${base}?theme=${encodeURIComponent(name)}` : base;
 }
 
@@ -197,9 +227,20 @@ export function swapThemeStylesheet(name: string | undefined): Promise<void> {
 		document.querySelector(
 			'link[rel="stylesheet"][href*="api/ui/style"]',
 		)) as HTMLLinkElement | null;
-	const href = styleHref(currentAppCode(), name);
+	const currentHref = existing?.getAttribute('href');
 
-	if (existing?.getAttribute('href') === href) return Promise.resolve();
+	// Every cold load lands here with the server's sheet already installed and
+	// already correct, so this is the common path, not the edge case. Compare the
+	// THEME rather than the whole href: the paths legitimately differ between the
+	// three emitters, and comparing them as strings meant this never matched, a
+	// second <link> was always created, and every visitor paid a serial
+	// render-blocking round trip for a stylesheet the document already had.
+	//
+	// An href-less link falls through deliberately. That is the dev index.html
+	// before its inline script runs, and it needs an href written, not a no-op.
+	if (currentHref && themeOfHref(currentHref) === name) return Promise.resolve();
+
+	const href = styleHref(currentHref, name);
 
 	return new Promise<void>(resolve => {
 		const link = document.createElement('link');
@@ -239,7 +280,9 @@ export function isSignedIn(): boolean {
  * document until the first switch, and an anonymous caller gets an empty object
  * back rather than a 401.
  */
-export async function readThemePersonalization(appCode: string | undefined): Promise<string | undefined> {
+export async function readThemePersonalization(
+	appCode: string | undefined,
+): Promise<string | undefined> {
 	const token = authToken();
 	if (!appCode || !token) return undefined;
 

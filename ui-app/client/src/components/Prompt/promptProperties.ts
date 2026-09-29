@@ -29,6 +29,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		translatable: true,
 	},
 	{
+		name: 'steerPlaceholder',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Steer Placeholder',
+		description:
+			'Placeholder shown while the agent is working, when a message steers the run in progress instead of starting a new one.',
+		defaultValue: 'Send a message to steer the agent...',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: true,
+	},
+	{
 		name: 'welcomeMessage',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Welcome Message',
@@ -99,7 +109,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Offer A Page Preview',
 		description:
-			"Offer to render the page the agent changed next to the chat, with a Draft/Live toggle and width presets. The pane is draggable and its size is remembered. Needs room: leave off for a docked panel and use Open Full Page Name there instead.",
+			'Offer to render the page the agent changed next to the chat, with a Draft/Live toggle and width presets. The pane is draggable and its size is remembered. Needs room: leave off for a docked panel and use Open Full Page Name there instead.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
 	},
@@ -199,12 +209,37 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		// Safe to leave on: the agent probes the deployment and keeps writing live
 		// when there is no draft surface, rather than claiming a review step that
 		// does not exist.
+		// Three settings rather than a switch, because the products embedding this
+		// do not agree about what a draft is. AppBuilder drafts everything and has
+		// a pending bar to publish it. A page editor that publishes one page at a
+		// time has no UI for a pending storage, so drafting one there would strand
+		// the change with nothing able to ship it.
 		name: 'draftMode',
-		schema: SCHEMA_BOOL_COMP_PROP,
-		displayName: 'Edit On The Draft Surface',
+		schema: SCHEMA_STRING_COMP_PROP,
+		editor: ComponentPropertyEditor.ENUM,
+		displayName: 'Where AI Edits Land',
 		description:
-			"Send the agent's edits to the app's draft surface instead of live, so they can be reviewed and published deliberately.",
-		defaultValue: false,
+			"Which of the agent's edits go to the app's draft surface instead of live, so they can be reviewed and published deliberately.",
+		defaultValue: 'DRAFT',
+		enumValues: [
+			{
+				name: 'DRAFT',
+				displayName: 'Draft Everything',
+				description:
+					'Every definition edit waits on the draft surface until someone publishes it.',
+			},
+			{
+				name: 'PAGE_ONLY_DRAFT',
+				displayName: 'Draft Pages Only',
+				description:
+					'Pages, styles and themes wait for review. Storages, connections, schemas and functions go live immediately.',
+			},
+			{
+				name: 'LIVE',
+				displayName: 'Write Live',
+				description: 'Every edit goes straight to the live app, with no review step.',
+			},
+		],
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -220,6 +255,29 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'Show what the agent has left unpublished, with links to open the draft or the workspace, and buttons to publish or discard. For chat surfaces with no editor of their own.',
 		defaultValue: false,
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		// The draft review bar's second link. `/workspace` is a page in appbuilder
+		// and nowhere else, so hosting this chat in another app used to offer a
+		// link to a page that does not exist. sitezump has no workspace; its
+		// per-app equivalent is '/pages/site/{{appCode}}', the site's page list,
+		// and each page opens from there in editPage.
+		name: 'draftWorkspaceUrl',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Draft Review Editor URL',
+		description:
+			"Where the draft review bar's editor link goes. {{appCode}} is replaced with the app being drafted into.",
+		defaultValue: '/workspace/{{appCode}}',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'draftWorkspaceLabel',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Draft Review Editor Label',
+		description:
+			"Label on that link. 'workspace' is appbuilder's word for it, not every app's.",
+		defaultValue: 'Open in workspace',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
 		name: 'quickActionLayout',
@@ -474,6 +532,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		displayName: 'File Icon',
 		description: 'Icon class for file attachments.',
 		defaultValue: 'fa fa-file',
+		editor: ComponentPropertyEditor.ICON,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'expiredAttachmentIcon',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Expired Attachment Icon',
+		description:
+			'Icon class shown in place of an attachment that has passed its retention period and been deleted.',
+		defaultValue: 'fa fa-clock-rotate-left',
 		editor: ComponentPropertyEditor.ICON,
 		group: ComponentPropertyGroup.ADVANCED,
 	},

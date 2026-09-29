@@ -288,11 +288,7 @@ export function CalendarMonth(
 }
 
 type DATE_SUBCOMPONENT_NAMES =
-	| 'date'
-	| 'prevNextMonthDate'
-	| 'weekendLowLightDate'
-	| 'todayDate'
-	| 'selectedDate';
+	'date' | 'prevNextMonthDate' | 'weekendLowLightDate' | 'todayDate' | 'selectedDate';
 
 const SUBCOMPONENT_PREFRENCE: Record<DATE_SUBCOMPONENT_NAMES, number> = {
 	date: 1,

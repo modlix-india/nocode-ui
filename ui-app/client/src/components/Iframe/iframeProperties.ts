@@ -45,7 +45,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'sandbox',
 		group: ComponentPropertyGroup.ADVANCED,
-		multiValued:true,
+		multiValued: true,
 		description: 'Applies extra restrictions to the content in the frame. ',
 		enumValues: [
 			{
@@ -86,7 +86,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'allow-popups-to-escape-sandbox',
 				displayName: 'allow-popups-to-escape-sandbox',
-				description: 'Allows popups to open windows without inheriting sandbox restrictions.',
+				description:
+					'Allows popups to open windows without inheriting sandbox restrictions.',
 			},
 			{
 				name: 'allow-presentation',
@@ -132,8 +133,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: '',
 				displayName: 'Maximum Restrictions',
 				description: 'Applies all sandbox restrictions.',
-			}
-		]
+			},
+		],
 	},
 	{
 		name: 'referrerpolicy',
@@ -151,7 +152,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'no-referrer-when-downgrade',
 				displayName: 'no-referrer-when-downgrade',
-				description: 'Send full referrer info to same or more secure destinations, no referrer to less secure destinations.',
+				description:
+					'Send full referrer info to same or more secure destinations, no referrer to less secure destinations.',
 			},
 			{
 				name: 'origin',
@@ -161,7 +163,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'origin-when-cross-origin',
 				displayName: 'origin-when-cross-origin',
-				description: 'Send full referrer to same origin, only send origin for cross-origin requests.',
+				description:
+					'Send full referrer to same origin, only send origin for cross-origin requests.',
 			},
 			{
 				name: 'same-origin',
@@ -171,12 +174,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'strict-origin',
 				displayName: 'strict-origin',
-				description: 'Send origin to same or more secure destinations, no referrer to less secure destinations.',
+				description:
+					'Send origin to same or more secure destinations, no referrer to less secure destinations.',
 			},
 			{
 				name: 'strict-origin-when-cross-origin',
 				displayName: 'strict-origin-when-cross-origin',
-				description: 'Same origin: full referrer. Cross-origin: origin only if same/more secure, no referrer if less secure.',
+				description:
+					'Same origin: full referrer. Cross-origin: origin only if same/more secure, no referrer if less secure.',
 			},
 			{
 				name: 'unsafe-url',
@@ -187,8 +192,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: '',
 				displayName: 'Default Browser Policy',
 				description: 'Use the default referrer policy of the browser.',
-			}
-		]
+			},
+		],
 	},
 	{
 		name: 'loading',
@@ -201,14 +206,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{
 				name: 'eager',
 				displayName: 'eager',
-				description: 'The iframe loads immediately, even if it is not within the initial viewport.',
+				description:
+					'The iframe loads immediately, even if it is not within the initial viewport.',
 			},
 			{
 				name: 'lazy',
 				displayName: 'lazy',
-				description: 'The iframe loads lazily, only when it is within the initial viewport.',
-			}
-		]
+				description:
+					'The iframe loads lazily, only when it is within the initial viewport.',
+			},
+		],
 	},
 	{
 		name: 'allowfullscreen',
@@ -370,8 +377,8 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				name: 'xr-spatial-tracking',
 				displayName: 'xr-spatial-tracking',
 				description: 'Allows access to WebXR spatial tracking.',
-			}
-		]
+			},
+		],
 	},
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

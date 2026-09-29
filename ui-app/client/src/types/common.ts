@@ -73,6 +73,26 @@ export enum ComponentPropertyEditor {
 	TEXT_EDITOR,
 	SVG,
 	SHORTCUT_KEY,
+	/**
+	 * A bounded numeric property: slider plus number box, driven by the min,
+	 * max and step on the property definition.
+	 *
+	 * APPEND ONLY, like every member above it. This enum is numeric and
+	 * unannotated, so its members are stored as ordinals; inserting one in the
+	 * middle renumbers everything after it and silently repoints the editor for
+	 * every page definition already saved in Mongo.
+	 */
+	NUMBER_SLIDER,
+	/**
+	 * A visual picker for a scene preset: one card per option, each showing a
+	 * still rendered from the preset itself. Append only, as above.
+	 */
+	SCENE_PRESET,
+	/**
+	 * A whole three.js SceneDocument, edited in the Scene Editor modal.
+	 * Append only, as above.
+	 */
+	THREE_SCENE,
 }
 
 export enum ComponentPropertyGroup {
@@ -105,6 +125,14 @@ export interface ComponentPropertyDefinition {
 	defaultValue?: any;
 	displayOrder?: number;
 	hide?: boolean;
+	/**
+	 * Bounds for a numeric property. Read by the NUMBER_SLIDER editor, and
+	 * worth setting even without it: they are the only place the legal range
+	 * of a number is written down for whoever fills the property in.
+	 */
+	min?: number;
+	max?: number;
+	step?: number;
 	validationList?: Array<{
 		name: string;
 		displayName?: string;
@@ -314,6 +342,10 @@ export interface ComponentDefinitionValues {
 	key: string;
 	properties?: any;
 	stylePropertiesWithPseudoStates?: any;
+	/** Where each declared bindingPath currently resolves to. Compared so a
+	 * component re-renders when its binding MOVES, not only when a value under
+	 * it changes. Never read for display. */
+	bindingPaths?: string;
 }
 
 export interface StyleClassDefinition {
@@ -348,6 +380,19 @@ export interface PageDefinition {
 		onLoadEvent?: string;
 		loadStrategy?: string;
 		wrapShell?: boolean;
+		/**
+		 * Per-page metadata.
+		 *
+		 * The og, twitter and article keys are emitted by the SSR renderer under
+		 * their real tag names, and og/article are addressed by `property`
+		 * rather than `name`. Anything added here has to be added to
+		 * `SEO_TAG_NAMES` in RenderEngineContainer as well, or hydration writes
+		 * a second tag beside the server's rather than finding it.
+		 *
+		 * Only `.value` is ever server-rendered: SSR has no store and no
+		 * expression evaluation, so an expression-bound field is filled in after
+		 * hydration, long after any crawler has read the document.
+		 */
 		seo?: {
 			description?: ComponentProperty<string>;
 			keywords?: ComponentProperty<string>;
@@ -356,6 +401,30 @@ export interface PageDefinition {
 			author?: ComponentProperty<string>;
 			applicationName?: ComponentProperty<string>;
 			generator?: ComponentProperty<string>;
+
+			ogTitle?: ComponentProperty<string>;
+			ogDescription?: ComponentProperty<string>;
+			ogImage?: ComponentProperty<string>;
+			ogImageAlt?: ComponentProperty<string>;
+			ogImageWidth?: ComponentProperty<string>;
+			ogImageHeight?: ComponentProperty<string>;
+			ogImageType?: ComponentProperty<string>;
+			ogType?: ComponentProperty<string>;
+			ogUrl?: ComponentProperty<string>;
+			ogLocale?: ComponentProperty<string>;
+			ogDeterminer?: ComponentProperty<string>;
+			ogSiteName?: ComponentProperty<string>;
+
+			twitterCard?: ComponentProperty<string>;
+			twitterSite?: ComponentProperty<string>;
+			twitterCreator?: ComponentProperty<string>;
+
+			articlePublishedTime?: ComponentProperty<string>;
+			articleModifiedTime?: ComponentProperty<string>;
+			articleAuthor?: ComponentProperty<string>;
+			articleSection?: ComponentProperty<string>;
+			articleTag?: ComponentProperty<string>;
+
 			[key: string]: ComponentProperty<string> | undefined;
 		};
 		classes?: { [key: string]: StyleClassDefinition };

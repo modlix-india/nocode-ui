@@ -5,15 +5,7 @@
 // are preserved verbatim so server-side rendering still works.
 
 export type BlockType =
-	| 'heading'
-	| 'text'
-	| 'list'
-	| 'button'
-	| 'link'
-	| 'image'
-	| 'divider'
-	| 'spacer'
-	| 'html';
+	'heading' | 'text' | 'list' | 'button' | 'link' | 'image' | 'divider' | 'spacer' | 'html';
 
 export interface Block {
 	id: string;

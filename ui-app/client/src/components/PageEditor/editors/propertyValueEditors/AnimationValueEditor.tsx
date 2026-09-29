@@ -5,7 +5,12 @@ import {
 	PageDefinition,
 } from '../../../../types/common';
 import {
+	ANIMATION_AXIS_PROP,
 	ANIMATION_BASIC_PROPERTIES,
+	ANIMATION_RANGE_END,
+	ANIMATION_RANGE_START,
+	ANIMATION_SCROLLER_PROP,
+	ANIMATION_TIMELINE_PROP,
 	NUM_OF_OBSERVATIONS,
 	OBESERVATION_ENTERING_THRESHOLD,
 	OBESERVATION_EXITING_THRESHOLD,
@@ -171,6 +176,46 @@ export function AnimationValueEditor({
 		}
 	}
 
+	/**
+	 * The scroll-timeline fields, shown only once a timeline has been chosen.
+	 *
+	 * Hidden by default because `timeline` defaults to 'none' and the axis,
+	 * scroller and range mean nothing then. Showing four inert fields on every
+	 * animation on every component would make the common case worse to use.
+	 */
+	const timelineSelection: ReactNode[] = [];
+	const field = (def: ComponentPropertyDefinition) => (
+		<div className="_eachProp" key={def.name}>
+			<div className="_propLabel">{def.displayName}:</div>
+			<PropertyValueEditor
+				appPath={appPath}
+				pageDefinition={pageDefinition}
+				propDef={def}
+				value={value?.[def.name]}
+				storePaths={storePaths}
+				onChange={v => onChange?.({ ...(value ?? {}), [def.name]: v })}
+				onShowCodeEditor={onShowCodeEditor}
+				editPageName={editPageName}
+				slaveStore={slaveStore}
+				pageOperations={pageOperations}
+			/>
+		</div>
+	);
+
+	timelineSelection.push(field(ANIMATION_TIMELINE_PROP as ComponentPropertyDefinition));
+
+	const timelineMode = value?.[ANIMATION_TIMELINE_PROP.name]?.value;
+	if (timelineMode && timelineMode !== 'none') {
+		timelineSelection.push(field(ANIMATION_AXIS_PROP as ComponentPropertyDefinition));
+		// view() is always measured against the element's own scrollport, so a
+		// scroller choice there would be inert AND invalid in the emitted CSS.
+		if (timelineMode === 'scroll') {
+			timelineSelection.push(field(ANIMATION_SCROLLER_PROP as ComponentPropertyDefinition));
+		}
+		timelineSelection.push(field(ANIMATION_RANGE_START as ComponentPropertyDefinition));
+		timelineSelection.push(field(ANIMATION_RANGE_END as ComponentPropertyDefinition));
+	}
+
 	return (
 		<div className="_animationValueEditor">
 			{ANIMATION_BASIC_PROPERTIES.map(propDef => (
@@ -192,6 +237,7 @@ export function AnimationValueEditor({
 			))}
 			{extraParam}
 			{observerSelection}
+			{timelineSelection}
 		</div>
 	);
 }

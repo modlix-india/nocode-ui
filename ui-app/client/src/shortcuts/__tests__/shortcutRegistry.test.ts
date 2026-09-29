@@ -90,7 +90,9 @@ describe('dispatch', () => {
 		const run = jest.fn();
 		shortcutRegistry.register(makeReg({ run }));
 
-		shortcutRegistry.dispatch(keyEvent({ key: 's', code: 'KeyS', ctrlKey: true, repeat: true }));
+		shortcutRegistry.dispatch(
+			keyEvent({ key: 's', code: 'KeyS', ctrlKey: true, repeat: true }),
+		);
 
 		expect(run).not.toHaveBeenCalled();
 	});

@@ -45,7 +45,7 @@ const component: Component = {
 		bindingPath6: { name: 'FallBack Image' },
 		bindingPath7: { name: 'Alt text' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

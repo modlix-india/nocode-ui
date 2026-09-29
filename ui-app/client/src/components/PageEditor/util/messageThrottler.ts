@@ -150,7 +150,10 @@ class MessageThrottler {
 				try {
 					iframe.contentWindow.postMessage(msg, '*');
 				} catch (e) {
-					console.error(`[MessageThrottler] Failed to send ${message.type} to ${target}:`, e);
+					console.error(
+						`[MessageThrottler] Failed to send ${message.type} to ${target}:`,
+						e,
+					);
 				}
 			}
 		}
@@ -228,4 +231,3 @@ class MessageThrottler {
 
 // Singleton instance
 export const messageThrottler = new MessageThrottler();
-

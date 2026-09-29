@@ -79,7 +79,10 @@ export default function VariablesPanel({
 				<button className={mode === 'event' ? '_on' : ''} onClick={() => setMode('event')}>
 					Event
 				</button>
-				<button className={mode === 'custom' ? '_on' : ''} onClick={() => setMode('custom')}>
+				<button
+					className={mode === 'custom' ? '_on' : ''}
+					onClick={() => setMode('custom')}
+				>
 					Custom
 				</button>
 				<button className={mode === 'json' ? '_on' : ''} onClick={() => setMode('json')}>
@@ -210,14 +213,20 @@ function CustomFields({ value, onChange }: Readonly<{ value: any; onChange: (v: 
 				</div>
 			))}
 			{/* Adding is local only, so an empty new row stays visible until you name it. */}
-			<button className="_addBtn" onClick={() => setRows([...rows, { name: '', type: 'STRING' }])}>
+			<button
+				className="_addBtn"
+				onClick={() => setRows([...rows, { name: '', type: 'STRING' }])}
+			>
 				<i className="fa fa-solid fa-plus" /> Add field
 			</button>
 		</div>
 	);
 }
 
-function JsonSchemaEditor({ value, onChange }: Readonly<{ value: any; onChange: (v: any) => void }>) {
+function JsonSchemaEditor({
+	value,
+	onChange,
+}: Readonly<{ value: any; onChange: (v: any) => void }>) {
 	const lastEmitted = useRef('');
 	const [text, setText] = useState(() => JSON.stringify(value ?? emptyObjectSchema(), null, 2));
 	const [error, setError] = useState<string | undefined>();

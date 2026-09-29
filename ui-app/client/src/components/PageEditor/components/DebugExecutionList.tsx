@@ -52,9 +52,7 @@ export default function DebugExecutionList({
 		<div className="_popupMenuBackground" onClick={onClose}>
 			<div className="_executionListMenu" onClick={e => e.stopPropagation()}>
 				<div className="_executionListHeader">
-					<h3>
-						Debug Executions - {device.charAt(0).toUpperCase() + device.slice(1)}
-					</h3>
+					<h3>Debug Executions - {device.charAt(0).toUpperCase() + device.slice(1)}</h3>
 					<div className="_executionListActions">
 						<button className="_resetButton" onClick={onReset}>
 							Reset
@@ -85,7 +83,9 @@ export default function DebugExecutionList({
 									<span className="_timestamp">
 										{new Date(msg.startTime).toLocaleTimeString()}
 									</span>
-									<span className="_duration">{formatDuration(getDuration(msg))}</span>
+									<span className="_duration">
+										{formatDuration(getDuration(msg))}
+									</span>
 								</div>
 							</div>
 						))

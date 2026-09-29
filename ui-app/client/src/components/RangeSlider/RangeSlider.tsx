@@ -38,7 +38,7 @@ const component: Component = {
 		name: 'RangeSlider',
 		properties: { value: { value: 'RangeSlider' } },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

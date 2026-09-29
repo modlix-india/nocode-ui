@@ -14,6 +14,7 @@ import { Component, ComponentPropertyDefinition, ComponentProps } from '../../ty
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
+import { rewriteCssUrls } from '../util/getSrcUrl';
 import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -22,7 +23,6 @@ import pageHistory from './pageHistory';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
 import { styleProperties, styleDefaults } from './pageStyleProperties';
 
-const STATIC_FILE_API_PREFIX = 'api/files/static/file/';
 
 function PageComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -131,7 +131,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	const styleText = React.useMemo(() => {
 		if (!pageDefinition?.properties?.classes) return '';
 
-		let fullStyle = Object.values(pageDefinition?.properties?.classes)
+		const fullStyle = Object.values(pageDefinition?.properties?.classes)
 			.filter(e => e.selector?.indexOf('@') !== -1)
 			.map(e => {
 				const txt = `${e.selector} { ${e.style} }`;
@@ -140,24 +140,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 			})
 			.join('\n');
 
-		if (!globalThis.cdnPrefix) return fullStyle;
-
-		const styleParts = fullStyle.split(STATIC_FILE_API_PREFIX);
-		fullStyle = '';
-
-		for (let i = 0; i < styleParts.length; i += 2) {
-			fullStyle += styleParts[i];
-			if (i + 1 == styleParts.length) break;
-			if (fullStyle.endsWith('/')) fullStyle = fullStyle.substring(0, fullStyle.length - 1);
-			fullStyle += `https://${globalThis.cdnPrefix}/`;
-			if (!globalThis.cdnStripAPIPrefix) fullStyle += STATIC_FILE_API_PREFIX;
-			const lastPartIndex = styleParts[i + 1].indexOf(')');
-			let lastPart = styleParts[i + 1].substring(0, lastPartIndex);
-			if (globalThis.cdnReplacePlus) lastPart = lastPart.replaceAll('+', '%20');
-			fullStyle += lastPart + ')';
-			fullStyle += styleParts[i + 1].substring(lastPartIndex + 2);
-		}
-		return fullStyle;
+		return rewriteCssUrls(fullStyle);
 	}, [pageDefinition?.properties?.classes]);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -203,7 +186,7 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleComponent: PageStyle,
 	styleDefaults: styleDefaults,
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

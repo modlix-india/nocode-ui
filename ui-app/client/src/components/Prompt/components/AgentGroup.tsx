@@ -83,9 +83,7 @@ function ToolRow({
 			<span className={`_statusDot _sm ${dotClass}`} />
 			<span className="_agentToolName">{label}</span>
 			{!open && liveText && <span className="_agentToolLive">{liveText}</span>}
-			{duration != null && duration > 0 && (
-				<span className="_agentToolDur">{duration}s</span>
-			)}
+			{duration != null && duration > 0 && <span className="_agentToolDur">{duration}s</span>}
 			{canExpand && (
 				<i
 					className={`_agentToolToggle ${open ? collapseIcon : expandIcon}`}

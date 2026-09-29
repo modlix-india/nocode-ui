@@ -209,7 +209,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
-	{	
+	{
 		name: 'showMandatoryAsterisk',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Mandatory',
@@ -224,7 +224,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: "Label text that's shown on top of file upload component.",
 		group: ComponentPropertyGroup.BASIC,
 	},
-	
+
 	{
 		name: 'noFloat',
 		schema: SCHEMA_BOOL_COMP_PROP,
@@ -244,7 +244,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.validation,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
-	
 ];
 
 const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
@@ -319,9 +318,9 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,	
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,	
-	]
+		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
 };
 
 export { propertiesDefinition, stylePropertiesDefinition };

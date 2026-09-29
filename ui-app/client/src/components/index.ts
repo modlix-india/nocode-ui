@@ -1,6 +1,7 @@
 import { Component } from '../types/common';
 import Animator from './Animator/Animator';
 import ArrayRepeater from './ArrayRepeater/ArrayRepeater';
+import BlueprintEditor from './BlueprintEditor/BlueprintEditor';
 import Button from './Button/Button';
 import ButtonBar from './Buttonbar/ButtonBar';
 import Carousel from './Carousel/Carousel';
@@ -20,6 +21,10 @@ import Prompt from './Prompt/Prompt';
 import Popup from './Popup/Popup';
 import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
+import ModelViewer from './ModelViewer/ModelViewer';
+import ParticleField from './ParticleField/ParticleField';
+import ScrollScene from './ScrollScene/ScrollScene';
+import ShaderBackground from './ShaderBackground/ShaderBackground';
 import Shortcut from './Shortcut/Shortcut';
 import Stepper from './Stepper/Stepper';
 import SubPage from './SubPage/SubPage';
@@ -62,11 +67,7 @@ import SSEventListener from './SSEventListener/SSEventListener';
 import Chart from './Chart/Chart';
 import FileSelector from './FileSelector/FileSelector';
 import Form from './Form/Form';
-import AnalyticsQuery from './AnalyticsQuery/AnalyticsQuery';
-import WebAnalyticsWidget from './WebAnalyticsWidget/WebAnalyticsWidget';
-import ProductAnalyticsWidget from './ProductAnalyticsWidget/ProductAnalyticsWidget';
-import SessionReplayList from './SessionReplayList/SessionReplayList';
-import SessionReplayPlayer from './SessionReplayPlayer/SessionReplayPlayer';
+import AnalyticsHeatmap from './AnalyticsHeatmap/AnalyticsHeatmap';
 
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 import ThemeEditor from './ThemeEditor/ThemeEditor';
@@ -81,6 +82,7 @@ import TemplateEditor from './TemplateEditor/TemplateEditor';
 import TextEditor from './TextEditor/TextEditor';
 
 const componentMap = new Map<string, Component>([
+	[BlueprintEditor.name, BlueprintEditor],
 	[Button.name, Button],
 	[ButtonBar.name, ButtonBar],
 	[Grid.name, Grid],
@@ -97,6 +99,10 @@ const componentMap = new Map<string, Component>([
 	[Tags.name, Tags],
 	[Image.name, Image],
 	[Svg.name, Svg],
+	[ShaderBackground.name, ShaderBackground],
+	[ModelViewer.name, ModelViewer],
+	[ParticleField.name, ParticleField],
+	[ScrollScene.name, ScrollScene],
 	[Tabs.name, Tabs],
 	[ThemeSwitcher.name, ThemeSwitcher],
 	[Icon.name, Icon],
@@ -138,11 +144,7 @@ const componentMap = new Map<string, Component>([
 	[Audio.name, Audio],
 	[SSEventListener.name, SSEventListener],
 	[Chart.name, Chart],
-	[AnalyticsQuery.name, AnalyticsQuery],
-	[WebAnalyticsWidget.name, WebAnalyticsWidget],
-	[ProductAnalyticsWidget.name, ProductAnalyticsWidget],
-	[SessionReplayList.name, SessionReplayList],
-	[SessionReplayPlayer.name, SessionReplayPlayer],
+	[AnalyticsHeatmap.name, AnalyticsHeatmap],
 	[FileSelector.name, FileSelector],
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FillerValueEditor.name, FillerValueEditor],

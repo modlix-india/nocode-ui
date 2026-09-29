@@ -620,7 +620,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Text Box', pageName: 'textBox' }],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

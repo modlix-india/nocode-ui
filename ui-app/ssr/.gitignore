@@ -4,5 +4,8 @@ dist/
 # Auto-generated build info (regenerated on each build)
 src/config/buildInfo.ts
 
+# Copied from the client by scripts/copyShared.js — edit the client original
+src/shared/
+
 # Node modules
 node_modules/

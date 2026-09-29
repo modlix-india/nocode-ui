@@ -219,7 +219,7 @@ const component: Component = {
 		youtubeLink: 'https://www.youtube.com/watch?v=YSv3KNSUwWQ&ab_channel=FincityIndia',
 	},
 
-		stylePropertiesForTheme: stylePropertiesForTheme,
+	stylePropertiesForTheme: stylePropertiesForTheme,
 	propertiesForTheme: [textContainer, textColor],
 };
 

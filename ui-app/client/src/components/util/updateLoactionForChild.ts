@@ -1,5 +1,9 @@
 import { TokenValueExtractor } from '@fincity/kirun-js';
-import { PageStoreExtractor, getPathFromLocation ,UrlDetailsExtractor} from '../../context/StoreContext';
+import {
+	PageStoreExtractor,
+	getPathFromLocation,
+	UrlDetailsExtractor,
+} from '../../context/StoreContext';
 import { DataLocation, LocationHistory } from '../../types/common';
 
 export const updateLocationForChild = (

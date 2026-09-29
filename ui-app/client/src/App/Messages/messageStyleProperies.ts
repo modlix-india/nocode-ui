@@ -1,6 +1,25 @@
 import { StylePropertyDefinition } from '../../types/common';
 
 export const styleProperties: Array<StylePropertyDefinition> = [
+	// A toast is the app telling you what just happened, so it has to be readable
+	// whatever is on screen. This was hard-coded at `z-index: 12` in MessageStyle.tsx,
+	// which is BELOW almost everything it needs to appear over: an app shell's sidebar
+	// commonly sits at 50, a Popup's stacking context at 100, and Dropdown and Popover
+	// render their portals as direct children of <body> at 9999. The visible symptom is
+	// a "Saved" or an error toast that fires correctly and is painted behind the modal
+	// scrim, so the user sees nothing at all and repeats the action.
+	//
+	// 10000 puts it above the portal layer, which is the top of the application stack.
+	// Exposed as a variable rather than another hard-coded number so an app that embeds
+	// Modlix under chrome of its own can still raise it.
+	{
+		n: 'messagesZIndex',
+		cp: 'z-index',
+		dn: 'Messages Z Index',
+		de: 'Stacking order of the toast container. Must exceed the popup and portal layers.',
+		dv: '10000',
+		sel: ' ',
+	},
 	{
 		n: 'messagesOuterContainerLeft',
 		cp: 'left',

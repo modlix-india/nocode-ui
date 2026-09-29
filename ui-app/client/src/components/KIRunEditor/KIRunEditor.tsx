@@ -30,7 +30,7 @@ const component: Component = {
 		bindingPath: { name: 'Function Binding' },
 		bindingPath2: { name: 'Personalization' },
 	},
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

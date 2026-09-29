@@ -30,10 +30,7 @@ export function setChartGradients(_chart: ChartJS, _gradients: Map<number, Gradi
 /**
  * Extracts gradient definition from URL reference
  */
-function getGradientFromUrl(
-	color: string,
-	gradients: Map<number, Gradient>,
-): Gradient | null {
+function getGradientFromUrl(color: string, gradients: Map<number, Gradient>): Gradient | null {
 	if (!color || typeof color !== 'string' || !color.startsWith('url(#gradient_')) {
 		return null;
 	}
@@ -129,7 +126,12 @@ function processUserSpaceGradients(chart: ChartJS, gradients: Map<number, Gradie
 				resolveGradientUserSpace(chart, color, gradients, cache!),
 			);
 		} else if (typeof dataset.backgroundColor === 'string') {
-			dataset.backgroundColor = resolveGradientUserSpace(chart, dataset.backgroundColor, gradients, cache!);
+			dataset.backgroundColor = resolveGradientUserSpace(
+				chart,
+				dataset.backgroundColor,
+				gradients,
+				cache!,
+			);
 		}
 
 		// Process borderColor
@@ -138,7 +140,12 @@ function processUserSpaceGradients(chart: ChartJS, gradients: Map<number, Gradie
 				resolveGradientUserSpace(chart, color, gradients, cache!),
 			);
 		} else if (typeof dataset.borderColor === 'string') {
-			dataset.borderColor = resolveGradientUserSpace(chart, dataset.borderColor, gradients, cache!);
+			dataset.borderColor = resolveGradientUserSpace(
+				chart,
+				dataset.borderColor,
+				gradients,
+				cache!,
+			);
 		}
 
 		// Process pointBackgroundColor
@@ -147,7 +154,12 @@ function processUserSpaceGradients(chart: ChartJS, gradients: Map<number, Gradie
 				resolveGradientUserSpace(chart, color, gradients, cache!),
 			);
 		} else if (typeof dataset.pointBackgroundColor === 'string') {
-			dataset.pointBackgroundColor = resolveGradientUserSpace(chart, dataset.pointBackgroundColor, gradients, cache!);
+			dataset.pointBackgroundColor = resolveGradientUserSpace(
+				chart,
+				dataset.pointBackgroundColor,
+				gradients,
+				cache!,
+			);
 		}
 
 		// Process pointBorderColor
@@ -156,7 +168,12 @@ function processUserSpaceGradients(chart: ChartJS, gradients: Map<number, Gradie
 				resolveGradientUserSpace(chart, color, gradients, cache!),
 			);
 		} else if (typeof dataset.pointBorderColor === 'string') {
-			dataset.pointBorderColor = resolveGradientUserSpace(chart, dataset.pointBorderColor, gradients, cache!);
+			dataset.pointBorderColor = resolveGradientUserSpace(
+				chart,
+				dataset.pointBorderColor,
+				gradients,
+				cache!,
+			);
 		}
 	});
 }
@@ -177,7 +194,10 @@ function getUrlStorage(chart: ChartJS): Map<string, string> {
  * Process dataset colors for objectBoundingBox mode (gradient per element)
  * Returns true if all gradients were applied, false if some were skipped due to invalid bounds
  */
-function processObjectBoundingBoxGradients(chart: ChartJS, gradients: Map<number, Gradient>): boolean {
+function processObjectBoundingBoxGradients(
+	chart: ChartJS,
+	gradients: Map<number, Gradient>,
+): boolean {
 	const ctx = chart.ctx;
 	if (!ctx) {
 		return true;
@@ -222,8 +242,12 @@ function processObjectBoundingBoxGradients(chart: ChartJS, gradients: Map<number
 			const borderKey = `border_${datasetIndex}_${elementIndex}`;
 
 			// Check if current value is a gradient URL string
-			const bgIsUrl = bgColor && typeof bgColor === 'string' && bgColor.startsWith('url(#gradient_');
-			const borderIsUrl = borderColor && typeof borderColor === 'string' && borderColor.startsWith('url(#gradient_');
+			const bgIsUrl =
+				bgColor && typeof bgColor === 'string' && bgColor.startsWith('url(#gradient_');
+			const borderIsUrl =
+				borderColor &&
+				typeof borderColor === 'string' &&
+				borderColor.startsWith('url(#gradient_');
 
 			// Store original URLs if we see them for the first time
 			if (bgIsUrl) {
@@ -258,14 +282,22 @@ function processObjectBoundingBoxGradients(chart: ChartJS, gradients: Map<number
 				if (gradient) {
 					// Include bounds in cache key so gradient is recreated when bounds change
 					const cacheKey = `${bgKey}_${Math.round(bounds.left)}_${Math.round(bounds.top)}_${Math.round(bounds.right)}_${Math.round(bounds.bottom)}`;
-					const canvasGradient = createElementGradient(ctx, gradient, bounds, cacheKey, cache);
+					const canvasGradient = createElementGradient(
+						ctx,
+						gradient,
+						bounds,
+						cacheKey,
+						cache,
+					);
 
 					// Set on dataset for consistency
 					if (Array.isArray(dataset.backgroundColor)) {
 						dataset.backgroundColor[elementIndex] = canvasGradient;
 					} else {
 						// Convert single color to array for per-element gradients
-						dataset.backgroundColor = new Array(meta.data.length).fill(dataset.backgroundColor);
+						dataset.backgroundColor = new Array(meta.data.length).fill(
+							dataset.backgroundColor,
+						);
 						dataset.backgroundColor[elementIndex] = canvasGradient;
 					}
 
@@ -283,7 +315,13 @@ function processObjectBoundingBoxGradients(chart: ChartJS, gradients: Map<number
 				const gradient = getGradientFromUrl(borderUrl, gradients);
 				if (gradient) {
 					const cacheKey = `${borderKey}_${Math.round(bounds.left)}_${Math.round(bounds.top)}_${Math.round(bounds.right)}_${Math.round(bounds.bottom)}`;
-					const canvasGradient = createElementGradient(ctx, gradient, bounds, cacheKey, cache);
+					const canvasGradient = createElementGradient(
+						ctx,
+						gradient,
+						bounds,
+						cacheKey,
+						cache,
+					);
 
 					// Set on dataset for consistency
 					if (Array.isArray(dataset.borderColor)) {
@@ -310,7 +348,12 @@ function processObjectBoundingBoxGradients(chart: ChartJS, gradients: Map<number
 /**
  * Validates that bounds contain finite, valid numbers
  */
-function isValidBounds(bounds: { left: number; right: number; top: number; bottom: number }): boolean {
+function isValidBounds(bounds: {
+	left: number;
+	right: number;
+	top: number;
+	bottom: number;
+}): boolean {
 	// Check all values are finite
 	if (
 		!Number.isFinite(bounds.left) ||
@@ -332,7 +375,9 @@ function isValidBounds(bounds: { left: number; right: number; top: number; botto
 /**
  * Gets the bounding box of a chart element (bar, arc, point, etc.)
  */
-function getElementBounds(element: any): { left: number; right: number; top: number; bottom: number } | null {
+function getElementBounds(
+	element: any,
+): { left: number; right: number; top: number; bottom: number } | null {
 	if (!element) return null;
 
 	let bounds: { left: number; right: number; top: number; bottom: number } | null = null;
@@ -389,7 +434,12 @@ function getElementBounds(element: any): { left: number; right: number; top: num
 		}
 	}
 	// For bar elements without base (fallback)
-	else if (element.x !== undefined && element.y !== undefined && element.width !== undefined && element.height !== undefined) {
+	else if (
+		element.x !== undefined &&
+		element.y !== undefined &&
+		element.width !== undefined &&
+		element.height !== undefined
+	) {
 		bounds = {
 			left: element.x - element.width / 2,
 			right: element.x + element.width / 2,
@@ -398,7 +448,12 @@ function getElementBounds(element: any): { left: number; right: number; top: num
 		};
 	}
 	// For arc elements (pie/doughnut)
-	else if (element.innerRadius !== undefined && element.outerRadius !== undefined && element.x !== undefined && element.y !== undefined) {
+	else if (
+		element.innerRadius !== undefined &&
+		element.outerRadius !== undefined &&
+		element.x !== undefined &&
+		element.y !== undefined
+	) {
 		bounds = {
 			left: element.x - element.outerRadius,
 			right: element.x + element.outerRadius,

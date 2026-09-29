@@ -92,7 +92,9 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 			clientCode: application.urlClientCode ?? '',
 		});
 	}
-	if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
+	if (globalThis.isDebugMode)
+		axiosOptions.headers!['x-debug'] =
+			(globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 	const selectedTheme = resolveThemeName(application, {
 		personalized: personalizedTheme,
@@ -107,8 +109,7 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 		// frame. `themeName` is absent until the SSR side is taught to stamp it,
 		// which is why the comparison also accepts "we resolved to the default".
 		const bootstrap = globalThis.__APP_BOOTSTRAP__;
-		const bootstrapTheme =
-			bootstrap?.themeName ?? resolveThemeName(application, {});
+		const bootstrapTheme = bootstrap?.themeName ?? resolveThemeName(application, {});
 
 		if (bootstrap && bootstrapTheme === selectedTheme) theme = bootstrap.theme;
 		else {
@@ -151,12 +152,12 @@ async function makeAppDefinitionCall(
 		if (globalThis.__APP_BOOTSTRAP__?.application)
 			application = globalThis.__APP_BOOTSTRAP__?.application;
 		else {
-		const response = await axios.get('api/ui/application', axiosOptions);
-		if (response.status === 200) {
-			application = response.data;
-			
-		}}
-		if (application  && !language) language = application.defaultLanguage;
+			const response = await axios.get('api/ui/application', axiosOptions);
+			if (response.status === 200) {
+				application = response.data;
+			}
+		}
+		if (application && !language) language = application.defaultLanguage;
 	} catch (e) {
 		isApplicationLoadFailed = true;
 		console.error('Unable to load application definition:', e);
@@ -173,7 +174,9 @@ async function makeVerifyTokenCall(
 ) {
 	try {
 		axiosOptions.headers!.Authorization = JSON.parse(authToken);
-		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
+		if (globalThis.isDebugMode)
+			axiosOptions.headers!['x-debug'] =
+				(globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 		const response = await axios.get('api/security/verifyToken', axiosOptions);
 
 		if (response.status === 200) {
@@ -202,7 +205,9 @@ async function makeVerifyTokenCall(
 			localStorage.removeItem(TOKEN_EXPIRY);
 		}
 		axiosOptions = { headers: {} };
-		if (globalThis.isDebugMode) axiosOptions.headers!['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') +shortUUID();
+		if (globalThis.isDebugMode)
+			axiosOptions.headers!['x-debug'] =
+				(globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 	}
 	return { axiosOptions, language };
 }

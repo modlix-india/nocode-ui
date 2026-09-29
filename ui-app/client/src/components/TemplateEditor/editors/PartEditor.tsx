@@ -15,7 +15,12 @@ interface PartEditorProps {
 
 // Editor for a single template part. HTML parts use Monaco; text parts use a textarea.
 // Both support inserting FreeMarker variable tokens at the caret via the merge-field picker.
-export default function PartEditor({ part, value, onChange, variables }: Readonly<PartEditorProps>) {
+export default function PartEditor({
+	part,
+	value,
+	onChange,
+	variables,
+}: Readonly<PartEditorProps>) {
 	const monacoRef = useRef<any>(null);
 	const textRef = useRef<HTMLTextAreaElement | null>(null);
 	const [showVars, setShowVars] = useState(false);
@@ -45,8 +50,7 @@ export default function PartEditor({ part, value, onChange, variables }: Readonl
 		setShowVars(false);
 	};
 
-	const format = () =>
-		monacoRef.current?.getAction?.('editor.action.formatDocument')?.run?.();
+	const format = () => monacoRef.current?.getAction?.('editor.action.formatDocument')?.run?.();
 
 	return (
 		<div className="_partEditor">
@@ -54,47 +58,51 @@ export default function PartEditor({ part, value, onChange, variables }: Readonl
 				<span className="_partLabel">{part.label}</span>
 				<div className="_partToolbarActions">
 					{part.editor === 'html' && (
-						<button type="button" className="_ghostBtn" onClick={format} title="Format HTML">
+						<button
+							type="button"
+							className="_ghostBtn"
+							onClick={format}
+							title="Format HTML"
+						>
 							<i className="fa fa-solid fa-wand-magic-sparkles" /> Format
 						</button>
 					)}
 					<div className="_varPicker">
-					<button
-						type="button"
-						className="_varButton"
-						onClick={() => setShowVars(s => !s)}
-					>
-						Insert variable ▾
-					</button>
-					{showVars && (
-						<div className="_varDropdown">
-							{variables.length === 0 && (
-								<div className="_varEmpty">
-									No variables yet. Define them in the Variables panel, or type
-									{' ${name}'} directly.
-								</div>
-							)}
-							{variables.map(v => (
-								<button
-									key={v.path}
-									type="button"
-									className="_varItem"
-									onClick={() => insertToken(v.token)}
-								>
-									<span className="_varPath">{v.token}</span>
-									{v.type && <span className="_varType">{v.type}</span>}
-								</button>
-							))}
-						</div>
-					)}
-				</div>
+						<button
+							type="button"
+							className="_varButton"
+							onClick={() => setShowVars(s => !s)}
+						>
+							Insert variable ▾
+						</button>
+						{showVars && (
+							<div className="_varDropdown">
+								{variables.length === 0 && (
+									<div className="_varEmpty">
+										No variables yet. Define them in the Variables panel, or
+										type
+										{' ${name}'} directly.
+									</div>
+								)}
+								{variables.map(v => (
+									<button
+										key={v.path}
+										type="button"
+										className="_varItem"
+										onClick={() => insertToken(v.token)}
+									>
+										<span className="_varPath">{v.token}</span>
+										{v.type && <span className="_varType">{v.type}</span>}
+									</button>
+								))}
+							</div>
+						)}
+					</div>
 				</div>
 			</div>
 			{part.editor === 'html' ? (
 				<div className="_htmlEditor">
-					<Suspense
-						fallback={<div className="_editorLoading">Loading editor...</div>}
-					>
+					<Suspense fallback={<div className="_editorLoading">Loading editor...</div>}>
 						<LazyEditor
 							language="html"
 							height="100%"

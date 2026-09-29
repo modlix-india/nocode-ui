@@ -74,8 +74,7 @@ export class ParentExtractor extends SpecialTokenValueExtractor {
 		const remainingSuffix = this.reconstructPath(parts.slice(pNum));
 		let baseLocation: string;
 
-		if (typeof lastHistory.location === 'string')
-			baseLocation = lastHistory.location;
+		if (typeof lastHistory.location === 'string') baseLocation = lastHistory.location;
 		else
 			baseLocation =
 				(lastHistory.location.type === 'VALUE'
@@ -148,11 +147,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 
 	protected getValueInternal(token: string) {
 		const path = this.computeParentPath(token);
-		const value = getDataFromPath(
-			path,
-			[],
-			...Array.from(this.valueMaps.values()),
-		);
+		const value = getDataFromPath(path, [], ...Array.from(this.valueMaps.values()));
 
 		if (value === undefined || value === null) {
 			// console.warn('[ParentExtractorForRunEvent] undefined/null for token:', token, '=> path:', path, this.valueMaps.get('Page.')?.getStore()?.dealData?.content);
@@ -227,8 +222,7 @@ export class ParentExtractorForRunEvent extends TokenValueExtractor {
 		const remainingSuffix = this.reconstructPath(parts.slice(pNum));
 		let baseLocation: string;
 
-		if (typeof lastHistory.location === 'string')
-			baseLocation = lastHistory.location;
+		if (typeof lastHistory.location === 'string') baseLocation = lastHistory.location;
 		else
 			baseLocation =
 				(lastHistory.location.type === 'VALUE'

@@ -11,15 +11,48 @@ import { Block, BlockType } from './blockTypes';
 
 // Wrapper elements we look THROUGH to find content.
 const CONTAINER_TAGS = new Set([
-	'html', 'body', 'center', 'div', 'section', 'article', 'header', 'footer', 'main', 'figure',
-	'table', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th',
+	'html',
+	'body',
+	'center',
+	'div',
+	'section',
+	'article',
+	'header',
+	'footer',
+	'main',
+	'figure',
+	'table',
+	'thead',
+	'tbody',
+	'tfoot',
+	'tr',
+	'td',
+	'th',
 ]);
 
 // Tags whose presence means a container has genuine block structure worth descending into (rather
 // than being an inline-only wrapper we should keep as a single block).
 const BLOCK_LEVEL_TAGS = new Set([
-	'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ul', 'ol', 'hr', 'img',
-	'table', 'div', 'section', 'article', 'header', 'footer', 'blockquote', 'figure', 'center',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+	'p',
+	'ul',
+	'ol',
+	'hr',
+	'img',
+	'table',
+	'div',
+	'section',
+	'article',
+	'header',
+	'footer',
+	'blockquote',
+	'figure',
+	'center',
 ]);
 
 const HEADING_LEVELS = new Set(['h1', 'h2', 'h3', 'h4']);
@@ -68,7 +101,13 @@ function anchorBlock(a: Element): Block {
 	if (img && !(a.textContent ?? '').trim()) return imageBlock(img, a.getAttribute('href') ?? '');
 
 	const bg = styleStr(a, 'backgroundColor') ?? styleStr(a, 'background');
-	const looksButton = !!bg && !!(styleStr(a, 'display') === 'inline-block' || styleStr(a, 'padding') || styleStr(a, 'paddingTop'));
+	const looksButton =
+		!!bg &&
+		!!(
+			styleStr(a, 'display') === 'inline-block' ||
+			styleStr(a, 'padding') ||
+			styleStr(a, 'paddingTop')
+		);
 	if (looksButton) {
 		return mk('button', {
 			label: (a.textContent ?? '').trim() || 'Button',
@@ -123,7 +162,15 @@ function leafBlockFor(el: Element): Block[] | null {
 			.map(li => (li as HTMLElement).innerHTML.trim())
 			.filter(Boolean)
 			.join('\n');
-		return [mk('list', { items, ordered: tag === 'ol' ? 'true' : 'false', align: 'left', color: '#333333', fontSize: 14 })];
+		return [
+			mk('list', {
+				items,
+				ordered: tag === 'ol' ? 'true' : 'false',
+				align: 'left',
+				color: '#333333',
+				fontSize: 14,
+			}),
+		];
 	}
 	if (tag === 'hr') return [mk('divider', { color: '#e0e0e0', thickness: 1, spacing: 16 })];
 	if (tag === 'img') return [imageBlock(el, '')];
@@ -166,7 +213,15 @@ function walkChildren(el: Element, out: Block[]): void {
 	el.childNodes.forEach(node => {
 		if (node.nodeType === 3) {
 			const txt = (node.textContent ?? '').trim();
-			if (txt) out.push(mk('text', { html: escapeText(txt), align: 'left', color: '#333333', fontSize: 14 }));
+			if (txt)
+				out.push(
+					mk('text', {
+						html: escapeText(txt),
+						align: 'left',
+						color: '#333333',
+						fontSize: 14,
+					}),
+				);
 			return;
 		}
 		if (node.nodeType === 1) walk(node as Element, out);

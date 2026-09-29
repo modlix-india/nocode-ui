@@ -515,7 +515,7 @@ const component: Component = {
 		},
 	},
 	sections: [{ name: 'Buttons', pageName: 'buttons' }],
-		propertiesForTheme: [designType, colorScheme],
+	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,
 	externalStylePropsForThemeJson: true,
 };

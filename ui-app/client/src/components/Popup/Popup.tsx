@@ -265,7 +265,7 @@ const component: Component = {
 	},
 	needShowInDesginMode: true,
 	sections: [{ name: 'Popup', pageName: 'popup' }],
-		stylePropertiesForTheme: styleProperties,
+	stylePropertiesForTheme: styleProperties,
 };
 
 export default component;

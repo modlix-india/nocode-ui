@@ -17,7 +17,7 @@ import { Messages } from './Messages/Messages';
 import { getAppDefinition } from './appDefinition';
 import { usedComponents } from './usedComponents';
 import DebugWindow from '../debug/DebugWindow';
-import { AnalyticsConsentBanner } from './AnalyticsConsentBanner';
+import { AnalyticsBinder } from './AnalyticsBinder';
 import { ShortcutChooser } from '../shortcuts/ShortcutChooser';
 import { ShortcutModifierHold } from '../shortcuts/ShortcutModifierHold';
 import { ShortcutCheatSheet } from '../shortcuts/ShortcutCheatSheet';
@@ -78,6 +78,8 @@ function processTagType(headTags: any, tag: string) {
 		});
 }
 
+import { processFontPacks } from './fontPacks';
+
 const addedKeySet = new Set<string>();
 
 function processCodeParts(codeParts: any) {
@@ -111,22 +113,6 @@ function processCodeParts(codeParts: any) {
 				Array.from(div.children).forEach(cp => document.body.appendChild(cp));
 
 			addedKeySet.add(setKey);
-		});
-}
-
-function processFontPacks(fontPacks: any) {
-	if (!fontPacks) return;
-
-	Object.entries(fontPacks)
-		.sort((a: any[], b: any[]) => (a[1]?.order ?? 0) - (b[1]?.order ?? 0))
-		.forEach(([key, fontPack]: [string, any]) => {
-			const setKey = `FONT_${key}`;
-			if (addedKeySet.has(setKey)) return;
-
-			let div = document.createElement('div');
-			div.innerHTML = fontPack.code.trim();
-
-			Array.from(div.children).forEach(cp => document.head.appendChild(cp));
 		});
 }
 
@@ -208,13 +194,8 @@ export function App() {
 				undefined,
 				async (_, appDef) => {
 					if (appDef === undefined) {
-						const {
-							auth,
-							application,
-							isApplicationLoadFailed,
-							theme,
-							selectedTheme,
-						} = await getAppDefinition();
+						const { auth, application, isApplicationLoadFailed, theme, selectedTheme } =
+							await getAppDefinition();
 						setData(`${STORE_PREFIX}.application`, application);
 						setData(`${STORE_PREFIX}.auth`, auth);
 						setData(`${STORE_PREFIX}.isApplicationLoadFailed`, isApplicationLoadFailed);
@@ -288,7 +269,7 @@ export function App() {
 			<ShortcutChooser />
 			<ShortcutModifierHold />
 			<ShortcutCheatSheet />
-			<AnalyticsConsentBanner />
+			<AnalyticsBinder />
 			<div id="_rendered" data-used-components={usedComps} />
 			<DebugWindow />
 		</>

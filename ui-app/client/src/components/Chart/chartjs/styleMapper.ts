@@ -8,13 +8,22 @@ import { ChartJsType } from './dataTransformer';
  */
 function extractColor(styles: any): string | undefined {
 	if (!styles) return undefined;
-	return styles.color || styles.fill || styles.stroke || styles.backgroundColor || styles.borderTopColor || styles.borderColor;
+	return (
+		styles.color ||
+		styles.fill ||
+		styles.stroke ||
+		styles.backgroundColor ||
+		styles.borderTopColor ||
+		styles.borderColor
+	);
 }
 
 /**
  * Extracts font properties from a style object
  */
-function extractFont(styles: any): { family?: string; size?: number; weight?: string | number; style?: string } | undefined {
+function extractFont(
+	styles: any,
+): { family?: string; size?: number; weight?: string | number; style?: string } | undefined {
 	if (!styles) return undefined;
 
 	const font: { family?: string; size?: number; weight?: string | number; style?: string } = {};
@@ -84,7 +93,10 @@ function extractDashPattern(styles: any): number[] | undefined {
 		if (Array.isArray(dashArray)) return dashArray;
 		if (typeof dashArray === 'string') {
 			// Parse "5 5" or "5, 5" or "5,5" format
-			const parts = dashArray.split(/[\s,]+/).map((p: string) => Number.parseFloat(p)).filter((n: number) => !Number.isNaN(n));
+			const parts = dashArray
+				.split(/[\s,]+/)
+				.map((p: string) => Number.parseFloat(p))
+				.filter((n: number) => !Number.isNaN(n));
 			if (parts.length > 0) return parts;
 		}
 	}
@@ -164,7 +176,8 @@ function applyAxisStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.x.ticks) scales.x.ticks = {};
 		if (color) {
-			scales.x.ticks.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.x.ticks.color =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (font) scales.x.ticks.font = { ...scales.x.ticks.font, ...font };
 	}
@@ -177,7 +190,8 @@ function applyAxisStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.y.ticks) scales.y.ticks = {};
 		if (color) {
-			scales.y.ticks.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.y.ticks.color =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (font) scales.y.ticks.font = { ...scales.y.ticks.font, ...font };
 	}
@@ -190,7 +204,8 @@ function applyAxisStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.x.title) scales.x.title = { display: true };
 		if (color) {
-			scales.x.title.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.x.title.color =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (font) scales.x.title.font = { ...scales.x.title.font, ...font };
 	}
@@ -203,7 +218,8 @@ function applyAxisStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.y.title) scales.y.title = { display: true };
 		if (color) {
-			scales.y.title.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.y.title.color =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (font) scales.y.title.font = { ...scales.y.title.font, ...font };
 	}
@@ -218,7 +234,8 @@ function applyAxisStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.x.border) scales.x.border = {};
 		if (color) {
-			scales.x.border.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.x.border.color =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (lineWidth !== undefined) scales.x.border.width = lineWidth;
 		if (dashPattern) scales.x.border.dash = dashPattern;
@@ -234,7 +251,8 @@ function applyAxisStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.y.border) scales.y.border = {};
 		if (color) {
-			scales.y.border.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.y.border.color =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (lineWidth !== undefined) scales.y.border.width = lineWidth;
 		if (dashPattern) scales.y.border.dash = dashPattern;
@@ -259,7 +277,8 @@ function applyTickStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.x.grid) scales.x.grid = {};
 		if (color) {
-			scales.x.grid.tickColor = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.x.grid.tickColor =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (lineWidth !== undefined) scales.x.grid.tickWidth = lineWidth;
 		if (dashPattern) scales.x.grid.tickBorderDash = dashPattern;
@@ -281,7 +300,8 @@ function applyTickStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.y.grid) scales.y.grid = {};
 		if (color) {
-			scales.y.grid.tickColor = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.y.grid.tickColor =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (lineWidth !== undefined) scales.y.grid.tickWidth = lineWidth;
 		if (dashPattern) scales.y.grid.tickBorderDash = dashPattern;
@@ -312,7 +332,8 @@ function applyGridStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.y.grid) scales.y.grid = {};
 		if (color) {
-			scales.y.grid.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.y.grid.color =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (lineWidth !== undefined) scales.y.grid.lineWidth = lineWidth;
 		if (dashPattern) scales.y.grid.borderDash = dashPattern;
@@ -328,7 +349,8 @@ function applyGridStyles(options: ChartOptions, resolvedStyles: any): void {
 
 		if (!scales.x.grid) scales.x.grid = {};
 		if (color) {
-			scales.x.grid.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			scales.x.grid.color =
+				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 		}
 		if (lineWidth !== undefined) scales.x.grid.lineWidth = lineWidth;
 		if (dashPattern) scales.x.grid.borderDash = dashPattern;
@@ -350,7 +372,8 @@ function applyLegendStyles(options: ChartOptions, resolvedStyles: any): void {
 
 	if (!plugins.legend.labels) plugins.legend.labels = {};
 	if (color) {
-		plugins.legend.labels.color = opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+		plugins.legend.labels.color =
+			opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
 	}
 	if (font) plugins.legend.labels.font = { ...plugins.legend.labels.font, ...font };
 }
@@ -411,12 +434,14 @@ function applyTooltipStyles(options: ChartOptions, resolvedStyles: any): void {
 	const opacity = extractOpacity(styles);
 
 	if (textColor) {
-		const appliedColor = opacity !== undefined ? applyOpacityToColor(textColor, opacity) : textColor;
+		const appliedColor =
+			opacity !== undefined ? applyOpacityToColor(textColor, opacity) : textColor;
 		plugins.tooltip.bodyColor = appliedColor;
 		plugins.tooltip.titleColor = appliedColor;
 	}
 	if (bgColor) {
-		plugins.tooltip.backgroundColor = opacity !== undefined ? applyOpacityToColor(bgColor, opacity) : bgColor;
+		plugins.tooltip.backgroundColor =
+			opacity !== undefined ? applyOpacityToColor(bgColor, opacity) : bgColor;
 	}
 	if (font) {
 		plugins.tooltip.bodyFont = { ...plugins.tooltip.bodyFont, ...font };
@@ -525,9 +550,10 @@ export function applyStylesToDatasets(
 		// Only apply style if dataset doesn't already have specific colors set
 		// (data-driven colors take precedence over subcomponent styles)
 		if (backgroundColor && !isDataDrivenColor(dataset.backgroundColor)) {
-			modified.backgroundColor = opacity !== undefined
-				? applyOpacityToColor(backgroundColor, opacity)
-				: backgroundColor;
+			modified.backgroundColor =
+				opacity !== undefined
+					? applyOpacityToColor(backgroundColor, opacity)
+					: backgroundColor;
 		}
 
 		if (borderColor && !isDataDrivenColor(dataset.borderColor)) {
@@ -542,7 +568,11 @@ export function applyStylesToDatasets(
 
 		// Apply border radius for bar charts
 		// borderSkipped: false ensures rounded corners appear on each stacked bar segment
-		if (chartType === 'bar' && borderRadius !== undefined && dataset.borderRadius === undefined) {
+		if (
+			chartType === 'bar' &&
+			borderRadius !== undefined &&
+			dataset.borderRadius === undefined
+		) {
 			modified.borderRadius = borderRadius;
 			// For stacked bars, set borderSkipped to false so each segment shows rounded corners
 			modified.borderSkipped = false;
@@ -553,13 +583,15 @@ export function applyStylesToDatasets(
 			const pointStyles = resolvedStyles.point;
 			const pointBgColor = pointStyles.fill || pointStyles.backgroundColor;
 			// Prioritize border-top properties for consistent border handling
-			const pointBorderColor = pointStyles.borderTopColor || pointStyles.stroke || pointStyles.borderColor;
+			const pointBorderColor =
+				pointStyles.borderTopColor || pointStyles.stroke || pointStyles.borderColor;
 			const pointOpacity = extractOpacity(pointStyles);
 
 			if (pointBgColor && !isDataDrivenColor(dataset.pointBackgroundColor)) {
-				modified.pointBackgroundColor = pointOpacity !== undefined
-					? applyOpacityToColor(pointBgColor, pointOpacity)
-					: pointBgColor;
+				modified.pointBackgroundColor =
+					pointOpacity !== undefined
+						? applyOpacityToColor(pointBgColor, pointOpacity)
+						: pointBgColor;
 				// Also apply to hover state
 				modified.pointHoverBackgroundColor = modified.pointBackgroundColor;
 			}

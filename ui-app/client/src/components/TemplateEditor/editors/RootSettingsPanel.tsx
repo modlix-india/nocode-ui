@@ -42,7 +42,9 @@ export default function RootSettingsPanel({ options, onChange }: Readonly<RootSe
 					value={o.maxWidth ?? ''}
 					placeholder="600"
 					onChange={e =>
-						onChange({ maxWidth: e.target.value === '' ? undefined : Number(e.target.value) })
+						onChange({
+							maxWidth: e.target.value === '' ? undefined : Number(e.target.value),
+						})
 					}
 				/>
 			</label>

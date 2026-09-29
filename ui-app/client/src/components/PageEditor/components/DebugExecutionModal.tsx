@@ -61,7 +61,9 @@ export default function DebugExecutionModal({
 				<button className="_debugModalClose" onClick={onClose}>
 					×
 				</button>
-				<Suspense fallback={<div className="_debugModalLoading">Loading debug viewer...</div>}>
+				<Suspense
+					fallback={<div className="_debugModalLoading">Loading debug viewer...</div>}
+				>
 					<LazyDebugWindow />
 				</Suspense>
 			</div>

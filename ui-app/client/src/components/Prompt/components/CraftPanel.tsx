@@ -67,21 +67,10 @@ export function CraftPanel({
 	return (
 		<div className="_craftPanel" style={styleProperties?.craftPanel ?? {}}>
 			<SubHelperComponent definition={definition} subComponentName="craftPanel" />
-			<div
-				className="_craftPanelHeader"
-				style={styleProperties?.craftPanelHeader ?? {}}
-			>
-				<SubHelperComponent
-					definition={definition}
-					subComponentName="craftPanelHeader"
-				/>
+			<div className="_craftPanelHeader" style={styleProperties?.craftPanelHeader ?? {}}>
+				<SubHelperComponent definition={definition} subComponentName="craftPanelHeader" />
 				<span className="_craftPanelTitle">{craft.title}</span>
-				<button
-					type="button"
-					className="_craftPanelClose"
-					onClick={onClose}
-					title="Close"
-				>
+				<button type="button" className="_craftPanelClose" onClick={onClose} title="Close">
 					<i className="fa fa-xmark" />
 				</button>
 			</div>
