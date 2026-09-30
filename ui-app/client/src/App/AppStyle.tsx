@@ -10,12 +10,38 @@ import { styleDefaults, styleProperties } from './appStyleProperties';
 import MessageStyle from './Messages/MessageStyle';
 import ShortcutStyle from '../shortcuts/ShortcutStyle';
 import ComponentDefinitions from '../components';
+import { usedComponents } from './usedComponents';
+import { hasNewNames, styledComponents } from './styleFloor';
+import { COMMON_CHECKBOX_CSS } from '../commonComponents/commonCheckboxCss';
 
 export function AppStyle() {
 	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
 		new Map([[StyleResolution.ALL, styleDefaults]]),
 	);
 	const [style, setStyle] = useState('');
+
+	/**
+	 * Which components have rendered, and so whose CSS belongs in the document.
+	 *
+	 * Subscribed to directly rather than through the listener App.tsx keeps,
+	 * because that one defers by 100ms. A style arriving 100ms after the
+	 * component it styles is a visible flash; `usedComponents.using` is called
+	 * during render, so an immediate setState lands in the same React commit
+	 * and the CSS is there before the browser paints.
+	 */
+	const [styled, setStyled] = useState<Set<string>>(() => styledComponents([]));
+
+	useEffect(() => {
+		setStyled(prev => styledComponents(usedComponents.names(), prev));
+		return usedComponents.registerGloblalListener(uc =>
+			setStyled(prev => {
+				const next = styledComponents(uc, prev);
+				// Same set means the same render output, so returning `prev`
+				// keeps React from committing a no-op on every component mount.
+				return hasNewNames(prev, next) ? next : prev;
+			}),
+		);
+	}, []);
 
 	const TABLET_MIN_WIDTH = StyleResolutionDefinition.get(
 		StyleResolution.TABLET_POTRAIT_SCREEN,
@@ -95,6 +121,8 @@ export function AppStyle() {
 		background-size: 100%;
 	}
 
+	${COMMON_CHECKBOX_CSS}
+
 	._ROWLAYOUT, ._SINGLECOLUMNLAYOUT, ._ROWCOLUMNLAYOUT {
 		display: flex;
 		flex-direction: column;
@@ -136,9 +164,12 @@ export function AppStyle() {
 	` + processStyleDefinition('', styleProperties, styleDefaults, theme);
 
 	const styleComps = new Array();
-	// Render style components for all statically imported components
-	for (const [, comp] of ComponentDefinitions.entries()) {
+	// Only the components this page has actually rendered, plus the floor in
+	// styleFloor.ts. Emitting all of them cost 374KB of unused CSS on a
+	// measured marketing page.
+	for (const [name, comp] of ComponentDefinitions.entries()) {
 		if (!comp.styleComponent) continue;
+		if (!styled.has(name)) continue;
 
 		const StyleComp = comp.styleComponent;
 		styleComps.push(<StyleComp key={comp.displayName + '_stylcomps'} theme={theme} />);

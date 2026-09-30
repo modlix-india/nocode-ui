@@ -7,6 +7,7 @@ import {
 	type PageDefinition,
 	type ApplicationDefinition,
 	type ThemeDefinition,
+	type HeadTagCollection,
 } from '../api/client.js';
 import { assignmentSetCookie, isDesignUrl, resolveRoute } from '../resolver/pageRouting.js';
 import { getCachedData, setCachedData, generateAppCacheKey, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
@@ -216,48 +217,330 @@ body { margin: 0; }
 `;
 
 /**
- * Generate meta tags HTML
+ * A head-tag collection as it is really stored: a map keyed by generated id.
+ *
+ * Every consumer but this one already knew that. Java iterates `.values()`, the
+ * React client does `Object.entries`, and the appbuilder Settings pane writes a
+ * map. SSR declared an array and used `for...of`, which throws
+ * `TypeError: not iterable` on an object -- and the throw is caught up in the
+ * request handler, so an app that had ever saved a head tag served a bare 500
+ * with nothing in it pointing here.
+ *
+ * `order` sorts ascending, matching Java's `MapWithOrderComparator`. A
+ * non-numeric order sorts as 0 rather than throwing, which is the one place
+ * this is deliberately laxer than Java (that one raises NumberFormatException).
  */
-function generateMetaTags(
+export function headTagValues<T extends { order?: number | string }>(
+	collection: HeadTagCollection<T> | undefined
+): T[] {
+	if (!collection) return [];
+	const values = Array.isArray(collection) ? [...collection] : Object.values(collection);
+	return values
+		.filter((v): v is T => !!v && typeof v === 'object')
+		.sort((a, b) => (Number(a.order) || 0) - (Number(b.order) || 0));
+}
+
+/** Trim one side's slashes with string ops; the regex forms backtrack. */
+function trimSlashes(value: string, side: 'start' | 'end'): string {
+	let from = 0;
+	let to = value.length;
+	if (side === 'start') while (from < to && value[from] === '/') from++;
+	else while (to > from && value[to - 1] === '/') to--;
+	return value.slice(from, to);
+}
+
+/**
+ * Resolve a stored URL to an absolute one.
+ *
+ * Stored image values are root-relative files-API paths, and there is no
+ * `getSrcUrl` on this side -- `cdn.hostName` here only ever addresses script and
+ * preload tags. Facebook, X and Slack all reject a relative `og:image`, so a
+ * value that is not already absolute is resolved against the configured
+ * canonical base. With no base configured there is nothing honest to prepend,
+ * so the tag is dropped rather than emitted broken.
+ */
+function absolutise(value: string, canonicalBase: string): string {
+	const v = value.trim();
+	if (!v) return '';
+	const lower = v.toLowerCase();
+	if (lower.startsWith('http://') || lower.startsWith('https://') || v.startsWith('//')) return v;
+	// A data: URI is self-contained but no consumer accepts one for og:image,
+	// and it would blow the document up besides. Treated as unusable.
+	if (lower.startsWith('data:')) return '';
+	if (!canonicalBase) return '';
+	return `${trimSlashes(canonicalBase, 'end')}/${trimSlashes(v, 'start')}`;
+}
+
+/** Page SEO keys that are plain `name=` metas, and the attribute each emits under. */
+const PLAIN_META_KEYS: Array<[string, string]> = [
+	['description', 'description'],
+	['keywords', 'keywords'],
+	['robots', 'robots'],
+	['author', 'author'],
+	// The HTML attribute is hyphenated; the stored key is not. The client makes
+	// the same translation, so the two agree on what lands in the document.
+	['applicationName', 'application-name'],
+	['generator', 'generator'],
+];
+
+/** Page SEO keys that map to a `twitter:` name, in emission order. */
+const TWITTER_KEYS: Array<[string, string]> = [
+	['twitterCard', 'twitter:card'],
+	['twitterSite', 'twitter:site'],
+	['twitterCreator', 'twitter:creator'],
+];
+
+/** ogp.me's `article` type-specific properties, emitted only for `og:type=article`. */
+const ARTICLE_KEYS: Array<[string, string]> = [
+	['articlePublishedTime', 'article:published_time'],
+	['articleModifiedTime', 'article:modified_time'],
+	['articleAuthor', 'article:author'],
+	['articleSection', 'article:section'],
+	['articleTag', 'article:tag'],
+];
+
+export interface MetaRenderContext {
+	pageName?: string;
+	appCode?: string;
+	clientCode?: string;
+}
+
+/** First non-blank candidate, trimmed. The whole fallback chain is built on it. */
+function firstOf(...candidates: Array<string | number | undefined | null>): string {
+	for (const c of candidates) {
+		const v = (c ?? '').toString().trim();
+		if (v) return v;
+	}
+	return '';
+}
+
+/**
+ * Everything the head needs to say about this page, with inheritance already
+ * applied: the page's own `properties.seo` first, the application's
+ * `properties.og` behind it, and the title chain the `<title>` tag uses behind
+ * that.
+ */
+export interface ResolvedOg {
+	charset: string;
+	title: string;
+	type: string;
+	image: string;
+	imageAlt: string;
+	imageType: string;
+	imageWidth: string;
+	imageHeight: string;
+	url: string;
+	description: string;
+	siteName: string;
+	locale: string;
+	localeAlternate: string[];
+	determiner: string;
+	twitterCard: string;
+	twitterSite: string;
+	twitterCreator: string;
+	fbAppId: string;
+	article: Array<[string, string]>;
+	plain: Array<[string, string]>;
+	/** False when there is nothing worth a card, so no og block is emitted. */
+	present: boolean;
+}
+
+export function resolveOg(
 	page: PageDefinition | null,
-	application: ApplicationDefinition | null
-): string {
-	const tags: string[] = [
-		'<meta charset="utf-8">',
-		'<meta name="viewport" content="width=device-width, initial-scale=1">',
-	];
-
+	application: ApplicationDefinition | null,
+	ctx: MetaRenderContext = {}
+): ResolvedOg {
 	const seo = page?.properties?.seo;
-	if (seo?.description?.value) {
-		tags.push(`<meta name="description" content="${escapeHtml(seo.description.value)}">`);
-	}
-	if (seo?.keywords?.value) {
-		tags.push(`<meta name="keywords" content="${escapeHtml(seo.keywords.value)}">`);
-	}
-	if (seo?.ogTitle?.value) {
-		tags.push(`<meta property="og:title" content="${escapeHtml(seo.ogTitle.value)}">`);
-	}
-	if (seo?.ogDescription?.value) {
-		tags.push(`<meta property="og:description" content="${escapeHtml(seo.ogDescription.value)}">`);
-	}
-	if (seo?.ogImage?.value) {
-		tags.push(`<meta property="og:image" content="${escapeHtml(seo.ogImage.value)}">`);
+	const og = application?.properties?.og;
+	const appTitle = application?.properties?.title;
+	const s = (key: string): string => (seo?.[key]?.value ?? '').toString().trim();
+
+	const canonicalBase = trimSlashes((og?.canonicalBase ?? '').toString().trim(), 'end');
+
+	const image = absolutise(firstOf(s('ogImage'), og?.image?.url), canonicalBase);
+	const title = firstOf(s('ogTitle'), og?.title, page?.properties?.title?.name?.value, appTitle);
+	const description = firstOf(s('ogDescription'), s('description'), og?.description);
+
+	// A page reached at its own path, expressed against the canonical origin
+	// rather than the host that happened to ask. The HTML cache key carries no
+	// host, so one cached document is served to every domain the app answers on,
+	// and a host-derived value would be whichever host missed the cache first.
+	const ownUrl = absolutise(s('ogUrl'), canonicalBase);
+	const path = ctx.pageName ? `/${ctx.pageName}` : '/';
+
+	return {
+		// The encoding declaration has to be in the document's first 1024 bytes
+		// and is a lone attribute rather than a name plus content, so it is
+		// emitted separately from everything else here.
+		charset: firstOf(s('charset'), 'utf-8'),
+		title,
+		type: firstOf(s('ogType'), og?.type, 'website'),
+		image,
+		imageAlt: firstOf(s('ogImageAlt'), og?.image?.alt),
+		imageType: firstOf(s('ogImageType'), og?.image?.type),
+		imageWidth: firstOf(s('ogImageWidth'), og?.image?.width),
+		imageHeight: firstOf(s('ogImageHeight'), og?.image?.height),
+		url: firstOf(ownUrl, canonicalBase ? `${canonicalBase}${path}` : ''),
+		description,
+		siteName: firstOf(s('ogSiteName'), og?.siteName, appTitle),
+		locale: firstOf(s('ogLocale'), og?.locale),
+		localeAlternate: (og?.localeAlternate ?? []).map(a => (a ?? '').toString().trim()).filter(Boolean),
+		determiner: firstOf(s('ogDeterminer'), og?.determiner),
+		// X reads og:* for everything except the card layout, which only
+		// twitter:card selects. Defaulted from whether an image resolved,
+		// because summary_large_image with no image renders as a blank plate.
+		twitterCard: firstOf(s('twitterCard'), og?.twitter?.card, image ? 'summary_large_image' : 'summary'),
+		twitterSite: firstOf(s('twitterSite'), og?.twitter?.site),
+		twitterCreator: firstOf(s('twitterCreator'), og?.twitter?.creator),
+		fbAppId: firstOf(og?.fbAppId),
+		article: ARTICLE_KEYS.map(([key, tag]) => [tag, s(key)] as [string, string]).filter(e => !!e[1]),
+		plain: PLAIN_META_KEYS.map(([key, name]) => {
+			const value = firstOf(s(key), key === 'description' ? description : '');
+			return [name, value] as [string, string];
+		}).filter(e => !!e[1]),
+		// Nothing to say at all means nothing is said. A card built from an empty
+		// title and no image is worse than no card: the consumer then falls back
+		// to the page's own <title>, which is usually right.
+		present: !!(title || image || description),
+	};
+}
+
+/** Collects `<meta>` tags, refusing a property that has already been said. */
+class MetaSink {
+	readonly tags: string[] = [];
+	// ogp.me gives the first tag precedence on a conflict, but LinkedIn and
+	// Teams do not document that they follow it, so a document is never given
+	// two of the same property to choose between.
+	private readonly seen = new Set<string>();
+
+	add(attr: 'name' | 'property', key: string, value: string): void {
+		const v = (value ?? '').toString().trim();
+		if (!v || this.seen.has(key)) return;
+		this.seen.add(key);
+		this.tags.push(`<meta ${attr}="${escapeHtml(key)}" content="${escapeHtml(v)}">`);
 	}
 
-	// Application-level meta tags
-	const externalMetas = application?.properties?.metas || [];
-	for (const meta of externalMetas) {
-		const attrs: string[] = [];
-		if (meta.name) attrs.push(`name="${escapeHtml(meta.name)}"`);
-		if (meta.property) attrs.push(`property="${escapeHtml(meta.property)}"`);
-		if (meta.httpEquiv) attrs.push(`http-equiv="${escapeHtml(meta.httpEquiv)}"`);
-		if (meta.content) attrs.push(`content="${escapeHtml(meta.content)}"`);
-		if (attrs.length > 0) {
-			tags.push(`<meta ${attrs.join(' ')}>`);
+	/** For ogp.me's repeated properties, which are meant to appear more than once. */
+	addRepeated(attr: 'name' | 'property', key: string, value: string): void {
+		this.tags.push(`<meta ${attr}="${escapeHtml(key)}" content="${escapeHtml(value)}">`);
+	}
+
+	has(key: string): boolean {
+		return this.seen.has(key);
+	}
+
+	claim(key: string): void {
+		this.seen.add(key);
+	}
+
+	raw(tag: string): void {
+		this.tags.push(tag);
+	}
+}
+
+/** The og block, in the order ogp.me lays it out. */
+function emitOg(sink: MetaSink, r: ResolvedOg): void {
+	if (!r.present) return;
+
+	// The four required properties come first.
+	sink.add('property', 'og:title', r.title);
+	sink.add('property', 'og:type', r.type);
+
+	if (r.image) {
+		sink.add('property', 'og:image', r.image);
+		// ogp.me: "Put structured properties after you declare their root tag.
+		// Whenever another root element is parsed, that structured property is
+		// considered to be done." So these sit directly under og:image; moved
+		// below og:site_name they would attach to nothing.
+		if (r.image.toLowerCase().startsWith('https://')) {
+			sink.add('property', 'og:image:secure_url', r.image);
 		}
+		sink.add('property', 'og:image:alt', r.imageAlt);
+		sink.add('property', 'og:image:type', r.imageType);
+		sink.add('property', 'og:image:width', r.imageWidth);
+		sink.add('property', 'og:image:height', r.imageHeight);
 	}
 
-	return tags.join('\n\t\t');
+	sink.add('property', 'og:url', r.url);
+
+	sink.add('property', 'og:description', r.description);
+	sink.add('property', 'og:site_name', r.siteName);
+	sink.add('property', 'og:locale', r.locale);
+	// The one repeated property in the set: ogp.me says to put multiple versions
+	// of the same tag on the page, so this deliberately bypasses the dedupe.
+	if (r.localeAlternate.length) sink.claim('og:locale:alternate');
+	for (const alt of r.localeAlternate) sink.addRepeated('property', 'og:locale:alternate', alt);
+	sink.add('property', 'og:determiner', r.determiner);
+
+	if (r.type === 'article') {
+		for (const [tag, value] of r.article) sink.add('property', tag, value);
+	}
+
+	sink.add('name', 'twitter:card', r.twitterCard);
+	sink.add('name', 'twitter:site', r.twitterSite);
+	sink.add('name', 'twitter:creator', r.twitterCreator);
+	sink.add('property', 'fb:app_id', r.fbAppId);
+}
+
+/**
+ * Application-level head metas, last and never duplicating.
+ *
+ * These are the free-form escape hatch. The typed blocks above are the ones the
+ * product can preview, so they win, and an entry here that names something
+ * already said is dropped rather than appended.
+ */
+function emitAppMetas(sink: MetaSink, application: ApplicationDefinition | null): void {
+	for (const m of headTagValues(application?.properties?.metas)) {
+		if (m.charset) continue; // already emitted, and only one is legal
+
+		const property = m.property?.trim();
+		const name = m.name?.trim();
+		const httpEquiv = (m['http-equiv'] ?? m.httpEquiv)?.trim();
+
+		const key = property || name || httpEquiv;
+		if (!key || sink.has(key)) continue;
+		sink.claim(key);
+
+		const attrs: string[] = [];
+		if (name) attrs.push(`name="${escapeHtml(name)}"`);
+		if (property) attrs.push(`property="${escapeHtml(property)}"`);
+		if (httpEquiv) attrs.push(`http-equiv="${escapeHtml(httpEquiv)}"`);
+		// `order` is bookkeeping, not an attribute. The React client emits it as
+		// a literal `<meta order="1">`; this one does not.
+		if (m.content) attrs.push(`content="${escapeHtml(m.content)}"`);
+		if (attrs.length > 0) sink.raw(`<meta ${attrs.join(' ')}>`);
+	}
+}
+
+/**
+ * Resolve and emit the document head's metadata.
+ *
+ * A page's own `properties.seo` wins, the application's `properties.og` fills
+ * the gaps, and the free-form `properties.metas` comes last for anything
+ * neither covers. ogp.me makes og:title, og:type, og:image and og:url all
+ * required, so all four are emitted whenever there is anything to say at all.
+ */
+export function generateMetaTags(
+	page: PageDefinition | null,
+	application: ApplicationDefinition | null,
+	ctx: MetaRenderContext = {}
+): string {
+	const resolved = resolveOg(page, application, ctx);
+	const sink = new MetaSink();
+
+	sink.raw(`<meta charset="${escapeHtml(resolved.charset)}">`);
+	sink.raw('<meta name="viewport" content="width=device-width, initial-scale=1">');
+
+	emitOg(sink, resolved);
+
+	// `robots`, `author`, `applicationName` and `generator` have been authored by
+	// the page editor's SEO panel since it existed and were never rendered, so
+	// the panel promised something it did not deliver.
+	for (const [name, value] of resolved.plain) sink.add('name', name, value);
+
+	emitAppMetas(sink, application);
+
+	return sink.tags.join('\n\t\t');
 }
 
 /**
@@ -327,7 +610,9 @@ function generateAnalyticsSnippet(
  */
 function generateExternalScripts(application: ApplicationDefinition | null): string {
 	const scripts: string[] = [];
-	const externalScripts = application?.properties?.scripts || [];
+	// Same keyed-map shape as `metas`, and the same `for...of` throw before this
+	// went through `headTagValues`. See its comment.
+	const externalScripts = headTagValues(application?.properties?.scripts);
 
 	for (const script of externalScripts) {
 		// Skip scripts without src
@@ -426,7 +711,14 @@ function generateHtml(
 		  }
 		: null;
 
-	const metaTags = generateMetaTags(page, application);
+	// `pageName` here is the page actually served, which is what the canonical
+	// URL has to name: a routing split that resolved to a variant still belongs
+	// under the URL the visitor asked for, and that is the name this carries.
+	const metaTags = generateMetaTags(page, application, {
+		pageName,
+		appCode: codes.appCode,
+		clientCode: codes.clientCode,
+	});
 	const externalLinks = generateExternalLinks(application);
 	const externalScripts = generateExternalScripts(application);
 	const analyticsSnippet = generateAnalyticsSnippet(

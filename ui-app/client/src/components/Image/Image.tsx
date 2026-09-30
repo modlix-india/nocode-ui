@@ -10,7 +10,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
-import getSrcUrl from '../util/getSrcUrl';
+import getSrcUrl, { getSizesFromStyle, getSrcSet } from '../util/getSrcUrl';
 import { IconHelper } from '../util/IconHelper';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -137,7 +137,8 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 
 	const [actualSrc, setActualSrc] = useState<string | undefined>();
 	const [actualComparisonSrc, setActualComparisonSrc] = useState<string | undefined>();
-	const computedUrl = getSrcUrl(getHref(src ?? defaultSrc, location)!);
+	const rawSrc = getHref(src ?? defaultSrc, location)!;
+	const computedUrl = getSrcUrl(rawSrc);
 	const computedComparisonUrl = comparisonSrc
 		? getSrcUrl(getHref(comparisonSrc, location)!)
 		: undefined;
@@ -326,6 +327,12 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 	let imageTag = undefined;
 
 	if (actualSrc) {
+		// A secured file is fetched and swapped for a token form, and the ladder
+		// entries carry no such token. Offer a srcset only while the src being
+		// rendered is still the one built from the CDN path.
+		const srcSet = actualSrc === computedUrl ? getSrcSet(rawSrc) : undefined;
+		const sizes = srcSet ? getSizesFromStyle(resolvedStyles.image) : undefined;
+
 		const actualImage = useObjectToRender ? (
 			<object type="image/svg+xml" data={actualSrc} style={resolvedStyles.image ?? {}} />
 		) : (
@@ -349,6 +356,8 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 				className={onClickEvent ? '_onclicktrue' : ''}
 				style={resolvedStyles.image ?? {}}
 				src={actualSrc}
+				srcSet={srcSet}
+				sizes={sizes}
 				alt={alt}
 				onError={fallBackImg ? handleError : undefined}
 				loading={imgLazyLoading ? 'lazy' : 'eager'}
