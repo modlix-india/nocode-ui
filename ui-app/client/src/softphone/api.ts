@@ -1,7 +1,19 @@
 import axios from 'axios';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../constants';
 import { getDataFromPath } from '../context/StoreContext';
-import { BrowserCallStatus, BrowserCallToken } from './types';
+import { BrowserCallStatus, BrowserCallToken, SoftphoneError } from './types';
+
+/** Long enough for a slow network; short enough that a hung request ends in an error. */
+const REQUEST_TIMEOUT_MS = 20_000;
+
+/** Longer: the provider is asked to place the call before the request answers. */
+const DIAL_TIMEOUT_MS = 30_000;
+
+/** Axios's code for its own timeout, or the network's. */
+function timedOut(e: unknown): boolean {
+	const code = (e as { code?: unknown })?.code;
+	return code === 'ECONNABORTED' || code === 'ETIMEDOUT';
+}
 
 /**
  * Uses `getDataFromPath`, not `getData`: handed a path string, `getData` returns undefined and the
@@ -32,6 +44,7 @@ export async function fetchStatus(
 	const response = await axios.get<BrowserCallStatus>('api/message/call/browser/status', {
 		params: connectionName ? { connectionName, verify } : { verify },
 		headers: headers(),
+		timeout: REQUEST_TIMEOUT_MS,
 	});
 	return response.data;
 }
@@ -41,7 +54,7 @@ export async function fetchToken(connectionName: string): Promise<BrowserCallTok
 	const response = await axios.post<BrowserCallToken>(
 		'api/message/call/browser/token',
 		{ connectionName },
-		{ headers: headers() },
+		{ headers: headers(), timeout: REQUEST_TIMEOUT_MS },
 	);
 	return response.data;
 }
@@ -51,10 +64,21 @@ export async function fetchToken(connectionName: string): Promise<BrowserCallTok
  * the browser can neither choose a number nor learn the customer's.
  */
 export async function dialTicket(ticketId: string, connectionName: string): Promise<unknown> {
-	const response = await axios.post(
-		`api/entity/processor/calls/${encodeURIComponent(ticketId)}/browser-dial`,
-		{ connectionName },
-		{ headers: headers() },
-	);
-	return response.data;
+	try {
+		const response = await axios.post(
+			`api/entity/processor/calls/${encodeURIComponent(ticketId)}/browser-dial`,
+			{ connectionName },
+			{ headers: headers(), timeout: DIAL_TIMEOUT_MS },
+		);
+		return response.data;
+	} catch (e) {
+		// Not "could not be placed": the server may have placed it, and a second click rings twice.
+		if (timedOut(e))
+			throw {
+				code: 'DIAL_REJECTED',
+				message:
+					'The call request timed out. The call may still connect: check the call log before calling again.',
+			} satisfies SoftphoneError;
+		throw e;
+	}
 }

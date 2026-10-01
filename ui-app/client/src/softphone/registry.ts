@@ -67,6 +67,13 @@ const OUTBOUND_CLAIM_WINDOW_MS = 20_000;
 const TAKE_UP_ATTEMPTS = 3;
 const TAKE_UP_RETRY_MS = 5_000;
 
+/** Cleared again when the leader is heard from; any other error is left for the page to see. */
+const LEADER_STALE_ERROR: SoftphoneError = {
+	code: 'REGISTRATION_FAILED',
+	message:
+		'The tab holding the phone has stopped responding. Reload this page if calls are not arriving.',
+};
+
 class SoftphoneRegistry {
 	private state: SoftphoneState = { ...INITIAL_STATE };
 	private readonly subscribers = new Set<(state: SoftphoneState) => void>();
@@ -99,7 +106,13 @@ class SoftphoneRegistry {
 	 * before it signs in as an agent who may have logged out.
 	 */
 	private bringingUp?: { provider: ICallProvider; unsubscribe: () => void };
-	private unsubscribeAuth?: () => void;
+
+	/**
+	 * The page's last start, kept across stops: a signed-out page (a login screen under the
+	 * shell) and a logout both leave the component mounted, and nothing would start it again.
+	 */
+	private wanted?: { connectionName?: string; autoRegister: boolean; sdkUrl?: string };
+	private watchingAuth = false;
 
 	/*
 	 * The agent's credential is deliberately not a field: it goes straight to the adapter's
@@ -120,6 +133,12 @@ class SoftphoneRegistry {
 		if (inDesigner()) return;
 		const requested = connectionName || undefined;
 
+		this.wanted = { connectionName: requested, autoRegister, sdkUrl };
+		this.watchAuth();
+
+		// Asked for once the agent signs in. Checked now, it is refused, and nothing asks again.
+		if (!signedIn()) return;
+
 		if (this.started && this.isSameSession(requested, sdkUrl)) {
 			this.autoRegister = autoRegister;
 			return;
@@ -134,13 +153,13 @@ class SoftphoneRegistry {
 		this.autoRegister = autoRegister;
 		this.sdkUrl = sdkUrl;
 
-		this.watchAuth();
-
 		let status;
 		try {
 			status = await fetchStatus(requested);
 		} catch (e) {
 			if (generation !== this.generation) return;
+			// Not a session: the next start, or the next sign-in, asks again.
+			this.started = false;
 			this.fail({
 				code: 'NOT_PROVISIONED',
 				message: serverMessage(e) ?? 'Calling could not be checked for this user.',
@@ -175,14 +194,15 @@ class SoftphoneRegistry {
 			onSnapshot: snapshot => this.adoptSnapshot(snapshot),
 			onOutboundPlaced: ticketId => this.claimOutbound(ticketId),
 			onOutboundFailed: () => this.releaseOutboundClaim(),
-			onLeaderStale: () =>
-				this.patch({
-					lastError: {
-						code: 'REGISTRATION_FAILED',
-						message:
-							'The tab holding the phone has stopped responding. Reload this page if calls are not arriving.',
-					},
-				}),
+			onLeaderStale: () => this.patch({ lastError: { ...LEADER_STALE_ERROR } }),
+			onLeaderBack: () => {
+				const error = this.state.lastError;
+				if (
+					error?.code === LEADER_STALE_ERROR.code &&
+					error.message === LEADER_STALE_ERROR.message
+				)
+					this.patch({ lastError: null });
+			},
 		});
 
 		if (!this.channel.isLeader) this.channel.requestSnapshot();
@@ -220,9 +240,6 @@ class SoftphoneRegistry {
 		this.bringingUp = undefined;
 		if (bringingUp) this.discardProvider(bringingUp.provider, bringingUp.unsubscribe);
 
-		this.unsubscribeAuth?.();
-		this.unsubscribeAuth = undefined;
-
 		try {
 			this.provider?.destroy();
 		} catch {
@@ -239,13 +256,23 @@ class SoftphoneRegistry {
 
 	/**
 	 * Logout clears `Store.auth` but cannot reach this singleton; without this the browser stays
-	 * registered as the agent who just left. Covers every path that ends a session.
+	 * registered as the agent who just left. Sign-in starts what the page last asked for. Kept for
+	 * the module's life: the registry is a singleton, and a session can begin and end many times.
 	 */
 	private watchAuth(): void {
-		this.unsubscribeAuth = addListener(
+		if (this.watchingAuth) return;
+		this.watchingAuth = true;
+
+		addListener(
 			undefined,
 			() => {
-				if (!getDataFromPath(`${STORE_PREFIX}.auth`, [])) this.stop();
+				if (!signedIn()) {
+					if (this.started) this.stop();
+					return;
+				}
+				const wanted = this.wanted;
+				if (!this.started && wanted)
+					void this.start(wanted.connectionName, wanted.autoRegister, wanted.sdkUrl);
 			},
 			`${STORE_PREFIX}.auth`,
 		);
@@ -384,11 +411,29 @@ class SoftphoneRegistry {
 		this.notify();
 	}
 
+	/**
+	 * Each listener on its own: this runs inside the vendor SDK's callbacks and the tab channel's
+	 * handler, where a throw would break the SDK or leave the other listeners a state behind.
+	 */
 	private notify(): void {
-		this.subscribers.forEach(l => l(this.state));
+		const state = this.state;
+		this.subscribers.forEach(listener => {
+			try {
+				listener(state);
+			} catch (e) {
+				console.error('A softphone state listener failed', e);
+			}
+		});
 	}
 
+	/**
+	 * The error already showing is not news: Exotel delivers every event twice and TeleCMI's SDK
+	 * repeats its errors, and a new object each time would fire the page's `onError` per copy.
+	 */
 	private fail(error: SoftphoneError): void {
+		const showing = this.state.lastError;
+		if (showing?.code === error.code && showing.message === error.message) return;
+
 		this.patch({
 			lastError: error,
 			micDenied: error.code === 'MIC_DENIED' ? true : this.state.micDenied,
@@ -646,6 +691,10 @@ class SoftphoneRegistry {
 			}
 		}
 	}
+}
+
+function signedIn(): boolean {
+	return !!getDataFromPath(`${STORE_PREFIX}.auth`, []);
 }
 
 function noPhone(): SoftphoneError {

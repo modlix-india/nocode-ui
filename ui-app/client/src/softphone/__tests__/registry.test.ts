@@ -1,3 +1,4 @@
+import { setImmediate as realSetImmediate } from 'node:timers';
 import { BroadcastChannel as NodeBroadcastChannel } from 'node:worker_threads';
 import { LeaderChannel } from '../leader';
 import type { ICallProvider, ProviderInit } from '../providers/ICallProvider';
@@ -132,6 +133,8 @@ function installLockManager() {
 	};
 
 	(navigator as unknown as { locks: unknown }).locks = {
+		// What a real LockManager reports: which locks some tab holds right now.
+		query: async () => ({ held: [...held].map(name => ({ name })), pending: [] }),
 		// Both call shapes, as the real one: (name, callback) and (name, { signal }, callback). An
 		// aborted request still queued leaves the queue and rejects, per the Web Locks spec.
 		request: (
@@ -1151,6 +1154,7 @@ describe('softphoneRegistry', () => {
 			onOutboundPlaced: ticketId => announced.push(ticketId),
 			onOutboundFailed: () => {},
 			onLeaderStale: () => {},
+			onLeaderBack: () => {},
 		});
 		// Driven through dial(), not by calling announce directly - otherwise this would pass with
 		// the announce removed and prove only that the receiving half works.
@@ -1410,5 +1414,220 @@ describe('softphoneRegistry', () => {
 		// everything bound to `Store.softphone`. The clock ticks in the component that shows it.
 		expect(registry.getState()).not.toHaveProperty('durationSeconds');
 		expect(registry.getState().startedAt).toBeDefined();
+	});
+
+	describe('in a follower tab whose leader goes quiet', () => {
+		let restoreLocks: () => void;
+		let leaderTab: NodeBroadcastChannel;
+
+		const delivered = async () => {
+			for (let i = 0; i < 20; i++) await new Promise(resolve => realSetImmediate(resolve));
+		};
+
+		const advance = async (ms: number) => {
+			for (let t = 0; t < ms; t += 1_000) {
+				jest.advanceTimersByTime(1_000);
+				await delivered();
+			}
+		};
+
+		beforeEach(() => {
+			jest.useFakeTimers({ doNotFake: ['nextTick', 'queueMicrotask'] });
+			restoreLocks = installLockManager();
+			// A live leader tab holds the lock and, its timers throttled, says nothing.
+			void navigator.locks.request('softphone_leader', () => new Promise<void>(() => {}));
+			leaderTab = new NodeBroadcastChannel('softphone_sync');
+		});
+
+		afterEach(() => {
+			leaderTab.close();
+			restoreLocks();
+			jest.useRealTimers();
+		});
+
+		async function follower() {
+			provisioned();
+			const registry = loadRegistry();
+			await registry.start('exotelConnection', true, SDK);
+			expect(registry.getState().isLeader).toBeFalsy();
+			await advance(25_000);
+			expect(registry.getState().lastError).toMatchObject({ code: 'REGISTRATION_FAILED' });
+			return registry;
+		}
+
+		it('clears the stopped-responding error once the leader is heard from', async () => {
+			const registry = await follower();
+
+			leaderTab.postMessage({ kind: 'LEADER_ANNOUNCE', at: Date.now() });
+			await delivered();
+
+			expect(registry.getState().lastError).toBeNull();
+		});
+
+		it('leaves any other error in place when the leader returns', async () => {
+			const registry = await follower();
+			api.dialTicket.mockRejectedValue(new Error('refused'));
+			await registry
+				.current()
+				?.dial('1234')
+				.catch(() => {});
+			expect(registry.getState().lastError).toMatchObject({ code: 'DIAL_REJECTED' });
+
+			leaderTab.postMessage({ kind: 'LEADER_ANNOUNCE', at: Date.now() });
+			await delivered();
+
+			expect(registry.getState().lastError).toMatchObject({ code: 'DIAL_REJECTED' });
+		});
+	});
+
+	describe('signing in and out with the page still mounted', () => {
+		it('asks nothing while signed out, and starts the phone when the agent signs in', async () => {
+			authValue = undefined;
+			provisioned();
+			const registry = loadRegistry();
+
+			// A login page under the shell: the request would be refused, and nothing would ask again.
+			await registry.start('exotelConnection', true, SDK);
+			await settle();
+			expect(api.fetchStatus).not.toHaveBeenCalled();
+			expect(registry.getState().lastError).toBeFalsy();
+
+			authValue = { loggedInClientCode: 'ACME' };
+			authListener?.();
+			await waitFor(() => !!FakeProvider.last?.hasPhone);
+
+			expect(api.fetchStatus).toHaveBeenCalledTimes(1);
+			expect(registry.getState().provisioned).toBe(true);
+		});
+
+		it('comes back after a logout and a new sign-in', async () => {
+			provisioned();
+			const registry = loadRegistry();
+			await registry.start('exotelConnection', true, SDK);
+			await waitFor(() => !!FakeProvider.last?.hasPhone);
+			const first = FakeProvider.last!;
+
+			authValue = undefined;
+			authListener?.();
+			expect(first.destroy).toHaveBeenCalled();
+
+			authValue = { loggedInClientCode: 'ACME' };
+			authListener?.();
+			await waitFor(() => FakeProvider.last !== first && !!FakeProvider.last?.hasPhone);
+
+			expect(api.fetchStatus).toHaveBeenCalledTimes(2);
+			expect(registry.getState().provisioned).toBe(true);
+		});
+
+		it('asks again after a failed status check instead of keeping the phone off', async () => {
+			provisioned();
+			api.fetchStatus.mockRejectedValueOnce(new Error('Network Error'));
+			const registry = loadRegistry();
+
+			await registry.start('exotelConnection', true, SDK);
+			await settle();
+			expect(registry.getState().lastError).toMatchObject({ code: 'NOT_PROVISIONED' });
+
+			// The same start, as a remount sends it: no longer taken for the failed session.
+			await registry.start('exotelConnection', true, SDK);
+			await waitFor(() => !!FakeProvider.last?.hasPhone);
+
+			expect(api.fetchStatus).toHaveBeenCalledTimes(2);
+			expect(registry.getState().provisioned).toBe(true);
+		});
+	});
+
+	it('keeps the other listeners and the provider callback safe from a listener that throws', async () => {
+		const quiet = jest.spyOn(console, 'error').mockImplementation(() => {});
+		try {
+			provisioned();
+			const registry = loadRegistry();
+			await registry.start('exotelConnection', true, SDK);
+			await waitFor(() => !!FakeProvider.last?.hasPhone);
+
+			let calls = 0;
+			registry.subscribe(() => {
+				// The first call is the subscription's own reading; break on the first change.
+				if (calls++ > 0) throw new Error('a store write failed');
+			});
+			const seen: boolean[] = [];
+			registry.subscribe(state => seen.push(state.inCall));
+
+			// This runs inside the vendor SDK's own callback.
+			expect(() =>
+				FakeProvider.last!.emit({ type: 'INCOMING', callId: 'c1', from: '+919000000001' }),
+			).not.toThrow();
+
+			expect(seen.at(-1)).toBe(true);
+			expect(registry.getState().inCall).toBe(true);
+		} finally {
+			quiet.mockRestore();
+		}
+	});
+
+	describe('in a single tab whose phone never comes up', () => {
+		let restoreLocks: () => void;
+
+		const delivered = async () => {
+			for (let i = 0; i < 20; i++) await new Promise(resolve => realSetImmediate(resolve));
+		};
+
+		beforeEach(() => {
+			jest.useFakeTimers({ doNotFake: ['nextTick', 'queueMicrotask'] });
+			restoreLocks = installLockManager();
+		});
+
+		afterEach(() => {
+			restoreLocks();
+			jest.useRealTimers();
+		});
+
+		it('keeps the real reason instead of calling the tab unresponsive', async () => {
+			provisioned();
+			FakeProvider.initFailure = {
+				code: 'MIC_DENIED',
+				message: 'Microphone access is blocked.',
+			};
+			const registry = loadRegistry();
+
+			await registry.start('exotelConnection', true, SDK);
+			// Three start-ups five seconds apart, then the tab stops competing; then well past the
+			// stale-leader check.
+			for (let t = 0; t < 60_000; t += 1_000) {
+				jest.advanceTimersByTime(1_000);
+				await delivered();
+			}
+
+			expect(api.fetchToken).toHaveBeenCalledTimes(3);
+			expect(registry.getState().lastError).toMatchObject({ code: 'MIC_DENIED' });
+		});
+	});
+
+	it('does not report the error already showing again, so onError fires once per error', async () => {
+		provisioned();
+		const registry = loadRegistry();
+		await registry.start('exotelConnection', true, SDK);
+		await waitFor(() => !!FakeProvider.last?.hasPhone);
+		const provider = FakeProvider.last!;
+
+		const refused = {
+			code: 'REGISTRATION_FAILED' as const,
+			message: 'The phone could not register: x',
+		};
+		provider.emit({ type: 'ERROR', error: refused });
+		const shown = registry.getState().lastError;
+
+		// Exotel delivers every event twice; the copy must keep the same object.
+		provider.emit({ type: 'ERROR', error: { ...refused } });
+		expect(registry.getState().lastError).toBe(shown);
+
+		provider.emit({
+			type: 'ERROR',
+			error: { ...refused, message: 'The phone could not register: y' },
+		});
+		expect(registry.getState().lastError).not.toBe(shown);
+		expect(registry.getState().lastError).toMatchObject({
+			message: 'The phone could not register: y',
+		});
 	});
 });

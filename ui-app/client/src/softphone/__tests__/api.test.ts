@@ -82,4 +82,34 @@ describe('softphone api', () => {
 
 		expect(post.mock.calls[0][0]).toBe('api/entity/processor/calls/a%2Fb%20501/browser-dial');
 	});
+
+	it('gives every request a timeout, and the dial a longer one', async () => {
+		await fetchStatus('exotel_connection');
+		await fetchToken('exotel_connection');
+		await dialTicket('501', 'exotel_connection');
+
+		expect(get.mock.calls[0][1]).toMatchObject({ timeout: 20_000 });
+		expect(post.mock.calls[0][2]).toMatchObject({ timeout: 20_000 });
+		expect(post.mock.calls[1][2]).toMatchObject({ timeout: 30_000 });
+	});
+
+	it('reports a timed-out dial as one that may still connect, not as refused', async () => {
+		post.mockRejectedValue({ isAxiosError: true, code: 'ECONNABORTED', message: 'timeout' });
+
+		await expect(dialTicket('501', 'exotel_connection')).rejects.toEqual({
+			code: 'DIAL_REJECTED',
+			message:
+				'The call request timed out. The call may still connect: check the call log before calling again.',
+		});
+	});
+
+	it('passes any other dial failure through untouched', async () => {
+		const refused = {
+			isAxiosError: true,
+			response: { status: 400, data: { message: 'No number' } },
+		};
+		post.mockRejectedValue(refused);
+
+		await expect(dialTicket('501', 'exotel_connection')).rejects.toBe(refused);
+	});
 });

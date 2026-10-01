@@ -8,9 +8,13 @@ import { ComponentProperty, ComponentProps, PageDefinition } from '../../types/c
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
-import { awaitingConnectionBinding } from './softphoneConnection';
 import { propertiesDefinition, stylePropertiesDefinition } from './softphoneProperties';
-import { changedKeys, detectTransitions, elapsedSince } from './softphoneTransitions';
+import {
+	awaitingConnectionBinding,
+	changedKeys,
+	detectTransitions,
+	elapsedSince,
+} from './softphoneUtils';
 
 /**
  * Mirrors the registry into the store and fires the page's events. The session lives in the
@@ -101,6 +105,40 @@ export default function Softphone(props: Readonly<ComponentProps>) {
 	}, [connectionName, autoRegister, sdkUrl, waitingForConnection]);
 
 	useEffect(() => {
+		/**
+		 * Driven off state, not events, so every path (snapshot, logout, second call) is covered.
+		 * Defined here, its only user, as is `stopClock`: both read only refs.
+		 */
+		function syncClock(state: SoftphoneState) {
+			const startedAt = state.inCall ? state.startedAt : undefined;
+
+			if (!startedAt) {
+				if (tickingForRef.current === undefined) return;
+				stopClock();
+				tickingForRef.current = undefined;
+				setData(DURATION_PATH, IDLE_DURATION);
+				return;
+			}
+
+			// Keyed on the timestamp, so a new call restarts the clock.
+			if (tickingForRef.current === startedAt) return;
+
+			stopClock();
+			tickingForRef.current = startedAt;
+
+			setData(DURATION_PATH, elapsedSince(startedAt));
+			tickRef.current = setInterval(
+				() => setData(DURATION_PATH, elapsedSince(startedAt)),
+				1000,
+			);
+		}
+
+		function stopClock() {
+			if (!tickRef.current) return;
+			clearInterval(tickRef.current);
+			tickRef.current = undefined;
+		}
+
 		// Otherwise a connection switch diffs against the old phone and fires stale transitions.
 		previousRef.current = undefined;
 
@@ -159,34 +197,6 @@ export default function Softphone(props: Readonly<ComponentProps>) {
 			setData(DURATION_PATH, IDLE_DURATION);
 		};
 	}, [connectionName]);
-
-	/** Driven off state, not events, so every path (snapshot, logout, second call) is covered. */
-	function syncClock(state: SoftphoneState) {
-		const startedAt = state.inCall ? state.startedAt : undefined;
-
-		if (!startedAt) {
-			if (tickingForRef.current === undefined) return;
-			stopClock();
-			tickingForRef.current = undefined;
-			setData(DURATION_PATH, IDLE_DURATION);
-			return;
-		}
-
-		// Keyed on the timestamp, so a new call restarts the clock.
-		if (tickingForRef.current === startedAt) return;
-
-		stopClock();
-		tickingForRef.current = startedAt;
-
-		setData(DURATION_PATH, elapsedSince(startedAt));
-		tickRef.current = setInterval(() => setData(DURATION_PATH, elapsedSince(startedAt)), 1000);
-	}
-
-	function stopClock() {
-		if (!tickRef.current) return;
-		clearInterval(tickRef.current);
-		tickRef.current = undefined;
-	}
 
 	const ref = useRef<HTMLDivElement>(null);
 

@@ -15,6 +15,8 @@ const CHANNEL_NAME = 'softphone_sync';
 
 const ANNOUNCE_INTERVAL_MS = 5_000;
 const LEADER_STALE_MS = 15_000;
+/** How long a quiet leader has to answer the state request that checks it before it is reported. */
+const LEADER_CHECK_MS = 5_000;
 const RELAY_TIMEOUT_MS = 5_000;
 
 /** Controls a follower can ask the leader to perform. `dial` is absent: it works from any tab. */
@@ -54,14 +56,23 @@ export interface LeaderHandlers {
 	onOutboundFailed: () => void;
 
 	/**
-	 * The leader went quiet without releasing its lock. Reported only, never repaired: stealing
-	 * the lock on a false positive would produce two registered tabs.
+	 * The leader went quiet without releasing its lock and did not answer a state request either.
+	 * Reported only, never repaired: stealing the lock on a false positive would produce two
+	 * registered tabs.
 	 */
 	onLeaderStale: () => void;
+
+	/** A leader reported stale was heard from again. */
+	onLeaderBack: () => void;
 }
 
 export class LeaderChannel {
 	private readonly tabId = shortUUID();
+	/**
+	 * Who the liveness check's state request comes from. Not `tabId`, so the reply, which every
+	 * tab hears, proves the leader alive without any tab adopting it over its own state.
+	 */
+	private readonly checkId = `${this.tabId}:check`;
 
 	private channel?: BroadcastChannel;
 	private handlers?: LeaderHandlers;
@@ -76,6 +87,7 @@ export class LeaderChannel {
 
 	private announceTimer?: ReturnType<typeof setInterval>;
 	private staleTimer?: ReturnType<typeof setInterval>;
+	private checkTimer?: ReturnType<typeof setTimeout>;
 	private requeueTimer?: ReturnType<typeof setTimeout>;
 	private lastLeaderSeen = 0;
 	private staleReported = false;
@@ -169,10 +181,9 @@ export class LeaderChannel {
 		this.leader = false;
 
 		if (this.announceTimer) clearInterval(this.announceTimer);
-		if (this.staleTimer) clearInterval(this.staleTimer);
+		this.stopWatchingLeader();
 		if (this.requeueTimer) clearTimeout(this.requeueTimer);
 		this.announceTimer = undefined;
-		this.staleTimer = undefined;
 		this.requeueTimer = undefined;
 
 		for (const [, p] of this.pending) {
@@ -243,9 +254,7 @@ export class LeaderChannel {
 	private becomeLeader(): void {
 		this.leader = true;
 		this.staleReported = false;
-
-		if (this.staleTimer) clearInterval(this.staleTimer);
-		this.staleTimer = undefined;
+		this.stopWatchingLeader();
 
 		this.announce();
 		this.announceTimer = setInterval(() => this.announce(), ANNOUNCE_INTERVAL_MS);
@@ -257,18 +266,54 @@ export class LeaderChannel {
 		this.post({ kind: 'LEADER_ANNOUNCE', at: Date.now() });
 	}
 
+	/**
+	 * Silence alone proves nothing: a background tab's timers are throttled, to about once a
+	 * minute after a few minutes hidden, so a live leader's announcements stop arriving while its
+	 * calls keep working. Message handlers are not throttled, so a quiet leader is asked for its
+	 * state, and reported only if that goes unanswered too.
+	 */
 	private watchForStaleLeader(): void {
+		this.stopWatchingLeader();
 		this.lastLeaderSeen = Date.now();
 		this.staleReported = false;
 
-		if (this.staleTimer) clearInterval(this.staleTimer);
 		this.staleTimer = setInterval(() => {
-			if (this.leader) return;
+			if (this.leader || this.staleReported || this.checkTimer) return;
 			if (Date.now() - this.lastLeaderSeen < LEADER_STALE_MS) return;
-			if (this.staleReported) return;
-			this.staleReported = true;
-			this.handlers?.onLeaderStale();
+
+			const askedAt = Date.now();
+			this.post({ kind: 'STATE_REQUEST', from: this.checkId });
+			this.checkTimer = setTimeout(() => {
+				this.checkTimer = undefined;
+				const answered = () =>
+					!this.handlers ||
+					this.leader ||
+					this.staleReported ||
+					this.lastLeaderSeen >= askedAt;
+				if (answered()) return;
+
+				void lockHeld().then(held => {
+					if (!held || answered()) return;
+					this.staleReported = true;
+					this.handlers?.onLeaderStale();
+				});
+			}, LEADER_CHECK_MS);
 		}, ANNOUNCE_INTERVAL_MS);
+	}
+
+	private stopWatchingLeader(): void {
+		if (this.staleTimer) clearInterval(this.staleTimer);
+		if (this.checkTimer) clearTimeout(this.checkTimer);
+		this.staleTimer = undefined;
+		this.checkTimer = undefined;
+	}
+
+	/** Anything only the leader sends proves it alive, whichever tab it was meant for. */
+	private heardFromLeader(): void {
+		this.lastLeaderSeen = Date.now();
+		if (!this.staleReported) return;
+		this.staleReported = false;
+		this.handlers?.onLeaderBack();
 	}
 
 	private post(message: LeaderMessage): void {
@@ -281,8 +326,7 @@ export class LeaderChannel {
 
 		switch (message.kind) {
 			case 'LEADER_ANNOUNCE':
-				this.lastLeaderSeen = message.at;
-				this.staleReported = false;
+				this.heardFromLeader();
 				return;
 
 			case 'OUTBOUND_PLACED':
@@ -294,6 +338,7 @@ export class LeaderChannel {
 				return;
 
 			case 'CALL_EVENT':
+				this.heardFromLeader();
 				if (!this.leader) handlers.onEvent(message.event);
 				return;
 
@@ -307,6 +352,7 @@ export class LeaderChannel {
 				return;
 
 			case 'STATE_SNAPSHOT':
+				this.heardFromLeader();
 				if (!this.leader && message.to === this.tabId) handlers.onSnapshot(message.state);
 				return;
 
@@ -315,6 +361,7 @@ export class LeaderChannel {
 				return;
 
 			case 'ACTION_RESULT': {
+				this.heardFromLeader();
 				if (message.to !== this.tabId) return;
 				const p = this.pending.get(message.id);
 				if (!p) return;
@@ -366,5 +413,20 @@ export class LeaderChannel {
 					error: asError(error, 'RELAY_TIMEOUT', 'The control failed.'),
 				}),
 			);
+	}
+}
+
+/**
+ * Whether any tab holds the phone. Nobody holding it means no leader to call unresponsive: every
+ * tab gave up on starting the phone, and the error that made them give up is the one to show.
+ * Unknown counts as held, keeping the report where `query` is missing.
+ */
+async function lockHeld(): Promise<boolean> {
+	try {
+		if (typeof navigator.locks?.query !== 'function') return true;
+		const { held } = await navigator.locks.query();
+		return !!held?.some(lock => lock.name === LOCK_NAME);
+	} catch {
+		return true;
 	}
 }

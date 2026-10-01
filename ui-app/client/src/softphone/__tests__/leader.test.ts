@@ -1,3 +1,4 @@
+import { setImmediate as realSetImmediate } from 'node:timers';
 import { BroadcastChannel as NodeBroadcastChannel } from 'node:worker_threads';
 import { LeaderChannel, LeaderHandlers, RelayAction } from '../leader';
 import { INITIAL_STATE, SoftphoneEvent, SoftphoneState } from '../types';
@@ -54,6 +55,8 @@ function installLockManager({ ignoreAbort = false } = {}) {
 	};
 
 	(navigator as unknown as { locks: unknown }).locks = {
+		// What a real LockManager reports: which locks some tab holds right now.
+		query: async () => ({ held: [...held].map(name => ({ name })), pending: [] }),
 		// Both call shapes, as the real one: (name, callback) and (name, { signal }, callback). An
 		// aborted request still queued leaves the queue and rejects, per the Web Locks spec.
 		request: (
@@ -100,6 +103,7 @@ function handlers(over: Partial<LeaderHandlers> = {}): LeaderHandlers {
 		onOutboundPlaced: () => {},
 		onOutboundFailed: () => {},
 		onLeaderStale: () => {},
+		onLeaderBack: () => {},
 		...over,
 	};
 }
@@ -376,3 +380,161 @@ describe('LeaderChannel', () => {
 		await assertion;
 	});
 });
+
+/**
+ * A leader whose tab is in the background: Chrome throttles its timers, to about once a minute after
+ * a few minutes hidden, so its announcements stop, while message handlers (and its calls) keep
+ * running. The leader here is a bare BroadcastChannel the test drives, holding the lock the way a
+ * live tab would, so it can stay silent and still answer when asked.
+ */
+describe('LeaderChannel, a quiet leader', () => {
+	let restoreLocks: () => void;
+	let restoreChannel: () => void;
+	let follower: LeaderChannel;
+	let leaderTab: NodeBroadcastChannel;
+	let requests: Array<{ kind: string; from?: string }>;
+
+	/** BroadcastChannel delivery is not timer-driven, so it is waited for with real turns. */
+	const delivered = async () => {
+		for (let i = 0; i < 20; i++) await new Promise(resolve => realSetImmediate(resolve));
+	};
+
+	const advance = async (ms: number) => {
+		for (let t = 0; t < ms; t += 1_000) {
+			jest.advanceTimersByTime(1_000);
+			await delivered();
+		}
+	};
+
+	function startFollower(over: Partial<LeaderHandlers> = {}) {
+		follower = new LeaderChannel();
+		follower.start(handlers(over));
+	}
+
+	beforeEach(() => {
+		jest.useFakeTimers({ doNotFake: ['nextTick', 'queueMicrotask'] });
+		restoreLocks = installLockManager();
+		restoreChannel = installBroadcastChannel();
+		// Held, never released: the live leader tab.
+		void navigator.locks.request('softphone_leader', () => new Promise<void>(() => {}));
+		leaderTab = new NodeBroadcastChannel('softphone_sync');
+		requests = [];
+	});
+
+	afterEach(() => {
+		follower?.stop();
+		leaderTab.close();
+		restoreChannel();
+		restoreLocks();
+		jest.useRealTimers();
+	});
+
+	/** Answers state requests as a live leader does, without ever announcing. */
+	function answerStateRequests() {
+		leaderTab.onmessage = (e: unknown) => {
+			const message = (e as { data: { kind: string; from?: string } }).data;
+			requests.push(message);
+			if (message.kind === 'STATE_REQUEST')
+				leaderTab.postMessage({
+					kind: 'STATE_SNAPSHOT',
+					to: message.from,
+					state: INITIAL_STATE,
+				});
+		};
+	}
+
+	function ignoreEverything() {
+		leaderTab.onmessage = (e: unknown) => requests.push((e as { data: { kind: string } }).data);
+	}
+
+	it('does not report a leader that is only quiet, and adopts nothing from the check', async () => {
+		answerStateRequests();
+		const stale = jest.fn();
+		const snapshot = jest.fn();
+		startFollower({ onLeaderStale: stale, onSnapshot: snapshot });
+
+		await advance(120_000);
+
+		expect(requests.some(m => m.kind === 'STATE_REQUEST')).toBe(true);
+		expect(stale).not.toHaveBeenCalled();
+		// The check's reply proves the leader alive; it must not overwrite this tab's own state.
+		expect(snapshot).not.toHaveBeenCalled();
+	});
+
+	it('reports a leader that answers nothing, once, and only after asking it', async () => {
+		ignoreEverything();
+		const stale = jest.fn();
+		startFollower({ onLeaderStale: stale });
+
+		await advance(15_000);
+		expect(stale).not.toHaveBeenCalled();
+
+		await advance(10_000);
+		expect(requests.filter(m => m.kind === 'STATE_REQUEST')).toHaveLength(1);
+		expect(stale).toHaveBeenCalledTimes(1);
+
+		await advance(60_000);
+		expect(stale).toHaveBeenCalledTimes(1);
+	});
+
+	it('says so when a leader it reported is heard from again, by any message only a leader sends', async () => {
+		ignoreEverything();
+		const back = jest.fn();
+		startFollower({ onLeaderBack: back });
+
+		await advance(25_000);
+		expect(back).not.toHaveBeenCalled();
+
+		// A call event, not an announcement: whatever the leader sends proves it alive.
+		leaderTab.postMessage({ kind: 'CALL_EVENT', event: { type: 'MUTE', muted: true } });
+		await delivered();
+
+		expect(back).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('LeaderChannel, no leader at all', () => {
+	let restoreLocks: () => void;
+	let restoreChannel: () => void;
+	let channel: LeaderChannel | undefined;
+
+	beforeEach(() => {
+		jest.useFakeTimers({ doNotFake: ['nextTick', 'queueMicrotask'] });
+		restoreLocks = installLockManager();
+		restoreChannel = installBroadcastChannel();
+	});
+
+	afterEach(() => {
+		channel?.stop();
+		restoreChannel();
+		restoreLocks();
+		jest.useRealTimers();
+	});
+
+	it('reports no stale leader when the tab gave up and nobody holds the phone', async () => {
+		const stale = jest.fn();
+		channel = new LeaderChannel();
+		channel.start(handlers({ onLeaderStale: stale }));
+		await waitForRealTurns(() => channel!.isLeader);
+
+		// What the registry does after the third failed start-up: step down and stop competing.
+		expect(channel.resign()).toBe(true);
+
+		for (let t = 0; t < 60_000; t += 1_000) {
+			jest.advanceTimersByTime(1_000);
+			await realTurns();
+		}
+
+		// The error that made it give up is the one the agent must see, not "stopped responding".
+		expect(stale).not.toHaveBeenCalled();
+	});
+});
+
+async function realTurns() {
+	for (let i = 0; i < 20; i++) await new Promise(resolve => realSetImmediate(resolve));
+}
+
+async function waitForRealTurns(condition: () => boolean) {
+	for (let i = 0; i < 50 && !condition(); i++) await realTurns();
+	if (!condition()) throw new Error('Timed out waiting for the expected state.');
+}
