@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
+import { getDataFromPath, PageStoreExtractor, UrlDetailsExtractor } from '../../context/StoreContext';
+import { LOCAL_STORE_PREFIX } from '../../constants';
 import { ComponentProps } from '../../types/common';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
@@ -74,9 +75,26 @@ interface ScrollResponse {
 	};
 }
 
+/**
+ * The token, read the way the rest of the app reads it.
+ *
+ * This used to be `window.localStorage.getItem('AuthToken')`, which is wrong twice over, and
+ * both faults are silent:
+ *
+ * - The stored value is JSON-stringified, so the raw item comes back wrapped in quotes. Security
+ *   cannot parse that, and its `onErrorResume` falls back to an ANONYMOUS context rather than
+ *   rejecting - so the call succeeded and the card drew, while the server believed nobody was
+ *   asking. This component was the anonymous caller that
+ *   `/api/ui/analytics/query` was accepting on production.
+ * - In design mode the key is `designMode_AuthToken`, so the raw read found nothing at all and
+ *   no header was sent.
+ *
+ * `getDataFromPath` resolves the prefix and un-stringifies, which is what `draftToken.authHeaders`
+ * and `QueryAnalytics.ts` already do.
+ */
 function authToken(): string | undefined {
 	try {
-		return window.localStorage.getItem('AuthToken') || undefined;
+		return getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []) || undefined;
 	} catch {
 		return undefined;
 	}
