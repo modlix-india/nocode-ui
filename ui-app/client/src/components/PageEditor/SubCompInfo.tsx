@@ -3421,8 +3421,7 @@ export const SubComponentDefinitions: Record<
 			displayName: 'Component',
 			description: 'Component',
 
-			// A handset with signal arcs. The arcs are what separate it from a plain telephone
-			// glyph and from Audio's speaker, and they read at the 16px the bottom bar renders at.
+			// Handset with signal arcs, distinct from a plain telephone glyph and Audio's speaker.
 			icon: (
 				<IconHelper viewBox="0 0 30 30">
 					<g transform="translate(-0.55 9.15) scale(0.85)">

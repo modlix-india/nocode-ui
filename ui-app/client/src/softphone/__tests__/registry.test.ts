@@ -34,10 +34,24 @@ class FakeProvider implements ICallProvider {
 
 	static last?: FakeProvider;
 	static initFailure?: unknown;
+	/** Holds the next provider's init open until the test settles it - the microphone prompt, say. */
+	static initGate?: Promise<void>;
+
+	/**
+	 * Whether this provider has a registered phone, modelled on Exotel's adapter - the case that
+	 * needs the most from the registry. Its `destroy` before `init` has finished finds no phone and
+	 * does nothing, and `init` then goes on to make and register one regardless. Only a destroy
+	 * after `init` returns reaches it.
+	 */
+	hasPhone = false;
 
 	init = jest.fn(async (config: ProviderInit) => {
 		this.initConfig = config;
+		const gate = FakeProvider.initGate;
+		FakeProvider.initGate = undefined;
+		if (gate) await gate;
 		if (FakeProvider.initFailure) throw FakeProvider.initFailure;
+		this.hasPhone = true;
 	});
 	register = jest.fn();
 	unregister = jest.fn();
@@ -46,7 +60,9 @@ class FakeProvider implements ICallProvider {
 	toggleHold = jest.fn();
 	toggleMute = jest.fn();
 	sendDtmf = jest.fn();
-	destroy = jest.fn();
+	destroy = jest.fn(() => {
+		this.hasPhone = false;
+	});
 
 	initConfig?: ProviderInit;
 	private listener?: (event: SoftphoneEvent) => void;
@@ -63,11 +79,18 @@ class FakeProvider implements ICallProvider {
 	emit(event: SoftphoneEvent): void {
 		this.listener?.(event);
 	}
+
+	get subscribed(): boolean {
+		return !!this.listener;
+	}
 }
 
 jest.mock('../api', () => api);
 jest.mock('../providers/exotel', () => ({
 	ExotelCallProvider: jest.fn(() => new FakeProvider()),
+}));
+jest.mock('../providers/telecmi', () => ({
+	TelecmiCallProvider: jest.fn(() => new FakeProvider()),
 }));
 jest.mock('../../context/StoreContext', () => store);
 
@@ -109,12 +132,30 @@ function installLockManager() {
 	};
 
 	(navigator as unknown as { locks: unknown }).locks = {
-		request: (name: string, callback: () => Promise<void>) => {
+		// Both call shapes, as the real one: (name, callback) and (name, { signal }, callback). An
+		// aborted request still queued leaves the queue and rejects, per the Web Locks spec.
+		request: (
+			name: string,
+			optionsOrCallback: { signal?: AbortSignal } | (() => Promise<void>),
+			maybeCallback?: () => Promise<void>,
+		) => {
+			const callback =
+				typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback!;
+			const signal =
+				typeof optionsOrCallback === 'function' ? undefined : optionsOrCallback.signal;
+			if (signal?.aborted) return Promise.reject(new DOMException('Aborted', 'AbortError'));
 			if (!held.has(name)) return grant(name, callback);
+
 			return new Promise<void>((resolve, reject) => {
 				const waiters = queued.get(name) ?? [];
-				waiters.push(() => grant(name, callback).then(resolve, reject));
+				const waiter = () => grant(name, callback).then(resolve, reject);
+				waiters.push(waiter);
 				queued.set(name, waiters);
+				signal?.addEventListener('abort', () => {
+					const at = waiters.indexOf(waiter);
+					if (at >= 0) waiters.splice(at, 1);
+					reject(new DOMException('Aborted', 'AbortError'));
+				});
 			});
 		},
 	};
@@ -146,6 +187,7 @@ describe('softphoneRegistry', () => {
 		jest.clearAllMocks();
 		FakeProvider.last = undefined;
 		FakeProvider.initFailure = undefined;
+		FakeProvider.initGate = undefined;
 		authListener = undefined;
 		authValue = { loggedInClientCode: 'ACME' };
 
@@ -327,6 +369,521 @@ describe('softphoneRegistry', () => {
 
 		expect(FakeProvider.last).toBe(first);
 		expect(first?.destroy).not.toHaveBeenCalled();
+	});
+
+	// ------------------------------------------------------------------ a second provider
+
+	function telecmiProvisioned(status: Record<string, unknown> = {}) {
+		api.fetchStatus.mockResolvedValue({
+			provisioned: true,
+			provider: 'telecmi',
+			providerUserId: '5001_1111112',
+			connectionName: 'telecmiCalls',
+			...status,
+		});
+		api.fetchToken.mockResolvedValue({
+			token: 'agent-password',
+			providerUserId: '5001_1111112',
+			provider: 'telecmi',
+			region: 'sbcind.telecmi.com',
+		});
+	}
+
+	it('brings up the TeleCMI adapter for a TeleCMI connection, with its region', async () => {
+		telecmiProvisioned();
+		const { TelecmiCallProvider } = jest.requireMock('../providers/telecmi');
+		const registry = loadRegistry();
+
+		await registry.start('telecmiCalls', true, SDK);
+		await settle();
+
+		expect(TelecmiCallProvider).toHaveBeenCalledTimes(1);
+		expect(FakeProvider.last?.init).toHaveBeenCalledWith({
+			token: 'agent-password',
+			providerUserId: '5001_1111112',
+			autoRegister: true,
+			sdkUrl: SDK,
+			region: 'sbcind.telecmi.com',
+		});
+		expect(registry.getState().provider).toBe('telecmi');
+	});
+
+	it('runs on the connection the backend answered for when the page names none', async () => {
+		telecmiProvisioned({
+			sdkUrl: 'api/files/static/file/SYSTEM/jslib/telecmiBundle/piopiy.min.js',
+		});
+		api.dialTicket.mockResolvedValue({});
+		const registry = loadRegistry();
+
+		await registry.start(undefined, true, undefined);
+		await settle();
+
+		// Asked with no connection, so the backend picks the agent's own...
+		expect(api.fetchStatus).toHaveBeenCalledWith(undefined);
+		// ...and the token, the library and every dial then use what it picked.
+		expect(api.fetchToken).toHaveBeenCalledWith('telecmiCalls');
+		expect(FakeProvider.last?.init).toHaveBeenCalledWith(
+			expect.objectContaining({
+				sdkUrl: 'api/files/static/file/SYSTEM/jslib/telecmiBundle/piopiy.min.js',
+			}),
+		);
+
+		await registry.current()?.dial('501');
+		expect(api.dialTicket).toHaveBeenCalledWith('501', 'telecmiCalls');
+	});
+
+	it("prefers the connection's library over the page's", async () => {
+		telecmiProvisioned({ sdkUrl: 'api/connection/piopiy.min.js' });
+		const registry = loadRegistry();
+
+		await registry.start(undefined, true, SDK);
+		await settle();
+
+		// One page, Exotel's bundle as its setting: a TeleCMI agent must still get TeleCMI's.
+		expect(FakeProvider.last?.init).toHaveBeenCalledWith(
+			expect.objectContaining({ sdkUrl: 'api/connection/piopiy.min.js' }),
+		);
+	});
+
+	it("falls back to the page's library when the connection names none", async () => {
+		provisioned();
+		api.fetchStatus.mockResolvedValue({
+			provisioned: true,
+			provider: 'exotel',
+			providerUserId: 'agent@example.com',
+			connectionName: 'exotelConnection',
+		});
+		const registry = loadRegistry();
+
+		await registry.start(undefined, true, SDK);
+		await settle();
+
+		expect(FakeProvider.last?.init).toHaveBeenCalledWith(
+			expect.objectContaining({ sdkUrl: SDK }),
+		);
+	});
+
+	it('refuses, and mints no token, when neither the connection nor the page names a library', async () => {
+		telecmiProvisioned();
+		const registry = loadRegistry();
+
+		await registry.start(undefined);
+		await settle();
+
+		expect(api.fetchToken).not.toHaveBeenCalled();
+		expect(registry.getState().lastError).toMatchObject({ code: 'SDK_LOAD_FAILED' });
+	});
+
+	it('does nothing more for a user on no connection when the page names none', async () => {
+		api.fetchStatus.mockResolvedValue({ provisioned: false });
+		const registry = loadRegistry();
+
+		await registry.start(undefined, true, SDK);
+		await settle();
+
+		expect(api.fetchToken).not.toHaveBeenCalled();
+		expect(FakeProvider.last).toBeUndefined();
+		expect(registry.current()).toBeUndefined();
+		expect(registry.getState().lastError).toBeNull();
+	});
+
+	it("says which connections the page has to choose between, in the server's words", async () => {
+		api.fetchStatus.mockRejectedValue({
+			response: {
+				status: 400,
+				data: { message: 'This user can take calls on more than one connection: a, b.' },
+			},
+		});
+		const registry = loadRegistry();
+
+		await registry.start(undefined, true, SDK);
+		await settle();
+
+		expect(api.fetchToken).not.toHaveBeenCalled();
+		expect(registry.getState().lastError).toEqual({
+			code: 'NOT_PROVISIONED',
+			message: 'This user can take calls on more than one connection: a, b.',
+		});
+	});
+
+	it('does not restart when the page again names no connection', async () => {
+		telecmiProvisioned({ sdkUrl: 'api/connection/piopiy.min.js' });
+		const registry = loadRegistry();
+
+		await registry.start(undefined, true, SDK);
+		await settle();
+		const first = FakeProvider.last;
+
+		// Compared with what the page asked for, not with the connection the backend picked -
+		// otherwise every remount of a page with no connection would tear a working phone down.
+		await registry.start(undefined, true, SDK);
+		await settle();
+
+		expect(FakeProvider.last).toBe(first);
+		expect(first?.destroy).not.toHaveBeenCalled();
+		expect(api.fetchStatus).toHaveBeenCalledTimes(1);
+	});
+
+	// ------------------------------------------------------------------ a start replaced mid-flight
+
+	it('drops the status of a start a newer one replaced, when both name the same connection', async () => {
+		telecmiProvisioned();
+		let answerFirst!: (status: unknown) => void;
+		api.fetchStatus.mockReturnValueOnce(new Promise(resolve => (answerFirst = resolve)));
+		const registry = loadRegistry();
+
+		// An author correcting the library URL while the first status read is still in flight:
+		// the same connection (here none), a different URL.
+		const first = registry.start(undefined, true, 'api/wrong/piopiy.min.js');
+		await registry.start(undefined, true, 'api/right/piopiy.min.js');
+		await settle();
+
+		answerFirst({ provisioned: true, provider: 'telecmi', connectionName: 'telecmiCalls' });
+		await first;
+		await settle();
+
+		// One phone, on the URL asked for last. The stale answer used to open a second leader
+		// channel, which brought up a second phone and kept its lock.
+		expect(api.fetchToken).toHaveBeenCalledTimes(1);
+		expect(FakeProvider.last?.init).toHaveBeenCalledWith(
+			expect.objectContaining({ sdkUrl: 'api/right/piopiy.min.js' }),
+		);
+	});
+
+	it('does not bring up the phone of a start replaced while its token was being minted', async () => {
+		telecmiProvisioned();
+		let mintFirst!: (token: unknown) => void;
+		api.fetchToken.mockReturnValueOnce(new Promise(resolve => (mintFirst = resolve)));
+		// Real locks, so a resign would actually hand the post away and show here.
+		const restoreLocks = installLockManager();
+		const registry = loadRegistry();
+
+		await registry.start('telecmiCalls', true, 'api/wrong/piopiy.min.js');
+		await settle();
+		await registry.start('telecmiCalls', true, 'api/right/piopiy.min.js');
+		await settle();
+		const current = FakeProvider.last;
+
+		mintFirst({ token: 'agent-password', providerUserId: '5001_1111112', provider: 'telecmi' });
+		await settle();
+		await settle();
+		restoreLocks();
+
+		expect(FakeProvider.last).toBe(current);
+		expect(current?.init).toHaveBeenCalledWith(
+			expect.objectContaining({ sdkUrl: 'api/right/piopiy.min.js' }),
+		);
+		// And the stale start does not count itself a failure and resign the new one's post.
+		expect(registry.getState().isLeader).toBe(true);
+		expect(registry.getState().lastError).toBeNull();
+	});
+
+	/** Starts on one library URL, then restarts on another while the first init is still open. */
+	async function restartDuringInit() {
+		telecmiProvisioned();
+		let settleInit!: { resolve: () => void; reject: (e: unknown) => void };
+		FakeProvider.initGate = new Promise<void>(
+			(resolve, reject) => (settleInit = { resolve, reject }),
+		);
+		const registry = loadRegistry();
+
+		await registry.start('telecmiCalls', true, 'api/wrong/piopiy.min.js');
+		await settle();
+		const replaced = FakeProvider.last!;
+
+		await registry.start('telecmiCalls', true, 'api/right/piopiy.min.js');
+		await settle();
+		const current = FakeProvider.last!;
+		expect(current).not.toBe(replaced);
+
+		return { registry, replaced, current, settleInit };
+	}
+
+	it("keeps the new phone's events when a replaced bring-up finishes after it", async () => {
+		const { registry, replaced, current, settleInit } = await restartDuringInit();
+
+		// Torn down by the restart itself, not when its init returns - an adapter destroyed there
+		// goes no further, so it never signs in...
+		expect(replaced.destroy).toHaveBeenCalledTimes(1);
+
+		// ...nothing it says on its way out reaches the page, because the restart unsubscribed it...
+		replaced.emit({ type: 'INCOMING', callId: 'stale', from: '+91000' });
+		expect(registry.getState().inCall).toBe(false);
+
+		settleInit.resolve();
+		await settle();
+
+		// ...and destroyed again when its init returns, which is what unregisters a phone that init
+		// made regardless - Exotel's. Skipping this left one registered and owned by nobody...
+		expect(replaced.destroy).toHaveBeenCalledTimes(2);
+		expect(replaced.hasPhone).toBe(false);
+		expect(current.destroy).not.toHaveBeenCalled();
+
+		// ...and the phone in use still reaches the page. Discarding the replaced one used to
+		// unsubscribe this one instead, so a registered phone rang with nothing on screen.
+		current.emit({ type: 'REGISTRATION', registered: true });
+		current.emit({ type: 'INCOMING', callId: 'c1', from: '+919876543210' });
+		expect(registry.getState()).toMatchObject({ registered: true, inCall: true, callId: 'c1' });
+	});
+
+	it('destroys a phone still in its init when the session stops, and again when its init returns', async () => {
+		telecmiProvisioned();
+		let settleInit!: () => void;
+		FakeProvider.initGate = new Promise<void>(resolve => (settleInit = resolve));
+		const registry = loadRegistry();
+
+		await registry.start('telecmiCalls', true, SDK);
+		await settle();
+		const pending = FakeProvider.last!;
+
+		// Logging out of the CRM while the microphone prompt is still open.
+		registry.stop();
+		expect(pending.destroy).toHaveBeenCalledTimes(1);
+		expect(pending.subscribed).toBe(false);
+
+		settleInit();
+		await settle();
+
+		// An adapter that could not stop part-way has made and registered its phone by now. It
+		// must not be left ringing for the agent who just logged out.
+		expect(pending.destroy).toHaveBeenCalledTimes(2);
+		expect(pending.hasPhone).toBe(false);
+		expect(registry.getState().lastError).toBeNull();
+	});
+
+	it("still reaches a newer phone in its init after a replaced one's init returns", async () => {
+		telecmiProvisioned();
+		const gates: Array<() => void> = [];
+		const gate = () =>
+			(FakeProvider.initGate = new Promise<void>(resolve => gates.push(resolve)));
+		const registry = loadRegistry();
+
+		gate();
+		await registry.start('telecmiCalls', true, 'api/wrong/piopiy.min.js');
+		await settle();
+		const replaced = FakeProvider.last!;
+
+		gate();
+		await registry.start('telecmiCalls', true, 'api/right/piopiy.min.js');
+		await settle();
+		const pending = FakeProvider.last!;
+
+		// The replaced bring-up finishes while the newer one is still in its init...
+		gates[0]();
+		await settle();
+		expect(replaced.hasPhone).toBe(false);
+
+		// ...and must not have taken the newer one's record with it: a logout now still destroys
+		// the newer phone at once, before its own init has returned.
+		registry.stop();
+		expect(pending.destroy).toHaveBeenCalledTimes(1);
+
+		gates[1]();
+		await settle();
+		expect(pending.hasPhone).toBe(false);
+	});
+
+	it("lets go of the phone's events when the session stops", async () => {
+		telecmiProvisioned();
+		const registry = loadRegistry();
+
+		await registry.start('telecmiCalls', true, SDK);
+		await settle();
+		const provider = FakeProvider.last!;
+		expect(provider.subscribed).toBe(true);
+
+		registry.stop();
+
+		expect(provider.subscribed).toBe(false);
+		expect(provider.destroy).toHaveBeenCalled();
+	});
+
+	it('does not report the failure of a bring-up a newer start replaced', async () => {
+		const { registry, replaced, current, settleInit } = await restartDuringInit();
+
+		settleInit.reject({ code: 'MIC_DENIED', message: 'The microphone could not be opened.' });
+		await settle();
+
+		expect(replaced.destroy).toHaveBeenCalled();
+		expect(registry.getState().lastError).toBeNull();
+		expect(registry.getState().micDenied).toBe(false);
+
+		current.emit({ type: 'REGISTRATION', registered: true });
+		expect(registry.getState().registered).toBe(true);
+	});
+
+	it('does not report the failed status of a start a newer one replaced', async () => {
+		telecmiProvisioned();
+		let failFirst!: (error: unknown) => void;
+		api.fetchStatus.mockReturnValueOnce(new Promise((_, reject) => (failFirst = reject)));
+		const registry = loadRegistry();
+
+		const first = registry.start('oldConnection', true, SDK);
+		await registry.start('telecmiCalls', true, SDK);
+		await settle();
+
+		failFirst({
+			response: { data: { message: 'Connection with name oldConnection not found' } },
+		});
+		await first;
+		await settle();
+
+		// The phone that is running is fine; an error about the one that was replaced would say
+		// otherwise, and fire the page's onError for nothing.
+		expect(registry.getState().lastError).toBeNull();
+		expect(registry.getState().provisioned).toBe(true);
+	});
+
+	// ------------------------------------------------------------------ what a failure tells the page
+
+	/** What axios rejects with on a 4xx: its own `code` and `message`, and the whole request. */
+	function httpFailure(serverMessage?: string) {
+		return Object.assign(new Error('Request failed with status code 400'), {
+			isAxiosError: true,
+			code: 'ERR_BAD_REQUEST',
+			config: { headers: { Authorization: 'the-users-jwt' } },
+			response: { status: 400, data: serverMessage ? { message: serverMessage } : {} },
+		});
+	}
+
+	it("reports a refused dial as DIAL_REJECTED in the server's words, not as the HTTP error", async () => {
+		provisioned();
+		api.dialTicket.mockRejectedValue(httpFailure('This deal has no phone number.'));
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		await expect(registry.current()?.dial('501')).rejects.toEqual({
+			code: 'DIAL_REJECTED',
+			message: 'This deal has no phone number.',
+		});
+		// Exactly those two fields: the request, its auth header among them, stays out of the store.
+		expect(registry.getState().lastError).toEqual({
+			code: 'DIAL_REJECTED',
+			message: 'This deal has no phone number.',
+		});
+	});
+
+	it('reports a refused token as TOKEN_FAILED, with the fallback when the server says nothing', async () => {
+		provisioned();
+		api.fetchToken.mockRejectedValue(httpFailure());
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		expect(registry.getState().lastError).toEqual({
+			code: 'TOKEN_FAILED',
+			message: 'The phone could not be started.',
+		});
+	});
+
+	it('does not take a built-in object name for one of our codes', async () => {
+		provisioned();
+		// `'constructor' in {...}` is true - the name lives on the prototype of every object.
+		api.dialTicket.mockRejectedValue({ code: 'constructor', message: 'Not one of ours.' });
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		await expect(registry.current()?.dial('501')).rejects.toMatchObject({
+			code: 'DIAL_REJECTED',
+		});
+	});
+
+	it("still passes an adapter's own error through, as its own fields only", async () => {
+		provisioned();
+		FakeProvider.initFailure = { code: 'MIC_DENIED', message: 'Blocked.', extra: 'dropped' };
+		const registry = loadRegistry();
+
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		expect(registry.getState().lastError).toEqual({ code: 'MIC_DENIED', message: 'Blocked.' });
+	});
+
+	// ------------------------------------------------------------------ one phone, however it is named
+
+	it('keeps a running phone when a Softphone with no connection mounts', async () => {
+		telecmiProvisioned();
+		const registry = loadRegistry();
+
+		await registry.start('telecmiCalls', true, SDK);
+		await settle();
+		const running = FakeProvider.last!;
+
+		// Navigating mid-call from a page naming the connection to one that leaves it blank. Blank
+		// means the agent's own, and the running phone is one they are provisioned on: a restart
+		// would drop the call and sign in again, only to land back on the same connection.
+		await registry.start(undefined, true, SDK);
+		await settle();
+
+		expect(running.destroy).not.toHaveBeenCalled();
+		expect(FakeProvider.last).toBe(running);
+		expect(api.fetchStatus).toHaveBeenCalledTimes(1);
+	});
+
+	it('keeps a running phone when a Softphone names the connection it already runs on', async () => {
+		telecmiProvisioned();
+		const registry = loadRegistry();
+
+		await registry.start(undefined, true, SDK);
+		await settle();
+		const running = FakeProvider.last!;
+
+		await registry.start('telecmiCalls', true, SDK);
+		await settle();
+
+		expect(running.destroy).not.toHaveBeenCalled();
+		expect(api.fetchStatus).toHaveBeenCalledTimes(1);
+	});
+
+	it('still lets the Softphone mounted last win when it names a different connection', async () => {
+		telecmiProvisioned();
+		const registry = loadRegistry();
+
+		await registry.start('telecmiCalls', true, SDK);
+		await settle();
+		const running = FakeProvider.last!;
+
+		provisioned();
+		await registry.start('exotelConnection', true, SDK);
+		await settle();
+
+		expect(running.destroy).toHaveBeenCalled();
+		expect(api.fetchToken).toHaveBeenLastCalledWith('exotelConnection');
+	});
+
+	it('restarts for a Softphone with no connection when the running one is not provisioned', async () => {
+		api.fetchStatus.mockResolvedValue({ provisioned: false, connectionName: 'someOtherCalls' });
+		const registry = loadRegistry();
+
+		await registry.start('someOtherCalls', true, SDK);
+		await settle();
+
+		// Not provisioned on that one says nothing about the agent's own, which may be elsewhere.
+		telecmiProvisioned();
+		await registry.start(undefined, true, SDK);
+		await settle();
+
+		expect(api.fetchStatus).toHaveBeenCalledTimes(2);
+		expect(FakeProvider.last).toBeDefined();
+	});
+
+	it("ignores a change of the component's library URL that the connection's own library overrides", async () => {
+		telecmiProvisioned({ sdkUrl: 'api/connection/piopiy.min.js' });
+		const registry = loadRegistry();
+
+		await registry.start('telecmiCalls', true, 'api/page/one.js');
+		await settle();
+		const running = FakeProvider.last!;
+
+		await registry.start('telecmiCalls', true, 'api/page/two.js');
+		await settle();
+
+		expect(running.destroy).not.toHaveBeenCalled();
 	});
 
 	it('does nothing at all in the page editor', async () => {
@@ -678,7 +1235,7 @@ describe('softphoneRegistry', () => {
 		await settle();
 
 		const provider = FakeProvider.last!;
-		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919701191800' });
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919000000001' });
 		provider.emit({
 			type: 'CONNECTED',
 			callId: 'c1',
@@ -689,7 +1246,7 @@ describe('softphoneRegistry', () => {
 		expect(registry.getState().lastCall).toMatchObject({
 			callId: 'c1',
 			direction: 'inbound',
-			phoneNumber: '+919701191800',
+			phoneNumber: '+919000000001',
 			agent: 'agent@example.com',
 			answered: true,
 			endReason: 'normal',
@@ -707,13 +1264,13 @@ describe('softphoneRegistry', () => {
 		await settle();
 
 		const provider = FakeProvider.last!;
-		provider.emit({ type: 'INCOMING', callId: 'c2', from: '+919701191800' });
+		provider.emit({ type: 'INCOMING', callId: 'c2', from: '+919000000001' });
 		provider.emit({ type: 'ENDED', callId: 'c2', reason: 'cancelled' });
 
 		expect(registry.getState().lastCall).toMatchObject({
 			answered: false,
 			durationSeconds: 0,
-			phoneNumber: '+919701191800',
+			phoneNumber: '+919000000001',
 		});
 		expect(registry.getState().lastCall?.startedAt).toBeUndefined();
 	});
@@ -748,13 +1305,13 @@ describe('softphoneRegistry', () => {
 		await settle();
 
 		const provider = FakeProvider.last!;
-		provider.emit({ type: 'INCOMING', callId: 'c4', from: '+919701191800' });
+		provider.emit({ type: 'INCOMING', callId: 'c4', from: '+919000000001' });
 		provider.emit({ type: 'ENDED', callId: 'c4' });
 
 		const state = registry.getState();
 		// The live fields go, the record stays - that is the whole point of holding it here.
 		expect(state).toMatchObject({ inCall: false, callId: undefined, from: undefined });
-		expect(state.lastCall?.phoneNumber).toBe('+919701191800');
+		expect(state.lastCall?.phoneNumber).toBe('+919000000001');
 	});
 
 	it('has no summary before the first call', async () => {
@@ -778,8 +1335,8 @@ describe('softphoneRegistry', () => {
 		const startedAt = new Date(Date.now() - 30_000).toISOString();
 
 		// This is what the bundle actually does - each event is delivered twice.
-		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919701191800' });
-		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919701191800' });
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919000000001' });
+		provider.emit({ type: 'INCOMING', callId: 'c1', from: '+919000000001' });
 		provider.emit({ type: 'CONNECTED', callId: 'c1', startedAt });
 		provider.emit({ type: 'CONNECTED', callId: 'c1', startedAt: new Date().toISOString() });
 
@@ -796,7 +1353,7 @@ describe('softphoneRegistry', () => {
 		const lastCall = registry.getState().lastCall;
 		expect(lastCall).toMatchObject({
 			direction: 'inbound',
-			phoneNumber: '+919701191800',
+			phoneNumber: '+919000000001',
 			answered: true,
 		});
 		expect(lastCall?.durationSeconds).toBeGreaterThanOrEqual(29);

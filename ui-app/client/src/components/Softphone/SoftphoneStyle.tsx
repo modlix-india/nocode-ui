@@ -3,10 +3,7 @@ import { styleDefaults, styleProperties } from './softphoneStyleProperties';
 
 const PREFIX = '.comp.compSoftphone';
 
-/**
- * The component renders nothing at run time, so this only styles the marker the page editor shows
- * so the component can be found and moved on a canvas.
- */
+/** Styles only the page editor's marker; nothing renders at run time. */
 export default function SoftphoneStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {

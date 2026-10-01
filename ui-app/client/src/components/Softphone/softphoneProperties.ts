@@ -16,7 +16,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Connection Name',
 		description:
-			'The calling connection to use, as named in the application connections. The provider is read from that connection, so it never has to be set here.',
+			"The calling connection to use, as named in the application connections. The provider is read from that connection, so it never has to be set here. Leave it empty to use the signed-in agent's own connection, so one page serves agents on different providers; an agent set up on more than one connection then needs it set. When it is bound to an expression, the phone waits for that expression to name a connection rather than starting on the agent's own in the meantime - so a binding that stays empty never starts the phone; to use the agent's own connection, leave this blank. A binding that later goes empty leaves a running phone on the connection it last named; it changes only when the binding names another.",
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
@@ -33,7 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Calling Library URL',
 		description:
-			"Required. Where to load the calling provider's browser library from, for example api/files/static/file/SYSTEM/jslib/exotelBundle/crmBundle.js. There is no default: a built-in path would have to be true of every deployment. A configured CDN is applied automatically, the same way it is for an image. Changing it takes effect on the next page load.",
+			"Where to load the calling provider's browser library from, for example api/files/static/file/SYSTEM/jslib/exotelBundle/crmBundle.js. Used when the calling connection names no library of its own; a connection that does wins, so each agent loads their own provider's. One of the two is required: there is no built-in default, because a built-in path would have to be true of every deployment. A configured CDN is applied automatically, the same way it is for an image. Changing it takes effect on the next page load.",
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{

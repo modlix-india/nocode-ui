@@ -1,26 +1,14 @@
 import { SoftphoneEvent } from '../types';
 
 /**
- * What a calling provider has to be able to do in a browser.
- *
- * Mirrors the backend's `EnumMap<ConnectionSubType, IBrowserCallService>` deliberately: adding a
- * provider should mean a `ConnectionSubType` entry, a service on the backend, an adapter here, and
- * no page edits in any app.
- *
- * There is no `dial`, and that is the point rather than an omission. Dialling goes to our own
- * backend, which reads the customer's number off the deal under the agent's own access; a `dial`
- * on this interface would put a number in the browser's hands and invite someone to reach for the
- * vendor SDK's own outbound call, which carries no ticket and no caller ID.
+ * Mirrors the backend's `EnumMap<ConnectionSubType, IBrowserCallService>`. No `dial` on purpose:
+ * dialling goes through our backend, which reads the number off the deal, and the vendor SDK's
+ * own outbound call carries no ticket and no caller ID.
  */
 export interface ICallProvider {
 	readonly provider: string;
 
-	/**
-	 * Brings the phone up. Only ever called in the leader tab.
-	 *
-	 * `autoRegister` false initialises without registering, so an app can offer an explicit
-	 * "go online" control.
-	 */
+	/** Leader tab only. `autoRegister` false initialises without registering. */
 	init(config: ProviderInit): Promise<void>;
 
 	register(): void;
@@ -29,8 +17,7 @@ export interface ICallProvider {
 	answer(): void;
 	hangup(): void;
 
-	/** Toggle only. No provider SDK in scope exposes a set-hold, and a boolean that silently
-	 * no-ops half the time would be worse than an honest toggle. */
+	/** Toggle only: no provider SDK in scope exposes a set-hold. */
 	toggleHold(): void;
 	toggleMute(): void;
 
@@ -38,7 +25,6 @@ export interface ICallProvider {
 
 	destroy(): void;
 
-	/** Subscribes to normalised events. Returns an unsubscribe. */
 	on(listener: (event: SoftphoneEvent) => void): () => void;
 }
 
@@ -47,12 +33,8 @@ export interface ProviderInit {
 	token: string;
 	providerUserId: string;
 	autoRegister: boolean;
-	/**
-	 * Where to load the provider's client library from. Falls back to the adapter's own default.
-	 *
-	 * Configurable because the path differs per deployment and per bundle version, and neither is
-	 * worth a release. Resolved through `getSrcUrl` by the adapter, so a configured CDN applies to
-	 * it the same way it applies to an image.
-	 */
+	/** Resolved through `getSrcUrl` by the adapter, so a configured CDN applies. */
 	sdkUrl?: string;
+	/** Regional signalling server, from the token response; ignored by adapters that need none. */
+	region?: string;
 }

@@ -32,12 +32,17 @@ function installBroadcastChannel() {
  * the first caller and leaves the rest queued forever - what a real one does when the holder never
  * releases, which is exactly how leadership is held here.
  */
-function installLockManager() {
+/** How many times the stub has granted the lock since it was installed. */
+let lockGrants = 0;
+
+function installLockManager({ ignoreAbort = false } = {}) {
+	lockGrants = 0;
 	const held = new Set<string>();
 	const queued = new Map<string, Array<() => void>>();
 
 	const grant = (name: string, callback: () => Promise<void>): Promise<void> => {
 		held.add(name);
+		lockGrants += 1;
 		// A real LockManager holds the lock for as long as the callback's promise is pending and
 		// releases it when that promise settles, handing the lock to the next waiter. Getting this
 		// right in the stub is what makes "leader closes its tab, another is promoted" testable.
@@ -49,13 +54,33 @@ function installLockManager() {
 	};
 
 	(navigator as unknown as { locks: unknown }).locks = {
-		request: (name: string, callback: () => Promise<void>) => {
+		// Both call shapes, as the real one: (name, callback) and (name, { signal }, callback). An
+		// aborted request still queued leaves the queue and rejects, per the Web Locks spec.
+		request: (
+			name: string,
+			optionsOrCallback: { signal?: AbortSignal } | (() => Promise<void>),
+			maybeCallback?: () => Promise<void>,
+		) => {
+			const callback =
+				typeof optionsOrCallback === 'function' ? optionsOrCallback : maybeCallback!;
+			// `ignoreAbort` stands in for the grant winning a race with the abort.
+			const signal =
+				typeof optionsOrCallback === 'function' || ignoreAbort
+					? undefined
+					: optionsOrCallback.signal;
+			if (signal?.aborted) return Promise.reject(new DOMException('Aborted', 'AbortError'));
 			if (!held.has(name)) return grant(name, callback);
 
 			return new Promise<void>((resolve, reject) => {
 				const waiters = queued.get(name) ?? [];
-				waiters.push(() => grant(name, callback).then(resolve, reject));
+				const waiter = () => grant(name, callback).then(resolve, reject);
+				waiters.push(waiter);
 				queued.set(name, waiters);
+				signal?.addEventListener('abort', () => {
+					const at = waiters.indexOf(waiter);
+					if (at >= 0) waiters.splice(at, 1);
+					reject(new DOMException('Aborted', 'AbortError'));
+				});
 			});
 		},
 	};
@@ -174,6 +199,25 @@ describe('LeaderChannel', () => {
 		await expect(follower.relay('hangup')).rejects.toMatchObject({ code: 'NO_ACTIVE_CALL' });
 	});
 
+	it('relays a failure that is not ours as a plain error, never the thrown object', async () => {
+		open({
+			onAction: async () => {
+				throw {
+					isAxiosError: true,
+					code: 'ERR_NETWORK',
+					message: 'Network Error',
+					config: { headers: { Authorization: 'a-token' } },
+				};
+			},
+		});
+		const follower = open();
+
+		await expect(follower.relay('hangup')).rejects.toEqual({
+			code: 'RELAY_TIMEOUT',
+			message: 'The control failed.',
+		});
+	});
+
 	it('does not resolve one follower with another follower s result', async () => {
 		open({ onAction: async (_action, arg) => `for-${String(arg)}` });
 		const one = open();
@@ -258,6 +302,47 @@ describe('LeaderChannel', () => {
 		// which is also why a crashed tab recovers: the browser releases the lock for it.
 		expect(follower.isLeader).toBe(true);
 		expect(promoted).toBe(true);
+	});
+
+	it('does not hand the lock to a tab that stopped while it was waiting for it', async () => {
+		let promoted = false;
+
+		const leader = open();
+		// A follower that stops - a logout, a restart - while its lock request is still queued.
+		const stopped = open();
+		stopped.stop();
+		const waiting = open({ onBecameLeader: () => (promoted = true) });
+
+		leader.stop();
+
+		// The stopped tab's request was first in the queue. Granted, it held the lock with no phone
+		// and no announcements, and no tab could ever lead again.
+		await waitFor(() => waiting.isLeader);
+		expect(promoted).toBe(true);
+		expect(stopped.isLeader).toBe(false);
+
+		// And not even briefly: its request left the queue when it stopped, so the lock went from
+		// the leader straight to the waiting tab - two grants, not three.
+		expect(lockGrants).toBe(2);
+	});
+
+	it('lets go at once of a lock granted to a tab that has already stopped', async () => {
+		// The abort can lose the race with the grant. The stopped tab must then release the lock
+		// straight away, not hold it with nothing behind it.
+		restoreLocks();
+		restoreLocks = installLockManager({ ignoreAbort: true });
+		let promoted = false;
+
+		const leader = open();
+		const stopped = open();
+		stopped.stop();
+		const waiting = open({ onBecameLeader: () => (promoted = true) });
+
+		leader.stop();
+
+		await waitFor(() => waiting.isLeader);
+		expect(promoted).toBe(true);
+		expect(stopped.isLeader).toBe(false);
 	});
 
 	it('promotes another tab when the leader resigns, and keeps its channel usable', async () => {

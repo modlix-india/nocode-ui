@@ -71,6 +71,12 @@ describe('softphone api', () => {
 		});
 	});
 
+	it("leaves the connection out when there is none, so the backend answers for the agent's own", async () => {
+		await fetchStatus();
+
+		expect(get.mock.calls[0][1].params).toStrictEqual({ verify: false });
+	});
+
 	it('escapes the deal id rather than interpolating it raw', async () => {
 		await dialTicket('a/b 501', 'exotel_connection');
 

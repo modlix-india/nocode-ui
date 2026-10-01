@@ -2,12 +2,7 @@ import getSrcUrl from '../../components/util/getSrcUrl';
 import { SoftphoneError, SoftphoneErrorCode, SoftphoneEvent } from '../types';
 import { ICallProvider, ProviderInit } from './ICallProvider';
 
-/**
- * Exotel's CRM WebRTC SDK, wrapped so nothing above this file knows it is Exotel.
- *
- * Everything vendor-shaped stops here: the global the UMD bundle defines, its five event literals,
- * its toggle-only controls, and the several places it fails quietly.
- */
+/** Exotel's CRM WebRTC SDK: five event literals, toggle-only controls, several quiet failures. */
 
 /** The UMD bundle is built with `libraryExport: 'default'`, so the global is the class itself. */
 interface ExotelSdkConstructor {
@@ -35,57 +30,34 @@ interface ExotelPhone {
 }
 
 /**
- * What the vendor hands the call listener - its `getCallDetails()` snapshot, verified against the
- * built bundle rather than guessed.
+ * The vendor's `getCallDetails()` snapshot, verified against the built bundle; only used fields
+ * are declared.
  *
- * The complete shape is `callId, remoteId, remoteDisplayName, callDirection, callState,
- * callDuration, callStartedTime, callEstablishedTime, callEndedTime, callAnswerTime,
- * callEndReason, sessionId, callSid, sipHeaders`, plus `callFromNumber` which the SDK copies on
- * afterwards. Only the fields used are declared.
- *
- * **On an inbound call most of these are empty, and that is a defect in the bundle rather than a
- * field-name guessing game.** `callFromNumber`, `callSid`, `callId` and `sipHeaders` are populated
- * only by the vendor's `onRecieveInvite` handler, which reads them off the INVITE - and that
- * handler has no call sites anywhere in the built bundle. The number does get extracted, in
- * `newSession`, as `session.displayName = remoteIdentity.displayName || remoteIdentity.uri.user`,
- * but onto the SIP.js session object, which is not passed to this callback. So the caller's number
- * exists in the page and cannot be reached through the public API. The fix is one line in the
- * vendor source we already have to fork for `publicPath`; nothing on this side can substitute.
- *
- * `callDirection` is deliberately unused: it is unverified, and the event name already says which
- * direction the call is.
+ * On an inbound call `callFromNumber`, `callSid`, `callId` and `sipHeaders` are empty: only the
+ * vendor's `onRecieveInvite` fills them, and it has no call sites in the bundle. The number lands
+ * on the SIP.js session (`newSession`), which this callback never receives; fixing it needs the
+ * vendor fork. `callDirection` is unverified and unused.
  */
 interface ExotelCallEventData {
 	callId?: string;
-	/** The provider's own call identity, and what ties a call to its backend record. */
+	/** What ties a call to its backend record. */
 	callSid?: string;
 	remoteId?: string;
 	remoteDisplayName?: string;
 	callFromNumber?: string;
 	callEndReason?: string;
-	/** Raw INVITE headers, when the bundle populates them - `X-Exotel-CallSid`, `From`, and so on. */
 	sipHeaders?: Record<string, string>;
 }
 
 /**
- * Keyed by URL, not a single promise.
- *
- * Memoized so two near-simultaneous callers - a leader election racing a remount - share one
- * script tag instead of appending two. Keyed because the URL is configuration: a single shared
- * promise would hand the second caller the *first* caller's bundle whenever the two URLs differ,
- * with nothing anywhere to say the requested one was never fetched.
+ * Memoized so near-simultaneous callers share one script tag; keyed by URL so a caller asking for
+ * a different URL is never handed the first caller's bundle.
  */
 const loads = new Map<string, Promise<ExotelSdkConstructor>>();
 
 /**
- * Where the bundle currently occupying `globalThis.ExotelCRMWebSDK` came from.
- *
- * Kept on the global rather than in a module variable because it has to answer a question about
- * the page, not about this module: the global outlives any module instance, so provenance held
- * beside `loads` would be forgotten in exactly the case the check exists for. The global is a
- * page-wide name while the URL is per-component configuration, so the global being defined says
- * nothing about *which* bundle is defined - and reusing it on that basis hands a component a
- * bundle from a URL it never asked for, with nothing anywhere to say so.
+ * Which URL the bundle on `globalThis.ExotelCRMWebSDK` came from. Kept on the global because the
+ * global outlives this module's instances, and its presence alone says nothing about which URL.
  */
 const SDK_SOURCE_KEY = '__modlixExotelSdkSource';
 
@@ -96,15 +68,7 @@ function sdkOnPage(url: string): ExotelSdkConstructor | undefined {
 	return sdk as ExotelSdkConstructor;
 }
 
-/**
- * Loads the vendor bundle from the URL the component was given, and only from there.
- *
- * There is deliberately no built-in default. A default is a path that has to be true of every
- * deployment, and the one that used to be here was true of none of them - it named a folder that
- * had never been created, so the softphone failed with a 404 and a MIME-type complaint that read
- * like a corrupt bundle. Requiring the URL means an unconfigured component says so plainly instead
- * of failing somewhere three layers down.
- */
+/** No built-in default URL: no single path is true of every deployment. */
 function loadSdk(sdkUrl?: string): Promise<ExotelSdkConstructor> {
 	const requested = sdkUrl?.trim();
 
@@ -120,18 +84,14 @@ function loadSdk(sdkUrl?: string): Promise<ExotelSdkConstructor> {
 	if (cached) return cached;
 
 	const load = new Promise<ExotelSdkConstructor>((resolve, reject) => {
-		// Only when it is this URL's bundle. A different one has to be fetched, even though that
-		// overwrites the global: whichever bundle is asked for last is the one the page keeps.
+		// A different URL's bundle is fetched even though it overwrites the global.
 		const existing = sdkOnPage(requested);
 		if (existing) {
 			resolve(existing);
 			return;
 		}
 
-		// Resolved here rather than at module scope: getSrcUrl reads globalThis.cdnPrefix, which
-		// is set during boot and may not exist yet when this module is first evaluated. This is
-		// also what puts the bundle on the CDN when one is configured - the same treatment Image
-		// gives its src.
+		// Not at module scope: getSrcUrl reads globalThis.cdnPrefix, which is set during boot.
 		const script = document.createElement('script');
 		script.src = getSrcUrl(requested);
 		script.async = true;
@@ -150,9 +110,7 @@ function loadSdk(sdkUrl?: string): Promise<ExotelSdkConstructor> {
 				);
 		};
 
-		// Drop the memo rather than caching the failure forever, so a corrected URL or a bundle
-		// that 404d mid-deploy can be retried without reloading the tab. This is the case an
-		// author hits while getting the URL right.
+		// Drop the memo so a failed load can be retried without reloading the tab.
 		script.onerror = () => {
 			loads.delete(requested);
 			reject(
@@ -171,12 +129,8 @@ function loadSdk(sdkUrl?: string): Promise<ExotelSdkConstructor> {
 }
 
 /**
- * Asks for the microphone before the SDK does.
- *
- * Not redundant. Left to the SDK, a refused microphone surfaces as a registration that never
- * completes, which looks exactly like a broken integration. Asking here turns it into a specific
- * answer the UI can put in front of the agent - and Chrome remembers a denial per origin, so
- * "clear it in site settings" is the only useful thing to say and we can only say it if we know.
+ * Asks for the microphone before the SDK does: left to the SDK, a refusal surfaces as a
+ * registration that never completes, and Chrome remembers a denial per origin.
  */
 async function ensureMicrophone(): Promise<void> {
 	if (!globalThis.isSecureContext)
@@ -193,8 +147,7 @@ async function ensureMicrophone(): Promise<void> {
 
 	try {
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-		// Release it immediately. The SDK opens its own; holding this one would leave the
-		// recording indicator lit between calls.
+		// Released at once: the SDK opens its own, and holding this lights the mic indicator.
 		stream.getTracks().forEach(t => t.stop());
 	} catch (e) {
 		const name = e instanceof Error ? e.name : '';
@@ -207,16 +160,10 @@ async function ensureMicrophone(): Promise<void> {
 	}
 }
 
-/**
- * "registered" standing on its own, rather than as part of a longer word.
- *
- * `(?![a-z])` instead of `\b` on the tail so that "registered_at" and "registered-ok" still count:
- * `_` is a word character to a regex, and this is matching provider strings whose shape is a
- * guess, not identifiers.
- */
+/** `(?![a-z])` rather than `\b`, so "registered_at" still counts (`_` is a word character). */
 const REGISTERED = /(?:^|[^a-z])registered(?![a-z])/;
 
-/** The same word carrying a negation - "not registered", "un-registered", "de registered". */
+/** "not registered", "un-registered", "de registered". */
 const NOT_REGISTERED = /(?:^|[^a-z])(?:not|non|un|de)[^a-z]*registered(?![a-z])/;
 
 function err(code: SoftphoneErrorCode, message: string): SoftphoneError {
@@ -224,50 +171,27 @@ function err(code: SoftphoneErrorCode, message: string): SoftphoneError {
 }
 
 export class ExotelCallProvider implements ICallProvider {
-	// Lowercase to match the backend's own name for it - see PROVIDERS in registry.ts.
 	readonly provider = 'exotel';
 
 	private phone?: ExotelPhone;
 	private listeners = new Set<(event: SoftphoneEvent) => void>();
 
-	/**
-	 * Hold and mute are tracked here because the SDK will not tell us.
-	 *
-	 * `holdtoggle` and `mutetoggle` report that a toggle happened, not what it landed on, so the
-	 * only way to have a state to show is to keep one.
-	 */
+	/** Tracked here: `holdtoggle` / `mutetoggle` say a toggle happened, not what it landed on. */
 	private onHold = false;
 	private muted = false;
 
 	/**
-	 * What the outstanding hold/mute request asked for, until the SDK confirms it.
-	 *
-	 * The confirmation carries no state, and this is a bundle that already delivers its call
-	 * events more than once - which is why INCOMING, CONNECTED and ENDED are all idempotent in
-	 * the registry. Flipping a boolean per event would take a duplicated `holdtoggle` and land it
-	 * exactly the wrong way round: the call stays held while the button offers to hold it, and
-	 * pressing that button unholds a call the agent believes is already live. Asserting the value
-	 * that was asked for instead makes the second event a no-op.
-	 *
-	 * A confirmation with nothing outstanding therefore re-states the current value rather than
-	 * inverting it: the toggles have no other cause today, and a stale reading is recoverable in a
-	 * way an inverted one is not.
+	 * What the outstanding request asked for. The bundle delivers events more than once, so
+	 * flipping per event would invert state on a duplicate; asserting the requested value makes
+	 * the duplicate a no-op. With nothing outstanding the current value is re-stated.
 	 */
 	private requestedHold?: boolean;
 	private requestedMute?: boolean;
 
-	/**
-	 * Whether a call is in progress, tracked separately from its id.
-	 *
-	 * These are different questions and conflating them broke auto-answer. The provider does not
-	 * always give an id - `callSid` and `callId` are both empty when its INVITE reader has not
-	 * populated them - so a guard written as `if (!this.activeCallId)` treated a perfectly real
-	 * ringing call as no call, threw, and left the agent's own outbound leg ringing until the
-	 * provider timed it out.
-	 */
+	/** Tracked apart from the id, which is often empty (see ExotelCallEventData). */
 	private callInProgress = false;
 
-	/** The provider's id for that call, when it gives one. Reporting only; never a presence check. */
+	/** Reporting only; never a presence check. */
 	private activeCallId?: string;
 
 	async init(config: ProviderInit): Promise<void> {
@@ -276,22 +200,18 @@ export class ExotelCallProvider implements ICallProvider {
 
 		const sdk = new Sdk(config.token, config.providerUserId, config.autoRegister);
 
-		// All three callbacks are passed, and none of them may be null. The SDK stores the last two
-		// only when truthy, but wires its own wrappers into the WebRTC client unconditionally and
-		// each wrapper calls the stored callback with no guard - so a null here is a TypeError the
-		// first time the provider says anything, which is during registration.
+		// None may be null: the SDK's wrappers call each stored callback unguarded, so a null is
+		// a TypeError during registration.
 		const phone = await sdk.Initialize(
 			(event, data) => this.onVendorCallEvent(event, data),
 			state => this.onVendorRegisterEvent(state),
 			() => {
-				/* Session state duplicates what the register callback already tells us. Present
-				   because it must be, ignored because it adds nothing. */
+				/* Duplicates the register callback. */
 			},
 		);
 
-		// `Initialize` returns void on every settings failure - no app, no user mapping, no SIP id -
-		// and says so only with a console warning. Treating a missing return as a hard failure is
-		// the difference between "your phone is not set up" and a phone that silently never rings.
+		// `Initialize` returns void on every settings failure (no app, user mapping or SIP id),
+		// with only a console warning.
 		if (!phone)
 			throw err(
 				'INIT_FAILED',
@@ -325,19 +245,12 @@ export class ExotelCallProvider implements ICallProvider {
 		try {
 			this.phone?.ToggleHold();
 		} catch (e) {
-			// Nothing was asked of the SDK after all, so leave no assertion behind for the next
-			// confirmation to pick up.
 			this.requestedHold = undefined;
 			throw e;
 		}
 	}
 
-	/**
-	 * Guarded because the vendor does not guard it.
-	 *
-	 * `ToggleHold` calls through an optional chain and `ToggleMute` does not, so mute with no call
-	 * in progress throws inside the bundle. The asymmetry is theirs; the check has to be ours.
-	 */
+	/** The vendor's `ToggleMute`, unlike `ToggleHold`, throws with no call in progress. */
 	toggleMute(): void {
 		this.requireCall();
 		this.requestedMute = !this.muted;
@@ -382,22 +295,12 @@ export class ExotelCallProvider implements ICallProvider {
 		this.listeners.forEach(l => l(event));
 	}
 
-	/**
-	 * The provider's own identity for the call, preferred over the SIP dialog id.
-	 *
-	 * `callSid` is what the backend records and what a callback arrives with, so it is the value
-	 * worth putting in front of a page. `callId` is the SIP Call-ID and only a fallback.
-	 */
+	/** `callSid` is what the backend records; `callId` (the SIP Call-ID) is only a fallback. */
 	private static identify(data: ExotelCallEventData): string {
 		return data?.callSid || data?.callId || '';
 	}
 
-	/**
-	 * The caller's number, from whichever field the bundle actually filled in.
-	 *
-	 * Every source here is a real field on the vendor's snapshot - no speculative names. On the
-	 * current bundle all of them are empty for an inbound call; see ExotelCallEventData.
-	 */
+	/** All real snapshot fields, though all empty inbound on the current bundle. */
 	private static callerNumber(data: ExotelCallEventData): string {
 		return (
 			data?.callFromNumber ||
@@ -408,7 +311,6 @@ export class ExotelCallProvider implements ICallProvider {
 		);
 	}
 
-	/** Clears hold and mute, and any request still waiting on a confirmation, between calls. */
 	private resetCallControls(): void {
 		this.onHold = false;
 		this.muted = false;
@@ -416,7 +318,6 @@ export class ExotelCallProvider implements ICallProvider {
 		this.requestedMute = undefined;
 	}
 
-	/** Turns the vendor's five literals into our union. */
 	private onVendorCallEvent(event: string, data: ExotelCallEventData): void {
 		const callId = ExotelCallProvider.identify(data);
 
@@ -435,8 +336,7 @@ export class ExotelCallProvider implements ICallProvider {
 
 			case 'connected':
 				this.activeCallId = callId || this.activeCallId;
-				// Our own clock rather than the vendor's timestamps: their format is unverified,
-				// and a wrong parse here shows the agent a call that started in 1970.
+				// Our own clock: the vendor's timestamp format is unverified.
 				this.emit({
 					type: 'CONNECTED',
 					callId: this.activeCallId ?? '',
@@ -470,16 +370,9 @@ export class ExotelCallProvider implements ICallProvider {
 	}
 
 	/**
-	 * The registration strings are not documented and not verified against a live account.
-	 *
-	 * So this matches loosely and passes the raw value through as `detail`, rather than testing for
-	 * one literal and reporting "offline" for every string nobody predicted. Tighten it once a
-	 * prototype run has recorded what actually arrives.
-	 *
-	 * Loosely, but not carelessly: the strings that mean the opposite of registered all contain
-	 * the word. A substring match read "deregistered", "unregistered" and "not registered" as
-	 * registered - the worst reading available, since it leaves the UI saying the agent is
-	 * available to a queue that has just dropped them.
+	 * The registration strings are undocumented and unverified, so this matches loosely and passes
+	 * the raw value as `detail`. Negations are excluded, since a plain substring match would read
+	 * "unregistered" as registered.
 	 */
 	private onVendorRegisterEvent(state: string): void {
 		const value = (state ?? '').toString();

@@ -437,6 +437,33 @@ describe('call presence, separately from the call id', () => {
 		expect(phone.SendDTMF).toHaveBeenCalledWith('#');
 	});
 
+	it('unregisters, on a second destroy, the phone an init finished making after the first', async () => {
+		// What the registry relies on when a session stops while this adapter is still in init: a
+		// destroy then finds no phone, init goes on to make and register one, and only a destroy
+		// after init returns can reach it.
+		const { ExotelCallProvider } = loadProviderModule();
+		const capture = captureScripts(script => {
+			(globalThis as Record<string, unknown>).ExotelCRMWebSDK = fakeSdk();
+			script.onload?.(new Event('load'));
+		});
+		restore = capture.restore;
+
+		const provider = new ExotelCallProvider();
+		const init = provider.init({
+			token: 't',
+			providerUserId: 'a@b.c',
+			autoRegister: true,
+			sdkUrl: 'api/x.js',
+		});
+
+		provider.destroy();
+		expect(phone.UnRegisterDevice).not.toHaveBeenCalled();
+
+		await init;
+		provider.destroy();
+		expect(phone.UnRegisterDevice).toHaveBeenCalledTimes(1);
+	});
+
 	it('refuses again once the call has ended', async () => {
 		const provider = await ringing('c1');
 		expect(() => provider.hangup()).not.toThrow();

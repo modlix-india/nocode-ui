@@ -160,12 +160,12 @@ describe('MakeCall', () => {
 		facade.dial.mockResolvedValue({ code: 'abc123' });
 
 		// The regression this guards: declared String alone, this threw before the function ran -
-		// "Expected a string but found 3458" - because a deal's id is a number in this platform.
-		const output = await new MakeCall().execute(params({ ticketId: 3458 }));
+		// "Expected a string but found 1234" - because a deal's id is a number in this platform.
+		const output = await new MakeCall().execute(params({ ticketId: 1234 }));
 
 		expect(eventNames(output)).toEqual([Event.OUTPUT]);
 		// Coerced once, here, so the facade and the URL only ever see one form.
-		expect(facade.dial).toHaveBeenCalledWith('3458', undefined);
+		expect(facade.dial).toHaveBeenCalledWith('1234', undefined);
 	});
 
 	it('still accepts the deal code, which is a string', async () => {
@@ -239,6 +239,25 @@ describe('call controls', () => {
 
 		expect(eventNames(output)).toEqual([Event.ERROR]);
 		expect(errorOf(output).code).toBe('NO_ACTIVE_CALL');
+	});
+
+	it('reports a failed request with our code and the server message, never the request', async () => {
+		facade.toggleHold.mockRejectedValue({
+			isAxiosError: true,
+			code: 'ERR_BAD_REQUEST',
+			message: 'Request failed with status code 400',
+			config: { headers: { Authorization: 'a-token' } },
+			response: { data: { message: 'The call could not be held.' } },
+		});
+
+		const output = await new ToggleHold().execute(params());
+		const result = output.allResults()[0].getResult();
+
+		expect(eventNames(output)).toEqual([Event.ERROR]);
+		expect(result.get('data')).toEqual({
+			code: 'NO_ACTIVE_CALL',
+			message: 'The call could not be held.',
+		});
 	});
 
 	it('sends one keypad tone', async () => {

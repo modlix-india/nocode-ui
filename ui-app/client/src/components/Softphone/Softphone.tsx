@@ -17,15 +17,8 @@ function LoadLazySoftphone(props: Readonly<ComponentProps>) {
 }
 
 /**
- * Browser calling for an agent.
- *
- * Belongs on the shell page, once. The shell's subtree survives navigation, so one instance rings
- * whichever page the agent happens to be on. A page with `wrapShell: false` unmounts the shell and
- * so opts out of the phone UI - the call itself survives, because the session lives in the
- * softphone registry rather than in this component.
- *
- * Takes a connection name and nothing else. The provider comes from the connection, by way of
- * `/browser/status`, so adding a second provider needs no page edits anywhere.
+ * Belongs on the shell page, once, so it rings on whichever page the agent is on. A page with
+ * `wrapShell: false` drops the phone UI, but the call survives in the registry.
  */
 const component = {
 	name: 'Softphone',
