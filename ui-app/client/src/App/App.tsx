@@ -61,17 +61,27 @@ function onMessageFromEditor(event: MessageEvent) {
 	}
 }
 
+/** Marks the head tags `processTagType` created, so it can replace them and nothing else. */
+const APP_TAG_ATTRIBUTE = 'data-mlx-app-tag';
+
 function processTagType(headTags: any, tag: string) {
 	if (!headTags) return;
 
-	const existingLinks = document.head.getElementsByTagName(tag);
-	for (const link of Array.from(existingLinks)) {
-		document.head.removeChild(link);
+	// Only the tags this function put there. It used to remove EVERY <link> in the
+	// head, so each later pass (design mode, the dev server's double mount) took the
+	// font packs, the icon packs and the theme stylesheet with it. Font packs are
+	// added once and never re-added, so every Inter or Figtree heading fell back to
+	// the browser's serif.
+	for (const existing of Array.from(
+		document.head.querySelectorAll(`${tag}[${APP_TAG_ATTRIBUTE}]`),
+	)) {
+		existing.remove();
 	}
 	Object.entries(headTags)
 		.sort((a: any[], b: any[]) => (b[1]?.order ?? 0) - (a[1]?.order ?? 0))
 		.forEach(([key, attributes]: [string, any]) => {
 			const link = document.createElement(tag);
+			link.setAttribute(APP_TAG_ATTRIBUTE, '');
 			link.id = key;
 			Object.entries(attributes).forEach(e => link.setAttribute(e[0], e[1] as string));
 			document.head.appendChild(link);
