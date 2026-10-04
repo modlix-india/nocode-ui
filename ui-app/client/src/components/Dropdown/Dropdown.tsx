@@ -35,10 +35,8 @@ import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 import { styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
+import { MOUSE_LEAVE_CLOSE_DELAY, openFloating } from '../util/floatingLayer';
 
-// Grace period before a closeOnMouseLeave dropdown actually closes. Long enough to
-// cross the gap between the control and its panel, or to glance away and come back.
-const MOUSE_LEAVE_CLOSE_DELAY = 1000;
 
 type DropdownOption = { label: any; value: any; key: any; originalObjectKey?: any };
 
@@ -460,6 +458,21 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => cancelPendingClose, [cancelPendingClose]);
 
+	// One floating panel at a time (util/floatingLayer): opening this list closes other
+	// open dropdowns and popovers, but not a popover this dropdown sits inside.
+	const portalRef = useRef<HTMLDivElement>(null);
+	const handleCloseRef = useRef(handleClose);
+	handleCloseRef.current = handleClose;
+	useEffect(() => {
+		if (!showDropdown) return;
+		const anchor = () => inputRef.current?.closest('.comp.compDropdown');
+		return openFloating({
+			close: () => handleCloseRef.current(),
+			contains: el => !!(anchor()?.contains(el) || portalRef.current?.contains(el)),
+			anchor,
+		});
+	}, [showDropdown]);
+
 	const getLabel = useCallback(() => {
 		let label = '';
 		if (selected == undefined || (Array.isArray(selected) && !selected.length)) {
@@ -701,6 +714,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 		dropdownContainer = ReactDOM.createPortal(
 			<div
+				ref={portalRef}
 				className={`comp compDropdown _dropdownPortal ${designType ?? ''} ${
 					colorScheme ?? ''
 				}`}

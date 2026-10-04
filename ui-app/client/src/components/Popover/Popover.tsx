@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MOUSE_LEAVE_CLOSE_DELAY, openFloating } from '../util/floatingLayer';
 import {
 	addListenerAndCallImmediately,
 	PageStoreExtractor,
@@ -24,10 +25,6 @@ export interface PortalCoordinates {
 	bottom?: number;
 }
 
-// Kept identical to Dropdown's own constant on purpose: both are "the pointer left the
-// control, give it a moment to come back", and two different delays would read as two
-// different behaviours for the same gesture.
-const MOUSE_LEAVE_CLOSE_DELAY = 1000;
 
 function Popover(props: Readonly<ComponentProps>) {
 	const {
@@ -145,6 +142,17 @@ function Popover(props: Readonly<ComponentProps>) {
 		[],
 	);
 
+	// One floating panel at a time: opening this closes the others, except one this
+	// popover was opened from (it lives inside that panel).
+	React.useEffect(() => {
+		if (!show) return;
+		return openFloating({
+			close: () => setShow(false),
+			contains: el => !!(boxRef.current?.contains(el) || popoverRef.current?.contains(el)),
+			anchor: () => boxRef.current,
+		});
+	}, [show]);
+
 	React.useEffect(() => {
 		if (globalThis.designMode == 'PAGE' && showInDesign === true) return;
 		const closePopover = () => setShow(false);
@@ -172,7 +180,8 @@ function Popover(props: Readonly<ComponentProps>) {
 					onClick={showPopover}
 					onMouseEnter={e => {
 						if (leaveClosesIt) cancelPendingClose();
-						if (showOnHover) showPopover(e);
+						// Hover opens; it used to toggle, so re-entering the trigger shut it.
+						if (showOnHover) setShow(true);
 					}}
 					onMouseLeave={leaveClosesIt ? schedulePendingClose : undefined}
 				>

@@ -3,6 +3,7 @@ import { shortUUID } from '../util/shortUUID';
 import { consumeSsoArrival, hasAskedBeacon, isSsoEnabled, ssoBounce } from '../sso/ssoModule';
 import {
 	currentAppCode,
+	pageThemeName,
 	readThemeCookie,
 	readThemePersonalization,
 	resolveThemeName,
@@ -18,9 +19,24 @@ export interface AppDefinitionResponse {
 	theme: any;
 	/** The theme `theme` came from. Seeds Store.selectedTheme before React mounts. */
 	selectedTheme?: string;
+	/**
+	 * The visitor's own theme. Equal to `selectedTheme` unless the first page names
+	 * a theme of its own (`properties.theme`); seeds Store.userTheme, which is the
+	 * theme the app returns to on a page that names none.
+	 */
+	userTheme?: string;
 }
 
-export async function getAppDefinition(): Promise<AppDefinitionResponse> {
+/**
+ * @param pageDefinition the first page's definition, when the caller is fetching it.
+ * Given the application, so a load with no page in the URL can start the default
+ * page's fetch as soon as that name is known. It is awaited only after the app
+ * definition, and by then it has usually arrived, so a page that names its own
+ * theme costs no extra round trip and never paints in the visitor's theme first.
+ */
+export async function getAppDefinition(
+	pageDefinition?: (application: any) => Promise<any> | undefined,
+): Promise<AppDefinitionResponse> {
 	let TOKEN_NAME = 'AuthToken';
 	let TOKEN_EXPIRY = 'AuthTokenExpiry';
 	let TOKEN_LANGUAGE = 'currentLanguage';
@@ -101,6 +117,14 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 		cookie: cookieTheme,
 	});
 
+	let forcedTheme: string | undefined;
+	try {
+		forcedTheme = pageThemeName(application, await pageDefinition?.(application));
+	} catch {
+		// The page fetch has its own error handling; here it only means no forced theme.
+	}
+	const appliedTheme = forcedTheme ?? selectedTheme;
+
 	try {
 		// The SSR bootstrap is only usable when it carries the theme we resolved to.
 		// It is rendered from a shared cache with no knowledge of this visitor, so
@@ -111,10 +135,10 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 		const bootstrap = globalThis.__APP_BOOTSTRAP__;
 		const bootstrapTheme = bootstrap?.themeName ?? resolveThemeName(application, {});
 
-		if (bootstrap && bootstrapTheme === selectedTheme) theme = bootstrap.theme;
+		if (bootstrap && bootstrapTheme === appliedTheme) theme = bootstrap.theme;
 		else {
 			const themeOptions: AxiosRequestConfig<any> = { ...axiosOptions };
-			if (selectedTheme) themeOptions.params = { theme: selectedTheme };
+			if (appliedTheme) themeOptions.params = { theme: appliedTheme };
 			const response = await axios.get('api/ui/theme', themeOptions);
 			if (response.status === 200) theme = response.data;
 		}
@@ -128,7 +152,7 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 	// until someone reloaded twice. This is the only place that mismatch is
 	// knowable, and swapThemeStylesheet is a no-op when the hrefs already agree, so
 	// the common case costs nothing.
-	await swapThemeStylesheet(selectedTheme);
+	await swapThemeStylesheet(appliedTheme);
 
 	// Rewrite whatever disagrees with what actually resolved, so a theme that has
 	// been deleted stops being replayed on every load, on every device.
@@ -139,7 +163,14 @@ export async function getAppDefinition(): Promise<AppDefinitionResponse> {
 	if (language) localStorage.setItem(TOKEN_LANGUAGE, language);
 	else localStorage.removeItem(TOKEN_LANGUAGE);
 
-	return { auth, application, isApplicationLoadFailed, theme, selectedTheme };
+	return {
+		auth,
+		application,
+		isApplicationLoadFailed,
+		theme,
+		selectedTheme: appliedTheme,
+		userTheme: selectedTheme,
+	};
 }
 
 async function makeAppDefinitionCall(
