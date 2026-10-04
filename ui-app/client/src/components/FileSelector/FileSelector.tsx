@@ -22,7 +22,7 @@ import { flattenUUID } from '../util/uuid';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import getSrcUrl from '../util/getSrcUrl';
-import { fileSelectorStoredValue } from './storedValue';
+import { fileDeleteUrl, fileSelectorStoredValue } from './storedValue';
 import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 
@@ -218,14 +218,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			let fileUrl = getFileUrl(selectedFile);
 			if (!fileUrl) return;
 
-			let deleteUrl = fileUrl.replace('//', '/');
-			deleteUrl = `/api/files/${resourceType}/${deleteUrl}`;
-
-			if (clientCode) {
-				deleteUrl += `?clientCode=${clientCode}`;
-			}
-
-			await axios.delete(deleteUrl, { headers });
+			await axios.delete(fileDeleteUrl(fileUrl, resourceType, clientCode), { headers });
 
 			if (bindingPathPath) {
 				setData(bindingPathPath, undefined, context.pageName, true);
@@ -238,6 +231,17 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			setDataUrl(undefined);
 			setSelectedFile('');
 			setUploadProgress(0);
+			setIsDirty(true);
+			// The selection is now empty, so the page hears about it the same way it
+			// does for a pick or a remove: whatever it derived from the file goes too.
+			if (!onSelect || !pageDefinition.eventFunctions[onSelect]) return;
+			await runEvent(
+				pageDefinition.eventFunctions[onSelect],
+				onSelect,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
 		} catch (error) {
 			console.error('Delete failed:', error);
 		}

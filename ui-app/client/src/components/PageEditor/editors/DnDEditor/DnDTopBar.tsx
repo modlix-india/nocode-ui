@@ -24,6 +24,7 @@ import PropertyValueEditor from '../propertyValueEditors/PropertyValueEditor';
 import { Dropdown } from '../stylePropertyValueEditors/simpleEditors/Dropdown';
 import { performanceMonitor } from '../../util/performanceMonitor';
 import { UndoRedoManager } from '../../util/undoRedoManager';
+import { themeEntries } from '../../../../util/themeSelection';
 
 interface TopBarProps {
 	theme: string;
@@ -66,6 +67,8 @@ interface TopBarProps {
 	settingsPageMenuName: string | undefined;
 	addnewPageName: string | undefined;
 	editorType: string | undefined;
+	/** Store path of the edited app's definition, for the page Theme choices. */
+	appPath?: string;
 }
 
 function removeExcessPages(pid: string) {
@@ -144,6 +147,7 @@ function debouncedPgdefSetItem(pageId: string, pageDef: PageDefinition) {
 }
 
 export default function DnDTopBar({
+	appPath,
 	theme,
 	personalizationPath,
 	onChangePersonalization,
@@ -187,6 +191,20 @@ export default function DnDTopBar({
 	const [localUrl, setLocalUrl] = useState(url);
 	const [, setDeviceType] = useState<string | undefined>();
 	const [properties, setProperties] = useState<any>({});
+	// The edited app's themes, offered as the page's own theme. Follows the app
+	// definition, so a theme added in Settings shows up without reopening the page.
+	const [appThemes, setAppThemes] = useState<Array<{ name: string; displayName?: string }>>([]);
+	useEffect(
+		() =>
+			appPath
+				? addListenerWithChildrenActivity(
+						pageExtractor.getPageName(),
+						(_, v) => setAppThemes(themeEntries(v)),
+						appPath,
+					)
+				: undefined,
+		[appPath],
+	);
 	const [showProperties, setShowProperties] = useState(false);
 	const [page, setPage] = useState<PageDefinition>();
 	const [, setChanged] = useState(Date.now());
@@ -506,6 +524,36 @@ export default function DnDTopBar({
 									pageOperations={pageOperations}
 								/>
 							</div>
+							{appThemes.length ? (
+								<div className="_eachProp">
+									<div className="_propLabel">Theme</div>
+									<PropertyValueEditor
+										propDef={{
+											name: 'theme',
+											displayName: 'Theme',
+											description:
+												'A theme this page always uses. Unset, the page follows the theme the visitor picked.',
+											schema: SCHEMA_STRING_COMP_PROP,
+											enumValues: appThemes.map(t => ({
+												name: t.name,
+												displayName: t.displayName
+													? `${t.displayName} (${t.name})`
+													: t.name,
+												description: `Always show this page in ${t.displayName ?? t.name}`,
+											})),
+										}}
+										value={{ value: properties?.theme }}
+										onlyValue={true}
+										onChange={v => updatePageProperties('simple', 'theme', v)}
+										storePaths={storePaths}
+										slaveStore={slaveStore}
+										editPageName={editPageName}
+										pageOperations={pageOperations}
+									/>
+								</div>
+							) : (
+								<></>
+							)}
 							{eventEnums.length ? (
 								<div className="_eachProp">
 									<div className="_propLabel">On Load Function</div>

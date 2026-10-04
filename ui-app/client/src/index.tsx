@@ -269,20 +269,27 @@ if (!app) {
 		// param, which is every ordinary load.
 		await consumeSocialArrival();
 
+		// The page goes to getAppDefinition as well because a page may name its own
+		// theme, and the theme has to be known before the first one is fetched.
 		let appDefinitionResponse, pageDefinitionResponse;
 		if (pageName) {
 			globalThis.pageDefinitionRequestPageName = pageName;
+			const page = getPageDefinition(pageName);
 			[appDefinitionResponse, pageDefinitionResponse] = await Promise.all([
-				getAppDefinition(),
-				getPageDefinition(pageName),
+				getAppDefinition(() => page),
+				page,
 			]);
 		} else {
-			appDefinitionResponse = await getAppDefinition();
-			globalThis.pageDefinitionRequestPageName =
+			let page: Promise<any> | undefined;
+			appDefinitionResponse = await getAppDefinition(application => {
+				globalThis.pageDefinitionRequestPageName = application?.properties?.defaultPage;
+				page = getPageDefinition(globalThis.pageDefinitionRequestPageName);
+				return page;
+			});
+			globalThis.pageDefinitionRequestPageName ??=
 				appDefinitionResponse?.application?.properties?.defaultPage;
-			pageDefinitionResponse = await getPageDefinition(
-				globalThis.pageDefinitionRequestPageName,
-			);
+			pageDefinitionResponse = await (page ??
+				getPageDefinition(globalThis.pageDefinitionRequestPageName));
 		}
 
 		globalThis.appDefinitionResponse = appDefinitionResponse;

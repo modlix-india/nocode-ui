@@ -1,10 +1,12 @@
 import {
 	currentAppCode,
 	getThemeEntry,
+	pageThemeName,
 	readThemeCookie,
 	resolveThemeName,
 	swapThemeStylesheet,
 	themeEntries,
+	visitorThemeEntries,
 	writeThemeCookie,
 } from '../themeSelection';
 
@@ -95,6 +97,54 @@ describe('getThemeEntry', () => {
 	it('is undefined for a name that is not listed, and for no name', () => {
 		expect(getThemeEntry(app({ a: LIGHT }), 'dark')).toBeUndefined();
 		expect(getThemeEntry(app({ a: LIGHT }), undefined)).toBeUndefined();
+	});
+});
+
+describe('pageThemeName', () => {
+	const application = app({ a: LIGHT, b: DARK });
+
+	it('is the theme a page names, when the app lists it', () => {
+		expect(pageThemeName(application, { properties: { theme: 'dark' } })).toBe('dark');
+	});
+
+	it('is undefined for a page that names none, so the visitor choice applies', () => {
+		expect(pageThemeName(application, { properties: {} })).toBeUndefined();
+		expect(pageThemeName(application, undefined)).toBeUndefined();
+	});
+
+	it('ignores a name the app does not list rather than failing', () => {
+		expect(pageThemeName(application, { properties: { theme: 'gone' } })).toBeUndefined();
+	});
+
+	it('ignores a value that is not a name', () => {
+		expect(pageThemeName(application, { properties: { theme: { value: 'dark' } } })).toBeUndefined();
+	});
+});
+
+describe('page-only themes', () => {
+	const CLASSIC = { name: 'classic', order: 0, pageOnly: true };
+	const application = app({ a: LIGHT, b: DARK, c: CLASSIC });
+
+	it('are never the default, even with the lowest order', () => {
+		expect(resolveThemeName(application, {})).toBe('light');
+	});
+
+	it('are never taken from a stored choice', () => {
+		expect(resolveThemeName(application, { cookie: 'classic', personalized: 'classic' })).toBe(
+			'light',
+		);
+	});
+
+	it('are not offered to a visitor', () => {
+		expect(visitorThemeEntries(application).map(e => e.name)).toEqual(['light', 'dark']);
+	});
+
+	it('can still be named by a page', () => {
+		expect(pageThemeName(application, { properties: { theme: 'classic' } })).toBe('classic');
+	});
+
+	it('still theme an app that lists nothing else', () => {
+		expect(resolveThemeName(app({ c: CLASSIC }), {})).toBe('classic');
 	});
 });
 

@@ -190,6 +190,7 @@ export default function DnDEditor({
 		<div className="_dndGrid">
 			<div className="_dndGridMain">
 				<DnDTopBar
+					appPath={appPath}
 					defPath={defPath}
 					locationHistory={locationHistory}
 					url={url}

@@ -26,7 +26,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
-import { getRenderData } from '../util/getRenderData';
+import { getRenderData, toDataTypeShape } from '../util/getRenderData';
 import { getSelectedKeys } from '../util/getSelectedKeys';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { runEvent } from '../util/runEvent';
@@ -35,10 +35,18 @@ import { flattenUUID } from '../util/uuid';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 import { styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
+import { MOUSE_LEAVE_CLOSE_DELAY, openFloating } from '../util/floatingLayer';
 
-// Grace period before a closeOnMouseLeave dropdown actually closes. Long enough to
-// cross the gap between the control and its panel, or to glance away and come back.
-const MOUSE_LEAVE_CLOSE_DELAY = 1000;
+
+type DropdownOption = { label: any; value: any; key: any; originalObjectKey?: any };
+
+function findOptionByValue(value: any, ...lists: Array<Array<DropdownOption | undefined>>) {
+	for (const list of lists) {
+		const found = list.find(e => deepEqual(e?.value, value));
+		if (found) return found;
+	}
+	return undefined;
+}
 
 function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [showDropdown, setShowDropdown] = useState(false);
@@ -82,6 +90,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			onClick,
 			datatype,
 			data,
+			selectedData,
 			placeholder,
 			readOnly,
 			label,
@@ -213,6 +222,58 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		() => getSelectedKeys(dropdownData, selected, isMultiSelect),
 		[selected, dropdownData, isMultiSelect],
 	);
+
+	// The options for the selection itself, supplied by the page, for a selection the
+	// loaded data does not contain: an id bound before its row is in the first page, or
+	// one a server search has filtered out. The shape of `data`, or one item of it, or
+	// an array of items (see toDataTypeShape), since a fetch by id returns one item.
+	const selectedDataOptions = React.useMemo(() => {
+		const source = toDataTypeShape(selectedData, datatype);
+		if (isNullValue(source)) return [];
+		return getRenderData(
+			source,
+			datatype,
+			uniqueKeyType,
+			uniqueKey,
+			selectionType,
+			selectionKey,
+			labelKeyType,
+			labelKey,
+		).filter(e => !isNullValue(e?.key));
+	}, [
+		selectedData,
+		datatype,
+		uniqueKeyType,
+		uniqueKey,
+		selectionType,
+		selectionKey,
+		labelKeyType,
+		labelKey,
+	]);
+
+	// The label used to come from `data` alone, so the moment the list stopped holding
+	// the selected row (a search, the next page, a reload of the first 20) the box went
+	// blank although the bound value had not changed. The options last seen for the
+	// selection are remembered and used when neither `data` nor `selectedData` has them.
+	// Only the current selection is kept, so this never grows past it.
+	const rememberedSelectedOptions = useRef<Array<DropdownOption>>([]);
+	const selectedOptions: Array<DropdownOption> = React.useMemo(() => {
+		if (isNullValue(selected)) return [];
+		let values: Array<any> = [selected];
+		if (isMultiSelect) values = Array.isArray(selected) ? selected : [];
+		const found: Array<DropdownOption> = [];
+		for (const value of values) {
+			const option = findOptionByValue(
+				value,
+				dropdownData,
+				selectedDataOptions,
+				rememberedSelectedOptions.current,
+			);
+			if (option) found.push(option);
+		}
+		rememberedSelectedOptions.current = found;
+		return found;
+	}, [selected, dropdownData, selectedDataOptions, isMultiSelect]);
 
 	const getIsSelected = (key: any) => {
 		if (!isMultiSelect) return deepEqual(selectedDataKey, key);
@@ -397,13 +458,28 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => cancelPendingClose, [cancelPendingClose]);
 
+	// One floating panel at a time (util/floatingLayer): opening this list closes other
+	// open dropdowns and popovers, but not a popover this dropdown sits inside.
+	const portalRef = useRef<HTMLDivElement>(null);
+	const handleCloseRef = useRef(handleClose);
+	handleCloseRef.current = handleClose;
+	useEffect(() => {
+		if (!showDropdown) return;
+		const anchor = () => inputRef.current?.closest('.comp.compDropdown');
+		return openFloating({
+			close: () => handleCloseRef.current(),
+			contains: el => !!(anchor()?.contains(el) || portalRef.current?.contains(el)),
+			anchor,
+		});
+	}, [showDropdown]);
+
 	const getLabel = useCallback(() => {
 		let label = '';
 		if (selected == undefined || (Array.isArray(selected) && !selected.length)) {
 			return '';
 		}
 		if (!isMultiSelect) {
-			label = dropdownData?.find((each: any) => each?.key === selectedDataKey)?.label;
+			label = selectedOptions[0]?.label;
 			if (!label && searchEvent) {
 				label = selected?.label;
 			}
@@ -411,17 +487,17 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		}
 
 		if (showMultipleSelectedValues) {
-			const vals = [];
-			for (const each of selectedDataKey ?? []) {
-				vals.push(dropdownData?.find((e: any) => e?.key === each)?.label);
-			}
-			return vals.join(', ');
+			return selectedOptions
+				.map(e => e.label)
+				.filter(e => !isNullValue(e))
+				.join(', ');
 		}
 
-		return `${selectedDataKey?.length} Item${
-			(selectedDataKey?.length ?? 0) > 1 ? 's' : ''
-		}  selected`;
-	}, [selected, selectedDataKey, dropdownData, isMultiSelect, showMultipleSelectedValues]);
+		// Counted off the selection, not off the options it matched: an id outside the
+		// loaded page is still selected.
+		const count = Array.isArray(selected) ? selected.length : 0;
+		return `${count} Item${count > 1 ? 's' : ''}  selected`;
+	}, [selected, selectedOptions, isMultiSelect, showMultipleSelectedValues, searchEvent]);
 	const computedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ focus, disabled: readOnly },
@@ -638,6 +714,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 		dropdownContainer = ReactDOM.createPortal(
 			<div
+				ref={portalRef}
 				className={`comp compDropdown _dropdownPortal ${designType ?? ''} ${
 					colorScheme ?? ''
 				}`}

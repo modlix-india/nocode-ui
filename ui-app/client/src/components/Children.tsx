@@ -48,6 +48,15 @@ function ComponentWrapper({
 }
 
 /**
+ * The location history of a page's root. Shared, never a fresh `[]`: every component below a
+ * page receives it, and a new array on each shell render reran every effect keyed on it. A
+ * Table's personalization effect resubscribed with call-immediately, which rebuilt the whole
+ * table (a deep copy of the page definition handed to every cell), so opening a popup on
+ * Deals froze the page.
+ */
+export const ROOT_LOCATION_HISTORY: Array<LocationHistory> = Object.freeze([]) as any;
+
+/**
  * The page definition for the current URL, together with the page name that URL resolves to.
  *
  * Both are returned because they are NOT always the same string. When the platform bounces an
@@ -190,7 +199,7 @@ function Children({
 										level: context.level + 1,
 										shellPageName: context.pageName,
 									}}
-									locationHistory={[]}
+									locationHistory={ROOT_LOCATION_HISTORY}
 								/>
 							);
 						else return undefined;
