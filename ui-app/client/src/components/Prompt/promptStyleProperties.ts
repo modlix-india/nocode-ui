@@ -11,8 +11,30 @@ import { StylePropertyDefinition } from '../../types/common';
  *
  * Every default is the literal the component ships today, so an app that sets
  * none of these looks exactly as it did. Theming is opt-in per key.
+ *
+ * The chat's text colors resolve from its own keys (promptFontColor /
+ * promptSecondaryFontColor / promptTertiaryFontColor), not from the app-wide
+ * palette (fontColorOne/Two/Three). The adzump theme sets fontColorTwo to
+ * #FFFFFF for its dark marketing surfaces, which made every secondary line in
+ * the chat white-on-white (live 2026-09-10). Two rules still read the app
+ * palette and should move over when next touched: the expired attachment chip
+ * (fontColorThree) and the steer button (fontColorOne).
  */
 export const styleProperties: Array<StylePropertyDefinition> = [
+	// ─── Text tones (no sel/cp: resolved inline by PromptStyle's t(), declared
+	// here so the Theme Editor lists them) ───
+	{
+		gn: 'Prompt Surface',
+		dn: 'Secondary Font Color',
+		de: 'Labels, tool rows, craft-panel entries - all mid-emphasis text',
+		n: 'promptSecondaryFontColor',
+	},
+	{
+		gn: 'Prompt Surface',
+		dn: 'Tertiary Font Color',
+		de: 'Timestamps, durations, muted hints - all low-emphasis text',
+		n: 'promptTertiaryFontColor',
+	},
 	// ─── Shell ───
 	{
 		gn: 'Prompt Surface',
@@ -284,6 +306,287 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		dv: '0px 4px 0px 0px',
 		cp: 'margin',
 		sel: '.comp.compPrompt ._inputActions ._shortcutHint',
+		np: true,
+	},
+
+	// ─── Icons (composer + quick actions; send icon is Prompt Accent) ───
+	// Each `dv` points at the text tone the icon is drawn in, so an app that sets
+	// the tone recolors the icon with it, and one that sets neither keeps the
+	// literal in PromptStyle.tsx (see Prompt Notices below for how that resolves).
+	{
+		gn: 'Prompt Icons',
+		dn: 'Attachment Icon Color',
+		n: 'promptAttachmentIconColor',
+		dv: '<promptSecondaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._addAttachmentButton',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Attachment Icon Hover Color',
+		n: 'promptAttachmentIconHoverColor',
+		dv: '<promptFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._addAttachmentButton:hover',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Attachment Button Border Color',
+		n: 'promptAttachmentBorderColor',
+		dv: '#e0e0e0',
+		cp: 'border-color',
+		sel: '.comp.compPrompt ._addAttachmentButton',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Quick Action Icon Color',
+		n: 'promptQuickActionIconColor',
+		dv: '<promptSecondaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._quickActionIcon',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Microphone Icon Color',
+		n: 'promptMicIconColor',
+		dv: '<promptSecondaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._micButton',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Microphone Icon Hover Color',
+		n: 'promptMicIconHoverColor',
+		dv: '<promptFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._micButton:hover',
+		np: true,
+	},
+	{
+		gn: 'Prompt Icons',
+		dn: 'Microphone Recording Color',
+		n: 'promptMicRecordingColor',
+		dv: '#ef4444',
+		cp: 'color',
+		sel: '.comp.compPrompt ._micButton._recording',
+		np: true,
+	},
+
+	// ─── Agent activity card ───
+	// Monochrome by design rule: state is carried by fill and motion, never hue.
+	// Text colors default to the chat's text tones, so setting a tone recolors
+	// the card with the rest of the chat; these keys tint just the card. Fills
+	// and borders keep literal defaults, so the app-wide palette never tints it.
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Background',
+		n: 'promptAgentCardBackground',
+		dv: '#fbfbf9',
+		cp: 'background',
+		sel: '.comp.compPrompt ._agentCard',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Done Background',
+		n: 'promptAgentCardDoneBackground',
+		dv: '#ffffff',
+		cp: 'background',
+		sel: '.comp.compPrompt ._agentCard._done',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Border Color',
+		n: 'promptAgentCardBorderColor',
+		dv: '#ececec',
+		cp: 'border-color',
+		sel: '.comp.compPrompt ._agentCard',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Title Font Color',
+		n: 'promptAgentCardTitleFontColor',
+		dv: '<promptFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentCardTitle',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Time Chip Background',
+		n: 'promptAgentCardTimeBackground',
+		dv: '#f4f3ee',
+		cp: 'background',
+		sel: '.comp.compPrompt ._agentCardTime',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Time Chip Font Color',
+		n: 'promptAgentCardTimeFontColor',
+		dv: '<promptTertiaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentCardTime',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Spinner Color',
+		n: 'promptAgentSpinnerColor',
+		dv: '#1a1a1a',
+		cp: 'border-top-color',
+		sel: '.comp.compPrompt ._agentCardSpin',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Check Background',
+		n: 'promptAgentCheckBackground',
+		dv: '#1a1a1a',
+		cp: 'background',
+		sel: '.comp.compPrompt ._agentCardCheck',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Card Check Font Color',
+		n: 'promptAgentCheckFontColor',
+		dv: '#ffffff',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentCardCheck',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Name Font Color',
+		n: 'promptAgentNameFontColor',
+		dv: '<promptFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentItemName',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Progress Font Color',
+		de: 'The live doing-line under an agent name, and the settled outcome line',
+		n: 'promptAgentDoingFontColor',
+		dv: '<promptSecondaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentDoing',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Thinking Font Color',
+		de: 'The streamed sub-agent reasoning quote',
+		n: 'promptAgentThinkingFontColor',
+		dv: '<promptTertiaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentThink',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Agent Thinking Border Color',
+		n: 'promptAgentThinkingBorderColor',
+		dv: '#e2e1db',
+		cp: 'border-left-color',
+		sel: '.comp.compPrompt ._agentThink',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Tool Name Font Color',
+		n: 'promptAgentToolNameFontColor',
+		dv: '<promptFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentCardToolName',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Tool Progress Font Color',
+		de: 'The in-place tool_update line while a tool runs',
+		n: 'promptAgentToolLiveFontColor',
+		dv: '<promptSecondaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentCardTool._live ._agentCardToolLive',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Tool Result Font Color',
+		de: 'The settled summary line after tool_result',
+		n: 'promptAgentToolResultFontColor',
+		dv: '<promptTertiaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentCardTool._settled ._agentCardToolLive',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Tool History Font Color',
+		de: 'Past tool_update lines revealed by expanding a settled tool row',
+		n: 'promptAgentToolHistoryFontColor',
+		dv: '<promptTertiaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._agentCardToolHistLine',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Status Dot Color',
+		de: 'Filled blinking while running, filled steady when done',
+		n: 'promptStatusDotColor',
+		dv: '#1a1a1a',
+		cp: 'background',
+		sel: '.comp.compPrompt ._statusDot._running, .comp.compPrompt ._statusDot._success',
+		np: true,
+	},
+	{
+		gn: 'Prompt Agent Activity',
+		dn: 'Status Dot Error Border Color',
+		de: 'The hollow dot a failed agent or tool shows',
+		n: 'promptStatusDotErrorBorderColor',
+		dv: '#1a1a1a',
+		cp: 'border-color',
+		sel: '.comp.compPrompt ._statusDot._error',
+		np: true,
+	},
+
+	// ─── Thinking (the orchestrator's own reasoning block) ───
+	{
+		gn: 'Prompt Thinking',
+		dn: 'Thinking Label Font Color',
+		n: 'promptThinkingLabelFontColor',
+		dv: '<promptTertiaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._thinkingLabel',
+		np: true,
+	},
+	{
+		gn: 'Prompt Thinking',
+		dn: 'Thinking Reasoning Font Color',
+		n: 'promptThinkingReasoningFontColor',
+		dv: '<promptTertiaryFontColor>',
+		cp: 'color',
+		sel: '.comp.compPrompt ._thinkingReasoning',
+		np: true,
+	},
+	{
+		gn: 'Prompt Thinking',
+		dn: 'Thinking Reasoning Border Color',
+		n: 'promptThinkingReasoningBorderColor',
+		dv: '#e2e1db',
+		cp: 'border-left-color',
+		sel: '.comp.compPrompt ._thinkingReasoning',
 		np: true,
 	},
 
