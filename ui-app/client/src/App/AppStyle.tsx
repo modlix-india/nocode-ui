@@ -34,12 +34,18 @@ export function AppStyle() {
 	useEffect(() => {
 		setStyled(prev => styledComponents(usedComponents.names(), prev));
 		return usedComponents.registerGloblalListener(uc =>
-			setStyled(prev => {
-				const next = styledComponents(uc, prev);
-				// Same set means the same render output, so returning `prev`
-				// keeps React from committing a no-op on every component mount.
-				return hasNewNames(prev, next) ? next : prev;
-			}),
+			// `using` is called while another component renders. A setState here, inside that
+			// render, rendered newly emitted style components without ever running their
+			// effects, so lazily themed ones (RadioButton in a filter popup) never inflated.
+			// A microtask runs after that render and still before the browser paints.
+			queueMicrotask(() =>
+				setStyled(prev => {
+					const next = styledComponents(uc, prev);
+					// Same set means the same render output, so returning `prev`
+					// keeps React from committing a no-op on every component mount.
+					return hasNewNames(prev, next) ? next : prev;
+				}),
+			),
 		);
 	}, []);
 

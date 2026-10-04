@@ -107,3 +107,29 @@ describe('values that are not a file', () => {
 		expect(fileSelectorStoredValue(odd, STORE_URL, true, ORIGIN)).toBe(odd);
 	});
 });
+
+describe('fileDeleteUrl', () => {
+	const { fileDeleteUrl } = jest.requireActual('../storedValue');
+
+	it('deletes the path under the client root, for the client the url names', () => {
+		expect(fileDeleteUrl(PATH, 'static')).toBe(
+			'/api/files/static/crumbco/global/favicon.png?clientCode=SYSTEM',
+		);
+	});
+
+	it('reads an absolute url, and drops a resize query', () => {
+		expect(fileDeleteUrl(`${ORIGIN}/${PATH}?height=48&width=48`, 'static')).toBe(
+			'/api/files/static/crumbco/global/favicon.png?clientCode=SYSTEM',
+		);
+	});
+
+	it('prefers the client the component is configured with', () => {
+		expect(fileDeleteUrl(PATH, 'static', 'ACME')).toBe(
+			'/api/files/static/crumbco/global/favicon.png?clientCode=ACME',
+		);
+	});
+
+	it('takes a bare path as one under the client root', () => {
+		expect(fileDeleteUrl('/crumbco//logo.png', 'secured')).toBe('/api/files/secured/crumbco/logo.png');
+	});
+});
