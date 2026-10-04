@@ -1,4 +1,4 @@
-import React, { CSSProperties, useEffect, useRef } from 'react';
+import React, { CSSProperties, useEffect, useLayoutEffect, useRef } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -25,17 +25,21 @@ function setHighlighter(
 	activeTab: any,
 	setHighlighterPosition: React.Dispatch<React.SetStateAction<React.CSSProperties>>,
 ) {
-	const currentTab = tabRefs.current[hover === -1 ? tabs.indexOf(activeTab) : hover];
-	const tabRect = currentTab?.getBoundingClientRect();
-	if (!tabRect) return;
-	const tabsContainer = tabRefs.current[0];
-	if (!tabsContainer || !tabsContainer.parentElement) return;
-	const tabsRect = tabsContainer.parentElement.getBoundingClientRect();
+	const currentTab: HTMLElement | undefined =
+		tabRefs.current[hover === -1 ? tabs.indexOf(activeTab) : hover];
+	// Layout offsets, not getBoundingClientRect: inside a popup that is still scaling in, the
+	// visual rect is transformed and the highlighter came out the wrong size and place.
+	// The tabs container is position:relative, so it is the offset parent.
+	if (!currentTab?.offsetHeight) {
+		// No tab to sit under: hide it rather than leave it where it was last measured.
+		if (!currentTab) setHighlighterPosition({});
+		return;
+	}
 	const hp: CSSProperties = {};
-	hp['left'] = tabRect.left - tabsRect.left + tabsContainer.parentElement.scrollLeft;
-	hp['top'] = tabRect.top - tabsRect.top + tabsContainer.parentElement.scrollTop;
-	hp['width'] = tabsOrientation === '_horizontal' ? tabRect.width : '100%';
-	hp['height'] = tabsOrientation === '_vertical' ? tabRect.height : '100%';
+	hp['left'] = currentTab.offsetLeft;
+	hp['top'] = currentTab.offsetTop;
+	hp['width'] = currentTab.offsetWidth;
+	hp['height'] = tabsOrientation === '_vertical' ? currentTab.offsetHeight : '100%';
 
 	setHighlighterPosition(hp);
 }
@@ -129,6 +133,9 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 	};
 
 	const index = tabs.findIndex((e: string) => e == activeTab);
+	// A bound value that names no tab shows the first tab's content, so the first tab is the
+	// one that looks active too.
+	const shownTab = index == -1 ? tabs[0] : activeTab;
 	const entry = Object.entries(definition.children ?? {})
 		.filter(([k, v]) => !!v)
 		.sort((a: any, b: any) => {
@@ -147,21 +154,28 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 
 	const [highlighterPosition, setHighlighterPosition] = React.useState<CSSProperties>({});
 
-	useEffect(() => {
-		const timeout = setTimeout(() => {
+	useLayoutEffect(() => {
+		const place = () =>
 			setHighlighter(
 				tabsOrientation,
 				tabRefs,
 				hover,
 				tabs,
-				activeTab,
+				shownTab,
 				setHighlighterPosition,
 			);
-		}, 100);
-		return () => clearTimeout(timeout);
+		place();
+		// Tabs change size after mount (icons and fonts load, the popup finishes opening, the
+		// container is resized), so follow the tab list instead of measuring once.
+		const container: HTMLElement | undefined = tabRefs.current.find(e => !!e)?.parentElement;
+		if (!container || typeof ResizeObserver === 'undefined') return;
+		const observer = new ResizeObserver(place);
+		observer.observe(container);
+		tabRefs.current.forEach(e => e && observer.observe(e));
+		return () => observer.disconnect();
 	}, [
 		hover,
-		activeTab,
+		shownTab,
 		tabs,
 		tabRefs,
 		tabsOrientation,
@@ -199,12 +213,12 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 									tabRefs.current[i] = el;
 								}}
 								className={`tabDiv ${tabNameOrientation} ${
-									hover === i || (hover === -1 && activeTab === e)
+									hover === i || (hover === -1 && shownTab === e)
 										? '_active'
 										: ''
 								}`}
 								style={
-									hover === i || activeTab === e
+									hover === i || shownTab === e
 										? (resolvedStylesWithHover.tab ?? {})
 										: (resolvedStyles.tab ?? {})
 								}
@@ -250,7 +264,12 @@ export default function TabsComponent(props: Readonly<ComponentProps>) {
 				)}
 				<div
 					className={`tabHighlighter`}
-					style={{ ...(resolvedStyles.tabHighlighter ?? {}), ...highlighterPosition }}
+					style={{
+						...(resolvedStyles.tabHighlighter ?? {}),
+						...highlighterPosition,
+						// Unmeasured, the highlighter would paint at its full default size.
+						...(highlighterPosition.top === undefined ? { visibility: 'hidden' } : {}),
+					}}
 				>
 					<SubHelperComponent
 						definition={props.definition}

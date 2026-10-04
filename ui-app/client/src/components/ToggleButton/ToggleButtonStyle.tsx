@@ -14,6 +14,7 @@ export default function ToggleButtonStyle({
         transition: all 0.4s ease-in-out;
         align-items: center;
         cursor: pointer;
+        container-type: inline-size;
     }
     
     ${PREFIX} input[type='checkbox'] {
@@ -21,7 +22,8 @@ export default function ToggleButtonStyle({
     }
 
     ${PREFIX} ._knob {
-        transition: all 0.4s ease-in-out;
+        transition: transform 0.4s ease-in-out, background-color 0.4s ease-in-out, color 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out;
         position: absolute;
         left: 0%;
     }
@@ -37,20 +39,25 @@ export default function ToggleButtonStyle({
         justify-content: center;
     }
 
+    /* The knob and the on-track label slide with transform alone. Animating left together
+       with transform split the motion across threads: a busy main thread (a table
+       re-rendering on toggle) froze left while the compositor ran transform, and the knob
+       hung outside the track. 100cqw is the track's own width (the label is the container).
+       Margins (the theme's on/off knob inset) switch at once rather than transition, or a
+       blocked main thread would leave the knob pressed against the far edge until it frees. */
     ${PREFIX} ._toggleButtonLabel._ontrack {
-        transition: all 0.4s ease-in-out;
+        transition: transform 0.4s ease-in-out, background-color 0.4s ease-in-out, color 0.4s ease-in-out,
+            box-shadow 0.4s ease-in-out;
         position: absolute;
-        left: 100%;
-        transform: translateX(-100%);
+        left: 0%;
+        transform: translateX(calc(100cqw - 100%));
     }
     ${PREFIX}._on ._toggleButtonLabel._ontrack {
-        left: 0%;
         transform: translateX(0%);
     }
 
     ${PREFIX}._on ._knob{
-        left: 100%;
-        transform: translateX(-100%);
+        transform: translateX(calc(100cqw - 100%));
     }
 
     ${PREFIX} ._toggleIcon{

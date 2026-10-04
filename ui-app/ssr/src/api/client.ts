@@ -210,6 +210,8 @@ export interface ThemeEntry {
 	/** Style document loaded only while this theme is active. Optional. */
 	style?: string;
 	order?: number;
+	/** Only a page can name it (`properties.theme`); never the default or a stored choice. */
+	pageOnly?: boolean;
 }
 
 export interface AnalyticsConfig {
@@ -391,14 +393,33 @@ export function resolveThemeName(
 	const themes = application?.properties?.themes;
 	if (!themes) return undefined;
 
-	const entries = Object.values(themes)
+	const listed = Object.values(themes)
 		.filter((e) => e?.name)
 		.sort((a, b) => Number(a.order ?? 0) - Number(b.order ?? 0));
+	// Page-only themes are never a visitor's theme (see ThemeEntry.pageOnly).
+	const chosen = listed.filter((e) => !e.pageOnly);
+	const entries = chosen.length ? chosen : listed;
 
 	if (!entries.length) return undefined;
 	if (requested && entries.some((e) => e.name === requested)) return requested;
 
 	return entries[0].name;
+}
+
+/**
+ * The theme a page names in `properties.theme`, when the app lists it; undefined
+ * to follow the visitor's choice. Must agree with `pageThemeName` in the client's
+ * themeSelection.ts, or the client would refetch the theme SSR rendered with.
+ */
+export function pageThemeName(
+	application: ApplicationDefinition | null,
+	page: PageDefinition | null
+): string | undefined {
+	const name = (page as any)?.properties?.theme;
+	const themes = application?.properties?.themes;
+	return typeof name === 'string' && themes && Object.values(themes).some((e) => e?.name === name)
+		? name
+		: undefined;
 }
 
 /**
@@ -441,11 +462,21 @@ export async function fetchAllPageData(
 	}
 
 	// Now fetch page and theme in parallel
-	const themeName = resolveThemeName(application, requestedTheme);
-	const [page, theme] = await Promise.all([
+	let themeName = resolveThemeName(application, requestedTheme);
+	let [page, theme] = await Promise.all([
 		fetchPage(actualPageName, options),
 		fetchTheme(options, themeName),
 	]);
+
+	// A page may name its own theme (`properties.theme`), which beats the visitor's
+	// choice for that page only. Same rule as `pageThemeName` in the client's
+	// themeSelection.ts: honoured only when the app lists it. Costs a second theme
+	// fetch only on such a page, and only when it differs from the visitor's.
+	const pageTheme = pageThemeName(application, page);
+	if (pageTheme && pageTheme !== themeName) {
+		themeName = pageTheme;
+		theme = await fetchTheme(options, themeName);
+	}
 
 	logger.debug('Fetched page data', {
 		requestedPage: pageName,

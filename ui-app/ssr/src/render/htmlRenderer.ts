@@ -672,6 +672,10 @@ function generateHtml(
 	const application = data?.application || null;
 	const page = data?.page || null;
 	const theme = data?.theme || null;
+	// The theme this document wears, for the app's `mlxThemeGround` code part: its
+	// rules paint `html` by this mark, so a page that names its own theme never
+	// shows the visitor's theme ground. The client keeps it current after that.
+	const themeAttr = data?.themeName ? ` data-mlx-theme="${escapeHtml(data.themeName)}"` : '';
 
 	// Get page title
 	const pageTitle =
@@ -758,7 +762,7 @@ function generateHtml(
 	].join('\n\t\t');
 
 	return `<!DOCTYPE html>
-<html lang="en"${draftAttr}>
+<html lang="en"${draftAttr}${themeAttr}>
 	<head>
 		${beforeHeadParts ? `${beforeHeadParts}\n\t\t` : ''}${metaTags}
 		<title>${escapeHtml(pageTitle)}</title>

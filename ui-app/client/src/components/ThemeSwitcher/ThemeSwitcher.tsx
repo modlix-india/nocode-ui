@@ -8,7 +8,7 @@ import {
 import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { selectTheme } from '../../util/selectTheme';
-import { ThemeEntry, themeEntries } from '../../util/themeSelection';
+import { ThemeEntry, visitorThemeEntries } from '../../util/themeSelection';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import Portal from '../Portal';
@@ -89,7 +89,8 @@ function ThemeSwitcher(props: Readonly<ComponentProps>) {
 		[],
 	);
 
-	const themes = useMemo(() => themeEntries(application), [application]);
+	// Page-only themes are never offered: a page names them, a visitor does not pick them.
+	const themes = useMemo(() => visitorThemeEntries(application), [application]);
 
 	// Layout effect, not an effect: the panel is portalled to the end of the body,
 	// so an unpositioned fixed box paints at the origin for a frame before the

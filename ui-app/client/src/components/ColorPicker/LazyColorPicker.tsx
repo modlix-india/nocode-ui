@@ -25,6 +25,18 @@ import {
 	RGBA,
 } from '../util/colorUtil';
 
+/**
+ * The panel's own style, with its gap to the input moved to the side the input is on:
+ * a panel opened above keeps the space a page gave it as a top margin below it instead.
+ */
+function dropDownContainerStyle(
+	style: React.CSSProperties | undefined,
+	atBottom: boolean,
+): React.CSSProperties {
+	if (!atBottom || !style?.marginTop) return style ?? {};
+	return { ...style, marginTop: 0, marginBottom: style.marginTop };
+}
+
 function getEmptyValue(emptyValue: string | undefined): string | null | undefined {
 	if (emptyValue === 'ENMPTYSTRING') return '';
 	if (emptyValue === 'NULL') return null;
@@ -116,6 +128,8 @@ export default function ColorPickerComponent(props: Readonly<ComponentProps>) {
 	}, [bindingPathPath]);
 
 	const [mouseIsInside, setMouseIsInside] = useState(false);
+	// Opens above the input when there is no room below it, as Dropdown does.
+	const [isAtBottom, setIsAtBottom] = useState(false);
 
 	const handleClose = useCallback(() => {
 		if (!showDropdown) return;
@@ -169,8 +183,15 @@ export default function ColorPickerComponent(props: Readonly<ComponentProps>) {
 	if (showDropdown) {
 		dropdownBody = (
 			<div
-				className="_dropdownContainer _colorPickerBody"
-				style={computedStyles.dropDownContainer ?? {}}
+				className={`_dropdownContainer _colorPickerBody ${isAtBottom ? '_atBottom' : ''}`}
+				style={dropDownContainerStyle(computedStyles.dropDownContainer, isAtBottom)}
+				ref={element => {
+					if (!element) return;
+					const parentRect = element.parentElement?.getBoundingClientRect();
+					if (!parentRect) return;
+					const height = element.getBoundingClientRect().height;
+					setIsAtBottom(parentRect.bottom + height > window.innerHeight);
+				}}
 				onMouseLeave={() => {
 					if (closeOnMouseLeave) handleClose();
 					else setMouseIsInside(false);

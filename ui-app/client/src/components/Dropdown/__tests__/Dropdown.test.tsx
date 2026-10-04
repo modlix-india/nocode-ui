@@ -384,3 +384,136 @@ describe('keyboard navigation', () => {
 		expect(hoveredLabels()).toEqual(['Fincity']);
 	});
 });
+
+// ── the label of a selection the loaded data does not contain ────────────────
+
+describe('label of a selection outside the data', () => {
+	/** A server search answers with a list that no longer holds the selected row. */
+	function serverAnswers(rows: any[]) {
+		properties = { ...properties, data: rows };
+		render();
+	}
+
+	function pick(label: string) {
+		openPanel();
+		const option = Array.from(document.querySelectorAll('._dropdownItem')).find(
+			e => e.textContent?.trim() === label,
+		);
+		if (!option) throw new Error(`no option ${label}`);
+		act(() => {
+			option.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+		});
+	}
+
+	it('shows the label of a selection in the data', () => {
+		storeValues.set(SELECTION_PATH, 'FIN');
+		render();
+		expect(controlInput().value).toBe('Fincity');
+	});
+
+	/** Reported: select, then search for something else; the box went blank. */
+	it('keeps the label after a search drops the selected row', () => {
+		render();
+		pick('Fincity');
+		expect(storeValues.get(SELECTION_PATH)).toBe('FIN');
+		expect(controlInput().value).toBe('Fincity');
+
+		serverAnswers([{ code: 'RAJAA', name: 'RajaAvinash' }]);
+		expect(controlInput().value).toBe('Fincity');
+	});
+
+	it('keeps the label when the page reloads the list without the row', () => {
+		storeValues.set(SELECTION_PATH, 'FIN');
+		render();
+		serverAnswers([CLIENTS[0]]);
+		expect(controlInput().value).toBe('Fincity');
+	});
+
+	it('follows a new label for the same id when the data carries one', () => {
+		storeValues.set(SELECTION_PATH, 'FIN');
+		render();
+		serverAnswers([{ code: 'FIN', name: 'Fincity Renamed' }]);
+		expect(controlInput().value).toBe('Fincity Renamed');
+	});
+
+	/** Reported: an id bound before its row is in the first page has no label at all. */
+	it('is blank for an unknown id without selectedData', () => {
+		storeValues.set(SELECTION_PATH, 'ZZZ');
+		render();
+		expect(controlInput().value).toBe('');
+	});
+
+	it('uses selectedData, given as a single object, for an id outside the data', () => {
+		storeValues.set(SELECTION_PATH, 'ZZZ');
+		properties = serverSearchedProperties({ selectedData: { code: 'ZZZ', name: 'Zebra' } });
+		render();
+		expect(controlInput().value).toBe('Zebra');
+	});
+
+	it('uses selectedData given as a list', () => {
+		storeValues.set(SELECTION_PATH, 'ZZZ');
+		properties = serverSearchedProperties({
+			selectedData: [{ code: 'ZZZ', name: 'Zebra' }],
+		});
+		render();
+		expect(controlInput().value).toBe('Zebra');
+	});
+
+	it('does not add selectedData to the options shown', () => {
+		storeValues.set(SELECTION_PATH, 'ZZZ');
+		properties = serverSearchedProperties({ selectedData: { code: 'ZZZ', name: 'Zebra' } });
+		render();
+		openPanel();
+		expect(optionLabels()).toEqual(['CLIENT A', 'Fincity', 'RajaAvinash']);
+	});
+
+	it('forgets the old label once the selection changes', () => {
+		storeValues.set(SELECTION_PATH, 'FIN');
+		render();
+		act(() => listeners.get(SELECTION_PATH)?.(SELECTION_PATH, 'ZZZ'));
+		expect(controlInput().value).toBe('');
+	});
+
+	it('names every multi-selected value, including ones outside the data', () => {
+		storeValues.set(SELECTION_PATH, ['FIN', 'ZZZ']);
+		properties = serverSearchedProperties({
+			isMultiSelect: true,
+			showMultipleSelectedValues: true,
+			selectedData: [{ code: 'ZZZ', name: 'Zebra' }],
+		});
+		render();
+		expect(controlInput().value).toBe('Fincity, Zebra');
+	});
+
+	/** Object-shaped data selected by INDEX stores the map key, so selectedData keeps it. */
+	it('uses selectedData in an OBJECT_OF_OBJECTS dropdown selected by INDEX', () => {
+		storeValues.set(SELECTION_PATH, 'ZZZ');
+		properties = serverSearchedProperties({
+			data: { CLIA: CLIENTS[0], FIN: CLIENTS[1] },
+			datatype: 'OBJECT_OF_OBJECTS',
+			uniqueKeyType: 'INDEX',
+			selectionType: 'INDEX',
+			selectedData: { ZZZ: { code: 'ZZZ', name: 'Zebra' } },
+		});
+		render();
+		expect(controlInput().value).toBe('Zebra');
+	});
+
+	it('uses a bare row as selectedData in an OBJECT_OF_OBJECTS dropdown selected by KEY', () => {
+		storeValues.set(SELECTION_PATH, 'ZZZ');
+		properties = serverSearchedProperties({
+			data: { CLIA: CLIENTS[0], FIN: CLIENTS[1] },
+			datatype: 'OBJECT_OF_OBJECTS',
+			selectedData: { code: 'ZZZ', name: 'Zebra' },
+		});
+		render();
+		expect(controlInput().value).toBe('Zebra');
+	});
+
+	it('counts every multi-selected value, including ones outside the data', () => {
+		storeValues.set(SELECTION_PATH, ['FIN', 'ZZZ']);
+		properties = serverSearchedProperties({ isMultiSelect: true });
+		render();
+		expect(controlInput().value).toBe('2 Items  selected');
+	});
+});

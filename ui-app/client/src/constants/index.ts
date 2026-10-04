@@ -25,6 +25,12 @@ export const STORE_PATH_STYLE_PATH = 'Store.style';
  * .properties.themes` they came from, so a switcher can mark the active one.
  */
 export const STORE_PATH_SELECTED_THEME = 'Store.selectedTheme';
+/**
+ * The visitor's own theme: their stored choice, else the app default. Differs from
+ * `Store.selectedTheme` only while a page that names its own theme
+ * (`properties.theme`) is showing, and is what the app returns to after it.
+ */
+export const STORE_PATH_USER_THEME = 'Store.userTheme';
 export const STORE_PATH_APP = 'Store.application';
 export const STORE_PATH_MESSAGES = 'Store.messages';
 export const STORE_PATH_SHORTCUT_CHOOSER = 'Store.shortcutChooser';

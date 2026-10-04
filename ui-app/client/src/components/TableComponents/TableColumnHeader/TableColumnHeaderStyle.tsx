@@ -65,8 +65,35 @@ export default function TableColumnStyle({
 			position: relative;
 		}
 
+		.comp.compTable ._popupMenu {
+			text-transform: none;
+			letter-spacing: normal;
+			text-align: left;
+			min-width: 220px;
+		}
+
+		.comp.compTable ._popupMenu ._popupMenuItem {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			white-space: nowrap;
+		}
+
+		.comp.compTable ._popupMenu ._popupMenuIcon {
+			flex: none;
+		}
+
+		.comp.compTable ._popupMenu ._column ._popupMenuItemLabel {
+			flex: 1;
+		}
+
+		.comp.compTable ._popupMenu ._popupMenuSectionLabel {
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+		}
+
 		${PREFIX} ._rightIcon {
-			position: relative;			
+			position: relative;
 			padding-left: 5px;
 			padding-right: 5px;
 		}

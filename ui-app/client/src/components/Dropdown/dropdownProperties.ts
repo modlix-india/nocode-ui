@@ -120,6 +120,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	},
 
 	{
+		name: 'selectedData',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Selected option data',
+		description:
+			'The option(s) of the current selection: the same shape as the dropdown data, a single item of it, or an array of single items. Used to show the label of a selection that is not in the loaded data, such as an id outside the first page fetched or one a search has left out. For an object data type with Index selection, pass the item under its key ({ key: item }).',
+		group: ComponentPropertyGroup.DATA,
+	},
+
+	{
 		name: 'moveSelectedToTop',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Move Selected to Top',
