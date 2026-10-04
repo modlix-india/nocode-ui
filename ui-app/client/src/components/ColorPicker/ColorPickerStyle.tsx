@@ -223,6 +223,12 @@ export default function ColorPickerStyle({
 			cursor: default;
 		}
 
+		${PREFIX} ._dropdownContainer._colorPickerBody._atBottom {
+			top: auto;
+			bottom: 100%;
+			margin: 0 0 4px 0;
+		}
+
 		${PREFIX} ._dropdownContainer._colorPickerBody ._combineEditors {
 			padding: 0;
 			gap: 8px;

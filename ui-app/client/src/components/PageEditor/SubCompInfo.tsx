@@ -3086,8 +3086,8 @@ export const SubComponentDefinitions: Record<
 	[Popup.name]: [
 		{
 			name: '',
-			displayName: 'Component',
-			description: 'Component',
+			displayName: 'Backdrop',
+			description: 'Backdrop',
 			mainComponent: true,
 			icon: (
 				<IconHelper viewBox="0 0 30 26">
@@ -3103,6 +3103,12 @@ export const SubComponentDefinitions: Record<
 					/>
 				</IconHelper>
 			),
+		},
+		{
+			name: 'root',
+			displayName: 'Root',
+			description: 'Root',
+			icon: 'fa-solid fa-box',
 		},
 		{
 			name: 'modal',

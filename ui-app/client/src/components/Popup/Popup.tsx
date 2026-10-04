@@ -151,7 +151,8 @@ function Popup(props: Readonly<ComponentProps>) {
 	if (isActive || (globalThis.designMode == 'PAGE' && showInDesign === true)) {
 		return (
 			<Portal>
-				<div className="comp compPopup">
+				<div className="comp compPopup" style={resolvedStyles.root ?? {}}>
+					<SubHelperComponent definition={props.definition} subComponentName="root" />
 					<div
 						className={`backdrop ${modalPosition}`}
 						onClick={handleCloseOnOutsideClick}

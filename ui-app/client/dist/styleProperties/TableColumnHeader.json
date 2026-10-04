@@ -590,12 +590,132 @@
 		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableHeaderColumn",
 		"np": true
 	},
-{
+	{
 		"gn": "Font",
 		"dn": "Text Transform",
 		"n": "tableColumnHeaderTextTransform<tableDesign><colorScheme>",
 		"cp": "text-transform",
 		"sel": ".comp.compTable<tableDesign><colorScheme> .comp.compTableHeaderColumn",
 		"np": true
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._popupMenu ._popupMenuIcon",
+		"np": true,
+		"spv": {
+			"_design1-": "<fontColorTwo>",
+			"_design2-": "<fontColorTwo>",
+			"_design3-": "<fontColorTwo>",
+			"_design4-": "<fontColorTwo>",
+			"_design5-": "<fontColorTwo>",
+			"_design6-": "<fontColorTwo>",
+			"_design7-": "<fontColorTwo>",
+			"_design8-": "<fontColorTwo>",
+			"_design9-": "<fontColorTwo>",
+			"_design0-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color PopupMenuIcon",
+		"n": "tableColumnHeaderColorPopupMenuIcon<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._popupMenu ._popupMenuItem._column[aria-checked=\"true\"] ._popupMenuIcon",
+		"np": true,
+		"spv": {
+			"_design1-": "<fontColorOne>",
+			"_design2-": "<fontColorOne>",
+			"_design3-": "<fontColorOne>",
+			"_design4-": "<fontColorOne>",
+			"_design5-": "<fontColorOne>",
+			"_design6-": "<fontColorOne>",
+			"_design7-": "<fontColorOne>",
+			"_design8-": "<fontColorOne>",
+			"_design9-": "<fontColorOne>",
+			"_design0-": "<fontColorOne>"
+		},
+		"gn": "Color",
+		"dn": "Color PopupMenuIcon Shown Column",
+		"n": "tableColumnHeaderColorPopupMenuIconShown<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._popupMenu ._popupMenuItem._hidden",
+		"np": true,
+		"spv": {
+			"_design1-": "<fontColorTwo>",
+			"_design2-": "<fontColorTwo>",
+			"_design3-": "<fontColorTwo>",
+			"_design4-": "<fontColorTwo>",
+			"_design5-": "<fontColorTwo>",
+			"_design6-": "<fontColorTwo>",
+			"_design7-": "<fontColorTwo>",
+			"_design8-": "<fontColorTwo>",
+			"_design9-": "<fontColorTwo>",
+			"_design0-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color PopupMenuItem Hidden Column",
+		"n": "tableColumnHeaderColorPopupMenuItemHidden<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "font",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._popupMenu ._popupMenuSectionLabel",
+		"np": true,
+		"spv": {
+			"_design1-": "<octonaryFont>",
+			"_design2-": "<octonaryFont>",
+			"_design3-": "<octonaryFont>",
+			"_design4-": "<octonaryFont>",
+			"_design5-": "<octonaryFont>",
+			"_design6-": "<octonaryFont>",
+			"_design7-": "<octonaryFont>",
+			"_design8-": "<octonaryFont>",
+			"_design9-": "<octonaryFont>",
+			"_design0-": "<octonaryFont>"
+		},
+		"gn": "Font",
+		"dn": "Font PopupMenuSectionLabel",
+		"n": "tableColumnHeaderFontPopupMenuSectionLabel<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "color",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._popupMenu ._popupMenuSectionLabel",
+		"np": true,
+		"spv": {
+			"_design1-": "<fontColorTwo>",
+			"_design2-": "<fontColorTwo>",
+			"_design3-": "<fontColorTwo>",
+			"_design4-": "<fontColorTwo>",
+			"_design5-": "<fontColorTwo>",
+			"_design6-": "<fontColorTwo>",
+			"_design7-": "<fontColorTwo>",
+			"_design8-": "<fontColorTwo>",
+			"_design9-": "<fontColorTwo>",
+			"_design0-": "<fontColorTwo>"
+		},
+		"gn": "Color",
+		"dn": "Color PopupMenuSectionLabel",
+		"n": "tableColumnHeaderColorPopupMenuSectionLabel<tableDesign><colorScheme>"
+	},
+	{
+		"cp": "padding",
+		"sel": ".comp.compTable<tableDesign><colorScheme> ._popupMenu ._popupMenuSectionLabel",
+		"np": true,
+		"spv": {
+			"_design1-": "12px 20px 4px 20px",
+			"_design2-": "12px 20px 4px 20px",
+			"_design3-": "12px 20px 4px 20px",
+			"_design4-": "12px 20px 4px 20px",
+			"_design5-": "12px 20px 4px 20px",
+			"_design6-": "12px 20px 4px 20px",
+			"_design7-": "12px 20px 4px 20px",
+			"_design8-": "12px 20px 4px 20px",
+			"_design9-": "12px 20px 4px 20px",
+			"_design0-": "12px 20px 4px 20px"
+		},
+		"gn": "Padding",
+		"dn": "Padding PopupMenuSectionLabel",
+		"n": "tableColumnHeaderPaddingPopupMenuSectionLabel<tableDesign><colorScheme>"
 	}
 ]

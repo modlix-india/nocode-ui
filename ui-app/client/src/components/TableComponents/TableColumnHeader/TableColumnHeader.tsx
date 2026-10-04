@@ -17,6 +17,47 @@ import { runEvent } from '../../util/runEvent';
 import useDefinition from '../../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './tableCloumnHeaderProperties';
 
+// Line icons for the header menu, drawn inline (like the default sort icon) so the
+// menu does not depend on an icon pack the app may not load. 16px, currentColor.
+const MENU_ICON_PATHS: Record<string, string[]> = {
+	sortAscending: ['M8 13V3', 'M4 7l4-4 4 4'],
+	sortDescending: ['M8 3v10', 'M4 9l4 4 4-4'],
+	clearSorting: ['M4 4l8 8', 'M12 4l-8 8'],
+	resetOrder: ['M5 13V3', 'M2 6l3-3 3 3', 'M11 3v10', 'M8 10l3 3 3-3'],
+	hideColumn: [
+		'M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z',
+		'M2.5 2.5l11 11',
+	],
+	resetVisibility: ['M3 8a5 5 0 1 0 1.5-3.5', 'M3 3v3h3'],
+	columnShown: [
+		'M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z',
+		'M8 6a2 2 0 1 0 0 4a2 2 0 1 0 0-4z',
+	],
+	columnHidden: [
+		'M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8s-2.4 4.5-6.5 4.5S1.5 8 1.5 8z',
+		'M2.5 2.5l11 11',
+	],
+};
+
+function MenuIcon({ name }: Readonly<{ name: string }>) {
+	return (
+		<svg
+			className={`_popupMenuIcon _${name}`}
+			width="16"
+			height="16"
+			viewBox="0 0 16 16"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.4"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+			aria-hidden="true"
+		>
+			{MENU_ICON_PATHS[name]?.map(d => <path key={d} d={d} />)}
+		</svg>
+	);
+}
+
 interface SortObject {
 	[key: string]: 'ASC' | 'DESC';
 }
@@ -319,7 +360,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			sortItems = (
 				<>
 					<div
-						className="_popupMenuItem"
+						className="_popupMenuItem _action"
 						role="menuitem"
 						tabIndex={0}
 						onKeyUp={e =>
@@ -347,10 +388,11 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 							setShowMenuLocation(undefined);
 						}}
 					>
-						Sort Ascending
+						<MenuIcon name="sortAscending" />
+						<span className="_popupMenuItemLabel">Sort Ascending</span>
 					</div>
 					<div
-						className="_popupMenuItem"
+						className="_popupMenuItem _action"
 						role="menuitem"
 						tabIndex={0}
 						onKeyUp={e =>
@@ -378,10 +420,11 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 							setShowMenuLocation(undefined);
 						}}
 					>
-						Sort Descending
+						<MenuIcon name="sortDescending" />
+						<span className="_popupMenuItemLabel">Sort Descending</span>
 					</div>
 					<div
-						className="_popupMenuItem"
+						className="_popupMenuItem _action"
 						role="menuitem"
 						tabIndex={0}
 						onKeyUp={e =>
@@ -409,7 +452,8 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 							setShowMenuLocation(undefined);
 						}}
 					>
-						Clear Sorting
+						<MenuIcon name="clearSorting" />
+						<span className="_popupMenuItemLabel">Clear Sorting</span>
 					</div>
 					<div className="_popupMenuItemSeperator" />
 				</>
@@ -421,7 +465,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 			resetColoumnOrder = (
 				<>
 					<div
-						className="_popupMenuItem"
+						className="_popupMenuItem _action"
 						role="menuitem"
 						tabIndex={0}
 						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
@@ -434,7 +478,8 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 							)
 						}
 					>
-						Reset Column Order
+						<MenuIcon name="resetOrder" />
+						<span className="_popupMenuItemLabel">Reset Column Order</span>
 					</div>
 					<div className="_popupMenuItemSeperator" />
 				</>
@@ -466,7 +511,7 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 				>
 					{sortItems}
 					<div
-						className="_popupMenuItem"
+						className="_popupMenuItem _action"
 						role="menuitem"
 						tabIndex={0}
 						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
@@ -478,10 +523,11 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 							)
 						}
 					>
-						Hide Column
+						<MenuIcon name="hideColumn" />
+						<span className="_popupMenuItemLabel">Hide Column</span>
 					</div>
 					<div
-						className="_popupMenuItem"
+						className="_popupMenuItem _action"
 						role="menuitem"
 						tabIndex={0}
 						onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
@@ -494,28 +540,36 @@ export default function TableColumnHeaderComponent(props: Readonly<ComponentProp
 							)
 						}
 					>
-						Reset Column Visibility
+						<MenuIcon name="resetVisibility" />
+						<span className="_popupMenuItemLabel">Reset Column Visibility</span>
 					</div>
 					<div className="_popupMenuItemSeperator" />
 					{resetColoumnOrder}
-					{context.table.columnNames.map(({ key, label }: any) => {
+					<div className="_popupMenuSectionLabel">Columns</div>
+					{context.table.columnNames.map(({ key, label, hideIfNotPersonalized }: any) => {
 						if (!label) return null;
+						// A column that is hidden unless personalized is SHOWN when its flag is set.
+						const flag = !!personalizedObject?.hiddenFields?.[key];
+						const hidden = hideIfNotPersonalized ? !flag : flag;
 						return (
 							<div
 								key={key}
-								className="_popupMenuItem"
-								role="menuitem"
+								className={`_popupMenuItem _column${hidden ? ' _hidden' : ''}`}
+								role="menuitemcheckbox"
+								aria-checked={!hidden}
+								title={hidden ? 'Hidden: click to show' : 'Shown: click to hide'}
 								tabIndex={0}
 								onKeyDown={e => e.key === 'Enter' && e.currentTarget.click()}
 								onClick={() =>
 									setData(
 										`${context.table.personalizationBindingPath}.hiddenFields.${key}`,
-										!personalizedObject?.hiddenFields?.[key],
+										!flag,
 										pageExtractor.getPageName(),
 									)
 								}
 							>
-								{label}
+								<span className="_popupMenuItemLabel">{label}</span>
+								<MenuIcon name={hidden ? 'columnHidden' : 'columnShown'} />
 							</div>
 						);
 					})}
