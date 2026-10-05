@@ -15,6 +15,7 @@ import {
 import { PageOperations } from '../../functions/PageOperations';
 import { startDragShield } from '../../../../functions/utils';
 import { DraftMode } from '../../../Prompt/draftMode';
+import { usedComponents } from '../../../../App/usedComponents';
 
 /**
  * The AI panel, docked in the editor chrome.
@@ -234,6 +235,11 @@ export default function DnDSidekickBar({
 
 	const Prompt = ComponentDefinitions.get('Prompt')?.component;
 	if (!Prompt) return <></>;
+
+	// AppStyle only emits the CSS of components that Children.tsx has seen render.
+	// This Prompt is rendered directly, never through Children, so without this it
+	// comes up with no PromptCss at all: bare buttons and a monospace textarea.
+	usedComponents.using('Prompt');
 
 	const promptProps: ComponentProps & { onObjectSaved: (d: any) => void } = {
 		definition,
