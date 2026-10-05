@@ -97,9 +97,12 @@ function Menu(props: Readonly<ComponentProps>) {
 					// /assets, `campaignProductMap` to catch /campaignProductMapping.
 					// Making anchoring automatic would quietly unlight all of those, so
 					// the only menus that change are the ones that ask to.
+					// The segment can sit anywhere: on an app's own domain the path is
+					// /ads, but under /<app>/<client>/page/ads it is the last segment.
+					// Comparing the whole path only ever worked on the first.
 					if (raw.endsWith('$')) {
 						const seg = `/${raw.slice(0, -1)}`;
-						return lowerPath === seg || lowerPath.startsWith(`${seg}/`);
+						return lowerPath.endsWith(seg) || lowerPath.indexOf(`${seg}/`) >= 0;
 					}
 					return lowerPath.indexOf(`/${raw}`) >= 0;
 				});
