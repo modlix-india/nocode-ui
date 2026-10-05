@@ -23,7 +23,6 @@ import pageHistory from './pageHistory';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
 import { styleProperties, styleDefaults } from './pageStyleProperties';
 
-
 function PageComponent(props: Readonly<ComponentProps>) {
 	const {
 		context,
@@ -89,9 +88,21 @@ function PageComponent(props: Readonly<ComponentProps>) {
 
 				pageHistory[name] = v;
 
+				const isRunning = !!getDataFromPath(
+					`Store.functionExecutions.${pageName}.pageOnLoad.isRunning`,
+					[],
+				);
+
 				if (!firstTime) {
 					makeCall = false;
-					if (loadStrategy !== 'default' || !sameAsExisting) {
+					// The same url firing again while its onLoad is still running is the same
+					// visit (a re-mount, as in the editor preview), not a reload. Clearing the
+					// store here would drop what the running onLoad already set, and the guard
+					// below would not run it again.
+					if (
+						(loadStrategy !== 'default' && !(sameAsExisting && isRunning)) ||
+						!sameAsExisting
+					) {
 						setData(`${STORE_PREFIX}.pageData.${pageName}`, {});
 						makeCall = true;
 					}
@@ -102,12 +113,7 @@ function PageComponent(props: Readonly<ComponentProps>) {
 					!isNullValue(onLoadEvent) &&
 					!isNullValue(eventFunctions[onLoadEvent!])
 				) {
-					if (
-						!getDataFromPath(
-							`Store.functionExecutions.${pageName}.pageOnLoad.isRunning`,
-							[],
-						)
-					) {
+					if (!isRunning) {
 						(async () =>
 							await runEvent(
 								eventFunctions[onLoadEvent!],
