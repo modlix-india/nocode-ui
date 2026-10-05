@@ -294,7 +294,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 								0,
 								0,
 							);
-							const validated = validateWithProps(testDate, validationProps);
+							const validated = validateWithProps(testDate, validationProps, 'hour');
 							if (validated) isValidAm = true;
 						}
 					}
@@ -314,7 +314,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 								0,
 								0,
 							);
-							const validated = validateWithProps(testDate, validationProps);
+							const validated = validateWithProps(testDate, validationProps, 'hour');
 							if (validated) isValidPm = true;
 						}
 					}
@@ -360,7 +360,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 						0,
 						0,
 					);
-					const validated = validateWithProps(testDate, validationProps);
+					const validated = validateWithProps(testDate, validationProps, 'hour');
 					if (validated) {
 						hours.push({
 							value: hour,
@@ -446,7 +446,7 @@ export function useMinuteOptions(params: UseMinuteOptionsParams): DropdownOption
 					minute,
 					0,
 				);
-				const validated = validateWithProps(testDate, validationProps);
+				const validated = validateWithProps(testDate, validationProps, 'minute');
 				if (validated) {
 					minutes.push({
 						value: minute,
@@ -541,7 +541,7 @@ export function useSecondOptions(params: UseSecondOptionsParams): DropdownOption
 					selectedMinute,
 					second,
 				);
-				const validated = validateWithProps(testDate, validationProps);
+				const validated = validateWithProps(testDate, validationProps, 'second');
 				if (validated) {
 					seconds.push({
 						value: second,

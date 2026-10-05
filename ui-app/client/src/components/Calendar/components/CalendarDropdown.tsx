@@ -278,7 +278,13 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 				newDate = new Date(year, month - 1, day, finalHour, finalMinute, finalSecond);
 			}
 
-			const validated = validateWithProps(newDate, validationProps);
+			// A picked time is checked at the minute options' precision, so disablePast
+			// refuses a time today that has already gone; a date alone is checked by day.
+			const validated = validateWithProps(
+				newDate,
+				validationProps,
+				!needsDefaultTime && hour !== undefined ? 'minute' : 'day',
+			);
 
 			if (validated) {
 				const displayFormatted = toFormat(newDate, 'Date', displayDateFormat);
