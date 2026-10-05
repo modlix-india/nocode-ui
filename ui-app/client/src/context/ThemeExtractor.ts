@@ -24,6 +24,8 @@ const ORDER_OF_RESOLUTION = [
 	StyleResolution.MOBILE_POTRAIT_SCREEN_ONLY,
 ].reverse();
 
+const NO_THEME = {};
+
 export class ThemeExtractor extends SpecialTokenValueExtractor {
 	private store: any;
 	private defaults: Map<string, string> | undefined = undefined;
@@ -50,13 +52,9 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 	 * Fully resolve a value that may contain `<variable>` references, against
 	 * the live theme first and the component and app defaults behind it.
 	 *
-	 * This exists because `Theme.x` alone is not enough for a consumer that
-	 * needs a real value rather than a CSS string. getValueInternal returns the
-	 * live theme's entry VERBATIM, so a variable whose value is itself
-	 * `<anotherVar>` comes back unresolved: fine when it is about to be written
-	 * into a stylesheet, useless for anything that has to parse it, such as a
-	 * WebGL colour. Resolving against defaults only happens on the fallback
-	 * path, which is the asymmetry this method removes.
+	 * `Theme.x` expressions go through this too (see getValueInternal), so a
+	 * variable whose value is itself `<anotherVar>` resolves the same way for a
+	 * style leaf as for a consumer that has to parse it, such as a WebGL colour.
 	 *
 	 * Returns the input unchanged when there is nothing to resolve, and leaves
 	 * a genuinely unknown variable as the empty string that
@@ -65,13 +63,35 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 	public resolveValue(value: string | undefined): string {
 		if (!value) return '';
 		if (!value.includes('<')) return value;
-		const merged = new Map(this.refreshDefaults());
-		const allTheme = this.store?.theme?.[StyleResolution.ALL] ?? {};
-		for (const [k, v] of Object.entries(allTheme)) merged.set(k, String(v));
-		return processStyleValueWithFunction(value, merged);
+		return processStyleValueWithFunction(value, this.mergedTheme());
 	}
 
+	private merged: { theme: any; time: number; map: Map<string, string> } | undefined;
+
+	// Defaults overlaid with the live theme's ALL entries, rebuilt only when the
+	// theme object or the set of used components changes: Theme.x is evaluated
+	// for every style leaf that names one, so this must not be built per call.
+	private mergedTheme(): Map<string, string> {
+		const defaults = this.refreshDefaults();
+		const allTheme = this.store?.theme?.[StyleResolution.ALL] ?? NO_THEME;
+		const cached = this.merged;
+		if (cached && cached.theme === allTheme && cached.time === this.currentTime)
+			return cached.map;
+		const map = new Map(defaults);
+		for (const [k, v] of Object.entries(allTheme)) map.set(k, String(v));
+		this.merged = { theme: allTheme, time: this.currentTime, map };
+		return map;
+	}
+
+	// A theme entry can itself be a reference (Classic stores backgroundColorThree
+	// as `<colorThree>`). Returned verbatim, that reaches a style leaf as invalid
+	// CSS and the browser drops it without a word, so resolve it here.
 	protected getValueInternal(token: string) {
+		const value = this.getRawValue(token);
+		return typeof value === 'string' && value.includes('<') ? this.resolveValue(value) : value;
+	}
+
+	private getRawValue(token: string) {
 		this.refreshDefaults();
 
 		const allTheme = this.store.theme?.[StyleResolution.ALL] ?? {};
