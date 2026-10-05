@@ -13,6 +13,9 @@ enum Position {
 	RightEnd = 'right-end',
 }
 
+// Gap kept between a horizontally clamped popover and the edge of the viewport.
+const VIEWPORT_EDGE = 8;
+
 export default function getPositions(position: Position, boxRect: DOMRect, popoverRect: DOMRect) {
 	let top = 0;
 	let bottom = 0;
@@ -27,12 +30,6 @@ export default function getPositions(position: Position, boxRect: DOMRect, popov
 	let bodyWidth = document.documentElement.clientWidth;
 
 	if (position.includes('bottom') || position.includes('top')) {
-		let xAsixTipStyle = position.includes('end')
-			? { left: `${boxRect.width * 0.5 + (popoverRect.width - boxRect.width)}px` }
-			: position.includes('start')
-				? { left: `${boxRect.width * 0.5}px` }
-				: { left: `50%` };
-
 		if (position === 'bottom-start' || position === 'top-start') {
 			left = boxRect.x;
 		} else if (position === 'bottom' || position === 'top') {
@@ -40,6 +37,31 @@ export default function getPositions(position: Position, boxRect: DOMRect, popov
 		} else {
 			right = bodyWidth - boxRect.x - boxRect.width;
 		}
+
+		// Keep the panel inside the viewport horizontally. An end-anchored panel grows leftwards
+		// from the trigger's right edge, so a wide panel on a trigger near the right of a phone
+		// screen ran off the left edge (leadzump's notification panel lost its first 50px at
+		// 375px). Slide it back in, and move the tip the other way so it still points at the
+		// trigger.
+		let shift = 0;
+		if (position.includes('end')) {
+			const maxRight = Math.max(0, bodyWidth - popoverRect.width - VIEWPORT_EDGE);
+			if (right > maxRight) {
+				shift = right - maxRight;
+				right = maxRight;
+			}
+		} else {
+			const maxLeft = Math.max(0, bodyWidth - popoverRect.width - VIEWPORT_EDGE);
+			const clamped = Math.min(Math.max(left, Math.min(VIEWPORT_EDGE, maxLeft)), maxLeft);
+			shift = clamped - left;
+			left = clamped;
+		}
+
+		let xAsixTipStyle = position.includes('end')
+			? { left: `${boxRect.width * 0.5 + (popoverRect.width - boxRect.width) - shift}px` }
+			: position.includes('start')
+				? { left: `${boxRect.width * 0.5 - shift}px` }
+				: { left: shift ? `calc(50% - ${shift}px)` : `50%` };
 
 		top = boxRect.y + boxRect.height;
 		bottom = bodyHeight - boxRect.y;
