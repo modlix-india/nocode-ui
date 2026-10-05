@@ -64,3 +64,23 @@ export function fileSelectorStoredValue(
 	if (keepObject && typeof value === 'object') return { ...value, url: absolute };
 	return absolute;
 }
+
+/**
+ * The request that deletes the file a FileSelector holds.
+ *
+ * The value is a file url as the files service hands it out,
+ * `api/files/<type>/file/<client>/<path>`, possibly made absolute by `fullUrl`.
+ * The delete endpoint wants `/api/files/<type>/<path>` with the owning client as
+ * `clientCode`. Prefixing the whole url instead, as this used to, asked for
+ * `/api/files/static/api/files/static/file/...`: the service answered 2xx,
+ * deleted nothing, and the file stayed served while the page showed it gone.
+ *
+ * A value that is already a path under the client root is taken as one.
+ */
+export function fileDeleteUrl(fileUrl: string, resourceType: string, clientCode?: string): string {
+	const bare = fileUrl.replace(/^[a-z]+:\/\/[^/]+/i, '').split('?')[0];
+	const m = /(?:^|\/)api\/files\/(?:static|secured)\/(?:file\/([^/]+)\/)?(.*)$/.exec(bare);
+	const path = (m ? m[2] : bare).replace(/^\/+/, '').replace(/\/{2,}/g, '/');
+	const client = clientCode || m?.[1];
+	return `/api/files/${resourceType}/${path}` + (client ? `?clientCode=${client}` : '');
+}

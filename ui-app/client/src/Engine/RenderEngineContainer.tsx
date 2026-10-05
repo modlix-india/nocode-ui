@@ -17,9 +17,11 @@ import {
 	UrlDetailsExtractor,
 } from '../context/StoreContext';
 import { ComponentProperty, PageDefinition } from '../types/common';
+import { ROOT_LOCATION_HISTORY } from '../components/Children';
 import { processLocation } from '../util/locationProcessor';
 import { processClassesForPageDefinition } from '../util/styleProcessor';
 import getPageDefinition from './pageDefinition';
+import { applyPageTheme, pageThemePending } from '../util/selectTheme';
 import { resolvePageForLocation } from './pageRoute';
 import { isLeavingForBeacon } from '../sso/ssoModule';
 
@@ -498,7 +500,26 @@ export const RenderEngineContainer = () => {
 		);
 	}, [globalThis.designMode, currentPageName]);
 
+	// `properties.theme`: a page may wear a theme of its own (the marketing pages of
+	// an app whose product pages follow the visitor's choice). Leaving such a page
+	// puts the visitor's theme back. Neither is remembered.
+	const [, setPageThemeApplied] = useState(0);
+	const pageTheme = pageDefinition?.properties?.theme;
+	useEffect(() => {
+		if (!pageDefinition || globalThis.designMode === 'THEME_EDITOR') return;
+		let live = true;
+		applyPageTheme(pageDefinition).then(() => live && setPageThemeApplied(n => n + 1));
+		return () => {
+			live = false;
+		};
+	}, [pageDefinition?.name, pageTheme]);
+
 	if (isNullValue(pageDefinition)) return <></>;
+
+	// A page that names its own theme waits for it rather than painting a frame in
+	// the visitor's theme first. The theme editor is left alone: it shows the theme
+	// being edited, whatever the page asks for.
+	if (globalThis.designMode !== 'THEME_EDITOR' && pageThemePending(pageDefinition)) return <></>;
 
 	const Page = PageComponentDefinition.component;
 
@@ -509,7 +530,7 @@ export const RenderEngineContainer = () => {
 	const consentOverlay =
 		askConsent && consentPageDefinition && !globalThis.designMode ? (
 			<Page
-				locationHistory={[]}
+				locationHistory={ROOT_LOCATION_HISTORY}
 				pageDefinition={consentPageDefinition}
 				context={{
 					pageName: consentPageDefinition.name,
@@ -531,7 +552,7 @@ export const RenderEngineContainer = () => {
 			return (
 				<>
 					<Page
-						locationHistory={[]}
+						locationHistory={ROOT_LOCATION_HISTORY}
 						pageDefinition={shellPageDefinition}
 						context={{
 							pageName: GLOBAL_CONTEXT_NAME,
@@ -546,7 +567,7 @@ export const RenderEngineContainer = () => {
 		return (
 			<>
 				<Page
-					locationHistory={[]}
+					locationHistory={ROOT_LOCATION_HISTORY}
 					pageDefinition={pageDefinition}
 					context={{
 						pageName: currentPageName,
@@ -565,7 +586,7 @@ export const RenderEngineContainer = () => {
 		return (
 			<>
 				<Page
-					locationHistory={[]}
+					locationHistory={ROOT_LOCATION_HISTORY}
 					pageDefinition={shellPageDefinition}
 					context={{
 						pageName: GLOBAL_CONTEXT_NAME,

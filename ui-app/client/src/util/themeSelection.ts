@@ -40,6 +40,13 @@ export interface ThemeEntry {
 	/** Style document loaded only while this theme is active. Optional. */
 	style?: string;
 	order?: number;
+	/**
+	 * Only a page can name this theme (`properties.theme`). It is never the app
+	 * default, never offered by a switcher and never taken from a stored choice:
+	 * it exists so some pages (say, the marketing ones) can keep a look of their
+	 * own while the rest follow the visitor.
+	 */
+	pageOnly?: boolean;
 }
 
 const COOKIE_PREFIX = 'mlxTheme_';
@@ -136,6 +143,17 @@ export function themeEntries(application: any): ThemeEntry[] {
 		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 }
 
+/**
+ * The themes a visitor can be in by choice: every entry except the page-only ones.
+ * Falls back to all of them for an app that lists only page-only themes, so such
+ * an app is still themed rather than bare.
+ */
+export function visitorThemeEntries(application: any): ThemeEntry[] {
+	const entries = themeEntries(application);
+	const chosen = entries.filter(e => !e.pageOnly);
+	return chosen.length ? chosen : entries;
+}
+
 export function getThemeEntry(application: any, name: string | undefined): ThemeEntry | undefined {
 	if (!name) return undefined;
 	return themeEntries(application).find(e => e.name === name);
@@ -161,7 +179,7 @@ export function resolveThemeName(
 		cookie,
 	}: { requested?: string; personalized?: string; cookie?: string },
 ): string | undefined {
-	const entries = themeEntries(application);
+	const entries = visitorThemeEntries(application);
 	if (!entries.length) return undefined;
 
 	for (const candidate of [requested, personalized, cookie]) {
@@ -169,6 +187,22 @@ export function resolveThemeName(
 	}
 
 	return entries[0].name;
+}
+
+/**
+ * The theme a page insists on, or undefined to follow the visitor's choice.
+ *
+ * A page may name a theme in `properties.theme`, so one app can keep, say, its
+ * marketing pages in their original look while its product pages follow the
+ * visitor's light or dark choice. Only a theme in the app's list counts; any other
+ * name is ignored rather than failing, the same way a stale stored choice is.
+ *
+ * Forcing a theme never touches the cookie or the personalization: those hold what
+ * the visitor picked, and the app returns to it on the next page that names none.
+ */
+export function pageThemeName(application: any, pageDefinition: any): string | undefined {
+	const name = pageDefinition?.properties?.theme;
+	return typeof name === 'string' && getThemeEntry(application, name) ? name : undefined;
 }
 
 /**
@@ -207,6 +241,23 @@ function styleHref(currentHref: string | null | undefined, name: string | undefi
 }
 
 /**
+ * Mark the theme the app is wearing on `<html>` as `data-mlx-theme`.
+ *
+ * An app's `mlxThemeGround` code part paints `html` for the visitor's theme
+ * before any CSS arrives, with rules keyed on this attribute. Its first paint is
+ * an inline guess from the theme cookie, which is wrong on a page that names its
+ * own theme and stale after a switch, so every apply drops the guess and lets the
+ * rules follow the mark. The SSR renderer writes the same mark.
+ */
+export function markAppliedTheme(name: string | undefined) {
+	if (typeof document === 'undefined') return;
+	const root = document.documentElement;
+	if (name) root.setAttribute('data-mlx-theme', name);
+	else root.removeAttribute('data-mlx-theme');
+	root.style.removeProperty('background');
+}
+
+/**
  * Point the app stylesheet at a different theme without ever showing an unstyled
  * frame: the replacement is loaded to completion beside the current one, and only
  * then is the old one removed. Mutating the live link's href instead would drop
@@ -238,7 +289,10 @@ export function swapThemeStylesheet(name: string | undefined): Promise<void> {
 	//
 	// An href-less link falls through deliberately. That is the dev index.html
 	// before its inline script runs, and it needs an href written, not a no-op.
-	if (currentHref && themeOfHref(currentHref) === name) return Promise.resolve();
+	if (currentHref && themeOfHref(currentHref) === name) {
+		markAppliedTheme(name);
+		return Promise.resolve();
+	}
 
 	const href = styleHref(currentHref, name);
 
@@ -250,6 +304,7 @@ export function swapThemeStylesheet(name: string | undefined): Promise<void> {
 		const done = () => {
 			if (existing) existing.remove();
 			link.id = APP_STYLE_LINK_ID;
+			markAppliedTheme(name);
 			resolve();
 		};
 

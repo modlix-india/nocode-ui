@@ -205,6 +205,9 @@ function CommonInputText(props: CommonInputType) {
 	const setEditMode = (editMode: boolean, canceled: boolean) => {
 		if (!editMode && !canceled && validationMessages?.length) return;
 		setEditModeOriginal(editMode);
+		// The field is disabled on leaving edit mode, and a disabled element does not
+		// always report its blur, so the focused look stayed after the tick.
+		if (!editMode) setFocus(false);
 		onEditRequest?.(editMode, canceled);
 	};
 	const disabled = readOnly || (showEditRequest && !editModeOriginal);
@@ -254,7 +257,7 @@ function CommonInputText(props: CommonInputType) {
 				onChange={handleChangeEvent}
 				placeholder={getTranslations(placeholder, translations)}
 				onFocus={handleFocusEvent}
-				onBlur={showEditRequest ? undefined : event => handleBlurEvent(event)}
+				onBlur={showEditRequest ? () => setFocus(false) : event => handleBlurEvent(event)}
 				onKeyUp={
 					showEditRequest
 						? event => {
@@ -418,7 +421,7 @@ function CommonInputText(props: CommonInputType) {
 					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
 				</i>
 			) : undefined}
-			{!hasErrorMessages && hasValidationCheck && isDirty ? (
+			{!hasErrorMessages && hasValidationCheck && isDirty && !showEditRequest ? (
 				<i
 					style={computedStyles.rightIcon ?? {}}
 					className={`_successIcon _rightIcon ${

@@ -123,6 +123,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 		context.pageName,
 	]);
 
+	const lastColumns = React.useRef<any>(undefined);
 	const { headerDef, columnDef, listenPaths, children, tableRowProps } = useMemo(() => {
 		let { dynamicColumns, groupedColumns, columnsPageDefinition, listenPaths, tableRowProps } =
 			resolvePropertiesOfDynamicColumns(
@@ -140,7 +141,7 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 					pageExtractor,
 				)
 			: {};
-		return {
+		const next = {
 			...generateTableColumnDefinitions(
 				dynamicColumns,
 				groupedColumns,
@@ -154,6 +155,27 @@ export default function TableColumnsComponent(props: Readonly<ComponentProps>) {
 			listenPaths,
 			tableRowProps,
 		};
+
+		// A rebuild usually comes out the same: `Page.showComments` is a listen path because a
+		// row's visibility reads it, yet the rows re-check visibility on their own. The rebuilt
+		// definitions are copies of the page definition, and handing those to every cell
+		// rerendered the whole table on each toggle (in development, React's per-component prop
+		// diff made that over ten seconds). Keep the previous objects when nothing changed.
+		const last = lastColumns.current;
+		if (
+			last?.pageDefinition === pageDefinition &&
+			deepEqual(last.value.children, next.children) &&
+			deepEqual(last.value.listenPaths, next.listenPaths) &&
+			deepEqual(
+				last.value.columnDef.componentDefinition,
+				next.columnDef.componentDefinition,
+			)
+		)
+			// The row's own evaluated properties (its visibility among them) can differ.
+			return { ...last.value, tableRowProps: next.tableRowProps };
+
+		lastColumns.current = { pageDefinition, value: next };
+		return next;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [
 		pageDefinition,
@@ -530,6 +552,7 @@ function getColumnNames({
 	key: string;
 	label: string;
 	order: number;
+	hideIfNotPersonalized?: boolean;
 }> {
 	if (!children) return [];
 
@@ -537,6 +560,7 @@ function getColumnNames({
 		key: string;
 		label: string;
 		order: number;
+		hideIfNotPersonalized?: boolean;
 	}> = [];
 
 	for (let [k, v] of Object.entries(children)) {
@@ -554,7 +578,12 @@ function getColumnNames({
 				if (!isNullValue(newValue)) value = newValue;
 			}
 		}
-		columnNames.push({ key: k, label: value, order: column.displayOrder });
+		columnNames.push({
+			key: k,
+			label: value,
+			order: column.displayOrder,
+			hideIfNotPersonalized: !!column.properties?.hideIfNotPersonalized?.value,
+		});
 	}
 
 	columnNames.sort((a, b) => a.order - b.order);
