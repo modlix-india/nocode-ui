@@ -40,6 +40,10 @@ import { MOUSE_LEAVE_CLOSE_DELAY, openFloating } from '../util/floatingLayer';
 
 type DropdownOption = { label: any; value: any; key: any; originalObjectKey?: any };
 
+// Gap kept between an open list and the window edge, and the least height a capped list keeps.
+const DROPDOWN_VIEWPORT_EDGE = 8;
+const DROPDOWN_MIN_ROOM = 120;
+
 function findOptionByValue(value: any, ...lists: Array<Array<DropdownOption | undefined>>) {
 	for (const list of lists) {
 		const found = list.find(e => deepEqual(e?.value, value));
@@ -561,6 +565,8 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			: undefined;
 
 	const [isAtBottom, setIsAtBottom] = useState(false);
+	// Height the list may use on the side it opened, set only when it would not fit there.
+	const [roomHeight, setRoomHeight] = useState<number | undefined>(undefined);
 	const sortOrder = useMemo(() => {
 		if (!moveSelectedToTop) return undefined;
 		return Array.isArray(selectedDataKey) ? [...selectedDataKey] : [selectedDataKey];
@@ -599,7 +605,16 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		const dropdownPanel = (
 			<div
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
-				style={{ pointerEvents: 'auto', ...(computedStyles.dropDownContainer ?? {}) }}
+				style={{
+					pointerEvents: 'auto',
+					...(computedStyles.dropDownContainer ?? {}),
+					...(roomHeight !== undefined && {
+						maxHeight: computedStyles.dropDownContainer?.maxHeight
+							? `min(${computedStyles.dropDownContainer.maxHeight}, ${roomHeight}px)`
+							: `${roomHeight}px`,
+						overflowY: 'auto',
+					}),
+				}}
 				onScroll={scrollEndEvent}
 				onMouseEnter={() => {
 					setMouseInside(true);
@@ -611,10 +626,21 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				}}
 				ref={element => {
 					if (!element || searchText) return;
-					const rect = element.getBoundingClientRect();
 					const parentRect = element.parentElement?.getBoundingClientRect();
 					if (!parentRect) return;
-					setIsAtBottom(parentRect.bottom + rect.height > window.innerHeight);
+					// Open on the side with more room, and cap the list to that room. It used
+					// to flip above whenever it did not fit below, however little room there
+					// was above, and never limited its height: a long role list on an
+					// Organization popup started 2000px above the top of the window.
+					// scrollHeight is the full list height even once it is capped, so this
+					// settles instead of flipping back and forth.
+					const natural = element.scrollHeight;
+					const below = window.innerHeight - parentRect.bottom - DROPDOWN_VIEWPORT_EDGE;
+					const above = parentRect.top - DROPDOWN_VIEWPORT_EDGE;
+					const atBottom = natural > below && above > below;
+					const room = Math.floor(atBottom ? above : below);
+					setIsAtBottom(atBottom);
+					setRoomHeight(natural > room ? Math.max(room, DROPDOWN_MIN_ROOM) : undefined);
 				}}
 			>
 				<SubHelperComponent
