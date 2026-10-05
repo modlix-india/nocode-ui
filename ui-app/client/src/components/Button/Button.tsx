@@ -179,16 +179,16 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 				className={hover ? '_rightButtonActiveImage' : '_rightButtonImage'}
 			/>
 		);
-	} else if (hasLabel) {
+	} else if (hasLabel && rightIcon) {
+		// No icon, no tag. The old `fa-circle-notch hide` stand-in never showed a
+		// spinner (`.hide` kept it at opacity 0 even while loading), but it still took
+		// the icon's width and margin, so every icon-less button was wider than its
+		// padding said.
 		rightIconTag = (
 			<i
 				style={styleProperties.rightIcon ?? {}}
 				className={`_rightButtonIcon _icon ${
-					rightIcon
-						? !isLoading
-							? rightIcon
-							: 'fa fa-circle-notch fa-spin'
-						: 'fa fa-circle-notch hide'
+					!isLoading ? rightIcon : 'fa fa-circle-notch fa-spin'
 				}`}
 			>
 				<SubHelperComponent
@@ -217,16 +217,12 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 				className={hover ? '_leftButtonActiveImage' : '_leftButtonImage'}
 			/>
 		);
-	} else {
+	} else if (leftIcon) {
 		leftIconTag = (
 			<i
 				style={styleProperties.leftIcon ?? {}}
 				className={`_leftButtonIcon _icon ${
-					leftIcon
-						? !isLoading
-							? leftIcon
-							: 'fa fa-circle-notch fa-spin'
-						: 'fa fa-circle-notch hide'
+					!isLoading ? leftIcon : 'fa fa-circle-notch fa-spin'
 				}`}
 			>
 				<SubHelperComponent
