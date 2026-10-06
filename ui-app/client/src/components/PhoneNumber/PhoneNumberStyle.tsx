@@ -103,6 +103,15 @@ export default function PhoneNumberStyle({
 		bottom: 0px;
 	}
 
+	/* The dial code padding (phoneNumberPaddingLeftDialCodeLength*Label, 80 to 150px)
+	   keeps a label INSIDE the box clear of the country picker. Once the label sits above
+	   the box it only pushed it toward the middle. The doubled prefix and the attribute
+	   outrank the catalog's .comp.compPhoneNumber<designType><colorScheme>._dialCodeLengthN. */
+	${PREFIX}${PREFIX}[class*='_dialCodeLength']._isActive ._label,
+	${PREFIX}${PREFIX}[class*='_dialCodeLength'] ._label._noFloat {
+		padding-left: 0;
+	}
+
 	${PREFIX} ._clearText {
 		cursor: pointer;
 	}
