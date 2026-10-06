@@ -11,6 +11,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
 import { isBrowserHandledLinkClick } from '../util/isBrowserHandledLinkClick';
+import { navigateInApp } from '../util/navigateInApp';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import MenuStyle from './MenuStyle';
@@ -138,9 +139,7 @@ function Menu(props: Readonly<ComponentProps>) {
 							e.stopPropagation();
 							e.preventDefault();
 							if (externalButtonTarget === '_self') {
-								window.history.pushState(undefined, '', resolvedLink);
-								window.history.back();
-								setTimeout(() => window.history.forward(), 100);
+								navigateInApp(resolvedLink);
 							} else {
 								window.open(
 									resolvedLink,
@@ -356,9 +355,7 @@ function Menu(props: Readonly<ComponentProps>) {
 					if ((!target || target === '_self') && linkPath) {
 						e.stopPropagation();
 						e.preventDefault();
-						window.history.pushState(undefined, '', resolvedLink);
-						window.history.back();
-						setTimeout(() => window.history.forward(), 100);
+						navigateInApp(resolvedLink);
 					} else if (features && linkPath) {
 						e.stopPropagation();
 						e.preventDefault();
