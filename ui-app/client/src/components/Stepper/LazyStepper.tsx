@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -107,6 +107,20 @@ export default function Stepper(props: Readonly<ComponentProps>) {
 			bindingPathPath,
 		);
 	}, [bindingPathPath]);
+
+	// A one-line stepper that is wider than its box scrolls sideways; keep the active step in view.
+	// Only the list's own scrollLeft moves, so the page never jumps.
+	const listRef = useRef<HTMLUListElement>(null);
+	useEffect(() => {
+		const list = listRef.current;
+		if (!list || list.scrollWidth <= list.clientWidth) return;
+		const active = list.querySelector<HTMLElement>(':scope > li._active');
+		if (!active) return;
+		const box = list.getBoundingClientRect();
+		const item = active.getBoundingClientRect();
+		if (item.left < box.left) list.scrollLeft += item.left - box.left;
+		else if (item.right > box.right) list.scrollLeft += item.right - box.right;
+	}, [value]);
 
 	const onClickEvent = onClick ? props.pageDefinition.eventFunctions?.[onClick] : undefined;
 
@@ -288,6 +302,7 @@ export default function Stepper(props: Readonly<ComponentProps>) {
 	}
 	return (
 		<ul
+			ref={listRef}
 			style={resolvedStyles.comp ?? {}}
 			className={`comp compStepper ${stepperDesign} ${colorScheme} ${
 				stepperDesign !== '_rectangle_arrow' && isStepperVertical
