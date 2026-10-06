@@ -321,6 +321,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Coloured Text Color 5',
 				description: 'Coloured Text Color 5',
 			},
+			{
+				name: '_overlineText',
+				displayName: 'Overline Text',
+				description: 'Small caps-style label text (table heads, section labels).',
+			},
+			{
+				name: '_smallText',
+				displayName: 'Small Text',
+				description: 'Text one step below body (secondary details, meta lines).',
+			},
 		],
 	},
 	{

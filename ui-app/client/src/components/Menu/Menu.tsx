@@ -11,6 +11,7 @@ import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
 import { isBrowserHandledLinkClick } from '../util/isBrowserHandledLinkClick';
+import { navigateInApp } from '../util/navigateInApp';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import MenuStyle from './MenuStyle';
@@ -97,9 +98,12 @@ function Menu(props: Readonly<ComponentProps>) {
 					// /assets, `campaignProductMap` to catch /campaignProductMapping.
 					// Making anchoring automatic would quietly unlight all of those, so
 					// the only menus that change are the ones that ask to.
+					// The segment can sit anywhere: on an app's own domain the path is
+					// /ads, but under /<app>/<client>/page/ads it is the last segment.
+					// Comparing the whole path only ever worked on the first.
 					if (raw.endsWith('$')) {
 						const seg = `/${raw.slice(0, -1)}`;
-						return lowerPath === seg || lowerPath.startsWith(`${seg}/`);
+						return lowerPath.endsWith(seg) || lowerPath.indexOf(`${seg}/`) >= 0;
 					}
 					return lowerPath.indexOf(`/${raw}`) >= 0;
 				});
@@ -135,9 +139,7 @@ function Menu(props: Readonly<ComponentProps>) {
 							e.stopPropagation();
 							e.preventDefault();
 							if (externalButtonTarget === '_self') {
-								window.history.pushState(undefined, '', resolvedLink);
-								window.history.back();
-								setTimeout(() => window.history.forward(), 100);
+								navigateInApp(resolvedLink);
 							} else {
 								window.open(
 									resolvedLink,
@@ -353,9 +355,7 @@ function Menu(props: Readonly<ComponentProps>) {
 					if ((!target || target === '_self') && linkPath) {
 						e.stopPropagation();
 						e.preventDefault();
-						window.history.pushState(undefined, '', resolvedLink);
-						window.history.back();
-						setTimeout(() => window.history.forward(), 100);
+						navigateInApp(resolvedLink);
 					} else if (features && linkPath) {
 						e.stopPropagation();
 						e.preventDefault();

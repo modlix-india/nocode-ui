@@ -11,6 +11,7 @@ import { getHref } from '../util/getHref';
 import { getTranslations } from '../util/getTranslations';
 import { IconHelper } from '../util/IconHelper';
 import { isBrowserHandledLinkClick } from '../util/isBrowserHandledLinkClick';
+import { navigateInApp } from '../util/navigateInApp';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -94,9 +95,7 @@ function Link(props: Readonly<ComponentProps>) {
 				if (resolvedLink?.startsWith('tel') || resolvedLink?.startsWith('mailto')) {
 					window.open(resolvedLink, target);
 				} else if (externalButtonTarget === '_self') {
-					window.history.pushState(undefined, '', resolvedLink);
-					window.history.back();
-					setTimeout(() => window.history.forward(), 100);
+					navigateInApp(resolvedLink);
 				} else {
 					window.open(
 						resolvedLink,
@@ -162,9 +161,7 @@ function Link(props: Readonly<ComponentProps>) {
 					} else if (!target || target === '_self') {
 						e.stopPropagation();
 						e.preventDefault();
-						window.history.pushState(undefined, '', resolvedLink);
-						window.history.back();
-						setTimeout(() => window.history.forward(), 100);
+						navigateInApp(resolvedLink);
 					} else if (features) {
 						e.stopPropagation();
 						e.preventDefault();

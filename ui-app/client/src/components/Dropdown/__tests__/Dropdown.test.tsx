@@ -517,3 +517,81 @@ describe('label of a selection outside the data', () => {
 		expect(controlInput().value).toBe('2 Items  selected');
 	});
 });
+
+// ── open direction and height ────────────────────────────────────────────────
+
+describe('open direction and height', () => {
+	// jsdom has no layout, so the field's box, the window height and the list's natural
+	// height are supplied here. Both the control wrapper and the portal that anchors the
+	// panel carry .compDropdown and sit on the field, which is what the panel measures.
+	let field = { top: 0, bottom: 0 };
+	let natural = 0;
+	const originalRect = HTMLElement.prototype.getBoundingClientRect;
+	const originalInnerHeight = window.innerHeight;
+
+	beforeEach(() => {
+		HTMLElement.prototype.getBoundingClientRect = function (this: HTMLElement) {
+			const r = this.classList.contains('compDropdown')
+				? { top: field.top, bottom: field.bottom, left: 0, right: 240 }
+				: { top: 0, bottom: 0, left: 0, right: 0 };
+			return {
+				...r,
+				x: r.left,
+				y: r.top,
+				width: r.right - r.left,
+				height: r.bottom - r.top,
+				toJSON: () => r,
+			} as DOMRect;
+		};
+		Object.defineProperty(HTMLElement.prototype, 'scrollHeight', {
+			configurable: true,
+			get(this: HTMLElement) {
+				return this.classList.contains('_dropdownContainer') ? natural : 0;
+			},
+		});
+		Object.defineProperty(window, 'innerHeight', { configurable: true, value: 746 });
+	});
+
+	afterEach(() => {
+		HTMLElement.prototype.getBoundingClientRect = originalRect;
+		delete (HTMLElement.prototype as any).scrollHeight;
+		Object.defineProperty(window, 'innerHeight', {
+			configurable: true,
+			value: originalInnerHeight,
+		});
+	});
+
+	const panel = () => document.querySelector<HTMLElement>('._dropdownContainer')!;
+
+	/**
+	 * The regression (QA-0051): a 2417px role list on a field halfway down a 746px window
+	 * flipped above with no height limit and started 2000px above the top of the window.
+	 */
+	it('opens above with the list capped to the room above when that side is bigger', () => {
+		field = { top: 381, bottom: 421 };
+		natural = 2417;
+		render();
+		openPanel();
+		expect(panel().classList.contains('_atBottom')).toBe(true);
+		expect(panel().style.maxHeight).toBe(`${381 - 8}px`);
+		expect(panel().style.overflowY).toBe('auto');
+	});
+
+	it('stays below and caps the list when there is more room below', () => {
+		field = { top: 100, bottom: 140 };
+		natural = 2417;
+		render();
+		openPanel();
+		expect(panel().classList.contains('_atBottom')).toBe(false);
+		expect(panel().style.maxHeight).toBe(`${746 - 140 - 8}px`);
+	});
+
+	it('leaves a list that fits below alone', () => {
+		field = { top: 100, bottom: 140 };
+		natural = 200;
+		render();
+		openPanel();
+		expect(panel().classList.contains('_atBottom')).toBe(false);
+		expect(panel().style.maxHeight).toBe('');
+	});
+});
