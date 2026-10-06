@@ -187,8 +187,13 @@ body { margin: 0; }
    page too. A SubPage pane is a .compPage inside the shell's .compPage, so 100vh
    forced each pane to a full viewport below the shell header and pushed the
    document down by the header's height: a scrollbar on workspace, org and docs,
-   which lock their height, and only on the environments serving this block. */
-#app > .comp.compPage { min-height: 100vh; }
+   which lock their height, and only on the environments serving this block.
+   The cookie-consent overlay is a second .compPage straight under #app (after the
+   real page, before Messages), so the rule must also stop at the FIRST page: with
+   100vh on the overlay too, every page with the consent banner showed a second,
+   empty screen below it (QA-0067). #app opens with <style>/<link> nodes, so it is
+   :first-of-type (the first div), not :first-child. */
+#app > div.comp.compPage:first-of-type { min-height: 100vh; }
 .compGrid { display: flex; flex-direction: column; }
 .compTable { display: flex; flex-direction: row; }
 .compTableColumns { display: table; border-spacing: 0; width: 100%; }
