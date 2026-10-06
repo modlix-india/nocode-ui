@@ -284,6 +284,15 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '.comp.compGrid._noAnchorGrid._PADDINGSIX, .comp.compGrid ._anchorGrid._PADDINGSIX',
 		np: true,
 	},
+	{
+		gn: 'Padding',
+		dn: 'Padding Design Seven',
+		n: 'paddingDesignSeven',
+		dv: '70px 70px 70px 70px',
+		cp: 'padding',
+		sel: '.comp.compGrid._noAnchorGrid._PADDINGSEVEN, .comp.compGrid ._anchorGrid._PADDINGSEVEN',
+		np: true,
+	},
 ];
 
 export const styleDefaults = new Map<string, string>(
