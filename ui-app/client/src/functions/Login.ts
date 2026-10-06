@@ -32,6 +32,10 @@ const SIGNATURE = new FunctionSignature('Login')
 			Parameter.ofEntry('rememberMe', Schema.ofBoolean('rememberMe').setDefaultValue(false)),
 			Parameter.ofEntry('cookie', Schema.ofBoolean('cookie').setDefaultValue(false)),
 			Parameter.ofEntry('redirectUrl', Schema.ofString('redirectUrl').setDefaultValue('')),
+			Parameter.ofEntry(
+				'forceRedirect',
+				Schema.ofBoolean('forceRedirect').setDefaultValue(false),
+			),
 		]),
 	)
 	.setEvents(
@@ -49,8 +53,23 @@ const SIGNATURE = new FunctionSignature('Login')
 	)
 	.setDescription('Authenticates a user and stores session data in the application store')
 	.setDocumentation(
-		"# UIEngine.Login\n\nAuthenticates a user by calling the `/api/security/authenticate` endpoint. On success, stores authentication data in `Store.auth`, saves the access token to `LocalStore.AuthToken`, and clears all page caches to ensure a fresh session.\n\n## Parameters\n\n- **userName** (String, required): Username or email for authentication\n- **password** (String, optional, default: ''): User password\n- **userId** (Any, optional, default: null): User ID if available\n- **otp** (String, optional, default: ''): One-time password for two-factor authentication\n- **pin** (String, optional, default: ''): PIN code if required\n- **identifierType** (String, optional, default: ''): Type of identifier being used for login\n- **rememberMe** (Boolean, optional, default: false): Whether to persist the session\n- **cookie** (Boolean, optional, default: false): Whether to set an authentication cookie\n- **redirectUrl** (String, optional): Where to send the user on success. Pass this INSTEAD of a following `Navigate` step. A relative path is resolved the way page links are, so `/dashboard` works. When the app has SSO enabled this navigation is routed through the SSO beacon, which seeds the shared session at no extra cost, so other apps can sign the same user in without asking again.\n\n## Events\n\n- **output**: Triggered on successful authentication\n  - `data` (Any): Authentication response containing access token and user details\n- **error**: Triggered on authentication failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **User Authentication**: Log users into the application\n- **Multi-Factor Auth**: Support OTP and PIN-based authentication flows\n- **Session Management**: Establish and persist user sessions\n- **SSO Integration**: Authenticate via various identifier types",
+		"# UIEngine.Login\n\nAuthenticates a user by calling the `/api/security/authenticate` endpoint. On success, stores authentication data in `Store.auth`, saves the access token to `LocalStore.AuthToken`, and clears all page caches to ensure a fresh session.\n\n## Parameters\n\n- **userName** (String, required): Username or email for authentication\n- **password** (String, optional, default: ''): User password\n- **userId** (Any, optional, default: null): User ID if available\n- **otp** (String, optional, default: ''): One-time password for two-factor authentication\n- **pin** (String, optional, default: ''): PIN code if required\n- **identifierType** (String, optional, default: ''): Type of identifier being used for login\n- **rememberMe** (Boolean, optional, default: false): Whether to persist the session\n- **cookie** (Boolean, optional, default: false): Whether to set an authentication cookie\n- **redirectUrl** (String, optional): Where to send the user on success, when the address named no page of its own. Pass this INSTEAD of a following `Navigate` step. A relative path is resolved the way page links are, so `/dashboard` works. It is used only when the URL names no page, or names the app's default or login page. When the URL names any other page, the visitor was sent to sign in on the way to that page, so the sign-in returns to it and it renders for the signed-in user; `redirectUrl` is ignored. When the app has SSO enabled the navigation is routed through the SSO beacon, which seeds the shared session at no extra cost, so other apps can sign the same user in without asking again.\n- **forceRedirect** (Boolean, optional, default: false): Go to `redirectUrl` whatever page the URL names. For sign-ins that must always move on, such as a sign-up or invite page that signs the new user in, or a dedicated login page.\n\n## Events\n\n- **output**: Triggered on successful authentication\n  - `data` (Any): Authentication response containing access token and user details\n- **error**: Triggered on authentication failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **User Authentication**: Log users into the application\n- **Multi-Factor Auth**: Support OTP and PIN-based authentication flows\n- **Session Management**: Establish and persist user sessions\n- **SSO Integration**: Authenticate via various identifier types",
 	);
+
+/**
+ * Whether the address names a page of its own, i.e. the visitor was on their way somewhere and
+ * should get there once signed in. The default page (which `Store.urlDetails.pageName` is filled
+ * with when the URL names none) and the login page do not count: signing in there has nowhere
+ * better to stay.
+ *
+ * Read before Login resets the store, because the reset clears `Store.application`.
+ */
+function urlNamesAPage(application: any): boolean {
+	const pageName = getDataFromPath('Store.urlDetails.pageName', []);
+	if (!pageName) return false;
+	const { defaultPage, loginPage } = application?.properties ?? {};
+	return pageName !== defaultPage && pageName !== loginPage;
+}
 
 /**
  * Mint a one-time token for the beacon and build the URL that seeds it and then continues to
@@ -85,10 +104,13 @@ export class Login extends AbstractFunction {
 		const identifierType: string = context.getArguments()?.get('identifierType');
 		const rememberMe: string = context.getArguments()?.get('rememberMe');
 		const cookieArg: boolean = context.getArguments()?.get('cookie');
-		const redirectUrl: string = context.getArguments()?.get('redirectUrl');
+		const forceRedirect: boolean = context.getArguments()?.get('forceRedirect');
+		const askedRedirect: string = context.getArguments()?.get('redirectUrl');
 
 		const application = getDataFromPath('Store.application', []);
 		const ssoOn = isSsoEnabled(application);
+		const redirectUrl: string =
+			askedRedirect && (forceRedirect || !urlNamesAPage(application)) ? askedRedirect : '';
 		const cookie: boolean = ssoOn ? true : cookieArg;
 
 		const data: any = { userName, rememberMe, cookie };
@@ -121,6 +143,31 @@ export class Login extends AbstractFunction {
 			// asks for it explicitly instead: call UIEngine.SsoSeed after Login, passing
 			// the page you would have navigated to.
 
+			// Seed the beacon on EVERY successful login when the app is enrolled, not only
+			// when the page named a destination. Seeding is what lets the next app sign this
+			// user in without asking again, and gating it on a parameter would mean it never
+			// happened for any page that had not been edited.
+			//
+			// It rides the navigation rather than adding one: the hop goes through the beacon,
+			// which is top-level there so it writes a genuine first-party session, and lands on
+			// `redirectUrl` when the page gave one, otherwise back on this same page.
+			//
+			// Note the consequence of coming back here: this leaves the page, so a `Navigate`
+			// step after Login in the page's own function does NOT run. Pass `redirectUrl`
+			// instead of that step.
+			const destination = redirectUrl
+				? absoluteDestination(redirectUrl)
+				: window.location.href;
+
+			// The token is minted BEFORE the store is reset below. The reset clears
+			// `Store.application`, the page re-fetches at once, and with no app code it looks like
+			// a page from another app and reloads, unless the beacon hop is already committed.
+			// Minting after the reset left that reload a whole request to win, and when it won
+			// the user came back to the page they signed in on: no `redirectUrl`, no seed.
+			const seed = ssoOn
+				? await seedTarget(destination, headers, response.data?.accessToken)
+				: null;
+
 			for (let key of Object.keys(pageHistory)) delete pageHistory[key];
 
 			setData('Store.auth', response.data);
@@ -140,30 +187,11 @@ export class Login extends AbstractFunction {
 			setData('Store.application', undefined, undefined, true);
 			setData('Store.functionExecutions', {});
 
-			// Seed the beacon on EVERY successful login when the app is enrolled, not only
-			// when the page named a destination. Seeding is what lets the next app sign this
-			// user in without asking again, and gating it on a parameter would mean it never
-			// happened for any page that had not been edited.
-			//
-			// It rides the navigation rather than adding one: the hop goes through the beacon,
-			// which is top-level there so it writes a genuine first-party session, and lands on
-			// `redirectUrl` when the page gave one, otherwise back on this same page.
-			//
-			// Note the consequence of coming back here: this leaves the page, so a `Navigate`
-			// step after Login in the page's own function does NOT run. Pass `redirectUrl`
-			// instead of that step.
-			const destination = redirectUrl
-				? absoluteDestination(redirectUrl)
-				: window.location.href;
-
-			if (ssoOn) {
-				const seed = await seedTarget(destination, headers, response.data?.accessToken);
-				if (seed) {
-					window.location.replace(seed);
-					return new FunctionOutput([
-						EventResult.outputOf(new Map([['data', response.data]])),
-					]);
-				}
+			if (seed) {
+				window.location.replace(seed);
+				return new FunctionOutput([
+					EventResult.outputOf(new Map([['data', response.data]])),
+				]);
 			}
 
 			// SSO off, or the beacon token could not be minted. A login that worked must not
