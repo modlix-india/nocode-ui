@@ -183,7 +183,13 @@ async function makeAppDefinitionCall(
 		if (globalThis.__APP_BOOTSTRAP__?.application)
 			application = globalThis.__APP_BOOTSTRAP__?.application;
 		else {
-			const response = await axios.get('api/ui/application', axiosOptions);
+			// Revalidated on every load like the page definitions (Engine/pageDefinition.ts):
+			// the server's `max-age` would otherwise serve the copy fetched under another
+			// login state from the browser cache.
+			const response = await axios.get('api/ui/application', {
+				...axiosOptions,
+				headers: { ...(axiosOptions.headers ?? {}), 'Cache-Control': 'max-age=0' },
+			});
 			if (response.status === 200) {
 				application = response.data;
 			}
