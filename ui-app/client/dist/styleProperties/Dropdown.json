@@ -276,7 +276,7 @@
 	},
 	{
 		"cp": "border",
-		"sel": ".comp.compDropdown<colorScheme><designType>._dropdownCheckIcon::before",
+		"sel": ".comp.compDropdown<colorScheme><designType> ._dropdownCheckIcon::before",
 		"np": true,
 		"spv": {
 			"-_primary": "2px solid <fontColorThree>",

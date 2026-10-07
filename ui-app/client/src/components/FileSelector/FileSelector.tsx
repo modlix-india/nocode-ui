@@ -25,6 +25,7 @@ import getSrcUrl from '../util/getSrcUrl';
 import { fileDeleteUrl, fileSelectorStoredValue } from './storedValue';
 import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
+import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
 
 function FileSelector(props: Readonly<ComponentProps>) {
 	const {
@@ -75,6 +76,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			analyticsLabel,
 			valueType,
 			fullUrl,
+			keepFileOnRemove,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -218,7 +220,11 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			let fileUrl = getFileUrl(selectedFile);
 			if (!fileUrl) return;
 
-			await axios.delete(fileDeleteUrl(fileUrl, resourceType, clientCode), { headers });
+			// With keepFileOnRemove the remove only clears this field: the file may be a shared
+			// default (a new site's favicon is a SYSTEM asset the server refuses to delete), or
+			// the value is a setting that is only saved later.
+			if (!keepFileOnRemove)
+				await axios.delete(fileDeleteUrl(fileUrl, resourceType, clientCode), { headers });
 
 			if (bindingPathPath) {
 				setData(bindingPathPath, undefined, context.pageName, true);
@@ -244,6 +250,8 @@ function FileSelector(props: Readonly<ComponentProps>) {
 			);
 		} catch (error) {
 			console.error('Delete failed:', error);
+			// A refused delete used to leave the trash looking dead; say so.
+			addMessage(MESSAGE_TYPE.ERROR, 'Could not delete the file.', true, context.pageName);
 		}
 	};
 

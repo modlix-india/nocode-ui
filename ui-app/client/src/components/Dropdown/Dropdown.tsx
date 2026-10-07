@@ -166,9 +166,11 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		bindingPathPath = makeTempPath(bindingPathPath, context.pageName);
 	}
 
+	// Return the remover: a Dropdown in a repeater row moves to another index when the
+	// array is re-sorted, and a listener left on the old path keeps mirroring that row.
 	useEffect(() => {
 		if (!originalBindingPathPath) return;
-		addListenerAndCallImmediately(
+		return addListenerAndCallImmediately(
 			props.context.pageName,
 			(_, value) => {
 				setSelected(value);
@@ -179,7 +181,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!searchBindingPath) return;
-		addListenerAndCallImmediately(
+		return addListenerAndCallImmediately(
 			props.context.pageName,
 			(_, value) => {
 				setSearchText(value ?? '');

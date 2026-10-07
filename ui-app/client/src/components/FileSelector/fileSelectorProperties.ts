@@ -247,6 +247,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'keepFileOnRemove',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Keep the file on remove',
+		description:
+			'The remove icon only clears this field and never deletes the file. Use it where ' +
+			'the value is a setting saved later, or may point at a shared or default file ' +
+			'(a site favicon that is still the system default, for example).',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'validation',
 		schema: SCHEMA_VALIDATION,
 		displayName: 'Validation',
