@@ -86,6 +86,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: true,
 		group: ComponentPropertyGroup.ADVANCED,
 	},
+	{
+		name: 'closeOnInsideClick',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Close Popover on action click',
+		description:
+			'Close Popover when a Button, Menu or Link inside it is clicked. Fields, toggles and other inputs in the panel never close it.',
+		defaultValue: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
 	COMMON_COMPONENT_PROPERTIES.showInDesign,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

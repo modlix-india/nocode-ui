@@ -595,3 +595,48 @@ describe('open direction and height', () => {
 		expect(panel().style.maxHeight).toBe('');
 	});
 });
+
+// ── a Dropdown whose row moved in a repeater ─────────────────────────────────
+
+/**
+ * Reported on leadzump addProduct (QA-0087): the duplicate-deal rules repeater re-sorts
+ * after every save, so a row's Dropdown is re-rendered with its binding at another index.
+ * The subscription effect did not return the listener's remover, so the listener on the
+ * OLD index stayed alive and the row kept showing whatever row now sat there: editing
+ * rule 2 painted rules 3 and 4 (both had passed through index 1) with rule 2's values.
+ */
+describe('binding path that moves to another index', () => {
+	function renderBoundTo(path: string) {
+		const props = propsFor(pageDefinition);
+		props.definition.bindingPath = { type: 'VALUE', value: path };
+		act(() => root.render(<Dropdown {...props} />));
+	}
+
+	beforeEach(() => {
+		properties = serverSearchedProperties({ isSearchable: false, onSearch: undefined });
+	});
+
+	it('stops listening on the old path once the binding moves', () => {
+		storeValues.set('Page.rows[1].pick', 'FIN');
+		storeValues.set('Page.rows[2].pick', 'CLIA');
+		renderBoundTo('Page.rows[1].pick');
+		expect(controlInput().value).toBe('Fincity');
+
+		renderBoundTo('Page.rows[2].pick');
+		expect(controlInput().value).toBe('CLIENT A');
+		expect(listeners.has('Page.rows[1].pick')).toBe(false);
+	});
+
+	it('does not show the value written to the row that now holds its old index', () => {
+		storeValues.set('Page.rows[1].pick', 'FIN');
+		storeValues.set('Page.rows[2].pick', 'CLIA');
+		renderBoundTo('Page.rows[1].pick');
+		renderBoundTo('Page.rows[2].pick');
+
+		act(() => {
+			storeValues.set('Page.rows[1].pick', 'RAJAA');
+			listeners.get('Page.rows[1].pick')?.('Page.rows[1].pick', 'RAJAA');
+		});
+		expect(controlInput().value).toBe('CLIENT A');
+	});
+});
