@@ -18,6 +18,7 @@ import {
 	setData,
 	storeExtractor,
 	themeExtractor,
+	authoritiesExtractor,
 } from '../../context/StoreContext';
 import { REPO_SERVER, RemoteRepository } from '../../Engine/RemoteRepository';
 import { UIFunctionRepository } from '../../functions';
@@ -166,6 +167,9 @@ export const runEvent = async (
 			[pageExtractor.getPrefix(), pageExtractor],
 			[themeExtractor.getPrefix(), themeExtractor],
 			[urlExtractor.getPrefix(), urlExtractor],
+			// Bindings resolve `Authorities.X` through this extractor (StoreContext); without
+			// it here a page function read `Authorities.X` as its own text, always truthy.
+			[authoritiesExtractor.getPrefix(), authoritiesExtractor],
 		]);
 
 		if (locationHistory?.length) {
