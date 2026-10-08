@@ -8,6 +8,7 @@ import { processLocation } from './util/locationProcessor';
 import { consumeSocialArrival, consumeSsoArrival } from './sso/ssoModule';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 import DraftBanner from './components/DraftBanner';
+import { getDataFromPath, setData } from './context/StoreContext';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
@@ -216,6 +217,13 @@ setInterval(async () => {
 		.then(response => {
 			window.localStorage.setItem(AUTH_TOKEN, JSON.stringify(response.data.accessToken));
 			window.localStorage.setItem(AUTH_TOKEN_EXPIRY, response.data.accessTokenExpiryAt);
+			// Keep the in-memory session in step. refreshToken REVOKES the token it replaces,
+			// and the AI chat, blueprint board, scene AI and debugger read Store.auth.accessToken
+			// first, so they kept sending the dead token from ~27 minutes into a page's life.
+			if (getDataFromPath('Store.auth', [])) {
+				setData('Store.auth.accessToken', response.data.accessToken);
+				setData('Store.auth.accessTokenExpiryAt', response.data.accessTokenExpiryAt);
+			}
 		})
 		.catch(e => {
 			// A 401/403 means this token is already gone -- revoked by a sign-out

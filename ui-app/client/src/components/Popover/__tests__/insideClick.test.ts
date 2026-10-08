@@ -1,4 +1,4 @@
-import { isPanelActionClick } from '../insideClick';
+import { closeAfterClick, isPanelActionClick } from '../insideClick';
 
 // The DOM a popover's portalled panel renders: the panel is `comp compPopover popover`, the
 // components inside keep their own root classes.
@@ -69,5 +69,23 @@ describe('isPanelActionClick', () => {
 		expect(isPanelActionClick(elsewhere, panel)).toBe(false);
 		expect(isPanelActionClick(null, panel)).toBe(false);
 		expect(isPanelActionClick(elsewhere, null)).toBe(false);
+	});
+});
+
+describe('closeAfterClick', () => {
+	// Closing inside the click unmounted the clicked Button before its onClick ran (seen on
+	// dev: the leads Delete and products Edit menus closed and did nothing), so the close
+	// must wait until the click has been handled.
+	test('does not close during the click, closes right after it', () => {
+		jest.useFakeTimers();
+		try {
+			const close = jest.fn();
+			closeAfterClick(close);
+			expect(close).not.toHaveBeenCalled();
+			jest.runAllTimers();
+			expect(close).toHaveBeenCalledTimes(1);
+		} finally {
+			jest.useRealTimers();
+		}
 	});
 });

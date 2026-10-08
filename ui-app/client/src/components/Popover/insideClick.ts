@@ -31,3 +31,13 @@ export function isPanelActionClick(
 
 	return true;
 }
+
+/**
+ * Close the panel once the click that asked for it is over. Closing straight from the
+ * panel's onClickCapture let React render the closed state before the bubble pass, so
+ * the clicked Button or Menu was unmounted before its own onClick ran: every action
+ * menu (Edit, Delete...) closed and did nothing.
+ */
+export function closeAfterClick(close: () => void): void {
+	setTimeout(close, 0);
+}
