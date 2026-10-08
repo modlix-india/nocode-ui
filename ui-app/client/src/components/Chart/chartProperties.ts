@@ -712,6 +712,26 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: false,
 	},
+	{
+		name: 'doughnutCutout',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Doughnut Hole Size',
+		description:
+			'How much of a doughnut is hole, as a percentage of its radius (e.g. 70%) or in ' +
+			'pixels. Larger values draw a thinner ring. Empty keeps the default (50%).',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'lineAreaFill',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Fill Under Lines',
+		description:
+			'Fill the area under each line whose Data Set Fill Opacity is below 1, fading from ' +
+			'that opacity at the top of the chart to transparent at the bottom. Lines with no ' +
+			'fill opacity (or 1) stay unfilled.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
 
 	{
 		name: 'gradientSpace',

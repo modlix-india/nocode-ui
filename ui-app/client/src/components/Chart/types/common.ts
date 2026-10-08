@@ -190,6 +190,8 @@ export interface ChartProperties {
 	padding: number;
 	focusDataSetOnHover: boolean;
 	gradientSpace: 'objectBoundingBox' | 'userSpaceOnUse';
+	doughnutCutout?: string;
+	lineAreaFill?: boolean;
 }
 
 export interface MakeChartProps {
