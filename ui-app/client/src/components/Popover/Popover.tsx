@@ -18,7 +18,7 @@ import getPositions from '../util/getPositions';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleProperties, styleDefaults } from './popoverStyleProperties';
 import { IconHelper } from '../util/IconHelper';
-import { isPanelActionClick } from './insideClick';
+import { closeAfterClick, isPanelActionClick } from './insideClick';
 export interface PortalCoordinates {
 	left?: number;
 	top?: number;
@@ -209,7 +209,7 @@ function Popover(props: Readonly<ComponentProps>) {
 									if (!closeOnInsideClick || globalThis.designMode == 'PAGE')
 										return;
 									if (isPanelActionClick(e.target, popoverRef.current))
-										setShow(false);
+										closeAfterClick(() => setShow(false));
 								}}
 								// Without these the panel is unreachable when closeOnLeave
 								// is set: the countdown armed on leaving the trigger would
