@@ -13,6 +13,7 @@ import { LOCAL_STORE_PREFIX, NAMESPACE_UI_ENGINE } from '../constants';
 import { getDataFromPath, setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
 import { isSsoEnabled, ssoLogoutBeacon } from '../sso/ssoModule';
+import { absoluteDestination } from '../util/absoluteDestination';
 
 const SIGNATURE = new FunctionSignature('Logout')
 	.setParameters(
@@ -67,7 +68,11 @@ export class Logout extends AbstractFunction {
 				headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
 			const ssoLogout: boolean = context.getArguments()?.get('ssoLogout');
-			const redirectUrl: string = context.getArguments()?.get('redirectUrl');
+			const rawRedirect: string = context.getArguments()?.get('redirectUrl');
+			// Resolved the way Login resolves its redirect: the SSO beacon rejects a relative
+			// URL with a 400, and a path-based host needs its /{app}/{client}/page/ prefix.
+			const redirectUrl: string =
+				rawRedirect && rawRedirect !== '' ? absoluteDestination(rawRedirect) : '';
 
 			const response = await axios({
 				url: `api/security/revoke?ssoLogout=${ssoLogout ? 'true' : 'false'}`,
