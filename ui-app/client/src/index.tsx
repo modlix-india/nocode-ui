@@ -8,7 +8,6 @@ import { processLocation } from './util/locationProcessor';
 import { consumeSocialArrival, consumeSsoArrival } from './sso/ssoModule';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 import DraftBanner from './components/DraftBanner';
-import { getDataFromPath, setData } from './context/StoreContext';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
@@ -220,10 +219,15 @@ setInterval(async () => {
 			// Keep the in-memory session in step. refreshToken REVOKES the token it replaces,
 			// and the AI chat, blueprint board, scene AI and debugger read Store.auth.accessToken
 			// first, so they kept sending the dead token from ~27 minutes into a page's life.
-			if (getDataFromPath('Store.auth', [])) {
-				setData('Store.auth.accessToken', response.data.accessToken);
-				setData('Store.auth.accessTokenExpiryAt', response.data.accessTokenExpiryAt);
-			}
+			// StoreContext is imported here, not at the top: importing it while index.tsx
+			// loads changes the start-up order and every page reloaded in a loop on first
+			// load ("Host app code: undefined").
+			const { accessToken, accessTokenExpiryAt } = response.data;
+			import('./context/StoreContext').then(({ getDataFromPath, setData }) => {
+				if (!getDataFromPath('Store.auth', [])) return;
+				setData('Store.auth.accessToken', accessToken);
+				setData('Store.auth.accessTokenExpiryAt', accessTokenExpiryAt);
+			});
 		})
 		.catch(e => {
 			// A 401/403 means this token is already gone -- revoked by a sign-out
