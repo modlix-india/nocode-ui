@@ -463,3 +463,43 @@ describe('buildChartJsOptions', () => {
 		});
 	});
 });
+
+describe('doughnutCutout', () => {
+	it('sets the hole size of a doughnut, as a percentage or in pixels', () => {
+		const data = createMockChartData();
+		expect(
+			(
+				buildChartJsOptions(
+					createMockProperties({ doughnutCutout: '70%' }),
+					data,
+					'doughnut',
+				) as any
+			).cutout,
+		).toBe('70%');
+		expect(
+			(
+				buildChartJsOptions(
+					createMockProperties({ doughnutCutout: '60' }),
+					data,
+					'doughnut',
+				) as any
+			).cutout,
+		).toBe(60);
+	});
+
+	it('leaves the default when empty, and ignores it on other chart types', () => {
+		const data = createMockChartData();
+		expect(
+			(buildChartJsOptions(createMockProperties(), data, 'doughnut') as any).cutout,
+		).toBeUndefined();
+		expect(
+			(
+				buildChartJsOptions(
+					createMockProperties({ doughnutCutout: '70%' }),
+					data,
+					'pie',
+				) as any
+			).cutout,
+		).toBeUndefined();
+	});
+});

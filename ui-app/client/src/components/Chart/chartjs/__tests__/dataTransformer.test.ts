@@ -583,3 +583,77 @@ describe('transformToChartJsData', () => {
 		});
 	});
 });
+
+describe('line area fill and smooth lines', () => {
+	function lineChart(fillOpacity: number, style = DataSetStyle.Line) {
+		return createMockChartData({
+			xUniqueData: ['A', 'B'],
+			dataSetData: [
+				{
+					data: [
+						{ x: 'A', y: 1 },
+						{ x: 'B', y: 3 },
+					],
+					isHidden: false,
+					dataSetStyle: style,
+					dataColors: createRepArray(['#191918']),
+					dataStrokeColors: createRepArray(['#191918']),
+					fillOpacity: createRepArray([fillOpacity]),
+					strokeOpacity: createRepArray([1]),
+					pointType: createRepArray([PointType.Circle]),
+					pointSize: createRepArray([3]),
+				},
+			],
+		});
+	}
+
+	it('leaves lines unfilled unless lineAreaFill is on', () => {
+		const out = transformToChartJsData(createMockProperties(), lineChart(0.2), ['Total']);
+		expect((out.datasets[0] as any).fill).toBe(false);
+	});
+
+	it('leaves a line with fill opacity 1 unfilled even with lineAreaFill', () => {
+		const out = transformToChartJsData(
+			createMockProperties({ lineAreaFill: true }),
+			lineChart(1),
+			['Total'],
+		);
+		expect((out.datasets[0] as any).fill).toBe(false);
+	});
+
+	it('fills under a line with a fading gradient when asked', () => {
+		const out = transformToChartJsData(
+			createMockProperties({ lineAreaFill: true }),
+			lineChart(0.2),
+			['Total'],
+		);
+		const ds: any = out.datasets[0];
+		expect(ds.fill).toBe('origin');
+		expect(typeof ds.backgroundColor).toBe('function');
+
+		const stops: [number, string][] = [];
+		const gradient = { addColorStop: (o: number, c: string) => stops.push([o, c]) };
+		const chart = {
+			chartArea: { top: 10, bottom: 210 },
+			ctx: { createLinearGradient: () => gradient },
+		};
+		expect(ds.backgroundColor({ chart })).toBe(gradient);
+		expect(stops).toEqual([
+			[0, 'rgba(25, 25, 24, 0.2)'],
+			[1, 'rgba(25, 25, 24, 0.001)'],
+		]);
+		// Before layout there is no chart area: a flat colour at the opacity.
+		expect(ds.backgroundColor({ chart: { ctx: chart.ctx } })).toBe('rgba(25, 25, 24, 0.2)');
+	});
+
+	it('draws a smooth line as monotone, a straight line without it', () => {
+		const smooth = transformToChartJsData(
+			createMockProperties(),
+			lineChart(1, DataSetStyle.SmoothLine),
+			['Total'],
+		);
+		expect((smooth.datasets[0] as any).cubicInterpolationMode).toBe('monotone');
+		const straight = transformToChartJsData(createMockProperties(), lineChart(1), ['Total']);
+		expect((straight.datasets[0] as any).cubicInterpolationMode).toBeUndefined();
+	});
+});
