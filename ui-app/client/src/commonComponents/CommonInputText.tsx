@@ -350,7 +350,12 @@ function CommonInputText(props: CommonInputType) {
 				!focus && value?.toString()?.length ? '_hasValue' : ''
 			} ${!hasErrorMessages && hasValidationCheck && isDirty ? '_validationSuccess' : ''} ${
 				hasErrorMessages ? '_hasError' : ''
-			} ${readOnly ? '_readOnly' : ''} ${showEditRequest && editModeOriginal ? '_editMode' : ''}`}
+			} ${readOnly ? '_readOnly' : ''} ${showEditRequest && editModeOriginal ? '_editMode' : ''} ${
+				// The label element is always rendered (it carries the asterisk), so styles
+				// cannot see an unlabelled field on their own: a theme that places messages on
+				// the label's line must skip fields that have no such line (QA-0225).
+				label ? '' : '_noLabel'
+			}`}
 			style={computedStyles.comp ?? {}}
 			onMouseLeave={onMouseLeave}
 			onMouseEnter={onMouseEnter}
