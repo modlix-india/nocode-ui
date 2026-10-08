@@ -339,14 +339,29 @@ function transformRegularData(
 		// When showing on hover, use the line color for point background so it's visible
 		const hoverPointBackgroundColors = showPointsOnHover ? borderColors : pointBackgroundColors;
 
+		// The area under a line is opt-in (lineAreaFill) and only for a line given a fill
+		// opacity below 1, so existing line charts keep drawing without a fill.
+		const areaOpacity = reorderedFillOpacities[0] ?? 1;
+		const fillsArea = isLine && properties.lineAreaFill === true && areaOpacity < 1;
+		let backgroundColor: any = isLine ? backgroundColors[0] : backgroundColors;
+		if (fillsArea)
+			backgroundColor = areaFade(
+				resolveGradientRef(reorderedColors[0], chartData.gradients),
+				areaOpacity,
+			);
+
 		const dataset: any = {
 			label: dataSetLabels[index] || `Dataset ${index + 1}`,
 			data,
-			backgroundColor: isLine ? backgroundColors[0] : backgroundColors,
+			backgroundColor,
 			borderColor: isLine ? borderColors[0] : borderColors,
 			borderWidth: 2,
-			fill: isLine ? false : undefined,
+			fill: fillsArea ? 'origin' : isLine ? false : undefined,
 			tension,
+			// Monotone keeps a smooth line from bulging past its points, e.g. dipping below
+			// zero between two zero weeks.
+			cubicInterpolationMode:
+				dataSet.dataSetStyle === DataSetStyle.SmoothLine ? 'monotone' : undefined,
 			stepped,
 			pointStyle: pointStyles,
 			pointRadius,
@@ -578,6 +593,24 @@ function transformRadarData(
 /**
  * Applies opacity to a color string
  */
+/**
+ * Fill for the area under a line: the line's colour at `opacity` at the top of the chart
+ * area, fading to nothing at the bottom. Scriptable, because the chart area is only known
+ * once Chart.js has laid the chart out.
+ */
+function areaFade(color: string, opacity: number) {
+	return (context: any) => {
+		const chart = context?.chart;
+		const area = chart?.chartArea;
+		if (!area || !chart.ctx) return applyOpacity(color, opacity);
+		const gradient = chart.ctx.createLinearGradient(0, area.top, 0, area.bottom);
+		gradient.addColorStop(0, applyOpacity(color, opacity));
+		// Not 0: applyOpacity turns 0 into 'transparent' (black), which greys the fade.
+		gradient.addColorStop(1, applyOpacity(color, 0.001));
+		return gradient;
+	};
+}
+
 function applyOpacity(color: string, opacity: number): string {
 	if (opacity >= 1) return color;
 	if (opacity <= 0) return 'transparent';

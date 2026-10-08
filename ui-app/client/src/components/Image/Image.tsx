@@ -148,7 +148,11 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			setActualSrc(computedUrl);
 			return;
 		}
-		(async () => setActualSrc(await secureImage(computedUrl)))();
+		// A missing or expired file must not become an unhandled rejection; it is
+		// a broken image, so it takes the fallback like any other load error.
+		secureImage(computedUrl)
+			.then(setActualSrc)
+			.catch(() => setActualSrc(fallBackImg || undefined));
 	}, [computedUrl]);
 
 	useEffect(() => {
@@ -156,7 +160,9 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			setActualComparisonSrc(computedComparisonUrl);
 			return;
 		}
-		(async () => setActualComparisonSrc(await secureImage(computedComparisonUrl)))();
+		secureImage(computedComparisonUrl)
+			.then(setActualComparisonSrc)
+			.catch(() => setActualComparisonSrc(undefined));
 	}, [computedComparisonUrl]);
 
 	const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
