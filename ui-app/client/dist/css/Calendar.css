@@ -287,9 +287,16 @@
 
 /* Calendar Dropdown Select Styles */
 
+/* The root's height, border and fill are the date FIELD's (calendarBackground and
+   friends). Here the root only wraps the year/month/day dropdowns, so its fill showed
+   as a band in the gaps between them whenever it differed from the surface behind.
+   Its padding is the field's text inset too: it pushed the dropdowns in from the edge
+   the other fields' boxes start at. */
 .comp.compCalendar.dropDownCalendar {
 	height: auto !important;
 	border: none !important;
+	background: transparent !important;
+	padding: 0 !important;
 }
 
 .comp.compCalendar ._calendarDropdownContainer {
@@ -331,7 +338,8 @@
 	align-items: center;
 	justify-content: space-between;
 	gap: 4px;
-	height: 35px;
+	/* The height of the other form fields. */
+	height: 40px;
 	padding: 0 8px;
 	background-color: #f8fafb;
 	cursor: pointer;

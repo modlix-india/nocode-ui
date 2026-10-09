@@ -40,6 +40,10 @@ import { MOUSE_LEAVE_CLOSE_DELAY, openFloating } from '../util/floatingLayer';
 
 type DropdownOption = { label: any; value: any; key: any; originalObjectKey?: any };
 
+// Gap kept between an open list and the window edge, and the least height a capped list keeps.
+const DROPDOWN_VIEWPORT_EDGE = 8;
+const DROPDOWN_MIN_ROOM = 120;
+
 function findOptionByValue(value: any, ...lists: Array<Array<DropdownOption | undefined>>) {
 	for (const list of lists) {
 		const found = list.find(e => deepEqual(e?.value, value));
@@ -162,9 +166,11 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		bindingPathPath = makeTempPath(bindingPathPath, context.pageName);
 	}
 
+	// Return the remover: a Dropdown in a repeater row moves to another index when the
+	// array is re-sorted, and a listener left on the old path keeps mirroring that row.
 	useEffect(() => {
 		if (!originalBindingPathPath) return;
-		addListenerAndCallImmediately(
+		return addListenerAndCallImmediately(
 			props.context.pageName,
 			(_, value) => {
 				setSelected(value);
@@ -175,7 +181,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	useEffect(() => {
 		if (!searchBindingPath) return;
-		addListenerAndCallImmediately(
+		return addListenerAndCallImmediately(
 			props.context.pageName,
 			(_, value) => {
 				setSearchText(value ?? '');
@@ -561,6 +567,12 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			: undefined;
 
 	const [isAtBottom, setIsAtBottom] = useState(false);
+	// Height the list may use on the side it opened, set only when it would not fit there.
+	const [roomHeight, setRoomHeight] = useState<number | undefined>(undefined);
+	// The theme's list cap (max-height from the stylesheet), read before the inline room cap
+	// replaces it: an inline max-height beats the stylesheet, so a long list used to grow to the
+	// whole room below the field instead of stopping at the theme's height.
+	const themeMaxHeight = useRef<string | undefined>(undefined);
 	const sortOrder = useMemo(() => {
 		if (!moveSelectedToTop) return undefined;
 		return Array.isArray(selectedDataKey) ? [...selectedDataKey] : [selectedDataKey];
@@ -599,7 +611,17 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		const dropdownPanel = (
 			<div
 				className={`_dropdownContainer ${isAtBottom ? '_atBottom' : ''}`}
-				style={{ pointerEvents: 'auto', ...(computedStyles.dropDownContainer ?? {}) }}
+				style={{
+					pointerEvents: 'auto',
+					...(computedStyles.dropDownContainer ?? {}),
+					...(roomHeight !== undefined && {
+						maxHeight:
+							(computedStyles.dropDownContainer?.maxHeight ?? themeMaxHeight.current)
+								? `min(${computedStyles.dropDownContainer?.maxHeight ?? themeMaxHeight.current}, ${roomHeight}px)`
+								: `${roomHeight}px`,
+						overflowY: 'auto',
+					}),
+				}}
 				onScroll={scrollEndEvent}
 				onMouseEnter={() => {
 					setMouseInside(true);
@@ -611,10 +633,31 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				}}
 				ref={element => {
 					if (!element || searchText) return;
-					const rect = element.getBoundingClientRect();
 					const parentRect = element.parentElement?.getBoundingClientRect();
 					if (!parentRect) return;
-					setIsAtBottom(parentRect.bottom + rect.height > window.innerHeight);
+					if (roomHeight === undefined) {
+						const cap = window.getComputedStyle(element).maxHeight;
+						themeMaxHeight.current = cap && cap !== 'none' ? cap : undefined;
+					}
+					// Open on the side with more room, and cap the list to that room. It used
+					// to flip above whenever it did not fit below, however little room there
+					// was above, and never limited its height: a long role list on an
+					// Organization popup started 2000px above the top of the window.
+					// scrollHeight is the full list height even once it is capped, so this
+					// settles instead of flipping back and forth.
+					// A px theme cap is as tall as the list ever gets, so judge the room by it.
+					const capPx = themeMaxHeight.current?.endsWith('px')
+						? Number.parseFloat(themeMaxHeight.current)
+						: Number.NaN;
+					const natural = Number.isNaN(capPx)
+						? element.scrollHeight
+						: Math.min(element.scrollHeight, capPx);
+					const below = window.innerHeight - parentRect.bottom - DROPDOWN_VIEWPORT_EDGE;
+					const above = parentRect.top - DROPDOWN_VIEWPORT_EDGE;
+					const atBottom = natural > below && above > below;
+					const room = Math.floor(atBottom ? above : below);
+					setIsAtBottom(atBottom);
+					setRoomHeight(natural > room ? Math.max(room, DROPDOWN_MIN_ROOM) : undefined);
 				}}
 			>
 				<SubHelperComponent

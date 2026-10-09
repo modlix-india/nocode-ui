@@ -248,6 +248,12 @@ export function buildChartJsOptions(
 		},
 	};
 
+	if (chartType === 'doughnut' && properties.doughnutCutout) {
+		// Chart.js reads a number as pixels and a string such as '70%' as part of the radius.
+		const cutout = String(properties.doughnutCutout).trim();
+		(options as any).cutout = /^\d+(\.\d+)?$/.test(cutout) ? Number(cutout) : cutout;
+	}
+
 	// Add scales for non-radial charts
 	if (!isRadial && !isRadar) {
 		(options as any).scales = buildScalesOptions(

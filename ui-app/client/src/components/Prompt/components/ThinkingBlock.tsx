@@ -52,7 +52,10 @@ interface ThinkingBlockProps {
 	collapseIcon?: string;
 }
 
-// Single tool row with Tool(name) label — used when exactly 1 tool, no wrapper.
+// How close to the bottom (px) still counts as reading the newest thinking.
+const FOLLOW_TAIL_SLACK = 24;
+
+// A lone tool drawn as one flat Tool(name) row, with no thinking box around it.
 function SingleToolRow({
 	tc,
 	expandIcon,
@@ -117,9 +120,6 @@ export function ThinkingBlock({
 	isActive,
 	toolCalls,
 	reasoningContent,
-	toolRunningIcon,
-	toolSuccessIcon,
-	toolErrorIcon,
 	expandIcon = 'fa fa-chevron-down',
 	collapseIcon = 'fa fa-chevron-up',
 }: Readonly<ThinkingBlockProps>) {
@@ -130,6 +130,22 @@ export function ThinkingBlock({
 	);
 	const startTimeRef = useRef(Date.now());
 	const wasEverActiveRef = useRef(isActive);
+	const reasoningRef = useRef<HTMLDivElement>(null);
+	const followTailRef = useRef(true);
+
+	// Keep the newest thinking in view while it streams, unless the user
+	// scrolled up to read (live 2026-09-29: the box filled and stopped moving).
+	useEffect(() => {
+		const box = reasoningRef.current;
+		if (box && followTailRef.current) box.scrollTop = box.scrollHeight;
+	}, [reasoningContent]);
+
+	const onReasoningScroll = useCallback(() => {
+		const box = reasoningRef.current;
+		if (!box) return;
+		followTailRef.current =
+			box.scrollHeight - box.scrollTop - box.clientHeight <= FOLLOW_TAIL_SLACK;
+	}, []);
 
 	useEffect(() => {
 		if (isActive) {
@@ -215,7 +231,13 @@ export function ThinkingBlock({
 			{expanded && hasContent && (
 				<div className="_thinkingBody">
 					{reasoningContent && (
-						<div className="_thinkingReasoning">{reasoningContent}</div>
+						<div
+							ref={reasoningRef}
+							className="_thinkingReasoning"
+							onScroll={onReasoningScroll}
+						>
+							{reasoningContent}
+						</div>
 					)}
 					{toolCalls.map(tc => {
 						const isToolExpanded = expandedTools.has(tc.id);

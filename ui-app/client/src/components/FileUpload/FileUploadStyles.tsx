@@ -66,6 +66,8 @@ export default function ProgressBarStyles({
   		cursor: pointer;
 		justify-content: center;
 		gap: 5px;
+		white-space: nowrap;
+		flex-shrink: 0;
 	}
 
 	${PREFIX}._onlyButton ._fileUploadButton {

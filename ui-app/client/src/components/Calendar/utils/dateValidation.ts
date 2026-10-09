@@ -109,14 +109,22 @@ export function validateRangesAndSetData(
 	return false;
 }
 
+export type ValidationPrecision = 'day' | 'hour' | 'minute' | 'second';
+
 /**
  * Validates a date against all calendar constraints (min/max date, disabled dates,
  * disabled days, temporal ranges, hour/minute/second intervals).
  * Returns the date if valid, undefined otherwise.
+ *
+ * `precision` says what the date stands for. 'day' (the default) checks days only. The
+ * time pickers pass 'hour', 'minute' or 'second', and then disablePast also rejects a
+ * time today whose whole unit has already gone (14:00 is still allowed at 14:30 as an
+ * hour, because 14:45 is still possible).
  */
 export function validateWithProps(
 	date: Date | undefined,
 	props: CalendarValidationProps,
+	precision: ValidationPrecision = 'day',
 ): Date | undefined {
 	if (!date) return undefined;
 
@@ -156,6 +164,13 @@ export function validateWithProps(
 		if (disableToday && onlyDate.toDateString() === today.toDateString()) return undefined;
 		if (disableFuture && onlyDate > today) return undefined;
 		if (disablePast && onlyDate < today) return undefined;
+		if (disablePast && precision !== 'day') {
+			const unitEnd = new Date(date.getTime());
+			if (precision === 'hour') unitEnd.setMinutes(59, 59, 999);
+			else if (precision === 'minute') unitEnd.setSeconds(59, 999);
+			else unitEnd.setMilliseconds(999);
+			if (unitEnd.getTime() < Date.now()) return undefined;
+		}
 		if (disableWeekend && weekEndDays?.length && weekEndDays.includes(onlyDate.getDay()))
 			return undefined;
 	}

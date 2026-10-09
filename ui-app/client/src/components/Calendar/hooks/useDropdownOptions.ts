@@ -294,7 +294,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 								0,
 								0,
 							);
-							const validated = validateWithProps(testDate, validationProps);
+							const validated = validateWithProps(testDate, validationProps, 'hour');
 							if (validated) isValidAm = true;
 						}
 					}
@@ -314,7 +314,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 								0,
 								0,
 							);
-							const validated = validateWithProps(testDate, validationProps);
+							const validated = validateWithProps(testDate, validationProps, 'hour');
 							if (validated) isValidPm = true;
 						}
 					}
@@ -360,7 +360,7 @@ export function useHourOptions(params: UseHourOptionsParams): DropdownOption[] {
 						0,
 						0,
 					);
-					const validated = validateWithProps(testDate, validationProps);
+					const validated = validateWithProps(testDate, validationProps, 'hour');
 					if (validated) {
 						hours.push({
 							value: hour,
@@ -446,7 +446,7 @@ export function useMinuteOptions(params: UseMinuteOptionsParams): DropdownOption
 					minute,
 					0,
 				);
-				const validated = validateWithProps(testDate, validationProps);
+				const validated = validateWithProps(testDate, validationProps, 'minute');
 				if (validated) {
 					minutes.push({
 						value: minute,
@@ -541,7 +541,7 @@ export function useSecondOptions(params: UseSecondOptionsParams): DropdownOption
 					selectedMinute,
 					second,
 				);
-				const validated = validateWithProps(testDate, validationProps);
+				const validated = validateWithProps(testDate, validationProps, 'second');
 				if (validated) {
 					seconds.push({
 						value: second,
@@ -575,10 +575,36 @@ export function useSecondOptions(params: UseSecondOptionsParams): DropdownOption
 	]);
 }
 
+export interface UseAmPmOptionsParams {
+	selectedYear?: number | undefined;
+	selectedMonth?: number | undefined;
+	selectedDay?: number | undefined;
+	hourIntervalFrom?: number;
+	hourInterval?: number;
+	validationProps?: CalendarValidationProps;
+}
+
 /**
  * Hook to generate AM/PM options for 12-hour format.
+ *
+ * With a date picked, a half of the day none of whose hours is allowed is left out, the way
+ * the hour options leave out a refused hour. Offering AM on a disablePast date this evening
+ * let a past time show in the dropdowns that the calendar then refused to store, so the old
+ * value stayed bound while the dropdowns said otherwise.
  */
-export function useAmPmOptions(timeDesignType: TimeDesignType): DropdownOption[] {
+export function useAmPmOptions(
+	timeDesignType: TimeDesignType,
+	params: UseAmPmOptionsParams = {},
+): DropdownOption[] {
+	const {
+		selectedYear,
+		selectedMonth,
+		selectedDay,
+		hourIntervalFrom = 0,
+		hourInterval = 1,
+		validationProps,
+	} = params;
+
 	return useMemo(() => {
 		if (
 			timeDesignType === 'none' ||
@@ -588,9 +614,37 @@ export function useAmPmOptions(timeDesignType: TimeDesignType): DropdownOption[]
 		)
 			return [];
 
-		return [
+		const all: DropdownOption[] = [
 			{ value: 'AM', label: 'AM' },
 			{ value: 'PM', label: 'PM' },
 		];
-	}, [timeDesignType]);
+
+		if (
+			selectedYear === undefined ||
+			selectedMonth === undefined ||
+			selectedDay === undefined ||
+			!validationProps
+		)
+			return all;
+
+		const halfIsOpen = (firstHour: number) => {
+			for (let hour = firstHour; hour < firstHour + 12; hour++) {
+				if (hour < hourIntervalFrom) continue;
+				if (hourInterval > 0 && (hour - hourIntervalFrom) % hourInterval !== 0) continue;
+				const testDate = new Date(selectedYear, selectedMonth - 1, selectedDay, hour, 0, 0);
+				if (validateWithProps(testDate, validationProps, 'hour')) return true;
+			}
+			return false;
+		};
+
+		return all.filter(e => halfIsOpen(e.value === 'AM' ? 0 : 12));
+	}, [
+		timeDesignType,
+		selectedYear,
+		selectedMonth,
+		selectedDay,
+		hourIntervalFrom,
+		hourInterval,
+		validationProps,
+	]);
 }

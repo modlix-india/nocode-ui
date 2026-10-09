@@ -231,6 +231,11 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 				displayName: 'Padding Design Six',
 				description: 'Padding Design Six',
 			},
+			{
+				name: '_PADDINGSEVEN',
+				displayName: 'Padding Design Seven',
+				description: 'Padding Design Seven',
+			},
 		],
 	},
 	{

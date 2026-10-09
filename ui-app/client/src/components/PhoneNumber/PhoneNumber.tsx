@@ -433,6 +433,14 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 			context.pageName,
 			true,
 		);
+		// An unmounted (hidden, closed popup) field must not leave its error behind to block a Save.
+		return () =>
+			setData(
+				`Store.validations.${context.pageName}.${flattenUUID(definition.key)}`,
+				undefined,
+				context.pageName,
+				true,
+			);
 	}, [selected.D, phoneNumber, validation, storeFormatted, seperator]);
 
 	useEffect(() => {

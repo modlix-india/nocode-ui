@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import { ComponentProps } from '../../types/common';
 import {
 	PageStoreExtractor,
 	UrlDetailsExtractor,
@@ -18,6 +18,7 @@ import { getTranslations } from '../util/getTranslations';
 import { runEvent } from '../util/runEvent';
 import { flattenUUID } from '../util/uuid';
 import { ChatMessage } from './components/ChatMessage';
+import { splitReply, type AgentStart } from './replyParts';
 import { ThinkingBlock } from './components/ThinkingBlock';
 import { AgentGroup } from './components/AgentGroup';
 import { ActionBlock, ConfirmationAction } from './components/ActionBlock';
@@ -65,6 +66,8 @@ interface Message {
 	dataConfirmedMeta?: Record<string, any>;
 	craftIds?: string[];
 	confirmationActions?: ConfirmationAction[];
+	/** How far this reply had got as each sub-agent started, so its card is drawn there. */
+	agentStarts?: AgentStart[];
 	/**
 	 * A steer (a message sent mid-run) that the agent has not acknowledged yet.
 	 * Drawn faded: it is on its way to a turn already in progress, and only the
@@ -82,10 +85,13 @@ interface ToolCall {
 	isRunning: boolean;
 	agentId?: string; // sub-agent that produced this tool call (if any)
 	startedAt?: number;
+	endedAt?: number;
 	updates?: string[]; // accumulated tool_update messages (mini-log)
 }
 
 interface AgentSpan {
+	/** The per-spawn key it is stored under, and that its AgentStart names. */
+	key: string;
 	agentId: string;
 	label: string;
 	parentId: string;
@@ -262,6 +268,17 @@ function spanForAgent(ctx: SSEEventContext, agentId?: string): AgentSpan | undef
 	return latestRunning ?? latest;
 }
 
+// The orchestrator's own tool rows: a sub-agent's tools render inside its card,
+// and the tool that spawned an agent is replaced by that card.
+function orchestratorToolCalls(msg: Message): ToolCall[] {
+	const hidden = new Set<string>();
+	for (const sp of msg.agentSpans ?? []) {
+		for (const tc of sp.toolCalls) hidden.add(tc.id);
+		if (sp.parentToolUseId) hidden.add(sp.parentToolUseId);
+	}
+	return (msg.toolCalls ?? []).filter(tc => !hidden.has(tc.id));
+}
+
 function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 	switch (eventType) {
 		case 'text': {
@@ -297,6 +314,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			// span (its card vanished and its spawn tool row un-suppressed).
 			const spanKey = data.agent_tool_use_id || data.parent_tool_use_id || agentId;
 			ctx.agentSpans.set(spanKey, {
+				key: spanKey,
 				agentId,
 				label: data.label ?? agentId,
 				parentId: data.parent_id ?? 'root',
@@ -307,6 +325,24 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				toolCalls: [],
 			});
 			flushMessageState(ctx);
+			// Recorded so the text written before this card is drawn above it.
+			ctx.setMessages(prev =>
+				prev.map(m =>
+					m.id === ctx.assistantMsgId
+						? {
+								...m,
+								agentStarts: [
+									...(m.agentStarts ?? []),
+									{
+										spanKey,
+										contentLength: m.content.length,
+										thinkingLength: (m.thinking ?? '').length,
+									},
+								],
+							}
+						: m,
+				),
+			);
 			break;
 		}
 		case 'agent_finished': {
@@ -405,6 +441,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				existing.summary = data.summary ?? '';
 				existing.success = data.success;
 				existing.isRunning = false;
+				existing.endedAt = Date.now();
 				flushMessageState(ctx);
 			}
 			break;
@@ -1179,6 +1216,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const saveDraftTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
+	const messagesInnerRef = useRef<HTMLDivElement>(null);
 	const abortControllerRef = useRef<AbortController | null>(null);
 	/**
 	 * True while the stream is being let go of ON PURPOSE: Stop, a session
@@ -1934,6 +1972,22 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		});
 	}, [messages]);
 
+	// Follow the conversation as it grows, not only when a message changes. A
+	// reply keeps typing after its last event, and its chips and copy buttons
+	// arrive once it has, so none of that touches `messages` and the effect above
+	// never sees it (live 2026-09-29: the chips were left under the input box).
+	// Images and cards that open late grow it the same way.
+	useEffect(() => {
+		const container = messagesContainerRef.current;
+		const inner = messagesInnerRef.current;
+		if (!container || !inner) return;
+		const observer = new ResizeObserver(() => {
+			if (shouldAutoScrollRef.current) container.scrollTo({ top: container.scrollHeight });
+		});
+		observer.observe(inner);
+		return () => observer.disconnect();
+	}, []);
+
 	// Only human-initiated wheel/touch un-stick auto-scroll — programmatic
 	// scrollTo never fires them, so the smooth-scroll race can't happen.
 	const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -2214,6 +2268,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 													thinking: undefined,
 													toolCalls: [],
 													agentSpans: [],
+													agentStarts: undefined,
 													suggestions: undefined,
 													data: undefined,
 												}
@@ -2856,11 +2911,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			const headers = getAuthHeaders();
 			let receivedSessionId = sessionId;
+			const controller = new AbortController();
 
 			try {
 				// A new stream: nobody has asked to let go of THIS one yet.
 				deliberateAbortRef.current = false;
-				abortControllerRef.current = new AbortController();
+				abortControllerRef.current = controller;
 
 				const editorContext = buildEditorContext();
 				const drafts = buildOpenDraftsRef.current();
@@ -2897,7 +2953,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					method: 'POST',
 					headers,
 					body: JSON.stringify(body),
-					signal: abortControllerRef.current.signal,
+					signal: controller.signal,
 				});
 
 				if (response.status === 409) {
@@ -2962,6 +3018,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				}
 
 				forgetActiveRun();
+				// The reply is done: settle it now, not after the session list
+				// below comes back (its chips and copy buttons waited on that).
+				setIsStreaming(false);
 
 				// Refresh sessions after a message exchange
 				await fetchSessions();
@@ -3006,8 +3065,15 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					}
 				}
 			} finally {
-				setIsStreaming(false);
-				abortControllerRef.current = null;
+				// Only while this send still owns the stream. The reply settles
+				// before the session list refreshes, so a chip click or a queued
+				// steer can start the next send in between, and resetting here
+				// would switch that run off while it streams. Stop, a new chat and
+				// a rejoin let go themselves and leave nothing to reset.
+				if (abortControllerRef.current === controller) {
+					setIsStreaming(false);
+					abortControllerRef.current = null;
+				}
 			}
 		},
 		[
@@ -3414,7 +3480,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						definition={props.definition}
 						subComponentName="messagesContainer"
 					/>
-					<div className="_promptMessagesInner">
+					<div className="_promptMessagesInner" ref={messagesInnerRef}>
 						{hasEarlierMessages && (
 							<button
 								className="_loadEarlierMessages"
@@ -3431,167 +3497,148 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								</h2>
 							</div>
 						)}
-						{messages.map(msg => (
-							<React.Fragment key={msg.id}>
-								{msg.attachments?.length ? (
-									<div className="_messageAttachments">
-										{msg.attachments.map(att => (
-											<AttachmentThumb
-												key={att.id}
-												type={att.type}
-												name={att.name}
-												url={att.url}
-												expired={att.expired}
-												fileIcon={fileIcon}
-												expiredIcon={expiredAttachmentIcon}
-											/>
-										))}
-									</div>
-								) : null}
-								{msg.role === 'assistant' &&
-									(() => {
-										// 1. Tools owned by a sub-agent render
-										//    inside that agent's row, not the
-										//    orchestrator's group.
-										// 2. Tools that *spawned* an agent
-										//    (parent_tool_use_id) are suppressed
-										//    from the orchestrator group — the
-										//    agent row replaces them.
-										const subAgentToolIds = new Set<string>();
-										const spawnToolIds = new Set<string>();
-										for (const sp of msg.agentSpans ?? []) {
-											for (const tc of sp.toolCalls)
-												subAgentToolIds.add(tc.id);
-											if (sp.parentToolUseId)
-												spawnToolIds.add(sp.parentToolUseId);
-										}
-										const orchestratorToolCalls = (msg.toolCalls ?? []).filter(
-											tc =>
-												!subAgentToolIds.has(tc.id) &&
-												!spawnToolIds.has(tc.id),
-										);
-										// Render blocks in chronological order —
-										// whichever happened first appears first.
-										const firstToolAt = orchestratorToolCalls
-											.map(tc => tc.startedAt ?? Infinity)
-											.reduce((a, b) => Math.min(a, b), Infinity);
-										const firstAgentAt = (msg.agentSpans ?? [])
-											.map(sp => sp.startedAt ?? Infinity)
-											.reduce((a, b) => Math.min(a, b), Infinity);
-										const agentsFirst = firstAgentAt < firstToolAt;
-
-										// Hide the thinking indicator while an agent is running —
-										// the agent's pulsing dot already signals activity.
-										const anyAgentRunning = (msg.agentSpans ?? []).some(
-											sp => sp.status === 'running',
-										);
-										const thinkingBlock = (
-											<ThinkingBlock
-												isActive={
-													!anyAgentRunning &&
-													isStreaming &&
-													msg.id === messages.at(-1)?.id &&
-													(!msg.content ||
-														(msg.toolCalls?.some(tc => tc.isRunning) ??
-															false))
-												}
-												toolCalls={
-													showToolCalls ? orchestratorToolCalls : []
-												}
-												reasoningContent={msg.thinking}
-												toolRunningIcon={toolRunningIcon}
-												toolSuccessIcon={toolSuccessIcon}
-												toolErrorIcon={toolErrorIcon}
-												expandIcon={expandIcon}
-												collapseIcon={collapseIcon}
-											/>
-										);
-										const agentGroup =
-											(msg.agentSpans ?? []).length > 0 ? (
-												<AgentGroup
-													spans={msg.agentSpans ?? []}
+						{messages.map(msg => {
+							const isLatest = msg.id === messages.at(-1)?.id;
+							const isLive = isStreaming && msg.role === 'assistant' && isLatest;
+							const parts =
+								msg.role === 'assistant'
+									? splitReply(
+											{
+												thinking: msg.thinking ?? '',
+												content: msg.content,
+												toolCalls: orchestratorToolCalls(msg),
+												agentSpans: msg.agentSpans ?? [],
+											},
+											msg.agentStarts ?? [],
+										)
+									: [];
+							const answer = parts.at(-1);
+							const agentRunning = (msg.agentSpans ?? []).some(
+								sp => sp.status === 'running',
+							);
+							const working =
+								agentRunning || (msg.toolCalls ?? []).some(tc => tc.isRunning);
+							return (
+								<React.Fragment key={msg.id}>
+									{msg.attachments?.length ? (
+										<div className="_messageAttachments">
+											{msg.attachments.map(att => (
+												<AttachmentThumb
+													key={att.id}
+													type={att.type}
+													name={att.name}
+													url={att.url}
+													expired={att.expired}
+													fileIcon={fileIcon}
+													expiredIcon={expiredAttachmentIcon}
+												/>
+											))}
+										</div>
+									) : null}
+									{parts.map((part, i) => {
+										const isAnswer = i === parts.length - 1;
+										return (
+											<React.Fragment key={`${msg.id}-part-${i}`}>
+												<ThinkingBlock
+													isActive={
+														// The card's pulsing dot shows a running agent.
+														isAnswer &&
+														isLive &&
+														!agentRunning &&
+														(!part.content ||
+															part.toolCalls.some(tc => tc.isRunning))
+													}
+													toolCalls={showToolCalls ? part.toolCalls : []}
+													reasoningContent={part.thinking || undefined}
 													expandIcon={expandIcon}
 													collapseIcon={collapseIcon}
 												/>
-											) : null;
-										return (
-											<>
-												{agentsFirst ? (
-													<>
-														{agentGroup}
-														{thinkingBlock}
-													</>
-												) : (
-													<>
-														{thinkingBlock}
-														{agentGroup}
-													</>
+												{!isAnswer && part.content && (
+													<ChatMessage
+														role="assistant"
+														content={part.content}
+														componentKey={key ?? ''}
+														styles={styleProperties}
+														definition={props.definition}
+														showActions={false}
+													/>
 												)}
-											</>
+												{part.agentSpans.length > 0 && (
+													<AgentGroup
+														spans={part.agentSpans}
+														expandIcon={expandIcon}
+														collapseIcon={collapseIcon}
+													/>
+												)}
+											</React.Fragment>
 										);
-									})()}
-								<ChatMessage
-									role={msg.role}
-									content={msg.content}
-									pending={msg.pending}
-									componentKey={key ?? ''}
-									styles={styleProperties}
-									isStreaming={
-										isStreaming &&
-										msg.role === 'assistant' &&
-										msg.id === messages.at(-1)?.id
-									}
-									definition={props.definition}
-									copyIcon={copyIcon}
-									copySuccessIcon={copySuccessIcon}
-									enableFeedback={!!enableFeedback}
-									feedbackRating={msg.feedbackRating}
-									turnNumber={msg.turnNumber}
-									messageId={msg.id}
-									onFeedback={handleFeedback}
-									thumbsUpIcon={thumbsUpIcon}
-									thumbsDownIcon={thumbsDownIcon}
-								>
-									{msg.suggestions && (
-										<SuggestionButtons
-											suggestions={msg.suggestions}
-											onSelect={handleSend}
-											disabled={isStreaming || msg.id !== messages.at(-1)?.id}
-										/>
-									)}
-									{msg.data?.map((payload, i) => (
-										<InlineDataRenderer
-											key={`${msg.id}-data-${i}`}
-											payload={payload}
-											confirmed={msg.dataConfirmed}
-											confirmedMeta={msg.dataConfirmedMeta}
-											disabled={isStreaming || msg.id !== messages.at(-1)?.id}
-											onRespond={(sendText, displayText, meta) => {
-												setMessages(prev =>
-													prev.map(m =>
-														m.id === msg.id
-															? {
-																	...m,
-																	dataConfirmed: true,
-																	dataConfirmedMeta: meta,
-																}
-															: m,
-													),
-												);
-												handleSend(sendText, undefined, displayText);
-											}}
+									})}
+									<ChatMessage
+										role={msg.role}
+										content={answer ? answer.content : msg.content}
+										pending={msg.pending}
+										copyText={parts
+											.map(part => part.content)
+											.filter(Boolean)
+											.join('\n\n')}
+										componentKey={key ?? ''}
+										styles={styleProperties}
+										isStreaming={isLive}
+										working={working}
+										definition={props.definition}
+										copyIcon={copyIcon}
+										copySuccessIcon={copySuccessIcon}
+										enableFeedback={!!enableFeedback}
+										feedbackRating={msg.feedbackRating}
+										turnNumber={msg.turnNumber}
+										messageId={msg.id}
+										onFeedback={handleFeedback}
+										thumbsUpIcon={thumbsUpIcon}
+										thumbsDownIcon={thumbsDownIcon}
+										footer={
+											msg.suggestions && (
+												<SuggestionButtons
+													suggestions={msg.suggestions}
+													onSelect={handleSend}
+													disabled={isStreaming || !isLatest}
+												/>
+											)
+										}
+									>
+										{msg.data?.map((payload, i) => (
+											<InlineDataRenderer
+												key={`${msg.id}-data-${i}`}
+												payload={payload}
+												confirmed={msg.dataConfirmed}
+												confirmedMeta={msg.dataConfirmedMeta}
+												disabled={isStreaming || !isLatest}
+												onRespond={(sendText, displayText, meta) => {
+													setMessages(prev =>
+														prev.map(m =>
+															m.id === msg.id
+																? {
+																		...m,
+																		dataConfirmed: true,
+																		dataConfirmedMeta: meta,
+																	}
+																: m,
+														),
+													);
+													handleSend(sendText, undefined, displayText);
+												}}
+											/>
+										))}
+									</ChatMessage>
+									{msg.confirmationActions?.map(action => (
+										<ActionBlock
+											key={action.confirmationId}
+											action={action}
+											onRespond={handleActionResponse}
 										/>
 									))}
-								</ChatMessage>
-								{msg.confirmationActions?.map(action => (
-									<ActionBlock
-										key={action.confirmationId}
-										action={action}
-										onRespond={handleActionResponse}
-									/>
-								))}
-							</React.Fragment>
-						))}
+								</React.Fragment>
+							);
+						})}
 						{isStreaming && messages.at(-1)?.role === 'user' && (
 							<ThinkingBlock
 								isActive={true}

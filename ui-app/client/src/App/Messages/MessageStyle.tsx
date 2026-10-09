@@ -10,10 +10,20 @@ export default function MessageStyle({
 	// messageStyleProperies.ts, whose default is 10000. Hard-coding it at 12 meant
 	// toasts painted behind popups and portals with no way for a theme to say
 	// otherwise.
+	//
+	// The container is always in the DOM, even with no toasts, and sits above everything.
+	// A theme that pins it on all four sides (top AND bottom, left AND right) stretches it
+	// over the page, and an empty box at 10000 then swallows every click. So the box
+	// itself ignores the pointer and only the toasts inside it take clicks.
 	const css =
 		`
 		${PREFIX} {
 			position: fixed;
+			pointer-events: none;
+		}
+
+		${PREFIX} > * {
+			pointer-events: auto;
 		}
 
 		${PREFIX} ._message {

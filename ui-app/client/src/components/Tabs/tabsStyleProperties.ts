@@ -126,6 +126,14 @@ export const stylePropertiesForTheme: Array<StylePropertyDefinition> = [
 		n: 'tabsGapTabsContainer<designType><colorScheme>',
 	},
 	{
+		cp: 'gap',
+		sel: '.comp.compTabs<designType><colorScheme>._horizontal',
+		np: true,
+		gn: 'Gap',
+		dn: 'Gap between the tabs and the content',
+		n: 'tabsGapHorizontal<designType><colorScheme>',
+	},
+	{
 		cp: 'color',
 		sel: '.comp.compTabs<designType><colorScheme> > .tabsContainer > .tabDiv',
 		np: true,

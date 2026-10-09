@@ -18,6 +18,7 @@ import getPositions from '../util/getPositions';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { styleProperties, styleDefaults } from './popoverStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { closeAfterClick, isPanelActionClick } from './insideClick';
 export interface PortalCoordinates {
 	left?: number;
 	top?: number;
@@ -45,6 +46,7 @@ function Popover(props: Readonly<ComponentProps>) {
 			closeOnLeave,
 			showInDesign,
 			closeOnOutsideClick,
+			closeOnInsideClick,
 			showOnHover,
 		} = {},
 		stylePropertiesWithPseudoStates,
@@ -201,6 +203,14 @@ function Popover(props: Readonly<ComponentProps>) {
 							<div
 								ref={popoverRef}
 								onClick={e => e.stopPropagation()}
+								// Capture, not bubble: a Menu or Link that navigates stops the
+								// click before it would bubble up to here.
+								onClickCapture={e => {
+									if (!closeOnInsideClick || globalThis.designMode == 'PAGE')
+										return;
+									if (isPanelActionClick(e.target, popoverRef.current))
+										closeAfterClick(() => setShow(false));
+								}}
 								// Without these the panel is unreachable when closeOnLeave
 								// is set: the countdown armed on leaving the trigger would
 								// run out while the pointer sits on the panel, because the

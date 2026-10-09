@@ -241,7 +241,14 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		reverseSecondOrder,
 	});
 
-	const availableAmPm = useAmPmOptions(timeDesignType);
+	const availableAmPm = useAmPmOptions(timeDesignType, {
+		selectedYear,
+		selectedMonth,
+		selectedDay,
+		hourIntervalFrom: props.hourIntervalFrom,
+		hourInterval: props.hourInterval,
+		validationProps,
+	});
 
 	// Style curry function
 	const curry = getStyleObjectCurry(props.styles, props.hoverStyles, props.disabledStyles);
@@ -251,7 +258,42 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	const needsDefaultTime =
 		timeDesignType === 'none' && formatHasTimeComponent(storageFormatToUse);
 
-	// Update date and notify parent
+	// The date the dropdowns stand for, or undefined while the date part is incomplete.
+	const composeDate = useCallback(
+		(
+			year: number | undefined,
+			month: number | undefined,
+			day: number | undefined,
+			hour: number | undefined,
+			minute: number | undefined,
+			second: number | undefined,
+		): Date | undefined => {
+			if (year === undefined || month === undefined || day === undefined) return undefined;
+
+			if (needsDefaultTime) {
+				// When time dropdowns are hidden but format needs time, apply default time
+				const baseDate = new Date(year, month - 1, day, 0, 0, 0);
+				return applyDefaultTime(baseDate, defaultTimeWhenNone as DefaultTimeWhenNone);
+			}
+			return new Date(year, month - 1, day, hour ?? 0, minute ?? 0, second ?? 0);
+		},
+		[needsDefaultTime, defaultTimeWhenNone],
+	);
+
+	// A picked time is checked at the minute options' precision, so disablePast
+	// refuses a time today that has already gone; a date alone is checked by day.
+	const isAllowed = useCallback(
+		(date: Date, hour: number | undefined) =>
+			!!validateWithProps(
+				date,
+				validationProps,
+				!needsDefaultTime && hour !== undefined ? 'minute' : 'day',
+			),
+		[validationProps, needsDefaultTime],
+	);
+
+	// Update date and notify parent. Returns false when the date is refused, and then nothing
+	// is stored.
 	const updateDate = useCallback(
 		(
 			year: number | undefined,
@@ -260,35 +302,40 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 			hour: number | undefined,
 			minute: number | undefined,
 			second: number | undefined,
-		) => {
-			if (year === undefined || month === undefined || day === undefined) {
-				return;
+		): boolean => {
+			const newDate = composeDate(year, month, day, hour, minute, second);
+			if (!newDate) return true;
+
+			if (!isAllowed(newDate, hour)) return false;
+
+			const displayFormatted = toFormat(newDate, 'Date', displayDateFormat);
+			if (displayFormatted) {
+				props.onChange(displayFormatted, false);
 			}
-
-			let newDate: Date;
-
-			if (needsDefaultTime) {
-				// When time dropdowns are hidden but format needs time, apply default time
-				const baseDate = new Date(year, month - 1, day, 0, 0, 0);
-				newDate = applyDefaultTime(baseDate, defaultTimeWhenNone as DefaultTimeWhenNone);
-			} else {
-				const finalHour = hour ?? 0;
-				const finalMinute = minute ?? 0;
-				const finalSecond = second ?? 0;
-				newDate = new Date(year, month - 1, day, finalHour, finalMinute, finalSecond);
-			}
-
-			const validated = validateWithProps(newDate, validationProps);
-
-			if (validated) {
-				const displayFormatted = toFormat(newDate, 'Date', displayDateFormat);
-				if (displayFormatted) {
-					props.onChange(displayFormatted, false);
-				}
-			}
+			return true;
 		},
-		[displayDateFormat, validationProps, props.onChange, needsDefaultTime, defaultTimeWhenNone],
+		[displayDateFormat, props.onChange, composeDate, isAllowed],
 	);
+
+	// A refused pick must not stay in the dropdowns: they would show a time that is not the
+	// bound value (AM on today's date showed 9 AM while the stored 9:57 PM stayed bound and
+	// was saved). So a refused change puts every dropdown back to what it showed before it.
+	const commitDate = (
+		year: number | undefined,
+		month: number | undefined,
+		day: number | undefined,
+		hour: number | undefined,
+		minute: number | undefined,
+		second: number | undefined,
+	) => {
+		if (updateDate(year, month, day, hour, minute, second)) return;
+		setSelectedYear(selectedYear);
+		setSelectedMonth(selectedMonth);
+		setSelectedDay(selectedDay);
+		setSelectedHour(selectedHour);
+		setSelectedMinute(selectedMinute);
+		setSelectedSecond(selectedSecond);
+	};
 
 	// Change handlers
 	const handleYearChange = (value: string | number) => {
@@ -296,7 +343,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 			setSelectedYear(undefined);
 			setSelectedMonth(undefined);
 			setSelectedDay(undefined);
-			updateDate(
+			commitDate(
 				undefined,
 				undefined,
 				undefined,
@@ -315,9 +362,9 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 			if (newDate.getFullYear() !== year || newDate.getMonth() + 1 !== selectedMonth) {
 				setSelectedMonth(1);
 				setSelectedDay(1);
-				updateDate(year, 1, 1, selectedHour, selectedMinute, selectedSecond);
+				commitDate(year, 1, 1, selectedHour, selectedMinute, selectedSecond);
 			} else {
-				updateDate(
+				commitDate(
 					year,
 					selectedMonth,
 					selectedDay,
@@ -333,7 +380,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		if (value === '' || value === undefined) {
 			setSelectedMonth(undefined);
 			setSelectedDay(undefined);
-			updateDate(
+			commitDate(
 				selectedYear,
 				undefined,
 				undefined,
@@ -351,7 +398,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 			const lastDay = new Date(selectedYear, month, 0).getDate();
 			if (selectedDay > lastDay) {
 				setSelectedDay(lastDay);
-				updateDate(
+				commitDate(
 					selectedYear,
 					month,
 					lastDay,
@@ -360,7 +407,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 					selectedSecond,
 				);
 			} else {
-				updateDate(
+				commitDate(
 					selectedYear,
 					month,
 					selectedDay,
@@ -375,7 +422,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	const handleDayChange = (value: string | number) => {
 		if (value === '' || value === undefined) {
 			setSelectedDay(undefined);
-			updateDate(
+			commitDate(
 				selectedYear,
 				selectedMonth,
 				undefined,
@@ -388,13 +435,13 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		const day = typeof value === 'string' ? parseInt(value, 10) : value;
 		if (isNaN(day) || selectedYear === undefined || selectedMonth === undefined) return;
 		setSelectedDay(day);
-		updateDate(selectedYear, selectedMonth, day, selectedHour, selectedMinute, selectedSecond);
+		commitDate(selectedYear, selectedMonth, day, selectedHour, selectedMinute, selectedSecond);
 	};
 
 	const handleHourChange = (value: string | number) => {
 		if (value === '' || value === undefined) {
 			setSelectedHour(undefined);
-			updateDate(
+			commitDate(
 				selectedYear,
 				selectedMonth,
 				selectedDay,
@@ -422,8 +469,37 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 			actualHour = hour === 12 ? 0 : hour;
 		}
 
+		// The hour options list a 12-hour value when either half allows it, so 9 is offered
+		// at 9:30 PM for 9 PM even with AM showing. Take the half that is allowed then.
+		if (is12Hr) {
+			const otherHalfHour = (actualHour + 12) % 24;
+			const inHalf = composeDate(
+				selectedYear,
+				selectedMonth,
+				selectedDay,
+				actualHour,
+				selectedMinute,
+				selectedSecond,
+			);
+			const inOtherHalf = composeDate(
+				selectedYear,
+				selectedMonth,
+				selectedDay,
+				otherHalfHour,
+				selectedMinute,
+				selectedSecond,
+			);
+			if (
+				inHalf &&
+				inOtherHalf &&
+				!isAllowed(inHalf, actualHour) &&
+				isAllowed(inOtherHalf, otherHalfHour)
+			)
+				actualHour = otherHalfHour;
+		}
+
 		setSelectedHour(actualHour);
-		updateDate(
+		commitDate(
 			selectedYear,
 			selectedMonth,
 			selectedDay,
@@ -436,7 +512,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 	const handleMinuteChange = (value: string | number) => {
 		if (value === '' || value === undefined) {
 			setSelectedMinute(undefined);
-			updateDate(
+			commitDate(
 				selectedYear,
 				selectedMonth,
 				selectedDay,
@@ -449,13 +525,13 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		const minute = typeof value === 'string' ? parseInt(value, 10) : value;
 		if (isNaN(minute)) return;
 		setSelectedMinute(minute);
-		updateDate(selectedYear, selectedMonth, selectedDay, selectedHour, minute, selectedSecond);
+		commitDate(selectedYear, selectedMonth, selectedDay, selectedHour, minute, selectedSecond);
 	};
 
 	const handleSecondChange = (value: string | number) => {
 		if (value === '' || value === undefined) {
 			setSelectedSecond(undefined);
-			updateDate(
+			commitDate(
 				selectedYear,
 				selectedMonth,
 				selectedDay,
@@ -468,7 +544,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 		const second = typeof value === 'string' ? parseInt(value, 10) : value;
 		if (isNaN(second)) return;
 		setSelectedSecond(second);
-		updateDate(selectedYear, selectedMonth, selectedDay, selectedHour, selectedMinute, second);
+		commitDate(selectedYear, selectedMonth, selectedDay, selectedHour, selectedMinute, second);
 	};
 
 	const handleAmPmChange = (value: string | number) => {
@@ -488,7 +564,7 @@ export function CalendarDropdown(props: CalendarDropdownProps) {
 			newHour = hour12 === 12 ? 12 : hour12 + 12;
 		}
 		setSelectedHour(newHour);
-		updateDate(
+		commitDate(
 			selectedYear,
 			selectedMonth,
 			selectedDay,

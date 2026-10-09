@@ -24,6 +24,7 @@ export default function PopupStyles({
       bottom: 0;
       left: 0;
       display: flex;
+      overflow-y: auto;
     }
 
     
@@ -39,6 +40,23 @@ export default function PopupStyles({
 
     ${PREFIX} .modal{
       position: relative;
+    }
+
+    /* A modal taller than the viewport used to overflow both edges of the centred
+       backdrop, and the part above the top could not be scrolled to (the title on a
+       small laptop). Auto margins centre the same way while it fits and collapse to
+       0 when it does not, so it starts at the top and the backdrop scrolls. */
+    ${PREFIX} ._left_center.backdrop > .modal,
+    ${PREFIX} ._right_center.backdrop > .modal,
+    ${PREFIX} ._center_center.backdrop > .modal { margin-top: auto; margin-bottom: auto; }
+    /* A bottom-anchored modal sits on the screen edge, so rounding its bottom corners only
+       shows the page through them. Pages used to square them one popup at a time. */
+    ${PREFIX} ._left_bottom.backdrop > .modal,
+    ${PREFIX} ._right_bottom.backdrop > .modal,
+    ${PREFIX} ._center_bottom.backdrop > .modal {
+      margin-top: auto;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
     }
     ${PREFIX} .closeButtonPosition{
       margin-bottom: 10px;

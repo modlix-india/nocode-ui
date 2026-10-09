@@ -191,6 +191,8 @@ function TextBox(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	// Also re-validate when the page asks for the messages: a rule's condition can read other store
+	// values (walkInForm's Page.isInvalidOtp) that change while the field's value does not.
 	useEffect(() => {
 		if (!validation?.length) return;
 
@@ -217,7 +219,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 				context.pageName,
 				true,
 			);
-	}, [value, validation]);
+	}, [value, validation, context.showValidationMessages]);
 	const changeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
 	const blurEvent = onBlur ? props.pageDefinition.eventFunctions?.[onBlur] : undefined;
 	const focusEvent = onFocus ? props.pageDefinition.eventFunctions?.[onFocus] : undefined;
@@ -365,7 +367,16 @@ function TextBox(props: Readonly<ComponentProps>) {
 				callChangeEvent();
 			}
 		}
-		if (!updateStoreImmediately) setValue(text);
+		if (!updateStoreImmediately) {
+			setValue(text);
+			// A change while the field is not focused is the browser filling it (autofill, a
+			// password manager). No blur follows to store it, so a sign-in form would post
+			// without the password: store it now.
+			if (!focus && bindingPathPath) {
+				setData(bindingPathPath, temp, context?.pageName);
+				callChangeEvent();
+			}
+		}
 	};
 
 	const handleNumberChange = (text: string) => {
