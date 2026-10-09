@@ -271,7 +271,9 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._htmlPreviewWrap { display: flex; flex-direction: column; width: 100%; }
 	${PREFIX} ._previewSubject { padding: 8px 12px; background: ${card}; border-bottom: 1px solid ${border}; font-size: 13px; }
 	${PREFIX} ._previewSubject span { color: ${t('fontColorThree', '#999')}; margin-right: 6px; }
-	${PREFIX} ._htmlPreview { border: none; background: ${card}; flex: 1; width: 100%; height: 100%; }
+	/* An email renders on a white client window whatever the editor's theme; on the theme's
+	   card a dark theme hid every part the email leaves transparent. */
+	${PREFIX} ._htmlPreview { border: none; background: #fff; flex: 1; width: 100%; height: 100%; }
 	${PREFIX} ._htmlPreview.DESKTOP { }
 	${PREFIX} ._htmlPreviewWrap.TABLET { max-width: 768px; }
 	${PREFIX} ._htmlPreviewWrap.MOBILE { max-width: 400px; }
