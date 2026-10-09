@@ -367,7 +367,16 @@ function TextBox(props: Readonly<ComponentProps>) {
 				callChangeEvent();
 			}
 		}
-		if (!updateStoreImmediately) setValue(text);
+		if (!updateStoreImmediately) {
+			setValue(text);
+			// A change while the field is not focused is the browser filling it (autofill, a
+			// password manager). No blur follows to store it, so a sign-in form would post
+			// without the password: store it now.
+			if (!focus && bindingPathPath) {
+				setData(bindingPathPath, temp, context?.pageName);
+				callChangeEvent();
+			}
+		}
 	};
 
 	const handleNumberChange = (text: string) => {

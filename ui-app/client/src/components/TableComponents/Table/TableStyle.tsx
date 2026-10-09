@@ -52,9 +52,32 @@ export default function TableStyle({
 
 	const values = new Map([...(theme.get(StyleResolution.ALL) ?? []), ...styleDefaults]);
 
+	// Row selection (multiSelect) draws CommonCheckbox, whose shared CSS gives it no size and
+	// no colour: those live in CheckBoxStyle, scoped to `.comp.compCheckbox`. Inside a table it
+	// rendered as a 0x0 box with a 2px border (a dash), and as nothing once checked. Size it
+	// here and paint it from the theme's own CheckBox variables, so it follows the theme.
+	const checkboxValue = (name: string, fallback: string) =>
+		processStyleValueWithFunction(values.get(name), values) || fallback;
 	const css =
 		`${PREFIX} ._tablePagination ._seperator {
 		color: ${processStyleValueWithFunction(values.get('paginationSeperatorColor'), values)};
+	}
+	${PREFIX} span.commonCheckbox {
+		width: 16px;
+		height: 16px;
+		box-sizing: border-box;
+		border: 1.5px solid ${checkboxValue('checkBoxBorderColorCommonCheckboxDefaultPrimary', '#74746F')};
+		border-radius: ${checkboxValue('checkBoxBorderRadiusCommonCheckboxDefaultPrimary', '4px')};
+		background: ${checkboxValue('checkBoxBackgroundCommonCheckboxDefaultPrimary', '#FFFFFF')};
+	}
+	${PREFIX} span.commonCheckbox._checked {
+		border: 1.5px solid ${checkboxValue('checkBoxBorderColorCheckedDefaultPrimary', '#191918')};
+		background: ${checkboxValue('checkBoxBackgroundCheckedDefaultPrimary', '#191918')};
+	}
+	${PREFIX} span.commonCheckbox ._thumb {
+		left: 0px;
+		top: 0px;
+		background: ${checkboxValue('checkBoxBackgroundThumbDefaultPrimary', '#FFFFFF')};
 	}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
