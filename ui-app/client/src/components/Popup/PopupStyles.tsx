@@ -49,9 +49,15 @@ export default function PopupStyles({
     ${PREFIX} ._left_center.backdrop > .modal,
     ${PREFIX} ._right_center.backdrop > .modal,
     ${PREFIX} ._center_center.backdrop > .modal { margin-top: auto; margin-bottom: auto; }
+    /* A bottom-anchored modal sits on the screen edge, so rounding its bottom corners only
+       shows the page through them. Pages used to square them one popup at a time. */
     ${PREFIX} ._left_bottom.backdrop > .modal,
     ${PREFIX} ._right_bottom.backdrop > .modal,
-    ${PREFIX} ._center_bottom.backdrop > .modal { margin-top: auto; }
+    ${PREFIX} ._center_bottom.backdrop > .modal {
+      margin-top: auto;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
     ${PREFIX} .closeButtonPosition{
       margin-bottom: 10px;
       position: relative;
