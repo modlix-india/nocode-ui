@@ -89,9 +89,16 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		}
 	}, []);
 
+	// The running flag is kept per page and function, so every row of a list whose buttons
+	// share one onClick saw it and all of them spun. A repeated button now shows the spinner
+	// only for the run it started; the shared flag still blocks a second run from any row.
+	const [startedHere, setStartedHere] = useState(false);
+	const isRepeated = (props.locationHistory?.length ?? 0) > 0;
+	const showSpinner = isLoading && (!isRepeated || startedHere);
+
 	const styleProperties = processComponentStylePseudoClasses(
 		props.pageDefinition,
-		{ focus, hover, disabled: isLoading || readOnly },
+		{ focus, hover, disabled: showSpinner || readOnly },
 		stylePropertiesWithPseudoStates,
 	);
 
@@ -117,6 +124,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 
 		if (clickEvent && !isLoading && !eventRunningRef.current) {
 			eventRunningRef.current = true;
+			setStartedHere(true);
 			try {
 				await runEvent(
 					clickEvent,
@@ -127,6 +135,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 				);
 			} finally {
 				eventRunningRef.current = false;
+				setStartedHere(false);
 			}
 		}
 	};
@@ -151,7 +160,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		shortcutGroup,
 		label,
 		fallbackLabel: 'Button',
-		disabled: isLoading || readOnly,
+		disabled: showSpinner || readOnly,
 		elementRef: buttonRef,
 		onActivate: e => handleClick(e),
 	});
@@ -165,7 +174,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	let rightIconTag = undefined;
 
 	if (rightImage) {
-		rightIconTag = isLoading ? (
+		rightIconTag = showSpinner ? (
 			<i className="fa fa-circle-notch fa-spin _rightButtonIcon _icon"></i>
 		) : (
 			<img
@@ -188,7 +197,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			<i
 				style={styleProperties.rightIcon ?? {}}
 				className={`_rightButtonIcon _icon ${
-					!isLoading ? rightIcon : 'fa fa-circle-notch fa-spin'
+					!showSpinner ? rightIcon : 'fa fa-circle-notch fa-spin'
 				}`}
 			>
 				<SubHelperComponent
@@ -199,11 +208,11 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 		);
 	}
 
-	const hasLeftIcon = leftIcon || leftImage || isLoading;
+	const hasLeftIcon = leftIcon || leftImage || showSpinner;
 
 	let leftIconTag = undefined;
 	if (leftImage) {
-		leftIconTag = isLoading ? (
+		leftIconTag = showSpinner ? (
 			<i className="fa fa-circle-notch fa-spin _leftButtonIcon _icon"></i>
 		) : (
 			<img
@@ -222,7 +231,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			<i
 				style={styleProperties.leftIcon ?? {}}
 				className={`_leftButtonIcon _icon ${
-					!isLoading ? leftIcon : 'fa fa-circle-notch fa-spin'
+					!showSpinner ? leftIcon : 'fa fa-circle-notch fa-spin'
 				}`}
 			>
 				<SubHelperComponent
@@ -455,7 +464,7 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 			className={`comp compButton button ${designType} ${colorScheme} ${
 				hasLeftIcon ? '_withLeftIcon' : ''
 			} ${hasRightIcon ? '_withRightIcon' : ''}`}
-			disabled={isLoading || readOnly}
+			disabled={showSpinner || readOnly}
 			onClick={handleClick}
 			style={styleProperties.comp ?? {}}
 			onMouseEnter={() => setHover(true)}
