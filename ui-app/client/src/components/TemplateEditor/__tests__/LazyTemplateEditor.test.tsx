@@ -42,6 +42,7 @@ jest.mock('../util/previewApi', () => ({
 jest.mock('../../../context/StoreContext', () => ({
 	__esModule: true,
 	getDataFromPath: () => undefined,
+	addListenerAndCallImmediately: () => () => undefined,
 	PageStoreExtractor: { getForContext: () => ({ getPageName: () => 'p' }) },
 }));
 
