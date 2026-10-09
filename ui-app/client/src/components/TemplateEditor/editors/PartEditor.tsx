@@ -1,4 +1,7 @@
-import React, { Suspense, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
+import { STORE_PATH_THEME_PATH } from '../../../constants';
+import { addListenerAndCallImmediately } from '../../../context/StoreContext';
+import { isDarkTheme } from '../../../util/themeSelection';
 import { TemplatePartDef } from '../util/templateTypes';
 import { VariableEntry } from '../util/variableUtils';
 
@@ -24,6 +27,17 @@ export default function PartEditor({
 	const monacoRef = useRef<any>(null);
 	const textRef = useRef<HTMLTextAreaElement | null>(null);
 	const [showVars, setShowVars] = useState(false);
+	// Monaco follows the app theme's ground, as the page editor does.
+	const [dark, setDark] = useState(false);
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				undefined,
+				(_, v) => setDark(isDarkTheme(v)),
+				STORE_PATH_THEME_PATH,
+			),
+		[],
+	);
 
 	const insertToken = (token: string) => {
 		if (part.editor === 'html' && monacoRef.current) {
@@ -105,6 +119,7 @@ export default function PartEditor({
 					<Suspense fallback={<div className="_editorLoading">Loading editor...</div>}>
 						<LazyEditor
 							language="html"
+							theme={dark ? 'vs-dark' : 'light'}
 							height="100%"
 							value={value ?? ''}
 							onChange={(ev: string | undefined) => onChange(ev ?? '')}
