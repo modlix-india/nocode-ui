@@ -569,6 +569,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 	const [isAtBottom, setIsAtBottom] = useState(false);
 	// Height the list may use on the side it opened, set only when it would not fit there.
 	const [roomHeight, setRoomHeight] = useState<number | undefined>(undefined);
+	// The theme's list cap (max-height from the stylesheet), read before the inline room cap
+	// replaces it: an inline max-height beats the stylesheet, so a long list used to grow to the
+	// whole room below the field instead of stopping at the theme's height.
+	const themeMaxHeight = useRef<string | undefined>(undefined);
 	const sortOrder = useMemo(() => {
 		if (!moveSelectedToTop) return undefined;
 		return Array.isArray(selectedDataKey) ? [...selectedDataKey] : [selectedDataKey];
@@ -611,9 +615,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					pointerEvents: 'auto',
 					...(computedStyles.dropDownContainer ?? {}),
 					...(roomHeight !== undefined && {
-						maxHeight: computedStyles.dropDownContainer?.maxHeight
-							? `min(${computedStyles.dropDownContainer.maxHeight}, ${roomHeight}px)`
-							: `${roomHeight}px`,
+						maxHeight:
+							(computedStyles.dropDownContainer?.maxHeight ?? themeMaxHeight.current)
+								? `min(${computedStyles.dropDownContainer?.maxHeight ?? themeMaxHeight.current}, ${roomHeight}px)`
+								: `${roomHeight}px`,
 						overflowY: 'auto',
 					}),
 				}}
@@ -630,13 +635,23 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					if (!element || searchText) return;
 					const parentRect = element.parentElement?.getBoundingClientRect();
 					if (!parentRect) return;
+					if (roomHeight === undefined) {
+						const cap = window.getComputedStyle(element).maxHeight;
+						themeMaxHeight.current = cap && cap !== 'none' ? cap : undefined;
+					}
 					// Open on the side with more room, and cap the list to that room. It used
 					// to flip above whenever it did not fit below, however little room there
 					// was above, and never limited its height: a long role list on an
 					// Organization popup started 2000px above the top of the window.
 					// scrollHeight is the full list height even once it is capped, so this
 					// settles instead of flipping back and forth.
-					const natural = element.scrollHeight;
+					// A px theme cap is as tall as the list ever gets, so judge the room by it.
+					const capPx = themeMaxHeight.current?.endsWith('px')
+						? Number.parseFloat(themeMaxHeight.current)
+						: Number.NaN;
+					const natural = Number.isNaN(capPx)
+						? element.scrollHeight
+						: Math.min(element.scrollHeight, capPx);
 					const below = window.innerHeight - parentRect.bottom - DROPDOWN_VIEWPORT_EDGE;
 					const above = parentRect.top - DROPDOWN_VIEWPORT_EDGE;
 					const atBottom = natural > below && above > below;
