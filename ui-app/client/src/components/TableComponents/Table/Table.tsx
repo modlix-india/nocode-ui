@@ -528,7 +528,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 			const gridMode = gridModeImage ? (
 				<img
 					alt="Grid Mode"
-					src={getSrcUrl(mode === 'COLUMNS' ? gridModeActiveImage : gridModeImage)}
+					src={getSrcUrl(mode === 'GRID' ? gridModeActiveImage : gridModeImage)}
 					style={getStyleObject(
 						'gridModeImage',
 						hovers.has('gridModeIcon') ? new Set(['gridModeImage']) : new Set(),
@@ -631,7 +631,7 @@ export default function TableComponent(props: Readonly<ComponentProps>) {
 							<div
 								className={`_grid _pointer ${mode === 'GRID' ? '_selected' : ''}`}
 								style={getStyleObject(
-									mode === 'COLUMNS' ? 'selectedGridModeIcon' : 'gridModeIcon',
+									mode === 'GRID' ? 'selectedGridModeIcon' : 'gridModeIcon',
 									hovers,
 								)}
 								onClick={() => {
