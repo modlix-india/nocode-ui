@@ -4,6 +4,7 @@ import {
 	draftPayload,
 	matchDescriptor,
 	pageOverlay,
+	rebaseLocalEdits,
 	snapshotBaseline,
 } from '../openDrafts';
 import { PageDefinition } from '../../../types/common';
@@ -269,5 +270,57 @@ describe('matchDescriptor', () => {
 		const explicit = [{ kind: 'page', path: 'Page.pageDefinition' }];
 		const hit = matchDescriptor(explicit, { kind: 'page' }, () => ({ id: 'p1' }));
 		expect(hit?.path).toBe('Page.pageDefinition');
+	});
+});
+
+describe('rebaseLocalEdits', () => {
+	// QA-0264: the sidekick saved the page, the editor fetched it, and whatever the
+	// user had changed on the canvas meanwhile disappeared.
+	const base = page({
+		root: { key: 'root', type: 'Grid', children: { a: true, b: true } },
+		a: { key: 'a', type: 'Text', properties: { text: { value: 'A' } } },
+		b: { key: 'b', type: 'Text', properties: { text: { value: 'B' } } },
+	});
+
+	it('keeps an edit the user made while the agent changed something else', () => {
+		const local = page({ ...base.componentDefinition, a: { ...base.componentDefinition.a, properties: { text: { value: 'mine' } } } });
+		const remote = page({ ...base.componentDefinition, b: { ...base.componentDefinition.b, properties: { text: { value: 'agent' } } } }, { version: 4 });
+		const next = rebaseLocalEdits(remote, local, snapshotBaseline(base));
+		expect(next.componentDefinition.a.properties.text.value).toBe('mine');
+		expect(next.componentDefinition.b.properties.text.value).toBe('agent');
+		expect(next.version).toBe(4);
+	});
+
+	it('joins children when both sides changed the same parent', () => {
+		const local = page({
+			...base.componentDefinition,
+			root: { key: 'root', type: 'Grid', children: { a: true, b: true, mine: true }, properties: { gap: 'x' } },
+			mine: { key: 'mine', type: 'Text' },
+		});
+		const remote = page({
+			...base.componentDefinition,
+			root: { key: 'root', type: 'Grid', children: { a: true, theirs: true } },
+			theirs: { key: 'theirs', type: 'Text' },
+		});
+		delete (remote.componentDefinition as any).b;
+		const next = rebaseLocalEdits(remote, local, snapshotBaseline(base));
+		expect(Object.keys(next.componentDefinition.root.children).sort()).toEqual(['a', 'mine', 'theirs']);
+		expect(next.componentDefinition.root.properties).toEqual({ gap: 'x' });
+		expect(next.componentDefinition.mine).toBeDefined();
+		expect(next.componentDefinition.theirs).toBeDefined();
+	});
+
+	it('returns the server copy untouched when the user changed nothing', () => {
+		const remote = page({ ...base.componentDefinition, b: { key: 'b', type: 'Text' } }, { version: 4 });
+		expect(rebaseLocalEdits(remote, base, snapshotBaseline(base))).toBe(remote);
+	});
+
+	it('merges event functions by key', () => {
+		const withEv = (ev: any) => page(base.componentDefinition, { eventFunctions: ev });
+		const b = withEv({ f1: { name: 'one' }, f2: { name: 'two' } });
+		const local = withEv({ f1: { name: 'one, mine' }, f2: { name: 'two' } });
+		const remote = withEv({ f1: { name: 'one' }, f2: { name: 'two, agent' }, f3: { name: 'agent new' } });
+		const next = rebaseLocalEdits(remote, local, snapshotBaseline(b));
+		expect(next.eventFunctions).toEqual({ f1: { name: 'one, mine' }, f2: { name: 'two, agent' }, f3: { name: 'agent new' } });
 	});
 });
