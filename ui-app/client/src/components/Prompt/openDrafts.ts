@@ -247,6 +247,73 @@ export function applyDraftPatch(current: any, patch: DraftPatch | undefined): an
 }
 
 /**
+ * Replay the user's unsaved edits on top of a newer copy of the page.
+ *
+ * The sidekick writes the page on the server and the editor then fetches that
+ * copy. The copy knows nothing of what the user changed on the canvas meanwhile,
+ * so putting it on screen as-is threw that work away (QA-0264). `base` is the page
+ * as the server last held it from this editor's point of view; whatever differs
+ * between it and `local` is the user's, and goes onto `remote` by component.
+ *
+ * Where both sides changed one component the user's copy wins, except for its
+ * children: those are joined, so a child the agent added under a parent the user
+ * also edited does not end up orphaned. A child either side removed stays removed.
+ * Event functions merge the same way, by key.
+ */
+export function rebaseLocalEdits(remote: any, local: any, base: any): any {
+	if (!remote || !local || !base) return remote;
+
+	const mine = pageOverlay(local, base);
+	const remoteComps = remote.componentDefinition ?? {};
+	const baseComps = base.componentDefinition ?? {};
+
+	const changed: Record<string, any> = {};
+	for (const [key, comp] of Object.entries<any>(mine.changed)) {
+		const theirs = remoteComps[key];
+		const theyChangedIt = theirs && !deepEqual(theirs, baseComps[key]);
+		changed[key] = theyChangedIt
+			? { ...comp, children: joinChildren(baseComps[key], theirs, comp) }
+			: comp;
+		if (changed[key].children === undefined) delete changed[key].children;
+	}
+
+	// The page's own bookkeeping comes from the server copy; event functions are
+	// merged by key below instead of being replaced whole.
+	const fields = { ...mine.fields };
+	for (const key of ['id', 'version', 'message', 'eventFunctions']) delete fields[key];
+
+	let next = applyDraftPatch(remote, {
+		changed,
+		removed: mine.removed.filter(key => key in remoteComps),
+		fields,
+	});
+
+	const events = mergeByKey(remote.eventFunctions, local.eventFunctions, base.eventFunctions);
+	if (events) next = { ...next, eventFunctions: events };
+	return next;
+}
+
+function joinChildren(base: any, theirs: any, mine: any): Record<string, boolean> | undefined {
+	if (!theirs?.children && !mine?.children) return undefined;
+	const joined: Record<string, boolean> = { ...theirs?.children, ...mine?.children };
+	for (const child of Object.keys(base?.children ?? {}))
+		if (!(child in (theirs?.children ?? {})) || !(child in (mine?.children ?? {})))
+			delete joined[child];
+	return joined;
+}
+
+function mergeByKey(remote: any, local: any, base: any): Record<string, any> | undefined {
+	if (deepEqual(local, base)) return undefined;
+	const merged: Record<string, any> = { ...remote };
+	for (const key of new Set([...Object.keys(local ?? {}), ...Object.keys(base ?? {})])) {
+		if (deepEqual(local?.[key], base?.[key])) continue;
+		if (local && key in local) merged[key] = local[key];
+		else delete merged[key];
+	}
+	return merged;
+}
+
+/**
  * Snapshot a document to measure later changes against.
  *
  * Deliberately a deep copy: the store hands out live references, and a baseline
