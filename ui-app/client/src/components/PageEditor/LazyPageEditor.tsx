@@ -32,6 +32,7 @@ import PageEditorDebugWindow from './components/PageEditorDebugWindow';
 import IssuePopup, { Issue } from './components/IssuePopup';
 import DnDEditor from './editors/DnDEditor/DnDEditor';
 import { toDraftMode } from '../Prompt/draftMode';
+import { rebaseLocalEdits, snapshotBaseline } from '../Prompt/openDrafts';
 import { MASTER_FUNCTIONS } from './functions/masterFunctions';
 import {
 	PageOperations,
@@ -303,6 +304,7 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 		}
 
 		setData(defPath!, def, pageExtractor.getPageName());
+		if (def.id) syncedPageRef.current = { id: String(def.id), doc: snapshotBaseline(def) };
 
 		(async () =>
 			await runEvent(
@@ -406,6 +408,17 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 	const editPageDefinition = !defPath
 		? undefined
 		: (getDataFromPath(`${defPath}`, locationHistory, pageExtractor) as PageDefinition);
+
+	// The page as the server last held it, as far as this editor knows: taken when a
+	// page opens, on Save, and on every refetch after a sidekick write. Whatever the
+	// canvas has beyond it is the user's unsaved work, which a refetch must keep.
+	const syncedPageRef = useRef<{ id?: string; doc?: PageDefinition }>({});
+	const editPageId = editPageDefinition?.id ? String(editPageDefinition.id) : undefined;
+	useEffect(() => {
+		if (editPageId && syncedPageRef.current.id !== editPageId)
+			syncedPageRef.current = { id: editPageId, doc: snapshotBaseline(editPageDefinition) };
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [editPageId]);
 
 	const appDefinition = getDataFromPath(appPath, locationHistory, pageExtractor);
 
@@ -1147,14 +1160,22 @@ export default function LazyPageEditor(props: Readonly<ComponentProps>) {
 					// The store write is what drives everything downstream: the canvas
 					// iframes, the component tree and the undo stack all listen on
 					// defPath, so the previous state stays reachable with Ctrl+Z.
-					if (response.data && defPath)
-						setData(defPath, response.data, pageExtractor.getPageName());
+					const remote = response.data;
+					if (!remote || !defPath) return;
+					// The server copy has the agent's change but not what the user did on
+					// the canvas meanwhile; putting it up as-is threw that away (QA-0264).
+					const local = getDataFromPath(defPath, locationHistory, pageExtractor);
+					const synced = syncedPageRef.current;
+					const base = synced.id === String(remote.id) ? synced.doc : undefined;
+					const next = base ? rebaseLocalEdits(remote, local, base) : remote;
+					syncedPageRef.current = { id: String(remote.id), doc: snapshotBaseline(remote) };
+					setData(defPath, next, pageExtractor.getPageName());
 				} catch (error) {
 					console.error('Could not reload the page the sidekick changed:', error);
 				}
 			}, 250);
 		},
-		[defPath, pageExtractor],
+		[defPath, locationHistory, pageExtractor],
 	);
 
 	useEffect(
