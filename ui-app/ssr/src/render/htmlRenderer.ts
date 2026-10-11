@@ -912,17 +912,29 @@ function setResponseHeaders(
 	// Cache status
 	res.setHeader('X-Cache-Status', fromCache ? 'HIT' : 'MISS');
 
-	// CSP headers
-	if (application?.properties) {
-		const csp = processCSP(application.properties.csp, cdnHostName);
-		if (csp) {
-			res.setHeader('Content-Security-Policy', allowDevBundleEval(csp));
-		}
+	setSecurityPolicyHeaders(res, application, cdnHostName);
+}
 
-		const cspReport = processCSP(application.properties.cspReport, cdnHostName);
-		if (cspReport) {
-			res.setHeader('Content-Security-Policy-Report-Only', cspReport);
-		}
+/**
+ * The app's Content-Security-Policy headers. Its own function because every response carrying a
+ * page needs them: the HTML cache hits used to return before setResponseHeaders ran, so a page
+ * served from the cache, which is most anonymous traffic, went out with no CSP at all.
+ */
+function setSecurityPolicyHeaders(
+	res: ServerResponse,
+	application: ApplicationDefinition | null | undefined,
+	cdnHostName?: string,
+): void {
+	if (!application?.properties) return;
+
+	const csp = processCSP(application.properties.csp, cdnHostName);
+	if (csp) {
+		res.setHeader('Content-Security-Policy', allowDevBundleEval(csp));
+	}
+
+	const cspReport = processCSP(application.properties.cspReport, cdnHostName);
+	if (cspReport) {
+		res.setHeader('Content-Security-Policy-Report-Only', cspReport);
 	}
 }
 
@@ -1114,6 +1126,7 @@ export async function handlePageRequest(
 				res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
 				res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
+				setSecurityPolicyHeaders(res, application, cdn.hostName);
 
 				res.writeHead(200);
 				res.end(cachedGzipped);
@@ -1131,6 +1144,7 @@ export async function handlePageRequest(
 			res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
 			res.setHeader('Vary', 'Authorization, Cookie');
 			res.setHeader('X-Cache-Status', 'HIT-HTML');
+			setSecurityPolicyHeaders(res, application, cdn.hostName);
 
 			res.writeHead(200);
 			res.end(cachedHtml);
