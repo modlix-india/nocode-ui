@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { usedComponents } from '../../App/usedComponents';
 import { processStyleDefinition } from '../../util/styleProcessor';
-import { findPropertyDefinitions, inflateAndSetStyleProps } from '../util/lazyStylePropertyUtil';
+import {
+	findPropertyDefinitions,
+	inflateAndSetStyleProps,
+	applyPreloadedStyleProperties,
+} from '../util/lazyStylePropertyUtil';
 import { propertiesDefinition } from './linkProperties';
 import { styleDefaults, styleProperties, stylePropertiesForTheme } from './linkStyleProperties';
 
@@ -12,12 +16,14 @@ export default function LinkStyle({
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [_, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
-		styleProperties
-			.filter((e: any) => !!e.dv)
-			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
-	}
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size)
+		applyPreloadedStyleProperties(
+			NAME,
+			propertiesDefinition,
+			styleProperties,
+			stylePropertiesForTheme,
+			styleDefaults,
+		);
 
 	useEffect(() => {
 		const { designType, colorScheme } = findPropertyDefinitions(

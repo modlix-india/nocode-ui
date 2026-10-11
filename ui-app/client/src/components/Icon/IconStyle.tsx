@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './iconStyleProperies';
 import { usedComponents } from '../../App/usedComponents';
-import { findPropertyDefinitions, inflateAndSetStyleProps } from '../util/lazyStylePropertyUtil';
+import {
+	findPropertyDefinitions,
+	inflateAndSetStyleProps,
+	applyPreloadedStyleProperties,
+} from '../util/lazyStylePropertyUtil';
 import { propertiesDefinition } from './iconProperties';
 
 const PREFIX = '.comp.compIcon';
@@ -12,12 +16,14 @@ export default function IconStyle({
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [_, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
-		styleProperties
-			.filter((e: any) => !!e.dv)
-			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
-	}
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size)
+		applyPreloadedStyleProperties(
+			NAME,
+			propertiesDefinition,
+			styleProperties,
+			stylePropertiesForTheme,
+			styleDefaults,
+		);
 
 	useEffect(() => {
 		const { designType, colorScheme } = findPropertyDefinitions(

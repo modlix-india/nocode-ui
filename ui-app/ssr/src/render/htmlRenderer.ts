@@ -14,6 +14,8 @@ import { getCachedData, setCachedData, generateAppCacheKey, generateCacheKey, ge
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
+import { noscriptBlock } from './noscriptText.js';
+import { renderWidthFor, serverRenderEnabled, serverRenderPage } from './serverRender.js';
 // Key compression removed - doesn't help gzipped transfer size (only 14% savings)
 // and adds 10-20ms CPU overhead that hurts TTFB/FBBT
 
@@ -33,6 +35,8 @@ interface CDNConfig {
 	stripAPIPrefix: boolean;
 	replacePlus: boolean;
 	resizeOptionsType: string;
+	/** Local development only; see `clientBundleUrl` in configLoader.ts. */
+	clientBundleUrl?: string;
 }
 
 interface CachedPageData {
@@ -120,6 +124,21 @@ function processCSP(csp: string | Record<string, string> | undefined, cdnHostNam
 
 			return `${kebabDirective} ${finalValue}`;
 		})
+		.join('; ');
+}
+
+/**
+ * The webpack dev server's bundle evaluates its modules with `eval` (eval source maps), which an
+ * app's CSP without 'unsafe-eval' blocks, so a page served with the local bundle
+ * (CLIENT_BUNDLE_URL) gets it added to script-src (default-src when there is none). Only then:
+ * production bundles never eval, and their policy is sent exactly as the app wrote it.
+ */
+function allowDevBundleEval(csp: string): string {
+	if (!getConfig().cdn.clientBundleUrl) return csp;
+	const parts = csp.split(';').map(p => p.trim()).filter(Boolean);
+	const name = parts.some(p => p.startsWith('script-src ')) ? 'script-src' : 'default-src';
+	return parts
+		.map(p => (p.startsWith(`${name} `) && !p.includes("'unsafe-eval'") ? `${p} 'unsafe-eval'` : p))
 		.join('; ');
 }
 
@@ -666,14 +685,19 @@ function generateHtml(
 	codes: { appCode: string; clientCode: string; urlType?: string },
 	pageName: string,
 	cdn: CDNConfig,
-	error?: string
+	error?: string,
+	/** The width the page is server-rendered at; the browser's first render must use it. */
+	deviceWidth?: number
 ): string {
 	// The client reads this to know which surface it is on, and SSR is the only
 	// thing that writes the shell on this path -- IndexHTMLService never runs
 	// here, so without this a draft host gets drafted content, a draft-keyed
 	// cache entry and no banner.
 	const draftAttr = codes.urlType === 'DRAFT' ? ' data-draft="true"' : '';
-	const cdnUrl = `https://${cdn.hostName}/js/dist/`;
+	// A local dev server bundle (CLIENT_BUNDLE_URL) replaces the CDN's: one index.js, no chunks to
+	// preload and no CDN host for the client to rewrite asset URLs to.
+	const devBundle = cdn.clientBundleUrl;
+	const cdnUrl = devBundle ?? `https://${cdn.hostName}/js/dist/`;
 	const application = data?.application || null;
 	const page = data?.page || null;
 	const theme = data?.theme || null;
@@ -712,6 +736,7 @@ function generateHtml(
 				 * whoever happened to miss the cache first.
 				 */
 				resolvedPageName: pageName,
+				...(deviceWidth ? { deviceWidth } : {}),
 				urlDetails: {
 					pageName,
 					appCode: codes.appCode,
@@ -742,10 +767,14 @@ function generateHtml(
 	const afterBodyParts = extractCodeParts(application, 'AFTER_BODY');
 
 	// Get critical chunks from manifest for preloading
-	const criticalChunks = getCriticalChunks(assetManifest, 3);
+	const criticalChunks = devBundle
+		? { application: [] as string[], applicationStyle: [] as string[] }
+		: getCriticalChunks(assetManifest, 3);
 
 	// Get entrypoint scripts from manifest (with fallback to legacy bundles)
-	const entrypointScripts = assetManifest?.entrypoints?.index || ['vendors.js', 'index.js'];
+	const entrypointScripts = devBundle
+		? ['index.js']
+		: assetManifest?.entrypoints?.index || ['vendors.js', 'index.js'];
 
 	// Generate preload tags for entrypoint scripts
 	const entrypointPreloadTags = entrypointScripts
@@ -773,8 +802,8 @@ function generateHtml(
 		<title>${escapeHtml(pageTitle)}</title>
 
 		<!-- Resource hints -->
-		<link rel="dns-prefetch" href="https://${cdn.hostName}">
-		<link rel="preconnect" href="https://${cdn.hostName}" crossorigin="anonymous">
+		${devBundle ? '' : `<link rel="dns-prefetch" href="https://${cdn.hostName}">
+		<link rel="preconnect" href="https://${cdn.hostName}" crossorigin="anonymous">`}
 
 		<!-- Preload entrypoint scripts -->
 		${entrypointPreloadTags}		
@@ -800,7 +829,7 @@ function generateHtml(
 			// domain-mapped host has no app code in its path for the client to parse:
 			// without this stamp a theme the visitor picks here is never remembered.
 			window.__mlxAppCode = '${escapeHtml(codes.appCode)}';
-			window.cdnPrefix = '${escapeHtml(cdn.hostName)}';
+			window.cdnPrefix = '${devBundle ? '' : escapeHtml(cdn.hostName)}';
 			window.cdnStripAPIPrefix = ${cdn.stripAPIPrefix};
 			window.cdnReplacePlus = ${cdn.replacePlus};
 			${cdn.resizeOptionsType ? `window.cdnResizeOptionsType = '${escapeHtml(cdn.resizeOptionsType)}';` : ''}
@@ -810,6 +839,7 @@ function generateHtml(
 
 		<!-- Main app container -->
 		<div id="app">${error ? `<div style="padding:20px;color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;margin:20px;">${escapeHtml(error)}</div>` : ''}</div>
+		${error ? '' : noscriptBlock(page)}
 
 		<!-- Application style from style service, for the resolved theme -->
 		<link rel="stylesheet" id="mlxAppStyle" href="/${escapeHtml(codes.appCode)}/${escapeHtml(codes.clientCode)}/page/api/ui/style${themeName ? `?theme=${encodeURIComponent(themeName)}` : ''}" />
@@ -886,7 +916,7 @@ function setResponseHeaders(
 	if (application?.properties) {
 		const csp = processCSP(application.properties.csp, cdnHostName);
 		if (csp) {
-			res.setHeader('Content-Security-Policy', csp);
+			res.setHeader('Content-Security-Policy', allowDevBundleEval(csp));
 		}
 
 		const cspReport = processCSP(application.properties.cspReport, cdnHostName);
@@ -962,9 +992,10 @@ export async function handlePageRequest(
 		stripAPIPrefix: config.cdn.stripAPIPrefix,
 		replacePlus: config.cdn.replacePlus,
 		resizeOptionsType: config.cdn.resizeOptionsType,
+		clientBundleUrl: config.cdn.clientBundleUrl,
 	};
 
-	if (!cdn.hostName) {
+	if (!cdn.hostName && !cdn.clientBundleUrl) {
 		logger.error('CDN hostName not configured');
 		res.writeHead(500, { 'Content-Type': 'text/html' });
 		res.end(generateHtml(null, codes, urlPageName, cdn, 'CDN hostName not configured. Check ssr.cdn.hostName in config server.'));
@@ -1033,12 +1064,24 @@ export async function handlePageRequest(
 		});
 	}
 
+	// Draw the page itself (render/serverRender.ts) for anonymous visitors only: a signed-in
+	// visitor's page is never cached and the client renders it fresh (it skips hydration when it
+	// holds a token). The width is part of the key: its markup is resolved for that width.
+	const renderWidth = serverRenderEnabled() && !isAuthenticated ? renderWidthFor(req.headers) : undefined;
+	const renderSurface = renderWidth
+		? `${req.headers['x-forwarded-host'] ?? url.host}${
+				url.pathname.startsWith(`/${codes.appCode}/${codes.clientCode}/page`) ? '/page' : ''
+			}`
+		: undefined;
+
 	const htmlCacheKey = generateCacheKey(
 		codes.appCode,
 		codes.clientCode,
 		actualPageName,
 		isDraft,
 		cookieTheme,
+		renderWidth,
+		renderSurface,
 	);
 
 	// A page asked for as-is, for somebody looking at their own heatmap. It renders the page
@@ -1161,7 +1204,25 @@ export async function handlePageRequest(
 	};
 
 	// Generate HTML once
-	const generatedHtml = generateHtml(result, codes, servedPageName, cdn);
+	let generatedHtml = generateHtml(result, codes, servedPageName, cdn, undefined, renderWidth);
+
+	// The page drawn into #app, for the browser to hydrate. Shell-wrapped pages still render in
+	// the browser only (their shell loads separately). On any failure the document goes out as
+	// generated, which is today's behaviour. The <noscript> copy is dropped when the page itself
+	// is in the HTML, so a crawler does not read the text twice.
+	if (renderWidth && !isDesign && result.page?.properties?.wrapShell === false) {
+		// The URL as the visitor sees it (scheme included), which is what the browser's first
+		// render reads; behind a proxy that does not send X-Full-URL, rebuild it from X-Forwarded-*.
+		const forwardedProto = (req.headers['x-forwarded-proto'] as string | undefined)?.split(',')[0];
+		const fullUrl =
+			(req.headers['x-full-url'] as string | undefined) ??
+			`${forwardedProto ?? url.protocol.replace(':', '')}://${req.headers['x-forwarded-host'] ?? url.host}${url.pathname}${url.search}`;
+		const drawn = await serverRenderPage(generatedHtml, fullUrl, renderWidth);
+		if (drawn)
+			generatedHtml = generatedHtml
+				.replace(/<noscript>[\s\S]*?<\/noscript>/, '')
+				.replace('<div id="app"></div>', () => `<div id="app">${drawn}</div>`);
+	}
 
 	// Cache HTML for unauthenticated requests (primary cache).
 	//
@@ -1171,7 +1232,7 @@ export async function handlePageRequest(
 	const servedCacheKey =
 		servedPageName === actualPageName
 			? htmlCacheKey
-			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme);
+			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme, renderWidth, renderSurface);
 	if (!isAuthenticated && !isDesign) {
 		// Cache the rendered HTML (fast serving)
 		await setCachedHtml(servedCacheKey, generatedHtml, config.cache.ttlSeconds);

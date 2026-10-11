@@ -289,6 +289,16 @@ export async function invalidateCache(pattern: string): Promise<number> {
 			`${CACHE_PREFIX}${pattern}:data`,
 			`${CACHE_PREFIX}${pattern}`
 		];
+		// A page's copies carry suffixes on the key (`:draft`, `:theme:<name>`, `:w<width>`; see
+		// generateCacheKey), and the ui service evicts a page by its bare `app:client:page`. Without
+		// these the eviction removed only the unsuffixed copy, so every themed, draft or
+		// server-rendered copy outlived a publish until its TTL.
+		if (!pattern.endsWith('*'))
+			patterns.push(
+				`${CACHE_PREFIX}html:gz:${pattern}:*`,
+				`${CACHE_PREFIX}html:${pattern}:*`,
+				`${CACHE_PREFIX}${pattern}:*:data`,
+			);
 
 		let totalKeysRemoved = 0;
 
@@ -336,11 +346,23 @@ export function generateCacheKey(
 	 * resolve against, so keying on the resolved name would mean the lookup and
 	 * the store used different keys and nothing ever hit.
 	 */
-	theme?: string | null
+	theme?: string | null,
+	/**
+	 * The width a server-rendered copy was drawn at (render/serverRender.ts). Its markup is
+	 * resolved for that width, so a phone and a desktop visitor must never share it. Absent
+	 * when server rendering is off, which keeps every key exactly as before.
+	 */
+	width?: number,
+	/**
+	 * Where a server-rendered copy was drawn for: the host, plus `/page` for the path-prefixed
+	 * form (`/<app>/<client>/page/<name>`). Its links and URL details follow the address, so a copy
+	 * drawn for one form must not be served to the other. Only with `width`.
+	 */
+	surface?: string
 ): string {
 	return `${appCode}:${clientCode}:${pageName}${draft ? ':draft' : ''}${
 		theme ? `:theme:${theme}` : ''
-	}`;
+	}${width ? `:w${width}${surface ? `:${surface}` : ''}` : ''}`;
 }
 
 /**

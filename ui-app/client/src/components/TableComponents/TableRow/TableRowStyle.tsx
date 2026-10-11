@@ -4,6 +4,7 @@ import { processStyleDefinition } from '../../../util/styleProcessor';
 import {
 	findPropertyDefinitions,
 	lazyStylePropertyLoadFunction,
+	applyPreloadedStyleProperties,
 } from '../../util/lazyStylePropertyUtil';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './tableRowStyleProperties';
 import { propertiesDefinition } from '../Table/tableProperties';
@@ -15,12 +16,14 @@ export default function TableRowStyle({
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [_, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
-		styleProperties
-			.filter((e: any) => !!e.dv)
-			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
-	}
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size)
+		applyPreloadedStyleProperties(
+			NAME,
+			propertiesDefinition,
+			styleProperties,
+			stylePropertiesForTheme,
+			styleDefaults,
+		);
 
 	useEffect(() => {
 		const { tableDesign, colorScheme } = findPropertyDefinitions(
