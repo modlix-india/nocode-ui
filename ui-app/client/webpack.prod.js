@@ -44,13 +44,28 @@ module.exports = async (env = {}) => {
         // chunk is still fetched by webpack's runtime either way, but without
         // a preload tag it arrives one round trip later, which would hand
         // back as latency most of what splitting it saved in bytes.
-        const applicationChunks = files
-          .filter(f => /^(Application|components-common).*\.js$/.test(f.name))
-          .map(f => f.path.split('/').pop());
+        //
+        // The lists are webpack's own: every file in the chunk GROUP that the
+        // `import(/* webpackChunkName: "Application" */ ...)` in index.tsx
+        // loads, not a match on file names. Matching names missed kirun,
+        // app-common, form-components and the rest of the group, which the
+        // runtime then fetched one round trip later at Low priority, and only
+        // after index had run (measured on rajaplatino.com: 16 of the 26
+        // scripts arrived that way).
+        const chunkGroupFiles = groupName => {
+          const seen = new Set();
+          for (const f of files) {
+            if (!f.chunk || !f.path.endsWith('.js') || f.path.endsWith('.map')) continue;
+            for (const g of f.chunk.groupsIterable)
+              if (g.name === groupName) seen.add(f.path.split('/').pop());
+          }
+          return Array.from(seen);
+        };
 
-        const applicationStyleChunks = files
-          .filter(f => /^ApplicationStyle.*\.js$/.test(f.name))
-          .map(f => f.path.split('/').pop());
+        const applicationChunks = chunkGroupFiles('Application');
+        const applicationStyleChunks = chunkGroupFiles('ApplicationStyle').filter(
+          f => !applicationChunks.includes(f),
+        );
 
         return {
           buildVersion,
@@ -72,6 +87,22 @@ module.exports = async (env = {}) => {
       openAnalyzer: false
     }));
   }
+
+  // The chunks the first render needs: the entry and the two imports index.tsx
+  // awaits before rendering, plus StoreContext, which index.tsx imports beside
+  // them (not inside them) and so must share their chunks rather than get its
+  // own copy of everything they hold. The named groups below are scoped to these.
+  //
+  // Unscoped (chunks: "all" from splitChunks), a named group gathers every
+  // module it matches from EVERY chunk into one chunk, and that chunk joins the
+  // startup set because the startup chunks need part of it. So whatever a
+  // React.lazy wrapper split off was put back: chart.js (493KB) behind
+  // LazyChart landed in `vendors`, and the Chart, Gallery, Calendar and
+  // Carousel implementations in `visualization`, all fetched by every page.
+  // Scoped, a lazy chunk keeps its own modules (or shares them through
+  // webpack's default groups) and is fetched only when rendered.
+  const STARTUP_CHUNKS = new Set(['index', 'Application', 'ApplicationStyle', 'StoreContext']);
+  const startupChunks = chunk => STARTUP_CHUNKS.has(chunk.name);
 
   return {
     mode: 'production',
@@ -144,6 +175,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/,
             name: 'react-vendors',
             priority: 20,
+            chunks: startupChunks,
             reuseExistingChunk: true,
           },
           // Monaco Editor (huge, only for lazy-loaded editors)
@@ -276,6 +308,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]node_modules[\\/]@fincity[\\/]kirun/,
             name: 'kirun',
             priority: 14,
+            chunks: startupChunks,
             reuseExistingChunk: true,
           },
           // Path reactive state management
@@ -283,6 +316,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]node_modules[\\/]@fincity[\\/]path-reactive/,
             name: 'path-reactive',
             priority: 13,
+            chunks: startupChunks,
             reuseExistingChunk: true,
           },
           // Heavy Editor Components - only lazy-loaded implementation files
@@ -299,6 +333,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]src[\\/]components[\\/]TableComponents[\\/]/,
             name: 'table-components',
             priority: 11,
+            chunks: startupChunks,
             reuseExistingChunk: true,
           },
           // Chart and Gallery (visualization components)
@@ -306,6 +341,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]src[\\/]components[\\/](Chart|Gallery|Calendar|Carousel|SmallCarousel)[\\/]/,
             name: 'visualization',
             priority: 11,
+            chunks: startupChunks,
             reuseExistingChunk: true,
           },
           // Form Components
@@ -313,6 +349,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]src[\\/]components[\\/](TextBox|TextArea|Dropdown|CheckBox|RadioButton|ToggleButton|Button|ButtonBar|FileUpload|ColorPicker|PhoneNumber|Otp|RangeSlider)[\\/]/,
             name: 'form-components',
             priority: 10,
+            chunks: startupChunks,
             reuseExistingChunk: true,
           },
           // Remaining node_modules
@@ -320,6 +357,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             priority: 9,
+            chunks: startupChunks,
             reuseExistingChunk: true,
           },
           // Split remaining large application code
@@ -327,6 +365,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]src[\\/](Engine|context|util)[\\/]/,
             name: 'app-common',
             priority: 8,
+            chunks: startupChunks,
             reuseExistingChunk: true,
             minChunks: 2,
           },
@@ -350,6 +389,7 @@ module.exports = async (env = {}) => {
             test: /[\\/]src[\\/](components|commonComponents|functions)[\\/]/,
             name: 'components-common',
             priority: 7,
+            chunks: startupChunks,
             reuseExistingChunk: true,
             minChunks: 2,
           },
