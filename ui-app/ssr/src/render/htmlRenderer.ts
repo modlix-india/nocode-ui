@@ -100,7 +100,33 @@ const CSP_DIRECTIVES_FOR_CDN = [
  * - camelCase: { "defaultSrc": "'self'" } -> converts to "default-src"
  * Also adds CDN URL to relevant directives
  */
-function processCSP(csp: string | Record<string, string> | undefined, cdnHostName?: string): string | null {
+/**
+ * Directives the analytics snippet needs: a.js is a script, and it posts its events back to the
+ * same host (`/i`, fetch or sendBeacon).
+ */
+const CSP_DIRECTIVES_FOR_ANALYTICS = ['default-src', 'script-src', 'connect-src'];
+
+/**
+ * The analytics host's origin when this document carries the snippet (generateAnalyticsSnippet),
+ * so the app's own policy cannot block what the platform itself put on the page. Without it every
+ * app whose CSP predates analytics refused a.js; that went unseen while cached pages were sent with
+ * no policy at all.
+ */
+function analyticsOriginFor(application: ApplicationDefinition | null | undefined): string | undefined {
+	const host = getConfig().analytics.ingestionHost;
+	if (!host || !application?.properties?.analytics?.enabled) return undefined;
+	try {
+		return new URL(host).origin;
+	} catch {
+		return undefined;
+	}
+}
+
+export function processCSP(
+	csp: string | Record<string, string> | undefined,
+	cdnHostName?: string,
+	analyticsOrigin?: string,
+): string | null {
 	if (!csp) return null;
 
 	const cdnUrl = cdnHostName ? `https://${cdnHostName}` : null;
@@ -121,6 +147,13 @@ function processCSP(csp: string | Record<string, string> | undefined, cdnHostNam
 				if (!value.includes(cdnHostName!)) {
 					finalValue = `${value} ${cdnUrl}`;
 				}
+			}
+			if (
+				analyticsOrigin &&
+				CSP_DIRECTIVES_FOR_ANALYTICS.includes(kebabDirective) &&
+				!finalValue.includes(analyticsOrigin)
+			) {
+				finalValue = `${finalValue} ${analyticsOrigin}`;
 			}
 
 			return `${kebabDirective} ${finalValue}`;
@@ -926,12 +959,13 @@ function setSecurityPolicyHeaders(
 ): void {
 	if (!application?.properties) return;
 
-	const csp = processCSP(application.properties.csp, cdnHostName);
+	const analyticsOrigin = analyticsOriginFor(application);
+	const csp = processCSP(application.properties.csp, cdnHostName, analyticsOrigin);
 	if (csp) {
 		res.setHeader('Content-Security-Policy', allowDevBundleEval(csp));
 	}
 
-	const cspReport = processCSP(application.properties.cspReport, cdnHostName);
+	const cspReport = processCSP(application.properties.cspReport, cdnHostName, analyticsOrigin);
 	if (cspReport) {
 		res.setHeader('Content-Security-Policy-Report-Only', cspReport);
 	}
