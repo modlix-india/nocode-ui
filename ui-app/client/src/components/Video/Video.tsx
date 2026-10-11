@@ -73,42 +73,45 @@ function Video(props: Readonly<ComponentProps>) {
 	const [currentSrc, setCurrentSrc] = useState(defaultSrc);
 	const [currentPoster, setCurrentPoster] = useState(defaultPoster);
 
-	useEffect(() => {
-		addListenerAndCallImmediately(
+	// Returned, so an unmount or a source change drops this listener instead of adding another.
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				props.context.pageName,
+				(_, value) => {
+					if (value?.TABLET_LANDSCAPE_SCREEN_ONLY) {
+						setCurrentSrc(src2 ?? defaultSrc);
+						setCurrentPoster(poster2 ?? defaultPoster);
+					} else if (value?.TABLET_POTRAIT_SCREEN_ONLY) {
+						setCurrentSrc(src3 ?? defaultSrc);
+						setCurrentPoster(poster3 ?? defaultPoster);
+					} else if (value?.MOBILE_LANDSCAPE_SCREEN_ONLY) {
+						setCurrentSrc(src4 ?? defaultSrc);
+						setCurrentPoster(poster4 ?? defaultPoster);
+					} else if (value?.MOBILE_POTRAIT_SCREEN_ONLY) {
+						setCurrentSrc(src5 ?? defaultSrc);
+						setCurrentPoster(poster5 ?? defaultPoster);
+					} else {
+						setCurrentSrc(defaultSrc);
+						setCurrentPoster(defaultPoster);
+					}
+				},
+				'Store.devices',
+			),
+		[
+			defaultSrc,
+			src2,
+			src3,
+			src4,
+			src5,
+			defaultPoster,
+			poster2,
+			poster3,
+			poster4,
+			poster5,
 			props.context.pageName,
-			(_, value) => {
-				if (value?.TABLET_LANDSCAPE_SCREEN_ONLY) {
-					setCurrentSrc(src2 ?? defaultSrc);
-					setCurrentPoster(poster2 ?? defaultPoster);
-				} else if (value?.TABLET_POTRAIT_SCREEN_ONLY) {
-					setCurrentSrc(src3 ?? defaultSrc);
-					setCurrentPoster(poster3 ?? defaultPoster);
-				} else if (value?.MOBILE_LANDSCAPE_SCREEN_ONLY) {
-					setCurrentSrc(src4 ?? defaultSrc);
-					setCurrentPoster(poster4 ?? defaultPoster);
-				} else if (value?.MOBILE_POTRAIT_SCREEN_ONLY) {
-					setCurrentSrc(src5 ?? defaultSrc);
-					setCurrentPoster(poster5 ?? defaultPoster);
-				} else {
-					setCurrentSrc(defaultSrc);
-					setCurrentPoster(defaultPoster);
-				}
-			},
-			'Store.devices',
-		);
-	}, [
-		defaultSrc,
-		src2,
-		src3,
-		src4,
-		src5,
-		defaultPoster,
-		poster2,
-		poster3,
-		poster4,
-		poster5,
-		props.context.pageName,
-	]);
+		],
+	);
 
 	//to check wheater browser supports html5 video
 	const [videoControls, setVideoControls] = useState<boolean>(true);
