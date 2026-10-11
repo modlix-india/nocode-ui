@@ -15,9 +15,10 @@ interface Input {
 	width: number;
 	bundle: string;
 	styleProperties: Record<string, unknown>;
+	buildVersion?: string;
 }
 
-const { documentHtml, url, width, bundle, styleProperties } = workerData as Input;
+const { documentHtml, url, width, bundle, styleProperties, buildVersion } = workerData as Input;
 
 async function run(): Promise<string> {
 	const dom = new JSDOM(documentHtml, { url, pretendToBeVisual: true, runScripts: 'outside-only' });
@@ -46,6 +47,7 @@ async function run(): Promise<string> {
 	for (const key of ['__APP_BOOTSTRAP__', 'domainAppCode', 'domainClientCode', '__mlxAppCode', 'cdnPrefix', 'cdnStripAPIPrefix', 'cdnReplacePlus', 'cdnResizeOptionsType', '__SOCIAL_LOGIN_HOST__', '__SSO_BEACON_HOST__'])
 		if (win[key] !== undefined) g[key] = win[key];
 
+	if (buildVersion) g.buildVersion = buildVersion;
 	const { renderPage } = createRequire(import.meta.url)(bundle);
 	return renderPage(styleProperties);
 }

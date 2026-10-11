@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { Worker } from 'node:worker_threads';
 import logger from '../config/logger.js';
+import { loadManifest } from '../util/manifestLoader.js';
 
 /**
  * Server rendering of the page itself, so `#app` arrives drawn and the browser hydrates it
@@ -18,10 +19,17 @@ import logger from '../config/logger.js';
  * null and the caller serves today's empty `#app`, which the browser renders as it always has.
  */
 
-const BUNDLE = process.env.SERVER_RENDER_BUNDLE;
+// Where a deploy puts the server render: CI copies the client's server build and its style JSON
+// into the image's manifests/ (beside asset-manifest.json), so including them in an environment's
+// image is what switches server rendering on there. SERVER_RENDER_BUNDLE overrides it (local:
+// client/dist-server/serverEntry.js, with the style JSON in client/dist/styleProperties).
+const IMAGE_BUNDLE = path.join(process.cwd(), 'manifests', 'server-render', 'serverEntry.js');
+const BUNDLE = process.env.SERVER_RENDER_BUNDLE ?? (existsSync(IMAGE_BUNDLE) ? IMAGE_BUNDLE : undefined);
 const STYLE_PROPERTIES_DIR =
 	process.env.SERVER_RENDER_STYLE_PROPERTIES ??
-	(BUNDLE ? path.join(path.dirname(BUNDLE), '..', 'dist', 'styleProperties') : undefined);
+	(BUNDLE
+		? [path.join(path.dirname(BUNDLE), 'styleProperties'), path.join(path.dirname(BUNDLE), '..', 'dist', 'styleProperties')].find(d => existsSync(d))
+		: undefined);
 const TIMEOUT_MS = Number(process.env.SERVER_RENDER_TIMEOUT_MS ?? 3000);
 const MAX_IN_FLIGHT = Number(process.env.SERVER_RENDER_MAX_IN_FLIGHT ?? 2);
 
@@ -80,7 +88,16 @@ export async function serverRenderPage(documentHtml: string, url: string, width:
 	try {
 		return await new Promise<string | null>(resolve => {
 			const worker = new Worker(new URL('./serverRenderWorker.js', import.meta.url), {
-				workerData: { documentHtml, url, width, bundle: BUNDLE, styleProperties: loadStyleProperties() },
+				workerData: {
+					documentHtml,
+					url,
+					width,
+					bundle: BUNDLE,
+					styleProperties: loadStyleProperties(),
+					// The deployed client's build version: asset URLs carry it (AppStyle's stylesheet), so
+					// the server must stamp the one the browser's bundle will, or hydration fails at once.
+					buildVersion: loadManifest()?.buildVersion,
+				},
 			});
 			let settled = false;
 			const done = (html: string | null, reason?: string) => {
