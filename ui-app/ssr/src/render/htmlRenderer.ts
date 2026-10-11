@@ -15,6 +15,7 @@ import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
 import { noscriptBlock } from './noscriptText.js';
+import { startupHintTags, startupScriptPreloads } from './startupHints.js';
 import { renderWidthFor, serverRenderEnabled, serverRenderPage } from './serverRender.js';
 // Key compression removed - doesn't help gzipped transfer size (only 14% savings)
 // and adds 10-20ms CPU overhead that hurts TTFB/FBBT
@@ -766,34 +767,32 @@ function generateHtml(
 	const beforeBodyParts = extractCodeParts(application, 'BEFORE_BODY');
 	const afterBodyParts = extractCodeParts(application, 'AFTER_BODY');
 
-	// Get critical chunks from manifest for preloading
-	const criticalChunks = devBundle
-		? { application: [] as string[], applicationStyle: [] as string[] }
-		: getCriticalChunks(assetManifest, 3);
-
 	// Get entrypoint scripts from manifest (with fallback to legacy bundles)
 	const entrypointScripts = devBundle
 		? ['index.js']
 		: assetManifest?.entrypoints?.index || ['vendors.js', 'index.js'];
 
-	// Generate preload tags for entrypoint scripts
-	const entrypointPreloadTags = entrypointScripts
-		.map(script => `<link rel="preload" href="${cdnUrl}${script}" as="script">`)
-		.join('\n\t\t');
+	// Every script the first render needs, named here: the entry and ALL of the chunks index.tsx
+	// imports before rendering (asset-manifest `preload`, webpack's own chunk groups), the ones
+	// beyond the two named chunks at Low priority (startupHints.ts says why).
+	const criticalChunks = devBundle
+		? { application: [] as string[], applicationStyle: [] as string[] }
+		: getCriticalChunks(assetManifest, Infinity);
+	const scriptPreloadTags = startupScriptPreloads(cdnUrl, entrypointScripts, [
+		...criticalChunks.application,
+		...criticalChunks.applicationStyle,
+	]);
 
-	// Helper to extract filename from full URL or return as-is if already a filename
-	const extractFilename = (path: string) => {
-		if (path.startsWith('http')) {
-			return path.split('/').pop() || path;
-		}
-		return path;
-	};
-
-	// Generate preload tags for critical chunks (strip CDN URL if present)
-	const chunkPreloadTags = [
-		...criticalChunks.application.map(chunk => `<link rel="preload" href="${cdnUrl}${extractFilename(chunk)}" as="script">`),
-		...criticalChunks.applicationStyle.map(chunk => `<link rel="preload" href="${cdnUrl}${extractFilename(chunk)}" as="script">`)
-	].join('\n\t\t');
+	// Font and icon hosts and the page's style JSON (startupHints.ts). Not
+	// for a local dev bundle, whose build version is not the manifest's.
+	const startupHints = devBundle
+		? ''
+		: startupHintTags({
+				assetBase: cdn.hostName ? `https://${cdn.hostName}/js/dist` : '',
+				buildVersion: assetManifest?.buildVersion,
+				page,
+				application,
+		  });
 
 	return `<!DOCTYPE html>
 <html lang="en"${draftAttr}${themeAttr}>
@@ -805,9 +804,9 @@ function generateHtml(
 		${devBundle ? '' : `<link rel="dns-prefetch" href="https://${cdn.hostName}">
 		<link rel="preconnect" href="https://${cdn.hostName}" crossorigin="anonymous">`}
 
-		<!-- Preload entrypoint scripts -->
-		${entrypointPreloadTags}		
-		${chunkPreloadTags ? `${chunkPreloadTags}\n\t\t` : ''}<!-- Preload critical Application chunks -->
+		<!-- Preload the scripts, styles and data the first render needs -->
+		${scriptPreloadTags}
+		${startupHints}
 
 		<!-- Critical CSS -->
 		<style id="criticalCss">${CRITICAL_CSS}</style>
