@@ -10,3 +10,5 @@ reports/**
 stats.json
 dist/*.txt
 coverage/**
+# Server build of the client (webpack.server.js), generated
+dist-server/

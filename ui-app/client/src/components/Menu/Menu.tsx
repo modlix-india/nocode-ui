@@ -232,81 +232,82 @@ function Menu(props: Readonly<ComponentProps>) {
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
-			{processStyleObjectToCSS(
-				regularStyle?.comp,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.comp,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.comp,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.externalIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._externalButton`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.externalIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._externalButton`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.externalIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._externalButton, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive > ._externalButton`,
-			)}
-
-			{processStyleObjectToCSS(
-				regularStyle?.icon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._icon`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.icon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._icon`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.icon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._icon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._icon`,
-			)}
-
-			{processStyleObjectToCSS(
-				regularStyle?.imageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.imageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._imageIcon`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.imageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._imageIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon`,
-			)}
-			{processStyleObjectToCSS(
-				regularStyle?.activeImageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.activeImageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._activeImageIcon`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.activeImageIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._activeImageIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon`,
-			)}
-
-			{processStyleObjectToCSS(
-				regularStyle?.caretIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.caretIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._caretIcon`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.caretIcon,
-				`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._caretIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
-			)}
+			{/* One string: React's server renderer emits nothing for a <style> with several
+			    children, which breaks hydration (ui-app/ssr/HYDRATION_PLAN.md). */}
+			{[
+				processStyleObjectToCSS(
+					regularStyle?.comp,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}`,
+				),
+				processStyleObjectToCSS(
+					visitedStyle?.comp,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited`,
+				),
+				processStyleObjectToCSS(
+					hoverStyle?.comp,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive`,
+				),
+				processStyleObjectToCSS(
+					regularStyle?.externalIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._externalButton`,
+				),
+				processStyleObjectToCSS(
+					visitedStyle?.externalIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._externalButton`,
+				),
+				processStyleObjectToCSS(
+					hoverStyle?.externalIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._externalButton, .comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}._isActive > ._externalButton`,
+				),
+				processStyleObjectToCSS(
+					regularStyle?.icon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._icon`,
+				),
+				processStyleObjectToCSS(
+					visitedStyle?.icon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._icon`,
+				),
+				processStyleObjectToCSS(
+					hoverStyle?.icon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._icon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._icon`,
+				),
+				processStyleObjectToCSS(
+					regularStyle?.imageIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon`,
+				),
+				processStyleObjectToCSS(
+					visitedStyle?.imageIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._imageIcon`,
+				),
+				processStyleObjectToCSS(
+					hoverStyle?.imageIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._imageIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._imageIcon`,
+				),
+				processStyleObjectToCSS(
+					regularStyle?.activeImageIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon`,
+				),
+				processStyleObjectToCSS(
+					visitedStyle?.activeImageIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._activeImageIcon`,
+				),
+				processStyleObjectToCSS(
+					hoverStyle?.activeImageIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._activeImageIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._activeImageIcon`,
+				),
+				processStyleObjectToCSS(
+					regularStyle?.caretIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
+				),
+				processStyleObjectToCSS(
+					visitedStyle?.caretIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:visited > ._caretIcon`,
+				),
+				processStyleObjectToCSS(
+					hoverStyle?.caretIcon,
+					`.comp.compMenu._${styleKey}menu_css.${menuDesignSelectionType}.${menuColorScheme}:hover > ._caretIcon, .comp.compMenu._${styleKey}menu_css._isActive.${menuDesignSelectionType}.${menuColorScheme} > ._caretIcon`,
+				),
+			].join('')}
 		</style>
 	);
 
