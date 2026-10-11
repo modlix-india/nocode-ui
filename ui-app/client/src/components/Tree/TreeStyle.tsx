@@ -4,6 +4,7 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import {
 	findPropertyDefinitions,
 	lazyStylePropertyLoadFunction,
+	applyPreloadedStyleProperties,
 } from '../util/lazyStylePropertyUtil';
 import { propertiesDefinition } from './treeProperties';
 import { styleDefaults, styleProperties, stylePropertiesForTheme } from './treeStyleProperties';
@@ -25,12 +26,14 @@ export default function TreeStyle({
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const [, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
-		styleProperties
-			.filter((e: any) => !!e.dv)
-			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
-	}
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size)
+		applyPreloadedStyleProperties(
+			NAME,
+			propertiesDefinition,
+			styleProperties,
+			stylePropertiesForTheme,
+			styleDefaults,
+		);
 
 	useEffect(() => {
 		const { treeDesign, colorScheme } = findPropertyDefinitions(

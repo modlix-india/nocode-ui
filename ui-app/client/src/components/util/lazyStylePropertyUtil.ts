@@ -194,3 +194,33 @@ function generateReversedCombinations(n: number, l: number): number[][] {
 	remember.set(keyToRemember, result);
 	return result;
 }
+
+/**
+ * Style properties handed in before the first render (`globalThis.styleProperties`: preloaded for a
+ * server-rendered page, and given to the server render), applied synchronously exactly as the fetch
+ * path applies them: expanded for the component's design and colour properties, the expanded list
+ * into `styleProperties`, the source into `stylePropertiesForTheme`. The branch this replaces copied
+ * the RAW JSON in, which left `<designType><colorScheme>` placeholders in every selector and, by
+ * filling the defaults, stopped the fetch path from ever expanding them: the component's design
+ * styles never applied (unstyled buttons and inputs on a server-rendered page).
+ */
+export function applyPreloadedStyleProperties(
+	name: string,
+	propertiesDefinition: Array<ComponentPropertyDefinition>,
+	styleProperties: Array<StylePropertyDefinition>,
+	stylePropertiesForTheme: Array<StylePropertyDefinition>,
+	styleDefaults: Map<string, string>,
+) {
+	const designProps = propertiesDefinition.filter(
+		p => p.enumValues?.length && /design|colorScheme/i.test(p.name),
+	);
+	inflateAndSetStyleProps(
+		designProps.length ? designProps : undefined,
+		globalThis.styleProperties[name],
+		(props, originalStyleProps) => {
+			styleProperties.splice(0, 0, ...props);
+			if (originalStyleProps) stylePropertiesForTheme.splice(0, 0, ...originalStyleProps);
+		},
+		styleDefaults,
+	);
+}

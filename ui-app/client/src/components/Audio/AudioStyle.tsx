@@ -5,6 +5,7 @@ import { StylePropertyDefinition } from '../../types/common';
 import {
 	findPropertyDefinitions,
 	lazyStylePropertyLoadFunction,
+	applyPreloadedStyleProperties,
 } from '../util/lazyStylePropertyUtil';
 import { usedComponents } from '../../App/usedComponents';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './audioStyleProperties';
@@ -26,12 +27,14 @@ export default function AudioStyle({
 
 	const [_, setReRender] = useState<number>(Date.now());
 
-	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size) {
-		styleProperties.splice(0, 0, ...globalThis.styleProperties[NAME]);
-		styleProperties
-			.filter((e: any) => !!e.dv)
-			?.map(({ n: name, dv: defaultValue }: any) => styleDefaults.set(name, defaultValue));
-	}
+	if (globalThis.styleProperties[NAME] && !styleProperties.length && !styleDefaults.size)
+		applyPreloadedStyleProperties(
+			NAME,
+			propertiesDefinition,
+			styleProperties,
+			stylePropertiesForTheme,
+			styleDefaults,
+		);
 
 	useEffect(() => {
 		const { designType, colorScheme } = findPropertyDefinitions(
