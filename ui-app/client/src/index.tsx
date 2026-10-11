@@ -8,6 +8,7 @@ import { processLocation } from './util/locationProcessor';
 import { consumeSocialArrival, consumeSsoArrival } from './sso/ssoModule';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 import DraftBanner from './components/DraftBanner';
+import { stylePropertyComponentsFor } from './ssr/stylePropertyComponents';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
@@ -65,6 +66,8 @@ declare global {
 		 */
 		resolvedPageName?: string;
 		urlDetails: any;
+		/** The width the SSR rendered this page at; the first render here must use it. */
+		deviceWidth?: number;
 	};
 	/**
 	 * The app this page belongs to, stamped by IndexHTMLService. Read this rather
@@ -74,6 +77,8 @@ declare global {
 	var appDefinitionResponse: AppDefinitionResponse;
 	var pageDefinitionResponse: PageDefinition;
 	var pageDefinitionRequestPageName: string;
+	/** Set by the server render (ssr/serverEntry.tsx) so the client code takes its SSR paths. */
+	var __SSR_RENDERING__: boolean | undefined;
 	var debugContext: any;
 	var isDraftMode: boolean;
 	// var d3: typeof import('d3/index');
@@ -314,43 +319,21 @@ if (!app) {
 			/* webpackChunkName: "ApplicationStyle" */ './App/AppStyle'
 		);
 
-		const externalStylePropertyJSONComponents = new Set([
-			'Button',
-			'Calendar',
-			'ColorPicker',
-			'Dropdown',
-			'FileUpload',
-			'Menu',
-			'Otp',
-			'PhoneNumber',
-			'Stepper',
-			'Table',
-			'TableColumn',
-			'TableColumnHeader',
-			'TableColumns',
-			'TableEmptyGrid',
-			'TableGrid',
-			'TablePreviewGrid',
-			'TextArea',
-			'TextBox',
-			'Video',
-		]);
-
 		const rendered = document.getElementById('_rendered');
 		if (rendered) {
-			const comps = (rendered.getAttribute('data-used-components') ?? '').split(',');
-
-			for (const eachcomp of comps) {
-				if (!externalStylePropertyJSONComponents.has(eachcomp)) continue;
-
-				// This is required for server side rendering to load the needed components style props early on.
-
-				// try {
-				// 	globalThis.styleProperties[eachcomp] = (
-				// 		await axios.get(lazyStylePropURL(eachcomp))
-				// 	)?.data;
-				// } catch (err) {}
-			}
+			// A server-rendered page was drawn with these components' style properties already
+			// loaded, so the first client render must have them too or every component's <style>
+			// differs and hydration throws the whole tree away. They come from the page definition,
+			// not `data-used-components`: that attribute is filled after the first render, so the
+			// server always writes it empty.
+			await Promise.all(
+				stylePropertyComponentsFor(pageDefinitionResponse).map(async t => {
+					try {
+						globalThis.styleProperties[t] = (await axios.get(lazyStylePropURL(t)))
+							?.data;
+					} catch (err) {}
+				}),
+			);
 		}
 
 		const reactNode = (

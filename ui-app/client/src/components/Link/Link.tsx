@@ -117,24 +117,31 @@ function Link(props: Readonly<ComponentProps>) {
 
 	const styleComp = (
 		<style key={`${styleKey}_style`}>
-			{processStyleObjectToCSS(regularStyle?.comp, `.comp.compLink#_${styleKey}link_css`)}
-			{processStyleObjectToCSS(
-				visitedStyle?.comp,
-				`.comp.compLink._${styleKey}link_css:visited`,
-			)}
-			{processStyleObjectToCSS(hoverStyle?.comp, `.comp.compLink#_${styleKey}link_css:hover`)}
-			{processStyleObjectToCSS(
-				regularStyle?.externalIcon,
-				`.comp.compLink#_${styleKey}link_css > ._externalButton`,
-			)}
-			{processStyleObjectToCSS(
-				visitedStyle?.externalIcon,
-				`.comp.compLink#_${styleKey}link_css:visited > ._externalButton`,
-			)}
-			{processStyleObjectToCSS(
-				hoverStyle?.externalIcon,
-				`.comp.compLink#_${styleKey}link_css:hover > ._externalButton`,
-			)}
+			{/* One string: React's server renderer emits nothing for a <style> with several
+			    children, which breaks hydration (ui-app/ssr/HYDRATION_PLAN.md). */}
+			{[
+				processStyleObjectToCSS(regularStyle?.comp, `.comp.compLink#_${styleKey}link_css`),
+				processStyleObjectToCSS(
+					visitedStyle?.comp,
+					`.comp.compLink._${styleKey}link_css:visited`,
+				),
+				processStyleObjectToCSS(
+					hoverStyle?.comp,
+					`.comp.compLink#_${styleKey}link_css:hover`,
+				),
+				processStyleObjectToCSS(
+					regularStyle?.externalIcon,
+					`.comp.compLink#_${styleKey}link_css > ._externalButton`,
+				),
+				processStyleObjectToCSS(
+					visitedStyle?.externalIcon,
+					`.comp.compLink#_${styleKey}link_css:visited > ._externalButton`,
+				),
+				processStyleObjectToCSS(
+					hoverStyle?.externalIcon,
+					`.comp.compLink#_${styleKey}link_css:hover > ._externalButton`,
+				),
+			].join('')}
 		</style>
 	);
 

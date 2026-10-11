@@ -1,6 +1,6 @@
 import { isNullValue } from '@fincity/kirun-js';
 import { useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, StaticRouter } from 'react-router-dom';
 import { RenderEngineContainer } from '../Engine/RenderEngineContainer';
 import { STORE_PREFIX } from '../constants';
 import {
@@ -194,8 +194,15 @@ function processIconPacks(iconPacks: any) {
 	});
 }
 
-export function App() {
+// `location` is set only by the server render (ssr/serverEntry.tsx), which has no history to
+// read; the browser always takes BrowserRouter, so hydration sees the same tree either way.
+export function App({ location }: Readonly<{ location?: string }> = {}) {
 	const [isApplicationLoadFailed, setIsApplicationLoadFailed] = useState(false);
+
+	// The real viewport, now that the server-width first render has hydrated (see ssrDeviceWidth).
+	useEffect(() => {
+		if (ssrDeviceWidth !== undefined) setDeviceType();
+	}, []);
 
 	const [firstTime, setFirstTime] = useState(true);
 	useEffect(
@@ -275,13 +282,19 @@ export function App() {
 	if (isApplicationLoadFailed)
 		return <>Application Load failed, Please contact your administrator</>;
 
+	const routes = (
+		<Routes>
+			<Route path="/*" element={<RenderEngineContainer />} />
+		</Routes>
+	);
+
 	return (
 		<>
-			<BrowserRouter>
-				<Routes>
-					<Route path="/*" element={<RenderEngineContainer />} />
-				</Routes>
-			</BrowserRouter>
+			{location === undefined ? (
+				<BrowserRouter>{routes}</BrowserRouter>
+			) : (
+				<StaticRouter location={location}>{routes}</StaticRouter>
+			)}
 			<Messages />
 			<ShortcutChooser />
 			<ShortcutModifierHold />
@@ -372,9 +385,20 @@ function setSmallDeviceTypes(size: number, newDevices: { [key: string]: boolean 
 	}
 }
 
-function setDeviceType() {
+// On a server-rendered page the FIRST render must use the width the server rendered at (the
+// bootstrap's `deviceWidth`): components resolve width-dependent styles from `Store.devices` in
+// JS, so any other width changes the markup and hydration throws the tree away. The real width
+// is applied once App has mounted, which is after hydration has committed. The server render
+// (`__SSR_RENDERING__`) takes the same branch, so both sides start from one number.
+const ssrDeviceWidth: number | undefined =
+	globalThis.__SSR_RENDERING__ || document.getElementById('_rendered')
+		? globalThis.__APP_BOOTSTRAP__?.deviceWidth
+		: undefined;
+
+// `width` only from the calls below; the resize listener passes an Event, which is ignored.
+function setDeviceType(width?: unknown) {
 	if (!document.body) return;
-	const size = document.body.offsetWidth;
+	const size = typeof width === 'number' ? width : document.body.offsetWidth;
 	const newDevices: { [key: string]: boolean } = {};
 
 	setBaseDeviceTypes(size, newDevices);
@@ -395,7 +419,7 @@ function setDeviceType() {
 	if (currentDevices === devicesString) return;
 	currentDevices = devicesString;
 	setData('Store.devices', newDevices);
-	setData('Store.window.innerWidth', window.innerWidth);
+	setData('Store.window.innerWidth', typeof width === 'number' ? width : window.innerWidth);
 	setData('Store.window.innerHeight', window.innerHeight);
 	setData('Store.window.outerWidth', window.outerWidth);
 	setData('Store.window.outerHeight', window.outerHeight);
@@ -428,6 +452,6 @@ function setScrollDetails() {
 	setData('Store.window.scrollX', window.scrollX);
 }
 
-setDeviceType();
+setDeviceType(ssrDeviceWidth);
 window.addEventListener('resize', setDeviceType);
 window.addEventListener('scroll', setScrollDetails);

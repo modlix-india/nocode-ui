@@ -1,5 +1,5 @@
 import { isNullValue, TokenValueExtractor } from '@fincity/kirun-js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { getPathsFrom } from '../components/util/getPaths';
 import { runEvent } from '../components/util/runEvent';
@@ -76,12 +76,32 @@ function seoTagFor(key: string): { attribute: 'name' | 'property'; tagName: stri
 	return { attribute, tagName };
 }
 
+function bootstrappedPage(): { name: string; definition: any } | undefined {
+	if (!globalThis.__APP_BOOTSTRAP__?.resolvedPageName) return undefined;
+	const details = processLocation(window.location);
+	UrlDetailsExtractor.fillDefaultPage(details);
+	const pageName = resolvePageForLocation(details);
+	if (!pageName) return undefined;
+	const pDef = getDataFromPath(`${STORE_PREFIX}.pageDefinition.${pageName}`, []);
+	if (!pDef || pDef.properties?.wrapShell !== false) return undefined;
+	UrlDetailsExtractor.addDetails(details, pageName);
+	return { name: pageName, definition: processClassesForPageDefinition(pDef) };
+}
+
 export const RenderEngineContainer = () => {
 	const location = useLocation();
 	const pathParams = useParams();
-	const [currentPageName, setCurrentPageName] = useState<string | undefined>();
+	// The page the SSR bootstrap already holds, taken on the FIRST render instead of from the
+	// mount effect. A server render runs no effects, so without this both it and the browser's
+	// first render are an empty fragment and there is nothing to hydrate. Only a page that is
+	// not wrapped in the shell, which still loads the ordinary way. `Store.urlDetails` is
+	// written here, so the mount effect skips its first load: one write, as loadDefinition
+	// requires (two would count the arrival twice).
+	const [initial] = useState(bootstrappedPage);
+	const skipFirstLoad = useRef(!!initial);
+	const [currentPageName, setCurrentPageName] = useState<string | undefined>(initial?.name);
 	const [shellPageDefinition, setShellPageDefinition] = useState<PageDefinition>();
-	const [pageDefinition, setPageDefinition] = useState<any>();
+	const [pageDefinition, setPageDefinition] = useState<any>(initial?.definition);
 	const [consentPageDefinition, setConsentPageDefinition] = useState<PageDefinition>();
 	const [askConsent, setAskConsent] = useState(false);
 	const [appTitle, setAppTitle] = useState<string>('');
@@ -174,6 +194,10 @@ export const RenderEngineContainer = () => {
 	}, [location, location.pathname, location.search, location.hash]);
 
 	useEffect(() => {
+		if (skipFirstLoad.current) {
+			skipFirstLoad.current = false;
+			return;
+		}
 		loadDefinition();
 	}, [pathParams['*'], location.search]);
 

@@ -66,6 +66,13 @@ interface SSRConfig {
 		stripAPIPrefix: boolean;
 		replacePlus: boolean;
 		resizeOptionsType: string;
+		/**
+		 * LOCAL DEVELOPMENT ONLY, from CLIENT_BUNDLE_URL: where the webpack dev server's single
+		 * `index.js` is, usually `/` (the page's own origin through local nginx). When set, the
+		 * document loads that bundle instead of the CDN's, and the client gets no cdnPrefix so its
+		 * css, style JSON and files come from the same origin, as the dev server's own page does.
+		 */
+		clientBundleUrl?: string;
 	};
 	// Cache configuration
 	cache: {
@@ -256,6 +263,9 @@ function loadFromEnvironment(): Partial<SSRConfig> {
 	}
 	if (process.env.CDN_RESIZE_OPTIONS_TYPE) {
 		cdnConfig.resizeOptionsType = process.env.CDN_RESIZE_OPTIONS_TYPE;
+	}
+	if (process.env.CLIENT_BUNDLE_URL) {
+		cdnConfig.clientBundleUrl = process.env.CLIENT_BUNDLE_URL;
 	}
 	if (Object.keys(cdnConfig).length > 0) {
 		config.cdn = cdnConfig as SSRConfig['cdn'];
