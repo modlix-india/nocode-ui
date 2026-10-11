@@ -228,11 +228,15 @@ setInterval(async () => {
 			// loads changes the start-up order and every page reloaded in a loop on first
 			// load ("Host app code: undefined").
 			const { accessToken, accessTokenExpiryAt } = response.data;
-			import('./context/StoreContext').then(({ getDataFromPath, setData }) => {
-				if (!getDataFromPath('Store.auth', [])) return;
-				setData('Store.auth.accessToken', accessToken);
-				setData('Store.auth.accessTokenExpiryAt', accessTokenExpiryAt);
-			});
+			// Named because webpack.prod.js scopes its shared chunk groups by name: unnamed, this
+			// import (a sibling of Application, not a child) got its own copy of the whole app.
+			import(/* webpackChunkName: "StoreContext" */ './context/StoreContext').then(
+				({ getDataFromPath, setData }) => {
+					if (!getDataFromPath('Store.auth', [])) return;
+					setData('Store.auth.accessToken', accessToken);
+					setData('Store.auth.accessTokenExpiryAt', accessTokenExpiryAt);
+				},
+			);
 		})
 		.catch(e => {
 			// A 401/403 means this token is already gone -- revoked by a sign-out

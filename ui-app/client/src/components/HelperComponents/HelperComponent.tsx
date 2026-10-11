@@ -1,7 +1,16 @@
-import React, { MouseEvent, ReactNode } from 'react';
+import React, { MouseEvent, ReactNode, Suspense } from 'react';
 import { ComponentDefinition, RenderContext } from '../../types/common';
-import { PageEditorHelperComponent } from './PageEditorHelperComponent';
 import { FillerValueEditorHelperComponent } from './FillerValueEditorHelperComponent';
+
+// Only the page editor's preview draws this, and it reads the editor's SubCompInfo (over 200KB of
+// source). Imported directly, every component's HelperComponent put that in every visitor's
+// startup download; behind React.lazy it loads only where `designMode` is PAGE, which is never a
+// server-rendered page.
+const PageEditorHelperComponent = React.lazy(() =>
+	import(/* webpackChunkName: "PageEditorHelper" */ './PageEditorHelperComponent').then(m => ({
+		default: m.PageEditorHelperComponent,
+	})),
+);
 
 export function HelperComponent(
 	props: Readonly<{
@@ -16,7 +25,12 @@ export function HelperComponent(
 	}>,
 ) {
 	if (props.context.disableSelection) return <></>;
-	if (globalThis.designMode === 'PAGE') return <PageEditorHelperComponent {...props} />;
+	if (globalThis.designMode === 'PAGE')
+		return (
+			<Suspense fallback={<></>}>
+				<PageEditorHelperComponent {...props} />
+			</Suspense>
+		);
 	else if (globalThis.designMode === 'FILLER_VALUE_EDITOR')
 		return <FillerValueEditorHelperComponent {...props} />;
 	return <></>;
