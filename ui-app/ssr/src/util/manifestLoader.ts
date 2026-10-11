@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import logger from '../config/logger.js';
 
 interface AssetManifest {
+	/** The client build's version stamp (webpack.prod.js); the server render stamps the same. */
+	buildVersion?: string;
 	files: Record<string, string>;
 	entrypoints: Record<string, string[]>;
 	preload: {

@@ -56,6 +56,19 @@ jobs:
           mkdir -p ui-app/ssr/manifests
           cp ./ui-app/client/dist/asset-manifest.json ui-app/ssr/manifests/asset-manifest.json
 
+      # Server rendering (ui-app/ssr/HYDRATION_PLAN.md): the client built for Node, which the SSR
+      # finds at manifests/server-render/serverEntry.js and uses to draw pages into #app for the
+      # browser to hydrate. Its presence in the image is the switch, so only stage builds it for now.
+      - name: Build the client for server rendering
+        working-directory: ./ui-app/client
+        run: npx webpack --config webpack.server.js
+
+      - name: Copy the server render into the SSR image
+        run: |
+          mkdir -p ui-app/ssr/manifests/server-render
+          cp -r ./ui-app/client/dist-server/. ui-app/ssr/manifests/server-render/
+          cp -r ./ui-app/client/dist/styleProperties ui-app/ssr/manifests/server-render/styleProperties
+
       - name: Pushing Stage to Cloudflare
         working-directory: ./ui-app/client
         run: |
