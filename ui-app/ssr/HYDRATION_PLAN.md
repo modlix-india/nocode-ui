@@ -83,6 +83,48 @@ Not yet looked at: images (the server renders `compImage` without its `<img>`; I
 intersection), random DOM ids, lazy components, shell-wrapped pages (modlix `newHome`), concurrent
 renders (the store is a module singleton: serialize or isolate).
 
+## In the SSR service (local, 2026-10-11)
+
+`render/serverRender.ts` + `serverRenderWorker.ts`: on a cache MISS for an anonymous visitor on a
+non-shell page, the page is drawn in a fresh worker (jsdom + the client server build), with a time
+limit (`SERVER_RENDER_TIMEOUT_MS`, 3000) and a cap on renders in flight
+(`SERVER_RENDER_MAX_IN_FLIGHT`, 2); any failure serves today's empty `#app`. On only when
+`SERVER_RENDER_BUNDLE` names `client/dist-server/serverEntry.js`. Width from the request
+(User-Agent / `Sec-CH-UA-Mobile`: 390 / 820 / 1440) goes into the bootstrap (`deviceWidth`), and
+the browser's first render uses it (`App.tsx` `ssrDeviceWidth`), then its real width after mount.
+End to end through local nginx (`/__ssr/on`): 10 pages x desktop and iPhone, 20 of 20 hydrated
+with 0 mismatches; first contentful paint 40-70 ms against 470-700 ms from the dev server.
+
+Fixed while wiring it in:
+
+11. **Preloaded style JSON was applied raw.** 24 `*Style.tsx` copied `globalThis.styleProperties`
+    in without expanding `<designType><colorScheme>`, so buttons and inputs lost their design
+    styles on a server-rendered page. Now `applyPreloadedStyleProperties` (lazyStylePropertyUtil)
+    expands it exactly as the fetch path does.
+12. **One cached copy for two URL forms.** A copy drawn for `/<app>/<client>/page/<name>` was served
+    to `<app-host>/<name>`; server-rendered keys now carry the host and the URL form.
+13. **Publishing left suffixed copies.** Page eviction (`app:client:page`) never matched `:draft`,
+    `:theme:<name>` or `:w<width>` copies; `invalidateCache` now also clears `pattern:*`.
+14. **Markdown `<a>` in `<a>`.** A link whose label is a URL was auto-linked again inside the link
+    (authzump `privacyPolicy`); labels are no longer auto-linked.
+15. **No CSP on cached pages (#9): FIXED.** `setSecurityPolicyHeaders` now runs on HIT-HTML and
+    HIT-HTML-GZIP too; verified on all three paths locally.
+16. **OPEN: first requests after a start get the fallback page.** The SSR's main Redis client
+    rejects commands until it has connected (`enableOfflineQueue: false`), so app resolution fails
+    with "Stream isn't writeable", falls back to `appCode: nothing`, and the visitor gets the
+    "Danger, Will Robinson" page. Likely the first hit on every instance after each deploy.
+
+Deploy switch: an image whose `manifests/server-render/serverEntry.js` exists renders (CI copies
+`client/dist-server` and `client/dist/styleProperties` there; only `deploy-stage.yml` does so far);
+`SERVER_RENDER_BUNDLE` overrides. Each render stamps the manifest's `buildVersion`. No cache flush
+is needed on deploy: every SSR build regenerates `BUILD_ID`, which prefixes every cache key.
+(#10 above did not reproduce in a retest: the clears found nothing because nothing was cached.)
+
+Still to do for a complete first paint (visible with JavaScript off): images (Image writes its
+`<img>` only once visible in the browser) and the theme styles Text, Link, Icon, Tabs, RadioButton,
+ButtonBar, Otp and CheckBox fill in an effect + 100 ms timer (absent from the server HTML, so the
+page shifts slightly when the client starts).
+
 ## Phases
 
 **1. Make it production-shaped.** Device class from the request into the bootstrap (6); move the
