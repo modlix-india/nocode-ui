@@ -22,6 +22,10 @@ const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'co
 const URL_REGEX =
 	/<?(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})>?/g;
 
+// Decodes entities in plain-text runs. Read with textContent: for an element that is not being
+// rendered (this one is never attached) the spec makes innerText return exactly textContent, so
+// browsers see no change, while a server DOM without layout (jsdom) has no innerText at all and
+// dropped every plain run between the bold and link parts.
 const TEMP_SPAN = document.createElement('span');
 
 export function parseInline(
@@ -399,7 +403,7 @@ function processLink(
 				title: linkParts.title,
 				...(attrs ?? {}),
 			},
-			...parseInline({ ...params, line: linkText }),
+			...labelOf({ ...params, line: linkText }),
 		),
 	);
 
@@ -520,7 +524,26 @@ function processNewLineWithBR(
 	return current;
 }
 
+// Above zero while a link's label is being parsed. A label that is itself a URL
+// (`[https://x](https://x)`) was auto-linked again inside the link, an <a> in an <a>: invalid
+// HTML that browsers split apart, so a server-rendered copy could never hydrate. Parsing is
+// synchronous, so a counter is enough.
+let insideLinkLabel = 0;
+
+function labelOf(params: MarkdownParserParameters & { parseNewline?: boolean }) {
+	insideLinkLabel++;
+	try {
+		return parseInline(params);
+	} finally {
+		insideLinkLabel--;
+	}
+}
+
 function processForURLs(text: string, styles: any): Array<React.JSX.Element> | string {
+	if (insideLinkLabel > 0) {
+		TEMP_SPAN.innerHTML = text;
+		return TEMP_SPAN.textContent ?? '';
+	}
 	const matches = text.matchAll(URL_REGEX);
 	const parts: Array<React.JSX.Element> = [];
 	let match;
@@ -543,7 +566,7 @@ function processForURLs(text: string, styles: any): Array<React.JSX.Element> | s
 				React.createElement(
 					React.Fragment,
 					{ key: cyrb53(`${text}-${index}`) },
-					TEMP_SPAN.innerText,
+					TEMP_SPAN.textContent,
 				),
 			);
 		}
@@ -566,7 +589,7 @@ function processForURLs(text: string, styles: any): Array<React.JSX.Element> | s
 
 	if (lastIndex == 0) {
 		TEMP_SPAN.innerHTML = text;
-		return TEMP_SPAN.innerText;
+		return TEMP_SPAN.textContent;
 	}
 
 	if (lastIndex < text.length) {
@@ -575,7 +598,7 @@ function processForURLs(text: string, styles: any): Array<React.JSX.Element> | s
 			React.createElement(
 				React.Fragment,
 				{ key: cyrb53(`${text}-${lastIndex}`) },
-				TEMP_SPAN.innerText,
+				TEMP_SPAN.textContent,
 			),
 		);
 	}
