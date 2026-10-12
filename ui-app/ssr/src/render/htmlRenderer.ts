@@ -122,6 +122,35 @@ function analyticsOriginFor(application: ApplicationDefinition | null | undefine
 	}
 }
 
+/**
+ * The page editor's preview canvases: each edit session mints a draft host
+ * `t-<32 hex><env suffix>.modlix.com` (client components/util/draftToken.ts), so no app can list
+ * it ahead of time. The editor pages (sitezump.ai/editPage, the app builder) frame it, and an app's
+ * own `frame-src` blocked every canvas once cached pages were sent with the app's policy too.
+ * Platform hosts, like the CDN; allowed for framing only (see withPlatformFrames).
+ */
+const PLATFORM_FRAME_SOURCES = ['https://*.modlix.com'];
+
+/**
+ * Adds the platform's frame sources to `frame-src`. Without one, framing falls back to
+ * `child-src`, then `default-src`; a `frame-src` copied from that fallback plus these hosts widens
+ * what the page may frame and nothing else, where adding them to `default-src` would let it load
+ * scripts and styles from them too.
+ */
+function withPlatformFrames(directives: Array<[string, string]>): Array<[string, string]> {
+	const has = (name: string) => directives.find(([d]) => d === name);
+	const add = (value: string) =>
+		[value, ...PLATFORM_FRAME_SOURCES.filter(s => !value.split(/\s+/).includes(s))].join(' ').trim();
+	const frame = has('frame-src');
+	if (frame) return directives.map(([d, v]) => (d === 'frame-src' ? [d, add(v)] : [d, v]));
+	const fallback = has('child-src') ?? has('default-src');
+	// No fallback at all means framing is unrestricted already: nothing to add.
+	if (!fallback) return directives;
+	// 'none' allows nothing, so it cannot be widened by appending: the copy starts empty.
+	const base = fallback[1].trim() === "'none'" ? '' : fallback[1];
+	return [...directives, ['frame-src', add(base)]];
+}
+
 export function processCSP(
 	csp: string | Record<string, string> | undefined,
 	cdnHostName?: string,
@@ -136,28 +165,30 @@ export function processCSP(
 		return csp;
 	}
 
-	return Object.entries(csp)
-		.map(([directive, value]) => {
-			// Convert camelCase to kebab-case if needed
-			const kebabDirective = directive.includes('-') ? directive : camelToKebab(directive);
+	const directives = Object.entries(csp).map(([directive, value]): [string, string] => {
+		// Convert camelCase to kebab-case if needed
+		const kebabDirective = directive.includes('-') ? directive : camelToKebab(directive);
 
-			// Add CDN URL to relevant directives if not already present
-			let finalValue = value;
-			if (cdnUrl && CSP_DIRECTIVES_FOR_CDN.includes(kebabDirective)) {
-				if (!value.includes(cdnHostName!)) {
-					finalValue = `${value} ${cdnUrl}`;
-				}
+		// Add CDN URL to relevant directives if not already present
+		let finalValue = value;
+		if (cdnUrl && CSP_DIRECTIVES_FOR_CDN.includes(kebabDirective)) {
+			if (!value.includes(cdnHostName!)) {
+				finalValue = `${value} ${cdnUrl}`;
 			}
-			if (
-				analyticsOrigin &&
-				CSP_DIRECTIVES_FOR_ANALYTICS.includes(kebabDirective) &&
-				!finalValue.includes(analyticsOrigin)
-			) {
-				finalValue = `${finalValue} ${analyticsOrigin}`;
-			}
+		}
+		if (
+			analyticsOrigin &&
+			CSP_DIRECTIVES_FOR_ANALYTICS.includes(kebabDirective) &&
+			!finalValue.includes(analyticsOrigin)
+		) {
+			finalValue = `${finalValue} ${analyticsOrigin}`;
+		}
 
-			return `${kebabDirective} ${finalValue}`;
-		})
+		return [kebabDirective, finalValue];
+	});
+
+	return withPlatformFrames(directives)
+		.map(([d, v]) => `${d} ${v}`)
 		.join('; ');
 }
 
