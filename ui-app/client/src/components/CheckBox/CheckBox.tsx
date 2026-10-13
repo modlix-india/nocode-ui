@@ -45,6 +45,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			colorScheme,
 			hideLabel,
 			analyticsLabel,
+			invertValue,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -66,11 +67,13 @@ function CheckBox(props: Readonly<ComponentProps>) {
 		return addListenerAndCallImmediately(
 			props.context.pageName,
 			(_, value) => {
-				setCheckBoxData(!!value);
+				// Inverted, only an explicit false checks the box: an empty value reads as
+				// true, as it does for a flag like "enabled" whose absence means on.
+				setCheckBoxData(invertValue ? value === false : !!value);
 			},
 			bindingPathPath,
 		);
-	}, [bindingPath]);
+	}, [bindingPath, invertValue]);
 	const resolvedStyles = processComponentStylePseudoClasses(
 		props.pageDefinition,
 		{ hover, focus, disabled: readOnly },
@@ -78,7 +81,8 @@ function CheckBox(props: Readonly<ComponentProps>) {
 	);
 	const handleChange = async (value: boolean) => {
 		if (readOnly || !bindingPathPath) return;
-		if (bindingPathPath) setData(bindingPathPath, value, context.pageName);
+		if (bindingPathPath)
+			setData(bindingPathPath, invertValue ? !value : value, context.pageName);
 		if (clickEvent)
 			await runEvent(
 				pageDefinition.eventFunctions[onClick],

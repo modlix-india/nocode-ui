@@ -56,6 +56,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'invertValue',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Invert Value',
+		description:
+			'Checked when the bound value is false, unchecked when it is true or empty. Ticking writes false, unticking writes true.',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
+	},
+	{
 		name: 'hideLabel',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Label',
