@@ -157,6 +157,20 @@ describe('buildChartJsOptions', () => {
 
 			expect(options.scales.y.type).toBe('logarithmic');
 		});
+
+		it('should set the zero safe symlog scale for symlog axis and keep min', () => {
+			const properties = createMockProperties({ yAxisMin: 0 });
+			const chartData = createMockChartData({
+				hasBar: false,
+				xAxisType: 'ordinal',
+				yAxisType: 'symlog',
+			});
+
+			const options = buildChartJsOptions(properties, chartData, 'line') as any;
+
+			expect(options.scales.y.type).toBe('symlog');
+			expect(options.scales.y.min).toBe(0);
+		});
 	});
 
 	describe('ordinal Y values handling', () => {

@@ -39,9 +39,9 @@ export function ShaderPane({
 				<pre className="_sceneShaderError">{compileError}</pre>
 			) : (
 				<p className="_sceneNote">
-					uTime, uResolution, uPointer, uPointerActive and uProgress are bound for you,
-					but their declarations are not added for you: declare each one you use or the
-					shader will not compile.
+					uTime, uResolution, uPointer, uPointerActive, uPointerEased and uProgress are
+					bound for you, but their declarations are not added for you: declare each one
+					you use or the shader will not compile.
 				</p>
 			)}
 

@@ -161,21 +161,55 @@ export const AGENTS: Record<DraftAgentName, AgentConfig> = {
 	leadzump: { endpoint: '/api/ai/leadzump/chat', appCodeHeader: 'draftApp', title: 'LeadZump' },
 };
 
-export type DraftAgentMode = 'left' | 'right' | 'compact' | 'rail' | 'button' | 'window';
+export type DraftAgentMode = 'left' | 'right' | 'compact' | 'button' | 'window';
 
 export const MODES: ReadonlyArray<{ mode: DraftAgentMode; label: string; icon: string }> = [
 	{ mode: 'left', label: 'Dock left', icon: 'fa fa-solid fa-table-columns' },
 	{ mode: 'right', label: 'Dock right', icon: 'fa fa-solid fa-table-columns fa-flip-horizontal' },
 	{ mode: 'compact', label: 'Floating prompt', icon: 'fa fa-solid fa-message' },
-	{
-		mode: 'rail',
-		label: 'Minimise to the side rail',
-		icon: 'fa fa-solid fa-grip-lines-vertical',
-	},
-	{ mode: 'button', label: 'Floating button', icon: 'fa fa-solid fa-circle-dot' },
+	{ mode: 'button', label: 'Minimise', icon: 'fa fa-solid fa-minus' },
 	{ mode: 'window', label: 'Open in a new window', icon: 'fa fa-solid fa-up-right-from-square' },
 ];
 
-export function toMode(value: any, fallback: DraftAgentMode = 'rail'): DraftAgentMode {
+export function toMode(value: any, fallback: DraftAgentMode = 'button'): DraftAgentMode {
+	// The side rail is retired: the FAB is the one minimised state.
+	if (value === 'rail') return 'button';
 	return MODES.some(m => m.mode === value) ? (value as DraftAgentMode) : fallback;
+}
+
+/**
+ * Where a placed agent runs, and with it whose session it uses.
+ *
+ * `draft` (the default, and what every draft host gets on its own): only on the
+ * app's draft host, signed in as the BUILDER through the bridge, never as the
+ * app's user. `live`: only on the live app, signed in as whoever this window is
+ * signed in as, talking to the agent the page names. Each is invisible on the
+ * other surface, so one page definition can carry both.
+ */
+export type RunIn = 'draft' | 'live';
+
+export function toRunIn(value: any): RunIn {
+	const v = typeof value === 'string' ? value.trim().toLowerCase().replace(/^_/, '') : '';
+	return v === 'live' ? 'live' : 'draft';
+}
+
+export function runsHere(runIn: RunIn, onDraftHost: boolean): boolean {
+	return runIn === 'draft' ? onDraftHost : !onDraftHost;
+}
+
+/**
+ * A live run's agent, by name: `leadzump` is `/api/ai/leadzump/chat?draftmode=false`. Anything but
+ * a plain name is dropped rather than built into a URL, so a property can only ever
+ * pick one of the AI service's own agents.
+ */
+export function liveAgentEndpoint(name: string): string {
+	const clean = (name ?? '').trim().toLowerCase();
+	// `draftmode=false`: a live run is the live app, where the agent works the app's
+	// data and does not change the app itself (LeadZump's `app_change` reads it).
+	return `/api/ai/${/^[a-z0-9_-]+$/.test(clean) ? clean : 'appbuilder'}/chat?draftmode=false`;
+}
+
+/** The minimised state: the FAB, which "close" and "open in a window" fall back to. */
+export function isMinimised(mode: DraftAgentMode): boolean {
+	return mode === 'button';
 }

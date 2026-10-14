@@ -279,9 +279,10 @@ if (AGENT_BRIDGE) {
 	document.body.appendChild(span);
 } else {
 	(async function () {
-		// The draft agent's detached window: the app's definition (for the store and
-		// the theme) and the agent, but no page.
-		if (globalThis.isDraftMode && window.location.pathname === WINDOW_PATH) {
+		// The AI agent's detached window: the app's definition (for the store and the
+		// theme) and the agent, but no page. Draft hosts and live apps alike, since a
+		// live app can place the agent on its own sign-in.
+		if (window.location.pathname === WINDOW_PATH) {
 			globalThis.appDefinitionResponse = await getAppDefinition();
 			const { renderDraftAgentWindow } = await import(
 				/* webpackChunkName: "DraftAgent" */ './components/DraftAgent/DraftAgentWindow'

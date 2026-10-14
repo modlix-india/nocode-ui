@@ -346,6 +346,10 @@ export interface ComponentDefinitionValues {
 	 * component re-renders when its binding MOVES, not only when a value under
 	 * it changes. Never read for display. */
 	bindingPaths?: string;
+	/** Every validation rule's fields, resolved. Compared so a rule whose
+	 * condition reads the store is re-evaluated when that store value changes.
+	 * Never read for display. */
+	validationState?: string;
 }
 
 export interface StyleClassDefinition {

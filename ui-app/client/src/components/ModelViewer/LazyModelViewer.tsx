@@ -52,6 +52,7 @@ export default function LazyModelViewer(props: Readonly<ComponentProps>) {
 			onMeshClick,
 			onMeshHover,
 			uniforms: uniformOverrides,
+			pointerScope = 'self',
 			colorScheme = '_preset',
 			visibility = true,
 		} = {},
@@ -294,6 +295,7 @@ export default function LazyModelViewer(props: Readonly<ComponentProps>) {
 			poster={poster}
 			fallbackColor={resolveThemeColor(fallbackColor)}
 			uniformOverrides={uniformOverrides}
+			pointerScope={pointerScope === 'page' ? 'page' : 'self'}
 			onReadyEvent={onReady}
 			onErrorEvent={onError}
 			afterBuild={afterBuild}

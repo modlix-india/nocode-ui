@@ -97,6 +97,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'pointerScope',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Follow the Pointer',
+		description:
+			'Where a custom shader reads the pointer from (uPointer, uPointerEased). ' +
+			'Over the model only, or anywhere on the page, so a figure can turn ' +
+			'toward a cursor that never touches it.',
+		editor: ComponentPropertyEditor.ENUM,
+		defaultValue: 'self',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{
+				name: 'self',
+				displayName: 'Over the model',
+				description: 'Only while the pointer is over this component.',
+			},
+			{
+				name: 'page',
+				displayName: 'Anywhere on the page',
+				description:
+					'Measured from the middle of this component, in units of half the window.',
+			},
+		],
+	},
+	{
 		name: 'autoRotateSpeed',
 		schema: SCHEMA_NUM_COMP_PROP,
 		displayName: 'Turn Speed',

@@ -13,6 +13,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './sseventListen
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
 import { duplicate } from '@fincity/kirun-js';
+import { openEventStream } from './authedEventStream';
 
 export default function SSEventListener(props: Readonly<ComponentProps>) {
 	const {
@@ -41,11 +42,8 @@ export default function SSEventListener(props: Readonly<ComponentProps>) {
 		if (!bindingPath || !url || !onEvent || !pageDefinition.eventFunctions?.[onEvent]) return;
 
 		const eventFunction = pageDefinition.eventFunctions?.[onEvent];
-		const es = new EventSource(url, { withCredentials: true });
 
-		const func = (event: MessageEvent) => {
-			const data = event.data;
-
+		const func = (data: string) => {
 			let value = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
 
 			value = value ? duplicate(value) : [];
@@ -57,17 +55,17 @@ export default function SSEventListener(props: Readonly<ComponentProps>) {
 			runEvent(eventFunction, onEvent, context.pageName, locationHistory, pageDefinition);
 		};
 
-		if (Array.isArray(eventName)) {
-			eventName.forEach(name => {
-				es.addEventListener(name, func);
-			});
-		} else if (typeof eventName === 'string') {
-			es.addEventListener(eventName, func);
-		}
+		let eventNames: string[] = [];
+		if (Array.isArray(eventName)) eventNames = eventName;
+		else if (typeof eventName === 'string') eventNames = [eventName];
 
-		es.onerror = e => console.error('SSE error (auto-retrying)', e);
-
-		return () => es.close();
+		// Not EventSource: it cannot send the Authorization header, so without the cookie every
+		// stream 401'd (QA-0369). See authedEventStream.
+		return openEventStream(url, {
+			eventNames,
+			onMessage: message => func(message.data),
+			onError: e => console.error('SSE error (auto-retrying)', e),
+		});
 	}, [bindingPathPath, url, onEvent, eventName]);
 
 	const ref = useRef<HTMLDivElement>(null);
