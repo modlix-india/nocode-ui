@@ -38,9 +38,12 @@ export default function DraftBanner() {
 				display: 'flex',
 				justifyContent: 'center',
 				padding: '4px 0',
+				// Mostly see-through so the page underneath stays readable; the
+				// stripes and the shadowed text are what keep it recognisable.
 				background:
-					'repeating-linear-gradient(45deg, rgba(180,83,9,0.92), rgba(180,83,9,0.92) 10px, rgba(146,64,14,0.92) 10px, rgba(146,64,14,0.92) 20px)',
+					'repeating-linear-gradient(45deg, rgba(180,83,9,0.38), rgba(180,83,9,0.38) 10px, rgba(146,64,14,0.38) 10px, rgba(146,64,14,0.38) 20px)',
 				color: '#fff',
+				textShadow: '0 0 3px rgba(0,0,0,0.65), 0 1px 1px rgba(0,0,0,0.5)',
 				font: '600 11px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif',
 				letterSpacing: '0.08em',
 				textTransform: 'uppercase',
