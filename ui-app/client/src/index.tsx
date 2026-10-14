@@ -8,6 +8,9 @@ import { processLocation } from './util/locationProcessor';
 import { consumeSocialArrival, consumeSsoArrival } from './sso/ssoModule';
 import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
 import DraftBanner from './components/DraftBanner';
+import DraftAgentHost from './components/DraftAgent/DraftAgentHost';
+import { isDraftAgentBridge, runDraftAgentBridge } from './components/DraftAgent/draftAgentBridge';
+import { WINDOW_PATH } from './components/DraftAgent/draftAgentEnv';
 import { stylePropertyComponentsFor } from './ssr/stylePropertyComponents';
 
 // TEST CDN CODE
@@ -177,7 +180,13 @@ const FIFTEEN_MINUTES = 15 * 60 * 1000;
 // minutes of the token's life, so there are three chances to do that.
 let refreshInFlight = false;
 
+// The draft agent's sign-in hand-off page on a builder origin. It renders none of
+// the app and must not renew the builder's token from inside a frame, so it skips
+// the refresher below as well as the app.
+const AGENT_BRIDGE = isDraftAgentBridge();
+
 setInterval(async () => {
+	if (AGENT_BRIDGE) return;
 	const AUTH_TOKEN_EXPIRY = globalThis.isDebugMode
 		? 'designMode_AuthTokenExpiry'
 		: 'AuthTokenExpiry';
@@ -262,12 +271,25 @@ setInterval(async () => {
 }, 60000);
 
 const app = document.getElementById('app');
-if (!app) {
+if (AGENT_BRIDGE) {
+	runDraftAgentBridge();
+} else if (!app) {
 	const span = document.createElement('SPAN');
 	span.innerHTML = 'Unable to find "app" div to start the application.';
 	document.body.appendChild(span);
 } else {
 	(async function () {
+		// The draft agent's detached window: the app's definition (for the store and
+		// the theme) and the agent, but no page.
+		if (globalThis.isDraftMode && window.location.pathname === WINDOW_PATH) {
+			globalThis.appDefinitionResponse = await getAppDefinition();
+			const { renderDraftAgentWindow } = await import(
+				/* webpackChunkName: "DraftAgent" */ './components/DraftAgent/DraftAgentWindow'
+			);
+			renderDraftAgentWindow(app);
+			return;
+		}
+
 		const pageName = processLocation(window.location)?.pageName;
 
 		// A return from the SSO beacon carries the session as a one-time token on the URL,
@@ -345,6 +367,7 @@ if (!app) {
 				<AppStyle />
 				<App />
 				<DraftBanner />
+				<DraftAgentHost />
 			</ErrorBoundary>
 		);
 		if (window.localStorage.getItem(AUTH_TOKEN) || !rendered) createRoot(app).render(reactNode);
