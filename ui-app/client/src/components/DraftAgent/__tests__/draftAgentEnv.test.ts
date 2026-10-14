@@ -1,4 +1,7 @@
 import {
+	liveAgentEndpoint,
+	runsHere,
+	toRunIn,
 	builderOrigins,
 	draftEnvOf,
 	envOfHost,
@@ -115,7 +118,8 @@ describe('small readers', () => {
 	});
 	it('defaults an unknown mode', () => {
 		expect(toMode('compact')).toBe('compact');
-		expect(toMode('nope')).toBe('rail');
+		expect(toMode('rail')).toBe('button');
+		expect(toMode('nope')).toBe('button');
 		expect(toMode(undefined, 'right')).toBe('right');
 	});
 });
@@ -165,5 +169,26 @@ describe('parseSSE', () => {
 		expect(tailOf('**short**')).toBe('short');
 		const long = 'word '.repeat(80);
 		expect(tailOf(long, 40).length).toBeLessThanOrEqual(40);
+	});
+});
+
+describe('run in draft or live', () => {
+	it('defaults to a draft run', () => {
+		expect(toRunIn(undefined)).toBe('draft');
+		expect(toRunIn('_live')).toBe('live');
+		expect(toRunIn('LIVE')).toBe('live');
+		expect(toRunIn('nonsense')).toBe('draft');
+	});
+	it('shows a draft run only on a draft host and a live run only on the live app', () => {
+		expect(runsHere('draft', true)).toBe(true);
+		expect(runsHere('draft', false)).toBe(false);
+		expect(runsHere('live', false)).toBe(true);
+		expect(runsHere('live', true)).toBe(false);
+	});
+	it('builds a live run endpoint from a plain agent name only', () => {
+		expect(liveAgentEndpoint('leadzump')).toBe('/api/ai/leadzump/chat?draftmode=false');
+		expect(liveAgentEndpoint(' AdZump2 ')).toBe('/api/ai/adzump2/chat?draftmode=false');
+		expect(liveAgentEndpoint('../security/x')).toBe('/api/ai/appbuilder/chat?draftmode=false');
+		expect(liveAgentEndpoint('')).toBe('/api/ai/appbuilder/chat?draftmode=false');
 	});
 });

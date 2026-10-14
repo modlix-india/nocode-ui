@@ -43,6 +43,7 @@ import {
 	applyStylesToDatasets,
 } from './chartjs';
 import { gradientPlugin } from './chartjs/gradientPlugin';
+import { SymlogScale } from './chartjs/symlogScale';
 import { getDataFromPath } from '../../context/StoreContext';
 import type { CountryFeature, GeoBuild } from './chartjs/geo';
 
@@ -61,6 +62,7 @@ ChartJS.register(
 	CategoryScale,
 	LinearScale,
 	LogarithmicScale,
+	SymlogScale,
 	TimeScale,
 	RadialLinearScale,
 	// Elements

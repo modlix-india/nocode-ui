@@ -31,3 +31,14 @@ export function toDraftMode(value: any): DraftMode {
 	const v = typeof value === 'string' ? value.trim().toUpperCase() : '';
 	return (DRAFT_MODES as ReadonlyArray<string>).includes(v) ? (v as DraftMode) : 'DRAFT';
 }
+
+/**
+ * The agent's root, from its chat endpoint: `/api/ai/leadzump/chat?draftmode=false`
+ * gives `/api/ai/leadzump`, which the sessions, stop, confirm and other routes hang
+ * off. The query string belongs to the chat call alone: an endpoint carrying one
+ * (`?draftmode=false` keeps the LeadZump assistant off the app builder) used to
+ * leave `/chat?...` in place and send every other call to a path that does not exist.
+ */
+export function agentBaseUrl(endpoint: string): string {
+	return (endpoint ?? '').split('?')[0].replace(/\/chat\/?$/, '');
+}

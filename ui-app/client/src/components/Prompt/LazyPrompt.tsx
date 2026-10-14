@@ -29,7 +29,7 @@ import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
 import AttachmentThumb from './components/AttachmentThumb';
-import { Attachment, splitTurnAttachments } from './attachments';
+import { Attachment, splitTurnAttachments, fileToBase64 } from './attachments';
 import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
@@ -44,7 +44,7 @@ import {
 	matchDescriptor,
 	snapshotBaseline,
 } from './openDrafts';
-import { toDraftMode } from './draftMode';
+import { agentBaseUrl, toDraftMode } from './draftMode';
 import { startDragShield } from '../../functions/utils';
 
 interface Message {
@@ -144,20 +144,6 @@ function formatTokensTitle(total: number, cacheRead?: number): string {
 	if (!cacheRead) return base;
 	const pct = total > 0 ? Math.round((cacheRead / total) * 100) : 0;
 	return `${base}\n${cacheRead.toLocaleString()} (${pct}%) served from prompt cache`;
-}
-
-function fileToBase64(file: File): Promise<string> {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = () => {
-			const result = reader.result as string;
-			// Strip the data:...;base64, prefix — backend expects raw base64
-			const base64 = result.split(',')[1] ?? result;
-			resolve(base64);
-		};
-		reader.onerror = reject;
-		reader.readAsDataURL(file);
-	});
 }
 
 function mapHistoryToMessages(history: any[]): Message[] {
@@ -782,10 +768,17 @@ function readSessionContext(session: any): { app?: string; page?: string; apps: 
 	return { app: app || undefined, page: page || undefined, apps };
 }
 
+/**
+ * Usage of a reopened chat, from the stored session. The total counts cache
+ * reads, as the live `done` event does (input + cache_read + output): without
+ * them the same chat read 38,614 tokens when the answer arrived and 2,518 once
+ * reopened, since most of each prompt is served from the provider's cache.
+ */
 function extractUsageFromSession(session: any): TokenUsage | null {
 	if (!session) return null;
 	const input = session.total_input_tokens ?? 0;
 	const output = session.total_output_tokens ?? 0;
+	const cacheRead = session.total_cache_read_tokens ?? 0;
 	const contextUsed = session.context_tokens_used ?? 0;
 	const contextLimit = session.context_limit ?? DEFAULT_CONTEXT_LIMIT;
 	const contextPercent = contextLimit > 0 ? Math.round((contextUsed / contextLimit) * 100) : 0;
@@ -793,10 +786,11 @@ function extractUsageFromSession(session: any): TokenUsage | null {
 	return {
 		input_tokens: input,
 		output_tokens: output,
-		total_tokens: input + output,
+		total_tokens: input + cacheRead + output,
 		context_used: contextUsed,
 		context_limit: contextLimit,
 		context_percent: Math.min(contextPercent, 100),
+		cache_read_tokens: cacheRead,
 		turns: session.turn_count ?? 0,
 	};
 }
@@ -1883,7 +1877,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Fetch sessions list
 	const fetchSessions = useCallback(async () => {
 		try {
-			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			const baseUrl = agentBaseUrl(agentEndpoint);
 			const response = await fetch(
 				`${baseUrl}/sessions?limit=${sessionsPerPage}${sessionScopeQuery}`,
 				{
@@ -1912,7 +1906,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		if (!showModelSelector) return;
 		(async () => {
 			try {
-				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const baseUrl = agentBaseUrl(agentEndpoint);
 				const response = await fetch(`${baseUrl}/models`, {
 					headers: getAuthHeaders(),
 				});
@@ -2042,7 +2036,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		setLoadingMoreSessions(true);
 		try {
 			const newOffset = sessions.length;
-			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			const baseUrl = agentBaseUrl(agentEndpoint);
 			const response = await fetch(
 				`${baseUrl}/sessions?limit=${sessionsPerPage}&offset=${newOffset}${sessionScopeQuery}`,
 				{ headers: getAuthHeaders() },
@@ -2084,7 +2078,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			const poll = async () => {
 				try {
-					const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+					const baseUrl = agentBaseUrl(agentEndpoint);
 					const response = await fetch(
 						`${baseUrl}/sessions/${pollSessionId}?limit=${messagesPerPage}&offset=0`,
 						{ headers: getAuthHeaders() },
@@ -2451,7 +2445,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			if (!attachSessionId) return false;
 			stopPolling();
 
-			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			const baseUrl = agentBaseUrl(agentEndpoint);
 			let assistantMsgId = '';
 			let attempt = 0;
 			// Polling owns the streaming state once it takes over, so the
@@ -2566,7 +2560,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			if (overlaySessions) setSidebarOpen(false);
 
 			try {
-				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const baseUrl = agentBaseUrl(agentEndpoint);
 				const response = await fetch(
 					`${baseUrl}/sessions/${selectedSessionId}?limit=${messagesPerPage}&offset=0`,
 					{ headers: getAuthHeaders() },
@@ -2667,7 +2661,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 		(async () => {
 			try {
-				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const baseUrl = agentBaseUrl(agentEndpoint);
 				const response = await fetch(`${baseUrl}/runs`, { headers: getAuthHeaders() });
 				if (!response.ok) return;
 				const data = await response.json();
@@ -2772,7 +2766,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const handleDeleteSession = useCallback(
 		async (deleteSessionId: string) => {
 			try {
-				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const baseUrl = agentBaseUrl(agentEndpoint);
 				await fetch(`${baseUrl}/sessions/${deleteSessionId}`, {
 					method: 'DELETE',
 					headers: getAuthHeaders(),
@@ -2799,7 +2793,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const handleRenameSession = useCallback(
 		async (renameSessionId: string, newTitle: string) => {
 			try {
-				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const baseUrl = agentBaseUrl(agentEndpoint);
 				const response = await fetch(`${baseUrl}/sessions/${renameSessionId}`, {
 					method: 'PATCH',
 					headers: getAuthHeaders(),
@@ -2829,7 +2823,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 		try {
 			const newOffset = messagesOffset + messagesPerPage;
-			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			const baseUrl = agentBaseUrl(agentEndpoint);
 			const response = await fetch(
 				`${baseUrl}/sessions/${sessionId}?limit=${messagesPerPage}&offset=${newOffset}`,
 				{ headers: getAuthHeaders() },
@@ -3154,7 +3148,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			shouldAutoScrollRef.current = true;
 			setIsAtBottom(true);
 
-			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			const baseUrl = agentBaseUrl(agentEndpoint);
 			try {
 				const response = await fetch(`${baseUrl}/steer`, {
 					method: 'POST',
@@ -3279,7 +3273,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		// lets the panel close and the page refresh without losing the turn.
 		const sid = sessionIdRef.current;
 		if (sid) {
-			const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+			const baseUrl = agentBaseUrl(agentEndpoint);
 			fetch(`${baseUrl}/stop`, {
 				method: 'POST',
 				headers: getAuthHeaders(),
@@ -3312,7 +3306,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			);
 
 			try {
-				const baseUrl = agentEndpoint.replace(/\/chat$/, '').replace(/\/appbuilder$/, '');
+				const baseUrl = agentBaseUrl(agentEndpoint).replace(/\/appbuilder$/, '');
 				await fetch(`${baseUrl}/learning/feedback`, {
 					method: 'POST',
 					headers: getAuthHeaders(),
@@ -3357,7 +3351,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			);
 
 			try {
-				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const baseUrl = agentBaseUrl(agentEndpoint);
 				const response = await fetch(`${baseUrl}/confirm`, {
 					method: 'POST',
 					headers: getAuthHeaders(),
