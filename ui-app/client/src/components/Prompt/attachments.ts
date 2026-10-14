@@ -82,3 +82,27 @@ export function splitTurnAttachments(
 		),
 	};
 }
+
+/** A file as the chat endpoint takes it: raw base64, without the `data:...;base64,` prefix. */
+export function fileToBase64(file: File): Promise<string> {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onload = () => {
+			const result = reader.result as string;
+			resolve(result.split(',')[1] ?? result);
+		};
+		reader.onerror = reject;
+		reader.readAsDataURL(file);
+	});
+}
+
+/** The chat's `attachments` payload for what the user picked. */
+export async function toChatAttachments(attachments: Attachment[]): Promise<any[]> {
+	return Promise.all(
+		attachments.map(async a => {
+			const att: any = { type: a.type, name: a.name, mime_type: a.mimeType };
+			if (a.file) att.data = await fileToBase64(a.file);
+			return att;
+		}),
+	);
+}

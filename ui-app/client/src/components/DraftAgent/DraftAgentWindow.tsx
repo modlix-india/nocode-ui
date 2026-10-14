@@ -16,7 +16,11 @@ import { DraftAgentApp } from './LazyDraftAgent';
  */
 export function renderDraftAgentWindow(root: HTMLElement) {
 	const appCode = globalThis.appDefinitionResponse?.application?.appCode ?? '';
-	document.title = appCode ? `AI: ${appCode} (draft)` : 'AI (draft)';
+	const surface = globalThis.isDraftMode ? ' (draft)' : '';
+	document.title = appCode ? `AI: ${appCode}${surface}` : `AI${surface}`;
+	// The page that opened this window says how it was configured; this window is a
+	// fresh page and has no component definition of its own to read it from.
+	const asked = new URLSearchParams(window.location.hash.replace(/^#/, ''));
 	root.innerHTML = '';
 	createRoot(root).render(
 		<ErrorBoundary>
@@ -24,6 +28,9 @@ export function renderDraftAgentWindow(root: HTMLElement) {
 			<BrowserRouter>
 				<DraftAgentApp
 					windowed
+					runIn={asked.get('runIn') ?? undefined}
+					agent={asked.get('agent') ?? undefined}
+					draftMode={asked.get('draftMode') ?? undefined}
 					defaultMode="right"
 					icon=""
 					showWhenSignedOut

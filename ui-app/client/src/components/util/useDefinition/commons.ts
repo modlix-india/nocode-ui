@@ -51,6 +51,46 @@ function resolveBindingPaths(
 	return resolved;
 }
 
+/**
+ * Every field of every validation rule, resolved, as one string.
+ *
+ * `makePropertiesObject` hands a rule to the component as its raw definition
+ * (`condition`, `message` and so on are still unevaluated properties); the
+ * component's validate effect evaluates them, and reruns only when its value or
+ * that `validation` array changes. So a rule gated on the store, such as
+ * `condition: Page.isInvalidOtp = true` written by the page after a failed
+ * verify, never showed: the store write reached the listener, the resolved state
+ * was deep-equal to the last one, the bail-out skipped the render and the
+ * effect never saw the new condition. Holding the resolved fields here makes
+ * that write a state change, so the component renders and revalidates.
+ */
+function resolveValidationState(
+	definition: ComponentDefinition,
+	locationHistory: Array<LocationHistory>,
+	tokenExtractors: TokenValueExtractor[],
+): string | undefined {
+	const rules = (definition.properties as any)?.validation;
+	if (!rules || typeof rules !== 'object') return undefined;
+
+	let resolved: string | undefined;
+	for (const [key, rule] of Object.entries(rules)) {
+		const fields = (rule as any)?.property?.value;
+		if (!fields || typeof fields !== 'object') continue;
+		for (const [field, prop] of Object.entries(fields)) {
+			if (!prop || typeof prop !== 'object') continue;
+			let text: string;
+			try {
+				const value = getData(prop as any, locationHistory, ...tokenExtractors);
+				text = value === undefined ? 'undefined' : JSON.stringify(value);
+			} catch (err) {
+				text = `!${String(err)}`;
+			}
+			resolved = (resolved ? resolved + '\u0000' : '') + key + '.' + field + '=' + text;
+		}
+	}
+	return resolved;
+}
+
 export function createNewState(
 	definition: ComponentDefinition,
 	properties: Array<ComponentPropertyDefinition>,
@@ -82,6 +122,9 @@ export function createNewState(
 	// the listener worked, and the input stayed empty because it was still
 	// listening to the path from before `favIconKey` existed.
 	def.bindingPaths = resolveBindingPaths(definition, locationHistory, tokenExtractors);
+
+	// Same reason for validation rules gated on the store: see resolveValidationState.
+	def.validationState = resolveValidationState(definition, locationHistory, tokenExtractors);
 
 	if (definition.styleProperties) {
 		const devices = getDataFromPath(`${STORE_PREFIX}.devices`, locationHistory);

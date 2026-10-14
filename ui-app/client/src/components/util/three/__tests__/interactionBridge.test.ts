@@ -1,5 +1,6 @@
 import { createSceneDocument } from '../sceneDocument';
 import {
+	easeToward,
 	hitEventArgs,
 	isInside,
 	matchInteractions,
@@ -7,6 +8,7 @@ import {
 	needsHoverRaycast,
 	resolveSceneObjectId,
 	toNDC,
+	toPageNDC,
 } from '../interactionBridge';
 
 const rect = { left: 0, top: 0, width: 800, height: 600 };
@@ -37,6 +39,60 @@ describe('toNDC', () => {
 		expect(
 			toNDC({ clientX: 10, clientY: 10 }, { left: 0, top: 0, width: 0, height: 0 }),
 		).toEqual({ x: 0, y: 0 });
+	});
+});
+
+describe('toPageNDC', () => {
+	// A 400x300 canvas centred at (720, 250) in a 1440x900 window.
+	const canvas = { left: 520, top: 100, width: 400, height: 300 };
+	const viewport = { width: 1440, height: 900 };
+
+	it('is zero at the canvas centre', () => {
+		expect(toPageNDC({ clientX: 720, clientY: 250 }, canvas, viewport)).toEqual({ x: 0, y: 0 });
+	});
+
+	it('measures in half-viewports, so leaving the canvas does not saturate it', () => {
+		// 200px right of centre is the canvas edge: toNDC would say 1, this says 200/720.
+		const p = toPageNDC({ clientX: 920, clientY: 250 }, canvas, viewport);
+		expect(p.x).toBeCloseTo(200 / 720);
+	});
+
+	it('flips Y like toNDC, and clamps far pointers to -1..1', () => {
+		expect(toPageNDC({ clientX: 720, clientY: 0 }, canvas, viewport).y).toBeCloseTo(250 / 450);
+		const far = toPageNDC({ clientX: 0, clientY: 900 }, canvas, viewport);
+		expect(far.x).toBeCloseTo(-1);
+		expect(far.y).toBeCloseTo(-1);
+	});
+
+	it('does not divide by zero on a collapsed viewport', () => {
+		expect(toPageNDC({ clientX: 10, clientY: 10 }, canvas, { width: 0, height: 0 })).toEqual({
+			x: 0,
+			y: 0,
+		});
+	});
+});
+
+describe('easeToward', () => {
+	it('moves part of the way, and does not overshoot', () => {
+		const p = easeToward({ x: 0, y: 0 }, { x: 1, y: -1 }, 0.1, 4);
+		expect(p.x).toBeGreaterThan(0);
+		expect(p.x).toBeLessThan(1);
+		expect(p.y).toBeCloseTo(-p.x);
+	});
+
+	it('is framerate independent: two half steps equal one whole step', () => {
+		const once = easeToward({ x: 0, y: 0 }, { x: 1, y: 0 }, 0.2, 4);
+		const twice = easeToward(
+			easeToward({ x: 0, y: 0 }, { x: 1, y: 0 }, 0.1, 4),
+			{ x: 1, y: 0 },
+			0.1,
+			4,
+		);
+		expect(twice.x).toBeCloseTo(once.x, 10);
+	});
+
+	it('ignores a negative delta rather than moving away', () => {
+		expect(easeToward({ x: 0.5, y: 0 }, { x: 1, y: 0 }, -1, 4).x).toBe(0.5);
 	});
 });
 

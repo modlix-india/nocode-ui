@@ -19,10 +19,9 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'How the AI first appears on the draft. The person can switch at any time and their choice is remembered.',
 		group: ComponentPropertyGroup.BASIC,
-		defaultValue: 'rail',
+		defaultValue: 'button',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
-			{ name: 'rail', displayName: 'Side rail' },
 			{ name: 'button', displayName: 'Floating button' },
 			{ name: 'compact', displayName: 'Floating prompt' },
 			{ name: 'right', displayName: 'Docked right' },
@@ -30,17 +29,40 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'runIn',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Run in',
+		description:
+			"Draft run: only on the app's draft host, signed in as the builder (AppBuilder, SiteZump or LeadZump), never as the app's user. Live run: only on the live app, signed in as whoever is using it, talking to the agent named below. Each is hidden on the other surface.",
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'draft',
+		editor: ComponentPropertyEditor.ENUM,
+		enumValues: [
+			{ name: 'draft', displayName: 'Draft run' },
+			{ name: 'live', displayName: 'Live run' },
+		],
+	},
+	{
 		name: 'agent',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Agent',
 		description:
-			"Which AI to talk to. Empty uses the app's draftAgent property, and AppBuilder when that is not set.",
+			"The agent's name. Live run: called at /api/ai/<name>/chat with this app's own sign-in, e.g. leadzump, appbuilder, adzump2; the agent must admit this app. Draft run: appbuilder or leadzump; empty uses the app's draftAgent setting, then appbuilder.",
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'draftMode',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Where AI edits land',
+		description:
+			'DRAFT (default): every definition edit is a draft to review and publish. PAGE_ONLY_DRAFT: pages, styles and themes drafted, the rest live. LIVE: straight to production.',
 		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'DRAFT',
 		editor: ComponentPropertyEditor.ENUM,
 		enumValues: [
-			{ name: '', displayName: "App's setting" },
-			{ name: 'appbuilder', displayName: 'AppBuilder' },
-			{ name: 'leadzump', displayName: 'LeadZump' },
+			{ name: 'DRAFT', displayName: 'Drafts' },
+			{ name: 'PAGE_ONLY_DRAFT', displayName: 'Pages as drafts, rest live' },
+			{ name: 'LIVE', displayName: 'Live' },
 		],
 	},
 	{
@@ -48,7 +70,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Sign-in host',
 		description:
-			"The production host builders sign in on, e.g. leadzump.ai. The environment is added for dev, stage and local. Empty uses the app's draftAgentHost property, then the agent's default.",
+			"Draft run only. The production host builders sign in on, e.g. leadzump.ai. The environment is added for dev, stage and local. Empty uses the app's draftAgentHost property, then the agent's default.",
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
@@ -74,7 +96,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Offer to connect',
 		description:
-			'With no builder session found silently, show a dimmed button that signs in through a small window. Needed for builders on another site (SiteZump, LeadZump), whose sessions a draft page cannot see on its own.',
+			'Draft run only. With no builder session found silently, show a dimmed button that signs in through a small window. Needed for builders on another site (SiteZump, LeadZump), whose sessions a draft page cannot see on its own.',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: true,
 	},

@@ -30,11 +30,17 @@ import {
 	DraftAgentMode,
 	draftEnvOf,
 	MESSAGE_TYPE,
+	isMinimised,
 	MODES,
+	liveAgentEndpoint,
+	runsHere,
+	toRunIn,
 	toDraftAgent,
 	toMode,
 	WINDOW_PATH,
 } from './draftAgentEnv';
+import { agentBaseUrl, toDraftMode } from '../Prompt/draftMode';
+import { Attachment, toChatAttachments } from '../Prompt/attachments';
 import { applyObjectChange, ObjectChange } from './draftAgentRefresh';
 import { streamChat, tailOf } from './draftAgentStream';
 import { DRAFT_AGENT_CSS } from './draftAgentCss';
@@ -65,6 +71,10 @@ export interface DraftAgentConfig {
 	placeholder: string;
 	/** Rendered in the detached window: one full-height chat, no other modes. */
 	windowed?: boolean;
+	/** `draft` (builder sign-in, draft host only) or `live` (this app's sign-in, live only). */
+	runIn?: string;
+	/** Where the agent's definition edits land: DRAFT (default), PAGE_ONLY_DRAFT or LIVE. */
+	draftMode?: string;
 	pageDefinition?: PageDefinition;
 	locationHistory?: Array<any>;
 	contextPageName?: string;
@@ -125,8 +135,6 @@ function ensureFontAwesome() {
 		/* icons are decoration; the controls still have labels */
 	}
 }
-
-const RAIL_WIDTH = 44;
 
 /**
  * Make room for the agent beside the app instead of covering it.
@@ -189,33 +197,6 @@ function Sparkle({ size = 20 }: Readonly<{ size?: number }>) {
 
 function AgentIcon({ icon, size }: Readonly<{ icon?: string; size?: number }>) {
 	return icon ? <i className={icon} /> : <Sparkle size={size} />;
-}
-
-function SideRail({
-	side,
-	icon,
-	busy,
-	state,
-	title,
-	onClick,
-}: Readonly<{
-	side: 'left' | 'right';
-	icon?: string;
-	busy: boolean;
-	state: 'checking' | 'ready' | 'disconnected' | 'away';
-	title: string;
-	onClick: () => void;
-}>) {
-	return (
-		<div className={`_mlxDARail _${side} _${state} ${busy ? '_busy' : ''}`}>
-			<button className="_mlxDARailBtn" title={title} aria-label={title} onClick={onClick}>
-				<span className="_mlxDARing" aria-hidden="true" />
-				<span className="_mlxDARailFace">
-					<AgentIcon icon={icon} />
-				</span>
-			</button>
-		</div>
-	);
 }
 
 function clamp(v: number, lo: number, hi: number) {
@@ -287,18 +268,6 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	const appCode = useStoreValue<string>('Store.application.appCode', '') ?? '';
 	const props = useStoreValue<any>('Store.application.properties', {}) ?? {};
 	const pageName = useStoreValue<string>('Store.urlDetails.pageName', '') ?? '';
-
-	const agentName = toDraftAgent(config.agent || props.draftAgent);
-	const agent = AGENTS[agentName];
-	const hostOverride: string | undefined = config.host || props.draftAgentHost || undefined;
-	// Empty means AppBuilder's own AI mark (an inline SVG), not an icon-pack class.
-	const icon: string = props.draftAgentIcon || config.icon || '';
-
-	const [session, setSession] = useState<AgentSession | undefined>(getAgentSession());
-	const [phase, setPhase] = useState<'checking' | 'ready' | 'unavailable'>(
-		getAgentSession() ? 'ready' : 'checking',
-	);
-	const [tried, setTried] = useState<ProbeOutcome[]>([]);
 	const [prefs, setPrefsState] = useState<Prefs>(() => readPrefs(appCode));
 	const prefsRef = useRef(prefs);
 	const setPrefs = useCallback(
@@ -315,6 +284,51 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 		prefsRef.current = p;
 		setPrefsState(p);
 	}, [appCode]);
+
+	const onDraftHost = !!globalThis.isDraftMode;
+	// A live run signs in as this window's own user and talks to the agent the page
+	// names; a draft run signs in as the builder and talks to appbuilder or leadzump.
+	const runIn = toRunIn(config.runIn);
+	const appMode = runIn === 'live';
+	const agentName = toDraftAgent(config.agent || props.draftAgent);
+	const agent = AGENTS[agentName];
+	const liveAgent = (config.agent ?? '').trim().toLowerCase();
+	const endpoint = appMode ? liveAgentEndpoint(liveAgent) : agent.endpoint;
+	const agentTitle = appMode
+		? liveAgent
+			? liveAgent.charAt(0).toUpperCase() + liveAgent.slice(1)
+			: 'AppBuilder'
+		: agent.title;
+	const draftMode = toDraftMode(config.draftMode || 'DRAFT');
+	// This window's own sign-in, for `app` mode. Followed, not copied: the app's
+	// refresher replaces the token every half hour and revokes the old one.
+	const appAuth = useStoreValue<any>('Store.auth');
+	const hostOverride: string | undefined = config.host || props.draftAgentHost || undefined;
+	// Empty means AppBuilder's own AI mark (an inline SVG), not an icon-pack class.
+	const icon: string = props.draftAgentIcon || config.icon || '';
+
+	const [builderSession, setSession] = useState<AgentSession | undefined>(getAgentSession());
+	const appSession = useMemo<AgentSession | undefined>(() => {
+		if (!appMode || !appAuth?.accessToken) return undefined;
+		const user = appAuth.user ?? {};
+		return {
+			accessToken: appAuth.accessToken,
+			expiresAt: Number(appAuth.accessTokenExpiryAt) * 1000 || Date.now() + 30 * 60_000,
+			appCode,
+			clientCode: appAuth.loggedInClientCode ?? '',
+			userName:
+				[user.firstName, user.lastName].filter(Boolean).join(' ') || user.userName || '',
+			origin: window.location.origin,
+			label: props.title || appCode,
+		};
+	}, [appMode, appAuth, appCode, props.title]);
+	const session = appMode ? appSession : builderSession;
+	const [builderPhase, setPhase] = useState<'checking' | 'ready' | 'unavailable'>(
+		getAgentSession() ? 'ready' : 'checking',
+	);
+	// In app mode there is nothing to look for: signed in or not is already known.
+	const phase = appMode ? (appSession ? 'ready' : 'unavailable') : builderPhase;
+	const [tried, setTried] = useState<ProbeOutcome[]>([]);
 
 	const mode: DraftAgentMode = config.windowed ? 'right' : toMode(prefs.mode, config.defaultMode);
 	const [menuOpen, setMenuOpen] = useState(false);
@@ -333,8 +347,8 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 		if (phase !== 'checking') ensureFontAwesome();
 	}, [phase]);
 	useEffect(() => {
-		if (session) setPhase('ready');
-	}, [session]);
+		if (builderSession) setPhase('ready');
+	}, [builderSession]);
 
 	// ── Finding a builder session ─────────────────────────────────────────
 	const askOpener = useCallback(async (): Promise<AgentSession | undefined> => {
@@ -363,7 +377,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	}, []);
 
 	useEffect(() => {
-		if (!appCode || getAgentSession()) return;
+		if (appMode || !appCode || getAgentSession()) return;
 		let cancelled = false;
 		(async () => {
 			if (config.windowed) {
@@ -386,15 +400,15 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 		return () => {
 			cancelled = true;
 		};
-	}, [appCode, agentName, hostOverride, config.windowed, askOpener]);
+	}, [appMode, appCode, agentName, hostOverride, config.windowed, askOpener]);
 
 	// Keep the token alive while the page is open.
 	useEffect(() => {
 		const t = setInterval(() => {
-			if (getAgentSession()) freshSession();
+			if (!appMode && getAgentSession()) freshSession();
 		}, 60_000);
 		return () => clearInterval(t);
-	}, []);
+	}, [appMode]);
 
 	const connect = useCallback(
 		async (origin: string) => {
@@ -467,7 +481,12 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 
 	const openWindow = useCallback(() => {
 		const w = window.open(
-			`${window.location.origin}${WINDOW_PATH}#app=${encodeURIComponent(appCode)}`,
+			`${window.location.origin}${WINDOW_PATH}#${new URLSearchParams({
+				app: appCode,
+				runIn,
+				agent: appMode ? liveAgent : agentName,
+				draftMode,
+			}).toString()}`,
 			'mlxDraftAgentWindow',
 			'popup=yes,width=520,height=820',
 		);
@@ -481,7 +500,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 		windowRef.current = w;
 		setWindowOpen(true);
 		w.focus();
-	}, [appCode]);
+	}, [appCode, runIn, appMode, liveAgent, agentName, draftMode]);
 
 	const chooseMode = useCallback(
 		(m: DraftAgentMode) => {
@@ -497,14 +516,10 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 			}
 			if (m === 'window') {
 				openWindow();
-				setPrefs({ mode: 'rail' });
+				setPrefs({ mode: 'button' });
 				return;
 			}
-			setPrefs(
-				m === 'button' || m === 'rail'
-					? { mode: m }
-					: { mode: m, panel: m as Prefs['panel'] },
-			);
+			setPrefs(isMinimised(m) ? { mode: m } : { mode: m, panel: m as Prefs['panel'] });
 		},
 		[config.windowed, openWindow, setPrefs],
 	);
@@ -514,23 +529,33 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	const textRef = useRef('');
 
 	const headers = useCallback(() => {
+		if (appMode) {
+			// Read at call time: the store holds the live token, the memo may be a refresh behind.
+			const token = getDataFromPath('Store.auth.accessToken', []);
+			const s = token ? { ...(appSession as AgentSession), accessToken: token } : appSession;
+			return agentHeaders(s, appCode);
+		}
 		const s = getAgentSession();
 		return agentHeaders(s, agent.appCodeHeader === 'builder' ? (s?.appCode ?? '') : appCode);
-	}, [agent, appCode]);
+	}, [appMode, appSession, agent, appCode]);
+
+	const surface = onDraftHost
+		? `the running DRAFT of app '${appCode}', as its users would see it. Your page, theme and app edits land on this draft and the page refreshes to show them.`
+		: `the LIVE app '${appCode}', as its users see it, signed in as the person asking. Edits land ${draftMode === 'LIVE' ? 'live' : 'as drafts unless said otherwise'}; the page refreshes to show what changed.`;
 
 	const editorContext = useCallback(
 		() => ({
-			surface: `the running DRAFT of app '${appCode}', as its users would see it. Your page, theme and app edits land on this draft and the page refreshes to show them.`,
+			surface,
 			app_code: appCode,
 			...(pageName ? { active_object: `page '${pageName}'` } : {}),
 		}),
-		[appCode, pageName],
+		[surface, appCode, pageName],
 	);
 
 	const send = useCallback(
-		async (message: string) => {
+		async (message: string, attachments: Attachment[] = []) => {
 			const text = message.trim();
-			if (!text || run.busy) return;
+			if ((!text && !attachments.length) || run.busy) return;
 			await freshSession();
 			const controller = new AbortController();
 			abortRef.current = controller;
@@ -539,7 +564,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 			let sid = prefsRef.current.sessionId ?? null;
 			try {
 				const status = await streamChat({
-					endpoint: agent.endpoint,
+					endpoint,
 					headers: headers(),
 					signal: controller.signal,
 					body: {
@@ -547,7 +572,10 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 						session_id: sid,
 						app_code: appCode,
 						editor_context: editorContext(),
-						draft_mode: 'DRAFT',
+						draft_mode: draftMode,
+						...(attachments.length
+							? { attachments: await toChatAttachments(attachments) }
+							: {}),
 					},
 					onEvent: ({ type, data }) => {
 						if (data?.session_id && data.session_id !== sid) {
@@ -613,26 +641,26 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 				}));
 			}
 		},
-		[run.busy, agent, headers, appCode, editorContext, onObjectChanged, setPrefs],
+		[run.busy, endpoint, draftMode, headers, appCode, editorContext, onObjectChanged, setPrefs],
 	);
 
 	const stop = useCallback(() => {
 		const sid = prefsRef.current.sessionId;
 		abortRef.current?.abort();
 		if (sid)
-			fetch(`${agent.endpoint.replace(/\/chat$/, '')}/stop`, {
+			fetch(`${agentBaseUrl(endpoint)}/stop`, {
 				method: 'POST',
 				headers: headers(),
 				body: JSON.stringify({ session_id: sid }),
 			}).catch(() => undefined);
-	}, [agent, headers]);
+	}, [endpoint, headers]);
 
 	const answer = useCallback(
 		(approved: boolean) => {
 			const c = run.confirmation;
 			if (!c) return;
 			setRun(r => ({ ...r, confirmation: undefined }));
-			fetch(`${agent.endpoint.replace(/\/chat$/, '')}/confirm`, {
+			fetch(`${agentBaseUrl(endpoint)}/confirm`, {
 				method: 'POST',
 				headers: headers(),
 				body: JSON.stringify({
@@ -643,7 +671,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 				}),
 			}).catch(() => undefined);
 		},
-		[run.confirmation, agent, headers],
+		[run.confirmation, endpoint, headers],
 	);
 
 	// A theme, style, app or shell change needs a full reload, which would cut a
@@ -651,7 +679,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	// whose runs this component cannot see, it is offered as a button instead.
 	useEffect(() => {
 		if (!reloadOwed || run.busy) return;
-		if (mode === 'compact' || mode === 'button' || mode === 'rail') {
+		if (mode === 'compact' || mode === 'button') {
 			const t = setTimeout(() => window.location.reload(), 800);
 			return () => clearTimeout(t);
 		}
@@ -659,12 +687,9 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 
 	// ── Rendering ─────────────────────────────────────────────────────────
 	const docked = mode === 'left' || mode === 'right';
-	const railSide: 'left' | 'right' = prefs.panel === 'left' ? 'left' : 'right';
-	const hidden = !session && phase !== 'ready' && !config.showWhenSignedOut;
-	const showRail =
-		!config.windowed && !hidden && (mode === 'rail' || (!session && mode !== 'button'));
-	// The docked panel reserves its own width (it changes while being dragged).
-	useReservedSpace(showRail ? railSide : undefined, RAIL_WIDTH);
+	// App mode signs in with the app: when nobody is signed in there is nothing to offer.
+	// A live run with nobody signed in has nothing to offer: signing in is the app's job.
+	const hidden = appMode ? !session : !session && phase !== 'ready' && !config.showWhenSignedOut;
 
 	if (hidden) return <></>;
 
@@ -699,18 +724,22 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 			>
 				<i className="fa fa-solid fa-plus" /> New conversation
 			</button>
-			<button
-				role="menuitem"
-				className="_mlxDAMenuItem"
-				onClick={() => {
-					setMenuOpen(false);
-					disconnect();
-					setPhase('unavailable');
-				}}
-			>
-				<i className="fa fa-solid fa-right-from-bracket" /> Disconnect{' '}
-				{session?.label ?? ''}
-			</button>
+			{!appMode && (
+				// Only the agent's own builder session can be ended here; in app mode the
+				// session is the app's, and signing out of it belongs to the app.
+				<button
+					role="menuitem"
+					className="_mlxDAMenuItem"
+					onClick={() => {
+						setMenuOpen(false);
+						disconnect();
+						setPhase('unavailable');
+					}}
+				>
+					<i className="fa fa-solid fa-right-from-bracket" /> Disconnect{' '}
+					{session?.label ?? ''}
+				</button>
+			)}
 		</div>
 	) : null;
 
@@ -725,34 +754,22 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	) : null;
 
 	if (!session) {
-		const state = phase === 'checking' ? 'checking' : 'disconnected';
 		const railTitle =
 			phase === 'checking' ? 'Looking for your builder sign-in...' : 'Connect the AI';
 		const toggleConnect = () => phase !== 'checking' && setConnectOpen(o => !o);
 		let cardStyle: React.CSSProperties;
 		if (config.windowed) cardStyle = { left: '50%', top: 80, transform: 'translateX(-50%)' };
-		else if (mode === 'button') cardStyle = connectPosition(prefs);
-		else if (railSide === 'right') cardStyle = { right: RAIL_WIDTH + 8, top: 8 };
-		else cardStyle = { left: RAIL_WIDTH + 8, top: 8 };
+		else cardStyle = connectPosition(prefs);
 		return (
 			<Chrome>
-				{!config.windowed && mode === 'button' && (
+				{/* Not connected yet, whatever was open last: the FAB, dimmed. */}
+				{!config.windowed && (
 					<FloatingButton
 						icon={icon}
 						busy={false}
 						dim
 						prefs={prefs}
 						setPrefs={setPrefs}
-						title={railTitle}
-						onClick={toggleConnect}
-					/>
-				)}
-				{showRail && (
-					<SideRail
-						side={railSide}
-						icon={icon}
-						busy={false}
-						state={state}
 						title={railTitle}
 						onClick={toggleConnect}
 					/>
@@ -801,18 +818,21 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 					windowed={!!config.windowed}
 					width={prefs.width ?? DEFAULT_WIDTH}
 					onWidth={w => setPrefs({ width: w })}
-					title={agent.title}
+					title={agentTitle}
 					session={session}
 					menu={modeMenu}
 					onMenu={() => setMenuOpen(o => !o)}
-					onClose={() => (config.windowed ? window.close() : chooseMode('rail'))}
+					onClose={() => (config.windowed ? window.close() : chooseMode('button'))}
 					reloadChip={reloadChip}
 				>
 					<ChatPane
 						key={chatEpoch}
 						appCode={appCode}
 						pageName={pageName}
-						endpoint={agent.endpoint}
+						endpoint={endpoint}
+						surface={surface}
+						draftMode={draftMode}
+						onDraftHost={onDraftHost}
 						sessionId={prefs.sessionId ?? ''}
 						onSession={id =>
 							id && id !== prefsRef.current.sessionId && setPrefs({ sessionId: id })
@@ -840,6 +860,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 					onStop={stop}
 					onAnswer={answer}
 					onMenu={() => setMenuOpen(o => !o)}
+					onMinimise={() => chooseMode('button')}
 					onDismissError={() => setRun(r => ({ ...r, error: undefined }))}
 					menu={modeMenu}
 					reloadChip={reloadChip}
@@ -850,34 +871,23 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 
 	const openPanel = () => {
 		if (windowOpen && windowRef.current) windowRef.current.focus();
-		else chooseMode(prefs.panel ?? 'right');
+		// Whichever panel was used last (remembered per app in localStorage); the
+		// floating prompt the first time.
+		else chooseMode(prefs.panel ?? 'compact');
 	};
-	const openTitle = windowOpen
-		? 'The AI is open in another window'
-		: `Open the ${agent.title} AI`;
+	const openTitle = windowOpen ? 'The AI is open in another window' : `Open the ${agentTitle} AI`;
 
 	return (
 		<Chrome>
-			{mode === 'button' ? (
-				<FloatingButton
-					icon={icon}
-					busy={run.busy}
-					windowOpen={windowOpen}
-					prefs={prefs}
-					setPrefs={setPrefs}
-					title={openTitle}
-					onClick={openPanel}
-				/>
-			) : (
-				<SideRail
-					side={railSide}
-					icon={icon}
-					busy={run.busy}
-					state={windowOpen ? 'away' : 'ready'}
-					title={openTitle}
-					onClick={openPanel}
-				/>
-			)}
+			<FloatingButton
+				icon={icon}
+				busy={run.busy}
+				windowOpen={windowOpen}
+				prefs={prefs}
+				setPrefs={setPrefs}
+				title={openTitle}
+				onClick={openPanel}
+			/>
 			{reloadChip && <div className="_mlxDAReloadFloat">{reloadChip}</div>}
 		</Chrome>
 	);
@@ -949,6 +959,7 @@ function CompactPrompt({
 	onStop,
 	onAnswer,
 	onMenu,
+	onMinimise,
 	onDismissError,
 	menu,
 	reloadChip,
@@ -957,10 +968,11 @@ function CompactPrompt({
 	setPrefs: (p: Partial<Prefs>) => void;
 	run: RunState;
 	placeholder: string;
-	onSend: (m: string) => void;
+	onSend: (m: string, attachments: Attachment[]) => void;
 	onStop: () => void;
 	onAnswer: (approved: boolean) => void;
 	onMenu: () => void;
+	onMinimise: () => void;
 	onDismissError: () => void;
 	menu: React.ReactNode;
 	reloadChip: React.ReactNode;
@@ -988,22 +1000,84 @@ function CompactPrompt({
 		if (!ta) return;
 		ta.style.height = 'auto';
 		ta.style.height = `${Math.min(ta.scrollHeight, 120)}px`;
+		// A scrollbar only once the text outgrows the box; before that the empty
+		// track showed beside the send button.
+		ta.style.overflowY = ta.scrollHeight > 120 ? 'auto' : 'hidden';
 	}, [text]);
 
+	// Images and files, as the Prompt component takes them: picked, pasted or dropped.
+	const [attachments, setAttachments] = useState<Attachment[]>([]);
+	const fileRef = useRef<HTMLInputElement>(null);
+	const [dragging, setDragging] = useState(false);
+	const addFiles = (files: FileList | File[] | null | undefined) => {
+		const picked = Array.from(files ?? []).map(file => ({
+			id: `att_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+			type: (file.type.startsWith('image/') ? 'image' : 'file') as Attachment['type'],
+			name: file.name || 'pasted-image.png',
+			url: URL.createObjectURL(file),
+			mimeType: file.type,
+			file,
+		}));
+		if (picked.length) setAttachments(prev => [...prev, ...picked]);
+	};
+	const removeAttachment = (id: string) =>
+		setAttachments(prev => {
+			const gone = prev.find(a => a.id === id);
+			if (gone?.url.startsWith('blob:')) URL.revokeObjectURL(gone.url);
+			return prev.filter(a => a.id !== id);
+		});
+
 	const submit = () => {
-		if (!text.trim() || run.busy) return;
-		onSend(text);
+		if ((!text.trim() && !attachments.length) || run.busy) return;
+		onSend(text, attachments);
 		setText('');
+		// The object URLs are not revoked here: the send reads the files first.
+		setAttachments([]);
 	};
 
 	return (
 		<div
 			ref={boxRef}
-			className={`_mlxDACompact ${run.busy ? '_busy' : ''}`}
+			className={`_mlxDACompact ${run.busy ? '_busy' : ''} ${dragging ? '_dragging' : ''}`}
 			style={{ left: pos.x, top: pos.y, width: WIDTH }}
+			onDragOver={e => {
+				if (!Array.from(e.dataTransfer.types).includes('Files')) return;
+				e.preventDefault();
+				setDragging(true);
+			}}
+			onDragLeave={() => setDragging(false)}
+			onDrop={e => {
+				if (!e.dataTransfer.files?.length) return;
+				e.preventDefault();
+				setDragging(false);
+				addFiles(e.dataTransfer.files);
+			}}
 		>
 			<span className="_mlxDARing" aria-hidden="true" />
 			<div className="_mlxDACompactInner">
+				{attachments.length > 0 && (
+					<div className="_mlxDAAttachments">
+						{attachments.map(a => (
+							<span key={a.id} className="_mlxDAAttachment" title={a.name}>
+								{a.type === 'image' ? (
+									<img src={a.url} alt={a.name} />
+								) : (
+									<span className="_mlxDAAttachmentFile">
+										<i className="fa fa-solid fa-file" /> {a.name}
+									</span>
+								)}
+								<button
+									className="_mlxDAAttachmentRemove"
+									onClick={() => removeAttachment(a.id)}
+									title="Remove"
+									aria-label={`Remove ${a.name}`}
+								>
+									<i className="fa fa-solid fa-xmark" />
+								</button>
+							</span>
+						))}
+					</div>
+				)}
 				<div className="_mlxDACompactRow">
 					<button
 						className="_mlxDAGrip"
@@ -1013,6 +1087,25 @@ function CompactPrompt({
 					>
 						<i className="fa fa-solid fa-grip-vertical" />
 					</button>
+					<button
+						className="_mlxDAIconBtn"
+						onClick={() => fileRef.current?.click()}
+						title="Add images or files"
+						aria-label="Add images or files"
+					>
+						<i className="fa fa-solid fa-plus" />
+					</button>
+					<input
+						ref={fileRef}
+						type="file"
+						multiple
+						accept="image/*,.pdf,.txt,.csv,.json,.xml,.doc,.docx,.xls,.xlsx"
+						style={{ display: 'none' }}
+						onChange={e => {
+							addFiles(e.target.files);
+							e.target.value = '';
+						}}
+					/>
 					<textarea
 						ref={taRef}
 						className="_mlxDAInput"
@@ -1020,6 +1113,15 @@ function CompactPrompt({
 						value={text}
 						placeholder={placeholder}
 						onChange={e => setText(e.target.value)}
+						onPaste={e => {
+							const images = Array.from(e.clipboardData?.items ?? [])
+								.filter(i => i.type.startsWith('image/'))
+								.map(i => i.getAsFile())
+								.filter((f): f is File => !!f);
+							if (!images.length) return;
+							e.preventDefault();
+							addFiles(images);
+						}}
 						onKeyDown={e => {
 							if (e.key === 'Enter' && !e.shiftKey) {
 								e.preventDefault();
@@ -1040,7 +1142,7 @@ function CompactPrompt({
 						<button
 							className="_mlxDAIconBtn _send"
 							onClick={submit}
-							disabled={!text.trim()}
+							disabled={!text.trim() && !attachments.length}
 							title="Send"
 							aria-label="Send"
 						>
@@ -1054,6 +1156,14 @@ function CompactPrompt({
 						aria-label="Layout and options"
 					>
 						<i className="fa fa-solid fa-ellipsis" />
+					</button>
+					<button
+						className="_mlxDAIconBtn"
+						onClick={onMinimise}
+						title="Minimise"
+						aria-label="Minimise"
+					>
+						<i className="fa fa-solid fa-minus" />
 					</button>
 				</div>
 				{(run.status || run.error) && (
@@ -1190,6 +1300,9 @@ function ChatPane({
 	appCode,
 	pageName,
 	endpoint,
+	surface,
+	draftMode,
+	onDraftHost,
 	sessionId,
 	onSession,
 	headers,
@@ -1201,6 +1314,9 @@ function ChatPane({
 	appCode: string;
 	pageName: string;
 	endpoint: string;
+	surface: string;
+	draftMode: string;
+	onDraftHost: boolean;
 	sessionId: string;
 	onSession: (id: string | null) => void;
 	headers: () => Record<string, string>;
@@ -1221,14 +1337,16 @@ function ChatPane({
 				agentEndpoint: { value: endpoint },
 				targetAppCode: { value: appCode },
 				initialSessionId: { value: sessionId },
-				contextSurface: {
-					value: `the running DRAFT of app '${appCode}', as its users would see it. Your page, theme and app edits land on this draft and the page refreshes to show them.`,
-				},
+				contextSurface: { value: surface },
 				activeObject: { value: pageName ? `page '${pageName}'` : '' },
-				draftMode: { value: 'DRAFT' },
+				draftMode: { value: draftMode },
 				placeholder: { value: 'Describe a change to this app...' },
 				welcomeMessage: {
-					value: 'What should we change? Your edits go to this draft, not live.',
+					value: onDraftHost
+						? 'What should we change? Your edits go to this draft, not live.'
+						: draftMode === 'LIVE'
+							? 'What should we change? Edits go live straight away.'
+							: 'What should we change? Edits are saved as drafts for review.',
 				},
 				showSessions: { value: true },
 				sessionsMode: { value: '_overlay' },
@@ -1240,7 +1358,7 @@ function ChatPane({
 		}),
 		// The session is read once on mount; following it afterwards would remount the chat.
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[endpoint, appCode, pageName],
+		[endpoint, appCode, pageName, surface, draftMode, onDraftHost],
 	);
 
 	const pageDef = useMemo<PageDefinition>(
@@ -1274,9 +1392,11 @@ export default function LazyDraftAgent(props: Readonly<ComponentProps>) {
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const {
 		properties: {
-			defaultMode = 'rail',
+			defaultMode = 'button',
 			agent = '',
 			host = '',
+			runIn = 'draft',
+			draftMode = 'DRAFT',
 			icon = '',
 			placeholder = 'Ask the AI to change this app...',
 			showWhenSignedOut = true,
@@ -1290,9 +1410,14 @@ export default function LazyDraftAgent(props: Readonly<ComponentProps>) {
 		urlExtractor,
 	);
 
-	useEffect(() => claimPlacement(), []);
+	// A draft run shows only on the draft host, a live run only on the live app.
+	const shows = !globalThis.isDesignMode && runsHere(toRunIn(runIn), !!globalThis.isDraftMode);
+	// Only a draft run that is actually showing replaces the copy every draft host gets:
+	// a live run placed on the same page must not leave the draft without its agent.
+	const replacesDraftCopy = shows && toRunIn(runIn) === 'draft';
+	useEffect(() => (replacesDraftCopy ? claimPlacement() : undefined), [replacesDraftCopy]);
 
-	if (!globalThis.isDraftMode || globalThis.isDesignMode) return <></>;
+	if (!shows) return <></>;
 
 	return (
 		<DraftAgentApp
@@ -1300,6 +1425,8 @@ export default function LazyDraftAgent(props: Readonly<ComponentProps>) {
 			icon={icon}
 			agent={agent}
 			host={host}
+			runIn={runIn}
+			draftMode={draftMode}
 			showWhenSignedOut={showWhenSignedOut !== false}
 			placeholder={placeholder}
 			pageDefinition={props.pageDefinition}
