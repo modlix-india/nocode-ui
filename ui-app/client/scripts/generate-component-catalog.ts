@@ -955,6 +955,7 @@ const COMPONENT_TIERS: Record<string, ComponentTier> = {
 	Page: 'internal',
 	PageEditor: 'internal',
 	Prompt: 'internal',
+	DraftAgent: 'internal',
 	SSEventListener: 'internal',
 	SectionGrid: 'internal',
 	TemplateEditor: 'internal',
@@ -1052,6 +1053,8 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 	Popup: 'Modal dialog overlay with backdrop, close button, and customizable content area. Use for confirmations or forms.',
 	ProgressBar:
 		'Visual progress indicator showing completion percentage. Supports horizontal bar and circular variants.',
+	DraftAgent:
+		"The builder's AI on an app's DRAFT host, signed in through the builder (AppBuilder, SiteZump or LeadZump) rather than the app. Mounted on every draft host automatically; place it only to override its layout, agent or sign-in host on one page.",
 	Prompt: 'AI chat interface with SSE streaming, message history, and tool call display. Connects to AI agent endpoints.',
 	RadioButton:
 		'Radio button group for single-selection from multiple options. Each option has a label and value.',

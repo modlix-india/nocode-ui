@@ -1124,6 +1124,13 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		sessionIdRef.current = id;
 		_setSessionId(id);
 	}, []);
+	// Lets a React host follow the conversation, so it can reopen the same one in
+	// another presentation (the draft agent's docked, floating and windowed modes).
+	const onSessionChange = (props as any).onSessionChange as
+		((id: string | null) => void) | undefined;
+	useEffect(() => {
+		onSessionChange?.(sessionId);
+	}, [sessionId, onSessionChange]);
 	const [sessions, setSessions] = useState<Session[]>([]);
 	const [feedbackTurn, setFeedbackTurn] = useState<{
 		sessionId: string;
@@ -1526,7 +1533,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		});
 	}, [personalizationBindingPath, props.locationHistory, pageExtractor]);
 
+	// A React host that signs the agent in separately from the app passes its own
+	// headers. The draft agent does: on a draft host, Store.auth is the draft APP's
+	// user, and the agent must act as the builder instead.
+	const authHeadersOverride = (props as any).authHeaders as
+		(() => Record<string, string>) | undefined;
+
 	const getAuthHeaders = useCallback(() => {
+		if (authHeadersOverride) return authHeadersOverride();
 		// Store.auth carries `accessToken` / `loggedInClientCode`; there is no `token`
 		// or `clientCode` on it. Reading those sent an empty Authorization on every AI
 		// call, which only ever worked because the gateway fell back to the auth
@@ -1549,7 +1563,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			clientCode: clientCode as string,
 			appCode: appCode as string,
 		};
-	}, [pageExtractor, props.locationHistory]);
+	}, [pageExtractor, props.locationHistory, authHeadersOverride]);
 
 	// What the hosting page has open. Rebuilt on every render so it always reflects
 	// the tab the user is on now, not the one they were on when the chat mounted.
@@ -3344,7 +3358,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 			try {
 				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
-				await fetch(`${baseUrl}/confirm`, {
+				const response = await fetch(`${baseUrl}/confirm`, {
 					method: 'POST',
 					headers: getAuthHeaders(),
 					body: JSON.stringify({
@@ -3354,6 +3368,21 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						selected: selectedValue,
 					}),
 				});
+				// 404: nothing was waiting for this answer. The run behind the card
+				// had already stopped (a restart, a timeout, a reload replaying an
+				// old card), so the click did nothing. Saying "Approved" and then
+				// sitting there is what made it look stuck.
+				if (response.status === 404)
+					setMessages(prev =>
+						prev.map(m => ({
+							...m,
+							confirmationActions: m.confirmationActions?.map(a =>
+								a.confirmationId === confirmationId
+									? { ...a, status: 'expired' as ConfirmationAction['status'] }
+									: a,
+							),
+						})),
+					);
 			} catch {
 				// If the confirm POST fails, the backend will timeout and auto-deny
 			}
