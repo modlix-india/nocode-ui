@@ -84,3 +84,25 @@ export function fileDeleteUrl(fileUrl: string, resourceType: string, clientCode?
 	const client = clientCode || m?.[1];
 	return `/api/files/${resourceType}/${path}` + (client ? `?clientCode=${client}` : '');
 }
+
+/**
+ * The file name a FileSelector shows for the value it holds.
+ *
+ * An upload stores the files service's response, whose `name` is the real name:
+ * use it. Otherwise the name is the last segment of the url, which the files
+ * service built with Java's `URLEncoder` (form encoding): a space is `+`, a `(`
+ * is `%28`, a literal `+` is `%2B`. Shown raw it read `download+%284%29.pdf`.
+ * So `+` goes back to a space first, then the percent escapes are decoded. A
+ * segment that is not valid percent encoding (a bare `%` in a hand-typed url)
+ * is shown as it is rather than throwing.
+ */
+export function fileSelectorDisplayName(value: any, fileUrl: string): string {
+	if (value && typeof value === 'object' && typeof value.name === 'string' && value.name)
+		return value.name;
+	const segment = (fileUrl ?? '').split('?')[0].split('/').pop() ?? '';
+	try {
+		return decodeURIComponent(segment.replace(/\+/g, ' '));
+	} catch {
+		return segment;
+	}
+}
