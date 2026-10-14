@@ -20,7 +20,7 @@ const component = {
 	name: 'DraftAgent',
 	displayName: 'Draft Agent',
 	description:
-		"The builder's AI on an app's draft surface, signed in separately from the app. Appears on every draft host by itself; place it only to override its settings on a page.",
+		"An AI agent over the running app. On a draft host it appears by itself, signed in as the builder; place it to override that, or to offer an agent of your choice in a live app on the app's own sign-in.",
 	component: LoadLazyDraftAgent,
 	styleComponent: DraftAgentStyle,
 	styleDefaults: styleDefaults,
@@ -32,7 +32,7 @@ const component = {
 		type: 'DraftAgent',
 		name: 'DraftAgent',
 		properties: {
-			defaultMode: { value: 'rail' },
+			defaultMode: { value: 'button' },
 		},
 	},
 	stylePropertiesForTheme: styleProperties,

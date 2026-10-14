@@ -5,7 +5,7 @@
  * inside the docked panel is the Prompt component and keeps Prompt's own styles.
  */
 export const DRAFT_AGENT_CSS = `
-._mlxDAButton, ._mlxDACompact, ._mlxDADock, ._mlxDAConnect, ._mlxDARail {
+._mlxDAButton, ._mlxDACompact, ._mlxDADock, ._mlxDAConnect {
 	--mlxda-bg: #ffffff;
 	--mlxda-fg: #111827;
 	--mlxda-muted: #6b7280;
@@ -19,7 +19,7 @@ export const DRAFT_AGENT_CSS = `
 	z-index: 2147482000;
 }
 @media (prefers-color-scheme: dark) {
-	._mlxDAButton, ._mlxDACompact, ._mlxDADock, ._mlxDAConnect, ._mlxDARail {
+	._mlxDAButton, ._mlxDACompact, ._mlxDADock, ._mlxDAConnect {
 		--mlxda-bg: #1f2430;
 		--mlxda-fg: #f3f4f6;
 		--mlxda-muted: #9ca3af;
@@ -28,7 +28,7 @@ export const DRAFT_AGENT_CSS = `
 		--mlxda-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 	}
 }
-._mlxDAButton *, ._mlxDACompact *, ._mlxDADock *, ._mlxDAConnect *, ._mlxDARail * { box-sizing: border-box; }
+._mlxDAButton *, ._mlxDACompact *, ._mlxDADock *, ._mlxDAConnect * { box-sizing: border-box; }
 
 @keyframes mlxdaSpin {
 	from { transform: translate(-50%, -50%) rotate(0deg); }
@@ -117,49 +117,6 @@ export const DRAFT_AGENT_CSS = `
 ._mlxDAButton._away ._mlxDAButtonFace { outline: 2px dashed var(--mlxda-accent); outline-offset: -6px; }
 ._mlxDAButton:focus-visible { outline: 2px solid var(--mlxda-accent); outline-offset: 3px; }
 
-/* ── Side rail: the minimised agent, like the workspace's collapsed sidekick ── */
-@keyframes mlxdaPulse { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.8; } }
-._mlxDARail {
-	position: fixed;
-	top: 0;
-	bottom: 0;
-	width: 44px;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding-top: 10px;
-	background: var(--mlxda-bg);
-}
-._mlxDARail._right { right: 0; border-left: 1px solid var(--mlxda-line); }
-._mlxDARail._left { left: 0; border-right: 1px solid var(--mlxda-line); }
-._mlxDARailBtn {
-	position: relative;
-	width: 34px;
-	height: 34px;
-	padding: 0;
-	border: 0;
-	border-radius: 10px;
-	background: transparent;
-	cursor: pointer;
-}
-._mlxDARailFace {
-	position: absolute;
-	inset: 0;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border-radius: 10px;
-	background: var(--mlxda-bg);
-	color: var(--mlxda-accent);
-	font-size: 18px;
-}
-._mlxDARailBtn:hover ._mlxDARailFace { background: var(--mlxda-line); }
-._mlxDARailBtn:focus-visible { outline: 2px solid var(--mlxda-accent); outline-offset: 2px; }
-._mlxDARail._busy ._mlxDARailBtn > ._mlxDARing { opacity: 1; }
-._mlxDARail._checking ._mlxDARailFace { color: var(--mlxda-muted); animation: mlxdaPulse 1.4s ease-in-out infinite; cursor: progress; }
-._mlxDARail._disconnected ._mlxDARailFace { color: var(--mlxda-muted); }
-._mlxDARail._away ._mlxDARailFace { outline: 2px dashed var(--mlxda-accent); outline-offset: -4px; }
-
 /* ── Compact prompt ────────────────────────────────────────────── */
 ._mlxDACompact {
 	position: fixed;
@@ -168,13 +125,19 @@ export const DRAFT_AGENT_CSS = `
 }
 ._mlxDACompactInner {
 	position: relative;
-	border-radius: 18px;
+	border-radius: 16px;
 	background: var(--mlxda-bg);
 	box-shadow: var(--mlxda-shadow);
 	border: 1px solid var(--mlxda-line);
 	padding: 6px;
 }
-._mlxDACompact._busy ._mlxDACompactInner { border-color: transparent; }
+/* The same ring as the FAB: always there, breathing and turning slowly; full and fast
+   while the agent works. The inner border gives way to it. */
+._mlxDACompact ._mlxDACompactInner { border-color: transparent; }
+._mlxDACompact > ._mlxDARing { opacity: 0.75; animation: mlxdaBreath 3.2s ease-in-out infinite; }
+._mlxDACompact > ._mlxDARing::before { animation-duration: 6s; }
+._mlxDACompact._busy > ._mlxDARing { opacity: 1; animation: none; }
+._mlxDACompact._busy > ._mlxDARing::before { animation-duration: 1.2s; }
 ._mlxDACompactRow { display: flex; align-items: flex-end; gap: 4px; }
 ._mlxDAGrip {
 	flex: none;
@@ -201,6 +164,38 @@ export const DRAFT_AGENT_CSS = `
 	max-height: 120px;
 }
 ._mlxDAInput::placeholder { color: var(--mlxda-muted); }
+._mlxDAInput { overflow-y: hidden; scrollbar-width: thin; }
+._mlxDACompact._dragging ._mlxDACompactInner { outline: 2px dashed var(--mlxda-accent); outline-offset: 2px; }
+._mlxDAAttachments { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 6px 2px 30px; }
+._mlxDAAttachment {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	height: 44px;
+	max-width: 180px;
+	border: 1px solid var(--mlxda-line);
+	border-radius: 8px;
+	overflow: hidden;
+	background: var(--mlxda-bg);
+}
+._mlxDAAttachment img { height: 100%; width: auto; max-width: 80px; object-fit: cover; display: block; }
+._mlxDAAttachmentFile { padding: 0 22px 0 8px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+._mlxDAAttachmentRemove {
+	position: absolute;
+	top: 2px;
+	right: 2px;
+	width: 18px;
+	height: 18px;
+	border: 0;
+	border-radius: 50%;
+	background: rgba(17, 24, 39, 0.65);
+	color: #fff;
+	font-size: 10px;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
 ._mlxDAIconBtn {
 	flex: none;
 	width: 32px;
@@ -385,6 +380,6 @@ export const DRAFT_AGENT_CSS = `
 ._mlxDAConnectNote { font-size: 12px; color: var(--mlxda-muted); }
 
 @media (prefers-reduced-motion: reduce) {
-	._mlxDARing::before, ._mlxDAButtonFace::after, ._mlxDAButton > ._mlxDARing { animation: none; }
+	._mlxDARing::before, ._mlxDAButtonFace::after, ._mlxDAButton > ._mlxDARing, ._mlxDACompact > ._mlxDARing { animation: none; }
 }
 `;

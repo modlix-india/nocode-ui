@@ -9,7 +9,7 @@ import { HelperComponent } from '../../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import getSrcUrl from '../getSrcUrl';
 import { runEvent } from '../runEvent';
-import { resolveSceneObjectId, toNDC } from './interactionBridge';
+import { easeToward, resolveSceneObjectId, toNDC, toPageNDC } from './interactionBridge';
 import type { SceneDocument } from './sceneDocument';
 import {
 	applyTimeline,
@@ -60,6 +60,14 @@ export interface SceneSurfaceProps {
 	speed?: number;
 	dprCap?: number;
 	pointerInteraction?: boolean;
+	/**
+	 * Where uPointer and uPointerEased come from. 'self' (the default) reads the
+	 * pointer only while it is over the canvas. 'page' follows it anywhere in the
+	 * window, measured from the canvas centre in units of half the viewport, so
+	 * a scene can react to a cursor that never touches it. Picking always uses
+	 * the canvas-relative position, whichever this is.
+	 */
+	pointerScope?: 'self' | 'page';
 	poster?: string;
 	fallbackColor?: string;
 	/** Uniform name to value, merged over the document's own each frame. */
@@ -112,6 +120,13 @@ export interface SceneSurfaceProps {
  */
 const POINTER_AWAY = { x: 1000, y: 1000 };
 
+/**
+ * How fast uPointerEased catches up, per second. 4 covers about 98% of the gap
+ * in one second: quick enough to feel attached to the cursor, slow enough that
+ * a flick across the page reads as a turn rather than a jump.
+ */
+const POINTER_EASE_RATE = 4;
+
 export function SceneSurface(props: Readonly<SceneSurfaceProps>) {
 	const {
 		compClass,
@@ -126,6 +141,7 @@ export function SceneSurface(props: Readonly<SceneSurfaceProps>) {
 		speed = 1,
 		dprCap = 2,
 		pointerInteraction = true,
+		pointerScope = 'self',
 		poster,
 		fallbackColor,
 		uniformOverrides,
@@ -150,11 +166,17 @@ export function SceneSurface(props: Readonly<SceneSurfaceProps>) {
 	// Kept beside pointerRef rather than derived from it: a shader that pulls
 	// toward the pointer cannot tell the parked sentinel from a real position.
 	const pointerOnRef = useRef(false);
+	// pointerScope 'page': the last client position seen anywhere in the window,
+	// turned into page NDC once per frame rather than once per pointermove, so a
+	// fast mouse costs one layout read a frame instead of dozens.
+	const pageClientRef = useRef<{ clientX: number; clientY: number } | null>(null);
+	const pagePointerRef = useRef({ x: 0, y: 0 });
+	const easedRef = useRef({ x: 0, y: 0 });
 
 	// Read inside the frame callback rather than captured, so changing a colour
 	// does not rebuild the GL scene on every keystroke.
-	const liveRef = useRef({ speed, uniformOverrides, scrollProgress, doc });
-	liveRef.current = { speed, uniformOverrides, scrollProgress, doc };
+	const liveRef = useRef({ speed, uniformOverrides, scrollProgress, doc, pointerScope });
+	liveRef.current = { speed, uniformOverrides, scrollProgress, doc, pointerScope };
 
 	const fireEvent = useCallback(
 		(eventKey: string | undefined, args?: Record<string, unknown>) => {
@@ -256,6 +278,37 @@ export function SceneSurface(props: Readonly<SceneSurfaceProps>) {
 		updateSharedUniforms(handle, { width, height });
 	}, []);
 
+	/**
+	 * This frame's pointer for the shared uniforms, and one step of the ease.
+	 * Reads containerRef at call time, which is after useThreeCanvas below has
+	 * created it: the frame loop only starts once the canvas exists.
+	 */
+	const framePointer = (delta: number) => {
+		let pointer = pointerRef.current;
+		let pointerActive = pointerOnRef.current;
+		if (liveRef.current.pointerScope === 'page') {
+			const client = pageClientRef.current;
+			const el = containerRef.current;
+			if (client && el) {
+				pagePointerRef.current = toPageNDC(client, el.getBoundingClientRect(), {
+					width: window.innerWidth,
+					height: window.innerHeight,
+				});
+			}
+			pointer = pagePointerRef.current;
+			pointerActive = !!client;
+		}
+		// Eases to the centre once the pointer is gone, rather than snapping.
+		// Clamped because 'self' parks the pointer at POINTER_AWAY.
+		const target = pointerActive
+			? { x: Math.max(-1, Math.min(1, pointer.x)), y: Math.max(-1, Math.min(1, pointer.y)) }
+			: { x: 0, y: 0 };
+		easeToward(easedRef.current, target, delta, POINTER_EASE_RATE);
+		return { pointer, pointerActive };
+	};
+	const framePointerRef = useRef(framePointer);
+	framePointerRef.current = framePointer;
+
 	const onFrame = useCallback((ctx: ThreeCanvasContext, elapsed: number, delta: number) => {
 		const handle = handleRef.current;
 		if (!handle) return;
@@ -270,12 +323,15 @@ export function SceneSurface(props: Readonly<SceneSurfaceProps>) {
 						(Math.max(1, d.timeline.duration) / 1000)
 					: Math.min(1, elapsed / (Math.max(1, d.timeline.duration) / 1000));
 
+		const { pointer, pointerActive } = framePointerRef.current(delta);
+
 		updateSharedUniforms(handle, {
 			time: elapsed * (typeof live.speed === 'number' ? live.speed : 1),
 			width: ctx.width,
 			height: ctx.height,
-			pointer: pointerRef.current,
-			pointerActive: pointerOnRef.current,
+			pointer,
+			pointerActive,
+			pointerEased: easedRef.current,
 			progress,
 		});
 
@@ -348,6 +404,33 @@ export function SceneSurface(props: Readonly<SceneSurfaceProps>) {
 		pointerRef.current = { ...POINTER_AWAY };
 		pointerOnRef.current = false;
 	}, []);
+
+	// pointerScope 'page': follow the pointer anywhere in the window. Passive and
+	// store-only; the frame loop does the maths. Leaving the window (or losing
+	// focus) clears it, and uPointerEased then drifts back to the centre.
+	const followPage = pointerScope === 'page' && pointerInteraction;
+	useEffect(() => {
+		if (!followPage) return;
+		const move = (e: PointerEvent) => {
+			pageClientRef.current = { clientX: e.clientX, clientY: e.clientY };
+		};
+		const away = () => {
+			pageClientRef.current = null;
+		};
+		const out = (e: MouseEvent) => {
+			// mouseout with no relatedTarget is the pointer leaving the window.
+			if (!e.relatedTarget) away();
+		};
+		window.addEventListener('pointermove', move, { passive: true });
+		document.addEventListener('mouseout', out);
+		window.addEventListener('blur', away);
+		return () => {
+			window.removeEventListener('pointermove', move);
+			document.removeEventListener('mouseout', out);
+			window.removeEventListener('blur', away);
+			pageClientRef.current = null;
+		};
+	}, [followPage]);
 
 	const handleClick = useCallback(() => {
 		const onPick = hooksRef.current.picking?.click;
