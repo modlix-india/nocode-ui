@@ -184,6 +184,11 @@ function buildShaderMaterial(three: ThreeBundle, doc: SceneDocument, shaderId: s
 		// parked value as a real position and sends its effect off-screen, so
 		// it renders flat until the pointer first arrives. Gate on this instead.
 		uPointerActive: { value: 0 },
+		// uPointer smoothed over time, and easing back to the centre (0, 0)
+		// when the pointer leaves. For anything that should FOLLOW the pointer
+		// (a head turning, a parallax tilt): raw uPointer jumps on every enter
+		// and leave, and a shader has no memory of the last frame to smooth it.
+		uPointerEased: { value: new T.Vector2(0, 0) },
 		uProgress: { value: 0 },
 	};
 	for (const u of shader.uniforms) {
@@ -537,6 +542,7 @@ export function updateSharedUniforms(
 		height?: number;
 		pointer?: { x: number; y: number };
 		pointerActive?: boolean;
+		pointerEased?: { x: number; y: number };
 		progress?: number;
 	},
 ): void {
@@ -553,6 +559,9 @@ export function updateSharedUniforms(
 		}
 		if (u.uPointerActive && values.pointerActive !== undefined) {
 			u.uPointerActive.value = values.pointerActive ? 1 : 0;
+		}
+		if (u.uPointerEased && values.pointerEased) {
+			u.uPointerEased.value.set(values.pointerEased.x, values.pointerEased.y);
 		}
 	}
 }

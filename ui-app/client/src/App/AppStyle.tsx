@@ -14,9 +14,40 @@ import { usedComponents } from './usedComponents';
 import { hasNewNames, styledComponents } from './styleFloor';
 import { COMMON_CHECKBOX_CSS } from '../commonComponents/commonCheckboxCss';
 
+/**
+ * The theme variables as AppStyle keys them: one map per resolution, with ALL laid over the
+ * platform defaults. No theme means the defaults alone.
+ */
+function themeMaps(value: any): Map<string, Map<string, string>> {
+	if (!value) return new Map([[StyleResolution.ALL, styleDefaults]]);
+
+	const thm: Map<string, Map<string, string>> = new Map(
+		Object.entries<any>(value).map(([k, v]) => [
+			k,
+			new Map<string, string>(Object.entries<string>(v)),
+		]),
+	);
+
+	thm.set(
+		StyleResolution.ALL,
+		thm.has(StyleResolution.ALL)
+			? new Map<string, string>([
+					...Array.from(styleDefaults),
+					...Array.from(thm.get(StyleResolution.ALL) ?? []),
+				])
+			: styleDefaults,
+	);
+	return thm;
+}
+
 export function AppStyle() {
-	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(
-		new Map([[StyleResolution.ALL, styleDefaults]]),
+	// Read from the store on the FIRST render, not in an effect. The store already holds the
+	// app's theme when this mounts (StoreContext seeds it from the app definition), and an
+	// effect runs only after the first paint: until then every theme class wore the platform
+	// default, so a page whose root is _QUATERNARYBG flashed #EC6B5F red on load. A server
+	// render never runs effects at all, so its markup shipped with the defaults for good.
+	const [theme, setTheme] = useState<Map<string, Map<string, string>>>(() =>
+		themeMaps(getDataFromPath(STORE_PATH_THEME_PATH, [])),
 	);
 	const [style, setStyle] = useState('');
 
@@ -58,30 +89,7 @@ export function AppStyle() {
 	)?.minWidth;
 
 	useEffect(() => {
-		const thmValue = getDataFromPath(STORE_PATH_THEME_PATH, []);
-		if (!thmValue) {
-			setTheme(new Map([[StyleResolution.ALL, styleDefaults]]));
-			return;
-		}
-
-		const thm: Map<string, Map<string, string>> = new Map(
-			Object.entries<any>(thmValue).map(([k, v]) => [
-				k,
-				new Map<string, string>(Object.entries<string>(v)),
-			]),
-		);
-
-		thm.set(
-			StyleResolution.ALL,
-			thm.has(StyleResolution.ALL)
-				? new Map<string, string>([
-						...Array.from(styleDefaults),
-						...Array.from(thm.get(StyleResolution.ALL) ?? []),
-					])
-				: styleDefaults,
-		);
-
-		setTheme(thm);
+		setTheme(themeMaps(getDataFromPath(STORE_PATH_THEME_PATH, [])));
 	}, [setTheme]);
 
 	useEffect(
@@ -89,30 +97,8 @@ export function AppStyle() {
 			addListener(
 				undefined,
 				(path, value) => {
-					if (path == STORE_PATH_THEME_PATH) {
-						if (!value) {
-							setTheme(new Map([[StyleResolution.ALL, styleDefaults]]));
-						} else {
-							const thm: Map<string, Map<string, string>> = new Map(
-								Object.entries<any>(value).map(([k, v]) => [
-									k,
-									new Map<string, string>(Object.entries<string>(v)),
-								]),
-							);
-
-							thm.set(
-								StyleResolution.ALL,
-								thm.has(StyleResolution.ALL)
-									? new Map<string, string>([
-											...Array.from(styleDefaults),
-											...Array.from(thm.get(StyleResolution.ALL) ?? []),
-										])
-									: styleDefaults,
-							);
-
-							setTheme(thm);
-						}
-					} else if (path == STORE_PATH_STYLE_PATH) setStyle(value ?? '');
+					if (path == STORE_PATH_THEME_PATH) setTheme(themeMaps(value));
+					else if (path == STORE_PATH_STYLE_PATH) setStyle(value ?? '');
 				},
 				STORE_PATH_STYLE_PATH,
 				STORE_PATH_THEME_PATH,

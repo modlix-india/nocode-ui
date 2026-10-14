@@ -161,7 +161,9 @@ function parseGradientForLegend(
 /**
  * Maps axis type to Chart.js scale type
  */
-function mapAxisType(axisType: AxisType | 'time'): 'category' | 'linear' | 'logarithmic' | 'time' {
+function mapAxisType(
+	axisType: AxisType | 'time',
+): 'category' | 'linear' | 'logarithmic' | 'symlog' | 'time' {
 	switch (axisType) {
 		case 'ordinal':
 			return 'category';
@@ -169,6 +171,8 @@ function mapAxisType(axisType: AxisType | 'time'): 'category' | 'linear' | 'loga
 			return 'linear';
 		case 'log':
 			return 'logarithmic';
+		case 'symlog':
+			return 'symlog';
 		case 'time':
 			return 'time';
 		default:

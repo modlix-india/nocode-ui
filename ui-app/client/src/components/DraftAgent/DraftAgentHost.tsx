@@ -36,7 +36,7 @@ export default function DraftAgentHost() {
 		<BrowserRouter>
 			<Suspense fallback={<></>}>
 				<DraftAgentApp
-					defaultMode="rail"
+					defaultMode="button"
 					icon=""
 					showWhenSignedOut
 					placeholder="Ask the AI to change this app..."

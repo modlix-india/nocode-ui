@@ -1,4 +1,5 @@
 import type { JSX } from 'react';
+import { agentBaseUrl } from '../draftMode';
 import React, { useState, useEffect, useRef, useCallback, createContext, useContext } from 'react';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
@@ -450,7 +451,7 @@ function MapBlock({
 		const delayDebounce = setTimeout(async () => {
 			setSearching(true);
 			try {
-				const baseUrl = agentEndpoint.replace(/\/chat$/, '');
+				const baseUrl = agentBaseUrl(agentEndpoint);
 				const queryPlatform = platform.toLowerCase().includes('meta') ? 'meta' : 'google';
 				const url = `${baseUrl}/sessions/${sessionId}/target-locations/search?q=${encodeURIComponent(searchQuery)}&platform=${queryPlatform}`;
 				const res = await fetch(url, {

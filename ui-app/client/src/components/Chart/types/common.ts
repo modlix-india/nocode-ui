@@ -98,7 +98,8 @@ export interface Gradient {
 
 // Properties of the chart component
 
-export type AxisType = 'ordinal' | 'value' | 'log';
+// 'symlog' is a zero safe log axis (sign(v) * log10(1 + |v|)), see chartjs/symlogScale.ts
+export type AxisType = 'ordinal' | 'value' | 'log' | 'symlog';
 export interface ChartProperties {
 	hideGrid: boolean;
 	colorScheme: string;
@@ -306,7 +307,7 @@ export function makeChartDataFromProperties(
 		properties.xAxisLabelsSort !== 'none' &&
 		xUniqueData.length > 0
 	) {
-		if (xAxisType === 'value' || xAxisType === 'log') {
+		if (xAxisType === 'value' || xAxisType === 'log' || xAxisType === 'symlog') {
 			// Numeric sort for value/log axis
 			xUniqueData.sort((a, b) => {
 				const numA = Number.parseFloat(a);
@@ -338,7 +339,7 @@ export function makeChartDataFromProperties(
 		properties.yAxisLabelsSort !== 'none' &&
 		yUniqueData.length > 0
 	) {
-		if (yAxisType === 'value' || yAxisType === 'log') {
+		if (yAxisType === 'value' || yAxisType === 'log' || yAxisType === 'symlog') {
 			// Numeric sort for value/log axis
 			yUniqueData.sort((a, b) => {
 				const numA = Number.parseFloat(a);
@@ -740,7 +741,9 @@ function findDerivedType(data: any[], axisType: AxisType | 'derived'): AxisType 
 		}) ?? 'ordinal';
 
 	if (retAxisType === 'value') {
-		if (coefficientOfVariation(data) > 0.95) retAxisType = 'log';
+		// A plain log axis cannot place 0 or negative values, so use the zero safe one then
+		if (coefficientOfVariation(data) > 0.95)
+			retAxisType = data.some(e => parseFloat(e) <= 0) ? 'symlog' : 'log';
 	}
 
 	return retAxisType;

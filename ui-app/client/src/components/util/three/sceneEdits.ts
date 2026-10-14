@@ -348,16 +348,17 @@ export function setUniform(
  * Uniform names a fragment or vertex source declares but the document does not
  * carry, so the editor can offer to add them.
  *
- * The four shared uniforms are excluded: the runtime binds uTime, uResolution,
- * uPointer, uPointerActive and uProgress for every shader, and listing them as
- * missing would invite an author to add a document uniform that then shadows
- * the live one with a frozen value.
+ * The shared uniforms are excluded: the runtime binds uTime, uResolution,
+ * uPointer, uPointerActive, uPointerEased and uProgress for every shader, and
+ * listing them as missing would invite an author to add a document uniform that
+ * then shadows the live one with a frozen value.
  */
 const SHARED_UNIFORMS = new Set([
 	'uTime',
 	'uResolution',
 	'uPointer',
 	'uPointerActive',
+	'uPointerEased',
 	'uProgress',
 ]);
 
