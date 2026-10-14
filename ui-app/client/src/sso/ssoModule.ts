@@ -569,20 +569,39 @@ export async function consumeSocialArrival(): Promise<boolean> {
 		return false;
 	}
 
+	// Facebook appends `#_=_` to every redirect it makes; it means nothing to the app and only
+	// clutters the address bar and anything copied from it.
+	if (window.location.hash === '#_=_') {
+		try {
+			window.history.replaceState(null, '', window.location.href.split('#')[0]);
+		} catch {
+			/* leave the address alone if it cannot be rewritten */
+		}
+	}
+
 	const state = params.get(PARAM_SOCIAL_STATE);
 	if (!state) {
-		// A cancelled consent screen comes back with `error` and no state. There is nothing to
-		// redeem, and the app should render as if nothing happened, so just tidy the address bar.
-		if (params.get(PARAM_SOCIAL_ERROR)) scrubParams(SOCIAL_ARRIVAL_PARAMS);
+		// A cancelled or refused consent screen comes back with `error` and no state. There is
+		// nothing to redeem; tidy the address bar and say why nobody got signed in, or the user
+		// lands on the sign-in page again with no idea what happened (QA-0326).
+		if (params.get(PARAM_SOCIAL_ERROR)) {
+			scrubParams(SOCIAL_ARRIVAL_PARAMS);
+			stashSocialMessage('Sign-in was cancelled or could not be completed. Please try again.');
+		}
 		return false;
 	}
 
 	// `emailId` is what the provider verified; `userName` is the same value on every platform
 	// the callback supports today, and is the fallback only so a provider that stops sending
-	// one does not take the whole flow down.
-	const userName = params.get('emailId') ?? params.get('userName');
+	// one does not take the whole flow down. `||`, not `??`: the callback sends `emailId=` EMPTY
+	// when Facebook shares no email (phone-only accounts, an unticked email permission), and an
+	// empty string must fall through rather than end the flow in silence (QA-0326, QA-0349).
+	const userName = params.get('emailId') || params.get('userName');
 	if (!userName) {
 		scrubParams(SOCIAL_ARRIVAL_PARAMS);
+		stashSocialMessage(
+			'We could not sign you in because no email address was shared. Allow access to your email address when signing in, or sign in with your email and password.',
+		);
 		return false;
 	}
 

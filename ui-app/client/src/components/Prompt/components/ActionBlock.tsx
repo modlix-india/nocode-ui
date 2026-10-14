@@ -13,7 +13,8 @@ export interface ConfirmationAction {
 	details: Record<string, any>;
 	options: ActionOption[];
 	toolUseId: string;
-	status: 'pending' | 'approved' | 'denied' | 'timeout';
+	// `expired`: answered, but nothing was waiting any more (the run had stopped).
+	status: 'pending' | 'approved' | 'denied' | 'timeout' | 'expired';
 	selectedValue?: string;
 }
 
@@ -88,7 +89,9 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 			? `Approved: ${action.displayName || action.toolName}`
 			: action.status === 'timeout'
 				? `Timed out: ${action.displayName || action.toolName}`
-				: `Denied: ${action.displayName || action.toolName}`;
+				: action.status === 'expired'
+					? `No longer waiting: ${action.displayName || action.toolName}. The run had stopped, so nothing was done. Ask again.`
+					: `Denied: ${action.displayName || action.toolName}`;
 		const statusClass = isApproved ? '_approved' : '_denied';
 
 		return (
