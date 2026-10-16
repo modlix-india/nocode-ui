@@ -1996,6 +1996,118 @@ export default function PromptStyle({
 
 		/* Horizontal creative carousel - assets-style thumbnail strip with
 		   arrow paging when a competitor has many creatives. */
+		/* Tabs block — segmented pill switcher for multi-section craft views */
+		${PREFIX} ._craftTabsWrap {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+			margin: 8px 0;
+		}
+
+		${PREFIX} ._craftTabsHeader {
+			display: flex;
+			align-items: center;
+			gap: 6px;
+			padding: 4px;
+			background: ${t('surfaceColorTwo', '#f3f4f6')};
+			border-radius: 10px;
+			border: 1px solid ${t('borderColorNine', '#e5e7eb')};
+		}
+
+		${PREFIX} ._craftTabButton {
+			flex: 1;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 6px;
+			padding: 7px 12px;
+			background: transparent;
+			border: none;
+			border-radius: 7px;
+			font-size: 13px;
+			font-weight: 500;
+			color: ${t('promptSecondaryFontColor', '#64748b')};
+			cursor: pointer;
+			transition: all 0.15s ease;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._craftTabButton:hover:not(._active) {
+			color: ${t('promptFontColor', '#1e293b')};
+			background: ${t('surfaceColorThree', 'rgba(0, 0, 0, 0.05)')};
+		}
+
+		${PREFIX} ._craftTabButton._active {
+			background: ${t('colorSeven', '#ffffff')};
+			color: ${t('promptFontColor', '#0f172a')};
+			font-weight: 600;
+			box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+		}
+
+		${PREFIX} ._craftTabIcon {
+			font-size: 13px;
+		}
+
+		${PREFIX} ._craftTabLabel {
+			line-height: 1;
+		}
+
+		${PREFIX} ._craftTabCount {
+			font-size: 11px;
+			font-weight: 600;
+			padding: 2px 6px;
+			border-radius: 999px;
+			background: ${t('surfaceColorThree', 'rgba(0, 0, 0, 0.06)')};
+			color: inherit;
+			line-height: 1;
+		}
+
+		${PREFIX} ._craftTabButton._active ._craftTabCount {
+			background: ${t('surfaceColorTwo', '#eef2ff')};
+			color: ${t('colorFive', '#4f46e5')};
+		}
+
+		${PREFIX} ._craftActionButton {
+			display: inline-flex;
+			align-items: center;
+			gap: 6px;
+			padding: 6px 12px;
+			background: ${t('colorSeven', '#ffffff')};
+			border: 1px solid ${t('borderColorNine', '#e5e7eb')};
+			border-radius: 8px;
+			font-size: 12px;
+			font-weight: 500;
+			color: ${t('promptFontColor', '#1e293b')};
+			cursor: pointer;
+			transition: all 0.15s ease;
+			white-space: nowrap;
+			box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+			align-self: flex-start;
+		}
+
+		${PREFIX} ._craftActionButton:hover {
+			background: ${t('surfaceColorTwo', '#f8fafc')};
+			border-color: ${t('borderColorTen', '#cbd5e1')};
+			color: ${t('promptFontColor', '#0f172a')};
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+		}
+
+		${PREFIX} ._craftActionButton:active {
+			background: ${t('surfaceColorThree', '#f1f5f9')};
+			transform: scale(0.98);
+		}
+
+		${PREFIX} ._craftActionIcon {
+			font-size: 11px;
+			color: ${t('promptSecondaryFontColor', '#64748b')};
+		}
+
+		${PREFIX} ._craftTabBody {
+			display: flex;
+			flex-direction: column;
+			gap: 12px;
+		}
+
 		${PREFIX} ._craftCarouselWrap {
 			position: relative;
 		}

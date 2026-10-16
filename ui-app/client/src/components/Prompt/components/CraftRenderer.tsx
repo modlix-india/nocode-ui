@@ -289,6 +289,73 @@ function CollapsibleBlock({
 	);
 }
 
+interface TabItem {
+	id: string;
+	label: string;
+	count?: number | string;
+	icon?: string;
+	children?: Block[];
+}
+
+function TabsBlock({
+	tabs = [],
+	default_tab,
+	styleProperties,
+}: {
+	tabs?: TabItem[];
+	default_tab?: string;
+	styleProperties?: any;
+}) {
+	const [activeTabId, setActiveTabId] = useState<string>(
+		() => default_tab || tabs[0]?.id || '',
+	);
+
+	useEffect(() => {
+		if (tabs.length > 0 && !tabs.some(t => t.id === activeTabId)) {
+			setActiveTabId(tabs[0].id);
+		}
+	}, [tabs, activeTabId]);
+
+	if (!tabs.length) return null;
+
+	const currentTab = tabs.find(t => t.id === activeTabId) ?? tabs[0];
+
+	return (
+		<div className="_craftTabsWrap">
+			<div className="_craftTabsHeader" role="tablist">
+				{tabs.map(t => {
+					const isActive = t.id === currentTab?.id;
+					return (
+						<button
+							key={t.id}
+							type="button"
+							role="tab"
+							aria-selected={isActive}
+							className={`_craftTabButton${isActive ? ' _active' : ''}`}
+							onClick={() => setActiveTabId(t.id)}
+						>
+							{t.icon && <i className={`${t.icon} _craftTabIcon`} aria-hidden="true" />}
+							<span className="_craftTabLabel">{t.label}</span>
+							{t.count != null && (
+								<span className="_craftTabCount">{t.count}</span>
+							)}
+						</button>
+					);
+				})}
+			</div>
+			<div className="_craftTabBody">
+				{(currentTab?.children ?? []).map((block, i) => (
+					<CraftBlockRenderer
+						key={(block as any).id ?? i}
+						block={block}
+						styleProperties={styleProperties}
+					/>
+				))}
+			</div>
+		</div>
+	);
+}
+
 // Sub-pixel scroll positions never quite reach the edge, so an arrow hides
 // once it is this close.
 const ARROW_EDGE_SLACK_PX = 4;
@@ -929,7 +996,36 @@ function MapBlock({
 	);
 }
 
+
+function ActionButtonBlock({
+	label,
+	icon,
+	prompt,
+	display_text,
+}: {
+	label: string;
+	icon?: string;
+	prompt?: string;
+	display_text?: string;
+}) {
+	const context = useContext(CraftContext);
+	if (!context || !prompt) return null;
+	const { onSend } = context;
+
+	return (
+		<button
+			type="button"
+			className="_craftActionButton"
+			onClick={() => onSend(prompt, undefined, display_text)}
+		>
+			{icon && <i className={`${icon} _craftActionIcon`} aria-hidden="true" />}
+			<span>{label}</span>
+		</button>
+	);
+}
+
 const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
+	action_button: ActionButtonBlock,
 	heading: HeadingBlock,
 	text: TextBlock,
 	badge: BadgeBlock,
@@ -944,6 +1040,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	collapsible: CollapsibleBlock,
 	carousel: CarouselBlock,
 	map: MapBlock,
+	tabs: TabsBlock,
 };
 
 function CraftBlockRenderer({ block, styleProperties }: { block: Block; styleProperties?: any }) {
