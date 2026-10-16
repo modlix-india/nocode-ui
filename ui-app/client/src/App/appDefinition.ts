@@ -1,6 +1,12 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { shortUUID } from '../util/shortUUID';
-import { consumeSsoArrival, hasAskedBeacon, isSsoEnabled, ssoBounce } from '../sso/ssoModule';
+import {
+	consumeSsoArrival,
+	hasAskedBeacon,
+	isLeavingForBeacon,
+	isSsoEnabled,
+	ssoBounce,
+} from '../sso/ssoModule';
 import {
 	currentAppCode,
 	pageThemeName,
@@ -99,7 +105,11 @@ export async function getAppDefinition(
 	// Cold start with no session: ask the beacon, once. `isSsoEnabled` rather than a bare
 	// `properties.sso3` check, so design mode is excluded here the way it is everywhere else;
 	// the old check fired inside the appbuilder design-mode iframe.
-	if (!auth && isSsoEnabled(application) && !hasAskedBeacon()) {
+	// Not while a beacon hop is already under way: `UIEngine.Logout` clears
+	// `Store.application`, App refetches it here with no session, and this bounce then
+	// replaced the logout hop before it committed, so the beacon kept its session and
+	// the logout's `redirectUrl` was lost (the user landed on the app's login page).
+	if (!auth && isSsoEnabled(application) && !hasAskedBeacon() && !isLeavingForBeacon()) {
 		// Navigates, so nothing below this runs. The browser comes back to this same URL
 		// carrying either a one-time token or `sso=none`, and `consumeSsoArrival` above
 		// banks it on that second pass.

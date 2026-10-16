@@ -70,7 +70,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Sign-in host',
 		description:
-			"Draft run only. The production host builders sign in on, e.g. leadzump.ai. The environment is added for dev, stage and local. Empty uses the app's draftAgentHost property, then the agent's default.",
+			"Draft run only. The host builders sign in on. Put <env.> where the environment goes, e.g. <env.>leadzump.ai (dev.leadzump.ai on dev, leadzump.ai on production) or leadzump.<env.>modlix.com. Without <env.>, the environment is added before the domain. Empty uses the app's draftAgentHost property, then the agent's default.",
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{

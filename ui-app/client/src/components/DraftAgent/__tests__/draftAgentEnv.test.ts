@@ -48,6 +48,19 @@ describe('envOfHost and hostForEnv', () => {
 		expect(hostForEnv('leadzump.ai', '')).toBe('leadzump.ai');
 		expect(hostForEnv('dev.leadzump.ai', 'dev')).toBe('dev.leadzump.ai');
 	});
+
+	it('fills an <env.> template exactly where it is written', () => {
+		expect(hostForEnv('<env.>leadzump.ai', 'dev')).toBe('dev.leadzump.ai');
+		expect(hostForEnv('<env.>leadzump.ai', 'stage')).toBe('stage.leadzump.ai');
+		expect(hostForEnv('<env.>leadzump.ai', 'local')).toBe('local.leadzump.ai');
+		expect(hostForEnv('<env.>leadzump.ai', '')).toBe('leadzump.ai');
+		expect(hostForEnv('leadzump.<env.>modlix.com', 'dev')).toBe('leadzump.dev.modlix.com');
+		expect(hostForEnv('leadzump.<env.>modlix.com', '')).toBe('leadzump.modlix.com');
+		expect(hostForEnv('https://<ENV.>leadzump.ai/', 'stage')).toBe('stage.leadzump.ai');
+		expect(builderOrigins('dev', 'leadzump', '<env.>leadzump.ai')).toEqual([
+			{ origin: 'https://dev.leadzump.ai', label: 'dev.leadzump.ai' },
+		]);
+	});
 });
 
 describe('builderOrigins', () => {
