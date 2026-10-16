@@ -60,12 +60,25 @@ export function envOfHost(hostname: string): DraftEnv | undefined {
 	return last === 'local' || last === 'dev' || last === 'stage' ? last : '';
 }
 
+export const ENV_PLACEHOLDER = '<env.>';
+
 /**
- * Put an environment into a production host name: the env label goes just before
- * the registrable domain. `appbuilder.modlix.com` becomes
- * `appbuilder.dev.modlix.com`, `leadzump.ai` becomes `dev.leadzump.ai`.
+ * Put an environment into a host name.
+ *
+ * A template says exactly where it goes: `<env.>` becomes `dev.`, `stage.` or
+ * `local.`, and nothing on production, so `<env.>leadzump.ai` is `dev.leadzump.ai`
+ * and `leadzump.<env.>modlix.com` is `leadzump.dev.modlix.com`. The same value then
+ * works on every environment and survives a transport unchanged.
+ *
+ * Without a template the label goes just before the registrable domain:
+ * `appbuilder.modlix.com` becomes `appbuilder.dev.modlix.com`, `leadzump.ai`
+ * becomes `dev.leadzump.ai`.
  */
 export function hostForEnv(prodHost: string, env: DraftEnv): string {
+	const raw = (prodHost ?? '').trim().toLowerCase();
+	if (raw.includes(ENV_PLACEHOLDER))
+		return hostOfPattern(raw.split(ENV_PLACEHOLDER).join(env ? `${env}.` : ''));
+
 	const clean = hostOfPattern(prodHost);
 	if (!env || !clean) return clean;
 	const labels = clean.split('.');
@@ -93,8 +106,9 @@ export function builderOrigins(
 		label,
 	});
 
+	// The label is the host actually used, never the `<env.>` template.
 	if (hostOverride && hostOfPattern(hostOverride))
-		return [named(hostOverride, hostOfPattern(hostOverride))];
+		return [named(hostOverride, hostForEnv(hostOverride, env))];
 
 	if (agent === 'leadzump') return [named('leadzump.ai', 'LeadZump')];
 
