@@ -22,7 +22,7 @@ import { flattenUUID } from '../util/uuid';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import getSrcUrl from '../util/getSrcUrl';
-import { fileDeleteUrl, fileSelectorStoredValue } from './storedValue';
+import { fileDeleteUrl, fileSelectorDisplayName, fileSelectorStoredValue } from './storedValue';
 import axios, { AxiosRequestConfig } from 'axios';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { MESSAGE_TYPE, addMessage } from '../../App/Messages/Messages';
@@ -165,7 +165,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 				directory = false;
 			}
 			type = fileUrl.split('.').pop()?.toLowerCase() || '';
-			name = fileUrl.split('/').pop() || '';
+			name = fileSelectorDisplayName(selectedFile, fileUrl);
 			setFileName(name);
 			try {
 				const dataURL = await imageURLForFile(fileUrl, directory, type);

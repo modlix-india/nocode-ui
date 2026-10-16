@@ -18,6 +18,7 @@ import Menu from './Menu/Menu';
 import Page from './Page/Page';
 import Popover from './Popover/Popover';
 import Prompt from './Prompt/Prompt';
+import DraftAgent from './DraftAgent/DraftAgent';
 import Popup from './Popup/Popup';
 import ProgressBar from './ProgressBar/ProgressBar';
 import RadioButton from './RadioButton/RadioButton';
@@ -159,6 +160,7 @@ const componentMap = new Map<string, Component>([
 	[Form.name, Form],
 	[TableRow.name, TableRow],
 	[Prompt.name, Prompt],
+	[DraftAgent.name, DraftAgent],
 ]);
 
 export default componentMap;

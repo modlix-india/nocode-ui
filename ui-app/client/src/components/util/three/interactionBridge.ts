@@ -48,6 +48,44 @@ export function toNDC(pointer: PointerLike, rect: RectLike): NDC {
 	};
 }
 
+/**
+ * Pointer position anywhere on the page, relative to the canvas.
+ *
+ * The origin is the canvas centre and one unit is half the VIEWPORT, not half
+ * the canvas, so a pointer at the far edge of the window reads about +-1 and a
+ * scene can follow the cursor across the whole page. Measuring against the
+ * canvas instead put -1..1 inside a small box, so the effect saturated the
+ * moment the pointer left it. Clamped to -1..1 for the same reason, with Y
+ * flipped as in toNDC.
+ */
+export function toPageNDC(
+	pointer: PointerLike,
+	rect: RectLike,
+	viewport: { width: number; height: number },
+): NDC {
+	if (viewport.width <= 0 || viewport.height <= 0) return { x: 0, y: 0 };
+	const clamp = (v: number) => Math.max(-1, Math.min(1, v));
+	return {
+		x: clamp((pointer.clientX - (rect.left + rect.width / 2)) / (viewport.width / 2)),
+		y: clamp(-(pointer.clientY - (rect.top + rect.height / 2)) / (viewport.height / 2)) + 0,
+	};
+}
+
+/**
+ * Move `current` toward `target` by an exponential ease, in place.
+ *
+ * Framerate independent: the fraction covered depends on elapsed seconds, not
+ * on how many frames ran, so 30fps and 120fps reach the target together. A
+ * shader cannot do this itself, because it has no memory of the last frame,
+ * which is why a pointer-driven head snapped instead of turning.
+ */
+export function easeToward(current: NDC, target: NDC, deltaSeconds: number, rate: number): NDC {
+	const k = 1 - Math.exp(-Math.max(0, deltaSeconds) * rate);
+	current.x += (target.x - current.x) * k;
+	current.y += (target.y - current.y) * k;
+	return current;
+}
+
 /** Whether a pointer landed inside the canvas at all. */
 export function isInside(pointer: PointerLike, rect: RectLike): boolean {
 	const { x, y } = toNDC(pointer, rect);

@@ -71,6 +71,8 @@ import SchemaForm from '../SchemaForm/SchemaForm';
 import TemplateEditor from '../TemplateEditor/TemplateEditor';
 import TextEditor from '../TextEditor/TextEditor';
 import Prompt from '../Prompt/Prompt';
+import DraftAgent from '../DraftAgent/DraftAgent';
+import DraftAgentIcon from '../DraftAgent/DraftAgentIcon';
 import Tree from '../Tree/Tree';
 
 import { ComponentStyleSubComponentDefinition } from '../../types/common';
@@ -5992,6 +5994,16 @@ export const SubComponentDefinitions: Record<
 					/>
 				</IconHelper>
 			),
+		},
+	],
+
+	[DraftAgent.name]: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: <DraftAgentIcon />,
+			mainComponent: true,
 		},
 	],
 
