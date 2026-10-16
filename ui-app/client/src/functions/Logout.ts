@@ -43,75 +43,83 @@ const SIGNATURE = new FunctionSignature('Logout')
 
 export class Logout extends AbstractFunction {
 	protected async internalExecute(context: FunctionExecutionParameters): Promise<FunctionOutput> {
+		const token = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
+
+		const application = getDataFromPath('Store.application', []);
+		const ssoOn = isSsoEnabled(application);
+		const appCode: string = application?.appCode ?? '';
+
+		const headers: any = { AUTHORIZATION: token };
+		if (globalThis.isDebugMode)
+			headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
+
+		const ssoLogout: boolean = context.getArguments()?.get('ssoLogout');
+		const rawRedirect: string = context.getArguments()?.get('redirectUrl');
+		// Resolved the way Login resolves its redirect: the SSO beacon rejects a relative
+		// URL with a 400, and a path-based host needs its /{app}/{client}/page/ prefix.
+		const redirectUrl: string =
+			rawRedirect && rawRedirect !== '' ? absoluteDestination(rawRedirect) : '';
+
+		// The revoke goes out BEFORE the store is cleared. Clearing `Store.pageDefinition` and
+		// `Store.application` makes the render engine refetch the page, see no app code and
+		// reload, and that reload used to abort the revoke in flight: the token stayed valid on
+		// the server, the beacon was never told, and `redirectUrl` was never reached, so the
+		// user landed on the app's own login page instead of the one the page asked for.
+		let failure: any = undefined;
 		try {
-			const token = getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []);
-
-			const application = getDataFromPath('Store.application', []);
-			const ssoOn = isSsoEnabled(application);
-			const appCode: string = application?.appCode ?? '';
-
-			setData('Store.auth', undefined, undefined, true);
-			setData(`${LOCAL_STORE_PREFIX}.AuthToken`, undefined, undefined, true);
-			// The expiry was being left behind. On its own that is only litter, but the pair
-			// is what every reader treats as "there is a session here", so clear both.
-			setData(`${LOCAL_STORE_PREFIX}.AuthTokenExpiry`, undefined, undefined, true);
-			setData('Store.pageDefinition', {});
-			setData('Store.messages', []);
-			setData('Store.validations', {});
-			setData('Store.validationTriggers', {});
-			setData('Store.pageData', {});
-			setData('Store.application', undefined, undefined, true);
-			setData('Store.functionExecutions', {});
-
-			const headers: any = { AUTHORIZATION: token };
-			if (globalThis.isDebugMode)
-				headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
-
-			const ssoLogout: boolean = context.getArguments()?.get('ssoLogout');
-			const rawRedirect: string = context.getArguments()?.get('redirectUrl');
-			// Resolved the way Login resolves its redirect: the SSO beacon rejects a relative
-			// URL with a 400, and a path-based host needs its /{app}/{client}/page/ prefix.
-			const redirectUrl: string =
-				rawRedirect && rawRedirect !== '' ? absoluteDestination(rawRedirect) : '';
-
-			const response = await axios({
+			await axios({
 				url: `api/security/revoke?ssoLogout=${ssoLogout ? 'true' : 'false'}`,
 				method: 'GET',
 				headers,
 			});
-
-			// Clearing this origin is only half of signing out. The beacon holds its own
-			// session on its own origin, and while it does, the next cold load bounces there
-			// and is handed a fresh token, i.e. the user is signed straight back in. Go and
-			// forget it, then continue to wherever logout was headed anyway.
-			if (ssoOn && appCode) {
-				ssoLogoutBeacon(
-					appCode,
-					redirectUrl && redirectUrl !== '' ? redirectUrl : undefined,
-				);
-				return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
-			}
-
-			if (redirectUrl && redirectUrl !== '') {
-				setTimeout(() => {
-					globalThis.location.href = redirectUrl;
-				}, 100);
-			}
-
-			return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
 		} catch (err: any) {
+			failure = err;
+		}
+
+		setData('Store.auth', undefined, undefined, true);
+		setData(`${LOCAL_STORE_PREFIX}.AuthToken`, undefined, undefined, true);
+		// The expiry was being left behind. On its own that is only litter, but the pair
+		// is what every reader treats as "there is a session here", so clear both.
+		setData(`${LOCAL_STORE_PREFIX}.AuthTokenExpiry`, undefined, undefined, true);
+		setData('Store.pageDefinition', {});
+		setData('Store.messages', []);
+		setData('Store.validations', {});
+		setData('Store.validationTriggers', {});
+		setData('Store.pageData', {});
+		setData('Store.application', undefined, undefined, true);
+		setData('Store.functionExecutions', {});
+
+		if (failure) {
 			return new FunctionOutput([
 				EventResult.of(
 					Event.ERROR,
 					new Map([
-						['data', err.response.data],
-						['headers', err.response.headers],
-						['status', err.response.status],
+						['data', failure.response?.data],
+						['headers', failure.response?.headers],
+						['status', failure.response?.status],
 					]),
 				),
 				EventResult.outputOf(new Map([['data', null]])),
 			]);
 		}
+
+		// Clearing this origin is only half of signing out. The beacon holds its own
+		// session on its own origin, and while it does, the next cold load bounces there
+		// and is handed a fresh token, i.e. the user is signed straight back in. Go and
+		// forget it, then continue to wherever logout was headed anyway. It runs in the same
+		// tick as the clearing above, so the render engine sees the hop and does not reload.
+		if (ssoOn && appCode) {
+			ssoLogoutBeacon(appCode, redirectUrl && redirectUrl !== '' ? redirectUrl : undefined);
+			return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
+		}
+
+		if (redirectUrl && redirectUrl !== '') {
+			setTimeout(() => {
+				globalThis.location.href = redirectUrl;
+			}, 100);
+		}
+
+		return new FunctionOutput([EventResult.outputOf(new Map([['data', {}]]))]);
 	}
 
 	getSignature(): FunctionSignature {
