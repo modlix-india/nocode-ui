@@ -25,7 +25,8 @@ export function HelperComponent(
 	}>,
 ) {
 	if (props.context.disableSelection) return <></>;
-	if (globalThis.designMode === 'PAGE')
+	// `draftPick`: the draft agent's picker reuses these overlays on a running draft.
+	if (globalThis.designMode === 'PAGE' || globalThis.draftPick)
 		return (
 			<Suspense fallback={<></>}>
 				<PageEditorHelperComponent {...props} />

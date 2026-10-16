@@ -84,6 +84,8 @@ declare global {
 	var __SSR_RENDERING__: boolean | undefined;
 	var debugContext: any;
 	var isDraftMode: boolean;
+	/** The draft agent is picking a component: the page editor's helpers draw outside design mode. */
+	var draftPick: boolean | undefined;
 	// var d3: typeof import('d3/index');
 }
 

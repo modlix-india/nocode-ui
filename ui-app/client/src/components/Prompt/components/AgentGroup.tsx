@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ToolSummary } from './ToolSummary';
 
 interface ToolCallInfo {
 	id: string;
@@ -32,6 +33,8 @@ interface AgentGroupProps {
 	spans: AgentSpanInfo[];
 	expandIcon?: string;
 	collapseIcon?: string;
+	componentKey?: string;
+	styles?: any;
 }
 
 function elapsedSeconds(span: AgentSpanInfo, now: number): number {
@@ -51,11 +54,15 @@ function AgentRow({
 	now,
 	expandIcon,
 	collapseIcon,
+	componentKey,
+	styles,
 }: {
 	sp: AgentSpanInfo;
 	now: number;
 	expandIcon: string;
 	collapseIcon: string;
+	componentKey: string;
+	styles: any;
 }) {
 	const isRunning = sp.status === 'running';
 	const [expanded, setExpanded] = useState(isRunning);
@@ -174,7 +181,13 @@ function AgentRow({
 												{u}
 											</div>
 										))}
-										{tc.summary && <div>{tc.summary}</div>}
+										{tc.summary && (
+											<ToolSummary
+												text={tc.summary}
+												componentKey={componentKey}
+												styles={styles}
+											/>
+										)}
 									</div>
 								)}
 							</div>
@@ -193,6 +206,8 @@ export function AgentGroup({
 	spans,
 	expandIcon = 'fa fa-chevron-down',
 	collapseIcon = 'fa fa-chevron-up',
+	componentKey = '',
+	styles,
 }: Readonly<AgentGroupProps>) {
 	const anyRunning = spans.some(s => s.status === 'running');
 	const [groupExpanded, setGroupExpanded] = useState(true);
@@ -235,6 +250,8 @@ export function AgentGroup({
 					now={now}
 					expandIcon={expandIcon}
 					collapseIcon={collapseIcon}
+					componentKey={componentKey}
+					styles={styles}
 				/>
 			</div>
 		);
@@ -268,6 +285,8 @@ export function AgentGroup({
 							now={now}
 							expandIcon={expandIcon}
 							collapseIcon={collapseIcon}
+							componentKey={componentKey}
+							styles={styles}
 						/>
 					))}
 				</div>
