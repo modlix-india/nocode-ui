@@ -12,6 +12,7 @@ import DraftAgentHost from './components/DraftAgent/DraftAgentHost';
 import { isDraftAgentBridge, runDraftAgentBridge } from './components/DraftAgent/draftAgentBridge';
 import { WINDOW_PATH } from './components/DraftAgent/draftAgentEnv';
 import { stylePropertyComponentsFor } from './ssr/stylePropertyComponents';
+import { startFrameKeyRelay } from './util/frameKeyRelay';
 
 // TEST CDN CODE
 // globalThis.cdnPrefix = 'cdn-local.modlix.com';
@@ -84,6 +85,8 @@ declare global {
 	var __SSR_RENDERING__: boolean | undefined;
 	var debugContext: any;
 	var isDraftMode: boolean;
+	/** The draft agent is picking a component: the page editor's helpers draw outside design mode. */
+	var draftPick: boolean | undefined;
 	// var d3: typeof import('d3/index');
 }
 
@@ -106,6 +109,9 @@ globalThis.isDesignMode = (() => {
 		return false;
 	}
 })();
+
+// Escape typed inside a framed app reaches the popup holding the frame.
+startFrameKeyRelay();
 
 // To enable debug mode, add ?debug to the URL
 globalThis.isDebugMode = window.location.search.indexOf('debug') != -1;

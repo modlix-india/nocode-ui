@@ -892,7 +892,10 @@ export default function PromptStyle({
 
 		/* ─── Thinking block ─── */
 		${PREFIX} ._thinkingBlock {
-			max-width: 768px;
+			/* Never wider than the chat column: as a flex-start item it sizes to its
+			   content, and a long tool summary pushed it past a narrow panel's edge. */
+			max-width: min(768px, 100%);
+			min-width: 0;
 			border-radius: 12px;
 			font-size: 13px;
 			margin-bottom: 4px;
@@ -965,6 +968,9 @@ export default function PromptStyle({
 			display: flex;
 			flex-direction: column;
 			gap: 4px;
+			/* What is still wider than the column (a tool's data, a long line of
+			   reasoning) scrolls here, inside the expanded tools, and nowhere else. */
+			overflow-x: auto;
 		}
 
 		${PREFIX} ._thinkingToolEntry {
@@ -1435,6 +1441,11 @@ export default function PromptStyle({
 			word-break: break-word;
 			max-height: 200px;
 			overflow-y: auto;
+		}
+
+		/* A tool result is parsed markdown; its own blocks set the line breaks. */
+		${PREFIX} ._toolSummaryMarkdown {
+			white-space: normal;
 		}
 
 		${PREFIX} ._agentToolUpdates {

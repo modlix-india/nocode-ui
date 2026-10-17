@@ -6,12 +6,14 @@ export default async function getPageDefinition(
 	pageName: string,
 	appCode?: string,
 	clientCode?: string,
+	/** Skip the copy inlined at boot: the caller knows the page changed since (the draft agent). */
+	fresh?: boolean,
 ): Promise<PageDefinition> {
 	const authToken = localStorage.getItem(
 		globalThis.isDesignMode ? 'designMode_AuthToken' : 'AuthToken',
 	);
 
-	if (!authToken && globalThis.__APP_BOOTSTRAP__?.pageDefinition[pageName])
+	if (!fresh && !authToken && globalThis.__APP_BOOTSTRAP__?.pageDefinition[pageName])
 		return globalThis.__APP_BOOTSTRAP__?.pageDefinition[pageName];
 
 	const axiosConfig: AxiosRequestConfig<any> = { headers: {} };

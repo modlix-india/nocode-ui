@@ -118,6 +118,8 @@ function Popup(props: Readonly<ComponentProps>) {
 	React.useEffect(() => {
 		const escapeHandler = (event: any) => {
 			if (event.key === 'Escape') {
+				// Used here, so a framed page does not forward it to the popup around it.
+				event.preventDefault();
 				handleClose();
 			}
 		};
@@ -127,7 +129,7 @@ function Popup(props: Readonly<ComponentProps>) {
 		return () => {
 			document.body.removeEventListener('keyup', escapeHandler);
 		};
-	}, [isActive, handleClose]);
+	}, [isActive, closeOnEscape, handleClose]);
 
 	// While this popup is open, shortcuts registered inside it sit on their own layer
 	// and shortcuts on the page behind stop firing. An open dialog owns Ctrl+S outright
