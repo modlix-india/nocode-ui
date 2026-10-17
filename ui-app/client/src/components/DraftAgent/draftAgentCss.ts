@@ -379,6 +379,46 @@ export const DRAFT_AGENT_CSS = `
 ._mlxDAConnectBtn:hover { border-color: var(--mlxda-accent); color: var(--mlxda-accent); }
 ._mlxDAConnectNote { font-size: 12px; color: var(--mlxda-muted); }
 
+/* Picking a component: the page editor's own overlays, shown on hover. */
+body._mlxDAPicking, body._mlxDAPicking * { cursor: crosshair !important; }
+body._mlxDAPicking [class*="_mlxDA"], body._mlxDAPicking [class*="_mlxDA"] * { cursor: auto !important; }
+/* The overlays take no pointer: the picker finds the innermost one itself (draftAgentPicker). */
+body._mlxDAPicking ._helper { pointer-events: none !important; }
+body._mlxDAPicking ._helper._mlxDAHover { opacity: 1 !important; }
+._mlxDAIconBtn._picking { background: var(--mlxda-accent); color: #fff; }
+._mlxDAPicked {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	padding: 0 2px 6px;
+}
+._mlxDAPickedChip {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	max-width: 100%;
+	padding: 3px 4px 3px 9px;
+	border: 1px solid var(--mlxda-line);
+	border-radius: 999px;
+	font: 500 12px/1.3 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+	color: var(--mlxda-fg, #111827);
+	background: var(--mlxda-bg, #fff);
+}
+._mlxDAPickedChip > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+._mlxDAPickedChip > i { color: var(--mlxda-accent); font-size: 11px; }
+._mlxDAPickedChip > button {
+	all: unset;
+	cursor: pointer;
+	width: 18px;
+	height: 18px;
+	border-radius: 50%;
+	display: inline-grid;
+	place-items: center;
+	color: var(--mlxda-muted, #6b7280);
+}
+._mlxDAPickedChip > button:hover { background: var(--mlxda-line); color: var(--mlxda-fg); }
+._mlxDAPickHint { font-size: 12px; color: var(--mlxda-muted, #6b7280); padding: 0 2px 6px; }
+
 @media (prefers-reduced-motion: reduce) {
 	._mlxDARing::before, ._mlxDAButtonFace::after, ._mlxDAButton > ._mlxDARing, ._mlxDACompact > ._mlxDARing { animation: none; }
 }
