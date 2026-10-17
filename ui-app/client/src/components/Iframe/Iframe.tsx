@@ -15,6 +15,7 @@ import { IconHelper } from '../util/IconHelper';
 import { LOCAL_STORE_PREFIX } from '../../constants';
 import { shortUUID } from '../../util/shortUUID';
 import axios from 'axios';
+import { useFrameKeyRelay } from '../../util/frameKeyRelay';
 
 async function secureSource(src: string) {
 	const headers: any = {
@@ -81,11 +82,15 @@ function Iframe(props: Readonly<ComponentProps>) {
 		(async () => setActualSrc(await secureSource(src)))();
 	}, [src]);
 
+	const [iframeEl, setIframeEl] = useState<HTMLIFrameElement | null>(null);
+	useFrameKeyRelay(iframeEl);
+
 	return (
 		<div className="comp compIframe" style={resolvedStyles.comp ?? {}}>
 			<HelperComponent context={props.context} definition={definition} />
 			{shouldRenderIframe ? (
 				<iframe
+					ref={setIframeEl}
 					className="iframe"
 					style={resolvedStyles.iframe ?? {}}
 					width={width}
