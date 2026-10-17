@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { ToolSummary } from './ToolSummary';
 
 const THINKING_MESSAGES = [
 	'Thinking',
@@ -50,6 +51,8 @@ interface ThinkingBlockProps {
 	toolErrorIcon?: string;
 	expandIcon?: string;
 	collapseIcon?: string;
+	componentKey?: string;
+	styles?: any;
 }
 
 // How close to the bottom (px) still counts as reading the newest thinking.
@@ -60,10 +63,14 @@ function SingleToolRow({
 	tc,
 	expandIcon,
 	collapseIcon,
+	componentKey,
+	styles,
 }: {
 	tc: ToolCallInfo;
 	expandIcon: string;
 	collapseIcon: string;
+	componentKey: string;
+	styles: any;
 }) {
 	const [expanded, setExpanded] = useState(false);
 	const label = tc.displayName || tc.toolName;
@@ -109,7 +116,13 @@ function SingleToolRow({
 							))}
 						</div>
 					) : hasSummary ? (
-						<div className="_agentToolDetail">{tc.summary}</div>
+						<div className="_agentToolDetail">
+							<ToolSummary
+								text={tc.summary}
+								componentKey={componentKey}
+								styles={styles}
+							/>
+						</div>
 					) : null)}
 			</div>
 		</div>
@@ -122,6 +135,8 @@ export function ThinkingBlock({
 	reasoningContent,
 	expandIcon = 'fa fa-chevron-down',
 	collapseIcon = 'fa fa-chevron-up',
+	componentKey = '',
+	styles,
 }: Readonly<ThinkingBlockProps>) {
 	const [expanded, setExpanded] = useState(isActive);
 	const [expandedTools, setExpandedTools] = useState<Set<string>>(new Set());
@@ -193,7 +208,13 @@ export function ThinkingBlock({
 	// Single tool, not active, no reasoning → render flat, no wrapper.
 	if (!isActive && toolCalls.length === 1 && !reasoningContent) {
 		return (
-			<SingleToolRow tc={toolCalls[0]} expandIcon={expandIcon} collapseIcon={collapseIcon} />
+			<SingleToolRow
+				tc={toolCalls[0]}
+				expandIcon={expandIcon}
+				collapseIcon={collapseIcon}
+				componentKey={componentKey}
+				styles={styles}
+			/>
 		);
 	}
 
@@ -284,7 +305,13 @@ export function ThinkingBlock({
 											))}
 										</div>
 									) : hasSummary ? (
-										<div className="_thinkingToolDetail">{tc.summary}</div>
+										<div className="_thinkingToolDetail">
+											<ToolSummary
+												text={tc.summary}
+												componentKey={componentKey}
+												styles={styles}
+											/>
+										</div>
 									) : null)}
 							</div>
 						);

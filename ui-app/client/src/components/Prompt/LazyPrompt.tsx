@@ -1564,6 +1564,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// Built per send rather than memoised: the tab's rows change underneath us as
 	// the user filters and pages, and the agent should be told what is on screen
 	// now, not what was there when the chat last rendered.
+	// A React host can add to it at send time (the draft agent names the page and
+	// any component picked on it). Read per send, so a new selection never rebuilds
+	// the definition and so never remounts the chat.
+	const editorContextExtra = (props as any).editorContextExtra as
+		(() => Record<string, string> | undefined) | undefined;
+
 	const buildEditorContext = useCallback(() => {
 		const ctx: Record<string, string> = {};
 		if (contextSurface) ctx.surface = contextSurface;
@@ -1571,6 +1577,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		if (activeObject) ctx.active_object = activeObject;
 		if (openTabs) ctx.open_tabs = openTabs;
 		if (openTabIds) ctx.open_tab_ids = openTabIds;
+		for (const [k, v] of Object.entries(editorContextExtra?.() ?? {})) if (v) ctx[k] = v;
 
 		if (activeDataPath) {
 			const data = serialiseActiveData(
@@ -1586,6 +1593,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		openTabs,
 		openTabIds,
 		activeDataPath,
+		editorContextExtra,
 		props.locationHistory,
 		pageExtractor,
 	]);
@@ -3575,6 +3583,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 													reasoningContent={part.thinking || undefined}
 													expandIcon={expandIcon}
 													collapseIcon={collapseIcon}
+													componentKey={key ?? ''}
+													styles={styleProperties}
 												/>
 												{!isAnswer && part.content && (
 													<ChatMessage
@@ -3591,6 +3601,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 														spans={part.agentSpans}
 														expandIcon={expandIcon}
 														collapseIcon={collapseIcon}
+														componentKey={key ?? ''}
+														styles={styleProperties}
 													/>
 												)}
 											</React.Fragment>
@@ -3770,6 +3782,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					</div>
 				)}
 				<div className="_promptInputWrapper">
+					{(props as any).inputAddon}
 					<InputBar
 						placeholder={resolvedPlaceholder ?? placeholder}
 						steerPlaceholder={resolvedSteerPlaceholder ?? steerPlaceholder}
