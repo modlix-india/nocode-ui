@@ -44,6 +44,8 @@ import { Attachment, toChatAttachments } from '../Prompt/attachments';
 import { applyObjectChange, ObjectChange } from './draftAgentRefresh';
 import { streamChat, tailOf } from './draftAgentStream';
 import { DRAFT_AGENT_CSS } from './draftAgentCss';
+import { activeObjectNow, PickedComponent } from './draftAgentContext';
+import { usePicker } from './draftAgentPicker';
 
 /**
  * The AI, inside the running draft of an app.
@@ -543,13 +545,22 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 		? `the running DRAFT of app '${appCode}', as its users would see it. Your page, theme and app edits land on this draft and the page refreshes to show them.`
 		: `the LIVE app '${appCode}', as its users see it, signed in as the person asking. Edits land ${draftMode === 'LIVE' ? 'live' : 'as drafts unless said otherwise'}; the page refreshes to show what changed.`;
 
+	// Picking a component on the page, with the page editor's own overlays. Only
+	// while a panel is open in this window: the detached window is another document.
+	const panelOpen = mode === 'left' || mode === 'right' || mode === 'compact';
+	const picker = usePicker(pageName, !!session && panelOpen && !config.windowed);
+	const pickedRef = useRef<PickedComponent[]>(picker.picked);
+	pickedRef.current = picker.picked;
+
+	// Read at send time, so it names the page and selection as they are now.
+	const onScreenContext = useCallback((): Record<string, string> => {
+		const active = activeObjectNow(pickedRef.current);
+		return active ? { active_object: active } : {};
+	}, []);
+
 	const editorContext = useCallback(
-		() => ({
-			surface,
-			app_code: appCode,
-			...(pageName ? { active_object: `page '${pageName}'` } : {}),
-		}),
-		[surface, appCode, pageName],
+		() => ({ surface, app_code: appCode, ...onScreenContext() }),
+		[surface, appCode, onScreenContext],
 	);
 
 	const send = useCallback(
@@ -696,6 +707,48 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	const env = draftEnvOf(window.location.hostname) ?? '';
 	const connectable = builderOrigins(env, agentName, hostOverride);
 
+	const pickButton = config.windowed ? null : (
+		<button
+			className={`_mlxDAIconBtn ${picker.picking ? '_picking' : ''}`}
+			onClick={picker.toggle}
+			title={
+				picker.picking
+					? 'Click a component (Up arrow for its parent, Cmd/Ctrl-click for more, Esc to stop)'
+					: 'Select a component on the page'
+			}
+			aria-label="Select a component on the page"
+			aria-pressed={picker.picking}
+		>
+			<i className="fa fa-solid fa-arrow-pointer" />
+		</button>
+	);
+
+	const pickedChips =
+		picker.picked.length || picker.picking ? (
+			<div className="_mlxDAPicked">
+				{picker.picked.map(c => (
+					<span key={c.key} className="_mlxDAPickedChip" title={`${c.type} - ${c.key}`}>
+						<i className="fa fa-solid fa-arrow-pointer" />
+						<span>
+							{c.type} '{c.name || c.key}'
+						</span>
+						<button
+							onClick={() => picker.remove(c.key)}
+							title="Clear"
+							aria-label={`Clear ${c.name || c.key}`}
+						>
+							<i className="fa fa-solid fa-xmark" />
+						</button>
+					</span>
+				))}
+				{picker.picking && !picker.picked.length && (
+					<span className="_mlxDAPickHint">
+						Click a component on the page. Up arrow selects its parent, Esc stops.
+					</span>
+				)}
+			</div>
+		) : null;
+
 	const modeMenu = menuOpen ? (
 		<div className="_mlxDAMenu" role="menu">
 			{MODES.filter(m => !(config.windowed && m.mode === 'window')).map(m => (
@@ -824,6 +877,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 					onMenu={() => setMenuOpen(o => !o)}
 					onClose={() => (config.windowed ? window.close() : chooseMode('button'))}
 					reloadChip={reloadChip}
+					pickButton={pickButton}
 				>
 					<ChatPane
 						key={chatEpoch}
@@ -842,6 +896,8 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 						pageDefinition={config.pageDefinition}
 						locationHistory={config.locationHistory}
 						contextPageName={config.contextPageName}
+						editorContextExtra={onScreenContext}
+						inputAddon={pickedChips}
 					/>
 				</DockedPanel>
 			</Chrome>
@@ -864,6 +920,8 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 					onDismissError={() => setRun(r => ({ ...r, error: undefined }))}
 					menu={modeMenu}
 					reloadChip={reloadChip}
+					pickButton={pickButton}
+					pickedChips={pickedChips}
 				/>
 			</Chrome>
 		);
@@ -963,6 +1021,8 @@ function CompactPrompt({
 	onDismissError,
 	menu,
 	reloadChip,
+	pickButton,
+	pickedChips,
 }: Readonly<{
 	prefs: Prefs;
 	setPrefs: (p: Partial<Prefs>) => void;
@@ -976,6 +1036,8 @@ function CompactPrompt({
 	onDismissError: () => void;
 	menu: React.ReactNode;
 	reloadChip: React.ReactNode;
+	pickButton: React.ReactNode;
+	pickedChips: React.ReactNode;
 }>) {
 	const WIDTH = Math.min(440, window.innerWidth - 16);
 	const boxRef = useRef<HTMLDivElement>(null);
@@ -1055,6 +1117,7 @@ function CompactPrompt({
 		>
 			<span className="_mlxDARing" aria-hidden="true" />
 			<div className="_mlxDACompactInner">
+				{pickedChips}
 				{attachments.length > 0 && (
 					<div className="_mlxDAAttachments">
 						{attachments.map(a => (
@@ -1095,6 +1158,7 @@ function CompactPrompt({
 					>
 						<i className="fa fa-solid fa-plus" />
 					</button>
+					{pickButton}
 					<input
 						ref={fileRef}
 						type="file"
@@ -1209,6 +1273,7 @@ function DockedPanel({
 	onMenu,
 	onClose,
 	reloadChip,
+	pickButton,
 	children,
 }: Readonly<{
 	side: 'left' | 'right';
@@ -1221,6 +1286,7 @@ function DockedPanel({
 	onMenu: () => void;
 	onClose: () => void;
 	reloadChip: React.ReactNode;
+	pickButton?: React.ReactNode;
 	children: React.ReactNode;
 }>) {
 	const [w, setW] = useState(clamp(width, MIN_WIDTH, MAX_WIDTH));
@@ -1271,6 +1337,7 @@ function DockedPanel({
 					{session.userName ? `${session.userName} · ` : ''}
 					{session.label}
 				</span>
+				{pickButton}
 				<button
 					className="_mlxDAIconBtn"
 					onClick={onMenu}
@@ -1310,6 +1377,8 @@ function ChatPane({
 	pageDefinition,
 	locationHistory,
 	contextPageName,
+	editorContextExtra,
+	inputAddon,
 }: Readonly<{
 	appCode: string;
 	pageName: string;
@@ -1324,6 +1393,10 @@ function ChatPane({
 	pageDefinition?: PageDefinition;
 	locationHistory?: Array<any>;
 	contextPageName?: string;
+	/** The page on screen and what is picked on it, read when a message is sent. */
+	editorContextExtra?: () => Record<string, string>;
+	/** Shown above the chat's input: the picked components. */
+	inputAddon?: React.ReactNode;
 }>) {
 	usedComponents.using('Prompt');
 	const Prompt = PromptComponent.component as React.ComponentType<any>;
@@ -1381,6 +1454,8 @@ function ChatPane({
 			authHeaders={headers}
 			onObjectSaved={onObjectChanged}
 			onSessionChange={onSession}
+			editorContextExtra={editorContextExtra}
+			inputAddon={inputAddon}
 		/>
 	);
 }

@@ -72,7 +72,8 @@ const SEO_TAG_NAMES: Record<string, string> = {
 /** Which attribute a page SEO key is addressed by, and the value it carries. */
 function seoTagFor(key: string): { attribute: 'name' | 'property'; tagName: string } {
 	const tagName = SEO_TAG_NAMES[key] ?? key;
-	const attribute = tagName.startsWith('og:') || tagName.startsWith('article:') ? 'property' : 'name';
+	const attribute =
+		tagName.startsWith('og:') || tagName.startsWith('article:') ? 'property' : 'name';
 	return { attribute, tagName };
 }
 
@@ -523,6 +524,19 @@ export const RenderEngineContainer = () => {
 			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
 		);
 	}, [globalThis.designMode, currentPageName]);
+
+	// The same in-place swap on a draft host, where the draft agent writes the page it
+	// just changed (`DraftAgent/draftAgentRefresh`). Swapping keeps the page's store,
+	// so the change shows without a blank page and filters and scroll survive. Not
+	// called immediately: the definition on screen is already the stored one.
+	useEffect(() => {
+		if (!globalThis.isDraftMode || globalThis.designMode || !currentPageName) return;
+		return addListener(
+			undefined,
+			(_, v) => v && setPageDefinition(processClassesForPageDefinition(v)),
+			`${STORE_PREFIX}.pageDefinition.${currentPageName}`,
+		);
+	}, [currentPageName]);
 
 	// `properties.theme`: a page may wear a theme of its own (the marketing pages of
 	// an app whose product pages follow the visitor's choice). Leaving such a page

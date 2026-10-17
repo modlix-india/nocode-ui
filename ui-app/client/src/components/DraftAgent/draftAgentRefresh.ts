@@ -1,13 +1,16 @@
 import { getDataFromPath, setData } from '../../context/StoreContext';
+import getPageDefinition from '../../Engine/pageDefinition';
 
 /**
  * Show the agent's edits in the running draft app, the way the page editor
  * refetches its canvas when the sidekick saves.
  *
- * A changed PAGE is refreshed in place: its cached definition is dropped from
- * `Store.pageDefinition`, and the render engine, which listens on that path,
- * refetches the page it is showing. The draft host serves drafts `no-store`, so
- * the refetch is the new copy. Anything that is read once when the app boots
+ * A changed PAGE is refreshed in place. On a draft host the new copy is fetched
+ * (drafts are served `no-store`) and written over `Store.pageDefinition.<name>`,
+ * which the render engine swaps in without unmounting, so the page's store,
+ * filters and scroll survive. Elsewhere, or when the fetch fails, the cached
+ * definition is dropped from `Store.pageDefinition` instead, and the engine,
+ * which listens on that path, refetches and remounts. Anything that is read once when the app boots
  * (the application itself, the shell page, a theme or style, a UI function)
  * cannot be refreshed in place, so those ask for a full reload, which the
  * caller holds until the agent's run has finished: reloading mid-run would cut
@@ -67,11 +70,47 @@ export function applyObjectChange(change: ObjectChange): boolean {
 	const { action, pages } = refreshActionFor(change, appCode, cached, shellPage);
 	if (action === 'reload') return true;
 	if (action === 'page') {
-		const next = { ...cached };
-		for (const p of pages) delete next[p];
-		// The engine listens on exactly this path: writing the map, not a child of
-		// it, is what makes the page on screen refetch.
-		setData('Store.pageDefinition', next);
+		if (globalThis.isDraftMode) swapInPlace(pages);
+		else dropCached(pages);
 	}
 	return false;
+}
+
+function dropCached(pages: string[]) {
+	const next = { ...(getDataFromPath('Store.pageDefinition', []) ?? {}) };
+	for (const p of pages) delete next[p];
+	// The engine listens on exactly this path: writing the map, not a child of
+	// it, is what makes the page on screen refetch.
+	setData('Store.pageDefinition', next);
+}
+
+// A single change is often several saves in a row (a component, then its
+// styles, then the page's events). Each one is announced, so they are gathered
+// for a moment and the page is fetched once.
+const COALESCE_MS = 250;
+const owed = new Set<string>();
+let timer: ReturnType<typeof setTimeout> | undefined;
+
+function swapInPlace(pages: string[]) {
+	for (const p of pages) owed.add(p);
+	if (timer) clearTimeout(timer);
+	timer = setTimeout(async () => {
+		timer = undefined;
+		const names = Array.from(owed);
+		owed.clear();
+		const stale: string[] = [];
+		for (const name of names) {
+			try {
+				const def = await getPageDefinition(name, undefined, undefined, true);
+				if (def?.name === name) {
+					setData(`Store.pageDefinition.${name}`, def);
+					continue;
+				}
+			} catch {
+				/* falls back to the refetch below */
+			}
+			stale.push(name);
+		}
+		if (stale.length) dropCached(stale);
+	}, COALESCE_MS);
 }
