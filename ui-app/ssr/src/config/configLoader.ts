@@ -8,17 +8,22 @@
  * 3. Default configuration
  *
  * Environment Variables:
+ * - CONFIG_SERVER_ENABLED: 'false' skips the config server: defaults and environment only
+ *   (the same switch as nocode-ai)
  * - CLOUD_CONFIG_SERVER: Config server host (default: localhost)
  * - CLOUD_CONFIG_SERVER_PORT: Config server port (default: 8888)
  * - SPRING_PROFILE / SPRING_PROFILES_ACTIVE: Active profile (default: default)
  * - SERVER_PORT: SSR server port (default: 3080)
  * - REDIS_URL: Redis connection URL
+ * - REDIS_INVALIDATION_URL: Redis the cache invalidations are published on (default: REDIS_URL)
  * - GATEWAY_URL: Backend gateway URL
  * - CDN_HOST_NAME: CDN hostname
  * - CDN_STRIP_API_PREFIX: Strip API prefix from CDN URLs (default: true)
  * - CDN_REPLACE_PLUS: Replace + in query params (default: false)
  * - CDN_RESIZE_OPTIONS_TYPE: Image resize options type (default: none)
  * - CACHE_TTL_SECONDS: Cache TTL in seconds (default: 1800)
+ * - ANALYTICS_INGESTION_HOST: Analytics ingestion host (ui.analytics.ingestionHost)
+ * - SECURITY_APP_CODE_SUFFIX: security.appCodeSuffix
  */
 
 import logger from './logger.js';
@@ -242,8 +247,17 @@ function loadFromEnvironment(): Partial<SSRConfig> {
 		config.server = { port: Number.parseInt(process.env.SERVER_PORT, 10) };
 	}
 
+	// Only the keys that are set: mergeConfigs spreads this over the config server's redis block,
+	// and an undefined url would erase the one it has.
+	const redisConfig: Partial<SSRConfig['redis']> = {};
 	if (process.env.REDIS_URL) {
-		config.redis = { url: process.env.REDIS_URL };
+		redisConfig.url = process.env.REDIS_URL;
+	}
+	if (process.env.REDIS_INVALIDATION_URL) {
+		redisConfig.invalidationUrl = process.env.REDIS_INVALIDATION_URL;
+	}
+	if (Object.keys(redisConfig).length > 0) {
+		config.redis = redisConfig as SSRConfig['redis'];
 	}
 
 	if (process.env.GATEWAY_URL) {
@@ -279,7 +293,20 @@ function loadFromEnvironment(): Partial<SSRConfig> {
 		config.security = { appCodeSuffix: process.env.SECURITY_APP_CODE_SUFFIX };
 	}
 
+	if (process.env.ANALYTICS_INGESTION_HOST) {
+		config.analytics = { ingestionHost: process.env.ANALYTICS_INGESTION_HOST };
+	}
+
 	return config;
+}
+
+/**
+ * Whether to ask the config server at all. CONFIG_SERVER_ENABLED=false (the switch nocode-ai has
+ * too) skips the request: the service starts from the defaults and the environment alone, with no
+ * wait on a config server that is not there.
+ */
+export function configServerEnabled(): boolean {
+	return (process.env.CONFIG_SERVER_ENABLED ?? '').trim().toLowerCase() !== 'false';
 }
 
 /**
@@ -339,8 +366,13 @@ export async function loadConfig(): Promise<SSRConfig> {
 		appName: defaultConfig.configServer.appName,
 	});
 
-	// Try to load from config server first
-	const configServerConfig = await fetchFromConfigServer();
+	// Try to load from config server first, unless it is switched off
+	let configServerConfig: Partial<SSRConfig> | null = null;
+	if (configServerEnabled()) {
+		configServerConfig = await fetchFromConfigServer();
+	} else {
+		logger.info('Config server disabled (CONFIG_SERVER_ENABLED=false), using defaults and environment');
+	}
 
 	// Load from environment variables (highest priority)
 	const envConfig = loadFromEnvironment();
