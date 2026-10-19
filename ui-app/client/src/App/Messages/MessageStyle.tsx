@@ -48,6 +48,26 @@ export default function MessageStyle({
 			font-weight: 500;
 		}
 
+		/* What to do next, under the message: the same font and colour, a step quieter. Two
+		   classes on the element so the theme's messageFont shorthand does not reset the size. */
+		${PREFIX} ._message ._msgString._msgAction {
+			font-size: 0.9em;
+			opacity: 0.85;
+		}
+
+		/* "Copy error id": a text button that wears the message's font and colour. */
+		${PREFIX} ._message ._msgString._msgCopyId {
+			align-self: flex-start;
+			margin-top: 2px;
+			padding: 0;
+			border: none;
+			background: none;
+			font-size: 0.8em;
+			text-decoration: underline;
+			cursor: pointer;
+			opacity: 0.85;
+		}
+
 		${PREFIX} ._msgStackTrace {
 			padding: 10px;
 			border-radius: 0px 2px 2px 0;

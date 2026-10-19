@@ -7,6 +7,8 @@ import {
 } from '../../context/StoreContext';
 import { duplicate } from '@fincity/kirun-js';
 import { takeSocialArrivalMessage } from '../../sso/ssoModule';
+import { CopyErrorId } from './CopyErrorId';
+import { messageDetails } from './messageDetails';
 
 export function Messages() {
 	const [msgs, setMsgs] = useState<any[]>([]);
@@ -33,7 +35,6 @@ export function Messages() {
 	}, []);
 
 	const msgComps = msgs.map((e: any, i: number) => {
-		const isObject = typeof e.msg === 'object';
 		// `UIEngine.Message` declares its four types as ERROR | WARNING | INFO |
 		// SUCCESS (`functions/Message.ts`), and a value outside that enum is
 		// rejected before the step runs -- so INFO is the only informational type
@@ -45,42 +46,41 @@ export function Messages() {
 		// ground. Normalised on the way in rather than by widening the function's
 		// enum, because the definitions already stored say INFO.
 		const type = e.type === 'INFO' ? MESSAGE_TYPE.INFORMATION : e.type;
-		const debugMessageCaret =
-			isObject && e.msg.debugMessage ? (
-				<i
-					className={`fa _pointer fa-solid fa-angle-${
-						e.isOpened?.status ? 'down' : 'right'
-					}`}
-					onClick={() => {
-						const lMsgs = duplicate(msgs);
-						lMsgs[i] = {
-							...lMsgs[i],
-							isOpened: { status: !e.isOpened?.status },
-						};
-						setData(STORE_PATH_MESSAGES, lMsgs);
-					}}
-				/>
-			) : undefined;
+		// The text, the next step and the error id, from whatever shape the message came in
+		// (a string, a service's error body, a fetch error, a thrown axios error).
+		const details = messageDetails(e.msg, type);
+		const debugMessageCaret = details.debugMessage ? (
+			<i
+				className={`fa _pointer fa-solid fa-angle-${e.isOpened?.status ? 'down' : 'right'}`}
+				onClick={() => {
+					const lMsgs = duplicate(msgs);
+					lMsgs[i] = {
+						...lMsgs[i],
+						isOpened: { status: !e.isOpened?.status },
+					};
+					setData(STORE_PATH_MESSAGES, lMsgs);
+				}}
+			/>
+		) : undefined;
 		const debugMessage =
-			isObject && e.isOpened?.status ? (
-				<div className="_msgString _msgDebug">{e.msg.debugMessage}</div>
+			details.debugMessage && e.isOpened?.status ? (
+				<div className="_msgString _msgDebug">{details.debugMessage}</div>
 			) : undefined;
-		const stackTraceIcon =
-			isObject && e.msg.stackTrace ? (
-				<i
-					className="fa _pointer fa-solid  fa-arrow-up-right-from-square"
-					onClick={() => {
-						const lMsgs = duplicate(msgs);
+		const stackTraceIcon = details.stackTrace ? (
+			<i
+				className="fa _pointer fa-solid  fa-arrow-up-right-from-square"
+				onClick={() => {
+					const lMsgs = duplicate(msgs);
 
-						lMsgs[i] = {
-							...lMsgs[i],
-							isOpened: { status: e.isOpened?.status },
-						};
-						setShowStackTraceId(showStackTraceId === e.id ? undefined : e.id);
-						setData(STORE_PATH_MESSAGES, lMsgs);
-					}}
-				/>
-			) : undefined;
+					lMsgs[i] = {
+						...lMsgs[i],
+						isOpened: { status: e.isOpened?.status },
+					};
+					setShowStackTraceId(showStackTraceId === e.id ? undefined : e.id);
+					setData(STORE_PATH_MESSAGES, lMsgs);
+				}}
+			/>
+		) : undefined;
 
 		let stackTrace = undefined;
 		if (e.id === showStackTraceId) {
@@ -88,7 +88,7 @@ export function Messages() {
 			if (msg)
 				stackTrace = (
 					<div className={`_msgStackTrace ${type}`}>
-						<div className="_stackTrace">{e.msg.stackTrace}</div>
+						<div className="_stackTrace">{details.stackTrace}</div>
 					</div>
 				);
 		}
@@ -100,9 +100,13 @@ export function Messages() {
 					<div className="_msgStringContainer">
 						<div className="_msgString">
 							{debugMessageCaret}
-							{isObject ? e.msg.message : e.msg}
+							{details.text}
 							{stackTraceIcon}
 						</div>
+						{details.action ? (
+							<div className="_msgString _msgAction">{details.action}</div>
+						) : undefined}
+						{details.errorId ? <CopyErrorId errorId={details.errorId} /> : undefined}
 						{debugMessage}
 					</div>
 					<i
