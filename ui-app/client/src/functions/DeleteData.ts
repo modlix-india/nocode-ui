@@ -20,6 +20,7 @@ import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
 import { shortUUID } from '../util/shortUUID';
+import { errorEventData } from '../App/Messages/messageDetails';
 
 const SIGNATURE = new FunctionSignature('DeleteData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -74,7 +75,7 @@ const SIGNATURE = new FunctionSignature('DeleteData')
 	)
 	.setDescription('Sends an HTTP DELETE request to remove data at the specified URL')
 	.setDocumentation(
-		"# UIEngine.DeleteData\n\nMakes an HTTP DELETE request to the specified URL with configurable query parameters, path parameters, and headers. Used to delete resources on the server. Automatically resolves parameter and header values from store expressions.\n\n## Parameters\n\n- **url** (String, required): The endpoint URL to send the DELETE request to\n- **queryParams** (UrlParameters, optional): Key-value pairs appended as query string parameters to the URL\n- **pathParams** (UrlParameters, optional): Key-value pairs substituted into path placeholders in the URL\n- **headers** (UrlParameters, optional): HTTP request headers\n  - Default includes `Authorization` (from `LocalStore.AuthToken`) and `clientCode` (from `Store.auth.loggedInClientCode`)\n\n## Events\n\n- **output**: Triggered on successful response, and also on failure with a null `data`\n  - `data` (Any): The response body from the server, null when the request failed\n  - `headers` (Any): Response headers, lower-cased. Read them as `headers['x-my-header']` - a bare hyphen parses as subtraction\n  - `status` (Number): HTTP status code\n- **error**: Triggered on request failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **Record Deletion**: Remove individual records from the database\n- **Bulk Cleanup**: Delete resources matching specific criteria\n- **Cache Invalidation**: Clear server-side caches\n- **Session Termination**: End active sessions or revoke tokens",
+		"# UIEngine.DeleteData\n\nMakes an HTTP DELETE request to the specified URL with configurable query parameters, path parameters, and headers. Used to delete resources on the server. Automatically resolves parameter and header values from store expressions.\n\n## Parameters\n\n- **url** (String, required): The endpoint URL to send the DELETE request to\n- **queryParams** (UrlParameters, optional): Key-value pairs appended as query string parameters to the URL\n- **pathParams** (UrlParameters, optional): Key-value pairs substituted into path placeholders in the URL\n- **headers** (UrlParameters, optional): HTTP request headers\n  - Default includes `Authorization` (from `LocalStore.AuthToken`) and `clientCode` (from `Store.auth.loggedInClientCode`)\n\n## Events\n\n- **output**: Triggered on successful response, and also on failure with a null `data`\n  - `data` (Any): The response body from the server, null when the request failed\n  - `headers` (Any): Response headers, lower-cased. Read them as `headers['x-my-header']` - a bare hyphen parses as subtraction\n  - `status` (Number): HTTP status code\n- **error**: Triggered on request failure\n  - `data` (Any): Error response body. A body that is empty or an HTML page (no response at all, Spring Security's 401 and 403, a proxy's 502) is `{ message, action, status }`, with a plain text for the status\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **Record Deletion**: Remove individual records from the database\n- **Bulk Cleanup**: Delete resources matching specific criteria\n- **Cache Invalidation**: Clear server-side caches\n- **Session Termination**: End active sessions or revoke tokens",
 	);
 
 export class DeleteData extends AbstractFunction {
@@ -134,7 +135,9 @@ export class DeleteData extends AbstractFunction {
 				EventResult.of(
 					Event.ERROR,
 					new Map<string, any>([
-						['data', res?.data],
+						// An empty or HTML body (Spring Security's 401 and 403, a proxy's
+						// 502) becomes { message, action, status } for the page to show.
+						['data', errorEventData(res?.data, res?.status)],
 						['headers', res?.headers],
 						['status', res?.status],
 					]),

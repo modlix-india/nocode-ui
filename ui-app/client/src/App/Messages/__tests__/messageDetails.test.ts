@@ -4,7 +4,7 @@
  * that answer with an empty or non-JSON body (Java's 401 and 403, a proxy's 502 to 504) get the
  * platform's default text for their status instead of an empty toast.
  */
-import { copyText, messageDetails, textForStatus } from '../messageDetails';
+import { copyText, errorEventData, messageDetails, textForStatus } from '../messageDetails';
 
 const CODED = {
 	exceptionId: '2026-10-17-1f2e3d',
@@ -156,6 +156,52 @@ describe('messageDetails', () => {
 		expect(textForStatus(404)).toBeUndefined();
 		expect(textForStatus('500')).toBeUndefined();
 		expect(textForStatus(501)?.text).toBe('Something went wrong on our side.');
+	});
+});
+
+describe('errorEventData', () => {
+	it('gives an empty or missing body the text for its status', () => {
+		expect(errorEventData('', 401)).toEqual({
+			message: "You're signed out. Please sign in again.",
+			status: 401,
+		});
+		expect(errorEventData(undefined, 403)).toEqual({
+			message: "You don't have access to this.",
+			action: 'If you think you should, ask an owner of your organisation.',
+			status: 403,
+		});
+		expect(errorEventData(null, 503)).toEqual({
+			message: 'The service is restarting. Try again in a few seconds.',
+			status: 503,
+		});
+	});
+
+	it("replaces a proxy's HTML page, and says something when nothing answered", () => {
+		expect(errorEventData('  <html><body>502 Bad Gateway</body></html>', 502)).toEqual({
+			message: 'The service is restarting. Try again in a few seconds.',
+			status: 502,
+		});
+		expect(errorEventData(undefined, undefined)).toEqual({
+			message: 'Your request could not be completed.',
+			action: 'Try again in a moment.',
+		});
+	});
+
+	it('passes a readable body on as it came', () => {
+		expect(errorEventData(CODED, 403)).toBe(CODED);
+		expect(errorEventData('Access Denied', 403)).toBe('Access Denied');
+		expect(errorEventData([1], 400)).toEqual([1]);
+	});
+
+	it('reads in the toast as the status text', () => {
+		const event = new Map<string, any>([
+			['data', errorEventData('', 403)],
+			['status', 403],
+		]);
+		expect(messageDetails(event, 'ERROR')).toMatchObject({
+			text: "You don't have access to this.",
+			action: 'If you think you should, ask an owner of your organisation.',
+		});
 	});
 });
 

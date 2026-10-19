@@ -62,6 +62,25 @@ export function textForStatus(status: unknown): StatusText | undefined {
 	return undefined;
 }
 
+/**
+ * The `data` of FetchData / SendData / DeleteData's error event. A body that says nothing (none
+ * at all, empty, or an HTML page from a proxy) becomes `{ message, action, status }` from the
+ * status, so a page that shows `Steps.X.error.data.message` reads the words the toast would.
+ * Any other body, JSON or text, is passed on as it came.
+ */
+export function errorEventData(data: unknown, status: unknown): unknown {
+	const blank =
+		data === undefined ||
+		data === null ||
+		(typeof data === 'string' && (data.trim() === '' || data.trimStart().startsWith('<')));
+	if (!blank) return data;
+	const byStatus = textForStatus(status) ?? NOTHING_TO_SAY;
+	const out: Record<string, any> = { message: byStatus.text };
+	if (byStatus.action) out.action = byStatus.action;
+	if (typeof status === 'number') out.status = status;
+	return out;
+}
+
 function isObject(v: unknown): v is Record<string, any> {
 	return typeof v === 'object' && v !== null && !Array.isArray(v);
 }
