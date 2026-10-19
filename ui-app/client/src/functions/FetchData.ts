@@ -15,6 +15,7 @@ import { getData } from '../context/StoreContext';
 import { ComponentProperty } from '../types/common';
 import { pathFromParams, queryParamsSerializer } from './utils';
 import { shortUUID } from '../util/shortUUID';
+import { errorEventData } from '../App/Messages/messageDetails';
 
 const SIGNATURE = new FunctionSignature('FetchData')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -70,7 +71,7 @@ const SIGNATURE = new FunctionSignature('FetchData')
 	)
 	.setDescription('Fetches data from the specified URL with given parameters and headers')
 	.setDocumentation(
-		"# UIEngine.FetchData\n\nMakes an HTTP GET request to the specified URL with configurable query parameters, path parameters, and headers. Automatically resolves parameter and header values from store expressions.\n\n## Parameters\n\n- **url** (String, required): The endpoint URL to fetch data from\n- **queryParams** (UrlParameters, optional): Key-value pairs appended as query string parameters to the URL\n- **pathParams** (UrlParameters, optional): Key-value pairs substituted into path placeholders in the URL\n- **headers** (UrlParameters, optional): HTTP request headers\n  - Default includes `Authorization` (from `LocalStore.AuthToken`) and `clientCode` (from `Store.auth.loggedInClientCode`)\n\n## Events\n\n- **output**: Triggered on successful response, and also on failure with a null `data`\n  - `data` (Any): The response body from the server, null when the request failed\n  - `headers` (Any): Response headers, lower-cased. Read them as `headers['x-my-header']` - a bare hyphen parses as subtraction\n  - `status` (Number): HTTP status code\n- **error**: Triggered on request failure\n  - `data` (Any): Error response body\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **Loading Page Data**: Fetch data to populate UI components on page load\n- **Search and Filter**: Retrieve filtered results based on user input\n- **API Integration**: Connect to REST APIs with automatic authentication\n- **Data Refresh**: Re-fetch data to keep the UI up to date",
+		"# UIEngine.FetchData\n\nMakes an HTTP GET request to the specified URL with configurable query parameters, path parameters, and headers. Automatically resolves parameter and header values from store expressions.\n\n## Parameters\n\n- **url** (String, required): The endpoint URL to fetch data from\n- **queryParams** (UrlParameters, optional): Key-value pairs appended as query string parameters to the URL\n- **pathParams** (UrlParameters, optional): Key-value pairs substituted into path placeholders in the URL\n- **headers** (UrlParameters, optional): HTTP request headers\n  - Default includes `Authorization` (from `LocalStore.AuthToken`) and `clientCode` (from `Store.auth.loggedInClientCode`)\n\n## Events\n\n- **output**: Triggered on successful response, and also on failure with a null `data`\n  - `data` (Any): The response body from the server, null when the request failed\n  - `headers` (Any): Response headers, lower-cased. Read them as `headers['x-my-header']` - a bare hyphen parses as subtraction\n  - `status` (Number): HTTP status code\n- **error**: Triggered on request failure\n  - `data` (Any): Error response body. A body that is empty or an HTML page (no response at all, Spring Security's 401 and 403, a proxy's 502) is `{ message, action, status }`, with a plain text for the status\n  - `headers` (Any): Error response headers\n  - `status` (Number): HTTP status code\n\n## Use Cases\n\n- **Loading Page Data**: Fetch data to populate UI components on page load\n- **Search and Filter**: Retrieve filtered results based on user input\n- **API Integration**: Connect to REST APIs with automatic authentication\n- **Data Refresh**: Re-fetch data to keep the UI up to date",
 	);
 
 export class FetchData extends AbstractFunction {
@@ -132,7 +133,9 @@ export class FetchData extends AbstractFunction {
 				EventResult.of(
 					Event.ERROR,
 					new Map<string, any>([
-						['data', res?.data],
+						// An empty or HTML body (Spring Security's 401 and 403, a proxy's
+						// 502) becomes { message, action, status } for the page to show.
+						['data', errorEventData(res?.data, res?.status)],
 						['headers', res?.headers],
 						['status', res?.status],
 					]),
