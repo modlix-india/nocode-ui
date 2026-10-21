@@ -3,6 +3,7 @@ import { ComponentDefinition } from '../../../types/common';
 import { MarkdownParser } from '../../../commonComponents/Markdown/MarkdownParser';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { useTypedText } from '../useTypedText';
+import { QUEUED_NOTE } from '../steer';
 
 interface ChatMessageProps {
 	role: 'user' | 'assistant';
@@ -94,10 +95,17 @@ export function ChatMessage({
 			<div
 				className={`_promptMessage _user${pending ? ' _pending' : ''}`}
 				style={styles?.userMessage ?? {}}
-				title={pending ? 'Sending to the agent...' : undefined}
+				title={pending ? 'Queued for the agent' : undefined}
 			>
 				<SubHelperComponent definition={definition} subComponentName="userMessage" />
 				<span>{content}</span>
+				{pending && (
+					// Said in words, not only by the fading: a message sent while a
+					// reply is being written is not a new conversation turn running
+					// beside it. The agent reads it when it finishes its current
+					// step and answers it after.
+					<span className="_pendingNote">{QUEUED_NOTE}</span>
+				)}
 			</div>
 		);
 	}

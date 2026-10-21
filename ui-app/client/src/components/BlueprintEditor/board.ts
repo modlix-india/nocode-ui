@@ -1356,3 +1356,20 @@ export function streamUrlFor(
 	const endpoint = progress.kind === 'build' ? buildEndpoint : planEndpoint;
 	return endpoint ? endpoint.replace('{job}', progress.job) : '';
 }
+
+/**
+ * What "Put this on the site" asks the chat to do, for one planned card.
+ *
+ * The same request the host page used to compose into `Page.pendingPrompt`:
+ * which page, which part, what the plan says it is for, and to leave the rest of
+ * the page alone. A pure function so the wording is tested, not just typed.
+ */
+export function applyRequest(objectName: string, title: string, description?: string): string {
+	let what = (description ?? '').trim();
+	if (what && !/[.!?]$/.test(what)) what += '.';
+	return (
+		`On the site plan, the part "${title}" on ${objectName} is planned but not built yet.` +
+		(what ? ` What it is meant to do: ${what}` : '') +
+		` Build it on ${objectName} so it matches the plan, keep the rest of the page as it is, and tell me what you added.`
+	);
+}

@@ -11,6 +11,7 @@
  * three, so the module graph stays honest about where the dependency enters.
  */
 
+import getSrcUrl from '../getSrcUrl';
 import { easingFor } from './easing';
 import type { SceneDocument, SceneObject, TimelineTrack } from './sceneDocument';
 import type { ThreeBundle } from './threeLoader';
@@ -205,6 +206,16 @@ function buildShaderMaterial(three: ThreeBundle, doc: SceneDocument, shaderId: s
 			uniforms[u.name] = {
 				value: new T.Vector4(v[0] ?? 0, v[1] ?? 0, v[2] ?? 0, v[3] ?? 0),
 			};
+		} else if (u.type === 'texture') {
+			// A sampler2D needs a Texture; the bare URL string bound nothing. Loads
+			// asynchronously, so the first frames sample black until the image lands.
+			const url = typeof u.value === 'string' ? u.value : '';
+			// Left without a colour space on purpose: a ShaderMaterial writes its
+			// output unconverted, so an sRGB-tagged texture came out darker than the
+			// image (#fafafa rendered #f4f4f4). Untagged, texture2D returns the
+			// image's own values and the frame reproduces exactly.
+			const texture = url ? new T.TextureLoader().load(getSrcUrl(url)) : null;
+			uniforms[u.name] = { value: texture };
 		} else uniforms[u.name] = { value: u.value };
 	}
 
@@ -476,9 +487,12 @@ export function disposeSceneGraph(root: any): void {
 			if (!m || seen.has(m)) continue;
 			seen.add(m);
 			// Textures hold the most GPU memory of anything here, and a
-			// material.dispose() does NOT release the maps hanging off it.
-			for (const key of Object.keys(m)) {
-				const v = (m as any)[key];
+			// material.dispose() does NOT release the maps hanging off it, nor a
+			// ShaderMaterial's sampler uniforms.
+			const uniformValues = Object.values((m as any).uniforms ?? {}).map(
+				(u: any) => u?.value,
+			);
+			for (const v of [...Object.keys(m).map(key => (m as any)[key]), ...uniformValues]) {
 				if (v && v.isTexture) {
 					try {
 						v.dispose();
