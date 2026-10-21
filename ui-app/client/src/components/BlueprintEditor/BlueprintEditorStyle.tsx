@@ -979,6 +979,15 @@ ${PREFIX} ._exchangeLine {
 ${PREFIX} ._exchangeLine b { font-weight: 600; color: var(--_bpInk2); }
 ${PREFIX} ._exchangeDash { color: var(--_bpInk30); }
 ${PREFIX} ._exchangeLine._failed { color: var(--_bpStatusFailed); }
+/* A message sent while the turn runs: queued into that turn (as in the Prompt),
+   faded until the agent reads it, and saying so in words. */
+${PREFIX} ._exchangeLine._queued { opacity: 0.7; }
+${PREFIX} ._queuedNote {
+	display: block;
+	font-style: normal;
+	font-size: 12px;
+	color: var(--_bpInk30);
+}
 /* It has to MOVE. A turn spends most of its time thinking, and static grey
    text saying "Thinking" for forty seconds is indistinguishable from a screen
    that has frozen — which is exactly how it read. The pulse is the only thing

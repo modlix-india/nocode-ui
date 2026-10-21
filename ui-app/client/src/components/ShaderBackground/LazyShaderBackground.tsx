@@ -60,9 +60,10 @@ export default function LazyShaderBackground(props: Readonly<ComponentProps>) {
 					colorA: colorOr(colorA, scheme?.a),
 					colorB: colorOr(colorB, scheme?.b),
 					colorC: colorOr(colorC, scheme?.c),
+					poster,
 				});
 			}),
-		[scene, preset, fragmentShader, colorA, colorB, colorC, colorScheme],
+		[scene, preset, fragmentShader, colorA, colorB, colorC, colorScheme, poster],
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(

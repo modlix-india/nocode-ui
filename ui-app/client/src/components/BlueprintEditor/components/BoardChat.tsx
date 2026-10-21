@@ -4,6 +4,8 @@ import { FileBrowser } from '../../../commonComponents/FileBrowser';
 import { MarkdownParser } from '../../../commonComponents/Markdown/MarkdownParser';
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
+import { agentBaseUrl } from '../../Prompt/draftMode';
+import { newSteerId, postSteer, QUEUED_NOTE, SteerQueue } from '../../Prompt/steer';
 
 /**
  * The board's own prompt bar.
@@ -170,6 +172,15 @@ export default function BoardChat({
 
 	const sessionRef = useRef<string | null>(null);
 	const abortRef = useRef<AbortController | null>(null);
+	// Steering, as in the Prompt (see Prompt/steer.ts): a message sent while a
+	// turn runs is queued into that turn, never a second generation. `queued` is
+	// what is on screen; the queue itself is the bookkeeping.
+	const steerQueue = useRef(new SteerQueue());
+	const [queued, setQueued] = useState<string[]>([]);
+	const syncQueued = useCallback(() => setQueued(steerQueue.current.texts()), []);
+	// A message that missed its run (the run ended as it was sent): sent as an
+	// ordinary message the moment this surface sees the end.
+	const missedRef = useRef('');
 	const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
 	// Keyed on the PRESS, not on the sentence. Two presses of the same Add write
@@ -233,6 +244,42 @@ export default function BoardChat({
 		};
 	}, []);
 
+	/** Put text the agent never read back in the box, after whatever is typed there. */
+	const handBack = useCallback((text: string) => {
+		if (!text) return;
+		setDraft(current => (current.trim() ? `${current.trim()}\n\n${text}` : text));
+	}, []);
+
+	/**
+	 * Send into the running turn. See Prompt/steer.ts; the Prompt does the same.
+	 */
+	const steer = useCallback(
+		async (text: string) => {
+			const sid = sessionRef.current;
+			if (!sid) {
+				// The run has not named its session yet: nothing to address.
+				missedRef.current = missedRef.current ? `${missedRef.current}\n\n${text}` : text;
+				return;
+			}
+			const steerId = newSteerId();
+			steerQueue.current.add(steerId, text);
+			syncQueued();
+			const posted = await postSteer({
+				baseUrl: agentBaseUrl(agentEndpoint),
+				headers: headers(),
+				sessionId: sid,
+				text,
+				steerId,
+			});
+			if (posted === 'queued') return;
+			steerQueue.current.drop(steerId);
+			syncQueued();
+			if (posted === 'missed') missedRef.current = text;
+			else handBack(text);
+		},
+		[agentEndpoint, headers, syncQueued, handBack],
+	);
+
 	/**
 	 * Read the agent's stream, keeping only what this surface shows.
 	 *
@@ -242,7 +289,8 @@ export default function BoardChat({
 	 * to re-read, which is how the answer actually arrives.
 	 */
 	const consume = useCallback(
-		async (response: Response, question: string) => {
+		async (response: Response, asked: string) => {
+			let question = asked;
 			const reader = response.body?.getReader();
 			if (!reader) throw new Error('The agent sent no body to read.');
 
@@ -275,8 +323,26 @@ export default function BoardChat({
 						} catch {
 							continue; // a partial line; the next read completes it
 						}
+						// Known as early as possible, not only at `done`: a steer
+						// needs the session id while the turn is still running.
+						if (data?.session_id) sessionRef.current = data.session_id;
 
 						switch (eventType) {
+							case 'steer': {
+								const verdict = steerQueue.current.settle(data);
+								syncQueued();
+								if (!verdict.applied) {
+									// Never reached the model: back to the box.
+									if (verdict.ours) handBack(verdict.text);
+									break;
+								}
+								// The agent read it: it is now what is being answered.
+								question = verdict.text;
+								reply = '';
+								setExchange({ you: question, reply: '' });
+								setDoing('Thinking');
+								break;
+							}
 							case 'text':
 								reply += data.text ?? '';
 								setExchange({ you: question, reply });
@@ -321,104 +387,138 @@ export default function BoardChat({
 				}
 			}
 		},
-		[onObjectChanged],
+		[onObjectChanged, syncQueued, handBack],
 	);
 
-	const send = useCallback(async () => {
-		const text = draft.trim();
-		if (!text || streaming) return;
-
-		// The gate hands the sentence back rather than streaming it: there is no
-		// plan yet, so it has to be generated, not built.
-		if (onSubmitText) {
-			setDraft('');
-			setFailed('');
-			setExchange({ you: text, reply: '' });
-			setDoing('writing the plan');
-			onSubmitText(text);
-			return;
-		}
-
-		setDraft('');
-		setFailed('');
-		setDoing('thinking');
-		setExchange({ you: text, reply: '' });
-		setStreaming(true);
-		if (inputRef.current) inputRef.current.style.height = 'auto';
-
-		abortRef.current = new AbortController();
-		// Local files are carried as base64; a file already in the app's storage
-		// is named by its url, because the agent can fetch that itself and the
-		// bytes are already on the server that would be receiving them.
-		const carried = await Promise.all(
-			attachments.map(async a => ({
-				type: a.mimeType.startsWith('image/') ? 'image' : 'file',
-				name: a.name,
-				mime_type: a.mimeType,
-				...(a.file ? { data: await fileToBase64(a.file) } : {}),
-				...(a.url ? { url: a.url } : {}),
-			})),
-		);
-		setAttachments([]);
-		// Before the request, not after the first event. The gap between
-		// pressing send and the model's first token is seconds, and an
-		// unmarked gap reads as a button that did not work.
-		setDoing('Thinking');
-		try {
-			const response = await fetch(agentEndpoint, {
-				method: 'POST',
-				headers: headers(),
-				signal: abortRef.current.signal,
-				body: JSON.stringify({
-					message: chips.length ? `${text}\n\n${describeChips(chips)}` : text,
-					...(carried.length ? { attachments: carried } : {}),
-					session_id: sessionRef.current,
-					...(appCode ? { app_code: appCode } : {}),
-					...(contextSurface ? { editor_context: { surface: contextSurface } } : {}),
-					// Always sent. The server defaults an absent value to DRAFT, so
-					// omitting it would quietly draft the edits of a surface that
-					// asked to write live.
-					draft_mode: 'LIVE',
-				}),
-			});
-
-			if (!response.ok) {
-				setFailed(
-					response.status === 409
-						? 'That conversation is already working on something. Give it a moment.'
-						: `The agent answered ${response.status}.`,
-				);
+	const send = useCallback(
+		async (override?: string) => {
+			const text = (override ?? draft).trim();
+			if (!text) return;
+			if (streaming) {
+				// The board's agent is mid-turn: queue this into it rather than
+				// refusing it or starting a second one.
+				if (override === undefined) setDraft('');
+				await steer(text);
 				return;
 			}
-			await consume(response, text);
-		} catch (err: any) {
-			if (err?.name !== 'AbortError') setFailed(err?.message || 'Could not reach the agent.');
-		} finally {
-			setStreaming(false);
-			setDoing('');
-			abortRef.current = null;
-			onTurnEnd?.();
-		}
-	}, [
-		draft,
-		streaming,
-		agentEndpoint,
-		headers,
-		chips,
-		appCode,
-		contextSurface,
-		consume,
-		onTurnEnd,
-		onSubmitText,
-		attachments,
-	]);
+
+			// The gate hands the sentence back rather than streaming it: there is no
+			// plan yet, so it has to be generated, not built.
+			if (onSubmitText) {
+				setDraft('');
+				setFailed('');
+				setExchange({ you: text, reply: '' });
+				setDoing('writing the plan');
+				onSubmitText(text);
+				return;
+			}
+
+			setDraft('');
+			setFailed('');
+			setDoing('thinking');
+			setExchange({ you: text, reply: '' });
+			setStreaming(true);
+			if (inputRef.current) inputRef.current.style.height = 'auto';
+
+			abortRef.current = new AbortController();
+			// Local files are carried as base64; a file already in the app's storage
+			// is named by its url, because the agent can fetch that itself and the
+			// bytes are already on the server that would be receiving them.
+			const carried = await Promise.all(
+				attachments.map(async a => ({
+					type: a.mimeType.startsWith('image/') ? 'image' : 'file',
+					name: a.name,
+					mime_type: a.mimeType,
+					...(a.file ? { data: await fileToBase64(a.file) } : {}),
+					...(a.url ? { url: a.url } : {}),
+				})),
+			);
+			setAttachments([]);
+			// Before the request, not after the first event. The gap between
+			// pressing send and the model's first token is seconds, and an
+			// unmarked gap reads as a button that did not work.
+			setDoing('Thinking');
+			try {
+				const response = await fetch(agentEndpoint, {
+					method: 'POST',
+					headers: headers(),
+					signal: abortRef.current.signal,
+					body: JSON.stringify({
+						message: chips.length ? `${text}\n\n${describeChips(chips)}` : text,
+						...(carried.length ? { attachments: carried } : {}),
+						session_id: sessionRef.current,
+						...(appCode ? { app_code: appCode } : {}),
+						...(contextSurface ? { editor_context: { surface: contextSurface } } : {}),
+						// Always sent. The server defaults an absent value to DRAFT, so
+						// omitting it would quietly draft the edits of a surface that
+						// asked to write live.
+						draft_mode: 'LIVE',
+					}),
+				});
+
+				if (!response.ok) {
+					setFailed(
+						response.status === 409
+							? 'That conversation is already working on something. Give it a moment.'
+							: `The agent answered ${response.status}.`,
+					);
+					return;
+				}
+				await consume(response, text);
+			} catch (err: any) {
+				if (err?.name !== 'AbortError')
+					setFailed(err?.message || 'Could not reach the agent.');
+			} finally {
+				setStreaming(false);
+				setDoing('');
+				abortRef.current = null;
+				// Queued and never read: the run ended first. Back to the box.
+				for (const t of steerQueue.current.orphans()) handBack(t);
+				syncQueued();
+				onTurnEnd?.();
+			}
+		},
+		[
+			draft,
+			streaming,
+			steer,
+			handBack,
+			syncQueued,
+			agentEndpoint,
+			headers,
+			chips,
+			appCode,
+			contextSurface,
+			consume,
+			onTurnEnd,
+			onSubmitText,
+			attachments,
+		],
+	);
 
 	const stop = useCallback(() => {
 		abortRef.current?.abort();
 		abortRef.current = null;
 		setStreaming(false);
 		setDoing('');
-	}, []);
+		// Stop the run itself, not only this connection to it: a run left going
+		// keeps the session busy, and the next message would be refused.
+		const sid = sessionRef.current;
+		if (sid)
+			fetch(`${agentBaseUrl(agentEndpoint)}/stop`, {
+				method: 'POST',
+				headers: headers(),
+				body: JSON.stringify({ session_id: sid }),
+			}).catch(() => undefined);
+	}, [agentEndpoint, headers]);
+
+	// Send what missed its run as soon as the run is over.
+	useEffect(() => {
+		if (streaming || !missedRef.current) return;
+		const text = missedRef.current;
+		missedRef.current = '';
+		send(text);
+	}, [streaming, send]);
 
 	const isGate = variant === 'gate';
 
@@ -538,8 +638,9 @@ export default function BoardChat({
 								className="_askInput"
 								rows={3}
 								value={draft}
-								placeholder={placeholder}
-								disabled={streaming}
+								placeholder={
+									streaming ? 'Send a message to steer the agent...' : placeholder
+								}
 								onChange={e => {
 									setDraft(e.target.value);
 									grow();
@@ -547,7 +648,7 @@ export default function BoardChat({
 								onKeyDown={e => {
 									if (e.key === 'Enter' && !e.shiftKey) {
 										e.preventDefault();
-										send();
+										void send();
 									}
 								}}
 							/>
@@ -612,6 +713,17 @@ export default function BoardChat({
 								/>
 								<span className="_askHint">{attachHint}</span>
 								<span className="_askSpacer" />
+								{streaming && draft.trim() ? (
+									<button
+										type="button"
+										className="_askSend _primary"
+										onClick={() => void send()}
+										aria-label="Send to the running turn"
+									>
+										<i className={sendIcon} />
+										Send
+									</button>
+								) : null}
 								{streaming ? (
 									<button type="button" className="_askStop" onClick={stop}>
 										Stop
@@ -621,7 +733,7 @@ export default function BoardChat({
 										type="button"
 										className="_askSend _primary"
 										disabled={!draft.trim()}
-										onClick={send}
+										onClick={() => void send()}
 										aria-label={submitLabel ?? 'Send'}
 									>
 										<SubHelperComponent
@@ -666,8 +778,9 @@ export default function BoardChat({
 								className="_askInput"
 								rows={3}
 								value={draft}
-								placeholder={placeholder}
-								disabled={streaming}
+								placeholder={
+									streaming ? 'Send a message to steer the agent...' : placeholder
+								}
 								onChange={e => {
 									setDraft(e.target.value);
 									grow();
@@ -675,7 +788,7 @@ export default function BoardChat({
 								onKeyDown={e => {
 									if (e.key === 'Enter' && !e.shiftKey) {
 										e.preventDefault();
-										send();
+										void send();
 									}
 								}}
 							/>
@@ -740,6 +853,17 @@ export default function BoardChat({
 								/>
 								<span className="_askHint">{attachHint}</span>
 								<span className="_askSpacer" />
+								{streaming && draft.trim() ? (
+									<button
+										type="button"
+										className="_askSend _primary"
+										onClick={() => void send()}
+										aria-label="Send to the running turn"
+									>
+										<i className={sendIcon} />
+										Send
+									</button>
+								) : null}
 								{streaming ? (
 									<button type="button" className="_askStop" onClick={stop}>
 										Stop
@@ -749,7 +873,7 @@ export default function BoardChat({
 										type="button"
 										className="_askSend _primary"
 										disabled={!draft.trim()}
-										onClick={send}
+										onClick={() => void send()}
 										aria-label={submitLabel ?? 'Send'}
 									>
 										<SubHelperComponent
@@ -831,6 +955,15 @@ export default function BoardChat({
 							</>
 						) : null}
 
+						{queued.map((t, i) => (
+							<div className="_exchangeLine _queued" key={`${i}_${t}`}>
+								<b>You</b>
+								<span>
+									{t}
+									<em className="_queuedNote">{QUEUED_NOTE}</em>
+								</span>
+							</div>
+						))}
 						{failed ? (
 							<div className="_exchangeLine _failed">
 								<span className="_exchangeDash">—</span>

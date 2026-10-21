@@ -42,7 +42,8 @@ import {
 import { agentBaseUrl, toDraftMode } from '../Prompt/draftMode';
 import { Attachment, toChatAttachments } from '../Prompt/attachments';
 import { applyObjectChange, ObjectChange } from './draftAgentRefresh';
-import { streamChat, tailOf } from './draftAgentStream';
+import { followRun, tailOf } from './draftAgentStream';
+import { newSteerId, postSteer, QUEUED_NOTE, SteerQueue } from '../Prompt/steer';
 import { DRAFT_AGENT_CSS } from './draftAgentCss';
 import { activeObjectNow, PickedComponent } from './draftAgentContext';
 import { usePicker } from './draftAgentPicker';
@@ -529,6 +530,21 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	// ── The compact prompt's own run ──────────────────────────────────────
 	const abortRef = useRef<AbortController | null>(null);
 	const textRef = useRef('');
+	// Steering, as in the Prompt (see Prompt/steer.ts): a message sent while a run
+	// is going is queued into that run, never a second one.
+	const steerQueue = useRef(new SteerQueue());
+	const [queued, setQueued] = useState<string[]>([]);
+	const syncQueued = useCallback(() => setQueued(steerQueue.current.texts()), []);
+	const missedRef = useRef('');
+	// Text the agent never read, going back to the floating prompt's box.
+	const [handedBack, setHandedBack] = useState<{ text: string; key: number }>({
+		text: '',
+		key: 0,
+	});
+	const handBack = useCallback(
+		(text: string) => text && setHandedBack(h => ({ text, key: h.key + 1 })),
+		[],
+	);
 
 	const headers = useCallback(() => {
 		if (appMode) {
@@ -563,21 +579,57 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 		[surface, appCode, onScreenContext],
 	);
 
+	const steer = useCallback(
+		async (text: string) => {
+			const sid = prefsRef.current.sessionId;
+			if (!sid) {
+				missedRef.current = missedRef.current ? `${missedRef.current}\n\n${text}` : text;
+				return;
+			}
+			const steerId = newSteerId();
+			steerQueue.current.add(steerId, text);
+			syncQueued();
+			const posted = await postSteer({
+				baseUrl: agentBaseUrl(endpoint),
+				headers: headers(),
+				sessionId: sid,
+				text,
+				steerId,
+			});
+			if (posted === 'queued') return;
+			steerQueue.current.drop(steerId);
+			syncQueued();
+			if (posted === 'missed') missedRef.current = text;
+			else handBack(text);
+		},
+		[endpoint, headers, syncQueued, handBack],
+	);
+
 	const send = useCallback(
 		async (message: string, attachments: Attachment[] = []) => {
 			const text = message.trim();
-			if ((!text && !attachments.length) || run.busy) return;
+			if (!text && !attachments.length) return;
+			if (run.busy) {
+				// Mid-run: queue it into this run. Text only, as in the Prompt.
+				if (text) await steer(text);
+				return;
+			}
 			await freshSession();
 			const controller = new AbortController();
 			abortRef.current = controller;
 			textRef.current = '';
 			setRun({ busy: true, status: 'Thinking...' });
 			let sid = prefsRef.current.sessionId ?? null;
+			let lostContact = false;
 			try {
-				const status = await streamChat({
+				const { status, outcome } = await followRun({
 					endpoint,
-					headers: headers(),
+					baseUrl: agentBaseUrl(endpoint),
+					headers,
 					signal: controller.signal,
+					sessionId: () => sid,
+					onReconnecting: () =>
+						setRun(r => ({ ...r, status: 'Connection dropped. Reconnecting...' })),
 					body: {
 						message: text,
 						session_id: sid,
@@ -594,6 +646,22 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 							setPrefs({ sessionId: sid });
 						}
 						switch (type) {
+							case 'replay_start':
+								// A rejoin replays the turn from its start.
+								textRef.current = '';
+								break;
+							case 'steer': {
+								const verdict = steerQueue.current.settle(data);
+								syncQueued();
+								if (!verdict.applied) {
+									if (verdict.ours) handBack(verdict.text);
+									break;
+								}
+								// Read: what follows is the answer to it.
+								textRef.current = '';
+								setRun(r => ({ ...r, status: 'Thinking...' }));
+								break;
+							}
 							case 'text':
 								textRef.current += data.text ?? '';
 								setRun(r => ({ ...r, status: tailOf(textRef.current) }));
@@ -629,7 +697,21 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 						}
 					},
 				});
-				if (status === 409)
+				if (outcome === 'over')
+					// It finished while we were not connected, so its reply never
+					// reached this line. Say where it is rather than nothing.
+					setRun(r => ({
+						...r,
+						status:
+							tailOf(textRef.current) ||
+							'Done. Open the docked view to read the reply.',
+					}));
+				else if (outcome === 'lost')
+					// Not an error: the run is on the server and carries on without
+					// this connection. Saying "network error" here is what made a
+					// change that went on to succeed look like a failure.
+					lostContact = true;
+				else if (status === 409)
 					setRun(r => ({
 						...r,
 						error: 'The agent is still busy with this conversation. Open the docked view to follow it.',
@@ -644,16 +726,41 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 					setRun(r => ({ ...r, error: e?.message ?? 'Connection lost.' }));
 			} finally {
 				abortRef.current = null;
+				// Queued and never read: the run ended first. Back to the box.
+				for (const t of steerQueue.current.orphans()) handBack(t);
+				syncQueued();
 				setRun(r => ({
 					...r,
 					busy: false,
 					confirmation: undefined,
-					status: tailOf(textRef.current) || r.status,
+					status: lostContact
+						? 'Still working, but this window lost contact. Open the docked view to follow it.'
+						: tailOf(textRef.current) || r.status,
 				}));
 			}
 		},
-		[run.busy, endpoint, draftMode, headers, appCode, editorContext, onObjectChanged, setPrefs],
+		[
+			run.busy,
+			endpoint,
+			draftMode,
+			headers,
+			appCode,
+			editorContext,
+			onObjectChanged,
+			setPrefs,
+			steer,
+			syncQueued,
+			handBack,
+		],
 	);
+
+	// Send what missed its run as soon as the run is over.
+	useEffect(() => {
+		if (run.busy || !missedRef.current) return;
+		const text = missedRef.current;
+		missedRef.current = '';
+		send(text);
+	}, [run.busy, send]);
 
 	const stop = useCallback(() => {
 		const sid = prefsRef.current.sessionId;
@@ -913,6 +1020,8 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 					run={run}
 					placeholder={config.placeholder}
 					onSend={send}
+					queued={queued}
+					handedBack={handedBack}
 					onStop={stop}
 					onAnswer={answer}
 					onMenu={() => setMenuOpen(o => !o)}
@@ -1014,6 +1123,8 @@ function CompactPrompt({
 	run,
 	placeholder,
 	onSend,
+	queued,
+	handedBack,
 	onStop,
 	onAnswer,
 	onMenu,
@@ -1029,6 +1140,8 @@ function CompactPrompt({
 	run: RunState;
 	placeholder: string;
 	onSend: (m: string, attachments: Attachment[]) => void;
+	queued: string[];
+	handedBack: { text: string; key: number };
 	onStop: () => void;
 	onAnswer: (approved: boolean) => void;
 	onMenu: () => void;
@@ -1042,6 +1155,13 @@ function CompactPrompt({
 	const WIDTH = Math.min(440, window.innerWidth - 16);
 	const boxRef = useRef<HTMLDivElement>(null);
 	const [text, setText] = useState('');
+	// Keyed on the hand-back, not its text: the same words twice still come back.
+	const lastHandBack = useRef(0);
+	useEffect(() => {
+		if (!handedBack.key || handedBack.key === lastHandBack.current) return;
+		lastHandBack.current = handedBack.key;
+		setText(t => (t.trim() ? `${t.trim()}\n\n${handedBack.text}` : handedBack.text));
+	}, [handedBack]);
 	const [pos, setPos] = useState(() => ({
 		x: clamp(prefs.x ?? (window.innerWidth - WIDTH) / 2, 4, window.innerWidth - WIDTH - 4),
 		y: clamp(prefs.y ?? window.innerHeight - 140, 4, window.innerHeight - 64),
@@ -1090,11 +1210,13 @@ function CompactPrompt({
 		});
 
 	const submit = () => {
-		if ((!text.trim() && !attachments.length) || run.busy) return;
-		onSend(text, attachments);
+		if (!text.trim() && !attachments.length) return;
+		// Mid-run this queues the text into the run (attachments wait for the next send).
+		if (run.busy && !text.trim()) return;
+		onSend(text, run.busy ? [] : attachments);
 		setText('');
 		// The object URLs are not revoked here: the send reads the files first.
-		setAttachments([]);
+		if (!run.busy) setAttachments([]);
 	};
 
 	return (
@@ -1175,7 +1297,9 @@ function CompactPrompt({
 						className="_mlxDAInput"
 						rows={1}
 						value={text}
-						placeholder={placeholder}
+						placeholder={
+							run.busy ? 'Send a message to steer the agent...' : placeholder
+						}
 						onChange={e => setText(e.target.value)}
 						onPaste={e => {
 							const images = Array.from(e.clipboardData?.items ?? [])
@@ -1193,6 +1317,16 @@ function CompactPrompt({
 							}
 						}}
 					/>
+					{run.busy && text.trim() ? (
+						<button
+							className="_mlxDAIconBtn _send"
+							onClick={submit}
+							title="Send to the running turn"
+							aria-label="Send to the running turn"
+						>
+							<i className="fa fa-solid fa-arrow-up" />
+						</button>
+					) : null}
 					{run.busy ? (
 						<button
 							className="_mlxDAIconBtn _send"
@@ -1230,6 +1364,11 @@ function CompactPrompt({
 						<i className="fa fa-solid fa-minus" />
 					</button>
 				</div>
+				{queued.map((q, i) => (
+					<div className="_mlxDAStatus _queued" key={`${i}_${q}`}>
+						<span className="_mlxDAQueuedText">{q}</span> {QUEUED_NOTE}
+					</div>
+				))}
 				{(run.status || run.error) && (
 					<div className={`_mlxDAStatus ${run.error ? '_error' : ''}`}>
 						{run.error ? (

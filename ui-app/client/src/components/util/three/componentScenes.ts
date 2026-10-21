@@ -41,6 +41,7 @@ export interface ShaderBackgroundInput {
 	colorA?: string;
 	colorB?: string;
 	colorC?: string;
+	poster?: string;
 }
 
 export function shaderBackgroundDocument(o: ShaderBackgroundInput): SceneDocument {
@@ -68,6 +69,15 @@ export function shaderBackgroundDocument(o: ShaderBackgroundInput): SceneDocumen
 	setUniformEverywhere(doc, 'uColorA', o.colorA, 'color');
 	setUniformEverywhere(doc, 'uColorB', o.colorB, 'color');
 	setUniformEverywhere(doc, 'uColorC', o.colorC, 'color');
+	// A custom shader can sample the fallback image as `uniform sampler2D uPoster;`.
+	// A site clone sets the poster to a captured frame of the source's canvas and
+	// animates that frame, which matches the source far better than a shader
+	// redrawn from nothing. Presets never declare it, so they are left alone.
+	if (preset === 'custom' && o.poster) {
+		for (const shader of doc.shaders) {
+			shader.uniforms.push({ name: 'uPoster', type: 'texture', value: o.poster });
+		}
+	}
 	return doc;
 }
 
