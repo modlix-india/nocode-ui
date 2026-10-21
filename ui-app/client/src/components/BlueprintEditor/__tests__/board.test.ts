@@ -1,5 +1,6 @@
 import {
 	absoluteUrl,
+	applyRequest,
 	buildBoard,
 	connectionIndex,
 	sectionsOf,
@@ -998,5 +999,18 @@ describe('which stream watches a job', () => {
 	it('asks for nothing when the host configured no endpoint', () => {
 		// Better than fetching the literal "{job}" and reporting a lost job.
 		expect(streamUrlFor({ kind: 'build', job: 'abc' }, PLAN, '')).toBe('');
+	});
+});
+
+describe('applyRequest', () => {
+	it('names the page, the part and what it is for', () => {
+		expect(applyRequest('home', 'Scroll down button', 'A button under the opening text')).toBe(
+			'On the site plan, the part "Scroll down button" on home is planned but not built yet. What it is meant to do: A button under the opening text. Build it on home so it matches the plan, keep the rest of the page as it is, and tell me what you added.',
+		);
+	});
+	it('leaves the purpose out when the plan has none', () => {
+		expect(applyRequest('home', 'Image', '  ')).toBe(
+			'On the site plan, the part "Image" on home is planned but not built yet. Build it on home so it matches the plan, keep the rest of the page as it is, and tell me what you added.',
+		);
 	});
 });
