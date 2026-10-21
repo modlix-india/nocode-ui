@@ -30,6 +30,8 @@ import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
 import AttachmentThumb from './components/AttachmentThumb';
 import { Attachment, splitTurnAttachments, fileToBase64 } from './attachments';
+import { SavedObject, savedNoticeLines } from './savedNotice';
+import { newSteerId, postSteer } from './steer';
 import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
@@ -1714,9 +1716,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	// A write that really did save. Nothing to apply, but the surface may be
 	// showing the object, and the sharpest case is a theme edited from the page
 	// editor: saved app-wide, invisible on the canvas until something refetches it.
-	const [savedObjects, setSavedObjects] = useState<
-		Array<{ kind: string; name: string; draft: boolean }>
-	>([]);
+	const [savedObjects, setSavedObjects] = useState<SavedObject[]>([]);
 
 	// Apps this chat has left unpublished work in, and the page the preview shows.
 	//
@@ -1768,12 +1768,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		(data: any) => {
 			if (!data?.kind) return;
 			const draft = data.draft === true;
+			// A POST is a create: the one write that cannot go to a draft.
+			const created = String(data.operation ?? '').toUpperCase() === 'POST';
 			setSavedObjects(prev =>
 				prev.some(
 					o => o.kind === data.kind && o.name === (data.name ?? '') && o.draft === draft,
 				)
 					? prev
-					: [...prev, { kind: data.kind, name: data.name ?? '', draft }],
+					: [...prev, { kind: data.kind, name: data.name ?? '', draft, created }],
 			);
 			// A drafted change needs somewhere to be reviewed from. A surface with
 			// editor tabs has one already; this remembers the app so a surface
@@ -3147,7 +3149,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				return;
 			}
 
-			const steerId = `steer_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+			const steerId = newSteerId();
 			pendingSteersRef.current.set(steerId, trimmed);
 			setMessages(prev => [
 				...prev,
@@ -3156,35 +3158,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			shouldAutoScrollRef.current = true;
 			setIsAtBottom(true);
 
-			const baseUrl = agentBaseUrl(agentEndpoint);
-			try {
-				const response = await fetch(`${baseUrl}/steer`, {
-					method: 'POST',
-					headers: getAuthHeaders(),
-					body: JSON.stringify({
-						session_id: sid,
-						message: trimmed,
-						steer_id: steerId,
-					}),
-				});
+			const posted = await postSteer({
+				baseUrl: agentBaseUrl(agentEndpoint),
+				headers: getAuthHeaders(),
+				sessionId: sid,
+				text: trimmed,
+				steerId,
+			});
+			if (posted === 'queued') return;
 
-				if (response.ok) return;
-
-				pendingSteersRef.current.delete(steerId);
-				setMessages(prev => prev.filter(m => m.id !== steerId));
-				if (response.status === 404) {
-					// The run finished between the user typing and pressing
-					// send. Nothing was steered and nothing was lost: send it as
-					// an ordinary message once this tab agrees it is over.
-					queuedSendRef.current = trimmed;
-					return;
-				}
-				handBackText(trimmed);
-			} catch {
-				pendingSteersRef.current.delete(steerId);
-				setMessages(prev => prev.filter(m => m.id !== steerId));
-				handBackText(trimmed);
+			pendingSteersRef.current.delete(steerId);
+			setMessages(prev => prev.filter(m => m.id !== steerId));
+			if (posted === 'missed') {
+				// The run finished between the user typing and pressing send.
+				// Nothing was steered and nothing was lost: send it as an
+				// ordinary message once this tab agrees it is over.
+				queuedSendRef.current = trimmed;
+				return;
 			}
+			handBackText(trimmed);
 		},
 		[readOnly, agentEndpoint, getAuthHeaders, handBackText],
 	);
@@ -3674,17 +3666,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 								</React.Fragment>
 							);
 						})}
-						{isStreaming && messages.at(-1)?.role === 'user' && (
-							<ThinkingBlock
-								isActive={true}
-								toolCalls={[]}
-								toolRunningIcon={toolRunningIcon}
-								toolSuccessIcon={toolSuccessIcon}
-								toolErrorIcon={toolErrorIcon}
-								expandIcon={expandIcon}
-								collapseIcon={collapseIcon}
-							/>
-						)}
+						{/* "The agent is starting on your message", so only for a message
+						    it has started on. A queued steer (`pending`) is last in the
+						    list while the reply ABOVE it is still being written, and the
+						    indicator under it read as a second answer starting in
+						    parallel with the first (QA-0471). It is answered after the
+						    current step, in its own reply, and the bubble says so. */}
+						{isStreaming &&
+							messages.at(-1)?.role === 'user' &&
+							!messages.at(-1)?.pending && (
+								<ThinkingBlock
+									isActive={true}
+									toolCalls={[]}
+									toolRunningIcon={toolRunningIcon}
+									toolSuccessIcon={toolSuccessIcon}
+									toolErrorIcon={toolErrorIcon}
+									expandIcon={expandIcon}
+									collapseIcon={collapseIcon}
+								/>
+							)}
 					</div>
 				</div>
 
@@ -3750,26 +3750,12 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						    both. */}
 						<i className="fa fa-circle-info" aria-hidden="true" />
 						<span>
-							{savedObjects.some(o => o.draft) && (
-								<>
-									In the draft, waiting for Publish:{' '}
-									{savedObjects
-										.filter(o => o.draft)
-										.map(o => `${o.kind} ${o.name}`.trim())
-										.join(', ')}
-								</>
-							)}
-							{savedObjects.some(o => o.draft) &&
-								savedObjects.some(o => !o.draft) && <br />}
-							{savedObjects.some(o => !o.draft) && (
-								<>
-									Live already, not waiting for review:{' '}
-									{savedObjects
-										.filter(o => !o.draft)
-										.map(o => `${o.kind} ${o.name}`.trim())
-										.join(', ')}
-								</>
-							)}
+							{savedNoticeLines(savedObjects).map((line, i) => (
+								<React.Fragment key={line}>
+									{i > 0 && <br />}
+									{line}
+								</React.Fragment>
+							))}
 						</span>
 						<button
 							type="button"

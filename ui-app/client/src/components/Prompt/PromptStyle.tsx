@@ -828,6 +828,14 @@ export default function PromptStyle({
 			background: transparent;
 		}
 
+		${PREFIX} ._promptMessage._user._pending ._pendingNote {
+			display: block;
+			margin-top: 4px;
+			font-size: 12px;
+			color: ${t('fontColorThree', '#9b9b9b')};
+			white-space: normal;
+		}
+
 		/* ─── Assistant message ─── */
 		${PREFIX} ._promptMessage._assistant {
 			display: flex;
