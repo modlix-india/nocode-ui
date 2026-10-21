@@ -110,3 +110,33 @@ describe('ScrollScene always ends up scroll-driven', () => {
 		},
 	);
 });
+
+/**
+ * A site clone sets the poster to a captured frame of the source's canvas and
+ * animates it in a custom shader, which matches the source far better than a
+ * shader redrawn from nothing.
+ */
+describe('a custom ShaderBackground can sample its poster', () => {
+	it('binds the poster as the uPoster texture uniform', () => {
+		const doc = shaderBackgroundDocument({
+			preset: 'custom',
+			fragmentShader: 'uniform sampler2D uPoster; void main() { gl_FragColor = vec4(1.0); }',
+			poster: 'api/files/static/file/SYSTEM/x/frame.png',
+		});
+		const u = doc.shaders.flatMap(s => s.uniforms).find(x => x.name === 'uPoster');
+		expect(u).toEqual({
+			name: 'uPoster',
+			type: 'texture',
+			value: 'api/files/static/file/SYSTEM/x/frame.png',
+		});
+	});
+
+	it('leaves presets and poster-less shaders alone', () => {
+		expect(
+			uniform(shaderBackgroundDocument({ preset: 'aurora', poster: 'a.png' }), 'uPoster'),
+		).toBeUndefined();
+		expect(
+			uniform(shaderBackgroundDocument({ preset: 'custom', fragmentShader: '' }), 'uPoster'),
+		).toBeUndefined();
+	});
+});

@@ -222,6 +222,8 @@ export const DRAFT_AGENT_CSS = `
 	align-items: baseline;
 }
 ._mlxDAStatus._error { color: #dc2626; }
+._mlxDAStatus._queued { opacity: 0.75; }
+._mlxDAQueuedText { font-weight: 600; }
 ._mlxDALink {
 	border: 0;
 	background: none;

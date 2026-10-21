@@ -23,6 +23,7 @@ import {
 	BoardModel,
 	BoardSources,
 	absoluteUrl,
+	applyRequest,
 	buildBoard,
 	CardStatus,
 	loadedDetail,
@@ -304,6 +305,15 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 		(text: string) => setAskSeed(previous => ({ text, key: previous.key + 1 })),
 		[],
 	);
+	/**
+	 * The card whose Explain is running, so its button can say so.
+	 *
+	 * Explain is a metered model call that takes a few seconds, and the button
+	 * used to give no sign of it at all: no busy state, and (until the column was
+	 * re-read afterwards) no change on the card either, so it read as a button
+	 * that does nothing.
+	 */
+	const [explaining, setExplaining] = useState<string>('');
 	const [appQuery, setAppQuery] = useState<string>('');
 	/**
 	 * How wide the chat pane is, as a percentage of the component.
@@ -530,16 +540,24 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 			.filter(Boolean) as typeof model.bands;
 	}, [model.bands, bandsProp]);
 
+	// Returns the run, so a caller that has to know when the host is done (Explain,
+	// which re-reads the column afterwards) can wait for it. Everyone else ignores it.
 	const fire = useCallback(
-		(eventKey: string | undefined, data: any) => {
-			if (!eventKey) return;
+		(eventKey: string | undefined, data: any): Promise<void> => {
+			if (!eventKey) return Promise.resolve();
 			const ev = pageDefinition.eventFunctions?.[eventKey];
-			if (!ev) return;
+			if (!ev) return Promise.resolve();
 			// Write the payload BEFORE running, so the event can read it on its
 			// first step rather than racing the store.
 			if (payloadPath) setData(payloadPath, data, context.pageName);
-			(async () =>
-				await runEvent(ev, eventKey, context.pageName, locationHistory, pageDefinition))();
+			return (async () => {
+				try {
+					await runEvent(ev, eventKey, context.pageName, locationHistory, pageDefinition);
+				} catch {
+					// runEvent reports its own failures; a caller waiting on it
+					// only needs to know it is over.
+				}
+			})();
 		},
 		[pageDefinition, context.pageName, locationHistory, payloadPath],
 	);
@@ -1550,18 +1568,24 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					<button
 						type="button"
 						className="_actionButton _primary"
-						onClick={() =>
-							// `title` and `description` ride along because applying is
-							// the one action no endpoint can do: it is a BUILD, so the
-							// host turns it into a request somebody can read, and a uid
-							// is not something anybody can read.
+						onClick={() => {
+							// Applying is a BUILD, which no endpoint can do, so it
+							// becomes a request in this component's own chat. The
+							// host used to write that sentence to
+							// `Page.pendingPrompt`, which only the separate Prompt
+							// ever read; the chat moved in here, so the button did
+							// nothing. Seeded rather than sent, like every Add on
+							// the board: the person can read and correct it first.
+							seedAsk(applyRequest(column.name, card.title, card.description));
+							// Still fired: a host may want to know, and removing it
+							// would break one silently.
 							fire(onApply, {
 								uid: card.uid,
 								object: column.name,
 								title: card.title,
 								description: card.description,
-							})
-						}
+							});
+						}}
 					>
 						<SubHelperComponent
 							definition={definition}
@@ -1593,19 +1617,41 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 					<button
 						type="button"
 						className="_actionButton _quiet"
-						onClick={() =>
-							fire(onExplain, {
-								uid: card.uid,
-								object: column.name,
-								componentKey: card.componentKey,
-							})
-						}
+						disabled={explaining === card.uid}
+						onClick={async () => {
+							if (explaining) return;
+							setExplaining(card.uid);
+							try {
+								await fire(onExplain, {
+									uid: card.uid,
+									object: column.name,
+									componentKey: card.componentKey,
+								});
+								// Re-read the column the card belongs to. The host's
+								// own re-read wrote the page somewhere the board does
+								// not look first (`loaded.<name>`, under the
+								// `loaded.<kind>.<name>` copy the column was opened
+								// with), so the new description never showed. The
+								// open path is the one place that knows where the
+								// board reads from.
+								await fire(onNeedObject, {
+									name: column.name,
+									kind: column.kind,
+								});
+							} finally {
+								setExplaining('');
+							}
+						}}
 					>
 						<SubHelperComponent
 							definition={definition}
 							subComponentName="actionButton"
 						/>
-						{card.description ? 'Explain again' : 'Explain this'}
+						{explaining === card.uid
+							? 'Explaining...'
+							: card.description
+								? 'Explain again'
+								: 'Explain this'}
 					</button>
 				) : null}
 			</div>
