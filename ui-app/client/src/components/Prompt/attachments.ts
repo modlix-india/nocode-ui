@@ -102,7 +102,46 @@ export async function toChatAttachments(attachments: Attachment[]): Promise<any[
 		attachments.map(async a => {
 			const att: any = { type: a.type, name: a.name, mime_type: a.mimeType };
 			if (a.file) att.data = await fileToBase64(a.file);
+			// An existing file picked from the files service travels as its path: the agent is
+			// told where it is and fetches it only if it needs the bytes.
+			else if (a.url && !a.url.startsWith('blob:')) att.url = a.url;
 			return att;
 		}),
 	);
+}
+
+const IMAGE_EXT = /\.(png|jpe?g|gif|webp|svg|avif|bmp|ico)$/i;
+const MIME_BY_EXT: Record<string, string> = {
+	pdf: 'application/pdf',
+	txt: 'text/plain',
+	csv: 'text/csv',
+	json: 'application/json',
+	xml: 'application/xml',
+	svg: 'image/svg+xml',
+	png: 'image/png',
+	jpg: 'image/jpeg',
+	jpeg: 'image/jpeg',
+	gif: 'image/gif',
+	webp: 'image/webp',
+};
+
+/**
+ * An attachment for a file picked from the static or secured store: a server path, no `File`.
+ * The FileBrowser answers with `api/files/<store>/file/<client>/<path>`, with or without a
+ * leading slash.
+ */
+export function pickedFileAttachment(url: string, id: string): Attachment {
+	const path = url.startsWith('/') || /^https?:/.test(url) ? url : `/${url}`;
+	const name = decodeURIComponent(path.split('?')[0].split('/').pop() || 'file').replace(
+		/\+/g,
+		' ',
+	);
+	const ext = (name.split('.').pop() || '').toLowerCase();
+	return {
+		id,
+		type: IMAGE_EXT.test(name) ? 'image' : 'file',
+		name,
+		url: path,
+		mimeType: MIME_BY_EXT[ext] ?? '',
+	};
 }

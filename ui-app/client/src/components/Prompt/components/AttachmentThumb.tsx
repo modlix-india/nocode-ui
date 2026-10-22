@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import getSrcUrl from '../../util/getSrcUrl';
 import secureImage, { isSecuredUrl } from '../../util/secureImage';
 
@@ -73,6 +74,38 @@ export default function AttachmentThumb({
 	}, [url, secured, expired]);
 
 	const gone = expired || failed;
+	const [lightbox, setLightbox] = useState(false);
+	const [saving, setSaving] = useState(false);
+
+	// Click to keep a copy. Fetched as a blob, so a secured file goes with the user's token and a
+	// static one under its own name (a cross-origin CDN link would ignore `download`).
+	const download = useCallback(async () => {
+		if (saving) return;
+		setSaving(true);
+		try {
+			const href = secured
+				? await secureImage(url)
+				: URL.createObjectURL(await (await fetch(getSrcUrl(url))).blob());
+			const a = document.createElement('a');
+			a.href = href;
+			a.download = name || 'file';
+			document.body.appendChild(a);
+			a.click();
+			a.remove();
+			if (!secured) setTimeout(() => URL.revokeObjectURL(href), 10000);
+		} catch {
+			setFailed(true);
+		} finally {
+			setSaving(false);
+		}
+	}, [saving, secured, url, name]);
+
+	useEffect(() => {
+		if (!lightbox) return;
+		const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setLightbox(false);
+		document.addEventListener('keydown', onKey);
+		return () => document.removeEventListener('keydown', onKey);
+	}, [lightbox]);
 
 	if (gone) {
 		return (
@@ -90,12 +123,18 @@ export default function AttachmentThumb({
 
 	if (type !== 'image') {
 		return (
-			<div className="_attachmentPreview" title={name}>
+			<button
+				type="button"
+				className="_attachmentPreview _attachmentDownload"
+				title={`Download ${name}`}
+				onClick={download}
+				disabled={saving}
+			>
 				<div className="_attachmentFile">
-					<i className={fileIcon} />
+					<i className={saving ? 'fa fa-solid fa-spinner fa-spin' : fileIcon} />
 					<span>{name}</span>
 				</div>
-			</div>
+			</button>
 		);
 	}
 
@@ -105,7 +144,8 @@ export default function AttachmentThumb({
 				<img
 					src={resolved}
 					alt={name}
-					className="_attachmentImage"
+					className="_attachmentImage _attachmentZoomable"
+					onClick={() => setLightbox(true)}
 					// The other half of the expiry signal: a static or blob URL
 					// never goes through secureImage's catch, so this is the only
 					// place a missing one is noticed.
@@ -114,6 +154,32 @@ export default function AttachmentThumb({
 			) : (
 				<div className="_attachmentImage _attachmentLoading" />
 			)}
+			{lightbox && resolved
+				? createPortal(
+						<div
+							className="_mlxLightbox"
+							role="dialog"
+							aria-label={name}
+							onClick={() => setLightbox(false)}
+						>
+							<img src={resolved} alt={name} onClick={e => e.stopPropagation()} />
+							<div className="_mlxLightboxBar" onClick={e => e.stopPropagation()}>
+								<span>{name}</span>
+								<button type="button" onClick={download} disabled={saving}>
+									Download
+								</button>
+								<button
+									type="button"
+									onClick={() => setLightbox(false)}
+									aria-label="Close"
+								>
+									×
+								</button>
+							</div>
+						</div>,
+						document.body,
+					)
+				: null}
 		</div>
 	);
 }
