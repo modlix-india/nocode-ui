@@ -13,7 +13,8 @@ import { propertiesDefinition, stylePropertiesDefinition } from './sseventListen
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
 import { duplicate } from '@fincity/kirun-js';
-import { openEventStream } from './authedEventStream';
+import { openEventStream, StreamMessage } from './authedEventStream';
+import { createSerialQueue, eventArguments } from './eventDelivery';
 
 export default function SSEventListener(props: Readonly<ComponentProps>) {
 	const {
@@ -38,35 +39,66 @@ export default function SSEventListener(props: Readonly<ComponentProps>) {
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
 
+	let eventNames: string[] = [];
+	if (Array.isArray(eventName)) eventNames = eventName;
+	else if (typeof eventName === 'string') eventNames = [eventName];
+	// A string key, so a new array with the same names does not reopen the stream.
+	const eventNamesKey = JSON.stringify(eventNames);
+
+	// Read at run time, so a run uses the page as it is when the event arrives, not as it was
+	// when the stream opened.
+	const latest = useRef({ pageDefinition, locationHistory });
+	latest.current = { pageDefinition, locationHistory };
+
+	const hasEventFunction = !!(onEvent && pageDefinition.eventFunctions?.[onEvent]);
+
 	useEffect(() => {
-		if (!bindingPath || !url || !onEvent || !pageDefinition.eventFunctions?.[onEvent]) return;
+		// The binding path is optional: url, onEvent and its function are enough.
+		if (!url || !onEvent || !hasEventFunction) return;
 
-		const eventFunction = pageDefinition.eventFunctions?.[onEvent];
+		// One run per event, in arrival order, each awaited before the next starts.
+		const queue = createSerialQueue(e => console.error('SSE onEvent failed', e));
 
-		const func = (data: string) => {
-			let value = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
+		const deliver = async (message: StreamMessage, receivedAt: number) => {
+			const { pageDefinition: pageDef, locationHistory: history } = latest.current;
 
-			value = value ? duplicate(value) : [];
-			value.push(data);
+			if (bindingPathPath) {
+				// Unchanged from before the Arguments existed: the raw data string is appended,
+				// so pages that read the array (the leadzumptwo shell) keep working.
+				let value = getDataFromPath(bindingPathPath, history, pageExtractor);
+				value = value ? duplicate(value) : [];
+				value.push(message.data);
+				setData(bindingPathPath, value, pageExtractor.getPageName());
+			}
 
-			setData(bindingPathPath!, value, pageExtractor.getPageName());
-
+			const eventFunction = pageDef.eventFunctions?.[onEvent];
 			if (!eventFunction) return;
-			runEvent(eventFunction, onEvent, context.pageName, locationHistory, pageDefinition);
+			await runEvent(
+				eventFunction,
+				onEvent,
+				context.pageName,
+				history,
+				pageDef,
+				eventArguments(message, receivedAt),
+			);
 		};
-
-		let eventNames: string[] = [];
-		if (Array.isArray(eventName)) eventNames = eventName;
-		else if (typeof eventName === 'string') eventNames = [eventName];
 
 		// Not EventSource: it cannot send the Authorization header, so without the cookie every
 		// stream 401'd (QA-0369). See authedEventStream.
-		return openEventStream(url, {
-			eventNames,
-			onMessage: message => func(message.data),
+		const close = openEventStream(url, {
+			eventNames: JSON.parse(eventNamesKey),
+			onMessage: message => {
+				const receivedAt = Date.now();
+				queue.push(() => deliver(message, receivedAt));
+			},
 			onError: e => console.error('SSE error (auto-retrying)', e),
 		});
-	}, [bindingPathPath, url, onEvent, eventName]);
+
+		return () => {
+			close();
+			queue.close();
+		};
+	}, [bindingPathPath, url, onEvent, eventNamesKey, hasEventFunction]);
 
 	const ref = useRef<HTMLDivElement>(null);
 

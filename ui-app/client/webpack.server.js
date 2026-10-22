@@ -38,6 +38,20 @@ module.exports = {
 		},
 	},
 	plugins: [
+		// The output is CommonJS, but CI copies it into the SSR image under /app, whose package.json
+		// says "type": "module". Node takes a .js file's module type from the nearest package.json,
+		// so there the bundle loaded as ESM and every render died on `require is not defined`.
+		// This package.json beside the bundle keeps it CommonJS wherever it is copied.
+		{
+			apply(compiler) {
+				compiler.hooks.thisCompilation.tap('CommonJsPackageJson', compilation => {
+					compilation.hooks.processAssets.tap(
+						{ name: 'CommonJsPackageJson', stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL },
+						() => compilation.emitAsset('package.json', new webpack.sources.RawSource('{ "type": "commonjs" }\n')),
+					);
+				});
+			},
+		},
 		new webpack.optimize.LimitChunkCountPlugin({ maxChunks: 1 }),
 		new webpack.DefinePlugin({
 			// No buildVersion here: it stamps asset URLs (AppStyle's stylesheet), so the server must

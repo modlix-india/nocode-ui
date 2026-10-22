@@ -116,8 +116,27 @@ function isSameOrigin(url: string): boolean {
 	}
 }
 
+/** The connect event the notification stream sends first; never a page's event. */
+export const CONNECT_EVENT = 'init';
+
+/**
+ * Which event types reach the page. Named types are delivered as named. With no names (or only
+ * blank ones) every event is delivered except the server's `init` connect event. Keepalive
+ * comments never become events at all (the parser drops them).
+ */
+export function eventFilter(eventNames: ReadonlyArray<string>): (type: string) => boolean {
+	const wanted = new Set(
+		eventNames.filter(e => typeof e === 'string' && e.trim()).map(e => e.trim()),
+	);
+	if (!wanted.size) return type => type !== CONNECT_EVENT;
+	return type => wanted.has(type);
+}
+
 export interface EventStreamOptions {
-	/** Event types to deliver, as `addEventListener` names on an EventSource. */
+	/**
+	 * Event types to deliver, as `addEventListener` names on an EventSource. Empty: every
+	 * event except `init` (see eventFilter).
+	 */
 	eventNames: string[];
 	onMessage: (message: StreamMessage) => void;
 	onError?: (error: unknown) => void;
@@ -140,7 +159,7 @@ export function openEventStream(url: string, options: EventStreamOptions): () =>
 		clearTimer = handle => clearTimeout(handle as ReturnType<typeof setTimeout>),
 	} = options;
 
-	const wanted = new Set(eventNames);
+	const wanted = eventFilter(eventNames);
 	let closed = false;
 	let controller: AbortController | undefined;
 	let timer: unknown;
@@ -190,7 +209,7 @@ export function openEventStream(url: string, options: EventStreamOptions): () =>
 				if (done || closed) break;
 				for (const message of parser.feed(decoder.decode(value, { stream: true }))) {
 					if (closed) break;
-					if (wanted.has(message.type)) onMessage(message);
+					if (wanted(message.type)) onMessage(message);
 				}
 				lastEventId = parser.lastEventId;
 				if (parser.retry !== undefined) retryMs = parser.retry;

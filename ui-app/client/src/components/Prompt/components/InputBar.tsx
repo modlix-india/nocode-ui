@@ -5,12 +5,16 @@ import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 // byte-identical until history gained `expired`, at which point one of them
 // would have been silently wrong.
 import { Attachment } from '../attachments';
+import AttachmentThumb from './AttachmentThumb';
+import { AttachSourceMenu } from './AttachSourceMenu';
 
 // Matches the textarea's max-height in PromptStyle; past this the box stops
 // growing and starts scrolling.
 const MAX_INPUT_HEIGHT = 200;
 
 interface InputBarProps {
+	/** The app the chat works on: the attach menu's file browsers open in its folder. */
+	appCode?: string;
 	placeholder: string;
 	/** Shown instead of `placeholder` while a turn is running. */
 	steerPlaceholder?: string;
@@ -58,6 +62,7 @@ const speechSupported =
 	!!((globalThis as any).SpeechRecognition || (globalThis as any).webkitSpeechRecognition);
 
 export function InputBar({
+	appCode,
 	placeholder,
 	steerPlaceholder = 'Send a message to steer the agent...',
 	disabled,
@@ -284,11 +289,17 @@ export function InputBar({
 					{attachments.map(att => (
 						<div key={att.id} className="_inputAttachmentItem">
 							{att.type === 'image' ? (
-								<img
-									src={att.url}
-									alt={att.name}
-									className="_inputAttachmentThumb"
-								/>
+								// Through AttachmentThumb for every image: a picked secured one needs the
+								// user's token to show, and a click opens it in the lightbox.
+								<span className="_inputAttachmentThumb">
+									<AttachmentThumb
+										type="image"
+										name={att.name}
+										url={att.url}
+										fileIcon={fileIcon}
+										expiredIcon={fileIcon}
+									/>
+								</span>
 							) : (
 								<div className="_inputAttachmentFile">
 									<i className={fileIcon} />
@@ -307,14 +318,14 @@ export function InputBar({
 				</div>
 			)}
 			<div className="_inputContainer">
-				<button
-					className="_addAttachmentButton"
-					onClick={() => fileInputRef.current?.click()}
+				<AttachSourceMenu
+					appCode={appCode}
+					buttonClassName="_addAttachmentButton"
+					icon={addAttachmentIcon}
 					disabled={disabled || isStreaming}
-					title="Add attachment"
-				>
-					<i className={addAttachmentIcon} />
-				</button>
+					onUploadClick={() => fileInputRef.current?.click()}
+					onPick={att => setAttachments(prev => [...prev, att])}
+				/>
 				<input
 					ref={fileInputRef}
 					type="file"
