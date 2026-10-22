@@ -9,7 +9,12 @@
  * that predates the feature.
  */
 
-import { splitTurnAttachments, HistoryAttachment } from '../attachments';
+import {
+	splitTurnAttachments,
+	HistoryAttachment,
+	pickedFileAttachment,
+	toChatAttachments,
+} from '../attachments';
 
 const chatImage: HistoryAttachment = {
 	id: 1,
@@ -93,5 +98,41 @@ describe('splitTurnAttachments', () => {
 		const { user } = splitTurnAttachments([pdf], 0);
 		expect(user[0].type).toBe('file');
 		expect(user[0].name).toBe('contract.pdf');
+	});
+});
+
+describe('files picked from the static or secured store', () => {
+	it('become attachments named after their file, typed by extension', () => {
+		const pdf = pickedFileAttachment('api/files/secured/file/FIN/docs/Aadhaar+List.pdf', 'p1');
+		expect(pdf).toEqual({
+			id: 'p1',
+			type: 'file',
+			name: 'Aadhaar List.pdf',
+			url: '/api/files/secured/file/FIN/docs/Aadhaar+List.pdf',
+			mimeType: 'application/pdf',
+		});
+		const logo = pickedFileAttachment('/api/files/static/file/FIN/brand/logo.svg', 'p2');
+		expect(logo.type).toBe('image');
+		expect(logo.mimeType).toBe('image/svg+xml');
+	});
+
+	it('travel as their url, while an upload still travels as base64', async () => {
+		const picked = pickedFileAttachment('/api/files/static/file/FIN/brand/logo.svg', 'p2');
+		const blobOnly = {
+			id: 'b',
+			type: 'image' as const,
+			name: 'x.png',
+			url: 'blob:abc',
+			mimeType: 'image/png',
+		};
+		expect(await toChatAttachments([picked, blobOnly])).toEqual([
+			{
+				type: 'image',
+				name: 'logo.svg',
+				mime_type: 'image/svg+xml',
+				url: '/api/files/static/file/FIN/brand/logo.svg',
+			},
+			{ type: 'image', name: 'x.png', mime_type: 'image/png' },
+		]);
 	});
 });

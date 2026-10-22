@@ -178,6 +178,7 @@ export const DRAFT_AGENT_CSS = `
 	overflow: hidden;
 	background: var(--mlxda-bg);
 }
+._mlxDAAttachment ._attachmentPreview { height: 100%; display: flex; align-items: center; }
 ._mlxDAAttachment img { height: 100%; width: auto; max-width: 80px; object-fit: cover; display: block; }
 ._mlxDAAttachmentFile { padding: 0 22px 0 8px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 ._mlxDAAttachmentRemove {

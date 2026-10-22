@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { MOUSE_LEAVE_CLOSE_DELAY, openFloating } from '../util/floatingLayer';
 import {
 	addListenerAndCallImmediately,
+	getPathFromLocation,
 	PageStoreExtractor,
+	setData,
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -32,7 +34,7 @@ function Popover(props: Readonly<ComponentProps>) {
 		pageDefinition: { translations },
 		pageDefinition,
 		definition,
-		definition: { children, key },
+		definition: { children, key, bindingPath },
 		locationHistory,
 		context,
 	} = props;
@@ -104,6 +106,37 @@ function Popover(props: Readonly<ComponentProps>) {
 	const showPopover = (e: React.MouseEvent<HTMLElement>) => {
 		setShow(!show);
 	};
+
+	// Optional open state in the store. The page can close the panel by writing false there,
+	// for example after a date is picked in a calendar inside it; a calendar is not an action
+	// control, so a click on it leaves the panel open.
+	const bindingPathPath = bindingPath
+		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
+		: undefined;
+	const storedOpenRef = React.useRef<boolean | undefined>(undefined);
+	const shownRef = React.useRef(show);
+
+	React.useEffect(() => {
+		if (!bindingPathPath) return;
+		return addListenerAndCallImmediately(
+			pageExtractor.getPageName(),
+			(_, value) => {
+				storedOpenRef.current = value === true;
+				setShow(value === true);
+			},
+			bindingPathPath,
+		);
+	}, [bindingPathPath]);
+
+	// Only a change of `show` is written back, never the mount: a true already in the store
+	// is still on its way into `show` at that point.
+	React.useEffect(() => {
+		if (shownRef.current === show) return;
+		shownRef.current = show;
+		if (!bindingPathPath || storedOpenRef.current === show) return;
+		storedOpenRef.current = show;
+		setData(bindingPathPath, show, context.pageName);
+	}, [show, bindingPathPath]);
 
 	// `closeOnLeave` used to close on the spot, and only the TRIGGER carries the leave
 	// handler while the panel is portalled to the end of the body. So the pointer had to
@@ -274,6 +307,9 @@ const component: Component = {
 	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
+	bindingPaths: {
+		bindingPath: { name: 'Open state' },
+	},
 	stylePseudoStates: [],
 	allowedChildrenType: new Map<string, number>([['', -1]]),
 	defaultTemplate: {

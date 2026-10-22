@@ -26,3 +26,4 @@ export * from './GetAnalyticsConsent';
 export * from './SetAnalyticsConsent';
 export * from './InitiateSocialLogin';
 export * from './BuildLeadAdData';
+export * from './call';
