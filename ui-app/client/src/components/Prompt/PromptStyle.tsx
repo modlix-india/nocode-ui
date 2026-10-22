@@ -2,6 +2,7 @@ import { StyleResolution } from '../../types/common';
 import React from 'react';
 import { processStyleDefinition, processStyleValueWithFunction } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults } from './promptStyleProperties';
+import { ATTACH_SOURCE_MENU_CSS } from './components/AttachSourceMenu';
 
 const PREFIX = '.comp.compPrompt';
 
@@ -2396,6 +2397,15 @@ export default function PromptStyle({
 			border-radius: 8px;
 			display: block;
 		}
+		/* A file picked from the files service renders through AttachmentThumb inside the thumb. */
+		${PREFIX} span._inputAttachmentThumb { overflow: hidden; }
+		${PREFIX} span._inputAttachmentThumb ._attachmentPreview,
+		${PREFIX} span._inputAttachmentThumb img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			display: block;
+		}
 
 		${PREFIX} ._inputAttachmentFile {
 			display: flex;
@@ -3207,7 +3217,9 @@ export default function PromptStyle({
 			text-overflow: ellipsis;
 			white-space: nowrap;
 		}
-	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+	` +
+		ATTACH_SOURCE_MENU_CSS +
+		processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="PromptCss">{css}</style>;
 }

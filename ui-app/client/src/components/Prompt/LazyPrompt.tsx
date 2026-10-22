@@ -29,7 +29,7 @@ import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
 import AttachmentThumb from './components/AttachmentThumb';
-import { Attachment, splitTurnAttachments, fileToBase64 } from './attachments';
+import { Attachment, splitTurnAttachments, toChatAttachments } from './attachments';
 import { SavedObject, savedNoticeLines } from './savedNotice';
 import { newSteerId, postSteer } from './steer';
 import { PendingDraftBar } from './components/PendingDraftBar';
@@ -2952,19 +2952,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				};
 
 				if (attachments?.length) {
-					body.attachments = await Promise.all(
-						attachments.map(async a => {
-							const att: any = {
-								type: a.type,
-								name: a.name,
-								mime_type: a.mimeType,
-							};
-							if (a.file) {
-								att.data = await fileToBase64(a.file);
-							}
-							return att;
-						}),
-					);
+					// The shared mapping: a file off this machine goes as base64, one picked from the
+					// static or secured files as its url.
+					body.attachments = await toChatAttachments(attachments);
 				}
 
 				const response = await fetch(agentEndpoint, {

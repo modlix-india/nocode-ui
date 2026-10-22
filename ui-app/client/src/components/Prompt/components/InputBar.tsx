@@ -5,6 +5,8 @@ import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 // byte-identical until history gained `expired`, at which point one of them
 // would have been silently wrong.
 import { Attachment } from '../attachments';
+import AttachmentThumb from './AttachmentThumb';
+import { AttachSourceMenu } from './AttachSourceMenu';
 
 // Matches the textarea's max-height in PromptStyle; past this the box stops
 // growing and starts scrolling.
@@ -283,7 +285,19 @@ export function InputBar({
 				<div className="_inputAttachments">
 					{attachments.map(att => (
 						<div key={att.id} className="_inputAttachmentItem">
-							{att.type === 'image' ? (
+							{att.type === 'image' && !att.file && !att.url.startsWith('blob:') ? (
+								// Picked from the files service: a secured one needs the user's token
+								// to show, which a plain <img> cannot send.
+								<span className="_inputAttachmentThumb">
+									<AttachmentThumb
+										type="image"
+										name={att.name}
+										url={att.url}
+										fileIcon={fileIcon}
+										expiredIcon={fileIcon}
+									/>
+								</span>
+							) : att.type === 'image' ? (
 								<img
 									src={att.url}
 									alt={att.name}
@@ -307,14 +321,13 @@ export function InputBar({
 				</div>
 			)}
 			<div className="_inputContainer">
-				<button
-					className="_addAttachmentButton"
-					onClick={() => fileInputRef.current?.click()}
+				<AttachSourceMenu
+					buttonClassName="_addAttachmentButton"
+					icon={addAttachmentIcon}
 					disabled={disabled || isStreaming}
-					title="Add attachment"
-				>
-					<i className={addAttachmentIcon} />
-				</button>
+					onUploadClick={() => fileInputRef.current?.click()}
+					onPick={att => setAttachments(prev => [...prev, att])}
+				/>
 				<input
 					ref={fileInputRef}
 					type="file"

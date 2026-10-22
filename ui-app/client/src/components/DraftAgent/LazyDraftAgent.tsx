@@ -41,6 +41,8 @@ import {
 } from './draftAgentEnv';
 import { agentBaseUrl, toDraftMode } from '../Prompt/draftMode';
 import { Attachment, toChatAttachments } from '../Prompt/attachments';
+import AttachmentThumb from '../Prompt/components/AttachmentThumb';
+import { AttachSourceMenu, ATTACH_SOURCE_MENU_CSS } from '../Prompt/components/AttachSourceMenu';
 import { applyObjectChange, ObjectChange } from './draftAgentRefresh';
 import { followRun, tailOf } from './draftAgentStream';
 import { newSteerId, postSteer, QUEUED_NOTE, SteerQueue } from '../Prompt/steer';
@@ -182,7 +184,7 @@ function useReservedSpace(side: 'left' | 'right' | undefined, px: number) {
 function Chrome({ children }: Readonly<{ children: React.ReactNode }>) {
 	return createPortal(
 		<>
-			<style>{DRAFT_AGENT_CSS}</style>
+			<style>{DRAFT_AGENT_CSS + ATTACH_SOURCE_MENU_CSS}</style>
 			{children}
 		</>,
 		document.body,
@@ -1244,7 +1246,16 @@ function CompactPrompt({
 					<div className="_mlxDAAttachments">
 						{attachments.map(a => (
 							<span key={a.id} className="_mlxDAAttachment" title={a.name}>
-								{a.type === 'image' ? (
+								{a.type === 'image' && !a.file && !a.url.startsWith('blob:') ? (
+									// Picked from the files service: a secured image needs the token.
+									<AttachmentThumb
+										type="image"
+										name={a.name}
+										url={a.url}
+										fileIcon="fa fa-solid fa-file"
+										expiredIcon="fa fa-solid fa-file"
+									/>
+								) : a.type === 'image' ? (
 									<img src={a.url} alt={a.name} />
 								) : (
 									<span className="_mlxDAAttachmentFile">
@@ -1272,14 +1283,13 @@ function CompactPrompt({
 					>
 						<i className="fa fa-solid fa-grip-vertical" />
 					</button>
-					<button
-						className="_mlxDAIconBtn"
-						onClick={() => fileRef.current?.click()}
+					<AttachSourceMenu
+						buttonClassName="_mlxDAIconBtn"
+						icon="fa fa-solid fa-plus"
 						title="Add images or files"
-						aria-label="Add images or files"
-					>
-						<i className="fa fa-solid fa-plus" />
-					</button>
+						onUploadClick={() => fileRef.current?.click()}
+						onPick={att => setAttachments(prev => [...prev, att])}
+					/>
 					{pickButton}
 					<input
 						ref={fileRef}
