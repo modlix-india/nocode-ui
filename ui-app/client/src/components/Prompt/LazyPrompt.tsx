@@ -29,7 +29,7 @@ import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
 import AttachmentThumb from './components/AttachmentThumb';
-import { Attachment, splitTurnAttachments, fileToBase64 } from './attachments';
+import { Attachment, splitTurnAttachments, toChatAttachments } from './attachments';
 import { SavedObject, savedNoticeLines } from './savedNotice';
 import { newSteerId, postSteer } from './steer';
 import { PendingDraftBar } from './components/PendingDraftBar';
@@ -148,7 +148,18 @@ function formatTokensTitle(total: number, cacheRead?: number): string {
 	return `${base}\n${cacheRead.toLocaleString()} (${pct}%) served from prompt cache`;
 }
 
-function mapHistoryToMessages(history: any[]): Message[] {
+/**
+ * A choice the agent asked with clickable chips that the user has not answered yet, as the session
+ * history returns it. The chips arrive once, live, at the end of the reply; without this a reload
+ * dropped them and left "still waiting on your folder pick" with nothing to click (2026-10-22).
+ */
+interface PendingChoice {
+	turn?: number;
+	question?: string;
+	options?: Array<{ label: string; value: string }>;
+}
+
+function mapHistoryToMessages(history: any[], pending?: PendingChoice | null): Message[] {
 	// Sort by turn_number ascending to guarantee chronological order
 	const sorted = [...history].sort((a, b) => (a.turn_number ?? 0) - (b.turn_number ?? 0));
 	const msgs: Message[] = [];
@@ -194,6 +205,14 @@ function mapHistoryToMessages(history: any[]): Message[] {
 				attachments: attached.assistant,
 			});
 		}
+	}
+	const last = msgs[msgs.length - 1];
+	if (
+		pending?.options?.length &&
+		last?.role === 'assistant' &&
+		(pending.turn === undefined || pending.turn === last.turnNumber)
+	) {
+		last.suggestions = { options: pending.options, mode: 'single' };
 	}
 	return msgs;
 }
@@ -2097,7 +2116,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 					const data = await response.json();
 					const history = Array.isArray(data.history) ? data.history : [];
-					setMessages(mapHistoryToMessages(history));
+					setMessages(mapHistoryToMessages(history, data.pending_choice));
 					setTotalMessages(data.total_history ?? history.length);
 					setUsage(extractUsageFromSession(data.session));
 
@@ -2580,7 +2599,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					setSessionId(selectedSessionId);
 
 					const history = Array.isArray(data.history) ? data.history : [];
-					setMessages(mapHistoryToMessages(history));
+					setMessages(mapHistoryToMessages(history, data.pending_choice));
 					setTotalMessages(data.total_history ?? history.length);
 					setMessagesOffset(0);
 					setUsage(extractUsageFromSession(data.session));
@@ -2952,19 +2971,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				};
 
 				if (attachments?.length) {
-					body.attachments = await Promise.all(
-						attachments.map(async a => {
-							const att: any = {
-								type: a.type,
-								name: a.name,
-								mime_type: a.mimeType,
-							};
-							if (a.file) {
-								att.data = await fileToBase64(a.file);
-							}
-							return att;
-						}),
-					);
+					// The shared mapping: a file off this machine goes as base64, one picked from the
+					// static or secured files as its url.
+					body.attachments = await toChatAttachments(attachments);
 				}
 
 				const response = await fetch(agentEndpoint, {
@@ -3770,6 +3779,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				<div className="_promptInputWrapper">
 					{(props as any).inputAddon}
 					<InputBar
+						appCode={targetAppCode}
 						placeholder={resolvedPlaceholder ?? placeholder}
 						steerPlaceholder={resolvedSteerPlaceholder ?? steerPlaceholder}
 						disabled={!!readOnly}

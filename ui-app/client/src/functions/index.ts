@@ -9,7 +9,11 @@ import { NAMESPACE_UI_ENGINE } from '../constants';
 import * as map from './all';
 
 const functionMap = new Map<string, AbstractFunction>();
-Object.entries(map).forEach(([k, v]) => functionMap.set(k, new v()));
+// Keyed by full name, so functions in a sub namespace (UIEngine.Call.Connect) resolve too.
+Object.values(map).forEach(v => {
+	const fn = new v();
+	functionMap.set(fn.getSignature().getFullName(), fn);
+});
 
 /**
  * UIEngine function docs, registered into kirun-ui's registry on demand.
@@ -63,8 +67,9 @@ export function registerUIEngineFunctionDocs(): Promise<void> {
 
 class _UIFunctionRepository implements Repository<Function> {
 	public find(namespace: string, name: string): Promise<Function | undefined> {
-		if (namespace !== NAMESPACE_UI_ENGINE) return Promise.resolve(undefined);
-		return Promise.resolve(functionMap.get(name));
+		if (namespace !== NAMESPACE_UI_ENGINE && !namespace?.startsWith(NAMESPACE_UI_ENGINE + '.'))
+			return Promise.resolve(undefined);
+		return Promise.resolve(functionMap.get(`${namespace}.${name}`));
 	}
 
 	public filter(name: string): Promise<string[]> {

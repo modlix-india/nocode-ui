@@ -1,4 +1,9 @@
-import { EventStreamParser, openEventStream, StreamMessage } from '../authedEventStream';
+import {
+	EventStreamParser,
+	eventFilter,
+	openEventStream,
+	StreamMessage,
+} from '../authedEventStream';
 
 const encoder = new TextEncoder();
 
@@ -103,6 +108,49 @@ describe('openEventStream', () => {
 		close();
 	});
 
+	test('no event names: every event except init, keepalive comments never', async () => {
+		const fetchImpl = jest
+			.fn()
+			.mockResolvedValue(
+				streamResponse([
+					'event:init\ndata:connected\nid:u1\nretry:5000\n\n',
+					':keepalive\n\n',
+					'event:incomingCall\ndata:{"event":"incomingCall"}\n\n',
+					'event:notification\ndata:{"id":5}\n\ndata: plain\n\n',
+				]),
+			);
+		const got: string[] = [];
+		const close = openEventStream('/s', {
+			eventNames: [],
+			onMessage: m => got.push(m.type),
+			fetchImpl,
+			getToken: () => undefined,
+			setTimer: () => 1,
+			clearTimer: () => {},
+		});
+		await flush();
+		expect(got).toEqual(['incomingCall', 'notification', 'message']);
+		close();
+	});
+
+	test('blank names count as no names', async () => {
+		const fetchImpl = jest
+			.fn()
+			.mockResolvedValue(streamResponse(['event:init\ndata:c\n\nevent:x\ndata:1\n\n']));
+		const got: string[] = [];
+		const close = openEventStream('/s', {
+			eventNames: ['', '  '],
+			onMessage: m => got.push(m.type),
+			fetchImpl,
+			getToken: () => undefined,
+			setTimer: () => 1,
+			clearTimer: () => {},
+		});
+		await flush();
+		expect(got).toEqual(['x']);
+		close();
+	});
+
 	test('no token header for another origin', async () => {
 		const fetchImpl = jest.fn().mockResolvedValue(streamResponse([]));
 		const close = openEventStream('https://elsewhere.example.com/s', {
@@ -182,5 +230,21 @@ describe('openEventStream', () => {
 		close();
 		expect(signal.aborted).toBe(true);
 		expect(cleared).toEqual(['timer-1']);
+	});
+});
+
+describe('eventFilter', () => {
+	test('named types only when names are given, init included if asked for', () => {
+		const f = eventFilter(['a', ' init ']);
+		expect(['a', 'b', 'init', 'message'].filter(f)).toEqual(['a', 'init']);
+	});
+
+	test('empty takes everything but init', () => {
+		const f = eventFilter([]);
+		expect(['a', 'init', 'message', 'notification'].filter(f)).toEqual([
+			'a',
+			'message',
+			'notification',
+		]);
 	});
 });
