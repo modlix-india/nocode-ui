@@ -1246,8 +1246,9 @@ function CompactPrompt({
 					<div className="_mlxDAAttachments">
 						{attachments.map(a => (
 							<span key={a.id} className="_mlxDAAttachment" title={a.name}>
-								{a.type === 'image' && !a.file && !a.url.startsWith('blob:') ? (
-									// Picked from the files service: a secured image needs the token.
+								{a.type === 'image' ? (
+									// AttachmentThumb for every image: a secured pick needs the token, and a
+									// click opens the lightbox.
 									<AttachmentThumb
 										type="image"
 										name={a.name}
@@ -1255,8 +1256,6 @@ function CompactPrompt({
 										fileIcon="fa fa-solid fa-file"
 										expiredIcon="fa fa-solid fa-file"
 									/>
-								) : a.type === 'image' ? (
-									<img src={a.url} alt={a.name} />
 								) : (
 									<span className="_mlxDAAttachmentFile">
 										<i className="fa fa-solid fa-file" /> {a.name}
@@ -1284,6 +1283,7 @@ function CompactPrompt({
 						<i className="fa fa-solid fa-grip-vertical" />
 					</button>
 					<AttachSourceMenu
+						// No appCode: the menu falls back to the app this page belongs to.
 						buttonClassName="_mlxDAIconBtn"
 						icon="fa fa-solid fa-plus"
 						title="Add images or files"

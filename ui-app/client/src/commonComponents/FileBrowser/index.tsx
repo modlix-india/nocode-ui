@@ -86,9 +86,16 @@ export async function imageURLForFile(
 		if (globalThis.isDebugMode)
 			headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
 
+		// A thumbnail that cannot be fetched (a file row whose bytes are gone, a 404) shows the
+		// file's icon. Uncaught, one bad file was an uncaught runtime error over the whole page.
 		imgUrl = await axios
 			.get(url, { responseType: 'blob', headers })
-			.then(res => URL.createObjectURL(res.data));
+			.then(res => URL.createObjectURL(res.data))
+			.catch(
+				() =>
+					Array.from(ICON_SET.entries()).find(([_, exts]) => exts.has(type))?.[0] ??
+					'api/files/static/file/SYSTEM/icons/anyfile.svg',
+			);
 	}
 	if (globalThis.cdnPrefix) {
 		let index = imgUrl.indexOf(STATIC_FILE_API_PREFIX);

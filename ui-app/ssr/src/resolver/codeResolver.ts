@@ -135,9 +135,31 @@ async function resolveDraftTokenType(
 	}
 }
 
+/** `d` plus 32 lowercase hex, matched over the first label only: a draft app's hostname. */
+const DRAFT_HOST_LABEL = /^d[0-9a-f]{32}$/;
+
+/**
+ * Whether a hostname's resolution may be cached.
+ *
+ * Never for a draft host. "New draft link" (POST /api/security/clienturls/draft)
+ * rotates the hostname and revokes the old one at once, and the gateway answers
+ * the old one with the `nothing` app from then on. A cached answer here kept
+ * resolving it to the app for up to ten minutes, so a tab opened on the old link
+ * got that app's shell inlined in __APP_BOOTSTRAP__ while every API call it made
+ * was answered as `nothing`: the 404 page plus "<fn> is not available" errors
+ * from the shell's onLoad (QA-0468). Draft hosts are few and lightly used, so
+ * asking the security service on each document load costs nothing that matters.
+ * The HTML cache key carries the resolved codes, so a fresh answer also keeps a
+ * cached render of the old app from being served for the revoked host.
+ */
+export function isCacheableResolution(host: string, urlType?: string): boolean {
+	if (urlType === 'DRAFT') return false;
+	return !DRAFT_HOST_LABEL.test(host.split(':')[0].split('.')[0]);
+}
+
 /**
  * Resolves appCode/clientCode from scheme, host, port via security service.
- * Results are cached in Redis.
+ * Results are cached in Redis, except for draft hosts (see isCacheableResolution).
  */
 async function resolveFromSecurityService(
 	scheme: string,
@@ -145,12 +167,13 @@ async function resolveFromSecurityService(
 	port: string
 ): Promise<Codes> {
 	const cacheKey = `resolver:${scheme}:${host}:${port}`;
+	const cacheable = isCacheableResolution(host);
 
 	try {
 		const redis = getRedisClient();
 
 		// Check cache first
-		const cached = await redis.get(cacheKey);
+		const cached = cacheable ? await redis.get(cacheKey) : null;
 		if (cached) {
 			return JSON.parse(cached);
 		}
@@ -193,8 +216,10 @@ async function resolveFromSecurityService(
 
 		const codes: Codes = { clientCode, appCode, urlType };
 
-		// Cache for 10 minutes
-		await redis.setex(cacheKey, 600, JSON.stringify(codes));
+		// Cache for 10 minutes; a draft host is asked again every time
+		if (isCacheableResolution(host, urlType)) {
+			await redis.setex(cacheKey, 600, JSON.stringify(codes));
+		}
 
 		return codes;
 	} catch (error) {

@@ -13,6 +13,8 @@ import { AttachSourceMenu } from './AttachSourceMenu';
 const MAX_INPUT_HEIGHT = 200;
 
 interface InputBarProps {
+	/** The app the chat works on: the attach menu's file browsers open in its folder. */
+	appCode?: string;
 	placeholder: string;
 	/** Shown instead of `placeholder` while a turn is running. */
 	steerPlaceholder?: string;
@@ -60,6 +62,7 @@ const speechSupported =
 	!!((globalThis as any).SpeechRecognition || (globalThis as any).webkitSpeechRecognition);
 
 export function InputBar({
+	appCode,
 	placeholder,
 	steerPlaceholder = 'Send a message to steer the agent...',
 	disabled,
@@ -285,9 +288,9 @@ export function InputBar({
 				<div className="_inputAttachments">
 					{attachments.map(att => (
 						<div key={att.id} className="_inputAttachmentItem">
-							{att.type === 'image' && !att.file && !att.url.startsWith('blob:') ? (
-								// Picked from the files service: a secured one needs the user's token
-								// to show, which a plain <img> cannot send.
+							{att.type === 'image' ? (
+								// Through AttachmentThumb for every image: a picked secured one needs the
+								// user's token to show, and a click opens it in the lightbox.
 								<span className="_inputAttachmentThumb">
 									<AttachmentThumb
 										type="image"
@@ -297,12 +300,6 @@ export function InputBar({
 										expiredIcon={fileIcon}
 									/>
 								</span>
-							) : att.type === 'image' ? (
-								<img
-									src={att.url}
-									alt={att.name}
-									className="_inputAttachmentThumb"
-								/>
 							) : (
 								<div className="_inputAttachmentFile">
 									<i className={fileIcon} />
@@ -322,6 +319,7 @@ export function InputBar({
 			)}
 			<div className="_inputContainer">
 				<AttachSourceMenu
+					appCode={appCode}
 					buttonClassName="_addAttachmentButton"
 					icon={addAttachmentIcon}
 					disabled={disabled || isStreaming}

@@ -124,7 +124,9 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._sessionItem {
-			display: block;
+			display: flex;
+			align-items: center;
+			gap: 4px;
 			width: 100%;
 			text-align: left;
 			border: none;
@@ -150,6 +152,8 @@ export default function PromptStyle({
 
 		${PREFIX} ._sessionTitle {
 			display: block;
+			flex: 1 1 auto;
+			min-width: 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
@@ -179,15 +183,14 @@ export default function PromptStyle({
 			cursor: not-allowed;
 		}
 
-		/* Session action buttons (visible on hover) */
+		/* Session action buttons (visible on hover). They sit in the row's flex
+		   line, not over it, so the title ellipsis ends before them. */
 		${PREFIX} ._sessionActions {
-			position: absolute;
-			right: 8px;
-			top: 50%;
-			transform: translateY(-50%);
+			flex: 0 0 auto;
 			display: none;
 			align-items: center;
 			gap: 2px;
+			margin: -4px -4px -4px 0;
 		}
 
 		${PREFIX} ._sessionItem:hover ._sessionActions {
@@ -223,6 +226,8 @@ export default function PromptStyle({
 
 		/* In-place rename input */
 		${PREFIX} ._sessionRenameInput {
+			flex: 1 1 auto;
+			min-width: 0;
 			width: 100%;
 			border: 1px solid ${t('borderColorTen', '#d0d0d0')};
 			border-radius: 4px;
