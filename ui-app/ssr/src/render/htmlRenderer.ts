@@ -17,6 +17,7 @@ import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
 import { noscriptBlock } from './noscriptText.js';
 import { startupHintTags, startupScriptPreloads } from './startupHints.js';
 import { renderWidthFor, serverRenderEnabled, serverRenderPage } from './serverRender.js';
+import { SIGNED_IN_CSS, SIGNED_IN_DROP_SCRIPT, SIGNED_IN_FLAG_SCRIPT } from './signedInGuard.js';
 // Key compression removed - doesn't help gzipped transfer size (only 14% savings)
 // and adds 10-20ms CPU overhead that hurts TTFB/FBBT
 
@@ -873,7 +874,7 @@ function generateHtml(
 		${startupHints}
 
 		<!-- Critical CSS -->
-		<style id="criticalCss">${CRITICAL_CSS}</style>
+		<style id="criticalCss">${CRITICAL_CSS}${SIGNED_IN_CSS}</style>
 
 		<!-- External stylesheets (fonts, etc.) -->
 		${externalLinks}
@@ -883,6 +884,7 @@ function generateHtml(
 	<body>
 		${beforeBodyParts ? `${beforeBodyParts}\n\t\t` : ''}<!-- Bootstrap data for client hydration -->
 		<script>
+			${SIGNED_IN_FLAG_SCRIPT}
 			${bootstrapData ? `window.__APP_BOOTSTRAP__ = ${JSON.stringify(removeCodeParts(bootstrapData))};` : ''}
 			window.domainAppCode = '${escapeHtml(codes.appCode)}';
 			window.domainClientCode = '${escapeHtml(codes.clientCode)}';
@@ -902,6 +904,7 @@ function generateHtml(
 
 		<!-- Main app container -->
 		<div id="app">${error ? `<div style="padding:20px;color:#721c24;background:#f8d7da;border:1px solid #f5c6cb;border-radius:4px;margin:20px;">${escapeHtml(error)}</div>` : ''}</div>
+		${SIGNED_IN_DROP_SCRIPT}
 		${error ? '' : noscriptBlock(page)}
 
 		<!-- Application style from style service, for the resolved theme -->
