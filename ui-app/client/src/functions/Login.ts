@@ -14,6 +14,7 @@ import { getDataFromPath, setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
 import pageHistory from '../components/Page/pageHistory';
 import { absoluteDestination } from '../util/absoluteDestination';
+import { reloadsTheDocument } from '../util/reloadsTheDocument';
 import { beginSsoSeed, isSsoEnabled } from '../sso/ssoModule';
 
 const SIGNATURE = new FunctionSignature('Login')
@@ -179,13 +180,22 @@ export class Login extends AbstractFunction {
 				true,
 			);
 
-			setData('Store.pageDefinition', {});
-			setData('Store.messages', []);
-			setData('Store.pageData', {});
-			setData('Store.validations', {});
-			setData('Store.validationTriggers', {});
-			setData('Store.application', undefined, undefined, true);
-			setData('Store.functionExecutions', {});
+			// When this page is about to be replaced by a full load (the beacon hop, or the
+			// destination), the reset below only repaints the page being left: it re-fetches
+			// itself signed in and re-runs its onLoad while the next document is on its way. An
+			// invite page that has just been accepted then finds no invite and shows "Invitation
+			// Revoked" for that moment (QA-0507). The new document starts from an empty store
+			// anyway, so the reset is skipped and the page stays as it was until it unloads.
+			const leaving = !!seed || (!!redirectUrl && reloadsTheDocument(destination));
+			if (!leaving) {
+				setData('Store.pageDefinition', {});
+				setData('Store.messages', []);
+				setData('Store.pageData', {});
+				setData('Store.validations', {});
+				setData('Store.validationTriggers', {});
+				setData('Store.application', undefined, undefined, true);
+				setData('Store.functionExecutions', {});
+			}
 
 			if (seed) {
 				window.location.replace(seed);
