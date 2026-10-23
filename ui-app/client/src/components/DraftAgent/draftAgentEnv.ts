@@ -93,8 +93,8 @@ export function hostForEnv(prodHost: string, env: DraftEnv): string {
  *
  * An explicit `draftAgentHost` on the app is the whole answer. Otherwise the
  * LeadZump agent signs in where LeadZump's own customers do, because they have no
- * AppBuilder or SiteZump account, the CXZump agent on cxlanding (where builders
- * manage CXZump; CXZump itself lives on each builder's domain), and the
+ * AppBuilder or SiteZump account, the CXZump agent on cxzump.ai (cxlanding, where
+ * builders manage CXZump; CXZump itself lives on each builder's domain), and the
  * AppBuilder agent tries AppBuilder and then SiteZump.
  */
 export function builderOrigins(
@@ -113,9 +113,9 @@ export function builderOrigins(
 
 	if (agent === 'leadzump') return [named('leadzump.ai', 'LeadZump')];
 
-	// CXZump runs on each builder's own domain, so it has no product host of its own:
-	// builders sign in on cxlanding, the self-serve app they manage CXZump from.
-	if (agent === 'cxzump') return [named('cxlanding.modlix.com', 'CXZump')];
+	// CXZump itself runs on each builder's own domain. Builders sign in on cxzump.ai,
+	// which serves cxlanding: the self-serve app they manage CXZump from.
+	if (agent === 'cxzump') return [named('cxzump.ai', 'CXZump')];
 
 	return [named('appbuilder.modlix.com', 'AppBuilder'), named('sitezump.ai', 'SiteZump')];
 }
