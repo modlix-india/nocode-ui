@@ -93,8 +93,9 @@ export function hostForEnv(prodHost: string, env: DraftEnv): string {
  *
  * An explicit `draftAgentHost` on the app is the whole answer. Otherwise the
  * LeadZump agent signs in where LeadZump's own customers do, because they have no
- * AppBuilder or SiteZump account, and the AppBuilder agent tries AppBuilder and
- * then SiteZump.
+ * AppBuilder or SiteZump account, the CXZump agent on cxlanding (where builders
+ * manage CXZump; CXZump itself lives on each builder's domain), and the
+ * AppBuilder agent tries AppBuilder and then SiteZump.
  */
 export function builderOrigins(
 	env: DraftEnv,
@@ -111,6 +112,10 @@ export function builderOrigins(
 		return [named(hostOverride, hostForEnv(hostOverride, env))];
 
 	if (agent === 'leadzump') return [named('leadzump.ai', 'LeadZump')];
+
+	// CXZump runs on each builder's own domain, so it has no product host of its own:
+	// builders sign in on cxlanding, the self-serve app they manage CXZump from.
+	if (agent === 'cxzump') return [named('cxlanding.modlix.com', 'CXZump')];
 
 	return [named('appbuilder.modlix.com', 'AppBuilder'), named('sitezump.ai', 'SiteZump')];
 }
@@ -147,7 +152,7 @@ export function hostOfPattern(pattern: string | undefined): string {
 		.replace(/[/:].*$/, '');
 }
 
-export type DraftAgentName = 'appbuilder' | 'leadzump';
+export type DraftAgentName = 'appbuilder' | 'leadzump' | 'cxzump';
 
 /**
  * The agent a draft talks to, from the app's `draftAgent` property.
@@ -156,15 +161,15 @@ export type DraftAgentName = 'appbuilder' | 'leadzump';
  */
 export function toDraftAgent(value: any): DraftAgentName {
 	const v = typeof value === 'string' ? value.trim().toLowerCase() : '';
-	return v === 'leadzump' ? 'leadzump' : 'appbuilder';
+	return v === 'leadzump' || v === 'cxzump' ? v : 'appbuilder';
 }
 
 export interface AgentConfig {
 	endpoint: string;
 	/**
 	 * The `appCode` header. The AppBuilder agent admits only the builder apps, so it
-	 * gets the builder the user signed in with. The LeadZump agent admits only its
-	 * own app, so it gets the draft app's code.
+	 * gets the builder the user signed in with. The LeadZump and CXZump agents admit
+	 * only their own app, so they get the draft app's code.
 	 */
 	appCodeHeader: 'builder' | 'draftApp';
 	title: string;
@@ -173,6 +178,7 @@ export interface AgentConfig {
 export const AGENTS: Record<DraftAgentName, AgentConfig> = {
 	appbuilder: { endpoint: '/api/ai/appbuilder/chat', appCodeHeader: 'builder', title: 'Builder' },
 	leadzump: { endpoint: '/api/ai/leadzump/chat', appCodeHeader: 'draftApp', title: 'LeadZump' },
+	cxzump: { endpoint: '/api/ai/cxzump/chat', appCodeHeader: 'draftApp', title: 'CXZump' },
 };
 
 export type DraftAgentMode = 'left' | 'right' | 'compact' | 'button' | 'window';
