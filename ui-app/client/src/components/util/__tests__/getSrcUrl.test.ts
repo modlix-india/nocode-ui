@@ -59,6 +59,22 @@ describe('getSrcUrl option list', () => {
 	it("does not override the author's own width with the caller's", () => {
 		expect(getSrcUrl(`${PNG}?width=450`, { width: 1920 })).toContain('width=450,format=auto');
 	});
+
+	// The client logo is re-uploaded over the same name and shown with
+	// `?v=<upload time>`. In the option list the buster never reached the source
+	// fetch, so the CDN kept serving the cached old logo for weeks.
+	it('keeps a cache buster on the source path, not in the option list', () => {
+		const url = getSrcUrl(`${PNG}?v=2026-10-23T17:44:43.969+05:30&width=450`);
+
+		expect(url).toBe(
+			`${CDN}/cdn-cgi/image/width=450,format=auto/FIN/CoevolveMisty/secondary-logo.png?v=2026-10-23T17:44:43.969%2005:30`,
+		);
+	});
+
+	it('keeps a cache buster on every srcset candidate', () => {
+		for (const candidate of getSrcSet(`${PNG}?v=7`)!.split(', '))
+			expect(candidate).toMatch(/\/cdn-cgi\/image\/width=\d+,format=auto\/.*\.png\?v=7 \d+w$/);
+	});
 });
 
 describe('getSrcUrl leaves alone what it must', () => {
