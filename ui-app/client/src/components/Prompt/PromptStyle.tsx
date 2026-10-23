@@ -1834,6 +1834,327 @@ export default function PromptStyle({
 			margin-top: 4px;
 			display: block;
 		}
+		
+		${PREFIX} ._adCard {
+			display: flex;
+			flex-direction: column;
+			gap: 14px;
+			margin: 8px 0;
+			padding: 14px;
+			border: 1px solid ${t('borderColorNine', '#e2e8f0')};
+			border-radius: 14px;
+			background: ${t('colorSeven', '#ffffff')};
+		}
+
+		${PREFIX} ._adHead {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 12px;
+		}
+
+		${PREFIX} ._adTitle {
+			font-size: 15px;
+			font-weight: 600;
+		}
+
+		${PREFIX} ._adMeta {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			margin-top: 4px;
+			font-size: 11px;
+			color: ${t('promptSecondaryFontColor', '#666')};
+		}
+
+		${PREFIX} ._adDestination {
+			max-width: 45%;
+			overflow: hidden;
+			padding: 6px 9px;
+			border-radius: 8px;
+			background: ${t('surfaceColorTwo', '#f3f4f6')};
+			font-size: 11px;
+			color: ${t('promptSecondaryFontColor', '#555')};
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._adSlots {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+			gap: 10px;
+		}
+
+		${PREFIX} ._adSlot {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+			padding: 10px;
+			border: 1px solid ${t('borderColorNine', '#e5e7eb')};
+			border-radius: 10px;
+		}
+
+		${PREFIX} ._adSlotHead {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 8px;
+		}
+
+		${PREFIX} ._adSlotName {
+			font-size: 12px;
+			font-weight: 600;
+		}
+
+		${PREFIX} ._adSlotRule {
+			font-size: 10px;
+			color: ${t('promptTertiaryFontColor', '#888')};
+		}
+
+		${PREFIX} ._adPictures {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		${PREFIX} ._adPicture {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			min-width: 0;
+		}
+
+		${PREFIX} ._adThumb,
+		${PREFIX} ._adChoiceThumb {
+			flex-shrink: 0;
+			object-fit: cover;
+			border-radius: 8px;
+			background: ${t('surfaceColorTwo', '#f3f4f6')};
+		}
+
+		${PREFIX} ._adThumb {
+			/* Width is fixed at 72 px by the inline shapeStyle; height follows aspect-ratio.
+			   The rule here is a safe fallback for thumbnails with no shape data. */
+			width: 72px;
+			height: auto;
+			min-height: 48px;
+		}
+
+		${PREFIX} ._adPicEmpty {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 4px;
+			color: ${t('promptTertiaryFontColor', '#888')};
+			font-size: 10px;
+			text-align: center;
+		}
+
+		${PREFIX} ._adPictureMeta {
+			display: flex;
+			flex-direction: column;
+			min-width: 0;
+		}
+
+		${PREFIX} ._adPictureName {
+			overflow-wrap: anywhere;
+			font-size: 12px;
+			font-weight: 500;
+		}
+
+		${PREFIX} ._adPictureShape,
+		${PREFIX} ._adRead {
+			color: ${t('promptTertiaryFontColor', '#888')};
+			font-size: 11px;
+		}
+
+		${PREFIX} ._adRead {
+			margin-top: 2px;
+		}
+
+		${PREFIX} ._adChoices {
+			display: flex;
+			gap: 8px;
+			overflow-x: auto;
+			padding: 2px 0 4px;
+		}
+
+		${PREFIX} ._adChoice {
+			display: flex;
+			flex: 0 0 auto;
+			flex-direction: column;
+			align-items: stretch;
+			min-width: 92px;
+			max-width: 120px;
+			padding: 6px;
+			border: 1px solid ${t('borderColorNine', '#e5e7eb')};
+			border-radius: 10px;
+			background: transparent;
+			color: inherit;
+			cursor: pointer;
+			text-align: left;
+		}
+
+		${PREFIX} ._adChoice:hover:not(:disabled) {
+			border-color: ${t('colorTwo', '#1967d2')};
+		}
+
+		${PREFIX} ._adChoice:disabled {
+			opacity: 0.55;
+			cursor: default;
+		}
+
+		${PREFIX} ._adChoiceThumb {
+			width: 100%;
+			height: 58px;
+		}
+
+		${PREFIX} ._adChoiceName {
+			margin-top: 4px;
+			overflow: hidden;
+			font-size: 11px;
+			font-weight: 500;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		${PREFIX} ._adChoiceShape {
+			font-size: 10px;
+			color: ${t('promptTertiaryFontColor', '#888')};
+		}
+
+		${PREFIX} ._adEmpty {
+			padding: 8px;
+			border-radius: 8px;
+			background: ${t('surfaceColorTwo', '#f8fafc')};
+			color: ${t('promptSecondaryFontColor', '#666')};
+			font-size: 11px;
+		}
+
+		${PREFIX} ._adEmptyHint {
+			color: ${t('promptTertiaryFontColor', '#888')};
+		}
+
+		${PREFIX} ._adSection {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		${PREFIX} ._adSectionTitle {
+			font-size: 10px;
+			font-weight: 600;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+			color: ${t('promptTertiaryFontColor', '#888')};
+		}
+
+		${PREFIX} ._adTextSlot {
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			padding-bottom: 2px;
+		}
+
+		${PREFIX} ._adTextLabel {
+			font-size: 11px;
+			color: ${t('promptSecondaryFontColor', '#666')};
+		}
+
+		${PREFIX} ._adLine {
+			font-size: 13px;
+			line-height: 1.5;
+		}
+
+		${PREFIX} ._adMissingLine {
+			color: ${t('promptTertiaryFontColor', '#888')};
+			font-style: italic;
+		}
+
+		${PREFIX} ._adChips {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 6px;
+		}
+
+		${PREFIX} ._adChip {
+			padding: 6px 10px;
+			border: 1px solid ${t('borderColorNine', '#e5e7eb')};
+			border-radius: 999px;
+			background: transparent;
+			color: inherit;
+			cursor: pointer;
+			font: inherit;
+			font-size: 12px;
+		}
+
+		${PREFIX} ._adChip:hover:not(:disabled) {
+			border-color: ${t('colorTwo', '#1967d2')};
+		}
+
+		${PREFIX} ._adChipOn {
+			border-color: ${t('colorTwo', '#1967d2')};
+			color: ${t('colorTwo', '#1967d2')};
+		}
+
+		${PREFIX} ._adKv {
+			display: flex;
+			justify-content: space-between;
+			gap: 12px;
+			font-size: 12px;
+		}
+
+		${PREFIX} ._adKv > span:first-child {
+			color: ${t('promptSecondaryFontColor', '#666')};
+		}
+
+		${PREFIX} ._adSource {
+			color: ${t('promptTertiaryFontColor', '#888')};
+		}
+
+		${PREFIX} ._adCheck {
+			display: flex;
+			gap: 8px;
+			padding: 6px 8px;
+			border-left: 3px solid ${t('borderColorNine', '#e5e7eb')};
+			font-size: 12px;
+			line-height: 1.45;
+		}
+
+		${PREFIX} ._adCheckName {
+			flex-shrink: 0;
+			font-weight: 600;
+			text-transform: capitalize;
+		}
+
+		${PREFIX} ._adCheckBLOCK {
+			border-color: ${t('errorBorderColor', '#dc2626')};
+			background: ${t('errorWashColor', '#fef2f2')};
+		}
+
+		${PREFIX} ._adCheckWARN {
+			border-color: ${t('warningBorderColor', '#d97706')};
+			background: ${t('warningWashColor', '#fffbeb')};
+		}
+
+		${PREFIX} ._adOwed {
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			padding: 9px 10px;
+			border-radius: 8px;
+			border-left: 3px dashed ${t('warningBorderColor', '#d97706')};
+			background: ${t('surfaceColorTwo', '#f8fafc')};
+			color: ${t('promptSecondaryFontColor', '#555')};
+			font-size: 12px;
+		}
+
+		${PREFIX} ._adConfirmed {
+			font-size: 12px;
+			font-weight: 500;
+			color: ${t('successColor', '#16a34a')};
+		}
 
 		${PREFIX} ._craftTable {
 			width: 100%;

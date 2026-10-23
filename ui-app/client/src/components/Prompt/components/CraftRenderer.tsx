@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback, createContext, useCont
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { loadGoogleMaps } from '../../../util/googleMapsLoader';
+import { AdSlotCard, AdSlotCardPayload } from './AdSlotCard';
 
 interface CraftContextValue {
 	sessionId: string | null;
@@ -929,6 +930,26 @@ function MapBlock({
 	);
 }
 
+function AdSlotBlock({ payload }: { payload: AdSlotCardPayload }) {
+	const craft = useContext(CraftContext);
+	if (!payload) return null;
+	return (
+		<AdSlotCard
+			payload={payload}
+			disabled={!craft}
+			onPick={
+				craft
+					? (sendText, displayText) => {
+							craft
+								.onSend(sendText, undefined, displayText)
+								.catch(err => console.error('Ad pick failed:', err));
+						}
+					: undefined
+			}
+		/>
+	);
+}
+
 const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	heading: HeadingBlock,
 	text: TextBlock,
@@ -944,6 +965,7 @@ const BLOCK_RENDERERS: Record<string, React.FC<any>> = {
 	collapsible: CollapsibleBlock,
 	carousel: CarouselBlock,
 	map: MapBlock,
+	adslot: AdSlotBlock,
 };
 
 function CraftBlockRenderer({ block, styleProperties }: { block: Block; styleProperties?: any }) {

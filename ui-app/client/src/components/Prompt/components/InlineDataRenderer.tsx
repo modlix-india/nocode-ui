@@ -1,4 +1,5 @@
 import React from 'react';
+import { AdSlotCard, AdSlotCardPayload } from './AdSlotCard';
 import { LocationMap } from './LocationMap';
 
 export interface InlineDataPayload {
@@ -21,6 +22,17 @@ export function InlineDataRenderer({
 	confirmedMeta,
 	disabled,
 }: Readonly<InlineDataRendererProps>) {
+	if (payload.type === 'adslot') {
+		return (
+			<AdSlotCard
+				payload={payload as AdSlotCardPayload}
+				confirmed={confirmed}
+				confirmedMeta={confirmedMeta}
+				disabled={disabled}
+				onPick={(sendText, displayText, meta) => onRespond(sendText, displayText, meta)}
+			/>
+		);
+	}
 	if (payload.type === 'location_map') {
 		return (
 			<LocationMap
