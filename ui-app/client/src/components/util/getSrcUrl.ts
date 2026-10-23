@@ -77,11 +77,62 @@ function normalize(urlAny: any): string {
  * and the original file returned with a 200, so every author who asked for a
  * resize silently got none and nothing anywhere reported a failure.
  */
+/**
+ * The option names the transformer reads (with their one-letter aliases).
+ *
+ * Anything else in the authored query is NOT an option. The usual one is a
+ * cache buster, `logo.png?v=<time>` after an upload over the same name. Folded
+ * into the option list it changed nothing: the transformer fetches its source
+ * by the bare path, the CDN edge answers that from its cache (the origin sends
+ * a month of max-age), and the old picture came back for weeks after a 200
+ * upload. Left on the source path as a query, it is part of the cache key and
+ * the new file is fetched.
+ */
+const TRANSFORM_OPTIONS = new Set([
+	'anim',
+	'background',
+	'blur',
+	'border',
+	'brightness',
+	'compression',
+	'contrast',
+	'dpr',
+	'fit',
+	'flip',
+	'format',
+	'gamma',
+	'gravity',
+	'height',
+	'metadata',
+	'onerror',
+	'quality',
+	'rotate',
+	'saturation',
+	'segment',
+	'sharpen',
+	'slow-connection-quality',
+	'trim',
+	'width',
+	'zoom',
+	'w',
+	'h',
+	'q',
+	'f',
+	'g',
+]);
+
+function isTransformOption(param: string): boolean {
+	const name = param.split('=')[0];
+	return TRANSFORM_OPTIONS.has(name) || name.startsWith('trim.');
+}
+
 function transformed(path: string, authored: string, width?: number): string {
 	if (globalThis.cdnResizeOptionsType !== 'cloudflare' || !RESIZABLE.test(path))
 		return authored ? `${path}?${authored}` : path;
 
-	const options = authored ? authored.split('&').filter(Boolean) : [];
+	const params = authored ? authored.split('&').filter(Boolean) : [];
+	const options = params.filter(isTransformOption);
+	const sourceQuery = params.filter(p => !isTransformOption(p)).join('&');
 	const named = new Set(options.map(o => o.split('=')[0]));
 
 	// format=auto is what turns the visitor's own Accept header into AVIF or
@@ -91,7 +142,9 @@ function transformed(path: string, authored: string, width?: number): string {
 	if (!named.has('format') && !named.has('f')) options.push('format=auto');
 	if (width && !named.has('width') && !named.has('w')) options.unshift(`width=${width}`);
 
-	return `/cdn-cgi/image/${options.join(',')}${path.startsWith('/') ? '' : '/'}${path}`;
+	return `/cdn-cgi/image/${options.join(',')}${path.startsWith('/') ? '' : '/'}${path}${
+		sourceQuery ? `?${sourceQuery}` : ''
+	}`;
 }
 
 export default function getSrcUrl(urlAny: any, options?: SrcUrlOptions) {
