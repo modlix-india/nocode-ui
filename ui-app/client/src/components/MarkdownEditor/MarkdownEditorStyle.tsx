@@ -124,6 +124,10 @@ export default function MarkdownEditorStyle({
 			cursor: pointer;
 			transition: background-color 0.2s;
 		  }
+
+		${PREFIX} ._filterPanel svg {
+			color: ${t('fontColorOne', '#000000')};
+		}
 		  
 		
 	
@@ -348,7 +352,7 @@ export default function MarkdownEditorStyle({
 			cursor: pointer;
 			text-align: left;
 			font-size: 12px;
-			color: rgba(0, 0, 0, 0.50);
+			color: ${t('fontColorTwo', 'rgba(0, 0, 0, 0.50)')};
 			border-radius: 40px;
 			transition: background-color 0.2s;
 			font-weight: 500;
