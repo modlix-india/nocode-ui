@@ -108,7 +108,11 @@ export class ThemeExtractor extends SpecialTokenValueExtractor {
 			}
 		}
 
-		return allTheme[parts[1]] ?? processStyleValueWithFunction(`<${parts[1]}>`, this.defaults!);
+		// A variable the theme does not set falls back to its RAW default, so a default
+		// that is a reference (validationMessageFontColor = `<errorColor>`) is resolved by
+		// getValueInternal against the merged theme, not against the catalog defaults.
+		// An unknown variable stays the empty string it always was.
+		return allTheme[parts[1]] ?? this.defaults!.get(parts[1]) ?? '';
 	}
 
 	getPrefix(): string {

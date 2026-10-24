@@ -8,7 +8,12 @@ jest.mock('../../components', () => ({
 }));
 jest.mock('../../App/appStyleProperties', () => ({
 	styleProperties: new Map(),
-	styleDefaults: new Map([['fontColorOne', '#111111']]),
+	styleDefaults: new Map([
+		['fontColorOne', '#111111'],
+		['errorColor', '#ed6a5e'],
+		['validationMessageFontColor', '<errorColor>'],
+		['focusRing', '0 0 0 2px rgba(0, 0, 0, 0.2), 0 0 0 4px <errorColor>'],
+	]),
 }));
 jest.mock('../../App/usedComponents', () => ({ usedComponents: { lastAdded: () => 1 } }));
 
@@ -59,6 +64,34 @@ describe('ThemeExtractor Theme.x', () => {
 			{ DESKTOP_SCREEN: true },
 		);
 		expect(t.getValue('Theme.panel')).toBe('#FBF6E9');
+	});
+
+	it('returns a variable the theme sets over its default', () => {
+		const t = extractor({ ALL: { validationMessageFontColor: '#00AA00', errorColor: '#C0362C' } });
+		expect(t.getValue('Theme.validationMessageFontColor')).toBe('#00AA00');
+	});
+
+	it('returns the plain default of a variable only the defaults set', () => {
+		const t = extractor({ ALL: { errorColor: '#C0362C' } });
+		expect(t.getValue('Theme.fontColorOne')).toBe('#111111');
+	});
+
+	it('resolves a default that references a variable the theme overrides against the theme', () => {
+		// validationMessageFontColor defaults to <errorColor>; it used to resolve against
+		// the catalog defaults (#ed6a5e) instead of the theme's own errorColor.
+		const t = extractor({ ALL: { errorColor: '#C0362C' } });
+		expect(t.getValue('Theme.validationMessageFontColor')).toBe('#C0362C');
+		expect(t.getValue('Theme.focusRing')).toBe('0 0 0 2px rgba(0, 0, 0, 0.2), 0 0 0 4px #C0362C');
+	});
+
+	it('resolves a referencing default against the defaults when the theme leaves both unset', () => {
+		const t = extractor({ ALL: {} });
+		expect(t.getValue('Theme.validationMessageFontColor')).toBe('#ed6a5e');
+	});
+
+	it('returns an empty string for a variable nobody defines', () => {
+		const t = extractor({ ALL: {} });
+		expect(t.getValue('Theme.noSuchVariable')).toBe('');
 	});
 
 	it('picks up a new theme object rather than a cached one', () => {
