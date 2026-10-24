@@ -98,3 +98,25 @@ it('sends the button pick from its chip', () => {
 		{ cta: 'WHATSAPP_MESSAGE' },
 	);
 });
+
+it('renders performance metrics on choices when available', () => {
+	const p = payload();
+	p.slots![0].choices = [
+		{
+			asset_id: 8,
+			name: 'top_performer.jpg',
+			shape: '1:1',
+			used: 3,
+			leads: 42,
+			cpl: 180,
+			currency: 'INR',
+			pick: 'pick:image:8',
+		},
+	];
+	act(() => {
+		root.render(<AdSlotCard payload={p} />);
+	});
+	const perfSpan = container.querySelector('._adPerf');
+	expect(perfSpan).not.toBeNull();
+	expect(perfSpan?.textContent).toBe('Used in 3 ads · 42 leads · ₹180 CPL');
+});

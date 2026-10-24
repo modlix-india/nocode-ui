@@ -1972,6 +1972,13 @@ export default function PromptStyle({
 			margin-top: 2px;
 		}
 
+		${PREFIX} ._adPerf {
+			color: ${t('primaryGreenColor', '#10b981')};
+			font-size: 11px;
+			font-weight: 500;
+			margin-top: 2px;
+		}
+
 		${PREFIX} ._adChoices {
 			display: flex;
 			gap: 8px;

@@ -14,6 +14,11 @@ export interface AdSlotPicture {
 	reason?: string;
 	/** May be absent when a picture has no asset_id yet — omitted by the backend in that case. */
 	pick?: string;
+	used?: number;
+	leads?: number;
+	cpl?: number;
+	currency?: string;
+	shared?: boolean;
 	read?: {
 		says?: string[];
 		prices?: string[];
@@ -133,6 +138,28 @@ function shapeToRatio(shape?: string): string {
 	return `${w} / ${h}`;
 }
 
+function performanceNote(picture: AdSlotPicture): string {
+	if (picture.leads === undefined || picture.leads === null) return '';
+	const parts: string[] = [];
+	if (picture.used) {
+		parts.push(`Used in ${picture.used} ad${picture.used === 1 ? '' : 's'}`);
+	}
+	parts.push(`${picture.leads} lead${picture.leads === 1 ? '' : 's'}`);
+	if (picture.cpl !== undefined && picture.cpl !== null && picture.cpl > 0) {
+		const symbol =
+			picture.currency === 'INR'
+				? '₹'
+				: picture.currency === 'USD'
+					? '$'
+					: `${picture.currency || ''} `;
+		parts.push(`${symbol}${picture.cpl} CPL`);
+	}
+	if (picture.shared) {
+		parts.push('(shared)');
+	}
+	return parts.join(' · ');
+}
+
 function readNote(picture: AdSlotPicture): string {
 	const read = picture.read;
 	if (!read) return '';
@@ -201,6 +228,9 @@ function SlotBlock({
 								{readNote(picture) ? (
 									<span className="_adRead">{readNote(picture)}</span>
 								) : null}
+								{performanceNote(picture) ? (
+									<span className="_adPerf">{performanceNote(picture)}</span>
+								) : null}
 							</div>
 						</div>
 					))}
@@ -234,6 +264,9 @@ function SlotBlock({
 								{shapeLabel(choice.shape) ||
 									`${choice.width || 0}×${choice.height || 0}`}
 							</span>
+							{performanceNote(choice) ? (
+								<span className="_adPerf">{performanceNote(choice)}</span>
+							) : null}
 						</button>
 					))}
 				</div>
