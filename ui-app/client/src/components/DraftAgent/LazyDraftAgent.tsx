@@ -17,6 +17,7 @@ import {
 	agentHeaders,
 	connectWithPopup,
 	disconnect,
+	dropUnfitSession,
 	findSession,
 	freshSession,
 	getAgentSession,
@@ -37,6 +38,7 @@ import {
 	toRunIn,
 	toDraftAgent,
 	toMode,
+	wantsDraftAppToken,
 	WINDOW_PATH,
 } from './draftAgentEnv';
 import { agentBaseUrl, toDraftMode } from '../Prompt/draftMode';
@@ -312,7 +314,12 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 	// Empty means AppBuilder's own AI mark (an inline SVG), not an icon-pack class.
 	const icon: string = props.draftAgentIcon || config.icon || '';
 
-	const [builderSession, setSession] = useState<AgentSession | undefined>(getAgentSession());
+	const [builderSession, setSession] = useState<AgentSession | undefined>(() => {
+		// A tab may hold a session from before this agent needed the draft app's own
+		// token (a cxlanding token for the CXZump agent): drop it so the bridge runs again.
+		if (!appMode) dropUnfitSession(appCode, agentName);
+		return getAgentSession();
+	});
 	const appSession = useMemo<AgentSession | undefined>(() => {
 		if (!appMode || !appAuth?.accessToken) return undefined;
 		const user = appAuth.user ?? {};
@@ -422,7 +429,7 @@ export function DraftAgentApp(config: Readonly<DraftAgentConfig>) {
 				b => b.origin === origin,
 			);
 			if (!builder) return;
-			const o = await connectWithPopup(builder, appCode);
+			const o = await connectWithPopup(builder, appCode, wantsDraftAppToken(agentName));
 			setTried(prev => [
 				...prev.filter(p => p.status === 'ok' || (p as any).origin !== origin),
 				o,

@@ -2,9 +2,13 @@ import {
 	BRIDGE_PATH,
 	BuilderOrigin,
 	MESSAGE_TYPE,
+	TOKEN_FOR_DRAFT_APP,
+	TOKEN_FOR_PARAM,
 	builderOrigins,
 	draftEnvOf,
 	DraftAgentName,
+	sessionFitsAgent,
+	wantsDraftAppToken,
 } from './draftAgentEnv';
 import type { BridgeReply } from './draftAgentBridge';
 
@@ -28,7 +32,11 @@ import type { BridgeReply } from './draftAgentBridge';
 export interface AgentSession {
 	accessToken: string;
 	expiresAt: number;
-	/** The builder app the token was issued for: `appbuilder`, `sitezump`, `leadzump`... */
+	/**
+	 * The app the token was issued for: the builder's (`appbuilder`, `sitezump`) for
+	 * the AppBuilder agent, the draft app itself (`leadzumptwo`, `cxzump`) for an
+	 * app's own agent.
+	 */
 	appCode: string;
 	clientCode: string;
 	userName: string;
@@ -101,6 +109,15 @@ export function setAgentSession(s: AgentSession | undefined) {
 	});
 }
 
+/**
+ * Forget a tab's cached session that cannot serve this agent on this draft (a
+ * token of another app, such as the cxlanding token an older bundle kept for the
+ * CXZump agent), so the bridge runs again and mints the right one.
+ */
+export function dropUnfitSession(draftApp: string, agent: DraftAgentName): void {
+	if (current && !sessionFitsAgent(current.appCode, draftApp, agent)) setAgentSession(undefined);
+}
+
 export function onAgentSession(fn: (s: AgentSession | undefined) => void): () => void {
 	listeners.add(fn);
 	return () => listeners.delete(fn);
@@ -112,13 +129,21 @@ function nonce(): string {
 	return Array.from(a, b => b.toString(16).padStart(2, '0')).join('');
 }
 
-export function bridgeUrl(origin: string, appCode: string, n: string, mode: 'frame' | 'popup') {
+export function bridgeUrl(
+	origin: string,
+	appCode: string,
+	n: string,
+	mode: 'frame' | 'popup',
+	forDraftApp = false,
+) {
 	const hash = new URLSearchParams({
 		parent: window.location.origin,
 		app: appCode,
 		nonce: n,
 		mode,
 	});
+	// Only added when wanted, so the AppBuilder agent's bridge URL is what it always was.
+	if (forDraftApp) hash.set(TOKEN_FOR_PARAM, TOKEN_FOR_DRAFT_APP);
 	return `${origin}${BRIDGE_PATH}#${hash.toString()}`;
 }
 
@@ -207,6 +232,8 @@ async function redeem(builder: BuilderOrigin, reply: BridgeReply): Promise<Probe
 function outcome(
 	builder: BuilderOrigin,
 	reply: BridgeReply | undefined,
+	appCode: string,
+	forDraftApp: boolean,
 ): Promise<ProbeOutcome> | ProbeOutcome {
 	if (!reply) return { status: 'timeout', origin: builder.origin, label: builder.label };
 	if (reply.status !== 'ok' || !reply.ott)
@@ -215,6 +242,15 @@ function outcome(
 			origin: builder.origin,
 			label: builder.label,
 			message: reply.message,
+		};
+	// A bridge on an older bundle ignores `token=app` and answers with its own app's
+	// token, which the app's own agent would refuse. Never redeem it.
+	if (forDraftApp && (reply.appCode ?? '').toLowerCase() !== appCode.toLowerCase())
+		return {
+			status: 'refused',
+			origin: builder.origin,
+			label: builder.label,
+			message: `${builder.label} answered for ${reply.appCode || 'another app'}, not ${appCode}.`,
 		};
 	return redeem(builder, reply);
 }
@@ -231,6 +267,7 @@ function outcome(
 export async function probeWithFrame(
 	builder: BuilderOrigin,
 	appCode: string,
+	forDraftApp = false,
 ): Promise<ProbeOutcome> {
 	const n = nonce();
 	const frame = document.createElement('iframe');
@@ -238,7 +275,7 @@ export async function probeWithFrame(
 	frame.tabIndex = -1;
 	frame.title = 'AI sign-in check';
 	frame.style.cssText = 'position:absolute;width:0;height:0;border:0;visibility:hidden';
-	frame.src = bridgeUrl(builder.origin, appCode, n, 'frame');
+	frame.src = bridgeUrl(builder.origin, appCode, n, 'frame', forDraftApp);
 	let loadedAt = 0;
 	frame.addEventListener('load', () => (loadedAt = Date.now()));
 	const waiting = awaitReply(
@@ -251,7 +288,7 @@ export async function probeWithFrame(
 	document.body.appendChild(frame);
 	const reply = await waiting;
 	frame.remove();
-	return outcome(builder, reply);
+	return outcome(builder, reply, appCode, forDraftApp);
 }
 
 /**
@@ -261,10 +298,11 @@ export async function probeWithFrame(
 export async function connectWithPopup(
 	builder: BuilderOrigin,
 	appCode: string,
+	forDraftApp = false,
 ): Promise<ProbeOutcome> {
 	const n = nonce();
 	const w = window.open(
-		bridgeUrl(builder.origin, appCode, n, 'popup'),
+		bridgeUrl(builder.origin, appCode, n, 'popup', forDraftApp),
 		'mlxDraftAgentConnect',
 		'popup=yes,width=460,height=560',
 	);
@@ -282,7 +320,7 @@ export async function connectWithPopup(
 		POPUP_TIMEOUT_MS,
 		() => w.closed,
 	);
-	return outcome(builder, reply);
+	return outcome(builder, reply, appCode, forDraftApp);
 }
 
 /**
@@ -301,7 +339,10 @@ export async function findSession(
 ): Promise<{ session?: AgentSession; tried: ProbeOutcome[] }> {
 	const env = draftEnvOf(window.location.hostname);
 	if (env === undefined) return { tried: [] };
-	const probes = builderOrigins(env, agent, hostOverride).map(b => probeWithFrame(b, appCode));
+	const forDraftApp = wantsDraftAppToken(agent);
+	const probes = builderOrigins(env, agent, hostOverride).map(b =>
+		probeWithFrame(b, appCode, forDraftApp),
+	);
 	const tried: ProbeOutcome[] = [];
 	// Walk in preference order: a success counts the moment every builder ahead of
 	// it has answered, without waiting on the ones behind it. Late successes behind

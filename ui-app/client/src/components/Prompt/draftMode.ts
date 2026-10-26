@@ -42,3 +42,12 @@ export function toDraftMode(value: any): DraftMode {
 export function agentBaseUrl(endpoint: string): string {
 	return (endpoint ?? '').split('?')[0].replace(/\/chat\/?$/, '');
 }
+
+/**
+ * The shared learning routes (`/api/ai/learning/...`) sit beside the agents, not under one:
+ * `/api/ai/leadzump/chat` gives `/api/ai/learning`. Only `/appbuilder` used to be stripped, so
+ * every other agent's ratings went to `/api/ai/<agent>/learning/feedback` and were lost (404).
+ */
+export function learningBaseUrl(endpoint: string): string {
+	return agentBaseUrl(endpoint).replace(/\/[^/]+\/?$/, '') + '/learning';
+}

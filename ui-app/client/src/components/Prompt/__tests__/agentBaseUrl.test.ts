@@ -1,4 +1,12 @@
-import { agentBaseUrl } from '../draftMode';
+import { agentBaseUrl, learningBaseUrl } from '../draftMode';
+
+describe('learningBaseUrl', () => {
+	it('points every agent at the shared learning routes', () => {
+		expect(learningBaseUrl('/api/ai/appbuilder/chat')).toBe('/api/ai/learning');
+		expect(learningBaseUrl('/api/ai/leadzump/chat?draftmode=false')).toBe('/api/ai/learning');
+		expect(learningBaseUrl('https://x.com/api/ai/cxzump/chat/')).toBe('https://x.com/api/ai/learning');
+	});
+});
 
 describe('agentBaseUrl', () => {
 	it('drops /chat and any query string', () => {

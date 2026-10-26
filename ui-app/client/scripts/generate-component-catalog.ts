@@ -1038,7 +1038,7 @@ const COMPONENT_BRIEFS: Record<string, string> = {
 		'Visual editor for KIRun function definitions with step-by-step flow builder. Internal/developer component.',
 	Link: 'Navigation link that routes to internal pages or external URLs. Renders as an anchor tag with styling.',
 	MarkdownEditor:
-		'Rich text editor that outputs Markdown. Toolbar with formatting buttons, preview mode, and syntax highlighting.',
+		'Block editor that stores Markdown. Type "/" for blocks, select text for the format toolbar, drag blocks by the handle; Edit, Markdown and Preview modes.',
 	MarkdownTOC:
 		'Auto-generated table of contents from Markdown headings. Updates dynamically as content changes.',
 	Menu: 'Navigation menu with nested sub-menus, icons, and horizontal/vertical orientation. Supports multi-level hierarchies.',
