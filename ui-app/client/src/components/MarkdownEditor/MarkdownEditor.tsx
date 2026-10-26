@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
-import { IconHelper } from '../util/IconHelper';
+import { Component, ComponentProps } from '../../types/common';
 import MarkdownEditorStyle from './MarkdownEditorStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './markdownEditorProperties';
 import { styleDefaults, stylePropertiesForTheme } from './markdownEditorStyleProperties';
@@ -19,9 +18,9 @@ function LoadLazyMarkdownEditor(props: Readonly<ComponentProps>) {
 const component: Component = {
 	name: 'MarkdownEditor',
 	displayName: 'Markdown Editor',
-	description: 'Markdown Editor',
+	description: 'Block editor that stores markdown: type "/" for blocks, select text to format it.',
 	component: LoadLazyMarkdownEditor,
-	propertyValidation: (props: ComponentPropertyDefinition): Array<string> => [],
+	propertyValidation: (): Array<string> => [],
 	properties: propertiesDefinition,
 	styleComponent: MarkdownEditorStyle,
 	styleDefaults: styleDefaults,

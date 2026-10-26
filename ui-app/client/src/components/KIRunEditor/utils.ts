@@ -59,13 +59,16 @@ export function savePersonalizationCurry(
 	locationHistory: Array<LocationHistory>,
 	pageDefinition: PageDefinition,
 ) {
-	if (!onChangePersonalization) return (key: string, value: any) => {};
 	let handle: any = -1;
 
+	// The store is written whether or not the page persists it: the editor reads its toggles back
+	// from this path, so without the write a page with no On Personalization Change event (the
+	// public playground) had toggles that did nothing.
 	return (key: string, value: any) => {
-		if (handle !== -1) clearTimeout(handle);
-
 		setData(`${personalizationPath}.${key}`, value, pageName);
+		if (!onChangePersonalization) return;
+
+		if (handle !== -1) clearTimeout(handle);
 		handle = setTimeout(() => {
 			if (typeof onChangePersonalization == 'function') {
 				onChangePersonalization();
@@ -83,3 +86,24 @@ export function savePersonalizationCurry(
 		}, 2000);
 	};
 }
+
+/**
+ * The editor's view toggles before the user has touched them, from the component properties.
+ *
+ * kirun-ui keeps both in the personalization, with opposite senses for historical reasons:
+ * `showParamValues` true shows each step's parameter values (expressions); `showStores` true HIDES
+ * the store nodes. A value the user saved always wins.
+ */
+export function withDefaultPreferences(
+	preference: any,
+	{ showExpressions, showStores }: { showExpressions?: boolean; showStores?: boolean },
+): any {
+	const out = { ...(preference ?? {}) };
+	if (out.showParamValues === undefined && showExpressions !== undefined)
+		out.showParamValues = !!showExpressions;
+	if (out.showStores === undefined && showStores !== undefined) out.showStores = !showStores;
+	return out;
+}
+
+/** The stores a page-side editor offers when the host passes none (the page editor passes these). */
+export const PAGE_STORES = ['Store', 'Page', 'Theme', 'LocalStore'];

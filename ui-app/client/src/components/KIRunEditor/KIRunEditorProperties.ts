@@ -55,6 +55,59 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Client Code for Remote Repositories',
 		group: ComponentPropertyGroup.BASIC,
 	},
+	{
+		name: 'debugViewMode',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Trace',
+		description:
+			'Read-only trace view: each step shows what it received and returned in the run bound to Execution Log (for example the log from UIEngine.RunKIRun).',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
+		name: 'defaultTheme',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Default Theme',
+		description:
+			"Theme the editor starts with: light, dark, high-contrast, easy-on-eyes or flared-up. Any other name (for example 'app') uses the app theme's Editor Palette instead.",
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'showThemeSelector',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Theme Selector',
+		description:
+			"Show the theme picker in the editor header. When off, the user's saved theme is ignored and Default Theme always applies.",
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: true,
+	},
+	{
+		name: 'showExpressions',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Expressions',
+		description:
+			"Show each step's parameter values and expressions on the graph until the user changes it with the toolbar toggle.",
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: true,
+	},
+	{
+		name: 'showStores',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Stores',
+		description:
+			'Show the store nodes (Page, Store, LocalStore, Theme) and their lines on the graph until the user changes it with the toolbar toggle.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
+		name: 'allowLightbox',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Allow Lightbox',
+		description:
+			'Show an expand icon in the editor header that opens it large over a dimmed page; Esc or a click outside closes it.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

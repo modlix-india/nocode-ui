@@ -36,8 +36,9 @@ export function parseTextLine(params: MarkdownParserParameters): MarkdownParserR
 	} else if (
 		line.startsWith('#') ||
 		line.startsWith('\\#') ||
-		nextLine.startsWith('---') ||
-		nextLine.startsWith('===')
+		// A setext underline needs text above it: after a blank line, `---`
+		// is a horizontal rule, not the underline of an empty heading.
+		(line.trim() !== '' && (nextLine.startsWith('---') || nextLine.startsWith('===')))
 	) {
 		({ lineNumber, comp } = parseHeaderLine(params));
 	} else if (HR_REGEX.test(line)) {

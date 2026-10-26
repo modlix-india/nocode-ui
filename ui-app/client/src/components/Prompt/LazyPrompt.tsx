@@ -46,7 +46,7 @@ import {
 	matchDescriptor,
 	snapshotBaseline,
 } from './openDrafts';
-import { agentBaseUrl, toDraftMode } from './draftMode';
+import { agentBaseUrl, learningBaseUrl, toDraftMode } from './draftMode';
 import { startDragShield } from '../../functions/utils';
 
 interface Message {
@@ -3315,8 +3315,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			);
 
 			try {
-				const baseUrl = agentBaseUrl(agentEndpoint).replace(/\/appbuilder$/, '');
-				await fetch(`${baseUrl}/learning/feedback`, {
+				await fetch(`${learningBaseUrl(agentEndpoint)}/feedback`, {
 					method: 'POST',
 					headers: getAuthHeaders(),
 					body: JSON.stringify({
