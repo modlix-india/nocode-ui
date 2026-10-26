@@ -33,7 +33,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Run in',
 		description:
-			"Draft run: only on the app's draft host, signed in as the builder (AppBuilder, SiteZump or LeadZump), never as the app's user. Live run: only on the live app, signed in as whoever is using it, talking to the agent named below. Each is hidden on the other surface.",
+			"Draft run: only on the app's draft host, signed in as the builder (AppBuilder, SiteZump, LeadZump or CXZump's cxzump.ai), never as the app's user. An app's own agent (LeadZump, CXZump) gets a token of the draft app itself. Live run: only on the live app, signed in as whoever is using it, talking to the agent named below. Each is hidden on the other surface.",
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'draft',
 		editor: ComponentPropertyEditor.ENUM,
@@ -47,7 +47,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Agent',
 		description:
-			"The agent's name. Live run: called at /api/ai/<name>/chat with this app's own sign-in, e.g. leadzump, appbuilder, adzump2; the agent must admit this app. Draft run: appbuilder or leadzump; empty uses the app's draftAgent setting, then appbuilder.",
+			"The agent's name. Live run: called at /api/ai/<name>/chat with this app's own sign-in, e.g. leadzump, appbuilder, adzump2; the agent must admit this app. Draft run: appbuilder, leadzump or cxzump; empty uses the app's draftAgent setting, then appbuilder.",
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
