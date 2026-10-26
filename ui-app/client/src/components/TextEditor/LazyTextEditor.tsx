@@ -1,6 +1,6 @@
 import { deepEqual } from '@fincity/kirun-js';
 import Editor from '@monaco-editor/react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
 	getPathFromLocation,
@@ -12,6 +12,7 @@ import { ComponentProps } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
+import { APP_THEME_NAME, readAppTheme, watchHostStyles } from './appMonacoTheme';
 import { propertiesDefinition, stylePropertiesDefinition } from './textEditorProperties';
 
 export default function LazyTextEditor(props: Readonly<ComponentProps>) {
@@ -25,7 +26,7 @@ export default function LazyTextEditor(props: Readonly<ComponentProps>) {
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		key,
-		properties: { documentType } = {},
+		properties: { documentType, editorTheme = 'light', readOnly } = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
 		definition,
@@ -41,6 +42,25 @@ export default function LazyTextEditor(props: Readonly<ComponentProps>) {
 		: undefined;
 
 	const editorRef = useRef<any>(null);
+	const monacoRef = useRef<any>(null);
+	const rootRef = useRef<HTMLDivElement>(null);
+	const isAppTheme = editorTheme === 'app';
+
+	// The app theme is rebuilt from the Editor Palette variables now and whenever the page's
+	// styles change; Monaco cannot follow CSS variables on its own.
+	const applyAppTheme = useCallback(() => {
+		const monaco = monacoRef.current;
+		if (!monaco || !rootRef.current) return;
+		const { theme, fontFamily } = readAppTheme(rootRef.current);
+		monaco.editor.defineTheme(APP_THEME_NAME, theme);
+		monaco.editor.setTheme(APP_THEME_NAME);
+		if (fontFamily) editorRef.current?.updateOptions({ fontFamily });
+	}, []);
+	useEffect(() => {
+		if (!isAppTheme) return;
+		applyAppTheme();
+		return watchHostStyles(applyAppTheme);
+	}, [isAppTheme, applyAppTheme]);
 	const editorJSONTextRef = useRef<string>('');
 	const [_, setNow] = useState(Date.now());
 	const datInStoreRef = useRef<any>(undefined);
@@ -113,15 +133,23 @@ export default function LazyTextEditor(props: Readonly<ComponentProps>) {
 	);
 
 	return (
-		<div className="comp compTextEditor" style={resolvedStyles.comp ?? {}}>
+		<div
+			ref={rootRef}
+			className={`comp compTextEditor${isAppTheme ? ' _appTheme' : ''}`}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			<Editor
 				language={documentType}
 				height="100%"
 				defaultValue={''}
+				theme={isAppTheme ? APP_THEME_NAME : editorTheme}
+				options={{ readOnly: !!readOnly }}
 				onChange={handleChange}
-				onMount={editor => {
+				onMount={(editor, monaco) => {
 					editorRef.current = editor;
+					monacoRef.current = monaco;
+					if (isAppTheme) applyAppTheme();
 					setNow(Date.now());
 				}}
 			/>

@@ -29,6 +29,7 @@ const component: Component = {
 	bindingPaths: {
 		bindingPath: { name: 'Function Binding' },
 		bindingPath2: { name: 'Personalization' },
+		bindingPath3: { name: 'Execution Log' },
 	},
 	stylePropertiesForTheme: styleProperties,
 };

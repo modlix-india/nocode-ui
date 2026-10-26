@@ -114,8 +114,14 @@ export function builderOrigins(
 	if (agent === 'leadzump') return [named('leadzump.ai', 'LeadZump')];
 
 	// CXZump itself runs on each builder's own domain. Builders sign in on cxzump.ai,
-	// which serves cxlanding: the self-serve app they manage CXZump from.
-	if (agent === 'cxzump') return [named('cxzump.ai', 'CXZump')];
+	// which serves cxlanding: the self-serve app they manage CXZump from. The local
+	// stack has no cxzump.ai host (nothing resolves local.cxzump.ai), so local signs in
+	// on cxlanding's own modlix.com host instead. Kept here rather than in the app's
+	// `draftAgentHost`, because that property travels with a transport to every env.
+	if (agent === 'cxzump')
+		return env === 'local'
+			? [named('cxlanding.local.modlix.com', 'CXZump')]
+			: [named('cxzump.ai', 'CXZump')];
 
 	return [named('appbuilder.modlix.com', 'AppBuilder'), named('sitezump.ai', 'SiteZump')];
 }
@@ -180,6 +186,56 @@ export const AGENTS: Record<DraftAgentName, AgentConfig> = {
 	leadzump: { endpoint: '/api/ai/leadzump/chat', appCodeHeader: 'draftApp', title: 'LeadZump' },
 	cxzump: { endpoint: '/api/ai/cxzump/chat', appCodeHeader: 'draftApp', title: 'CXZump' },
 };
+
+/**
+ * Bridge hash parameter asking for a token of the DRAFT app rather than of the
+ * builder session's own app. Value {@link TOKEN_FOR_DRAFT_APP}; absent means the
+ * session's app, which is what every bridge did before it existed.
+ */
+export const TOKEN_FOR_PARAM = 'token';
+export const TOKEN_FOR_DRAFT_APP = 'app';
+
+/**
+ * Whether this agent needs a token of the draft app itself.
+ *
+ * The agents that admit only their own app (LeadZump, CXZump) work that app's
+ * server functions, whose authorities follow the token's app. Their builders may
+ * sign in on another app: CXZump builders sign in on cxlanding (cxzump.ai), so a
+ * cxlanding token would carry cxlanding's profiles and every CxZump call would be
+ * refused. The AppBuilder agent admits only the builder apps, so it keeps the
+ * builder's token.
+ */
+export function wantsDraftAppToken(agent: DraftAgentName): boolean {
+	return AGENTS[agent]?.appCodeHeader === 'draftApp';
+}
+
+/**
+ * The app the bridge mints its one-time token for.
+ *
+ * The draft app when asked for it, else the session's own app. Security mints a
+ * token for another app only when the two apps depend on each other (either
+ * direction; `makeOneTimeToken`), so cxlanding (which depends on cxzump) can mint
+ * for cxzump and an unrelated app is refused there, not here. When the draft app IS
+ * the session's app (LeadZump on leadzump.ai) nothing changes.
+ */
+export function tokenAppCode(sessionApp: string, draftApp: string, wantDraftApp: boolean): string {
+	const draft = (draftApp ?? '').trim();
+	return wantDraftApp && draft ? draft : (sessionApp ?? '');
+}
+
+/**
+ * Whether a session (cached for the tab, or just redeemed) can serve this agent on
+ * this draft: an agent that needs the draft app's token cannot use one of another
+ * app, such as a cxlanding token cached by an older bundle.
+ */
+export function sessionFitsAgent(
+	sessionApp: string | undefined,
+	draftApp: string,
+	agent: DraftAgentName,
+): boolean {
+	if (!wantsDraftAppToken(agent)) return true;
+	return (sessionApp ?? '').toLowerCase() === (draftApp ?? '').toLowerCase();
+}
 
 export type DraftAgentMode = 'left' | 'right' | 'compact' | 'button' | 'window';
 

@@ -8,8 +8,11 @@ import {
 	hostForEnv,
 	hostOfPattern,
 	isAllowedParent,
+	sessionFitsAgent,
 	toDraftAgent,
+	tokenAppCode,
 	toMode,
+	wantsDraftAppToken,
 } from '../draftAgentEnv';
 import { refreshActionFor } from '../draftAgentRefresh';
 import { parseSSE, tailOf } from '../draftAgentStream';
@@ -79,6 +82,22 @@ describe('builderOrigins', () => {
 			'https://dev.leadzump.ai',
 		]);
 		expect(builderOrigins('', 'leadzump').map(b => b.origin)).toEqual(['https://leadzump.ai']);
+	});
+	it('signs the CXZump agent in on cxzump.ai, and on cxlanding locally', () => {
+		expect(builderOrigins('dev', 'cxzump').map(b => b.origin)).toEqual([
+			'https://dev.cxzump.ai',
+		]);
+		expect(builderOrigins('stage', 'cxzump').map(b => b.origin)).toEqual([
+			'https://stage.cxzump.ai',
+		]);
+		expect(builderOrigins('', 'cxzump').map(b => b.origin)).toEqual(['https://cxzump.ai']);
+		// The local stack resolves no local.cxzump.ai.
+		expect(builderOrigins('local', 'cxzump').map(b => b.origin)).toEqual([
+			'https://cxlanding.local.modlix.com',
+		]);
+		expect(
+			builderOrigins('local', 'cxzump', 'cx.<env.>example.com').map(b => b.origin),
+		).toEqual(['https://cx.local.example.com']);
 	});
 	it('takes an explicit host over both', () => {
 		expect(builderOrigins('stage', 'leadzump', 'crm.example.com').map(b => b.origin)).toEqual([
@@ -203,5 +222,35 @@ describe('run in draft or live', () => {
 		expect(liveAgentEndpoint(' AdZump2 ')).toBe('/api/ai/adzump2/chat?draftmode=false');
 		expect(liveAgentEndpoint('../security/x')).toBe('/api/ai/appbuilder/chat?draftmode=false');
 		expect(liveAgentEndpoint('')).toBe('/api/ai/appbuilder/chat?draftmode=false');
+	});
+});
+
+describe('which app the bridge mints for', () => {
+	it('asks for the draft app only for the agents that admit their own app', () => {
+		expect(wantsDraftAppToken('appbuilder')).toBe(false);
+		expect(wantsDraftAppToken('leadzump')).toBe(true);
+		expect(wantsDraftAppToken('cxzump')).toBe(true);
+	});
+	it('mints for the draft app when asked, else the session app', () => {
+		// CXZump: a builder signed in on cxlanding gets a cxzump token.
+		expect(tokenAppCode('cxlanding', 'cxzump', true)).toBe('cxzump');
+		// AppBuilder: unchanged, the builder's own app.
+		expect(tokenAppCode('appbuilder', 'crumbcob', false)).toBe('appbuilder');
+		expect(tokenAppCode('sitezump', 'crumbcob', false)).toBe('sitezump');
+		// LeadZump: the builder host is the app itself, so nothing changes.
+		expect(tokenAppCode('leadzumptwo', 'leadzumptwo', true)).toBe('leadzumptwo');
+		// Asked without a draft app: the session's app, never an empty target.
+		expect(tokenAppCode('cxlanding', '', true)).toBe('cxlanding');
+		expect(tokenAppCode('cxlanding', '  ', true)).toBe('cxlanding');
+	});
+	it('keeps a session only when it can serve the agent', () => {
+		expect(sessionFitsAgent('cxlanding', 'cxzump', 'cxzump')).toBe(false);
+		expect(sessionFitsAgent('cxzump', 'cxzump', 'cxzump')).toBe(true);
+		expect(sessionFitsAgent('CXZUMP', 'cxzump', 'cxzump')).toBe(true);
+		expect(sessionFitsAgent(undefined, 'cxzump', 'cxzump')).toBe(false);
+		expect(sessionFitsAgent('leadzumptwo', 'leadzumptwo', 'leadzump')).toBe(true);
+		// The AppBuilder agent runs on the builder's token, whatever the draft app.
+		expect(sessionFitsAgent('appbuilder', 'crumbcob', 'appbuilder')).toBe(true);
+		expect(sessionFitsAgent('sitezump', 'crumbcob', 'appbuilder')).toBe(true);
 	});
 });
