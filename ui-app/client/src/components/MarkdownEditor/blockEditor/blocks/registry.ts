@@ -209,7 +209,7 @@ export const blockDefinitions: BlockDefinition[] = [
 		labelKey: 'block.image.label',
 		descriptionKey: 'block.image.description',
 		shortcut: undefined,
-		keywords: ['image', 'photo', 'picture', 'img'],
+		keywords: ['image', 'photo', 'picture', 'img', 'screenshot', 'upload', 'file'],
 		hasContent: false,
 	},
 	{

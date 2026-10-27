@@ -8,6 +8,11 @@ export default function TagsStyle({
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
 	const css =
 		`
+		/*
+		 * A chip is one line: it keeps its height, never grows taller than the
+		 * row, and a long name ends in an ellipsis (the full name is the
+		 * tooltip). Chips that do not fit wrap onto the next row whole.
+		 */
 		${PREFIX} .container{
 			display: flex;
 			flex-direction: row;
@@ -16,6 +21,14 @@ export default function TagsStyle({
 			padding: 5px;
 			cursor:pointer;
 			position: relative;
+			box-sizing: border-box;
+			flex: 0 1 auto;
+			min-width: 0;
+		}
+
+		${PREFIX} .container .closeButton,
+		${PREFIX} .container .iconCss{
+			flex-shrink: 0;
 		}
 
 		/*
@@ -40,9 +53,12 @@ export default function TagsStyle({
 		${PREFIX} .tagcontainerWithInput{
 			display: flex;
 			flex-wrap: wrap;
+			align-items: center;
 			overflow: auto;
 			gap:5px;
 			position: relative;
+			max-width: 100%;
+			box-sizing: border-box;
 	    }
 
 		${PREFIX} .tagContainer {
@@ -80,6 +96,8 @@ export default function TagsStyle({
 		${PREFIX} .text{
 			overflow: hidden;
 			text-overflow: ellipsis;
+			white-space: nowrap;
+			min-width: 0;
 			position: relative;
 		}
 

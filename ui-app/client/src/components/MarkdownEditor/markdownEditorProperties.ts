@@ -124,10 +124,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'pastedFilesStorage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Storage for added pictures',
+		description:
+			'Where pictures added to the editor (pasted, dropped or uploaded from the Image block) are stored. Static files are public; secured files are shown only to signed in users who may read the folder.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'STATIC',
+		enumValues: [
+			{ name: 'STATIC', displayName: 'Static (public)' },
+			{ name: 'SECURED', displayName: 'Secured (signed in users only)' },
+		],
+	},
+	{
 		name: 'pathForPastedFiles',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Static path to store pasted files',
-		description: 'Static path where pasted and dropped images are uploaded',
+		displayName: 'Folder for added pictures',
+		description:
+			'Folder, in the storage chosen above, where pasted, dropped and uploaded pictures go',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: '/mdPastedFiles',
 	},

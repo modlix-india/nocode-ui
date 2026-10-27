@@ -252,6 +252,17 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		// What a word on screen means, shown on hover: "Done when" explains itself
+		// to someone who has never used a tracker. Wins over Remove Tooltip, which
+		// only drops the echo of the text itself.
+		name: 'tooltip',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tooltip',
+		group: ComponentPropertyGroup.ADVANCED,
+		description: 'Text shown on hover instead of the text itself, e.g. what a word means.',
+		translatable: true,
+	},
+	{
 		name: 'textColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Text Color Scheme',

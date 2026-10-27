@@ -797,7 +797,7 @@ function getDialCode(countryList: DropdownOptions, value: string) {
 	return dc;
 }
 
-function getSelectedCountry(
+export function getSelectedCountry(
 	countryList: DropdownOptions,
 	countryMap: Map<string, DropdownOption>,
 	value: string,
@@ -816,7 +816,9 @@ function getSelectedCountry(
 		}
 	}
 	if (countryMap.has(dc)) return countryMap.get(dc);
-	return temp[0];
+	// No area code matched and none picked by hand: the dial code's main country (the one with no
+	// area-code list, e.g. United States for +1), not whichever sorts first (Canada).
+	return temp.find(e => !e.A?.length) ?? temp[0];
 }
 
 function getUnformattedNumber(text: string | undefined) {
