@@ -22,6 +22,8 @@ import {
 	propertiesDefinition,
 	stylePropertiesDefinition,
 } from './markdownEditorProperties';
+import type { MentionProvider } from './blockEditor/features/mention-types';
+import { peopleForMentions, peopleMentionProvider } from './mentionPeople';
 import { uploadPastedFile } from './uploadPastedFile';
 
 type Mode = 'editDoc' | 'editText' | 'preview';
@@ -117,6 +119,7 @@ export default function MarkdownEditor(props: Readonly<ComponentProps>) {
 			placeholder,
 			blockTypes,
 			readOnlyView,
+			mentionPeople,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -145,6 +148,14 @@ export default function MarkdownEditor(props: Readonly<ComponentProps>) {
 				? blockTypes
 				: DEFAULT_BLOCK_TYPES) as BlockType[],
 		[Array.isArray(blockTypes) ? blockTypes.join(',') : ''],
+	);
+
+	const people = peopleForMentions(mentionPeople);
+	// A string key, so a new array with the same people keeps the same provider.
+	const peopleKey = people.map(p => `${p.id}:${p.label}`).join('|');
+	const mentionProviders = useMemo<MentionProvider[] | undefined>(
+		() => (people.length ? [peopleMentionProvider(people)] : undefined),
+		[peopleKey],
 	);
 
 	const bindingPathPath = bindingPath
@@ -335,6 +346,7 @@ export default function MarkdownEditor(props: Readonly<ComponentProps>) {
 					allowedBlockTypes={allowedBlockTypes}
 					markdownSafe
 					onImageUpload={handleImageUpload}
+					mentionProviders={mentionProviders}
 					hideHeadingRail
 				/>
 			</div>

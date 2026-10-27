@@ -17,7 +17,7 @@ import type {
 	Selection,
 	TextSpan,
 } from './types';
-import { createBlock, generateId, getTextLength } from './types';
+import { createBlock, generateId, getPlainText, getTextLength } from './types';
 import {
 	deleteTextInContent,
 	findBlock,
@@ -894,7 +894,14 @@ export function insertMention(
 		text: label,
 		marks: [{ type: 'mention', attrs: { kind, id } }],
 	};
-	const newContent = mergeAdjacentSpans([...before, mentionSpan, ...after]);
+	// A space after the pill, unless one follows already, so typing goes on as text.
+	const spaced = /^\s/.test(getPlainText(after)) ? 0 : 1;
+	const newContent = mergeAdjacentSpans([
+		...before,
+		mentionSpan,
+		...(spaced ? [{ text: ' ' }] : []),
+		...after,
+	]);
 
 	const oldContent = block.content;
 	const newDoc = updateBlock(doc, blockId, b => ({
@@ -903,9 +910,10 @@ export function insertMention(
 	}));
 
 	const op: Operation = { type: 'replaceContent', blockId, oldContent, newContent };
+	const caret = from + label.length + spaced;
 	const selection: Selection = {
-		anchor: { blockId, offset: from + label.length },
-		focus: { blockId, offset: from + label.length },
+		anchor: { blockId, offset: caret },
+		focus: { blockId, offset: caret },
 	};
 
 	return { doc: newDoc, ops: [op], selection };

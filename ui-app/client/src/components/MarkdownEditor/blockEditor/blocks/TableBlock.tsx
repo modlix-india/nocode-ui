@@ -1618,10 +1618,20 @@ export function TableBlock({ block, readOnly }: { block: Block; readOnly?: boole
 	// ---- Template Picker (shown when table is empty) ----
 	const isAllEmpty = data.every(row => row.every(cell => cell === ''));
 
+	// A table wider than the editor scrolls sideways inside its own block instead of running
+	// past the editor (and over whatever sits beside it). While a menu is open the block lets
+	// it hang out, since a scroll box would clip the menu.
+	const menuOpen = !!menu || !!cellMenu || showTemplates;
+
 	return (
 		<div
 			ref={tableRef}
-			style={{ margin: '8px 0', position: 'relative' }}
+			style={{
+				margin: '8px 0',
+				position: 'relative',
+				maxWidth: '100%',
+				overflowX: menuOpen ? 'visible' : 'auto',
+			}}
 			contentEditable={false}
 			data-table-block
 			onBlur={e => {
