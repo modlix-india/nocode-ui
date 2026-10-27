@@ -66,6 +66,16 @@ export default function LabelStyle({
 		justify-content: center;
 	}
 
+	/* A person mentioned in markdown ([@Name](mde://user/<id>)): a tinted chip in the text colour. */
+	${PREFIX} ._mention {
+		display: inline;
+		padding: 0 4px;
+		border-radius: 4px;
+		font-weight: 500;
+		white-space: nowrap;
+		background-color: color-mix(in srgb, currentColor 10%, transparent);
+	}
+
 	${PREFIX} ._textContainer {
 		width: 100%;
 		display: block;
