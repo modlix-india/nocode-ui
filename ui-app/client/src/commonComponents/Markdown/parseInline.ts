@@ -323,6 +323,11 @@ function processImageLink(
 	const isVideo =
 		lowerURL.endsWith('.mov') || lowerURL.endsWith('.mp4') || lowerURL.endsWith('.webm');
 	const src = resolveMarkdownAssetUrl(linkParts.url, params.location);
+	// A picture sized with {width=.. height=..} (the editor writes the pixel
+	// size it was pasted at) still fits a narrow column: the size is the most it
+	// grows to, and the height follows the width. A page style wins over this.
+	if (!isVideo && attrs?.width)
+		style = { maxWidth: '100%', ...(attrs.height ? { height: 'auto' } : {}), ...(style ?? {}) };
 	const mediaProps = {
 		key: cyrb53(`${actualLine}-${lineNumber}-${i}`),
 		src,

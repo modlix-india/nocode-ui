@@ -138,6 +138,13 @@ describe('markdown view', () => {
 		expect((img.props as any).src).toContain('api/files/secured/file/SYSTEM/loopzump/items');
 	});
 
+	test('a sized picture still fits a narrow column', () => {
+		const [img] = images(`![image.png](${SECURED}){width="1236" height="1343"}`);
+		expect((img.props as any).style).toEqual({ maxWidth: '100%', height: 'auto' });
+		const [plain] = images(`![image.png](${STATIC})`);
+		expect((plain.props as any).style).toBeUndefined();
+	});
+
 	test('a static picture is still a plain img', () => {
 		const [img] = images(`![image.png](${STATIC}){width="10" height="20"}`);
 		expect(img.type).toBe('img');
