@@ -43,6 +43,7 @@ export default function Tags(props: Readonly<ComponentProps>) {
 			placeHolder,
 			label,
 			analyticsLabel,
+			onChange,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -97,20 +98,35 @@ export default function Tags(props: Readonly<ComponentProps>) {
 		stylePropertiesWithPseudoStates,
 	);
 
+	const onChangeEvent = onChange ? props.pageDefinition.eventFunctions?.[onChange] : undefined;
+
+	// Runs after the store holds the new list, so the event sees it.
+	const runChangeEvent = () => {
+		if (readOnly || !onChangeEvent) return;
+		(async () =>
+			await runEvent(
+				onChangeEvent,
+				key,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			))();
+	};
+
 	const handleKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === delimitter) {
+			const added =
+				inputData
+					?.trim()
+					?.split(delimitter)
+					?.filter(e => !!e) ?? [];
 			setData(
 				bindingPathPath!,
-				[
-					...(Array.isArray(value) ? value : []),
-					...(inputData
-						?.trim()
-						?.split(delimitter)
-						?.filter(e => !!e) ?? []),
-				],
+				[...(Array.isArray(value) ? value : []), ...added],
 				context.pageName,
 			);
 			setInputData('');
+			if (added.length) runChangeEvent();
 		}
 	};
 
@@ -126,6 +142,7 @@ export default function Tags(props: Readonly<ComponentProps>) {
 			delete data[originalKey];
 			setData(bindingPathPath!, data, context.pageName);
 		}
+		runChangeEvent();
 		if (!readOnly && onCloseEvent) {
 			(async () =>
 				await runEvent(

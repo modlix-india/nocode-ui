@@ -2,6 +2,7 @@ import { Schema } from '@fincity/kirun-js';
 import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
@@ -43,6 +44,31 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			},
 		],
 	},
+	{
+		name: 'editorTheme',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Editor Theme',
+		description:
+			"Monaco's colours: light (the default), vs-dark, hc-black, or app to take them from the app theme's Editor Palette, following a light/dark switch.",
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'light',
+		enumValues: [
+			{ name: 'light', displayName: 'Light', description: "Monaco's light theme" },
+			{ name: 'vs-dark', displayName: 'Dark', description: "Monaco's dark theme" },
+			{
+				name: 'hc-black',
+				displayName: 'High Contrast',
+				description: "Monaco's high-contrast theme",
+			},
+			{
+				name: 'app',
+				displayName: 'App theme',
+				description: "The app theme's Editor Palette",
+			},
+		],
+	},
+	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];
 

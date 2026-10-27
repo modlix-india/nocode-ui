@@ -45,6 +45,7 @@ function Text(props: Readonly<ComponentProps>) {
 			textColor,
 			designType,
 			removeToolTip,
+			tooltip,
 			textSuffix,
 			textPrefix,
 			luxonFormat,
@@ -174,7 +175,13 @@ function Text(props: Readonly<ComponentProps>) {
 		<div
 			className={`comp compText ${textContainer} ${textColor}`}
 			style={styleProperties.comp ?? {}}
-			title={removeToolTip ? undefined : originalText}
+			title={
+				tooltip
+					? getTranslations(tooltip, translations)
+					: removeToolTip
+						? undefined
+						: originalText
+			}
 		>
 			{comp}
 			<HelperComponent context={props.context} definition={definition} />

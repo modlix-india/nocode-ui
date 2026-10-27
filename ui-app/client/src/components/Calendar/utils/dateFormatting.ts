@@ -72,8 +72,14 @@ export function getValidDate(
 
 	if (!datePart) return undefined;
 
-	let [day, month, year] = datePart.split('/').map(e => parseInt(e, 10));
-	if (dateFormat.startsWith('MM')) [day, month] = [month, day];
+	let day: number, month: number, year: number;
+	if (dateFormat.startsWith('YYYY')) {
+		// Year first (YYYY-MM-DD or YYYY/MM/DD): toFormat already writes these, so read them back too.
+		[year, month, day] = datePart.split(/[-/]/).map(e => parseInt(e, 10));
+	} else {
+		[day, month, year] = datePart.split('/').map(e => parseInt(e, 10));
+		if (dateFormat.startsWith('MM')) [day, month] = [month, day];
+	}
 
 	if (year < 1000 || year > 9999) return undefined;
 	if (month < 1 || month > 12) return undefined;

@@ -77,6 +77,10 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.labelKeyType,
 	COMMON_COMPONENT_PROPERTIES.uniqueKey,
 	COMMON_COMPONENT_PROPERTIES.labelKey,
+	{
+		...COMMON_COMPONENT_PROPERTIES.onChange,
+		description: 'Event triggered when a tag is added or removed.',
+	},
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,
 ];

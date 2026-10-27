@@ -1,8 +1,16 @@
-import { BRIDGE_PATH, MESSAGE_TYPE, hostOfPattern, isAllowedParent } from './draftAgentEnv';
+import {
+	BRIDGE_PATH,
+	MESSAGE_TYPE,
+	TOKEN_FOR_DRAFT_APP,
+	TOKEN_FOR_PARAM,
+	hostOfPattern,
+	isAllowedParent,
+	tokenAppCode,
+} from './draftAgentEnv';
 
 /**
  * The builder half of the draft agent's sign-in: runs on the builder's origin
- * (AppBuilder, SiteZump, LeadZump, or whatever host the app names) inside a
+ * (AppBuilder, SiteZump, LeadZump, cxzump.ai, or whatever host the app names) inside a
  * hidden iframe or a small popup opened by a draft page.
  *
  * It holds the builder session, and it never sends that session anywhere. What
@@ -19,6 +27,13 @@ import { BRIDGE_PATH, MESSAGE_TYPE, hostOfPattern, isAllowedParent } from './dra
  *    app, and only with the caller's own client's draft, so a platform admin
  *    browsing a tenant's draft is never silently signed in to it: that host is not
  *    theirs, and the tenant's page code would otherwise be handed their session.
+ *
+ * Which app the token is for: the session's own app, unless the draft page asks
+ * for the draft app (`#token=app`, sent for the agents that admit only their own
+ * app). A CXZump builder signs in on cxlanding (cxzump.ai), and the CXZump agent
+ * needs a cxzump token, because authorities follow the token's app. Security mints
+ * a token for another app only when the two apps depend on each other, so this is
+ * no wider than what the session could already ask security for itself.
  *
  * Deliberately plain fetch and no store: this page renders nothing of the app,
  * and must not touch the builder's own storage beyond reading the token.
@@ -40,7 +55,7 @@ export interface BridgeReply {
 	nonce: string;
 	status: BridgeStatus;
 	ott?: string;
-	/** The builder app the session belongs to; the redeem must name it as `appCode`. */
+	/** The app the token was minted for (the builder's, or the draft app's when asked); the redeem must name it as `appCode`. */
 	appCode?: string;
 	clientCode?: string;
 	userName?: string;
@@ -77,6 +92,7 @@ export async function runDraftAgentBridge(): Promise<void> {
 	const appCode = params.get('app') ?? '';
 	const nonce = params.get('nonce') ?? '';
 	const popup = params.get('mode') === 'popup';
+	const forDraftApp = params.get(TOKEN_FOR_PARAM) === TOKEN_FOR_DRAFT_APP;
 	const target: Window | null = popup
 		? window.opener
 		: window.parent !== window
@@ -144,7 +160,8 @@ export async function runDraftAgentBridge(): Promise<void> {
 			return;
 		}
 
-		const appForToken = who.body.verifiedAppCode;
+		const sessionApp: string = who.body.verifiedAppCode ?? '';
+		const appForToken = tokenAppCode(sessionApp, appCode, forDraftApp);
 		const ott = await getJson('/api/security/makeOneTimeToken', {
 			method: 'POST',
 			headers: { ...auth, 'Content-Type': 'application/json' },
@@ -152,6 +169,16 @@ export async function runDraftAgentBridge(): Promise<void> {
 			// draft app's own calls and sign it in as the builder.
 			body: JSON.stringify({ targetAppCode: appForToken, authMode: 'BEARER' }),
 		});
+		if (ott.status === 403 && appForToken !== sessionApp) {
+			// Security mints for another app only across an app dependency.
+			reply({
+				status: 'no-access',
+				message: `Signing in on ${window.location.host} cannot open the ${appCode} assistant.`,
+			});
+			show(`Your sign-in on ${window.location.host} cannot open the assistant for this app.`);
+			if (popup) setTimeout(() => window.close(), 4000);
+			return;
+		}
 		if (ott.status !== 200 || !ott.body?.token) {
 			reply({ status: 'error', message: `Could not start a session (${ott.status}).` });
 			show('Could not connect. Please try again.');

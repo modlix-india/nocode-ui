@@ -27,3 +27,4 @@ export * from './SetAnalyticsConsent';
 export * from './InitiateSocialLogin';
 export * from './BuildLeadAdData';
 export * from './call';
+export * from './kirun';

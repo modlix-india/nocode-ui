@@ -1,4 +1,4 @@
-import { SCHEMA_BOOL_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyGroup,
@@ -6,26 +6,102 @@ import {
 } from '../../types/common';
 import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '../util/properties';
 
+/** Block types the editor offers when `blockTypes` is not set. These are the
+ *  ones that survive a markdown round trip and render in Modlix's markdown. */
+export const DEFAULT_BLOCK_TYPES = [
+	'paragraph',
+	'heading1',
+	'heading2',
+	'heading3',
+	'bulletItem',
+	'numberItem',
+	'todoItem',
+	'quote',
+	'codeBlock',
+	'divider',
+	'image',
+	'table',
+];
+
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	{
 		name: 'editType',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Editing Modes',
-		description: 'Editing modes',
+		description:
+			'Modes offered by the mode switch. When more than one is chosen a small switch shows in the corner; the first one is where the editor opens. Defaults to Editor, Markdown and Preview.',
 		group: ComponentPropertyGroup.BASIC,
 		multiValued: true,
 		enumValues: [
 			{
-				name: 'editText',
-				displayName: 'Edit Text',
+				name: 'editDoc',
+				displayName: 'Editor',
+				description: 'Block editor: type "/" for blocks, select text to format',
 			},
 			{
-				name: 'editDoc',
-				displayName: 'Edit Document',
+				name: 'editText',
+				displayName: 'Markdown',
+				description: 'Raw markdown text',
 			},
 			{
 				name: 'preview',
 				displayName: 'Preview',
+				description: 'Read-only rendering',
+			},
+		],
+	},
+	{
+		name: 'placeholder',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Placeholder',
+		description: 'Shown while the document is empty',
+		group: ComponentPropertyGroup.BASIC,
+		translatable: true,
+		defaultValue: "Type '/' for commands",
+	},
+	{
+		name: 'blockTypes',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Block Types',
+		description:
+			'Blocks offered by the "/" menu and "Turn into". Defaults to text, headings, lists, to-do, quote, code, divider, image and table.',
+		group: ComponentPropertyGroup.ADVANCED,
+		multiValued: true,
+		enumValues: [
+			{ name: 'paragraph', displayName: 'Text' },
+			{ name: 'heading1', displayName: 'Heading 1' },
+			{ name: 'heading2', displayName: 'Heading 2' },
+			{ name: 'heading3', displayName: 'Heading 3' },
+			{ name: 'heading4', displayName: 'Heading 4' },
+			{ name: 'heading5', displayName: 'Heading 5' },
+			{ name: 'heading6', displayName: 'Heading 6' },
+			{ name: 'bulletItem', displayName: 'Bullet list' },
+			{ name: 'numberItem', displayName: 'Numbered list' },
+			{ name: 'todoItem', displayName: 'To-do list' },
+			{ name: 'quote', displayName: 'Quote' },
+			{ name: 'codeBlock', displayName: 'Code' },
+			{ name: 'divider', displayName: 'Divider' },
+			{ name: 'image', displayName: 'Image' },
+			{ name: 'table', displayName: 'Table' },
+			{ name: 'toggle', displayName: 'Toggle', description: 'Saved as <details>' },
+			{ name: 'callout', displayName: 'Callout' },
+			{ name: 'toc', displayName: 'Table of contents' },
+		],
+	},
+	{
+		name: 'readOnlyView',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Read-only View',
+		description:
+			'How the content shows when read-only or in Preview. When not set, the markdown renderer is used if any of its element styles (h1, p, table, ...) are set, otherwise the document view.',
+		group: ComponentPropertyGroup.ADVANCED,
+		enumValues: [
+			{ name: 'DOCUMENT', displayName: 'Document', description: 'Same look as the editor' },
+			{
+				name: 'MARKDOWN',
+				displayName: 'Markdown renderer',
+				description:
+					'The markdown renderer used by Text, styled by the h1, p, table, ... style keys',
 			},
 		],
 	},
@@ -48,10 +124,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		],
 	},
 	{
+		name: 'pastedFilesStorage',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Storage for added pictures',
+		description:
+			'Where pictures added to the editor (pasted, dropped or uploaded from the Image block) are stored. Static files are public; secured files are shown only to signed in users who may read the folder.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: 'STATIC',
+		enumValues: [
+			{ name: 'STATIC', displayName: 'Static (public)' },
+			{ name: 'SECURED', displayName: 'Secured (signed in users only)' },
+		],
+	},
+	{
 		name: 'pathForPastedFiles',
 		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Static path to store pasted files',
-		description: 'Static path to store pasted files',
+		displayName: 'Folder for added pictures',
+		description:
+			'Folder, in the storage chosen above, where pasted, dropped and uploaded pictures go',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: '/mdPastedFiles',
 	},
@@ -72,34 +162,18 @@ const stylePropertiesDefinition: ComponentStylePropertyDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	tabBar: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
+	editor: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
-	tabButton: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
+	modeSwitch: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	tabSeparator: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.position.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.border.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.effects.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
 	],
 	textArea: [

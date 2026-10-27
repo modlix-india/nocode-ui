@@ -26,7 +26,12 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './KIRunEditorProperties';
-import { normalizeParameterTypes, savePersonalizationCurry } from './utils';
+import {
+	normalizeParameterTypes,
+	PAGE_STORES,
+	savePersonalizationCurry,
+	withDefaultPreferences,
+} from './utils';
 
 // The documentation registry is read by kirun-ui's own help panel, which
 // only exists inside this editor. Kicking it off here rather than from
@@ -53,10 +58,13 @@ export default function LazyKIRunEditor(
 		executionLog?: ExecutionLog;
 		functionDefinition?: FunctionDefinition;
 		onChangePersonalizationFunction?: () => void;
+		// Theme overrides for editors rendered directly from code; pages use the properties
+		defaultTheme?: string;
+		showThemeSelector?: boolean;
 	},
 ) {
 	const {
-		definition: { bindingPath, bindingPath2 },
+		definition: { bindingPath, bindingPath2, bindingPath3 },
 		definition,
 		context,
 		locationHistory,
@@ -65,8 +73,8 @@ export default function LazyKIRunEditor(
 		tokenValueExtractors = new Map(),
 		storePaths = new Set(),
 		pageDefinition,
-		debugViewMode = false,
-		executionLog,
+		debugViewMode: debugViewModeProp,
+		executionLog: executionLogProp,
 		functionDefinition,
 		onChangePersonalizationFunction,
 	} = props;
@@ -75,7 +83,19 @@ export default function LazyKIRunEditor(
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const {
 		stylePropertiesWithPseudoStates,
-		properties: { readOnly, editorType, onChangePersonalization, clientCode, appCode } = {},
+		properties: {
+			readOnly,
+			editorType,
+			onChangePersonalization,
+			clientCode,
+			appCode,
+			defaultTheme,
+			showThemeSelector,
+			showExpressions,
+			showStores,
+			allowLightbox,
+			debugViewMode: debugViewModeProperty,
+		} = {},
 	} = useDefinition(
 		definition,
 		propertiesDefinition,
@@ -88,6 +108,35 @@ export default function LazyKIRunEditor(
 	const bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath!, locationHistory, pageExtractor)
 		: undefined;
+
+	// A run's trace from the store (Execution Log binding): either kirun-js's ExecutionLog or the
+	// bare array of log entries that UIEngine.RunKIRun returns as `log`.
+	const executionLogPath = bindingPath3
+		? getPathFromLocation(bindingPath3, locationHistory, pageExtractor)
+		: undefined;
+	const [boundLog, setBoundLog] = useState<any>();
+	useEffect(() => {
+		if (!executionLogPath) return;
+		return addListenerAndCallImmediatelyWithChildrenActivity(
+			pageExtractor.getPageName(),
+			(_, v) => setBoundLog(v),
+			executionLogPath,
+		);
+	}, [executionLogPath, pageExtractor]);
+	const executionLog = useMemo<ExecutionLog | undefined>(() => {
+		if (executionLogProp) return executionLogProp;
+		if (!boundLog) return undefined;
+		const logs = Array.isArray(boundLog) ? boundLog : boundLog.logs;
+		if (!Array.isArray(logs)) return undefined;
+		return {
+			executionId: boundLog.executionId ?? 'bound',
+			startTime: boundLog.startTime ?? 0,
+			errored: !!boundLog.errored,
+			logs,
+			definitions: new Map(),
+		};
+	}, [executionLogProp, boundLog]);
+	const debugViewMode = debugViewModeProp ?? !!debugViewModeProperty;
 
 	const isReadonly = readOnly || !bindingPathPath || debugViewMode;
 
@@ -228,15 +277,24 @@ export default function LazyKIRunEditor(
 		[bindingPathPath, context.pageName],
 	);
 
-	// Handle personalization changes — delegate to savePersonalizationCurry
+	// Handle personalization changes — delegate to savePersonalizationCurry. With no Personalization
+	// binding the choices live in this component only, so the toggles still work.
 	const handlePersonalizationChange = useCallback(
 		(data: PersonalizationData) => {
-			if (!savePersonalization) return;
+			if (!personalizationPath) {
+				setPreference({ ...data });
+				return;
+			}
 			for (const [pKey, value] of Object.entries(data)) {
 				savePersonalization(pKey, value);
 			}
 		},
-		[savePersonalization],
+		[savePersonalization, personalizationPath],
+	);
+
+	const effectivePreference = useMemo(
+		() => withDefaultPreferences(preference, { showExpressions, showStores }),
+		[preference, showExpressions, showStores],
 	);
 
 	const resolvedStyles = processComponentStylePseudoClasses(
@@ -265,13 +323,16 @@ export default function LazyKIRunEditor(
 				tokenValueExtractors={tokenValueExtractors}
 				readOnly={isReadonly}
 				functionKey={props.functionKey}
-				stores={props.stores}
+				stores={props.stores ?? (editorType === 'core' ? undefined : PAGE_STORES)}
 				storePaths={storePaths}
 				hideArguments={props.hideArguments}
 				debugViewMode={debugViewMode}
 				executionLog={executionLog}
-				personalization={preference}
+				personalization={effectivePreference}
 				onPersonalizationChange={handlePersonalizationChange}
+				defaultTheme={props.defaultTheme ?? defaultTheme}
+				showThemeSelector={props.showThemeSelector ?? showThemeSelector}
+				allowLightbox={!!allowLightbox}
 			/>
 		</div>
 	);
