@@ -2,6 +2,8 @@ import React from 'react';
 import { cyrb53 } from '../../util/cyrb53';
 import { MarkdowFootnotes, MarkdownParserParameters, MarkdownURLRef } from './common';
 import { makeURLnTitle, parseAttributes, resolveMarkdownAssetUrl } from './utils';
+import { isSecuredUrl } from '../../components/util/secureImage';
+import { SecureImg } from '../../components/util/useSecureSrc';
 
 const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'code' | 'span' } = {
 	'~~': 's',
@@ -320,15 +322,20 @@ function processImageLink(
 	const lowerURL = linkParts.url.toLowerCase();
 	const isVideo =
 		lowerURL.endsWith('.mov') || lowerURL.endsWith('.mp4') || lowerURL.endsWith('.webm');
+	const src = resolveMarkdownAssetUrl(linkParts.url, params.location);
+	const mediaProps = {
+		key: cyrb53(`${actualLine}-${lineNumber}-${i}`),
+		src,
+		className: isVideo ? '_video' : '_images',
+		alt: linkParts.title ?? altText,
+		...(attrs ?? {}),
+		style,
+	};
+	// A secured file needs the sign-in token, which a plain src cannot send.
 	lineParts.push(
-		React.createElement(isVideo ? 'video' : 'img', {
-			key: cyrb53(`${actualLine}-${lineNumber}-${i}`),
-			src: resolveMarkdownAssetUrl(linkParts.url, params.location),
-			className: isVideo ? '_video' : '_images',
-			alt: linkParts.title ?? altText,
-			...(attrs ?? {}),
-			style,
-		}),
+		isSecuredUrl(src)
+			? React.createElement(SecureImg, { ...mediaProps, as: isVideo ? 'video' : 'img' })
+			: React.createElement(isVideo ? 'video' : 'img', mediaProps),
 	);
 
 	return { i, current, found: true };
