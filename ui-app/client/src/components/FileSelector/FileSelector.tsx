@@ -468,6 +468,13 @@ function FileSelector(props: Readonly<ComponentProps>) {
 									type="file"
 									className="_hidden"
 									disabled={readOnly}
+									accept={
+										restrictUploadType?.length
+											? restrictUploadType
+													.map((e: string) => '.' + e.replace(/^\./, ''))
+													.join(',')
+											: undefined
+									}
 									max={fileSizeLimit}
 									onClick={e => (e.currentTarget.value = '')}
 									onChange={async e => {

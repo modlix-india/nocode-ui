@@ -132,6 +132,33 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '.label',
 		dv: '#393A3C',
 	},
+	// The caption is a field label, so it reads like the theme's text box
+	// label. Each value below names that text box variable; a theme that does
+	// not set it resolves to nothing, and the caption keeps the look above.
+	{
+		n: 'outerLabelFieldColor',
+		cp: 'color',
+		dn: 'Outer label color like the text box label',
+		de: "The caption's color, taken from the theme's text box label.",
+		sel: '.label',
+		dv: '<textBoxLabelColorDefaultPrimary>',
+	},
+	{
+		n: 'outerLabelFont',
+		cp: 'font',
+		dn: 'Outer label font',
+		de: "The caption's font, taken from the theme's text box label.",
+		sel: '.label',
+		dv: '<textBoxFontLabelDefaultPrimary>',
+	},
+	{
+		n: 'outerLabelMargin',
+		cp: 'margin',
+		dn: 'Outer label margin',
+		de: 'The space around the caption.',
+		sel: '.label',
+		dv: '0px 0px 5px 0px',
+	},
 	{
 		n: 'inputHeight',
 		cp: 'height',

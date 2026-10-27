@@ -21,6 +21,7 @@ import {
 	Unlock,
 } from 'lucide-react';
 import type { Block } from '../core/types';
+import { useSecureSrc } from '../../../util/useSecureSrc';
 import { TextContent } from './TextContent';
 import { getRegisteredComponent } from './component-registry';
 import { TableBlock } from './TableBlock';
@@ -1330,6 +1331,8 @@ function imgRenderHeight(
 function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 	const t = useT();
 	const src = block.props.src;
+	// A secured file is fetched with the sign-in token; a plain src cannot send it.
+	const shownSrc = useSecureSrc(typeof src === 'string' ? src : undefined);
 	const alt = block.props.alt ?? '';
 	const caption = block.props.caption;
 	// True while the host upload for this block is in flight — `src` holds a
@@ -1776,7 +1779,7 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 						style={tabStyle(mode === 'upload')}
 						onClick={() => setMode('upload')}
 					>
-						Upload
+						Upload a file
 					</button>
 					<button
 						type="button"
@@ -1963,7 +1966,7 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 								? {
 										width: '100%',
 										aspectRatio: `${cropW} / ${cropH}`,
-										backgroundImage: `url(${src})`,
+										backgroundImage: `url(${shownSrc ?? ''})`,
 										backgroundSize: `${bgSizeWPct}% ${bgSizeHPct}%`,
 										backgroundPosition: `${bgPosXPct}% ${bgPosYPct}%`,
 										backgroundRepeat: 'no-repeat',
@@ -1973,7 +1976,7 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 								: {
 										width: cropW,
 										height: cropH,
-										backgroundImage: `url(${src})`,
+										backgroundImage: `url(${shownSrc ?? ''})`,
 										backgroundSize: `${imgW}px ${imgH}px`,
 										backgroundPosition: `-${cropX}px -${cropY}px`,
 										backgroundRepeat: 'no-repeat',
@@ -1989,7 +1992,7 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
              lock is off). */
 					<img
 						ref={imgRef}
-						src={src as string}
+						src={shownSrc}
 						alt={alt as string}
 						onLoad={handleImgLoad}
 						style={{
@@ -2009,7 +2012,7 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 						{/* Full image (dimmed) */}
 						<img
 							ref={imgRef}
-							src={src as string}
+							src={shownSrc}
 							alt={alt as string}
 							onLoad={handleImgLoad}
 							style={{
@@ -2028,7 +2031,7 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 								top: activeCropY,
 								width: activeCropW,
 								height: activeCropH,
-								backgroundImage: `url(${src})`,
+								backgroundImage: `url(${shownSrc ?? ''})`,
 								backgroundSize: `${imgW}px ${imgH}px`,
 								backgroundPosition: `-${activeCropX}px -${activeCropY}px`,
 								backgroundRepeat: 'no-repeat',

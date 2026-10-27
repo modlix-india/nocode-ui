@@ -1,7 +1,5 @@
-import axios from 'axios';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MarkdownParser } from '../../commonComponents/Markdown/MarkdownParser';
-import { LOCAL_STORE_PREFIX } from '../../constants';
 import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
@@ -11,7 +9,6 @@ import {
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { ComponentProps } from '../../types/common';
-import { shortUUID } from '../../util/shortUUID';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { runEvent } from '../util/runEvent';
@@ -25,6 +22,7 @@ import {
 	propertiesDefinition,
 	stylePropertiesDefinition,
 } from './markdownEditorProperties';
+import { uploadPastedFile } from './uploadPastedFile';
 
 type Mode = 'editDoc' | 'editText' | 'preview';
 
@@ -115,6 +113,7 @@ export default function MarkdownEditor(props: Readonly<ComponentProps>) {
 			onBlur,
 			editType,
 			pathForPastedFiles,
+			pastedFilesStorage,
 			placeholder,
 			blockTypes,
 			readOnlyView,
@@ -258,22 +257,9 @@ export default function MarkdownEditor(props: Readonly<ComponentProps>) {
 	}, [runBlurEvent]);
 
 	const handleImageUpload = useCallback(
-		async (file: File): Promise<string> => {
-			const formData = new FormData();
-			formData.append('file', file);
-			formData.append('name', `pasted_${shortUUID()}_`);
-			const headers: Record<string, string> = {
-				Authorization: getDataFromPath(`${LOCAL_STORE_PREFIX}.AuthToken`, []),
-			};
-			if (globalThis.isDebugMode)
-				headers['x-debug'] = (globalThis.isFullDebugMode ? 'full-' : '') + shortUUID();
-			const path = (pathForPastedFiles || '/mdPastedFiles').replace(/^\/+/, '');
-			const response = await axios.post(`/api/files/static/${path}`, formData, { headers });
-			const url = response?.data?.url;
-			if (!url) throw new Error('Upload returned no url');
-			return url;
-		},
-		[pathForPastedFiles],
+		(file: File): Promise<string> =>
+			uploadPastedFile(file, pastedFilesStorage, pathForPastedFiles),
+		[pastedFilesStorage, pathForPastedFiles],
 	);
 
 	const styleProperties = processComponentStylePseudoClasses(

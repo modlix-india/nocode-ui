@@ -1374,4 +1374,14 @@
 		"n": "phoneNumberInputColor<designType><colorScheme>",
 		"dv": "<fontColorOne>"
 	}
+,
+	{
+		"gn": "Icon",
+		"dn": "Icon Font Size",
+		"de": "Size of the clear (x) icon and the validation icons on the right of the number, as textBoxFontSizeIcon sizes the text box's. No default: unset, the icon inherits the field font.",
+		"n": "phoneNumberFontSizeIcon<designType><colorScheme>",
+		"cp": "font-size",
+		"sel": ".comp.compPhoneNumber<designType><colorScheme> ._rightIcon",
+		"np": true
+	}
 ]

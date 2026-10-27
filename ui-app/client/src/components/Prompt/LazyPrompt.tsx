@@ -3,6 +3,7 @@ import { ComponentProps } from '../../types/common';
 import {
 	PageStoreExtractor,
 	UrlDetailsExtractor,
+	addListenerAndCallImmediately,
 	getDataFromPath,
 	getPathFromLocation,
 	setData,
@@ -246,6 +247,10 @@ interface SSEEventContext {
 	 * because it already happened when the events first went out.
 	 */
 	replaying: boolean;
+	/** Note that a tool ran, so the next text starts a new paragraph. */
+	markToolRan?: () => void;
+	/** Whether a tool ran since the last text arrived; reading it clears it. */
+	takeToolRan?: () => boolean;
 }
 
 // Helper: update the assistant message with current toolCalls + agentSpans state.
@@ -289,7 +294,15 @@ function orchestratorToolCalls(msg: Message): ToolCall[] {
 function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 	switch (eventType) {
 		case 'text': {
-			const newText = ctx.currentText + (data.text ?? '');
+			// Text on either side of a tool call arrives as one stream, so "I'll read it
+			// first." and the answer after the read would run together with no space.
+			const incoming: string = data.text ?? '';
+			const afterTool = ctx.takeToolRan?.() ?? false;
+			const gap =
+				afterTool && ctx.currentText && !/\s$/.test(ctx.currentText) && !/^\s/.test(incoming)
+					? '\n\n'
+					: '';
+			const newText = ctx.currentText + gap + incoming;
 			ctx.setText(newText);
 			ctx.setMessages(prev =>
 				prev.map(m => (m.id === ctx.assistantMsgId ? { ...m, content: newText } : m)),
@@ -384,6 +397,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			break;
 		}
 		case 'tool_start': {
+			ctx.markToolRan?.();
 			if (!ctx.showToolCalls) break;
 			const agentId = data.agent_id;
 			const tc: ToolCall = {
@@ -2192,6 +2206,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const decoder = new TextDecoder();
 			let buffer = '';
 			let assistantText = '';
+			let toolRan = false;
 			let toolCalls = new Map<string, ToolCall>();
 			let agentSpans = new Map<string, AgentSpan>();
 			let receivedSessionId = initialSessionId;
@@ -2422,6 +2437,14 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							onDraftPatch: handleDraftPatchRef.current,
 							onObjectChanged: handleObjectChangedRef.current,
 							replaying,
+							markToolRan: () => {
+								toolRan = true;
+							},
+							takeToolRan: () => {
+								const ran = toolRan;
+								toolRan = false;
+								return ran;
+							},
 						});
 					}
 				}
@@ -3258,6 +3281,30 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 		props.context.pageName,
 		pageExtractor,
 	]);
+
+	// A docked chat stays open while the page around it changes, so a button on
+	// that page ("Summarize this item") hands its question over while the chat
+	// already holds a conversation. Taken into that conversation once the agent
+	// is idle; one that arrives mid-turn waits for the turn to end.
+	const [pendingTick, setPendingTick] = useState(0);
+	useEffect(() => {
+		if (!pendingPromptPath) return;
+		return addListenerAndCallImmediately(
+			props.context.pageName,
+			() => setPendingTick(t => t + 1),
+			pendingPromptPath,
+		);
+	}, [pendingPromptPath, props.context.pageName]);
+	useEffect(() => {
+		if (!pendingPromptPath || (!initialSentRef.current && messages.length === 0)) return;
+		if (!restoreSettled || !urlSessionSettled || isStreaming || readOnly) return;
+		const pending = getDataFromPath(pendingPromptPath, props.locationHistory, pageExtractor);
+		const text = typeof pending === 'string' ? pending : pending?.text;
+		if (!text?.trim()) return;
+		initialSentRef.current = true;
+		setData(pendingPromptPath, undefined, props.context.pageName);
+		handleSend(text);
+	}, [pendingTick, isStreaming, restoreSettled, urlSessionSettled]);
 
 	const handleStop = useCallback(() => {
 		releaseStream();
