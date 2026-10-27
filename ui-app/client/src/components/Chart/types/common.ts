@@ -193,6 +193,7 @@ export interface ChartProperties {
 	gradientSpace: 'objectBoundingBox' | 'userSpaceOnUse';
 	doughnutCutout?: string;
 	lineAreaFill?: boolean;
+	numberLocale?: string;
 }
 
 export interface MakeChartProps {
