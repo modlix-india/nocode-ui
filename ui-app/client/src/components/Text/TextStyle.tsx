@@ -110,8 +110,12 @@ export default function LabelStyle({
 		white-Space: inherit;
 	}
 
-	${PREFIX}._markdown img {
+	/* A picture never grows past the text box: a wide screenshot shrinks to fit (and its
+	   height follows), so it cannot push the page sideways. */
+	${PREFIX} ._markdown img,
+	${PREFIX} ._markdown video {
 		max-width: 100%;
+		height: auto;
 	}
 
 	/*
