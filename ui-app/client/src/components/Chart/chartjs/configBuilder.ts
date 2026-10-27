@@ -252,6 +252,18 @@ export function buildChartJsOptions(
 		},
 	};
 
+	// Chart.js formats axis ticks and tooltip values with Intl.NumberFormat(options.locale).
+	const numberLocale = properties.numberLocale?.trim();
+	if (numberLocale) {
+		try {
+			// Throws a RangeError for a malformed tag, which would otherwise break every tick.
+			Intl.NumberFormat.supportedLocalesOf(numberLocale);
+			(options as any).locale = numberLocale;
+		} catch {
+			// A malformed locale tag keeps the browser default rather than breaking the chart.
+		}
+	}
+
 	if (chartType === 'doughnut' && properties.doughnutCutout) {
 		// Chart.js reads a number as pixels and a string such as '70%' as part of the radius.
 		const cutout = String(properties.doughnutCutout).trim();
