@@ -26,7 +26,7 @@ import type {
 	TextSpan,
 	Transaction,
 } from './core/types';
-import { createBlock, getPlainText, getTextLength, generateId } from './core/types';
+import { createBlock, getPlainText, getTextLength, generateId, isInMention } from './core/types';
 import {
 	findBlock,
 	findBlockLocation,
@@ -1901,6 +1901,11 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				return;
 			}
 			if (atIdx !== 0 && !/\s/.test(text[atIdx - 1])) {
+				close();
+				return;
+			}
+			// The "@" of a mention already inserted (its pill label) is not a new trigger.
+			if (isInMention(block.content, atIdx)) {
 				close();
 				return;
 			}
