@@ -114,6 +114,24 @@ export default function LabelStyle({
 		max-width: 100%;
 	}
 
+	/*
+	 * Markdown text stays inside its box: a long token (a path, a code span, words joined
+	 * by no-break spaces) wraps (anywhere also lowers the min-content width, so a flex or
+	 * grid parent cannot be pushed wider), and a table wider than the box scrolls sideways
+	 * inside it instead of running over what sits beside it.
+	 */
+	${PREFIX} ._markdown {
+		overflow-wrap: anywhere;
+		min-width: 0;
+		max-width: 100%;
+		overflow-x: auto;
+	}
+
+	${PREFIX} ._markdown pre {
+		overflow-x: auto;
+		overflow-wrap: normal;
+	}
+
 	${PREFIX}._markdown pre, ._markDownContent pre {
 		overflow: auto;
 	}
