@@ -3093,6 +3093,58 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		[readOnly, apply, onChange],
 	);
 
+	// ---- Image files dropped from the desktop ----
+	// Each picture becomes an image block after the block it was dropped on and
+	// goes through the same upload as a pasted one. Returns false when the drop
+	// carried no picture, so the caller can leave the event alone.
+	const dropImageFiles = useCallback(
+		(e: React.DragEvent): boolean => {
+			if (readOnly) return false;
+			const files = Array.from(e.dataTransfer?.files ?? []).filter(f =>
+				f.type.startsWith('image/'),
+			);
+			if (!files.length) return false;
+			e.preventDefault();
+			let doc = docRef.current;
+			const under = (e.target as HTMLElement | null)?.closest?.(
+				'[data-block-id]',
+			) as HTMLElement | null;
+			let anchorId =
+				under?.dataset.blockId && findBlock(doc, under.dataset.blockId)
+					? under.dataset.blockId
+					: doc.blocks[doc.blocks.length - 1]?.id;
+			if (!anchorId) return false;
+			const placed: { blockId: string; file: File }[] = [];
+			for (const file of files) {
+				const imgBlock = createBlock('image');
+				doc = insertBlockAfter(doc, anchorId, imgBlock);
+				anchorId = imgBlock.id;
+				placed.push({ blockId: imgBlock.id, file });
+			}
+			setDoc(doc);
+			docRef.current = doc;
+			onChange?.(doc);
+			for (const { blockId, file } of placed) {
+				const reader = new FileReader();
+				reader.onload = () => {
+					globalThis.dispatchEvent(
+						new CustomEvent('mde-image-upload', {
+							detail: {
+								blockId,
+								dataUrl: reader.result as string,
+								fileName: file.name || 'dropped-image',
+								file,
+							},
+						}),
+					);
+				};
+				reader.readAsDataURL(file);
+			}
+			return true;
+		},
+		[readOnly, onChange],
+	);
+
 	const onEditorBlur = useCallback(() => {
 		historyRef.current.flushSeal(); // persist the final edit before losing focus
 		onBlur?.(docRef.current);
@@ -3668,7 +3720,14 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				style={{ position: 'relative' }}
 				onDragOver={e => {
 					const draggingId = dragState.draggingBlockId;
-					if (!draggingId) return;
+					if (!draggingId) {
+						// A file from the desktop: allow the drop so pictures can land.
+						if (!readOnly && Array.from(e.dataTransfer.types ?? []).includes('Files')) {
+							e.preventDefault();
+							e.dataTransfer.dropEffect = 'copy';
+						}
+						return;
+					}
 					e.preventDefault();
 					e.dataTransfer.dropEffect = 'move';
 					const editorEl = rootRef.current;
@@ -3686,7 +3745,10 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				}}
 				onDrop={e => {
 					const draggingId = dragState.draggingBlockId;
-					if (!draggingId) return;
+					if (!draggingId) {
+						dropImageFiles(e);
+						return;
+					}
 					e.preventDefault();
 					const target = dragState.dropTarget;
 					if (target) {
