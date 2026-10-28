@@ -60,9 +60,13 @@ import {
 	setBlockTypeOp,
 	moveBlockOp,
 	indentBlocksOp,
-	toggleMark as toggleMarkOp,
-	setMark as setMarkOp,
 	replaceContent,
+	selectionTextRanges,
+	blockSelectionTextRanges,
+	activeMarksInRanges,
+	toggleMarkInRanges,
+	setMarkInRanges,
+	type BlockTextRange,
 	insertText as insertTextOp,
 	deleteText as deleteTextOp,
 	insertMention as insertMentionOp,
@@ -271,25 +275,6 @@ interface DragState {
 }
 
 // ---- Helpers ----
-
-/** Get marks active at a given offset within a block */
-function getActiveMarksAtPosition(
-	doc: EditorDocument,
-	blockId: string,
-	offset: number,
-): MarkType[] {
-	const block = findBlock(doc, blockId);
-	if (!block) return [];
-	let pos = 0;
-	for (const span of block.content) {
-		const end = pos + span.text.length;
-		if (offset > pos && offset <= end) {
-			return (span.marks ?? []).map(m => m.type);
-		}
-		pos = end;
-	}
-	return [];
-}
 
 /** Get the bounding rect of the caret (collapsed selection) */
 function getCaretRect(): DOMRect | null {
@@ -2246,8 +2231,9 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				return;
 			}
 
-			// Get active marks at the focus position
-			const marks = getActiveMarksAtPosition(currentDoc, sel.focus.blockId, sel.focus.offset);
+			// A mark shows as on only when ALL the selected text has it, across
+			// every block the selection touches (not just the caret's block).
+			const marks = activeMarksInRanges(currentDoc, selectionTextRanges(currentDoc, sel));
 
 			setToolbar({
 				active: true,
@@ -2261,39 +2247,34 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		[toolbar.active],
 	);
 
-	/** Handle mark toggle from toolbar */
+	/** The text the toolbar acts on: in whole-block mode every selected
+	 *  block's full text (nested blocks included), otherwise each block's part
+	 *  of the text selection, so a selection across lines formats all of it. */
+	const toolbarRanges = useCallback((): BlockTextRange[] => {
+		const ids = selectedBlockIdsRef.current;
+		if (ids.length > 0) return blockSelectionTextRanges(docRef.current, ids);
+		const sel = selectionRef.current;
+		return sel ? selectionTextRanges(docRef.current, sel) : [];
+	}, []);
+
+	/** Re-read the on/off state of the toolbar buttons after an edit. */
+	const refreshToolbarMarks = useCallback(() => {
+		const marks = activeMarksInRanges(docRef.current, toolbarRanges());
+		setToolbar(prev => (prev.active ? { ...prev, activeMarks: marks } : prev));
+	}, [toolbarRanges]);
+
+	/** Handle mark toggle from toolbar. Works on the whole selection, across
+	 *  blocks; the selection is kept (the result carries no selection), so a
+	 *  second click toggles the mark back off. */
 	const handleToolbarToggleMark = useCallback(
 		(mark: Mark) => {
-			const sel = selectionRef.current;
-			if (!sel) return;
-
-			// For same-block selections
-			if (sel.anchor.blockId === sel.focus.blockId) {
-				const from = Math.min(sel.anchor.offset, sel.focus.offset);
-				const to = Math.max(sel.anchor.offset, sel.focus.offset);
-				const result = toggleMarkOp(docRef.current, sel.anchor.blockId, from, to, mark);
-				if (result.doc !== docRef.current) {
-					apply(result);
-				}
-			}
-
-			// Update toolbar marks after toggling
-			requestAnimationFrame(() => {
-				const currentSel = selectionRef.current;
-				if (currentSel) {
-					const marks = getActiveMarksAtPosition(
-						docRef.current,
-						currentSel.focus.blockId,
-						currentSel.focus.offset,
-					);
-					setToolbar(prev => ({
-						...prev,
-						activeMarks: marks,
-					}));
-				}
-			});
+			const ranges = toolbarRanges();
+			if (ranges.length === 0) return;
+			const result = toggleMarkInRanges(docRef.current, ranges, mark);
+			if (result.doc !== docRef.current) apply(result);
+			refreshToolbarMarks();
 		},
-		[apply],
+		[apply, toolbarRanges, refreshToolbarMarks],
 	);
 
 	/** Set (or clear, with no `attrs`) a "pick a value" mark like color /
@@ -2301,45 +2282,61 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 	 *  DIFFERENT value replaces it instead of toggling the mark off. */
 	const handleToolbarSetMark = useCallback(
 		(mark: Mark) => {
-			const sel = selectionRef.current;
-			if (!sel || sel.anchor.blockId !== sel.focus.blockId) return;
-			const from = Math.min(sel.anchor.offset, sel.focus.offset);
-			const to = Math.max(sel.anchor.offset, sel.focus.offset);
-			if (from === to) return;
-			const result = setMarkOp(
-				docRef.current,
-				sel.anchor.blockId,
-				from,
-				to,
-				mark.type,
-				mark.attrs,
-			);
+			const ranges = toolbarRanges();
+			if (ranges.length === 0) return;
+			const result = setMarkInRanges(docRef.current, ranges, mark.type, mark.attrs);
 			if (result.doc !== docRef.current) apply(result);
+			refreshToolbarMarks();
 		},
-		[apply],
+		[apply, toolbarRanges, refreshToolbarMarks],
 	);
 
 	/** Set (or clear, with "") an inline font on the selection. Uses the
 	 *  set-mark op so re-picking replaces the font instead of toggling off. */
 	const handleToolbarSetFont = useCallback(
 		(value: string) => {
-			const sel = selectionRef.current;
-			if (!sel || sel.anchor.blockId !== sel.focus.blockId) return;
-			const from = Math.min(sel.anchor.offset, sel.focus.offset);
-			const to = Math.max(sel.anchor.offset, sel.focus.offset);
-			if (from === to) return;
-			const result = setMarkOp(
+			const ranges = toolbarRanges();
+			if (ranges.length === 0) return;
+			const result = setMarkInRanges(
 				docRef.current,
-				sel.anchor.blockId,
-				from,
-				to,
+				ranges,
 				'fontFamily',
 				value ? { fontFamily: value } : undefined,
 			);
 			if (result.doc !== docRef.current) apply(result);
 		},
-		[apply],
+		[apply, toolbarRanges],
 	);
+
+	// A drag across blocks (or a shift-click) turns into a whole-block
+	// selection, which has no text range for the toolbar to read. Offer the
+	// toolbar for the selected blocks' text instead, and close it when the
+	// block selection ends. Without this the toolbar stayed up from the text
+	// selection made before the drag left its first block, with that stale
+	// on/off state, and its buttons did nothing to the highlighted blocks.
+	const blockToolbarOpenRef = useRef(false);
+	const selectedBlocksKey = selectedBlockIds.join('\n');
+	useEffect(() => {
+		const ids = selectedBlockIdsRef.current;
+		const root = rootRef.current;
+		const ranges = ids.length > 0 ? blockSelectionTextRanges(docRef.current, ids) : [];
+		if (readOnly || !root || ranges.length === 0) {
+			if (blockToolbarOpenRef.current || ids.length > 0) {
+				blockToolbarOpenRef.current = false;
+				setToolbar(prev => (prev.active ? { ...prev, active: false } : prev));
+			}
+			return;
+		}
+		const firstEl = root.querySelector<HTMLElement>(`[data-block-id="${ids[0]}"]`);
+		if (!firstEl) return;
+		const rect = firstEl.getBoundingClientRect();
+		blockToolbarOpenRef.current = true;
+		setToolbar({
+			active: true,
+			position: { x: rect.left + rect.width / 2, y: rect.top - 10 },
+			activeMarks: activeMarksInRanges(docRef.current, ranges),
+		});
+	}, [selectedBlocksKey, readOnly]);
 
 	/** Close floating toolbar */
 	const handleToolbarClose = useCallback(() => {
@@ -2636,7 +2633,21 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 						}
 						return;
 					}
-					// Other modifier shortcuts (undo, select-all, save, find, bold, …)
+					// Bold / italic / underline / code / strike format every
+					// selected block, like the toolbar, and keep the selection.
+					let blockMark: Mark | null = null;
+					if (e.shiftKey) {
+						if (k === 's') blockMark = { type: 'strikethrough' };
+					} else if (k === 'b') blockMark = { type: 'bold' };
+					else if (k === 'i') blockMark = { type: 'italic' };
+					else if (k === 'u') blockMark = { type: 'underline' };
+					else if (k === 'e') blockMark = { type: 'code' };
+					if (blockMark) {
+						e.preventDefault();
+						handleToolbarToggleMark(blockMark);
+						return;
+					}
+					// Other modifier shortcuts (undo, select-all, save, find, …)
 					// return to text mode first.
 					clearBlockSelection();
 				} else if (e.key === 'Escape') {
@@ -2835,6 +2846,8 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			);
 			if (handled && result.doc) {
 				apply(result);
+				// Cmd+B / I / U / E change marks: keep the toolbar's on/off state true.
+				if (toolbar.active) refreshToolbarMarks();
 			}
 		},
 		[
@@ -2846,6 +2859,8 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			mentionPicker.active,
 			toolbar.active,
 			handleToolbarClose,
+			handleToolbarToggleMark,
+			refreshToolbarMarks,
 			flushIdle,
 			clearBlockSelection,
 		],
