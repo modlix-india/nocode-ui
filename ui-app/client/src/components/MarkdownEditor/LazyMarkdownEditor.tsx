@@ -290,7 +290,11 @@ export default function MarkdownEditor(props: Readonly<ComponentProps>) {
 		flushRef.current();
 		// The block editor stays mounted between Edit and a document-style
 		// Preview; it is rebuilt from the markdown when it was not on screen.
-		if (next === 'editDoc' && (mode === 'editText' || previewAsMarkdown)) {
+		// Leaving the Markdown text for any block editor view (Edit, or a document-style
+		// Preview) rebuilds it too: it was not mounted while the text was on screen, so it
+		// would come back with the document it had before, and show the text as lost.
+		const toBlockView = next === 'editDoc' || (next === 'preview' && !previewAsMarkdown);
+		if (toBlockView && (mode === 'editText' || (next === 'editDoc' && previewAsMarkdown))) {
 			setEditorMount(m => ({ key: m.key + 1, doc: toDocument(markdownRef.current) }));
 		}
 		setMode(next);

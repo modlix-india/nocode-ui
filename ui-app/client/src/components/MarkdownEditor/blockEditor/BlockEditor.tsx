@@ -87,7 +87,7 @@ import {
 	replaceBlocksOp,
 	cloneBlockWithFreshIds,
 } from './core/block-selection';
-import { SlashCommandMenu } from './features/slash-command';
+import { FILE_SLASH_TYPE, SlashCommandMenu } from './features/slash-command';
 import { EmojiPicker } from './features/emoji-picker';
 import { MentionPicker } from './features/mention-picker';
 import type { MentionItem, MentionProvider } from './features/mention-types';
@@ -102,6 +102,11 @@ import { BlockMenu } from './features/block-menu';
 import { useIsCoarsePointer } from './hooks/use-is-coarse-pointer';
 import { GripVertical, Plus } from 'lucide-react';
 import { consumeEscape } from './features/escape-guard';
+
+/** A file's name as link text: square brackets would end the markdown link early. */
+function fileLinkText(name: string): string {
+	return (name || 'file').replace(/[[\]]/g, '').trim() || 'file';
+}
 
 // ---- Public API Types ----
 
@@ -1463,6 +1468,11 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 	);
 
 	/** Handle slash command item selection */
+	// `attachFiles` is defined further down (beside paste); the slash menu reaches it through this ref.
+	const attachFilesRef = useRef<
+		((files: File[], anchorId: string, replaceId?: string) => boolean) | null
+	>(null);
+
 	const handleSlashSelect = useCallback(
 		(type: BlockType) => {
 			const blockId = slashCommand.blockId;
@@ -1550,6 +1560,39 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 					filter: '',
 					position: { x: 0, y: 0 },
 				});
+				return;
+			}
+
+			// File pseudo-type: strip the "/filter", then pick files from the computer.
+			// Pictures become image blocks, anything else a link to the uploaded file.
+			if (type === FILE_SLASH_TYPE) {
+				const whole = slashIdx === 0 && slashEnd === text.length;
+				if (slashIdx >= 0) {
+					currentDoc = deleteTextOp(
+						currentDoc,
+						blockId,
+						slashIdx,
+						slashEnd - slashIdx,
+					).doc;
+					setDoc(currentDoc);
+					docRef.current = currentDoc;
+					onChange?.(currentDoc);
+				}
+				setSlashCommand({
+					active: false,
+					blockId: '',
+					filter: '',
+					position: { x: 0, y: 0 },
+				});
+				const input = document.createElement('input');
+				input.type = 'file';
+				input.multiple = true;
+				input.onchange = () => {
+					const files = Array.from(input.files ?? []);
+					if (files.length)
+						attachFilesRef.current?.(files, blockId, whole ? blockId : undefined);
+				};
+				input.click();
 				return;
 			}
 
@@ -3010,6 +3053,60 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		[readOnly, apply],
 	);
 
+	// ---- Files that are not pictures (PDF, Word, ...) ----
+	// Each becomes a paragraph holding a link to the uploaded file, named after it. It reads
+	// "Uploading <name>..." until the host's upload answers. A host without an upload handler
+	// gets nothing: a whole document as a data URL would bloat the stored markdown.
+	const attachFiles = useCallback(
+		(files: File[], anchorId: string, replaceId?: string): boolean => {
+			if (readOnly || !files.length || !onImageUpload) return false;
+			let doc = docRef.current;
+			let after = anchorId;
+			const placed: { blockId: string; file: File }[] = [];
+			files.forEach((file, i) => {
+				const block = createBlock(
+					'paragraph',
+					`${i18nT('editor.file.uploading')} ${file.name}...`,
+				);
+				if (i === 0 && replaceId && findBlock(doc, replaceId))
+					doc = updateBlock(doc, replaceId, () => block);
+				else doc = insertBlockAfter(doc, after, block);
+				after = block.id;
+				placed.push({ blockId: block.id, file });
+			});
+			setDoc(doc);
+			docRef.current = doc;
+			onChange?.(doc);
+			for (const { blockId, file } of placed) {
+				onImageUpload(file)
+					.then(
+						(url): TextSpan[] =>
+							url
+								? [
+										{
+											text: fileLinkText(file.name),
+											marks: [{ type: 'link', attrs: { href: url } }],
+										},
+									]
+								: [{ text: `${i18nT('editor.file.failed')} ${file.name}` }],
+						(err): TextSpan[] => {
+							console.warn('File upload failed', err);
+							return [{ text: `${i18nT('editor.file.failed')} ${file.name}` }];
+						},
+					)
+					.then(content => {
+						if (!findBlock(docRef.current, blockId)) return;
+						const next = updateBlock(docRef.current, blockId, b => ({ ...b, content }));
+						setDoc(next);
+						docRef.current = next;
+						onChange?.(next);
+					});
+			}
+			return true;
+		},
+		[readOnly, onChange, onImageUpload, i18nT],
+	);
+
 	const onPaste = useCallback(
 		(e: React.ClipboardEvent) => {
 			if (readOnly) return;
@@ -3056,6 +3153,23 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				} else {
 					apply(insertBlocksAfterOp(docRef.current, sel.focus.blockId, clones));
 				}
+				return;
+			}
+
+			// Pasted files that are not pictures (a PDF or Word file copied in Finder or
+			// Explorer): attach them as links, replacing an empty paragraph in place.
+			const pastedDocs = Array.from(e.clipboardData?.files ?? []).filter(
+				f => !f.type.startsWith('image/'),
+			);
+			if (pastedDocs.length && onImageUpload) {
+				e.preventDefault();
+				const here = findBlock(docRef.current, sel.focus.blockId);
+				const empty =
+					!!here &&
+					here.type === 'paragraph' &&
+					here.children.length === 0 &&
+					getTextLength(here.content) === 0;
+				attachFiles(pastedDocs, sel.focus.blockId, empty ? sel.focus.blockId : undefined);
 				return;
 			}
 
@@ -3111,20 +3225,23 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			if (!result) return;
 			apply(result);
 		},
-		[readOnly, apply, onChange],
+		[readOnly, apply, onChange, onImageUpload, attachFiles],
 	);
+
+	attachFilesRef.current = attachFiles;
 
 	// ---- Image files dropped from the desktop ----
 	// Each picture becomes an image block after the block it was dropped on and
-	// goes through the same upload as a pasted one. Returns false when the drop
-	// carried no picture, so the caller can leave the event alone.
+	// goes through the same upload as a pasted one; any other file (PDF, Word, ...)
+	// is attached as a link. Returns false when the drop carried no file, so the
+	// caller can leave the event alone.
 	const dropImageFiles = useCallback(
 		(e: React.DragEvent): boolean => {
 			if (readOnly) return false;
-			const files = Array.from(e.dataTransfer?.files ?? []).filter(f =>
-				f.type.startsWith('image/'),
-			);
-			if (!files.length) return false;
+			const all = Array.from(e.dataTransfer?.files ?? []);
+			const files = all.filter(f => f.type.startsWith('image/'));
+			const others = all.filter(f => !f.type.startsWith('image/'));
+			if (!all.length) return false;
 			e.preventDefault();
 			let doc = docRef.current;
 			const under = (e.target as HTMLElement | null)?.closest?.(
@@ -3142,9 +3259,11 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				anchorId = imgBlock.id;
 				placed.push({ blockId: imgBlock.id, file });
 			}
-			setDoc(doc);
-			docRef.current = doc;
-			onChange?.(doc);
+			if (placed.length) {
+				setDoc(doc);
+				docRef.current = doc;
+				onChange?.(doc);
+			}
 			for (const { blockId, file } of placed) {
 				const reader = new FileReader();
 				reader.onload = () => {
@@ -3161,9 +3280,10 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				};
 				reader.readAsDataURL(file);
 			}
+			if (others.length) attachFiles(others, anchorId);
 			return true;
 		},
-		[readOnly, onChange],
+		[readOnly, onChange, attachFiles],
 	);
 
 	const onEditorBlur = useCallback(() => {
