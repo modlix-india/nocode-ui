@@ -4,6 +4,7 @@ import { MarkdowFootnotes, MarkdownParserParameters, MarkdownURLRef } from './co
 import { makeURLnTitle, parseAttributes, resolveMarkdownAssetUrl } from './utils';
 import { isSecuredUrl } from '../../components/util/secureImage';
 import { SecureImg } from '../../components/util/useSecureSrc';
+import { handleSecuredLinkClick } from '../../components/util/openSecuredFile';
 
 const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'code' | 'span' } = {
 	'~~': 's',
@@ -431,6 +432,13 @@ function processLink(
 				style,
 				title: linkParts.title,
 				...(attrs ?? {}),
+				// An attached file (secured) needs the sign in token: fetch it, then open or save it.
+				...(isSecuredUrl(linkParts.url)
+					? {
+							onClick: (e: React.MouseEvent<HTMLAnchorElement>) =>
+								handleSecuredLinkClick(e, linkParts!.url, linkText),
+						}
+					: {}),
 			},
 			...labelOf({ ...params, line: linkText }),
 		),
