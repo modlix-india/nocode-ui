@@ -28,6 +28,7 @@ import { SessionList, Session } from './components/SessionList';
 import { CraftCard } from './components/CraftCard';
 import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
+import { CraftRenderer } from './components/CraftRenderer';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
 import AttachmentThumb from './components/AttachmentThumb';
 import { Attachment, splitTurnAttachments, toChatAttachments } from './attachments';
@@ -564,6 +565,8 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				const isAppend = data.append === true;
 				const textDelta = data.text_delta;
 				const newBlocks = data.blocks ?? [];
+				// an inline craft is drawn in its message; the agent sends `inline` on every event of it
+				const inline = data.inline === true;
 
 				ctx.setCrafts(prev => {
 					const next = new Map(prev);
@@ -622,6 +625,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 							title: data.title ?? 'Craft',
 							blocks: newBlocks,
 							message_id: data.message_id ?? ctx.assistantMsgId,
+							...(inline ? { inline } : {}),
 						};
 					}
 
@@ -629,7 +633,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					return next;
 				});
 
-				ctx.setActiveCraftId(craftId);
+				if (!inline) ctx.setActiveCraftId(craftId);
 
 				// link craft to message; already linked → return prev, no re-render
 				ctx.setMessages(prev => {
@@ -3710,6 +3714,35 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												}}
 											/>
 										))}
+										{msg.craftIds?.map(craftId => {
+											const craft = crafts.get(craftId);
+											if (!craft?.inline) return null;
+											// drawn again later (same id): it shows in the latest message only
+											const holders = messages.filter(m =>
+												m.craftIds?.includes(craftId),
+											);
+											if (
+												holders.length &&
+												holders[holders.length - 1].id !== msg.id
+											)
+												return null;
+											return (
+												<div
+													key={`${msg.id}-craft-${craftId}`}
+													className="_inlineCraft"
+												>
+													<CraftRenderer
+														blocks={craft.blocks}
+														definition={props.definition}
+														styleProperties={styleProperties}
+														sessionId={sessionId}
+														agentEndpoint={agentEndpoint}
+														onSend={handleSend}
+														getAuthHeaders={getAuthHeaders}
+													/>
+												</div>
+											);
+										})}
 									</ChatMessage>
 									{msg.confirmationActions?.map(action => (
 										<ActionBlock
@@ -3743,21 +3776,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					</div>
 				</div>
 
-				{crafts.size > 0 && !activeCraftId && (
+				{Array.from(crafts.values()).some(c => !c.inline) && !activeCraftId && (
 					<div className="_craftCardsBar">
-						{Array.from(crafts.values()).map(c => {
-							const subtitle = c.blocks.find((b: any) => b.type === 'badge')?.label;
-							return (
-								<CraftCard
-									key={c.id}
-									title={c.title}
-									subtitle={subtitle}
-									onClick={() => setActiveCraftId(c.id)}
-									definition={props.definition}
-									styleProperties={styleProperties}
-								/>
-							);
-						})}
+						{Array.from(crafts.values())
+							.filter(c => !c.inline)
+							.map(c => {
+								const subtitle = c.blocks.find(
+									(b: any) => b.type === 'badge',
+								)?.label;
+								return (
+									<CraftCard
+										key={c.id}
+										title={c.title}
+										subtitle={subtitle}
+										onClick={() => setActiveCraftId(c.id)}
+										definition={props.definition}
+										styleProperties={styleProperties}
+									/>
+								);
+							})}
 					</div>
 				)}
 				<div className="_scrollToBottomAnchor">
