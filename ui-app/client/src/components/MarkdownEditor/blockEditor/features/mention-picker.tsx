@@ -9,6 +9,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MentionItem, MentionProvider } from './mention-types';
 import { InlineCalendar } from './inline-calendar';
+import { caretPopoverPlacement, useFixedContainingBlock } from './fixed-position';
+import { consumeEscape } from './escape-guard';
 
 interface MentionPickerProps {
 	readonly position: { x: number; y: number };
@@ -315,8 +317,8 @@ export function MentionPicker({
 					break;
 				}
 				case 'Escape':
-					e.preventDefault();
 					e.stopImmediatePropagation();
+					consumeEscape(e); // only the picker reacts, not a popup around the editor
 					if (datePrompt) {
 						setDatePrompt(null);
 					} else if (pendingCreate) {
@@ -355,16 +357,18 @@ export function MentionPicker({
 		el?.scrollIntoView({ block: 'nearest' });
 	}, [selectedIndex]);
 
-	const menuPos = useMemo(() => {
-		const flipUp = position.y + 320 > globalThis.innerHeight - 20;
-		return {
+	// `position` is the caret in viewport coordinates; inside a popup with a
+	// blurred, scrolled backdrop `fixed` is measured from that backdrop, so
+	// convert (including the flipped-up `bottom`) for the real containing block.
+	const fixedBox = useFixedContainingBlock(menuRef, [position.x, position.y]);
+	const menuPos = useMemo(
+		() => ({
 			position: 'fixed' as const,
-			left: position.x,
-			top: flipUp ? undefined : position.y,
-			bottom: flipUp ? globalThis.innerHeight - position.y + 8 : undefined,
+			...caretPopoverPlacement(position, 320, fixedBox, globalThis.innerHeight),
 			zIndex: 50,
-		};
-	}, [position]);
+		}),
+		[position, fixedBox],
+	);
 
 	const shellStyle = {
 		...menuPos,

@@ -33,6 +33,8 @@ import {
 	Component,
 	LayoutDashboard,
 } from 'lucide-react';
+import { caretPopoverPlacement, useFixedContainingBlock } from './fixed-position';
+import { consumeEscape } from './escape-guard';
 
 interface SlashCommandProps {
 	position: { x: number; y: number };
@@ -386,8 +388,8 @@ export function SlashCommandMenu({
 					break;
 				}
 				case 'Escape':
-					e.preventDefault();
 					e.stopImmediatePropagation();
+					consumeEscape(e); // only the menu closes, not a popup around the editor
 					onClose();
 					break;
 			}
@@ -413,16 +415,18 @@ export function SlashCommandMenu({
 		el?.scrollIntoView({ block: 'nearest' });
 	}, [selectedIndex]);
 
-	const menuPos = useMemo(() => {
-		const flipUp = position.y + 340 > globalThis.innerHeight - 20;
-		return {
+	// `position` is the caret in viewport coordinates; inside a popup with a
+	// blurred, scrolled backdrop `fixed` is measured from that backdrop, so
+	// convert (including the flipped-up `bottom`) for the real containing block.
+	const fixedBox = useFixedContainingBlock(menuRef, [position.x, position.y]);
+	const menuPos = useMemo(
+		() => ({
 			position: 'fixed' as const,
-			left: position.x,
-			top: flipUp ? undefined : position.y,
-			bottom: flipUp ? globalThis.innerHeight - position.y + 8 : undefined,
+			...caretPopoverPlacement(position, 340, fixedBox, globalThis.innerHeight),
 			zIndex: 50,
-		};
-	}, [position]);
+		}),
+		[position, fixedBox],
+	);
 
 	if (flatItems.length === 0) {
 		return (
