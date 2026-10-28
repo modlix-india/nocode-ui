@@ -7,6 +7,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { emojiMap } from '../markdown/emoji';
 import { useT } from '../i18n/context';
+import { caretPopoverPlacement, useFixedContainingBlock } from './fixed-position';
+import { consumeEscape } from './escape-guard';
 
 interface EmojiPickerProps {
 	position: { x: number; y: number };
@@ -150,8 +152,8 @@ export function EmojiPicker({ position, filter, onSelect, onClose }: EmojiPicker
 					break;
 				}
 				case 'Escape':
-					e.preventDefault();
 					e.stopImmediatePropagation();
+					consumeEscape(e); // only the menu closes, not a popup around the editor
 					onClose();
 					break;
 				case 'Tab': {
@@ -185,16 +187,18 @@ export function EmojiPicker({ position, filter, onSelect, onClose }: EmojiPicker
 	}, [selectedIndex]);
 
 	// Position with flip-up detection
-	const menuPos = useMemo(() => {
-		const flipUp = position.y + 280 > globalThis.innerHeight - 20;
-		return {
+	// `position` is the caret in viewport coordinates; inside a popup with a
+	// blurred, scrolled backdrop `fixed` is measured from that backdrop, so
+	// convert (including the flipped-up `bottom`) for the real containing block.
+	const fixedBox = useFixedContainingBlock(menuRef, [position.x, position.y]);
+	const menuPos = useMemo(
+		() => ({
 			position: 'fixed' as const,
-			left: position.x,
-			top: flipUp ? undefined : position.y,
-			bottom: flipUp ? globalThis.innerHeight - position.y + 8 : undefined,
+			...caretPopoverPlacement(position, 280, fixedBox, globalThis.innerHeight),
 			zIndex: 50,
-		};
-	}, [position]);
+		}),
+		[position, fixedBox],
+	);
 
 	if (filtered.length === 0) {
 		return (
