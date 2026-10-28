@@ -101,6 +101,7 @@ import { FindReplaceBar } from './features/find-replace';
 import { BlockMenu } from './features/block-menu';
 import { useIsCoarsePointer } from './hooks/use-is-coarse-pointer';
 import { GripVertical, Plus } from 'lucide-react';
+import { consumeEscape } from './features/escape-guard';
 
 // ---- Public API Types ----
 
@@ -2651,7 +2652,7 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 					// return to text mode first.
 					clearBlockSelection();
 				} else if (e.key === 'Escape') {
-					e.preventDefault();
+					consumeEscape(e); // clears the block selection only, not a popup around the editor
 					clearBlockSelection();
 					return;
 				} else if (e.key === 'Backspace' || e.key === 'Delete') {
@@ -2748,7 +2749,7 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 
 			// Escape closes toolbar
 			if (toolbar.active && e.key === 'Escape') {
-				e.preventDefault();
+				consumeEscape(e); // closes the toolbar only, not a popup around the editor
 				handleToolbarClose();
 				return;
 			}
