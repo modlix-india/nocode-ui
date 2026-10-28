@@ -36,6 +36,7 @@ import {
 	splitContent,
 	toggleMarkInContent,
 	setMarkInContent,
+	rangeHasMark,
 	updateBlock,
 	mergeAdjacentSpans,
 } from './document';
@@ -857,6 +858,176 @@ export function setMark(
 	if (!block) return { doc, ops: [], selection: null };
 	const newContent = setMarkInContent(block.content, from, to, markType, attrs);
 	return replaceContent(doc, blockId, newContent);
+}
+
+// ---- Marks over a selection that can span several blocks ----
+
+/** The selected part of one block's text: [from, to) in that block. */
+export interface BlockTextRange {
+	blockId: string;
+	from: number;
+	to: number;
+}
+
+/** Block types whose inline text takes marks (bold, italic, links...). Code
+ *  blocks are left out: their text is literal and marks cannot be stored. */
+const MARKABLE_BLOCK_TYPES = new Set<BlockType>([
+	'paragraph',
+	'heading1',
+	'heading2',
+	'heading3',
+	'heading4',
+	'heading5',
+	'heading6',
+	'toggleHeading1',
+	'toggleHeading2',
+	'toggleHeading3',
+	'todo',
+	'bulletItem',
+	'numberItem',
+	'todoItem',
+	'quote',
+	'callout',
+	'toggle',
+]);
+
+export function isMarkableBlock(block: Block): boolean {
+	return MARKABLE_BLOCK_TYPES.has(block.type);
+}
+
+/**
+ * The per-block text ranges a text selection covers, in document order. A
+ * selection inside one block gives one range; a selection across blocks gives
+ * the tail of the first block, every block in between and the head of the
+ * last. Blocks whose text cannot take marks, and empty ranges (a selection
+ * that ends at offset 0 of the next block), are left out.
+ */
+export function selectionTextRanges(doc: EditorDocument, sel: Selection): BlockTextRange[] {
+	const flat = getBlocksInOrder(doc);
+	const startIdx0 = flat.findIndex(b => b.id === sel.anchor.blockId);
+	const endIdx0 = flat.findIndex(b => b.id === sel.focus.blockId);
+	if (startIdx0 < 0 || endIdx0 < 0) return [];
+	const forward =
+		startIdx0 < endIdx0 || (startIdx0 === endIdx0 && sel.anchor.offset <= sel.focus.offset);
+	const start = forward ? sel.anchor : sel.focus;
+	const end = forward ? sel.focus : sel.anchor;
+	const startIdx = Math.min(startIdx0, endIdx0);
+	const endIdx = Math.max(startIdx0, endIdx0);
+
+	const out: BlockTextRange[] = [];
+	for (let i = startIdx; i <= endIdx; i++) {
+		const block = flat[i]!;
+		if (!isMarkableBlock(block)) continue;
+		const len = getTextLength(block.content);
+		const from = Math.max(0, Math.min(len, block.id === start.blockId ? start.offset : 0));
+		const to = Math.max(0, Math.min(len, block.id === end.blockId ? end.offset : len));
+		if (from < to) out.push({ blockId: block.id, from, to });
+	}
+	return out;
+}
+
+/** Full-text ranges for a whole-block selection: every selected block and
+ *  every block nested inside it, in document order. */
+export function blockSelectionTextRanges(
+	doc: EditorDocument,
+	blockIds: string[],
+): BlockTextRange[] {
+	const out: BlockTextRange[] = [];
+	const seen = new Set<string>();
+	const visit = (block: Block) => {
+		if (seen.has(block.id)) return;
+		seen.add(block.id);
+		const len = getTextLength(block.content);
+		if (isMarkableBlock(block) && len > 0) out.push({ blockId: block.id, from: 0, to: len });
+		block.children.forEach(visit);
+	};
+	const wanted = new Set(blockIds);
+	for (const block of getBlocksInOrder(doc)) {
+		if (wanted.has(block.id)) visit(block);
+	}
+	return out;
+}
+
+/** Mark types that EVERY selected character has, across all the ranges.
+ *  Empty when nothing is selected. */
+export function activeMarksInRanges(doc: EditorDocument, ranges: BlockTextRange[]): MarkType[] {
+	let common: Set<MarkType> | null = null;
+	for (const r of ranges) {
+		const block = findBlock(doc, r.blockId);
+		if (!block) continue;
+		let pos = 0;
+		for (const span of block.content) {
+			const spanEnd = pos + span.text.length;
+			if (Math.max(pos, r.from) < Math.min(spanEnd, r.to)) {
+				const types = new Set((span.marks ?? []).map(m => m.type));
+				if (common === null) common = types;
+				else for (const t of [...common]) if (!types.has(t)) common.delete(t);
+				if (common.size === 0) return [];
+			}
+			pos = spanEnd;
+		}
+	}
+	return common ? [...common] : [];
+}
+
+/**
+ * Toggle a mark over every range as ONE edit: when all selected text already
+ * has the mark it is removed everywhere, otherwise it is added where missing.
+ * Recorded as one `replaceContent` op per changed block, so undo restores each
+ * block's exact previous spans (including partial marks).
+ */
+export function toggleMarkInRanges(
+	doc: EditorDocument,
+	ranges: BlockTextRange[],
+	mark: Mark,
+): ApplyResult {
+	const live = ranges.filter(r => r.from < r.to && findBlock(doc, r.blockId));
+	if (live.length === 0) return { doc, ops: [], selection: null };
+	const hasEverywhere = live.every(r =>
+		rangeHasMark(findBlock(doc, r.blockId)!.content, r.from, r.to, mark.type),
+	);
+	return rewriteRanges(doc, live, (content, r) => {
+		// Adding: a block whose part already has the mark keeps it as it is
+		// (toggling it there would REMOVE the mark).
+		if (!hasEverywhere && rangeHasMark(content, r.from, r.to, mark.type)) return content;
+		return toggleMarkInContent(content, r.from, r.to, mark);
+	});
+}
+
+/** Set (or clear, with no `attrs`) a single-value mark (color, highlight,
+ *  font) over every range as one edit. */
+export function setMarkInRanges(
+	doc: EditorDocument,
+	ranges: BlockTextRange[],
+	markType: MarkType,
+	attrs?: Record<string, string>,
+): ApplyResult {
+	const live = ranges.filter(r => r.from < r.to && findBlock(doc, r.blockId));
+	return rewriteRanges(doc, live, (content, r) =>
+		setMarkInContent(content, r.from, r.to, markType, attrs),
+	);
+}
+
+function rewriteRanges(
+	doc: EditorDocument,
+	ranges: BlockTextRange[],
+	rewrite: (content: TextSpan[], r: BlockTextRange) => TextSpan[],
+): ApplyResult {
+	let newDoc = doc;
+	const ops: Operation[] = [];
+	for (const r of ranges) {
+		const block = findBlock(newDoc, r.blockId);
+		if (!block) continue;
+		const oldContent = block.content;
+		const newContent = rewrite(oldContent, r);
+		if (newContent === oldContent || JSON.stringify(newContent) === JSON.stringify(oldContent))
+			continue;
+		newDoc = updateBlock(newDoc, r.blockId, b => ({ ...b, content: newContent }));
+		ops.push({ type: 'replaceContent', blockId: r.blockId, oldContent, newContent });
+	}
+	return ops.length > 0
+		? { doc: newDoc, ops, selection: null }
+		: { doc, ops: [], selection: null };
 }
 
 /** Replace the entire content of a block */
