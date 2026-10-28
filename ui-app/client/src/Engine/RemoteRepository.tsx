@@ -166,7 +166,7 @@ export class RemoteRepository<T> implements Repository<T> {
 
 	private storedKey(key: string): string {
 		const url = getDataFromPath(`${STORE_PREFIX}.url`, []);
-		return `${STORED_PREFIX}${this.repoServer}.${this.appCode ?? url?.appCode ?? ''}.${
+		return `${STORED_PREFIX}${this.repoServer}.${this.repoType}.${this.appCode ?? url?.appCode ?? ''}.${
 			this.clientCode ?? url?.clientCode ?? ''
 		}.${this.includeKIRunRepos}.${key}`;
 	}
