@@ -14,6 +14,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { getHref } from '../util/getHref';
+import { isBrowserHandledLinkClick } from '../util/isBrowserHandledLinkClick';
 import { onMouseDownDragStartCurry } from '../../functions/utils';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
@@ -57,6 +58,7 @@ function Grid(props: Readonly<ComponentProps>) {
 			boxShadow,
 			stopPropagation,
 			preventDefault,
+			linkForNewTabOnly = false,
 			dragDataPrefix,
 			dragDataType,
 			dropDataPrefix,
@@ -407,7 +409,21 @@ function Grid(props: Readonly<ComponentProps>) {
 								}
 							: undefined
 					}
-					onMouseDown={handleClick}
+					// With `linkForNewTabOnly` the anchor is there for the browser's own gestures
+					// (Cmd/Ctrl, Shift or middle click open the link in a new tab or window); a plain
+					// click runs On Click and stays on this page. Without it, On Click runs on mouse
+					// down and the link is followed as well.
+					onMouseDown={linkForNewTabOnly ? undefined : handleClick}
+					onClick={
+						linkForNewTabOnly
+							? e => {
+									if (isBrowserHandledLinkClick(e)) return;
+									e.preventDefault();
+									if (stopPropagation) e.stopPropagation();
+									handleClick?.();
+								}
+							: undefined
+					}
 					onFocus={
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(true) : undefined
 					}

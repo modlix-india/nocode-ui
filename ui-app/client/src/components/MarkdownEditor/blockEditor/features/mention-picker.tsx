@@ -500,6 +500,21 @@ export function MentionPicker({
 
 	return (
 		<div ref={menuRef} data-testid="mention-picker" style={shellStyle}>
+			{/* The list is searched by what is typed after "@"; say so, since there
+			    is no separate search box (the caret stays in the text). */}
+			<div
+				data-testid="mention-picker-hint"
+				style={{
+					padding: '6px 12px 2px',
+					fontSize: 12,
+					color: 'var(--mde-text-muted, #999)',
+					whiteSpace: 'nowrap',
+					overflow: 'hidden',
+					textOverflow: 'ellipsis',
+				}}
+			>
+				{filter.trim() ? `Matching "${filter.trim()}"` : 'Type a name to search'}
+			</div>
 			{groups.map((group, groupIndex) => {
 				const baseIndex = flat.findIndex(r => r.groupIndex === groupIndex);
 				return (
