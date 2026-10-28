@@ -67,6 +67,17 @@ export default function TextBoxStyle({
 		min-width: 20px;
 	}
 
+	/* Edge draws its own reveal eye and clear cross inside password/text inputs, beside the
+	   component's own show/hide icon (two eyes on BP sign-in, LZT-1646). The component owns them.
+	   Separate rules: a browser that does not know one of these pseudo-elements drops the whole rule. */
+	${PREFIX} input::-ms-reveal {
+		display: none;
+	}
+
+	${PREFIX} input::-ms-clear {
+		display: none;
+	}
+
 	${PREFIX}._isActive ._label,
 	${PREFIX} ._label._noFloat {
 		transform: translateY(-50%);

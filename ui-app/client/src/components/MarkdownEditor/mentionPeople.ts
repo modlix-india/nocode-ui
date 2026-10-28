@@ -3,12 +3,13 @@ import type { MentionItem, MentionProvider } from './blockEditor/features/mentio
 export interface MentionPerson {
 	id: string;
 	label: string;
+	/** Shown under the name and searched, when the host passes one. */
+	email?: string;
 }
 
-const MAX_SUGGESTIONS = 8;
-
 /** The `mentionPeople` property as people the picker can offer: each entry needs an id and a
- *  name (`name`, `label`, or `firstName` and `lastName`). Anything else is skipped. */
+ *  name (`name`, `label`, or `firstName` and `lastName`). Anything else is skipped. An
+ *  `email` (or `emailId`) is kept for searching when present. */
 export function peopleForMentions(value: unknown): MentionPerson[] {
 	if (!Array.isArray(value)) return [];
 	const out: MentionPerson[] = [];
@@ -21,23 +22,32 @@ export function peopleForMentions(value: unknown): MentionPerson[] {
 		const label = `${p.name || p.label || full || p.userName || ''}`.trim();
 		if (!label || seen.has(`${id}`)) continue;
 		seen.add(`${id}`);
-		out.push({ id: `${id}`, label });
+		const email = `${p.email || p.emailId || ''}`.trim();
+		out.push(email ? { id: `${id}`, label, email } : { id: `${id}`, label });
 	}
 	return out;
 }
 
-/** Names that start with the filter come first, then names with a word that does. */
+/**
+ * Everyone whose name or email matches what was typed after "@", case-insensitive, best
+ * matches first: the name starts with the text, then every typed word starts a word of the
+ * name ("wahab sh" finds "Abdul Wahab Shaik"), then the name contains it, then the email
+ * does. With nothing typed it is the whole list: the picker scrolls, so nobody is left out.
+ */
 export function matchPeople(people: MentionPerson[], filter: string): MentionPerson[] {
-	const f = filter.trim().toLowerCase();
-	if (!f) return people.slice(0, MAX_SUGGESTIONS);
-	const starts: MentionPerson[] = [];
-	const words: MentionPerson[] = [];
+	const f = filter.trim().toLowerCase().replace(/\s+/g, ' ');
+	if (!f) return people.slice();
+	const tokens = f.split(' ');
+	const ranked: MentionPerson[][] = [[], [], [], []];
 	for (const p of people) {
-		const l = p.label.toLowerCase();
-		if (l.startsWith(f)) starts.push(p);
-		else if (l.split(/\s+/).some(w => w.startsWith(f))) words.push(p);
+		const name = p.label.toLowerCase();
+		const words = name.split(/\s+/);
+		if (name.startsWith(f)) ranked[0]!.push(p);
+		else if (tokens.every(t => words.some(w => w.startsWith(t)))) ranked[1]!.push(p);
+		else if (name.includes(f)) ranked[2]!.push(p);
+		else if (p.email?.toLowerCase().includes(f)) ranked[3]!.push(p);
 	}
-	return [...starts, ...words].slice(0, MAX_SUGGESTIONS);
+	return ranked.flat();
 }
 
 /** A `user` mention provider over a fixed list. A mention is stored as
@@ -47,6 +57,10 @@ export function peopleMentionProvider(people: MentionPerson[]): MentionProvider 
 		kind: 'user',
 		label: 'People',
 		search: async (filter: string): Promise<MentionItem[]> =>
-			matchPeople(people, filter).map(p => ({ kind: 'user', id: p.id, label: p.label })),
+			matchPeople(people, filter).map(p =>
+				p.email
+					? { kind: 'user', id: p.id, label: p.label, description: p.email }
+					: { kind: 'user', id: p.id, label: p.label },
+			),
 	};
 }
