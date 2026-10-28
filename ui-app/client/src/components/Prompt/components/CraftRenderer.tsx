@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef, useCallback, createContext, useCont
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { loadGoogleMaps } from '../../../util/googleMapsLoader';
+import { SecureImg } from '../../util/useSecureSrc';
+import { isSecuredUrl } from '../../util/secureImage';
 
 interface CraftContextValue {
 	sessionId: string | null;
@@ -93,10 +95,12 @@ function ImageBlock({
 	if (background === 'dark') classes.push('_dark');
 	if (fit === 'cover') classes.push('_cover');
 	const inlineSrc = thumb_url || url;
-	const img = <img src={inlineSrc} alt={caption ?? ''} loading="lazy" />;
+	// A secured file (an agent's generated creative) needs the sign-in token, which a plain <img> cannot send:
+	// SecureImg fetches it as a blob. A secured URL is not linked either (a new tab would have no token).
+	const img = <SecureImg src={inlineSrc} alt={caption ?? ''} loading="lazy" />;
 	return (
 		<div className={classes.join(' ')}>
-			{url ? (
+			{url && !isSecuredUrl(url) ? (
 				<a
 					href={url}
 					target="_blank"
