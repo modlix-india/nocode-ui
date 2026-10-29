@@ -88,6 +88,16 @@ export default function MessageStyle({
 		${PREFIX} .fa-circle-xmark{
 			cursor: pointer
 		}
+
+		/* On a phone the theme's fixed toast width (360px plus padding) is wider than the
+		   screen, so the toast and its close icon ran off the right edge (LZT-1714). Cap it
+		   to the viewport, keeping the same 16px inset on both sides. */
+		@media (max-width: 480px) {
+			${PREFIX} ._message {
+				box-sizing: border-box;
+				max-width: calc(100vw - 32px);
+			}
+		}
 	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 
 	return <style id="MessageCss">{css}</style>;
