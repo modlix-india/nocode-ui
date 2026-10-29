@@ -31,6 +31,59 @@ function asPoint(v: any): Point | undefined {
 
 const round6 = (n: number) => Math.round(n * 1e6) / 1e6;
 
+type Place = {
+	name?: string;
+	lat?: number;
+	lng?: number;
+	radiusKm?: number;
+	radius?: number;
+	distanceUnit?: string;
+	excluded?: boolean;
+};
+type Spot = {
+	center: Point;
+	bounds?: { south: number; west: number; north: number; east: number };
+};
+
+// one lookup per place name for the whole session (the Geocoding API is billed per call)
+const spots = new Map<string, Promise<Spot | undefined>>();
+
+function findPlace(google: any, name: string): Promise<Spot | undefined> {
+	const key = name.trim().toLowerCase();
+	const cached = spots.get(key);
+	if (cached) return cached;
+	const p = new Promise<Spot | undefined>(resolve => {
+		try {
+			new google.maps.Geocoder().geocode({ address: name }, (res: any, status: string) => {
+				const g = status === 'OK' ? res?.[0]?.geometry : undefined;
+				if (!g?.location) return resolve(undefined);
+				const box = (g.bounds ?? g.viewport)?.toJSON?.() ?? g.bounds ?? g.viewport;
+				resolve({ center: { lat: g.location.lat(), lng: g.location.lng() }, bounds: box });
+			});
+		} catch {
+			resolve(undefined);
+		}
+	});
+	spots.set(key, p);
+	void p.then(s => !s && spots.delete(key));
+	return p;
+}
+
+function placeList(v: any, excluded = false): Place[] {
+	if (!Array.isArray(v)) return [];
+	return v
+		.filter(p => p && typeof p === 'object')
+		.map(p => (excluded ? { ...p, excluded: true } : p));
+}
+
+/** radiusKm, else radius in its distanceUnit (MILE / mile: miles, anything else: km). */
+function placeKm(p: Place): number {
+	if (Number(p.radiusKm) > 0) return Number(p.radiusKm);
+	const r = Number(p.radius);
+	if (!(r > 0)) return 0;
+	return /^mile/i.test(String(p.distanceUnit ?? '')) ? r * 1.609344 : r;
+}
+
 /**
  * Pick one point on a Google map: a click or a marker drag writes {lat, lng} to the binding path
  * (other keys of the bound object are kept) and runs On Change. The bound point, when set, shows
@@ -49,6 +102,10 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			centerLng,
 			zoom,
 			radiusKm,
+			places,
+			excludedPlaces,
+			placeColor,
+			excludedColor,
 			noMapText,
 			readOnly,
 			onChange,
@@ -73,8 +130,17 @@ function MapPicker(props: Readonly<ComponentProps>) {
 
 	const [bound, setBound] = useState<any>(undefined);
 	const [failed, setFailed] = useState(false);
+	const [ready, setReady] = useState(false);
 	const holder = useRef<HTMLDivElement>(null);
-	const live = useRef<{ google?: any; map?: any; marker?: any; circle?: any }>({});
+	const live = useRef<{
+		google?: any;
+		map?: any;
+		marker?: any;
+		circle?: any;
+		shapes?: any[];
+		fit?: any;
+		idled?: boolean;
+	}>({});
 	const latest = useRef<{ bound?: any; readOnly?: boolean; onChange?: string }>({});
 	latest.current = { bound, readOnly, onChange };
 
@@ -108,6 +174,12 @@ function MapPicker(props: Readonly<ComponentProps>) {
 					clickableIcons: false,
 				});
 				live.current = { google, map };
+				// a fit asked for before the map first settles is lost, so it is held until then
+				map.addListener('idle', () => {
+					live.current.idled = true;
+					if (live.current.fit) fitWhenShown(live.current.fit);
+				});
+				setReady(true);
 				map.addListener('click', (e: any) => {
 					if (latest.current.readOnly || !e?.latLng) return;
 					pick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
@@ -118,6 +190,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		return () => {
 			cancelled = true;
 			live.current = {};
+			setReady(false);
 		};
 	}, [apiKey]);
 
@@ -186,6 +259,93 @@ function MapPicker(props: Readonly<ComponentProps>) {
 	}
 
 	useEffect(() => drawPoint(point), [point?.lat, point?.lng, radiusKm]);
+
+	// A map inside a hidden step has no size; fitting it then does nothing, so the fit waits until it is shown.
+	function fitWhenShown(bounds: any) {
+		const { map } = live.current;
+		if (!map) return;
+		const el = holder.current;
+		if (live.current.idled && el && el.offsetWidth > 0 && el.offsetHeight > 0) {
+			live.current.fit = undefined;
+			map.fitBounds(bounds, 24);
+		} else live.current.fit = bounds;
+	}
+
+	useEffect(() => {
+		const el = holder.current;
+		if (!ready || !el || typeof ResizeObserver === 'undefined') return;
+		const ro = new ResizeObserver(() => {
+			if (live.current.fit && el.offsetWidth > 0 && el.offsetHeight > 0)
+				fitWhenShown(live.current.fit);
+		});
+		ro.observe(el);
+		return () => ro.disconnect();
+	}, [ready]);
+
+	// ADZ-1171: the places a page targets (or excludes), drawn read-only under the picked point
+	const allPlaces = [...placeList(places), ...placeList(excludedPlaces, true)];
+	const placesKey = JSON.stringify(allPlaces);
+	useEffect(() => {
+		const { google, map } = live.current;
+		if (!ready || !google || !map) return;
+		let stale = false;
+		(live.current.shapes ?? []).forEach(s => s.setMap(null));
+		live.current.shapes = [];
+		const list: Place[] = JSON.parse(placesKey);
+		if (!list.length) return;
+		Promise.all(
+			list.map(pl => {
+				const at = asPoint(pl);
+				if (at) return Promise.resolve<Spot | undefined>({ center: at });
+				return pl.name ? findPlace(google, String(pl.name)) : Promise.resolve(undefined);
+			}),
+		).then(found => {
+			if (stale || live.current.map !== map) return;
+			const all = new google.maps.LatLngBounds();
+			let any = false;
+			found.forEach((spot, i) => {
+				if (!spot) return;
+				const pl = list[i];
+				const color = pl.excluded
+					? (excludedColor ?? '#c0362c')
+					: (placeColor ?? '#1a1a1a');
+				const look = {
+					map,
+					clickable: false,
+					strokeColor: color,
+					strokeOpacity: 0.9,
+					strokeWeight: pl.excluded ? 2 : 1.5,
+					fillColor: color,
+					fillOpacity: pl.excluded ? 0.18 : 0.08,
+				};
+				const km = placeKm(pl);
+				let shape: any;
+				if (km > 0 || !spot.bounds) {
+					shape = new google.maps.Circle({
+						...look,
+						center: spot.center,
+						radius: (km > 0 ? km : 1) * 1000,
+					});
+				} else {
+					shape = new google.maps.Rectangle({ ...look, bounds: spot.bounds });
+				}
+				live.current.shapes!.push(shape);
+				const b = shape.getBounds?.();
+				if (b) {
+					all.union(b);
+					any = true;
+				}
+			});
+			if (!any) return;
+			// the picked point stays in view too
+			const at = asPoint(latest.current.bound);
+			if (at) all.extend(at);
+			fitWhenShown(all);
+		});
+		return () => {
+			stale = true;
+		};
+	}, [ready, placesKey, placeColor, excludedColor]);
 
 	return (
 		<div className="comp compMapPicker" style={resolvedStyles.comp ?? {}}>

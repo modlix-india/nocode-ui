@@ -1,4 +1,5 @@
 import {
+	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
 	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
@@ -49,6 +50,38 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description:
 			'Draws a circle of this radius around the picked point. Empty or 0: no circle.',
 		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'places',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Places to show',
+		description:
+			'Optional list of places drawn on the map (not picked): [{name, lat, lng, radiusKm (or radius + distanceUnit KILOMETER / MILE), excluded}]. A place with lat / lng is drawn there, one with only a name is looked up by name. With a radius it is a circle, without one the area the place covers is outlined. The map fits them all when the list changes.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'excludedPlaces',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Excluded places to show',
+		description:
+			'Optional list of places drawn in the excluded colour, same shape as Places to show.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'placeColor',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Place colour',
+		description: 'Outline and fill colour of the places to show.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '#1a1a1a',
+	},
+	{
+		name: 'excludedColor',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Excluded place colour',
+		description: 'Outline and fill colour of the places marked excluded.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '#c0362c',
 	},
 	{
 		name: 'noMapText',
