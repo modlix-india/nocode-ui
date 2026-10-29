@@ -8,6 +8,7 @@ import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import useDefinition from '../util/useDefinition';
 import { propertiesDefinition, stylePropertiesDefinition } from './analyticsHeatmapProperties';
 import { PAGE_ROUTE_DESIGN_PARAM } from '../../util/pageRouting';
+import { DESIGN_VIEWPORT_HEIGHT_PARAM, typicalViewportHeight } from '../../util/designViewport';
 
 /** What the engine answers for a heatmap. Coordinates are in its units, not pixels. */
 interface HeatmapResponse {
@@ -389,10 +390,12 @@ export default function LazyAnalyticsHeatmap(props: Readonly<ComponentProps>) {
 	 */
 	const base = (siteUrl ?? '').replace(/\/$/, '');
 	let src = '';
+	// The screen height the page is to be laid out for. Without it a `100vh` section is as tall
+	// as this frame, which is as tall as the page, which then grows with it (designViewport.ts).
+	const design = `${PAGE_ROUTE_DESIGN_PARAM}=1&${DESIGN_VIEWPORT_HEIGHT_PARAM}=${typicalViewportHeight(width)}`;
 	if (page && appCode && clientCode)
-		src = `${base}/${appCode}/${clientCode}/page/${page}?${PAGE_ROUTE_DESIGN_PARAM}=1`;
-	else if (path)
-		src = `${base}${path}${path.includes('?') ? '&' : '?'}${PAGE_ROUTE_DESIGN_PARAM}=1`;
+		src = `${base}/${appCode}/${clientCode}/page/${page}?${design}`;
+	else if (path) src = `${base}${path}${path.includes('?') ? '&' : '?'}${design}`;
 
 	// How much room the card actually gives us. Measured rather than assumed: this pane sits in
 	// a resizable workspace next to an explorer that opens and closes.
