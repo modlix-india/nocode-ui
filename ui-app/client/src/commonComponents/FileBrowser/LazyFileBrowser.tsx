@@ -22,8 +22,6 @@ async function uploadFile(
 	headers: any,
 	setSomethingChanged: (value: ((prevState: number) => number) | number) => void,
 ) {
-	const formData = new FormData();
-	Array.from(file).forEach(f => formData.append('file', f));
 	setInProgress(true);
 	try {
 		let url = `/api/files/${resourceType}/${path}/`;
@@ -31,9 +29,15 @@ async function uploadFile(
 		if (clientCode) {
 			url += `?clientCode=${clientCode}`;
 		}
-		await axios.post(url, formData, {
-			headers,
-		});
+		// One request per file: the files service keeps only the first `file` part of a multipart upload, so
+		// several files in one form lost all but the first (CXZ-1208).
+		for (const f of Array.from(file)) {
+			const formData = new FormData();
+			formData.append('file', f);
+			try {
+				await axios.post(url, formData, { headers });
+			} catch (e) {}
+		}
 	} catch (e) {
 	} finally {
 		setInProgress(false);
