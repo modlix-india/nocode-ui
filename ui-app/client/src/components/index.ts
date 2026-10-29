@@ -70,6 +70,7 @@ import FileSelector from './FileSelector/FileSelector';
 import Form from './Form/Form';
 import AnalyticsHeatmap from './AnalyticsHeatmap/AnalyticsHeatmap';
 import MapPicker from './MapPicker/MapPicker';
+import SignaturePad from './SignaturePad/SignaturePad';
 
 import MarkdownEditor from './MarkdownEditor/MarkdownEditor';
 import ThemeEditor from './ThemeEditor/ThemeEditor';
@@ -148,6 +149,7 @@ const componentMap = new Map<string, Component>([
 	[Chart.name, Chart],
 	[AnalyticsHeatmap.name, AnalyticsHeatmap],
 	[MapPicker.name, MapPicker],
+	[SignaturePad.name, SignaturePad],
 	[FileSelector.name, FileSelector],
 	[FillerDefinitionEditor.name, FillerDefinitionEditor],
 	[FillerValueEditor.name, FillerValueEditor],
