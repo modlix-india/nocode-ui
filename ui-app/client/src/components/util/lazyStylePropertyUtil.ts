@@ -20,16 +20,46 @@ export function lazyStylePropertyLoadFunction(
 				);
 			return;
 		}
-		axios.get(lazyStylePropURL(name)).then((res: any) => {
-			if (!Array.isArray(res.data)) {
-				console.error('Unable to load style properties for component : ', name);
-				console.error('Response : ', res);
-				return;
-			}
-
-			inflateAndSetStyleProps(props, res.data, setStyleProperties, styleDefaults);
+		void fetchStyleProperties(name).then(data => {
+			if (!data) return;
+			if (styleDefaults.size > 0) return;
+			inflateAndSetStyleProps(props, data, setStyleProperties, styleDefaults);
 		});
 	};
+}
+
+const STYLE_PROPERTY_RETRY_DELAYS = [400, 1500, 4000];
+
+/**
+ * Fetches `/styleProperties/<name>.json`, retrying when the request fails or does not answer with
+ * an array. One failed request used to leave the component without any of its theme styles until
+ * a reload (browser-default buttons and inputs on a sign-in page), and the CDN answers a miss with
+ * a month long max-age, so a retry asks for a URL no cache holds (`r=<attempt>`).
+ */
+export function fetchStyleProperties(
+	name: string,
+	delays: Array<number> = STYLE_PROPERTY_RETRY_DELAYS,
+): Promise<Array<StylePropertyDefinition> | undefined> {
+	const attempt = (n: number): Promise<Array<StylePropertyDefinition> | undefined> => {
+		const base = lazyStylePropURL(name);
+		const url = n === 0 ? base : `${base}${base.includes('?') ? '&' : '?'}r=${n}`;
+		return axios
+			.get(url)
+			.then((res: any) => {
+				if (Array.isArray(res?.data)) return res.data;
+				throw new Error('Style properties response is not a list');
+			})
+			.catch((err: any) => {
+				if (n >= delays.length) {
+					console.error('Unable to load style properties for component : ', name, err);
+					return undefined;
+				}
+				return new Promise<Array<StylePropertyDefinition> | undefined>(resolve =>
+					setTimeout(() => resolve(attempt(n + 1)), delays[n]),
+				);
+			});
+	};
+	return attempt(0);
 }
 
 export function inflateAndSetStyleProps(
