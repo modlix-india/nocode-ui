@@ -1806,9 +1806,14 @@ export default function PromptStyle({
 		${PREFIX} ._craftKvValue {
 		}
 
+		/* colorTwo is a SURFACE colour in the app themes (classic #F9FAFB, monoLight
+		   #F4F4F2, monoDark #121211), never a text or accent colour: every rule below
+		   that used it painted near-invisible text (ADZ-1225). A link is the text
+		   colour, marked by its underline. */
 		${PREFIX} ._craftKvValue a {
-			color: ${t('colorTwo', '#1967d2')};
-			text-decoration: none;
+			color: ${t('promptFontColor', '#1967d2')};
+			text-decoration: underline;
+			text-underline-offset: 2px;
 		}
 
 		${PREFIX} ._craftKvValue a:hover {
@@ -2284,7 +2289,7 @@ export default function PromptStyle({
 			font-size: 12px;
 			line-height: 1.45;
 			background-color: ${t('accentTintColor', 'rgba(245, 158, 11, 0.1)')};
-			color: ${t('colorTwo', '#92400e')};
+			color: ${t('promptNoticeFontColor', '#92400e')};
 		}
 
 		${PREFIX} ._promptSavedNotice > span {
@@ -2319,7 +2324,7 @@ export default function PromptStyle({
 			font-size: 12px;
 			line-height: 1.45;
 			background-color: ${t('accentTintColor', 'rgba(245, 158, 11, 0.1)')};
-			color: ${t('colorTwo', '#92400e')};
+			color: ${t('promptNoticeFontColor', '#92400e')};
 		}
 
 		${PREFIX} ._promptPendingHead {
@@ -2766,7 +2771,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._usageContext._warning {
-			color: ${t('colorTwo', '#b45309')};
+			color: ${t('promptWarningFontColor', '#b45309')};
 		}
 
 		${PREFIX} ._usageContext._critical {
@@ -2791,7 +2796,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._usageContext._warning + ._usageContextBar ._usageContextFill {
-			background: ${t('colorTwo', '#b45309')};
+			background: ${t('warningColor', '#b45309')};
 		}
 
 		${PREFIX} ._usageContext._critical + ._usageContextBar ._usageContextFill {
@@ -2822,7 +2827,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._confirmationIcon {
 			font-size: 16px;
-			color: ${t('colorTwo', '#b45309')};
+			color: ${t('promptConfirmIconColor', t('warningColor', '#b45309'))};
 		}
 
 		${PREFIX} ._confirmationTitle {
@@ -2887,7 +2892,7 @@ export default function PromptStyle({
 		${PREFIX} ._confirmationOption._selected {
 			background: ${t('infoWashColor', '#e8f0fe')};
 			border-color: ${t('colorOne', '#1a73e8')};
-			color: ${t('colorTwo', '#1a73e8')};
+			color: ${t('promptFontColor', '#1a73e8')};
 		}
 
 		${PREFIX} ._confirmationOption._selected:hover {
