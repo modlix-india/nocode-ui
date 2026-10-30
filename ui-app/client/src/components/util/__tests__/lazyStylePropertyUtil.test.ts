@@ -62,4 +62,52 @@ describe('fetchStyleProperties', () => {
 		expect(set).toHaveBeenCalledWith([{ n: 'x', dv: 'red' }], undefined);
 		expect(defaults.get('x')).toBe('red');
 	});
+	it('asks one request per component when the load function runs twice at once', async () => {
+		mockedGet.mockResolvedValue({ data: [{ n: 'y', dv: 'blue' }] });
+		const set = jest.fn();
+		const defaults = new Map<string, string>();
+		const load = lazyStylePropertyLoadFunction('Dropdown', set, defaults);
+		load();
+		load();
+		await Promise.resolve();
+		await new Promise(r => setTimeout(r, 0));
+		expect(mockedGet).toHaveBeenCalledTimes(1);
+		expect(set).toHaveBeenCalledTimes(1);
+	});
+
+	it('asks again when the network comes back after every retry failed', async () => {
+		jest.useFakeTimers();
+		mockedGet.mockRejectedValue(new Error('Network Error'));
+		const set = jest.fn();
+		const defaults = new Map<string, string>();
+		lazyStylePropertyLoadFunction('TextBox', set, defaults)();
+		// The quick retries (400 + 1500 + 4000 ms) all fail.
+		await jest.advanceTimersByTimeAsync(6000);
+		expect(mockedGet).toHaveBeenCalledTimes(4);
+		expect(set).not.toHaveBeenCalled();
+
+		mockedGet.mockReset();
+		mockedGet.mockResolvedValue({ data: [{ n: 'z', dv: 'green' }] });
+		window.dispatchEvent(new Event('online'));
+		await jest.advanceTimersByTimeAsync(0);
+		jest.useRealTimers();
+		expect(mockedGet).toHaveBeenCalledTimes(1);
+		expect(set).toHaveBeenCalledWith([{ n: 'z', dv: 'green' }], undefined);
+		expect(defaults.get('z')).toBe('green');
+	});
+
+	it('asks again on a timer when nothing else wakes it', async () => {
+		jest.useFakeTimers();
+		mockedGet.mockRejectedValue(new Error('Network Error'));
+		const set = jest.fn();
+		const defaults = new Map<string, string>();
+		lazyStylePropertyLoadFunction('Calendar', set, defaults)();
+		await jest.advanceTimersByTimeAsync(6000);
+		expect(set).not.toHaveBeenCalled();
+
+		mockedGet.mockResolvedValue({ data: [{ n: 'c', dv: '1px' }] });
+		await jest.advanceTimersByTimeAsync(15000);
+		jest.useRealTimers();
+		expect(set).toHaveBeenCalledWith([{ n: 'c', dv: '1px' }], undefined);
+	});
 });
