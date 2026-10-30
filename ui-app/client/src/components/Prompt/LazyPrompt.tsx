@@ -34,6 +34,7 @@ import AttachmentThumb from './components/AttachmentThumb';
 import { Attachment, splitTurnAttachments, toChatAttachments } from './attachments';
 import { SavedObject, savedNoticeLines } from './savedNotice';
 import { newSteerId, postSteer } from './steer';
+import { NOT_SEEN, sessionChange } from './sessionWatch';
 import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
@@ -300,7 +301,10 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			const incoming: string = data.text ?? '';
 			const afterTool = ctx.takeToolRan?.() ?? false;
 			const gap =
-				afterTool && ctx.currentText && !/\s$/.test(ctx.currentText) && !/^\s/.test(incoming)
+				afterTool &&
+				ctx.currentText &&
+				!/\s$/.test(ctx.currentText) &&
+				!/^\s/.test(incoming)
 					? '\n\n'
 					: '';
 			const newText = ctx.currentText + gap + incoming;
@@ -969,7 +973,7 @@ const RECONNECT_BACKOFF_MS = 1_000;
 
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath, bindingPath2, bindingPath3 },
+		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
@@ -1048,6 +1052,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			// one is a callback a parent COMPONENT passes, this one is an event
 			// function a PAGE names, and a page definition cannot carry a function.
 			onObjectSaved: onObjectSavedEvent,
+			onSessionSwitch,
 			shortcutKey,
 			shortcutScope,
 			shortcutPriority,
@@ -1164,6 +1169,33 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		onSessionChange?.(sessionId);
 	}, [sessionId, onSessionChange]);
+	// The page follows the conversation too: the Session Binding, then On Session
+	// Change (sessionWatch.ts says when).
+	const sessionBindingPath = useMemo(
+		() =>
+			bindingPath4
+				? getPathFromLocation(bindingPath4, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath4, props.locationHistory, pageExtractor],
+	);
+	const heardSessionRef = useRef<string | null | typeof NOT_SEEN>(NOT_SEEN);
+	useEffect(() => {
+		const change = sessionChange(heardSessionRef.current, sessionId);
+		heardSessionRef.current = sessionId;
+		if (!change) return;
+		if (sessionBindingPath) setData(sessionBindingPath, change.value, props.context.pageName);
+		if (!change.fire || !onSessionSwitch) return;
+		const switchEvent = props.pageDefinition.eventFunctions?.[onSessionSwitch];
+		if (switchEvent)
+			runEvent(
+				switchEvent,
+				onSessionSwitch,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sessionId]);
 	const [sessions, setSessions] = useState<Session[]>([]);
 	const [feedbackTurn, setFeedbackTurn] = useState<{
 		sessionId: string;

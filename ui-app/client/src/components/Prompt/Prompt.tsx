@@ -36,6 +36,9 @@ const component: Component = {
 		// Point it at a LocalStore path so the handoff survives the navigation,
 		// and expect it to be empty afterwards: the chat takes the prompt.
 		bindingPath3: { name: 'Pending Prompt Binding' },
+		// The session id of the chat on screen, empty for a new chat; written before
+		// On Session Change fires, so a page can follow the conversation.
+		bindingPath4: { name: 'Session Binding' },
 	},
 	defaultTemplate: {
 		key: '',
