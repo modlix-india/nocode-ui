@@ -6,6 +6,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './audioProperti
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
 import getSrcUrl from '../util/getSrcUrl';
+import { useSecureSrc } from '../util/useSecureSrc';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { IconHelper } from '../util/IconHelper';
 import AudioStyle from './AudioStyle';
@@ -57,6 +58,10 @@ function Audio(props: Readonly<ComponentProps>) {
 		pageExtractor,
 		urlExtractor,
 	);
+
+	// A secured file (a call recording) needs the sign in token, which <audio src> cannot send:
+	// it is fetched as a blob first, as Image does. Other URLs pass through unchanged.
+	const playSrc = useSecureSrc(src);
 
 	const [audioControls, setAudioControls] = useState<boolean>(true);
 	const [playPauseEnd, setPlayPauseEnd] = useState<string>('play');
@@ -575,7 +580,7 @@ function Audio(props: Readonly<ComponentProps>) {
 				muted={muted}
 				loop={loop}
 				ref={audio}
-				key={getSrcUrl(src)}
+				key={getSrcUrl(playSrc)}
 				data-seek
 				onLoadedMetadata={initializeAudio}
 				onTimeUpdate={updateTimeElapsed}
@@ -587,7 +592,7 @@ function Audio(props: Readonly<ComponentProps>) {
 					setPlayPauseEnd('pause');
 				}}
 			>
-				<source src={getSrcUrl(src)} type={type} />
+				<source src={getSrcUrl(playSrc)} type={type} />
 				Your browser does not support HTML5 audio.
 			</audio>
 			{audioDesign === '_audioDesign4' ? fileName : null}
