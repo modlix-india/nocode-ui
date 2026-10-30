@@ -39,6 +39,10 @@ type Place = {
 	radius?: number;
 	distanceUnit?: string;
 	excluded?: boolean;
+	/** ADZ-1217: drawn in the suggested colour (a place offered, not chosen). */
+	suggested?: boolean;
+	/** ADZ-1217: a Google place id; with a map id its real outline is drawn, with no lookup. */
+	placeId?: string;
 };
 type Spot = {
 	center: Point;
@@ -69,11 +73,59 @@ function findPlace(google: any, name: string): Promise<Spot | undefined> {
 	return p;
 }
 
-function placeList(v: any, excluded = false): Place[] {
+function placeList(v: any, excluded = false, suggested = false): Place[] {
 	if (!Array.isArray(v)) return [];
 	return v
 		.filter(p => p && typeof p === 'object')
-		.map(p => (excluded ? { ...p, excluded: true } : p));
+		.map(p =>
+			excluded ? { ...p, excluded: true } : suggested ? { ...p, suggested: true } : p,
+		);
+}
+
+// ADZ-1217: the Google boundary layers a place id can be outlined in (a map id with them switched on)
+const BOUNDARY_LAYERS = [
+	'LOCALITY',
+	'POSTAL_CODE',
+	'ADMINISTRATIVE_AREA_LEVEL_2',
+	'ADMINISTRATIVE_AREA_LEVEL_1',
+	'COUNTRY',
+];
+
+/** The boundary layers this map can style: none without a map id or when the map style has none switched on. */
+export function boundaryLayers(google: any, map: any): any[] {
+	if (!map?.getFeatureLayer) return [];
+	const types = google?.maps?.FeatureType ?? {};
+	const out: any[] = [];
+	for (const t of BOUNDARY_LAYERS) {
+		try {
+			const layer = map.getFeatureLayer(types[t] ?? t);
+			if (layer?.isAvailable) out.push(layer);
+		} catch {
+			/* a layer this map does not have */
+		}
+	}
+	return out;
+}
+
+/** Outline and fill of a place: excluded, suggested (lighter) or chosen; an outlined area is filled a little more. */
+export function placeLook(
+	pl: Place,
+	colors: { place?: string; excluded?: string; suggested?: string },
+	outline = false,
+) {
+	const color = pl.excluded
+		? (colors.excluded ?? '#c0362c')
+		: pl.suggested
+			? (colors.suggested ?? '#6b7280')
+			: (colors.place ?? '#1a1a1a');
+	const fill = pl.excluded ? 0.18 : pl.suggested ? 0.04 : outline ? 0.18 : 0.08;
+	return {
+		strokeColor: color,
+		strokeOpacity: pl.suggested ? 0.6 : 0.9,
+		strokeWeight: pl.excluded ? 2 : pl.suggested ? 1 : 1.5,
+		fillColor: color,
+		fillOpacity: fill,
+	};
 }
 
 /** radiusKm, else radius in its distanceUnit (MILE / mile: miles, anything else: km). */
@@ -94,7 +146,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
 	const { definition, locationHistory, context, pageDefinition } = props;
-	const { bindingPath, key } = definition;
+	const { bindingPath, bindingPath2, key } = definition;
 	const {
 		properties: {
 			apiKey,
@@ -104,11 +156,15 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			radiusKm,
 			places,
 			excludedPlaces,
+			suggestedPlaces,
 			placeColor,
 			excludedColor,
+			suggestedColor,
+			mapId,
 			noMapText,
 			readOnly,
 			onChange,
+			onPlaceClick,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -127,6 +183,10 @@ function MapPicker(props: Readonly<ComponentProps>) {
 	const path = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
 		: undefined;
+	// ADZ-1217: where a click on a drawn place is written (the place as given), for On Place Click
+	const clickedPath = bindingPath2
+		? getPathFromLocation(bindingPath2, locationHistory, pageExtractor)
+		: undefined;
 
 	const [bound, setBound] = useState<any>(undefined);
 	const [failed, setFailed] = useState(false);
@@ -138,11 +198,19 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		marker?: any;
 		circle?: any;
 		shapes?: any[];
+		layers?: any[];
+		layerListeners?: any[];
 		fit?: any;
 		idled?: boolean;
 	}>({});
-	const latest = useRef<{ bound?: any; readOnly?: boolean; onChange?: string }>({});
-	latest.current = { bound, readOnly, onChange };
+	const latest = useRef<{
+		bound?: any;
+		readOnly?: boolean;
+		onChange?: string;
+		onPlaceClick?: string;
+		clickedPath?: string;
+	}>({});
+	latest.current = { bound, readOnly, onChange, onPlaceClick, clickedPath };
 
 	useEffect(() => {
 		if (!path) return;
@@ -172,6 +240,8 @@ function MapPicker(props: Readonly<ComponentProps>) {
 					zoomControl: true,
 					gestureHandling: 'cooperative',
 					clickableIcons: false,
+					// ADZ-1217: a map id whose style has the boundary layers on draws places' real outlines
+					...(mapId ? { mapId } : {}),
 				});
 				live.current = { google, map };
 				// a fit asked for before the map first settles is lost, so it is held until then
@@ -192,7 +262,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			live.current = {};
 			setReady(false);
 		};
-	}, [apiKey]);
+	}, [apiKey, mapId]);
 
 	function pick(p: Point) {
 		if (!path) return;
@@ -282,21 +352,80 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		return () => ro.disconnect();
 	}, [ready]);
 
-	// ADZ-1171: the places a page targets (or excludes), drawn read-only under the picked point
-	const allPlaces = [...placeList(places), ...placeList(excludedPlaces, true)];
+	// ADZ-1217: a click on a drawn place writes it to the second binding and runs On Place Click
+	function clickPlace(pl: Place) {
+		const { clickedPath: cp, onPlaceClick: ev } = latest.current;
+		if (cp) setData(cp, pl, context.pageName);
+		if (ev && pageDefinition.eventFunctions?.[ev])
+			(async () =>
+				await runEvent(
+					pageDefinition.eventFunctions[ev],
+					key,
+					context.pageName,
+					locationHistory,
+					pageDefinition,
+				))();
+	}
+
+	function clearPlaces() {
+		(live.current.shapes ?? []).forEach(s => s.setMap(null));
+		live.current.shapes = [];
+		(live.current.layerListeners ?? []).forEach(l => l?.remove?.());
+		live.current.layerListeners = [];
+		(live.current.layers ?? []).forEach(l => {
+			try {
+				l.style = null;
+			} catch {
+				/* a layer that takes no style */
+			}
+		});
+		live.current.layers = [];
+	}
+
+	// ADZ-1171: the places a page targets (or excludes), drawn read-only under the picked point.
+	// ADZ-1217: plus the suggested ones in their own colour; a place with a Google place id (and no radius) is
+	// outlined with its real boundary when the map id has boundary layers, else drawn as before.
+	const allPlaces = [
+		...placeList(places),
+		...placeList(suggestedPlaces, false, true),
+		...placeList(excludedPlaces, true),
+	];
 	const placesKey = JSON.stringify(allPlaces);
+	const clickable = !!(onPlaceClick || clickedPath);
 	useEffect(() => {
 		const { google, map } = live.current;
 		if (!ready || !google || !map) return;
 		let stale = false;
-		(live.current.shapes ?? []).forEach(s => s.setMap(null));
-		live.current.shapes = [];
+		clearPlaces();
 		const list: Place[] = JSON.parse(placesKey);
 		if (!list.length) return;
+		const colors = { place: placeColor, excluded: excludedColor, suggested: suggestedColor };
+		const layers = mapId ? boundaryLayers(google, map) : [];
+		const outlined = new Map<string, Place>();
+		list.forEach(pl => {
+			if (layers.length && pl.placeId && !(placeKm(pl) > 0)) outlined.set(pl.placeId, pl);
+		});
+		if (outlined.size) {
+			live.current.layers = layers;
+			layers.forEach(layer => {
+				layer.style = (opts: any) => {
+					const pl = outlined.get(opts?.feature?.placeId);
+					return pl ? placeLook(pl, colors, true) : null;
+				};
+				if (clickable)
+					live.current.layerListeners!.push(
+						layer.addListener('click', (e: any) => {
+							const pl = outlined.get(e?.features?.[0]?.placeId);
+							if (pl) clickPlace(pl);
+						}),
+					);
+			});
+		}
 		Promise.all(
 			list.map(pl => {
 				const at = asPoint(pl);
 				if (at) return Promise.resolve<Spot | undefined>({ center: at });
+				if (pl.placeId && outlined.has(pl.placeId)) return Promise.resolve(undefined);
 				return pl.name ? findPlace(google, String(pl.name)) : Promise.resolve(undefined);
 			}),
 		).then(found => {
@@ -306,21 +435,18 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			found.forEach((spot, i) => {
 				if (!spot) return;
 				const pl = list[i];
-				const color = pl.excluded
-					? (excludedColor ?? '#c0362c')
-					: (placeColor ?? '#1a1a1a');
-				const look = {
-					map,
-					clickable: false,
-					strokeColor: color,
-					strokeOpacity: 0.9,
-					strokeWeight: pl.excluded ? 2 : 1.5,
-					fillColor: color,
-					fillOpacity: pl.excluded ? 0.18 : 0.08,
-				};
+				const look = { map, clickable, ...placeLook(pl, colors) };
 				const km = placeKm(pl);
 				let shape: any;
-				if (km > 0 || !spot.bounds) {
+				if (pl.placeId && outlined.has(pl.placeId)) {
+					// the outline is the layer's; a small dot marks it and takes the click
+					shape = new google.maps.Circle({
+						...look,
+						fillOpacity: 0.6,
+						center: spot.center,
+						radius: 120,
+					});
+				} else if (km > 0 || !spot.bounds) {
 					shape = new google.maps.Circle({
 						...look,
 						center: spot.center,
@@ -329,10 +455,14 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				} else {
 					shape = new google.maps.Rectangle({ ...look, bounds: spot.bounds });
 				}
+				if (clickable) shape.addListener?.('click', () => clickPlace(pl));
 				live.current.shapes!.push(shape);
-				const b = shape.getBounds?.();
+				const b = pl.placeId && outlined.has(pl.placeId) ? undefined : shape.getBounds?.();
 				if (b) {
 					all.union(b);
+					any = true;
+				} else {
+					all.extend(spot.center);
 					any = true;
 				}
 			});
@@ -345,7 +475,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		return () => {
 			stale = true;
 		};
-	}, [ready, placesKey, placeColor, excludedColor]);
+	}, [ready, placesKey, placeColor, excludedColor, suggestedColor, mapId, clickable]);
 
 	return (
 		<div className="comp compMapPicker" style={resolvedStyles.comp ?? {}}>

@@ -1891,9 +1891,13 @@ export default function PromptStyle({
 			font-size: 14px;
 		}
 
-		${PREFIX} ._craftCallout._info { background: ${t('infoWashColor', '#e8f0fe')}; color: ${t('colorTwo', '#1967d2')}; }
-		${PREFIX} ._craftCallout._warning { background: ${t('warningWashColor', '#fef7e0')}; color: ${t('colorTwo', '#b06000')}; }
-		${PREFIX} ._craftCallout._success { background: ${t('successWashColor', '#e6f4ea')}; color: #137333; }
+		/* Text on a wash is the prompt's own font colour. colorTwo was used here, but in
+		   every theme (classic, monoLight, monoDark) it is a SURFACE colour (#F9FAFB,
+		   #F4F4F2, #121211), so callout text was all but invisible: the picture-less
+		   creative cards of ADZ-1225 read as never-loading placeholders. */
+		${PREFIX} ._craftCallout._info { background: ${t('infoWashColor', '#e8f0fe')}; color: ${t('promptFontColor', '#1967d2')}; }
+		${PREFIX} ._craftCallout._warning { background: ${t('warningWashColor', '#fef7e0')}; color: ${t('promptFontColor', '#b06000')}; }
+		${PREFIX} ._craftCallout._success { background: ${t('successWashColor', '#e6f4ea')}; color: ${t('promptFontColor', '#137333')}; }
 
 		${PREFIX} ._craftList {
 			margin: 0;
@@ -2049,6 +2053,25 @@ export default function PromptStyle({
 			height: 175px;
 			aspect-ratio: auto;
 			object-fit: cover;
+		}
+
+		/* A card without a picture (a text ad, a creative with no image yet) is a
+		   callout: about the picture's height, so it reads as a card with its text,
+		   not as a pale strip. Not stretched to the row (flex-start): a stretched
+		   -webkit-box shows the lines past its clamp under the ellipsis. */
+		${PREFIX} ._craftCarousel > ._craftCallout {
+			box-sizing: border-box;
+			align-self: flex-start;
+			overflow: hidden;
+			font-size: 13px;
+			line-height: 1.4;
+			display: -webkit-box;
+			-webkit-line-clamp: 8;
+			-webkit-box-orient: vertical;
+			/* the bottom space is a transparent border, not padding: overflow clips at
+			   the padding edge, so a padding-bottom would show half of the next line */
+			padding: 10px 12px 0;
+			border-bottom: 10px solid transparent;
 		}
 
 		${PREFIX} ._craftCarousel ._craftImageCaption {
