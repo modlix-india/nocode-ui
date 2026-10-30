@@ -39,8 +39,10 @@ jest.mock('../../util/useDefinition', () => ({
 }));
 
 let clickHandler: ((e: any) => void) | undefined;
-const drawn: Array<{ kind: string; opts: any }> = [];
+const drawn: Array<{ kind: string; opts: any; click?: () => void }> = [];
 let fitted = 0;
+// ADZ-1217: boundary layers the map id switches on (none unless a test sets them)
+let layers: any[] = [];
 jest.mock('../../../util/googleMapsLoader', () => ({
 	loadGoogleMaps: () =>
 		Promise.resolve({
@@ -55,14 +57,21 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 						getZoom: () => 5,
 						setZoom: () => {},
 						fitBounds: () => fitted++,
+						getFeatureLayer: (t: string) => layers.find(l => l.type === t),
 					};
 				},
+				FeatureType: { LOCALITY: 'LOCALITY', POSTAL_CODE: 'POSTAL_CODE' },
 				LatLngBounds: function () {
 					return { union: () => {}, extend: () => {} };
 				},
 				Rectangle: function (opts: any) {
-					drawn.push({ kind: 'rect', opts });
-					return { setMap: () => {}, getBounds: () => opts.bounds };
+					const d: any = { kind: 'rect', opts };
+					drawn.push(d);
+					return {
+						setMap: () => {},
+						getBounds: () => opts.bounds,
+						addListener: (_n: string, fn: any) => (d.click = fn),
+					};
 				},
 				Geocoder: function () {
 					return {
@@ -94,12 +103,14 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 					return { addListener: () => {}, setPosition: () => {}, setMap: () => {} };
 				},
 				Circle: function (opts: any) {
-					drawn.push({ kind: 'circle', opts });
+					const d: any = { kind: 'circle', opts };
+					drawn.push(d);
 					return {
 						setCenter: () => {},
 						setRadius: () => {},
 						setMap: () => {},
 						getBounds: () => ({}),
+						addListener: (_n: string, fn: any) => (d.click = fn),
 					};
 				},
 			},
@@ -113,8 +124,11 @@ const definition = {
 	name: 'mp',
 	type: 'MapPicker',
 	bindingPath: { value: 'Page.pin' },
+	bindingPath2: { value: 'Page.clicked' },
 } as any;
-const pageDefinition = { eventFunctions: { picked: { name: 'picked' } } } as any;
+const pageDefinition = {
+	eventFunctions: { picked: { name: 'picked' }, placeClicked: { name: 'placeClicked' } },
+} as any;
 
 let root: Root;
 let host: HTMLDivElement;
@@ -127,6 +141,7 @@ beforeEach(() => {
 	clickHandler = undefined;
 	drawn.length = 0;
 	fitted = 0;
+	layers = [];
 });
 afterEach(() => act(() => root.unmount()));
 
@@ -202,4 +217,64 @@ test('no places draws nothing and keeps the pin behaviour', async () => {
 	});
 	expect(drawn).toHaveLength(0);
 	expect(fitted).toBe(0);
+});
+
+test('ADZ-1217: suggested places are lighter, and a click writes the place and runs On Place Click', async () => {
+	jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(600);
+	jest.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300);
+	properties = {
+		apiKey: 'k',
+		places: [{ name: 'Whitefield', lat: 12.97, lng: 77.75 }],
+		suggestedPlaces: [{ name: 'Hoodi', lat: 12.99, lng: 77.71 }],
+		suggestedColor: '#999999',
+		onPlaceClick: 'placeClicked',
+	};
+	render();
+	await act(async () => {
+		await new Promise(r => setTimeout(r, 0));
+	});
+	const [chosen, offered] = drawn;
+	expect(chosen.opts.strokeColor).toBe('#1a1a1a');
+	expect(offered.opts.strokeColor).toBe('#999999');
+	expect(offered.opts.fillOpacity).toBeLessThan(chosen.opts.fillOpacity);
+	expect(offered.opts.clickable).toBe(true);
+	act(() => offered.click!());
+	expect(storeValues.get('Page.clicked')).toEqual({
+		name: 'Hoodi',
+		lat: 12.99,
+		lng: 77.71,
+		suggested: true,
+	});
+	expect(runEventMock).toHaveBeenCalledTimes(1);
+	expect(runEventMock.mock.calls[0][1]).toBe('mp');
+	jest.restoreAllMocks();
+});
+
+test('ADZ-1217: with a map id, a place id is outlined by the boundary layer with no lookup', async () => {
+	jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(600);
+	jest.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300);
+	const layer: any = {
+		type: 'POSTAL_CODE',
+		isAvailable: true,
+		style: null,
+		addListener: () => ({}),
+	};
+	layers = [layer, { type: 'LOCALITY', isAvailable: false }];
+	properties = {
+		apiKey: 'k',
+		mapId: 'map-1',
+		places: [{ name: '560066', placeId: 'ChIJa', lat: 12.97, lng: 77.75 }],
+		suggestedPlaces: [{ name: 'Nowhere', placeId: 'ChIJb' }],
+	};
+	render();
+	await act(async () => {
+		await new Promise(r => setTimeout(r, 0));
+	});
+	expect(layer.style({ feature: { placeId: 'ChIJa' } }).fillOpacity).toBe(0.18);
+	expect(layer.style({ feature: { placeId: 'ChIJb' } }).strokeColor).toBe('#6b7280');
+	expect(layer.style({ feature: { placeId: 'ChIJz' } })).toBeNull();
+	// the outlined place gets a small dot (no viewport box); the one without a point is not looked up at all
+	expect(drawn).toHaveLength(1);
+	expect(drawn[0].opts.radius).toBe(120);
+	jest.restoreAllMocks();
 });
