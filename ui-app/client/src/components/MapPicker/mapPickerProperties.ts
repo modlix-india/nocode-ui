@@ -6,6 +6,7 @@ import {
 } from '../../constants';
 import {
 	ComponentPropertyDefinition,
+	ComponentPropertyEditor,
 	ComponentPropertyGroup,
 	ComponentStylePropertyDefinition,
 } from '../../types/common';
@@ -68,6 +69,22 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
+		name: 'suggestedPlaces',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'Suggested places to show',
+		description:
+			'Optional list of places offered but not chosen, drawn lighter in the suggested colour; same shape as Places to show.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
+		name: 'mapId',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Map ID',
+		description:
+			'A Google Maps map id whose style has the boundary layers on (locality, postal code, district, state, country). With it, a place that carries a Google placeId (and no radius) is drawn with its real outline, without looking it up again. Without it, places are circles and boxes.',
+		group: ComponentPropertyGroup.DATA,
+	},
+	{
 		name: 'placeColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Place colour',
@@ -82,6 +99,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		description: 'Outline and fill colour of the places marked excluded.',
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: '#c0362c',
+	},
+	{
+		name: 'suggestedColor',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Suggested place colour',
+		description:
+			'Outline and fill colour of the suggested places (drawn lighter than the chosen ones).',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: '#6b7280',
+	},
+	{
+		name: 'onPlaceClick',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On place click',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description:
+			'Event run when a drawn place (chosen, suggested or excluded) is clicked; the place, as given, is written to the Clicked place binding first.',
+		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
 		name: 'noMapText',

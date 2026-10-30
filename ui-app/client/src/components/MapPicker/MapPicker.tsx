@@ -28,7 +28,10 @@ const component: Component = {
 	properties: propertiesDefinition,
 	styleProperties: stylePropertiesDefinition,
 	stylePseudoStates: [],
-	bindingPaths: { bindingPath: { name: 'Point (lat, lng)' } },
+	bindingPaths: {
+		bindingPath: { name: 'Point (lat, lng)' },
+		bindingPath2: { name: 'Clicked place' },
+	},
 	defaultTemplate: {
 		key: '',
 		type: 'MapPicker',
