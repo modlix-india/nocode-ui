@@ -25,7 +25,53 @@ import TextBoxStyle from './TextBoxStyle';
 import { styleDefaults, stylePropertiesForTheme } from './textBoxStyleProperties';
 import { makeTempPath } from '../../context/TempStore';
 
-const REGEX_NUMBER = /^(?![.,])[0-9.,]+$/;
+// A whole number in plain form. A DECIMAL may lead with the point (".5") and, from a
+// type="number" box, carry an exponent ("1e5"). Anything else is still being typed: "-", "12.",
+// "-0.".
+const REGEX_DECIMAL = /^-?(\d+|\d*\.\d+)(e[-+]?\d+)?$/i;
+const REGEX_INTEGER = /^-?\d+$/;
+
+// No debounced write is waiting. A plain undefined cannot say that: it is a value to store
+// (emptyValue UNDEFINED).
+const NO_PENDING = Symbol('noPendingWrite');
+
+function numberFormatter(numberFormat: string): Intl.NumberFormat {
+	const locale = numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat;
+	try {
+		return new Intl.NumberFormat(locale, { style: 'decimal' });
+	} catch (e) {
+		// A locale the browser does not know: format the way the browser would by default.
+		return new Intl.NumberFormat(undefined, { style: 'decimal' });
+	}
+}
+
+// Text typed into a box with a numberFormat ("-1,234.50" in en-US, "-1.234,50" in de-DE) in
+// plain form ("-1234.50"), or undefined when it holds a character the locale does not use there.
+// The minus, group and decimal characters come from the formatter itself, so locales that group
+// with a space or write a different minus work too. A separator must follow a digit, and an
+// INTEGER takes no decimal separator.
+function toPlainNumber(
+	text: string,
+	formatter: Intl.NumberFormat,
+	integer: boolean,
+): string | undefined {
+	const parts = formatter.formatToParts(-12345678.5);
+	const minus = parts.find(e => e.type === 'minusSign')?.value ?? '-';
+	const group = parts.find(e => e.type === 'group')?.value;
+	const decimal = parts.find(e => e.type === 'decimal')?.value ?? '.';
+	const spaceGroup = group !== undefined && /\s/.test(group);
+	let plain = '';
+	for (let i = 0; i < text.length; i++) {
+		const c = text[i];
+		const afterDigit = i > 0 && text[i - 1] >= '0' && text[i - 1] <= '9';
+		if (c >= '0' && c <= '9') plain += c;
+		else if (i === 0 && (c === '-' || c === minus)) plain += '-';
+		else if (c === decimal && !integer && afterDigit && !plain.includes('.')) plain += '.';
+		else if (afterDigit && (c === group || (spaceGroup && /\s/.test(c)))) continue;
+		else return undefined;
+	}
+	return plain;
+}
 
 interface mapType {
 	[key: string]: any;
@@ -105,7 +151,65 @@ function TextBox(props: Readonly<ComponentProps>) {
 		pageExtractor,
 		urlExtractor,
 	);
-	const [value, setValue] = React.useState(defaultValue ?? '');
+	const [value, setValueState] = React.useState(defaultValue ?? '');
+
+	// What the box holds and whether it has focus, for the store listener: a value it gets while
+	// the user types must not overwrite the text (see storedMatchesText).
+	const textRef = React.useRef<any>(value);
+	const focusRef = React.useRef(false);
+	const setValue = (v: any) => {
+		textRef.current = v;
+		setValueState(v);
+	};
+
+	const integer = numberType !== 'DECIMAL';
+	const formatter = React.useMemo(
+		() => (valueType === 'number' && numberFormat ? numberFormatter(numberFormat) : undefined),
+		[valueType, numberFormat],
+	);
+	const emptyStoreValue = () => (emptyValue ? mapValue[emptyValue] : '');
+
+	// The box's text in plain number form ("-1234.50"); undefined when it is not number text.
+	const plainNumberText = (text: any): string | undefined => {
+		const t = isNullValue(text) ? '' : String(text).trim();
+		return formatter ? toPlainNumber(t, formatter, integer) : t;
+	};
+
+	// The number the text stands for, read leniently ("12." is 12); NaN when there is none.
+	const textToNumber = (text: any): number => {
+		const plain = plainNumberText(text);
+		if (!plain) return NaN;
+		const n = integer ? parseInt(plain) : parseFloat(plain);
+		return n === 0 ? 0 : n; // -0 is 0
+	};
+
+	// The number a COMPLETE text stands for; undefined when the text is empty or still being
+	// typed ("-", "12.", "-0.").
+	const completeNumber = (text: any): number | undefined => {
+		const plain = plainNumberText(text);
+		if (!plain || !(integer ? REGEX_INTEGER : REGEX_DECIMAL).test(plain)) return undefined;
+		return textToNumber(text);
+	};
+
+	const displayNumber = (n: number) => (formatter ? formatter.format(n) : n.toString());
+
+	const displayFromStore = (v: any) => {
+		if (isNullValue(v)) return '';
+		// As a string: React compares a type="number" box's text to a NUMBER value loosely
+		// ("12.30" == 12.3), so a stored 12.3 would leave "12.30" on screen after blur.
+		if (!formatter && valueType === 'number' && typeof v === 'number') return v.toString();
+		if (!formatter || v === '') return v;
+		return formatter.format(integer ? parseInt(v) : parseFloat(v));
+	};
+
+	// True when the stored value is what the text already says, which is the store echoing the
+	// number just typed. Writing it back would rewrite the text: "12.30" to "12.3" before the next
+	// digit, "0.0" to "0", a lone "-" or "12." wiped.
+	const storedMatchesText = (stored: any): boolean => {
+		const n = textToNumber(textRef.current);
+		if (isNaN(n)) return isNullValue(stored) || stored === '' || stored === emptyStoreValue();
+		return !isNullValue(stored) && stored !== '' && Number(stored) === n;
+	};
 
 	let bindingPathPath = bindingPath
 		? getPathFromLocation(bindingPath, locationHistory, pageExtractor)
@@ -123,24 +227,12 @@ function TextBox(props: Readonly<ComponentProps>) {
 		return addListenerAndCallImmediately(
 			props.context.pageName,
 			(_, value) => {
-				if (isNullValue(value)) {
-					setValue('');
-					return;
-				}
-				if (valueType === 'number' && numberFormat) {
-					const formatter = new Intl.NumberFormat(
-						numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat,
-						{ style: 'decimal' },
-					);
-					value = numberType === 'DECIMAL' ? parseFloat(value) : parseInt(value);
-					setValue(formatter.format(value));
-				} else {
-					setValue(value);
-				}
+				if (valueType === 'number' && focusRef.current && storedMatchesText(value)) return;
+				setValue(displayFromStore(value));
 			},
 			originalBindingPathPath,
 		);
-	}, [originalBindingPathPath, valueType, numberFormat, numberType]);
+	}, [originalBindingPathPath, valueType, numberFormat, numberType, emptyValue]);
 
 	const spinnerPath1 = onEnter
 		? `${STORE_PATH_FUNCTION_EXECUTION}.${props.context.pageName}.${flattenUUID(
@@ -196,11 +288,19 @@ function TextBox(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		if (!validation?.length) return;
 
+		// A number box validates the number as it used to show while typing ("12.3" for "12.30",
+		// "1,234" for "1234" with an en-US numberFormat), not the raw text.
+		let validationValue = value;
+		if (valueType === 'number') {
+			const n = textToNumber(value);
+			validationValue = isNaN(n) ? '' : displayNumber(n);
+		}
+
 		const msgs = validate(
 			props.definition,
 			props.pageDefinition,
 			validation,
-			value,
+			validationValue,
 			locationHistory,
 			pageExtractor,
 		);
@@ -233,7 +333,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 	const updateStoreImmediately = editOn ? false : upStoreImm || autoComplete === 'on';
 
 	const debounceTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
-	const pendingDebouncedValueRef = React.useRef<any>(undefined);
+	const pendingDebouncedValueRef = React.useRef<any>(NO_PENDING);
 
 	React.useEffect(() => {
 		return () => {
@@ -261,11 +361,35 @@ function TextBox(props: Readonly<ComponentProps>) {
 			clearTimeout(debounceTimerRef.current);
 			debounceTimerRef.current = null;
 		}
-		if (pendingDebouncedValueRef.current === undefined || !bindingPathPath) return;
+		if (pendingDebouncedValueRef.current === NO_PENDING || !bindingPathPath) return;
 		setData(bindingPathPath, pendingDebouncedValueRef.current, context?.pageName);
-		pendingDebouncedValueRef.current = undefined;
+		pendingDebouncedValueRef.current = NO_PENDING;
 		callChangeEvent();
 	}, [bindingPathPath, context?.pageName, callChangeEvent]);
+
+	const cancelDebouncedChange = () => {
+		if (debounceTimerRef.current) {
+			clearTimeout(debounceTimerRef.current);
+			debounceTimerRef.current = null;
+		}
+		pendingDebouncedValueRef.current = NO_PENDING;
+	};
+
+	// Stores a value typed with updateStoreImmediately, after debounceTime when there is one.
+	const storeWhileTyping = (temp: any) => {
+		if (!bindingPathPath) return;
+		if (debounceTime && debounceTime > 0) {
+			pendingDebouncedValueRef.current = temp;
+			if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+			debounceTimerRef.current = setTimeout(() => {
+				debounceTimerRef.current = null;
+				flushDebouncedChange();
+			}, debounceTime);
+		} else {
+			setData(bindingPathPath, temp, context?.pageName);
+			callChangeEvent();
+		}
+	};
 
 	const callBlurEvent = useCallback(
 		(force: boolean = false) => {
@@ -295,40 +419,43 @@ function TextBox(props: Readonly<ComponentProps>) {
 	}, [focusEvent]);
 
 	const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		// handleKeyUp runs this on Enter while the box keeps its focus.
+		if (event?.type !== 'keyup') focusRef.current = false;
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
+		let isEmpty = event?.target.value === '';
 		if (valueType === 'number') {
-			if (temp === mapValue[emptyValue]) {
-				setValue(mapValue[emptyValue]);
-				return;
-			}
-			if (numberFormat) {
-				const formatter = new Intl.NumberFormat(
-					numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat,
-					{ style: 'decimal' },
-				);
-				const commaDot = formatter.format(1234.56) === '1,234.56';
-				temp = temp?.toString() ?? '';
-				const tempNumber = commaDot
-					? temp.replace(/,/g, '')
-					: temp.replace(/\./g, '').replace(/,/g, '.');
-				temp = numberType === 'DECIMAL' ? parseFloat(tempNumber) : parseInt(tempNumber);
-			} else {
-				const tempNumber =
-					value !== ''
-						? numberType === 'DECIMAL'
-							? parseFloat(value)
-							: parseInt(value)
-						: temp;
-				temp = isNaN(tempNumber) ? temp : tempNumber;
-			}
+			// Typing never rewrote the text; now it shows the number it stands for.
+			const n = textToNumber(value);
+			isEmpty = isNaN(n);
+			temp = isEmpty ? emptyStoreValue() : n;
+			setValue(typeof temp === 'number' ? displayNumber(temp) : '');
+			// A type="number" box keeps a lone "-" on screen while reporting ''. It is not a
+			// number and nothing was stored for it: clear it.
+			const input = event?.target as HTMLInputElement | undefined;
+			if (isEmpty && input?.validity?.badInput) input.value = '';
 		}
 		if (!updateStoreImmediately && bindingPathPath) {
-			if (event?.target.value === '' && removeKeyWhenEmpty) {
+			if (isEmpty && removeKeyWhenEmpty) {
 				setData(bindingPathPath, undefined, context?.pageName, true);
 			} else {
 				setData(bindingPathPath, temp, context?.pageName);
 			}
 			callChangeEvent();
+		} else if (updateStoreImmediately && valueType === 'number' && bindingPathPath) {
+			// The store has the last complete number typed, but the text can have moved on to a
+			// state that was never stored (a lone "-"). Store what the box shows now when it
+			// differs, in place of any write still waiting for its debounce.
+			cancelDebouncedChange();
+			const stored = getDataFromPath(bindingPathPath, locationHistory, pageExtractor);
+			if (isEmpty && removeKeyWhenEmpty) {
+				if (stored !== undefined) {
+					setData(bindingPathPath, undefined, context?.pageName, true);
+					callChangeEvent();
+				}
+			} else if (stored !== temp) {
+				setData(bindingPathPath, temp, context?.pageName);
+				callChangeEvent();
+			}
 		} else if (updateStoreImmediately && debounceTimerRef.current) {
 			flushDebouncedChange();
 		}
@@ -337,35 +464,22 @@ function TextBox(props: Readonly<ComponentProps>) {
 	};
 
 	const handleInputFocus = () => {
+		focusRef.current = true;
 		setFocus(true);
 		callFocusEvent();
 	};
 
 	const handleTextChange = (text: string) => {
 		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
-			if (debounceTimerRef.current) {
-				clearTimeout(debounceTimerRef.current);
-				debounceTimerRef.current = null;
-				pendingDebouncedValueRef.current = undefined;
-			}
+			cancelDebouncedChange();
 			setData(bindingPathPath, undefined, context?.pageName, true);
 			callChangeEvent();
 			return;
 		}
 		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
 		if (updateStoreImmediately && bindingPathPath) {
-			if (debounceTime && debounceTime > 0) {
-				setValue(text);
-				pendingDebouncedValueRef.current = temp;
-				if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-				debounceTimerRef.current = setTimeout(() => {
-					debounceTimerRef.current = null;
-					flushDebouncedChange();
-				}, debounceTime);
-			} else {
-				setData(bindingPathPath, temp, context?.pageName);
-				callChangeEvent();
-			}
+			if (debounceTime && debounceTime > 0) setValue(text);
+			storeWhileTyping(temp);
 		}
 		if (!updateStoreImmediately) {
 			setValue(text);
@@ -379,64 +493,68 @@ function TextBox(props: Readonly<ComponentProps>) {
 		}
 	};
 
-	const handleNumberChange = (text: string) => {
-		if (removeKeyWhenEmpty && text === '' && bindingPathPath) {
-			setData(bindingPathPath, undefined, context?.pageName, true);
-			callChangeEvent();
+	// The box keeps the text exactly as typed while it has focus ("12.30", "0.0", "-", "12.");
+	// the store gets the number once the text is a complete one, and handleBlur shows the number.
+	const handleNumberChange = (
+		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+	) => {
+		const text = event.target.value;
+
+		// A type="number" box reports '' with validity.badInput while its text is not a number
+		// yet ("-", "1e", "12." in some browsers). That is the user typing, not clearing: mirror
+		// the '' so React does not put the previous text back, and leave the store alone.
+		if (text === '' && (event.target as HTMLInputElement).validity?.badInput) {
+			setValue('');
 			return;
 		}
 
-		let temp = text === '' && emptyValue ? mapValue[emptyValue] : text;
-
-		let tempNumber;
-		if (temp === mapValue[emptyValue]) {
-			setValue(mapValue[emptyValue]);
-		}
-		if (numberFormat) {
-			if (!REGEX_NUMBER.test(temp)) return;
-
-			const formatter = new Intl.NumberFormat(
-				numberFormat.toLowerCase() === 'system' ? navigator.language : numberFormat,
-				{ style: 'decimal' },
-			);
-			const commaDot = formatter.format(1234.56) === '1,234.56';
-			temp = temp?.toString();
-			tempNumber = commaDot
-				? temp.replace(/,/g, '')
-				: temp.replace(/\./g, '').replace(/,/g, '.');
-			tempNumber = numberType === 'DECIMAL' ? parseFloat(tempNumber) : parseInt(tempNumber);
-			temp = formatter.format(tempNumber);
-			if (text[text.length - 1] === ',' || text[text.length - 1] === '.')
-				temp += text[text.length - 1];
-			if (updateStoreImmediately && bindingPathPath) {
-				if (text[text.length - 1] === ',' || text[text.length - 1] === '.') {
-					setValue(temp);
-				} else {
-					setData(bindingPathPath, tempNumber, context?.pageName);
-					callChangeEvent();
-				}
-			}
-		} else {
-			tempNumber = numberType === 'DECIMAL' ? parseFloat(temp) : parseInt(temp);
-			temp = !isNaN(tempNumber) ? tempNumber : temp;
-			if (updateStoreImmediately && bindingPathPath) {
-				setData(bindingPathPath, temp, context?.pageName);
+		if (text === '') {
+			setValue('');
+			if (removeKeyWhenEmpty && bindingPathPath) {
+				cancelDebouncedChange();
+				setData(bindingPathPath, undefined, context?.pageName, true);
 				callChangeEvent();
+			} else if (updateStoreImmediately && bindingPathPath) {
+				storeWhileTyping(emptyStoreValue());
 			}
+			return;
 		}
 
-		if (!updateStoreImmediately) setValue(!isNaN(tempNumber) ? temp?.toString() : '');
+		const plain = plainNumberText(text);
+		// A character the numberFormat does not take, or a decimal point in an INTEGER (pasted;
+		// the keys are refused in integerKeyDown): leaving the value as it was makes React put
+		// the previous text back.
+		if (plain === undefined || (integer && !formatter && /[.,e]/i.test(plain))) return;
+
+		setValue(text);
+
+		// Still being typed ("-", "12.", "-0."): the store keeps the last complete number.
+		const n = completeNumber(text);
+		if (n === undefined || !updateStoreImmediately) return;
+		storeWhileTyping(n);
 	};
+
+	// A type="number" box takes '.', ',' and 'e' and can report '' for them, too late to refuse
+	// there. An INTEGER box refuses those keys before they land.
+	const integerKeyDown =
+		valueType === 'number' && integer && !formatter
+			? (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+					if (e.ctrlKey || e.metaKey || e.altKey) return;
+					if (['.', ',', 'e', 'E'].includes(e.key)) e.preventDefault();
+				}
+			: undefined;
 
 	const handleChange = async (
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
 		if (valueType === 'text') handleTextChange(event.target.value);
-		else handleNumberChange(event.target.value);
+		else handleNumberChange(event);
 	};
 
 	const handleClickClose = async () => {
 		let temp = mapValue[emptyValue];
+		// A write still waiting for its debounce would put the cleared value back.
+		cancelDebouncedChange();
 		if (removeKeyWhenEmpty && bindingPathPath) {
 			setData(bindingPathPath, undefined, context?.pageName, true);
 			callChangeEvent();
@@ -549,6 +667,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 				clearContentHandler={handleClickClose}
 				blurHandler={handleBlur}
 				keyUpHandler={handleKeyUp}
+				keyDownHandler={integerKeyDown}
 				focusHandler={() => handleInputFocus()}
 				supportingText={supportingText}
 				messageDisplay={messageDisplay}
@@ -584,12 +703,24 @@ function TextBox(props: Readonly<ComponentProps>) {
 					if (editMode || !originalBindingPathPath) return;
 					if (cancel) {
 						setValue(
-							getDataFromPath(
-								originalBindingPathPath,
-								locationHistory,
-								pageExtractor,
+							displayFromStore(
+								getDataFromPath(
+									originalBindingPathPath,
+									locationHistory,
+									pageExtractor,
+								),
 							),
 						);
+					} else if (valueType === 'number') {
+						// Enter confirms without a blur, so the text can still be as typed.
+						const n = textToNumber(value);
+						setData(
+							originalBindingPathPath,
+							isNaN(n) ? emptyStoreValue() : n,
+							context?.pageName,
+						);
+						callChangeEvent(true);
+						callBlurEvent(true);
 					} else {
 						setData(originalBindingPathPath, value, context?.pageName);
 						callChangeEvent(true);
