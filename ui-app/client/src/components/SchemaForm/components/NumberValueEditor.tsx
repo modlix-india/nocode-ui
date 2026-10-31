@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { DraftNumberInput } from '../../util/DraftNumberInput';
 import {
 	Repository,
 	Schema,
@@ -24,6 +25,12 @@ export function NumberValueEditor({
 	label?: string;
 }>) {
 	const [inValue, setInValue] = useState<number | undefined>(value ?? defaultValue);
+	// inValue as last set, for a blur or Enter that runs in the same event as the box settling.
+	const inValueRef = useRef<number | undefined>(inValue);
+	const setIn = (v: number | undefined) => {
+		inValueRef.current = v;
+		setInValue(v);
+	};
 
 	const onChange = async (v: number | undefined) => {
 		if (defaultValue === v) actualOnChange(undefined);
@@ -31,7 +38,7 @@ export function NumberValueEditor({
 	};
 
 	useEffect(() => {
-		setInValue(value ?? defaultValue);
+		setIn(value ?? defaultValue);
 	}, [value, defaultValue]);
 
 	const [msg, setMsg] = useState<string>('');
@@ -69,29 +76,42 @@ export function NumberValueEditor({
 		})();
 	}, [schema, schemaRepository]);
 
+	// An option's value is its text; the empty one is None. Picking one commits it at once, as
+	// Enter and blur do for the box: the enum's own number, or undefined for None.
 	const inputElement = options.length ? (
-		<select value={inValue}>
+		<select
+			value={isNullValue(inValue) ? '' : String(inValue)}
+			onChange={ev => {
+				const text = ev.target.value;
+				const v =
+					text === ''
+						? undefined
+						: options.find(e => !isNullValue(e) && String(e) === text);
+				setIn(v);
+				onChange(v);
+			}}
+		>
 			{options.map(e => (
-				<option value={e}>{isNullValue(e) ? 'None' : '' + e}</option>
+				<option
+					key={isNullValue(e) ? '' : String(e)}
+					value={isNullValue(e) ? '' : String(e)}
+				>
+					{isNullValue(e) ? 'None' : '' + e}
+				</option>
 			))}
 		</select>
 	) : (
-		<input
-			type="number"
-			value={inValue ?? ''}
-			onChange={ev => {
-				if (ev.target.value == '') {
-					setInValue(undefined);
-					return;
-				}
-				const ind = ev.target.value.indexOf('.');
-				setInValue((ind === -1 ? parseInt : parseFloat)(ev.target.value));
-			}}
+		// The box keeps the text as typed; inValue follows it once it is a complete number.
+		<DraftNumberInput
+			value={inValue}
+			allowEmpty
+			onNumber={setIn}
 			onKeyDown={ev => {
-				if (ev.key === 'Enter') onChange(inValue);
-				else if (ev.key === 'Escape') setInValue(value);
+				if (ev.key === 'Enter') onChange(inValueRef.current);
+				else if (ev.key === 'Escape') setIn(value);
 			}}
-			onBlur={() => onChange(inValue)}
+			// The box has settled inValue (inValueRef) before this runs.
+			onBlur={() => onChange(inValueRef.current)}
 		/>
 	);
 	return (
