@@ -102,6 +102,7 @@ import { BlockMenu } from './features/block-menu';
 import { useIsCoarsePointer } from './hooks/use-is-coarse-pointer';
 import { GripVertical, Plus } from 'lucide-react';
 import { consumeEscape } from './features/escape-guard';
+import { isFormControlFocusedIn, RETURN_TO_TEXT_EVENT } from './core/island-input';
 
 /** A file's name as link text: square brackets would end the markdown link early. */
 function fileLinkText(name: string): string {
@@ -1393,6 +1394,9 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		// is typing in.
 		const active = document.activeElement as HTMLElement | null;
 		if (active && active !== document.body && !rootRef.current.contains(active)) return;
+		// Nor into the text while a box inside the editor (an image's W) has focus: the
+		// caret would take its keys.
+		if (isFormControlFocusedIn(rootRef.current)) return;
 		isWritingSelection.current = true;
 		writeSelection(rootRef.current, selection);
 		isWritingSelection.current = false;
@@ -2415,6 +2419,10 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		const domSel = window.getSelection();
 		if (!domSel || !rootRef.current.contains(domSel.anchorNode)) return;
 
+		// A box inside the editor (an image's W) has focus: the selection is the box's, beside
+		// it in the island. It is not a caret in the text; the text keeps the one it had.
+		if (isFormControlFocusedIn(rootRef.current)) return;
+
 		// Skip only when the selection is inside a self-managed nested surface
 		// (table cells, list cells, MentionInput) — those run their own selection
 		// pipeline. Plain mention chips are contentEditable=false but NOT
@@ -2966,6 +2974,28 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		updateEmojiPickerState,
 		updateMentionPickerState,
 	]);
+
+	// ---- Leaving a box inside the editor for the text ----
+	// A box in an island (an image's W) bubbles RETURN_TO_TEXT_EVENT on Enter or Escape. The
+	// editor's selection was left alone while the box had focus, so the caret goes back where it
+	// was. Focusing the root blurs the box, which commits it.
+	useEffect(() => {
+		const root = rootRef.current;
+		if (!root || readOnly) return;
+		const onReturnToText = (e: Event) => {
+			e.stopPropagation();
+			const sel = selectionRef.current;
+			isWritingSelection.current = true;
+			try {
+				root.focus({ preventScroll: true });
+				if (sel) writeSelection(root, sel);
+			} finally {
+				isWritingSelection.current = false;
+			}
+		};
+		root.addEventListener(RETURN_TO_TEXT_EVENT, onReturnToText);
+		return () => root.removeEventListener(RETURN_TO_TEXT_EVENT, onReturnToText);
+	}, [readOnly]);
 
 	const onCompositionStart = useCallback(() => {
 		isComposing.current = true;

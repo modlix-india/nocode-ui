@@ -45,6 +45,36 @@ function numberFormatter(numberFormat: string): Intl.NumberFormat {
 	}
 }
 
+// The fraction digits JavaScript writes for the number (12.3052 has 4, 1.5e-7 has 8): its
+// shortest form that reads back as the same number.
+function fractionDigits(n: number): number {
+	const m = /^(\d+)(?:\.(\d+))?(?:e([-+]\d+))?$/i.exec(String(Math.abs(n)));
+	if (!m) return 0;
+	return Math.min(20, Math.max(0, (m[2] ?? '').length - Number(m[3] ?? 0)));
+}
+
+// Formats with the formatter's locale and grouping, but with every fraction digit the number
+// has. Intl's default is at most 3, so a stored 12.3052 showed as "12.305", and a blur then
+// stored what was shown.
+function exactNumberFormat(formatter: Intl.NumberFormat): (n: number) => string {
+	const { locale, numberingSystem } = formatter.resolvedOptions();
+	const byDigits = new Map<number, Intl.NumberFormat>();
+	return (n: number) => {
+		const digits = fractionDigits(n);
+		if (digits <= 3) return formatter.format(n);
+		let f = byDigits.get(digits);
+		if (!f) {
+			f = new Intl.NumberFormat(locale, {
+				style: 'decimal',
+				numberingSystem,
+				maximumFractionDigits: digits,
+			} as Intl.NumberFormatOptions);
+			byDigits.set(digits, f);
+		}
+		return f.format(n);
+	};
+}
+
 // Text typed into a box with a numberFormat ("-1,234.50" in en-US, "-1.234,50" in de-DE) in
 // plain form ("-1234.50"), or undefined when it holds a character the locale does not use there.
 // The minus, group and decimal characters come from the formatter itself, so locales that group
@@ -162,10 +192,26 @@ function TextBox(props: Readonly<ComponentProps>) {
 		setValueState(v);
 	};
 
+	// The text the box showed when it got focus, or the store last put in it, whether a number
+	// was stored while typing since focus, and whether anything was typed. A blur with that text
+	// and nothing stored is not an edit and stores nothing: blur is not a reason to rewrite the
+	// store. A box typed into and emptied again is cleared, though: it stores the emptyValue.
+	const shownRef = React.useRef<any>(value);
+	const storedSinceFocusRef = React.useRef(false);
+	const typedSinceFocusRef = React.useRef(false);
+	const isUnedited = () =>
+		textRef.current === shownRef.current &&
+		!storedSinceFocusRef.current &&
+		!(textRef.current === '' && typedSinceFocusRef.current);
+
 	const integer = numberType !== 'DECIMAL';
 	const formatter = React.useMemo(
 		() => (valueType === 'number' && numberFormat ? numberFormatter(numberFormat) : undefined),
 		[valueType, numberFormat],
+	);
+	const formatNumber = React.useMemo(
+		() => (formatter ? exactNumberFormat(formatter) : undefined),
+		[formatter],
 	);
 	const emptyStoreValue = () => (emptyValue ? mapValue[emptyValue] : '');
 
@@ -191,15 +237,23 @@ function TextBox(props: Readonly<ComponentProps>) {
 		return textToNumber(text);
 	};
 
-	const displayNumber = (n: number) => (formatter ? formatter.format(n) : n.toString());
+	const displayNumber = (n: number) => (formatNumber ? formatNumber(n) : n.toString());
 
 	const displayFromStore = (v: any) => {
 		if (isNullValue(v)) return '';
 		// As a string: React compares a type="number" box's text to a NUMBER value loosely
 		// ("12.30" == 12.3), so a stored 12.3 would leave "12.30" on screen after blur.
-		if (!formatter && valueType === 'number' && typeof v === 'number') return v.toString();
-		if (!formatter || v === '') return v;
-		return formatter.format(integer ? parseInt(v) : parseFloat(v));
+		if (!formatNumber && valueType === 'number' && typeof v === 'number') return v.toString();
+		if (!formatNumber || v === '') return v;
+		const n = integer ? parseInt(v) : parseFloat(v);
+		return isNaN(n) ? '' : formatNumber(n);
+	};
+
+	// Shows the stored value, which is then the box's unedited text.
+	const showStored = (v: any) => {
+		const text = displayFromStore(v);
+		shownRef.current = text;
+		setValue(text);
 	};
 
 	// True when the stored value is what the text already says, which is the store echoing the
@@ -228,7 +282,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 			props.context.pageName,
 			(_, value) => {
 				if (valueType === 'number' && focusRef.current && storedMatchesText(value)) return;
-				setValue(displayFromStore(value));
+				showStored(value);
 			},
 			originalBindingPathPath,
 		);
@@ -378,6 +432,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 	// Stores a value typed with updateStoreImmediately, after debounceTime when there is one.
 	const storeWhileTyping = (temp: any) => {
 		if (!bindingPathPath) return;
+		storedSinceFocusRef.current = true;
 		if (debounceTime && debounceTime > 0) {
 			pendingDebouncedValueRef.current = temp;
 			if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
@@ -423,6 +478,16 @@ function TextBox(props: Readonly<ComponentProps>) {
 		if (event?.type !== 'keyup') focusRef.current = false;
 		let temp = value === '' && emptyValue ? mapValue[emptyValue] : value;
 		let isEmpty = event?.target.value === '';
+		if (valueType === 'number' && isUnedited()) {
+			// Nothing was typed: the box shows the stored value, so storing it would only round
+			// it to what is shown or put the emptyValue over an unset one.
+			const input = event?.target as HTMLInputElement | undefined;
+			if (input?.validity?.badInput) input.value = '';
+			cancelDebouncedChange();
+			callBlurEvent();
+			setFocus(false);
+			return;
+		}
 		if (valueType === 'number') {
 			// Typing never rewrote the text; now it shows the number it stands for.
 			const n = textToNumber(value);
@@ -459,12 +524,22 @@ function TextBox(props: Readonly<ComponentProps>) {
 		} else if (updateStoreImmediately && debounceTimerRef.current) {
 			flushDebouncedChange();
 		}
+		if (valueType === 'number') {
+			// What is shown now is stored: a blur after Enter (which keeps the focus) is not
+			// another edit.
+			shownRef.current = textRef.current;
+			storedSinceFocusRef.current = false;
+			typedSinceFocusRef.current = false;
+		}
 		callBlurEvent();
 		setFocus(false);
 	};
 
 	const handleInputFocus = () => {
 		focusRef.current = true;
+		shownRef.current = textRef.current;
+		storedSinceFocusRef.current = false;
+		typedSinceFocusRef.current = false;
 		setFocus(true);
 		callFocusEvent();
 	};
@@ -499,6 +574,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 		event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
 		const text = event.target.value;
+		typedSinceFocusRef.current = true;
 
 		// A type="number" box reports '' with validity.badInput while its text is not a number
 		// yet ("-", "1e", "12." in some browsers). That is the user typing, not clearing: mirror
@@ -511,6 +587,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 		if (text === '') {
 			setValue('');
 			if (removeKeyWhenEmpty && bindingPathPath) {
+				storedSinceFocusRef.current = true;
 				cancelDebouncedChange();
 				setData(bindingPathPath, undefined, context?.pageName, true);
 				callChangeEvent();
@@ -701,19 +778,22 @@ function TextBox(props: Readonly<ComponentProps>) {
 				shortcutHint={shortcutHint?.(computedStyles.shortcutHint)}
 				onEditRequest={(editMode, cancel) => {
 					if (editMode || !originalBindingPathPath) return;
+					const stored = getDataFromPath(
+						originalBindingPathPath,
+						locationHistory,
+						pageExtractor,
+					);
 					if (cancel) {
-						setValue(
-							displayFromStore(
-								getDataFromPath(
-									originalBindingPathPath,
-									locationHistory,
-									pageExtractor,
-								),
-							),
-						);
+						showStored(stored);
 					} else if (valueType === 'number') {
+						// Confirmed with the text the store shows: nothing was edited, and as on
+						// blur, nothing is stored.
+						if (textRef.current === displayFromStore(stored)) {
+							callBlurEvent(true);
+							return;
+						}
 						// Enter confirms without a blur, so the text can still be as typed.
-						const n = textToNumber(value);
+						const n = textToNumber(textRef.current);
 						setData(
 							originalBindingPathPath,
 							isNaN(n) ? emptyStoreValue() : n,

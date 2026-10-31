@@ -6,6 +6,7 @@ import type {
 	Vec3,
 } from '../../../util/three/sceneDocument';
 import type { Selection } from './common';
+import { DraftNumberInput } from '../../../util/DraftNumberInput';
 
 const SHAPES: PrimitiveShape[] = ['box', 'sphere', 'plane', 'torus', 'cylinder', 'icosahedron'];
 const LIGHT_TYPES: LightType[] = ['ambient', 'directional', 'point', 'spot', 'hemisphere'];
@@ -28,18 +29,16 @@ function Num({
 	return (
 		<label className="_sceneField">
 			<span>{label}</span>
-			<input
-				type="number"
+			{/* One NaN in a matrix takes the whole scene with it, and the box reports '' (which
+			    Number() reads as 0) while it is empty or half typed (a lone "-"). It reports
+			    only complete numbers and keeps the typed text until blur. */}
+			<DraftNumberInput
 				value={Number.isFinite(value) ? value : 0}
 				step={step}
 				min={min}
 				max={max}
-				onChange={e => {
-					const n = Number(e.target.value);
-					// An empty or half-typed box parses to NaN, and one NaN in a
-					// matrix takes the whole scene with it rather than just this
-					// field. Hold the previous value until the box is a number.
-					if (Number.isFinite(n)) onChange(n);
+				onNumber={n => {
+					if (n !== undefined) onChange(n);
 				}}
 			/>
 		</label>
