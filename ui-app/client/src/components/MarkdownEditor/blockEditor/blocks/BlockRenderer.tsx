@@ -33,6 +33,9 @@ import {
 	useRenderBlockList,
 } from './EditorDocContext';
 import { useT } from '../i18n/context';
+import { DraftNumberInput } from '../../../util/DraftNumberInput';
+import { consumeEscape } from '../features/escape-guard';
+import { focusIslandInput, returnToText } from '../core/island-input';
 
 interface BlockRendererProps {
 	block: Block;
@@ -1488,6 +1491,57 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 		[block.id],
 	);
 
+	// The W and H boxes: keys stay in the box (not the editor's shortcuts), and a size is
+	// never negative. Enter keeps the size typed and Escape puts back the one the image had when
+	// the box got focus; both leave the box for the text, where the caret was. The Escape is used
+	// here, so a popup around the editor does not close on it. Tab moves between W and H.
+	const sizeAtFocusRef = useRef<{ w: number; h: number } | null>(null);
+	const sizeFocus = () => {
+		sizeAtFocusRef.current ??= { w: wRef.current, h: hRef.current };
+	};
+	const sizeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		e.stopPropagation();
+		const input = e.currentTarget;
+		if (e.key === '-') e.preventDefault();
+		else if (e.key === 'Tab') {
+			// Chrome's Tab skips a box inside the editing host and lands in the text: Tab goes
+			// from W to H (Shift+Tab back), and past either end returns to the text.
+			e.preventDefault();
+			const boxes = Array.from(
+				input.closest('[data-mde-image-size]')?.querySelectorAll('input') ?? [],
+			);
+			const next = boxes[boxes.indexOf(input) + (e.shiftKey ? -1 : 1)];
+			if (next) {
+				next.focus();
+				next.select();
+			} else {
+				sizeAtFocusRef.current = null;
+				returnToText(input);
+			}
+		} else if (e.key === 'Enter') {
+			e.preventDefault();
+			sizeAtFocusRef.current = null;
+			returnToText(input);
+		} else if (e.key === 'Escape') {
+			consumeEscape();
+			const before = sizeAtFocusRef.current;
+			sizeAtFocusRef.current = null;
+			if (before) {
+				setImgW((wRef.current = before.w));
+				setImgH((hRef.current = before.h));
+			}
+			// After DraftNumberInput drops the typed text on this Escape, or the blur that
+			// returning to the text causes would commit it.
+			queueMicrotask(() => returnToText(input));
+		}
+	};
+	// Focus moving between W and H keeps the size from when the first of them got focus.
+	const sizeBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+		const next = e.relatedTarget as HTMLElement | null;
+		if (!next?.closest?.('[data-mde-image-size]')) sizeAtFocusRef.current = null;
+		dispatchImageUpdate({ width: wRef.current, height: hRef.current });
+	};
+
 	// Refs for drag closures
 	const wRef = useRef(imgW);
 	wRef.current = imgW;
@@ -2185,7 +2239,10 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 						</div>
 					)}
 					{/* Row 1: W × H + lock + crop */}
-					<div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+					<div
+						data-mde-image-size
+						style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+					>
 						<label
 							style={{
 								display: 'flex',
@@ -2195,16 +2252,23 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 							}}
 						>
 							W
-							<input
-								type="number"
-								value={imgW || ''}
-								onChange={e => {
-									const w = parseInt(e.target.value) || 0;
-									setImgW(w);
-									if (lockAspect && ratio && w) setImgH(Math.round(w / ratio));
+							<DraftNumberInput
+								integer
+								min={1}
+								value={imgW || undefined}
+								onNumber={w => {
+									// Only a whole width of 1px or more resizes; an empty or "0" box
+									// leaves the image as it is and shows its width again on blur.
+									if (!w || w < 1) return;
+									// The refs too: a blur in the same event reads them.
+									setImgW((wRef.current = w));
+									if (lockAspect && ratio)
+										setImgH((hRef.current = Math.round(w / ratio)));
 								}}
-								onBlur={() => dispatchImageUpdate({ width: imgW, height: imgH })}
-								onKeyDown={e => e.stopPropagation()}
+								onFocus={sizeFocus}
+								onBlur={sizeBlur}
+								onMouseDown={focusIslandInput}
+								onKeyDown={sizeKeyDown}
 								style={{
 									width: 70,
 									padding: '4px 6px',
@@ -2227,16 +2291,20 @@ function ImageBlock({ block }: { block: Block; readOnly?: boolean }) {
 							}}
 						>
 							H
-							<input
-								type="number"
-								value={imgH || ''}
-								onChange={e => {
-									const h = parseInt(e.target.value) || 0;
-									setImgH(h);
-									if (lockAspect && ratio && h) setImgW(Math.round(h * ratio));
+							<DraftNumberInput
+								integer
+								min={1}
+								value={imgH || undefined}
+								onNumber={h => {
+									if (!h || h < 1) return;
+									setImgH((hRef.current = h));
+									if (lockAspect && ratio)
+										setImgW((wRef.current = Math.round(h * ratio)));
 								}}
-								onBlur={() => dispatchImageUpdate({ width: imgW, height: imgH })}
-								onKeyDown={e => e.stopPropagation()}
+								onFocus={sizeFocus}
+								onBlur={sizeBlur}
+								onMouseDown={focusIslandInput}
+								onKeyDown={sizeKeyDown}
 								style={{
 									width: 70,
 									padding: '4px 6px',

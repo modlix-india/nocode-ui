@@ -4,7 +4,7 @@
 // FreeMarker. Different template types read different parts (e.g. email uses subject+body, pdf uses
 // body). This module declares, per type, which parts exist and how each should be edited/previewed.
 
-export type TemplateTypeKey = 'email' | 'pdf' | 'inapp' | 'whatsapp' | 'sms';
+export type TemplateTypeKey = 'email' | 'pdf' | 'inapp' | 'push' | 'whatsapp' | 'sms';
 
 export type PartEditorKind = 'text' | 'html' | 'expression';
 export type PreviewFormat = 'html' | 'pdf' | 'text';
@@ -60,6 +60,19 @@ export const TEMPLATE_TYPES: Record<TemplateTypeKey, TemplateTypeDef> = {
 			{ key: 'body', label: 'Body', editor: 'html' },
 		],
 		previewFormat: 'html',
+		previewPart: 'body',
+	},
+	// Web, Android and iOS push: short plain text (a lock screen shows about two lines).
+	push: {
+		key: 'push',
+		displayName: 'Push',
+		parts: [
+			{ key: 'title', label: 'Title', editor: 'text' },
+			{ key: 'body', label: 'Body', editor: 'text' },
+			{ key: 'url', label: 'URL', editor: 'text', placeholder: '/page/...' },
+			{ key: 'image', label: 'Image URL', editor: 'text' },
+		],
+		previewFormat: 'text',
 		previewPart: 'body',
 	},
 	whatsapp: {

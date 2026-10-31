@@ -21,6 +21,7 @@ import { AnalyticsBinder } from './AnalyticsBinder';
 import { ShortcutChooser } from '../shortcuts/ShortcutChooser';
 import { ShortcutModifierHold } from '../shortcuts/ShortcutModifierHold';
 import { ShortcutCheatSheet } from '../shortcuts/ShortcutCheatSheet';
+import { resumePushAfterSignIn } from '../util/pushGate';
 
 // In design mode we are listening to the messages from editor
 
@@ -266,6 +267,18 @@ export function App({ location }: Readonly<{ location?: string }> = {}) {
 				undefined,
 				(_, value) => setIsApplicationLoadFailed(value),
 				`${STORE_PREFIX}.isApplicationLoadFailed`,
+			),
+		[],
+	);
+
+	// A signed-in user who turned push on earlier keeps their device registered. The gate loads
+	// nothing unless push permission is already granted or this is the mobile app.
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				undefined,
+				(_, user) => resumePushAfterSignIn(user?.id),
+				`${STORE_PREFIX}.auth.user`,
 			),
 		[],
 	);
