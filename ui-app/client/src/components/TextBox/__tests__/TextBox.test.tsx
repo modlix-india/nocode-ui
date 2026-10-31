@@ -545,6 +545,122 @@ describe('number box with numberFormat, store listener', () => {
 	});
 });
 
+// ── a stored number is never shortened by being shown ───────────────────────
+//
+// Intl.NumberFormat shows at most 3 fraction digits by default: a stored 12.3052 showed as
+// "12.305", and focusing then leaving the box stored 12.305.
+
+describe.each([
+	['en-US', '12.3052', '-33.86882', '1,234,567.891234'],
+	['de-DE', '12,3052', '-33,86882', '1.234.567,891234'],
+])('numberFormat %s, a stored number', (numberFormat, shown, negative, grouped) => {
+	describe.each([false, true])('updateStoreImmediately %s', updateStoreImmediately => {
+		const props = (o: Record<string, any> = {}) =>
+			numberProperties({ updateStoreImmediately, numberFormat, ...o });
+
+		test('shows every digit, and focus then blur stores nothing', () => {
+			storeValues.set(PATH, 12.3052);
+			render(props());
+			expect(input().value).toBe(shown);
+			focus();
+			blur();
+			expect(writtenValues()).toEqual([]);
+			expect(runEventMock).not.toHaveBeenCalled();
+			expect(storeValues.get(PATH)).toBe(12.3052);
+			expect(input().value).toBe(shown);
+		});
+
+		test('keeps the grouping and the sign with every digit', () => {
+			storeValues.set(PATH, -33.86882);
+			render(props());
+			expect(input().value).toBe(negative);
+			act(() => setData(PATH, 1234567.891234, 'testpage'));
+			expect(input().value).toBe(grouped);
+			writes.length = 0;
+			focus();
+			blur();
+			expect(writtenValues()).toEqual([]);
+			expect(storeValues.get(PATH)).toBe(1234567.891234);
+		});
+
+		test('a digit typed and taken back again is not an edit', () => {
+			storeValues.set(PATH, 12.3052);
+			render(props());
+			focus();
+			typeInto(shown.slice(0, -1));
+			if (!updateStoreImmediately) {
+				typeInto(shown);
+				blur();
+				expect(writtenValues()).toEqual([]);
+			} else {
+				// The shortened number was stored while typing: the blur stores the box again.
+				typeInto(shown);
+				blur();
+				expect(storeValues.get(PATH)).toBe(12.3052);
+			}
+			expect(input().value).toBe(shown);
+		});
+
+		test('an edit is still stored, with every digit shown after blur', () => {
+			storeValues.set(PATH, 12.3052);
+			render(props());
+			focus();
+			typeInto(shown + '7');
+			blur();
+			expect(storeValues.get(PATH)).toBe(12.30527);
+			expect(input().value).toBe(shown + '7');
+		});
+	});
+});
+
+describe('a blur that follows no edit', () => {
+	test('plain number box: focus then blur stores nothing', () => {
+		storeValues.set(PATH, 12.3052);
+		render(numberProperties());
+		expect(input().value).toBe('12.3052');
+		focus();
+		blur();
+		expect(writtenValues()).toEqual([]);
+	});
+
+	test('emptyValue ZERO: an untouched empty box stays unset', () => {
+		render(numberProperties({ emptyValue: 'ZERO', numberFormat: 'en-US' }));
+		focus();
+		blur();
+		expect(writtenValues()).toEqual([]);
+		expect(input().value).toBe('');
+	});
+
+	test('editOn: confirming the stored number unedited stores nothing; an edit is stored', () => {
+		jest.useFakeTimers();
+		storeValues.set(PATH, 12.3052);
+		render(numberProperties({ numberFormat: 'de-DE', designType: '_editOnReq' }));
+		expect(input().value).toBe('12,3052');
+		const click = (sel: string) => {
+			const el = container.querySelector<HTMLElement>(sel);
+			expect(el).not.toBeNull();
+			act(() => el!.click());
+		};
+		click('._editRequestIcon');
+		act(() => {
+			jest.advanceTimersByTime(150);
+		});
+		focus();
+		blur();
+		click('._editConfirmIcon');
+		expect(writes).toEqual([]);
+		expect(storeValues.get(PATH)).toBe(12.3052);
+
+		click('._editRequestIcon');
+		focus();
+		typeInto('12,30527');
+		blur();
+		click('._editConfirmIcon');
+		expect(storeValues.get(PATH)).toBe(12.30527);
+		expect(input().value).toBe('12,30527');
+	});
+});
+
 // ── text boxes keep their behaviour ─────────────────────────────────────────
 
 describe('text box', () => {
