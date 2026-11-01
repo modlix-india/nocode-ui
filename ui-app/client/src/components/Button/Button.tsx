@@ -16,6 +16,7 @@ import useDefinition from '../util/useDefinition';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { flattenUUID } from '../util/uuid';
 import { getHref } from '../util/getHref';
+import { isBrowserHandledLinkClick } from '../util/isBrowserHandledLinkClick';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { messageToMaster } from '../../slaveFunctions';
@@ -107,6 +108,13 @@ function ButtonComponent(props: Readonly<ComponentProps>) {
 	const handleClick = async (e: any) => {
 		if (stopPropagation) e.stopPropagation();
 		if (preventDefault) e.preventDefault();
+		// Cmd/Ctrl or Shift click on a button with a link opens the link elsewhere, as on an
+		// anchor (Link, Grid): a new tab, or a new window with Shift. This page stays as it is
+		// and the click event does not run. Keyboard activation is not a click, so it navigates.
+		if (linkPath && e?.type === 'click' && isBrowserHandledLinkClick(e)) {
+			window.open(getHref(linkPath, location), '_blank', e.shiftKey ? 'popup' : undefined);
+			return;
+		}
 		if (linkPath) {
 			if (target) {
 				window.open(getHref(linkPath, location), target);
