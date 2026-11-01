@@ -8,6 +8,7 @@ import {
 	applyPreloadedStyleProperties,
 } from '../util/lazyStylePropertyUtil';
 import { propertiesDefinition } from './textBoxProperties';
+import { StylePropertyDefinition } from '../../types/common';
 
 const PREFIX = '.comp.compTextBox';
 const NAME = 'TextBox';
@@ -157,7 +158,36 @@ export default function TextBoxStyle({
 		display: flex;
 	}
 
-	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+	` +
+		processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme) +
+		processStyleDefinition(
+			PREFIX,
+			passwordIconInErrorProperties(styleProperties),
+			styleDefaults,
+			theme,
+		);
 
 	return <style id="TextBoxCss">{css}</style>;
+}
+
+// The error state recolours every right icon (`._hasError ._rightIcon`; the mono theme makes it
+// transparent), which also hid the password eye while the field showed an error (CXZ-1305). The
+// eye keeps its rest, active and value colour: the same rules again for the eye in the error
+// state, one class stronger than the error ones.
+const NORMAL_RIGHT_ICON_COLOR = /^textBox(Active|Value)?RightIconColor/;
+
+function passwordIconInErrorProperties(
+	props: Array<StylePropertyDefinition>,
+): Array<StylePropertyDefinition> {
+	return props
+		.filter(p => p.sel && NORMAL_RIGHT_ICON_COLOR.test(p.n))
+		.map(p => ({
+			...p,
+			sel: p
+				.sel!.split(',')
+				.map(s =>
+					s.trim().replace(/ \._rightIcon$/, '._hasError ._passwordIcon._rightIcon'),
+				)
+				.join(', '),
+		}));
 }
