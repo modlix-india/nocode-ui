@@ -28,7 +28,6 @@ export interface PortalCoordinates {
 	bottom?: number;
 }
 
-
 function Popover(props: Readonly<ComponentProps>) {
 	const {
 		pageDefinition: { translations },
@@ -84,14 +83,7 @@ function Popover(props: Readonly<ComponentProps>) {
 
 	const isOpen = (globalThis.designMode == 'PAGE' && showInDesign === true) || show;
 
-	// Layout effect and not an effect : the popover is portalled to the end of the body, so an
-	// unpositioned absolute box would be painted at the bottom of the document for a frame,
-	// growing the scroll height and flashing a scrollbar before the coordinates land.
-	React.useLayoutEffect(() => {
-		if (!isOpen) {
-			setCoords(undefined);
-			return;
-		}
+	const place = React.useCallback(() => {
 		if (!boxRef.current || !popoverRef.current) return;
 		const boxRect = boxRef.current.getBoundingClientRect();
 		const popoverRect = popoverRef.current.getBoundingClientRect();
@@ -101,7 +93,66 @@ function Popover(props: Readonly<ComponentProps>) {
 		setTipPosition(positions.tipPosition);
 		setMargin(positions.marginContainer);
 		setTipStyle(positions.tipStyle!);
-	}, [isOpen, position, showTip]);
+	}, [position]);
+
+	// Layout effect and not an effect : the popover is portalled to the end of the body, so an
+	// unpositioned absolute box would be painted at the bottom of the document for a frame,
+	// growing the scroll height and flashing a scrollbar before the coordinates land.
+	React.useLayoutEffect(() => {
+		if (!isOpen) {
+			setCoords(undefined);
+			return;
+		}
+		place();
+	}, [isOpen, place, showTip]);
+
+	// The panel is fixed to the viewport, so it used to stay where it opened while the page
+	// scrolled under it (a row menu floating over other rows). It follows its trigger now, as
+	// Dropdown does, and closes once a scroll takes the trigger out of sight.
+	React.useEffect(() => {
+		if (!isOpen) return;
+		const onScroll = (e: Event) => {
+			const box = boxRef.current;
+			if (!box) return;
+			const scroller = e.target;
+			// A scroll inside the panel itself moves nothing.
+			if (scroller instanceof Node && popoverRef.current?.contains(scroller)) return;
+			if (show && scroller instanceof Node && scroller.contains(box)) {
+				const b = box.getBoundingClientRect();
+				const s =
+					scroller instanceof Element && scroller !== document.documentElement
+						? scroller.getBoundingClientRect()
+						: {
+								top: 0,
+								left: 0,
+								bottom: document.documentElement.clientHeight,
+								right: document.documentElement.clientWidth,
+							};
+				// Out of the scrolled area, or under something pinned over it (a sticky header).
+				const hit = document.elementFromPoint?.(
+					(b.left + b.right) / 2,
+					(b.top + b.bottom) / 2,
+				);
+				if (
+					b.bottom <= s.top ||
+					b.top >= s.bottom ||
+					b.right <= s.left ||
+					b.left >= s.right ||
+					(hit && !box.contains(hit) && !popoverRef.current?.contains(hit))
+				) {
+					setShow(false);
+					return;
+				}
+			}
+			place();
+		};
+		window.addEventListener('scroll', onScroll, true);
+		window.addEventListener('resize', place);
+		return () => {
+			window.removeEventListener('scroll', onScroll, true);
+			window.removeEventListener('resize', place);
+		};
+	}, [isOpen, show, place]);
 
 	const showPopover = (e: React.MouseEvent<HTMLElement>) => {
 		setShow(!show);
