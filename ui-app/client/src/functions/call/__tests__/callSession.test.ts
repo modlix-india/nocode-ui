@@ -9,7 +9,7 @@ jest.mock('../../../context/StoreContext', () => ({
 	setData: (path: string, value: any, page: string) => writes.push({ path, value, page }),
 }));
 
-import { Answer, Connect, Disconnect, Hangup, Mute, Sound } from '..';
+import { Alert, Answer, Connect, Disconnect, Hangup, Mute, Sound } from '..';
 import { registerCallProvider, unregisterCallProvider } from '../registry';
 import * as session from '../session';
 import { CallAdapter, CallStateListener } from '../types';
@@ -92,7 +92,7 @@ afterAll(() => unregisterCallProvider('fake'));
 describe('function repository', () => {
 	test('the call functions resolve under UIEngine.Call, the old ones under UIEngine', async () => {
 		const repo = new UIFunctionRepository();
-		for (const name of ['Connect', 'Answer', 'Hangup', 'Mute', 'Disconnect', 'Sound']) {
+		for (const name of ['Connect', 'Answer', 'Hangup', 'Mute', 'Disconnect', 'Sound', 'Alert']) {
 			const fn = await repo.find('UIEngine.Call', name);
 			expect(fn?.getSignature().getFullName()).toBe(`UIEngine.Call.${name}`);
 		}
@@ -103,7 +103,7 @@ describe('function repository', () => {
 	});
 
 	test('every call function has a description', () => {
-		for (const F of [Connect, Answer, Hangup, Mute, Disconnect, Sound]) {
+		for (const F of [Connect, Answer, Hangup, Mute, Disconnect, Sound, Alert]) {
 			expect(new F().getSignature().getDescription()?.length).toBeGreaterThan(20);
 		}
 	});
@@ -119,6 +119,7 @@ describe('UIEngine.Call', () => {
 			error: undefined,
 			soundOn: true,
 			audioBlocked: false,
+			alertsOffer: false,
 		});
 		expect(adapter.load).toHaveBeenCalled();
 		expect(adapter.credentials).toEqual({ user: 'agent1', password: 'pw-123' });
@@ -141,6 +142,7 @@ describe('UIEngine.Call', () => {
 			muted: false,
 			soundOn: true,
 			audioBlocked: false,
+			alertsOffer: false,
 		});
 
 		let r = await exec(new Answer(), { callId: 'c1' });
@@ -180,6 +182,7 @@ describe('UIEngine.Call', () => {
 			muted: false,
 			soundOn: true,
 			audioBlocked: false,
+			alertsOffer: false,
 		});
 	});
 
@@ -280,6 +283,7 @@ describe('UIEngine.Call', () => {
 			error: 'bad password',
 			soundOn: true,
 			audioBlocked: false,
+			alertsOffer: false,
 		});
 		expect(adapter.disconnect).toHaveBeenCalled();
 		expect(session.activeCallState()).toBeUndefined();

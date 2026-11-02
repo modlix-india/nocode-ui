@@ -280,7 +280,7 @@ export function createWebAudioOut(): SoundOut {
 
 // ---------------------------------------------------------------- the controller
 
-function localStore(): Storage | undefined {
+export function localStore(): Storage | undefined {
 	try {
 		return typeof localStorage === 'undefined' ? undefined : localStorage;
 	} catch {
@@ -288,14 +288,15 @@ function localStore(): Storage | undefined {
 	}
 }
 
-function userKey(): string {
+/** A localStorage key for the signed in user: the prefix, then the user id. */
+export function userKey(prefix: string = SOUND_KEY): string {
 	let id: any;
 	try {
 		id = getDataFromPath('Store.auth.user.id', []);
 	} catch {
 		id = undefined;
 	}
-	return id === undefined || id === null || id === '' ? SOUND_KEY : `${SOUND_KEY}.${id}`;
+	return id === undefined || id === null || id === '' ? prefix : `${prefix}.${id}`;
 }
 
 /** The loop a call state asks for, before the incoming delay and the answer quiet. */

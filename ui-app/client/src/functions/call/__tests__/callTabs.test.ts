@@ -94,6 +94,50 @@ interface Tab {
 	adapters: FakeAdapter[];
 	last: () => any;
 	out: FakeOut;
+	browser: FakeBrowser;
+}
+
+/** A tab's view of the browser for the hidden tab alerts. */
+class FakeBrowser {
+	isHidden = true;
+	pageTitle = 'Deals';
+	perm = 'granted';
+	requests = 0;
+	notes: Array<{ body: string; closed: boolean }> = [];
+	private visibility?: () => void;
+	hidden() {
+		return this.isHidden;
+	}
+	onVisibility(cb: () => void) {
+		this.visibility = cb;
+	}
+	setHidden(h: boolean) {
+		this.isHidden = h;
+		this.visibility?.();
+	}
+	title() {
+		return this.pageTitle;
+	}
+	setTitle(t: string) {
+		this.pageTitle = t;
+	}
+	permission() {
+		return this.perm;
+	}
+	async request() {
+		this.requests++;
+		this.perm = 'granted';
+		return 'granted';
+	}
+	notify(_: string, body: string) {
+		const n = { body, closed: false };
+		this.notes.push(n);
+		return {
+			close: () => {
+				n.closed = true;
+			},
+		};
+	}
 }
 
 /** A tab's speaker: what it played, and whether the browser lets it play. */
@@ -143,12 +187,16 @@ function loadTab(name: string, tabs: FakeTabs): Tab {
 		const out = new FakeOut();
 		const sounds = require('../sounds');
 		session.useCallSounds(new sounds.CallSounds(() => out));
+		const browser = new FakeBrowser();
+		const alerts = require('../alerts');
+		session.useCallAlerts(new alerts.CallAlerts(() => browser));
 		tab = {
 			name,
 			session,
 			adapters,
 			last: () => writes[name][writes[name].length - 1]?.value,
 			out,
+			browser,
 		};
 	});
 	loaded.push(tab);
@@ -340,6 +388,7 @@ describe('one call across tabs', () => {
 			muted: false,
 			soundOn: true,
 			audioBlocked: false,
+			alertsOffer: false,
 		});
 	});
 });
@@ -395,7 +444,7 @@ describe('reload of the tab holding the call', () => {
 	});
 });
 
-describe('call sounds across tabs', () => {
+describe('call sounds and alerts across tabs', () => {
 	const later = async (ms: number) => {
 		jest.advanceTimersByTime(ms);
 		await flush();
@@ -483,5 +532,41 @@ describe('call sounds across tabs', () => {
 		await flush();
 		expect(b.out.played).toEqual(['incoming', 'end once']);
 		expect(a.out.played).toEqual([]);
+	});
+
+	test('only the hidden call tab alerts; Answer in the other tab ends its alerts', async () => {
+		const { a, b, sdk } = await twoTabs();
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1', from: '+9198' });
+		await later(1000);
+		expect(a.browser.pageTitle).toBe('Incoming call: +9198');
+		expect(a.browser.notes).toEqual([{ body: '+9198', closed: false }]);
+		expect(b.browser.pageTitle).toBe('Deals');
+		expect(b.browser.notes).toEqual([]);
+
+		await b.session.answer();
+		await flush();
+		expect(a.browser.pageTitle).toBe('Deals');
+		expect(a.browser.notes).toEqual([{ body: '+9198', closed: true }]);
+	});
+
+	test('"Allow call alerts" in the other tab asks once and drops the offer in every tab', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		a.browser.perm = 'default';
+		b.browser.perm = 'default';
+		await connect(a);
+		await connect(b);
+		expect(a.last()).toMatchObject({ alertsOffer: true });
+		expect(b.last()).toMatchObject({ alertsOffer: true });
+
+		await b.session.callAlert({ allow: true });
+		// The permission is the site's, shared by its tabs.
+		a.browser.perm = 'granted';
+		await flush();
+		expect(b.browser.requests).toBe(1);
+		expect(a.browser.requests).toBe(0);
+		expect(a.last().alertsOffer).toBe(false);
+		expect(b.last().alertsOffer).toBe(false);
 	});
 });
