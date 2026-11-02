@@ -43,10 +43,17 @@ type Place = {
 	suggested?: boolean;
 	/** ADZ-1217: a Google place id; with a map id its real outline is drawn, with no lookup. */
 	placeId?: string;
+	/** ADZ-1257: the kind of place (a Google Ads or Meta target type), checked when Match Place Type is on. */
+	type?: string;
 };
 type Spot = {
 	center: Point;
 	bounds?: { south: number; west: number; north: number; east: number };
+	/** ADZ-1257: what the lookup found: its types, its own bounds (not only a viewport), its place id */
+	types?: string[];
+	exact?: boolean;
+	partial?: boolean;
+	placeId?: string;
 };
 
 // one lookup per place name for the whole session (the Geocoding API is billed per call)
@@ -59,10 +66,18 @@ function findPlace(google: any, name: string): Promise<Spot | undefined> {
 	const p = new Promise<Spot | undefined>(resolve => {
 		try {
 			new google.maps.Geocoder().geocode({ address: name }, (res: any, status: string) => {
-				const g = status === 'OK' ? res?.[0]?.geometry : undefined;
+				const r = status === 'OK' ? res?.[0] : undefined;
+				const g = r?.geometry;
 				if (!g?.location) return resolve(undefined);
 				const box = (g.bounds ?? g.viewport)?.toJSON?.() ?? g.bounds ?? g.viewport;
-				resolve({ center: { lat: g.location.lat(), lng: g.location.lng() }, bounds: box });
+				resolve({
+					center: { lat: g.location.lat(), lng: g.location.lng() },
+					bounds: box,
+					types: Array.isArray(r.types) ? r.types : [],
+					exact: !!g.bounds,
+					partial: !!r.partial_match,
+					placeId: r.place_id,
+				});
 			});
 		} catch {
 			resolve(undefined);
@@ -136,6 +151,127 @@ function placeKm(p: Place): number {
 	return /^mile/i.test(String(p.distanceUnit ?? '')) ? r * 1.609344 : r;
 }
 
+// ADZ-1257: the Geocoding result types that ARE a place of each target type (Google Ads target types, Meta's
+// lower case ones normalised). A lookup that answers another kind (a state for an unknown postal code, a town
+// for a district) is not that place, so it is not drawn. Types listed in POINT_FITS get a marker, not an area.
+const AAL = 'administrative_area_level_';
+const AREA_FITS: Record<string, string[]> = {
+	COUNTRY: ['country'],
+	STATE: [AAL + '1'],
+	PROVINCE: [AAL + '1'],
+	REGION: [AAL + '1'],
+	TERRITORY: [AAL + '1'],
+	UNION_TERRITORY: [AAL + '1'],
+	AUTONOMOUS_COMMUNITY: [AAL + '1'],
+	PREFECTURE: [AAL + '1'],
+	GOVERNORATE: [AAL + '1'],
+	CANTON: [AAL + '1'],
+	OKRUG: [AAL + '1'],
+	DEPARTMENT: [AAL + '2'],
+	DIVISION: [AAL + '2'],
+	COUNTY: [AAL + '2', AAL + '3'],
+	DISTRICT: [AAL + '2', AAL + '3'],
+	SUB_DISTRICT: [AAL + '3', AAL + '4', AAL + '5'],
+	CITY: ['locality', 'postal_town', AAL + '3'],
+	MUNICIPALITY: ['locality', AAL + '2', AAL + '3', AAL + '4'],
+	POST_TOWN: ['postal_town', 'locality'],
+	CITY_REGION: ['colloquial_area', 'locality'],
+	COLLOQUIAL_AREA: ['colloquial_area'],
+	BOROUGH: ['sublocality', 'locality'],
+	NEIGHBORHOOD: ['neighborhood', 'sublocality'],
+	SUBCITY: ['neighborhood', 'sublocality'],
+	WARD: ['sublocality', 'neighborhood', AAL + '4', AAL + '5'],
+	SUB_WARD: ['sublocality', 'neighborhood'],
+	QUARTER: ['sublocality', 'neighborhood'],
+	COMMUNE: ['locality', AAL + '3', AAL + '4'],
+	POSTAL_CODE: ['postal_code'],
+	ZIP: ['postal_code'],
+	AIRPORT: ['airport'],
+	UNIVERSITY: ['university'],
+	NATIONAL_PARK: ['park', 'natural_feature'],
+};
+const POINT_FITS: Record<string, string[]> = { SUB_DISTRICT: ['locality'] };
+const LAYER_TYPES = ['locality', 'postal_code', AAL + '2', AAL + '1', 'country'];
+
+const hasType = (types: string[], fits: string[] = []) =>
+	types.some(t => fits.some(f => t === f || t.startsWith(f + '_level_')));
+
+/**
+ * ADZ-1257: how a place looked up by name may be drawn when its type is checked: 'outline' (its real boundary,
+ * through a boundary layer), 'area' (the box of its own bounds), 'point' (a marker) or undefined (not drawn).
+ */
+export function placeFit(
+	pl: Place,
+	spot: Spot | undefined,
+	layered = false,
+): 'outline' | 'area' | 'point' | undefined {
+	if (!spot) return undefined;
+	const kind = String(pl.type ?? '')
+		.trim()
+		.toUpperCase()
+		.replace(/[\s-]+/g, '_');
+	const types = spot.types ?? [];
+	const fits = AREA_FITS[kind];
+	if (!fits) return spot.partial ? undefined : 'point'; // a kind this map does not know: a marker at most
+	if (hasType(types, fits)) {
+		if (layered && spot.placeId && hasType(types, LAYER_TYPES)) return 'outline';
+		return spot.exact && spot.bounds ? 'area' : 'point';
+	}
+	return hasType(types, POINT_FITS[kind]) ? 'point' : undefined;
+}
+
+/**
+ * The shape a found place is drawn with, and the box the map fits to (undefined: fit its centre):
+ * a small dot where a boundary layer draws the outline, a marker for a point (ADZ-1257), a circle for a radius
+ * or a place with no bounds, else the box of its bounds.
+ */
+function shapeOf(
+	google: any,
+	look: any,
+	pl: Place,
+	spot: Spot,
+	fit: 'outline' | 'area' | 'point' | null,
+	km: number,
+	layered: boolean,
+): { shape: any; box?: any } {
+	if (layered) {
+		// the outline is the layer's; a small dot marks it and takes the click
+		const shape = new google.maps.Circle({
+			...look,
+			fillOpacity: 0.6,
+			center: spot.center,
+			radius: 120,
+		});
+		return { shape, box: fit === 'outline' ? spot.bounds : undefined };
+	}
+	if (fit === 'point') {
+		const shape = new google.maps.Marker({
+			map: look.map,
+			clickable: look.clickable,
+			position: spot.center,
+			title: pl.name ? String(pl.name) : undefined,
+		});
+		// a marker alone would fit the map to street level: keep a few km around it in view
+		const d = 0.05;
+		const c = spot.center;
+		return {
+			shape,
+			box: { south: c.lat - d, west: c.lng - d, north: c.lat + d, east: c.lng + d },
+		};
+	}
+	if (km > 0 || !spot.bounds) {
+		const shape = new google.maps.Circle({
+			...look,
+			center: spot.center,
+			radius: (km > 0 ? km : 1) * 1000,
+		});
+		return { shape, box: shape.getBounds?.() };
+	}
+	// an outlined area (fit 'area' lands here too: no radius, bounds of its own)
+	const shape = new google.maps.Rectangle({ ...look, bounds: spot.bounds });
+	return { shape, box: shape.getBounds?.() };
+}
+
 /**
  * Pick one point on a Google map: a click or a marker drag writes {lat, lng} to the binding path
  * (other keys of the bound object are kept) and runs On Change. The bound point, when set, shows
@@ -161,6 +297,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			excludedColor,
 			suggestedColor,
 			mapId,
+			matchPlaceType,
 			noMapText,
 			readOnly,
 			onChange,
@@ -202,6 +339,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		layerListeners?: any[];
 		fit?: any;
 		idled?: boolean;
+		hadPlaces?: boolean;
 	}>({});
 	const latest = useRef<{
 		bound?: any;
@@ -385,6 +523,8 @@ function MapPicker(props: Readonly<ComponentProps>) {
 	// ADZ-1171: the places a page targets (or excludes), drawn read-only under the picked point.
 	// ADZ-1217: plus the suggested ones in their own colour; a place with a Google place id (and no radius) is
 	// outlined with its real boundary when the map id has boundary layers, else drawn as before.
+	// ADZ-1257: with Match Place Type, a place looked up by name is drawn only when the lookup found that kind of
+	// place (placeFit): its real outline (map id), else the box of its bounds, else a marker; never another place.
 	const allPlaces = [
 		...placeList(places),
 		...placeList(suggestedPlaces, false, true),
@@ -398,21 +538,37 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		let stale = false;
 		clearPlaces();
 		const list: Place[] = JSON.parse(placesKey);
-		if (!list.length) return;
+		if (!list.length) {
+			// ADZ-1257: the last place went: back to the start view (a picked point keeps the view it has)
+			if (live.current.hadPlaces && !asPoint(latest.current.bound)) {
+				live.current.fit = undefined;
+				map.setCenter({
+					lat: Number(centerLat ?? 20.5937),
+					lng: Number(centerLng ?? 78.9629),
+				});
+				map.setZoom(Number(zoom ?? 5));
+			}
+			live.current.hadPlaces = false;
+			return;
+		}
+		live.current.hadPlaces = true;
+		const typed = !!matchPlaceType;
 		const colors = { place: placeColor, excluded: excludedColor, suggested: suggestedColor };
 		const layers = mapId ? boundaryLayers(google, map) : [];
 		const outlined = new Map<string, Place>();
 		list.forEach(pl => {
 			if (layers.length && pl.placeId && !(placeKm(pl) > 0)) outlined.set(pl.placeId, pl);
 		});
-		if (outlined.size) {
+		let listening = false;
+		const styleLayers = () => {
+			if (!outlined.size) return;
 			live.current.layers = layers;
 			layers.forEach(layer => {
 				layer.style = (opts: any) => {
 					const pl = outlined.get(opts?.feature?.placeId);
 					return pl ? placeLook(pl, colors, true) : null;
 				};
-				if (clickable)
+				if (clickable && !listening)
 					live.current.layerListeners!.push(
 						layer.addListener('click', (e: any) => {
 							const pl = outlined.get(e?.features?.[0]?.placeId);
@@ -420,7 +576,9 @@ function MapPicker(props: Readonly<ComponentProps>) {
 						}),
 					);
 			});
-		}
+			listening = true;
+		};
+		styleLayers();
 		Promise.all(
 			list.map(pl => {
 				const at = asPoint(pl);
@@ -432,40 +590,31 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			if (stale || live.current.map !== map) return;
 			const all = new google.maps.LatLngBounds();
 			let any = false;
+			let moreOutlines = false;
 			found.forEach((spot, i) => {
 				if (!spot) return;
 				const pl = list[i];
 				const look = { map, clickable, ...placeLook(pl, colors) };
 				const km = placeKm(pl);
-				let shape: any;
-				if (pl.placeId && outlined.has(pl.placeId)) {
-					// the outline is the layer's; a small dot marks it and takes the click
-					shape = new google.maps.Circle({
-						...look,
-						fillOpacity: 0.6,
-						center: spot.center,
-						radius: 120,
-					});
-				} else if (km > 0 || !spot.bounds) {
-					shape = new google.maps.Circle({
-						...look,
-						center: spot.center,
-						radius: (km > 0 ? km : 1) * 1000,
-					});
-				} else {
-					shape = new google.maps.Rectangle({ ...look, bounds: spot.bounds });
+				// ADZ-1257: a place looked up by name must be the kind of place its type says
+				const fit =
+					typed && !asPoint(pl) && !(km > 0)
+						? placeFit(pl, spot, layers.length > 0)
+						: null;
+				if (fit === undefined) return;
+				if (fit === 'outline') {
+					outlined.set(spot.placeId!, pl);
+					moreOutlines = true;
 				}
+				const layered = fit === 'outline' || !!(pl.placeId && outlined.has(pl.placeId));
+				const { shape, box } = shapeOf(google, look, pl, spot, fit, km, layered);
 				if (clickable) shape.addListener?.('click', () => clickPlace(pl));
 				live.current.shapes!.push(shape);
-				const b = pl.placeId && outlined.has(pl.placeId) ? undefined : shape.getBounds?.();
-				if (b) {
-					all.union(b);
-					any = true;
-				} else {
-					all.extend(spot.center);
-					any = true;
-				}
+				if (box) all.union(box);
+				else all.extend(spot.center);
+				any = true;
 			});
+			if (moreOutlines) styleLayers();
 			if (!any) return;
 			// the picked point stays in view too
 			const at = asPoint(latest.current.bound);
@@ -475,7 +624,16 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		return () => {
 			stale = true;
 		};
-	}, [ready, placesKey, placeColor, excludedColor, suggestedColor, mapId, clickable]);
+	}, [
+		ready,
+		placesKey,
+		placeColor,
+		excludedColor,
+		suggestedColor,
+		mapId,
+		clickable,
+		matchPlaceType,
+	]);
 
 	return (
 		<div className="comp compMapPicker" style={resolvedStyles.comp ?? {}}>

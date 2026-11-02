@@ -85,6 +85,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.DATA,
 	},
 	{
+		name: 'matchPlaceType',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Match place type',
+		description:
+			'Check that a place looked up by name is the kind of place its "type" says (a Google Ads or Meta target type: CITY, REGION, POSTAL_CODE, NEIGHBORHOOD, ...). A match is outlined (its real outline with a map id, else the box of its bounds) or, when the lookup has no bounds, marked with a marker; a lookup that finds another kind of place (a state for an unknown postal code) is not drawn. Places with lat / lng or a radius are drawn as usual.',
+		group: ComponentPropertyGroup.DATA,
+		defaultValue: false,
+	},
+	{
 		name: 'placeColor',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Place colour',
