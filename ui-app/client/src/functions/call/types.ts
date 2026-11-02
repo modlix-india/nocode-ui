@@ -24,6 +24,17 @@ export interface CallState {
 	endReason?: 'pageClosed';
 	/** True in a tab that only mirrors the call: another tab of the site holds its audio. */
 	otherTab?: boolean;
+	/** The user's call sounds setting (ring, ring back, end tone), remembered per user. */
+	soundOn?: boolean;
+	/** True while a ring is due and the browser blocks audio until the user taps the page. */
+	audioBlocked?: boolean;
+	/**
+	 * True while the call in this browser is the leg of a call the user placed and the far end
+	 * has not answered: the ring back plays instead of the incoming ring.
+	 */
+	ringBack?: boolean;
+	/** Set when the tab holding the call cannot play sound and another tab of the site does. */
+	soundTab?: string;
 	error?: string;
 }
 
