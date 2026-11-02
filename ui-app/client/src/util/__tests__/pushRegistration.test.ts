@@ -161,3 +161,24 @@ test('sign-out removes the subscription from this user but keeps it in the brows
 	);
 	expect(sub.unsubscribe).not.toHaveBeenCalled();
 });
+
+test('status is unsupported unless the app has push, then the browser permission', async () => {
+	signedIn();
+	browser('default');
+	// An app without notifications.
+	mockedAxios.get.mockResolvedValue({ data: { enabled: false, vapidPublicKey: VAPID } });
+	expect(await pushStatus()).toBe('unsupported');
+	// Notifications, but no web push key on the platform.
+	mockedAxios.get.mockResolvedValue({ data: { enabled: true } });
+	expect(await pushStatus()).toBe('unsupported');
+	// The config cannot be read (signed out, server down).
+	mockedAxios.get.mockRejectedValue(new Error('401'));
+	expect(await pushStatus()).toBe('unsupported');
+	// Push on: the browser's own answer.
+	mockedAxios.get.mockResolvedValue({ data: { enabled: true, vapidPublicKey: VAPID } });
+	expect(await pushStatus()).toBe('default');
+	expect(mockedAxios.get).toHaveBeenLastCalledWith(
+		'/leadzumptwo/SYSTEM/api/notification/push/config',
+		expect.objectContaining({ params: { appCode: 'leadzumptwo' } }),
+	);
+});
