@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { SceneDocument, SceneShader } from '../../../util/three/sceneDocument';
 import { undeclaredUniforms } from '../../../util/three/sceneEdits';
+import { DraftNumberInput } from '../../../util/DraftNumberInput';
 
 /**
  * The GLSL source of one shader, plus a control per declared uniform.
@@ -99,13 +100,11 @@ export function ShaderPane({
 							onChange={e => onSetUniform(shader.id, u.name, e.target.value)}
 						/>
 					) : (
-						<input
-							type="number"
+						<DraftNumberInput
 							step={0.05}
 							value={typeof u.value === 'number' ? u.value : 0}
-							onChange={e => {
-								const n = Number(e.target.value);
-								if (Number.isFinite(n)) onSetUniform(shader.id, u.name, n);
+							onNumber={n => {
+								if (n !== undefined) onSetUniform(shader.id, u.name, n);
 							}}
 						/>
 					)}

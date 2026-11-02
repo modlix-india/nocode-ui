@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { EASING_NAMES, type EasingName } from '../../../util/three/easing';
 import type { SceneDocument, TimelineTrack } from '../../../util/three/sceneDocument';
 import { trackTargets } from '../../../util/three/sceneEdits';
+import { DraftNumberInput } from '../../../util/DraftNumberInput';
 
 /**
  * Tracks, keys and the scrub position.
@@ -143,27 +144,23 @@ export function TimelinePanel({
 							<div className="_sceneKey" key={ki}>
 								<label>
 									<span>at</span>
-									<input
-										type="number"
+									<DraftNumberInput
 										step={0.05}
 										min={0}
 										max={1}
 										value={k.t}
-										onChange={e => {
-											const n = Number(e.target.value);
-											if (Number.isFinite(n)) onSetKey(ti, ki, { t: n });
+										onNumber={n => {
+											if (n !== undefined) onSetKey(ti, ki, { t: n });
 										}}
 									/>
 								</label>
 								<label>
 									<span>=</span>
-									<input
-										type="number"
+									<DraftNumberInput
 										step={0.1}
 										value={k.v}
-										onChange={e => {
-											const n = Number(e.target.value);
-											if (Number.isFinite(n)) onSetKey(ti, ki, { v: n });
+										onNumber={n => {
+											if (n !== undefined) onSetKey(ti, ki, { v: n });
 										}}
 									/>
 								</label>

@@ -26,7 +26,7 @@ import type {
 	TextSpan,
 	Transaction,
 } from './core/types';
-import { createBlock, getPlainText, getTextLength, generateId } from './core/types';
+import { createBlock, getPlainText, getTextLength, generateId, isInMention } from './core/types';
 import {
 	findBlock,
 	findBlockLocation,
@@ -60,9 +60,13 @@ import {
 	setBlockTypeOp,
 	moveBlockOp,
 	indentBlocksOp,
-	toggleMark as toggleMarkOp,
-	setMark as setMarkOp,
 	replaceContent,
+	selectionTextRanges,
+	blockSelectionTextRanges,
+	activeMarksInRanges,
+	toggleMarkInRanges,
+	setMarkInRanges,
+	type BlockTextRange,
 	insertText as insertTextOp,
 	deleteText as deleteTextOp,
 	insertMention as insertMentionOp,
@@ -83,7 +87,7 @@ import {
 	replaceBlocksOp,
 	cloneBlockWithFreshIds,
 } from './core/block-selection';
-import { SlashCommandMenu } from './features/slash-command';
+import { FILE_SLASH_TYPE, SlashCommandMenu } from './features/slash-command';
 import { EmojiPicker } from './features/emoji-picker';
 import { MentionPicker } from './features/mention-picker';
 import type { MentionItem, MentionProvider } from './features/mention-types';
@@ -97,6 +101,13 @@ import { FindReplaceBar } from './features/find-replace';
 import { BlockMenu } from './features/block-menu';
 import { useIsCoarsePointer } from './hooks/use-is-coarse-pointer';
 import { GripVertical, Plus } from 'lucide-react';
+import { consumeEscape } from './features/escape-guard';
+import { isFormControlFocusedIn, RETURN_TO_TEXT_EVENT } from './core/island-input';
+
+/** A file's name as link text: square brackets would end the markdown link early. */
+function fileLinkText(name: string): string {
+	return (name || 'file').replace(/[[\]]/g, '').trim() || 'file';
+}
 
 // ---- Public API Types ----
 
@@ -271,25 +282,6 @@ interface DragState {
 }
 
 // ---- Helpers ----
-
-/** Get marks active at a given offset within a block */
-function getActiveMarksAtPosition(
-	doc: EditorDocument,
-	blockId: string,
-	offset: number,
-): MarkType[] {
-	const block = findBlock(doc, blockId);
-	if (!block) return [];
-	let pos = 0;
-	for (const span of block.content) {
-		const end = pos + span.text.length;
-		if (offset > pos && offset <= end) {
-			return (span.marks ?? []).map(m => m.type);
-		}
-		pos = end;
-	}
-	return [];
-}
 
 /** Get the bounding rect of the caret (collapsed selection) */
 function getCaretRect(): DOMRect | null {
@@ -1402,6 +1394,9 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		// is typing in.
 		const active = document.activeElement as HTMLElement | null;
 		if (active && active !== document.body && !rootRef.current.contains(active)) return;
+		// Nor into the text while a box inside the editor (an image's W) has focus: the
+		// caret would take its keys.
+		if (isFormControlFocusedIn(rootRef.current)) return;
 		isWritingSelection.current = true;
 		writeSelection(rootRef.current, selection);
 		isWritingSelection.current = false;
@@ -1477,6 +1472,11 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 	);
 
 	/** Handle slash command item selection */
+	// `attachFiles` is defined further down (beside paste); the slash menu reaches it through this ref.
+	const attachFilesRef = useRef<
+		((files: File[], anchorId: string, replaceId?: string) => boolean) | null
+	>(null);
+
 	const handleSlashSelect = useCallback(
 		(type: BlockType) => {
 			const blockId = slashCommand.blockId;
@@ -1564,6 +1564,39 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 					filter: '',
 					position: { x: 0, y: 0 },
 				});
+				return;
+			}
+
+			// File pseudo-type: strip the "/filter", then pick files from the computer.
+			// Pictures become image blocks, anything else a link to the uploaded file.
+			if (type === FILE_SLASH_TYPE) {
+				const whole = slashIdx === 0 && slashEnd === text.length;
+				if (slashIdx >= 0) {
+					currentDoc = deleteTextOp(
+						currentDoc,
+						blockId,
+						slashIdx,
+						slashEnd - slashIdx,
+					).doc;
+					setDoc(currentDoc);
+					docRef.current = currentDoc;
+					onChange?.(currentDoc);
+				}
+				setSlashCommand({
+					active: false,
+					blockId: '',
+					filter: '',
+					position: { x: 0, y: 0 },
+				});
+				const input = document.createElement('input');
+				input.type = 'file';
+				input.multiple = true;
+				input.onchange = () => {
+					const files = Array.from(input.files ?? []);
+					if (files.length)
+						attachFilesRef.current?.(files, blockId, whole ? blockId : undefined);
+				};
+				input.click();
 				return;
 			}
 
@@ -1904,6 +1937,11 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				close();
 				return;
 			}
+			// The "@" of a mention already inserted (its pill label) is not a new trigger.
+			if (isInMention(block.content, atIdx)) {
+				close();
+				return;
+			}
 
 			// Honor an explicit Escape close until the user moves to a different "@".
 			const dismissed = closedMentionAtRef.current;
@@ -2241,8 +2279,9 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				return;
 			}
 
-			// Get active marks at the focus position
-			const marks = getActiveMarksAtPosition(currentDoc, sel.focus.blockId, sel.focus.offset);
+			// A mark shows as on only when ALL the selected text has it, across
+			// every block the selection touches (not just the caret's block).
+			const marks = activeMarksInRanges(currentDoc, selectionTextRanges(currentDoc, sel));
 
 			setToolbar({
 				active: true,
@@ -2256,39 +2295,34 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		[toolbar.active],
 	);
 
-	/** Handle mark toggle from toolbar */
+	/** The text the toolbar acts on: in whole-block mode every selected
+	 *  block's full text (nested blocks included), otherwise each block's part
+	 *  of the text selection, so a selection across lines formats all of it. */
+	const toolbarRanges = useCallback((): BlockTextRange[] => {
+		const ids = selectedBlockIdsRef.current;
+		if (ids.length > 0) return blockSelectionTextRanges(docRef.current, ids);
+		const sel = selectionRef.current;
+		return sel ? selectionTextRanges(docRef.current, sel) : [];
+	}, []);
+
+	/** Re-read the on/off state of the toolbar buttons after an edit. */
+	const refreshToolbarMarks = useCallback(() => {
+		const marks = activeMarksInRanges(docRef.current, toolbarRanges());
+		setToolbar(prev => (prev.active ? { ...prev, activeMarks: marks } : prev));
+	}, [toolbarRanges]);
+
+	/** Handle mark toggle from toolbar. Works on the whole selection, across
+	 *  blocks; the selection is kept (the result carries no selection), so a
+	 *  second click toggles the mark back off. */
 	const handleToolbarToggleMark = useCallback(
 		(mark: Mark) => {
-			const sel = selectionRef.current;
-			if (!sel) return;
-
-			// For same-block selections
-			if (sel.anchor.blockId === sel.focus.blockId) {
-				const from = Math.min(sel.anchor.offset, sel.focus.offset);
-				const to = Math.max(sel.anchor.offset, sel.focus.offset);
-				const result = toggleMarkOp(docRef.current, sel.anchor.blockId, from, to, mark);
-				if (result.doc !== docRef.current) {
-					apply(result);
-				}
-			}
-
-			// Update toolbar marks after toggling
-			requestAnimationFrame(() => {
-				const currentSel = selectionRef.current;
-				if (currentSel) {
-					const marks = getActiveMarksAtPosition(
-						docRef.current,
-						currentSel.focus.blockId,
-						currentSel.focus.offset,
-					);
-					setToolbar(prev => ({
-						...prev,
-						activeMarks: marks,
-					}));
-				}
-			});
+			const ranges = toolbarRanges();
+			if (ranges.length === 0) return;
+			const result = toggleMarkInRanges(docRef.current, ranges, mark);
+			if (result.doc !== docRef.current) apply(result);
+			refreshToolbarMarks();
 		},
-		[apply],
+		[apply, toolbarRanges, refreshToolbarMarks],
 	);
 
 	/** Set (or clear, with no `attrs`) a "pick a value" mark like color /
@@ -2296,45 +2330,61 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 	 *  DIFFERENT value replaces it instead of toggling the mark off. */
 	const handleToolbarSetMark = useCallback(
 		(mark: Mark) => {
-			const sel = selectionRef.current;
-			if (!sel || sel.anchor.blockId !== sel.focus.blockId) return;
-			const from = Math.min(sel.anchor.offset, sel.focus.offset);
-			const to = Math.max(sel.anchor.offset, sel.focus.offset);
-			if (from === to) return;
-			const result = setMarkOp(
-				docRef.current,
-				sel.anchor.blockId,
-				from,
-				to,
-				mark.type,
-				mark.attrs,
-			);
+			const ranges = toolbarRanges();
+			if (ranges.length === 0) return;
+			const result = setMarkInRanges(docRef.current, ranges, mark.type, mark.attrs);
 			if (result.doc !== docRef.current) apply(result);
+			refreshToolbarMarks();
 		},
-		[apply],
+		[apply, toolbarRanges, refreshToolbarMarks],
 	);
 
 	/** Set (or clear, with "") an inline font on the selection. Uses the
 	 *  set-mark op so re-picking replaces the font instead of toggling off. */
 	const handleToolbarSetFont = useCallback(
 		(value: string) => {
-			const sel = selectionRef.current;
-			if (!sel || sel.anchor.blockId !== sel.focus.blockId) return;
-			const from = Math.min(sel.anchor.offset, sel.focus.offset);
-			const to = Math.max(sel.anchor.offset, sel.focus.offset);
-			if (from === to) return;
-			const result = setMarkOp(
+			const ranges = toolbarRanges();
+			if (ranges.length === 0) return;
+			const result = setMarkInRanges(
 				docRef.current,
-				sel.anchor.blockId,
-				from,
-				to,
+				ranges,
 				'fontFamily',
 				value ? { fontFamily: value } : undefined,
 			);
 			if (result.doc !== docRef.current) apply(result);
 		},
-		[apply],
+		[apply, toolbarRanges],
 	);
+
+	// A drag across blocks (or a shift-click) turns into a whole-block
+	// selection, which has no text range for the toolbar to read. Offer the
+	// toolbar for the selected blocks' text instead, and close it when the
+	// block selection ends. Without this the toolbar stayed up from the text
+	// selection made before the drag left its first block, with that stale
+	// on/off state, and its buttons did nothing to the highlighted blocks.
+	const blockToolbarOpenRef = useRef(false);
+	const selectedBlocksKey = selectedBlockIds.join('\n');
+	useEffect(() => {
+		const ids = selectedBlockIdsRef.current;
+		const root = rootRef.current;
+		const ranges = ids.length > 0 ? blockSelectionTextRanges(docRef.current, ids) : [];
+		if (readOnly || !root || ranges.length === 0) {
+			if (blockToolbarOpenRef.current || ids.length > 0) {
+				blockToolbarOpenRef.current = false;
+				setToolbar(prev => (prev.active ? { ...prev, active: false } : prev));
+			}
+			return;
+		}
+		const firstEl = root.querySelector<HTMLElement>(`[data-block-id="${ids[0]}"]`);
+		if (!firstEl) return;
+		const rect = firstEl.getBoundingClientRect();
+		blockToolbarOpenRef.current = true;
+		setToolbar({
+			active: true,
+			position: { x: rect.left + rect.width / 2, y: rect.top - 10 },
+			activeMarks: activeMarksInRanges(docRef.current, ranges),
+		});
+	}, [selectedBlocksKey, readOnly]);
 
 	/** Close floating toolbar */
 	const handleToolbarClose = useCallback(() => {
@@ -2368,6 +2418,10 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 
 		const domSel = window.getSelection();
 		if (!domSel || !rootRef.current.contains(domSel.anchorNode)) return;
+
+		// A box inside the editor (an image's W) has focus: the selection is the box's, beside
+		// it in the island. It is not a caret in the text; the text keeps the one it had.
+		if (isFormControlFocusedIn(rootRef.current)) return;
 
 		// Skip only when the selection is inside a self-managed nested surface
 		// (table cells, list cells, MentionInput) — those run their own selection
@@ -2631,11 +2685,25 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 						}
 						return;
 					}
-					// Other modifier shortcuts (undo, select-all, save, find, bold, …)
+					// Bold / italic / underline / code / strike format every
+					// selected block, like the toolbar, and keep the selection.
+					let blockMark: Mark | null = null;
+					if (e.shiftKey) {
+						if (k === 's') blockMark = { type: 'strikethrough' };
+					} else if (k === 'b') blockMark = { type: 'bold' };
+					else if (k === 'i') blockMark = { type: 'italic' };
+					else if (k === 'u') blockMark = { type: 'underline' };
+					else if (k === 'e') blockMark = { type: 'code' };
+					if (blockMark) {
+						e.preventDefault();
+						handleToolbarToggleMark(blockMark);
+						return;
+					}
+					// Other modifier shortcuts (undo, select-all, save, find, …)
 					// return to text mode first.
 					clearBlockSelection();
 				} else if (e.key === 'Escape') {
-					e.preventDefault();
+					consumeEscape(e); // clears the block selection only, not a popup around the editor
 					clearBlockSelection();
 					return;
 				} else if (e.key === 'Backspace' || e.key === 'Delete') {
@@ -2732,7 +2800,7 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 
 			// Escape closes toolbar
 			if (toolbar.active && e.key === 'Escape') {
-				e.preventDefault();
+				consumeEscape(e); // closes the toolbar only, not a popup around the editor
 				handleToolbarClose();
 				return;
 			}
@@ -2830,6 +2898,8 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			);
 			if (handled && result.doc) {
 				apply(result);
+				// Cmd+B / I / U / E change marks: keep the toolbar's on/off state true.
+				if (toolbar.active) refreshToolbarMarks();
 			}
 		},
 		[
@@ -2841,6 +2911,8 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			mentionPicker.active,
 			toolbar.active,
 			handleToolbarClose,
+			handleToolbarToggleMark,
+			refreshToolbarMarks,
 			flushIdle,
 			clearBlockSelection,
 		],
@@ -2902,6 +2974,28 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		updateEmojiPickerState,
 		updateMentionPickerState,
 	]);
+
+	// ---- Leaving a box inside the editor for the text ----
+	// A box in an island (an image's W) bubbles RETURN_TO_TEXT_EVENT on Enter or Escape. The
+	// editor's selection was left alone while the box had focus, so the caret goes back where it
+	// was. Focusing the root blurs the box, which commits it.
+	useEffect(() => {
+		const root = rootRef.current;
+		if (!root || readOnly) return;
+		const onReturnToText = (e: Event) => {
+			e.stopPropagation();
+			const sel = selectionRef.current;
+			isWritingSelection.current = true;
+			try {
+				root.focus({ preventScroll: true });
+				if (sel) writeSelection(root, sel);
+			} finally {
+				isWritingSelection.current = false;
+			}
+		};
+		root.addEventListener(RETURN_TO_TEXT_EVENT, onReturnToText);
+		return () => root.removeEventListener(RETURN_TO_TEXT_EVENT, onReturnToText);
+	}, [readOnly]);
 
 	const onCompositionStart = useCallback(() => {
 		isComposing.current = true;
@@ -2989,6 +3083,60 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 		[readOnly, apply],
 	);
 
+	// ---- Files that are not pictures (PDF, Word, ...) ----
+	// Each becomes a paragraph holding a link to the uploaded file, named after it. It reads
+	// "Uploading <name>..." until the host's upload answers. A host without an upload handler
+	// gets nothing: a whole document as a data URL would bloat the stored markdown.
+	const attachFiles = useCallback(
+		(files: File[], anchorId: string, replaceId?: string): boolean => {
+			if (readOnly || !files.length || !onImageUpload) return false;
+			let doc = docRef.current;
+			let after = anchorId;
+			const placed: { blockId: string; file: File }[] = [];
+			files.forEach((file, i) => {
+				const block = createBlock(
+					'paragraph',
+					`${i18nT('editor.file.uploading')} ${file.name}...`,
+				);
+				if (i === 0 && replaceId && findBlock(doc, replaceId))
+					doc = updateBlock(doc, replaceId, () => block);
+				else doc = insertBlockAfter(doc, after, block);
+				after = block.id;
+				placed.push({ blockId: block.id, file });
+			});
+			setDoc(doc);
+			docRef.current = doc;
+			onChange?.(doc);
+			for (const { blockId, file } of placed) {
+				onImageUpload(file)
+					.then(
+						(url): TextSpan[] =>
+							url
+								? [
+										{
+											text: fileLinkText(file.name),
+											marks: [{ type: 'link', attrs: { href: url } }],
+										},
+									]
+								: [{ text: `${i18nT('editor.file.failed')} ${file.name}` }],
+						(err): TextSpan[] => {
+							console.warn('File upload failed', err);
+							return [{ text: `${i18nT('editor.file.failed')} ${file.name}` }];
+						},
+					)
+					.then(content => {
+						if (!findBlock(docRef.current, blockId)) return;
+						const next = updateBlock(docRef.current, blockId, b => ({ ...b, content }));
+						setDoc(next);
+						docRef.current = next;
+						onChange?.(next);
+					});
+			}
+			return true;
+		},
+		[readOnly, onChange, onImageUpload, i18nT],
+	);
+
 	const onPaste = useCallback(
 		(e: React.ClipboardEvent) => {
 			if (readOnly) return;
@@ -3035,6 +3183,23 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				} else {
 					apply(insertBlocksAfterOp(docRef.current, sel.focus.blockId, clones));
 				}
+				return;
+			}
+
+			// Pasted files that are not pictures (a PDF or Word file copied in Finder or
+			// Explorer): attach them as links, replacing an empty paragraph in place.
+			const pastedDocs = Array.from(e.clipboardData?.files ?? []).filter(
+				f => !f.type.startsWith('image/'),
+			);
+			if (pastedDocs.length && onImageUpload) {
+				e.preventDefault();
+				const here = findBlock(docRef.current, sel.focus.blockId);
+				const empty =
+					!!here &&
+					here.type === 'paragraph' &&
+					here.children.length === 0 &&
+					getTextLength(here.content) === 0;
+				attachFiles(pastedDocs, sel.focus.blockId, empty ? sel.focus.blockId : undefined);
 				return;
 			}
 
@@ -3090,20 +3255,23 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 			if (!result) return;
 			apply(result);
 		},
-		[readOnly, apply, onChange],
+		[readOnly, apply, onChange, onImageUpload, attachFiles],
 	);
+
+	attachFilesRef.current = attachFiles;
 
 	// ---- Image files dropped from the desktop ----
 	// Each picture becomes an image block after the block it was dropped on and
-	// goes through the same upload as a pasted one. Returns false when the drop
-	// carried no picture, so the caller can leave the event alone.
+	// goes through the same upload as a pasted one; any other file (PDF, Word, ...)
+	// is attached as a link. Returns false when the drop carried no file, so the
+	// caller can leave the event alone.
 	const dropImageFiles = useCallback(
 		(e: React.DragEvent): boolean => {
 			if (readOnly) return false;
-			const files = Array.from(e.dataTransfer?.files ?? []).filter(f =>
-				f.type.startsWith('image/'),
-			);
-			if (!files.length) return false;
+			const all = Array.from(e.dataTransfer?.files ?? []);
+			const files = all.filter(f => f.type.startsWith('image/'));
+			const others = all.filter(f => !f.type.startsWith('image/'));
+			if (!all.length) return false;
 			e.preventDefault();
 			let doc = docRef.current;
 			const under = (e.target as HTMLElement | null)?.closest?.(
@@ -3121,9 +3289,11 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				anchorId = imgBlock.id;
 				placed.push({ blockId: imgBlock.id, file });
 			}
-			setDoc(doc);
-			docRef.current = doc;
-			onChange?.(doc);
+			if (placed.length) {
+				setDoc(doc);
+				docRef.current = doc;
+				onChange?.(doc);
+			}
 			for (const { blockId, file } of placed) {
 				const reader = new FileReader();
 				reader.onload = () => {
@@ -3140,9 +3310,10 @@ export const BlockEditor = forwardRef<BlockEditorRef, BlockEditorProps>(function
 				};
 				reader.readAsDataURL(file);
 			}
+			if (others.length) attachFiles(others, anchorId);
 			return true;
 		},
-		[readOnly, onChange],
+		[readOnly, onChange, attachFiles],
 	);
 
 	const onEditorBlur = useCallback(() => {

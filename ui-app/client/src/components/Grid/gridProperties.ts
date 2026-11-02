@@ -256,6 +256,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'linkForNewTabOnly',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		group: ComponentPropertyGroup.ADVANCED,
+		displayName: 'Link only for a new tab',
+		description:
+			'With a Link Path and On Click: a plain click runs On Click and does not follow the link, while Cmd/Ctrl, Shift or middle click open the link in a new tab or window, as on any real link.',
+		defaultValue: false,
+	},
+	{
 		// Turns the grid into a user-resizable pane. Set it as an EXPRESSION to switch
 		// resizing off in states where the size is not the user's to choose, e.g. a
 		// collapsed rail: `Page.ui.sidekickCollapsed = true ? '_NONE' : '_LEFT'`.

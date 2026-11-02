@@ -10,7 +10,7 @@ export function lazyStylePropertyLoadFunction(
 	styleDefaults: Map<string, string>,
 	props?: Array<ComponentPropertyDefinition>,
 ) {
-	return () => {
+	const load = () => {
 		if (styleDefaults.size > 0) return;
 		if (globalThis.styleProperties[name]) {
 			globalThis.styleProperties[name]
@@ -20,16 +20,106 @@ export function lazyStylePropertyLoadFunction(
 				);
 			return;
 		}
-		axios.get(lazyStylePropURL(name)).then((res: any) => {
-			if (!Array.isArray(res.data)) {
-				console.error('Unable to load style properties for component : ', name);
-				console.error('Response : ', res);
+		void loadStylePropertiesOnce(name).then(data => {
+			if (styleDefaults.size > 0) return;
+			if (!data) {
+				retryStylePropertiesLater(name, load);
 				return;
 			}
-
-			inflateAndSetStyleProps(props, res.data, setStyleProperties, styleDefaults);
+			inflateAndSetStyleProps(props, data, setStyleProperties, styleDefaults);
 		});
 	};
+	return load;
+}
+
+const STYLE_PROPERTY_RETRY_DELAYS = [400, 1500, 4000];
+
+/**
+ * One request per component at a time. A style component calls its load function from its own
+ * effect AND from `usedComponents.using`, so without this every list was fetched twice in parallel.
+ */
+const stylePropertiesInFlight = new Map<
+	string,
+	Promise<Array<StylePropertyDefinition> | undefined>
+>();
+
+function loadStylePropertiesOnce(name: string) {
+	let p = stylePropertiesInFlight.get(name);
+	if (!p) {
+		p = fetchStyleProperties(name).finally(() => stylePropertiesInFlight.delete(name));
+		stylePropertiesInFlight.set(name, p);
+	}
+	return p;
+}
+
+/** Background rounds after the quick retries gave up; focus, a visible tab or `online` also wake. */
+const STYLE_PROPERTY_LATER_DELAYS = [15000, 30000, 60000];
+const stylePropertiesWaiting = new Map<string, () => void>();
+const stylePropertiesLaterRounds = new Map<string, number>();
+let stylePropertiesWakeTimer: ReturnType<typeof setTimeout> | undefined;
+let stylePropertiesWakeListening = false;
+
+function wakeStylePropertyLoads() {
+	if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
+	if (stylePropertiesWakeTimer) clearTimeout(stylePropertiesWakeTimer);
+	stylePropertiesWakeTimer = undefined;
+	const loads = Array.from(stylePropertiesWaiting.values());
+	stylePropertiesWaiting.clear();
+	loads.forEach(fn => fn());
+}
+
+/**
+ * The quick retries cover a blip of a few seconds. The CDN can stay unreachable longer than that
+ * from one browser (every request reset: net::ERR_CONNECTION_RESET) while the page itself loaded,
+ * and the component then kept browser-default buttons and inputs for good. So a component whose
+ * list never arrived asks again later: on a timer, a few rounds, and whenever the network comes
+ * back or the person returns to the tab.
+ */
+function retryStylePropertiesLater(name: string, load: () => void) {
+	if (typeof window === 'undefined') return;
+	stylePropertiesWaiting.set(name, load);
+	if (!stylePropertiesWakeListening) {
+		stylePropertiesWakeListening = true;
+		window.addEventListener('online', wakeStylePropertyLoads);
+		window.addEventListener('focus', wakeStylePropertyLoads);
+		document.addEventListener('visibilitychange', wakeStylePropertyLoads);
+	}
+	const round = stylePropertiesLaterRounds.get(name) ?? 0;
+	if (stylePropertiesWakeTimer || round >= STYLE_PROPERTY_LATER_DELAYS.length) return;
+	stylePropertiesLaterRounds.set(name, round + 1);
+	stylePropertiesWakeTimer = setTimeout(wakeStylePropertyLoads, STYLE_PROPERTY_LATER_DELAYS[round]);
+}
+
+/**
+ * Fetches `/styleProperties/<name>.json`, retrying when the request fails or does not answer with
+ * an array. One failed request used to leave the component without any of its theme styles until
+ * a reload (browser-default buttons and inputs on a sign-in page), and the CDN answers a miss with
+ * a month long max-age, so a retry asks for a URL no cache holds (`r=<attempt>`).
+ */
+export function fetchStyleProperties(
+	name: string,
+	delays: Array<number> = STYLE_PROPERTY_RETRY_DELAYS,
+): Promise<Array<StylePropertyDefinition> | undefined> {
+	const attempt = (n: number): Promise<Array<StylePropertyDefinition> | undefined> => {
+		const base = lazyStylePropURL(name);
+		const url = n === 0 ? base : `${base}${base.includes('?') ? '&' : '?'}r=${n}`;
+		return axios
+			.get(url)
+			.then((res: any) => {
+				if (Array.isArray(res?.data)) return res.data;
+				throw new Error('Style properties response is not a list');
+			})
+			.catch((err: any) => {
+				if (n >= delays.length) {
+					console.error('Unable to load style properties for component : ', name, err);
+					return undefined;
+				}
+				return new Promise<Array<StylePropertyDefinition> | undefined>(resolve =>
+					setTimeout(() => resolve(attempt(n + 1)), delays[n]),
+				);
+			});
+	};
+	return attempt(0);
 }
 
 export function inflateAndSetStyleProps(

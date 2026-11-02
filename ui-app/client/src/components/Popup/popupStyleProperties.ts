@@ -171,6 +171,20 @@ export const styleProperties: Array<StylePropertyDefinition> = [
 		sel: '.modal',
 	},
 	{
+		gn: 'Modal',
+		dn: 'Modal Max Height',
+		n: 'popupModalMaxHeight',
+		cp: 'max-height',
+		sel: '.modal',
+	},
+	{
+		gn: 'Modal',
+		dn: 'Modal Overflow Y',
+		n: 'popupModalOverflowY',
+		cp: 'overflow-y',
+		sel: '.modal',
+	},
+	{
 		gn: 'popup title',
 		dn: 'Popup Title Color',
 		n: 'popupTitleColor',

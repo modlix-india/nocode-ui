@@ -21,6 +21,7 @@ import { AnalyticsBinder } from './AnalyticsBinder';
 import { ShortcutChooser } from '../shortcuts/ShortcutChooser';
 import { ShortcutModifierHold } from '../shortcuts/ShortcutModifierHold';
 import { ShortcutCheatSheet } from '../shortcuts/ShortcutCheatSheet';
+import { resumePushAfterSignIn } from '../util/pushGate';
 
 // In design mode we are listening to the messages from editor
 
@@ -86,6 +87,24 @@ function processTagType(headTags: any, tag: string) {
 			Object.entries(attributes).forEach(e => link.setAttribute(e[0], e[1] as string));
 			document.head.appendChild(link);
 		});
+}
+
+/**
+ * The app's PWA manifest link, written where the page head is built here (the dev server);
+ * the shell and SSR write it into the served head. Same address as theirs.
+ */
+function processManifest(manifest: any) {
+	const existing = document.head.querySelector('link[rel="manifest"]');
+	const wanted = manifest && typeof manifest === 'object' && Object.keys(manifest).length > 0;
+	if (!wanted) {
+		existing?.remove();
+		return;
+	}
+	if (existing) return;
+	const link = document.createElement('link');
+	link.rel = 'manifest';
+	link.href = 'api/manifest/manifest.json';
+	document.head.appendChild(link);
 }
 
 import { processFontPacks } from './fontPacks';
@@ -249,6 +268,7 @@ export function App({ location }: Readonly<{ location?: string }> = {}) {
 					}
 
 					processTagType(properties.links, 'LINK');
+					if (globalThis.nodeDev) processManifest(properties.manifest);
 					processTagType(properties.scripts, 'SCRIPT');
 					processTagType(properties.metas, 'META');
 					processCodeParts(properties.codeParts);
@@ -266,6 +286,18 @@ export function App({ location }: Readonly<{ location?: string }> = {}) {
 				undefined,
 				(_, value) => setIsApplicationLoadFailed(value),
 				`${STORE_PREFIX}.isApplicationLoadFailed`,
+			),
+		[],
+	);
+
+	// A signed-in user who turned push on earlier keeps their device registered. The gate loads
+	// nothing unless push permission is already granted or this is the mobile app.
+	useEffect(
+		() =>
+			addListenerAndCallImmediately(
+				undefined,
+				(_, user) => resumePushAfterSignIn(user?.id),
+				`${STORE_PREFIX}.auth.user`,
 			),
 		[],
 	);

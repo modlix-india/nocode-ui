@@ -542,6 +542,10 @@ function PhoneNumber(props: Readonly<ComponentProps>) {
 		let text = event.target.value;
 		if (removeKeyWhenEmpty && text === '') {
 			if (lastSelectedCountry.current) setSelected(lastSelectedCountry.current);
+			// The field shows `phoneNumber`, not the store. When the key was never written (the
+			// store is updated on blur) removing it changes nothing, no listener fires, and the
+			// last digit stayed on screen however often Backspace was pressed (LZT-1648).
+			setPhoneNumber('');
 			updateBindingPathData(undefined, true);
 			return;
 		}

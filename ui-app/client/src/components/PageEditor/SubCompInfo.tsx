@@ -6204,6 +6204,34 @@ export const SubComponentDefinitions: Record<
 		},
 	],
 
+	SignaturePad: [
+		{
+			name: '',
+			displayName: 'Component',
+			description: 'Component',
+			icon: 'fa-solid fa-signature',
+			mainComponent: true,
+		},
+		{
+			name: 'pad',
+			displayName: 'Pad',
+			description: 'The drawing area',
+			icon: 'fa-solid fa-pen-nib',
+		},
+		{
+			name: 'hint',
+			displayName: 'Hint',
+			description: 'The "Sign here" text shown while empty',
+			icon: 'fa-solid fa-font',
+		},
+		{
+			name: 'button',
+			displayName: 'Buttons',
+			description: 'The Undo and Clear buttons',
+			icon: 'fa-solid fa-eraser',
+		},
+	],
+
 	BlueprintEditor: [
 		{
 			name: '',

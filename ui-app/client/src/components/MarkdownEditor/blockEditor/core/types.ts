@@ -321,6 +321,17 @@ export function getPlainText(content: TextSpan[]): string {
 	return text;
 }
 
+/** Whether the character at `offset` of the plain text belongs to a mention pill. */
+export function isInMention(content: TextSpan[], offset: number): boolean {
+	let pos = 0;
+	for (const span of content) {
+		const end = pos + span.text.length;
+		if (offset >= pos && offset < end) return !!span.marks?.some(m => m.type === 'mention');
+		pos = end;
+	}
+	return false;
+}
+
 /** Create a new block with defaults */
 export function createBlock(type: BlockType, text: string = '', props: BlockProps = {}): Block {
 	return {

@@ -6,7 +6,7 @@ import { PageDefinition } from './types/common';
 import getPageDefinition from './Engine/pageDefinition';
 import { processLocation } from './util/locationProcessor';
 import { consumeSocialArrival, consumeSsoArrival } from './sso/ssoModule';
-import { lazyStylePropURL } from './components/util/lazyStylePropertyUtil';
+import { fetchStyleProperties } from './components/util/lazyStylePropertyUtil';
 import DraftBanner from './components/DraftBanner';
 import DraftAgentHost from './components/DraftAgent/DraftAgentHost';
 import { isDraftAgentBridge, runDraftAgentBridge } from './components/DraftAgent/draftAgentBridge';
@@ -361,10 +361,10 @@ if (AGENT_BRIDGE) {
 			// server always writes it empty.
 			await Promise.all(
 				stylePropertyComponentsFor(pageDefinitionResponse).map(async t => {
-					try {
-						globalThis.styleProperties[t] = (await axios.get(lazyStylePropURL(t)))
-							?.data;
-					} catch (err) {}
+					// One quick retry here; a component still without its list fetches it again
+					// (with more retries) once it mounts, instead of staying unstyled.
+					const data = await fetchStyleProperties(t, [400]);
+					if (data) globalThis.styleProperties[t] = data;
 				}),
 			);
 		}

@@ -724,6 +724,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'numberLocale',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Number Format Locale',
+		description:
+			'Locale used to write the numbers on the axes and in the tooltips, e.g. en-IN for ' +
+			'Indian grouping (1,20,000) or en-US (120,000). Empty keeps the browser default.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'lineAreaFill',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Fill Under Lines',

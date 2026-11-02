@@ -1,4 +1,5 @@
 import { rewriteCssUrls } from '../components/util/getSrcUrl';
+import { pinViewportHeightInStyle } from './designViewport';
 import { EMPTY_STRING } from '../constants';
 import {
 	PageDefinition,
@@ -331,6 +332,10 @@ export function processComponentStylePseudoClasses(
 			style[target] = s;
 		}
 	}
+
+	// A page framed by the click map lays its viewport units out against the screen the viewer
+	// names, not against the frame (see designViewport.ts).
+	style = pinViewportHeightInStyle(style);
 
 	return globalThis.cdnPrefix ? processCDN(style) : style;
 }

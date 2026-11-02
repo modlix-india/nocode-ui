@@ -28,11 +28,13 @@ import { SessionList, Session } from './components/SessionList';
 import { CraftCard } from './components/CraftCard';
 import { CraftPanel } from './components/CraftPanel';
 import type { CraftData } from './components/CraftPanel';
+import { CraftRenderer } from './components/CraftRenderer';
 import { InlineDataRenderer } from './components/InlineDataRenderer';
 import AttachmentThumb from './components/AttachmentThumb';
 import { Attachment, splitTurnAttachments, toChatAttachments } from './attachments';
 import { SavedObject, savedNoticeLines } from './savedNotice';
 import { newSteerId, postSteer } from './steer';
+import { NOT_SEEN, sessionChange } from './sessionWatch';
 import { PendingDraftBar } from './components/PendingDraftBar';
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../constants';
 import { personalizationEvent } from '../util/personalization';
@@ -299,7 +301,10 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 			const incoming: string = data.text ?? '';
 			const afterTool = ctx.takeToolRan?.() ?? false;
 			const gap =
-				afterTool && ctx.currentText && !/\s$/.test(ctx.currentText) && !/^\s/.test(incoming)
+				afterTool &&
+				ctx.currentText &&
+				!/\s$/.test(ctx.currentText) &&
+				!/^\s/.test(incoming)
 					? '\n\n'
 					: '';
 			const newText = ctx.currentText + gap + incoming;
@@ -564,6 +569,8 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 				const isAppend = data.append === true;
 				const textDelta = data.text_delta;
 				const newBlocks = data.blocks ?? [];
+				// an inline craft is drawn in its message; the agent sends `inline` on every event of it
+				const inline = data.inline === true;
 
 				ctx.setCrafts(prev => {
 					const next = new Map(prev);
@@ -622,6 +629,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 							title: data.title ?? 'Craft',
 							blocks: newBlocks,
 							message_id: data.message_id ?? ctx.assistantMsgId,
+							...(inline ? { inline } : {}),
 						};
 					}
 
@@ -629,7 +637,7 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 					return next;
 				});
 
-				ctx.setActiveCraftId(craftId);
+				if (!inline) ctx.setActiveCraftId(craftId);
 
 				// link craft to message; already linked → return prev, no re-render
 				ctx.setMessages(prev => {
@@ -965,7 +973,7 @@ const RECONNECT_BACKOFF_MS = 1_000;
 
 export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	const {
-		definition: { bindingPath, bindingPath2, bindingPath3 },
+		definition: { bindingPath, bindingPath2, bindingPath3, bindingPath4 },
 	} = props;
 	const pageExtractor = PageStoreExtractor.getForContext(props.context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(props.context.pageName);
@@ -1044,6 +1052,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			// one is a callback a parent COMPONENT passes, this one is an event
 			// function a PAGE names, and a page definition cannot carry a function.
 			onObjectSaved: onObjectSavedEvent,
+			onSessionSwitch,
 			shortcutKey,
 			shortcutScope,
 			shortcutPriority,
@@ -1160,6 +1169,33 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 	useEffect(() => {
 		onSessionChange?.(sessionId);
 	}, [sessionId, onSessionChange]);
+	// The page follows the conversation too: the Session Binding, then On Session
+	// Change (sessionWatch.ts says when).
+	const sessionBindingPath = useMemo(
+		() =>
+			bindingPath4
+				? getPathFromLocation(bindingPath4, props.locationHistory, pageExtractor)
+				: undefined,
+		[bindingPath4, props.locationHistory, pageExtractor],
+	);
+	const heardSessionRef = useRef<string | null | typeof NOT_SEEN>(NOT_SEEN);
+	useEffect(() => {
+		const change = sessionChange(heardSessionRef.current, sessionId);
+		heardSessionRef.current = sessionId;
+		if (!change) return;
+		if (sessionBindingPath) setData(sessionBindingPath, change.value, props.context.pageName);
+		if (!change.fire || !onSessionSwitch) return;
+		const switchEvent = props.pageDefinition.eventFunctions?.[onSessionSwitch];
+		if (switchEvent)
+			runEvent(
+				switchEvent,
+				onSessionSwitch,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [sessionId]);
 	const [sessions, setSessions] = useState<Session[]>([]);
 	const [feedbackTurn, setFeedbackTurn] = useState<{
 		sessionId: string;
@@ -3710,6 +3746,35 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 												}}
 											/>
 										))}
+										{msg.craftIds?.map(craftId => {
+											const craft = crafts.get(craftId);
+											if (!craft?.inline) return null;
+											// drawn again later (same id): it shows in the latest message only
+											const holders = messages.filter(m =>
+												m.craftIds?.includes(craftId),
+											);
+											if (
+												holders.length &&
+												holders[holders.length - 1].id !== msg.id
+											)
+												return null;
+											return (
+												<div
+													key={`${msg.id}-craft-${craftId}`}
+													className="_inlineCraft"
+												>
+													<CraftRenderer
+														blocks={craft.blocks}
+														definition={props.definition}
+														styleProperties={styleProperties}
+														sessionId={sessionId}
+														agentEndpoint={agentEndpoint}
+														onSend={handleSend}
+														getAuthHeaders={getAuthHeaders}
+													/>
+												</div>
+											);
+										})}
 									</ChatMessage>
 									{msg.confirmationActions?.map(action => (
 										<ActionBlock
@@ -3743,21 +3808,25 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					</div>
 				</div>
 
-				{crafts.size > 0 && !activeCraftId && (
+				{Array.from(crafts.values()).some(c => !c.inline) && !activeCraftId && (
 					<div className="_craftCardsBar">
-						{Array.from(crafts.values()).map(c => {
-							const subtitle = c.blocks.find((b: any) => b.type === 'badge')?.label;
-							return (
-								<CraftCard
-									key={c.id}
-									title={c.title}
-									subtitle={subtitle}
-									onClick={() => setActiveCraftId(c.id)}
-									definition={props.definition}
-									styleProperties={styleProperties}
-								/>
-							);
-						})}
+						{Array.from(crafts.values())
+							.filter(c => !c.inline)
+							.map(c => {
+								const subtitle = c.blocks.find(
+									(b: any) => b.type === 'badge',
+								)?.label;
+								return (
+									<CraftCard
+										key={c.id}
+										title={c.title}
+										subtitle={subtitle}
+										onClick={() => setActiveCraftId(c.id)}
+										definition={props.definition}
+										styleProperties={styleProperties}
+									/>
+								);
+							})}
 					</div>
 				)}
 				<div className="_scrollToBottomAnchor">

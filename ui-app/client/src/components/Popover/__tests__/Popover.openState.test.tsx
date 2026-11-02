@@ -59,7 +59,11 @@ jest.mock('../../util/useDefinition', () => ({
 	__esModule: true,
 	default: () => ({
 		key: 'pop',
-		properties: { position: 'bottom-start', closeOnOutsideClick: true, closeOnInsideClick: true },
+		properties: {
+			position: 'bottom-start',
+			closeOnOutsideClick: true,
+			closeOnInsideClick: true,
+		},
 		stylePropertiesWithPseudoStates: {},
 	}),
 }));
@@ -146,4 +150,86 @@ test('a true already in the store opens it, and closing by the trigger writes fa
 	clickTrigger();
 	expect(panelOpen()).toBe(false);
 	expect(storeValues.get(OPEN_PATH)).toBe(false);
+});
+
+describe('scrolling while open', () => {
+	const rect = (top: number, left: number, h: number, w: number) =>
+		({
+			top,
+			left,
+			bottom: top + h,
+			right: left + w,
+			x: left,
+			y: top,
+			width: w,
+			height: h,
+		}) as DOMRect;
+	const trigger = () => container.querySelector('.child-trig')!.parentElement as HTMLElement;
+	const panel = () => container.querySelector('.compPopover.popover') as HTMLElement;
+	const scroll = (target: EventTarget) =>
+		act(() => {
+			target.dispatchEvent(new Event('scroll'));
+		});
+
+	test('the panel follows its trigger', () => {
+		act(() => root.render(<Popover {...props()} />));
+		jest.spyOn(container, 'getBoundingClientRect').mockImplementation(() =>
+			rect(0, 0, 400, 800),
+		);
+		let triggerTop = 100;
+		jest.spyOn(trigger(), 'getBoundingClientRect').mockImplementation(() =>
+			rect(triggerTop, 20, 30, 30),
+		);
+		clickTrigger();
+		jest.spyOn(panel(), 'getBoundingClientRect').mockImplementation(() => rect(0, 0, 50, 80));
+		scroll(container);
+		const before = parseFloat(panel().style.top);
+		triggerTop = 60;
+		scroll(container);
+		expect(panelOpen()).toBe(true);
+		expect(parseFloat(panel().style.top)).toBe(before - 40);
+	});
+
+	test('it closes once the trigger leaves the scrolled area', () => {
+		act(() => root.render(<Popover {...props()} />));
+		jest.spyOn(container, 'getBoundingClientRect').mockImplementation(() =>
+			rect(50, 0, 400, 800),
+		);
+		let triggerTop = 100;
+		jest.spyOn(trigger(), 'getBoundingClientRect').mockImplementation(() =>
+			rect(triggerTop, 20, 30, 30),
+		);
+		clickTrigger();
+		scroll(container);
+		expect(panelOpen()).toBe(true);
+		triggerTop = 10;
+		scroll(container);
+		expect(panelOpen()).toBe(false);
+	});
+
+	test('it closes once the trigger slides under something pinned over it', () => {
+		act(() => root.render(<Popover {...props()} />));
+		jest.spyOn(container, 'getBoundingClientRect').mockImplementation(() =>
+			rect(0, 0, 400, 800),
+		);
+		jest.spyOn(trigger(), 'getBoundingClientRect').mockImplementation(() =>
+			rect(20, 20, 30, 30),
+		);
+		const header = document.createElement('div');
+		document.body.appendChild(header);
+		let covered = false;
+		const original = (document as any).elementFromPoint;
+		(document as any).elementFromPoint = () => (covered ? header : trigger());
+		try {
+			clickTrigger();
+			scroll(container);
+			expect(panelOpen()).toBe(true);
+			covered = true;
+			scroll(container);
+			expect(panelOpen()).toBe(false);
+		} finally {
+			(document as any).elementFromPoint = original;
+			header.remove();
+		}
+	});
 });

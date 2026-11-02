@@ -36,6 +36,8 @@ import {
 	insertBlockOp,
 	moveBlockOp,
 	indentBlocksOp,
+	selectionTextRanges,
+	toggleMarkInRanges,
 	type ApplyResult,
 } from './operations';
 import { getOrderedSelection } from './selection';
@@ -125,6 +127,13 @@ function outdentNestedListItem(
 
 // ---- Keyboard shortcut handling (keydown) ----
 
+/** Toggle a mark over the whole selection, across blocks, keeping the
+ *  selection so the same shortcut toggles it back off. */
+function toggleMarkOnSelection(doc: EditorDocument, selection: Selection, mark: Mark): InputResult {
+	const result = toggleMarkInRanges(doc, selectionTextRanges(doc, selection), mark);
+	return { result: { ...result, selection }, handled: true };
+}
+
 export function handleKeyDown(ctx: InputContext, e: KeyboardEvent): InputResult {
 	const { doc, selection } = ctx;
 	const mod = e.metaKey || e.ctrlKey;
@@ -139,12 +148,7 @@ export function handleKeyDown(ctx: InputContext, e: KeyboardEvent): InputResult 
 		const mark = markMap[e.key.toLowerCase()];
 		if (mark && !isCollapsed(selection)) {
 			e.preventDefault();
-			const { start, end } = getOrderedSelection(doc, selection);
-			if (start.blockId === end.blockId) {
-				const result = toggleMark(doc, start.blockId, start.offset, end.offset, mark);
-				return { result: { ...result, selection }, handled: true };
-			}
-			return { result: { doc, ops: [], selection }, handled: true };
+			return toggleMarkOnSelection(doc, selection, mark);
 		}
 
 		// Strikethrough: Cmd+Shift+S handled below
@@ -153,13 +157,7 @@ export function handleKeyDown(ctx: InputContext, e: KeyboardEvent): InputResult 
 	if (mod && e.shiftKey && e.key.toLowerCase() === 's') {
 		e.preventDefault();
 		if (!isCollapsed(selection)) {
-			const { start, end } = getOrderedSelection(doc, selection);
-			if (start.blockId === end.blockId) {
-				const result = toggleMark(doc, start.blockId, start.offset, end.offset, {
-					type: 'strikethrough',
-				});
-				return { result: { ...result, selection }, handled: true };
-			}
+			return toggleMarkOnSelection(doc, selection, { type: 'strikethrough' });
 		}
 		return { result: { doc, ops: [], selection }, handled: true };
 	}
@@ -168,13 +166,7 @@ export function handleKeyDown(ctx: InputContext, e: KeyboardEvent): InputResult 
 	if (mod && e.key.toLowerCase() === 'e') {
 		e.preventDefault();
 		if (!isCollapsed(selection)) {
-			const { start, end } = getOrderedSelection(doc, selection);
-			if (start.blockId === end.blockId) {
-				const result = toggleMark(doc, start.blockId, start.offset, end.offset, {
-					type: 'code',
-				});
-				return { result: { ...result, selection }, handled: true };
-			}
+			return toggleMarkOnSelection(doc, selection, { type: 'code' });
 		}
 		return { result: { doc, ops: [], selection }, handled: true };
 	}

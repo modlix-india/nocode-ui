@@ -32,6 +32,11 @@ const schemaRepoCache = new Map<string, RemoteRepository<Schema>>();
 
 const HALF_A_MINUTE = 60 * 1000;
 
+// Stored copies of core repository answers (remote function signatures), so a page load does not
+// wait a round trip for a signature before it can call the function.
+const STORED_PREFIX = 'mlxRepo.';
+const STORED_MAX_LENGTH = 100 * 1024;
+
 let URL_PREFIX: string | undefined = undefined;
 
 function getUrlPrefix(): string {
@@ -121,6 +126,7 @@ export class RemoteRepository<T> implements Repository<T> {
 				.then(response => {
 					const convObj = this.jsonConversion(response.data);
 					this.internalCache.set(key, new Tuple2<number, any>(Date.now(), convObj));
+					if (this.persistent) this.writeStored(key, convObj, response.data);
 					resolve(convObj);
 				})
 				.catch(error => {
@@ -135,12 +141,61 @@ export class RemoteRepository<T> implements Repository<T> {
 
 	public async find(namespace: string, name: string): Promise<T | undefined> {
 		const key = `${namespace}.${name}`;
+		const cached = this.internalCache.get(key);
 
-		if (Date.now() - (this.internalCache.get(key)?.getT1() ?? 0) > HALF_A_MINUTE) {
-			return await this.makeFindCall(namespace, name);
+		if (Date.now() - (cached?.getT1() ?? 0) <= HALF_A_MINUTE) return cached?.getT2();
+
+		if (this.persistent) {
+			// A remote function's signature rarely changes: answer with the copy we have and
+			// refresh it behind the call.
+			const stale = cached?.getT2() ?? this.readStored(key);
+			if (stale !== undefined) {
+				this.makeFindCall(namespace, name).catch(() => {});
+				return stale;
+			}
 		}
 
-		return this.internalCache.get(key)?.getT2();
+		return await this.makeFindCall(namespace, name);
+	}
+
+	// Only core answers are kept: they are signatures that run on the server. UI functions run
+	// here in full, and the editor changes definitions under the page, so neither is reused stale.
+	private get persistent(): boolean {
+		return this.repoServer === REPO_SERVER.CORE && !globalThis.isDesignMode;
+	}
+
+	private storedKey(key: string): string {
+		const url = getDataFromPath(`${STORE_PREFIX}.url`, []);
+		return `${STORED_PREFIX}${this.repoServer}.${this.repoType}.${this.appCode ?? url?.appCode ?? ''}.${
+			this.clientCode ?? url?.clientCode ?? ''
+		}.${this.includeKIRunRepos}.${key}`;
+	}
+
+	private readStored(key: string): T | undefined {
+		try {
+			const json = window.localStorage.getItem(this.storedKey(key));
+			if (!json) return undefined;
+			const convObj = this.jsonConversion(JSON.parse(json));
+			// Time 0 marks it stale, so the next find refreshes it.
+			if (convObj !== undefined)
+				this.internalCache.set(key, new Tuple2<number, T>(0, convObj));
+			return convObj;
+		} catch (e) {
+			// Blocked storage or a damaged copy: fetch as if there were none.
+			return undefined;
+		}
+	}
+
+	private writeStored(key: string, convObj: T | undefined, data: any) {
+		try {
+			const storedKey = this.storedKey(key);
+			const json = convObj === undefined ? undefined : JSON.stringify(data);
+			if (json === undefined || json.length > STORED_MAX_LENGTH)
+				window.localStorage.removeItem(storedKey);
+			else window.localStorage.setItem(storedKey, json);
+		} catch (e) {
+			// Storage full or blocked: the in-memory cache still works.
+		}
 	}
 
 	private filterFromCache(name: string): string[] {

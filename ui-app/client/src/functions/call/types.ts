@@ -18,6 +18,30 @@ export interface CallState {
 	muted: boolean;
 	/** Epoch milliseconds when the call connected. */
 	startedAt?: number;
+	/** Epoch milliseconds when a connected or ringing call ended. */
+	endedAt?: number;
+	/** `pageClosed`: the tab holding the call closed or reloaded, which ends a browser call. */
+	endReason?: 'pageClosed';
+	/** True in a tab that only mirrors the call: another tab of the site holds its audio. */
+	otherTab?: boolean;
+	/** The user's call sounds setting (ring, ring back, end tone), remembered per user. */
+	soundOn?: boolean;
+	/** True while a ring is due and the browser blocks audio until the user taps the page. */
+	audioBlocked?: boolean;
+	/**
+	 * True while the call in this browser is the leg of a call the user placed and the far end
+	 * has not answered: the ring back plays instead of the incoming ring.
+	 */
+	ringBack?: boolean;
+	/** Set when the tab holding the call cannot play sound and another tab of the site does. */
+	soundTab?: string;
+	/**
+	 * True while the site has no notification answer from the user and the call card may offer
+	 * "Allow call alerts" (run `UIEngine.Call.Alert` with `allow` from the click). Not offered
+	 * again once answered, nor where notifications are not available. Always a boolean in a state
+	 * this engine writes, so a page can tell an engine that has alerts.
+	 */
+	alertsOffer?: boolean;
 	error?: string;
 }
 

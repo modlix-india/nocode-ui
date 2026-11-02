@@ -7,6 +7,7 @@
 import React, { useEffect, useRef } from 'react';
 import type { Mark, MentionKind, TextSpan } from '../core/types';
 import { type MentionResolver, useMentionResolver } from './MentionResolverContext';
+import { handleSecuredLinkClick } from '../../../util/openSecuredFile';
 
 interface TextContentProps {
 	content: TextSpan[];
@@ -102,6 +103,8 @@ function SpanRenderer({ span }: { span: TextSpan }) {
 						style={{ color: 'var(--mde-accent, #2563eb)', textDecoration: 'underline' }}
 						target="_blank"
 						rel="noopener noreferrer"
+						// An attached file (secured) needs the sign in token: fetch it, then open or save it.
+						onClick={e => handleSecuredLinkClick(e, mark.attrs?.href, span.text)}
 					>
 						{element}
 					</a>

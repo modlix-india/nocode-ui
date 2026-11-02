@@ -24,6 +24,8 @@ export * from './TrackAnalyticsEvent';
 export * from './QueryAnalytics';
 export * from './GetAnalyticsConsent';
 export * from './SetAnalyticsConsent';
+export * from './EnablePushNotifications';
+export * from './GetPushStatus';
 export * from './InitiateSocialLogin';
 export * from './BuildLeadAdData';
 export * from './call';

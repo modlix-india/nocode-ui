@@ -4,6 +4,7 @@ import { MarkdowFootnotes, MarkdownParserParameters, MarkdownURLRef } from './co
 import { makeURLnTitle, parseAttributes, resolveMarkdownAssetUrl } from './utils';
 import { isSecuredUrl } from '../../components/util/secureImage';
 import { SecureImg } from '../../components/util/useSecureSrc';
+import { handleSecuredLinkClick } from '../../components/util/openSecuredFile';
 
 const TYPE_MAP: { [key: string]: 's' | 'em' | 'b' | 'mark' | 'sup' | 'sub' | 'code' | 'span' } = {
 	'~~': 's',
@@ -404,6 +405,23 @@ function processLink(
 			),
 		);
 	current = '';
+	// A mention the editor stored as [@Name](mde://<kind>/<id>): a chip, not a link.
+	const mention = /^mde:\/\/([a-z]+)\/(.+)$/i.exec(linkParts.url ?? '');
+	if (mention) {
+		lineParts.push(
+			React.createElement(
+				'span',
+				{
+					key: cyrb53(`${actualLine}-${lineNumber}-${i}`),
+					className: `_mention mde-mention mde-mention-${mention[1].toLowerCase()}`,
+					'data-mention-kind': mention[1].toLowerCase(),
+					'data-mention-id': decodeURIComponent(mention[2]),
+				},
+				...labelOf({ ...params, line: linkText }),
+			),
+		);
+		return { i, current, found: true };
+	}
 	lineParts.push(
 		React.createElement(
 			'a',
@@ -414,6 +432,13 @@ function processLink(
 				style,
 				title: linkParts.title,
 				...(attrs ?? {}),
+				// An attached file (secured) needs the sign in token: fetch it, then open or save it.
+				...(isSecuredUrl(linkParts.url)
+					? {
+							onClick: (e: React.MouseEvent<HTMLAnchorElement>) =>
+								handleSecuredLinkClick(e, linkParts!.url, linkText),
+						}
+					: {}),
 			},
 			...labelOf({ ...params, line: linkText }),
 		),

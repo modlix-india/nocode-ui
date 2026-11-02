@@ -405,17 +405,6 @@ function CommonInputText(props: CommonInputType) {
 				</i>
 			) : undefined}
 			{controlButtons}
-			{isPassword && !readOnly ? (
-				<i
-					style={computedStyles.rightIcon ?? {}}
-					className={`_passwordIcon _rightIcon ${
-						showPassword ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
-					}`}
-					onClick={() => setShowPassowrd(!showPassword)}
-				>
-					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
-				</i>
-			) : undefined}
 			{hasErrorMessages ? (
 				<i
 					style={computedStyles.rightIcon ?? {}}
@@ -432,6 +421,19 @@ function CommonInputText(props: CommonInputType) {
 					className={`_successIcon _rightIcon ${
 						value?.toString()?.length ? `hasText` : ``
 					} fa fa-solid fa-circle-check`}
+				>
+					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
+				</i>
+			) : undefined}
+			{/* The show/hide toggle is the control the user reaches for, so it sits at the right
+			    edge, after the validation status icon (LZT-1646). */}
+			{isPassword && !readOnly ? (
+				<i
+					style={computedStyles.rightIcon ?? {}}
+					className={`_passwordIcon _rightIcon ${
+						showPassword ? `fa fa-regular fa-eye` : `fa fa-regular fa-eye-slash`
+					}`}
+					onClick={() => setShowPassowrd(!showPassword)}
 				>
 					<SubHelperComponent definition={definition} subComponentName="rightIcon" />
 				</i>

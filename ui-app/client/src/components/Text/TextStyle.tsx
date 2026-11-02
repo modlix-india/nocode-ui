@@ -66,6 +66,16 @@ export default function LabelStyle({
 		justify-content: center;
 	}
 
+	/* A person mentioned in markdown ([@Name](mde://user/<id>)): a tinted chip in the text colour. */
+	${PREFIX} ._mention {
+		display: inline;
+		padding: 0 4px;
+		border-radius: 4px;
+		font-weight: 500;
+		white-space: nowrap;
+		background-color: color-mix(in srgb, currentColor 10%, transparent);
+	}
+
 	${PREFIX} ._textContainer {
 		width: 100%;
 		display: block;
@@ -100,8 +110,30 @@ export default function LabelStyle({
 		white-Space: inherit;
 	}
 
-	${PREFIX}._markdown img {
+	/* A picture never grows past the text box: a wide screenshot shrinks to fit (and its
+	   height follows), so it cannot push the page sideways. */
+	${PREFIX} ._markdown img,
+	${PREFIX} ._markdown video {
 		max-width: 100%;
+		height: auto;
+	}
+
+	/*
+	 * Markdown text stays inside its box: a long token (a path, a code span, words joined
+	 * by no-break spaces) wraps (anywhere also lowers the min-content width, so a flex or
+	 * grid parent cannot be pushed wider), and a table wider than the box scrolls sideways
+	 * inside it instead of running over what sits beside it.
+	 */
+	${PREFIX} ._markdown {
+		overflow-wrap: anywhere;
+		min-width: 0;
+		max-width: 100%;
+		overflow-x: auto;
+	}
+
+	${PREFIX} ._markdown pre {
+		overflow-x: auto;
+		overflow-wrap: normal;
 	}
 
 	${PREFIX}._markdown pre, ._markDownContent pre {

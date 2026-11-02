@@ -1,4 +1,4 @@
-import { SCHEMA_STRING_COMP_PROP } from '../../constants';
+import { SCHEMA_ANY_COMP_PROP, SCHEMA_STRING_COMP_PROP } from '../../constants';
 import {
 	ComponentPropertyDefinition,
 	ComponentPropertyGroup,
@@ -144,6 +144,14 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'Folder, in the storage chosen above, where pasted, dropped and uploaded pictures go',
 		group: ComponentPropertyGroup.ADVANCED,
 		defaultValue: '/mdPastedFiles',
+	},
+	{
+		name: 'mentionPeople',
+		schema: SCHEMA_ANY_COMP_PROP,
+		displayName: 'People to Mention',
+		description:
+			'People who can be @mentioned: a list of objects with an id and a name (label, or firstName and lastName, also work). When set, typing @ offers them; a mention is stored in the markdown as [@Name](mde://user/<id>).',
+		group: ComponentPropertyGroup.ADVANCED,
 	},
 	COMMON_COMPONENT_PROPERTIES.onChange,
 	{ ...COMMON_COMPONENT_PROPERTIES.onBlur, displayName: 'On Blur of Editor' },

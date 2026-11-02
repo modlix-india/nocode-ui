@@ -1806,9 +1806,14 @@ export default function PromptStyle({
 		${PREFIX} ._craftKvValue {
 		}
 
+		/* colorTwo is a SURFACE colour in the app themes (classic #F9FAFB, monoLight
+		   #F4F4F2, monoDark #121211), never a text or accent colour: every rule below
+		   that used it painted near-invisible text (ADZ-1225). A link is the text
+		   colour, marked by its underline. */
 		${PREFIX} ._craftKvValue a {
-			color: ${t('colorTwo', '#1967d2')};
-			text-decoration: none;
+			color: ${t('promptFontColor', '#1967d2')};
+			text-decoration: underline;
+			text-underline-offset: 2px;
 		}
 
 		${PREFIX} ._craftKvValue a:hover {
@@ -1891,9 +1896,13 @@ export default function PromptStyle({
 			font-size: 14px;
 		}
 
-		${PREFIX} ._craftCallout._info { background: ${t('infoWashColor', '#e8f0fe')}; color: ${t('colorTwo', '#1967d2')}; }
-		${PREFIX} ._craftCallout._warning { background: ${t('warningWashColor', '#fef7e0')}; color: ${t('colorTwo', '#b06000')}; }
-		${PREFIX} ._craftCallout._success { background: ${t('successWashColor', '#e6f4ea')}; color: #137333; }
+		/* Text on a wash is the prompt's own font colour. colorTwo was used here, but in
+		   every theme (classic, monoLight, monoDark) it is a SURFACE colour (#F9FAFB,
+		   #F4F4F2, #121211), so callout text was all but invisible: the picture-less
+		   creative cards of ADZ-1225 read as never-loading placeholders. */
+		${PREFIX} ._craftCallout._info { background: ${t('infoWashColor', '#e8f0fe')}; color: ${t('promptFontColor', '#1967d2')}; }
+		${PREFIX} ._craftCallout._warning { background: ${t('warningWashColor', '#fef7e0')}; color: ${t('promptFontColor', '#b06000')}; }
+		${PREFIX} ._craftCallout._success { background: ${t('successWashColor', '#e6f4ea')}; color: ${t('promptFontColor', '#137333')}; }
 
 		${PREFIX} ._craftList {
 			margin: 0;
@@ -2049,6 +2058,25 @@ export default function PromptStyle({
 			height: 175px;
 			aspect-ratio: auto;
 			object-fit: cover;
+		}
+
+		/* A card without a picture (a text ad, a creative with no image yet) is a
+		   callout: about the picture's height, so it reads as a card with its text,
+		   not as a pale strip. Not stretched to the row (flex-start): a stretched
+		   -webkit-box shows the lines past its clamp under the ellipsis. */
+		${PREFIX} ._craftCarousel > ._craftCallout {
+			box-sizing: border-box;
+			align-self: flex-start;
+			overflow: hidden;
+			font-size: 13px;
+			line-height: 1.4;
+			display: -webkit-box;
+			-webkit-line-clamp: 8;
+			-webkit-box-orient: vertical;
+			/* the bottom space is a transparent border, not padding: overflow clips at
+			   the padding edge, so a padding-bottom would show half of the next line */
+			padding: 10px 12px 0;
+			border-bottom: 10px solid transparent;
 		}
 
 		${PREFIX} ._craftCarousel ._craftImageCaption {
@@ -2261,7 +2289,7 @@ export default function PromptStyle({
 			font-size: 12px;
 			line-height: 1.45;
 			background-color: ${t('accentTintColor', 'rgba(245, 158, 11, 0.1)')};
-			color: ${t('colorTwo', '#92400e')};
+			color: ${t('promptNoticeFontColor', '#92400e')};
 		}
 
 		${PREFIX} ._promptSavedNotice > span {
@@ -2296,7 +2324,7 @@ export default function PromptStyle({
 			font-size: 12px;
 			line-height: 1.45;
 			background-color: ${t('accentTintColor', 'rgba(245, 158, 11, 0.1)')};
-			color: ${t('colorTwo', '#92400e')};
+			color: ${t('promptNoticeFontColor', '#92400e')};
 		}
 
 		${PREFIX} ._promptPendingHead {
@@ -2743,7 +2771,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._usageContext._warning {
-			color: ${t('colorTwo', '#b45309')};
+			color: ${t('promptWarningFontColor', '#b45309')};
 		}
 
 		${PREFIX} ._usageContext._critical {
@@ -2768,7 +2796,7 @@ export default function PromptStyle({
 		}
 
 		${PREFIX} ._usageContext._warning + ._usageContextBar ._usageContextFill {
-			background: ${t('colorTwo', '#b45309')};
+			background: ${t('warningColor', '#b45309')};
 		}
 
 		${PREFIX} ._usageContext._critical + ._usageContextBar ._usageContextFill {
@@ -2799,7 +2827,7 @@ export default function PromptStyle({
 
 		${PREFIX} ._confirmationIcon {
 			font-size: 16px;
-			color: ${t('colorTwo', '#b45309')};
+			color: ${t('promptConfirmIconColor', t('warningColor', '#b45309'))};
 		}
 
 		${PREFIX} ._confirmationTitle {
@@ -2864,7 +2892,7 @@ export default function PromptStyle({
 		${PREFIX} ._confirmationOption._selected {
 			background: ${t('infoWashColor', '#e8f0fe')};
 			border-color: ${t('colorOne', '#1a73e8')};
-			color: ${t('colorTwo', '#1a73e8')};
+			color: ${t('promptFontColor', '#1a73e8')};
 		}
 
 		${PREFIX} ._confirmationOption._selected:hover {

@@ -13,6 +13,7 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			{ name: 'email', displayName: 'Email' },
 			{ name: 'pdf', displayName: 'PDF' },
 			{ name: 'inapp', displayName: 'In App' },
+			{ name: 'push', displayName: 'Push' },
 			{ name: 'whatsapp', displayName: 'WhatsApp' },
 			{ name: 'sms', displayName: 'SMS' },
 		],

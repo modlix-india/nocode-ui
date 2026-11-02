@@ -5,7 +5,7 @@
 // All colors use CSS variables for theme compatibility.
 // ============================================================
 
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import {
 	Bold,
 	Italic,
@@ -26,7 +26,9 @@ import {
 	type ColorPreset,
 } from '../blocks/ColorPicker';
 import { useT } from '../i18n/context';
+import { fixedContainingBlockOffset } from './fixed-position';
 import type { EditorTranslationKey } from '../i18n/keys';
+import { consumeEscape } from './escape-guard';
 
 /**
  * When true, the toolbar is showing the link URL input and should NOT be
@@ -172,16 +174,25 @@ export function FloatingToolbar({
 		};
 	}, [showLinkInput]);
 
+	// `position` is in viewport coordinates, but inside a popup with a blurred
+	// backdrop `fixed` is measured from the (scrolled) backdrop. Measure where
+	// that containing block starts so the toolbar lands over the selection.
+	const [fixedOffset, setFixedOffset] = useState({ x: 0, y: 0 });
+	useLayoutEffect(() => {
+		const offset = fixedContainingBlockOffset(toolbarRef.current?.parentElement);
+		setFixedOffset(prev => (prev.x === offset.x && prev.y === offset.y ? prev : offset));
+	}, [position]);
+
 	const toolbarStyle = useMemo(() => {
 		const GAP = 8;
 		const flipDown = position.y < 50;
 		return {
 			position: 'fixed' as const,
-			left: position.x,
-			top: flipDown ? position.y + 28 + GAP : position.y - GAP,
+			left: position.x - fixedOffset.x,
+			top: (flipDown ? position.y + 28 + GAP : position.y - GAP) - fixedOffset.y,
 			transform: flipDown ? 'translateX(-50%)' : 'translateX(-50%) translateY(-100%)',
 		};
-	}, [position]);
+	}, [position, fixedOffset]);
 
 	const handleMarkClick = useCallback(
 		(mark: MarkType) => {
@@ -223,7 +234,7 @@ export function FloatingToolbar({
 				e.preventDefault();
 				handleLinkSubmit();
 			} else if (e.key === 'Escape') {
-				e.preventDefault();
+				consumeEscape(e);
 				setShowLinkInput(false);
 				setLinkUrl('');
 			}

@@ -86,7 +86,22 @@ export const BLOCK_EDITOR_CSS = `
 
 .mde-editor [data-content] {
   white-space: pre-wrap;
-  word-wrap: break-word;
+  /* anywhere, not break-word: only anywhere also lowers the min-content width, so a
+     long token (a path, a code span, words joined by no-break spaces) wraps inside a
+     list item or a flex row instead of stretching it past the editor. */
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+/* Code blocks keep their lines and scroll sideways inside the block. */
+
+.mde-editor pre > [data-content] {
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
+.mde-editor pre {
+  max-width: 100%;
 }
 
 .mde-editor a {

@@ -108,6 +108,8 @@ export interface ApplicationDefinition {
 			[key: string]: string | undefined;
 		};
 		links?: Record<string, { rel: string; href: string }>;
+		/** The app's PWA manifest, served at api/manifest/manifest.json when it is set. */
+		manifest?: Record<string, unknown>;
 		/**
 		 * Head tags, stored as a KEYED MAP, not an array.
 		 *

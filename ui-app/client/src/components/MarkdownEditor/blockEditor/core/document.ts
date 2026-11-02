@@ -595,7 +595,12 @@ export function setMarkInContent(
 }
 
 /** Check if every character in a range has a specific mark */
-function rangeHasMark(content: TextSpan[], from: number, to: number, markType: string): boolean {
+export function rangeHasMark(
+	content: TextSpan[],
+	from: number,
+	to: number,
+	markType: string,
+): boolean {
 	let pos = 0;
 	for (const span of content) {
 		const spanEnd = pos + span.text.length;

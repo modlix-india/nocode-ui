@@ -8,6 +8,7 @@ import {
 	applyPreloadedStyleProperties,
 } from '../util/lazyStylePropertyUtil';
 import { propertiesDefinition } from './textBoxProperties';
+import { StylePropertyDefinition } from '../../types/common';
 
 const PREFIX = '.comp.compTextBox';
 const NAME = 'TextBox';
@@ -65,6 +66,17 @@ export default function TextBoxStyle({
 		background: transparent;
 		color: inherit;
 		min-width: 20px;
+	}
+
+	/* Edge draws its own reveal eye and clear cross inside password/text inputs, beside the
+	   component's own show/hide icon (two eyes on BP sign-in, LZT-1646). The component owns them.
+	   Separate rules: a browser that does not know one of these pseudo-elements drops the whole rule. */
+	${PREFIX} input::-ms-reveal {
+		display: none;
+	}
+
+	${PREFIX} input::-ms-clear {
+		display: none;
 	}
 
 	${PREFIX}._isActive ._label,
@@ -146,7 +158,36 @@ export default function TextBoxStyle({
 		display: flex;
 	}
 
-	` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
+	` +
+		processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme) +
+		processStyleDefinition(
+			PREFIX,
+			passwordIconInErrorProperties(styleProperties),
+			styleDefaults,
+			theme,
+		);
 
 	return <style id="TextBoxCss">{css}</style>;
+}
+
+// The error state recolours every right icon (`._hasError ._rightIcon`; the mono theme makes it
+// transparent), which also hid the password eye while the field showed an error (CXZ-1305). The
+// eye keeps its rest, active and value colour: the same rules again for the eye in the error
+// state, one class stronger than the error ones.
+const NORMAL_RIGHT_ICON_COLOR = /^textBox(Active|Value)?RightIconColor/;
+
+function passwordIconInErrorProperties(
+	props: Array<StylePropertyDefinition>,
+): Array<StylePropertyDefinition> {
+	return props
+		.filter(p => p.sel && NORMAL_RIGHT_ICON_COLOR.test(p.n))
+		.map(p => ({
+			...p,
+			sel: p
+				.sel!.split(',')
+				.map(s =>
+					s.trim().replace(/ \._rightIcon$/, '._hasError ._passwordIcon._rightIcon'),
+				)
+				.join(', '),
+		}));
 }

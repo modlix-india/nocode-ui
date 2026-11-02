@@ -517,3 +517,48 @@ describe('doughnutCutout', () => {
 		).toBeUndefined();
 	});
 });
+
+describe('numberLocale', () => {
+	it('sets the Chart.js locale, so axis ticks and tooltips group numbers that way', () => {
+		const data = createMockChartData();
+		const options = buildChartJsOptions(
+			createMockProperties({ numberLocale: 'en-IN' }),
+			data,
+			'line',
+		) as any;
+		expect(options.locale).toBe('en-IN');
+		// Chart.js formats ticks and tooltip values with Intl.NumberFormat(options.locale)
+		expect(new Intl.NumberFormat(options.locale).format(120000)).toBe('1,20,000');
+		expect(
+			new Intl.NumberFormat(
+				(
+					buildChartJsOptions(
+						createMockProperties({ numberLocale: ' en-US ' }),
+						data,
+						'bar',
+					) as any
+				).locale,
+			).format(120000),
+		).toBe('120,000');
+	});
+
+	it('leaves the browser default when empty or malformed', () => {
+		const data = createMockChartData();
+		expect(
+			(buildChartJsOptions(createMockProperties(), data, 'line') as any).locale,
+		).toBeUndefined();
+		expect(
+			(buildChartJsOptions(createMockProperties({ numberLocale: '' }), data, 'line') as any)
+				.locale,
+		).toBeUndefined();
+		expect(
+			(
+				buildChartJsOptions(
+					createMockProperties({ numberLocale: 'not a locale!' }),
+					data,
+					'line',
+				) as any
+			).locale,
+		).toBeUndefined();
+	});
+});

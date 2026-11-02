@@ -14,6 +14,7 @@ import { getDataFromPath, setData } from '../context/StoreContext';
 import { shortUUID } from '../util/shortUUID';
 import { isSsoEnabled, ssoLogoutBeacon } from '../sso/ssoModule';
 import { absoluteDestination } from '../util/absoluteDestination';
+import { pushMayBeRegistered } from '../util/pushGate';
 
 const SIGNATURE = new FunctionSignature('Logout')
 	.setParameters(
@@ -65,6 +66,15 @@ export class Logout extends AbstractFunction {
 		// reload, and that reload used to abort the revoke in flight: the token stayed valid on
 		// the server, the beacon was never told, and `redirectUrl` was never reached, so the
 		// user landed on the app's own login page instead of the one the page asked for.
+		// The device stops reaching this user while their token still works for the call.
+		// Only a browser or phone that registered for push has anything to remove.
+		if (pushMayBeRegistered()) {
+			const { disablePush } = await import(
+				/* webpackChunkName: "PushRegistration" */ '../util/pushRegistration'
+			);
+			await disablePush();
+		}
+
 		let failure: any = undefined;
 		try {
 			await axios({

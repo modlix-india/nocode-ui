@@ -8,6 +8,8 @@ interface CraftData {
 	title: string;
 	blocks: Array<{ type: string; [key: string]: any }>;
 	message_id?: string;
+	// Sent by the agent (`inline: true`): drawn inside its chat message instead of the side panel.
+	inline?: boolean;
 }
 
 interface CraftPanelProps {

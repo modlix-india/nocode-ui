@@ -32,7 +32,24 @@ import {
 	Columns2,
 	Component,
 	LayoutDashboard,
+	Paperclip,
 } from 'lucide-react';
+import { caretPopoverPlacement, useFixedContainingBlock } from './fixed-position';
+import { consumeEscape } from './escape-guard';
+
+/** Pseudo slash entry: pick files from the computer and attach them as links. */
+export const FILE_SLASH_TYPE = '__file' as BlockType;
+
+const FILE_SLASH_ENTRY: BlockDefinition = {
+	type: FILE_SLASH_TYPE,
+	label: 'File',
+	description: 'Attach a PDF, Word or any other file',
+	labelKey: 'block.file.label',
+	descriptionKey: 'block.file.description',
+	shortcut: undefined,
+	keywords: ['file', 'attach', 'attachment', 'upload', 'pdf', 'word', 'document', 'doc', 'docx'],
+	hasContent: false,
+};
 
 interface SlashCommandProps {
 	position: { x: number; y: number };
@@ -174,7 +191,7 @@ const CATEGORIES: { id: string; labelKey: EditorTranslationKey; types: BlockType
 	{
 		id: 'media',
 		labelKey: 'slash.category.media',
-		types: ['divider', 'image', 'embed', 'table'],
+		types: ['divider', 'image', FILE_SLASH_TYPE, 'embed', 'table'],
 	},
 	{
 		id: 'color',
@@ -187,6 +204,8 @@ const CATEGORIES: { id: string; labelKey: EditorTranslationKey; types: BlockType
  *  Color entries map to a pseudo "color" key so hosts can opt into them. */
 function slashEntryOwner(type: string): string {
 	if (type.startsWith('__toc:')) return 'toc';
+	// A file goes where a picture may: it is uploaded the same way.
+	if (type === FILE_SLASH_TYPE) return 'image';
 	if (type.startsWith('__textColor:') || type.startsWith('__bgColor:')) return '__color';
 	return type;
 }
@@ -265,6 +284,7 @@ function getBlockIconInner(type: BlockType): React.ReactNode {
 		toggle: <ChevronRight size={ICON_SIZE} />,
 		divider: <Minus size={ICON_SIZE} />,
 		image: <Image size={ICON_SIZE} />,
+		[FILE_SLASH_TYPE]: <Paperclip size={ICON_SIZE} />,
 		embed: <Link size={ICON_SIZE} />,
 		table: <Table size={ICON_SIZE} />,
 		toc: <TableOfContents size={ICON_SIZE} />,
@@ -323,6 +343,7 @@ export function SlashCommandMenu({
 		}));
 		const all = [
 			...blockDefinitions,
+			FILE_SLASH_ENTRY,
 			...tocVariantEntries,
 			...textColorEntries,
 			...bgColorEntries,
@@ -386,8 +407,8 @@ export function SlashCommandMenu({
 					break;
 				}
 				case 'Escape':
-					e.preventDefault();
 					e.stopImmediatePropagation();
+					consumeEscape(e); // only the menu closes, not a popup around the editor
 					onClose();
 					break;
 			}
@@ -413,16 +434,18 @@ export function SlashCommandMenu({
 		el?.scrollIntoView({ block: 'nearest' });
 	}, [selectedIndex]);
 
-	const menuPos = useMemo(() => {
-		const flipUp = position.y + 340 > globalThis.innerHeight - 20;
-		return {
+	// `position` is the caret in viewport coordinates; inside a popup with a
+	// blurred, scrolled backdrop `fixed` is measured from that backdrop, so
+	// convert (including the flipped-up `bottom`) for the real containing block.
+	const fixedBox = useFixedContainingBlock(menuRef, [position.x, position.y]);
+	const menuPos = useMemo(
+		() => ({
 			position: 'fixed' as const,
-			left: position.x,
-			top: flipUp ? undefined : position.y,
-			bottom: flipUp ? globalThis.innerHeight - position.y + 8 : undefined,
+			...caretPopoverPlacement(position, 340, fixedBox, globalThis.innerHeight),
 			zIndex: 50,
-		};
-	}, [position]);
+		}),
+		[position, fixedBox],
+	);
 
 	if (flatItems.length === 0) {
 		return (

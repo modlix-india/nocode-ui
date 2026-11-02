@@ -44,7 +44,14 @@ import {
 import { useCustomColors } from './custom-colors';
 import { useIsCoarsePointer } from '../hooks/use-is-coarse-pointer';
 import { useT } from '../i18n/context';
+import {
+	fixedContainingBlockOffset,
+	followAnchor,
+	placeInViewport,
+	toFixedCoords,
+} from './fixed-position';
 import type { EditorTranslationKey } from '../i18n/keys';
+import { consumeEscape } from './escape-guard';
 
 export interface TableMenuState {
 	showBorders: boolean;
@@ -515,6 +522,10 @@ export function BlockMenu({
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent) => {
 			if (e.key === 'Escape') {
+				// Close only this menu: the popup around the editor (LoopZump's
+				// New item dialog) must not see this Escape, or the draft is lost.
+				e.stopImmediatePropagation();
+				consumeEscape(e);
 				onClose();
 			}
 		},
@@ -522,34 +533,69 @@ export function BlockMenu({
 	);
 
 	useEffect(() => {
-		document.addEventListener('keydown', handleKeyDown);
-		return () => document.removeEventListener('keydown', handleKeyDown);
+		document.addEventListener('keydown', handleKeyDown, true);
+		return () => document.removeEventListener('keydown', handleKeyDown, true);
 	}, [handleKeyDown]);
 
-	// Clamp the menu within the viewport. The grip handle on coarse pointers
-	// sits near the right edge, so a 200px-wide menu opened from there would
-	// overflow off-screen on phones.
+	// Place the menu beside the block whose handle was clicked, inside the
+	// viewport (flips above near the bottom; the grip on coarse pointers sits
+	// near the right edge, so a 200px menu is pulled back on screen). The
+	// position is converted for the real containing block of `fixed`: inside
+	// a popup with a blurred backdrop (LoopZump's item editor) `fixed` is
+	// measured from the scrolled backdrop, which put the menu at the top of
+	// the ticket. On scroll / resize it follows its block, and closes once
+	// the block has left the screen.
+	const blockAtOpenRef = useRef<{ key: string; x: number; y: number } | null>(null);
+	const [fixedOffset, setFixedOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+	const onCloseRef = useRef(onClose);
+	onCloseRef.current = onClose;
 	useLayoutEffect(() => {
 		const menu = menuRef.current;
 		if (!menu) return;
-		const rect = menu.getBoundingClientRect();
-		const margin = 8;
-		const vw = window.innerWidth;
-		const vh = window.innerHeight;
-		let x = position.x;
-		let y = position.y;
-		if (x + rect.width > vw - margin) x = vw - rect.width - margin;
-		if (x < margin) x = margin;
-		if (y + rect.height > vh - margin) {
-			// Flip above the anchor if the menu fits there; otherwise pin to top.
-			const above = position.y - rect.height - 8;
-			y = above >= margin ? above : Math.max(margin, vh - rect.height - margin);
-		}
-		if (y < margin) y = margin;
-		if (x !== adjustedPos.x || y !== adjustedPos.y) {
-			setAdjustedPos({ x, y });
-		}
-	}, [position.x, position.y, adjustedPos.x, adjustedPos.y]);
+		const anchorKey = `${blockId}:${position.x}:${position.y}`;
+		const findBlockEl = () => {
+			const sel = `[data-block-id="${CSS.escape(blockId)}"]`;
+			return menu.parentElement?.querySelector(sel) ?? document.querySelector(sel);
+		};
+		const place = () => {
+			const vw = window.innerWidth;
+			const vh = window.innerHeight;
+			let anchor = { x: position.x, y: position.y };
+			const blockRect = findBlockEl()?.getBoundingClientRect();
+			if (blockRect) {
+				const now = { x: blockRect.left, y: blockRect.top };
+				if (blockAtOpenRef.current?.key !== anchorKey) {
+					blockAtOpenRef.current = { key: anchorKey, ...now };
+				} else if (blockRect.bottom < 0 || blockRect.top > vh) {
+					onCloseRef.current();
+					return;
+				}
+				anchor = followAnchor(anchor, blockAtOpenRef.current, now);
+			}
+			const rect = menu.getBoundingClientRect();
+			const viewportPos = placeInViewport(
+				anchor,
+				{ width: rect.width, height: rect.height },
+				{ width: vw, height: vh },
+			);
+			const offset = fixedContainingBlockOffset(menu.parentElement);
+			const next = toFixedCoords(viewportPos, offset);
+			setAdjustedPos(prev => (prev.x === next.x && prev.y === next.y ? prev : next));
+			setFixedOffset(prev => (prev.x === offset.x && prev.y === offset.y ? prev : offset));
+		};
+		place();
+		const onScroll = (e: Event) => {
+			// Scrolling inside the menu (a long submenu) is not a reason to move.
+			if (e.target instanceof Node && menu.contains(e.target)) return;
+			place();
+		};
+		window.addEventListener('scroll', onScroll, true);
+		window.addEventListener('resize', place);
+		return () => {
+			window.removeEventListener('scroll', onScroll, true);
+			window.removeEventListener('resize', place);
+		};
+	}, [blockId, position.x, position.y]);
 
 	// Close the menu when the user clicks/taps outside it.
 	// Using pointerdown (not mousedown) avoids the iOS quirk where the synthetic
@@ -595,7 +641,19 @@ export function BlockMenu({
 	return (
 		<>
 			{/* Invisible overlay to catch outside clicks */}
-			<div style={styles.overlay} onPointerDown={handleOverlayPointerDown} />
+			{/* Covers the viewport even when `fixed` is measured from a scrolled
+			    ancestor (see the placement effect). */}
+			<div
+				style={{
+					...styles.overlay,
+					inset: undefined,
+					left: -fixedOffset.x,
+					top: -fixedOffset.y,
+					width: '100vw',
+					height: '100vh',
+				}}
+				onPointerDown={handleOverlayPointerDown}
+			/>
 
 			<div
 				ref={menuRef}

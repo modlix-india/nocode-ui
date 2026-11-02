@@ -705,6 +705,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
+		// The chat on screen changed: opened from the list, a new chat, or reopened
+		// at load. The session id (empty for a new chat) is on the Session Binding
+		// first, so a page can swap what it shows beside the chat (sessionWatch.ts).
+		name: 'onSessionSwitch',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Session Change',
+		description:
+			'Event fired when the chat on screen changes (opened from the list, New chat, or reopened at load). The session id, empty for a new chat, is on the Session Binding before it fires.',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
 		// Writes the agent really committed, as opposed to the ones it held back
 		// for review because `openDraftsPath` declared the object open. A surface
 		// that shows an object it did not declare has to refetch it or it is
