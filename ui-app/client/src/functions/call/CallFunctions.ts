@@ -30,7 +30,7 @@ const EVENTS_DOC =
 	'## Events\n\n- **output**: The action was accepted\n  - `state` (Any): the call state after it\n- **error**: The action failed; `output` does not fire\n  - `error` (String): why\n  - `state` (Any): the call state, with the same `error`\n\n';
 
 const STATE_DOC =
-	'## Call state\n\nWritten, whole, to the `statePath` given to Connect on every change:\n\n- `status`: `idle`, `registering`, `ready`, `ringing`, `connected`, `ended` or `error`\n- `callId`: the provider\'s id for the current call\n- `direction`: `inbound` or `outbound`\n- `from`, `to`: the numbers, when the provider reports them\n- `muted`: true while the microphone is muted\n- `startedAt`: epoch milliseconds when the call connected\n- `endedAt`: epoch milliseconds when the call ended\n- `endReason`: `pageClosed` when the tab holding the call closed or reloaded (a browser call cannot outlive its page)\n- `otherTab`: true in a tab that only mirrors the call; its audio is in another tab of the site\n- `soundOn`: the user\'s call sounds setting (see `UIEngine.Call.Sound`)\n- `audioBlocked`: true while a ring is due and the browser blocks audio until the user taps the page; show a "Tap to enable sound" control that runs `UIEngine.Call.Sound` with `unlock` true\n- `ringBack`: true while the call here is the leg of a call the user placed and the far end has not answered\n- `error`: the last failure, as text\n\n';
+	'## Call state\n\nWritten, whole, to the `statePath` given to Connect on every change:\n\n- `status`: `idle`, `registering`, `ready`, `ringing`, `connected`, `ended` or `error`\n- `callId`: the provider\'s id for the current call\n- `direction`: `inbound` or `outbound`\n- `from`, `to`: the numbers, when the provider reports them\n- `muted`: true while the microphone is muted\n- `startedAt`: epoch milliseconds when the call connected\n- `endedAt`: epoch milliseconds when the call ended\n- `endReason`: `pageClosed` when the tab holding the call closed or reloaded (a browser call cannot outlive its page)\n- `otherTab`: true in a tab that only mirrors the call; its audio is in another tab of the site\n- `soundOn`: the user\'s call sounds setting (see `UIEngine.Call.Sound`)\n- `audioBlocked`: true while a ring is due and the browser blocks audio until the user taps the page; show a "Tap to enable sound" control that runs `UIEngine.Call.Sound` with `unlock` true\n- `ringBack`: true while the call here is the leg of a call the user placed and the far end has not answered\n- `alertsOffer`: true while the user has not answered whether this site may show notifications; the call card can offer \"Allow call alerts\" that runs `UIEngine.Call.Alert` with `allow` true (see Alert). Always true or false, so a page can tell that the engine in this browser has call alerts\n- `error`: the last failure, as text\n\n';
 
 function signature(name: string, parameters: Array<[string, Parameter]>, description: string) {
 	return new FunctionSignature(name)
@@ -207,5 +207,39 @@ export class Sound extends CallFunction {
 
 	getSignature(): FunctionSignature {
 		return SOUND;
+	}
+}
+
+const ALERT = signature(
+	'Alert',
+	[
+		Parameter.ofEntry('caller', Schema.ofString('caller').setDefaultValue('')),
+		Parameter.ofEntry('deal', Schema.ofString('deal').setDefaultValue('')),
+		Parameter.ofEntry('allow', Schema.ofAny('allow')),
+	],
+	'Hidden tab call alerts: tells the engine who is calling, or asks to allow notifications',
+).setDocumentation(
+	"# UIEngine.Call.Alert\n\nWhile an incoming call rings in this browser and the tab that holds the call is hidden (another tab or app is in front), the call engine blinks that tab's title between `Incoming call: <caller>` and the page's title and, when the user has already allowed notifications for the site, shows a browser notification \"Incoming call\" with the caller and the deal; clicking it brings the tab forward. Both stop when the call is answered, declined or ends, or the tab is shown. Only the tab that holds the call alerts, only for calls the provider rings in this browser (never for a call routed to a phone, never for the leg of a call the user placed), and the engine never asks for permission during a ring. Without caller details the number from the provider is shown. This function adds what only the page knows.\n\n## Parameters\n\n- **caller** (String, optional): the caller's name (or number) for the call ringing now\n- **deal** (String, optional): a line about the caller's deal, for the notification\n- **allow** (Boolean, optional): true from a click (\"Allow call alerts\"): asks the browser to show notifications when the user has not answered yet; the same answer turns push notifications on when the app has them, so that setting does not ask again. false: the user declined. Either way the state's `alertsOffer` turns false for this user in this browser. Leave empty for neither. Inside the Modlix mobile app there are no browser notifications\n\n## Events\n\n- **output**: The action was accepted\n  - `state` (Any): the call state after it; with `allow`, `alertPermission` is the browser's answer: `granted`, `denied`, `default` (the prompt was closed) or `unsupported`\n- **error**: The action failed; `output` does not fire\n  - `error` (String): why\n  - `state` (Any): the call state, with the same `error`\n\n" +
+		STATE_DOC,
+);
+
+export class Alert extends CallFunction {
+	protected run(context: FunctionExecutionParameters): Promise<CallState> {
+		const args = context.getArguments();
+		const allow = args?.get('allow');
+		return session.callAlert({
+			caller: args?.get('caller') || undefined,
+			deal: args?.get('deal') || undefined,
+			allow:
+				allow === true || allow === 'true'
+					? true
+					: allow === false || allow === 'false'
+						? false
+						: undefined,
+		});
+	}
+
+	getSignature(): FunctionSignature {
+		return ALERT;
 	}
 }
