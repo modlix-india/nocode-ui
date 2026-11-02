@@ -9,7 +9,7 @@ jest.mock('../../../context/StoreContext', () => ({
 	setData: (path: string, value: any, page: string) => writes.push({ path, value, page }),
 }));
 
-import { Answer, Connect, Disconnect, Hangup, Mute } from '..';
+import { Answer, Connect, Disconnect, Hangup, Mute, Sound } from '..';
 import { registerCallProvider, unregisterCallProvider } from '../registry';
 import * as session from '../session';
 import { CallAdapter, CallStateListener } from '../types';
@@ -92,7 +92,7 @@ afterAll(() => unregisterCallProvider('fake'));
 describe('function repository', () => {
 	test('the call functions resolve under UIEngine.Call, the old ones under UIEngine', async () => {
 		const repo = new UIFunctionRepository();
-		for (const name of ['Connect', 'Answer', 'Hangup', 'Mute', 'Disconnect']) {
+		for (const name of ['Connect', 'Answer', 'Hangup', 'Mute', 'Disconnect', 'Sound']) {
 			const fn = await repo.find('UIEngine.Call', name);
 			expect(fn?.getSignature().getFullName()).toBe(`UIEngine.Call.${name}`);
 		}
@@ -103,7 +103,7 @@ describe('function repository', () => {
 	});
 
 	test('every call function has a description', () => {
-		for (const F of [Connect, Answer, Hangup, Mute, Disconnect]) {
+		for (const F of [Connect, Answer, Hangup, Mute, Disconnect, Sound]) {
 			expect(new F().getSignature().getDescription()?.length).toBeGreaterThan(20);
 		}
 	});
@@ -113,7 +113,13 @@ describe('UIEngine.Call', () => {
 	test('Connect writes registering, then ready; credentials never reach the state', async () => {
 		const { event, result } = await connected();
 		expect(event).toBe('output');
-		expect(result.state).toEqual({ status: 'ready', muted: false, error: undefined });
+		expect(result.state).toEqual({
+			status: 'ready',
+			muted: false,
+			error: undefined,
+			soundOn: true,
+			audioBlocked: false,
+		});
 		expect(adapter.load).toHaveBeenCalled();
 		expect(adapter.credentials).toEqual({ user: 'agent1', password: 'pw-123' });
 		expect(writes.map(w => w.value.status)).toEqual(['registering', 'ready']);
@@ -133,6 +139,8 @@ describe('UIEngine.Call', () => {
 			from: '+9198',
 			to: undefined,
 			muted: false,
+			soundOn: true,
+			audioBlocked: false,
 		});
 
 		let r = await exec(new Answer(), { callId: 'c1' });
@@ -170,6 +178,8 @@ describe('UIEngine.Call', () => {
 			from: 'b',
 			to: undefined,
 			muted: false,
+			soundOn: true,
+			audioBlocked: false,
 		});
 	});
 
@@ -264,7 +274,13 @@ describe('UIEngine.Call', () => {
 		const r = await p;
 		expect(r.event).toBe('error');
 		expect(r.result.error).toBe('bad password');
-		expect(lastState()).toEqual({ status: 'error', muted: false, error: 'bad password' });
+		expect(lastState()).toEqual({
+			status: 'error',
+			muted: false,
+			error: 'bad password',
+			soundOn: true,
+			audioBlocked: false,
+		});
 		expect(adapter.disconnect).toHaveBeenCalled();
 		expect(session.activeCallState()).toBeUndefined();
 	});
