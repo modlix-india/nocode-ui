@@ -89,6 +89,24 @@ function processTagType(headTags: any, tag: string) {
 		});
 }
 
+/**
+ * The app's PWA manifest link, written where the page head is built here (the dev server);
+ * the shell and SSR write it into the served head. Same address as theirs.
+ */
+function processManifest(manifest: any) {
+	const existing = document.head.querySelector('link[rel="manifest"]');
+	const wanted = manifest && typeof manifest === 'object' && Object.keys(manifest).length > 0;
+	if (!wanted) {
+		existing?.remove();
+		return;
+	}
+	if (existing) return;
+	const link = document.createElement('link');
+	link.rel = 'manifest';
+	link.href = 'api/manifest/manifest.json';
+	document.head.appendChild(link);
+}
+
 import { processFontPacks } from './fontPacks';
 
 const addedKeySet = new Set<string>();
@@ -250,6 +268,7 @@ export function App({ location }: Readonly<{ location?: string }> = {}) {
 					}
 
 					processTagType(properties.links, 'LINK');
+					if (globalThis.nodeDev) processManifest(properties.manifest);
 					processTagType(properties.scripts, 'SCRIPT');
 					processTagType(properties.metas, 'META');
 					processCodeParts(properties.codeParts);
