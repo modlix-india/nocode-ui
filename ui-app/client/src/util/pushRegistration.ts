@@ -92,8 +92,8 @@ function sameKey(sub: PushSubscription, key: Uint8Array): boolean {
 	return bytes.length === key.length && bytes.every((b, i) => b === key[i]);
 }
 
-/** Whether push is on for this browser or phone, without asking. */
-export async function pushStatus(): Promise<PushStatus> {
+/** This browser's or phone's own permission, without asking. */
+async function devicePermission(): Promise<PushStatus> {
 	if (isNativeShell()) {
 		const r = await nativeCall<{ status?: PushStatus }>('pushStatus');
 		return r?.status ?? 'unsupported';
@@ -103,13 +103,29 @@ export async function pushStatus(): Promise<PushStatus> {
 }
 
 /**
+ * Whether push is on here, without asking: `unsupported` when this browser or phone cannot
+ * push, or the app has no push (no notifications, or no web push key for a browser), and
+ * otherwise the device's permission.
+ */
+export async function pushStatus(): Promise<PushStatus> {
+	if (!isNativeShell() && !webSupported()) return 'unsupported';
+	const app = appCode();
+	if (!app) return 'unsupported';
+	const cfg = await config(app).catch(
+		() => ({ enabled: false }) as Awaited<ReturnType<typeof config>>,
+	);
+	if (!cfg.enabled || (!isNativeShell() && !cfg.vapidPublicKey)) return 'unsupported';
+	return devicePermission();
+}
+
+/**
  * Turns push on and registers the device for the signed-in user. With `prompt`, asks the user
  * when they have not decided yet (call it from a click: browsers ignore a prompt without one).
  */
 export async function enablePush(prompt: boolean): Promise<PushResult> {
 	const app = appCode();
 	if (!app || !getDataFromPath('Store.auth.user', []))
-		return { status: await pushStatus(), registered: false };
+		return { status: await devicePermission(), registered: false };
 
 	const cfg = await config(app);
 	if (!cfg.enabled) return { status: 'unsupported', registered: false };
