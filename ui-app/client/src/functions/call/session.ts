@@ -154,12 +154,37 @@ function checkCallId(session: Session, callId?: string) {
 		throw new CallError(`No call with id ${callId}.`);
 }
 
+/**
+ * Asks for the microphone before a call is answered, so a blocked or missing microphone is a
+ * clear error up front instead of an SDK media failure after the provider saw the answer
+ * (a click to call agent leg would then be answered with no audio, or left ringing).
+ */
+export async function ensureMicrophone(): Promise<void> {
+	const devices = typeof navigator === 'undefined' ? undefined : navigator.mediaDevices;
+	if (!devices?.getUserMedia) return;
+	let stream: MediaStream;
+	try {
+		stream = await devices.getUserMedia({ audio: true });
+	} catch (e: any) {
+		const name = e?.name ?? '';
+		if (name === 'NotAllowedError' || name === 'SecurityError')
+			throw new CallError('The microphone is blocked for this site');
+		if (name === 'NotFoundError' || name === 'OverconstrainedError')
+			throw new CallError('No microphone was found');
+		throw new CallError(
+			`The microphone could not be opened${e?.message ? ': ' + e.message : ''}`,
+		);
+	}
+	stream.getTracks().forEach(t => t.stop());
+}
+
 export async function answer(callId?: string): Promise<CallState> {
 	const session = current();
 	if (session.state.status !== 'ringing' || session.state.direction !== 'inbound')
 		throw new CallError('No incoming call to answer.');
 	checkCallId(session, callId);
 	try {
+		await ensureMicrophone();
 		await session.adapter.answer(callId || session.state.callId);
 	} catch (e) {
 		fail(session, e);
