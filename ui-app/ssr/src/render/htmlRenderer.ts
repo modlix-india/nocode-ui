@@ -636,7 +636,7 @@ export function generateMetaTags(
 /**
  * Generate external links HTML (fonts, stylesheets)
  */
-function generateExternalLinks(application: ApplicationDefinition | null): string {
+export function generateExternalLinks(application: ApplicationDefinition | null): string {
 	const links: string[] = [];
 	const externalLinks = application?.properties?.links || {};
 
@@ -647,6 +647,13 @@ function generateExternalLinks(application: ApplicationDefinition | null): strin
 		}
 		const rel = link.rel || 'stylesheet';
 		links.push(`<link rel="${escapeHtml(rel)}" href="${escapeHtml(link.href)}">`);
+	}
+
+	// The app's PWA manifest, served by the ui shell. Relative and under /api/, like the icon
+	// links: nginx forwards only /api/ paths, and the gateway cuts whatever comes before.
+	const manifest = application?.properties?.manifest;
+	if (manifest && typeof manifest === 'object' && Object.keys(manifest).length) {
+		links.push('<link rel="manifest" href="api/manifest/manifest.json">');
 	}
 
 	return links.join('\n\t\t');
