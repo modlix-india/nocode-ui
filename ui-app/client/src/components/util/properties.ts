@@ -81,7 +81,8 @@ const COMMON_COMPONENT_PROPERTIES: { [key: string]: ComponentPropertyDefinition 
 		name: 'visibility',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Visibility',
-		description: 'This component will be hidden when this property is true.',
+		description:
+			'This component will be shown only when this property is true. A false or empty value, or an expression that fails, hides it. Leave it unset to always show the component.',
 		group: ComponentPropertyGroup.COMMON,
 	},
 	analyticsLabel: {
