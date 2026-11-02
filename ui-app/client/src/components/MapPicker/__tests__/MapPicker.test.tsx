@@ -43,6 +43,9 @@ const drawn: Array<{ kind: string; opts: any; click?: () => void }> = [];
 let fitted = 0;
 // ADZ-1217: boundary layers the map id switches on (none unless a test sets them)
 let layers: any[] = [];
+// ADZ-1257: what the Geocoder answers per address (null: nothing found; absent: a place with bounds, no types)
+let GEOCODED: Record<string, any> = {};
+const views: any[] = [];
 jest.mock('../../../util/googleMapsLoader', () => ({
 	loadGoogleMaps: () =>
 		Promise.resolve({
@@ -53,9 +56,9 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 							if (name === 'click') clickHandler = fn;
 							if (name === 'idle') setTimeout(fn, 0); // the map settles once
 						},
-						setCenter: () => {},
+						setCenter: (c: any) => views.push({ center: c }),
 						getZoom: () => 5,
-						setZoom: () => {},
+						setZoom: (z: number) => views.push({ zoom: z }),
 						fitBounds: () => fitted++,
 						getFeatureLayer: (t: string) => layers.find(l => l.type === t),
 					};
@@ -75,31 +78,34 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 				},
 				Geocoder: function () {
 					return {
-						geocode: (req: any, cb: any) =>
+						geocode: (req: any, cb: any) => {
+							const r = GEOCODED[req.address];
+							if (r === null || req.address === 'Nowhere')
+								return cb([], 'ZERO_RESULTS');
 							cb(
-								req.address === 'Nowhere'
-									? []
-									: [
-											{
-												geometry: {
-													location: {
-														lat: () => 12.97,
-														lng: () => 77.59,
-													},
-													bounds: {
-														south: 12.8,
-														west: 77.4,
-														north: 13.1,
-														east: 77.8,
-													},
-												},
+								[
+									r ?? {
+										geometry: {
+											location: {
+												lat: () => 12.97,
+												lng: () => 77.59,
 											},
-										],
-								req.address === 'Nowhere' ? 'ZERO_RESULTS' : 'OK',
-							),
+											bounds: {
+												south: 12.8,
+												west: 77.4,
+												north: 13.1,
+												east: 77.8,
+											},
+										},
+									},
+								],
+								'OK',
+							);
+						},
 					};
 				},
-				Marker: function () {
+				Marker: function (opts: any) {
+					drawn.push({ kind: 'marker', opts });
 					return { addListener: () => {}, setPosition: () => {}, setMap: () => {} };
 				},
 				Circle: function (opts: any) {
@@ -117,7 +123,7 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 		}),
 }));
 
-import MapPicker from '../LazyMapPicker';
+import MapPicker, { placeFit } from '../LazyMapPicker';
 
 const definition = {
 	key: 'mp',
@@ -142,6 +148,8 @@ beforeEach(() => {
 	drawn.length = 0;
 	fitted = 0;
 	layers = [];
+	GEOCODED = {};
+	views.length = 0;
 });
 afterEach(() => act(() => root.unmount()));
 
@@ -277,4 +285,164 @@ test('ADZ-1217: with a map id, a place id is outlined by the boundary layer with
 	expect(drawn).toHaveLength(1);
 	expect(drawn[0].opts.radius).toBe(120);
 	jest.restoreAllMocks();
+});
+
+// ADZ-1257: a Geocoding result as the Maps JS API gives it (bounds only when the place has its own)
+function geo(
+	types: string[],
+	at: [number, number],
+	opts: { bounds?: boolean; partial?: boolean; id?: string } = {},
+) {
+	const [lat, lng] = at;
+	const box = { south: lat - 0.1, west: lng - 0.1, north: lat + 0.1, east: lng + 0.1 };
+	return {
+		types,
+		place_id: opts.id,
+		partial_match: opts.partial,
+		geometry: {
+			location: { lat: () => lat, lng: () => lng },
+			viewport: box,
+			...(opts.bounds === false ? {} : { bounds: box }),
+		},
+	};
+}
+
+describe('ADZ-1257: Match Place Type', () => {
+	beforeEach(() => {
+		jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(600);
+		jest.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300);
+		GEOCODED = {
+			'Bengaluru,Karnataka,India': geo(['locality', 'political'], [12.97, 77.59], {
+				id: 'ChIJcity',
+			}),
+			'Karnataka,India': geo(['administrative_area_level_1', 'political'], [15.3, 75.7]),
+			// an unknown postal code: the Geocoder falls back to its state
+			'515671,Andhra Pradesh,India': geo(
+				['administrative_area_level_1', 'political'],
+				[15.9, 79.7],
+				{
+					partial: true,
+				},
+			),
+			'560038,Karnataka,India': geo(['postal_code'], [12.97, 77.64]),
+			'Indiranagar,Karnataka,India': geo(
+				['political', 'sublocality', 'sublocality_level_1'],
+				[12.97, 77.64],
+				{
+					bounds: false,
+				},
+			),
+			'Baglan,Maharashtra,India': geo(['locality', 'political'], [20.8, 74.1]),
+			'Somewhere,India': geo(['establishment'], [20, 78]),
+			'Gone,India': null,
+		};
+	});
+	afterEach(() => jest.restoreAllMocks());
+
+	test('placeFit: the right kind is an area, a point or an outline; another kind is not drawn', () => {
+		const spot = (g: any) => ({
+			center: { lat: 1, lng: 2 },
+			bounds: g.geometry.bounds,
+			types: g.types,
+			exact: !!g.geometry.bounds,
+			partial: !!g.partial_match,
+			placeId: g.place_id,
+		});
+		const S = (k: string) => spot(GEOCODED[k]);
+		expect(placeFit({ type: 'CITY' }, S('Bengaluru,Karnataka,India'))).toBe('area');
+		expect(placeFit({ type: 'CITY' }, S('Bengaluru,Karnataka,India'), true)).toBe('outline');
+		expect(placeFit({ type: 'city' }, S('Bengaluru,Karnataka,India'))).toBe('area'); // Meta's lower case
+		expect(placeFit({ type: 'STATE' }, S('Karnataka,India'))).toBe('area');
+		expect(placeFit({ type: 'POSTAL_CODE' }, S('515671,Andhra Pradesh,India'))).toBeUndefined();
+		expect(placeFit({ type: 'Postal Code' }, S('560038,Karnataka,India'))).toBe('area');
+		expect(placeFit({ type: 'NEIGHBORHOOD' }, S('Indiranagar,Karnataka,India'))).toBe('point');
+		expect(placeFit({ type: 'Sub-District' }, S('Baglan,Maharashtra,India'))).toBe('point');
+		expect(placeFit({ type: 'CITY' }, S('Karnataka,India'))).toBeUndefined();
+		expect(placeFit({ type: 'GEO_MARKET' }, S('Somewhere,India'))).toBe('point');
+		expect(placeFit({ type: 'GEO_MARKET' }, S('515671,Andhra Pradesh,India'))).toBeUndefined();
+		expect(placeFit({ type: 'CITY' }, undefined)).toBeUndefined();
+	});
+
+	test('the map draws each place as what it is and leaves a wrong match off', async () => {
+		properties = {
+			apiKey: 'k',
+			matchPlaceType: true,
+			places: [
+				{ name: 'Bengaluru,Karnataka,India', type: 'CITY', platformId: '1007768' },
+				{ name: '515671,Andhra Pradesh,India', type: 'POSTAL_CODE' },
+				{ name: 'Indiranagar,Karnataka,India', type: 'NEIGHBORHOOD' },
+				{ name: 'Gone,India', type: 'CITY' },
+				{ name: 'Pin', type: 'CUSTOM_LOCATION', lat: 12.5, lng: 77.1, radius: 2 },
+			],
+		};
+		render();
+		await act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+		expect(drawn.map(d => d.kind)).toEqual(['rect', 'marker', 'circle']);
+		expect(drawn[0].opts.bounds).toEqual(GEOCODED['Bengaluru,Karnataka,India'].geometry.bounds);
+		expect(drawn[1].opts.position).toEqual({ lat: 12.97, lng: 77.64 });
+		expect(drawn[1].opts.title).toBe('Indiranagar,Karnataka,India');
+		expect(Math.round(drawn[2].opts.radius)).toBe(2000);
+		expect(fitted).toBe(1);
+	});
+
+	test('without Match Place Type the old drawing is kept (a wrong match is boxed as before)', async () => {
+		properties = {
+			apiKey: 'k',
+			places: [{ name: '515671,Andhra Pradesh,India', type: 'POSTAL_CODE' }],
+		};
+		render();
+		await act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+		expect(drawn.map(d => d.kind)).toEqual(['rect']);
+	});
+
+	test('with a map id, a matched city is outlined by its boundary layer through the found place id', async () => {
+		const layer: any = {
+			type: 'LOCALITY',
+			isAvailable: true,
+			style: null,
+			addListener: () => ({}),
+		};
+		layers = [layer];
+		properties = {
+			apiKey: 'k',
+			mapId: 'map-1',
+			matchPlaceType: true,
+			places: [{ name: 'Bengaluru,Karnataka,India', type: 'CITY' }],
+		};
+		render();
+		await act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+		expect(layer.style({ feature: { placeId: 'ChIJcity' } }).fillOpacity).toBe(0.18);
+		expect(layer.style({ feature: { placeId: 'ChIJother' } })).toBeNull();
+		expect(drawn).toHaveLength(1);
+		expect(drawn[0].opts.radius).toBe(120);
+	});
+
+	test('when the last place is removed the map goes back to its start view', async () => {
+		properties = {
+			apiKey: 'k',
+			matchPlaceType: true,
+			centerLat: 20.5,
+			centerLng: 78.9,
+			zoom: 4,
+			places: [{ name: 'Bengaluru,Karnataka,India', type: 'CITY' }],
+		};
+		render();
+		await act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+		expect(drawn).toHaveLength(1);
+		views.length = 0;
+		properties = { ...properties, places: [] };
+		render();
+		await act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+		expect(views).toEqual([{ center: { lat: 20.5, lng: 78.9 } }, { zoom: 4 }]);
+	});
 });
