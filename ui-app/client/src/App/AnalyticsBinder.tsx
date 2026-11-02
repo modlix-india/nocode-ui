@@ -2,8 +2,10 @@ import { useEffect } from 'react';
 import { STORE_PREFIX } from '../constants';
 import { addListenerAndCallImmediately } from '../context/StoreContext';
 import {
+	activateConsentedScripts,
 	applyConsentToBeacon,
 	getConsentCookieName,
+	isFramedForDesign,
 	publishConsentState,
 	readConsentRecord,
 } from './analyticsConsent';
@@ -18,7 +20,8 @@ declare const __ANALYTICS_INGESTION_HOST__: string | undefined;
  * Put the beacon on the page when the document did not come with one.
  *
  * Two of the three things that serve a document stamp the tag themselves, from
- * `ui.analytics.ingestionHost`: the Java `IndexHTMLService` and the SSR renderer. The
+ * `ui.analytics.ingestionHost`: the ui shell (`crates/ui/src/shell/index.rs` in
+ * nocode-saas-rust, which replaced the Java `IndexHTMLService`) and the SSR renderer. The
  * third is the webpack dev server, and its `index.html` cannot carry the tag statically:
  * one template serves every app and host there, and the data attributes come from the
  * application's own `analytics` properties, which it has no way to know.
@@ -33,7 +36,7 @@ declare const __ANALYTICS_INGESTION_HOST__: string | undefined;
  * `applyConsentToBeacon` returns at its `typeof mlx !== 'function'` guard with nothing
  * to tell. Every surface looks correct and no event is ever sent.
  */
-// NOTE: this is the THIRD place that writes this tag — IndexHTMLService.java and the SSR
+// NOTE: this is the THIRD place that writes this tag — the Rust ui shell (index.rs) and the SSR
 // htmlRenderer are the other two, and all three have to agree. They already drifted once:
 // heatmaps was added to both renderers and not here, and the symptom was a local page that
 // recorded page views perfectly and no clicks at all, with nothing anywhere saying why.
@@ -71,10 +74,13 @@ function injectBeaconInDev(analytics: Record<string, unknown> | undefined) {
 	const attr = (v: unknown, dflt: boolean) =>
 		String(v === undefined || v === null ? dflt : v !== false);
 
+	// Held back exactly as both renderers write it: `text/plain`, so nothing is requested
+	// from the analytics host until the visitor agrees (`activateConsentedScripts`).
 	const tag = document.createElement('script');
-	tag.async = true;
-	tag.src = `${configured.replace(/\/$/, '')}/a.js`;
+	tag.type = 'text/plain';
+	tag.setAttribute('data-mlx-consent', 'analytics');
 	tag.setAttribute('data-mlx-beacon', 'dev');
+	tag.setAttribute('data-src', `${configured.replace(/\/$/, '')}/a.js`);
 	tag.setAttribute('data-autocapture', attr(analytics?.autocapture, true));
 	tag.setAttribute('data-pageviews', attr(analytics?.capturePageviews, true));
 	tag.setAttribute('data-pageleaves', attr(analytics?.capturePageleaves, true));
@@ -132,12 +138,15 @@ export function AnalyticsBinder() {
 					injectBeaconInDev(app.properties?.analytics);
 
 					// A visitor who already answered on a previous visit must not be asked
-					// again, and must not spend this page load unmeasured: the beacon starts
-					// opted out whenever consent is required.
+					// again, and must not spend this page load unmeasured. The beacon is
+					// held back until analytics is granted, so this is also what loads it on
+					// a return visit; a visitor who declined, or has not answered, causes no
+					// request to the analytics host at all.
 					const record = readConsentRecord(
 						getConsentCookieName(app.properties?.analytics),
 					);
 					if (record) applyConsentToBeacon(record);
+					else if (isFramedForDesign()) activateConsentedScripts('analytics', true);
 				},
 				`${STORE_PREFIX}.application`,
 			),
