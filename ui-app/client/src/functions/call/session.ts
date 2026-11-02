@@ -1,6 +1,7 @@
 import { duplicate } from '@fincity/kirun-js';
 import { setData } from '../../context/StoreContext';
 import { getCallProvider } from './registry';
+import { CallSounds, Tone } from './sounds';
 import { getTabSync, TabChannel } from './tabs';
 import {
 	CallAdapter,
@@ -27,6 +28,11 @@ import {
  * A full reload cannot keep a WebRTC call: the owner warns before unload while a call is up, ends
  * the call on the way out (so the customer is not left on a silent line), and the reloaded tab
  * shows that call as ended (`endReason: 'pageClosed'`) instead of a stale "in call".
+ *
+ * Sounds (sounds.ts): the tab holding the call plays the incoming ring, the ring back and the end
+ * tone, from every page, for calls the provider rings in this browser. If that tab cannot play
+ * sound (the browser wants a tap first) and the user taps "enable sound" in another tab, that
+ * tab plays instead (`soundTab`).
  */
 
 export const REGISTER_TIMEOUT_MS = 30000;
@@ -64,16 +70,57 @@ let active: Session | undefined;
 let generation = 0;
 let commandSeq = 0;
 
+/** This tab, for `soundTab`. */
+export const TAB_ID = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+
+let sounds = new CallSounds();
+wireSounds();
+
+function wireSounds() {
+	sounds.onBlocked = () =>
+		Promise.resolve().then(() => {
+			const s = active;
+			if (s && s.role !== 'follower' && !!s.state.audioBlocked !== sounds.isBlocked())
+				write(s);
+		});
+}
+
+/** For tests: the sound controller this tab uses. */
+export function useCallSounds(c: CallSounds): CallSounds {
+	sounds.reset();
+	sounds = c;
+	wireSounds();
+	return c;
+}
+
 export class CallError extends Error {}
 
 function idleState(): CallState {
 	return { status: 'idle', muted: false };
 }
 
+/** The sound fields the tab holding the call adds to every state it writes. */
+function withSound(state: CallState): CallState {
+	return { ...state, soundOn: state.soundOn ?? sounds.isOn(), audioBlocked: sounds.isBlocked() };
+}
+
+function soundHere(session: Session): boolean {
+	if (session.role === 'follower') return session.state.soundTab === TAB_ID;
+	return !session.state.soundTab;
+}
+
 function write(session: Session) {
+	if (session.role !== 'follower') session.state = withSound(session.state);
 	setData(session.statePath, duplicate(session.state), session.pageName);
 	if (session.role === 'owner')
 		session.channel?.post({ t: 'state', state: duplicate(session.state) });
+	sounds.update(session.state, soundHere(session));
+}
+
+/** A follower shows the state it mirrors; nothing goes to the other tabs. */
+function show(session: Session) {
+	setData(session.statePath, duplicate(session.state), session.pageName);
+	sounds.update(session.state, soundHere(session));
 }
 
 const IN_CALL = new Set(['ringing', 'connected']);
@@ -96,6 +143,8 @@ function apply(session: Session, patch: CallStatePatch) {
 			direction: patch.direction ?? prev.direction,
 			from: patch.from,
 			to: patch.to,
+			soundOn: prev.soundOn,
+			soundTab: prev.soundTab,
 		};
 	}
 
@@ -167,6 +216,8 @@ function onBeforeUnload(e: BeforeUnloadEvent) {
 
 function onPageHide() {
 	const session = active;
+	if (session?.role === 'follower' && session.state.soundTab === TAB_ID)
+		session.channel?.post({ t: 'cmd', id: `gone-${TAB_ID}`, op: 'soundGone', tab: TAB_ID });
 	if (!holdsCall(session)) return;
 	const endedAt = Date.now();
 	const { callId, direction, from, to, startedAt } = session.state;
@@ -225,7 +276,7 @@ function restoreLost(session: Session) {
 	};
 	// A follower shows it without telling the owner: the call belonged to this tab.
 	session.state = state;
-	if (session.role === 'follower') setData(session.statePath, duplicate(state), session.pageName);
+	if (session.role === 'follower') show(session);
 	else write(session);
 }
 
@@ -248,7 +299,7 @@ function onTabMessage(session: Session, m: any) {
 		)
 			return session.gotOwnerState?.();
 		session.state = { ...m.state, otherTab: true };
-		setData(session.statePath, duplicate(session.state), session.pageName);
+		show(session);
 		session.gotOwnerState?.();
 	} else if (m.t === 'reply' && session.pending.has(m.id)) {
 		const p = session.pending.get(m.id)!;
@@ -262,10 +313,25 @@ function onTabMessage(session: Session, m: any) {
 async function runForTab(session: Session, m: any) {
 	let error: string | undefined;
 	try {
-		if (m.op === 'answer') await answer(m.callId || undefined);
+		if (m.op === 'answer') await answer(m.callId || undefined, !!m.ringBack);
 		else if (m.op === 'hangup') await hangup(m.callId || undefined);
 		else if (m.op === 'mute') await mute(!!m.on);
-		else error = `Unknown call command ${m.op}`;
+		else if (m.op === 'answering') {
+			sounds.quietFor(m.callId || undefined);
+			if (m.ringBack) setRingBack(session, true);
+		} else if (m.op === 'unquiet') sounds.unquiet();
+		else if (m.op === 'sound') {
+			if (typeof m.on === 'boolean') setSoundOn(session, m.on);
+			if (typeof m.ringBack === 'boolean') setRingBack(session, m.ringBack);
+		} else if (m.op === 'soundHere' && m.tab) {
+			session.state = { ...session.state, soundTab: String(m.tab) };
+			write(session);
+		} else if (m.op === 'soundGone') {
+			if (session.state.soundTab && session.state.soundTab === m.tab) {
+				session.state = { ...session.state, soundTab: undefined };
+				write(session);
+			}
+		} else error = `Unknown call command ${m.op}`;
 	} catch (e: any) {
 		error = e?.message ?? String(e);
 	}
@@ -309,6 +375,8 @@ async function takeOver(session: Session) {
 	}
 	session.cancelWait = undefined;
 	const { otherTab, ...rest } = session.state;
+	// This tab holds the call now and plays its sounds itself.
+	if (rest.soundTab === TAB_ID) rest.soundTab = undefined;
 	// The call (if any) was in the tab that went away: it is over, show it as ended.
 	let ended: CallState | undefined;
 	if (IN_CALL.has(rest.status))
@@ -372,6 +440,7 @@ async function signIn(session: Session, factory: CallAdapterFactory, credentials
 
 	if (active === session && session.state.status === 'registering')
 		apply(session, { status: 'ready', error: undefined });
+	if (active === session) sounds.prefetch();
 }
 
 export async function connect(
@@ -429,7 +498,9 @@ export async function connect(
 			});
 			session.gotOwnerState = undefined;
 			if (active !== session) return session.state;
-			setData(session.statePath, duplicate(session.state), session.pageName);
+			if (session.state.soundOn === undefined)
+				session.state = { ...session.state, soundOn: sounds.isOn(), audioBlocked: false };
+			show(session);
 			restoreLost(session);
 			session.cancelWait = tabs.waitLead(lockName, () => takeOver(session));
 			return session.state;
@@ -471,17 +542,29 @@ export async function ensureMicrophone(): Promise<void> {
 	stream.getTracks().forEach(t => t.stop());
 }
 
-export async function answer(callId?: string): Promise<CallState> {
+/**
+ * Answers the ringing call. `ringBack`: this is the browser leg of a call the user placed (click
+ * to call rings the browser first), so the ring back plays until the far end answers.
+ */
+export async function answer(callId?: string, ringBack = false): Promise<CallState> {
 	const session = current();
 	if (session.state.status !== 'ringing' || session.state.direction !== 'inbound')
 		throw new CallError('No incoming call to answer.');
 	checkCallId(session, callId);
+	const id = callId || session.state.callId;
+	// The ring stops at the press, not when the provider confirms.
+	sounds.quietFor(id);
+	if (session.role === 'follower')
+		toOwner(session, 'answering', { callId: id, ringBack }).catch(() => undefined);
+	else if (ringBack) setRingBack(session, true);
 	try {
 		// Asked here, in the tab the user looks at; the permission then holds for the call tab too.
 		await ensureMicrophone();
-		if (session.role === 'follower') await toOwner(session, 'answer', { callId });
-		else await session.adapter!.answer(callId || session.state.callId);
+		if (session.role === 'follower') await toOwner(session, 'answer', { callId, ringBack });
+		else await session.adapter!.answer(id);
 	} catch (e) {
+		sounds.unquiet();
+		if (session.role === 'follower') toOwner(session, 'unquiet', {}).catch(() => undefined);
 		fail(session, e);
 	}
 	return session.state;
@@ -538,10 +621,74 @@ export async function disconnect(): Promise<CallState> {
 		await session.adapter?.disconnect();
 	} finally {
 		closeTabs(session);
+		sounds.reset();
 		session.state = idleState();
 		setData(session.statePath, duplicate(session.state), session.pageName);
 	}
 	return session.state;
+}
+
+// ---------------------------------------------------------------- sounds
+
+function setRingBack(session: Session, on: boolean) {
+	if (!IN_CALL.has(session.state.status) || !!session.state.ringBack === on) return;
+	session.state = { ...session.state, ringBack: on };
+	write(session);
+}
+
+function setSoundOn(session: Session, on: boolean) {
+	sounds.setOn(on);
+	if (session.state.soundOn === on) return;
+	session.state = { ...session.state, soundOn: on };
+	write(session);
+}
+
+export interface SoundOptions {
+	/** Turns call sounds on or off for this user, on every page and tab. */
+	on?: boolean;
+	/** Lets audio play now; call it from a click ("Tap to enable sound"). */
+	unlock?: boolean;
+	/** true: the call here is the leg of a call the user placed; false: the far end answered. */
+	ringBack?: boolean;
+	/** Plays a tone with no call (test page): incoming, ringBack, end or stop. */
+	preview?: string;
+	/** The incoming ring file, when not the default. */
+	ringtone?: string;
+}
+
+const PREVIEWS = new Set(['incoming', 'ringBack', 'end', 'stop']);
+
+export async function sound(opts: SoundOptions): Promise<CallState> {
+	if (opts.preview && !PREVIEWS.has(opts.preview))
+		throw new CallError(
+			`Unknown preview "${opts.preview}": use incoming, ringBack, end or stop.`,
+		);
+	if (opts.ringtone) sounds.setRingtone(opts.ringtone);
+	const session = active;
+	if (typeof opts.on === 'boolean') {
+		if (!session) sounds.setOn(opts.on);
+		else if (session.role !== 'follower') setSoundOn(session, opts.on);
+		else {
+			sounds.setOn(opts.on);
+			session.state = { ...session.state, soundOn: opts.on };
+			show(session);
+			toOwner(session, 'sound', { on: opts.on }).catch(() => undefined);
+		}
+	}
+	if (typeof opts.ringBack === 'boolean' && session) {
+		if (session.role !== 'follower') setRingBack(session, opts.ringBack);
+		else if (IN_CALL.has(session.state.status) && !!session.state.ringBack !== opts.ringBack)
+			toOwner(session, 'sound', { ringBack: opts.ringBack }).catch(() => undefined);
+	}
+	if (opts.unlock) {
+		const ok = await sounds.unlock();
+		const s = active;
+		// This tab can play and the call tab cannot: the call's sounds move here.
+		if (ok && s?.role === 'follower' && s.state.audioBlocked && s.state.soundTab !== TAB_ID)
+			toOwner(s, 'soundHere', { tab: TAB_ID }).catch(() => undefined);
+	}
+	if (opts.preview) await sounds.previewTone(opts.preview as Tone | 'stop');
+	return active?.state ?? { ...idleState(), soundOn: sounds.isOn() };
 }
 
 /** For tests. */

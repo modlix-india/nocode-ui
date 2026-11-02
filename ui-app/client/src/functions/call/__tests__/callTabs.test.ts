@@ -93,6 +93,34 @@ interface Tab {
 	session: typeof import('../session');
 	adapters: FakeAdapter[];
 	last: () => any;
+	out: FakeOut;
+}
+
+/** A tab's speaker: what it played, and whether the browser lets it play. */
+class FakeOut {
+	played: string[] = [];
+	loop?: string;
+	blocked = false;
+	private unlocked?: () => void;
+	async play(tone: string, loop: boolean) {
+		this.loop = undefined;
+		if (this.blocked) return 'blocked';
+		this.played.push(loop ? tone : `${tone} once`);
+		if (loop) this.loop = tone;
+		return 'playing';
+	}
+	stop() {
+		this.loop = undefined;
+	}
+	async unlock() {
+		this.blocked = false;
+		this.unlocked?.();
+		return true;
+	}
+	onUnlocked(cb: () => void) {
+		this.unlocked = cb;
+	}
+	setRingtone() {}
 }
 
 function loadTab(name: string, tabs: FakeTabs): Tab {
@@ -112,11 +140,15 @@ function loadTab(name: string, tabs: FakeTabs): Tab {
 			return a;
 		});
 		tabsModule.setTabSync(tabs.forTab(name));
+		const out = new FakeOut();
+		const sounds = require('../sounds');
+		session.useCallSounds(new sounds.CallSounds(() => out));
 		tab = {
 			name,
 			session,
 			adapters,
 			last: () => writes[name][writes[name].length - 1]?.value,
+			out,
 		};
 	});
 	loaded.push(tab);
@@ -306,6 +338,8 @@ describe('one call across tabs', () => {
 			from: undefined,
 			to: undefined,
 			muted: false,
+			soundOn: true,
+			audioBlocked: false,
 		});
 	});
 });
@@ -358,5 +392,96 @@ describe('reload of the tab holding the call', () => {
 		expect(s.endedAt).toBeGreaterThanOrEqual(startedAt);
 		expect(store[a.session.LOST_CALL_KEY]).toBeUndefined();
 		await a2.session.disconnect();
+	});
+});
+
+describe('call sounds across tabs', () => {
+	const later = async (ms: number) => {
+		jest.advanceTimersByTime(ms);
+		await flush();
+	};
+
+	beforeEach(() => {
+		jest.useFakeTimers();
+		localStorage.clear();
+	});
+	afterEach(() => jest.useRealTimers());
+
+	async function twoTabs() {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		return { a, b, sdk: a.adapters[0] };
+	}
+
+	test('only the tab holding the call rings; Answer in the other tab stops it', async () => {
+		const { a, b, sdk } = await twoTabs();
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		await later(1000);
+		expect(a.out.loop).toBe('incoming');
+		expect(b.out.played).toEqual([]);
+
+		const p = b.session.answer();
+		await flush();
+		expect(a.out.loop).toBeUndefined();
+		await p;
+		expect(sdk.answer).toHaveBeenCalled();
+		sdk.emit({ status: 'connected' });
+		sdk.emit({ status: 'ended' });
+		await later(1000);
+		expect(a.out.played).toEqual(['incoming', 'end once']);
+		expect(b.out.played).toEqual([]);
+	});
+
+	test('sound off in another tab silences the call tab, and every tab shows it', async () => {
+		const { a, b, sdk } = await twoTabs();
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		await later(1000);
+		await b.session.sound({ on: false });
+		await flush();
+		expect(a.out.loop).toBeUndefined();
+		expect(a.last()).toMatchObject({ status: 'ringing', soundOn: false });
+		expect(b.last()).toMatchObject({ status: 'ringing', soundOn: false });
+	});
+
+	test('the leg of a call placed from the other tab rings back, not in, until the far end answers', async () => {
+		const { a, b, sdk } = await twoTabs();
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		await flush();
+		await b.session.answer(undefined, true);
+		sdk.emit({ status: 'connected' });
+		await later(3000);
+		expect(a.out.played).toEqual(['ringBack']);
+		expect(a.out.loop).toBe('ringBack');
+		expect(b.last()).toMatchObject({ status: 'connected', ringBack: true });
+
+		await b.session.sound({ ringBack: false });
+		await flush();
+		expect(a.out.loop).toBeUndefined();
+		expect(b.out.played).toEqual([]);
+	});
+
+	test('the call tab cannot play: a tap in another tab moves the sounds there', async () => {
+		const { a, b, sdk } = await twoTabs();
+		a.out.blocked = true;
+		b.out.blocked = true;
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		await flush();
+		await later(1000);
+		expect(a.last()).toMatchObject({ audioBlocked: true });
+		expect(b.last()).toMatchObject({ audioBlocked: true, otherTab: true });
+
+		await b.session.sound({ unlock: true });
+		await flush();
+		expect(b.out.loop).toBe('incoming');
+		expect(a.out.loop).toBeUndefined();
+		expect(b.last()).toMatchObject({ audioBlocked: false, soundTab: b.session.TAB_ID });
+
+		sdk.emit({ status: 'ended' });
+		await flush();
+		expect(b.out.played).toEqual(['incoming', 'end once']);
+		expect(a.out.played).toEqual([]);
 	});
 });

@@ -30,7 +30,7 @@ const EVENTS_DOC =
 	'## Events\n\n- **output**: The action was accepted\n  - `state` (Any): the call state after it\n- **error**: The action failed; `output` does not fire\n  - `error` (String): why\n  - `state` (Any): the call state, with the same `error`\n\n';
 
 const STATE_DOC =
-	"## Call state\n\nWritten, whole, to the `statePath` given to Connect on every change:\n\n- `status`: `idle`, `registering`, `ready`, `ringing`, `connected`, `ended` or `error`\n- `callId`: the provider's id for the current call\n- `direction`: `inbound` or `outbound`\n- `from`, `to`: the numbers, when the provider reports them\n- `muted`: true while the microphone is muted\n- `startedAt`: epoch milliseconds when the call connected\n- `endedAt`: epoch milliseconds when the call ended\n- `endReason`: `pageClosed` when the tab holding the call closed or reloaded (a browser call cannot outlive its page)\n- `otherTab`: true in a tab that only mirrors the call; its audio is in another tab of the site\n- `error`: the last failure, as text\n\n";
+	'## Call state\n\nWritten, whole, to the `statePath` given to Connect on every change:\n\n- `status`: `idle`, `registering`, `ready`, `ringing`, `connected`, `ended` or `error`\n- `callId`: the provider\'s id for the current call\n- `direction`: `inbound` or `outbound`\n- `from`, `to`: the numbers, when the provider reports them\n- `muted`: true while the microphone is muted\n- `startedAt`: epoch milliseconds when the call connected\n- `endedAt`: epoch milliseconds when the call ended\n- `endReason`: `pageClosed` when the tab holding the call closed or reloaded (a browser call cannot outlive its page)\n- `otherTab`: true in a tab that only mirrors the call; its audio is in another tab of the site\n- `soundOn`: the user\'s call sounds setting (see `UIEngine.Call.Sound`)\n- `audioBlocked`: true while a ring is due and the browser blocks audio until the user taps the page; show a "Tap to enable sound" control that runs `UIEngine.Call.Sound` with `unlock` true\n- `ringBack`: true while the call here is the leg of a call the user placed and the far end has not answered\n- `error`: the last failure, as text\n\n';
 
 function signature(name: string, parameters: Array<[string, Parameter]>, description: string) {
 	return new FunctionSignature(name)
@@ -96,16 +96,20 @@ export class Connect extends CallFunction {
 
 const ANSWER = signature(
 	'Answer',
-	[Parameter.ofEntry('callId', Schema.ofString('callId').setDefaultValue(''))],
+	[
+		Parameter.ofEntry('callId', Schema.ofString('callId').setDefaultValue('')),
+		Parameter.ofEntry('ringBack', Schema.ofBoolean('ringBack').setDefaultValue(false)),
+	],
 	'Answers the incoming call that is ringing in this browser',
 ).setDocumentation(
-	'# UIEngine.Call.Answer\n\nAnswers the ringing incoming call. Needs a Connect first and a state of `ringing` with direction `inbound`; the state moves to `connected` when the provider confirms.\n\n## Parameters\n\n- **callId** (String, optional): answer only if the ringing call has this id\n\n' +
+	'# UIEngine.Call.Answer\n\nAnswers the ringing incoming call. Needs a Connect first and a state of `ringing` with direction `inbound`; the state moves to `connected` when the provider confirms. The incoming ring stops when Answer runs.\n\n## Parameters\n\n- **callId** (String, optional): answer only if the ringing call has this id\n- **ringBack** (Boolean, optional, default: false): true when this is the browser leg of a call the user placed (click to call rings the browser first and the page answers it). The ring back then plays, instead of the incoming ring, until `UIEngine.Call.Sound` with `ringBack` false says the far end answered, or the call ends\n\n' +
 		EVENTS_DOC,
 );
 
 export class Answer extends CallFunction {
 	protected run(context: FunctionExecutionParameters): Promise<CallState> {
-		return session.answer(context.getArguments()?.get('callId') || undefined);
+		const args = context.getArguments();
+		return session.answer(args?.get('callId') || undefined, args?.get('ringBack') === true);
 	}
 
 	getSignature(): FunctionSignature {
@@ -167,5 +171,41 @@ export class Disconnect extends CallFunction {
 
 	getSignature(): FunctionSignature {
 		return DISCONNECT;
+	}
+}
+
+const SOUND = signature(
+	'Sound',
+	[
+		Parameter.ofEntry('on', Schema.ofAny('on')),
+		Parameter.ofEntry('unlock', Schema.ofBoolean('unlock').setDefaultValue(false)),
+		Parameter.ofEntry('ringBack', Schema.ofAny('ringBack')),
+		Parameter.ofEntry('preview', Schema.ofString('preview').setDefaultValue('')),
+		Parameter.ofEntry('ringtone', Schema.ofString('ringtone').setDefaultValue('')),
+	],
+	'Call sounds: turns them on or off for the user, lets the browser play them, or previews a tone',
+).setDocumentation(
+	"# UIEngine.Call.Sound\n\nThe call engine plays the call sounds by itself, on every page, from the state of the call in this browser: an incoming ring while an incoming call rings (it starts 0.7 s late and stops when Answer runs or the call is answered, declined or ends), a ring back while a call the user placed is being dialled, and a short tone once when a call ends. Only the tab that holds the call plays them, and only for calls the provider rings in this browser: a call routed to a phone never rings here. This function changes how they play.\n\n## Parameters\n\n- **on** (Boolean, optional): true or false turns call sounds on or off for the signed in user, in every tab, remembered in this browser. The call card still shows the call while sounds are off. Leave empty to keep the setting. The state's `soundOn` shows it\n- **unlock** (Boolean, optional, default: false): browsers block audio until the user interacts with the page; while a ring is due and blocked the state has `audioBlocked: true`. Run Sound with `unlock` true from a click (\"Tap to enable sound\") and the ring starts. In a tab that does not hold the call, the call's sounds then play in this tab\n- **ringBack** (Boolean, optional): false when the far end of a call the user placed answered (the ring back stops); true marks the call here as one the user placed. See also Answer's `ringBack`\n- **preview** (String, optional): `incoming`, `ringBack` or `end` plays that tone with no call (`end` once, the others until `stop`); for test pages\n- **ringtone** (String, optional): the URL of the incoming ring file; default `" +
+		'/api/files/static/file/SYSTEM/jslib/exotelBundle/ringtone.wav`. When it cannot be played a generated ring plays\n\n' +
+		EVENTS_DOC +
+		STATE_DOC,
+);
+
+export class Sound extends CallFunction {
+	protected run(context: FunctionExecutionParameters): Promise<CallState> {
+		const args = context.getArguments();
+		const bool = (v: any) =>
+			v === true || v === 'true' ? true : v === false || v === 'false' ? false : undefined;
+		return session.sound({
+			on: bool(args?.get('on')),
+			unlock: args?.get('unlock') === true,
+			ringBack: bool(args?.get('ringBack')),
+			preview: args?.get('preview') || undefined,
+			ringtone: args?.get('ringtone') || undefined,
+		});
+	}
+
+	getSignature(): FunctionSignature {
+		return SOUND;
 	}
 }
