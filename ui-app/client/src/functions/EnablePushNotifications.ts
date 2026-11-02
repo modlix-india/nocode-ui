@@ -8,6 +8,7 @@ import {
 	Schema,
 } from '@fincity/kirun-js';
 import { NAMESPACE_UI_ENGINE } from '../constants';
+import { isNativeShell } from '../util/pushGate';
 
 const SIGNATURE = new FunctionSignature('EnablePushNotifications')
 	.setNamespace(NAMESPACE_UI_ENGINE)
@@ -33,6 +34,14 @@ const SIGNATURE = new FunctionSignature('EnablePushNotifications')
 export class EnablePushNotifications extends AbstractFunction {
 	protected async internalExecute(_: FunctionExecutionParameters): Promise<FunctionOutput> {
 		try {
+			// Ask first, while the tap still counts: Safari (iPhone home screen apps included)
+			// shows no prompt once a network call or a chunk load came between the tap and the ask.
+			if (
+				!isNativeShell() &&
+				typeof Notification !== 'undefined' &&
+				Notification.permission === 'default'
+			)
+				await Notification.requestPermission();
 			const { enablePush } = await import(
 				/* webpackChunkName: "PushRegistration" */ '../util/pushRegistration'
 			);
