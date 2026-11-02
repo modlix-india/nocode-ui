@@ -84,7 +84,7 @@ test('a browser asks once, registers the worker for the whole site and saves the
 	expect(requestPermission).toHaveBeenCalledTimes(1);
 	expect(register).toHaveBeenCalledWith(
 		'/leadzumptwo/SYSTEM/api/notification/push/sw.js?base=%2Fleadzumptwo%2FSYSTEM',
-		{ scope: '/' },
+		{ scope: '/leadzumptwo/SYSTEM/' },
 	);
 	const key: Uint8Array = subscribe.mock.calls[0][0].applicationServerKey;
 	expect(key.length).toBe(65);
@@ -155,6 +155,7 @@ test('sign-out removes the subscription from this user but keeps it in the brows
 	browser('granted', sub);
 	mockedAxios.delete.mockResolvedValue({ data: { removed: 1 } });
 	await disablePush();
+	expect(navigator.serviceWorker.getRegistration).toHaveBeenCalledWith('/leadzumptwo/SYSTEM/');
 	expect(mockedAxios.delete).toHaveBeenCalledWith(
 		'/leadzumptwo/SYSTEM/api/notification/push/devices',
 		expect.objectContaining({ data: { platform: 'WEB', token: sub.endpoint } }),
