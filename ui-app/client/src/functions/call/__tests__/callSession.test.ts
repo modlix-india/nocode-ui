@@ -201,6 +201,39 @@ describe('UIEngine.Call', () => {
 		expect(adapter.answer).toHaveBeenCalledTimes(1);
 	});
 
+	test('Answer asks for the microphone first; a blocked microphone stops it before the SDK answers', async () => {
+		const stop = jest.fn();
+		const getUserMedia = jest.fn().mockResolvedValue({ getTracks: () => [{ stop }] });
+		Object.defineProperty(navigator, 'mediaDevices', {
+			value: { getUserMedia },
+			configurable: true,
+		});
+		try {
+			await connected();
+			adapter.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+			let r = await exec(new Answer());
+			expect(r.event).toBe('output');
+			expect(getUserMedia).toHaveBeenCalledWith({ audio: true });
+			expect(stop).toHaveBeenCalled();
+			expect(adapter.answer).toHaveBeenCalledTimes(1);
+
+			adapter.emit({ status: 'ringing', direction: 'inbound', callId: 'c2' });
+			getUserMedia.mockRejectedValueOnce(
+				Object.assign(new Error('denied'), { name: 'NotAllowedError' }),
+			);
+			r = await exec(new Answer());
+			expect(r.event).toBe('error');
+			expect(r.result.error).toBe('The microphone is blocked for this site');
+			expect(r.result.state).toMatchObject({
+				status: 'ringing',
+				error: 'The microphone is blocked for this site',
+			});
+			expect(adapter.answer).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (navigator as any).mediaDevices;
+		}
+	});
+
 	test('Connect: unknown provider, missing statePath or credentials', async () => {
 		let r = await exec(new Connect(), {
 			provider: 'nope',
