@@ -35,6 +35,13 @@ export interface CallState {
 	ringBack?: boolean;
 	/** Set when the tab holding the call cannot play sound and another tab of the site does. */
 	soundTab?: string;
+	/**
+	 * True while the site has no notification answer from the user and the call card may offer
+	 * "Allow call alerts" (run `UIEngine.Call.Alert` with `allow` from the click). Not offered
+	 * again once answered, nor where notifications are not available. Always a boolean in a state
+	 * this engine writes, so a page can tell an engine that has alerts.
+	 */
+	alertsOffer?: boolean;
 	error?: string;
 }
 
