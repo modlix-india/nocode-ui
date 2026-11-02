@@ -18,7 +18,7 @@ const SIGNATURE = new FunctionSignature('GetPushStatus')
 	)
 	.setDescription('Whether push notifications are on for this device, without asking the user.')
 	.setDocumentation(
-		'# UIEngine.GetPushStatus\n\nReads whether this browser or phone shows push notifications, without asking the user anything.\n\n## Events\n\n- **output**:\n  - **status** (String): `granted` (on), `denied` (turned off by the user), `default` (not asked yet) or `unsupported` (no push here).\n\n## Use Cases\n\n- **Show an Enable notifications button** only while the status is `default` (or `denied`, with a hint to change it in the settings).',
+		'# UIEngine.GetPushStatus\n\nReads whether this browser or phone shows push notifications, without asking the user anything.\n\n## Events\n\n- **output**:\n  - **status** (String): `granted` (on), `denied` (turned off by the user), `default` (not asked yet) or `unsupported` (this browser or phone cannot push, or the app has no push: no notifications, or no web push key for a browser).\n\n## Use Cases\n\n- **Show an Enable notifications button** only while the status is `default` (or `denied`, with a hint to change it in the settings).',
 	);
 
 export class GetPushStatus extends AbstractFunction {
