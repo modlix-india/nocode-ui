@@ -18,6 +18,12 @@ export interface CallState {
 	muted: boolean;
 	/** Epoch milliseconds when the call connected. */
 	startedAt?: number;
+	/** Epoch milliseconds when a connected or ringing call ended. */
+	endedAt?: number;
+	/** `pageClosed`: the tab holding the call closed or reloaded, which ends a browser call. */
+	endReason?: 'pageClosed';
+	/** True in a tab that only mirrors the call: another tab of the site holds its audio. */
+	otherTab?: boolean;
 	error?: string;
 }
 
