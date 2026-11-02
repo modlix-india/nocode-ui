@@ -34,10 +34,10 @@ export type ConsentStatus = 'granted' | 'denied';
 
 /**
  * `necessary` is never a real choice — it is listed so a preferences panel can
- * show it switched on and disabled. `analytics` gates the beacon. `marketing` is
- * recorded and exposed but drives nothing yet: no ad pixel reads it today, so
- * a page that offers the toggle is making a promise the platform does not keep
- * until one does.
+ * show it switched on and disabled. `analytics` gates the beacon: until it is
+ * granted the beacon is not even requested. `marketing` gates any script held
+ * back as `data-mlx-consent="marketing"` and the ad click ids lead forms keep in
+ * first-party cookies (`UIEngine.BuildLeadAdData`).
  */
 export interface ConsentCategories {
 	necessary: boolean;
@@ -147,14 +147,106 @@ export function readConsentRecord(cookieName?: string): ConsentRecord | null {
 }
 
 /**
- * Push consent into the analytics beacon. Safe to call before the script has loaded: the
- * snippet installs a queue that replays these on arrival.
+ * The categories a script can be held back for. `necessary` is not one: a necessary script
+ * is written as an ordinary tag and runs without asking.
+ */
+export type ConsentGatedCategory = 'analytics' | 'marketing';
+
+/** The attribute that names the category a held-back script waits for. */
+export const CONSENT_CATEGORY_ATTRIBUTE = 'data-mlx-consent';
+
+/**
+ * Scripts that must not even be REQUESTED before the visitor agrees.
  *
- * Granting is what makes the arrival itself countable — the beacon holds back the page view
- * it would otherwise have sent, and emits it when consent is given. Revoking stops everything
- * and discards whatever had been batched but not yet sent.
+ * The page carries them as `<script type="text/plain" data-mlx-consent="analytics"
+ * data-src="https://host/x.js" ...>`. A browser neither fetches nor runs a script whose type
+ * is not JavaScript, so until this swaps the tag for a live one there is no request, no
+ * cookie and nothing the visitor has to take on trust. The renderers write the analytics
+ * beacon this way, and an app's own code parts can hold a marketing pixel the same way
+ * (`data-mlx-consent="marketing"`, inline body or `data-src`).
+ *
+ * The live tag keeps every other attribute, so a beacon that reads its settings from its
+ * own tag (`document.currentScript`) still finds them. Returns how many were started.
+ */
+export function activateConsentedScripts(
+	category: ConsentGatedCategory,
+	onlyBeacon = false,
+): number {
+	if (typeof document === 'undefined') return 0;
+
+	const held = Array.from(
+		document.querySelectorAll<HTMLScriptElement>(
+			`script[type="text/plain"][${CONSENT_CATEGORY_ATTRIBUTE}="${category}"]` +
+				(onlyBeacon ? '[data-mlx-beacon]' : ''),
+		),
+	);
+
+	for (const tag of held) {
+		const live = document.createElement('script');
+		for (const a of Array.from(tag.attributes)) {
+			if (a.name === 'type' || a.name === 'src' || a.name === 'data-src') continue;
+			live.setAttribute(a.name, a.value);
+		}
+		// A nonce is hidden from getAttribute once the document has parsed it.
+		if (tag.nonce) live.nonce = tag.nonce;
+
+		if (tag.hasAttribute('data-mlx-beacon')) ensureBeaconQueue();
+
+		const src = tag.getAttribute('data-src') || tag.getAttribute('src');
+		if (src) live.src = src;
+		else live.text = tag.text;
+
+		tag.replaceWith(live);
+	}
+	return held.length;
+}
+
+/**
+ * The queue the stamped snippet installs, so whatever is said to the beacon before its
+ * script arrives is replayed on arrival. Kept when one exists: replacing it would throw
+ * away what it already holds.
+ */
+function ensureBeaconQueue() {
+	if (typeof (globalThis as any).mlx === 'function') return;
+	const q: unknown[] = [];
+	const stub: any = function () {
+		q.push(arguments);
+	};
+	stub.q = q;
+	(globalThis as any).mlx = stub;
+}
+
+/**
+ * Whether the heatmap viewer is framing this page to draw its clicks over it. The viewer
+ * is the site's owner reading their own numbers, the beacon records nothing in that mode
+ * (`modlixDesign`), and it is the beacon that tells the viewer how tall the page is, so it
+ * is the one case where the beacon loads without a visitor's consent.
+ */
+export function isFramedForDesign(): boolean {
+	try {
+		if (window.parent === window) return false;
+		return /[?&]modlixDesign=(?!false|0)/.test(window.location.search);
+	} catch {
+		return false;
+	}
+}
+
+/**
+ * Act on a consent decision: start the scripts each granted category was holding back,
+ * then tell the beacon. Safe to call before the beacon has loaded: the snippet installs a
+ * queue that replays these on arrival.
+ *
+ * Nothing is loaded for a category that is not granted, so a visitor who chose only the
+ * necessary cookies causes no request to the analytics host at all. Granting is also what
+ * makes the arrival itself countable: the beacon holds back the page view it would otherwise
+ * have sent, and emits it when consent is given. Revoking stops everything and discards
+ * whatever had been batched but not yet sent; a script already running for this page view
+ * stays, and on the next visit it is not loaded.
  */
 export function applyConsentToBeacon(record: ConsentRecord) {
+	if (record.categories.analytics) activateConsentedScripts('analytics');
+	if (record.categories.marketing) activateConsentedScripts('marketing');
+
 	const mlx = (globalThis as any).mlx;
 	if (typeof mlx !== 'function') return;
 

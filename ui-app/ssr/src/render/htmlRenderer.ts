@@ -660,7 +660,7 @@ export function generateExternalLinks(application: ApplicationDefinition | null)
 }
 
 /**
- * The analytics beacon, as one script tag.
+ * The analytics beacon, as one script tag, held back until consent.
  *
  * The script itself is served by the engine that receives its events, so there is no vendor
  * stub here and no copy of the wire format. The previous arrangement transcribed the same
@@ -685,7 +685,13 @@ function generateAnalyticsSnippet(
 	return (
 		// A queue, so an event fired before the async script arrives is not lost.
 		'<script>window.mlx=window.mlx||function(){(window.mlx.q=window.mlx.q||[]).push(arguments)};</script>' +
-		`<script async src="${escapeHtml(host)}/a.js"` +
+		// Held back until the visitor grants analytics: a `text/plain` script is neither
+		// fetched nor run, so a visitor who chose only the necessary cookies causes no request
+		// to the analytics host at all. The client (`activateConsentedScripts`) swaps this for
+		// a live tag the moment analytics is granted, and at start on a later visit when the
+		// stored choice grants it.
+		'<script type="text/plain" data-mlx-consent="analytics" data-mlx-beacon="ssr"' +
+		` data-src="${escapeHtml(host)}/a.js"` +
 		` data-autocapture="${attr(a.autocapture, true)}"` +
 		` data-pageviews="${attr(a.capturePageviews, true)}"` +
 		` data-pageleaves="${attr(a.capturePageleaves, true)}"` +

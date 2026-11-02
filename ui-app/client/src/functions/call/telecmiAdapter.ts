@@ -33,6 +33,32 @@ export interface TelecmiAdapterOptions {
 	loadSdk?: () => Promise<any>;
 }
 
+/**
+ * The PIOPIY bundle sets `window.onbeforeunload` when it loads, and that handler ends every call
+ * and unregisters the agent. `beforeunload` fires BEFORE the browser asks "Leave site?", so a
+ * refresh hung up the call and signed the agent out even when the user then pressed Cancel.
+ * The handler is moved to `pagehide`, which fires only when the page really goes away.
+ */
+let sdkUnload: ((this: any, ev: any) => any) | undefined;
+let unloadMoved = false;
+
+function moveSdkUnloadToPagehide(before: any) {
+	if (typeof window === 'undefined') return;
+	const now = window.onbeforeunload;
+	if (typeof now !== 'function' || now === before) return;
+	sdkUnload = now;
+	window.onbeforeunload = before ?? null;
+	if (unloadMoved) return;
+	unloadMoved = true;
+	window.addEventListener('pagehide', ev => {
+		try {
+			sdkUnload?.call(window, ev);
+		} catch {
+			// The page is going away; nothing more to do.
+		}
+	});
+}
+
 function text(v: any): string | undefined {
 	if (v === undefined || v === null || v === '') return undefined;
 	return String(v);
@@ -139,7 +165,9 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 
 	return {
 		async load() {
+			const before = typeof window === 'undefined' ? undefined : window.onbeforeunload;
 			const g = await loadSdk();
+			moveSdkUnloadToPagehide(before);
 			Ctor = g?.default ?? g;
 			if (typeof Ctor !== 'function') throw new Error('The TeleCMI SDK did not load.');
 		},

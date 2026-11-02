@@ -173,4 +173,24 @@ describe('telecmi adapter', () => {
 		expect(patches).toEqual([]);
 		expect(() => adapter.answer()).toThrow('TeleCMI is not connected.');
 	});
+
+	test("the SDK's beforeunload teardown runs only on pagehide, so Cancel on the leave dialog keeps the call", async () => {
+		const teardown = jest.fn();
+		window.onbeforeunload = null;
+		const adapter = createTelecmiAdapter({
+			loadSdk: async () => {
+				// What the PIOPIY bundle does when it loads.
+				window.onbeforeunload = teardown;
+				return { default: FakePiopiy };
+			},
+		});
+		await adapter.load();
+		expect(window.onbeforeunload).toBeNull();
+
+		window.dispatchEvent(new Event('beforeunload', { cancelable: true }));
+		expect(teardown).not.toHaveBeenCalled();
+
+		window.dispatchEvent(new Event('pagehide'));
+		expect(teardown).toHaveBeenCalledTimes(1);
+	});
 });
