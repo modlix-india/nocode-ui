@@ -1,5 +1,6 @@
 import { duplicate } from '@fincity/kirun-js';
 import { setData } from '../../context/StoreContext';
+import { AlertPermission, CallAlerts } from './alerts';
 import { getCallProvider } from './registry';
 import { CallSounds, Tone } from './sounds';
 import { getTabSync, TabChannel } from './tabs';
@@ -33,6 +34,10 @@ import {
  * tone, from every page, for calls the provider rings in this browser. If that tab cannot play
  * sound (the browser wants a tap first) and the user taps "enable sound" in another tab, that
  * tab plays instead (`soundTab`).
+ *
+ * Alerts (alerts.ts): while an incoming call rings and the tab holding it is hidden, its title
+ * blinks with the caller and, when notifications are already allowed, a browser notification
+ * shows. Only the tab holding the call does this, never a follower.
  */
 
 export const REGISTER_TIMEOUT_MS = 30000;
@@ -85,6 +90,15 @@ function wireSounds() {
 		});
 }
 
+let alerts = new CallAlerts();
+
+/** For tests: the hidden tab alerts this tab uses. */
+export function useCallAlerts(c: CallAlerts): CallAlerts {
+	alerts.reset();
+	alerts = c;
+	return c;
+}
+
 /** For tests: the sound controller this tab uses. */
 export function useCallSounds(c: CallSounds): CallSounds {
 	sounds.reset();
@@ -99,9 +113,14 @@ function idleState(): CallState {
 	return { status: 'idle', muted: false };
 }
 
-/** The sound fields the tab holding the call adds to every state it writes. */
+/** The sound and alert fields the tab holding the call adds to every state it writes. */
 function withSound(state: CallState): CallState {
-	return { ...state, soundOn: state.soundOn ?? sounds.isOn(), audioBlocked: sounds.isBlocked() };
+	return {
+		...state,
+		soundOn: state.soundOn ?? sounds.isOn(),
+		audioBlocked: sounds.isBlocked(),
+		alertsOffer: alerts.canOffer(),
+	};
 }
 
 function soundHere(session: Session): boolean {
@@ -115,12 +134,14 @@ function write(session: Session) {
 	if (session.role === 'owner')
 		session.channel?.post({ t: 'state', state: duplicate(session.state) });
 	sounds.update(session.state, soundHere(session));
+	alerts.update(session.state, session.role !== 'follower');
 }
 
 /** A follower shows the state it mirrors; nothing goes to the other tabs. */
 function show(session: Session) {
 	setData(session.statePath, duplicate(session.state), session.pageName);
 	sounds.update(session.state, soundHere(session));
+	alerts.update(session.state, false);
 }
 
 const IN_CALL = new Set(['ringing', 'connected']);
@@ -318,8 +339,12 @@ async function runForTab(session: Session, m: any) {
 		else if (m.op === 'mute') await mute(!!m.on);
 		else if (m.op === 'answering') {
 			sounds.quietFor(m.callId || undefined);
+			alerts.quietFor(m.callId || undefined);
 			if (m.ringBack) setRingBack(session, true);
-		} else if (m.op === 'unquiet') sounds.unquiet();
+		} else if (m.op === 'unquiet') {
+			sounds.unquiet();
+			alerts.unquiet();
+		} else if (m.op === 'alerts') write(session);
 		else if (m.op === 'sound') {
 			if (typeof m.on === 'boolean') setSoundOn(session, m.on);
 			if (typeof m.ringBack === 'boolean') setRingBack(session, m.ringBack);
@@ -499,7 +524,12 @@ export async function connect(
 			session.gotOwnerState = undefined;
 			if (active !== session) return session.state;
 			if (session.state.soundOn === undefined)
-				session.state = { ...session.state, soundOn: sounds.isOn(), audioBlocked: false };
+				session.state = {
+					...session.state,
+					soundOn: sounds.isOn(),
+					audioBlocked: false,
+					alertsOffer: alerts.canOffer(),
+				};
 			show(session);
 			restoreLost(session);
 			session.cancelWait = tabs.waitLead(lockName, () => takeOver(session));
@@ -554,6 +584,7 @@ export async function answer(callId?: string, ringBack = false): Promise<CallSta
 	const id = callId || session.state.callId;
 	// The ring stops at the press, not when the provider confirms.
 	sounds.quietFor(id);
+	alerts.quietFor(id);
 	if (session.role === 'follower')
 		toOwner(session, 'answering', { callId: id, ringBack }).catch(() => undefined);
 	else if (ringBack) setRingBack(session, true);
@@ -564,6 +595,7 @@ export async function answer(callId?: string, ringBack = false): Promise<CallSta
 		else await session.adapter!.answer(id);
 	} catch (e) {
 		sounds.unquiet();
+		alerts.unquiet();
 		if (session.role === 'follower') toOwner(session, 'unquiet', {}).catch(() => undefined);
 		fail(session, e);
 	}
@@ -622,6 +654,7 @@ export async function disconnect(): Promise<CallState> {
 	} finally {
 		closeTabs(session);
 		sounds.reset();
+		alerts.reset();
 		session.state = idleState();
 		setData(session.statePath, duplicate(session.state), session.pageName);
 	}
@@ -689,6 +722,41 @@ export async function sound(opts: SoundOptions): Promise<CallState> {
 	}
 	if (opts.preview) await sounds.previewTone(opts.preview as Tone | 'stop');
 	return active?.state ?? { ...idleState(), soundOn: sounds.isOn() };
+}
+
+// ---------------------------------------------------------------- hidden tab alerts
+
+export interface AlertOptions {
+	/** The caller's name (or number) for the call ringing now, as the page knows it. */
+	caller?: string;
+	/** A line about the caller's deal for the notification. */
+	deal?: string;
+	/**
+	 * true (from a click, "Allow call alerts"): asks the browser to show notifications when it
+	 * has no answer yet. false: the user declined the offer. Either way it is not offered again.
+	 */
+	allow?: boolean;
+}
+
+export async function callAlert(
+	opts: AlertOptions,
+): Promise<CallState & { alertPermission?: AlertPermission }> {
+	if (opts.caller !== undefined || opts.deal !== undefined)
+		alerts.setInfo({ caller: opts.caller, deal: opts.deal });
+	let permission: AlertPermission | undefined;
+	if (typeof opts.allow === 'boolean') {
+		permission = await alerts.allow(opts.allow);
+		const s = active;
+		if (s && s.role !== 'follower') write(s);
+		else if (s) {
+			s.state = { ...s.state, alertsOffer: alerts.canOffer() };
+			show(s);
+			// The call tab rewrites its state, so every tab drops the offer.
+			toOwner(s, 'alerts', {}).catch(() => undefined);
+		}
+	}
+	const state = active?.state ?? { ...idleState(), alertsOffer: alerts.canOffer() };
+	return permission ? { ...state, alertPermission: permission } : state;
 }
 
 /** For tests. */
