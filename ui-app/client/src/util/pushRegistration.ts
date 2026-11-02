@@ -92,6 +92,31 @@ function sameKey(sub: PushSubscription, key: Uint8Array): boolean {
 	return bytes.length === key.length && bytes.every((b, i) => b === key[i]);
 }
 
+/**
+ * On a shared host, the worker an app registered for the whole site before each app had its own
+ * (scope `/`): its subscription is dropped, or the browser would get every push twice.
+ */
+async function retireSiteWideWorker(): Promise<void> {
+	try {
+		const old = await navigator.serviceWorker.getRegistration('/');
+		const script =
+			old?.active?.scriptURL ?? old?.waiting?.scriptURL ?? old?.installing?.scriptURL;
+		if (!old || new URL(old.scope).pathname !== '/' || !script?.includes(SW_PATH)) return;
+		const sub = await old.pushManager.getSubscription();
+		if (sub) {
+			await axios.delete(api('/api/notification/push/devices'), {
+				params: { appCode: appCode() },
+				headers: headers(),
+				data: { platform: 'WEB', token: sub.endpoint },
+			});
+			await sub.unsubscribe();
+		}
+		await old.unregister();
+	} catch (e) {
+		console.warn('The old site-wide push worker was not removed', e);
+	}
+}
+
 /** This browser's or phone's own permission, without asking. */
 async function devicePermission(): Promise<PushStatus> {
 	if (isNativeShell()) {
@@ -151,15 +176,19 @@ export async function enablePush(prompt: boolean): Promise<PushResult> {
 	if (permission !== 'granted') return { status: permission, registered: false };
 
 	const prefix = pathPrefix();
+	// Each app subscribes with its own key, so on a shared host every app keeps its own worker
+	// (and subscription) under its own path; on the app's own domain that is the whole site.
 	const reg = await navigator.serviceWorker.register(
 		`${prefix}${SW_PATH}?base=${encodeURIComponent(prefix)}`,
-		{ scope: '/' },
+		{ scope: `${prefix}/` },
 	);
 	await navigator.serviceWorker.ready;
+	if (prefix) await retireSiteWideWorker();
 	const key = keyBytes(cfg.vapidPublicKey);
 	let sub = await reg.pushManager.getSubscription();
 	if (sub && !sameKey(sub, key)) {
-		// The platform's VAPID keys changed: the old subscription can no longer be sent to.
+		// The app's key changed (or it got its own after the platform's): the old subscription
+		// can no longer be sent to.
 		await sub.unsubscribe();
 		sub = null;
 	}
@@ -196,7 +225,7 @@ export async function disablePush(): Promise<void> {
 			const d = await nativeCall<NativeDevice>('pushToken');
 			if (d?.token && d.platform) device = { platform: d.platform, token: d.token };
 		} else if (webSupported()) {
-			const reg = await navigator.serviceWorker.getRegistration('/');
+			const reg = await navigator.serviceWorker.getRegistration(`${pathPrefix()}/`);
 			const sub = await reg?.pushManager.getSubscription();
 			if (sub?.endpoint) device = { platform: 'WEB', token: sub.endpoint };
 		}
