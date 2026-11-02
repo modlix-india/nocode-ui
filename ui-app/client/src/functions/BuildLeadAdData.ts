@@ -7,6 +7,7 @@ import {
 	FunctionSignature,
 	Schema,
 } from '@fincity/kirun-js';
+import { getConsentState } from '../App/analyticsConsent';
 import { NAMESPACE_UI_ENGINE } from '../constants';
 
 const SIGNATURE = new FunctionSignature('BuildLeadAdData')
@@ -15,10 +16,10 @@ const SIGNATURE = new FunctionSignature('BuildLeadAdData')
 		new Map([Event.eventMapEntry(Event.OUTPUT, new Map([['adData', Schema.ofAny('adData')]]))]),
 	)
 	.setDescription(
-		'Builds the adData object (gclid/wbraid/gbraid/fbc/fbp) for lead-form submissions from URL params + Meta Pixel cookies. Persists click identifiers to first-party cookies so they survive navigation between landing and form pages.',
+		'Builds the adData object (gclid/wbraid/gbraid/fbc/fbp) for lead-form submissions from URL params + Meta Pixel cookies. Persists click identifiers to first-party cookies so they survive navigation between landing and form pages, only once the visitor has granted marketing cookies on an app that asks for consent.',
 	)
 	.setDocumentation(
-		'# UIEngine.BuildLeadAdData\n\nReads ad-click identifiers from `window.location` query params and browser cookies, persists newly-seen ones into first-party cookies, and emits an `adData` object suitable for sending alongside a lead-form POST to `entity-processor`. The downstream Meta CAPI / Google Conversions API dispatchers read these exact keys off the ticket.\n\n## Parameters\n\nNone.\n\n## Events\n\n- **output**: Emits the built object\n  - `adData` (Any): Object containing whichever of these keys are present: `gclid`, `wbraid`, `gbraid`, `fbc`, `fbp`. Empty object `{}` if none are detected.\n\n## Sources, in order\n\nFor each click identifier (`gclid`, `wbraid`, `gbraid`, `fbclid`):\n1. Look in the current URL query string. If found, write to a first-party cookie (`lz_<name>`, max-age 1 year) so the value survives navigation to a separate form page.\n2. Else, read from the `lz_<name>` first-party cookie.\n\nMeta cookies come straight from the browser:\n- `fbp` <- cookie `_fbp` (set by Meta Pixel on every page load).\n- `fbc` <- cookie `_fbc` (set by Meta Pixel when URL contains `fbclid`); else built from the persisted fbclid as `fb.1.<now>.<fbclid>` per Meta CAPI spec.\n\n## Use\n\nBind the output through `UIEngine.SetStore` into a `Page.adData` path, then include `Page.adData` in the lead-form POST body sent to `/api/entity/processor/entry/website`.',
+		'# UIEngine.BuildLeadAdData\n\nReads ad-click identifiers from `window.location` query params and browser cookies, persists newly-seen ones into first-party cookies, and emits an `adData` object suitable for sending alongside a lead-form POST to `entity-processor`. The downstream Meta CAPI / Google Conversions API dispatchers read these exact keys off the ticket.\n\n## Parameters\n\nNone.\n\n## Events\n\n- **output**: Emits the built object\n  - `adData` (Any): Object containing whichever of these keys are present: `gclid`, `wbraid`, `gbraid`, `fbc`, `fbp`. Empty object `{}` if none are detected.\n\n## Sources, in order\n\nFor each click identifier (`gclid`, `wbraid`, `gbraid`, `fbclid`):\n1. Look in the current URL query string. If found, write to a first-party cookie (`lz_<name>`, max-age 1 year) so the value survives navigation to a separate form page. On an app that asks for cookie consent the cookie is written only after the visitor grants marketing cookies; the URL value is used either way.\n2. Else, read from the `lz_<name>` first-party cookie.\n\nMeta cookies come straight from the browser:\n- `fbp` <- cookie `_fbp` (set by Meta Pixel on every page load).\n- `fbc` <- cookie `_fbc` (set by Meta Pixel when URL contains `fbclid`); else built from the persisted fbclid as `fb.1.<now>.<fbclid>` per Meta CAPI spec.\n\n## Use\n\nBind the output through `UIEngine.SetStore` into a `Page.adData` path, then include `Page.adData` in the lead-form POST body sent to `/api/entity/processor/entry/website`.',
 	);
 
 const COOKIE_PREFIX = 'lz_';
@@ -31,8 +32,26 @@ function readCookie(name: string): string | undefined {
 	return match ? decodeURIComponent(match[1]) : undefined;
 }
 
+/**
+ * Whether ad click ids may be KEPT in a cookie. They are marketing cookies: on an app that
+ * asks for consent (analytics on, so its consent box shows) they are written only once the
+ * visitor has granted marketing. The id in the URL is still used for a form sent from this
+ * page; it is only not carried to the next one. An app with no consent box asks nothing,
+ * and keeps its old behaviour.
+ */
+function marketingCookiesAllowed(): boolean {
+	try {
+		const state = getConsentState();
+		if (!state?.enabled) return true;
+		return state.decided && !!state.categories?.marketing;
+	} catch {
+		return false;
+	}
+}
+
 function writeCookie(name: string, value: string) {
 	if (typeof document === 'undefined' || !value) return;
+	if (!marketingCookiesAllowed()) return;
 	document.cookie = `${name}=${encodeURIComponent(value)}; max-age=${ONE_YEAR_SECONDS}; path=/; SameSite=Lax`;
 }
 
