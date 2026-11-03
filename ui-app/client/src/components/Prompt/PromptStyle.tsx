@@ -2899,6 +2899,27 @@ export default function PromptStyle({
 			background: ${t('infoWashColor', '#d2e3fc')};
 		}
 
+		${PREFIX} ._confirmationOption:disabled,
+		${PREFIX} ._confirmationOption:disabled:hover {
+			opacity: 0.45;
+			cursor: not-allowed;
+		}
+
+		${PREFIX} ._confirmationPrompt._expired {
+			animation: none;
+		}
+
+		${PREFIX} ._confirmationPrompt._expired ._confirmationIcon {
+			color: ${t('promptSecondaryFontColor', '#555')};
+		}
+
+		${PREFIX} ._confirmationExpired {
+			margin-left: auto;
+			font-size: 12px;
+			font-weight: 600;
+			color: ${t('colorTwelve', '#dc3545')};
+		}
+
 		/* Resolved confirmation states */
 		${PREFIX} ._confirmationPrompt._resolved {
 			padding: 10px 16px;
