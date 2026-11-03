@@ -694,6 +694,8 @@ describe('what the server says about the call, the same in every tab (LZT-2122, 
 		at,
 		...extra,
 	});
+	const callOf = (t: Tab) =>
+		[...writes[t.name]].reverse().find(w => w.path === 'Store.call')?.value;
 	const liveOf = (t: Tab) =>
 		[...writes[t.name]].reverse().find(w => w.path === 'Store.callLive')?.value;
 
@@ -795,5 +797,72 @@ describe('what the server says about the call, the same in every tab (LZT-2122, 
 		expect(b.last().error).toBeUndefined();
 		expect(b.last().status).toBe('ended');
 		expect(sdk.hangup).toHaveBeenCalledTimes(1);
+	});
+
+	test('the call tab ends a call the server says is over when the phone never reports it', async () => {
+		jest.useFakeTimers();
+		try {
+			const tabs = new FakeTabs();
+			const a = loadTab('A', tabs);
+			const b = loadTab('B', tabs);
+			const pa = connect(a);
+			await jest.advanceTimersByTimeAsync(10);
+			await pa;
+			const pb = connect(b);
+			await jest.advanceTimersByTimeAsync(500);
+			await pb;
+			const sdk = a.adapters[0];
+			sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+			sdk.emit({ status: 'connected' });
+			const now = Date.now();
+			// An end of an earlier call, before this call was bound to a server call: nothing happens.
+			b.session.liveFrame(frame('COMPLETED', now, { callLogId: 'OLD', terminal: true }));
+			await jest.advanceTimersByTimeAsync(5000);
+			expect(callOf(a).status).toBe('connected');
+
+			// The customer answers (a frame the background tab got), then hangs up: another tab heard it.
+			b.session.liveFrame(frame('IN_PROGRESS', now + 100));
+			b.session.liveFrame(
+				frame('COMPLETED', now + 9000, { terminal: true, talkDuration: 8 }),
+			);
+			await jest.advanceTimersByTimeAsync(1500);
+			expect(callOf(a).status).toBe('connected');
+			await jest.advanceTimersByTimeAsync(1000);
+			expect(sdk.hangup).toHaveBeenCalledWith('c1');
+			expect(callOf(a).status).toBe('ended');
+			expect(callOf(b).status).toBe('ended');
+			expect(typeof callOf(a).endedAt).toBe('number');
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	test('an end the phone reports first cancels the server end; a late end of another call never ends a new call', async () => {
+		jest.useFakeTimers();
+		try {
+			const tabs = new FakeTabs();
+			const a = loadTab('A', tabs);
+			const pa = connect(a);
+			await jest.advanceTimersByTimeAsync(10);
+			await pa;
+			const sdk = a.adapters[0];
+			sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+			sdk.emit({ status: 'connected' });
+			a.session.liveFrame(frame('IN_PROGRESS', Date.now()));
+			a.session.liveFrame(frame('COMPLETED', Date.now(), { terminal: true }));
+			sdk.emit({ status: 'ended' });
+			await jest.advanceTimersByTimeAsync(3000);
+			expect(sdk.hangup).not.toHaveBeenCalled();
+
+			// A second call: the first call's repeated end (TeleCMI sends a second CDR) does nothing to it.
+			sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c2' });
+			sdk.emit({ status: 'connected' });
+			a.session.liveFrame(frame('IN_PROGRESS', Date.now(), { callLogId: 'L2' }));
+			a.session.liveFrame(frame('COMPLETED', Date.now(), { terminal: true }));
+			await jest.advanceTimersByTimeAsync(3000);
+			expect(callOf(a).status).toBe('connected');
+		} finally {
+			jest.useRealTimers();
+		}
 	});
 });
