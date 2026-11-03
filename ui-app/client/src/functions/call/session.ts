@@ -80,6 +80,12 @@ interface Session {
 
 let active: Session | undefined;
 let generation = 0;
+/** When the call now up in this tab began (epoch ms), and which server call it is (see liveFrame). */
+let callSince = 0;
+let boundLog: string | undefined;
+let endTimer: ReturnType<typeof setTimeout> | undefined;
+/** After the server says the call ended, how long the browser phone gets to say so itself. */
+export const SERVER_END_GRACE_MS = 2000;
 let commandSeq = 0;
 
 /** This tab, for `soundTab`. */
@@ -207,6 +213,16 @@ function apply(session: Session, patch: CallStatePatch) {
 	if (next.status === 'ended') {
 		next.muted = false;
 		if (IN_CALL.has(prev.status) && !next.endedAt) next.endedAt = Date.now();
+	}
+
+	if (IN_CALL.has(next.status) && (!IN_CALL.has(prev.status) || newCall)) {
+		callSince = Date.now();
+		boundLog = undefined;
+	}
+	if (!IN_CALL.has(next.status)) {
+		boundLog = undefined;
+		if (endTimer) clearTimeout(endTimer);
+		endTimer = undefined;
 	}
 
 	session.state = next;
@@ -803,7 +819,37 @@ function applyLive(report: LiveReport, own: boolean) {
 	// Written again even when nothing changed: the page may have written its own view meanwhile.
 	setData(livePath, duplicate(merged), livePage);
 	if (changed) active?.channel?.post({ t: 'live', live: duplicate(merged) });
+	serverEnd(report, merged);
 	return own ? merged : undefined;
+}
+
+/**
+ * The call tab ends its side of a call the server says is over, when the browser phone did not
+ * (an outgoing call the customer ended: the phone SDK does not always report it). The server's
+ * call is told from the engine's call by the first frame that was not an end and arrived while
+ * this call was up; only an end of THAT call counts, never a late end of an earlier one.
+ */
+function serverEnd(report: LiveReport, merged: LiveReport) {
+	const session = active;
+	if (!session || session.role === 'follower' || !IN_CALL.has(session.state.status)) return;
+	if (!boundLog && !report.terminal && report.at >= callSince - 5000) boundLog = report.callLogId;
+	if (!merged.terminal || !boundLog || boundLog !== merged.callLogId || endTimer) return;
+	endTimer = setTimeout(() => {
+		endTimer = undefined;
+		void endByServer(session);
+	}, SERVER_END_GRACE_MS);
+}
+
+async function endByServer(session: Session) {
+	if (active !== session || session.role === 'follower') return;
+	if (!IN_CALL.has(session.state.status) || boundLog !== live?.callLogId) return;
+	try {
+		await session.adapter?.hangup(session.state.callId);
+	} catch {
+		// The phone may already be gone: the card still has to end.
+	}
+	if (active === session && IN_CALL.has(session.state.status))
+		apply(session, { status: 'ended' });
 }
 
 /** `UIEngine.Call.Live`: the page received a `call` frame from the server. */
