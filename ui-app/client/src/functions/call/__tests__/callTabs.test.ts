@@ -570,3 +570,116 @@ describe('call sounds and alerts across tabs', () => {
 		expect(b.last().alertsOffer).toBe(false);
 	});
 });
+
+describe('the ended call summary across tabs (LZT-2119)', () => {
+	async function endedMissedCall() {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		const sdk = a.adapters[0];
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'm1', from: '+919108489008' });
+		sdk.emit({ status: 'ended' });
+		await flush();
+		expect(a.last()).toMatchObject({ status: 'ended', callId: 'm1' });
+		expect(b.last()).toMatchObject({ status: 'ended', callId: 'm1', otherTab: true });
+		return { tabs, a, b, sdk };
+	}
+
+	test('Close in the tab that does not hold the call clears the summary in every tab', async () => {
+		const { a, b, sdk } = await endedMissedCall();
+		await b.session.hangup(undefined, true);
+		await flush();
+		expect(b.last()).toMatchObject({ status: 'ready', otherTab: true });
+		expect(b.last().callId).toBeUndefined();
+		expect(a.last()).toMatchObject({ status: 'ready' });
+		expect(a.last().callId).toBeUndefined();
+		expect(sdk.hangup).not.toHaveBeenCalled();
+	});
+
+	test('Close in the tab holding the call clears it in the other tabs too, and keeps the sound setting', async () => {
+		const { a, b } = await endedMissedCall();
+		await a.session.sound({ on: false });
+		await flush();
+		await a.session.hangup(undefined, true);
+		await flush();
+		expect(a.last()).toMatchObject({ status: 'ready', soundOn: false });
+		expect(b.last()).toMatchObject({ status: 'ready', soundOn: false, otherTab: true });
+	});
+
+	test('a tab opened or reloaded after the call ended shows no summary, even when the call tab writes again', async () => {
+		const { tabs, a, b } = await endedMissedCall();
+		tabs.closeTab('B');
+		await b.session.disconnect();
+		const b2 = loadTab('B2', tabs);
+		expect(await connect(b2)).toMatchObject({ status: 'ready', otherTab: true });
+		expect(b2.last().callId).toBeUndefined();
+
+		// The call tab rewrites the same ended call (a sound toggle): still nothing in the new tab.
+		await a.session.sound({ on: false });
+		await flush();
+		expect(a.last()).toMatchObject({ status: 'ended', callId: 'm1' });
+		expect(b2.last()).toMatchObject({ status: 'ready', soundOn: false });
+
+		// The next call shows everywhere as usual.
+		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'n2' });
+		await flush();
+		expect(b2.last()).toMatchObject({ status: 'ringing', callId: 'n2', otherTab: true });
+	});
+
+	test('Close with dismiss never hangs up a call that started meanwhile', async () => {
+		const { a, b, sdk } = await endedMissedCall();
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'n2' });
+		await flush();
+		await b.session.hangup(undefined, true);
+		await a.session.hangup(undefined, true);
+		await flush();
+		expect(sdk.hangup).not.toHaveBeenCalled();
+		expect(a.last()).toMatchObject({ status: 'ringing', callId: 'n2' });
+		expect(b.last()).toMatchObject({ status: 'ringing', callId: 'n2' });
+	});
+});
+
+describe('one ring per call across tabs (LZT-2125)', () => {
+	beforeEach(() => {
+		jest.useFakeTimers();
+		localStorage.clear();
+	});
+	afterEach(() => jest.useRealTimers());
+
+	const later = async (ms: number) => {
+		jest.advanceTimersByTime(ms);
+		await flush();
+	};
+
+	test('a call placed from the tab that took the sounds rings back there only, never in the call tab', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		const sdk = a.adapters[0];
+		// The call tab cannot play; the user enabled sound in the other tab.
+		a.out.blocked = true;
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'w1' });
+		await later(1000);
+		await b.session.sound({ unlock: true });
+		await flush();
+		sdk.emit({ status: 'ended' });
+		await later(1000);
+		a.out.blocked = false;
+		a.out.played = [];
+		b.out.played = [];
+
+		// Click to call from B: the browser leg rings and B answers it at once with ringBack.
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'o1' });
+		await flush();
+		await b.session.answer(undefined, true);
+		sdk.emit({ status: 'connected' });
+		await later(5000);
+		expect(b.out.loop).toBe('ringBack');
+		expect(a.out.played).toEqual([]);
+		expect(a.out.loop).toBeUndefined();
+	});
+});
