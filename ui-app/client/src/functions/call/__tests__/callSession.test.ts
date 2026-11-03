@@ -9,7 +9,7 @@ jest.mock('../../../context/StoreContext', () => ({
 	setData: (path: string, value: any, page: string) => writes.push({ path, value, page }),
 }));
 
-import { Alert, Answer, Connect, Disconnect, Hangup, Mute, Sound } from '..';
+import { Alert, Answer, Connect, Disconnect, Hangup, Hold, Mute, Sound, View } from '..';
 import { registerCallProvider, unregisterCallProvider } from '../registry';
 import * as session from '../session';
 import { CallAdapter, CallStateListener } from '../types';
@@ -24,6 +24,7 @@ class FakeAdapter implements CallAdapter {
 	answer = jest.fn();
 	hangup = jest.fn();
 	mute = jest.fn();
+	hold = jest.fn();
 	disconnect = jest.fn();
 	register = jest.fn(
 		(credentials: any) =>
@@ -92,7 +93,17 @@ afterAll(() => unregisterCallProvider('fake'));
 describe('function repository', () => {
 	test('the call functions resolve under UIEngine.Call, the old ones under UIEngine', async () => {
 		const repo = new UIFunctionRepository();
-		for (const name of ['Connect', 'Answer', 'Hangup', 'Mute', 'Disconnect', 'Sound', 'Alert']) {
+		for (const name of [
+			'Connect',
+			'Answer',
+			'Hangup',
+			'Mute',
+			'Hold',
+			'View',
+			'Disconnect',
+			'Sound',
+			'Alert',
+		]) {
 			const fn = await repo.find('UIEngine.Call', name);
 			expect(fn?.getSignature().getFullName()).toBe(`UIEngine.Call.${name}`);
 		}
@@ -103,7 +114,7 @@ describe('function repository', () => {
 	});
 
 	test('every call function has a description', () => {
-		for (const F of [Connect, Answer, Hangup, Mute, Disconnect, Sound, Alert]) {
+		for (const F of [Connect, Answer, Hangup, Mute, Hold, View, Disconnect, Sound, Alert]) {
 			expect(new F().getSignature().getDescription()?.length).toBeGreaterThan(20);
 		}
 	});
@@ -120,6 +131,7 @@ describe('UIEngine.Call', () => {
 			soundOn: true,
 			audioBlocked: false,
 			alertsOffer: false,
+			collapsed: false,
 		});
 		expect(adapter.load).toHaveBeenCalled();
 		expect(adapter.credentials).toEqual({ user: 'agent1', password: 'pw-123' });
@@ -143,6 +155,7 @@ describe('UIEngine.Call', () => {
 			soundOn: true,
 			audioBlocked: false,
 			alertsOffer: false,
+			collapsed: false,
 		});
 
 		let r = await exec(new Answer(), { callId: 'c1' });
@@ -183,6 +196,7 @@ describe('UIEngine.Call', () => {
 			soundOn: true,
 			audioBlocked: false,
 			alertsOffer: false,
+			collapsed: false,
 		});
 	});
 
@@ -284,6 +298,7 @@ describe('UIEngine.Call', () => {
 			soundOn: true,
 			audioBlocked: false,
 			alertsOffer: false,
+			collapsed: false,
 		});
 		expect(adapter.disconnect).toHaveBeenCalled();
 		expect(session.activeCallState()).toBeUndefined();
@@ -344,5 +359,90 @@ describe('UIEngine.Call', () => {
 		await connected();
 		adapter.emit({ status: 'error', error: 'signed in elsewhere' });
 		expect(lastState()).toMatchObject({ status: 'error', error: 'signed in elsewhere' });
+	});
+});
+
+describe('UIEngine.Call.Hold and UIEngine.Call.View', () => {
+	afterEach(() => localStorage.clear());
+
+	test('Hold puts the connected call on hold and off; the end of the call clears it', async () => {
+		await connected();
+		adapter.emit({ status: 'ringing', direction: 'inbound', callId: 'c1', from: '+9198' });
+		adapter.emit({ status: 'connected' });
+
+		let r = await exec(new Hold(), { on: true });
+		expect(r.event).toBe('output');
+		expect(adapter.hold).toHaveBeenCalledWith(true);
+		expect(lastState().held).toBe(true);
+
+		r = await exec(new Hold(), { on: false });
+		expect(adapter.hold).toHaveBeenLastCalledWith(false);
+		expect(lastState().held).toBe(false);
+
+		await exec(new Hold(), {});
+		expect(lastState().held).toBe(true);
+		adapter.emit({ status: 'ended' });
+		expect(lastState()).toMatchObject({ status: 'ended', held: false });
+	});
+
+	test('Hold needs a connected call and a provider that can hold', async () => {
+		await connected();
+		let r = await exec(new Hold(), { on: true });
+		expect(r.event).toBe('error');
+		expect(r.result.error).toMatch(/No connected call/);
+
+		adapter.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		adapter.emit({ status: 'connected' });
+		(adapter as any).hold = undefined;
+		r = await exec(new Hold(), { on: true });
+		expect(r.event).toBe('error');
+		expect(r.result.error).toMatch(/cannot hold/);
+		expect(lastState().held).toBeFalsy();
+	});
+
+	test('a provider refusing to hold leaves the call as it was', async () => {
+		await connected();
+		adapter.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		adapter.emit({ status: 'connected' });
+		adapter.hold.mockImplementation(() => {
+			throw new Error('re-invite rejected');
+		});
+		await exec(new Hold(), { on: true });
+		expect(lastState().held).toBeFalsy();
+	});
+
+	test('View collapses the bar, is remembered, and a new connection starts collapsed', async () => {
+		await connected();
+		expect(lastState().collapsed).toBe(false);
+
+		let r = await exec(new View(), { collapsed: true });
+		expect(r.event).toBe('output');
+		expect(lastState().collapsed).toBe(true);
+
+		await session.disconnect();
+		await connected();
+		expect(lastState().collapsed).toBe(true);
+
+		r = await exec(new View(), { collapsed: false });
+		expect(lastState().collapsed).toBe(false);
+		r = await exec(new View(), {});
+		expect(r.result.state.collapsed).toBe(false);
+	});
+
+	test('View keeps the choice through a call and after it', async () => {
+		await connected();
+		await exec(new View(), { collapsed: true });
+		adapter.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		expect(lastState()).toMatchObject({ status: 'ringing', collapsed: true });
+		adapter.emit({ status: 'connected' });
+		adapter.emit({ status: 'ended' });
+		expect(lastState()).toMatchObject({ status: 'ended', collapsed: true });
+	});
+
+	test('View without a connection only remembers the choice', async () => {
+		const r = await exec(new View(), { collapsed: true });
+		expect(r.event).toBe('output');
+		expect(r.result.state.collapsed).toBe(true);
+		expect(writes.length).toBe(0);
 	});
 });

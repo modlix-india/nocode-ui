@@ -26,6 +26,8 @@ type Piopiy = {
 	terminate(): void;
 	mute(): void;
 	unMute(): void;
+	hold(): void;
+	unHold(): void;
 };
 
 export interface TelecmiAdapterOptions {
@@ -214,6 +216,12 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			const p = need();
 			if (on) p.mute();
 			else p.unMute();
+		},
+
+		hold(on: boolean) {
+			const p = need();
+			if (on) p.hold();
+			else p.unHold();
 		},
 
 		disconnect() {
