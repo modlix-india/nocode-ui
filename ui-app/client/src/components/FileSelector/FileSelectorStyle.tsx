@@ -173,7 +173,12 @@ export default function FileSelector({
     margin: 0px;
 	cursor: pointer;
     }
- 
+
+    ${PREFIX}._readOnly ._progressBarUploadButton {
+	opacity: 0.5;
+	cursor: not-allowed;
+    }
+
     ${PREFIX} ._ImagePreviewPlaceholder {
         background-color:#DFE8F066;
         border-radius: 4px;
