@@ -5,6 +5,14 @@ interface ChildrenErrorBoundaryState {
 }
 
 /**
+ * After a failure the children are tried again after these waits (ms), then left empty. Most
+ * failures come from a store value that is right a moment later (a popup's data written in
+ * several steps); without a retry the container stayed empty until it was unmounted, so an
+ * incoming call card showed its title and no number or buttons for the whole call.
+ */
+export const RETRY_DELAYS_MS = [100, 400, 1000, 2000, 4000, 8000];
+
+/**
  * Bounds a render failure to one container's child list.
  *
  * Without this the only boundary in the app is the root one in App/ErrorBoundary,
@@ -26,9 +34,17 @@ export class ChildrenErrorBoundary extends React.Component<
 	{ children: React.ReactNode; pageName?: string },
 	ChildrenErrorBoundaryState
 > {
+	private retries = 0;
+	private retryTimer: ReturnType<typeof setTimeout> | undefined;
+
 	constructor(props: { children: React.ReactNode; pageName?: string }) {
 		super(props);
 		this.state = { error: null };
+	}
+
+	componentWillUnmount() {
+		if (this.retryTimer) clearTimeout(this.retryTimer);
+		this.retryTimer = undefined;
 	}
 
 	static getDerivedStateFromError(error: Error): ChildrenErrorBoundaryState {
@@ -41,6 +57,12 @@ export class ChildrenErrorBoundary extends React.Component<
 			error,
 			errorInfo?.componentStack,
 		);
+		if (this.retryTimer || this.retries >= RETRY_DELAYS_MS.length) return;
+		const delay = RETRY_DELAYS_MS[this.retries++];
+		this.retryTimer = setTimeout(() => {
+			this.retryTimer = undefined;
+			this.setState({ error: null });
+		}, delay);
 	}
 
 	render() {

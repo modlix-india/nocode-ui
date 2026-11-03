@@ -13,9 +13,44 @@ export interface ConfirmationAction {
 	details: Record<string, any>;
 	options: ActionOption[];
 	toolUseId: string;
-	// `expired`: answered, but nothing was waiting any more (the run had stopped).
+	// `expired`: nothing is waiting on this card any more. The server said so
+	// (`confirmation_expired`: no answer in time, or the run was stopped), or a
+	// click was refused as expired. Shown with its buttons disabled (LZT-1952).
 	status: 'pending' | 'approved' | 'denied' | 'timeout' | 'expired';
 	selectedValue?: string;
+	// A click is on its way to POST /confirm. The card only says "Approved" once
+	// the server has taken it, so a click on a dead card never reads as done.
+	sending?: boolean;
+}
+
+export const EXPIRED_LABEL = 'Expired, ask again';
+
+// Mark one card expired wherever it is. A card already answered keeps its
+// answer: an expiry can only reach a card that was still waiting. Returns the
+// same array when nothing changed, so React skips the render.
+export function markConfirmationExpired<M extends { confirmationActions?: ConfirmationAction[] }>(
+	messages: M[],
+	confirmationId: string,
+): M[] {
+	let changed = false;
+	const next = messages.map(m => {
+		if (
+			!m.confirmationActions?.some(
+				a => a.confirmationId === confirmationId && a.status === 'pending',
+			)
+		)
+			return m;
+		changed = true;
+		return {
+			...m,
+			confirmationActions: m.confirmationActions.map(a =>
+				a.confirmationId === confirmationId && a.status === 'pending'
+					? { ...a, status: 'expired' as const, sending: false }
+					: a,
+			),
+		};
+	});
+	return changed ? next : messages;
 }
 
 interface ActionBlockProps {
@@ -53,7 +88,9 @@ function formatDetails(details: Record<string, any>): string[] {
 
 export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 	const [selected, setSelected] = useState<string | null>(null);
-	const isPending = action.status === 'pending';
+	const isExpired = action.status === 'expired' || action.status === 'timeout';
+	// Buttons work only while the server is waiting and no click is in flight.
+	const isPending = action.status === 'pending' && !action.sending;
 
 	const isApproveOrDeny =
 		action.options.length === 2 &&
@@ -81,17 +118,13 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 
 	const detailLines = formatDetails(action.details);
 
-	// Resolved state — show compact result
-	if (!isPending) {
+	// Answered state — show compact result
+	if (action.status === 'approved' || action.status === 'denied') {
 		const isApproved = action.status === 'approved';
 		const icon = isApproved ? 'fa fa-check-circle' : 'fa fa-times-circle';
 		const label = isApproved
 			? `Approved: ${action.displayName || action.toolName}`
-			: action.status === 'timeout'
-				? `Timed out: ${action.displayName || action.toolName}`
-				: action.status === 'expired'
-					? `No longer waiting: ${action.displayName || action.toolName}. The run had stopped, so nothing was done. Ask again.`
-					: `Denied: ${action.displayName || action.toolName}`;
+			: `Denied: ${action.displayName || action.toolName}`;
 		const statusClass = isApproved ? '_approved' : '_denied';
 
 		return (
@@ -104,12 +137,15 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 		);
 	}
 
-	// Pending state — full interactive block
+	// Pending (or expired: the same card, buttons disabled, saying so)
 	return (
-		<div className="_confirmationPrompt">
+		<div className={`_confirmationPrompt${isExpired ? ' _expired' : ''}`}>
 			<div className="_confirmationHeader">
-				<i className="_confirmationIcon fa fa-shield-halved" />
+				<i
+					className={`_confirmationIcon fa ${isExpired ? 'fa-clock' : 'fa-shield-halved'}`}
+				/>
 				<span className="_confirmationTitle">{action.displayName || action.toolName}</span>
+				{isExpired && <span className="_confirmationExpired">{EXPIRED_LABEL}</span>}
 			</div>
 
 			<p className="_confirmationMessage">{action.message}</p>
@@ -128,6 +164,7 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 						<button
 							type="button"
 							className="_confirmationOption _deny"
+							disabled={!isPending}
 							onClick={() => handleOptionClick('deny')}
 						>
 							Deny
@@ -135,6 +172,7 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 						<button
 							type="button"
 							className="_confirmationOption _approve"
+							disabled={!isPending}
 							onClick={() => handleOptionClick('approve')}
 						>
 							Approve
@@ -147,6 +185,7 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 								key={opt.value}
 								type="button"
 								className={`_confirmationOption${selected === opt.value ? ' _selected' : ''}`}
+								disabled={!isPending}
 								onClick={() => handleOptionClick(opt.value)}
 							>
 								{opt.label}
@@ -156,6 +195,7 @@ export function ActionBlock({ action, onRespond }: Readonly<ActionBlockProps>) {
 							<button
 								type="button"
 								className="_confirmationOption _approve"
+								disabled={!isPending}
 								onClick={handleConfirmSelection}
 							>
 								Confirm
