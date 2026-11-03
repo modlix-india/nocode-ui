@@ -866,3 +866,44 @@ describe('what the server says about the call, the same in every tab (LZT-2122, 
 		}
 	});
 });
+
+describe('many tabs (LZT-2141)', () => {
+	test('six tabs: one sign in, and live frames in every tab do not multiply into a storm', async () => {
+		const tabs = new FakeTabs();
+		let posts = 0;
+		const orig = tabs.forTab.bind(tabs);
+		tabs.forTab = (name: string) => {
+			const t = orig(name);
+			const open = t.open;
+			t.open = (n: string, on: Listener) => {
+				const ch = open(n, on);
+				return {
+					...ch,
+					post: (m: any) => {
+						posts++;
+						ch.post(m);
+					},
+				};
+			};
+			return t;
+		};
+		const six = ['A', 'B', 'C', 'D', 'E', 'F'].map(n => loadTab(n, tabs));
+		for (const t of six) await connect(t);
+		expect(six.map(t => t.adapters.reduce((n, a) => n + a.register.mock.calls.length, 0))).toEqual([
+			1, 0, 0, 0, 0, 0,
+		]);
+		posts = 0;
+		// The server stream reaches every tab with every frame, as the page does (4 s poll too).
+		for (let i = 0; i < 10; i++) {
+			for (const t of six)
+				t.session.liveFrame({
+					callLogId: 'L1',
+					status: 'IN_PROGRESS',
+					terminal: false,
+					at: 5000 + i * 1000,
+				} as any);
+			await flush();
+		}
+		expect(posts).toBeLessThan(200);
+	});
+});

@@ -7,6 +7,7 @@ import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { Attachment } from '../attachments';
 import AttachmentThumb from './AttachmentThumb';
 import { AttachSourceMenu } from './AttachSourceMenu';
+import { attachAccept, uploadVideo, videoMimeType, videoTooLargeMessage } from '../videoUpload';
 
 // Matches the textarea's max-height in PromptStyle; past this the box stops
 // growing and starts scrolling.
@@ -47,6 +48,13 @@ interface InputBarProps {
 	removeAttachmentIcon?: string;
 	fileIcon?: string;
 	enableVoiceInput?: boolean;
+	/**
+	 * ADZ-1326: files folder MP4 and MOV videos are uploaded to as soon as they are picked
+	 * (`secured/...` or `static/...`); empty means the attach button takes no videos.
+	 */
+	videoUploadPath?: string;
+	/** The largest video taken, in MB; a larger one is refused before it is uploaded. */
+	videoMaxSizeMB?: number;
 	microphoneIcon?: string;
 	microphoneActiveIcon?: string;
 	/** Lets the Prompt focus this textarea from a keyboard shortcut. */
@@ -80,6 +88,8 @@ export function InputBar({
 	removeAttachmentIcon = 'fa fa-xmark',
 	fileIcon = 'fa fa-file',
 	enableVoiceInput = true,
+	videoUploadPath = '',
+	videoMaxSizeMB = 1024,
 	microphoneIcon = 'fa fa-microphone',
 	microphoneActiveIcon = 'fa fa-stop',
 	textareaRef: externalTextareaRef,
@@ -89,6 +99,12 @@ export function InputBar({
 	const [text, setText] = useState(initialText ?? '');
 	const [attachments, setAttachments] = useState<Attachment[]>([]);
 	const [isListening, setIsListening] = useState(false);
+	// ADZ-1326: videos being uploaded (id -> percent) and the last refusal, shown above the box
+	const [uploads, setUploads] = useState<Record<string, number>>({});
+	const [notice, setNotice] = useState('');
+	const uploadAborts = useRef<Map<string, AbortController>>(new Map());
+	const videosOn = !!videoUploadPath?.trim();
+	const uploading = Object.keys(uploads).length > 0;
 	const internalTextareaRef = useRef<HTMLTextAreaElement>(null);
 	const textareaRef = (externalTextareaRef ??
 		internalTextareaRef) as React.RefObject<HTMLTextAreaElement>;
@@ -140,7 +156,7 @@ export function InputBar({
 	// `isStreaming` bail here is what made the box dead for the length of a run.
 	const handleSend = useCallback(() => {
 		const trimmed = text.trim();
-		if ((!trimmed && !attachments.length) || disabled) return;
+		if ((!trimmed && !attachments.length) || disabled || uploading) return;
 		// Stop listening if active
 		if (recognitionRef.current) {
 			recognitionRef.current.stop();
@@ -150,7 +166,8 @@ export function InputBar({
 		onSend(trimmed, attachments.length ? attachments : undefined);
 		setText('');
 		setAttachments([]);
-	}, [text, attachments, disabled, onSend]);
+		setNotice('');
+	}, [text, attachments, disabled, uploading, onSend]);
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -171,19 +188,82 @@ export function InputBar({
 		[onTextChange],
 	);
 
-	const addFileAttachment = useCallback((file: File) => {
-		const isImage = file.type.startsWith('image/');
-		const url = URL.createObjectURL(file);
-		const attachment: Attachment = {
-			id: `att_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-			type: isImage ? 'image' : 'file',
-			name: file.name,
-			url,
-			mimeType: file.type,
-			file,
-		};
-		setAttachments(prev => [...prev, attachment]);
+	// ADZ-1326: a video is checked for size, then uploaded at once; the chat later gets only its path.
+	const addVideoAttachment = useCallback(
+		(file: File, mimeType: string) => {
+			const tooLarge = videoTooLargeMessage(file, videoMaxSizeMB);
+			if (tooLarge) {
+				setNotice(tooLarge);
+				return;
+			}
+			const id = `att_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+			const controller = new AbortController();
+			uploadAborts.current.set(id, controller);
+			setNotice('');
+			setUploads(prev => ({ ...prev, [id]: 0 }));
+			setAttachments(prev => [
+				...prev,
+				{ id, type: 'file', name: file.name, url: '', mimeType },
+			]);
+			const done = () => {
+				uploadAborts.current.delete(id);
+				setUploads(prev => {
+					const next = { ...prev };
+					delete next[id];
+					return next;
+				});
+			};
+			uploadVideo(
+				file,
+				videoUploadPath,
+				percent => setUploads(prev => (id in prev ? { ...prev, [id]: percent } : prev)),
+				controller.signal,
+			)
+				.then(url => {
+					done();
+					setAttachments(prev =>
+						prev.map(a => (a.id === id ? { ...a, url, sizeBytes: file.size } : a)),
+					);
+				})
+				.catch(err => {
+					done();
+					setAttachments(prev => prev.filter(a => a.id !== id));
+					if (controller.signal.aborted) return;
+					const reason =
+						err?.response?.data?.message ?? err?.message ?? 'the upload did not finish';
+					setNotice(`${file.name} could not be uploaded: ${reason}`);
+				});
+		},
+		[videoUploadPath, videoMaxSizeMB],
+	);
+
+	// Abandon uploads still running when the box goes away.
+	useEffect(() => {
+		const aborts = uploadAborts.current;
+		return () => aborts.forEach(c => c.abort());
 	}, []);
+
+	const addFileAttachment = useCallback(
+		(file: File) => {
+			const videoType = videosOn ? videoMimeType(file) : undefined;
+			if (videoType) {
+				addVideoAttachment(file, videoType);
+				return;
+			}
+			const isImage = file.type.startsWith('image/');
+			const url = URL.createObjectURL(file);
+			const attachment: Attachment = {
+				id: `att_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+				type: isImage ? 'image' : 'file',
+				name: file.name,
+				url,
+				mimeType: file.type,
+				file,
+			};
+			setAttachments(prev => [...prev, attachment]);
+		},
+		[videosOn, addVideoAttachment],
+	);
 
 	const handlePaste = useCallback(
 		(e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -215,9 +295,10 @@ export function InputBar({
 	);
 
 	const removeAttachment = useCallback((id: string) => {
+		uploadAborts.current.get(id)?.abort();
 		setAttachments(prev => {
 			const removed = prev.find(a => a.id === id);
-			if (removed) URL.revokeObjectURL(removed.url);
+			if (removed?.url.startsWith('blob:')) URL.revokeObjectURL(removed.url);
 			return prev.filter(a => a.id !== id);
 		});
 	}, []);
@@ -279,11 +360,19 @@ export function InputBar({
 	}, [isListening, startListening, stopListening]);
 
 	const showMic = enableVoiceInput && speechSupported;
-	const canSend = !!text.trim() || attachments.length > 0;
+	const canSend = (!!text.trim() || attachments.length > 0) && !uploading;
 
 	return (
 		<div className="_promptInputBar" style={styleProperties?.inputBar ?? {}}>
 			<SubHelperComponent definition={definition} subComponentName="inputBar" />
+			{notice ? (
+				<div className="_inputNotice" role="alert">
+					<span>{notice}</span>
+					<button type="button" onClick={() => setNotice('')} title="Dismiss">
+						<i className={removeAttachmentIcon} />
+					</button>
+				</div>
+			) : null}
 			{attachments.length > 0 && (
 				<div className="_inputAttachments">
 					{attachments.map(att => (
@@ -301,9 +390,23 @@ export function InputBar({
 									/>
 								</span>
 							) : (
-								<div className="_inputAttachmentFile">
-									<i className={fileIcon} />
+								<div
+									className={`_inputAttachmentFile${att.id in uploads ? ' _uploading' : ''}`}
+									title={att.name}
+								>
+									<i
+										className={
+											att.mimeType.startsWith('video/')
+												? 'fa fa-film'
+												: fileIcon
+										}
+									/>
 									<span>{att.name}</span>
+									{att.id in uploads ? (
+										<span className="_uploadProgress">
+											{`Uploading ${uploads[att.id]}%`}
+										</span>
+									) : null}
 								</div>
 							)}
 							<button
@@ -330,7 +433,7 @@ export function InputBar({
 					ref={fileInputRef}
 					type="file"
 					multiple
-					accept="image/*,.pdf,.txt,.csv,.json,.xml,.doc,.docx,.xls,.xlsx"
+					accept={attachAccept(videosOn)}
 					onChange={handleFileSelect}
 					style={{ display: 'none' }}
 				/>
