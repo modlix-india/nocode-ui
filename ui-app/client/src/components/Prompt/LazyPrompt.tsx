@@ -22,7 +22,7 @@ import { ChatMessage } from './components/ChatMessage';
 import { splitReply, type AgentStart } from './replyParts';
 import { ThinkingBlock } from './components/ThinkingBlock';
 import { AgentGroup } from './components/AgentGroup';
-import { ActionBlock, ConfirmationAction } from './components/ActionBlock';
+import { ActionBlock, ConfirmationAction, markConfirmationExpired } from './components/ActionBlock';
 import { InputBar } from './components/InputBar';
 import { SessionList, Session } from './components/SessionList';
 import { CraftCard } from './components/CraftCard';
@@ -691,6 +691,14 @@ function processSSEEvent(eventType: string, data: any, ctx: SSEEventContext) {
 						: m,
 				),
 			);
+			break;
+		}
+		case 'confirmation_expired': {
+			// Nothing waits on this card any more (no answer in time, or the run
+			// was stopped). Keep it on screen, buttons off, saying so (LZT-1952).
+			const expiredId = data.confirmation_id ?? '';
+			if (!expiredId) break;
+			ctx.setMessages(prev => markConfirmationExpired(prev, expiredId));
 			break;
 		}
 		case 'error': {
@@ -3424,22 +3432,20 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			const sid = sessionIdRef.current;
 			if (!sid) return;
 
-			// Optimistically update the action status on the message
-			const newStatus = approved ? 'approved' : 'denied';
-			setMessages(prev =>
-				prev.map(m => ({
-					...m,
-					confirmationActions: m.confirmationActions?.map(a =>
-						a.confirmationId === confirmationId
-							? {
-									...a,
-									status: newStatus as ConfirmationAction['status'],
-									selectedValue,
-								}
-							: a,
-					),
-				})),
-			);
+			const update = (patch: Partial<ConfirmationAction>) =>
+				setMessages(prev =>
+					prev.map(m => ({
+						...m,
+						confirmationActions: m.confirmationActions?.map(a =>
+							a.confirmationId === confirmationId ? { ...a, ...patch } : a,
+						),
+					})),
+				);
+
+			// Buttons off while the click travels. "Approved" only once the server
+			// took it: a click on a card nothing waits on must never read as done
+			// (LZT-1952: "Approved: Create Deal" on screen, no deal written).
+			update({ sending: true, selectedValue });
 
 			try {
 				const baseUrl = agentBaseUrl(agentEndpoint);
@@ -3453,23 +3459,23 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						selected: selectedValue,
 					}),
 				});
-				// 404: nothing was waiting for this answer. The run behind the card
-				// had already stopped (a restart, a timeout, a reload replaying an
-				// old card), so the click did nothing. Saying "Approved" and then
-				// sitting there is what made it look stuck.
-				if (response.status === 404)
-					setMessages(prev =>
-						prev.map(m => ({
-							...m,
-							confirmationActions: m.confirmationActions?.map(a =>
-								a.confirmationId === confirmationId
-									? { ...a, status: 'expired' as ConfirmationAction['status'] }
-									: a,
-							),
-						})),
-					);
+				// 404 / 410: nothing was waiting for this answer (detail.status is
+				// "expired"). The card had timed out, or the run behind it stopped
+				// or ended, so the click did nothing.
+				if (response.status === 404 || response.status === 410) {
+					update({ sending: false, status: 'expired' });
+					return;
+				}
+				if (!response.ok) {
+					// Not taken: leave the card answerable so they can click again.
+					update({ sending: false });
+					return;
+				}
+				update({ sending: false, status: approved ? 'approved' : 'denied' });
 			} catch {
-				// If the confirm POST fails, the backend will timeout and auto-deny
+				// Network failure: let them try again. If it never arrives the
+				// server expires the card and says so.
+				update({ sending: false });
 			}
 		},
 		[agentEndpoint, getAuthHeaders],

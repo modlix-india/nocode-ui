@@ -119,16 +119,20 @@ export class Answer extends CallFunction {
 
 const HANGUP = signature(
 	'Hangup',
-	[Parameter.ofEntry('callId', Schema.ofString('callId').setDefaultValue(''))],
+	[
+		Parameter.ofEntry('callId', Schema.ofString('callId').setDefaultValue('')),
+		Parameter.ofEntry('dismiss', Schema.ofBoolean('dismiss').setDefaultValue(false)),
+	],
 	'Ends the current call, or rejects it while it is still ringing',
 ).setDocumentation(
-	'# UIEngine.Call.Hangup\n\nEnds the connected call, or rejects a ringing one. The state moves to `ended`.\n\n## Parameters\n\n- **callId** (String, optional): hang up only if the current call has this id\n\n' +
+	'# UIEngine.Call.Hangup\n\nEnds the connected call, or rejects a ringing one. The state moves to `ended`.\n\n## Parameters\n\n- **callId** (String, optional): hang up only if the current call has this id\n- **dismiss** (Boolean, optional, default: false): true from a Close on the ended call\'s summary. When the call has ended, the call leaves the state (status `ready`) in every tab of the site, so its summary goes away everywhere and does not come back on another page or after a reload. Nothing is hung up: with `dismiss` a call that is up (a new one that started meanwhile) is left alone\n\n' +
 		EVENTS_DOC,
 );
 
 export class Hangup extends CallFunction {
 	protected run(context: FunctionExecutionParameters): Promise<CallState> {
-		return session.hangup(context.getArguments()?.get('callId') || undefined);
+		const args = context.getArguments();
+		return session.hangup(args?.get('callId') || undefined, args?.get('dismiss') === true);
 	}
 
 	getSignature(): FunctionSignature {
