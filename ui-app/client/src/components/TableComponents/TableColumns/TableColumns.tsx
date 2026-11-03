@@ -50,6 +50,7 @@ import { propertiesDefinition as tableDynamicGroupedColumnPropertiesDefinition }
 import { propertiesDefinition as tableRowPropertiesDefinition } from '../TableRow/tableRowProperties';
 import { createNewState } from '../../util/useDefinition/commons';
 import { getPathsFromComponentDefinition } from '../../util/getPaths';
+import { orderColumnKeys } from './columnOrder';
 
 // Progressive row rendering — renders rows in batches to avoid freezing the browser.
 const INITIAL_BATCH = 5;
@@ -973,15 +974,12 @@ function generateTableColumnDefinitions(
 
 	if (children && personalizationObject?.columnOrder) {
 		if (!dynamicColumns.length) cp = duplicate(pageDefinition);
-		Object.entries(children)
-			.filter(([, v]) => v)
-			.map(([k]) => cp.componentDefinition[k])
-			.sort(
-				(a, b) =>
-					(personalizationObject.columnOrder[a.key] ?? a.displayOrder ?? 0) -
-					(personalizationObject.columnOrder[b.key] ?? b.displayOrder ?? 0),
-			)
-			.forEach((cd, i) => (cd.displayOrder = i));
+		orderColumnKeys(
+			Object.entries(children)
+				.filter(([, v]) => v)
+				.map(([k]) => cp.componentDefinition[k]),
+			personalizationObject.columnOrder,
+		).forEach((k, i) => (cp.componentDefinition[k].displayOrder = i));
 	}
 
 	const hp = duplicate(cp);
