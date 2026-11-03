@@ -338,9 +338,16 @@ function restoreLost(session: Session) {
 
 function onTabMessage(session: Session, m: any) {
 	if (active !== session || !m || typeof m !== 'object') return;
+	if (m.t === 'live') {
+		// What the server said about the call (answered, ended): every tab shows the same.
+		if (m.live) applyLive(m.live, false);
+		return;
+	}
 	if (session.role === 'owner') {
-		if (m.t === 'hello') session.channel?.post({ t: 'state', state: duplicate(session.state) });
-		else if (m.t === 'cmd') runForTab(session, m);
+		if (m.t === 'hello') {
+			session.channel?.post({ t: 'state', state: duplicate(session.state) });
+			if (live) session.channel?.post({ t: 'live', live: duplicate(live) });
+		} else if (m.t === 'cmd') runForTab(session, m);
 		return;
 	}
 	if (session.role !== 'follower') return;
@@ -373,8 +380,10 @@ async function runForTab(session: Session, m: any) {
 	let error: string | undefined;
 	try {
 		if (m.op === 'answer') await answer(m.callId || undefined, !!m.ringBack);
-		else if (m.op === 'hangup') await hangup(m.callId || undefined);
-		else if (m.op === 'dismiss') dismissEnded(session, m.callId || undefined);
+		else if (m.op === 'hangup') {
+			// Every tab may ask for the same hangup (the server said the call ended): once is enough.
+			if (IN_CALL.has(session.state.status)) await hangup(m.callId || undefined);
+		} else if (m.op === 'dismiss') dismissEnded(session, m.callId || undefined);
 		else if (m.op === 'mute') await mute(!!m.on);
 		else if (m.op === 'answering') {
 			sounds.quietFor(m.callId || undefined);
@@ -719,6 +728,114 @@ export async function disconnect(): Promise<CallState> {
 		setData(session.statePath, duplicate(session.state), session.pageName);
 	}
 	return session.state;
+}
+
+// ---------------------------------------------------------------- what the server says
+
+/**
+ * What the server reports about the call this user is on (answered by the customer, ended), as
+ * the page receives it from the server's event stream. Every tab of the site has its own stream,
+ * and a tab that is in the background, was just opened or reconnected can miss a frame, so the
+ * tabs used to disagree (one "in call", one still "dialling"). Now each tab that receives a
+ * frame merges it here and tells the other tabs over the channel, so all of them show the same.
+ * The merge only moves forward (ringing, in progress, ended) and never walks a call back.
+ */
+export interface LiveReport {
+	callLogId: string;
+	dealId?: string;
+	direction?: string;
+	status: string;
+	terminal: boolean;
+	talkDuration?: number;
+	/** Epoch ms when a tab received the frame. */
+	at: number;
+	/** Epoch ms of the first frame that said the call was in progress, 0 until then. */
+	answeredAt?: number;
+}
+
+const DEFAULT_LIVE_PATH = 'Store.callLive';
+
+let live: LiveReport | undefined;
+let livePath = DEFAULT_LIVE_PATH;
+let livePage = '_global';
+
+function liveRank(r: LiveReport): number {
+	return r.terminal ? 3 : r.status === 'IN_PROGRESS' ? 2 : 1;
+}
+
+/** The report after `next` arrives, or `prev` itself when `next` adds nothing. */
+export function mergeLive(prev: LiveReport | undefined, next: LiveReport): LiveReport {
+	const same = !!prev && prev.callLogId === next.callLogId;
+	if (same && liveRank(next) < liveRank(prev!)) return prev!;
+	const answeredFrom = [
+		next.status === 'IN_PROGRESS' ? next.at : 0,
+		same ? (prev!.answeredAt ?? 0) : 0,
+		next.answeredAt ?? 0,
+	].filter(x => x > 0);
+	const merged: LiveReport = {
+		...next,
+		at: same ? Math.max(prev!.at, next.at) : next.at,
+		answeredAt: answeredFrom.length ? Math.min(...answeredFrom) : 0,
+	};
+	if (same && liveRank(next) === liveRank(prev!) && next.status !== 'IN_PROGRESS') {
+		// A repeat of what is known: keep the first frame's time so nothing moves.
+		merged.at = prev!.at;
+	}
+	return merged;
+}
+
+function sameLive(a: LiveReport | undefined, b: LiveReport): boolean {
+	return (
+		!!a &&
+		a.callLogId === b.callLogId &&
+		a.status === b.status &&
+		a.terminal === b.terminal &&
+		(a.talkDuration ?? 0) === (b.talkDuration ?? 0) &&
+		(a.answeredAt ?? 0) === (b.answeredAt ?? 0) &&
+		a.at === b.at
+	);
+}
+
+function applyLive(report: LiveReport, own: boolean) {
+	const merged = mergeLive(live, report);
+	const changed = !sameLive(live, merged);
+	live = merged;
+	// Written again even when nothing changed: the page may have written its own view meanwhile.
+	setData(livePath, duplicate(merged), livePage);
+	if (changed) active?.channel?.post({ t: 'live', live: duplicate(merged) });
+	return own ? merged : undefined;
+}
+
+/** `UIEngine.Call.Live`: the page received a `call` frame from the server. */
+export function liveFrame(
+	report: Partial<LiveReport> & { callLogId?: string },
+	path?: string,
+	pageName?: string,
+): CallState {
+	if (path?.trim()) livePath = path.trim();
+	if (pageName) livePage = pageName;
+	if (report.callLogId) {
+		const status = String(report.status ?? '');
+		applyLive(
+			{
+				callLogId: String(report.callLogId),
+				dealId: report.dealId,
+				direction: report.direction,
+				status,
+				terminal: report.terminal === true || (report.terminal as any) === 'true',
+				talkDuration: Number(report.talkDuration ?? 0) || 0,
+				at: Number(report.at) || Date.now(),
+				answeredAt: Number(report.answeredAt ?? 0) || 0,
+			},
+			true,
+		);
+	}
+	return active?.state ?? idleState();
+}
+
+/** For tests. */
+export function liveReport(): LiveReport | undefined {
+	return live;
 }
 
 // ---------------------------------------------------------------- sounds
