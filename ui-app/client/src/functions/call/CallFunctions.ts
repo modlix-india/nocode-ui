@@ -125,7 +125,7 @@ const HANGUP = signature(
 	],
 	'Ends the current call, or rejects it while it is still ringing',
 ).setDocumentation(
-	'# UIEngine.Call.Hangup\n\nEnds the connected call, or rejects a ringing one. The state moves to `ended`.\n\n## Parameters\n\n- **callId** (String, optional): hang up only if the current call has this id\n- **dismiss** (Boolean, optional, default: false): true from a Close on the ended call\'s summary. When the call has ended, the call leaves the state (status `ready`) in every tab of the site, so its summary goes away everywhere and does not come back on another page or after a reload. Nothing is hung up: with `dismiss` a call that is up (a new one that started meanwhile) is left alone\n\n' +
+	"# UIEngine.Call.Hangup\n\nEnds the connected call, or rejects a ringing one. The state moves to `ended`.\n\n## Parameters\n\n- **callId** (String, optional): hang up only if the current call has this id\n- **dismiss** (Boolean, optional, default: false): true from a Close on the ended call's summary. When the call has ended, the call leaves the state (status `ready`) in every tab of the site, so its summary goes away everywhere and does not come back on another page or after a reload. Nothing is hung up: with `dismiss` a call that is up (a new one that started meanwhile) is left alone\n\n" +
 		EVENTS_DOC,
 );
 
@@ -245,5 +245,47 @@ export class Alert extends CallFunction {
 
 	getSignature(): FunctionSignature {
 		return ALERT;
+	}
+}
+
+const LIVE = signature(
+	'Live',
+	[
+		Parameter.ofEntry('callLogId', Schema.ofString('callLogId')),
+		Parameter.ofEntry('status', Schema.ofString('status').setDefaultValue('')),
+		Parameter.ofEntry('terminal', Schema.ofAny('terminal')),
+		Parameter.ofEntry('dealId', Schema.ofString('dealId').setDefaultValue('')),
+		Parameter.ofEntry('direction', Schema.ofString('direction').setDefaultValue('')),
+		Parameter.ofEntry('talkDuration', Schema.ofAny('talkDuration')),
+		Parameter.ofEntry('at', Schema.ofAny('at')),
+		Parameter.ofEntry('path', Schema.ofString('path').setDefaultValue('Store.callLive')),
+	],
+	'Shares what the server says about the call (answered, ended) with every open tab of the site',
+).setDocumentation(
+	"# UIEngine.Call.Live\n\nThe page runs this when its event stream delivers a call status frame from the server. Each tab of the site has its own stream and a background or freshly opened tab can miss a frame, so the tabs disagreed on the call (one in the call, one still dialling). This merges the frame into one report, forwards it to the other tabs and writes the same report, whole, to `path` in every tab. It only moves forward (ringing, in progress, ended): a late or repeated frame never walks the call back. Works without a Connect (it then writes to `path` in this tab only).\n\n## Parameters\n\n- **callLogId** (String, required): the server's id of the call; a frame without one is ignored\n- **status** (String): `INITIATED`, `RINGING`, `IN_PROGRESS` or an end status\n- **terminal** (Boolean): true when the call has ended\n- **dealId**, **direction**, **talkDuration**: as the server sent them\n- **at** (Number): epoch milliseconds when this tab received the frame\n- **path** (String, default `Store.callLive`): where the report is written\n\nThe report written holds `callLogId`, `dealId`, `direction`, `status`, `terminal`, `talkDuration`, `at` (latest frame) and `answeredAt` (the first frame that said in progress, 0 until then).\n\n" +
+		EVENTS_DOC,
+);
+
+export class Live extends CallFunction {
+	protected async run(context: FunctionExecutionParameters): Promise<CallState> {
+		const args = context.getArguments();
+		const tve = context.getValuesMap?.()?.get('Page.') as PageStoreExtractor | undefined;
+		return session.liveFrame(
+			{
+				callLogId: args?.get('callLogId') || undefined,
+				status: args?.get('status') ?? '',
+				terminal: args?.get('terminal'),
+				dealId: args?.get('dealId') || undefined,
+				direction: args?.get('direction') || undefined,
+				talkDuration: args?.get('talkDuration'),
+				at: args?.get('at'),
+			},
+			args?.get('path') || undefined,
+			tve?.getPageName?.() ?? GLOBAL_CONTEXT_NAME,
+		);
+	}
+
+	getSignature(): FunctionSignature {
+		return LIVE;
 	}
 }
