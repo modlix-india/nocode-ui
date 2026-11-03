@@ -683,3 +683,117 @@ describe('one ring per call across tabs (LZT-2125)', () => {
 		expect(a.out.loop).toBeUndefined();
 	});
 });
+
+describe('what the server says about the call, the same in every tab (LZT-2122, LZT-2119)', () => {
+	const frame = (status: string, at: number, extra: any = {}) => ({
+		callLogId: 'L1',
+		dealId: 'D1',
+		direction: 'outbound',
+		status,
+		terminal: false,
+		at,
+		...extra,
+	});
+	const liveOf = (t: Tab) =>
+		[...writes[t.name]].reverse().find(w => w.path === 'Store.callLive')?.value;
+
+	test('a frame that only one tab received reaches every tab, with one answeredAt', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		const c = loadTab('C', tabs);
+		await connect(a);
+		await connect(b);
+		await connect(c);
+
+		// Only tab C (the one in front) got the frame; A and B were in the background.
+		c.session.liveFrame(frame('IN_PROGRESS', 5000));
+		await flush();
+		for (const t of [a, b, c])
+			expect(liveOf(t)).toMatchObject({
+				callLogId: 'L1',
+				status: 'IN_PROGRESS',
+				answeredAt: 5000,
+			});
+
+		// The same frame arrives later in the other tabs: nothing moves, answeredAt stays the first.
+		a.session.liveFrame(frame('IN_PROGRESS', 5400));
+		b.session.liveFrame(frame('IN_PROGRESS', 5900));
+		await flush();
+		for (const t of [a, b, c]) expect(liveOf(t).answeredAt).toBe(5000);
+	});
+
+	test('the end reaches every tab and a late in-progress frame never walks it back', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		a.session.liveFrame(frame('IN_PROGRESS', 1000));
+		a.session.liveFrame(frame('COMPLETED', 9000, { terminal: true, talkDuration: 8 }));
+		await flush();
+		expect(liveOf(b)).toMatchObject({ status: 'COMPLETED', terminal: true, talkDuration: 8 });
+		b.session.liveFrame(frame('IN_PROGRESS', 9500));
+		await flush();
+		expect(liveOf(b)).toMatchObject({ terminal: true, answeredAt: 1000 });
+		expect(liveOf(a)).toMatchObject({ terminal: true });
+	});
+
+	test('a new tab asks the call tab and gets what the server already said', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		a.session.liveFrame(frame('IN_PROGRESS', 2000));
+		const b = loadTab('B', tabs);
+		await connect(b);
+		await flush();
+		expect(liveOf(b)).toMatchObject({ status: 'IN_PROGRESS', answeredAt: 2000 });
+	});
+
+	test('a different call replaces the report; a frame without a call id is ignored', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		a.session.liveFrame(frame('COMPLETED', 3000, { terminal: true }));
+		a.session.liveFrame({ status: 'IN_PROGRESS', at: 4000 });
+		a.session.liveFrame(frame('RINGING', 6000, { callLogId: 'L2' }));
+		await flush();
+		expect(liveOf(b)).toMatchObject({
+			callLogId: 'L2',
+			status: 'RINGING',
+			terminal: false,
+			answeredAt: 0,
+		});
+	});
+
+	test('without a connection the frame is written in this tab only', () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		a.session.liveFrame(frame('IN_PROGRESS', 700), 'Store.callLive');
+		expect(liveOf(a)).toMatchObject({ status: 'IN_PROGRESS', answeredAt: 700 });
+	});
+
+	test('every tab asking to hang up the ended call leaves no error in the other tabs', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		const sdk = a.adapters[0];
+		sdk.emit({ status: 'ringing', direction: 'outbound', callId: 'c1' });
+		sdk.emit({ status: 'connected' });
+		await flush();
+		// The server said it ended: tab A hangs up, then tab B asks for the same hangup a moment late.
+		// B asks while A's hangup is still on its way: the call tab has ended it by then and says ok.
+		sdk.hangup.mockImplementation(() => sdk.emit({ status: 'ended' }));
+		const pa = a.session.hangup();
+		const pb = b.session.hangup();
+		await Promise.all([pa, pb]);
+		await flush();
+		expect(b.last().error).toBeUndefined();
+		expect(b.last().status).toBe('ended');
+		expect(sdk.hangup).toHaveBeenCalledTimes(1);
+	});
+});
