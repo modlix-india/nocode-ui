@@ -1043,6 +1043,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			collapseIcon = 'fa fa-chevron-up',
 			scrollToBottomIcon = 'fa fa-arrow-down',
 			enableVoiceInput = true,
+			videoUploadPath = '',
+			videoMaxSizeMB = 1024,
 			microphoneIcon = 'fa fa-microphone',
 			microphoneActiveIcon = 'fa fa-stop',
 			enableFeedback = true,
@@ -3918,6 +3920,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 						removeAttachmentIcon={removeAttachmentIcon}
 						fileIcon={fileIcon}
 						enableVoiceInput={enableVoiceInput}
+						videoUploadPath={videoUploadPath}
+						videoMaxSizeMB={videoMaxSizeMB}
 						microphoneIcon={microphoneIcon}
 						microphoneActiveIcon={microphoneActiveIcon}
 						textareaRef={promptInputRef}

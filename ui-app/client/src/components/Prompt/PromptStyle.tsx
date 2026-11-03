@@ -2458,6 +2458,40 @@ export default function PromptStyle({
 			white-space: nowrap;
 		}
 
+		/* A video while it uploads: its name, then how far the upload is (ADZ-1326). */
+		${PREFIX} ._inputAttachmentFile._uploading {
+			max-width: 240px;
+		}
+		${PREFIX} ._inputAttachmentFile ._uploadProgress {
+			flex-shrink: 0;
+			opacity: 0.75;
+		}
+
+		/* Why a picked file was not attached (too large, upload failed). */
+		${PREFIX} ._inputNotice {
+			display: flex;
+			align-items: flex-start;
+			gap: 8px;
+			margin: 8px 12px 0;
+			padding: 8px 10px;
+			border-radius: 8px;
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+			color: ${t('promptFontColor', '#1a1a1a')};
+			font-size: 12px;
+			line-height: 1.4;
+		}
+		${PREFIX} ._inputNotice span {
+			flex: 1;
+		}
+		${PREFIX} ._inputNotice button {
+			border: none;
+			background: transparent;
+			color: inherit;
+			cursor: pointer;
+			padding: 0;
+			font-size: 11px;
+		}
+
 		${PREFIX} ._removeAttachment {
 			position: absolute;
 			top: 2px;

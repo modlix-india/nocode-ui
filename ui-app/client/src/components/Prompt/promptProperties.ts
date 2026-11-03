@@ -395,6 +395,24 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'videoUploadPath',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Video Upload Folder',
+		description:
+			'When set, the attach button also takes MP4 and MOV videos. Each video is uploaded to this files folder as soon as it is picked (for example secured/_withInClient/myapp/uploads) and the chat gets its path. Empty: no videos.',
+		defaultValue: '',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'videoMaxSizeMB',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'Largest Video (MB)',
+		description:
+			'A video larger than this is refused before it is uploaded, with its size and the limit.',
+		defaultValue: 1024,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'showModelSelector',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Show Model Selector',
