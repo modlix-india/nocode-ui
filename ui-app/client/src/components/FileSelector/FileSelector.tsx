@@ -778,7 +778,7 @@ function FileSelector(props: Readonly<ComponentProps>) {
 
 	return (
 		<div
-			className={`comp compFileSelector ${selectedFile ? '_withImage' : ''} ${colorScheme}`}
+			className={`comp compFileSelector ${selectedFile ? '_withImage' : ''} ${readOnly ? '_readOnly' : ''} ${colorScheme}`}
 			style={resolvedStyles.comp ?? {}}
 			data-analytics-label={analyticsLabel || undefined}
 		>
