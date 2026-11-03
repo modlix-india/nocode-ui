@@ -4,6 +4,7 @@ import { AlertPermission, CallAlerts } from './alerts';
 import { getCallProvider } from './registry';
 import { CallSounds, Tone } from './sounds';
 import { getTabSync, TabChannel } from './tabs';
+import * as view from './view';
 import {
 	CallAdapter,
 	CallAdapterFactory,
@@ -126,13 +127,14 @@ function idleState(): CallState {
 	return { status: 'idle', muted: false };
 }
 
-/** The sound and alert fields the tab holding the call adds to every state it writes. */
+/** The sound, alert and view fields the tab holding the call adds to every state it writes. */
 function withSound(state: CallState): CallState {
 	return {
 		...state,
 		soundOn: state.soundOn ?? sounds.isOn(),
 		audioBlocked: sounds.isBlocked(),
 		alertsOffer: alerts.canOffer(),
+		collapsed: state.collapsed ?? view.isCollapsed(),
 	};
 }
 
@@ -171,6 +173,7 @@ function withoutCall(state: CallState): CallState {
 	if (state.audioBlocked !== undefined) next.audioBlocked = state.audioBlocked;
 	if (state.alertsOffer !== undefined) next.alertsOffer = state.alertsOffer;
 	if (state.soundTab !== undefined) next.soundTab = state.soundTab;
+	if (state.collapsed !== undefined) next.collapsed = state.collapsed;
 	return next;
 }
 
@@ -205,6 +208,7 @@ function apply(session: Session, patch: CallStatePatch) {
 			to: patch.to,
 			soundOn: prev.soundOn,
 			soundTab: prev.soundTab,
+			collapsed: prev.collapsed,
 		};
 	}
 
@@ -212,6 +216,7 @@ function apply(session: Session, patch: CallStatePatch) {
 		next.startedAt = Date.now();
 	if (next.status === 'ended') {
 		next.muted = false;
+		next.held = false;
 		if (IN_CALL.has(prev.status) && !next.endedAt) next.endedAt = Date.now();
 	}
 
@@ -401,7 +406,10 @@ async function runForTab(session: Session, m: any) {
 			if (IN_CALL.has(session.state.status)) await hangup(m.callId || undefined);
 		} else if (m.op === 'dismiss') dismissEnded(session, m.callId || undefined);
 		else if (m.op === 'mute') await mute(!!m.on);
-		else if (m.op === 'answering') {
+		else if (m.op === 'hold') await hold(!!m.on);
+		else if (m.op === 'view') {
+			if (typeof m.collapsed === 'boolean') setView(session, m.collapsed);
+		} else if (m.op === 'answering') {
 			sounds.quietFor(m.callId || undefined);
 			alerts.quietFor(m.callId || undefined);
 			if (m.ringBack) setRingBack(session, true);
@@ -729,6 +737,28 @@ export async function mute(on: boolean): Promise<CallState> {
 	return session.state;
 }
 
+export async function hold(on: boolean): Promise<CallState> {
+	const session = current();
+	if (session.state.status !== 'connected') throw new CallError('No connected call to hold.');
+	if (session.role === 'follower') {
+		try {
+			await toOwner(session, 'hold', { on: !!on });
+		} catch (e) {
+			fail(session, e);
+		}
+		return session.state;
+	}
+	if (!session.adapter?.hold) throw new CallError('This provider cannot hold a call.');
+	try {
+		await session.adapter.hold(!!on);
+	} catch (e) {
+		fail(session, e);
+		return session.state;
+	}
+	apply(session, { held: !!on });
+	return session.state;
+}
+
 export async function disconnect(): Promise<CallState> {
 	const session = active;
 	if (!session) return idleState();
@@ -890,6 +920,34 @@ function setRingBack(session: Session, on: boolean) {
 	if (!IN_CALL.has(session.state.status) || !!session.state.ringBack === on) return;
 	session.state = { ...session.state, ringBack: on };
 	write(session);
+}
+
+// ---------------------------------------------------------------- call bar view
+
+function setView(session: Session, collapsed: boolean) {
+	view.setCollapsed(collapsed);
+	if (session.state.collapsed === collapsed) return;
+	session.state = { ...session.state, collapsed };
+	write(session);
+}
+
+/**
+ * Collapses the call bar to its pill or expands it, for this user in every tab of the site. The
+ * choice is remembered in this browser, so a tab opened later starts the same way.
+ */
+export function setCallView(opts: { collapsed?: boolean }): CallState {
+	const session = active;
+	if (typeof opts.collapsed === 'boolean') {
+		if (!session) view.setCollapsed(opts.collapsed);
+		else if (session.role !== 'follower') setView(session, opts.collapsed);
+		else {
+			view.setCollapsed(opts.collapsed);
+			session.state = { ...session.state, collapsed: opts.collapsed };
+			show(session);
+			toOwner(session, 'view', { collapsed: opts.collapsed }).catch(() => undefined);
+		}
+	}
+	return active?.state ?? { ...idleState(), collapsed: view.isCollapsed() };
 }
 
 function setSoundOn(session: Session, on: boolean) {

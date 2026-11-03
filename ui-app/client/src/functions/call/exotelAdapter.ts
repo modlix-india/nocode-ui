@@ -231,6 +231,12 @@ export function createExotelAdapter(options: ExotelAdapterOptions = {}): CallAda
 			else call().UnMute();
 		},
 
+		hold(on: boolean) {
+			// The SDK checks the current hold first, so a repeat does nothing.
+			if (on) call().Hold();
+			else call().UnHold();
+		},
+
 		disconnect() {
 			if (pendingRegister) {
 				pendingRegister.reject(new Error('Disconnected before registration finished.'));
