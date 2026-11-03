@@ -69,6 +69,13 @@ interface Session {
 	factory?: CallAdapterFactory;
 	pending: Map<string, { resolve: () => void; reject: (e: Error) => void; timer: any }>;
 	gotOwnerState?: () => void;
+	/** A follower while it waits for the owner's first state (a new tab or a reload). */
+	joining?: boolean;
+	/**
+	 * A follower that opened after a call had ended: that ended call (callId and endedAt) is not
+	 * shown here. Its summary belonged to the tabs that were open during the call.
+	 */
+	skipEnded?: string;
 }
 
 let active: Session | undefined;
@@ -145,6 +152,32 @@ function show(session: Session) {
 }
 
 const IN_CALL = new Set(['ringing', 'connected']);
+
+/** Which ended call a state shows, so a tab can tell "that same ended call" from a new one. */
+function endedKey(state: CallState): string {
+	return `${state.callId ?? ''}|${state.endedAt ?? ''}`;
+}
+
+/** The state with no call in it (ready), keeping the user's sound and alert settings. */
+function withoutCall(state: CallState): CallState {
+	const next: CallState = { status: 'ready', muted: false };
+	if (state.soundOn !== undefined) next.soundOn = state.soundOn;
+	if (state.audioBlocked !== undefined) next.audioBlocked = state.audioBlocked;
+	if (state.alertsOffer !== undefined) next.alertsOffer = state.alertsOffer;
+	if (state.soundTab !== undefined) next.soundTab = state.soundTab;
+	return next;
+}
+
+/**
+ * Close on an ended call's summary: the call leaves the state (status `ready`) in every tab, so
+ * the summary does not come back in another tab, on another page or after a reload.
+ */
+function dismissEnded(session: Session, callId?: string) {
+	if (session.state.status !== 'ended') return;
+	if (callId && session.state.callId && callId !== session.state.callId) return;
+	session.state = withoutCall(session.state);
+	write(session);
+}
 
 /** Merges an adapter's report into the state, with the rules every provider shares. */
 function apply(session: Session, patch: CallStatePatch) {
@@ -319,7 +352,12 @@ function onTabMessage(session: Session, m: any) {
 			!IN_CALL.has(m.state.status)
 		)
 			return session.gotOwnerState?.();
-		session.state = { ...m.state, otherTab: true };
+		// A call that ended before this tab opened is not shown here (no summary after a reload).
+		if (session.joining && m.state.status === 'ended') session.skipEnded = endedKey(m.state);
+		session.state =
+			m.state.status === 'ended' && session.skipEnded === endedKey(m.state)
+				? { ...withoutCall(m.state), otherTab: true }
+				: { ...m.state, otherTab: true };
 		show(session);
 		session.gotOwnerState?.();
 	} else if (m.t === 'reply' && session.pending.has(m.id)) {
@@ -336,6 +374,7 @@ async function runForTab(session: Session, m: any) {
 	try {
 		if (m.op === 'answer') await answer(m.callId || undefined, !!m.ringBack);
 		else if (m.op === 'hangup') await hangup(m.callId || undefined);
+		else if (m.op === 'dismiss') dismissEnded(session, m.callId || undefined);
 		else if (m.op === 'mute') await mute(!!m.on);
 		else if (m.op === 'answering') {
 			sounds.quietFor(m.callId || undefined);
@@ -519,8 +558,10 @@ export async function connect(
 					clearTimeout(timer);
 					resolve();
 				};
+				session.joining = true;
 				session.channel?.post({ t: 'hello' });
 			});
+			session.joining = false;
 			session.gotOwnerState = undefined;
 			if (active !== session) return session.state;
 			if (session.state.soundOn === undefined)
@@ -602,8 +643,27 @@ export async function answer(callId?: string, ringBack = false): Promise<CallSta
 	return session.state;
 }
 
-export async function hangup(callId?: string): Promise<CallState> {
+/**
+ * `dismiss`: Close on an ended call's summary. Clears that ended call in every tab of the site
+ * and never hangs anything up: a call that started meanwhile is left alone.
+ */
+export async function hangup(callId?: string, dismiss = false): Promise<CallState> {
 	const session = current();
+	if (dismiss) {
+		if (session.state.status !== 'ended') return session.state;
+		if (session.role !== 'follower') {
+			dismissEnded(session, callId);
+			return session.state;
+		}
+		const lostHere = session.state.endReason === 'pageClosed' && !session.state.otherTab;
+		const id = callId || session.state.callId;
+		if (!lostHere) session.skipEnded = endedKey(session.state);
+		// Shown at once here; the call tab clears it for every other tab.
+		session.state = { ...withoutCall(session.state), otherTab: true };
+		show(session);
+		if (!lostHere) toOwner(session, 'dismiss', { callId: id }).catch(() => undefined);
+		return session.state;
+	}
 	if (!IN_CALL.has(session.state.status)) throw new CallError('No call to hang up.');
 	checkCallId(session, callId);
 	if (session.role === 'follower') {

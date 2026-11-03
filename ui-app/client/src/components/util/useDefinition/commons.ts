@@ -133,7 +133,14 @@ export function createNewState(
 			if (ecs.condition) {
 				let value = false;
 
-				value = getData(ecs.condition, locationHistory, ...tokenExtractors) as boolean;
+				try {
+					value = getData(ecs.condition, locationHistory, ...tokenExtractors) as boolean;
+				} catch (err) {
+					// A condition that will not evaluate leaves this style rule out instead of
+					// throwing during render (see makePropertiesObject).
+					console.error('Style condition could not be evaluated:', err);
+					value = false;
+				}
 
 				if (!value) continue;
 			}
