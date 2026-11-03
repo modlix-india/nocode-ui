@@ -79,6 +79,7 @@ class FakeAdapter {
 	answer = jest.fn();
 	hangup = jest.fn();
 	mute = jest.fn();
+	hold = jest.fn();
 	disconnect = jest.fn();
 	onStateChange(l: any) {
 		this.listener = l;
@@ -389,6 +390,7 @@ describe('one call across tabs', () => {
 			soundOn: true,
 			audioBlocked: false,
 			alertsOffer: false,
+			collapsed: false,
 		});
 	});
 });
@@ -889,9 +891,9 @@ describe('many tabs (LZT-2141)', () => {
 		};
 		const six = ['A', 'B', 'C', 'D', 'E', 'F'].map(n => loadTab(n, tabs));
 		for (const t of six) await connect(t);
-		expect(six.map(t => t.adapters.reduce((n, a) => n + a.register.mock.calls.length, 0))).toEqual([
-			1, 0, 0, 0, 0, 0,
-		]);
+		expect(
+			six.map(t => t.adapters.reduce((n, a) => n + a.register.mock.calls.length, 0)),
+		).toEqual([1, 0, 0, 0, 0, 0]);
 		posts = 0;
 		// The server stream reaches every tab with every frame, as the page does (4 s poll too).
 		for (let i = 0; i < 10; i++) {
@@ -905,5 +907,66 @@ describe('many tabs (LZT-2141)', () => {
 			await flush();
 		}
 		expect(posts).toBeLessThan(200);
+	});
+});
+
+describe('hold and the call bar view across tabs', () => {
+	afterEach(() => localStorage.clear());
+
+	test('Hold in a tab without the call acts on the call tab, and every tab shows it', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		const sdk = a.adapters[0];
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1', from: '+9198' });
+		sdk.emit({ status: 'connected' });
+
+		const b = loadTab('B', tabs);
+		await connect(b);
+		await b.session.hold(true);
+		expect(sdk.hold).toHaveBeenCalledWith(true);
+		await flush();
+		expect(a.last().held).toBe(true);
+		expect(b.last().held).toBe(true);
+
+		await b.session.hold(false);
+		await flush();
+		expect(a.last().held).toBe(false);
+		expect(b.last().held).toBe(false);
+	});
+
+	test('collapsing the bar in one tab collapses it in every tab', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		const b = loadTab('B', tabs);
+		await connect(b);
+		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		await flush();
+
+		b.session.setCallView({ collapsed: true });
+		expect(b.last().collapsed).toBe(true);
+		await flush();
+		expect(a.last().collapsed).toBe(true);
+
+		a.session.setCallView({ collapsed: false });
+		await flush();
+		expect(a.last().collapsed).toBe(false);
+		expect(b.last().collapsed).toBe(false);
+	});
+
+	test('a tab opened after the bar was collapsed starts collapsed', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		a.session.setCallView({ collapsed: true });
+		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+
+		const c = loadTab('C', tabs);
+		expect(await connect(c)).toMatchObject({
+			status: 'ringing',
+			collapsed: true,
+			otherTab: true,
+		});
 	});
 });
