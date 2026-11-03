@@ -31,7 +31,14 @@ class FakeClient {
 	reg!: (state: string, phone: string) => void;
 	callCb!: (callObj: any, eventType: string, phone: string) => void;
 	sess!: (state: string, phone: string, error?: any) => void;
-	theCall = { Answer: jest.fn(), Hangup: jest.fn(), Mute: jest.fn(), UnMute: jest.fn() };
+	theCall = {
+		Answer: jest.fn(),
+		Hangup: jest.fn(),
+		Mute: jest.fn(),
+		UnMute: jest.fn(),
+		Hold: jest.fn(),
+		UnHold: jest.fn(),
+	};
 	DoRegister = jest.fn(() => true);
 	UnRegister = jest.fn();
 	enableAutoRetry = jest.fn();
@@ -174,6 +181,10 @@ describe('exotel adapter', () => {
 		adapter.mute(false);
 		expect(client.theCall.Mute).toHaveBeenCalledTimes(1);
 		expect(client.theCall.UnMute).toHaveBeenCalledTimes(1);
+		adapter.hold!(true);
+		adapter.hold!(false);
+		expect(client.theCall.Hold).toHaveBeenCalledTimes(1);
+		expect(client.theCall.UnHold).toHaveBeenCalledTimes(1);
 		adapter.hangup();
 		expect(client.theCall.Hangup).toHaveBeenCalledTimes(1);
 		client.callCb({}, 'callEnded', 'agent1');

@@ -30,7 +30,7 @@ const EVENTS_DOC =
 	'## Events\n\n- **output**: The action was accepted\n  - `state` (Any): the call state after it\n- **error**: The action failed; `output` does not fire\n  - `error` (String): why\n  - `state` (Any): the call state, with the same `error`\n\n';
 
 const STATE_DOC =
-	'## Call state\n\nWritten, whole, to the `statePath` given to Connect on every change:\n\n- `status`: `idle`, `registering`, `ready`, `ringing`, `connected`, `ended` or `error`\n- `callId`: the provider\'s id for the current call\n- `direction`: `inbound` or `outbound`\n- `from`, `to`: the numbers, when the provider reports them\n- `muted`: true while the microphone is muted\n- `startedAt`: epoch milliseconds when the call connected\n- `endedAt`: epoch milliseconds when the call ended\n- `endReason`: `pageClosed` when the tab holding the call closed or reloaded (a browser call cannot outlive its page)\n- `otherTab`: true in a tab that only mirrors the call; its audio is in another tab of the site\n- `soundOn`: the user\'s call sounds setting (see `UIEngine.Call.Sound`)\n- `audioBlocked`: true while a ring is due and the browser blocks audio until the user taps the page; show a "Tap to enable sound" control that runs `UIEngine.Call.Sound` with `unlock` true\n- `ringBack`: true while the call here is the leg of a call the user placed and the far end has not answered\n- `alertsOffer`: true while the user has not answered whether this site may show notifications; the call card can offer \"Allow call alerts\" that runs `UIEngine.Call.Alert` with `allow` true (see Alert). Always true or false, so a page can tell that the engine in this browser has call alerts\n- `error`: the last failure, as text\n\n';
+	'## Call state\n\nWritten, whole, to the `statePath` given to Connect on every change:\n\n- `status`: `idle`, `registering`, `ready`, `ringing`, `connected`, `ended` or `error`\n- `callId`: the provider\'s id for the current call\n- `direction`: `inbound` or `outbound`\n- `from`, `to`: the numbers, when the provider reports them\n- `muted`: true while the microphone is muted\n- `held`: true while the connected call is on hold (see `UIEngine.Call.Hold`)\n- `collapsed`: true while the user keeps the call bar collapsed to its pill; the same in every tab (see `UIEngine.Call.View`)\n- `startedAt`: epoch milliseconds when the call connected\n- `endedAt`: epoch milliseconds when the call ended\n- `endReason`: `pageClosed` when the tab holding the call closed or reloaded (a browser call cannot outlive its page)\n- `otherTab`: true in a tab that only mirrors the call; its audio is in another tab of the site\n- `soundOn`: the user\'s call sounds setting (see `UIEngine.Call.Sound`)\n- `audioBlocked`: true while a ring is due and the browser blocks audio until the user taps the page; show a "Tap to enable sound" control that runs `UIEngine.Call.Sound` with `unlock` true\n- `ringBack`: true while the call here is the leg of a call the user placed and the far end has not answered\n- `alertsOffer`: true while the user has not answered whether this site may show notifications; the call card can offer \"Allow call alerts\" that runs `UIEngine.Call.Alert` with `allow` true (see Alert). Always true or false, so a page can tell that the engine in this browser has call alerts\n- `error`: the last failure, as text\n\n';
 
 function signature(name: string, parameters: Array<[string, Parameter]>, description: string) {
 	return new FunctionSignature(name)
@@ -156,6 +156,49 @@ export class Mute extends CallFunction {
 
 	getSignature(): FunctionSignature {
 		return MUTE;
+	}
+}
+
+const HOLD = signature(
+	'Hold',
+	[Parameter.ofEntry('on', Schema.ofBoolean('on').setDefaultValue(true))],
+	'Puts the connected call on hold or takes it off hold',
+).setDocumentation(
+	"# UIEngine.Call.Hold\n\nPuts the connected call on hold (`on` true) or takes it off hold (`on` false) and sets `held` in the state. While on hold the customer hears the provider's hold music and the agent's microphone is not sent. In a tab that does not hold the call it is sent to the tab that does. Fails when there is no connected call or the provider cannot hold.\n\n## Parameters\n\n- **on** (Boolean, optional, default: true)\n\n" +
+		EVENTS_DOC,
+);
+
+export class Hold extends CallFunction {
+	protected run(context: FunctionExecutionParameters): Promise<CallState> {
+		return session.hold(context.getArguments()?.get('on') !== false);
+	}
+
+	getSignature(): FunctionSignature {
+		return HOLD;
+	}
+}
+
+const VIEW = signature(
+	'View',
+	[Parameter.ofEntry('collapsed', Schema.ofAny('collapsed'))],
+	'Collapses the call bar to its pill or expands it, in every tab of the site',
+).setDocumentation(
+	"# UIEngine.Call.View\n\nThe user's choice of how the call bar shows: `collapsed` true keeps it as the small pill, false shows it expanded. One choice for the signed in user in this browser: every open tab follows within a moment and a tab opened later starts the same way. The state's `collapsed` carries it, so the page binds the bar to that. Works without a Connect (the choice is then only remembered).\n\n## Parameters\n\n- **collapsed** (Boolean, optional): true to collapse, false to expand; leave empty to keep the choice\n\n" +
+		EVENTS_DOC,
+);
+
+export class View extends CallFunction {
+	protected run(context: FunctionExecutionParameters): Promise<CallState> {
+		const collapsed = context.getArguments()?.get('collapsed');
+		return Promise.resolve(
+			session.setCallView({
+				collapsed: typeof collapsed === 'boolean' ? collapsed : undefined,
+			}),
+		);
+	}
+
+	getSignature(): FunctionSignature {
+		return VIEW;
 	}
 }
 

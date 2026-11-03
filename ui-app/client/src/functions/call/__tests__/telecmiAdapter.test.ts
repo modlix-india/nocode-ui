@@ -16,6 +16,8 @@ class FakePiopiy {
 	terminate = jest.fn();
 	mute = jest.fn();
 	unMute = jest.fn();
+	hold = jest.fn();
+	unHold = jest.fn();
 	removeAllListeners = jest.fn();
 	constructor(public options: any) {
 		FakePiopiy.instances.push(this);
@@ -99,6 +101,10 @@ describe('telecmi adapter', () => {
 		adapter.mute(false);
 		expect(sdk.mute).toHaveBeenCalledTimes(1);
 		expect(sdk.unMute).toHaveBeenCalledTimes(1);
+		adapter.hold!(true);
+		adapter.hold!(false);
+		expect(sdk.hold).toHaveBeenCalledTimes(1);
+		expect(sdk.unHold).toHaveBeenCalledTimes(1);
 		sdk.fire('ended', { code: 200, status: 'call ended' });
 		sdk.fire('hangup', { code: 200, status: 'call hangup' });
 
