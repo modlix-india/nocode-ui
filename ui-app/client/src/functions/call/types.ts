@@ -16,6 +16,13 @@ export interface CallState {
 	from?: string;
 	to?: string;
 	muted: boolean;
+	/** True while the connected call is on hold (the customer hears the provider's hold music). */
+	held?: boolean;
+	/**
+	 * The call bar is collapsed to its pill. The user's choice, remembered per user in this browser
+	 * and the same in every tab (set with `UIEngine.Call.View`).
+	 */
+	collapsed?: boolean;
 	/** Epoch milliseconds when the call connected. */
 	startedAt?: number;
 	/** Epoch milliseconds when a connected or ringing call ended. */
@@ -61,6 +68,8 @@ export interface CallAdapter {
 	answer(callId?: string): Promise<void> | void;
 	hangup(callId?: string): Promise<void> | void;
 	mute(on: boolean): Promise<void> | void;
+	/** Puts the connected call on hold (`on` true) or takes it off hold. Optional per provider. */
+	hold?(on: boolean): Promise<void> | void;
 	/** Signs out and releases the SDK's connection. */
 	disconnect(): Promise<void> | void;
 	/** Called once, before register. The adapter reports SDK events through it. */
