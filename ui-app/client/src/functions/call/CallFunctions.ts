@@ -258,11 +258,12 @@ const LIVE = signature(
 		Parameter.ofEntry('direction', Schema.ofString('direction').setDefaultValue('')),
 		Parameter.ofEntry('talkDuration', Schema.ofAny('talkDuration')),
 		Parameter.ofEntry('at', Schema.ofAny('at')),
+		Parameter.ofEntry('answeredAt', Schema.ofAny('answeredAt')),
 		Parameter.ofEntry('path', Schema.ofString('path').setDefaultValue('Store.callLive')),
 	],
 	'Shares what the server says about the call (answered, ended) with every open tab of the site',
 ).setDocumentation(
-	"# UIEngine.Call.Live\n\nThe page runs this when its event stream delivers a call status frame from the server. Each tab of the site has its own stream and a background or freshly opened tab can miss a frame, so the tabs disagreed on the call (one in the call, one still dialling). This merges the frame into one report, forwards it to the other tabs and writes the same report, whole, to `path` in every tab. It only moves forward (ringing, in progress, ended): a late or repeated frame never walks the call back. Works without a Connect (it then writes to `path` in this tab only).\n\n## Parameters\n\n- **callLogId** (String, required): the server's id of the call; a frame without one is ignored\n- **status** (String): `INITIATED`, `RINGING`, `IN_PROGRESS` or an end status\n- **terminal** (Boolean): true when the call has ended\n- **dealId**, **direction**, **talkDuration**: as the server sent them\n- **at** (Number): epoch milliseconds when this tab received the frame\n- **path** (String, default `Store.callLive`): where the report is written\n\nThe report written holds `callLogId`, `dealId`, `direction`, `status`, `terminal`, `talkDuration`, `at` (latest frame) and `answeredAt` (the first frame that said in progress, 0 until then).\n\n" +
+	"# UIEngine.Call.Live\n\nThe page runs this when its event stream delivers a call status frame from the server. Each tab of the site has its own stream and a background or freshly opened tab can miss a frame, so the tabs disagreed on the call (one in the call, one still dialling). This merges the frame into one report, forwards it to the other tabs and writes the same report, whole, to `path` in every tab. It only moves forward (ringing, in progress, ended): a late or repeated frame never walks the call back. The tab that holds the call also ends its side of a call the server reports as ended, a couple of seconds after the report, when the browser phone has not (an outgoing call the customer ended). Works without a Connect (it then writes to `path` in this tab only).\n\n## Parameters\n\n- **callLogId** (String, required): the server's id of the call; a frame without one is ignored\n- **status** (String): `INITIATED`, `RINGING`, `IN_PROGRESS` or an end status\n- **terminal** (Boolean): true when the call has ended\n- **dealId**, **direction**, **talkDuration**: as the server sent them\n- **at** (Number): epoch milliseconds when this tab received the frame\n- **answeredAt** (Number, optional): epoch milliseconds when the customer answered, when the page knows it (a status read from the server)\n- **path** (String, default `Store.callLive`): where the report is written\n\nThe report written holds `callLogId`, `dealId`, `direction`, `status`, `terminal`, `talkDuration`, `at` (latest frame) and `answeredAt` (the first frame that said in progress, 0 until then).\n\n" +
 		EVENTS_DOC,
 );
 
@@ -279,6 +280,7 @@ export class Live extends CallFunction {
 				direction: args?.get('direction') || undefined,
 				talkDuration: args?.get('talkDuration'),
 				at: args?.get('at'),
+				answeredAt: args?.get('answeredAt'),
 			},
 			args?.get('path') || undefined,
 			tve?.getPageName?.() ?? GLOBAL_CONTEXT_NAME,
