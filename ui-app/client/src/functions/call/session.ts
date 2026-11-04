@@ -797,7 +797,28 @@ export interface LiveReport {
 	at: number;
 	/** Epoch ms of the first frame that said the call was in progress, 0 until then. */
 	answeredAt?: number;
+	/** Seconds the call rang, when the server knows it. */
+	ringDuration?: number;
+	/** The calling connection and caller id line the call used (for Redial on the same line). */
+	connectionName?: string;
+	callerId?: string;
+	customerDialCode?: string;
+	customerPhoneNumber?: string;
+	/** The stored recording, once the server has it. */
+	recordingFile?: string;
+	provider?: string;
 }
+
+/** What the server adds about a call as it goes; a frame without one keeps the one already known. */
+const LIVE_DETAILS = [
+	'ringDuration',
+	'connectionName',
+	'callerId',
+	'customerDialCode',
+	'customerPhoneNumber',
+	'recordingFile',
+	'provider',
+] as const;
 
 const DEFAULT_LIVE_PATH = 'Store.callLive';
 
@@ -827,6 +848,9 @@ export function mergeLive(prev: LiveReport | undefined, next: LiveReport): LiveR
 		// A repeat of what is known: keep the first frame's time so nothing moves.
 		merged.at = prev!.at;
 	}
+	if (same)
+		for (const k of LIVE_DETAILS)
+			if (merged[k] === undefined && prev![k] !== undefined) (merged as any)[k] = prev![k];
 	return merged;
 }
 
@@ -838,7 +862,8 @@ function sameLive(a: LiveReport | undefined, b: LiveReport): boolean {
 		a.terminal === b.terminal &&
 		(a.talkDuration ?? 0) === (b.talkDuration ?? 0) &&
 		(a.answeredAt ?? 0) === (b.answeredAt ?? 0) &&
-		a.at === b.at
+		a.at === b.at &&
+		LIVE_DETAILS.every(k => a[k] === b[k])
 	);
 }
 
@@ -902,11 +927,26 @@ export function liveFrame(
 				talkDuration: Number(report.talkDuration ?? 0) || 0,
 				at: Number(report.at) || Date.now(),
 				answeredAt: Number(report.answeredAt ?? 0) || 0,
+				...liveDetails(report),
 			},
 			true,
 		);
 	}
 	return active?.state ?? idleState();
+}
+
+/** The details a frame carries, typed; blanks and nulls are left out. */
+function liveDetails(report: Partial<LiveReport>): Partial<LiveReport> {
+	const out: Partial<LiveReport> = {};
+	const ring = Number(report.ringDuration);
+	if (report.ringDuration !== undefined && report.ringDuration !== null && !Number.isNaN(ring))
+		out.ringDuration = ring;
+	for (const k of LIVE_DETAILS) {
+		if (k === 'ringDuration') continue;
+		const v = report[k];
+		if (v !== undefined && v !== null && String(v) !== '') (out as any)[k] = String(v);
+	}
+	return out;
 }
 
 /** For tests. */
