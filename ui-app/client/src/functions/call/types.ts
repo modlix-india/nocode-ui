@@ -49,6 +49,12 @@ export interface CallState {
 	 * this engine writes, so a page can tell an engine that has alerts.
 	 */
 	alertsOffer?: boolean;
+	/**
+	 * True while the agent chose to be away (`UIEngine.Call.Availability` with `available` false):
+	 * the browser phone is signed out, status is `idle`, and the provider sends calls to the
+	 * agent's phone instead. Remembered per user in this browser and the same in every tab.
+	 */
+	away?: boolean;
 	error?: string;
 }
 
@@ -70,7 +76,15 @@ export interface CallAdapter {
 	mute(on: boolean): Promise<void> | void;
 	/** Puts the connected call on hold (`on` true) or takes it off hold. Optional per provider. */
 	hold?(on: boolean): Promise<void> | void;
-	/** Signs out and releases the SDK's connection. */
+	/**
+	 * Sends one keypad tone (0 to 9, * or #) on the connected call. Optional per provider. Throws
+	 * when the provider refuses the tone, so a refused key is never reported as sent.
+	 */
+	sendDtmf?(digit: string): Promise<void> | void;
+	/**
+	 * Signs out and releases the SDK's connection. May wait (bounded) for the provider to confirm
+	 * the sign out, so a phone being torn down cannot stay registered.
+	 */
 	disconnect(): Promise<void> | void;
 	/** Called once, before register. The adapter reports SDK events through it. */
 	onStateChange(listener: CallStateListener): void;

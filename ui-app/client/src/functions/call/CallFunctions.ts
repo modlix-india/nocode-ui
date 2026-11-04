@@ -30,7 +30,7 @@ const EVENTS_DOC =
 	'## Events\n\n- **output**: The action was accepted\n  - `state` (Any): the call state after it\n- **error**: The action failed; `output` does not fire\n  - `error` (String): why\n  - `state` (Any): the call state, with the same `error`\n\n';
 
 const STATE_DOC =
-	'## Call state\n\nWritten, whole, to the `statePath` given to Connect on every change:\n\n- `status`: `idle`, `registering`, `ready`, `ringing`, `connected`, `ended` or `error`\n- `callId`: the provider\'s id for the current call\n- `direction`: `inbound` or `outbound`\n- `from`, `to`: the numbers, when the provider reports them\n- `muted`: true while the microphone is muted\n- `held`: true while the connected call is on hold (see `UIEngine.Call.Hold`)\n- `collapsed`: true while the user keeps the call bar collapsed to its pill; the same in every tab (see `UIEngine.Call.View`)\n- `startedAt`: epoch milliseconds when the call connected\n- `endedAt`: epoch milliseconds when the call ended\n- `endReason`: `pageClosed` when the tab holding the call closed or reloaded (a browser call cannot outlive its page)\n- `otherTab`: true in a tab that only mirrors the call; its audio is in another tab of the site\n- `soundOn`: the user\'s call sounds setting (see `UIEngine.Call.Sound`)\n- `audioBlocked`: true while a ring is due and the browser blocks audio until the user taps the page; show a "Tap to enable sound" control that runs `UIEngine.Call.Sound` with `unlock` true\n- `ringBack`: true while the call here is the leg of a call the user placed and the far end has not answered\n- `alertsOffer`: true while the user has not answered whether this site may show notifications; the call card can offer \"Allow call alerts\" that runs `UIEngine.Call.Alert` with `allow` true (see Alert). Always true or false, so a page can tell that the engine in this browser has call alerts\n- `error`: the last failure, as text\n\n';
+	'## Call state\n\nWritten, whole, to the `statePath` given to Connect on every change:\n\n- `status`: `idle`, `registering`, `ready`, `ringing`, `connected`, `ended` or `error`\n- `callId`: the provider\'s id for the current call\n- `direction`: `inbound` or `outbound`\n- `from`, `to`: the numbers, when the provider reports them\n- `muted`: true while the microphone is muted\n- `held`: true while the connected call is on hold (see `UIEngine.Call.Hold`)\n- `collapsed`: true while the user keeps the call bar collapsed to its pill; the same in every tab (see `UIEngine.Call.View`)\n- `startedAt`: epoch milliseconds when the call connected\n- `endedAt`: epoch milliseconds when the call ended\n- `endReason`: `pageClosed` when the tab holding the call closed or reloaded (a browser call cannot outlive its page)\n- `otherTab`: true in a tab that only mirrors the call; its audio is in another tab of the site\n- `soundOn`: the user\'s call sounds setting (see `UIEngine.Call.Sound`)\n- `audioBlocked`: true while a ring is due and the browser blocks audio until the user taps the page; show a "Tap to enable sound" control that runs `UIEngine.Call.Sound` with `unlock` true\n- `ringBack`: true while the call here is the leg of a call the user placed and the far end has not answered\n- `away`: true while the agent chose to be away (see `UIEngine.Call.Availability`); the browser phone is signed out and `status` is `idle`\n- `alertsOffer`: true while the user has not answered whether this site may show notifications; the call card can offer \"Allow call alerts\" that runs `UIEngine.Call.Alert` with `allow` true (see Alert). Always true or false, so a page can tell that the engine in this browser has call alerts\n- `error`: the last failure, as text\n\n';
 
 function signature(name: string, parameters: Array<[string, Parameter]>, description: string) {
 	return new FunctionSignature(name)
@@ -68,10 +68,15 @@ const CONNECT = signature(
 		Parameter.ofEntry('provider', Schema.ofString('provider')),
 		Parameter.ofEntry('credentials', Schema.ofAny('credentials')),
 		Parameter.ofEntry('statePath', Schema.ofString('statePath')),
+		Parameter.ofEntry(
+			'credentialsFunction',
+			Schema.ofString('credentialsFunction').setDefaultValue(''),
+		),
+		Parameter.ofEntry('credentialsArgs', Schema.ofAny('credentialsArgs')),
 	],
 	"Signs the agent in to a calling provider's web SDK so this browser can take and place calls",
 ).setDocumentation(
-	"# UIEngine.Call.Connect\n\nLoads the provider's web SDK (only now, from its CDN), signs the agent in with the credentials and keeps the call state at `statePath`. One connection per browser tab: a second Connect replaces the first, and is refused while a call is in progress. The connection survives navigation between pages.\n\nTabs: the provider keeps one sign in per agent, so only one tab of the site signs in and holds the audio. Every other tab that runs Connect mirrors that tab's call state (with `otherTab: true`) and sends Answer, Mute and Hangup to it; when that tab closes, another one signs in. While a call is up, the tab holding it asks before the page is left or reloaded, ends the call if it is, and after the reload the state shows that call as `ended` with `endReason: pageClosed`. Without Web Locks or BroadcastChannel in the browser every tab signs in on its own.\n\n## Parameters\n\n- **provider** (String, required): `exotel` or `telecmi`\n- **credentials** (Any, required): the agent's SDK credentials, fetched by a server function just before Connect. They are handed to the SDK and never written to the store or to browser storage. Keep them out of page definitions.\n  - Exotel: `userName`, `secret` (SIP password), `sipdomain`, `domain` (host:port of the WebSocket server), optional `authUser` (defaults to userName), `port` (default 443), `displayName`, `security` (default `wss`)\n  - TeleCMI: `userId`, `password`, optional `region` (the SBC host, for example `sbcind.telecmi.com`; the SDK defaults to `sbcsg.telecmi.com`), `name`, `ringTime` (seconds)\n- **statePath** (String, required): where the call state lives, for example `Store.call`\n\n" +
+	"# UIEngine.Call.Connect\n\nLoads the provider's web SDK (only now, from its CDN), signs the agent in with the credentials and keeps the call state at `statePath`. One connection per browser tab: a second Connect replaces the first, and is refused while a call is in progress. The connection survives navigation between pages.\n\nTabs: the provider keeps one sign in per agent, so only one tab of the site signs in and holds the audio. Every other tab that runs Connect mirrors that tab's call state (with `otherTab: true`) and sends Answer, Mute and Hangup to it; when that tab closes, another one signs in. While a call is up, the tab holding it asks before the page is left or reloaded, ends the call if it is, and after the reload the state shows that call as `ended` with `endReason: pageClosed`. Without Web Locks or BroadcastChannel in the browser every tab signs in on its own.\n\n## Parameters\n\n- **provider** (String, required): `exotel` or `telecmi`\n- **credentialsFunction** (String, recommended): `Namespace.name` of the server function that issues the agent's credential, for example `LeadZumpV2.callAgentCredential`. The engine calls it itself, as the signed in user, only in the tab that signs in and again when another tab takes over, so the credential never passes through the page, a step output or the store. It answers `{ enabled, credential, providerUserId, provider, region, expiresIn }` (or `{ enabled, agentId, password, region }`); `enabled` false fails Connect with `Browser calling is not turned on for this user.` A network failure is asked again up to 3 times, 5 seconds apart\n- **credentialsArgs** (Any, optional): the arguments for `credentialsFunction`\n- **credentials** (Any, required without `credentialsFunction`): the agent's SDK credentials. With `credentialsFunction` only extra settings that are not secret (for example `ringTime`), and the function's answer wins. They are handed to the SDK and never written to the store or to browser storage. Prefer `credentialsFunction`: credentials passed here travel through the page's expressions.\n  - Exotel: `userName`, `secret` (SIP password), `sipdomain`, `domain` (host:port of the WebSocket server), optional `authUser` (defaults to userName), `port` (default 443), `displayName`, `security` (default `wss`)\n  - TeleCMI: `userId`, `password`, optional `region` (the SBC host, for example `sbcind.telecmi.com`; the SDK defaults to `sbcsg.telecmi.com`), `name`, `ringTime` (seconds)\n- **statePath** (String, required): where the call state lives, for example `Store.call`\n\nSign out: the engine signs the phone out by itself when the user signs out in this tab or in another tab of the site, or a different user signs in, even while the phone is still signing in. In the AppBuilder editor nothing signs in and the call controls do nothing.\n\n" +
 		EVENTS_DOC +
 		STATE_DOC +
 		"## Notes\n\n- The SDK and media domains must be allowed in the app's Content Security Policy when the app sets one.\n- Microphone access needs HTTPS and is asked for on the first call.",
@@ -81,11 +86,19 @@ export class Connect extends CallFunction {
 	protected run(context: FunctionExecutionParameters): Promise<CallState> {
 		const args = context.getArguments();
 		const tve = context.getValuesMap?.()?.get('Page.') as PageStoreExtractor | undefined;
+		const credentialsArgs = args?.get('credentialsArgs');
 		return session.connect(
 			args?.get('provider'),
-			args?.get('credentials'),
+			args?.get('credentials') ?? undefined,
 			args?.get('statePath'),
 			tve?.getPageName?.() ?? GLOBAL_CONTEXT_NAME,
+			{
+				credentialsFunction: args?.get('credentialsFunction') || undefined,
+				credentialsArgs:
+					credentialsArgs && typeof credentialsArgs === 'object'
+						? credentialsArgs
+						: undefined,
+			},
 		);
 	}
 
@@ -218,6 +231,44 @@ export class View extends CallFunction {
 
 	getSignature(): FunctionSignature {
 		return VIEW;
+	}
+}
+
+const SEND_DTMF = signature(
+	'SendDTMF',
+	[Parameter.ofEntry('digit', Schema.ofString('digit'))],
+	'Presses a keypad key on the connected call, to work through the far end menu',
+).setDocumentation(
+	'# UIEngine.Call.SendDTMF\n\nSends one keypad tone on the connected call, as if the agent pressed a key on a desk phone: menus on the far end ("press 1 for accounts"), extensions, conference PINs. One key per run; for a sequence run it once per key. In a tab that does not hold the call it is sent to the tab that does. A key the provider refuses fires `error`, never `output`.\n\n## Parameters\n\n- **digit** (String, required): one of `0` to `9`, `*` or `#`\n\n' +
+		EVENTS_DOC,
+);
+
+export class SendDTMF extends CallFunction {
+	protected run(context: FunctionExecutionParameters): Promise<CallState> {
+		return session.sendDtmf(String(context.getArguments()?.get('digit') ?? ''));
+	}
+
+	getSignature(): FunctionSignature {
+		return SEND_DTMF;
+	}
+}
+
+const AVAILABILITY = signature(
+	'Availability',
+	[Parameter.ofEntry('available', Schema.ofBoolean('available').setDefaultValue(true))],
+	"Takes the agent online or away for calls in the browser; away sends calls to the agent's phone",
+).setDocumentation(
+	"# UIEngine.Call.Availability\n\nAway (`available` false) signs the browser phone out without closing any tab: the provider then rings the agent's phone instead (on TeleCMI the follow me number). Available signs it in again with a fresh credential. The state's `away` is true while away (status `idle`), the same in every tab, and the choice is remembered for the user in this browser, so a reload or a new tab stays away. Refused while a call is up. In a tab that does not hold the phone it is sent to the tab that does. Bind an Away or Available toggle to the state's `away`.\n\n## Parameters\n\n- **available** (Boolean, optional, default: true)\n\n" +
+		EVENTS_DOC,
+);
+
+export class Availability extends CallFunction {
+	protected run(context: FunctionExecutionParameters): Promise<CallState> {
+		return session.setAvailability(context.getArguments()?.get('available') !== false);
+	}
+
+	getSignature(): FunctionSignature {
+		return AVAILABILITY;
 	}
 }
 

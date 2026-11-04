@@ -1,8 +1,10 @@
 import { duplicate } from '@fincity/kirun-js';
 import { setData } from '../../context/StoreContext';
 import { AlertPermission, CallAlerts } from './alerts';
+import { getAuthWatch, inDesigner } from './auth';
+import { CredentialError, fetchCredentials } from './credentials';
 import { getCallProvider } from './registry';
-import { CallSounds, Tone } from './sounds';
+import { CallSounds, localStore, Tone, userKey } from './sounds';
 import { getTabSync, TabChannel } from './tabs';
 import * as view from './view';
 import {
@@ -39,6 +41,17 @@ import {
  * Alerts (alerts.ts): while an incoming call rings and the tab holding it is hidden, its title
  * blinks with the caller and, when notifications are already allowed, a browser notification
  * shows. Only the tab holding the call does this, never a follower.
+ *
+ * Credentials (LZT-2162): Connect can name a server function (`credentialsFunction`) that the
+ * engine asks for the agent's credential just before it signs in, so the credential never passes
+ * through the page. Only the tab that signs in asks; a follower keeps a way to ask (a closure),
+ * never the value, and asks again when it takes over.
+ *
+ * Sign out (LZT-2163): the session watches the sign in itself (auth.ts) and signs the phone out
+ * when the user signs out here or in another tab of the site, or a different user signs in, even
+ * while the phone is still signing in. The page's logout buttons are not the only way out.
+ *
+ * Editor canvas (LZT-2164): in the AppBuilder editor nothing signs in and the controls do nothing.
  */
 
 export const REGISTER_TIMEOUT_MS = 30000;
@@ -65,11 +78,16 @@ interface Session {
 	lockName?: string;
 	channel?: TabChannel;
 	cancelWait?: () => void;
-	/** A follower keeps them, in memory only, to sign in if the owner tab goes away. */
-	credentials?: CallCredentials;
+	/**
+	 * How to get the credentials when this tab signs in (now, after a takeover, back from away):
+	 * a closure, so the value is never a field of the session (LZT-2162).
+	 */
+	source: () => Promise<CallCredentials>;
 	/** Which phone this session is (provider and a digest of the credentials), see sameSession. */
 	identity: string;
-	factory?: CallAdapterFactory;
+	/** The signed in user at Connect ('' when unknown); another user means sign out (LZT-2163). */
+	user: string;
+	factory: CallAdapterFactory;
 	pending: Map<string, { resolve: () => void; reject: (e: Error) => void; timer: any }>;
 	gotOwnerState?: () => void;
 	/** A follower while it waits for the owner's first state (a new tab or a reload). */
@@ -145,20 +163,42 @@ function soundHere(session: Session): boolean {
 	return !session.state.soundTab;
 }
 
+/**
+ * Runs one listener of a state change on its own (LZT-2167): this runs inside the provider SDK's
+ * callbacks and the tab channel's handler, where a throw would break the SDK or leave the other
+ * listeners (the page, the other tabs, the sounds, the alerts) a state behind.
+ */
+function guard(f: () => void) {
+	try {
+		f();
+	} catch (e) {
+		console.error('A call state listener failed', e);
+	}
+}
+
 function write(session: Session) {
 	if (session.role !== 'follower') session.state = withSound(session.state);
-	setData(session.statePath, duplicate(session.state), session.pageName);
+	const state = session.state;
+	guard(() => setData(session.statePath, duplicate(state), session.pageName));
 	if (session.role === 'owner')
-		session.channel?.post({ t: 'state', state: duplicate(session.state) });
-	sounds.update(session.state, soundHere(session));
-	alerts.update(session.state, session.role !== 'follower');
+		guard(() => session.channel?.post({ t: 'state', state: duplicate(state) }));
+	guard(() => sounds.update(state, soundHere(session)));
+	guard(() => alerts.update(state, session.role !== 'follower'));
 }
 
 /** A follower shows the state it mirrors; nothing goes to the other tabs. */
 function show(session: Session) {
-	setData(session.statePath, duplicate(session.state), session.pageName);
-	sounds.update(session.state, soundHere(session));
-	alerts.update(session.state, false);
+	const state = session.state;
+	guard(() => setData(session.statePath, duplicate(state), session.pageName));
+	guard(() => sounds.update(state, soundHere(session)));
+	guard(() => alerts.update(state, false));
+}
+
+/** Same keys with the same values: a repeated provider event that changes nothing. */
+function sameState(a: CallState, b: CallState): boolean {
+	const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+	for (const k of Array.from(keys)) if ((a as any)[k] !== (b as any)[k]) return false;
+	return true;
 }
 
 const IN_CALL = new Set(['ringing', 'connected']);
@@ -176,6 +216,7 @@ function withoutCall(state: CallState): CallState {
 	if (state.alertsOffer !== undefined) next.alertsOffer = state.alertsOffer;
 	if (state.soundTab !== undefined) next.soundTab = state.soundTab;
 	if (state.collapsed !== undefined) next.collapsed = state.collapsed;
+	if (state.away) next.away = true;
 	return next;
 }
 
@@ -265,10 +306,15 @@ function apply(session: Session, reported: CallStatePatch) {
 		if (IN_CALL.has(prev.status) && !next.endedAt) next.endedAt = Date.now();
 	}
 
+	// A repeated provider event (TeleCMI repeats some, Exotel sends every one twice) is not news:
+	// the state and everything that follows it change once (LZT-2167).
+	if (!own && sameState(prev, next)) return;
+
 	if (IN_CALL.has(next.status) && (!IN_CALL.has(prev.status) || newCall)) {
 		callSince = Date.now();
 		boundLog = undefined;
 	}
+
 	if (!IN_CALL.has(next.status)) {
 		boundLog = undefined;
 		if (endTimer) clearTimeout(endTimer);
@@ -304,6 +350,7 @@ async function answerOwnLeg(session: Session) {
  * call that rings within OUTBOUND_CLAIM_MS is the agent's own leg of it.
  */
 export async function expectOutbound(on = true): Promise<CallState> {
+	if (inDesigner()) return designerState();
 	const session = current();
 	if (session.role === 'follower') {
 		await toOwner(session, 'expect', { on });
@@ -493,6 +540,8 @@ async function runForTab(session: Session, m: any) {
 		else if (m.op === 'mute') await mute(!!m.on);
 		else if (m.op === 'hold') await hold(!!m.on);
 		else if (m.op === 'expect') await expectOutbound(m.on !== false);
+		else if (m.op === 'dtmf') await sendDtmf(String(m.digit ?? ''));
+		else if (m.op === 'available') await setAvailability(m.on !== false);
 		else if (m.op === 'view') {
 			if (typeof m.collapsed === 'boolean') setView(session, m.collapsed);
 		} else if (m.op === 'answering') {
@@ -612,11 +661,8 @@ async function takeOver(session: Session) {
 	session.role = 'owner';
 	session.state = ended ?? { status: 'registering', muted: false };
 	write(session);
-	const credentials = session.credentials!;
-	const factory = session.factory!;
-	session.credentials = undefined;
 	try {
-		await signIn(session, factory, credentials);
+		await signIn(session);
 	} catch {
 		// signIn wrote the error state.
 		return;
@@ -630,26 +676,95 @@ async function takeOver(session: Session) {
 
 // ---------------------------------------------------------------- sign in
 
-async function signIn(session: Session, factory: CallAdapterFactory, credentials: CallCredentials) {
+/** How many times a sign in asks for the credentials before it gives up (LZT-2167). */
+export const CREDENTIAL_ATTEMPTS = 3;
+/** The wait between those asks: rides out a briefly unreachable server. */
+export const CREDENTIAL_RETRY_MS = 5000;
+
+/**
+ * The credentials for this sign in. A network blip or a 5xx is asked again a few times, so a
+ * takeover after a short outage does not leave every tab without a phone; a refusal (calling not
+ * turned on, not allowed) is not.
+ */
+async function credentialsFor(session: Session): Promise<CallCredentials> {
+	for (let attempt = 1; ; attempt++) {
+		try {
+			return await session.source();
+		} catch (e) {
+			const transient = e instanceof CredentialError && !e.permanent;
+			if (!transient || attempt >= CREDENTIAL_ATTEMPTS) throw e;
+		}
+		await new Promise(resolve => setTimeout(resolve, CREDENTIAL_RETRY_MS));
+		if (active !== session) throw new CallError('Disconnected before sign in finished.');
+	}
+}
+
+/** Thrown inside signIn when a Disconnect or a newer Connect replaced the session meanwhile. */
+class Replaced extends CallError {}
+
+/** localStorage key prefix; the user id follows. Holds 'away' while the agent chose away. */
+export const AWAY_KEY = 'modlix.call.away';
+
+function awayRemembered(): boolean {
 	try {
-		session.adapter = await factory();
-		session.adapter.onStateChange(patch => {
-			if (active === session && session.generation === generation) apply(session, patch);
+		return localStore()?.getItem(userKey(AWAY_KEY)) === 'away';
+	} catch {
+		return false;
+	}
+}
+
+function rememberAway(on: boolean) {
+	try {
+		if (on) localStore()?.setItem(userKey(AWAY_KEY), 'away');
+		else localStore()?.removeItem(userKey(AWAY_KEY));
+	} catch {
+		// Storage blocked: the choice lasts while this tab holds the phone.
+	}
+}
+
+/**
+ * Signs this tab's phone in: the credentials, the provider's SDK, the sign in. Every await can
+ * be overtaken by a Disconnect (a sign out) or a newer Connect, and the SDK load and the
+ * microphone are unbounded, so each step checks the session is still the one running and a phone
+ * made after the session ended is signed out at once (LZT-2167, LZT-2163).
+ */
+async function signIn(session: Session): Promise<void> {
+	if (awayRemembered()) {
+		const base =
+			session.state.status === 'registering' ? withoutCall(session.state) : session.state;
+		session.state = { ...base, status: base.status === 'ended' ? 'ended' : 'idle', away: true };
+		write(session);
+		return;
+	}
+	const live = () => active === session && session.generation !== -1;
+	let adapter: CallAdapter | undefined;
+	try {
+		const credentials = await credentialsFor(session);
+		if (!live()) throw new Replaced('Disconnected before sign in finished.');
+		adapter = await session.factory();
+		if (!live()) {
+			// Made after the session ended: nothing else will ever release it.
+			await release(adapter);
+			throw new Replaced('Disconnected before sign in finished.');
+		}
+		session.adapter = adapter;
+		const mine = adapter;
+		adapter.onStateChange(patch => {
+			if (active === session && session.adapter === mine && session.generation === generation)
+				guard(() => apply(session, patch));
 		});
-		await session.adapter.load();
+		await adapter.load();
+		if (!live()) throw new Replaced('Disconnected before sign in finished.');
 		await withTimeout(
-			session.adapter.register(credentials),
+			adapter.register(credentials),
 			REGISTER_TIMEOUT_MS,
 			'The call provider did not confirm the sign in.',
 		);
 	} catch (error) {
-		if (active !== session) throw error;
+		// Replaced: the Disconnect released the adapter it found; this one keeps nothing.
+		if (!live()) throw error;
 		// The adapter may hold a half open connection; release it, keep the error state.
-		try {
-			await session.adapter?.disconnect();
-		} catch {
-			// Nothing more to release.
-		}
+		await release(session.adapter);
 		const message = error instanceof Error ? error.message : String(error);
 		session.state = { status: 'error', muted: false, error: message };
 		write(session);
@@ -662,6 +777,14 @@ async function signIn(session: Session, factory: CallAdapterFactory, credentials
 	if (active === session && session.state.status === 'registering')
 		apply(session, { status: 'ready', error: undefined });
 	if (active === session) sounds.prefetch();
+}
+
+async function release(adapter: CallAdapter | undefined) {
+	try {
+		await adapter?.disconnect();
+	} catch {
+		// Nothing more to release.
+	}
 }
 
 /** Same keys in any order give the same text; values only, no key is dropped. */
@@ -700,19 +823,65 @@ function sameSession(session: Session, identity: string): boolean {
 	);
 }
 
+export interface ConnectOptions {
+	/**
+	 * `Namespace.name` of the server function the engine asks for the agent's credential, just
+	 * before this tab signs in (LZT-2162). `credentials` then holds only extra settings, if any.
+	 */
+	credentialsFunction?: string;
+	/** The arguments that function is called with. */
+	credentialsArgs?: Record<string, any>;
+}
+
+let authStop: (() => void) | undefined;
+
+/**
+ * Started by the first Connect and kept: the session can begin and end many times. A sign out
+ * here or in another tab, or a different user signing in, signs the phone out (LZT-2163).
+ */
+function watchAuth() {
+	if (authStop) return;
+	authStop = getAuthWatch()?.watch(elsewhere => {
+		const session = active;
+		if (!session) return;
+		const now = getAuthWatch()?.user() ?? '';
+		if (elsewhere || (session.user !== '' && now !== session.user))
+			disconnect().catch(() => undefined);
+	});
+}
+
+/** The state the editor canvas gets: nothing signs in there and no control reaches a phone. */
+function designerState(): CallState {
+	return active ? duplicate(active.state) : idleState();
+}
+
 export async function connect(
 	provider: string,
-	credentials: CallCredentials,
+	credentials: CallCredentials | undefined,
 	statePath: string,
 	pageName: string,
+	options: ConnectOptions = {},
 ): Promise<CallState> {
+	// The editor canvas never signs a real phone in (LZT-2164).
+	if (inDesigner()) return designerState();
 	if (!statePath?.trim()) throw new CallError('statePath is required.');
 	const factory = getCallProvider(provider);
 	if (!factory) throw new CallError(`Unknown call provider "${provider}".`);
-	if (!credentials || typeof credentials !== 'object')
-		throw new CallError('credentials are required.');
+	const fn = options.credentialsFunction?.trim() || undefined;
+	if (fn && credentials !== undefined && credentials !== null && typeof credentials !== 'object')
+		throw new CallError('credentials must be an object.');
+	if (!fn && (!credentials || typeof credentials !== 'object'))
+		throw new CallError('credentials or credentialsFunction is required.');
 
-	const identity = identityOf(provider.trim().toLowerCase(), credentials);
+	const name = provider.trim().toLowerCase();
+	const user = getAuthWatch()?.user() ?? '';
+	const extra: CallCredentials =
+		credentials && typeof credentials === 'object' ? credentials : {};
+	const args = options.credentialsArgs ?? {};
+	// Fetched: the same function, arguments and user are the same phone, without asking for it.
+	const identity = fn
+		? identityOf(name, { fn, args, extra, user })
+		: identityOf(name, credentials!);
 	if (active && sameSession(active, identity)) {
 		const session = active;
 		if (session.statePath !== statePath || session.pageName !== pageName) {
@@ -729,8 +898,14 @@ export async function connect(
 		await disconnect();
 	}
 
+	// Held in this closure, never in a field: a follower keeps no credential, only the way to
+	// ask for one when it takes over.
+	const source = fn
+		? async () => ({ ...extra, ...(await fetchCredentials(name, fn, args)) })
+		: async () => credentials!;
+
 	const session: Session = {
-		provider: provider.trim().toLowerCase(),
+		provider: name,
 		statePath,
 		pageName,
 		state: { status: 'registering', muted: false },
@@ -738,8 +913,12 @@ export async function connect(
 		role: 'solo',
 		pending: new Map(),
 		identity,
+		user,
+		source,
+		factory,
 	};
 	active = session;
+	watchAuth();
 
 	hookUnload();
 	const tabs = getTabSync();
@@ -752,10 +931,8 @@ export async function connect(
 		}
 		session.lockName = lockName;
 		session.role = lead ? 'owner' : 'follower';
-		session.channel = tabs.open(lockName, m => onTabMessage(session, m));
+		session.channel = tabs.open(lockName, m => guard(() => onTabMessage(session, m)));
 		if (!lead) {
-			session.credentials = credentials;
-			session.factory = factory;
 			session.state = { status: 'ready', muted: false, otherTab: true };
 			await new Promise<void>(resolve => {
 				const timer = setTimeout(resolve, TAB_HELLO_MS);
@@ -784,7 +961,7 @@ export async function connect(
 	}
 
 	write(session);
-	await signIn(session, factory, credentials);
+	await signIn(session);
 	if (active === session) restoreLost(session);
 	return session.state;
 }
@@ -823,6 +1000,7 @@ export async function ensureMicrophone(): Promise<void> {
  * to call rings the browser first), so the ring back plays until the far end answers.
  */
 export async function answer(callId?: string, ringBack = false): Promise<CallState> {
+	if (inDesigner()) return designerState();
 	const session = current();
 	if (session.state.status !== 'ringing' || session.state.direction !== 'inbound')
 		throw new CallError('No incoming call to answer.');
@@ -853,6 +1031,7 @@ export async function answer(callId?: string, ringBack = false): Promise<CallSta
  * and never hangs anything up: a call that started meanwhile is left alone.
  */
 export async function hangup(callId?: string, dismiss = false): Promise<CallState> {
+	if (inDesigner()) return designerState();
 	const session = current();
 	if (dismiss) {
 		if (session.state.status !== 'ended') return session.state;
@@ -890,6 +1069,7 @@ export async function hangup(callId?: string, dismiss = false): Promise<CallStat
 }
 
 export async function mute(on: boolean): Promise<CallState> {
+	if (inDesigner()) return designerState();
 	const session = current();
 	if (session.state.status !== 'connected') throw new CallError('No connected call to mute.');
 	if (session.role === 'follower') {
@@ -910,6 +1090,7 @@ export async function mute(on: boolean): Promise<CallState> {
 }
 
 export async function hold(on: boolean): Promise<CallState> {
+	if (inDesigner()) return designerState();
 	const session = current();
 	if (session.state.status !== 'connected') throw new CallError('No connected call to hold.');
 	if (session.role === 'follower') {
@@ -928,6 +1109,77 @@ export async function hold(on: boolean): Promise<CallState> {
 		return session.state;
 	}
 	apply(session, { held: !!on });
+	return session.state;
+}
+
+const DTMF_KEY = /^[0-9*#]$/;
+
+/**
+ * Sends one keypad tone on the connected call (LZT-2166), to work through the far end's menu.
+ * From any tab: a follower sends it to the tab holding the call. A key the provider refuses is
+ * an error, never reported as sent.
+ */
+export async function sendDtmf(digit: string): Promise<CallState> {
+	if (inDesigner()) return designerState();
+	const session = current();
+	const key = String(digit ?? '').trim();
+	if (!DTMF_KEY.test(key))
+		throw new CallError(`"${key}" is not a keypad key: use one of 0 to 9, * or #.`);
+	if (session.state.status !== 'connected')
+		throw new CallError('No connected call to send a key on.');
+	if (session.role === 'follower') {
+		try {
+			await toOwner(session, 'dtmf', { digit: key });
+		} catch (e) {
+			fail(session, e);
+		}
+		return session.state;
+	}
+	if (!session.adapter?.sendDtmf) throw new CallError('This provider cannot send keypad tones.');
+	try {
+		await session.adapter.sendDtmf(key);
+	} catch (e) {
+		fail(session, e);
+	}
+	return session.state;
+}
+
+/**
+ * Away (`available` false) signs the browser phone out, so the provider sends the agent's calls to
+ * their phone instead (on TeleCMI, the follow me number), without closing any tab (LZT-2166).
+ * Available signs it in again, with a fresh credential. The choice is remembered for the user in
+ * this browser and shows in every tab as `away`. Refused during a call: it would drop it.
+ */
+export async function setAvailability(available: boolean): Promise<CallState> {
+	if (inDesigner()) return designerState();
+	const session = current();
+	if (session.role === 'follower') {
+		if (!!session.state.away === !available) return session.state;
+		try {
+			await toOwner(session, 'available', { on: available });
+		} catch (e) {
+			fail(session, e);
+		}
+		return session.state;
+	}
+	if (!available) {
+		if (session.state.away) return session.state;
+		if (IN_CALL.has(session.state.status))
+			throw new CallError('Finish the call before going away.');
+		rememberAway(true);
+		const adapter = session.adapter;
+		session.adapter = undefined;
+		session.state = { ...withoutCall(session.state), status: 'idle', away: true };
+		write(session);
+		await release(adapter);
+		return session.state;
+	}
+	if (!session.state.away && session.state.status !== 'idle') return session.state;
+	rememberAway(false);
+	const { away, ...rest } = withoutCall(session.state);
+	session.state = { ...rest, status: 'registering' };
+	write(session);
+	await signIn(session);
 	return session.state;
 }
 
