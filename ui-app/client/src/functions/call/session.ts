@@ -67,6 +67,8 @@ interface Session {
 	cancelWait?: () => void;
 	/** A follower keeps them, in memory only, to sign in if the owner tab goes away. */
 	credentials?: CallCredentials;
+	/** Which phone this session is (provider and a digest of the credentials), see sameSession. */
+	identity: string;
 	factory?: CallAdapterFactory;
 	pending: Map<string, { resolve: () => void; reject: (e: Error) => void; timer: any }>;
 	gotOwnerState?: () => void;
@@ -464,6 +466,38 @@ function closeTabs(session: Session) {
 	if (session.lockName) getTabSync()?.release(session.lockName);
 }
 
+/** Whether a tab still answers as the call tab within TAB_HELLO_MS. */
+function ownerAnswers(session: Session): Promise<boolean> {
+	return new Promise<boolean>(resolve => {
+		const timer = setTimeout(() => {
+			session.gotOwnerState = undefined;
+			resolve(false);
+		}, TAB_HELLO_MS);
+		session.gotOwnerState = () => {
+			clearTimeout(timer);
+			session.gotOwnerState = undefined;
+			resolve(true);
+		};
+		session.channel?.post({ t: 'hello' });
+	});
+}
+
+/** How long a follower that found the call tab still there waits before it queues for the lock again. */
+export const STEP_BACK_MS = 5000;
+
+/** Gives the lock back to the tab that still holds the call and queues for it again later. */
+function stepBack(session: Session) {
+	const tabs = getTabSync();
+	if (active !== session || !session.lockName || !tabs) return;
+	const lockName = session.lockName;
+	tabs.release(lockName);
+	const timer = setTimeout(() => {
+		if (active === session && session.role === 'follower')
+			session.cancelWait = tabs.waitLead(lockName, () => takeOver(session));
+	}, STEP_BACK_MS);
+	session.cancelWait = () => clearTimeout(timer);
+}
+
 /** The owner tab went away: this follower signs in and holds calls from now on. */
 async function takeOver(session: Session) {
 	if (active !== session || session.role !== 'follower') {
@@ -471,6 +505,11 @@ async function takeOver(session: Session) {
 		return;
 	}
 	session.cancelWait = undefined;
+	// A free lock alone does not prove the call tab is gone (AB-1013): a tab that still answers
+	// holds the call, so this one gives the lock back and keeps following, and never signs in
+	// over it (the provider keeps one sign in per agent and the newest drops the call).
+	if (IN_CALL.has(session.state.status) && (await ownerAnswers(session))) return stepBack(session);
+	if (active !== session || session.role !== 'follower') return;
 	const { otherTab, ...rest } = session.state;
 	// This tab holds the call now and plays its sounds itself.
 	if (rest.soundTab === TAB_ID) rest.soundTab = undefined;
@@ -540,6 +579,38 @@ async function signIn(session: Session, factory: CallAdapterFactory, credentials
 	if (active === session) sounds.prefetch();
 }
 
+/** Same keys in any order give the same text; values only, no key is dropped. */
+function stableText(v: any): string {
+	if (v === null || typeof v !== 'object') return JSON.stringify(v) ?? 'undefined';
+	if (Array.isArray(v)) return `[${v.map(stableText).join(',')}]`;
+	return `{${Object.keys(v)
+		.sort()
+		.map(k => `${JSON.stringify(k)}:${stableText(v[k])}`)
+		.join(',')}}`;
+}
+
+/** The provider and a digest of the credentials (FNV-1a), so the password itself is not kept. */
+function identityOf(provider: string, credentials: CallCredentials): string {
+	const text = stableText(credentials);
+	let h = 0x811c9dc5;
+	for (let i = 0; i < text.length; i++) {
+		h ^= text.charCodeAt(i);
+		h = Math.imul(h, 0x01000193);
+	}
+	return `${provider}:${(h >>> 0).toString(36)}:${text.length}`;
+}
+
+/**
+ * A Connect for the phone this tab already has (same provider and credentials, not failed). The
+ * page runs Connect from a Timer, and a Timer fires once per mount, so any remount of the shell
+ * ran it again. Signing out and in again released the tab lock to another tab, which signed in
+ * too, and the provider keeps one sign in per agent: the newest logged the call tab out and
+ * dropped its call (LZT-2141, AB-1012). Such a Connect now keeps the session as it is.
+ */
+function sameSession(session: Session, identity: string): boolean {
+	return session.identity === identity && session.generation !== -1 && session.state.status !== 'error';
+}
+
 export async function connect(
 	provider: string,
 	credentials: CallCredentials,
@@ -551,6 +622,17 @@ export async function connect(
 	if (!factory) throw new CallError(`Unknown call provider "${provider}".`);
 	if (!credentials || typeof credentials !== 'object')
 		throw new CallError('credentials are required.');
+
+	const identity = identityOf(provider.trim().toLowerCase(), credentials);
+	if (active && sameSession(active, identity)) {
+		const session = active;
+		if (session.statePath !== statePath || session.pageName !== pageName) {
+			session.statePath = statePath;
+			session.pageName = pageName;
+			show(session);
+		}
+		return duplicate(session.state);
+	}
 
 	if (active) {
 		if (IN_CALL.has(active.state.status))
@@ -566,6 +648,7 @@ export async function connect(
 		generation: ++generation,
 		role: 'solo',
 		pending: new Map(),
+		identity,
 	};
 	active = session;
 
