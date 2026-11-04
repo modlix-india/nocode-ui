@@ -24,7 +24,17 @@ import { CallAdapter, CallCredentials, CallStateListener, CallStatus } from './t
  * - one incoming call at a time: a second INVITE while a call is up is ended by the SDK before
  *   it reports anything, so call waiting is not possible in the browser (LZT-2169);
  * - `mute()` and `unMute()` refuse silently in some states (an `error` event), so the state is
- *   read back with `onMute()`.
+ *   read back with `onMute()`;
+ * - `logout()` is not finished when it returns: the sign out ends with the SDK's `logout` event or
+ *   the socket's `disconnected` (either order), and on a socket that is reconnecting it does
+ *   nothing ("Please login") while the SDK signs back in by itself. So disconnect waits, bounded
+ *   by SIGN_OUT_WAIT_MS, for either signal, and a phone that signs in after it was let go is
+ *   signed out by its `login` listener, which is never removed (LZT-2163);
+ * - `sendDtmf()` reports a tone it will not send as an `error` event (SDK_INVALID_DTMF), so a
+ *   refused key is an error, not a silent no (LZT-2166).
+ *
+ * The agent's password is read from the credentials inside register and handed to the SDK's
+ * login; it is never kept in a field of the adapter (LZT-2162).
  */
 export const TELECMI_SDK_URL =
 	'https://cdn.jsdelivr.net/npm/@telecmi/piopiyjs@0.26.6/dist/piopiy.min.js';
@@ -40,6 +50,15 @@ export const RING_TIME_SECONDS = 60;
 /** The SDK's `error` code for a login while an earlier phone is still signed in. */
 const SDK_LOGOUT_FIRST = 1001;
 
+/** The SDK's "Please login": a control, or `logout()`, on a phone that is not signed in. */
+const SDK_NOT_SIGNED_IN = 1002;
+
+/** The SDK's `error` code for a DTMF tone it will not send. */
+const SDK_INVALID_DTMF = 1005;
+
+/** How long disconnect waits for the SDK to confirm a sign out before it moves on. */
+export const SIGN_OUT_WAIT_MS = 3000;
+
 type Piopiy = {
 	on(event: string, handler: (data: any) => void): unknown;
 	removeAllListeners?(event?: string): unknown;
@@ -54,6 +73,7 @@ type Piopiy = {
 	onMute?(): boolean;
 	hold(): void;
 	unHold(): void;
+	sendDtmf?(tone: string): void;
 };
 
 export interface TelecmiAdapterOptions {
@@ -102,6 +122,9 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 	let direction: 'inbound' | 'outbound' | undefined;
 	let signingOut = false;
 	let pendingLogin: { resolve: () => void; reject: (e: Error) => void } | undefined;
+	/** Set while sendDtmf runs: the SDK's refusal of that tone, if it reports one at once. */
+	let dtmfRefusal: string | undefined;
+	let sendingDtmf = false;
 	/** `answer()` was called for the call now up, before the SDK confirms it (LZT-2165 8a). */
 	let answered = false;
 
@@ -120,12 +143,7 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 		// A phone torn down while it was signing in signs out when that sign in lands.
 		p.on('login', () => {
 			if (sdk !== p) {
-				try {
-					p.logout();
-				} catch {
-					// Nothing more can be done for a phone already let go.
-				}
-				p.removeAllListeners?.();
+				signOutLate(p);
 				return;
 			}
 			if (pendingLogin) {
@@ -206,6 +224,12 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 		});
 		// Command errors ("call not found", "already in call"): the call itself goes on.
 		on('error', (d: any) => {
+			if (Number(d?.code) === SDK_INVALID_DTMF) {
+				const message = `TeleCMI would not send that key${text(d?.status) ? ': ' + d.status : ''}`;
+				if (sendingDtmf) dtmfRefusal = message;
+				else emit({ error: message });
+				return;
+			}
 			if (pendingLogin && Number(d?.code) === SDK_LOGOUT_FIRST) {
 				pendingLogin.reject(
 					new Error(`TeleCMI sign in failed: ${text(d?.status) ?? 'already signed in'}`),
@@ -214,6 +238,45 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 				return;
 			}
 			emit({ error: text(d?.status) ?? 'TeleCMI error' });
+		});
+	}
+
+	/**
+	 * A phone let go that signed in anyway (its sign in was under way, or its socket reconnected):
+	 * signed out now. Its listeners go and only this guard stays, for a later sign in.
+	 */
+	function signOutLate(p: Piopiy) {
+		try {
+			p.logout();
+		} catch {
+			// Nothing more can be done for a phone already let go.
+		}
+		p.removeAllListeners?.();
+		p.on('login', () => signOutLate(p));
+	}
+
+	/**
+	 * Resolves when the SDK says the sign out finished (`logout`, the socket's `disconnected`, or
+	 * "Please login": nothing was signed in), or after SIGN_OUT_WAIT_MS. Then only the login guard
+	 * stays on the phone.
+	 */
+	function signedOut(p: Piopiy): Promise<void> {
+		return new Promise<void>(resolve => {
+			let done = false;
+			const finish = () => {
+				if (done) return;
+				done = true;
+				clearTimeout(timer);
+				p.removeAllListeners?.();
+				p.on('login', () => signOutLate(p));
+				resolve();
+			};
+			const timer = setTimeout(finish, SIGN_OUT_WAIT_MS);
+			p.on('logout', finish);
+			p.on('disconnected', finish);
+			p.on('error', (d: any) => {
+				if (Number(d?.code) === SDK_NOT_SIGNED_IN) finish();
+			});
 		});
 	}
 
@@ -291,15 +354,31 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			else p.unHold();
 		},
 
+		sendDtmf(digit: string) {
+			const p = need();
+			if (!/^[0-9*#]$/.test(digit)) throw new Error(`"${digit}" is not a keypad key.`);
+			if (typeof p.sendDtmf !== 'function')
+				throw new Error('This TeleCMI SDK cannot send keypad tones.');
+			dtmfRefusal = undefined;
+			sendingDtmf = true;
+			try {
+				p.sendDtmf(digit);
+			} finally {
+				sendingDtmf = false;
+			}
+			const refused = dtmfRefusal;
+			dtmfRefusal = undefined;
+			if (refused) throw new Error(refused);
+		},
+
 		disconnect() {
 			const p = sdk;
 			sdk = undefined;
-			const signingIn = !!pendingLogin || status === 'registering';
 			if (pendingLogin) {
 				pendingLogin.reject(new Error('Disconnected before sign in finished.'));
 				pendingLogin = undefined;
 			}
-			if (!p) return;
+			if (!p) return Promise.resolve();
 			signingOut = true;
 			answered = false;
 			try {
@@ -307,15 +386,15 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			} catch {
 				// No call to end.
 			}
+			status = 'idle';
+			// Listened for before logout: the SDK may confirm inside the call.
+			const done = signedOut(p);
 			try {
 				p.logout();
 			} catch {
 				// Not signed in: the login listener signs it out if a sign in still lands.
 			}
-			// Still signing in: the SDK's logout does nothing yet, so the login listener stays to
-			// sign this phone out when its sign in lands (every other listener ignores it now).
-			if (!signingIn) p.removeAllListeners?.();
-			status = 'idle';
+			return done;
 		},
 
 		onStateChange(l: CallStateListener) {

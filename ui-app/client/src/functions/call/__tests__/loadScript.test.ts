@@ -34,9 +34,29 @@ describe('loadScript', () => {
 		lastScript().onerror!(new Event('error'));
 		await expect(a).rejects.toThrow('Could not load https://cdn.example/sdk-2.js');
 
+		// The failed tag is gone: one fresh tag for the retry.
 		const b = loadScript('https://cdn.example/sdk-2.js', 'FakeSdk');
-		expect(document.head.querySelectorAll('script')).toHaveLength(2);
+		expect(document.head.querySelectorAll('script')).toHaveLength(1);
 		lastScript().onload!(new Event('load'));
 		await expect(b).rejects.toThrow('did not define FakeSdk');
+
+		// A wrong file at the right URL is fixable without a reload: the next try loads again.
+		const c = loadScript('https://cdn.example/sdk-2.js', 'FakeSdk');
+		(globalThis as any).FakeSdk = { fixed: true };
+		lastScript().onload!(new Event('load'));
+		await expect(c).resolves.toEqual({ fixed: true });
+	});
+
+	test('a global another URL defined is not taken for this one', async () => {
+		const old = loadScript('https://cdn.example/sdk-old.js', 'FakeSdk');
+		(globalThis as any).FakeSdk = { version: 'old' };
+		lastScript().onload!(new Event('load'));
+		await expect(old).resolves.toEqual({ version: 'old' });
+
+		const next = loadScript('https://cdn.example/sdk-new.js', 'FakeSdk');
+		expect(lastScript().src).toBe('https://cdn.example/sdk-new.js');
+		(globalThis as any).FakeSdk = { version: 'new' };
+		lastScript().onload!(new Event('load'));
+		await expect(next).resolves.toEqual({ version: 'new' });
 	});
 });
