@@ -220,7 +220,12 @@ function ownLegPatch(
 		return { patch: { ...patch, direction: 'outbound' }, own: true };
 	}
 	const sameLeg = !patch.callId || ownLeg === '' || patch.callId === ownLeg;
-	if (patch.direction === 'inbound' && ownLeg !== undefined && IN_CALL.has(prev.status) && sameLeg) {
+	if (
+		patch.direction === 'inbound' &&
+		ownLeg !== undefined &&
+		IN_CALL.has(prev.status) &&
+		sameLeg
+	) {
 		const { direction, ...rest } = patch;
 		return { patch: rest, own: false };
 	}
@@ -456,6 +461,12 @@ function onTabMessage(session: Session, m: any) {
 			return session.gotOwnerState?.();
 		// A call that ended before this tab opened is not shown here (no summary after a reload).
 		if (session.joining && m.state.status === 'ended') session.skipEnded = endedKey(m.state);
+		// When the call tab's call came up, as the call tab counts it (see heldOther).
+		if (
+			IN_CALL.has(m.state.status) &&
+			(!IN_CALL.has(session.state.status) || m.state.callId !== session.state.callId)
+		)
+			callSince = Date.now();
 		session.state =
 			m.state.status === 'ended' && session.skipEnded === endedKey(m.state)
 				? { ...withoutCall(m.state), otherTab: true }
@@ -581,7 +592,8 @@ async function takeOver(session: Session) {
 	// A free lock alone does not prove the call tab is gone (AB-1013): a tab that still answers
 	// holds the call, so this one gives the lock back and keeps following, and never signs in
 	// over it (the provider keeps one sign in per agent and the newest drops the call).
-	if (IN_CALL.has(session.state.status) && (await ownerAnswers(session))) return stepBack(session);
+	if (IN_CALL.has(session.state.status) && (await ownerAnswers(session)))
+		return stepBack(session);
 	if (active !== session || session.role !== 'follower') return;
 	const { otherTab, ...rest } = session.state;
 	// This tab holds the call now and plays its sounds itself.
@@ -681,7 +693,11 @@ function identityOf(provider: string, credentials: CallCredentials): string {
  * dropped its call (LZT-2141, AB-1012). Such a Connect now keeps the session as it is.
  */
 function sameSession(session: Session, identity: string): boolean {
-	return session.identity === identity && session.generation !== -1 && session.state.status !== 'error';
+	return (
+		session.identity === identity &&
+		session.generation !== -1 &&
+		session.state.status !== 'error'
+	);
 }
 
 export async function connect(
@@ -1020,9 +1036,54 @@ function olderCall(prev: LiveReport | undefined, next: LiveReport): boolean {
 	return next.terminal && !prev.terminal && next.at - prev.at < CURRENT_CALL_MS;
 }
 
+/**
+ * Calls whose frames arrived while another call was up, with the callSince of the call that was
+ * up then (LZT-2169). The TeleCMI browser phone refuses a second call while one is up (its SDK
+ * ends any second incoming session at once), but the server still reports that call: its frames
+ * and the 4 s poll of the newest call log replaced the report of the call going on, so the call
+ * summary showed the second caller and the first call's own end was then dropped as older.
+ */
+const heldBack = new Map<string, number>();
+
+/** How early a call's first frame may come before the browser rings or dials for it. */
+const FIRST_FRAME_EARLY_MS = 20000;
+
+/**
+ * Whether `prev` is the call up in this browser (ringing, connected, or just ended and showing
+ * its summary). With no call connection, a call the server says is in progress.
+ */
+function callUp(prev: LiveReport): boolean {
+	const state = active?.state;
+	if (!state) return prev.status === 'IN_PROGRESS';
+	if (!IN_CALL.has(state.status) && state.status !== 'ended') return false;
+	const h = heard.get(prev.callLogId);
+	return !!h && h.first >= callSince - FIRST_FRAME_EARLY_MS;
+}
+
+/**
+ * A frame of another call while the call in `prev` is up: it never replaces that call's report.
+ * Such a call stays held back until this browser has a newer call of its own (then it may be
+ * that call); with no call connection, until the server says it is in progress.
+ */
+function heldOther(prev: LiveReport | undefined, next: LiveReport): boolean {
+	if (!prev || prev.callLogId === next.callLogId) return false;
+	const answered = next.status === 'IN_PROGRESS' && !next.terminal;
+	const held = heldBack.get(next.callLogId);
+	if (held !== undefined) {
+		if (active ? held === callSince : !answered) return true;
+		heldBack.delete(next.callLogId);
+		return false;
+	}
+	if (prev.terminal || !callUp(prev)) return false;
+	if (!active && (answered || next.at - prev.at >= CURRENT_CALL_MS)) return false;
+	heldBack.set(next.callLogId, callSince);
+	if (heldBack.size > HEARD_MAX) heldBack.delete(heldBack.keys().next().value!);
+	return true;
+}
+
 /** The report after `next` arrives, or `prev` itself when `next` adds nothing. */
 export function mergeLive(prev: LiveReport | undefined, next: LiveReport): LiveReport {
-	if (olderCall(prev, next)) return prev!;
+	if (olderCall(prev, next) || heldOther(prev, next)) return prev!;
 	const same = !!prev && prev.callLogId === next.callLogId;
 	if (same && liveRank(next) < liveRank(prev!)) return prev!;
 	const answeredFrom = [

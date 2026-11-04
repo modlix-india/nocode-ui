@@ -2,7 +2,12 @@
  * The TeleCMI adapter's mapping from PIOPIY SDK events and calls to the call state, with the
  * SDK replaced by a fake that records calls and fires events.
  */
-import { createTelecmiAdapter, TELECMI_SDK_URL } from '../telecmiAdapter';
+import {
+	createTelecmiAdapter,
+	DEFAULT_REGION,
+	RING_TIME_SECONDS,
+	TELECMI_SDK_URL,
+} from '../telecmiAdapter';
 import { CallStatePatch } from '../types';
 
 class FakePiopiy {
@@ -198,5 +203,92 @@ describe('telecmi adapter', () => {
 
 		window.dispatchEvent(new Event('pagehide'));
 		expect(teardown).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('telecmi adapter faults found against the real bundle (LZT-2165 8a to 8c)', () => {
+	async function signingIn(credentials: any) {
+		const adapter = createTelecmiAdapter({ loadSdk: async () => ({ default: FakePiopiy }) });
+		adapter.onStateChange(p => patches.push(p));
+		await adapter.load();
+		const done = adapter.register(credentials);
+		return { adapter, done, sdk: FakePiopiy.instances[FakePiopiy.instances.length - 1] };
+	}
+
+	test('8c: with no region (or an empty one from the server) the India SBC is passed, never the SDK default', async () => {
+		for (const [creds, want] of [
+			[{ userId: 'u', password: 'pw' }, DEFAULT_REGION],
+			[{ userId: 'u', password: 'pw', region: '' }, DEFAULT_REGION],
+			[
+				{ userId: 'u', password: 'pw', region: null, sbc: 'sbcus.telecmi.com' },
+				'sbcus.telecmi.com',
+			],
+			[{ userId: 'u', password: 'pw', region: 'sbcsg.telecmi.com' }, 'sbcsg.telecmi.com'],
+		] as Array<[any, string]>) {
+			const { sdk, done } = await signingIn(creds);
+			expect(sdk.login).toHaveBeenCalledWith('u', 'pw', want);
+			sdk.fire('login', {});
+			await done;
+		}
+		expect(DEFAULT_REGION).toBe('sbcind.telecmi.com');
+	});
+
+	test("8b: the ring time is longer than the SDK's 40 s unless the credentials set one", async () => {
+		const { sdk } = await registered();
+		expect(sdk.options.ringTime).toBe(RING_TIME_SECONDS);
+		expect(RING_TIME_SECONDS).toBeGreaterThan(40);
+		const { sdk: other } = await registered({ userId: 'u', password: 'pw', ringTime: '75' });
+		expect(other.options.ringTime).toBe(75);
+	});
+
+	test('8a: hanging up a call just answered terminates it, before the SDK says it is answered', async () => {
+		const { adapter, sdk } = await registered();
+		sdk.fire('inComingCall', { from: 'a', call_id: 'c1' });
+		adapter.answer();
+		adapter.hangup();
+		expect(sdk.terminate).toHaveBeenCalledTimes(1);
+		expect(sdk.reject).not.toHaveBeenCalled();
+		sdk.fire('hangup', {});
+
+		// The next incoming call, not answered, is rejected again.
+		sdk.fire('inComingCall', { from: 'b', call_id: 'c2' });
+		adapter.hangup();
+		expect(sdk.reject).toHaveBeenCalledTimes(1);
+	});
+
+	test('a phone torn down while signing in is signed out when its sign in lands, and reports nothing', async () => {
+		const { adapter, sdk, done } = await signingIn({ userId: 'u', password: 'pw' });
+		adapter.disconnect();
+		await expect(done).rejects.toThrow('Disconnected before sign in finished.');
+		expect(sdk.logout).toHaveBeenCalledTimes(1);
+		expect(sdk.removeAllListeners).not.toHaveBeenCalled();
+		patches = [];
+		sdk.fire('inComingCall', { from: 'a', call_id: 'late' });
+		sdk.fire('login', { code: 200 });
+		expect(sdk.logout).toHaveBeenCalledTimes(2);
+		expect(sdk.removeAllListeners).toHaveBeenCalled();
+		expect(patches).toEqual([]);
+	});
+
+	test('a login the SDK refuses because a phone is still signed in fails at once', async () => {
+		const { sdk, done } = await signingIn({ userId: 'u', password: 'pw' });
+		sdk.fire('error', { code: 1001, status: 'Please logout before you login' });
+		await expect(done).rejects.toThrow(
+			'TeleCMI sign in failed: Please logout before you login',
+		);
+	});
+
+	test('mute is read back: a mute the SDK refused is an error, not a muted state', async () => {
+		const { adapter, sdk } = await registered();
+		let muted = false;
+		(sdk as any).onMute = () => muted;
+		sdk.mute.mockImplementation(() => {
+			muted = true;
+		});
+		sdk.fire('inComingCall', { from: 'a', call_id: 'c1' });
+		sdk.fire('answered', {});
+		expect(() => adapter.mute(true)).not.toThrow();
+		sdk.unMute.mockImplementation(() => undefined);
+		expect(() => adapter.mute(false)).toThrow('TeleCMI did not unmute the call.');
 	});
 });

@@ -7,13 +7,38 @@ import { CallAdapter, CallCredentials, CallStateListener, CallStatus } from './t
  * global. API and events checked against the package's index.d.ts and README (0.26.6) and
  * https://doc.telecmi.com/piopiy/docs/client-sdk.
  *
- * Credentials: `userId`, `password`, optional `region` (SBC host such as `sbcind.telecmi.com`;
- * the SDK defaults to `sbcsg.telecmi.com`), `name`, `ringTime`.
+ * Credentials: `userId`, `password`, optional `region` (SBC host, default `sbcind.telecmi.com`),
+ * `name`, `ringTime` (seconds, default RING_TIME_SECONDS).
+ *
+ * What the SDK does that this adapter allows for (read from its lib/userAgent.js and
+ * lib/session.js, 0.26.6):
+ * - with no region it signs in to Singapore (`sbcsg.telecmi.com`), and an empty region from the
+ *   server means none, so the India SBC is always passed when none is given (LZT-2165 8c);
+ * - it ends an unanswered incoming call after `ringTime` (default 40 s), before TeleCMI's own
+ *   no answer wait, so the browser went quiet while the call still rang (LZT-2165 8b);
+ * - `logout()` does nothing while the phone is still signing in ("Please login") and the sign in
+ *   then completes, and `login()` refuses while an earlier phone is still signed in ("Please
+ *   logout before you login") with no `loginFailed`. A phone torn down while signing in is now
+ *   signed out when its sign in lands, and a refused login fails at once instead of after the
+ *   30 s register timeout;
+ * - one incoming call at a time: a second INVITE while a call is up is ended by the SDK before
+ *   it reports anything, so call waiting is not possible in the browser (LZT-2169);
+ * - `mute()` and `unMute()` refuse silently in some states (an `error` event), so the state is
+ *   read back with `onMute()`.
  */
 export const TELECMI_SDK_URL =
 	'https://cdn.jsdelivr.net/npm/@telecmi/piopiyjs@0.26.6/dist/piopiy.min.js';
 
 const ACTIVE_STATUSES: ReadonlyArray<CallStatus> = ['ringing', 'connected'];
+
+/** Always passed when no region is given: the SDK's own default is Singapore. */
+export const DEFAULT_REGION = 'sbcind.telecmi.com';
+
+/** Longer than the SDK's 40 s, so TeleCMI's no answer wait, not the browser, ends the ringing. */
+export const RING_TIME_SECONDS = 60;
+
+/** The SDK's `error` code for a login while an earlier phone is still signed in. */
+const SDK_LOGOUT_FIRST = 1001;
 
 type Piopiy = {
 	on(event: string, handler: (data: any) => void): unknown;
@@ -26,6 +51,7 @@ type Piopiy = {
 	terminate(): void;
 	mute(): void;
 	unMute(): void;
+	onMute?(): boolean;
 	hold(): void;
 	unHold(): void;
 };
@@ -76,6 +102,8 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 	let direction: 'inbound' | 'outbound' | undefined;
 	let signingOut = false;
 	let pendingLogin: { resolve: () => void; reject: (e: Error) => void } | undefined;
+	/** `answer()` was called for the call now up, before the SDK confirms it (LZT-2165 8a). */
+	let answered = false;
 
 	const emit: CallStateListener = patch => {
 		if (patch.status) status = patch.status;
@@ -89,7 +117,17 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 	};
 
 	function attach(p: Piopiy) {
+		// A phone torn down while it was signing in signs out when that sign in lands.
 		p.on('login', () => {
+			if (sdk !== p) {
+				try {
+					p.logout();
+				} catch {
+					// Nothing more can be done for a phone already let go.
+				}
+				p.removeAllListeners?.();
+				return;
+			}
 			if (pendingLogin) {
 				pendingLogin.resolve();
 				pendingLogin = undefined;
@@ -97,31 +135,36 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			// A re-login after a dropped transport puts a call that is still up back as it was.
 			if (!ACTIVE_STATUSES.includes(status)) emit({ status: 'ready', error: undefined });
 		});
-		p.on('loginFailed', (d: any) => {
+		const on = (event: string, handler: (d: any) => void) =>
+			p.on(event, (d: any) => {
+				if (sdk === p) handler(d);
+			});
+		on('loginFailed', (d: any) => {
 			const message = `TeleCMI sign in failed: ${text(d?.status) ?? 'invalid user or password'}`;
 			if (pendingLogin) {
 				pendingLogin.reject(new Error(message));
 				pendingLogin = undefined;
 			} else emit({ status: 'error', error: message });
 		});
-		p.on('disconnected', () => {
+		on('disconnected', () => {
 			// The SDK reconnects on its own; until then the agent cannot take calls.
 			if (!signingOut && status === 'ready') emit({ status: 'registering' });
 		});
-		p.on('connected', () => {
+		on('connected', () => {
 			if (status === 'registering' && !pendingLogin) emit({ status: 'ready' });
 		});
-		p.on('sbc_logout', (d: any) => {
+		on('sbc_logout', (d: any) => {
 			emit({
 				status: 'error',
 				error: `TeleCMI signed this agent out: ${text(d?.reason) ?? 'signed in elsewhere'}`,
 			});
 		});
-		p.on('logout', () => {
+		on('logout', () => {
 			if (!signingOut) emit({ status: 'idle' });
 		});
 
-		p.on('inComingCall', (d: any) => {
+		on('inComingCall', (d: any) => {
+			answered = false;
 			emit({
 				status: 'ringing',
 				direction: 'inbound',
@@ -130,11 +173,11 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 				to: text(d?.to_number),
 			});
 		});
-		p.on('trying', (d: any) => {
+		on('trying', (d: any) => {
 			// Progress of a call the server placed through the agent's login.
 			if (d?.call_id) emit({ callId: text(d.call_id) });
 		});
-		p.on('ringing', (d: any) => {
+		on('ringing', (d: any) => {
 			const patch: any = { status: 'ringing' };
 			if (d?.call_id) patch.callId = text(d.call_id);
 			if (d?.type === 'outbound' || d?.type === 'outgoing') patch.direction = 'outbound';
@@ -143,24 +186,33 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			if (status === 'ringing') delete patch.status;
 			emit(patch);
 		});
-		p.on('answered', (d: any) => {
+		on('answered', (d: any) => {
 			const patch: any = { status: 'connected' };
 			if (d?.call_id) patch.callId = text(d.call_id);
 			emit(patch);
 		});
+		// One end per call, whichever of the SDK's end events comes first.
 		const ended = () => {
+			answered = false;
 			if (ACTIVE_STATUSES.includes(status)) emit({ status: 'ended' });
 		};
-		p.on('ended', ended);
-		p.on('hangup', ended);
-		p.on('missedCall', ended);
-		p.on('mediaFailed', (d: any) => {
+		on('ended', ended);
+		on('hangup', ended);
+		on('missedCall', ended);
+		on('mediaFailed', (d: any) => {
 			emit({
 				error: `Microphone unavailable or not allowed${d?.status ? ': ' + d.status : ''}`,
 			});
 		});
 		// Command errors ("call not found", "already in call"): the call itself goes on.
-		p.on('error', (d: any) => {
+		on('error', (d: any) => {
+			if (pendingLogin && Number(d?.code) === SDK_LOGOUT_FIRST) {
+				pendingLogin.reject(
+					new Error(`TeleCMI sign in failed: ${text(d?.status) ?? 'already signed in'}`),
+				);
+				pendingLogin = undefined;
+				return;
+			}
 			emit({ error: text(d?.status) ?? 'TeleCMI error' });
 		});
 	}
@@ -180,20 +232,26 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			if (!userId || !password)
 				return Promise.reject(new Error('TeleCMI needs userId and password.'));
 
+			const ringTime = Number(credentials.ringTime);
 			const p: Piopiy = new Ctor({
 				name: credentials.name ?? '',
 				debug: false,
 				autoplay: true,
-				...(credentials.ringTime ? { ringTime: Number(credentials.ringTime) } : {}),
+				ringTime: ringTime > 0 ? ringTime : RING_TIME_SECONDS,
 			});
 			sdk = p;
 			signingOut = false;
+			answered = false;
 			attach(p);
 			emit({ status: 'registering' });
 			return new Promise<void>((resolve, reject) => {
 				pendingLogin = { resolve, reject };
 				try {
-					p.login(userId, password, text(credentials.region ?? credentials.sbc));
+					p.login(
+						userId,
+						password,
+						text(credentials.region) ?? text(credentials.sbc) ?? DEFAULT_REGION,
+					);
 				} catch (e: any) {
 					pendingLogin = undefined;
 					reject(new Error(e?.message ?? 'TeleCMI sign in failed'));
@@ -203,12 +261,15 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 
 		answer() {
 			need().answer();
+			// Marked at the press: the SDK's answered event comes later (LZT-2165 8a).
+			answered = true;
 		},
 
 		hangup() {
 			const p = need();
-			// A ringing incoming call is rejected; anything else is terminated.
-			if (status === 'ringing' && direction === 'inbound') p.reject();
+			// An incoming call not answered is rejected; anything else (answered here, even if
+			// the SDK has not said so yet) is terminated.
+			if (status === 'ringing' && direction === 'inbound' && !answered) p.reject();
 			else p.terminate();
 		},
 
@@ -216,6 +277,12 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			const p = need();
 			if (on) p.mute();
 			else p.unMute();
+			// The SDK refuses with an error event, not a throw: read back what it did.
+			const now = typeof p.onMute === 'function' ? p.onMute() : undefined;
+			if (typeof now === 'boolean' && now !== on)
+				throw new Error(
+					on ? 'TeleCMI did not mute the call.' : 'TeleCMI did not unmute the call.',
+				);
 		},
 
 		hold(on: boolean) {
@@ -227,19 +294,27 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 		disconnect() {
 			const p = sdk;
 			sdk = undefined;
+			const signingIn = !!pendingLogin || status === 'registering';
 			if (pendingLogin) {
 				pendingLogin.reject(new Error('Disconnected before sign in finished.'));
 				pendingLogin = undefined;
 			}
 			if (!p) return;
 			signingOut = true;
+			answered = false;
 			try {
 				if (ACTIVE_STATUSES.includes(status)) p.terminate();
 			} catch {
 				// No call to end.
 			}
-			p.logout();
-			p.removeAllListeners?.();
+			try {
+				p.logout();
+			} catch {
+				// Not signed in: the login listener signs it out if a sign in still lands.
+			}
+			// Still signing in: the SDK's logout does nothing yet, so the login listener stays to
+			// sign this phone out when its sign in lands (every other listener ignores it now).
+			if (!signingIn) p.removeAllListeners?.();
 			status = 'idle';
 		},
 
