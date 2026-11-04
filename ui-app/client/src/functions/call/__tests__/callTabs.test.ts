@@ -970,3 +970,72 @@ describe('hold and the call bar view across tabs', () => {
 		});
 	});
 });
+
+describe('what the server adds about the call (LZT-2144)', () => {
+	const frame = (status: string, at: number, extra: any = {}) => ({
+		callLogId: 'L1',
+		dealId: 'D1',
+		direction: 'inbound',
+		status,
+		terminal: false,
+		at,
+		...extra,
+	});
+	const liveOf = (t: Tab) =>
+		[...writes[t.name]].reverse().find(w => w.path === 'Store.callLive')?.value;
+
+	test('the line, ring time and customer reach every tab and stay when a later frame lacks them', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		a.session.liveFrame(
+			frame('COMPLETED', 9000, {
+				terminal: true,
+				talkDuration: 42,
+				ringDuration: 7,
+				connectionName: 'telecmiMain',
+				callerId: '+919003309441',
+				customerDialCode: '91',
+				customerPhoneNumber: '9108486004',
+				provider: 'TELECMI',
+				recordingFile: '',
+			}),
+		);
+		await flush();
+		const want = {
+			terminal: true,
+			ringDuration: 7,
+			connectionName: 'telecmiMain',
+			callerId: '+919003309441',
+			customerDialCode: '91',
+			customerPhoneNumber: '9108486004',
+		};
+		expect(liveOf(a)).toMatchObject(want);
+		expect(liveOf(b)).toMatchObject(want);
+		expect(liveOf(b).recordingFile).toBeUndefined();
+
+		// The recording arrives in a later frame of the same call that repeats only the status.
+		b.session.liveFrame(
+			frame('COMPLETED', 9900, { terminal: true, recordingFile: 'calls/L1.mp3' }),
+		);
+		await flush();
+		for (const t of [a, b])
+			expect(liveOf(t)).toMatchObject({ ...want, recordingFile: 'calls/L1.mp3', at: 9000 });
+	});
+
+	test('a new call does not inherit the last call details', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		a.session.liveFrame(
+			frame('COMPLETED', 1000, { terminal: true, ringDuration: 5, callerId: '+91900' }),
+		);
+		a.session.liveFrame(frame('RINGING', 2000, { callLogId: 'L2' }));
+		const r = liveOf(a);
+		expect(r.callLogId).toBe('L2');
+		expect(r.ringDuration).toBeUndefined();
+		expect(r.callerId).toBeUndefined();
+	});
+});
