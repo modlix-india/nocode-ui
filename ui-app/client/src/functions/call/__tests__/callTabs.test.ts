@@ -994,6 +994,102 @@ describe('Connect again for the same phone (LZT-2158)', () => {
 	});
 });
 
+describe('the agent leg of a call placed from the page (LZT-2160)', () => {
+	test('after Expect, the ringing leg is outbound with a ring back, never an incoming call, and the call tab answers it', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		// The deal page is in tab B; the phone is in tab A.
+		await b.session.expectOutbound(true);
+		await flush();
+		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'leg1' });
+		await flush();
+		expect(a.last()).toMatchObject({ status: 'ringing', direction: 'outbound', ringBack: true });
+		expect(b.last()).toMatchObject({ direction: 'outbound', otherTab: true });
+		expect(a.out.played).not.toContain('incoming');
+		expect(a.adapters[0].answer).toHaveBeenCalledWith('leg1');
+
+		// A later event of the same leg says incoming again: it stays outbound.
+		a.adapters[0].emit({ status: 'connected', direction: 'inbound' });
+		expect(a.last()).toMatchObject({ status: 'connected', direction: 'outbound' });
+	});
+
+	test('without Expect, or after Expect off, a ringing call is an incoming call', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		await a.session.expectOutbound(true);
+		await a.session.expectOutbound(false);
+		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'c9' });
+		await flush();
+		expect(a.last()).toMatchObject({ status: 'ringing', direction: 'inbound' });
+		expect(a.adapters[0].answer).not.toHaveBeenCalled();
+	});
+});
+
+describe('frames of an earlier call while the next is up (LZT-2156)', () => {
+	test("the earlier call's final record sent again never replaces the current call nor ends it", async () => {
+		jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+		try {
+			const tabs = new FakeTabs();
+			const a = loadTab('A', tabs);
+			const p = connect(a);
+			await p;
+			const t0 = Date.now();
+			// Call 1, answered and ended.
+			a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'x1' });
+			a.adapters[0].emit({ status: 'connected' });
+			a.session.liveFrame({ callLogId: 'L1', status: 'IN_PROGRESS', terminal: false, at: t0 } as any);
+			a.session.liveFrame({ callLogId: 'L1', status: 'COMPLETED', terminal: true, at: t0 + 1000 } as any);
+			a.adapters[0].emit({ status: 'ended' });
+
+			// Call 2 comes up; a leftover leg frame of call 1 arrives first, then call 2's own.
+			jest.advanceTimersByTime(10000);
+			a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'x2' });
+			a.adapters[0].emit({ status: 'connected' });
+			const t1 = Date.now();
+			a.session.liveFrame({ callLogId: 'L1', status: 'IN_PROGRESS', terminal: false, at: t1 } as any);
+			a.session.liveFrame({ callLogId: 'L2', status: 'RINGING', terminal: false, at: t1 + 100 } as any);
+			expect(a.session.liveReport()?.callLogId).toBe('L2');
+
+			// Call 1's final record again, with the recording: ignored, and call 2 stays up.
+			a.session.liveFrame({
+				callLogId: 'L1',
+				status: 'COMPLETED',
+				terminal: true,
+				at: t1 + 200,
+				recordingFile: 'rec/1.mp3',
+			} as any);
+			jest.advanceTimersByTime(5000);
+			await flush();
+			expect(a.session.liveReport()?.callLogId).toBe('L2');
+			expect(a.adapters[0].hangup).not.toHaveBeenCalled();
+			const calls = writes['A'].filter(w => w.path === 'Store.call');
+			expect(calls[calls.length - 1].value).toMatchObject({ status: 'connected', callId: 'x2' });
+
+			// Call 2's own end does end it.
+			a.session.liveFrame({ callLogId: 'L2', status: 'COMPLETED', terminal: true, at: t1 + 300 } as any);
+			jest.advanceTimersByTime(a.session.SERVER_END_GRACE_MS + 10);
+			await flush();
+			expect(a.adapters[0].hangup).toHaveBeenCalledTimes(1);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	test("the end of a call this tab never followed does not cover the call going on", async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		const t = Date.now();
+		a.session.liveFrame({ callLogId: 'L5', status: 'RINGING', terminal: false, at: t } as any);
+		a.session.liveFrame({ callLogId: 'L4', status: 'COMPLETED', terminal: true, at: t + 50 } as any);
+		expect(a.session.liveReport()?.callLogId).toBe('L5');
+	});
+});
+
 describe('hold and the call bar view across tabs', () => {
 	afterEach(() => localStorage.clear());
 
