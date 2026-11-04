@@ -5,6 +5,7 @@ export {
 	Answer,
 	Connect,
 	Disconnect,
+	Expect,
 	Hangup,
 	Hold,
 	Live,
