@@ -208,6 +208,8 @@ const flush = async () => {
 	for (let i = 0; i < 20; i++) await Promise.resolve();
 };
 
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 async function connect(tab: Tab) {
 	const p = tab.session.connect(
 		'fake',
@@ -372,6 +374,8 @@ describe('one call across tabs', () => {
 		await connect(b);
 
 		tabs.closeTab('A');
+		// B first asks whether a call tab still answers; nobody does.
+		await wait(b.session.TAB_HELLO_MS + 50);
 		await flush();
 		expect(b.adapters).toHaveLength(1);
 		expect(b.adapters[0].register).toHaveBeenCalled();
@@ -907,6 +911,86 @@ describe('many tabs (LZT-2141)', () => {
 			await flush();
 		}
 		expect(posts).toBeLessThan(200);
+	});
+});
+
+describe('Connect again for the same phone (LZT-2158)', () => {
+	test('the call tab running Connect again keeps its sign in, its lock and its call', async () => {
+		const tabs = new FakeTabs();
+		const six = ['A', 'B', 'C', 'D', 'E', 'F'].map(n => loadTab(n, tabs));
+		for (const t of six) await connect(t);
+		const a = six[0];
+		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		a.adapters[0].emit({ status: 'connected' });
+
+		// The shell remounts and its Timer runs Connect again, with the call up.
+		expect(await connect(a)).toMatchObject({ status: 'connected', callId: 'c1' });
+		await flush();
+		expect(a.adapters).toHaveLength(1);
+		expect(a.adapters[0].disconnect).not.toHaveBeenCalled();
+		expect(tabs.holders.get('modlix.call.fake')).toBe('A');
+		expect(six.slice(1).map(t => t.adapters.length)).toEqual([0, 0, 0, 0, 0]);
+	});
+
+	test('a follower running Connect again stays a follower and never signs in', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		expect(await connect(b)).toMatchObject({ status: 'ready', otherTab: true });
+		expect(b.adapters).toHaveLength(0);
+		expect(a.adapters).toHaveLength(1);
+	});
+
+	test('the same credentials in another key order are the same phone', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		await a.session.connect('fake', { password: 'pw-1', user: 'agent' }, 'Store.call', '_global');
+		expect(a.adapters).toHaveLength(1);
+		expect(a.adapters[0].disconnect).not.toHaveBeenCalled();
+	});
+
+	test('another phone (other credentials) signs in again', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		await a.session.connect('fake', { user: 'other', password: 'pw-2' }, 'Store.call', '_global');
+		await flush();
+		expect(a.adapters).toHaveLength(2);
+		expect(a.adapters[0].disconnect).toHaveBeenCalled();
+		expect(a.adapters[1].register).toHaveBeenCalled();
+	});
+
+	test('a phone in error is signed in again by the next Connect', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		a.adapters[0].emit({ status: 'error', error: 'TeleCMI signed this agent out' });
+		await connect(a);
+		expect(a.adapters).toHaveLength(2);
+		expect(a.adapters[1].register).toHaveBeenCalled();
+	});
+
+	test('a lock that comes free while the call tab still answers: no second sign in (LZT-2157)', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connect(a);
+		await connect(b);
+		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		a.adapters[0].emit({ status: 'connected' });
+		await flush();
+
+		// The lock is released, but tab A and its call are still there.
+		tabs.forTab('A').release('modlix.call.fake');
+		await flush();
+		await wait(b.session.TAB_HELLO_MS + 50);
+		await flush();
+		expect(b.adapters).toHaveLength(0);
+		expect(b.last()).toMatchObject({ status: 'connected', callId: 'c1', otherTab: true });
+		expect(tabs.holders.get('modlix.call.fake')).toBeUndefined();
 	});
 });
 
