@@ -275,7 +275,7 @@ describe('UIEngine.Call', () => {
 			credentials: null,
 			statePath: 'Store.call',
 		});
-		expect(r.result.error).toBe('credentials are required.');
+		expect(r.result.error).toBe('credentials or credentialsFunction is required.');
 		expect(writes).toEqual([]);
 	});
 
