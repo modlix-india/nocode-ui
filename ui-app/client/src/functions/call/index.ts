@@ -3,6 +3,7 @@
 export {
 	Alert,
 	Answer,
+	Availability,
 	Connect,
 	Disconnect,
 	Expect,
@@ -10,6 +11,7 @@ export {
 	Hold,
 	Live,
 	Mute,
+	SendDTMF,
 	Sound,
 	View,
 } from './CallFunctions';
