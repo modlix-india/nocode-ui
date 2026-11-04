@@ -947,7 +947,12 @@ describe('Connect again for the same phone (LZT-2158)', () => {
 		const tabs = new FakeTabs();
 		const a = loadTab('A', tabs);
 		await connect(a);
-		await a.session.connect('fake', { password: 'pw-1', user: 'agent' }, 'Store.call', '_global');
+		await a.session.connect(
+			'fake',
+			{ password: 'pw-1', user: 'agent' },
+			'Store.call',
+			'_global',
+		);
 		expect(a.adapters).toHaveLength(1);
 		expect(a.adapters[0].disconnect).not.toHaveBeenCalled();
 	});
@@ -956,7 +961,12 @@ describe('Connect again for the same phone (LZT-2158)', () => {
 		const tabs = new FakeTabs();
 		const a = loadTab('A', tabs);
 		await connect(a);
-		await a.session.connect('fake', { user: 'other', password: 'pw-2' }, 'Store.call', '_global');
+		await a.session.connect(
+			'fake',
+			{ user: 'other', password: 'pw-2' },
+			'Store.call',
+			'_global',
+		);
 		await flush();
 		expect(a.adapters).toHaveLength(2);
 		expect(a.adapters[0].disconnect).toHaveBeenCalled();
@@ -1006,7 +1016,11 @@ describe('the agent leg of a call placed from the page (LZT-2160)', () => {
 		await flush();
 		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'leg1' });
 		await flush();
-		expect(a.last()).toMatchObject({ status: 'ringing', direction: 'outbound', ringBack: true });
+		expect(a.last()).toMatchObject({
+			status: 'ringing',
+			direction: 'outbound',
+			ringBack: true,
+		});
 		expect(b.last()).toMatchObject({ direction: 'outbound', otherTab: true });
 		expect(a.out.played).not.toContain('incoming');
 		expect(a.adapters[0].answer).toHaveBeenCalledWith('leg1');
@@ -1041,8 +1055,18 @@ describe('frames of an earlier call while the next is up (LZT-2156)', () => {
 			// Call 1, answered and ended.
 			a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'x1' });
 			a.adapters[0].emit({ status: 'connected' });
-			a.session.liveFrame({ callLogId: 'L1', status: 'IN_PROGRESS', terminal: false, at: t0 } as any);
-			a.session.liveFrame({ callLogId: 'L1', status: 'COMPLETED', terminal: true, at: t0 + 1000 } as any);
+			a.session.liveFrame({
+				callLogId: 'L1',
+				status: 'IN_PROGRESS',
+				terminal: false,
+				at: t0,
+			} as any);
+			a.session.liveFrame({
+				callLogId: 'L1',
+				status: 'COMPLETED',
+				terminal: true,
+				at: t0 + 1000,
+			} as any);
 			a.adapters[0].emit({ status: 'ended' });
 
 			// Call 2 comes up; a leftover leg frame of call 1 arrives first, then call 2's own.
@@ -1050,8 +1074,18 @@ describe('frames of an earlier call while the next is up (LZT-2156)', () => {
 			a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'x2' });
 			a.adapters[0].emit({ status: 'connected' });
 			const t1 = Date.now();
-			a.session.liveFrame({ callLogId: 'L1', status: 'IN_PROGRESS', terminal: false, at: t1 } as any);
-			a.session.liveFrame({ callLogId: 'L2', status: 'RINGING', terminal: false, at: t1 + 100 } as any);
+			a.session.liveFrame({
+				callLogId: 'L1',
+				status: 'IN_PROGRESS',
+				terminal: false,
+				at: t1,
+			} as any);
+			a.session.liveFrame({
+				callLogId: 'L2',
+				status: 'RINGING',
+				terminal: false,
+				at: t1 + 100,
+			} as any);
 			expect(a.session.liveReport()?.callLogId).toBe('L2');
 
 			// Call 1's final record again, with the recording: ignored, and call 2 stays up.
@@ -1067,10 +1101,18 @@ describe('frames of an earlier call while the next is up (LZT-2156)', () => {
 			expect(a.session.liveReport()?.callLogId).toBe('L2');
 			expect(a.adapters[0].hangup).not.toHaveBeenCalled();
 			const calls = writes['A'].filter(w => w.path === 'Store.call');
-			expect(calls[calls.length - 1].value).toMatchObject({ status: 'connected', callId: 'x2' });
+			expect(calls[calls.length - 1].value).toMatchObject({
+				status: 'connected',
+				callId: 'x2',
+			});
 
 			// Call 2's own end does end it.
-			a.session.liveFrame({ callLogId: 'L2', status: 'COMPLETED', terminal: true, at: t1 + 300 } as any);
+			a.session.liveFrame({
+				callLogId: 'L2',
+				status: 'COMPLETED',
+				terminal: true,
+				at: t1 + 300,
+			} as any);
 			jest.advanceTimersByTime(a.session.SERVER_END_GRACE_MS + 10);
 			await flush();
 			expect(a.adapters[0].hangup).toHaveBeenCalledTimes(1);
@@ -1079,13 +1121,18 @@ describe('frames of an earlier call while the next is up (LZT-2156)', () => {
 		}
 	});
 
-	test("the end of a call this tab never followed does not cover the call going on", async () => {
+	test('the end of a call this tab never followed does not cover the call going on', async () => {
 		const tabs = new FakeTabs();
 		const a = loadTab('A', tabs);
 		await connect(a);
 		const t = Date.now();
 		a.session.liveFrame({ callLogId: 'L5', status: 'RINGING', terminal: false, at: t } as any);
-		a.session.liveFrame({ callLogId: 'L4', status: 'COMPLETED', terminal: true, at: t + 50 } as any);
+		a.session.liveFrame({
+			callLogId: 'L4',
+			status: 'COMPLETED',
+			terminal: true,
+			at: t + 50,
+		} as any);
 		expect(a.session.liveReport()?.callLogId).toBe('L5');
 	});
 });
@@ -1217,5 +1264,130 @@ describe('what the server adds about the call (LZT-2144)', () => {
 		expect(r.callLogId).toBe('L2');
 		expect(r.ringDuration).toBeUndefined();
 		expect(r.callerId).toBeUndefined();
+	});
+});
+
+describe('a second call while one is up (LZT-2169)', () => {
+	const liveOf = (t: Tab) =>
+		[...writes[t.name]].reverse().find(w => w.path === 'Store.callLive')?.value;
+	const callOf = (t: Tab) =>
+		[...writes[t.name]].reverse().find(w => w.path === 'Store.call')?.value;
+	const f = (callLogId: string, status: string, at: number, extra: any = {}) =>
+		({ callLogId, status, terminal: false, at, direction: 'inbound', ...extra }) as any;
+
+	test("the second caller's frames never replace the call going on, in any tab, nor end it", async () => {
+		jest.useFakeTimers({ doNotFake: ['queueMicrotask'] });
+		try {
+			const tabs = new FakeTabs();
+			const a = loadTab('A', tabs);
+			const b = loadTab('B', tabs);
+			const pa = connect(a);
+			await jest.advanceTimersByTimeAsync(10);
+			await pa;
+			const pb = connect(b);
+			await jest.advanceTimersByTimeAsync(500);
+			await pb;
+			const sdk = a.adapters[0];
+			const t0 = Date.now();
+			a.session.liveFrame(f('L1', 'RINGING', t0, { customerPhoneNumber: '8143118272' }));
+			sdk.emit({
+				status: 'ringing',
+				direction: 'inbound',
+				callId: 'c1',
+				from: '+918143118272',
+			});
+			sdk.emit({ status: 'connected' });
+			a.session.liveFrame(f('L1', 'IN_PROGRESS', t0 + 2000));
+			await jest.advanceTimersByTimeAsync(11000);
+
+			// The second caller: the event stream in both tabs and the poll of the newest call log.
+			const t1 = Date.now();
+			b.session.liveFrame(f('L2', 'RINGING', t1, { customerPhoneNumber: '7995115729' }));
+			a.session.liveFrame(f('L2', 'RINGING', t1 + 10, { customerPhoneNumber: '7995115729' }));
+			await jest.advanceTimersByTimeAsync(30000);
+			a.session.liveFrame(
+				f('L2', 'MISSED', Date.now(), { terminal: true, ringDuration: 32 }),
+			);
+			b.session.liveFrame(
+				f('L2', 'MISSED', Date.now(), { terminal: true, ringDuration: 32 }),
+			);
+			await jest.advanceTimersByTimeAsync(5000);
+			await flush();
+			for (const t of [a, b])
+				expect(liveOf(t)).toMatchObject({
+					callLogId: 'L1',
+					status: 'IN_PROGRESS',
+					customerPhoneNumber: '8143118272',
+				});
+			expect(sdk.hangup).not.toHaveBeenCalled();
+			expect(callOf(a)).toMatchObject({ status: 'connected', callId: 'c1' });
+
+			// The first call ends: its own end is shown and ends the call.
+			a.session.liveFrame(
+				f('L1', 'COMPLETED', Date.now(), { terminal: true, talkDuration: 63 }),
+			);
+			await jest.advanceTimersByTimeAsync(a.session.SERVER_END_GRACE_MS + 10);
+			await flush();
+			expect(sdk.hangup).toHaveBeenCalledWith('c1');
+			expect(callOf(a).status).toBe('ended');
+			for (const t of [a, b])
+				expect(liveOf(t)).toMatchObject({
+					callLogId: 'L1',
+					terminal: true,
+					talkDuration: 63,
+				});
+
+			// The poll keeps returning the newest call log (the missed second call): the summary stays.
+			a.session.liveFrame(f('L2', 'MISSED', Date.now(), { terminal: true }));
+			b.session.liveFrame(f('L2', 'MISSED', Date.now(), { terminal: true }));
+			await flush();
+			for (const t of [a, b]) expect(liveOf(t).callLogId).toBe('L1');
+
+			// A later call of this browser is reported as usual.
+			await jest.advanceTimersByTimeAsync(60000);
+			sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c3' });
+			a.session.liveFrame(f('L3', 'RINGING', Date.now()));
+			await flush();
+			for (const t of [a, b]) expect(liveOf(t).callLogId).toBe('L3');
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	test('a second call while the first is ending (summary up, its end not yet heard) stays out', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		const sdk = a.adapters[0];
+		const t0 = Date.now();
+		sdk.emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		sdk.emit({ status: 'connected' });
+		a.session.liveFrame(f('L1', 'IN_PROGRESS', t0));
+		sdk.emit({ status: 'ended' });
+		a.session.liveFrame(f('L2', 'RINGING', t0 + 100));
+		a.session.liveFrame(f('L1', 'COMPLETED', t0 + 200, { terminal: true, talkDuration: 20 }));
+		expect(a.session.liveReport()).toMatchObject({ callLogId: 'L1', terminal: true });
+	});
+
+	test('with no call connection, an in-progress call is replaced only by another call in progress', () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const t = Date.now();
+		a.session.liveFrame(f('L1', 'IN_PROGRESS', t), 'Store.callLive');
+		a.session.liveFrame(f('L2', 'RINGING', t + 100), 'Store.callLive');
+		a.session.liveFrame(f('L2', 'NO_ANSWER', t + 200, { terminal: true }), 'Store.callLive');
+		expect(a.session.liveReport()?.callLogId).toBe('L1');
+		a.session.liveFrame(f('L2', 'IN_PROGRESS', t + 300), 'Store.callLive');
+		expect(a.session.liveReport()?.callLogId).toBe('L2');
+	});
+
+	test('a call ringing while no call is up still replaces an ended report', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		const t = Date.now();
+		a.session.liveFrame(f('L1', 'COMPLETED', t, { terminal: true }));
+		a.session.liveFrame(f('L2', 'RINGING', t + 100));
+		expect(a.session.liveReport()?.callLogId).toBe('L2');
 	});
 });
