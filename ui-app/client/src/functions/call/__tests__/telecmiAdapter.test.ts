@@ -6,6 +6,7 @@ import {
 	createTelecmiAdapter,
 	DEFAULT_REGION,
 	RING_TIME_SECONDS,
+	SIGN_OUT_WAIT_MS,
 	TELECMI_SDK_URL,
 } from '../telecmiAdapter';
 import { CallStatePatch } from '../types';
@@ -23,7 +24,9 @@ class FakePiopiy {
 	unMute = jest.fn();
 	hold = jest.fn();
 	unHold = jest.fn();
-	removeAllListeners = jest.fn();
+	removeAllListeners = jest.fn(() => {
+		this.handlers.clear();
+	});
 	constructor(public options: any) {
 		FakePiopiy.instances.push(this);
 	}
@@ -176,11 +179,14 @@ describe('telecmi adapter', () => {
 		sdk.fire('inComingCall', { from: 'a', call_id: 'c1' });
 		sdk.fire('answered', { call_id: 'c1' });
 		patches = [];
-		adapter.disconnect();
+		const done = adapter.disconnect();
 		expect(sdk.terminate).toHaveBeenCalled();
 		expect(sdk.logout).toHaveBeenCalled();
-		expect(sdk.removeAllListeners).toHaveBeenCalled();
+		// The listeners stay until the SDK says the sign out finished.
+		expect(sdk.removeAllListeners).not.toHaveBeenCalled();
 		sdk.fire('logout', { code: 200 });
+		await done;
+		expect(sdk.removeAllListeners).toHaveBeenCalled();
 		expect(patches).toEqual([]);
 		expect(() => adapter.answer()).toThrow('TeleCMI is not connected.');
 	});
@@ -290,5 +296,74 @@ describe('telecmi adapter faults found against the real bundle (LZT-2165 8a to 8
 		expect(() => adapter.mute(true)).not.toThrow();
 		sdk.unMute.mockImplementation(() => undefined);
 		expect(() => adapter.mute(false)).toThrow('TeleCMI did not unmute the call.');
+	});
+	test('LZT-2163: disconnect waits for the socket to close when the SDK sends no logout', async () => {
+		const { adapter, sdk } = await registered();
+		patches = [];
+		let finished = false;
+		const done = Promise.resolve(adapter.disconnect()).then(() => (finished = true));
+		await Promise.resolve();
+		expect(finished).toBe(false);
+		sdk.fire('disconnected', {});
+		await done;
+		expect(finished).toBe(true);
+		expect(sdk.removeAllListeners).toHaveBeenCalled();
+		// A closed socket of a phone let go is not a drop to report.
+		expect(patches.filter(p => p.status === 'registering')).toEqual([]);
+	});
+
+	test('LZT-2163: a sign out while the socket reconnects is not swallowed: the phone that signs back in is signed out', async () => {
+		const { adapter, sdk } = await registered();
+		sdk.fire('disconnected', {});
+		expect(patches[patches.length - 1]).toEqual({ status: 'registering' });
+		patches = [];
+		const done = adapter.disconnect();
+		// The SDK answers logout on a reconnecting socket with "Please login".
+		sdk.fire('error', { code: 1002, status: 'Please login' });
+		await done;
+		expect(sdk.logout).toHaveBeenCalledTimes(1);
+		// Its own reconnect signs it in again a moment later.
+		sdk.fire('login', { code: 200 });
+		expect(sdk.logout).toHaveBeenCalledTimes(2);
+		sdk.fire('login', { code: 200 });
+		expect(sdk.logout).toHaveBeenCalledTimes(3);
+		sdk.fire('inComingCall', { from: 'a', call_id: 'late' });
+		expect(patches).toEqual([]);
+	});
+
+	test('LZT-2163: a sign out the SDK never confirms is bounded', async () => {
+		jest.useFakeTimers();
+		try {
+			const { adapter } = await registered();
+			let finished = false;
+			const done = Promise.resolve(adapter.disconnect()).then(() => (finished = true));
+			await jest.advanceTimersByTimeAsync(SIGN_OUT_WAIT_MS - 10);
+			expect(finished).toBe(false);
+			await jest.advanceTimersByTimeAsync(20);
+			await done;
+			expect(finished).toBe(true);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	test('LZT-2166: sendDtmf sends one key; a key the SDK refuses or a bad key throws', async () => {
+		const { adapter, sdk } = await registered();
+		(sdk as any).sendDtmf = jest.fn();
+		sdk.fire('inComingCall', { from: 'a', call_id: 'c1' });
+		sdk.fire('answered', {});
+		adapter.sendDtmf!('7');
+		expect((sdk as any).sendDtmf).toHaveBeenCalledWith('7');
+		expect(() => adapter.sendDtmf!('A')).toThrow('"A" is not a keypad key.');
+		(sdk as any).sendDtmf = jest.fn(() =>
+			sdk.fire('error', { code: 1005, status: 'Invalid DTMF' }),
+		);
+		expect(() => adapter.sendDtmf!('9')).toThrow(
+			'TeleCMI would not send that key: Invalid DTMF',
+		);
+		// A refusal that comes later lands in the state as an error.
+		patches = [];
+		sdk.fire('error', { code: 1005, status: 'Invalid DTMF' });
+		expect(patches).toEqual([{ error: 'TeleCMI would not send that key: Invalid DTMF' }]);
 	});
 });

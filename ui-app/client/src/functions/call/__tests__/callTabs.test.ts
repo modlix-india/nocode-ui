@@ -80,6 +80,7 @@ class FakeAdapter {
 	hangup = jest.fn();
 	mute = jest.fn();
 	hold = jest.fn();
+	sendDtmf = jest.fn();
 	disconnect = jest.fn();
 	onStateChange(l: any) {
 		this.listener = l;
@@ -96,6 +97,8 @@ interface Tab {
 	last: () => any;
 	out: FakeOut;
 	browser: FakeBrowser;
+	/** The credential server function calls this tab made. */
+	fetches: string[];
 }
 
 /** A tab's view of the browser for the hidden tab alerts. */
@@ -191,7 +194,13 @@ function loadTab(name: string, tabs: FakeTabs): Tab {
 		const browser = new FakeBrowser();
 		const alerts = require('../alerts');
 		session.useCallAlerts(new alerts.CallAlerts(() => browser));
+		const fetches: string[] = [];
+		require('../credentials').setCredentialFetcher(async (fn: string) => {
+			fetches.push(fn);
+			return { enabled: true, credential: `secret-for-${name}`, providerUserId: 'agent-7' };
+		});
 		tab = {
+			fetches,
 			name,
 			session,
 			adapters,
@@ -1389,5 +1398,66 @@ describe('a second call while one is up (LZT-2169)', () => {
 		a.session.liveFrame(f('L1', 'COMPLETED', t, { terminal: true }));
 		a.session.liveFrame(f('L2', 'RINGING', t + 100));
 		expect(a.session.liveReport()?.callLogId).toBe('L2');
+	});
+});
+
+describe('LZT-2162 and LZT-2166 across tabs', () => {
+	const connectFetched = async (tab: Tab) => {
+		const p = tab.session.connect('fake', undefined, 'Store.call', '_global', {
+			credentialsFunction: 'LeadZumpV2.callAgentCredential',
+		});
+		await flush();
+		return p;
+	};
+
+	test('only the tab that signs in asks for the credential; a follower asks when it takes over', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connectFetched(a);
+		await connectFetched(b);
+		expect(a.fetches).toHaveLength(1);
+		expect(b.fetches).toHaveLength(0);
+		expect(a.adapters[0].register).toHaveBeenCalledWith(
+			expect.objectContaining({ password: 'secret-for-A', userId: 'agent-7' }),
+		);
+
+		tabs.closeTab('A');
+		await wait(b.session.TAB_HELLO_MS + 50);
+		await flush();
+		expect(b.fetches).toHaveLength(1);
+		expect(b.adapters[0].register).toHaveBeenCalledWith(
+			expect.objectContaining({ password: 'secret-for-B' }),
+		);
+		for (const t of [a, b]) {
+			expect(JSON.stringify(writes[t.name])).not.toContain('secret-for');
+			expect(JSON.stringify(t.session.activeCallState() ?? {})).not.toContain('secret-for');
+		}
+	});
+
+	test('a follower sends a keypad key and away to the tab holding the phone', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		const b = loadTab('B', tabs);
+		await connectFetched(a);
+		await connectFetched(b);
+		a.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId: 'c1' });
+		a.adapters[0].emit({ status: 'connected' });
+		await flush();
+		await b.session.sendDtmf('3');
+		expect(a.adapters[0].sendDtmf).toHaveBeenCalledWith('3');
+
+		a.adapters[0].emit({ status: 'ended' });
+		await flush();
+		await b.session.setAvailability(false);
+		await flush();
+		expect(a.adapters[0].disconnect).toHaveBeenCalledTimes(1);
+		expect(a.last()).toMatchObject({ status: 'idle', away: true });
+		expect(b.last()).toMatchObject({ status: 'idle', away: true, otherTab: true });
+		try {
+			localStorage.clear();
+		} catch {
+			// No storage here.
+		}
 	});
 });
