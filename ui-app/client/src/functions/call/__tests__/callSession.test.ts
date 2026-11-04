@@ -333,7 +333,26 @@ describe('UIEngine.Call', () => {
 		expect(r.result.error).toBe('A call is in progress. Hang up before connecting again.');
 
 		first.emit({ status: 'ended' });
-		await connected();
+		// The same phone again keeps its sign in (LZT-2158).
+		r = await exec(new Connect(), {
+			provider: 'fake',
+			credentials: { password: 'pw-123', user: 'agent1' },
+			statePath: 'Store.call',
+		});
+		expect(r.event).toBe('output');
+		expect(adapters).toHaveLength(1);
+		expect(first.disconnect).not.toHaveBeenCalled();
+
+		// Another phone replaces it.
+		adapter = undefined as unknown as FakeAdapter;
+		const p = exec(new Connect(), {
+			provider: 'fake',
+			credentials: { user: 'agent2', password: 'pw-456' },
+			statePath: 'Store.call',
+		});
+		await registerCalled();
+		adapter.finishRegister();
+		await p;
 		expect(adapters).toHaveLength(2);
 		expect(first.disconnect).toHaveBeenCalled();
 

@@ -178,6 +178,25 @@ export class Hold extends CallFunction {
 	}
 }
 
+const EXPECT = signature(
+	'Expect',
+	[Parameter.ofEntry('on', Schema.ofBoolean('on').setDefaultValue(true))],
+	'Tells the call engine the page is placing a call, so the agent leg it rings is not an incoming call',
+).setDocumentation(
+	"# UIEngine.Call.Expect\n\nClick to call rings the agent's own browser first, and the provider's SDK reports that leg as an incoming call. Run Expect with `on` true just before asking the server to place the call: the next call that rings in this browser within 20 seconds is then taken as the agent's own leg. It is marked `direction` outbound with `ringBack` true (a ring back plays, never the incoming ring, and no incoming call card or alert shows), and the tab holding the phone answers it at once, so no other tab has to. Run it with `on` false when placing the call failed. In a tab that does not hold the call it is sent to the tab that does.\n\n## Parameters\n\n- **on** (Boolean, optional, default: true)\n\n" +
+		EVENTS_DOC,
+);
+
+export class Expect extends CallFunction {
+	protected run(context: FunctionExecutionParameters): Promise<CallState> {
+		return session.expectOutbound(context.getArguments()?.get('on') !== false);
+	}
+
+	getSignature(): FunctionSignature {
+		return EXPECT;
+	}
+}
+
 const VIEW = signature(
 	'View',
 	[Parameter.ofEntry('collapsed', Schema.ofAny('collapsed'))],

@@ -67,6 +67,8 @@ interface Session {
 	cancelWait?: () => void;
 	/** A follower keeps them, in memory only, to sign in if the owner tab goes away. */
 	credentials?: CallCredentials;
+	/** Which phone this session is (provider and a digest of the credentials), see sameSession. */
+	identity: string;
 	factory?: CallAdapterFactory;
 	pending: Map<string, { resolve: () => void; reject: (e: Error) => void; timer: any }>;
 	gotOwnerState?: () => void;
@@ -188,9 +190,47 @@ function dismissEnded(session: Session, callId?: string) {
 	write(session);
 }
 
+/**
+ * How long after the page says it is placing a call (Expect) the next ringing call is taken as
+ * the agent's own leg of it. Click to call rings the agent's browser first, and the provider SDK
+ * reports that leg as an incoming call.
+ */
+export const OUTBOUND_CLAIM_MS = 20000;
+let expectUntil = 0;
+/** The agent's own leg now up: its callId, or '' when the provider gave none. */
+let ownLeg: string | undefined;
+
+/**
+ * The agent's own leg of a call being placed (LZT-2160): the first ring after Expect is marked
+ * outbound, and a later event of that leg never turns it back into an incoming call.
+ */
+function ownLegPatch(
+	session: Session,
+	prev: CallState,
+	patch: CallStatePatch,
+): { patch: CallStatePatch; own: boolean } {
+	if (
+		session.role !== 'follower' &&
+		patch.status === 'ringing' &&
+		!IN_CALL.has(prev.status) &&
+		Date.now() < expectUntil
+	) {
+		expectUntil = 0;
+		ownLeg = patch.callId ?? '';
+		return { patch: { ...patch, direction: 'outbound' }, own: true };
+	}
+	const sameLeg = !patch.callId || ownLeg === '' || patch.callId === ownLeg;
+	if (patch.direction === 'inbound' && ownLeg !== undefined && IN_CALL.has(prev.status) && sameLeg) {
+		const { direction, ...rest } = patch;
+		return { patch: rest, own: false };
+	}
+	return { patch, own: false };
+}
+
 /** Merges an adapter's report into the state, with the rules every provider shares. */
-function apply(session: Session, patch: CallStatePatch) {
+function apply(session: Session, reported: CallStatePatch) {
 	const prev = session.state;
+	const { patch, own } = ownLegPatch(session, prev, reported);
 	let next: CallState = { ...prev, ...patch };
 
 	// A new call starts clean: no mute, start time or error left from the last one.
@@ -228,10 +268,44 @@ function apply(session: Session, patch: CallStatePatch) {
 		boundLog = undefined;
 		if (endTimer) clearTimeout(endTimer);
 		endTimer = undefined;
+		ownLeg = undefined;
 	}
+	// The own leg rings back (never in) until the far end answers, and is answered here at once.
+	if (own) next.ringBack = true;
 
 	session.state = next;
 	write(session);
+	if (own) void answerOwnLeg(session);
+}
+
+/**
+ * Answers the agent's own leg in the tab holding the phone: no round trip to the tab the call was
+ * placed from, so a busy or hidden tab can no longer leave it ringing until it fails.
+ */
+async function answerOwnLeg(session: Session) {
+	const id = session.state.callId;
+	try {
+		await ensureMicrophone();
+		if (active === session && session.state.status === 'ringing' && session.state.callId === id)
+			await session.adapter!.answer(id);
+	} catch (e) {
+		if (active === session && IN_CALL.has(session.state.status))
+			apply(session, { error: e instanceof Error ? e.message : String(e) });
+	}
+}
+
+/**
+ * The page is placing a call (`on` true) or the placing failed (`on` false). With `on`, the next
+ * call that rings within OUTBOUND_CLAIM_MS is the agent's own leg of it.
+ */
+export async function expectOutbound(on = true): Promise<CallState> {
+	const session = current();
+	if (session.role === 'follower') {
+		await toOwner(session, 'expect', { on });
+		return session.state;
+	}
+	expectUntil = on ? Date.now() + OUTBOUND_CLAIM_MS : 0;
+	return session.state;
 }
 
 function current(): Session {
@@ -407,6 +481,7 @@ async function runForTab(session: Session, m: any) {
 		} else if (m.op === 'dismiss') dismissEnded(session, m.callId || undefined);
 		else if (m.op === 'mute') await mute(!!m.on);
 		else if (m.op === 'hold') await hold(!!m.on);
+		else if (m.op === 'expect') await expectOutbound(m.on !== false);
 		else if (m.op === 'view') {
 			if (typeof m.collapsed === 'boolean') setView(session, m.collapsed);
 		} else if (m.op === 'answering') {
@@ -464,6 +539,38 @@ function closeTabs(session: Session) {
 	if (session.lockName) getTabSync()?.release(session.lockName);
 }
 
+/** Whether a tab still answers as the call tab within TAB_HELLO_MS. */
+function ownerAnswers(session: Session): Promise<boolean> {
+	return new Promise<boolean>(resolve => {
+		const timer = setTimeout(() => {
+			session.gotOwnerState = undefined;
+			resolve(false);
+		}, TAB_HELLO_MS);
+		session.gotOwnerState = () => {
+			clearTimeout(timer);
+			session.gotOwnerState = undefined;
+			resolve(true);
+		};
+		session.channel?.post({ t: 'hello' });
+	});
+}
+
+/** How long a follower that found the call tab still there waits before it queues for the lock again. */
+export const STEP_BACK_MS = 5000;
+
+/** Gives the lock back to the tab that still holds the call and queues for it again later. */
+function stepBack(session: Session) {
+	const tabs = getTabSync();
+	if (active !== session || !session.lockName || !tabs) return;
+	const lockName = session.lockName;
+	tabs.release(lockName);
+	const timer = setTimeout(() => {
+		if (active === session && session.role === 'follower')
+			session.cancelWait = tabs.waitLead(lockName, () => takeOver(session));
+	}, STEP_BACK_MS);
+	session.cancelWait = () => clearTimeout(timer);
+}
+
 /** The owner tab went away: this follower signs in and holds calls from now on. */
 async function takeOver(session: Session) {
 	if (active !== session || session.role !== 'follower') {
@@ -471,6 +578,11 @@ async function takeOver(session: Session) {
 		return;
 	}
 	session.cancelWait = undefined;
+	// A free lock alone does not prove the call tab is gone (AB-1013): a tab that still answers
+	// holds the call, so this one gives the lock back and keeps following, and never signs in
+	// over it (the provider keeps one sign in per agent and the newest drops the call).
+	if (IN_CALL.has(session.state.status) && (await ownerAnswers(session))) return stepBack(session);
+	if (active !== session || session.role !== 'follower') return;
 	const { otherTab, ...rest } = session.state;
 	// This tab holds the call now and plays its sounds itself.
 	if (rest.soundTab === TAB_ID) rest.soundTab = undefined;
@@ -540,6 +652,38 @@ async function signIn(session: Session, factory: CallAdapterFactory, credentials
 	if (active === session) sounds.prefetch();
 }
 
+/** Same keys in any order give the same text; values only, no key is dropped. */
+function stableText(v: any): string {
+	if (v === null || typeof v !== 'object') return JSON.stringify(v) ?? 'undefined';
+	if (Array.isArray(v)) return `[${v.map(stableText).join(',')}]`;
+	return `{${Object.keys(v)
+		.sort()
+		.map(k => `${JSON.stringify(k)}:${stableText(v[k])}`)
+		.join(',')}}`;
+}
+
+/** The provider and a digest of the credentials (FNV-1a), so the password itself is not kept. */
+function identityOf(provider: string, credentials: CallCredentials): string {
+	const text = stableText(credentials);
+	let h = 0x811c9dc5;
+	for (let i = 0; i < text.length; i++) {
+		h ^= text.charCodeAt(i);
+		h = Math.imul(h, 0x01000193);
+	}
+	return `${provider}:${(h >>> 0).toString(36)}:${text.length}`;
+}
+
+/**
+ * A Connect for the phone this tab already has (same provider and credentials, not failed). The
+ * page runs Connect from a Timer, and a Timer fires once per mount, so any remount of the shell
+ * ran it again. Signing out and in again released the tab lock to another tab, which signed in
+ * too, and the provider keeps one sign in per agent: the newest logged the call tab out and
+ * dropped its call (LZT-2141, AB-1012). Such a Connect now keeps the session as it is.
+ */
+function sameSession(session: Session, identity: string): boolean {
+	return session.identity === identity && session.generation !== -1 && session.state.status !== 'error';
+}
+
 export async function connect(
 	provider: string,
 	credentials: CallCredentials,
@@ -551,6 +695,17 @@ export async function connect(
 	if (!factory) throw new CallError(`Unknown call provider "${provider}".`);
 	if (!credentials || typeof credentials !== 'object')
 		throw new CallError('credentials are required.');
+
+	const identity = identityOf(provider.trim().toLowerCase(), credentials);
+	if (active && sameSession(active, identity)) {
+		const session = active;
+		if (session.statePath !== statePath || session.pageName !== pageName) {
+			session.statePath = statePath;
+			session.pageName = pageName;
+			show(session);
+		}
+		return duplicate(session.state);
+	}
 
 	if (active) {
 		if (IN_CALL.has(active.state.status))
@@ -566,6 +721,7 @@ export async function connect(
 		generation: ++generation,
 		role: 'solo',
 		pending: new Map(),
+		identity,
 	};
 	active = session;
 
@@ -830,8 +986,43 @@ function liveRank(r: LiveReport): number {
 	return r.terminal ? 3 : r.status === 'IN_PROGRESS' ? 2 : 1;
 }
 
+/**
+ * The calls the server reported, by callLogId: when this tab first heard of each and whether it
+ * ended. TeleCMI sends a call's final record again about five minutes later (with the recording),
+ * and leg events reach the page on the next 30 s tick, so frames of an earlier call keep arriving
+ * while the next one is up (LZT-2156).
+ */
+const heard = new Map<string, { first: number; ended: boolean }>();
+const HEARD_MAX = 50;
+
+function hear(report: LiveReport) {
+	const h = heard.get(report.callLogId);
+	if (h) {
+		if (report.terminal) h.ended = true;
+		return;
+	}
+	heard.set(report.callLogId, { first: report.at, ended: report.terminal });
+	if (heard.size > HEARD_MAX) heard.delete(heard.keys().next().value!);
+}
+
+/** Within this, a call still reported as going on is taken as the current one. */
+const CURRENT_CALL_MS = 10 * 60 * 1000;
+
+/**
+ * A frame of another call that must not replace the current report: a call heard of before the
+ * current one, or the end of a call this tab never followed while the current call goes on.
+ */
+function olderCall(prev: LiveReport | undefined, next: LiveReport): boolean {
+	if (!prev || prev.callLogId === next.callLogId) return false;
+	const p = heard.get(prev.callLogId);
+	const n = heard.get(next.callLogId);
+	if (n) return !!p && n.first < p.first;
+	return next.terminal && !prev.terminal && next.at - prev.at < CURRENT_CALL_MS;
+}
+
 /** The report after `next` arrives, or `prev` itself when `next` adds nothing. */
 export function mergeLive(prev: LiveReport | undefined, next: LiveReport): LiveReport {
+	if (olderCall(prev, next)) return prev!;
 	const same = !!prev && prev.callLogId === next.callLogId;
 	if (same && liveRank(next) < liveRank(prev!)) return prev!;
 	const answeredFrom = [
@@ -869,6 +1060,7 @@ function sameLive(a: LiveReport | undefined, b: LiveReport): boolean {
 
 function applyLive(report: LiveReport, own: boolean) {
 	const merged = mergeLive(live, report);
+	hear(report);
 	const changed = !sameLive(live, merged);
 	live = merged;
 	// Written again even when nothing changed: the page may have written its own view meanwhile.
@@ -887,12 +1079,24 @@ function applyLive(report: LiveReport, own: boolean) {
 function serverEnd(report: LiveReport, merged: LiveReport) {
 	const session = active;
 	if (!session || session.role === 'follower' || !IN_CALL.has(session.state.status)) return;
-	if (!boundLog && !report.terminal && report.at >= callSince - 5000) boundLog = report.callLogId;
+	if (!boundLog && bindable(report, merged)) boundLog = report.callLogId;
 	if (!merged.terminal || !boundLog || boundLog !== merged.callLogId || endTimer) return;
 	endTimer = setTimeout(() => {
 		endTimer = undefined;
 		void endByServer(session);
 	}, SERVER_END_GRACE_MS);
+}
+
+/**
+ * The server's call is the call up in the browser: a frame not an end, of a call first heard of
+ * around when this call came up, that has not ended already. A leftover frame of the call before
+ * (a leg event on the next tick, the final record sent again) once got bound, and its end then
+ * hung up the new call (LZT-2156).
+ */
+function bindable(report: LiveReport, merged: LiveReport): boolean {
+	if (report.terminal || merged.callLogId !== report.callLogId) return false;
+	const h = heard.get(report.callLogId);
+	return !!h && !h.ended && h.first >= callSince - 5000 && report.at >= callSince - 5000;
 }
 
 async function endByServer(session: Session) {
