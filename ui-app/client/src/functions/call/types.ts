@@ -23,6 +23,11 @@ export interface CallState {
 	 * and the same in every tab (set with `UIEngine.Call.View`).
 	 */
 	collapsed?: boolean;
+	/**
+	 * Epoch milliseconds when the call first rang here, stamped by the tab that holds the call, so
+	 * every tab counts the ring from the same moment (LZT-2161).
+	 */
+	ringAt?: number;
 	/** Epoch milliseconds when the call connected. */
 	startedAt?: number;
 	/** Epoch milliseconds when a connected or ringing call ended. */

@@ -366,4 +366,25 @@ describe('telecmi adapter faults found against the real bundle (LZT-2165 8a to 8
 		sdk.fire('error', { code: 1005, status: 'Invalid DTMF' });
 		expect(patches).toEqual([{ error: 'TeleCMI would not send that key: Invalid DTMF' }]);
 	});
+
+	test('LZT-2166: the SDK refusing a tone with 1002 (not established, no call) throws too', async () => {
+		const { adapter, sdk } = await registered();
+		sdk.fire('inComingCall', { from: 'a', call_id: 'c1' });
+		sdk.fire('answered', {});
+		// What piopiyjs 0.26.6 does inside sendDtmf when the session is not established.
+		for (const status of ['dtmf not allowed', 'call not found', 'Please login']) {
+			(sdk as any).sendDtmf = jest.fn(() => sdk.fire('error', { code: 1002, status }));
+			patches = [];
+			expect(() => adapter.sendDtmf!('1')).toThrow(`TeleCMI would not send that key: ${status}`);
+			// Reported once, as the refusal, not also as a stray error in the state.
+			expect(patches).toEqual([]);
+		}
+		// After the refusal, the next tone that the SDK takes is sent normally.
+		(sdk as any).sendDtmf = jest.fn();
+		expect(() => adapter.sendDtmf!('2')).not.toThrow();
+		expect((sdk as any).sendDtmf).toHaveBeenCalledWith('2');
+		// An unrelated SDK error outside a tone still lands in the state.
+		sdk.fire('error', { code: 1002, status: 'hold not allowed' });
+		expect(patches).toEqual([{ error: 'hold not allowed' }]);
+	});
 });
