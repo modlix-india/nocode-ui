@@ -164,6 +164,37 @@ export const GREY_STYLE = [
 	{ featureType: 'water', elementType: 'labels', stylers: [{ visibility: 'off' }] },
 ];
 
+// ADZ-1435: the Dark grey look, the Grey look for a dark page: dark grey land, darker water, names in light grey
+export const DARK_GREY_STYLE = [
+	{ elementType: 'geometry', stylers: [{ color: '#2b2b2b' }] },
+	{ elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+	{ elementType: 'labels.text.fill', stylers: [{ color: '#9a9a9a' }] },
+	{ elementType: 'labels.text.stroke', stylers: [{ color: '#1f1f1f' }] },
+	{
+		featureType: 'administrative',
+		elementType: 'geometry.stroke',
+		stylers: [{ color: '#4a4a4a' }],
+	},
+	{ featureType: 'administrative.land_parcel', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'administrative.neighborhood', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'poi', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'road', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'transit', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'water', elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
+	{ featureType: 'water', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+];
+
+/**
+ * The look options a map is made with. Without a map id: Grey and Dark grey style the map. With one, the map id's own
+ * style wins; Dark grey then asks for its dark colour scheme (ADZ-1435).
+ */
+export function lookOptions(mapLook?: string, mapId?: string): Record<string, any> {
+	if (mapId) return mapLook === 'GREY_DARK' ? { colorScheme: 'DARK' } : {};
+	if (mapLook === 'GREY') return { styles: GREY_STYLE, backgroundColor: '#eeeeee' };
+	if (mapLook === 'GREY_DARK') return { styles: DARK_GREY_STYLE, backgroundColor: '#2b2b2b' };
+	return {};
+}
+
 /** ADZ-1407: the tag text of a place: "Pin" for a dropped pin, else its name up to the first comma. */
 export function labelOf(pl: Place): string {
 	if (String(pl.type ?? '').toUpperCase() === 'CUSTOM_LOCATION') return 'Pin';
@@ -433,10 +464,8 @@ function MapPicker(props: Readonly<ComponentProps>) {
 					clickableIcons: false,
 					// ADZ-1217: a map id whose style has the boundary layers on draws places' real outlines
 					...(mapId ? { mapId } : {}),
-					// ADZ-1407: the Grey look, only without a map id (whose style wins)
-					...(!mapId && mapLook === 'GREY'
-						? { styles: GREY_STYLE, backgroundColor: '#eeeeee' }
-						: {}),
+					// ADZ-1407: the Grey look, only without a map id (whose style wins); ADZ-1435: Dark grey
+					...lookOptions(mapLook, mapId),
 				});
 				live.current = { google, map };
 				// a fit asked for before the map first settles is lost, so it is held until then
@@ -698,7 +727,10 @@ function MapPicker(props: Readonly<ComponentProps>) {
 	]);
 
 	return (
-		<div className="comp compMapPicker" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={'comp compMapPicker' + (mapLook === 'GREY_DARK' ? ' _dark' : '')}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			{apiKey && !failed ? (
 				<div className="_map" ref={holder} />

@@ -123,13 +123,18 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Map look',
 		description:
-			'Standard is Google’s own look. Grey is a quiet grey map (light grey land, darker water, no roads, places of interest or transit), so the drawn places stand out. A Map ID brings its own style, so the look applies only without one.',
+			'Standard is Google’s own look. Grey is a quiet grey map (light grey land, darker water, no roads, places of interest or transit), so the drawn places stand out. Dark grey is the same for a dark page (dark grey land, light names, dark place tags). A Map ID brings its own style, so the look applies only without one; with a Map ID, Dark grey asks for the map style’s dark colour scheme.',
 		editor: ComponentPropertyEditor.ENUM,
 		group: ComponentPropertyGroup.BASIC,
 		defaultValue: 'STANDARD',
 		enumValues: [
 			{ name: 'STANDARD', displayName: 'Standard', description: 'Google’s own look' },
 			{ name: 'GREY', displayName: 'Grey', description: 'A quiet grey map' },
+			{
+				name: 'GREY_DARK',
+				displayName: 'Dark grey',
+				description: 'A quiet dark grey map, for a dark page',
+			},
 		],
 	},
 	{

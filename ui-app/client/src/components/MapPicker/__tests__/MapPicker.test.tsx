@@ -140,7 +140,13 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 		}),
 }));
 
-import MapPicker, { GREY_STYLE, labelOf, placeFit } from '../LazyMapPicker';
+import MapPicker, {
+	DARK_GREY_STYLE,
+	GREY_STYLE,
+	labelOf,
+	lookOptions,
+	placeFit,
+} from '../LazyMapPicker';
 
 const definition = {
 	key: 'mp',
@@ -523,6 +529,43 @@ describe('ADZ-1407: the Grey look and the place tags', () => {
 		render();
 		await settle();
 		expect(tags).toHaveLength(0);
+	});
+
+	test('ADZ-1435: Dark grey styles the map dark without a map id and asks a map id for its dark scheme', async () => {
+		properties = { apiKey: 'k', mapLook: 'GREY_DARK' };
+		render();
+		await settle();
+		expect(mapOpts.styles).toBe(DARK_GREY_STYLE);
+		expect(mapOpts.backgroundColor).toBe('#2b2b2b');
+		expect(mapOpts.colorScheme).toBeUndefined();
+		expect(host.querySelector('.compMapPicker._dark')).not.toBeNull();
+		act(() => root.unmount());
+		root = createRoot(host);
+		properties = { apiKey: 'k', mapLook: 'GREY_DARK', mapId: 'm1' };
+		render();
+		await settle();
+		expect(mapOpts.mapId).toBe('m1');
+		expect(mapOpts.styles).toBeUndefined();
+		expect(mapOpts.colorScheme).toBe('DARK');
+	});
+
+	test('ADZ-1435: lookOptions keeps Standard and Grey as they were', () => {
+		expect(lookOptions(undefined, undefined)).toEqual({});
+		expect(lookOptions('STANDARD', undefined)).toEqual({});
+		expect(lookOptions('GREY', undefined)).toEqual({
+			styles: GREY_STYLE,
+			backgroundColor: '#eeeeee',
+		});
+		expect(lookOptions('GREY', 'm1')).toEqual({});
+		expect(lookOptions('STANDARD', 'm1')).toEqual({});
+	});
+
+	test('a map without Dark grey has no dark class', async () => {
+		properties = { apiKey: 'k', mapLook: 'GREY' };
+		render();
+		await settle();
+		expect(host.querySelector('.compMapPicker')).not.toBeNull();
+		expect(host.querySelector('.compMapPicker._dark')).toBeNull();
 	});
 
 	test('labelOf: up to the first comma, Pin for a dropped pin', () => {
