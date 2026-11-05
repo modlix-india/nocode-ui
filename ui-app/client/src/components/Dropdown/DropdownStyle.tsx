@@ -178,6 +178,12 @@ export default function DropdownStyle({
             gap: 10px;
         }
 
+        ${PREFIX} ._dropdownItemSubLabel {
+            display: block;
+            font-size: 0.86em;
+            opacity: 0.75;
+        }
+
         ${PREFIX} ._dropdownSearchBoxContainer {
             width: 100%;
             display: flex;

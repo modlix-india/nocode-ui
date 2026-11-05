@@ -594,6 +594,160 @@ describe('open direction and height', () => {
 		expect(panel().classList.contains('_atBottom')).toBe(false);
 		expect(panel().style.maxHeight).toBe('');
 	});
+
+	// ADZ-1432 / ADZ-1449: a wizard field low in the window opened its list upward over the
+	// section above, or downward over the sticky Continue bar.
+	describe('openBelow and listBottomGap', () => {
+		let scrollTop = 0;
+		beforeEach(() => {
+			scrollTop = 0;
+			container.style.overflowY = 'auto';
+			Object.defineProperty(container, 'scrollHeight', { configurable: true, value: 2000 });
+			Object.defineProperty(container, 'clientHeight', { configurable: true, value: 746 });
+			Object.defineProperty(container, 'scrollTop', {
+				configurable: true,
+				get: () => scrollTop,
+				set: (v: number) => {
+					scrollTop = v;
+				},
+			});
+		});
+
+		it('without openBelow still flips above (old behaviour kept)', () => {
+			field = { top: 560, bottom: 600 };
+			natural = 245;
+			render();
+			openPanel();
+			expect(panel().classList.contains('_atBottom')).toBe(true);
+			expect(scrollTop).toBe(0);
+		});
+
+		it('scrolls the page up to make room, then opens below', () => {
+			properties = serverSearchedProperties({ openBelow: true });
+			field = { top: 560, bottom: 600 };
+			natural = 245;
+			render();
+			openPanel();
+			// room below was 746 - 600 - 8 = 138; the list needs 245
+			expect(scrollTop).toBe(245 - 138);
+			field = { top: 560 - 107, bottom: 600 - 107 };
+			act(() => {
+				window.dispatchEvent(new Event('scroll'));
+			});
+			expect(panel().classList.contains('_atBottom')).toBe(false);
+			expect(panel().style.maxHeight).toBe('');
+		});
+
+		it('keeps listBottomGap free under the list', () => {
+			properties = serverSearchedProperties({ openBelow: true, listBottomGap: 72 });
+			field = { top: 100, bottom: 140 };
+			natural = 2417;
+			Object.defineProperty(container, 'scrollHeight', { configurable: true, value: 746 });
+			render();
+			openPanel();
+			expect(panel().classList.contains('_atBottom')).toBe(false);
+			expect(panel().style.maxHeight).toBe(`${746 - 140 - 72}px`);
+		});
+
+		it('lengthens a page that cannot scroll far enough with a spacer under the field', () => {
+			properties = serverSearchedProperties({ openBelow: true });
+			Object.defineProperty(container, 'scrollHeight', { configurable: true, value: 800 });
+			field = { top: 650, bottom: 690 };
+			natural = 245;
+			render();
+			openPanel();
+			// room below 746 - 690 - 8 = 48, need 197; the page could scroll 54 only, so the
+			// spacer adds the missing 143 in the flow, after the field in its container
+			const spacer = document.querySelector<HTMLElement>('._dropdownRoomSpacer');
+			expect(spacer).not.toBeNull();
+			expect(spacer!.style.height).toBe(`${197 - 54}px`);
+			expect(spacer!.parentElement).toBe(container);
+			act(() => {
+				controlInput().blur();
+			});
+			expect(document.querySelector('._dropdownRoomSpacer')).toBeNull();
+		});
+
+		it('opens above only when no usable room can be made below', () => {
+			properties = serverSearchedProperties({ openBelow: true });
+			Object.defineProperty(container, 'scrollHeight', { configurable: true, value: 746 });
+			field = { top: 650, bottom: 690 };
+			natural = 245;
+			render();
+			openPanel();
+			expect(scrollTop).toBe(0);
+			expect(panel().classList.contains('_atBottom')).toBe(true);
+		});
+	});
+});
+
+describe('focusSearchOnOpen', () => {
+	it('puts the cursor in the search box when the list opens', () => {
+		properties = serverSearchedProperties({ focusSearchOnOpen: true, searchLabel: 'Search' });
+		render();
+		openPanel();
+		const box = document.querySelector<HTMLInputElement>('._dropdownSearchBox');
+		expect(box).not.toBeNull();
+		expect(document.activeElement).toBe(box);
+		expect(box!.placeholder).toBe('Search');
+		// the list stays open although the control's own input lost the focus
+		expect(optionLabels()).toEqual(['CLIENT A', 'Fincity', 'RajaAvinash']);
+	});
+
+	it('leaves the focus on the control by default', () => {
+		render();
+		openPanel();
+		expect(document.activeElement).toBe(controlInput());
+	});
+
+	it('still navigates with the arrow keys from the search box', () => {
+		properties = serverSearchedProperties({ focusSearchOnOpen: true });
+		render();
+		openPanel();
+		const box = document.querySelector<HTMLInputElement>('._dropdownSearchBox')!;
+		act(() => {
+			box.dispatchEvent(new KeyboardEvent('keyup', { key: 'ArrowDown', bubbles: true }));
+		});
+		expect(hoveredLabels()).toEqual(['CLIENT A']);
+	});
+});
+
+describe('subLabelKey', () => {
+	const ACCOUNTS = [
+		{ code: 'A1', name: 'Cityville', ext: '852565919728055' },
+		{ code: 'A2', name: 'Raja IRA', ext: '1061033056474626' },
+		{ code: 'A3', name: 'No id' },
+	];
+
+	beforeEach(() => {
+		properties = serverSearchedProperties({
+			data: ACCOUNTS,
+			onSearch: undefined,
+			subLabelKey: 'ext',
+		});
+	});
+
+	const subLabels = () =>
+		Array.from(document.querySelectorAll('._dropdownItemSubLabel')).map(e => e.textContent);
+
+	it('shows the key under each option that has it', () => {
+		render();
+		openPanel();
+		expect(subLabels()).toEqual(['852565919728055', '1061033056474626']);
+	});
+
+	it('matches the search on the sub label too', () => {
+		render();
+		typeSearch('1061');
+		expect(optionLabels()).toEqual(['Raja IRA1061033056474626']);
+	});
+
+	it('renders no sub label without the property', () => {
+		properties = serverSearchedProperties({ data: ACCOUNTS, onSearch: undefined });
+		render();
+		openPanel();
+		expect(subLabels()).toEqual([]);
+	});
 });
 
 // ── a Dropdown whose row moved in a repeater ─────────────────────────────────

@@ -13,6 +13,7 @@ const runEventMock = jest.fn().mockResolvedValue(undefined);
 jest.mock('../../util/runEvent', () => ({ runEvent: (...a: any[]) => runEventMock(...a) }));
 
 const storeValues = new Map<string, any>();
+const childWatches: Array<{ cb: () => void; paths: string[] }> = [];
 jest.mock('../../../context/StoreContext', () => ({
 	PageStoreExtractor: { getForContext: () => ({ getPageName: () => 'p' }) },
 	UrlDetailsExtractor: { getForContext: () => ({}) },
@@ -22,6 +23,11 @@ jest.mock('../../../context/StoreContext', () => ({
 		path: string,
 	) => {
 		cb(path, storeValues.get(path));
+		return () => {};
+	},
+	// ADZ-1503: the map's watch on its place lists (children included)
+	addListenerWithChildrenActivity: (_p: string, cb: () => void, ...paths: string[]) => {
+		childWatches.push({ cb, paths });
 		return () => {};
 	},
 	getPathFromLocation: (bp: any) => bp?.value ?? bp,
@@ -146,6 +152,7 @@ import MapPicker, {
 	labelOf,
 	lookOptions,
 	placeFit,
+	placePaths,
 } from '../LazyMapPicker';
 
 const definition = {
@@ -175,6 +182,8 @@ beforeEach(() => {
 	views.length = 0;
 	mapOpts = undefined;
 	tags.length = 0;
+	childWatches.length = 0;
+	delete definition.properties;
 });
 afterEach(() => act(() => root.unmount()));
 
@@ -572,5 +581,49 @@ describe('ADZ-1407: the Grey look and the place tags', () => {
 		expect(labelOf({ name: 'Karnataka, India', type: 'region' })).toBe('Karnataka');
 		expect(labelOf({ name: 'Pin 1, 2', type: 'CUSTOM_LOCATION' })).toBe('Pin');
 		expect(labelOf({})).toBe('');
+	});
+});
+
+describe('ADZ-1503: a radius changed inside the place list redraws the map', () => {
+	const settle = () =>
+		act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+
+	test('placePaths: the store paths of the place properties, none for a value', () => {
+		expect(
+			placePaths(
+				{ location: { type: 'EXPRESSION', expression: 'Page.w.locations' } },
+				{ location: { type: 'EXPRESSION', expression: 'Page.a.b ? Page.a.b : Page.tmp0' } },
+				{ value: [{ name: 'x' }] },
+				undefined,
+			),
+		).toEqual(['Page.w.locations', 'Page.a.b', 'Page.tmp0']);
+		expect(placePaths({ location: { expression: 'Parent.places' } })).toEqual([]);
+	});
+
+	test('an edit inside the bound list (no new list) draws the new circle', async () => {
+		definition.properties = {
+			places: { location: { type: 'EXPRESSION', expression: 'Page.w.locations' } },
+		};
+		const list: any[] = [{ name: 'Mysuru, Karnataka, India', type: 'city' }];
+		properties = { apiKey: 'k', places: list };
+		render();
+		await settle();
+		expect(drawn.filter(d => d.kind === 'circle')).toHaveLength(0);
+		expect(childWatches.map(w => w.paths)).toEqual([['Page.w.locations']]);
+		// the store writes the radius into the same place object, so the resolved props look unchanged
+		list[0].radius = 20;
+		act(() => childWatches[0].cb());
+		await settle();
+		const circles = drawn.filter(d => d.kind === 'circle');
+		expect(circles.map(c => Math.round(c.opts.radius))).toEqual([20000]);
+	});
+
+	test('a map without place bindings watches nothing', async () => {
+		properties = { apiKey: 'k', places: [{ name: 'Mysuru' }] };
+		render();
+		await settle();
+		expect(childWatches).toHaveLength(0);
 	});
 });

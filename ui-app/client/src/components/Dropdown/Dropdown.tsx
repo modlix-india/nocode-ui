@@ -37,7 +37,6 @@ import { propertiesDefinition, stylePropertiesDefinition } from './dropdownPrope
 import { styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
 import { MOUSE_LEAVE_CLOSE_DELAY, openFloating } from '../util/floatingLayer';
 
-
 type DropdownOption = { label: any; value: any; key: any; originalObjectKey?: any };
 
 // Gap kept between an open list and the window edge, and the least height a capped list keeps.
@@ -56,18 +55,28 @@ function findScrollParent(from: HTMLElement | null | undefined): HTMLElement | u
 	return doc && doc.scrollHeight > doc.clientHeight ? doc : undefined;
 }
 
+// How far the field's scroll parent can still scroll down, and how far it may scroll
+// before the field's own top leaves it.
+function scrollRoom(input: HTMLElement | null, fieldTop: number) {
+	const scroller = findScrollParent(input);
+	if (!scroller) return undefined;
+	const scrollerTop =
+		scroller === document.scrollingElement ? 0 : scroller.getBoundingClientRect().top;
+	return {
+		scroller,
+		canScroll: Math.max(scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop, 0),
+		fieldRoom: Math.max(fieldTop - scrollerTop - DROPDOWN_VIEWPORT_EDGE, 0),
+	};
+}
+
 // Scroll the field's scroll parent up by `need` px (as far as it can, never past the
 // field's own top). True when it scrolled.
 function scrollForRoom(input: HTMLElement | null, fieldTop: number, need: number): boolean {
-	const scroller = findScrollParent(input);
-	if (!scroller) return false;
-	const scrollerTop =
-		scroller === document.scrollingElement ? 0 : scroller.getBoundingClientRect().top;
-	const canScroll = scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop;
-	const fieldRoom = Math.max(fieldTop - scrollerTop - DROPDOWN_VIEWPORT_EDGE, 0);
-	const shift = Math.floor(Math.min(need, canScroll, fieldRoom));
+	const r = scrollRoom(input, fieldTop);
+	if (!r) return false;
+	const shift = Math.floor(Math.min(need, r.canScroll, r.fieldRoom));
 	if (shift <= 0) return false;
-	scroller.scrollTop += shift;
+	r.scroller.scrollTop += shift;
 	return true;
 }
 
@@ -449,12 +458,20 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	// openBelow scrolls the page once per opening to make room under the field.
 	const scrolledForRoom = useRef(false);
+	// A field near the end of the page has nothing left to scroll. Like a list placed under
+	// the field in the page flow, an invisible spacer then lengthens the page while the
+	// list is open, so the page can scroll the list into view. It sits IN the flow, as the
+	// last child of the field's own container (so what follows the field moves down under
+	// the list, and a sticky footer after the content stays at the bottom); an absolutely
+	// placed one would only stretch the overflow and lift such a footer with it.
+	const [roomSpacer, setRoomSpacer] = useState<number | undefined>(undefined);
 	const searchBoxRef = useRef<HTMLInputElement>(null);
 
 	useLayoutEffect(() => {
 		if (!showDropdown) {
 			setWrapperRect(null);
 			scrolledForRoom.current = false;
+			setRoomSpacer(undefined);
 			return;
 		}
 		updateWrapperRect();
@@ -750,8 +767,19 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					// scroll moves the field, the scroll listener re-measures it, and this runs
 					// again with the new room.
 					if (openBelow && natural > below && !scrolledForRoom.current) {
+						const need = natural - below;
+						const r = scrollRoom(inputRef.current, parentRect.top);
+						if (
+							r &&
+							roomSpacer === undefined &&
+							r.canScroll < need &&
+							r.fieldRoom > r.canScroll
+						) {
+							setRoomSpacer(Math.ceil(Math.min(need, r.fieldRoom) - r.canScroll));
+							return;
+						}
 						scrolledForRoom.current = true;
-						if (scrollForRoom(inputRef.current, parentRect.top, natural - below)) return;
+						if (scrollForRoom(inputRef.current, parentRect.top, need)) return;
 					}
 					// openBelow stays below while the room there holds a usable list.
 					const atBottom = openBelow
@@ -933,6 +961,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	const spacerHost = roomSpacer
+		? (inputRef.current?.closest('.compDropdown')?.parentElement ?? undefined)
+		: undefined;
+
 	return (
 		<CommonInputText
 			id={key}
@@ -1018,6 +1050,22 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			}}
 		>
 			{dropdownContainer}
+			{roomSpacer && spacerHost
+				? ReactDOM.createPortal(
+						<div
+							aria-hidden="true"
+							className="_dropdownRoomSpacer"
+							style={{
+								width: 1,
+								height: roomSpacer,
+								flex: '0 0 auto',
+								pointerEvents: 'none',
+								visibility: 'hidden',
+							}}
+						/>,
+						spacerHost,
+					)
+				: undefined}
 		</CommonInputText>
 	);
 }
