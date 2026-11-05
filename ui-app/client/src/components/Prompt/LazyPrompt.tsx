@@ -3579,7 +3579,34 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							</button>
 						)}
 						<div className="_promptTopRight">
-							{enablePreview && previewTarget && !previewOpen && (
+							{savedObjects.length > 0 && (
+					<div className="_promptSavedNotice">
+						{/* The asymmetry made visible, and it is two asymmetries, not one.
+						    A drafted write is reviewable and waits for Publish; a live one
+						    is already in front of everyone. Collapsing them into a single
+						    "saved" line was the more alarming of the two claims applied to
+						    both. */}
+						<i className="fa fa-circle-info" aria-hidden="true" />
+						<span>
+							{savedNoticeLines(savedObjects).map((line, i) => (
+								<React.Fragment key={line}>
+									{i > 0 && <br />}
+									{line}
+								</React.Fragment>
+							))}
+						</span>
+						<button
+							type="button"
+							className="_promptSavedDismiss"
+							title="Dismiss"
+							onClick={() => setSavedObjects([])}
+						>
+							<i className="fa fa-xmark" aria-hidden="true" />
+						</button>
+					</div>
+				)}
+				{/* After the draft bar and the saved notice: the panels about what was saved come first, then the offer to look at it. */}
+				{enablePreview && previewTarget && !previewOpen && (
 								<button
 									className="_promptPreviewOpenButton"
 									onClick={openPreview}
@@ -3909,32 +3936,6 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							onClick={openPreview}
 						>
 							Show the page
-						</button>
-					</div>
-				)}
-				{savedObjects.length > 0 && (
-					<div className="_promptSavedNotice">
-						{/* The asymmetry made visible, and it is two asymmetries, not one.
-						    A drafted write is reviewable and waits for Publish; a live one
-						    is already in front of everyone. Collapsing them into a single
-						    "saved" line was the more alarming of the two claims applied to
-						    both. */}
-						<i className="fa fa-circle-info" aria-hidden="true" />
-						<span>
-							{savedNoticeLines(savedObjects).map((line, i) => (
-								<React.Fragment key={line}>
-									{i > 0 && <br />}
-									{line}
-								</React.Fragment>
-							))}
-						</span>
-						<button
-							type="button"
-							className="_promptSavedDismiss"
-							title="Dismiss"
-							onClick={() => setSavedObjects([])}
-						>
-							<i className="fa fa-xmark" aria-hidden="true" />
 						</button>
 					</div>
 				)}

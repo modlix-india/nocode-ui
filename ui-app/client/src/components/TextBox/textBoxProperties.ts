@@ -277,6 +277,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
+		name: 'onEscape',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'On Escape',
+		editor: ComponentPropertyEditor.EVENT_SELECTOR,
+		description:
+			'Event to be triggered when Escape is pressed in the box (for example to close a list it opened).',
+		group: ComponentPropertyGroup.EVENTS,
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		enumValues: [
 			...COMMON_COMPONENT_PROPERTIES.designType.enumValues!,

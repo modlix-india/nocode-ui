@@ -16,7 +16,8 @@ export interface Block {
 export interface BlockPropField {
 	key: string;
 	label: string;
-	kind: 'text' | 'textarea' | 'number' | 'color' | 'select' | 'code';
+	/** `image`: a URL box with an Upload button that stores the picture in the client's public files. */
+	kind: 'text' | 'textarea' | 'number' | 'color' | 'select' | 'code' | 'image';
 	options?: { value: string; label: string }[];
 	placeholder?: string;
 }
@@ -158,7 +159,7 @@ export const BLOCK_TYPES: Record<BlockType, BlockTypeDef> = {
 		icon: 'fa-image',
 		defaults: { src: '', alt: '', width: 600, align: 'center', href: '' },
 		fields: [
-			{ key: 'src', label: 'Image URL', kind: 'text' },
+			{ key: 'src', label: 'Image URL', kind: 'image' },
 			{ key: 'alt', label: 'Alt text', kind: 'text' },
 			{ key: 'width', label: 'Width (px)', kind: 'number' },
 			{ key: 'align', label: 'Align', kind: 'select', options: ALIGN_OPTIONS },
