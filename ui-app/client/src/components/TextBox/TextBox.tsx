@@ -147,6 +147,7 @@ function TextBox(props: Readonly<ComponentProps>) {
 			messageDisplay,
 			autoComplete,
 			onClear,
+			onEscape,
 			onChange,
 			autoFocus,
 			designType,
@@ -652,7 +653,20 @@ function TextBox(props: Readonly<ComponentProps>) {
 	};
 	const clickEvent = onEnter ? props.pageDefinition.eventFunctions?.[onEnter] : undefined;
 
+	const escapeEvent = onEscape ? props.pageDefinition.eventFunctions?.[onEscape] : undefined;
+
 	const handleKeyUp = async (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+		// ADZ-1408: Escape runs On Escape (a list the box opened closes)
+		if (e.key === 'Escape' && escapeEvent) {
+			await runEvent(
+				escapeEvent,
+				onEscape,
+				props.context.pageName,
+				props.locationHistory,
+				props.pageDefinition,
+			);
+			return;
+		}
 		if (!clickEvent || isLoading || e.key !== 'Enter') return;
 		if (!updateStoreImmediately) {
 			handleBlur(e as unknown as React.FocusEvent<HTMLInputElement>);

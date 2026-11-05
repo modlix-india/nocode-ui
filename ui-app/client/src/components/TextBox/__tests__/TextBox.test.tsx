@@ -90,7 +90,10 @@ const CHANGE_EVENT = 'onAmountChange';
 const PAGE_DEFINITION = {
 	name: 'testpage',
 	translations: {},
-	eventFunctions: { [CHANGE_EVENT]: { name: 'amountChanged', steps: {} } },
+	eventFunctions: {
+		[CHANGE_EVENT]: { name: 'amountChanged', steps: {} },
+		onEsc: { name: 'escaped', steps: {} },
+	},
 };
 
 function numberProperties(overrides: Record<string, any> = {}) {
@@ -679,5 +682,35 @@ describe('text box', () => {
 		expect(writtenValues()).toEqual([]);
 		blur();
 		expect(writtenValues()).toEqual(['ab']);
+	});
+});
+
+// ── ADZ-1408: On Escape ──────────────────────────────────────────────────────
+
+describe('On Escape', () => {
+	const keyUp = (key: string) =>
+		act(() => {
+			input().dispatchEvent(new KeyboardEvent('keyup', { key, bubbles: true }));
+		});
+
+	test('Escape runs On Escape, other keys do not', async () => {
+		render({ valueType: 'text', designType: '_default', onEscape: 'onEsc' });
+		runEventMock.mockClear();
+		keyUp('a');
+		expect(runEventMock).not.toHaveBeenCalled();
+		await act(async () => {
+			input().dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape', bubbles: true }));
+		});
+		expect(runEventMock).toHaveBeenCalledTimes(1);
+		expect(runEventMock.mock.calls[0][1]).toBe('onEsc');
+	});
+
+	test('without On Escape, Escape does nothing', async () => {
+		render({ valueType: 'text', designType: '_default' });
+		runEventMock.mockClear();
+		await act(async () => {
+			input().dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape', bubbles: true }));
+		});
+		expect(runEventMock).not.toHaveBeenCalled();
 	});
 });

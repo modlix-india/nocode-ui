@@ -119,6 +119,29 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: '#6b7280',
 	},
 	{
+		name: 'mapLook',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Map look',
+		description:
+			'Standard is Google’s own look. Grey is a quiet grey map (light grey land, darker water, no roads, places of interest or transit), so the drawn places stand out. A Map ID brings its own style, so the look applies only without one.',
+		editor: ComponentPropertyEditor.ENUM,
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: 'STANDARD',
+		enumValues: [
+			{ name: 'STANDARD', displayName: 'Standard', description: 'Google’s own look' },
+			{ name: 'GREY', displayName: 'Grey', description: 'A quiet grey map' },
+		],
+	},
+	{
+		name: 'placeLabels',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Place labels',
+		description:
+			'Show each chosen or excluded place’s name in a small tag at its centre (the part of the name before the first comma; "Pin" for a dropped pin). Suggested places get none.',
+		group: ComponentPropertyGroup.BASIC,
+		defaultValue: false,
+	},
+	{
 		name: 'onPlaceClick',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'On place click',
