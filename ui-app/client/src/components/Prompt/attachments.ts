@@ -10,7 +10,8 @@
 /** One attachment as `GET /sessions/{id}` returns it. */
 export interface HistoryAttachment {
 	id: number;
-	kind: 'chat' | 'generated';
+	/** chat = the user attached it; generated = a tool made it; screenshot = a page the agent looked at. */
+	kind: 'chat' | 'generated' | 'screenshot';
 	type: 'image' | 'file';
 	name: string;
 	mime_type?: string;
@@ -62,7 +63,7 @@ function toAttachments(raw: HistoryAttachment[], prefix: string): Attachment[] {
  * Split one turn's attachments between the two messages it becomes.
  *
  * What the user attached goes back onto their own message; what a tool
- * generated goes onto the reply. Both arrive on the same history row because
+ * generated, and the screenshots the agent took, go onto the reply. Both arrive on the same history row because
  * both belong to the same turn, and putting a generated image above the
  * question that produced it would read as the user having supplied it.
  */
@@ -73,11 +74,11 @@ export function splitTurnAttachments(
 	if (!raw?.length) return { user: [], assistant: [] };
 	return {
 		user: toAttachments(
-			raw.filter(a => a.kind !== 'generated'),
+			raw.filter(a => a.kind === 'chat' || !a.kind),
 			`hist_att_u_${index}`,
 		),
 		assistant: toAttachments(
-			raw.filter(a => a.kind === 'generated'),
+			raw.filter(a => a.kind === 'generated' || a.kind === 'screenshot'),
 			`hist_att_a_${index}`,
 		),
 	};

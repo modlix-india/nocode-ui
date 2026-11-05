@@ -46,11 +46,15 @@ let layers: any[] = [];
 // ADZ-1257: what the Geocoder answers per address (null: nothing found; absent: a place with bounds, no types)
 let GEOCODED: Record<string, any> = {};
 const views: any[] = [];
+// ADZ-1407: the options the map was made with, and the name tags shown on it
+let mapOpts: any;
+const tags: Array<{ text: string; cls: string; map: any }> = [];
 jest.mock('../../../util/googleMapsLoader', () => ({
 	loadGoogleMaps: () =>
 		Promise.resolve({
 			maps: {
-				Map: function () {
+				Map: function (_el: any, opts: any) {
+					mapOpts = opts;
 					return {
 						addListener: (name: string, fn: any) => {
 							if (name === 'click') clickHandler = fn;
@@ -104,6 +108,19 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 						},
 					};
 				},
+				LatLng: function (lat: number, lng: number) {
+					return { lat, lng };
+				},
+				OverlayView: function (this: any) {
+					this.setMap = (m: any) => {
+						if (!m) return;
+						const div = document.createElement('div');
+						this.getPanes = () => ({ floatPane: div });
+						this.onAdd();
+						const el = div.firstChild as HTMLElement;
+						tags.push({ text: el.textContent ?? '', cls: el.className, map: m });
+					};
+				},
 				Marker: function (opts: any) {
 					drawn.push({ kind: 'marker', opts });
 					return { addListener: () => {}, setPosition: () => {}, setMap: () => {} };
@@ -123,7 +140,7 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 		}),
 }));
 
-import MapPicker, { placeFit } from '../LazyMapPicker';
+import MapPicker, { GREY_STYLE, labelOf, placeFit } from '../LazyMapPicker';
 
 const definition = {
 	key: 'mp',
@@ -150,6 +167,8 @@ beforeEach(() => {
 	layers = [];
 	GEOCODED = {};
 	views.length = 0;
+	mapOpts = undefined;
+	tags.length = 0;
 });
 afterEach(() => act(() => root.unmount()));
 
@@ -444,5 +463,71 @@ describe('ADZ-1257: Match Place Type', () => {
 			await new Promise(r => setTimeout(r, 0));
 		});
 		expect(views).toEqual([{ center: { lat: 20.5, lng: 78.9 } }, { zoom: 4 }]);
+	});
+});
+
+describe('ADZ-1407: the Grey look and the place tags', () => {
+	const settle = () =>
+		act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+
+	test('Grey styles the map only without a map id', async () => {
+		properties = { apiKey: 'k', mapLook: 'GREY' };
+		render();
+		await settle();
+		expect(mapOpts.styles).toBe(GREY_STYLE);
+		expect(mapOpts.backgroundColor).toBe('#eeeeee');
+		act(() => root.unmount());
+		root = createRoot(host);
+		properties = { apiKey: 'k', mapLook: 'GREY', mapId: 'm1' };
+		render();
+		await settle();
+		expect(mapOpts.mapId).toBe('m1');
+		expect(mapOpts.styles).toBeUndefined();
+	});
+
+	test('Standard keeps Google’s look', async () => {
+		properties = { apiKey: 'k' };
+		render();
+		await settle();
+		expect(mapOpts.styles).toBeUndefined();
+	});
+
+	test('chosen and excluded places get a tag, suggested ones and a map without Place labels none', async () => {
+		properties = {
+			apiKey: 'k',
+			placeLabels: true,
+			places: [
+				{ name: 'Bangalore, Karnataka, India', type: 'city' },
+				{
+					name: 'Pin 12.97, 77.75',
+					type: 'CUSTOM_LOCATION',
+					lat: 12.97,
+					lng: 77.75,
+					radius: 5,
+				},
+			],
+			excludedPlaces: [{ name: 'Mahadevapura, Bangalore', type: 'neighborhood' }],
+			suggestedPlaces: [{ name: 'Hosur, Tamil Nadu' }],
+		};
+		render();
+		await settle();
+		expect(tags.map(t => [t.text, t.cls])).toEqual([
+			['Bangalore', '_placeLabel'],
+			['Pin', '_placeLabel'],
+			['Mahadevapura', '_placeLabel _excluded'],
+		]);
+		tags.length = 0;
+		properties = { ...properties, placeLabels: false };
+		render();
+		await settle();
+		expect(tags).toHaveLength(0);
+	});
+
+	test('labelOf: up to the first comma, Pin for a dropped pin', () => {
+		expect(labelOf({ name: 'Karnataka, India', type: 'region' })).toBe('Karnataka');
+		expect(labelOf({ name: 'Pin 1, 2', type: 'CUSTOM_LOCATION' })).toBe('Pin');
+		expect(labelOf({})).toBe('');
 	});
 });

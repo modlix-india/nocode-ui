@@ -52,6 +52,18 @@ describe('splitTurnAttachments', () => {
 		expect(assistant[0].name).toBe('banner.png');
 	});
 
+	it('puts the screenshots the agent took on the reply', () => {
+		const shot: HistoryAttachment = {
+			...chatImage,
+			id: 3,
+			kind: 'screenshot',
+			name: 'drive_page: final',
+		};
+		const { user, assistant } = splitTurnAttachments([chatImage, shot], 0);
+		expect(user.map(a => a.name)).toEqual(['hero.png']);
+		expect(assistant.map(a => a.name)).toEqual(['drive_page: final']);
+	});
+
 	it('splits a turn that has both', () => {
 		const { user, assistant } = splitTurnAttachments([chatImage, generatedImage], 3);
 		expect(user.map(a => a.name)).toEqual(['hero.png']);

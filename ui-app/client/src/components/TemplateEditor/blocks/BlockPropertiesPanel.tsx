@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { uploadPastedFile } from '../../MarkdownEditor/uploadPastedFile';
 import { VariableEntry } from '../util/variableUtils';
 import {
 	Block,
@@ -13,6 +14,60 @@ interface BlockPropertiesPanelProps {
 	variables: VariableEntry[];
 	onChange: (props: Record<string, any>) => void;
 	onClose: () => void;
+}
+
+/** Where pictures uploaded into a mail go: the client's PUBLIC files, because a mail client cannot sign in. */
+export const TEMPLATE_IMAGES_PATH = '/templateImages';
+
+/** A picture URL a mail can load from anywhere: the files service answers with a site-relative one. */
+export function absoluteImageUrl(url: string, origin: string = globalThis.location?.origin ?? ''): string {
+	if (/^https?:\/\//i.test(url)) return url;
+	return `${origin}/${url.replace(/^\/+/, '')}`;
+}
+
+function ImageField({ value, onChange }: Readonly<{ value: any; onChange: (v: any) => void }>) {
+	const input = useRef<HTMLInputElement>(null);
+	const [busy, setBusy] = useState(false);
+	const [error, setError] = useState('');
+	const pick = async (file?: File) => {
+		if (!file) return;
+		setBusy(true);
+		setError('');
+		try {
+			onChange(absoluteImageUrl(await uploadPastedFile(file, 'STATIC', TEMPLATE_IMAGES_PATH)));
+		} catch (e: any) {
+			setError(e?.response?.status === 403 ? 'You cannot upload files here.' : 'Upload failed.');
+		} finally {
+			setBusy(false);
+			if (input.current) input.current.value = '';
+		}
+	};
+	return (
+		<div className="_bpImage">
+			<input
+				className="_bpInput"
+				value={value ?? ''}
+				placeholder="https://..."
+				onChange={e => onChange(e.target.value)}
+			/>
+			<button
+				type="button"
+				className="_bpUpload"
+				disabled={busy}
+				onClick={() => input.current?.click()}
+			>
+				{busy ? 'Uploading...' : 'Upload'}
+			</button>
+			<input
+				ref={input}
+				type="file"
+				accept="image/*"
+				style={{ display: 'none' }}
+				onChange={e => pick(e.target.files?.[0])}
+			/>
+			{error ? <div className="_bpError">{error}</div> : null}
+		</div>
+	);
 }
 
 function Field({
@@ -70,6 +125,8 @@ function Field({
 					))}
 				</select>
 			);
+		case 'image':
+			return <ImageField value={value} onChange={onChange} />;
 		case 'code':
 			return (
 				<textarea
