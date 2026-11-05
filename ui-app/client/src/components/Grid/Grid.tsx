@@ -25,6 +25,7 @@ import { propertiesDefinition, stylePropertiesDefinition } from './gridPropertie
 import { isNullValue } from '@fincity/kirun-js';
 import { styleProperties, styleDefaults } from './gridStyleProperties';
 import { IconHelper } from '../util/IconHelper';
+import { gridKeyboardProps } from './gridKeyboard';
 
 function Grid(props: Readonly<ComponentProps>) {
 	const location = useLocation();
@@ -69,6 +70,9 @@ function Grid(props: Readonly<ComponentProps>) {
 			resizeMin = 80,
 			resizeMax = 2000,
 			enablePersonalization = true,
+			keyboardClickable = false,
+			accessibleName,
+			pressed,
 		} = {},
 	} = useDefinition(
 		definition,
@@ -506,7 +510,7 @@ function Grid(props: Readonly<ComponentProps>) {
 			draggable: !!dragData,
 			className: `comp compGrid _noAnchorGrid _${layout} ${background} ${border} ${borderRadius} ${boxShadow} ${padding} ${
 				sepStyle ? `_${key}_grid_css` : ''
-			}${isResizable ? ' _resizableGrid' : ''}`,
+			}${isResizable ? ' _resizableGrid' : ''}${keyboardClickable && handleClick ? ' _keyboardClickable' : ''}`,
 			style: { ...(resolvedStyles.comp ?? {}), ...resizeStyle },
 
 			onClick: ev => {
@@ -515,6 +519,7 @@ function Grid(props: Readonly<ComponentProps>) {
 				handleClick?.();
 			},
 			id: key,
+			...gridKeyboardProps(keyboardClickable, handleClick, accessibleName, pressed),
 		},
 		[
 			<HelperComponent context={props.context} key={`${key}_hlp`} definition={definition} />,
