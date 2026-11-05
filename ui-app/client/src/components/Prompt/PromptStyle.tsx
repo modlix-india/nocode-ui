@@ -2786,6 +2786,23 @@ export default function PromptStyle({
 			flex-shrink: 0;
 		}
 
+		/* ─── Settings button ─── */
+		${PREFIX} ._settingsButton {
+			border: none;
+			background: transparent;
+			color: ${t('promptTertiaryFontColor', '#9b9b9b')};
+			font-size: 12px;
+			cursor: pointer;
+			padding: 4px 6px;
+			border-radius: 6px;
+			transition: background 0.15s, color 0.15s;
+		}
+
+		${PREFIX} ._settingsButton:hover {
+			background: ${t('surfaceColorTwo', '#f4f4f4')};
+			color: ${t('promptFontColor', '#1a1a1a')};
+		}
+
 		/* ─── Usage bar ─── */
 		${PREFIX} ._usageBar {
 			display: flex;

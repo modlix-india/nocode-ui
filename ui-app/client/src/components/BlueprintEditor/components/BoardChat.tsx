@@ -5,6 +5,7 @@ import { MarkdownParser } from '../../../commonComponents/Markdown/MarkdownParse
 import { ComponentDefinition } from '../../../types/common';
 import { SubHelperComponent } from '../../HelperComponents/SubHelperComponent';
 import { agentBaseUrl } from '../../Prompt/draftMode';
+import { urlClientCodeOf } from '../../Prompt/llmSettings';
 import { newSteerId, postSteer, QUEUED_NOTE, SteerQueue } from '../../Prompt/steer';
 
 /**
@@ -241,6 +242,7 @@ export default function BoardChat({
 			Authorization: token ? `Bearer ${token}` : '',
 			clientCode: (getDataFromPath('Store.auth.loggedInClientCode', []) ?? '') as string,
 			appCode: (getDataFromPath('Store.application.appCode', []) ?? '') as string,
+			urlClientCode: urlClientCodeOf(),
 		};
 	}, []);
 

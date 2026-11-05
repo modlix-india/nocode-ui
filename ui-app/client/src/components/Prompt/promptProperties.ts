@@ -421,10 +421,38 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'showSettingsButton',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Show Settings Button',
+		description:
+			"Show a settings (gear) button in the bottom bar that opens the Settings URL, for example the app's AI settings page.",
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'settingsButtonVisibility',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Settings Button Visibility',
+		description:
+			'Like Visibility, for the settings button alone: it shows only while this is true. Bind it to the authorities that may open the settings, for example Authorities.ROLE_Owner or Authorities.Client_UPDATE.',
+		defaultValue: true,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
+		name: 'settingsUrl',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Settings URL',
+		description:
+			'Where the settings button goes, for example /aiSettings. Same tab; ctrl or cmd click opens a new one. The button is hidden while this is empty.',
+		defaultValue: '',
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		name: 'selectedProviders',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Selected Providers',
-		description: 'Providers to show in model selector. If empty, all providers are shown.',
+		description:
+			'Providers to show in model selector when the default AI is in use. If empty, all providers are shown. A client with its own AI settings sees exactly the models those settings allow.',
 		multiValued: true,
 		defaultValue: [],
 		group: ComponentPropertyGroup.BASIC,
