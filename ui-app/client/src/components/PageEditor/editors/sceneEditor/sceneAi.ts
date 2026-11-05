@@ -13,6 +13,7 @@
 
 import { LOCAL_STORE_PREFIX, STORE_PREFIX } from '../../../../constants';
 import { getDataFromPath } from '../../../../context/StoreContext';
+import { urlClientCodeOf } from '../../../Prompt/llmSettings';
 import { normalizeSceneDocument, type SceneDocument } from '../../../util/three/sceneDocument';
 
 /**
@@ -77,6 +78,7 @@ export function sceneAiHeaders(): Record<string, string> {
 		Authorization: token ? `Bearer ${token}` : '',
 		clientCode: (getDataFromPath('Store.auth.loggedInClientCode', []) as string) ?? '',
 		appCode: (getDataFromPath(`${STORE_PREFIX}.application.appCode`, []) as string) ?? '',
+		urlClientCode: urlClientCodeOf(),
 	};
 }
 
