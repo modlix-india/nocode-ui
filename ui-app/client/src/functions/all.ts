@@ -16,6 +16,7 @@ export * from './ExecuteJSFunction';
 export * from './Refresh';
 export * from './EncodeURIComponent';
 export * from './DecodeURIComponent';
+export * from './CharacterCount';
 export * from './ScrollTo';
 export * from './ScrollToGrid';
 export * from './SelectTheme';
