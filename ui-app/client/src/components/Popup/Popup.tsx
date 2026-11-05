@@ -57,6 +57,7 @@ function Popup(props: Readonly<ComponentProps>) {
 			showInDesign,
 			modalPosition,
 			background,
+			restoreFocus,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -130,6 +131,23 @@ function Popup(props: Readonly<ComponentProps>) {
 			document.body.removeEventListener('keyup', escapeHandler);
 		};
 	}, [isActive, closeOnEscape, handleClose]);
+
+	// restoreFocus (opt-in): remember what had focus when the popup opened (usually the
+	// button that opened it) and give focus back to it when the popup closes, as a dialog
+	// should. Without the property nothing changes.
+	const openerRef = useRef<HTMLElement | null>(null);
+	React.useEffect(() => {
+		if (!restoreFocus) return;
+		if (isActive) {
+			const active = document.activeElement;
+			openerRef.current =
+				active instanceof HTMLElement && active !== document.body ? active : null;
+			return;
+		}
+		const opener = openerRef.current;
+		openerRef.current = null;
+		if (opener?.isConnected) opener.focus();
+	}, [isActive, restoreFocus]);
 
 	// While this popup is open, shortcuts registered inside it sit on their own layer
 	// and shortcuts on the page behind stop firing. An open dialog owns Ctrl+S outright

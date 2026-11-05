@@ -65,6 +65,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.EVENTS,
 	},
 	{
+		name: 'restoreFocus',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Restore focus on close',
+		description:
+			'When on, the element that had focus when the popup opened (usually the button that opened it) gets focus back when the popup closes.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'modelTitle',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Title of the modal',

@@ -1,6 +1,7 @@
 import {
 	SCHEMA_ANY_COMP_PROP,
 	SCHEMA_BOOL_COMP_PROP,
+	SCHEMA_NUM_COMP_PROP,
 	SCHEMA_STRING_COMP_PROP,
 } from '../../constants';
 import {
@@ -238,6 +239,40 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'focusSearchOnOpen',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Focus Search On Open',
+		description:
+			'When the list opens, put the cursor in its search box (needs Is Searchable), so typing filters at once.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'openBelow',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Open Below',
+		description:
+			'Open the list below the field: when it does not fit there, scroll the page up to make room first, and open above only when no usable room can be made.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'listBottomGap',
+		schema: SCHEMA_NUM_COMP_PROP,
+		displayName: 'List Bottom Gap',
+		description:
+			'Space in px the open list keeps free at the bottom of the window, e.g. for a sticky action bar.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'subLabelKey',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Sub Label Key',
+		description:
+			'Key (a dotted path) of each data row shown as a second, smaller line under the option label, e.g. an account id. Search matches it too.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'editRequestIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Edit Request Icon',
@@ -368,6 +403,10 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
+	],
+	dropdownItemSubLabel: [
+		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
+		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
 	dropdownItem: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,

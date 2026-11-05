@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
 	addListenerAndCallImmediately,
+	addListenerWithChildrenActivity,
 	getPathFromLocation,
 	PageStoreExtractor,
 	setData,
@@ -163,6 +164,56 @@ export const GREY_STYLE = [
 	{ featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d4d4d8' }] },
 	{ featureType: 'water', elementType: 'labels', stylers: [{ visibility: 'off' }] },
 ];
+
+// ADZ-1435: the Dark grey look, the Grey look for a dark page: dark grey land, darker water, names in light grey
+export const DARK_GREY_STYLE = [
+	{ elementType: 'geometry', stylers: [{ color: '#2b2b2b' }] },
+	{ elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+	{ elementType: 'labels.text.fill', stylers: [{ color: '#9a9a9a' }] },
+	{ elementType: 'labels.text.stroke', stylers: [{ color: '#1f1f1f' }] },
+	{
+		featureType: 'administrative',
+		elementType: 'geometry.stroke',
+		stylers: [{ color: '#4a4a4a' }],
+	},
+	{ featureType: 'administrative.land_parcel', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'administrative.neighborhood', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'poi', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'road', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'transit', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'water', elementType: 'geometry', stylers: [{ color: '#1a1a1a' }] },
+	{ featureType: 'water', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+];
+
+/**
+ * The look options a map is made with. Without a map id: Grey and Dark grey style the map. With one, the map id's own
+ * style wins; Dark grey then asks for its dark colour scheme (ADZ-1435).
+ */
+export function lookOptions(mapLook?: string, mapId?: string): Record<string, any> {
+	if (mapId) return mapLook === 'GREY_DARK' ? { colorScheme: 'DARK' } : {};
+	if (mapLook === 'GREY') return { styles: GREY_STYLE, backgroundColor: '#eeeeee' };
+	if (mapLook === 'GREY_DARK') return { styles: DARK_GREY_STYLE, backgroundColor: '#2b2b2b' };
+	return {};
+}
+
+/**
+ * ADZ-1503: the store paths a place property reads (Page.x, Store.x, LocalStore.x in its expression). A change
+ * INSIDE such a list (one place's radius written at Page.list[0].radius) reaches no listener on the list itself,
+ * and the store edits the place in place, so the resolved props look unchanged; the map watches these paths with
+ * their children to redraw.
+ */
+export function placePaths(...props: any[]): string[] {
+	const out = new Set<string>();
+	for (const p of props) {
+		const text = p?.location?.expression;
+		if (typeof text !== 'string') continue;
+		for (const m of Array.from(
+			text.matchAll(/(?:^|[^\w.])((?:Page|Store|LocalStore)(?:\.[A-Za-z_$][\w$]*)+)/g),
+		))
+			out.add(m[1]);
+	}
+	return Array.from(out);
+}
 
 /** ADZ-1407: the tag text of a place: "Pin" for a dropped pin, else its name up to the first comma. */
 export function labelOf(pl: Place): string {
@@ -433,10 +484,8 @@ function MapPicker(props: Readonly<ComponentProps>) {
 					clickableIcons: false,
 					// ADZ-1217: a map id whose style has the boundary layers on draws places' real outlines
 					...(mapId ? { mapId } : {}),
-					// ADZ-1407: the Grey look, only without a map id (whose style wins)
-					...(!mapId && mapLook === 'GREY'
-						? { styles: GREY_STYLE, backgroundColor: '#eeeeee' }
-						: {}),
+					// ADZ-1407: the Grey look, only without a map id (whose style wins); ADZ-1435: Dark grey
+					...lookOptions(mapLook, mapId),
 				});
 				live.current = { google, map };
 				// a fit asked for before the map first settles is lost, so it is held until then
@@ -582,6 +631,21 @@ function MapPicker(props: Readonly<ComponentProps>) {
 	// outlined with its real boundary when the map id has boundary layers, else drawn as before.
 	// ADZ-1257: with Match Place Type, a place looked up by name is drawn only when the lookup found that kind of
 	// place (placeFit): its real outline (map id), else the box of its bounds, else a marker; never another place.
+	// ADZ-1503: a change inside a place list (a radius edited on its own) re-renders the map, so it redraws
+	const [, setPlaceTick] = useState(0);
+	const placeWatch = placePaths(
+		definition.properties?.places,
+		definition.properties?.excludedPlaces,
+		definition.properties?.suggestedPlaces,
+	).join('|');
+	useEffect(() => {
+		if (!placeWatch) return;
+		return addListenerWithChildrenActivity(
+			pageExtractor.getPageName(),
+			() => setPlaceTick(t => t + 1),
+			...placeWatch.split('|'),
+		);
+	}, [placeWatch]);
 	const allPlaces = [
 		...placeList(places),
 		...placeList(suggestedPlaces, false, true),
@@ -698,7 +762,10 @@ function MapPicker(props: Readonly<ComponentProps>) {
 	]);
 
 	return (
-		<div className="comp compMapPicker" style={resolvedStyles.comp ?? {}}>
+		<div
+			className={'comp compMapPicker' + (mapLook === 'GREY_DARK' ? ' _dark' : '')}
+			style={resolvedStyles.comp ?? {}}
+		>
 			<HelperComponent context={props.context} definition={definition} />
 			{apiKey && !failed ? (
 				<div className="_map" ref={holder} />
