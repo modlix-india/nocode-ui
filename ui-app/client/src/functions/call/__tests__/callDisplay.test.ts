@@ -81,9 +81,17 @@ describe('LZT-2161: computeDisplay', () => {
 			const d = computeDisplay(state, live(), true, sec(9));
 			expectTyped(d);
 			expect(d.phase).toBe(phase);
-			expect(d).toMatchObject({ callId: '', callLogId: '', number: '', talkText: '', final: false });
+			expect(d).toMatchObject({
+				callId: '',
+				callLogId: '',
+				number: '',
+				talkText: '',
+				final: false,
+			});
 		}
-		expect(computeDisplay(cases[5][0], undefined, false, 0).error).toBe('TeleCMI sign in failed');
+		expect(computeDisplay(cases[5][0], undefined, false, 0).error).toBe(
+			'TeleCMI sign in failed',
+		);
 	});
 
 	test('incoming call: rings, talks from the connect, and freezes at the end', () => {
@@ -114,7 +122,12 @@ describe('LZT-2161: computeDisplay', () => {
 		const ended: S = { ...talking, status: 'ended', endedAt: sec(100) };
 		const atEnd = computeDisplay(ended, undefined, false, sec(100));
 		const later = computeDisplay(ended, undefined, false, sec(4000));
-		expect(atEnd).toMatchObject({ phase: 'ended', final: true, endedAt: sec(100), talkSec: 90 });
+		expect(atEnd).toMatchObject({
+			phase: 'ended',
+			final: true,
+			endedAt: sec(100),
+			talkSec: 90,
+		});
 		// The seconds never move after the end (LZT-2124).
 		expect(later).toEqual(atEnd);
 		expect(clockRuns(atEnd)).toBe(false);
@@ -149,10 +162,17 @@ describe('LZT-2161: computeDisplay', () => {
 
 		const answered = live({ status: 'IN_PROGRESS', at: sec(15), answeredAt: sec(15) });
 		d = computeDisplay(legUp, answered, true, sec(75));
-		expect(d).toMatchObject({ phase: 'talking', talkStartedAt: sec(15), talkSec: 60, ringSec: 15 });
+		expect(d).toMatchObject({
+			phase: 'talking',
+			talkStartedAt: sec(15),
+			talkSec: 60,
+			ringSec: 15,
+		});
 
 		// Held shows as held, with the same talk clock.
-		expect(computeDisplay({ ...legUp, held: true }, answered, true, sec(80)).phase).toBe('held');
+		expect(computeDisplay({ ...legUp, held: true }, answered, true, sec(80)).phase).toBe(
+			'held',
+		);
 	});
 
 	test('the server end stops the clock at once, before the phone reports it, and its durations win', () => {
@@ -266,7 +286,13 @@ describe('LZT-2161: computeDisplay', () => {
 			false,
 			sec(9999),
 		);
-		expect(d).toMatchObject({ phase: 'ended', final: true, ringSec: 0, talkSec: 0, endedAt: 0 });
+		expect(d).toMatchObject({
+			phase: 'ended',
+			final: true,
+			ringSec: 0,
+			talkSec: 0,
+			endedAt: 0,
+		});
 	});
 
 	test('a call lost with its tab shows why it ended; a live call never does', () => {
@@ -341,5 +367,58 @@ describe('LZT-2161: one engine clock', () => {
 		expect(sameDisplay(undefined, a)).toBe(false);
 		expect(sameDisplay(a, { ...a })).toBe(true);
 		expect(sameDisplay(a, { ...a, phase: 'away' })).toBe(false);
+	});
+});
+
+describe('LZT-2256: the talk start stamped by the tab holding the call', () => {
+	const talking: S = {
+		status: 'connected',
+		muted: false,
+		callId: 'leg1',
+		direction: 'outbound',
+		ringAt: sec(0),
+		startedAt: sec(2),
+	};
+
+	test("a mirror tab counts from the call tab's stamp, not from its own report", () => {
+		// Its own report started when it opened (60 s in), or is about another call.
+		const mine = live({ status: 'IN_PROGRESS', at: sec(64), answeredAt: sec(64) });
+		const d = computeDisplay(
+			{ ...talking, otherTab: true, talkAt: sec(4), callLogId: 'log-2' },
+			mine,
+			true,
+			sec(70),
+		);
+		expect(d).toMatchObject({
+			phase: 'talking',
+			talkStartedAt: sec(4),
+			talkSec: 66,
+			talkText: '01:06',
+		});
+		// The same for an incoming call: the stamp wins over any outbound report.
+		const inbound = computeDisplay(
+			{ ...talking, direction: 'inbound', otherTab: true, talkAt: sec(2) },
+			undefined,
+			false,
+			sec(70),
+		);
+		expect(inbound).toMatchObject({ phase: 'talking', talkStartedAt: sec(2), talkSec: 68 });
+	});
+
+	test('the call tab works the answer out itself and uses its stamp only when it has none', () => {
+		const answered = live({ status: 'IN_PROGRESS', at: sec(10), answeredAt: sec(4) });
+		expect(
+			computeDisplay({ ...talking, talkAt: sec(9) }, answered, true, sec(20)).talkStartedAt,
+		).toBe(sec(4));
+		// After taking a call over from a tab that closed, with no report of its own yet.
+		expect(
+			computeDisplay({ ...talking, talkAt: sec(4) }, undefined, false, sec(20)),
+		).toMatchObject({ phase: 'talking', talkStartedAt: sec(4), talkSec: 16 });
+		// No stamp and no answer: still dialling.
+		expect(computeDisplay(talking, undefined, false, sec(20))).toMatchObject({
+			phase: 'dialling',
+			talkStartedAt: 0,
+			talkText: '',
+		});
 	});
 });

@@ -18,7 +18,9 @@
  * - Clock: times are epoch ms stamped by the tab that holds the call and shared in its state, so
  *   every tab shows the same seconds. The ring runs from the first ring to the answer; the talk
  *   time from the far end answering: the server's answer for a call the agent placed (the
- *   agent's own leg connects first), the phone's connect for an incoming call.
+ *   agent's own leg connects first), the phone's connect for an incoming call. The tab holding
+ *   the call stamps that answer and the server call it bound into the shared state (`talkAt`,
+ *   `callLogId`); every other tab shows the stamp (LZT-2256).
  * - End: the earlier of the phone's end and the server's end fixes `endedAt` and `final`; the
  *   seconds never move after it. The provider's own durations, once reported, win.
  * - Never null: every field is always present with a typed empty value.
@@ -26,15 +28,7 @@
 import { CallState } from './types';
 
 export type CallPhase =
-	| 'off'
-	| 'ready'
-	| 'away'
-	| 'dialling'
-	| 'ringing'
-	| 'talking'
-	| 'held'
-	| 'ended'
-	| 'error';
+	'off' | 'ready' | 'away' | 'dialling' | 'ringing' | 'talking' | 'held' | 'ended' | 'error';
 
 /** What the server reports about a call (the session's merged LiveReport), as far as shown. */
 export interface DisplayLive {
@@ -142,11 +136,24 @@ type DisplayState = CallState & { ringAt?: number };
  * When the far end answered. For a call the agent placed only the server knows: the agent's own
  * leg connects first and rings back. For an incoming call the phone's connect is the answer.
  */
-function talkStart(s: DisplayState, lv: DisplayLive | undefined, outbound: boolean): number {
+function ownTalkStart(s: DisplayState, lv: DisplayLive | undefined, outbound: boolean): number {
 	if (!outbound) return s.status === 'connected' || s.status === 'ended' ? num(s.startedAt) : 0;
 	if (!lv) return 0;
 	if (num(lv.answeredAt)) return num(lv.answeredAt);
 	return lv.status === 'IN_PROGRESS' && !lv.terminal ? num(lv.at) : 0;
+}
+
+/**
+ * The answer as the tab holding the call stamped it (`talkAt`) wins in a tab that only mirrors
+ * the call (LZT-2256): that tab's own server report may be about another call, or count from
+ * when that tab first heard of the call, so a tab opened mid call restarted at 00:00. The tab
+ * holding the call works it out itself and falls back to its stamp only when it has none (after
+ * it took the call over from a tab that closed).
+ */
+function talkStart(s: DisplayState, lv: DisplayLive | undefined, outbound: boolean): number {
+	const stamped = num(s.talkAt);
+	if (stamped && s.otherTab) return stamped;
+	return ownTalkStart(s, lv, outbound) || stamped;
 }
 
 /** The provider's own figure once the call ended, else the computed one. */
@@ -173,7 +180,10 @@ function callFields(
 	lv: DisplayLive | undefined,
 	outbound: boolean,
 	now: number,
-): Omit<CallDisplay, 'phase' | 'muted' | 'held' | 'otherTab' | 'error' | 'callLogId' | 'dealId' | 'provider'> {
+): Omit<
+	CallDisplay,
+	'phase' | 'muted' | 'held' | 'otherTab' | 'error' | 'callLogId' | 'dealId' | 'provider'
+> {
 	const ringStartedAt = num(s.ringAt);
 	const talkStartedAt = talkStart(s, lv, outbound);
 	const serverEnd = lv?.terminal ? num(lv.at) : 0;
@@ -242,7 +252,9 @@ export function computeDisplay(
 	// The server's report counts only for the call up here or just ended here.
 	const lv = liveBound && shown ? live : undefined;
 	const outbound =
-		s.direction === 'outbound' || !!s.ringBack || str(lv?.direction).toLowerCase() === 'outbound';
+		s.direction === 'outbound' ||
+		!!s.ringBack ||
+		str(lv?.direction).toLowerCase() === 'outbound';
 	const call = shown ? callFields(s, lv, outbound, now) : NO_CALL;
 	return {
 		...call,

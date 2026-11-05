@@ -60,6 +60,12 @@ import {
  * `Store.callDisplay`) on every change and once a second while a clock runs. The page binds its
  * labels to it and computes nothing. Without a displayPath nothing is written, so a page that
  * does not bind to it costs nothing.
+ *
+ * One clock per call (LZT-2256): the tab holding the call stamps the server call it bound and the
+ * far end's answer into the state (`callLogId`, `talkAt`). Every other tab, including one opened
+ * mid call, binds to that server call and counts from that answer, never from its own first
+ * report (the user's newest call row may be another call, and a tab only hears of the call when
+ * it opens).
  */
 
 export const REGISTER_TIMEOUT_MS = 30000;
@@ -218,15 +224,49 @@ function show(session: Session) {
 function liveBelongs(state: CallState): boolean {
 	if (!live) return false;
 	if (!IN_CALL.has(state.status) && state.status !== 'ended') return false;
-	if (boundLog) return boundLog === live.callLogId;
+	const bound = boundId();
+	if (bound) return bound === live.callLogId;
 	const h = heard.get(live.callLogId);
 	return !!h && h.first >= callSince - FIRST_FRAME_EARLY_MS;
+}
+
+/**
+ * The server call bound to the call up here: this tab's own binding when it holds the call, else
+ * the one the tab holding the call stamped into its state (LZT-2256). A follower used to guess it
+ * from what it heard first, and a tab opened mid call first hears the user's newest call row,
+ * which may be another call: its clock then counted from that tab's opening.
+ */
+function boundId(): string | undefined {
+	if (boundLog) return boundLog;
+	const s = active;
+	return s?.role === 'follower' && s.state.callLogId ? s.state.callLogId : undefined;
+}
+
+/**
+ * The tab holding the call stamps the server call it bound and the far end's answer into the
+ * call state, so every tab shows the same call and counts from the same answer (LZT-2256). Only
+ * a change is written; the state write rewrites the display. True when it wrote.
+ */
+function stampCall(session: Session, d: CallDisplay): boolean {
+	if (session.role === 'follower' || !IN_CALL.has(session.state.status)) return false;
+	const state = session.state;
+	if ((state.talkAt ?? 0) === d.talkStartedAt && (state.callLogId ?? '') === d.callLogId)
+		return false;
+	session.state = { ...state, talkAt: d.talkStartedAt, callLogId: d.callLogId };
+	write(session);
+	// The other tabs get this call's server report too, in case theirs is about another call.
+	const report = live;
+	if (report && d.callLogId && report.callLogId === d.callLogId)
+		guard(() => session.channel?.post({ t: 'live', live: duplicate(report) }));
+	return true;
 }
 
 /** Writes the display values when they changed, and keeps the 1 s clock running only while needed. */
 function writeDisplay(session: Session) {
 	if (!session.displayPath) return;
 	const d = computeDisplay(session.state, live, liveBelongs(session.state), Date.now());
+	// The stamp wrote the state, and that write wrote the display.
+	if (stampCall(session, d)) return;
 	if (!sameDisplay(session.display, d)) {
 		session.display = d;
 		setData(session.displayPath, duplicate(d), session.pageName);
@@ -360,6 +400,9 @@ function apply(session: Session, reported: CallStatePatch) {
 	if (IN_CALL.has(next.status) && (!IN_CALL.has(prev.status) || newCall)) {
 		callSince = Date.now();
 		boundLog = undefined;
+		// The stamps of the last call never carry over to this one (LZT-2256).
+		delete next.talkAt;
+		delete next.callLogId;
 	}
 
 	if (!IN_CALL.has(next.status)) {
@@ -1374,6 +1417,8 @@ function callUp(prev: LiveReport): boolean {
 	const state = active?.state;
 	if (!state) return prev.status === 'IN_PROGRESS';
 	if (!IN_CALL.has(state.status) && state.status !== 'ended') return false;
+	const bound = boundId();
+	if (bound) return bound === prev.callLogId;
 	const h = heard.get(prev.callLogId);
 	return !!h && h.first >= callSince - FIRST_FRAME_EARLY_MS;
 }
@@ -1401,7 +1446,10 @@ function heldOther(prev: LiveReport | undefined, next: LiveReport): boolean {
 
 /** The report after `next` arrives, or `prev` itself when `next` adds nothing. */
 export function mergeLive(prev: LiveReport | undefined, next: LiveReport): LiveReport {
-	if (olderCall(prev, next) || heldOther(prev, next)) return prev!;
+	// The call bound to the call up here is never held back behind another call (LZT-2256).
+	const bound = boundId();
+	const isBound = !!bound && next.callLogId === bound && prev?.callLogId !== bound;
+	if (!isBound && (olderCall(prev, next) || heldOther(prev, next))) return prev!;
 	const same = !!prev && prev.callLogId === next.callLogId;
 	if (same && liveRank(next) < liveRank(prev!)) return prev!;
 	const answeredFrom = [
