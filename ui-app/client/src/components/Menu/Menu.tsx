@@ -21,6 +21,7 @@ import { styleProperties, styleDefaults, stylePropertiesForTheme } from './menuS
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { menuTitle } from './menuTitle';
 
 function Menu(props: Readonly<ComponentProps>) {
 	const location = useLocation();
@@ -49,6 +50,7 @@ function Menu(props: Readonly<ComponentProps>) {
 			activeImageIcon,
 			isMenuOpen,
 			onlyIconMenu,
+			tooltip,
 			onMenuClose,
 			onMenuOpen,
 			onClick,
@@ -334,6 +336,12 @@ function Menu(props: Readonly<ComponentProps>) {
 			<></>
 		);
 
+	const linkTitle = menuTitle(
+		getTranslations(label, translations),
+		onlyIconMenu,
+		tooltip ? getTranslations(tooltip, translations) : undefined,
+	);
+
 	return (
 		<>
 			{styleComp}
@@ -344,6 +352,8 @@ function Menu(props: Readonly<ComponentProps>) {
 				href={readOnly ? 'javascript:void(0)' : resolvedLink}
 				target={target}
 				data-analytics-label={analyticsLabel || undefined}
+				title={linkTitle.title}
+				aria-label={linkTitle.ariaLabel}
 				onMouseEnter={() => setIsHovered(true)}
 				onMouseLeave={() => setIsHovered(false)}
 				onClick={e => {

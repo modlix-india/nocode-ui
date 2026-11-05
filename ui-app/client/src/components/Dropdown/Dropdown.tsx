@@ -42,6 +42,8 @@ type DropdownOption = { label: any; value: any; key: any; originalObjectKey?: an
 // Gap kept between an open list and the window edge, and the least height a capped list keeps.
 const DROPDOWN_VIEWPORT_EDGE = 8;
 const DROPDOWN_MIN_ROOM = 120;
+// How long after its own scroll (openBelow) a mouse leave is taken as the scroll's doing.
+const SELF_SCROLL_LEAVE_GRACE = 800;
 
 // The nearest ancestor that scrolls vertically and has room to scroll, or the document's.
 function findScrollParent(from: HTMLElement | null | undefined): HTMLElement | undefined {
@@ -458,6 +460,11 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 
 	// openBelow scrolls the page once per opening to make room under the field.
 	const scrolledForRoom = useRef(false);
+	// When openBelow scrolls the page, the field moves out from under a resting pointer and
+	// the browser reports a mouse leave nobody made; closeOnMouseLeave must not act on it.
+	const selfScrolledAt = useRef(0);
+	const leaveCloses = () =>
+		closeOnMouseLeave && Date.now() - selfScrolledAt.current > SELF_SCROLL_LEAVE_GRACE;
 	// A field near the end of the page has nothing left to scroll. Like a list placed under
 	// the field in the page flow, an invisible spacer then lengthens the page while the
 	// list is open, so the page can scroll the list into view. It sits IN the flow, as the
@@ -732,7 +739,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				}}
 				onMouseLeave={() => {
 					setMouseInside(false);
-					if (closeOnMouseLeave) schedulePendingClose();
+					if (leaveCloses()) schedulePendingClose();
 				}}
 				ref={element => {
 					if (!element || searchText) return;
@@ -779,7 +786,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 							return;
 						}
 						scrolledForRoom.current = true;
-						if (scrollForRoom(inputRef.current, parentRect.top, need)) return;
+						if (scrollForRoom(inputRef.current, parentRect.top, need)) {
+							selfScrolledAt.current = Date.now();
+							return;
+						}
 					}
 					// openBelow stays below while the room there holds a usable list.
 					const atBottom = openBelow
@@ -1021,7 +1031,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			}}
 			onMouseLeave={() => {
 				setMouseInside(false);
-				if (closeOnMouseLeave) schedulePendingClose();
+				if (leaveCloses()) schedulePendingClose();
 			}}
 			showMandatoryAsterisk={
 				!!(

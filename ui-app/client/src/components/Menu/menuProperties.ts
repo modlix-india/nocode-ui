@@ -118,6 +118,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'tooltip',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Tooltip',
+		description:
+			'Text shown when the pointer rests on the menu item (its title). Empty: no tooltip. Useful with Only Icon Menu, where the label is hidden.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'isMenuOpen',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Default state of submenus',

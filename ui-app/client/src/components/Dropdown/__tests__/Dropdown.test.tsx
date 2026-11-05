@@ -638,6 +638,23 @@ describe('open direction and height', () => {
 			expect(panel().style.maxHeight).toBe('');
 		});
 
+		it('does not close on the mouse leave its own scroll caused', () => {
+			properties = serverSearchedProperties({ openBelow: true, closeOnMouseLeave: true });
+			field = { top: 560, bottom: 600 };
+			natural = 245;
+			render();
+			openPanel();
+			expect(scrollTop).toBeGreaterThan(0);
+			const wrapper = container.querySelector('.compDropdown')!;
+			act(() => {
+				wrapper.dispatchEvent(
+					new MouseEvent('mouseout', { bubbles: true, relatedTarget: document.body }),
+				);
+				jest.advanceTimersByTime(500);
+			});
+			expect(document.querySelector('._dropdownContainer')).not.toBeNull();
+		});
+
 		it('keeps listBottomGap free under the list', () => {
 			properties = serverSearchedProperties({ openBelow: true, listBottomGap: 72 });
 			field = { top: 100, bottom: 140 };
