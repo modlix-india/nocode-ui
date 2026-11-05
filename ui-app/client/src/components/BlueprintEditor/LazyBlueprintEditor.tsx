@@ -15,6 +15,7 @@ import { HelperComponent } from '../HelperComponents/HelperComponent';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
+import { urlClientCodeOf } from '../Prompt/llmSettings';
 import { propertiesDefinition, stylePropertiesDefinition } from './blueprintEditorProperties';
 import {
 	BoardCard,
@@ -791,6 +792,7 @@ export default function LazyBlueprintEditor(props: Readonly<ComponentProps>) {
 						clientCode: (getDataFromPath('Store.auth.loggedInClientCode', []) ??
 							'') as string,
 						appCode: (getDataFromPath('Store.application.appCode', []) ?? '') as string,
+						urlClientCode: urlClientCodeOf(),
 					},
 					signal: controller.signal,
 				});

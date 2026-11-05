@@ -50,6 +50,8 @@ import {
 	snapshotBaseline,
 } from './openDrafts';
 import { agentBaseUrl, learningBaseUrl, toDraftMode } from './draftMode';
+import { LlmEffective, sourceLabel, urlClientCodeOf } from './llmSettings';
+import { navigateInApp } from '../util/navigateInApp';
 import { startDragShield } from '../../functions/utils';
 
 interface Message {
@@ -891,11 +893,13 @@ function ModelSelector({
 	selectedModel,
 	onSelectModel,
 	disabled,
+	title,
 }: Readonly<{
 	models: { id: string; name: string }[];
 	selectedModel: string;
 	onSelectModel: (id: string) => void;
 	disabled: boolean;
+	title?: string;
 }>) {
 	const [open, setOpen] = useState(false);
 	const ref = useRef<HTMLDivElement>(null);
@@ -919,6 +923,7 @@ function ModelSelector({
 				onClick={() => !disabled && setOpen(o => !o)}
 				disabled={disabled}
 				type="button"
+				title={title}
 			>
 				<span className="_modelSelectorLabel">{selectedLabel}</span>
 				<i className="fa fa-chevron-down _modelSelectorChevron" />
@@ -1015,6 +1020,9 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			yourChatsLabel = 'Your chats',
 			deleteConfirmMessage = 'Delete this chat? This action cannot be undone.',
 			showModelSelector = false,
+			showSettingsButton = false,
+			settingsButtonVisibility = true,
+			settingsUrl = '',
 			selectedProviders = [],
 			showToolCalls = true,
 			enablePersonalization = true,
@@ -1225,13 +1233,21 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 
 	// Model selector state
 	const [availableModels, setAvailableModels] = useState<{ id: string; name: string }[]>([]);
-	const [selectedModel, setSelectedModel] = useState<string>('');
+	const [pickedModel, setPickedModel] = useState<string>('');
+	// Where the models come from: the client's own AI settings, its managing
+	// client's, this site's, or the default.
+	const [modelsSource, setModelsSource] = useState<LlmEffective>({ source: 'platform' });
 
 	const filteredModels = useMemo(() => {
-		if (!selectedProviders.length) return availableModels;
+		// A client's own settings already list exactly what it allows.
+		if (!selectedProviders.length || modelsSource.source !== 'platform') return availableModels;
 		const providerSet = new Set(selectedProviders.map((p: string) => p.toLowerCase()));
 		return availableModels.filter(m => providerSet.has(m.id.split(':')[0]));
-	}, [availableModels, selectedProviders]);
+	}, [availableModels, selectedProviders, modelsSource.source]);
+
+	// A remembered pick the AI settings no longer offer means Auto, not a model
+	// the server would refuse.
+	const selectedModel = filteredModels.some(m => m.id === pickedModel) ? pickedModel : '';
 
 	// Session pagination state
 	const [totalSessions, setTotalSessions] = useState(0);
@@ -1384,6 +1400,7 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 				locationHistory: props.locationHistory,
 				pageExtractor,
 				onLoad: data => {
+					if (typeof data.selectedModel === 'string') setPickedModel(data.selectedModel);
 					if (data.sidebarWidth) setSidebarWidth(data.sidebarWidth);
 					if (data.previewWidth) setPreviewWidth(data.previewWidth);
 					if (data.previewSurface === 'draft' || data.previewSurface === 'live')
@@ -1637,6 +1654,8 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 			Authorization: token ? `Bearer ${token}` : '',
 			clientCode: clientCode as string,
 			appCode: appCode as string,
+			// Lets the AI service fall back to this site's own AI settings.
+			urlClientCode: urlClientCodeOf(props.locationHistory, pageExtractor),
 		};
 	}, [pageExtractor, props.locationHistory, authHeadersOverride]);
 
@@ -2003,12 +2022,32 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 					const data = await response.json();
 					const models = Array.isArray(data?.models) ? data.models : [];
 					setAvailableModels(models);
+					setModelsSource({
+						source: data?.source ?? 'platform',
+						sourceClientCode: data?.sourceClientCode,
+					});
 				}
 			} catch {
 				// Silently fail — model selector is optional
 			}
 		})();
 	}, [showModelSelector, agentEndpoint, getAuthHeaders]);
+
+	const onSelectModel = useCallback(
+		(id: string) => {
+			setPickedModel(id);
+			if (!personalizationBindingPath) return;
+			const current =
+				getDataFromPath(personalizationBindingPath, props.locationHistory, pageExtractor) ??
+				{};
+			setStoreData(
+				personalizationBindingPath,
+				{ ...current, selectedModel: id },
+				pageExtractor.getPageName(),
+			);
+		},
+		[personalizationBindingPath, props.locationHistory, pageExtractor],
+	);
 
 	// handleScroll: only re-sticks auto-scroll when at bottom.
 	// Never un-sticks here — wheel/touch do that (human-only, so programmatic
@@ -3933,9 +3972,26 @@ export default function LazyPrompt(props: Readonly<ComponentProps>) {
 							<ModelSelector
 								models={filteredModels}
 								selectedModel={selectedModel}
-								onSelectModel={setSelectedModel}
+								onSelectModel={onSelectModel}
 								disabled={isStreaming}
+								title={sourceLabel(modelsSource)}
 							/>
+						)}
+						{showSettingsButton && !!settingsButtonVisibility && settingsUrl && (
+							<a
+								className="_settingsButton"
+								href={getHref(settingsUrl, window.location)}
+								onClick={e => {
+									if (e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0)
+										return;
+									e.preventDefault();
+									navigateInApp(getHref(settingsUrl, window.location));
+								}}
+								title="Settings"
+								aria-label="Settings"
+							>
+								<i className="fa fa-gear" aria-hidden="true" />
+							</a>
 						)}
 						{usage && <UsageBar usage={usage} />}
 					</div>
