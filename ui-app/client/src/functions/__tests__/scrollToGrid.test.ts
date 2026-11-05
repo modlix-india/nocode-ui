@@ -1,4 +1,8 @@
-import { FunctionExecutionParameters, KIRunFunctionRepository, KIRunSchemaRepository } from '@fincity/kirun-js';
+import {
+	FunctionExecutionParameters,
+	KIRunFunctionRepository,
+	KIRunSchemaRepository,
+} from '@fincity/kirun-js';
 import { ScrollToGrid } from '../ScrollToGrid';
 
 /**
@@ -44,5 +48,27 @@ describe('ScrollToGrid', () => {
 	it('does nothing when the index is past the last row', async () => {
 		await run({ gridkey: 'nfRow', behaviour: 'Instant', index: 7 });
 		expect(calls).toEqual([]);
+	});
+
+	it('does not move the focus unless asked', async () => {
+		document.body.innerHTML = '<div id="nfBox"><label>Name</label><input id="nfIn" /></div>';
+		(document.getElementById('nfBox') as any).scrollIntoView = () => {};
+		await run({ gridkey: 'nfBox', behaviour: 'Instant' });
+		expect(document.activeElement).toBe(document.body);
+	});
+
+	it('focuses the first field inside the element with focus', async () => {
+		document.body.innerHTML =
+			'<div id="nfBox"><label>Name</label><input type="hidden" /><input id="nfIn" /><button>Go</button></div>';
+		(document.getElementById('nfBox') as any).scrollIntoView = () => {};
+		await run({ gridkey: 'nfBox', behaviour: 'Instant', block: 'Center', focus: true });
+		expect(document.activeElement?.id).toBe('nfIn');
+	});
+
+	it('focuses the element itself when it is a field', async () => {
+		document.body.innerHTML = '<input id="t_nfIn" />';
+		(document.getElementById('t_nfIn') as any).scrollIntoView = () => {};
+		await run({ gridkey: 't_nfIn', behaviour: 'Instant', focus: true });
+		expect(document.activeElement?.id).toBe('t_nfIn');
 	});
 });
