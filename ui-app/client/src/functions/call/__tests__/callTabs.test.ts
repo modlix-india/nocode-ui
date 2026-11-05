@@ -399,6 +399,7 @@ describe('one call across tabs', () => {
 			callId: 'c2',
 			from: undefined,
 			to: undefined,
+			ringAt: expect.any(Number),
 			muted: false,
 			soundOn: true,
 			audioBlocked: false,

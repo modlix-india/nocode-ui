@@ -3,6 +3,7 @@ import { setData } from '../../context/StoreContext';
 import { AlertPermission, CallAlerts } from './alerts';
 import { getAuthWatch, inDesigner } from './auth';
 import { CredentialError, fetchCredentials } from './credentials';
+import { CallDisplay, computeDisplay, DisplayTicker, sameDisplay } from './display';
 import { getCallProvider } from './registry';
 import { CallSounds, localStore, Tone, userKey } from './sounds';
 import { getTabSync, TabChannel } from './tabs';
@@ -52,6 +53,13 @@ import {
  * while the phone is still signing in. The page's logout buttons are not the only way out.
  *
  * Editor canvas (LZT-2164): in the AppBuilder editor nothing signs in and the controls do nothing.
+ *
+ * Display (LZT-2161): the call bar's values (phase, number, ring and talk clocks, the end, the
+ * line, the recording) are computed once, here (display.ts), from this state and the server's
+ * report, and written whole to the display path Connect names (`displayPath`, for example
+ * `Store.callDisplay`) on every change and once a second while a clock runs. The page binds its
+ * labels to it and computes nothing. Without a displayPath nothing is written, so a page that
+ * does not bind to it costs nothing.
  */
 
 export const REGISTER_TIMEOUT_MS = 30000;
@@ -70,6 +78,10 @@ interface Session {
 	provider: string;
 	adapter?: CallAdapter;
 	statePath: string;
+	/** Where the display values go (LZT-2161); '' when Connect named none (nothing is written). */
+	displayPath: string;
+	/** The display last written, so a repeat is not written again. */
+	display?: CallDisplay;
 	pageName: string;
 	state: CallState;
 	/** Bumped on every Connect, so events from a replaced adapter are ignored. */
@@ -184,6 +196,7 @@ function write(session: Session) {
 		guard(() => session.channel?.post({ t: 'state', state: duplicate(state) }));
 	guard(() => sounds.update(state, soundHere(session)));
 	guard(() => alerts.update(state, session.role !== 'follower'));
+	guard(() => writeDisplay(session));
 }
 
 /** A follower shows the state it mirrors; nothing goes to the other tabs. */
@@ -192,7 +205,40 @@ function show(session: Session) {
 	guard(() => setData(session.statePath, duplicate(state), session.pageName));
 	guard(() => sounds.update(state, soundHere(session)));
 	guard(() => alerts.update(state, false));
+	guard(() => writeDisplay(session));
 }
+
+// ---------------------------------------------------------------- display (LZT-2161)
+
+/**
+ * Whether the server's report is about the call this state shows: the server call bound to it
+ * (see bindable), else one first heard around when this call came up. Nothing else decides it,
+ * so a late frame of an earlier call never reaches the display.
+ */
+function liveBelongs(state: CallState): boolean {
+	if (!live) return false;
+	if (!IN_CALL.has(state.status) && state.status !== 'ended') return false;
+	if (boundLog) return boundLog === live.callLogId;
+	const h = heard.get(live.callLogId);
+	return !!h && h.first >= callSince - FIRST_FRAME_EARLY_MS;
+}
+
+/** Writes the display values when they changed, and keeps the 1 s clock running only while needed. */
+function writeDisplay(session: Session) {
+	if (!session.displayPath) return;
+	const d = computeDisplay(session.state, live, liveBelongs(session.state), Date.now());
+	if (!sameDisplay(session.display, d)) {
+		session.display = d;
+		setData(session.displayPath, duplicate(d), session.pageName);
+	}
+	ticker.update(d);
+}
+
+const ticker = new DisplayTicker(() => {
+	const s = active;
+	if (s) guard(() => writeDisplay(s));
+	else ticker.stop();
+});
 
 /** Same keys with the same values: a repeated provider event that changes nothing. */
 function sameState(a: CallState, b: CallState): boolean {
@@ -295,6 +341,7 @@ function apply(session: Session, reported: CallStatePatch) {
 			soundOn: prev.soundOn,
 			soundTab: prev.soundTab,
 			collapsed: prev.collapsed,
+			ringAt: Date.now(),
 		};
 	}
 
@@ -831,6 +878,8 @@ export interface ConnectOptions {
 	credentialsFunction?: string;
 	/** The arguments that function is called with. */
 	credentialsArgs?: Record<string, any>;
+	/** Where the call bar's display values are written (LZT-2161), for example `Store.callDisplay`. */
+	displayPath?: string;
 }
 
 let authStop: (() => void) | undefined;
@@ -884,9 +933,16 @@ export async function connect(
 		: identityOf(name, credentials!);
 	if (active && sameSession(active, identity)) {
 		const session = active;
-		if (session.statePath !== statePath || session.pageName !== pageName) {
+		const displayPath = options.displayPath?.trim() ?? '';
+		if (
+			session.statePath !== statePath ||
+			session.pageName !== pageName ||
+			session.displayPath !== displayPath
+		) {
 			session.statePath = statePath;
+			session.displayPath = displayPath;
 			session.pageName = pageName;
+			session.display = undefined;
 			show(session);
 		}
 		return duplicate(session.state);
@@ -907,6 +963,7 @@ export async function connect(
 	const session: Session = {
 		provider: name,
 		statePath,
+		displayPath: options.displayPath?.trim() ?? '',
 		pageName,
 		state: { status: 'registering', muted: false },
 		generation: ++generation,
@@ -1196,6 +1253,15 @@ export async function disconnect(): Promise<CallState> {
 		alerts.reset();
 		session.state = idleState();
 		setData(session.statePath, duplicate(session.state), session.pageName);
+		ticker.stop();
+		if (session.displayPath)
+			guard(() =>
+				setData(
+					session.displayPath,
+					computeDisplay(session.state, undefined, false, Date.now()),
+					session.pageName,
+				),
+			);
 	}
 	return session.state;
 }
@@ -1380,6 +1446,8 @@ function applyLive(report: LiveReport, own: boolean) {
 	setData(livePath, duplicate(merged), livePage);
 	if (changed) active?.channel?.post({ t: 'live', live: duplicate(merged) });
 	serverEnd(report, merged);
+	const session = active;
+	if (session) guard(() => writeDisplay(session));
 	return own ? merged : undefined;
 }
 
