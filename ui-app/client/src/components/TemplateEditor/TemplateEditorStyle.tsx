@@ -365,6 +365,11 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._bpColor { display: flex; gap: 6px; align-items: center; }
 	${PREFIX} ._bpColor input[type=color] { width: 34px; height: 30px; padding: 0; border: 1px solid ${border}; border-radius: 4px; }
 	${PREFIX} ._bpColor ._bpInput { flex: 1; }
+	${PREFIX} ._bpImage { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+	${PREFIX} ._bpImage ._bpInput { flex: 1; min-width: 0; }
+	${PREFIX} ._bpUpload { padding: 6px 10px; border: 1px solid ${border}; border-radius: 4px; background: transparent; cursor: pointer; font-size: 12px; }
+	${PREFIX} ._bpUpload:disabled { cursor: progress; opacity: 0.6; }
+	${PREFIX} ._bpError { flex-basis: 100%; color: ${t('fontColorThree', '#b00020')}; font-size: 12px; }
 	${PREFIX} ._bpCode { border: 1px solid ${border}; border-radius: 4px; overflow: hidden; }
 	${PREFIX} ._bpVars { margin-top: 4px; }
 	${PREFIX} ._bpVarsToggle { border: none; background: transparent; color: ${selection}; cursor: pointer; font-size: 12px; padding: 4px 0; }

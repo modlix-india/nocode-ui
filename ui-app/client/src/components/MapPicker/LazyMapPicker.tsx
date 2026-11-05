@@ -143,6 +143,57 @@ export function placeLook(
 	};
 }
 
+// ADZ-1407: the Grey map look (a map id brings its own style instead): light grey land, darker water, state and
+// city names in grey, no roads, places of interest or transit
+export const GREY_STYLE = [
+	{ elementType: 'geometry', stylers: [{ color: '#eeeeee' }] },
+	{ elementType: 'labels.icon', stylers: [{ visibility: 'off' }] },
+	{ elementType: 'labels.text.fill', stylers: [{ color: '#8a8a8a' }] },
+	{ elementType: 'labels.text.stroke', stylers: [{ color: '#f5f5f5' }] },
+	{
+		featureType: 'administrative',
+		elementType: 'geometry.stroke',
+		stylers: [{ color: '#c8c8c8' }],
+	},
+	{ featureType: 'administrative.land_parcel', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'administrative.neighborhood', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'poi', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'road', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'transit', stylers: [{ visibility: 'off' }] },
+	{ featureType: 'water', elementType: 'geometry', stylers: [{ color: '#d4d4d8' }] },
+	{ featureType: 'water', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+];
+
+/** ADZ-1407: the tag text of a place: "Pin" for a dropped pin, else its name up to the first comma. */
+export function labelOf(pl: Place): string {
+	if (String(pl.type ?? '').toUpperCase() === 'CUSTOM_LOCATION') return 'Pin';
+	return String(pl.name ?? '')
+		.split(',')[0]
+		.trim();
+}
+
+/** ADZ-1407: a place's name tag at a point, as a map overlay (none when the Maps script has no overlays). */
+function placeTag(google: any, map: any, at: Point, text: string, excluded: boolean) {
+	const Base = google?.maps?.OverlayView;
+	if (!Base || !text) return undefined;
+	const div = document.createElement('div');
+	div.className = excluded ? '_placeLabel _excluded' : '_placeLabel';
+	div.textContent = text;
+	const tag = new Base();
+	tag.onAdd = () => tag.getPanes?.()?.floatPane?.appendChild(div);
+	tag.draw = () => {
+		const p = tag
+			.getProjection?.()
+			?.fromLatLngToDivPixel(new google.maps.LatLng(at.lat, at.lng));
+		if (!p) return;
+		div.style.left = p.x + 'px';
+		div.style.top = p.y + 'px';
+	};
+	tag.onRemove = () => div.remove();
+	tag.setMap(map);
+	return tag;
+}
+
 /** radiusKm, else radius in its distanceUnit (MILE / mile: miles, anything else: km). */
 function placeKm(p: Place): number {
 	if (Number(p.radiusKm) > 0) return Number(p.radiusKm);
@@ -297,6 +348,8 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			excludedColor,
 			suggestedColor,
 			mapId,
+			mapLook,
+			placeLabels,
 			matchPlaceType,
 			noMapText,
 			readOnly,
@@ -380,6 +433,10 @@ function MapPicker(props: Readonly<ComponentProps>) {
 					clickableIcons: false,
 					// ADZ-1217: a map id whose style has the boundary layers on draws places' real outlines
 					...(mapId ? { mapId } : {}),
+					// ADZ-1407: the Grey look, only without a map id (whose style wins)
+					...(!mapId && mapLook === 'GREY'
+						? { styles: GREY_STYLE, backgroundColor: '#eeeeee' }
+						: {}),
 				});
 				live.current = { google, map };
 				// a fit asked for before the map first settles is lost, so it is held until then
@@ -400,7 +457,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			live.current = {};
 			setReady(false);
 		};
-	}, [apiKey, mapId]);
+	}, [apiKey, mapId, mapLook]);
 
 	function pick(p: Point) {
 		if (!path) return;
@@ -610,6 +667,10 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				const { shape, box } = shapeOf(google, look, pl, spot, fit, km, layered);
 				if (clickable) shape.addListener?.('click', () => clickPlace(pl));
 				live.current.shapes!.push(shape);
+				if (placeLabels && !pl.suggested) {
+					const tag = placeTag(google, map, spot.center, labelOf(pl), !!pl.excluded);
+					if (tag) live.current.shapes!.push(tag);
+				}
 				if (box) all.union(box);
 				else all.extend(spot.center);
 				any = true;
@@ -633,6 +694,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		mapId,
 		clickable,
 		matchPlaceType,
+		placeLabels,
 	]);
 
 	return (
