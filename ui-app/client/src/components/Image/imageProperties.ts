@@ -213,6 +213,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		editor: ComponentPropertyEditor.IMAGE,
 	},
 	{
+		name: 'ignoreLateSource',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Ignore a late picture',
+		description:
+			'A secured picture is fetched before it shows. When the source changes meanwhile (a repeater row that now shows another picture), drop the late answer for the old source instead of drawing it over the new one.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'imgLazyLoading',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Image lazy loading',

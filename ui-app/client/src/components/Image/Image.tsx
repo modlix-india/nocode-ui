@@ -72,6 +72,7 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			tooltipPosition,
 			tooltipOffset,
 			analyticsLabel,
+			ignoreLateSource,
 		} = {},
 		key,
 		stylePropertiesWithPseudoStates,
@@ -151,12 +152,22 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 			setActualSrc(computedUrl);
 			return;
 		}
+		// ADZ-1499: a secured picture arrives later than the source that asked for it. With
+		// "Ignore a late picture" on, an answer for a source this image no longer shows (a
+		// repeater row that now holds another picture) is dropped instead of drawn over it.
+		let current = true;
+		const set = (v: string | undefined) => {
+			if (current || !ignoreLateSource) setActualSrc(v);
+		};
 		// A missing or expired file must not become an unhandled rejection; it is
 		// a broken image, so it takes the fallback like any other load error.
 		secureImage(computedUrl)
-			.then(setActualSrc)
-			.catch(() => setActualSrc(fallBackImg || undefined));
-	}, [computedUrl]);
+			.then(set)
+			.catch(() => set(fallBackImg || undefined));
+		return () => {
+			current = false;
+		};
+	}, [computedUrl, ignoreLateSource]);
 
 	useEffect(() => {
 		if (!isSecuredUrl(computedComparisonUrl)) {
