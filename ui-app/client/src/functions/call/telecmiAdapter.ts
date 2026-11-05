@@ -30,8 +30,10 @@ import { CallAdapter, CallCredentials, CallStateListener, CallStatus } from './t
  *   nothing ("Please login") while the SDK signs back in by itself. So disconnect waits, bounded
  *   by SIGN_OUT_WAIT_MS, for either signal, and a phone that signs in after it was let go is
  *   signed out by its `login` listener, which is never removed (LZT-2163);
- * - `sendDtmf()` reports a tone it will not send as an `error` event (SDK_INVALID_DTMF), so a
- *   refused key is an error, not a silent no (LZT-2166).
+ * - `sendDtmf()` reports a tone it will not send as an `error` event, synchronously: code
+ *   SDK_INVALID_DTMF for a bad key, SDK_NOT_SIGNED_IN for "dtmf not allowed" (call not yet
+ *   established), "call not found" or "Please login". Every such event during sendDtmf is a
+ *   refusal, so a refused key is an error, not a silent no (LZT-2166).
  *
  * The agent's password is read from the credentials inside register and handed to the SDK's
  * login; it is never kept in a field of the adapter (LZT-2162).
@@ -224,10 +226,18 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 		});
 		// Command errors ("call not found", "already in call"): the call itself goes on.
 		on('error', (d: any) => {
+			// The SDK refuses a tone inside sendDtmf, before it returns: with SDK_INVALID_DTMF for a
+			// bad key, and with SDK_NOT_SIGNED_IN for "dtmf not allowed" (the call is not
+			// established), "call not found" or "Please login". Any error while a tone is being
+			// sent is that tone's refusal, so the key is never reported as sent.
+			if (sendingDtmf) {
+				dtmfRefusal = `TeleCMI would not send that key${text(d?.status) ? ': ' + d.status : ''}`;
+				return;
+			}
 			if (Number(d?.code) === SDK_INVALID_DTMF) {
-				const message = `TeleCMI would not send that key${text(d?.status) ? ': ' + d.status : ''}`;
-				if (sendingDtmf) dtmfRefusal = message;
-				else emit({ error: message });
+				emit({
+					error: `TeleCMI would not send that key${text(d?.status) ? ': ' + d.status : ''}`,
+				});
 				return;
 			}
 			if (pendingLogin && Number(d?.code) === SDK_LOGOUT_FIRST) {
