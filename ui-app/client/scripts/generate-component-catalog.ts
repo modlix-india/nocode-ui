@@ -277,6 +277,22 @@ function resolveGroupName(node: ts.Expression): string | undefined {
  * alongside the spread overrides them — which is exactly what the spread means
  * at runtime. Without a base, the literal must name itself.
  */
+/** The array literal a top-level `const NAME = [...]` in the identifier's own file holds, if any. */
+function arrayDeclaredAs(id: ts.Identifier): ts.ArrayLiteralExpression | undefined {
+	const sf = id.getSourceFile?.();
+	if (!sf) return undefined;
+	for (const st of sf.statements) {
+		if (!ts.isVariableStatement(st)) continue;
+		for (const d of st.declarationList.declarations) {
+			if (ts.isIdentifier(d.name) && d.name.text === id.text && d.initializer) {
+				const init = ts.isAsExpression(d.initializer) ? d.initializer.expression : d.initializer;
+				if (ts.isArrayLiteralExpression(init)) return init;
+			}
+		}
+	}
+	return undefined;
+}
+
 function extractPropertyFromObject(
 	obj: ts.ObjectLiteralExpression,
 	base?: CatalogProperty,
@@ -330,8 +346,10 @@ function extractPropertyFromObject(
 		else if (schemaName.includes('VALIDATION')) prop.type = 'validation';
 	}
 
-	// Extract enum values
-	const enumNode = getObjectProperty(obj, 'enumValues');
+	// Extract enum values. A list given by name (`enumValues: DATE_FORMATS`) is read from its declaration in the
+	// same file: left out, the agent never saw Calendar's formats and wrote Java's `dd/MM/yy` (2026-11-05).
+	let enumNode = getObjectProperty(obj, 'enumValues');
+	if (enumNode && ts.isIdentifier(enumNode)) enumNode = arrayDeclaredAs(enumNode) ?? enumNode;
 	if (enumNode && ts.isArrayLiteralExpression(enumNode)) {
 		prop.enumValues = [];
 		for (const el of enumNode.elements) {

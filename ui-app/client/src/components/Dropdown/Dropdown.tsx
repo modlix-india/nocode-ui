@@ -37,12 +37,50 @@ import { propertiesDefinition, stylePropertiesDefinition } from './dropdownPrope
 import { styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
 import { MOUSE_LEAVE_CLOSE_DELAY, openFloating } from '../util/floatingLayer';
 
-
 type DropdownOption = { label: any; value: any; key: any; originalObjectKey?: any };
 
 // Gap kept between an open list and the window edge, and the least height a capped list keeps.
 const DROPDOWN_VIEWPORT_EDGE = 8;
 const DROPDOWN_MIN_ROOM = 120;
+// How long after its own scroll (openBelow) a mouse leave is taken as the scroll's doing.
+const SELF_SCROLL_LEAVE_GRACE = 800;
+
+// The nearest ancestor that scrolls vertically and has room to scroll, or the document's.
+function findScrollParent(from: HTMLElement | null | undefined): HTMLElement | undefined {
+	let el = from?.parentElement;
+	while (el) {
+		const overflowY = window.getComputedStyle(el).overflowY;
+		if (/(auto|scroll|overlay)/.test(overflowY) && el.scrollHeight > el.clientHeight) return el;
+		el = el.parentElement;
+	}
+	const doc = document.scrollingElement as HTMLElement | null;
+	return doc && doc.scrollHeight > doc.clientHeight ? doc : undefined;
+}
+
+// How far the field's scroll parent can still scroll down, and how far it may scroll
+// before the field's own top leaves it.
+function scrollRoom(input: HTMLElement | null, fieldTop: number) {
+	const scroller = findScrollParent(input);
+	if (!scroller) return undefined;
+	const scrollerTop =
+		scroller === document.scrollingElement ? 0 : scroller.getBoundingClientRect().top;
+	return {
+		scroller,
+		canScroll: Math.max(scroller.scrollHeight - scroller.clientHeight - scroller.scrollTop, 0),
+		fieldRoom: Math.max(fieldTop - scrollerTop - DROPDOWN_VIEWPORT_EDGE, 0),
+	};
+}
+
+// Scroll the field's scroll parent up by `need` px (as far as it can, never past the
+// field's own top). True when it scrolled.
+function scrollForRoom(input: HTMLElement | null, fieldTop: number, need: number): boolean {
+	const r = scrollRoom(input, fieldTop);
+	if (!r) return false;
+	const shift = Math.floor(Math.min(need, r.canScroll, r.fieldRoom));
+	if (shift <= 0) return false;
+	r.scroller.scrollTop += shift;
+	return true;
+}
 
 function findOptionByValue(value: any, ...lists: Array<Array<DropdownOption | undefined>>) {
 	for (const list of lists) {
@@ -127,6 +165,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			editConfirmIcon,
 			editCancelIcon,
 			analyticsLabel,
+			focusSearchOnOpen,
+			openBelow,
+			listBottomGap,
+			subLabelKey,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -223,6 +265,17 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			labelKey,
 		],
 	);
+
+	// subLabelKey: a second, smaller line under an option, read off the option's own row in
+	// `data` (originalObjectKey is its index or key there), e.g. an account id under its name.
+	const subLabelOf = (option: any): string | undefined => {
+		if (!subLabelKey || isNullValue(option?.originalObjectKey) || isNullValue(data)) return;
+		const row = (data as any)[option.originalObjectKey];
+		const value = String(subLabelKey)
+			.split('.')
+			.reduce((acc: any, part: string) => (isNullValue(acc) ? acc : acc[part]), row);
+		return isNullValue(value) || value === '' ? undefined : String(value);
+	};
 
 	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
 		() => getSelectedKeys(dropdownData, selected, isMultiSelect),
@@ -375,9 +428,13 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		setSearchDropdownData(
 			dropdownData
 				.filter(e => !isNullValue(e?.label))
-				.filter(e => (e?.label + '').search(searchExpression) !== -1),
+				.filter(
+					e =>
+						(e?.label + '').search(searchExpression) !== -1 ||
+						(!!subLabelKey && (subLabelOf(e) ?? '').search(searchExpression) !== -1),
+				),
 		);
-	}, [searchText, dropdownData]);
+	}, [searchText, dropdownData, subLabelKey]);
 
 	const [mouseIsInside, setMouseIsInside] = useState(false);
 	const mouseIsInsideRef = useRef(false);
@@ -401,9 +458,27 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		setWrapperRect({ top: r.top, left: r.left, width: r.width, height: r.height });
 	}, []);
 
+	// openBelow scrolls the page once per opening to make room under the field.
+	const scrolledForRoom = useRef(false);
+	// When openBelow scrolls the page, the field moves out from under a resting pointer and
+	// the browser reports a mouse leave nobody made; closeOnMouseLeave must not act on it.
+	const selfScrolledAt = useRef(0);
+	const leaveCloses = () =>
+		closeOnMouseLeave && Date.now() - selfScrolledAt.current > SELF_SCROLL_LEAVE_GRACE;
+	// A field near the end of the page has nothing left to scroll. Like a list placed under
+	// the field in the page flow, an invisible spacer then lengthens the page while the
+	// list is open, so the page can scroll the list into view. It sits IN the flow, as the
+	// last child of the field's own container (so what follows the field moves down under
+	// the list, and a sticky footer after the content stays at the bottom); an absolutely
+	// placed one would only stretch the overflow and lift such a footer with it.
+	const [roomSpacer, setRoomSpacer] = useState<number | undefined>(undefined);
+	const searchBoxRef = useRef<HTMLInputElement>(null);
+
 	useLayoutEffect(() => {
 		if (!showDropdown) {
 			setWrapperRect(null);
+			scrolledForRoom.current = false;
+			setRoomSpacer(undefined);
 			return;
 		}
 		updateWrapperRect();
@@ -594,6 +669,41 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		[searchDropdownData, searchText, onSearch, dropdownData],
 	);
 
+	const keyHandler = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key.startsWith('Arrow')) {
+			if (!showDropdown) setShowDropdown(true);
+			const data = visibleOptions;
+			if (!data?.length) {
+				setHoverKey(undefined);
+				return;
+			}
+			let index = data?.findIndex(e => e?.key === hoverKey);
+			if (index === -1) index = e.key.endsWith('Up') ? data.length - 1 : 0;
+			else index = e.key.endsWith('Up') ? index - 1 : index + 1;
+			if (index < 0) index = data.length - 1;
+			if (index >= data.length) index = 0;
+			setHoverKey(data[index]?.key);
+		} else if (e.key === 'Enter' && showDropdown && hoverKey) {
+			handleClick(dropdownData.find(e => e.key === hoverKey)).then();
+		} else if (e.key === 'Escape') {
+			setHoverKey(undefined);
+			setShowDropdown(false);
+			// the focus was in the list's search box, which goes with the list
+			if (focusSearchOnOpen) setFocus(false);
+		}
+	};
+
+	const isInPanel = (el: EventTarget | null | undefined) =>
+		!!el && el instanceof Node && !!portalRef.current?.contains(el);
+
+	// focusSearchOnOpen: an opened searchable list puts the cursor in its search box, so
+	// typing filters at once. The panel renders after wrapperRect is measured.
+	const panelShown = showDropdown && !!wrapperRect;
+	useEffect(() => {
+		if (!panelShown || !focusSearchOnOpen || !isSearchable) return;
+		searchBoxRef.current?.focus({ preventScroll: true });
+	}, [panelShown, focusSearchOnOpen, isSearchable]);
+
 	let dropdownContainer = null;
 	if (showDropdown && wrapperRect) {
 		let options = visibleOptions;
@@ -629,7 +739,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 				}}
 				onMouseLeave={() => {
 					setMouseInside(false);
-					if (closeOnMouseLeave) schedulePendingClose();
+					if (leaveCloses()) schedulePendingClose();
 				}}
 				ref={element => {
 					if (!element || searchText) return;
@@ -652,9 +762,39 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 					const natural = Number.isNaN(capPx)
 						? element.scrollHeight
 						: Math.min(element.scrollHeight, capPx);
-					const below = window.innerHeight - parentRect.bottom - DROPDOWN_VIEWPORT_EDGE;
+					// listBottomGap keeps the bottom of the window free, e.g. for a sticky bar.
+					const bottomGap =
+						typeof listBottomGap === 'number' && listBottomGap > DROPDOWN_VIEWPORT_EDGE
+							? listBottomGap
+							: DROPDOWN_VIEWPORT_EDGE;
+					const below = window.innerHeight - parentRect.bottom - bottomGap;
 					const above = parentRect.top - DROPDOWN_VIEWPORT_EDGE;
-					const atBottom = natural > below && above > below;
+					// openBelow: make room under the field by scrolling the page up (once per
+					// opening, never past the field's own top) before deciding the side. The
+					// scroll moves the field, the scroll listener re-measures it, and this runs
+					// again with the new room.
+					if (openBelow && natural > below && !scrolledForRoom.current) {
+						const need = natural - below;
+						const r = scrollRoom(inputRef.current, parentRect.top);
+						if (
+							r &&
+							roomSpacer === undefined &&
+							r.canScroll < need &&
+							r.fieldRoom > r.canScroll
+						) {
+							setRoomSpacer(Math.ceil(Math.min(need, r.fieldRoom) - r.canScroll));
+							return;
+						}
+						scrolledForRoom.current = true;
+						if (scrollForRoom(inputRef.current, parentRect.top, need)) {
+							selfScrolledAt.current = Date.now();
+							return;
+						}
+					}
+					// openBelow stays below while the room there holds a usable list.
+					const atBottom = openBelow
+						? below < Math.min(natural, DROPDOWN_MIN_ROOM) && above > below
+						: natural > below && above > below;
 					const room = Math.floor(atBottom ? above : below);
 					setIsAtBottom(atBottom);
 					setRoomHeight(natural > room ? Math.max(room, DROPDOWN_MIN_ROOM) : undefined);
@@ -688,6 +828,21 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 							onMouseDown={e => {
 								e.stopPropagation();
 							}}
+							ref={searchBoxRef}
+							onBlur={
+								focusSearchOnOpen
+									? e => {
+											const to = e.relatedTarget;
+											if (
+												mouseIsInsideRef.current ||
+												isInPanel(to) ||
+												to === inputRef.current
+											)
+												return;
+											handleClose();
+										}
+									: undefined
+							}
 						/>
 					</div>
 				)}
@@ -747,6 +902,14 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 									subComponentName="dropdownItemLabel"
 								/>
 								{each?.label}
+								{subLabelKey && subLabelOf(each) !== undefined ? (
+									<span
+										className="_dropdownItemSubLabel"
+										style={computedStyles.dropdownItemSubLabel ?? {}}
+									>
+										{subLabelOf(each)}
+									</span>
+								) : undefined}
 							</label>
 							{tick}
 						</div>
@@ -808,6 +971,10 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		);
 	}
 
+	const spacerHost = roomSpacer
+		? (inputRef.current?.closest('.compDropdown')?.parentElement ?? undefined)
+		: undefined;
+
 	return (
 		<CommonInputText
 			id={key}
@@ -837,8 +1004,11 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			validationMessages={validationMessages}
 			context={context}
 			hideClearContentIcon={true}
-			blurHandler={() => {
+			blurHandler={e => {
 				if (mouseIsInside) return;
+				// focusSearchOnOpen moves the focus into the list's own search box: that is
+				// not leaving the control.
+				if (focusSearchOnOpen && isInPanel(e?.relatedTarget)) return;
 				setFocus(false);
 				setShowDropdown(false);
 			}}
@@ -861,7 +1031,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			}}
 			onMouseLeave={() => {
 				setMouseInside(false);
-				if (closeOnMouseLeave) schedulePendingClose();
+				if (leaveCloses()) schedulePendingClose();
 			}}
 			showMandatoryAsterisk={
 				!!(
@@ -872,27 +1042,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			}
 			supportingText={supportingText}
 			analyticsLabel={analyticsLabel}
-			updDownHandler={e => {
-				if (e.key.startsWith('Arrow')) {
-					if (!showDropdown) setShowDropdown(true);
-					const data = visibleOptions;
-					if (!data?.length) {
-						setHoverKey(undefined);
-						return;
-					}
-					let index = data?.findIndex(e => e?.key === hoverKey);
-					if (index === -1) index = e.key.endsWith('Up') ? data.length - 1 : 0;
-					else index = e.key.endsWith('Up') ? index - 1 : index + 1;
-					if (index < 0) index = data.length - 1;
-					if (index >= data.length) index = 0;
-					setHoverKey(data[index]?.key);
-				} else if (e.key === 'Enter' && showDropdown && hoverKey) {
-					handleClick(dropdownData.find(e => e.key === hoverKey)).then();
-				} else if (e.key === 'Escape') {
-					setHoverKey(undefined);
-					setShowDropdown(false);
-				}
-			}}
+			updDownHandler={keyHandler}
 			showEditRequest={editOn}
 			editRequestIcon={editRequestIcon}
 			editConfirmIcon={editConfirmIcon}
@@ -910,6 +1060,22 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			}}
 		>
 			{dropdownContainer}
+			{roomSpacer && spacerHost
+				? ReactDOM.createPortal(
+						<div
+							aria-hidden="true"
+							className="_dropdownRoomSpacer"
+							style={{
+								width: 1,
+								height: roomSpacer,
+								flex: '0 0 auto',
+								pointerEvents: 'none',
+								visibility: 'hidden',
+							}}
+						/>,
+						spacerHost,
+					)
+				: undefined}
 		</CommonInputText>
 	);
 }

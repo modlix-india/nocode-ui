@@ -23,6 +23,10 @@ export default function GridStyle({
 		}
 
 		/* ─── Resizable pane ─── */
+		${PREFIX}._keyboardClickable:focus-visible {
+			outline: 2px solid currentColor;
+			outline-offset: 2px;
+		}
 		${PREFIX}._resizableGrid {
 			position: relative;
 		}
