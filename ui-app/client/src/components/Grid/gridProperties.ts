@@ -17,6 +17,32 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.linkTargetType,
 	COMMON_COMPONENT_PROPERTIES.layout,
 	{
+		name: 'keyboardClickable',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Keyboard clickable',
+		description:
+			'With On Click: the grid acts as a button for the keyboard and screen readers. It takes Tab focus (with a visible focus ring), Enter or Space runs On Click, and it is announced as a button. Off by default.',
+		group: ComponentPropertyGroup.ADVANCED,
+		defaultValue: false,
+	},
+	{
+		name: 'accessibleName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Accessible name',
+		description:
+			'The name screen readers announce for this grid (aria-label), for a grid whose own text does not say what it is, such as a tile or an icon. Empty: none.',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
+		name: 'pressed',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Pressed',
+		description:
+			'For a keyboard clickable grid that is one choice of several (a tile, a toggle): true when it is the chosen one (aria-pressed). Empty: not a toggle.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'dragData',
 		schema: SCHEMA_STRING_COMP_PROP,
 		group: ComponentPropertyGroup.ADVANCED,

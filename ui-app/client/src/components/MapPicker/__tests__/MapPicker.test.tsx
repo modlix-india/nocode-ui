@@ -13,6 +13,7 @@ const runEventMock = jest.fn().mockResolvedValue(undefined);
 jest.mock('../../util/runEvent', () => ({ runEvent: (...a: any[]) => runEventMock(...a) }));
 
 const storeValues = new Map<string, any>();
+const childWatches: Array<{ cb: () => void; paths: string[] }> = [];
 jest.mock('../../../context/StoreContext', () => ({
 	PageStoreExtractor: { getForContext: () => ({ getPageName: () => 'p' }) },
 	UrlDetailsExtractor: { getForContext: () => ({}) },
@@ -22,6 +23,11 @@ jest.mock('../../../context/StoreContext', () => ({
 		path: string,
 	) => {
 		cb(path, storeValues.get(path));
+		return () => {};
+	},
+	// ADZ-1503: the map's watch on its place lists (children included)
+	addListenerWithChildrenActivity: (_p: string, cb: () => void, ...paths: string[]) => {
+		childWatches.push({ cb, paths });
 		return () => {};
 	},
 	getPathFromLocation: (bp: any) => bp?.value ?? bp,
@@ -140,7 +146,14 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 		}),
 }));
 
-import MapPicker, { GREY_STYLE, labelOf, placeFit } from '../LazyMapPicker';
+import MapPicker, {
+	DARK_GREY_STYLE,
+	GREY_STYLE,
+	labelOf,
+	lookOptions,
+	placeFit,
+	placePaths,
+} from '../LazyMapPicker';
 
 const definition = {
 	key: 'mp',
@@ -169,6 +182,8 @@ beforeEach(() => {
 	views.length = 0;
 	mapOpts = undefined;
 	tags.length = 0;
+	childWatches.length = 0;
+	delete definition.properties;
 });
 afterEach(() => act(() => root.unmount()));
 
@@ -525,9 +540,90 @@ describe('ADZ-1407: the Grey look and the place tags', () => {
 		expect(tags).toHaveLength(0);
 	});
 
+	test('ADZ-1435: Dark grey styles the map dark without a map id and asks a map id for its dark scheme', async () => {
+		properties = { apiKey: 'k', mapLook: 'GREY_DARK' };
+		render();
+		await settle();
+		expect(mapOpts.styles).toBe(DARK_GREY_STYLE);
+		expect(mapOpts.backgroundColor).toBe('#2b2b2b');
+		expect(mapOpts.colorScheme).toBeUndefined();
+		expect(host.querySelector('.compMapPicker._dark')).not.toBeNull();
+		act(() => root.unmount());
+		root = createRoot(host);
+		properties = { apiKey: 'k', mapLook: 'GREY_DARK', mapId: 'm1' };
+		render();
+		await settle();
+		expect(mapOpts.mapId).toBe('m1');
+		expect(mapOpts.styles).toBeUndefined();
+		expect(mapOpts.colorScheme).toBe('DARK');
+	});
+
+	test('ADZ-1435: lookOptions keeps Standard and Grey as they were', () => {
+		expect(lookOptions(undefined, undefined)).toEqual({});
+		expect(lookOptions('STANDARD', undefined)).toEqual({});
+		expect(lookOptions('GREY', undefined)).toEqual({
+			styles: GREY_STYLE,
+			backgroundColor: '#eeeeee',
+		});
+		expect(lookOptions('GREY', 'm1')).toEqual({});
+		expect(lookOptions('STANDARD', 'm1')).toEqual({});
+	});
+
+	test('a map without Dark grey has no dark class', async () => {
+		properties = { apiKey: 'k', mapLook: 'GREY' };
+		render();
+		await settle();
+		expect(host.querySelector('.compMapPicker')).not.toBeNull();
+		expect(host.querySelector('.compMapPicker._dark')).toBeNull();
+	});
+
 	test('labelOf: up to the first comma, Pin for a dropped pin', () => {
 		expect(labelOf({ name: 'Karnataka, India', type: 'region' })).toBe('Karnataka');
 		expect(labelOf({ name: 'Pin 1, 2', type: 'CUSTOM_LOCATION' })).toBe('Pin');
 		expect(labelOf({})).toBe('');
+	});
+});
+
+describe('ADZ-1503: a radius changed inside the place list redraws the map', () => {
+	const settle = () =>
+		act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+
+	test('placePaths: the store paths of the place properties, none for a value', () => {
+		expect(
+			placePaths(
+				{ location: { type: 'EXPRESSION', expression: 'Page.w.locations' } },
+				{ location: { type: 'EXPRESSION', expression: 'Page.a.b ? Page.a.b : Page.tmp0' } },
+				{ value: [{ name: 'x' }] },
+				undefined,
+			),
+		).toEqual(['Page.w.locations', 'Page.a.b', 'Page.tmp0']);
+		expect(placePaths({ location: { expression: 'Parent.places' } })).toEqual([]);
+	});
+
+	test('an edit inside the bound list (no new list) draws the new circle', async () => {
+		definition.properties = {
+			places: { location: { type: 'EXPRESSION', expression: 'Page.w.locations' } },
+		};
+		const list: any[] = [{ name: 'Mysuru, Karnataka, India', type: 'city' }];
+		properties = { apiKey: 'k', places: list };
+		render();
+		await settle();
+		expect(drawn.filter(d => d.kind === 'circle')).toHaveLength(0);
+		expect(childWatches.map(w => w.paths)).toEqual([['Page.w.locations']]);
+		// the store writes the radius into the same place object, so the resolved props look unchanged
+		list[0].radius = 20;
+		act(() => childWatches[0].cb());
+		await settle();
+		const circles = drawn.filter(d => d.kind === 'circle');
+		expect(circles.map(c => Math.round(c.opts.radius))).toEqual([20000]);
+	});
+
+	test('a map without place bindings watches nothing', async () => {
+		properties = { apiKey: 'k', places: [{ name: 'Mysuru' }] };
+		render();
+		await settle();
+		expect(childWatches).toHaveLength(0);
 	});
 });
