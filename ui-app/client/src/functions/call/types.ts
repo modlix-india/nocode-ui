@@ -30,6 +30,14 @@ export interface CallState {
 	ringAt?: number;
 	/** Epoch milliseconds when the call connected. */
 	startedAt?: number;
+	/**
+	 * The server call (callLogId) the tab holding the call bound to it, and when the far end
+	 * answered as that tab counts it (epoch ms), both stamped by that tab (LZT-2256). A tab that only
+	 * mirrors the call shows these instead of working them out from its own server report, which
+	 * may be about another call (the user's newest call row) or start when that tab first heard.
+	 */
+	callLogId?: string;
+	talkAt?: number;
 	/** Epoch milliseconds when a connected or ringing call ended. */
 	endedAt?: number;
 	/** `pageClosed`: the tab holding the call closed or reloaded, which ends a browser call. */
