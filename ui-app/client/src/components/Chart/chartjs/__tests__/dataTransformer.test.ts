@@ -657,3 +657,55 @@ describe('line area fill and smooth lines', () => {
 		expect((straight.datasets[0] as any).cubicInterpolationMode).toBeUndefined();
 	});
 });
+
+describe('secondaryAxisDataSets', () => {
+	const ds = (style: DataSetStyle, ys: number[]) => ({
+		data: ys.map((y, i) => ({ x: `d${i}`, y })),
+		isHidden: false,
+		dataSetStyle: style,
+		dataColors: createRepArray(['#123456']),
+		dataStrokeColors: createRepArray(['#123456']),
+		fillOpacity: createRepArray([1]),
+		strokeOpacity: createRepArray([1]),
+		pointType: createRepArray([PointType.Circle]),
+		pointSize: createRepArray([3]),
+	});
+	const spendAndLeads = (hasHorizontalBar = false) =>
+		createMockChartData({
+			xUniqueData: ['d0', 'd1'],
+			yUniqueData: [50000, 60000, 20, 30],
+			hasBar: true,
+			hasHorizontalBar,
+			dataSetData: [ds(DataSetStyle.Bar, [50000, 60000]), ds(DataSetStyle.Line, [20, 30])],
+		});
+
+	it('puts the named data sets on the right axis y1', () => {
+		const r = transformToChartJsData(
+			createMockProperties({ secondaryAxisDataSets: '2' }),
+			spendAndLeads(),
+			['Spend', 'Leads'],
+		);
+		expect((r.datasets[0] as any).yAxisID).toBeUndefined();
+		expect((r.datasets[1] as any).yAxisID).toBe('y1');
+	});
+
+	it('keeps every data set on one axis when unset, blank or not a position', () => {
+		for (const v of [undefined, '', 'x', '0']) {
+			const r = transformToChartJsData(
+				createMockProperties({ secondaryAxisDataSets: v }),
+				spendAndLeads(),
+				['Spend', 'Leads'],
+			);
+			expect(r.datasets.map((d: any) => d.yAxisID)).toEqual([undefined, undefined]);
+		}
+	});
+
+	it('ignores the right axis for horizontal bars', () => {
+		const r = transformToChartJsData(
+			createMockProperties({ secondaryAxisDataSets: '2' }),
+			spendAndLeads(true),
+			['Spend', 'Leads'],
+		);
+		expect((r.datasets[1] as any).yAxisID).toBeUndefined();
+	});
+});

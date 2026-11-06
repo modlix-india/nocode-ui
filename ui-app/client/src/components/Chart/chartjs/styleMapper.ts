@@ -182,18 +182,21 @@ function applyAxisStyles(options: ChartOptions, resolvedStyles: any): void {
 		if (font) scales.x.ticks.font = { ...scales.x.ticks.font, ...font };
 	}
 
-	// Y-axis label styles
-	if (resolvedStyles.yAxisLabel && scales.y) {
+	// Y-axis label styles (also on the opt-in right axis y1)
+	if (resolvedStyles.yAxisLabel) {
 		const color = extractColor(resolvedStyles.yAxisLabel);
 		const font = extractFont(resolvedStyles.yAxisLabel);
 		const opacity = extractOpacity(resolvedStyles.yAxisLabel);
 
-		if (!scales.y.ticks) scales.y.ticks = {};
-		if (color) {
-			scales.y.ticks.color =
-				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+		for (const axis of [scales.y, scales.y1]) {
+			if (!axis) continue;
+			if (!axis.ticks) axis.ticks = {};
+			if (color) {
+				axis.ticks.color =
+					opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			}
+			if (font) axis.ticks.font = { ...axis.ticks.font, ...font };
 		}
-		if (font) scales.y.ticks.font = { ...scales.y.ticks.font, ...font };
 	}
 
 	// X-axis title styles
@@ -241,21 +244,24 @@ function applyAxisStyles(options: ChartOptions, resolvedStyles: any): void {
 		if (dashPattern) scales.x.border.dash = dashPattern;
 	}
 
-	// Y-axis line styles
-	if (resolvedStyles.yAxis && scales.y) {
+	// Y-axis line styles (also on the opt-in right axis y1)
+	if (resolvedStyles.yAxis) {
 		const styles = resolvedStyles.yAxis;
 		const color = extractColor(styles);
 		const lineWidth = extractLineWidth(styles);
 		const opacity = extractOpacity(styles);
 		const dashPattern = extractDashPattern(styles);
 
-		if (!scales.y.border) scales.y.border = {};
-		if (color) {
-			scales.y.border.color =
-				opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+		for (const axis of [scales.y, scales.y1]) {
+			if (!axis) continue;
+			if (!axis.border) axis.border = {};
+			if (color) {
+				axis.border.color =
+					opacity !== undefined ? applyOpacityToColor(color, opacity) : color;
+			}
+			if (lineWidth !== undefined) axis.border.width = lineWidth;
+			if (dashPattern) axis.border.dash = dashPattern;
 		}
-		if (lineWidth !== undefined) scales.y.border.width = lineWidth;
-		if (dashPattern) scales.y.border.dash = dashPattern;
 	}
 }
 

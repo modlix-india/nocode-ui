@@ -562,3 +562,51 @@ describe('numberLocale', () => {
 		).toBeUndefined();
 	});
 });
+
+describe('secondaryAxisDataSets', () => {
+	const twoSets = (hasHorizontalBar = false) =>
+		createMockChartData({
+			hasBar: true,
+			hasHorizontalBar,
+			dataSetData: [{} as any, {} as any],
+		});
+
+	it('adds a right axis y1 without chart-area grid lines', () => {
+		const o = buildChartJsOptions(
+			createMockProperties({ secondaryAxisDataSets: '2' }),
+			twoSets(),
+			'bar',
+		) as any;
+		expect(o.scales.y1).toBeDefined();
+		expect(o.scales.y1.position).toBe('right');
+		expect(o.scales.y1.grid.drawOnChartArea).toBe(false);
+		expect(o.scales.y.position).toBe('left');
+	});
+
+	it('adds no y1 when unset or when the position has no data set', () => {
+		expect(
+			(buildChartJsOptions(createMockProperties(), twoSets(), 'bar') as any).scales.y1,
+		).toBeUndefined();
+		expect(
+			(
+				buildChartJsOptions(
+					createMockProperties({ secondaryAxisDataSets: '5' }),
+					twoSets(),
+					'bar',
+				) as any
+			).scales.y1,
+		).toBeUndefined();
+	});
+
+	it('adds no y1 for horizontal bars', () => {
+		expect(
+			(
+				buildChartJsOptions(
+					createMockProperties({ secondaryAxisDataSets: '2' }),
+					twoSets(true),
+					'bar',
+				) as any
+			).scales.y1,
+		).toBeUndefined();
+	});
+});

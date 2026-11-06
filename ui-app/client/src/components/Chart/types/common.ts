@@ -194,6 +194,7 @@ export interface ChartProperties {
 	doughnutCutout?: string;
 	lineAreaFill?: boolean;
 	numberLocale?: string;
+	secondaryAxisDataSets?: string;
 }
 
 export interface MakeChartProps {

@@ -69,6 +69,9 @@ const SEO_TAG_NAMES: Record<string, string> = {
 	articleTag: 'article:tag',
 };
 
+/** `seo` keys that hold structured data for the SSR head, not a meta tag's text. */
+const NON_META_SEO_KEYS = new Set(['jsonLd', 'paths', 'strictPaths']);
+
 /** Which attribute a page SEO key is addressed by, and the value it carries. */
 function seoTagFor(key: string): { attribute: 'name' | 'property'; tagName: string } {
 	const tagName = SEO_TAG_NAMES[key] ?? key;
@@ -418,10 +421,18 @@ export const RenderEngineContainer = () => {
 		if (!seo) return returnFunction;
 
 		Object.entries(seo).forEach(e => {
-			const value = getData(e[1] as ComponentProperty<string>, [], ...tve);
-			if (!value) return;
-
 			const key = e[0];
+			// Structured values the server renders on its own (JSON-LD, per path head values),
+			// never metas: written here they became `<meta name="jsonLd" content="[object Object]">`.
+			if (NON_META_SEO_KEYS.has(key)) return;
+
+			let value = getData(e[1] as ComponentProperty<string>, [], ...tve);
+			if (typeof value === 'number') value = String(value);
+			if (!value || typeof value !== 'string') return;
+
+			// A page behind sign in is never indexed, whatever its own robots says. The server
+			// writes the same (PLAT-1549); this keeps hydration from overwriting it.
+			if (key === 'robots' && pageDefinition?.permission) value = 'noindex, nofollow';
 
 			if (key === 'charset') {
 				// The element is found by the attribute it carries, and a charset
