@@ -8,9 +8,12 @@ import { IconHelper } from '../util/IconHelper';
 const LazySSEventListener = React.lazy(
 	() => import(/* webpackChunkName: "SSEventListener" */ './LazySSEventListener'),
 );
+// The listener draws nothing outside the editor, so neither does its loading state. A "..."
+// there was a 12 px flex item in the shell's row until the chunk arrived, and the whole
+// main column moved sideways when it went (ADZ-1496).
 function LoadLazySSEventListener(props: Readonly<ComponentProps>) {
 	return (
-		<Suspense fallback={<>...</>}>
+		<Suspense fallback={globalThis.designMode ? <>...</> : null}>
 			<LazySSEventListener {...props} />
 		</Suspense>
 	);

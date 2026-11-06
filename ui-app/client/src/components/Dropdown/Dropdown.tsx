@@ -12,6 +12,7 @@ import React, {
 import ReactDOM from 'react-dom';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import CommonInputText from '../../commonComponents/CommonInputText';
+import { getTranslations } from '../util/getTranslations';
 import {
 	addListenerAndCallImmediately,
 	getDataFromPath,
@@ -165,6 +166,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			editConfirmIcon,
 			editCancelIcon,
 			analyticsLabel,
+			accessibleName,
 			focusSearchOnOpen,
 			openBelow,
 			listBottomGap,
@@ -1042,6 +1044,7 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			}
 			supportingText={supportingText}
 			analyticsLabel={analyticsLabel}
+			ariaLabel={accessibleName ? getTranslations(accessibleName, translations) : undefined}
 			updDownHandler={keyHandler}
 			showEditRequest={editOn}
 			editRequestIcon={editRequestIcon}

@@ -44,3 +44,23 @@ describe('AppStyle first render', () => {
 		expect(/\._QUATERNARYBG\s*\{\s*background:\s*([^;]+);/.exec(html)?.[1]).toBe('#EC6B5F');
 	});
 });
+
+describe('AppStyle first render, named components', () => {
+	afterEach(() => {
+		globalThis.preStyledComponents = undefined;
+	});
+
+	it('emits the style of a component the page names before it has rendered', () => {
+		globalThis.appDefinitionResponse = {} as any;
+		globalThis.preStyledComponents = ['Menu'];
+
+		expect(firstRender()).toContain('.comp.compMenu');
+	});
+
+	it('emits only the floor when nothing is named', () => {
+		globalThis.appDefinitionResponse = {} as any;
+		globalThis.preStyledComponents = undefined;
+
+		expect(firstRender()).not.toContain('.comp.compMenu');
+	});
+});
