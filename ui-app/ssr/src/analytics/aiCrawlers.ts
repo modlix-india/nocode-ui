@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
+import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 import { botFor, type KnownBot } from '../render/bots.js';
 import { resolveCodesFromRequest } from '../resolver/codeResolver.js';
@@ -19,8 +20,10 @@ import { resolveCodesFromRequest } from '../resolver/codeResolver.js';
  *   the newest, a failed send drops that batch, and neither is retried;
  * - every step is inside a catch, and a send has a hard time limit.
  *
- * Off unless ANALYTICS_ENGINE_URL (the engine's private address, the one the ui service reads
- * `/q` from; never the public Worker) and ANALYTICS_SERVER_SECRET are both set.
+ * Off unless the engine's private address (the one the ui service reads `/q` from; never the public
+ * Worker) and its server secret are both set: ANALYTICS_ENGINE_URL and ANALYTICS_SERVER_SECRET, or,
+ * when those are absent, `ui.analytics.engine.url` and `ui.analytics.engine.serverSecret` from the
+ * config server (how the units' hosts configure ssr).
  *
  * A bot visit keeps the bot's name, the path, the status and the time. No IP, no User-Agent
  * string, nothing from a person.
@@ -53,10 +56,19 @@ interface Settings {
 	maxResolving: number;
 }
 
+function fromConfig(): { engineUrl?: string; serverSecret?: string } {
+	try {
+		return getConfig().analytics;
+	} catch {
+		return {}; // config not loaded (tests, early start): the environment alone decides
+	}
+}
+
 function settingsFromEnv(): Settings {
+	const cfg = fromConfig();
 	return {
-		url: (process.env.ANALYTICS_ENGINE_URL ?? '').trim().replace(/\/+$/, ''),
-		secret: (process.env.ANALYTICS_SERVER_SECRET ?? '').trim(),
+		url: (process.env.ANALYTICS_ENGINE_URL || cfg.engineUrl || '').trim().replace(/\/+$/, ''),
+		secret: (process.env.ANALYTICS_SERVER_SECRET || cfg.serverSecret || '').trim(),
 		maxQueue: 2000,
 		maxBatch: 200,
 		flushEveryMs: 5000,
