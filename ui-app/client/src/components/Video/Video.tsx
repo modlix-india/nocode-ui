@@ -16,6 +16,8 @@ import { styleProperties, styleDefaults, stylePropertiesForTheme } from './video
 import { IconHelper } from '../util/IconHelper';
 import getSrcUrl from '../util/getSrcUrl';
 import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
+import { useSecureSrc } from '../util/useSecureSrc';
+import { isSecuredUrl } from '../util/secureImage';
 
 function Video(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context, pageDefinition } = props;
@@ -49,6 +51,7 @@ function Video(props: Readonly<ComponentProps>) {
 			designType: videoDesign,
 			autoUnMuteAfterPlaying,
 			controlsOnScrim,
+			securedSource,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -113,6 +116,16 @@ function Video(props: Readonly<ComponentProps>) {
 			props.context.pageName,
 		],
 	);
+
+	// ADZ-1581: a secured file (`/api/files/secured/...`) needs the sign-in token, which a <video> cannot send.
+	// With `securedSource` on, the source and the poster are fetched with it and played from a blob URL (undefined
+	// until fetched). Off, both go to the element as before.
+	const plainSrc = getSrcUrl(currentSrc);
+	const plainPoster = getSrcUrl(currentPoster);
+	const fetchedSrc = useSecureSrc(securedSource ? plainSrc : undefined);
+	const fetchedPoster = useSecureSrc(securedSource ? plainPoster : undefined);
+	const shownSrc = securedSource && isSecuredUrl(plainSrc) ? fetchedSrc : plainSrc;
+	const shownPoster = securedSource && isSecuredUrl(plainPoster) ? fetchedPoster : plainPoster;
 
 	//to check wheater browser supports html5 video
 	const [videoControls, setVideoControls] = useState<boolean>(true);
@@ -596,11 +609,11 @@ function Video(props: Readonly<ComponentProps>) {
 			) : null}
 			<video
 				controls={videoControls}
-				poster={getSrcUrl(currentPoster)}
+				poster={shownPoster}
 				playsInline={playsInline}
 				preload="metadata"
 				ref={video}
-				key={getSrcUrl(currentSrc)}
+				key={shownSrc ?? ''}
 				muted={muted}
 				loop={loop}
 				autoPlay={autoPlay}
@@ -620,7 +633,7 @@ function Video(props: Readonly<ComponentProps>) {
 					}, 500);
 				}}
 			>
-				<source src={getSrcUrl(currentSrc)} type={type} />
+				<source src={shownSrc} type={type} />
 				Your browser does not support HTML5 video.
 			</video>
 			<SubHelperComponent

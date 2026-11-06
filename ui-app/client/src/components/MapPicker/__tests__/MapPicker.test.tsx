@@ -67,6 +67,8 @@ jest.mock('../../../util/googleMapsLoader', () => ({
 							if (name === 'idle') setTimeout(fn, 0); // the map settles once
 						},
 						setCenter: (c: any) => views.push({ center: c }),
+						// ADZ-1435: where the user left the map (read when a new look replaces it)
+						getCenter: () => ({ lat: () => 12.31, lng: () => 76.64 }),
 						getZoom: () => 5,
 						setZoom: (z: number) => views.push({ zoom: z }),
 						fitBounds: () => fitted++,
@@ -625,5 +627,92 @@ describe('ADZ-1503: a radius changed inside the place list redraws the map', () 
 		render();
 		await settle();
 		expect(childWatches).toHaveLength(0);
+	});
+});
+
+describe('ADZ-1435: a theme switch (new map look) keeps the places and the view', () => {
+	const settle = () =>
+		act(async () => {
+			await new Promise(r => setTimeout(r, 0));
+		});
+	const circles = () => drawn.filter(d => d.kind === 'circle');
+	const rects = () => drawn.filter(d => d.kind === 'rect');
+	beforeEach(() => {
+		jest.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockReturnValue(600);
+		jest.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockReturnValue(300);
+	});
+	afterEach(() => jest.restoreAllMocks());
+
+	test('Light to Dark and back: the places are drawn on each new map, which opens where the old one was', async () => {
+		properties = {
+			apiKey: 'k',
+			mapLook: 'GREY',
+			matchPlaceType: true,
+			places: [
+				{ name: 'Mysuru, Karnataka, India', type: 'city', radius: 60 },
+				{ name: 'Whitefield, Bangalore, Karnataka, India', type: 'neighborhood' },
+			],
+		};
+		GEOCODED['Whitefield, Bangalore, Karnataka, India'] = {
+			types: ['political', 'sublocality', 'sublocality_level_1'],
+			geometry: {
+				location: { lat: () => 12.97, lng: () => 77.75 },
+				bounds: { south: 12.94, west: 77.71, north: 13.0, east: 77.78 },
+			},
+		};
+		render();
+		await settle();
+		expect(circles()).toHaveLength(1);
+		expect(rects()).toHaveLength(1);
+		expect(fitted).toBe(1);
+		expect(mapOpts.styles).toBe(GREY_STYLE);
+
+		for (const look of ['GREY_DARK', 'GREY']) {
+			drawn.length = 0;
+			fitted = 0;
+			views.length = 0;
+			properties = { ...properties, mapLook: look };
+			render();
+			await settle();
+			expect(mapOpts.styles).toBe(look === 'GREY' ? GREY_STYLE : DARK_GREY_STYLE);
+			// the places again, on the new map
+			expect(circles()).toHaveLength(1);
+			expect(rects()).toHaveLength(1);
+			expect(circles()[0].opts.map).toBeDefined();
+			// the old map's view, not the start view (India) and no new fit
+			expect(mapOpts.center).toEqual({ lat: 12.31, lng: 76.64 });
+			expect(mapOpts.zoom).toBe(5);
+			expect(fitted).toBe(0);
+			expect(views).toEqual([]);
+		}
+	});
+
+	test('a place added after the switch is fitted as before', async () => {
+		properties = { apiKey: 'k', mapLook: 'GREY', places: [] };
+		render();
+		await settle();
+		properties = { ...properties, mapLook: 'GREY_DARK' };
+		render();
+		await settle();
+		fitted = 0;
+		properties = { ...properties, places: [{ name: 'Mysuru, Karnataka, India', radius: 20 }] };
+		render();
+		await settle();
+		expect(circles()).toHaveLength(1);
+		expect(fitted).toBe(1);
+	});
+
+	test('a first map still opens on the start view', async () => {
+		properties = {
+			apiKey: 'k',
+			mapLook: 'GREY',
+			centerLat: 20.5937,
+			centerLng: 78.9629,
+			zoom: 5,
+		};
+		render();
+		await settle();
+		expect(mapOpts.center).toEqual({ lat: 20.5937, lng: 78.9629 });
+		expect(mapOpts.zoom).toBe(5);
 	});
 });
