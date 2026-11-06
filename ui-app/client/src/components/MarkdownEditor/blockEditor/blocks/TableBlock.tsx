@@ -17,6 +17,7 @@ import {
 	spliceMentionInMarkdown,
 } from '../features/mention-markdown';
 import { hasInlineMarkup, inlineMarkdownToHtml } from './inline-html';
+import { placeCaretAfterChip } from './TextContent';
 import {
 	Plus,
 	Trash2,
@@ -316,6 +317,59 @@ export const TABLE_TEMPLATES: TableTemplate[] = [
 	},
 ];
 
+// ---- Caret in a rich cell (text nodes and chips, side by side) ----
+
+const ZWSP = '​';
+
+function isCellChip(node: Node): node is HTMLElement {
+	return node instanceof HTMLElement && node.dataset.mention === 'true';
+}
+
+/** Characters before `target` in the cell: a chip counts as its label, the ZWSP pad as nothing. */
+function cellOffsetBefore(cell: HTMLElement, target: Node): number {
+	let offset = 0;
+	for (const node of Array.from(cell.childNodes)) {
+		if (node === target) break;
+		if (isCellChip(node)) offset += node.dataset.mentionLabel?.length ?? 0;
+		else offset += (node.textContent ?? '').replaceAll(ZWSP, '').length;
+	}
+	return offset;
+}
+
+/** Focus the cell and put the caret `offset` characters in, counted as cellOffsetBefore does. */
+function placeCaretInCell(cell: HTMLElement, offset: number): void {
+	cell.focus();
+	const sel = globalThis.getSelection?.();
+	if (!sel) return;
+	let left = offset;
+	for (const node of Array.from(cell.childNodes)) {
+		if (isCellChip(node)) {
+			if (left === 0) {
+				sel.collapse(cell, Array.prototype.indexOf.call(cell.childNodes, node));
+				return;
+			}
+			left -= node.dataset.mentionLabel?.length ?? 0;
+		} else if (node.nodeType === Node.TEXT_NODE) {
+			const len = node.textContent?.length ?? 0;
+			if (left <= len) {
+				sel.collapse(node, left);
+				return;
+			}
+			left -= len;
+		}
+	}
+	// Past the end. A chip that ends the cell needs a ZWSP after it, or Chrome
+	// will not take typing there (same as after a mention insert).
+	if (cell.lastChild && isCellChip(cell.lastChild)) {
+		const pad = document.createTextNode(ZWSP);
+		cell.appendChild(pad);
+		sel.collapse(pad, 1);
+	} else {
+		sel.selectAllChildren(cell);
+		sel.collapseToEnd();
+	}
+}
+
 // ---- Individual Cell ----
 
 function TableCell({
@@ -492,6 +546,7 @@ function TableCell({
 								data-mention-kind={seg.kind}
 								data-mention-id={seg.id}
 								data-mention-label={seg.text}
+								onMouseDown={placeCaretAfterChip}
 							>
 								{seg.text}
 								<button
@@ -980,11 +1035,20 @@ export function TableBlock({ block, readOnly }: { block: Block; readOnly?: boole
 			const re = new RegExp(`\\[(?:\\\\.|[^\\]\\\\])*\\]\\(mde:\\/\\/${kind}\\/${escId}\\)`);
 			if (!re.test(value)) return;
 			const nextValue = value.replace(re, '');
+			const at = cellEl ? cellOffsetBefore(cellEl, chip) : 0;
 			const next = dataRef.current.map(r => [...r]);
 			if (next[rowIdx]) next[rowIdx][colIdx] = nextValue;
 			dispatchUpdate(next);
 			const cellKey = `${rowIdx}:${colIdx}`;
 			setCellInsertVersion(prev => ({ ...prev, [cellKey]: (prev[cellKey] ?? 0) + 1 }));
+			// The cell remounts without the chip and loses focus: put the caret
+			// back where the chip was, so typing goes on in the cell.
+			requestAnimationFrame(() => {
+				const newCell = tableElRef.current?.querySelectorAll('td')[
+					rowIdx * (dataRef.current[0]?.length ?? 0) + colIdx
+				]?.firstElementChild as HTMLElement | null;
+				if (newCell) placeCaretInCell(newCell, at);
+			});
 		};
 		globalThis.addEventListener('mde-mention-remove', onRemove as EventListener);
 		return () =>
@@ -1022,7 +1086,6 @@ export function TableBlock({ block, readOnly }: { block: Block; readOnly?: boole
 			// Restore focus + put caret at the end of the freshly-mounted cell.
 			// When the chip is the cell's last child, inject a ZWSP pad so Chrome
 			// accepts text input after it (see ListBlock for the same dance).
-			const ZWSP = '​';
 			requestAnimationFrame(() => {
 				const td =
 					tableElRef.current?.querySelectorAll('td')[
