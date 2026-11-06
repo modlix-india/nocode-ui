@@ -224,6 +224,7 @@ function MentionPill({ mark, snapshot, resolver }: MentionPillProps) {
 			data-mention-kind={kind}
 			data-mention-id={id}
 			data-mention-label={snapshot}
+			onMouseDown={placeCaretAfterChip}
 			onMouseEnter={onMouseEnter}
 			onMouseLeave={onMouseLeave}
 		>
@@ -232,6 +233,32 @@ function MentionPill({ mark, snapshot, resolver }: MentionPillProps) {
 			<RemoveMentionButton />
 		</span>
 	);
+}
+
+/**
+ * A plain click on a chip in an editable surface puts the caret just after it.
+ * Left to the browser, the click selects the whole contentEditable=false chip,
+ * and the next key typed replaces the mention instead of following it.
+ * Shift/Cmd/Ctrl clicks (extending a selection) and read-only views keep the
+ * browser's behaviour. Shared by every surface that renders chips (paragraphs
+ * and lists via MentionPill, table cells via TableBlock).
+ */
+export function placeCaretAfterChip(e: React.MouseEvent<HTMLElement>) {
+	if (e.button !== 0 || e.shiftKey || e.metaKey || e.ctrlKey || e.altKey) return;
+	if ((e.target as HTMLElement).closest('.mde-mention-remove')) return;
+	const chip = e.currentTarget;
+	const parent = chip.parentNode;
+	const host = chip.parentElement?.closest<HTMLElement>('[contenteditable="true"]');
+	if (!parent || !host) return;
+	e.preventDefault();
+	if (!host.contains(document.activeElement)) host.focus({ preventScroll: true });
+	const sel = globalThis.getSelection();
+	if (!sel) return;
+	// A text node after the chip (the trailing ZWSP pad, or the text that follows)
+	// is a real caret anchor; an element offset is the fallback before another chip.
+	const next = chip.nextSibling;
+	if (next?.nodeType === Node.TEXT_NODE) sel.collapse(next, 0);
+	else sel.collapse(parent, Array.prototype.indexOf.call(parent.childNodes, chip) + 1);
 }
 
 /**

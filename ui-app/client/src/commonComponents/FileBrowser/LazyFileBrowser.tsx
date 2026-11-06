@@ -45,11 +45,19 @@ async function uploadFile(
 	}
 }
 
+// A start location written without its leading slash ('eventtracker/invitationDesign') was joined straight onto
+// the resource type, '/api/files/staticeventtracker/...', which 404s: the browser listed nothing and every upload
+// went nowhere, without a message.
+export function withLeadingSlash(location?: string): string | undefined {
+	if (!location) return location;
+	return location.startsWith('/') ? location : '/' + location;
+}
+
 export default function FileBrowser({
 	selectedFile,
 	onChange,
 	resourceType = 'static',
-	startLocation,
+	startLocation: givenStartLocation,
 	restrictNavigationToTopLevel,
 	fileUploadSizeLimit,
 	restrictUploadType,
@@ -72,6 +80,7 @@ export default function FileBrowser({
 	clientCode,
 	allowMultipleSelection,
 }: Readonly<FileBrowserProps>) {
+	const startLocation = withLeadingSlash(givenStartLocation);
 	const [filter, setFilter] = useState('');
 	const [path, setPath] = useState(startLocation ?? '/');
 	const [files, setFiles] = useState<any>();

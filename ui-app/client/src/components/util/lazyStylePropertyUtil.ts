@@ -87,7 +87,10 @@ function retryStylePropertiesLater(name: string, load: () => void) {
 	const round = stylePropertiesLaterRounds.get(name) ?? 0;
 	if (stylePropertiesWakeTimer || round >= STYLE_PROPERTY_LATER_DELAYS.length) return;
 	stylePropertiesLaterRounds.set(name, round + 1);
-	stylePropertiesWakeTimer = setTimeout(wakeStylePropertyLoads, STYLE_PROPERTY_LATER_DELAYS[round]);
+	stylePropertiesWakeTimer = setTimeout(
+		wakeStylePropertyLoads,
+		STYLE_PROPERTY_LATER_DELAYS[round],
+	);
 }
 
 /**
