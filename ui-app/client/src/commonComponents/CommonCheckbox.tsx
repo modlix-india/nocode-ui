@@ -13,6 +13,8 @@ type CommonCheckboxType = {
 	focusHandler?: () => void;
 	blurHandler?: () => void;
 	definition?: ComponentDefinition;
+	/** Opt-in name for screen readers. When set, the box also reports its state (aria-checked, aria-disabled). */
+	ariaLabel?: string;
 };
 
 function CommonCheckbox({
@@ -26,6 +28,7 @@ function CommonCheckbox({
 	focusHandler,
 	blurHandler,
 	definition,
+	ariaLabel,
 }: CommonCheckboxType) {
 	const sh = definition ? (
 		<SubHelperComponent definition={definition} subComponentName="checkbox" />
@@ -52,6 +55,13 @@ function CommonCheckbox({
 			onFocus={focusHandler}
 			onBlur={blurHandler}
 			tabIndex={0}
+			{...(ariaLabel
+				? {
+						'aria-label': ariaLabel,
+						'aria-checked': isChecked,
+						'aria-disabled': isReadOnly || undefined,
+					}
+				: {})}
 			onKeyUp={
 				isReadOnly
 					? undefined

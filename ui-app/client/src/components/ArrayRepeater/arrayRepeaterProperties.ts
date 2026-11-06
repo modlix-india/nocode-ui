@@ -220,6 +220,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 			'When this option is set to true, the component will be re-rendered only when the data changes.',
 		defaultValue: false,
 	},
+	{
+		name: 'plainItems',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Plain items (no Tab stop)',
+		group: ComponentPropertyGroup.ADVANCED,
+		description:
+			'When this option is set to true, each repeated item is a plain container: it is not a Tab stop and is not announced as a button. Use it when the items hold their own buttons, links or fields, or can be empty. Off by default (every item is a Tab stop).',
+		defaultValue: false,
+	},
 	COMMON_COMPONENT_PROPERTIES.layout,
 	COMMON_COMPONENT_PROPERTIES.readOnly,
 	COMMON_COMPONENT_PROPERTIES.visibility,

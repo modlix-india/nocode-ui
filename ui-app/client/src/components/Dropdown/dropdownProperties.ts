@@ -14,6 +14,15 @@ import { COMMON_COMPONENT_PROPERTIES, COMPONENT_STYLE_GROUP_PROPERTIES } from '.
 const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 	COMMON_COMPONENT_PROPERTIES.analyticsLabel,
 	{
+		name: 'accessibleName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Accessible name',
+		description:
+			'The name screen readers announce for the field (aria-label on its input), for a dropdown whose visible label is a separate text or is empty. Empty: none (the old behaviour).',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'placeholder',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Dropdown placeholder',

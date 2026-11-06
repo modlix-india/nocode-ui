@@ -3,14 +3,22 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './iconStyleProperies';
 import { usedComponents } from '../../App/usedComponents';
 import {
-	findPropertyDefinitions,
-	inflateAndSetStyleProps,
 	applyPreloadedStyleProperties,
+	inflateThemeStylePropsOnce,
 } from '../util/lazyStylePropertyUtil';
 import { propertiesDefinition } from './iconProperties';
 
 const PREFIX = '.comp.compIcon';
 const NAME = 'Icon';
+
+const inflateVariants = () =>
+	inflateThemeStylePropsOnce(
+		propertiesDefinition,
+		['designType', 'colorScheme'],
+		stylePropertiesForTheme,
+		styleProperties,
+		styleDefaults,
+	);
 export default function IconStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
@@ -25,22 +33,13 @@ export default function IconStyle({
 			styleDefaults,
 		);
 
-	useEffect(() => {
-		const { designType, colorScheme } = findPropertyDefinitions(
-			propertiesDefinition,
-			'designType',
-			'colorScheme',
-		);
+	// The design and colour variants go into the first paint (see inflateThemeStylePropsOnce).
+	inflateVariants();
 
+	useEffect(() => {
 		const fn = () =>
 			setTimeout(() => {
-				inflateAndSetStyleProps(
-					[designType, colorScheme],
-					stylePropertiesForTheme,
-					(props, _) => styleProperties.splice(0, 0, ...props),
-					styleDefaults,
-				);
-				setReRender(Date.now());
+				if (inflateVariants()) setReRender(Date.now());
 			}, 100);
 
 		if (usedComponents.used(NAME)) fn();

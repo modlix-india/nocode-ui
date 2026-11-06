@@ -11,7 +11,11 @@ import DraftBanner from './components/DraftBanner';
 import DraftAgentHost from './components/DraftAgent/DraftAgentHost';
 import { isDraftAgentBridge, runDraftAgentBridge } from './components/DraftAgent/draftAgentBridge';
 import { WINDOW_PATH } from './components/DraftAgent/draftAgentEnv';
-import { stylePropertyComponentsFor } from './ssr/stylePropertyComponents';
+import {
+	componentTypesFor,
+	shellDefinitionFor,
+	stylePropertyComponentsFor,
+} from './ssr/stylePropertyComponents';
 import { startFrameKeyRelay } from './util/frameKeyRelay';
 
 // TEST CDN CODE
@@ -57,6 +61,8 @@ declare global {
 	var domainAppCode: string;
 	var lastInteracted: number;
 	var styleProperties: any;
+	/** Component types whose style blocks AppStyle emits from its first render (see AppStyle). */
+	var preStyledComponents: string[] | undefined;
 	var __APP_BOOTSTRAP__: {
 		application: any;
 		pageDefinition: any;
@@ -353,21 +359,34 @@ if (AGENT_BRIDGE) {
 		);
 
 		const rendered = document.getElementById('_rendered');
-		if (rendered) {
-			// A server-rendered page was drawn with these components' style properties already
-			// loaded, so the first client render must have them too or every component's <style>
-			// differs and hydration throws the whole tree away. They come from the page definition,
-			// not `data-used-components`: that attribute is filled after the first render, so the
-			// server always writes it empty.
-			await Promise.all(
-				stylePropertyComponentsFor(pageDefinitionResponse).map(async t => {
-					// One quick retry here; a component still without its list fetches it again
-					// (with more retries) once it mounts, instead of staying unstyled.
-					const data = await fetchStyleProperties(t, [400]);
-					if (data) globalThis.styleProperties[t] = data;
-				}),
+		const hydrating = !!rendered && !window.localStorage.getItem(AUTH_TOKEN);
+		// A server-rendered page was drawn with these components' style properties already
+		// loaded, so the first client render must have them too or every component's <style>
+		// differs and hydration throws the whole tree away. They come from the page definition,
+		// not `data-used-components`: that attribute is filled after the first render, so the
+		// server always writes it empty.
+		//
+		// A page that is rendered afresh (no server render, or a signed-in visitor, whose server
+		// copy is replaced rather than hydrated) has nothing to match, so it also takes its
+		// shell's. Without them the shell's menus waited for their own fetch after the first
+		// paint and the whole sidebar moved down when it landed (ADZ-1496).
+		const shellDefinition = hydrating
+			? undefined
+			: shellDefinitionFor(appDefinitionResponse?.application, pageDefinitionResponse);
+		const preload = stylePropertyComponentsFor(pageDefinitionResponse, shellDefinition);
+		if (!hydrating)
+			globalThis.preStyledComponents = componentTypesFor(
+				pageDefinitionResponse,
+				shellDefinition,
 			);
-		}
+		await Promise.all(
+			preload.map(async t => {
+				// One quick retry here; a component still without its list fetches it again
+				// (with more retries) once it mounts, instead of staying unstyled.
+				const data = await fetchStyleProperties(t, [400]);
+				if (data) globalThis.styleProperties[t] = data;
+			}),
+		);
 
 		const reactNode = (
 			<ErrorBoundary>

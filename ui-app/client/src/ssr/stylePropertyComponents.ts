@@ -32,10 +32,27 @@ export const EXTERNAL_STYLE_PROPERTY_COMPONENTS = new Set([
 	'Video',
 ]);
 
-/** The external style-property components a page definition uses, sorted. */
-export function stylePropertyComponentsFor(pageDefinition: any): string[] {
+/** Every component type the given page definitions use, sorted. */
+export function componentTypesFor(...pageDefinitions: any[]): string[] {
 	const types = new Set<string>();
-	for (const c of Object.values(pageDefinition?.componentDefinition ?? {}) as any[])
-		if (EXTERNAL_STYLE_PROPERTY_COMPONENTS.has(c?.type)) types.add(c.type);
-	return [...types].sort();
+	for (const pageDefinition of pageDefinitions)
+		for (const c of Object.values(pageDefinition?.componentDefinition ?? {}) as any[])
+			if (typeof c?.type === 'string' && c.type) types.add(c.type);
+	return [...types].sort((a, b) => a.localeCompare(b));
+}
+
+/** The external style-property components the given page definitions use, sorted. */
+export function stylePropertyComponentsFor(...pageDefinitions: any[]): string[] {
+	return componentTypesFor(...pageDefinitions).filter(t =>
+		EXTERNAL_STYLE_PROPERTY_COMPONENTS.has(t),
+	);
+}
+
+/**
+ * The shell a page is drawn in, or undefined: the application's `shellPageDefinition` unless the
+ * page opts out with `wrapShell: false`.
+ */
+export function shellDefinitionFor(application: any, pageDefinition: any): any {
+	if (pageDefinition?.properties?.wrapShell === false) return undefined;
+	return application?.properties?.shellPageDefinition;
 }
