@@ -811,3 +811,20 @@ describe('binding path that moves to another index', () => {
 		expect(controlInput().value).toBe('CLIENT A');
 	});
 });
+
+describe('accessible name (opt-in)', () => {
+	beforeEach(() => {
+		properties = serverSearchedProperties({ isSearchable: false, onSearch: undefined });
+	});
+
+	it('adds no aria-label by default', () => {
+		render();
+		expect(controlInput().hasAttribute('aria-label')).toBe(false);
+	});
+
+	it('names the input with accessibleName', () => {
+		properties = { ...properties, accessibleName: 'Instagram account' };
+		render();
+		expect(controlInput().getAttribute('aria-label')).toBe('Instagram account');
+	});
+});

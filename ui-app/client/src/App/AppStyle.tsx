@@ -60,7 +60,14 @@ export function AppStyle() {
 	 * during render, so an immediate setState lands in the same React commit
 	 * and the CSS is there before the browser paints.
 	 */
-	const [styled, setStyled] = useState<Set<string>>(() => styledComponents([]));
+	// A page rendered afresh starts with the components its definition and shell name
+	// (`globalThis.preStyledComponents`, set by index.tsx). Learning them from `using` lands
+	// their CSS a frame or more after they paint: the shell's menus drew unstyled and then
+	// grew 17 px each, moving the whole sidebar (ADZ-1496). Unset on the server and on a
+	// page being hydrated, whose first render must match the server's.
+	const [styled, setStyled] = useState<Set<string>>(() =>
+		styledComponents(globalThis.preStyledComponents ?? []),
+	);
 
 	useEffect(() => {
 		setStyled(prev => styledComponents(usedComponents.names(), prev));

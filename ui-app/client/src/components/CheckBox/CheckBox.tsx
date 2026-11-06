@@ -46,6 +46,7 @@ function CheckBox(props: Readonly<ComponentProps>) {
 			hideLabel,
 			analyticsLabel,
 			invertValue,
+			accessibleName,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -133,6 +134,9 @@ function CheckBox(props: Readonly<ComponentProps>) {
 						stylePropertiesWithPseudoStates?.focus ? () => setFocus(false) : undefined
 					}
 					definition={props.definition}
+					ariaLabel={
+						accessibleName ? getTranslations(accessibleName, translations) : undefined
+					}
 				/>
 				{hideLabel ? undefined : labelText}
 			</label>
