@@ -3,14 +3,22 @@ import { processStyleDefinition } from '../../util/styleProcessor';
 import { styleProperties, styleDefaults, stylePropertiesForTheme } from './TextStyleProperties';
 import { usedComponents } from '../../App/usedComponents';
 import {
-	findPropertyDefinitions,
-	inflateAndSetStyleProps,
 	applyPreloadedStyleProperties,
+	inflateThemeStylePropsOnce,
 } from '../util/lazyStylePropertyUtil';
 import { propertiesDefinition } from './textProperties';
 
 const PREFIX = '.comp.compText';
 const NAME = 'Text';
+
+const inflateVariants = () =>
+	inflateThemeStylePropsOnce(
+		propertiesDefinition,
+		['textContainer', 'textColor'],
+		stylePropertiesForTheme,
+		styleProperties,
+		styleDefaults,
+	);
 export default function LabelStyle({
 	theme,
 }: Readonly<{ theme: Map<string, Map<string, string>> }>) {
@@ -25,22 +33,13 @@ export default function LabelStyle({
 			styleDefaults,
 		);
 
-	useEffect(() => {
-		const { textContainer, textColor } = findPropertyDefinitions(
-			propertiesDefinition,
-			'textContainer',
-			'textColor',
-		);
+	// The H1..H6, P and colour variants go into the first paint (see inflateThemeStylePropsOnce).
+	inflateVariants();
 
+	useEffect(() => {
 		const fn = () =>
 			setTimeout(() => {
-				inflateAndSetStyleProps(
-					[textContainer, textColor],
-					stylePropertiesForTheme,
-					(props, _) => styleProperties.splice(0, 0, ...props),
-					styleDefaults,
-				);
-				setReRender(Date.now());
+				if (inflateVariants()) setReRender(Date.now());
 			}, 100);
 
 		if (usedComponents.used(NAME)) fn();

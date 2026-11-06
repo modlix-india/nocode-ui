@@ -65,6 +65,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		defaultValue: false,
 	},
 	{
+		name: 'accessibleName',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Accessible name',
+		description:
+			'The name screen readers announce for the box (aria-label), usually the label text. When set, the box also reports checked and read only. Empty: none (the old behaviour).',
+		translatable: true,
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'hideLabel',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Hide Label',

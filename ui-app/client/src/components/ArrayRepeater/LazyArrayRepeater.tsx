@@ -35,6 +35,7 @@ import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
 import { propertiesDefinition, stylePropertiesDefinition } from './arrayRepeaterProperties';
 import { putDataInObject } from '../util/putDataInObject';
+import { repeaterItemProps } from './repeaterItemProps';
 
 export default function ArrayRepeaterComponent(props: Readonly<ComponentProps>) {
 	const {
@@ -74,6 +75,7 @@ export default function ArrayRepeaterComponent(props: Readonly<ComponentProps>) 
 			missingValueOrder,
 			newKeyStrategy,
 			minimizeReRender,
+			plainItems,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -415,6 +417,7 @@ export default function ArrayRepeaterComponent(props: Readonly<ComponentProps>) 
 						orderDirection,
 						orderValue,
 						newKeyStrategy,
+						plainItems,
 					}),
 				)}
 			</>
@@ -538,6 +541,7 @@ function createRepeaterItem({
 	orderKey,
 	orderValue,
 	newKeyStrategy,
+	plainItems,
 }: {
 	pageDefinition: PageDefinition;
 	firstchild: any;
@@ -578,6 +582,7 @@ function createRepeaterItem({
 	orderDirection: string;
 	orderValue: string;
 	newKeyStrategy: string;
+	plainItems?: boolean;
 }) {
 	if (valuesMap && filterCondition) {
 		dvExtractor.setData(repeaterData[index][1]);
@@ -677,8 +682,7 @@ function createRepeaterItem({
 
 	return (
 		<div
-			tabIndex={0}
-			role="button"
+			{...repeaterItemProps(plainItems)}
 			key={indKeys.current.array[index] || `repeater_${index}`}
 			data-key={`${indKeys.current.array[index]}`}
 			className={`repeaterProperties ${readOnly ? 'disabled' : ''}`}
@@ -689,7 +693,6 @@ function createRepeaterItem({
 			onDragLeave={canDragToReSort ? handleDragLeave : undefined}
 			draggable={canDragToReSort && isItemDraggable && !readOnly}
 			style={styleProperties.repeaterProperties ?? {}}
-			onKeyDown={() => {}}
 		>
 			<SubHelperComponent
 				definition={props.definition}
