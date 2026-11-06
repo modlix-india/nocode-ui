@@ -88,6 +88,11 @@ export interface ApplicationDefinition {
 	name: string;
 	appCode: string;
 	clientCode: string;
+	/** Language code -> translated strings. Its keys are the languages the app is written in. */
+	translations?: Record<string, Record<string, string>>;
+	/** Language code -> how the language is shown. The languages the app offers. */
+	languages?: Record<string, unknown>;
+	defaultLanguage?: string;
 	properties?: {
 		title?: string;
 		defaultPage?: string;
@@ -141,6 +146,12 @@ export interface ApplicationDefinition {
 		 */
 		og?: OpenGraphDefaults;
 		notFoundPage?: string;
+		/**
+		 * JSON-LD the whole app speaks for (Organization, WebSite, LocalBusiness): one node, an
+		 * array of them, or a keyed map of them. Emitted on every public page, before the page's
+		 * own `seo.jsonLd` (render/structuredData.ts).
+		 */
+		structuredData?: unknown;
 		csp?: string | Record<string, string>;
 		cspReport?: string | Record<string, string>;
 		analytics?: AnalyticsConfig;
@@ -253,6 +264,10 @@ export interface PageDefinition {
 	name: string;
 	appCode?: string;
 	clientCode?: string;
+	/** The authority a visitor needs; a page with one is a signed in page (noindex, no JSON-LD). */
+	permission?: string | null;
+	/** Epoch seconds from the Rust ui service; Java sent an ISO string or milliseconds. */
+	updatedAt?: number | string;
 	rootComponent: string;
 	componentDefinition: Record<string, ComponentDefinition>;
 	eventFunctions?: Record<string, unknown>;
@@ -313,7 +328,13 @@ export interface SeoProperties {
 	articleSection?: SeoValue;
 	articleTag?: SeoValue;
 
-	[key: string]: SeoValue | undefined;
+	/** JSON-LD for this page; see render/structuredData.ts. Never a meta tag. */
+	jsonLd?: unknown;
+	/** Per path head values; see render/seoPaths.ts. Never a meta tag. */
+	paths?: unknown;
+	strictPaths?: unknown;
+
+	[key: string]: unknown;
 }
 
 export interface ComponentDefinition {

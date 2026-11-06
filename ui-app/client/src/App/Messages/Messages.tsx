@@ -34,6 +34,8 @@ export function Messages() {
 		if (pending) addMessage(MESSAGE_TYPE.ERROR, pending, true, '');
 	}, []);
 
+	const lift = useMessagesLift();
+
 	const msgComps = msgs.map((e: any, i: number) => {
 		// `UIEngine.Message` declares its four types as ERROR | WARNING | INFO |
 		// SUCCESS (`functions/Message.ts`), and a value outside that enum is
@@ -120,7 +122,60 @@ export function Messages() {
 		);
 	});
 
-	return <div className="comp compMessages">{msgComps}</div>;
+	return (
+		<div
+			className="comp compMessages"
+			style={lift ? { translate: `0px -${lift}` } : undefined}
+			data-lift={lift}
+		>
+			{msgComps}
+		</div>
+	);
+}
+
+/**
+ * Opt-in, per page: a page whose own bar sits where the theme puts the toasts (a sticky footer
+ * with a Back button in the bottom left, say) sets `Page.messagesLift` to a length (a number is
+ * pixels, or a string such as "88px" or "5rem") and the toasts move up by that much while that
+ * page is the one in the URL. `translate` adds to whatever the theme positions with (top, bottom
+ * or transform). Unset, or any other value, keeps the theme's place.
+ */
+export const MESSAGES_LIFT_KEY = 'messagesLift';
+
+export function messagesLiftValue(v: any): string | undefined {
+	if (typeof v === 'number') return Number.isFinite(v) && v > 0 ? `${v}px` : undefined;
+	if (typeof v !== 'string') return undefined;
+	const s = v.trim();
+	return /^\d+(\.\d+)?(px|rem|em|vh)$/.test(s) && Number.parseFloat(s) > 0 ? s : undefined;
+}
+
+function useMessagesLift(): string | undefined {
+	const [lift, setLift] = useState<string | undefined>(undefined);
+	useEffect(() => {
+		let offPage: (() => void) | undefined;
+		const offUrl = addListenerAndCallImmediately(
+			undefined,
+			(_, pageName) => {
+				offPage?.();
+				offPage = undefined;
+				if (!pageName) {
+					setLift(undefined);
+					return;
+				}
+				offPage = addListenerAndCallImmediately(
+					undefined,
+					(_p, v) => setLift(messagesLiftValue(v)),
+					`Store.pageData.${pageName}.${MESSAGES_LIFT_KEY}`,
+				);
+			},
+			'Store.urlDetails.pageName',
+		);
+		return () => {
+			offUrl();
+			offPage?.();
+		};
+	}, []);
+	return lift;
 }
 
 export enum MESSAGE_TYPE {
