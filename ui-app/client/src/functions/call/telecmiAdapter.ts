@@ -109,6 +109,21 @@ function moveSdkUnloadToPagehide(before: any) {
 	});
 }
 
+/** Set in the browser (localStorage) to have the SDK log its SIP messages to the console. */
+export const DEBUG_KEY = 'modlix.call.debug';
+
+/**
+ * The SDK's SIP log (JsSIP) for one agent's browser, to see which side ends a call leg
+ * (LZT-2208): `localStorage.setItem('modlix.call.debug', '1')`, then reload. Off by default.
+ */
+function sdkDebug(): boolean {
+	try {
+		return typeof localStorage !== 'undefined' && !!localStorage.getItem(DEBUG_KEY);
+	} catch {
+		return false;
+	}
+}
+
 function text(v: any): string | undefined {
 	if (v === undefined || v === null || v === '') return undefined;
 	return String(v);
@@ -308,7 +323,7 @@ export function createTelecmiAdapter(options: TelecmiAdapterOptions = {}): CallA
 			const ringTime = Number(credentials.ringTime);
 			const p: Piopiy = new Ctor({
 				name: credentials.name ?? '',
-				debug: false,
+				debug: sdkDebug(),
 				autoplay: true,
 				ringTime: ringTime > 0 ? ringTime : RING_TIME_SECONDS,
 			});

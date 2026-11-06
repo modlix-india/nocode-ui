@@ -152,13 +152,18 @@ export default function ArrayRepeaterComponent(props: Readonly<ComponentProps>) 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			pageExtractor.getPageName(),
 			(_, _v) => {
-				processArrayValue(toRepeaterEntries(dataType, _v), setRepeaterData, indKeys.current, {
-					valuesMap,
-					orderKey,
-					orderDirection,
-					missingValueOrder,
-					minimizeReRender,
-				});
+				processArrayValue(
+					toRepeaterEntries(dataType, _v),
+					setRepeaterData,
+					indKeys.current,
+					{
+						valuesMap,
+						orderKey,
+						orderDirection,
+						missingValueOrder,
+						minimizeReRender,
+					},
+				);
 			},
 			bindingPathPath,
 		);

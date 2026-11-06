@@ -444,7 +444,13 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		fit?: any;
 		idled?: boolean;
 		hadPlaces?: boolean;
+		/** ADZ-1435: a map made again for a new look keeps the old one's view: no fit on its first draw */
+		keepView?: boolean;
 	}>({});
+	// ADZ-1435: the view of the map being replaced (a new look or map id makes a new map), for the next one
+	const view = useRef<{ center: Point; zoom: number } | undefined>(undefined);
+	// ADZ-1435: one more for every map made, so the places are drawn again on a new map
+	const [mapGen, setMapGen] = useState(0);
 	const latest = useRef<{
 		bound?: any;
 		readOnly?: boolean;
@@ -472,12 +478,16 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			.then(google => {
 				if (cancelled || !holder.current) return;
 				const start = asPoint(latest.current.bound);
+				// ADZ-1435: switching the look (Light / Dark) makes a new map; it opens where the old one was
+				const carried = view.current;
+				view.current = undefined;
 				const map = new google.maps.Map(holder.current, {
-					center: start ?? {
-						lat: Number(centerLat ?? 20.5937),
-						lng: Number(centerLng ?? 78.9629),
-					},
-					zoom: start ? PIN_ZOOM : Number(zoom ?? 5),
+					center: carried?.center ??
+						start ?? {
+							lat: Number(centerLat ?? 20.5937),
+							lng: Number(centerLng ?? 78.9629),
+						},
+					zoom: carried?.zoom ?? (start ? PIN_ZOOM : Number(zoom ?? 5)),
 					disableDefaultUI: true,
 					zoomControl: true,
 					gestureHandling: 'cooperative',
@@ -487,13 +497,14 @@ function MapPicker(props: Readonly<ComponentProps>) {
 					// ADZ-1407: the Grey look, only without a map id (whose style wins); ADZ-1435: Dark grey
 					...lookOptions(mapLook, mapId),
 				});
-				live.current = { google, map };
+				live.current = { google, map, keepView: !!carried };
 				// a fit asked for before the map first settles is lost, so it is held until then
 				map.addListener('idle', () => {
 					live.current.idled = true;
 					if (live.current.fit) fitWhenShown(live.current.fit);
 				});
 				setReady(true);
+				setMapGen(g => g + 1);
 				map.addListener('click', (e: any) => {
 					if (latest.current.readOnly || !e?.latLng) return;
 					pick({ lat: e.latLng.lat(), lng: e.latLng.lng() });
@@ -503,6 +514,13 @@ function MapPicker(props: Readonly<ComponentProps>) {
 			.catch(() => !cancelled && setFailed(true));
 		return () => {
 			cancelled = true;
+			const old = live.current.map;
+			const c = old?.getCenter?.();
+			const z = old?.getZoom?.();
+			view.current =
+				c && typeof z === 'number'
+					? { center: { lat: c.lat(), lng: c.lng() }, zoom: z }
+					: undefined;
 			live.current = {};
 			setReady(false);
 		};
@@ -548,8 +566,10 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				if (pos) pick({ lat: pos.lat(), lng: pos.lng() });
 			});
 			live.current.marker = marker;
-			map.setCenter(p);
-			if (map.getZoom() < PIN_ZOOM - 4) map.setZoom(PIN_ZOOM - 2);
+			if (!live.current.keepView) {
+				map.setCenter(p);
+				if (map.getZoom() < PIN_ZOOM - 4) map.setZoom(PIN_ZOOM - 2);
+			}
 		} else live.current.marker.setPosition(p);
 		const km = Number(radiusKm);
 		if (km > 0) {
@@ -670,6 +690,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				map.setZoom(Number(zoom ?? 5));
 			}
 			live.current.hadPlaces = false;
+			live.current.keepView = false;
 			return;
 		}
 		live.current.hadPlaces = true;
@@ -740,7 +761,10 @@ function MapPicker(props: Readonly<ComponentProps>) {
 				any = true;
 			});
 			if (moreOutlines) styleLayers();
-			if (!any) return;
+			// ADZ-1435: the first draw on a map made for a new look keeps the view the old map had
+			const keep = live.current.keepView;
+			live.current.keepView = false;
+			if (!any || keep) return;
 			// the picked point stays in view too
 			const at = asPoint(latest.current.bound);
 			if (at) all.extend(at);
@@ -751,6 +775,7 @@ function MapPicker(props: Readonly<ComponentProps>) {
 		};
 	}, [
 		ready,
+		mapGen,
 		placesKey,
 		placeColor,
 		excludedColor,
