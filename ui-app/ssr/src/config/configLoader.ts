@@ -90,6 +90,10 @@ interface SSRConfig {
 	// authenticates nothing. Origin-based site resolution and rate limiting are the controls.
 	analytics: {
 		ingestionHost: string;
+		// The engine's private address and the secret for its server-only `POST /c` (AI crawler
+		// visits, analytics/aiCrawlers.ts). Never put in a page.
+		engineUrl?: string;
+		serverSecret?: string;
 	};
 	// Security configuration (mirror of Java security.appCodeSuffix for SSO beacon host derivation)
 	security: {
@@ -151,6 +155,8 @@ const defaultConfig: SSRConfig = {
 	},
 	analytics: {
 		ingestionHost: '',
+		engineUrl: '',
+		serverSecret: '',
 	},
 	security: {
 		appCodeSuffix: process.env.SECURITY_APP_CODE_SUFFIX ?? '',
@@ -243,6 +249,9 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 			},
 			analytics: {
 				ingestionHost: (source['ui.analytics.ingestionHost'] as string) || defaultConfig.analytics.ingestionHost,
+				engineUrl: (source['ui.analytics.engine.url'] as string) || defaultConfig.analytics.engineUrl,
+				serverSecret:
+					(source['ui.analytics.engine.serverSecret'] as string) || defaultConfig.analytics.serverSecret,
 			},
 			security: {
 				appCodeSuffix: (source['security.appCodeSuffix'] as string) ?? defaultConfig.security.appCodeSuffix,
