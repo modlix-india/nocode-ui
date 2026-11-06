@@ -71,6 +71,19 @@ jest.mock('../../HelperComponents/SubHelperComponent', () => ({
 	SubHelperComponent: () => null,
 }));
 jest.mock('../../HelperComponents/HelperComponent', () => ({ HelperComponent: () => null }));
+// The option-row template: shows which child it renders and the row it is given as Parent.
+jest.mock('../../Children', () => ({
+	__esModule: true,
+	default: ({ renderableChildren, locationHistory }: any) => {
+		const last = locationHistory[locationHistory.length - 1];
+		const loc = last?.location;
+		return (
+			<span className="_childRow">
+				{Object.keys(renderableChildren).join(',')}@{loc?.value ?? loc?.expression}
+			</span>
+		);
+	},
+}));
 
 // The properties the component would otherwise resolve off the definition.
 let properties: Record<string, any> = {};
@@ -729,41 +742,107 @@ describe('focusSearchOnOpen', () => {
 	});
 });
 
-describe('subLabelKey', () => {
+describe('child as the option row template', () => {
 	const ACCOUNTS = [
 		{ code: 'A1', name: 'Cityville', ext: '852565919728055' },
 		{ code: 'A2', name: 'Raja IRA', ext: '1061033056474626' },
-		{ code: 'A3', name: 'No id' },
 	];
+
+	function renderWithChild(dataProperty?: any) {
+		const props = propsFor(pageDefinition);
+		props.definition.children = { rowTpl: true };
+		if (dataProperty) props.definition.properties = { data: dataProperty };
+		act(() => root.render(<Dropdown {...props} />));
+	}
+
+	const childRows = () =>
+		Array.from(document.querySelectorAll('._dropdownItem ._childRow')).map(e => e.textContent);
 
 	beforeEach(() => {
 		properties = serverSearchedProperties({
 			data: ACCOUNTS,
 			onSearch: undefined,
-			subLabelKey: 'ext',
+			selectionOptionTickType: 'TICK',
 		});
 	});
 
-	const subLabels = () =>
-		Array.from(document.querySelectorAll('._dropdownItemSubLabel')).map(e => e.textContent);
-
-	it('shows the key under each option that has it', () => {
-		render();
-		openPanel();
-		expect(subLabels()).toEqual(['852565919728055', '1061033056474626']);
+	it('allows exactly one child in the editor', () => {
+		expect(dropdownDescriptor.allowedChildrenType?.get('')).toBe(1);
 	});
 
-	it('matches the search on the sub label too', () => {
-		render();
-		typeSearch('1061');
-		expect(optionLabels()).toEqual(['Raja IRA1061033056474626']);
+	it('renders the child once per option, on that row of bound data', () => {
+		renderWithChild({ location: { type: 'VALUE', value: 'Page.accounts' } });
+		openPanel();
+		expect(childRows()).toEqual(['rowTpl@Page.accounts[0]', 'rowTpl@Page.accounts[1]']);
+		expect(document.querySelectorAll('._dropdownItemLabel')).toHaveLength(0);
 	});
 
-	it('renders no sub label without the property', () => {
-		properties = serverSearchedProperties({ data: ACCOUNTS, onSearch: undefined });
+	it('mirrors literal data to a default-data path and points the rows there', () => {
+		renderWithChild({ value: ACCOUNTS });
+		openPanel();
+		expect(storeValues.get('Store.defaultData.testpage.dd')).toBe(ACCOUNTS);
+		expect(childRows()).toEqual([
+			'rowTpl@Store.defaultData.testpage.dd[0]',
+			'rowTpl@Store.defaultData.testpage.dd[1]',
+		]);
+	});
+
+	it('mirrors data from an expression too, since a Parent path cannot extend one', () => {
+		renderWithChild({
+			location: { type: 'EXPRESSION', expression: 'Page.pxOpt ? Page.pxOpt : Page.pixels' },
+		});
+		openPanel();
+		expect(storeValues.get('Store.defaultData.testpage.dd')).toBe(ACCOUNTS);
+		expect(childRows()).toEqual([
+			'rowTpl@Store.defaultData.testpage.dd[0]',
+			'rowTpl@Store.defaultData.testpage.dd[1]',
+		]);
+	});
+
+	it('keeps the row on its own data entry when a search filters the list', () => {
+		renderWithChild({ location: { type: 'VALUE', value: 'Page.accounts' } });
+		typeSearch('Raja');
+		expect(childRows()).toEqual(['rowTpl@Page.accounts[1]']);
+	});
+
+	it('uses the key of object data as the row path', () => {
+		properties = serverSearchedProperties({
+			data: { a1: ACCOUNTS[0], a2: ACCOUNTS[1] },
+			datatype: 'OBJECT_OF_OBJECTS',
+			onSearch: undefined,
+		});
+		renderWithChild({ location: { type: 'VALUE', value: 'Page.accounts' } });
+		openPanel();
+		expect(childRows()).toEqual(['rowTpl@Page.accounts.a1', 'rowTpl@Page.accounts.a2']);
+	});
+
+	it('still selects the row on mouse down, and draws no tick of its own', () => {
+		renderWithChild({ location: { type: 'VALUE', value: 'Page.accounts' } });
+		openPanel();
+		const rows = document.querySelectorAll('._dropdownItem');
+		act(() => {
+			rows[1].dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+		});
+		expect(storeValues.get(SELECTION_PATH)).toBe('A2');
+		expect(controlInput().value).toBe('Raja IRA');
+		openPanel();
+		expect(document.querySelector('._dropdownItem._selected ._childRow')).not.toBeNull();
+		expect(document.querySelectorAll('._dropdownCheckIcon')).toHaveLength(0);
+	});
+
+	it('still selects with the arrow keys and Enter', () => {
+		renderWithChild({ location: { type: 'VALUE', value: 'Page.accounts' } });
+		openPanel();
+		pressKey('ArrowDown');
+		pressKey('Enter');
+		expect(storeValues.get(SELECTION_PATH)).toBe('A1');
+	});
+
+	it('renders the label rows as before without a child', () => {
 		render();
 		openPanel();
-		expect(subLabels()).toEqual([]);
+		expect(optionLabels()).toEqual(['Cityville', 'Raja IRA']);
+		expect(document.querySelectorAll('._childRow')).toHaveLength(0);
 	});
 });
 

@@ -176,6 +176,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'controlsOnScrim',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Controls on a dark scrim',
+		description:
+			'Shows the player controls in white on a dark fade at the bottom of the video, so they read on any picture and in any theme. Off keeps the theme colours.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		defaultValue: '_videoDesign1',
 		enumValues: [

@@ -43,7 +43,9 @@ describe('inflateThemeStylePropsOnce', () => {
 			defaults,
 		);
 		expect(
-			styleProperties.some(e => e.sel === '.comp.compText.H2._coloredText1' && e.cp === 'font'),
+			styleProperties.some(
+				e => e.sel === '.comp.compText.H2._coloredText1' && e.cp === 'font',
+			),
 		).toBe(true);
 	});
 });
