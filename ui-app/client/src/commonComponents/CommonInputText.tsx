@@ -58,6 +58,8 @@ type CommonInputType = {
 	analyticsLabel?: string;
 	/** W3C aria-keyshortcuts token for the input itself. */
 	ariaKeyShortcuts?: string;
+	/** Opt-in aria-label for the input itself, for a field whose visible label sits outside it. */
+	ariaLabel?: string;
 	/**
 	 * The key chip from useComponentShortcut. Rendered as a flex item just before the
 	 * right icons, so it stays clear of the clear, password, error and success icons
@@ -122,6 +124,7 @@ function CommonInputText(props: CommonInputType) {
 		analyticsLabel,
 		onEditRequest,
 		ariaKeyShortcuts,
+		ariaLabel,
 		shortcutTooltip,
 		shortcutHint,
 	} = props;
@@ -246,6 +249,7 @@ function CommonInputText(props: CommonInputType) {
 				autoComplete={autoComplete}
 				onKeyDown={keyDownEvent}
 				aria-keyshortcuts={ariaKeyShortcuts}
+				aria-label={ariaLabel || undefined}
 			/>
 		) : (
 			<textarea
@@ -276,6 +280,7 @@ function CommonInputText(props: CommonInputType) {
 				onKeyDown={keyDownEvent}
 				rows={rows}
 				aria-keyshortcuts={ariaKeyShortcuts}
+				aria-label={ariaLabel || undefined}
 			/>
 		);
 

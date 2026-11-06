@@ -314,3 +314,31 @@ export function applyPreloadedStyleProperties(
 		styleDefaults,
 	);
 }
+
+/**
+ * A bundled component's theme variants (its `stylePropertiesForTheme` expanded for the named enum
+ * properties, e.g. Text's textContainer x textColor), put in `styleProperties` once. Returns true
+ * when this call did the expanding, false when they were already in.
+ *
+ * Meant to be called during the style component's render, so the variants are in the first paint.
+ * They used to be expanded 100 ms after the component was first used: until then an H2 wore the
+ * browser's own size and margins, an Icon its default box, and everything around them moved when
+ * the variants arrived (seconds late while a big page's onLoad kept the main thread busy).
+ */
+export function inflateThemeStylePropsOnce(
+	propertiesDefinition: Array<ComponentPropertyDefinition>,
+	enumPropNames: Array<string>,
+	stylePropertiesForTheme: Array<StylePropertyDefinition>,
+	styleProperties: Array<StylePropertyDefinition>,
+	styleDefaults: Map<string, string>,
+): boolean {
+	if (styleProperties.length) return false;
+	const defs = findPropertyDefinitions(propertiesDefinition, ...enumPropNames);
+	inflateAndSetStyleProps(
+		enumPropNames.map(n => defs[n]).filter(Boolean),
+		stylePropertiesForTheme,
+		props => styleProperties.splice(0, 0, ...props),
+		styleDefaults,
+	);
+	return true;
+}
