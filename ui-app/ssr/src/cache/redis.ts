@@ -385,6 +385,34 @@ export function generateAppCacheKey(appCode: string, clientCode: string, draft: 
 }
 
 /**
+ * Whether one more path of a `seo.paths` page may be stored (render/seoPaths.ts). Each page
+ * variant keeps a set of the path keys it holds, capped at `limit`, so a crawler walking random
+ * slugs of a source-backed page cannot fill Redis. The set lives at `html:<pageKey>:paths`, which
+ * the page eviction's `html:<pattern>:*` removes with the entries; it is refreshed to the entry
+ * TTL on each add, so it outlives its oldest entries and only ever overcounts. Without Redis
+ * nothing is stored anyway, so the answer is no.
+ */
+export async function admitPathEntry(
+	pageKey: string,
+	pathKey: string,
+	limit: number,
+	ttlSeconds: number,
+): Promise<boolean> {
+	try {
+		const redis = getRedisClient();
+		const setKey = `${CACHE_PREFIX}html:${pageKey}:paths`;
+		if (await redis.sismember(setKey, pathKey)) return true;
+		if ((await redis.scard(setKey)) >= limit) return false;
+		await redis.sadd(setKey, pathKey);
+		await redis.expire(setKey, ttlSeconds);
+		return true;
+	} catch (error) {
+		logger.warn('Redis path entry check error (degraded mode)', { pageKey, error: String(error) });
+		return false;
+	}
+}
+
+/**
  * Get cached HTML string (for rendered HTML caching)
  * Returns null if Redis is unavailable or HTML not found
  * Supports both raw HTML and gzipped HTML (for faster serving)

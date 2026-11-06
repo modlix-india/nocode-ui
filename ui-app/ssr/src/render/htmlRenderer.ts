@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import { resolveCodesFromRequest, extractPageName, getAuthToken } from '../resolver/codeResolver.js';
+import { resolveCodesFromRequest, extractPageName, extractPagePath, getAuthToken } from '../resolver/codeResolver.js';
 import {
 	fetchAllPageData,
 	fetchApplication,
@@ -8,9 +8,13 @@ import {
 	type ApplicationDefinition,
 	type ThemeDefinition,
 	type HeadTagCollection,
+	type SeoValue,
 } from '../api/client.js';
 import { assignmentSetCookie, isDesignUrl, resolveRoute } from '../resolver/pageRouting.js';
-import { getCachedData, setCachedData, generateAppCacheKey, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml } from '../cache/redis.js';
+import { getCachedData, setCachedData, generateAppCacheKey, generateCacheKey, getCachedHtml, setCachedHtml, getCachedGzippedHtml, admitPathEntry } from '../cache/redis.js';
+import { derivedNodes, isoInstant, jsonLdNodes, jsonLdScripts, type Crumb } from './structuredData.js';
+import { lookupPath, pathCacheKey, MAX_PATH_ENTRIES, type PathHead, type PathLookup } from './seoPaths.js';
+import { modlixNotFoundHtml } from './notFoundPage.js';
 import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
@@ -393,6 +397,70 @@ export interface MetaRenderContext {
 	pageName?: string;
 	appCode?: string;
 	clientCode?: string;
+	/** The slug after the page name, for a page that declares `seo.paths` (render/seoPaths.ts). */
+	path?: string;
+	/** That slug's own head values, which beat the page's. */
+	pathHead?: PathHead;
+	/**
+	 * A page behind sign in: its own `permission`, or the login page standing in for one.
+	 * Always noindex, nofollow, whatever its `seo.robots` says, and no canonical or JSON-LD.
+	 */
+	signedIn?: boolean;
+	/** The not found page, answered with 404: noindex, no canonical, no JSON-LD. */
+	notFound?: boolean;
+}
+
+/** Whether the page needs an authority to view, which makes it a signed in page. */
+export function hasPermission(page: PageDefinition | null | undefined): boolean {
+	const p = page?.permission;
+	return typeof p === 'string' && p.trim() !== '';
+}
+
+/** A BCP 47 language tag, as far as hreflang and `<html lang>` need one. */
+const LANGUAGE_TAG = /^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$/;
+
+/** The document's language: the app's default when it is a usable tag, `en` otherwise. */
+function htmlLang(application: ApplicationDefinition | null): string {
+	const lang = (application?.defaultLanguage ?? '').toString().trim();
+	return LANGUAGE_TAG.test(lang) ? lang : 'en';
+}
+
+/**
+ * hreflang alternates for an app written in two or more languages: the keys of its `languages`
+ * and `translations`. The default language is the canonical URL itself; every other one is the
+ * canonical with `?lang=<code>`; `x-default` is the canonical.
+ */
+export function hreflangAlternates(
+	application: ApplicationDefinition | null,
+	canonical: string,
+): Array<[string, string]> {
+	if (!canonical) return [];
+	const keys = (o: unknown) => (o && typeof o === 'object' && !Array.isArray(o) ? Object.keys(o) : []);
+	const langs = [...new Set([...keys(application?.languages), ...keys(application?.translations)])]
+		.filter(l => LANGUAGE_TAG.test(l))
+		.sort();
+	if (langs.length < 2) return [];
+	const fallback = (application?.defaultLanguage ?? '').toString().trim();
+	const main = langs.includes(fallback) ? fallback : langs.includes('en') ? 'en' : langs[0];
+	const join = canonical.includes('?') ? '&' : '?';
+	return [
+		...langs.map(l => [l, l === main ? canonical : `${canonical}${join}lang=${encodeURIComponent(l)}`] as [string, string]),
+		['x-default', canonical],
+	];
+}
+
+/** Each slug segment as it goes in a URL. */
+function encodePath(path: string): string {
+	return path.split('/').map(encodeURIComponent).join('/');
+}
+
+/** The default page is the site's root, whichever of `/`, `/index` or `/<defaultPage>` asked. */
+function isHomePage(ctx: MetaRenderContext, application: ApplicationDefinition | null): boolean {
+	return !ctx.path && (!ctx.pageName || ctx.pageName === 'index' || ctx.pageName === application?.properties?.defaultPage);
+}
+
+function canonicalBaseOf(application: ApplicationDefinition | null): string {
+	return trimSlashes((application?.properties?.og?.canonicalBase ?? '').toString().trim(), 'end');
 }
 
 /** First non-blank candidate, trimmed. The whole fallback chain is built on it. */
@@ -431,6 +499,11 @@ export interface ResolvedOg {
 	fbAppId: string;
 	article: Array<[string, string]>;
 	plain: Array<[string, string]>;
+	/**
+	 * `<link rel="canonical">`: the same URL as og:url, but only for a page that wants to be
+	 * indexed. A signed in page and the not found page get none.
+	 */
+	canonical: string;
 	/** False when there is nothing worth a card, so no og block is emitted. */
 	present: boolean;
 }
@@ -443,20 +516,31 @@ export function resolveOg(
 	const seo = page?.properties?.seo;
 	const og = application?.properties?.og;
 	const appTitle = application?.properties?.title;
-	const s = (key: string): string => (seo?.[key]?.value ?? '').toString().trim();
+	// Only text: `jsonLd`, `paths` and `strictPaths` live under `seo` too and are not metas.
+	const s = (key: string): string => {
+		const v = (seo?.[key] as SeoValue | undefined)?.value as unknown;
+		return typeof v === 'string' || typeof v === 'number' ? String(v).trim() : '';
+	};
+	// A `seo.paths` entry speaks for its own URL, so each of its values beats the page's.
+	const ph = ctx.pathHead ?? {};
 
-	const canonicalBase = trimSlashes((og?.canonicalBase ?? '').toString().trim(), 'end');
+	const canonicalBase = canonicalBaseOf(application);
 
-	const image = absolutise(firstOf(s('ogImage'), og?.image?.url), canonicalBase);
-	const title = firstOf(s('ogTitle'), og?.title, page?.properties?.title?.name?.value, appTitle);
-	const description = firstOf(s('ogDescription'), s('description'), og?.description);
+	const image = absolutise(firstOf(ph.image, s('ogImage'), og?.image?.url), canonicalBase);
+	const title = firstOf(ph.title, s('ogTitle'), og?.title, page?.properties?.title?.name?.value, appTitle);
+	const description = firstOf(ph.description, s('ogDescription'), s('description'), og?.description);
 
 	// A page reached at its own path, expressed against the canonical origin
 	// rather than the host that happened to ask. The HTML cache key carries no
 	// host, so one cached document is served to every domain the app answers on,
 	// and a host-derived value would be whichever host missed the cache first.
-	const ownUrl = absolutise(s('ogUrl'), canonicalBase);
-	const path = ctx.pageName ? `/${ctx.pageName}` : '/';
+	// The page's own `ogUrl` names the page, so it does not stand for any one of its paths.
+	const ownUrl = absolutise(firstOf(ph.canonical, ctx.path ? '' : s('ogUrl')), canonicalBase);
+	const path = isHomePage(ctx, application)
+		? '/'
+		: `/${ctx.pageName}${ctx.path ? `/${encodePath(ctx.path)}` : ''}`;
+	const url = firstOf(ownUrl, canonicalBase ? `${canonicalBase}${path}` : '');
+	const robots = ctx.signedIn ? 'noindex, nofollow' : ctx.notFound ? 'noindex' : '';
 
 	return {
 		// The encoding declaration has to be in the document's first 1024 bytes
@@ -470,7 +554,7 @@ export function resolveOg(
 		imageType: firstOf(s('ogImageType'), og?.image?.type),
 		imageWidth: firstOf(s('ogImageWidth'), og?.image?.width),
 		imageHeight: firstOf(s('ogImageHeight'), og?.image?.height),
-		url: firstOf(ownUrl, canonicalBase ? `${canonicalBase}${path}` : ''),
+		url,
 		description,
 		siteName: firstOf(s('ogSiteName'), og?.siteName, appTitle),
 		locale: firstOf(s('ogLocale'), og?.locale),
@@ -485,9 +569,13 @@ export function resolveOg(
 		fbAppId: firstOf(og?.fbAppId),
 		article: ARTICLE_KEYS.map(([key, tag]) => [tag, s(key)] as [string, string]).filter(e => !!e[1]),
 		plain: PLAIN_META_KEYS.map(([key, name]) => {
-			const value = firstOf(s(key), key === 'description' ? description : '');
+			// A signed in page is never indexed, whatever its own robots says (PLAT-1549).
+			if (key === 'robots' && robots) return [name, robots] as [string, string];
+			const value =
+				key === 'description' ? firstOf(ph.description, s(key), description) : s(key);
 			return [name, value] as [string, string];
 		}).filter(e => !!e[1]),
+		canonical: ctx.signedIn || ctx.notFound ? '' : url,
 		// Nothing to say at all means nothing is said. A card built from an empty
 		// title and no image is worse than no card: the consumer then falls back
 		// to the page's own <title>, which is usually right.
@@ -630,7 +718,67 @@ export function generateMetaTags(
 
 	emitAppMetas(sink, application);
 
+	// The URL this document is the original of (PLAT-1550). Built like og:url, from the
+	// configured origin and the full path of a `seo.paths` page, so each post names its own.
+	if (resolved.canonical) {
+		sink.raw(`<link rel="canonical" href="${escapeHtml(resolved.canonical)}">`);
+		for (const [lang, href] of hreflangAlternates(application, resolved.canonical)) {
+			sink.raw(`<link rel="alternate" hreflang="${escapeHtml(lang)}" href="${escapeHtml(href)}">`);
+		}
+	}
+
 	return sink.tags.join('\n\t\t');
+}
+
+/**
+ * The page's JSON-LD blocks (PLAT-1548): the app's `structuredData`, the page's `seo.jsonLd`,
+ * a `seo.paths` entry's `jsonLd`, then the derived BreadcrumbList and WebPage. None on a signed
+ * in page or the not found page: neither is something an answer engine should cite.
+ */
+export function generateStructuredData(
+	page: PageDefinition | null,
+	application: ApplicationDefinition | null,
+	ctx: MetaRenderContext = {}
+): string {
+	if (ctx.signedIn || ctx.notFound || hasPermission(page)) return '';
+
+	const authored = [
+		...jsonLdNodes(application?.properties?.structuredData),
+		...jsonLdNodes(page?.properties?.seo?.jsonLd),
+		...jsonLdNodes(ctx.pathHead?.jsonLd),
+	];
+
+	const resolved = resolveOg(page, application, ctx);
+	const base = canonicalBaseOf(application);
+	const crumbs: Crumb[] = [];
+	if (base) {
+		crumbs.push({ name: firstOf(application?.properties?.title, 'Home'), url: `${base}/` });
+		if (!isHomePage({ ...ctx, path: undefined }, application) && ctx.pageName) {
+			crumbs.push({
+				name: firstOf(page?.properties?.title?.name?.value, ctx.pageName),
+				url: `${base}/${ctx.pageName}`,
+			});
+		}
+		if (ctx.path) {
+			crumbs.push({
+				name: firstOf(ctx.pathHead?.title, ctx.path.split('/').pop()),
+				url: firstOf(resolved.url, `${base}/${ctx.pageName}/${encodePath(ctx.path)}`),
+			});
+		}
+	}
+
+	const derived = derivedNodes({
+		authored,
+		crumbs,
+		url: resolved.url,
+		name: resolved.title,
+		description: resolved.description,
+		// The page definition's update time says nothing about one post among its paths; an
+		// entry's own jsonLd carries that post's dates.
+		dateModified: ctx.path ? undefined : isoInstant(page?.updatedAt),
+	});
+
+	return jsonLdScripts([...authored, ...derived]);
 }
 
 /**
@@ -766,7 +914,9 @@ function generateHtml(
 	cdn: CDNConfig,
 	error?: string,
 	/** The width the page is server-rendered at; the browser's first render must use it. */
-	deviceWidth?: number
+	deviceWidth?: number,
+	/** What the request made of the page: its path entry, signed in or not found. */
+	head: Pick<MetaRenderContext, 'path' | 'pathHead' | 'signedIn' | 'notFound'> = {}
 ): string {
 	// The client reads this to know which surface it is on, and SSR is the only
 	// thing that writes the shell on this path -- IndexHTMLService never runs
@@ -787,6 +937,7 @@ function generateHtml(
 
 	// Get page title
 	const pageTitle =
+		head.pathHead?.title ||
 		page?.properties?.title?.name?.value ||
 		application?.properties?.title ||
 		'Modlix';
@@ -827,11 +978,16 @@ function generateHtml(
 	// `pageName` here is the page actually served, which is what the canonical
 	// URL has to name: a routing split that resolved to a variant still belongs
 	// under the URL the visitor asked for, and that is the name this carries.
-	const metaTags = generateMetaTags(page, application, {
+	const metaCtx: MetaRenderContext = {
 		pageName,
 		appCode: codes.appCode,
 		clientCode: codes.clientCode,
-	});
+		...head,
+		// Also from the definition itself, so the legacy object cache's copies say it too.
+		signedIn: head.signedIn || hasPermission(page),
+	};
+	const metaTags = generateMetaTags(page, application, metaCtx);
+	const structuredData = generateStructuredData(page, application, metaCtx);
 	const externalLinks = generateExternalLinks(application);
 	const externalScripts = generateExternalScripts(application);
 	const analyticsSnippet = generateAnalyticsSnippet(
@@ -873,10 +1029,11 @@ function generateHtml(
 		  });
 
 	return `<!DOCTYPE html>
-<html lang="en"${draftAttr}${themeAttr}>
+<html lang="${escapeHtml(htmlLang(application))}"${draftAttr}${themeAttr}>
 	<head>
 		${beforeHeadParts ? `${beforeHeadParts}\n\t\t` : ''}${metaTags}
 		<title>${escapeHtml(pageTitle)}</title>
+		${structuredData}
 
 		<!-- Resource hints -->
 		${devBundle ? '' : `<link rel="dns-prefetch" href="https://${cdn.hostName}">
@@ -1018,6 +1175,78 @@ function setSecurityPolicyHeaders(
 	}
 }
 
+interface FetchedPage {
+	application: ApplicationDefinition | null;
+	page: PageDefinition | null;
+	theme?: ThemeDefinition | null;
+	themeName?: string;
+	resolvedPageName: string;
+}
+
+/** Whether the app's page `role` came back in place of the page that was asked for. */
+function isStandIn(data: FetchedPage, role: 'notFoundPage' | 'loginPage'): boolean {
+	const standIn = data.application?.properties?.[role];
+	const name = data.page?.name;
+	return !!standIn && !!name && name === standIn && data.resolvedPageName !== standIn;
+}
+
+/**
+ * The ui service read an unknown page name as the app's notFoundPage (crates/ui engine.rs
+ * `page_read`). Only the definition's own name tells the two apart.
+ */
+export function isNotFoundStandIn(data: FetchedPage): boolean {
+	return isStandIn(data, 'notFoundPage');
+}
+
+/** The app's login page, served to an anonymous visitor in place of a page with a permission. */
+export function isLoginStandIn(data: FetchedPage): boolean {
+	return isStandIn(data, 'loginPage');
+}
+
+/** A not found answer may sit in a shared cache briefly; the page may be published any minute. */
+const NOT_FOUND_CACHE_CONTROL = 'public, max-age=60';
+
+/** The app's own not found page, rendered in full, with 404. Never stored in the HTML cache. */
+function sendAppNotFound(
+	res: ServerResponse,
+	data: FetchedPage,
+	codes: { appCode: string; clientCode: string; urlType?: string },
+	pageName: string,
+	cdn: CDNConfig,
+	isAuthenticated: boolean,
+): void {
+	const result: CachedPageData = {
+		application: data.application!,
+		page: data.page!,
+		theme: (data.theme ?? null) as ThemeDefinition | null,
+		themeName: data.themeName,
+		codes,
+		pageName,
+		cachedAt: Date.now(),
+	};
+	const html = generateHtml(result, codes, pageName, cdn, undefined, undefined, { notFound: true });
+	setResponseHeaders(res, isAuthenticated, false, null, data.application, cdn.hostName);
+	if (!isAuthenticated) res.setHeader('Cache-Control', NOT_FOUND_CACHE_CONTROL);
+	res.writeHead(404);
+	res.end(html);
+}
+
+/** Modlix's own friendly not found page, for an app without one (or no app at all), with 404. */
+function sendModlixNotFound(
+	res: ServerResponse,
+	codes: { appCode: string; clientCode: string },
+	url: URL,
+	isAuthenticated: boolean,
+): void {
+	const prefix = `/${codes.appCode}/${codes.clientCode}/page`;
+	const home = url.pathname === prefix || url.pathname.startsWith(`${prefix}/`) ? `${prefix}/` : '/';
+	res.setHeader('Content-Type', 'text/html; charset=utf-8');
+	res.setHeader('Cache-Control', isAuthenticated ? 'private, no-store' : NOT_FOUND_CACHE_CONTROL);
+	res.setHeader('X-Cache-Status', 'MISS');
+	res.writeHead(404);
+	res.end(modlixNotFoundHtml(home));
+}
+
 /**
  * Handle page request - main entry point for SSR
  */
@@ -1046,6 +1275,8 @@ export async function handlePageRequest(
 
 	const codes = await resolveCodesFromRequest(request);
 	const urlPageName = extractPageName(url.pathname);
+	// Everything after the page name; only a page declaring `seo.paths` makes anything of it.
+	const urlPath = extractPagePath(url.pathname);
 	const authToken = getAuthToken(request);
 	const isAuthenticated = !!authToken;
 
@@ -1190,45 +1421,50 @@ export async function handlePageRequest(
 		const acceptEncoding = req.headers['accept-encoding'] || '';
 		const supportsGzip = acceptEncoding.includes('gzip');
 
-		if (supportsGzip) {
-			// Try to serve pre-compressed content (fastest TTFB!)
-			const cachedGzipped = await getCachedGzippedHtml(htmlCacheKey);
-			if (cachedGzipped) {
-				logger.info('HTML cache hit (pre-compressed)', {
-					cacheKey: htmlCacheKey,
-					pageName: actualPageName,
-					size: cachedGzipped.length
-				});
+		// A page that declares `seo.paths` is stored under a key per path and never under its bare
+		// key (render/seoPaths.ts), so a miss on the bare key is followed by this URL's path key.
+		// Every other page hits on the first, exactly as before.
+		for (const cacheKey of [htmlCacheKey, pathCacheKey(htmlCacheKey, urlPath)]) {
+			if (supportsGzip) {
+				// Try to serve pre-compressed content (fastest TTFB!)
+				const cachedGzipped = await getCachedGzippedHtml(cacheKey);
+				if (cachedGzipped) {
+					logger.info('HTML cache hit (pre-compressed)', {
+						cacheKey,
+						pageName: actualPageName,
+						size: cachedGzipped.length
+					});
 
-				// Set headers for pre-compressed response
+					// Set headers for pre-compressed response
+					res.setHeader('Content-Type', 'text/html; charset=utf-8');
+					res.setHeader('Content-Encoding', 'gzip');
+					res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
+					res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
+					res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
+					setSecurityPolicyHeaders(res, application, cdn.hostName);
+
+					res.writeHead(200);
+					res.end(cachedGzipped);
+					return;
+				}
+			}
+
+			// Fallback: serve uncompressed HTML (let Nginx compress)
+			const cachedHtml = await getCachedHtml(cacheKey);
+			if (cachedHtml) {
+				logger.info('HTML cache hit', { cacheKey, pageName: actualPageName });
+
+				// Set headers for cached response
 				res.setHeader('Content-Type', 'text/html; charset=utf-8');
-				res.setHeader('Content-Encoding', 'gzip');
 				res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
-				res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
-				res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
+				res.setHeader('Vary', 'Authorization, Cookie');
+				res.setHeader('X-Cache-Status', 'HIT-HTML');
 				setSecurityPolicyHeaders(res, application, cdn.hostName);
 
 				res.writeHead(200);
-				res.end(cachedGzipped);
+				res.end(cachedHtml);
 				return;
 			}
-		}
-
-		// Fallback: serve uncompressed HTML (let Nginx compress)
-		const cachedHtml = await getCachedHtml(htmlCacheKey);
-		if (cachedHtml) {
-			logger.info('HTML cache hit', { cacheKey: htmlCacheKey, pageName: actualPageName });
-
-			// Set headers for cached response
-			res.setHeader('Content-Type', 'text/html; charset=utf-8');
-			res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
-			res.setHeader('Vary', 'Authorization, Cookie');
-			res.setHeader('X-Cache-Status', 'HIT-HTML');
-			setSecurityPolicyHeaders(res, application, cdn.hostName);
-
-			res.writeHead(200);
-			res.end(cachedHtml);
-			return;
 		}
 
 		// Fallback: legacy object cache
@@ -1264,27 +1500,65 @@ export async function handlePageRequest(
 	// definition is wrong, rather than taking it down with a 404 naming a page no
 	// visitor ever asked for. Only worth trying when routing actually changed the
 	// name, and only when the app itself came back.
-	if (data.application && !data.page && actualPageName !== urlPageName) {
+	if (data.application && (!data.page || isNotFoundStandIn(data)) && actualPageName !== urlPageName) {
 		logger.warn('Routed page missing, falling back to the requested page', {
 			requested: urlPageName,
 			resolved: actualPageName,
 			rule: route.resolution.ruleKey,
 		});
 		const fallback = await fetchAllPageData(urlPageName, fetchOptions, cookieTheme, application);
-		if (fallback.page) {
+		if (fallback.page && !isNotFoundStandIn(fallback)) {
 			data = fallback;
 			servedPageName = fallback.resolvedPageName;
 		}
 	}
 
-	// Handle not found
+	// Nothing to serve at all: no app, or no page and no notFoundPage to stand in for it.
 	if (!data.application || !data.page) {
 		logger.warn('Page not found', { pageName: servedPageName, appCode: codes.appCode });
-		setResponseHeaders(res, true, false, null, null, cdn.hostName);
-		res.writeHead(404);
-		res.end(generateHtml(null, codes, servedPageName, cdn, `Page "${servedPageName}" not found`));
+		sendModlixNotFound(res, codes, url, isAuthenticated);
 		return;
 	}
+
+	// The ui service answers a page name it does not know with the app's notFoundPage
+	// definition and a 200. That page is still what the visitor sees, but the status says
+	// what it is, and it is never cached: unknown names are unbounded.
+	if (isNotFoundStandIn(data)) {
+		logger.info('Unknown page, answering 404 with the app\'s not found page', {
+			requested: servedPageName,
+			notFoundPage: data.page.name,
+		});
+		sendAppNotFound(res, data, codes, servedPageName, cdn, isAuthenticated);
+		return;
+	}
+
+	// A page behind sign in: its own `permission`, or the app's login page standing in for it
+	// for an anonymous visitor. That stand in is the page working as designed, not a 404; it is
+	// served noindex like the page it stands for (PLAT-1549).
+	const signedIn = hasPermission(data.page) || isLoginStandIn(data);
+
+	// The rest of the path, for a page that declares `seo.paths` (PLAT-1546). Not asked for a
+	// signed in page: what it serves is the login page, and none of it is indexed.
+	const lookup: PathLookup = signedIn ? { kind: 'none' } : await lookupPath(data.page, urlPath, fetchOptions);
+	if (lookup.kind === 'missing') {
+		const nfName = data.application.properties?.notFoundPage;
+		const nf = nfName ? await fetchAllPageData(nfName, fetchOptions, cookieTheme, data.application) : null;
+		logger.info('Unknown path, answering 404', { pageName: servedPageName, path: urlPath, notFoundPage: nfName });
+		if (nf?.application && nf.page) {
+			// Bootstrapped under the not found page's own name, so the client never files it
+			// as the definition of the page whose slug was unknown.
+			sendAppNotFound(res, nf, codes, nf.page.name || nfName!, cdn, isAuthenticated);
+		} else {
+			sendModlixNotFound(res, codes, url, isAuthenticated);
+		}
+		return;
+	}
+	const head: Pick<MetaRenderContext, 'path' | 'pathHead' | 'signedIn'> = {
+		signedIn,
+		...(lookup.kind === 'found' ? { path: urlPath, pathHead: lookup.head } : {}),
+		// The source did not answer: the URL is still this path's, only without its own values.
+		...(lookup.kind === 'unknown' ? { path: urlPath } : {}),
+	};
 
 	// Build result
 	const result: CachedPageData = {
@@ -1298,7 +1572,7 @@ export async function handlePageRequest(
 	};
 
 	// Generate HTML once
-	let generatedHtml = generateHtml(result, codes, servedPageName, cdn, undefined, renderWidth);
+	let generatedHtml = generateHtml(result, codes, servedPageName, cdn, undefined, renderWidth, head);
 
 	// The page drawn into #app, for the browser to hydrate. Shell-wrapped pages still render in
 	// the browser only (their shell loads separately). On any failure the document goes out as
@@ -1323,11 +1597,21 @@ export async function handlePageRequest(
 	// Keyed on the page actually served, which after a fallback is not the page
 	// routing picked -- storing it under the missing name would serve the wrong
 	// document the moment that name starts resolving again.
-	const servedCacheKey =
+	const pageCacheKey =
 		servedPageName === actualPageName
 			? htmlCacheKey
 			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme, renderWidth, renderSurface);
-	if (!isAuthenticated && !isDesign) {
+	// A page that declares `seo.paths` is stored per path only (even its own bare URL, under the
+	// empty path), so a cached copy of one path can never answer for another. A path whose
+	// source did not answer is not stored, nor one past the page's entry cap.
+	const pathed = lookup.kind !== 'none';
+	const servedCacheKey = pathed ? pathCacheKey(pageCacheKey, urlPath) : pageCacheKey;
+	const storable =
+		!isAuthenticated &&
+		!isDesign &&
+		lookup.kind !== 'unknown' &&
+		(!pathed || (await admitPathEntry(pageCacheKey, servedCacheKey, MAX_PATH_ENTRIES, config.cache.ttlSeconds)));
+	if (storable) {
 		// Cache the rendered HTML (fast serving)
 		await setCachedHtml(servedCacheKey, generatedHtml, config.cache.ttlSeconds);
 		logger.info('Cached HTML', {
@@ -1337,8 +1621,9 @@ export async function handlePageRequest(
 			ttl: config.cache.ttlSeconds
 		});
 
-		// Also cache the object data (for cache warming and debugging)
-		await setCachedData(servedCacheKey + ':data', result, config.cache.ttlSeconds);
+		// Also cache the object data (for cache warming and debugging). Not per path: it is the
+		// same definition for every path, and the legacy probe reads only the bare key.
+		if (!pathed) await setCachedData(servedCacheKey + ':data', result, config.cache.ttlSeconds);
 	}
 
 	// Analyze key frequencies (debug mode only - set ANALYZE_KEYS=true in env)

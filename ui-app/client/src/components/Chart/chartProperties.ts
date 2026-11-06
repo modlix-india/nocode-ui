@@ -733,6 +733,16 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
+		name: 'secondaryAxisDataSets',
+		schema: SCHEMA_STRING_COMP_PROP,
+		displayName: 'Data Sets On The Right Axis',
+		description:
+			'Data set positions (1 for the first, comma separated, e.g. 2 or 2,3) drawn against a ' +
+			'second value axis on the right, so a small count can share a chart with large ' +
+			'amounts. Empty keeps every data set on the one axis.',
+		group: ComponentPropertyGroup.ADVANCED,
+	},
+	{
 		name: 'lineAreaFill',
 		schema: SCHEMA_BOOL_COMP_PROP,
 		displayName: 'Fill Under Lines',
