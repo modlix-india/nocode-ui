@@ -48,6 +48,7 @@ function Video(props: Readonly<ComponentProps>) {
 			colorScheme,
 			designType: videoDesign,
 			autoUnMuteAfterPlaying,
+			controlsOnScrim,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -629,7 +630,11 @@ function Video(props: Readonly<ComponentProps>) {
 			/>
 
 			{controlsOnHover && (
-				<div className={`_videoControlsContainer ${videoControls ? '_hidden' : ''} `}>
+				<div
+					className={`_videoControlsContainer ${videoControls ? '_hidden' : ''} ${
+						controlsOnScrim ? '_scrim' : ''
+					}`}
+				>
 					{showSeekBar && (
 						<div
 							className="_progressBarContainer"
