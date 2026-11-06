@@ -24,6 +24,8 @@
  * - CACHE_TTL_SECONDS: Cache TTL in seconds (default: 1800)
  * - ANALYTICS_INGESTION_HOST: Analytics ingestion host (ui.analytics.ingestionHost)
  * - SECURITY_APP_CODE_SUFFIX: security.appCodeSuffix
+ * - SERVER_RENDER_FOR: who gets the page drawn into #app, `all`, `bots` or `off`
+ *   (ssr.serverRender.for; the image's SERVER_RENDER_FOR_DEFAULT, else `all`)
  */
 
 import logger from './logger.js';
@@ -104,6 +106,24 @@ interface SSRConfig {
 		 */
 		assignmentCookieMaxAgeSeconds: number;
 	};
+	// Server rendering of the page body (render/serverRender.ts)
+	serverRender: {
+		/**
+		 * Who gets the page drawn into `#app` when the image carries the server render: every
+		 * anonymous visitor (`all`), only known crawlers and AI fetchers (`bots`, render/bots.ts),
+		 * or nobody (`off`). The default is the image's SERVER_RENDER_FOR_DEFAULT, baked in by the
+		 * deploy workflow (dev and prod: `bots`), else `all`, which is what stage has served.
+		 */
+		for: ServerRenderAudience;
+	};
+}
+
+export type ServerRenderAudience = 'all' | 'bots' | 'off';
+
+/** A configured audience, or undefined for anything that is not one. */
+export function serverRenderAudience(value: unknown): ServerRenderAudience | undefined {
+	const v = String(value ?? '').trim().toLowerCase();
+	return v === 'all' || v === 'bots' || v === 'off' ? v : undefined;
 }
 
 // Default configuration (used in development or if config server is unavailable)
@@ -142,6 +162,9 @@ const defaultConfig: SSRConfig = {
 	},
 	cache: {
 		ttlSeconds: 1800, // 30 minutes
+	},
+	serverRender: {
+		for: serverRenderAudience(process.env.SERVER_RENDER_FOR_DEFAULT) ?? 'all',
 	},
 };
 
@@ -229,6 +252,9 @@ async function fetchFromConfigServer(): Promise<Partial<SSRConfig> | null> {
 					ssr<number>('routing.assignmentCookieMaxAgeSeconds') ||
 					defaultConfig.routing.assignmentCookieMaxAgeSeconds,
 			},
+			serverRender: {
+				for: serverRenderAudience(ssr<string>('serverRender.for')) ?? defaultConfig.serverRender.for,
+			},
 		};
 	} catch (error) {
 		logger.warn('Failed to fetch from config server, using defaults', { error: String(error) });
@@ -297,6 +323,11 @@ function loadFromEnvironment(): Partial<SSRConfig> {
 		config.analytics = { ingestionHost: process.env.ANALYTICS_INGESTION_HOST };
 	}
 
+	const audience = serverRenderAudience(process.env.SERVER_RENDER_FOR);
+	if (audience) {
+		config.serverRender = { for: audience };
+	}
+
 	return config;
 }
 
@@ -345,6 +376,9 @@ function mergeConfigs(...configs: Array<Partial<SSRConfig> | null>): SSRConfig {
 		if (config.routing) {
 			result.routing = { ...result.routing, ...config.routing };
 		}
+		if (config.serverRender) {
+			result.serverRender = { ...result.serverRender, ...config.serverRender };
+		}
 	}
 
 	return result;
@@ -389,6 +423,7 @@ export async function loadConfig(): Promise<SSRConfig> {
 		cdnReplacePlus: loadedConfig.cdn.replacePlus,
 		cdnResizeOptionsType: loadedConfig.cdn.resizeOptionsType,
 		cacheTtlSeconds: loadedConfig.cache.ttlSeconds,
+		serverRenderFor: loadedConfig.serverRender.for,
 	});
 
 	return loadedConfig;

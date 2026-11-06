@@ -172,8 +172,10 @@ async function resolveFromSecurityService(
 	try {
 		const redis = getRedisClient();
 
-		// Check cache first
-		const cached = cacheable ? await redis.get(cacheKey) : null;
+		// Check cache first. A cache that cannot answer is a miss, not a failure: right after a
+		// start the client refuses commands until it has connected (no offline queue), and
+		// failing here served the first visitors the `nothing` app's page (HYDRATION_PLAN.md #16).
+		const cached = cacheable ? await redis.get(cacheKey).catch(() => null) : null;
 		if (cached) {
 			return JSON.parse(cached);
 		}
@@ -218,7 +220,7 @@ async function resolveFromSecurityService(
 
 		// Cache for 10 minutes; a draft host is asked again every time
 		if (isCacheableResolution(host, urlType)) {
-			await redis.setex(cacheKey, 600, JSON.stringify(codes));
+			await redis.setex(cacheKey, 600, JSON.stringify(codes)).catch(() => undefined);
 		}
 
 		return codes;

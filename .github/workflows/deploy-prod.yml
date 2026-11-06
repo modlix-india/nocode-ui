@@ -56,6 +56,20 @@ jobs:
           mkdir -p ui-app/ssr/manifests
           cp ./ui-app/client/dist/asset-manifest.json ui-app/ssr/manifests/asset-manifest.json
 
+      # Server rendering (ui-app/ssr/HYDRATION_PLAN.md, PLAT-1545): the client built for Node, which
+      # the SSR finds at manifests/server-render/serverEntry.js and uses to draw pages into #app.
+      # Its presence in the image is the switch; who gets the drawn page is SERVER_RENDER_FOR_DEFAULT
+      # below (here `bots`: crawlers and AI fetchers only, people keep today's page).
+      - name: Build the client for server rendering
+        working-directory: ./ui-app/client
+        run: npx webpack --config webpack.server.js
+
+      - name: Copy the server render into the SSR image
+        run: |
+          mkdir -p ui-app/ssr/manifests/server-render
+          cp -r ./ui-app/client/dist-server/. ui-app/ssr/manifests/server-render/
+          cp -r ./ui-app/client/dist/styleProperties ui-app/ssr/manifests/server-render/styleProperties
+
       - name: Pushing Prod to Cloudflare
         working-directory: ./ui-app/client
         run: |
@@ -82,6 +96,7 @@ jobs:
         run: |
           docker build -t $OCIR_REPO:${{ github.sha }} \
                        -t $OCIR_REPO:latest \
+                       --build-arg SERVER_RENDER_FOR_DEFAULT=bots \
                        -f ui-app/ssr/Dockerfile .
           docker push $OCIR_REPO:${{ github.sha }}
           docker push $OCIR_REPO:latest
