@@ -185,6 +185,15 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.BASIC,
 	},
 	{
+		name: 'securedSource',
+		schema: SCHEMA_BOOL_COMP_PROP,
+		displayName: 'Play secured files',
+		description:
+			'Fetches a secured file (/api/files/secured/...) with the sign-in token and plays it from memory, so a private upload plays and shows its poster. The whole file is downloaded first: use it for short videos. Off plays the address as given.',
+		defaultValue: false,
+		group: ComponentPropertyGroup.BASIC,
+	},
+	{
 		...COMMON_COMPONENT_PROPERTIES.designType,
 		defaultValue: '_videoDesign1',
 		enumValues: [
