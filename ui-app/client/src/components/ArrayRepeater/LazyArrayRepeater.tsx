@@ -9,6 +9,7 @@ import React, { Fragment, useEffect } from 'react';
 import { ParentExtractorForRunEvent } from '../../context/ParentExtractor';
 import {
 	addListenerAndCallImmediatelyWithChildrenActivity,
+	getDataFromPath,
 	getPathFromLocation,
 	localStoreExtractor,
 	PageStoreExtractor,
@@ -87,8 +88,6 @@ export default function ArrayRepeaterComponent(props: Readonly<ComponentProps>) 
 		urlExtractor,
 	);
 
-	const [repeaterData, setRepeaterData] = React.useState<any[]>([]);
-
 	const clickMove = moveEvent ? props.pageDefinition.eventFunctions?.[moveEvent] : undefined;
 	const clickRemove = removeEvent
 		? props.pageDefinition.eventFunctions?.[removeEvent]
@@ -124,6 +123,24 @@ export default function ArrayRepeaterComponent(props: Readonly<ComponentProps>) 
 		}
 	}
 
+	// The rows of a value already in the store belong in the first paint. Only the listener below
+	// used to fill them, and an effect runs after the browser paints, so such a list first drew
+	// empty and grew a frame later, pushing everything under it down (a layout shift).
+	const [repeaterData, setRepeaterData] = React.useState<any[]>(() => {
+		if (!bindingPathPath) return [];
+		let initial: any[] = [];
+		processArrayValue(
+			toRepeaterEntries(
+				dataType,
+				getDataFromPath(bindingPathPath, locationHistory, pageExtractor),
+			),
+			v => (initial = v),
+			indKeys.current,
+			{ valuesMap, orderKey, orderDirection, missingValueOrder, minimizeReRender },
+		);
+		return initial;
+	});
+
 	useEffect(() => {
 		if (!defaultData) return;
 
@@ -135,13 +152,7 @@ export default function ArrayRepeaterComponent(props: Readonly<ComponentProps>) 
 		return addListenerAndCallImmediatelyWithChildrenActivity(
 			pageExtractor.getPageName(),
 			(_, _v) => {
-				let repData: any[][] = [];
-				if (dataType === 'object' && _v) {
-					if (Array.isArray(_v)) repData = _v.map((e, i) => [i, e]);
-					else repData = Object.entries(_v);
-				} else if (Array.isArray(_v)) repData = _v.map((e, i) => [i, e]);
-
-				processArrayValue(repData, setRepeaterData, indKeys.current, {
+				processArrayValue(toRepeaterEntries(dataType, _v), setRepeaterData, indKeys.current, {
 					valuesMap,
 					orderKey,
 					orderDirection,
@@ -731,6 +742,15 @@ function createRepeaterItem({
 			</div>
 		</div>
 	);
+}
+
+function toRepeaterEntries(dataType: string, value: any): any[][] {
+	if (dataType === 'object' && value) {
+		if (Array.isArray(value)) return value.map((e, i) => [i, e]);
+		return Object.entries(value);
+	}
+	if (Array.isArray(value)) return value.map((e, i) => [i, e]);
+	return [];
 }
 
 function processArrayValue(

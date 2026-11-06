@@ -382,6 +382,16 @@ export interface PageDefinition {
 			append?: ComponentProperty<string>;
 		};
 		onLoadEvent?: string;
+		/**
+		 * Opt-in: an event function run when the page is left, either for another page or for
+		 * another address of this page (the store is cleared only after it finishes then).
+		 */
+		onLeaveEvent?: string;
+		/**
+		 * Opt-in: a store path (e.g. `Page.unsaved`). While its value is truthy the browser asks
+		 * before the tab is reloaded or closed.
+		 */
+		leaveWarningPath?: string;
 		loadStrategy?: string;
 		wrapShell?: boolean;
 		/**
