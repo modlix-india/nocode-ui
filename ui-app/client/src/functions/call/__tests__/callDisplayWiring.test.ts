@@ -430,3 +430,73 @@ describe('LZT-2161: the session writes the display', () => {
 		expect(writes.A.every(w => w.path === 'Store.call')).toBe(true);
 	});
 });
+
+describe('LZT-2208: an earlier call that is over never ends the call just placed', () => {
+	const ownLeg = async (tab: Tab, callId: string) => {
+		tab.session.expectOutbound(true);
+		tab.adapters[0].emit({ status: 'ringing', direction: 'inbound', callId });
+		await settle(10);
+	};
+
+	test('Call pressed again a few seconds after an attempt ended: the new call is not shown as ended', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		await ownLeg(a, 'leg1');
+		frame(a, { callLogId: 'log-1', status: 'INITIATED', direction: 'outbound' });
+		await settle(2_000);
+		a.adapters[0].emit({ status: 'ended' });
+		frame(a, { callLogId: 'log-1', status: 'BUSY', terminal: true, direction: 'outbound' });
+		await settle(15_000);
+
+		// 17 s after the first attempt was first heard, before any frame of the new call.
+		await ownLeg(a, 'leg2');
+		expect(a.display()).toMatchObject({ callId: 'leg2', phase: 'dialling', final: false });
+		expect(a.display().callLogId).toBe('');
+
+		// Its own frame binds it as usual.
+		frame(a, { callLogId: 'log-2', status: 'INITIATED', direction: 'outbound' });
+		await settle(10);
+		expect(a.display()).toMatchObject({ phase: 'dialling', final: false, callLogId: 'log-2' });
+	});
+
+	test('the final record of an earlier call, first heard while the new call rings, is not its end', async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		await ownLeg(a, 'leg1');
+		// TeleCMI events reach the page in batches: an earlier call's record arrives now, as its end.
+		frame(a, {
+			callLogId: 'log-0',
+			status: 'COMPLETED',
+			terminal: true,
+			direction: 'outbound',
+		});
+		await settle(10);
+		expect(a.display()).toMatchObject({ callId: 'leg1', phase: 'dialling', final: false });
+	});
+
+	test("the call's own end is still shown in its summary", async () => {
+		const tabs = new FakeTabs();
+		const a = loadTab('A', tabs);
+		await connect(a);
+		await ownLeg(a, 'leg1');
+		frame(a, { callLogId: 'log-1', status: 'INITIATED', direction: 'outbound' });
+		a.adapters[0].emit({ status: 'connected' });
+		await settle(20_000);
+		frame(a, {
+			callLogId: 'log-1',
+			status: 'COMPLETED',
+			terminal: true,
+			direction: 'outbound',
+			talkDuration: 12,
+		});
+		await settle(10);
+		expect(a.display()).toMatchObject({
+			phase: 'ended',
+			final: true,
+			callLogId: 'log-1',
+			talkSec: 12,
+		});
+	});
+});

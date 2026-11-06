@@ -226,8 +226,7 @@ function liveBelongs(state: CallState): boolean {
 	if (!IN_CALL.has(state.status) && state.status !== 'ended') return false;
 	const bound = boundId();
 	if (bound) return bound === live.callLogId;
-	const h = heard.get(live.callLogId);
-	return !!h && h.first >= callSince - FIRST_FRAME_EARLY_MS;
+	return heardAsThisCall(live.callLogId, IN_CALL.has(state.status));
 }
 
 /**
@@ -442,6 +441,12 @@ async function answerOwnLeg(session: Session) {
 export async function expectOutbound(on = true): Promise<CallState> {
 	if (inDesigner()) return designerState();
 	const session = current();
+	// The microphone is asked for at the press, in the tab the user pressed Call in (LZT-2208).
+	// Asked first when the agent's own leg rang, in the tab holding the phone (often one in the
+	// background), the browser's prompt waited unseen while TeleCMI rang that leg, so the first
+	// call on a new phone or after a one-time permission ran out was never answered. Not awaited:
+	// the call is placed meanwhile; a refused microphone still fails the answer as before.
+	if (on) ensureMicrophone().catch(() => undefined);
 	if (session.role === 'follower') {
 		await toOwner(session, 'expect', { on });
 		return session.state;
@@ -1369,17 +1374,42 @@ function liveRank(r: LiveReport): number {
  * and leg events reach the page on the next 30 s tick, so frames of an earlier call keep arriving
  * while the next one is up (LZT-2156).
  */
-const heard = new Map<string, { first: number; ended: boolean }>();
+const heard = new Map<string, { first: number; ended: boolean; endedAt?: number }>();
 const HEARD_MAX = 50;
 
 function hear(report: LiveReport) {
 	const h = heard.get(report.callLogId);
 	if (h) {
-		if (report.terminal) h.ended = true;
+		if (report.terminal && !h.ended) {
+			h.ended = true;
+			h.endedAt = report.at;
+		}
 		return;
 	}
-	heard.set(report.callLogId, { first: report.at, ended: report.terminal });
+	heard.set(report.callLogId, {
+		first: report.at,
+		ended: report.terminal,
+		...(report.terminal ? { endedAt: report.at } : {}),
+	});
 	if (heard.size > HEARD_MAX) heard.delete(heard.keys().next().value!);
+}
+
+/**
+ * Whether a server call no binding names is taken as the call up here: first heard around when
+ * this call came up (FIRST_FRAME_EARLY_MS), and not over already (LZT-2208). An earlier call
+ * heard within that window, a click to call attempt that ended a few seconds before the agent
+ * pressed Call again, or an earlier call whose record first reached this tab as its end (TeleCMI
+ * events reach the page in batches, up to half a minute late), was taken as the new call, so the
+ * new call showed as ended at once and the shell hung it up two seconds after it rang.
+ * `inCall`: the call is still up here; once it ended, its own final record, heard after it came
+ * up, is its end.
+ */
+function heardAsThisCall(callLogId: string, inCall: boolean): boolean {
+	const h = heard.get(callLogId);
+	if (!h || h.first < callSince - FIRST_FRAME_EARLY_MS) return false;
+	if (h.endedAt === undefined) return true;
+	if (h.endedAt < callSince) return false;
+	return !(inCall && h.endedAt === h.first);
 }
 
 /** Within this, a call still reported as going on is taken as the current one. */
@@ -1419,8 +1449,7 @@ function callUp(prev: LiveReport): boolean {
 	if (!IN_CALL.has(state.status) && state.status !== 'ended') return false;
 	const bound = boundId();
 	if (bound) return bound === prev.callLogId;
-	const h = heard.get(prev.callLogId);
-	return !!h && h.first >= callSince - FIRST_FRAME_EARLY_MS;
+	return heardAsThisCall(prev.callLogId, IN_CALL.has(state.status));
 }
 
 /**
