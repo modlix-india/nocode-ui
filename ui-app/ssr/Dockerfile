@@ -40,6 +40,13 @@ COPY ui-app/ssr/manifests ./manifests
 # Create logs directory
 RUN mkdir -p /logs
 
+# Who gets the page drawn into #app when manifests/server-render/ is in the image: `all` anonymous
+# visitors, only crawlers (`bots`, src/render/bots.ts) or `off`. The deploy workflow passes `bots`
+# for dev and prod; stage keeps `all`. ssr.serverRender.for in the config server, or
+# SERVER_RENDER_FOR on the container, overrides it without a new image.
+ARG SERVER_RENDER_FOR_DEFAULT=all
+ENV SERVER_RENDER_FOR_DEFAULT=${SERVER_RENDER_FOR_DEFAULT}
+
 # Expose port
 EXPOSE 3080
 

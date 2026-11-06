@@ -12,6 +12,7 @@ import { createRoot, Root } from 'react-dom/client';
 jest.mock('../../../context/StoreContext', () => ({
 	PageStoreExtractor: { getForContext: () => ({ getPageName: () => 'p' }) },
 	UrlDetailsExtractor: { getForContext: () => ({}) },
+	getDataFromPath: (path: string) => (path === 'Store.devices' ? devices : undefined),
 	addListenerAndCallImmediately: (
 		_p: string,
 		cb: (path: string, v: any) => void,
@@ -45,11 +46,13 @@ jest.mock('../../util/secureImage', () => ({
 }));
 
 let properties: Record<string, any> = {};
+let devices: Record<string, boolean> | undefined;
 jest.mock('../../util/useDefinition', () => ({
 	__esModule: true,
 	default: () => ({ properties, key: 'img', stylePropertiesWithPseudoStates: {} }),
 }));
 
+import { renderToString } from 'react-dom/server';
 import Image from '../Image';
 
 let host: HTMLDivElement;
@@ -121,4 +124,40 @@ test('Ignore a late picture: the current source still shows when it answers', as
 	render();
 	await answer('/secured/a.jpg', 'blob:a');
 	expect(shown()).toBe('blob:a');
+});
+
+// PLAT-1545: a server render runs no effects, so the <img> must come from the first render, for
+// crawlers to see it and for the browser's first render (the same) to hydrate it.
+const serverHtml = () =>
+	renderToString(
+		<Comp
+			definition={{ key: 'img' }}
+			context={{ pageName: 'p' }}
+			locationHistory={[]}
+			pageDefinition={{ eventFunctions: {} }}
+		/>,
+	);
+
+test('a public image is drawn with its alt on the first render (server render)', () => {
+	devices = undefined;
+	properties = { src: 'https://cdn.example.com/a.jpg', alt: 'A cat' };
+	const html = serverHtml();
+	expect(html).toContain('<img');
+	expect(html).toContain('src="https://cdn.example.com/a.jpg"');
+	expect(html).toContain('alt="A cat"');
+});
+
+test('the first render takes the source for the device class it starts at', () => {
+	devices = { MOBILE_POTRAIT_SCREEN_ONLY: true };
+	properties = {
+		src: 'https://cdn.example.com/wide.jpg',
+		src5: 'https://cdn.example.com/phone.jpg',
+	};
+	expect(serverHtml()).toContain('src="https://cdn.example.com/phone.jpg"');
+	devices = undefined;
+});
+
+test('a secured image is not drawn on the first render: it is fetched in the browser', () => {
+	properties = { src: '/secured/a.jpg', alt: 'Private' };
+	expect(serverHtml()).not.toContain('<img');
 });

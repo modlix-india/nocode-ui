@@ -58,7 +58,8 @@ jobs:
 
       # Server rendering (ui-app/ssr/HYDRATION_PLAN.md): the client built for Node, which the SSR
       # finds at manifests/server-render/serverEntry.js and uses to draw pages into #app for the
-      # browser to hydrate. Its presence in the image is the switch, so only stage builds it for now.
+      # browser to hydrate. Its presence in the image is the switch. Stage draws it for every
+      # anonymous visitor (the image default `all`); dev and prod build it too, for crawlers only.
       - name: Build the client for server rendering
         working-directory: ./ui-app/client
         run: npx webpack --config webpack.server.js

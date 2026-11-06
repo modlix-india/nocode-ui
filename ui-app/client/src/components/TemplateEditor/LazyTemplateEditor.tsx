@@ -482,6 +482,7 @@ export default function LazyTemplateEditor({
 						device={device}
 						onDevice={setDevice}
 						onRefresh={doPreview}
+						renderedSubject={preview.subject}
 						subjectValue={
 							typeDef.subjectKey
 								? getPartValue(template, activeLang, typeDef.subjectKey)

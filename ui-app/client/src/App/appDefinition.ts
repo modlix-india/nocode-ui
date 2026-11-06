@@ -1,4 +1,5 @@
 import axios, { AxiosRequestConfig } from 'axios';
+import { requestedLanguage } from '../util/requestedLanguage';
 import { shortUUID } from '../util/shortUUID';
 import {
 	consumeSsoArrival,
@@ -204,7 +205,15 @@ async function makeAppDefinitionCall(
 				application = response.data;
 			}
 		}
-		if (application && !language) language = application.defaultLanguage;
+		// `?lang=<code>` (the SSR's hreflang alternates) beats everything when the app is
+		// written in that language. It is seeded exactly like the default below: stored as
+		// currentLanguage for this load, not kept as a preference, so a later load without it
+		// resolves as before. The server render runs this same code at the same URL.
+		if (application)
+			language =
+				requestedLanguage(application, globalThis.location?.search) ??
+				language ??
+				application.defaultLanguage;
 	} catch (e) {
 		isApplicationLoadFailed = true;
 		console.error('Unable to load application definition:', e);
