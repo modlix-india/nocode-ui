@@ -304,9 +304,12 @@ export function applyPreloadedStyleProperties(
 	stylePropertiesForTheme: Array<StylePropertyDefinition>,
 	styleDefaults: Map<string, string>,
 ) {
-	const designProps = propertiesDefinition.filter(
-		p => p.enumValues?.length && /design|colorScheme/i.test(p.name),
-	);
+	// colorScheme last, as every fetch path passes it ([designType, colorScheme]): the per-design
+	// values (`spv`) are keyed in that order ("_videoDesign1-"). Video and Audio list colorScheme
+	// first, so expanding in their own order matched no key and their player icons stayed 100% wide.
+	const designProps = propertiesDefinition
+		.filter(p => p.enumValues?.length && /design|colorScheme/i.test(p.name))
+		.sort((a, b) => Number(a.name === 'colorScheme') - Number(b.name === 'colorScheme'));
 	inflateAndSetStyleProps(
 		designProps.length ? designProps : undefined,
 		globalThis.styleProperties[name],

@@ -274,14 +274,6 @@ const propertiesDefinition: Array<ComponentPropertyDefinition> = [
 		group: ComponentPropertyGroup.ADVANCED,
 	},
 	{
-		name: 'subLabelKey',
-		schema: SCHEMA_STRING_COMP_PROP,
-		displayName: 'Sub Label Key',
-		description:
-			'Key (a dotted path) of each data row shown as a second, smaller line under the option label, e.g. an account id. Search matches it too.',
-		group: ComponentPropertyGroup.ADVANCED,
-	},
-	{
 		name: 'editRequestIcon',
 		schema: SCHEMA_STRING_COMP_PROP,
 		displayName: 'Edit Request Icon',
@@ -412,10 +404,6 @@ const stylePropertiesDefinition = {
 		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.size.type,
 		COMPONENT_STYLE_GROUP_PROPERTIES.background.type,
-	],
-	dropdownItemSubLabel: [
-		COMPONENT_STYLE_GROUP_PROPERTIES.spacing.type,
-		COMPONENT_STYLE_GROUP_PROPERTIES.typography.type,
 	],
 	dropdownItem: [
 		COMPONENT_STYLE_GROUP_PROPERTIES.layout.type,

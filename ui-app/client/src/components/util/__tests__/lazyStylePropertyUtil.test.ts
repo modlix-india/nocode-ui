@@ -1,5 +1,12 @@
 import axios from 'axios';
-import { fetchStyleProperties, lazyStylePropertyLoadFunction } from '../lazyStylePropertyUtil';
+import {
+	applyPreloadedStyleProperties,
+	fetchStyleProperties,
+	findPropertyDefinitions,
+	inflateAndSetStyleProps,
+	lazyStylePropertyLoadFunction,
+} from '../lazyStylePropertyUtil';
+import { propertiesDefinition as videoProperties } from '../../Video/videoProperties';
 
 jest.mock('axios');
 const mockedGet = axios.get as jest.Mock;
@@ -109,5 +116,61 @@ describe('fetchStyleProperties', () => {
 		await jest.advanceTimersByTimeAsync(15000);
 		jest.useRealTimers();
 		expect(set).toHaveBeenCalledWith([{ n: 'c', dv: '1px' }], undefined);
+	});
+});
+
+describe('applyPreloadedStyleProperties', () => {
+	// ADZ-1549/1550: Video and Audio list colorScheme BEFORE designType in their properties. The
+	// preloaded path expanded the enums in that order, so a variant's lookup key read
+	// "_primary-_videoDesign1" while the list's per-design values are keyed "_videoDesign1-" (the
+	// order the fetch path uses: designType, then colorScheme). No per-design value matched, the
+	// player's icons kept width:100% and filled the whole video on hover.
+	const raw = [
+		{
+			n: 'videoWidthPlayIcon<designType><colorScheme>',
+			sel: '.comp.compVideo<designType><colorScheme> ._playIcon',
+			cp: 'width',
+			np: true,
+			spv: { '_videoDesign1-': '15px', '_videoDesign2-': '20px' },
+		},
+		{
+			n: 'videoCursorProgressBar<designType><colorScheme>',
+			sel: '._progressBar',
+			cp: 'cursor',
+			dv: 'pointer',
+		},
+	];
+
+	beforeEach(() => {
+		globalThis.styleProperties = { Video: raw };
+	});
+
+	it('expands the per-design values for Video, whose colorScheme comes first', () => {
+		const sp: Array<any> = [];
+		const spt: Array<any> = [];
+		const defaults = new Map<string, string>();
+		applyPreloadedStyleProperties('Video', videoProperties, sp, spt, defaults);
+		expect(defaults.get('videoWidthPlayIconVideoDesign1Primary')).toBe('15px');
+		expect(defaults.get('videoWidthPlayIconVideoDesign2Primary')).toBe('20px');
+		expect(defaults.get('videoCursorProgressBarVideoDesign1Primary')).toBe('pointer');
+		expect(sp.find(e => e.n === 'videoWidthPlayIconVideoDesign1Primary')?.sel).toBe(
+			'.comp.compVideo._videoDesign1._primary ._playIcon',
+		);
+		expect(spt).toEqual(raw);
+	});
+
+	it('gives the same values as the fetch path', () => {
+		const viaPreload = new Map<string, string>();
+		applyPreloadedStyleProperties('Video', videoProperties, [], [], viaPreload);
+		const { designType, colorScheme } = findPropertyDefinitions(
+			videoProperties,
+			'designType',
+			'colorScheme',
+		);
+		const viaFetch = new Map<string, string>();
+		inflateAndSetStyleProps([designType, colorScheme], raw as any, () => {}, viaFetch);
+		expect(Array.from(viaPreload.entries()).sort()).toEqual(
+			Array.from(viaFetch.entries()).sort(),
+		);
 	});
 });
