@@ -2,6 +2,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import { loadConfig } from './config/configLoader.js';
 import { initCacheInvalidationSubscriber, invalidateCache, closeRedis, getRedisClient } from './cache/redis.js';
 import { handlePageRequest } from './render/htmlRenderer.js';
+import { observeCrawlerVisit } from './analytics/aiCrawlers.js';
 import logger from './config/logger.js';
 
 const PORT = Number.parseInt(process.env.SERVER_PORT || '3080', 10);
@@ -182,6 +183,7 @@ async function startServer(): Promise<void> {
 				}
 
 				// All other requests are page requests
+				observeCrawlerVisit(req, res); // PLAT-1551: a known bot's page fetch, reported after the response
 				await handlePageRequest(req, res);
 			} catch (error) {
 				logger.error('Request handling error', {

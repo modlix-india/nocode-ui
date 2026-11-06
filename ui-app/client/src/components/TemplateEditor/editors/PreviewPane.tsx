@@ -16,6 +16,8 @@ interface PreviewPaneProps {
 	// When present, an editable subject line is shown above the preview (raw template value).
 	subjectValue?: string;
 	onSubjectChange?: (v: string) => void;
+	// The subject as the server rendered it with the sample data (merge fields filled).
+	renderedSubject?: string;
 }
 
 // Server-rendered preview: iframe for html, embedded pdf for pdf, styled text for whatsapp/sms.
@@ -30,7 +32,15 @@ export default function PreviewPane({
 	onRefresh,
 	subjectValue,
 	onSubjectChange,
+	renderedSubject,
 }: Readonly<PreviewPaneProps>) {
+	// The subject input holds the raw template (it is where the subject is edited), so the filled
+	// subject is shown under it, as the body is, whenever the two differ.
+	const showRenderedSubject =
+		!!onSubjectChange &&
+		typeof renderedSubject === 'string' &&
+		renderedSubject.trim() !== '' &&
+		renderedSubject !== (subjectValue ?? '');
 	return (
 		<div className="_previewPane">
 			<div className="_previewToolbar">
@@ -77,7 +87,14 @@ export default function PreviewPane({
 				</div>
 			)}
 
-			{error && <div className="_previewError">{error}</div>}
+			{showRenderedSubject && (
+				<div className="_previewSubject">
+					<span>Shows as</span>
+					{renderedSubject}
+				</div>
+			)}
+
+			{error &&<div className="_previewError">{error}</div>}
 
 			<div className="_previewBody">
 				{format === 'pdf' &&

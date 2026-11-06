@@ -109,7 +109,8 @@ Fixed while wiring it in:
     (authzump `privacyPolicy`); labels are no longer auto-linked.
 15. **No CSP on cached pages (#9): FIXED.** `setSecurityPolicyHeaders` now runs on HIT-HTML and
     HIT-HTML-GZIP too; verified on all three paths locally.
-16. **OPEN: first requests after a start get the fallback page.** The SSR's main Redis client
+16. **FIXED (PLAT-1545): first requests after a start got the fallback page.** The resolver now
+    takes a Redis error as a cache miss and asks the security service. Was: The SSR's main Redis client
     rejects commands until it has connected (`enableOfflineQueue: false`), so app resolution fails
     with "Stream isn't writeable", falls back to `appCode: nothing`, and the visitor gets the
     "Danger, Will Robinson" page. Likely the first hit on every instance after each deploy.
@@ -138,3 +139,19 @@ back to today's empty `#app` on timeout or error, and adds the device class to t
 hydration errors (report them from `onRecoverableError`) and first paint. Then prod.
 
 The `<noscript>` block stays as the fallback for anything not server-rendered.
+
+## Crawlers on dev and prod (PLAT-1545, local 2026-11-06)
+
+All three deploy workflows now put the server render in the image. Who gets the drawn page is
+`serverRender.for`: `all` anonymous visitors, `bots` (known crawlers and AI fetchers,
+`src/render/bots.ts`) or `off`. Order: `SERVER_RENDER_FOR` on the container, then
+`ssr.serverRender.for` (or `ssr-<region>.serverRender.for`) in the config server, then the image's
+`SERVER_RENDER_FOR_DEFAULT` (dev and prod workflows build with `bots`; stage keeps `all`).
+
+A crawler's copy is cached apart (`:bot` / `:botjs` on the key) and shaped by `botDocument.ts`:
+a bot that runs scripts keeps the bootstrap, moved after `#app`, so it still hydrates; a bot that
+only reads HTML gets no bootstrap, no `<style>` or image preloads in `#app` and no `#_rendered`
+mark. Responses say `Vary: User-Agent` while server rendering is on. A crawler's copy that could
+not be drawn (busy, timeout) is not cached. Image draws its `<img>` on the first render now (public
+URLs; secured ones are still fetched in the browser), so the server render has images with alt.
+
