@@ -1,7 +1,7 @@
 import { ChartOptions, ScaleOptionsByType } from 'chart.js';
 import { ChartData, ChartProperties, AxisType, Gradient } from '../types/common';
 import { mapEasingFunction } from './pointStyleMapper';
-import { ChartJsType } from './dataTransformer';
+import { ChartJsType, secondaryAxisDataSetIndexes } from './dataTransformer';
 import { applyStylesToChartOptions } from './styleMapper';
 
 /**
@@ -578,6 +578,28 @@ function buildScalesOptions(
 		if (properties.yAxisStartPosition === 'right' && properties.xAxisReverse === undefined) {
 			scales.x.reverse = true;
 		}
+	}
+
+	// Opt-in second value axis on the right for the data sets named in secondaryAxisDataSets
+	// (their datasets carry yAxisID 'y1'). Its grid lines stay off the chart area so the two
+	// axes do not draw two sets of lines.
+	const onRight = secondaryAxisDataSetIndexes(properties);
+	if (!isHorizontalBar && Array.from(onRight).some(i => i < chartData.dataSetData.length)) {
+		scales.y1 = {
+			type: 'linear',
+			display: !properties.hideYAxis,
+			position: 'right',
+			reverse: !!scales.y.reverse,
+			stacked: false,
+			beginAtZero: true,
+			grid: {
+				display: !properties.hideYLines,
+				drawOnChartArea: false,
+				drawBorder: !properties.hideYAxisLine,
+				tickLength: properties.yAxisHideTicks ? 0 : undefined,
+			},
+			ticks: { display: !properties.yAxisHideLabels },
+		};
 	}
 
 	return scales;

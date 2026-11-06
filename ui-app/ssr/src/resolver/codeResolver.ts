@@ -265,6 +265,29 @@ export function extractPageName(pathname: string): string {
 }
 
 /**
+ * The part of the path after the page name, as one slug: `/blog/2024/my-post` -> `2024/my-post`,
+ * `/app/client/page/blog/my-post` -> `my-post`, and '' when the URL names only a page.
+ *
+ * Segments are percent-decoded (one that does not decode is kept as sent) and joined with `/`,
+ * so `seo.paths` keys are written the way a person reads the URL. The client keeps the same
+ * segments as `Url.pathParts`.
+ */
+export function extractPagePath(pathname: string): string {
+	const pathParts = pathname.split('/').filter(Boolean);
+	const pageIndex = pathParts.indexOf('page');
+	const rest = pageIndex !== -1 ? pathParts.slice(pageIndex + 2) : pathParts.slice(1);
+	return rest
+		.map(s => {
+			try {
+				return decodeURIComponent(s);
+			} catch {
+				return s;
+			}
+		})
+		.join('/');
+}
+
+/**
  * Gets auth token from request (header or cookie)
  */
 export function getAuthToken(request: Request): string | null {

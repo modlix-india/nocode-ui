@@ -119,3 +119,50 @@ describe('Messages', () => {
 		expect(container.querySelector('._message.SUCCESS')).not.toBeNull();
 	});
 });
+
+describe('Messages lift (opt-in, per page)', () => {
+	const box = () => container.querySelector('.compMessages') as HTMLElement;
+	const set = (path: string, v: any) => {
+		const { setData } = require('../../../context/StoreContext');
+		act(() => setData(path, v));
+	};
+
+	afterEach(() => {
+		set('Store.pageData.liftA.messagesLift', undefined);
+		set('Store.pageData.liftB.messagesLift', undefined);
+		set('Store.urlDetails', undefined);
+	});
+
+	it('stays where the theme puts it when no page asks', () => {
+		set('Store.urlDetails', { pageName: 'liftA', pathParts: [], queryParameters: {} });
+		expect(box().getAttribute('style')).toBeNull();
+		expect(box().dataset.lift).toBeUndefined();
+	});
+
+	it('moves up by the current page`s messagesLift, and only on that page', () => {
+		set('Store.urlDetails', { pageName: 'liftA', pathParts: [], queryParameters: {} });
+		set('Store.pageData.liftA.messagesLift', 88);
+		expect(box().dataset.lift).toBe('88px');
+		expect(box().style.getPropertyValue('translate')).toBe('0px -88px');
+
+		set('Store.pageData.liftA.messagesLift', '5rem');
+		expect(box().dataset.lift).toBe('5rem');
+
+		set('Store.urlDetails', { pageName: 'liftB', pathParts: [], queryParameters: {} });
+		expect(box().dataset.lift).toBeUndefined();
+		expect(box().style.getPropertyValue('translate')).toBe('');
+
+		set('Store.urlDetails', { pageName: 'liftA', pathParts: [], queryParameters: {} });
+		expect(box().dataset.lift).toBe('5rem');
+	});
+
+	it('ignores values that are not a plain positive length', () => {
+		expect(mod.messagesLiftValue(undefined)).toBeUndefined();
+		expect(mod.messagesLiftValue(0)).toBeUndefined();
+		expect(mod.messagesLiftValue(-5)).toBeUndefined();
+		expect(mod.messagesLiftValue('calc(10px)')).toBeUndefined();
+		expect(mod.messagesLiftValue('10px; color: red')).toBeUndefined();
+		expect(mod.messagesLiftValue(' 72px ')).toBe('72px');
+		expect(mod.messagesLiftValue(72.5)).toBe('72.5px');
+	});
+});

@@ -3,6 +3,22 @@ import RepetetiveArray from '../../../util/RepetetiveArray';
 import { ChartData, ChartProperties, DataSetData, DataSetStyle, Gradient } from '../types/common';
 import { mapPointType, isFilledPointType } from './pointStyleMapper';
 
+/**
+ * The data sets drawn against the right value axis (`secondaryAxisDataSets`, 1-based positions,
+ * comma separated), as 0-based indexes. Empty when the property is unset.
+ */
+export function secondaryAxisDataSetIndexes(properties: ChartProperties): Set<number> {
+	const out = new Set<number>();
+	const raw = properties.secondaryAxisDataSets;
+	if (raw === undefined || raw === null) return out;
+	String(raw)
+		.split(',')
+		.map(x => Number(x.trim()))
+		.filter(n => Number.isInteger(n) && n >= 1)
+		.forEach(n => out.add(n - 1));
+	return out;
+}
+
 export type ChartJsType =
 	'line' | 'bar' | 'pie' | 'doughnut' | 'radar' | 'scatter' | 'polarArea' | 'bubble';
 
@@ -174,6 +190,9 @@ function transformRegularData(
 ): ChartJsChartData {
 	const datasets: ChartDataset[] = [];
 	const isStacked = properties.stackedAxis !== 'none';
+	const onRightAxis = chartData.hasHorizontalBar
+		? new Set<number>()
+		: secondaryAxisDataSetIndexes(properties);
 
 	// Note: Axis reversal is handled by Chart.js through scales.x.reverse and scales.y.reverse
 	// in configBuilder.ts. We should NOT reverse data here as it causes double-reversal issues.
@@ -379,6 +398,8 @@ function transformRegularData(
 		if (datasetType) {
 			dataset.type = datasetType;
 		}
+
+		if (onRightAxis.has(index)) dataset.yAxisID = 'y1';
 
 		datasets.push(dataset);
 	});

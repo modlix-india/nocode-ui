@@ -10,7 +10,13 @@ import {
 	setData,
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
-import { Component, ComponentPropertyDefinition, ComponentProps } from '../../types/common';
+import {
+	Component,
+	ComponentPropertyDefinition,
+	ComponentProps,
+	LocationHistory,
+	PageDefinition,
+} from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import Children from '../Children';
 import { HelperComponent } from '../HelperComponents/HelperComponent';
@@ -20,6 +26,7 @@ import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import PageStyle from './PageStyle';
 import pageHistory from './pageHistory';
+import { pageLeaveWarning, runPageLeaveEvent } from './pageLeave';
 import { propertiesDefinition, stylePropertiesDefinition } from './pageProperties';
 import { styleProperties, styleDefaults } from './pageStyleProperties';
 
@@ -56,9 +63,13 @@ function PageComponent(props: Readonly<ComponentProps>) {
 	);
 
 	useEffect(() => {
+		// the first call is the arrival; later calls are another address of this same page
+		let arrived = false;
 		return addListenerAndCallImmediately(
 			pageExtractor.getPageName(),
 			(_, value) => {
+				const wasHere = arrived;
+				arrived = true;
 				const v = duplicate(value);
 				if (isNullValue(v?.pageName)) {
 					v.pageName = getDataFromPath(
@@ -79,11 +90,16 @@ function PageComponent(props: Readonly<ComponentProps>) {
 				}
 
 				let makeCall = true;
+				let clearStore = false;
 
 				const {
 					name,
 					eventFunctions = {},
-					properties: { onLoadEvent = undefined, loadStrategy = 'default' } = {},
+					properties: {
+						onLoadEvent = undefined,
+						onLeaveEvent = undefined,
+						loadStrategy = 'default',
+					} = {},
 				} = pageDefinition;
 
 				pageHistory[name] = v;
@@ -103,27 +119,38 @@ function PageComponent(props: Readonly<ComponentProps>) {
 						(loadStrategy !== 'default' && !(sameAsExisting && isRunning)) ||
 						!sameAsExisting
 					) {
-						setData(`${STORE_PREFIX}.pageData.${pageName}`, {});
+						clearStore = true;
 						makeCall = true;
 					}
 				}
 
-				if (
-					makeCall &&
-					!isNullValue(onLoadEvent) &&
-					!isNullValue(eventFunctions[onLoadEvent!])
-				) {
-					if (!isRunning) {
-						(async () =>
-							await runEvent(
-								eventFunctions[onLoadEvent!],
-								'pageOnLoad',
-								pageName,
-								locationHistory,
-								pageDefinition,
-							))();
+				const load = () => {
+					if (clearStore) setData(`${STORE_PREFIX}.pageData.${pageName}`, {});
+					if (
+						makeCall &&
+						!isNullValue(onLoadEvent) &&
+						!isNullValue(eventFunctions[onLoadEvent!])
+					) {
+						if (!isRunning) {
+							(async () =>
+								await runEvent(
+									eventFunctions[onLoadEvent!],
+									'pageOnLoad',
+									pageName,
+									locationHistory,
+									pageDefinition,
+								))();
+						}
 					}
+				};
+
+				// Opt-in onLeaveEvent: another address of this page leaves the one shown, so the
+				// leave event runs on the old store before it is cleared for the new address.
+				if (clearStore && wasHere && !isNullValue(onLeaveEvent)) {
+					runPageLeaveEvent(pageName, pageDefinition, locationHistory).then(load);
+					return;
 				}
+				load();
 			},
 			`${STORE_PREFIX}.urlDetails`,
 		);
@@ -133,6 +160,30 @@ function PageComponent(props: Readonly<ComponentProps>) {
 		pageName,
 		locationHistory.length,
 	]);
+
+	// Opt-in onLeaveEvent: leaving for another page runs it (the page store stays until a next visit).
+	const leaveRef = React.useRef<
+		Record<string, { pageDefinition: PageDefinition; locationHistory: Array<LocationHistory> }>
+	>({});
+	if (pageDefinition?.name && pageDefinition.name === pageName)
+		leaveRef.current[pageName] = { pageDefinition, locationHistory };
+	useEffect(() => {
+		const name = pageName;
+		return () => {
+			const left = leaveRef.current[name];
+			if (left?.pageDefinition?.properties?.onLeaveEvent)
+				runPageLeaveEvent(name, left.pageDefinition, left.locationHistory);
+		};
+	}, [pageName]);
+
+	// Opt-in leaveWarningPath: the browser asks before a reload or close while the value is truthy.
+	const leaveWarningPath = pageDefinition?.properties?.leaveWarningPath;
+	useEffect(() => {
+		if (!leaveWarningPath || typeof window === 'undefined') return;
+		const onBeforeUnload = pageLeaveWarning(pageName, leaveWarningPath);
+		window.addEventListener('beforeunload', onBeforeUnload);
+		return () => window.removeEventListener('beforeunload', onBeforeUnload);
+	}, [pageName, leaveWarningPath]);
 
 	const styleText = React.useMemo(() => {
 		if (!pageDefinition?.properties?.classes) return '';
