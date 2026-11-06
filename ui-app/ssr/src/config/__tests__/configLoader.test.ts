@@ -29,6 +29,8 @@ const VARS = [
 	'ANALYTICS_INGESTION_HOST',
 	'SECURITY_APP_CODE_SUFFIX',
 	'CLIENT_BUNDLE_URL',
+	'SERVER_RENDER_FOR',
+	'SERVER_RENDER_FOR_DEFAULT',
 ];
 
 type Loader = typeof import('../configLoader.js');
@@ -163,5 +165,29 @@ describe('SSR config loader and CONFIG_SERVER_ENABLED', () => {
 		assert.equal(config.cache.ttlSeconds, 600);
 		assert.equal(config.analytics.ingestionHost, 'https://analytics.example.test');
 		assert.equal(config.security.appCodeSuffix, '-test');
+	});
+
+	it('serves the page drawn to everyone unless told otherwise (what stage has served)', async () => {
+		process.env.CONFIG_SERVER_ENABLED = 'false';
+		const { loadConfig } = await freshLoader();
+		assert.equal((await loadConfig()).serverRender.for, 'all');
+	});
+
+	it('takes the image default, then the config server, then the environment, ignoring junk', async () => {
+		process.env.SERVER_RENDER_FOR_DEFAULT = 'bots';
+		process.env.CONFIG_SERVER_ENABLED = 'false';
+		assert.equal((await (await freshLoader()).loadConfig()).serverRender.for, 'bots', 'image default');
+
+		delete process.env.CONFIG_SERVER_ENABLED;
+		configServerAnswer.propertySources[0].source['ssr.serverRender.for' as 'ssr.gateway.url'] = 'off';
+		try {
+			assert.equal((await (await freshLoader()).loadConfig()).serverRender.for, 'off', 'config server');
+			process.env.SERVER_RENDER_FOR = ' ALL ';
+			assert.equal((await (await freshLoader()).loadConfig()).serverRender.for, 'all', 'environment');
+			process.env.SERVER_RENDER_FOR = 'everyone';
+			assert.equal((await (await freshLoader()).loadConfig()).serverRender.for, 'off', 'junk is ignored');
+		} finally {
+			delete (configServerAnswer.propertySources[0].source as Record<string, unknown>)['ssr.serverRender.for'];
+		}
 	});
 });

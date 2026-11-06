@@ -1,8 +1,10 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { Worker } from 'node:worker_threads';
+import { getConfig } from '../config/configLoader.js';
 import logger from '../config/logger.js';
 import { loadManifest } from '../util/manifestLoader.js';
+import { botFor, type KnownBot } from './bots.js';
 
 /**
  * Server rendering of the page itself, so `#app` arrives drawn and the browser hydrates it
@@ -41,6 +43,43 @@ let styleProperties: Record<string, unknown> | undefined;
 
 export function serverRenderEnabled(): boolean {
 	return !!BUNDLE && existsSync(BUNDLE);
+}
+
+/** A request whose page is drawn into `#app`: the width, and the crawler it is for, if one. */
+export interface RenderTarget {
+	width: number;
+	bot?: KnownBot;
+}
+
+/**
+ * Whether this request gets the page drawn, by `serverRender.for` (configLoader.ts): every
+ * anonymous visitor (`all`), only known crawlers and AI fetchers (`bots`, render/bots.ts), or
+ * nobody (`off`). A signed-in visitor never does, and nothing is drawn without the bundle.
+ */
+export function renderTargetFor(
+	headers: Record<string, string | string[] | undefined>,
+	isAuthenticated: boolean,
+): RenderTarget | undefined {
+	if (isAuthenticated || !serverRenderEnabled()) return undefined;
+	const audience = getConfig().serverRender.for;
+	if (audience === 'off') return undefined;
+	const bot = botFor(headers['user-agent']);
+	if (audience === 'bots' && !bot) return undefined;
+	return { width: renderWidthFor(headers), ...(bot ? { bot } : {}) };
+}
+
+/** The HTML cache key's mark for a crawler's copy: `:bot` (reads HTML only), `:botjs`, or none. */
+export function botCacheSuffix(bot: KnownBot | undefined): string {
+	if (!bot) return '';
+	return bot.runsScripts ? ':botjs' : ':bot';
+}
+
+/**
+ * Whether a page's document can differ by User-Agent (a crawler's copy is drawn or lean while a
+ * person's is not), so responses must say `Vary: User-Agent` to any cache between.
+ */
+export function variesByUserAgent(): boolean {
+	return serverRenderEnabled() && getConfig().serverRender.for !== 'off';
 }
 
 /**

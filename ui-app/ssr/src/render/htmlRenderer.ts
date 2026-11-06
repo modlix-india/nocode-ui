@@ -20,7 +20,9 @@ import logger from '../config/logger.js';
 import { loadManifest, getCriticalChunks } from '../util/manifestLoader.js';
 import { noscriptBlock } from './noscriptText.js';
 import { startupHintTags, startupScriptPreloads } from './startupHints.js';
-import { renderWidthFor, serverRenderEnabled, serverRenderPage } from './serverRender.js';
+import { botCacheSuffix, renderTargetFor, serverRenderPage, variesByUserAgent } from './serverRender.js';
+import { documentForBot } from './botDocument.js';
+import { requestedLanguage } from './requestedLanguage.js';
 import { SIGNED_IN_CSS, SIGNED_IN_DROP_SCRIPT, SIGNED_IN_FLAG_SCRIPT } from './signedInGuard.js';
 // Key compression removed - doesn't help gzipped transfer size (only 14% savings)
 // and adds 10-20ms CPU overhead that hurts TTFB/FBBT
@@ -408,6 +410,8 @@ export interface MetaRenderContext {
 	signedIn?: boolean;
 	/** The not found page, answered with 404: noindex, no canonical, no JSON-LD. */
 	notFound?: boolean;
+	/** A non-default language asked for with `?lang=` (requestedLanguage.ts): `<html lang>` and a self canonical. */
+	lang?: string;
 }
 
 /** Whether the page needs an authority to view, which makes it a signed in page. */
@@ -721,8 +725,11 @@ export function generateMetaTags(
 	// The URL this document is the original of (PLAT-1550). Built like og:url, from the
 	// configured origin and the full path of a `seo.paths` page, so each post names its own.
 	if (resolved.canonical) {
-		sink.raw(`<link rel="canonical" href="${escapeHtml(resolved.canonical)}">`);
-		for (const [lang, href] of hreflangAlternates(application, resolved.canonical)) {
+		const alternates = hreflangAlternates(application, resolved.canonical);
+		// A `?lang=` copy is the original of itself, or its hreflang pair is ignored.
+		const self = ctx.lang ? alternates.find(([l]) => l === ctx.lang)?.[1] : undefined;
+		sink.raw(`<link rel="canonical" href="${escapeHtml(self ?? resolved.canonical)}">`);
+		for (const [lang, href] of alternates) {
 			sink.raw(`<link rel="alternate" hreflang="${escapeHtml(lang)}" href="${escapeHtml(href)}">`);
 		}
 	}
@@ -916,7 +923,7 @@ function generateHtml(
 	/** The width the page is server-rendered at; the browser's first render must use it. */
 	deviceWidth?: number,
 	/** What the request made of the page: its path entry, signed in or not found. */
-	head: Pick<MetaRenderContext, 'path' | 'pathHead' | 'signedIn' | 'notFound'> = {}
+	head: Pick<MetaRenderContext, 'path' | 'pathHead' | 'signedIn' | 'notFound' | 'lang'> = {}
 ): string {
 	// The client reads this to know which surface it is on, and SSR is the only
 	// thing that writes the shell on this path -- IndexHTMLService never runs
@@ -1029,7 +1036,7 @@ function generateHtml(
 		  });
 
 	return `<!DOCTYPE html>
-<html lang="${escapeHtml(htmlLang(application))}"${draftAttr}${themeAttr}>
+<html lang="${escapeHtml(head.lang ?? htmlLang(application))}"${draftAttr}${themeAttr}>
 	<head>
 		${beforeHeadParts ? `${beforeHeadParts}\n\t\t` : ''}${metaTags}
 		<title>${escapeHtml(pageTitle)}</title>
@@ -1119,6 +1126,11 @@ function cacheControlFor(drewAssignment: boolean): string {
 	return drewAssignment ? 'private, no-store' : SHARED_CACHE_CONTROL;
 }
 
+/** A crawler may get a different copy of a page than a person (serverRender.for), so say so. */
+function varyFor(base: string): string {
+	return variesByUserAgent() ? `${base}, User-Agent` : base;
+}
+
 function setResponseHeaders(
 	res: ServerResponse,
 	isAuthenticated: boolean,
@@ -1137,7 +1149,7 @@ function setResponseHeaders(
 		res.setHeader('Expires', '0');
 	} else {
 		res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
-		res.setHeader('Vary', 'Authorization, Cookie');
+		res.setHeader('Vary', varyFor('Authorization, Cookie'));
 	}
 
 	// ETag
@@ -1362,6 +1374,9 @@ export async function handlePageRequest(
 
 	const route = resolveRoute(application, url, req.headers, urlPageName, isAuthenticated);
 	const actualPageName = route.pageName;
+	// `?lang=<code>` in a language the app has, other than its default: drawn in that language
+	// (the client reads the same parameter), so it is cached apart and labelled as such.
+	const pageLang = requestedLanguage(application, url.searchParams);
 
 	// A visitor drawn into a split for the first time. The cookie is set whether
 	// the HTML that follows comes from cache or not: the body is identical for
@@ -1390,11 +1405,15 @@ export async function handlePageRequest(
 	// Draw the page itself (render/serverRender.ts) for anonymous visitors only: a signed-in
 	// visitor's page is never cached and the client renders it fresh (it skips hydration when it
 	// holds a token). The width is part of the key: its markup is resolved for that width.
-	const renderWidth = serverRenderEnabled() && !isAuthenticated ? renderWidthFor(req.headers) : undefined;
+	// `serverRender.for` decides who: everyone, or only crawlers, whose copy (botDocument.ts) is
+	// cached apart from a person's (`:bot` reads the HTML only, `:botjs` runs scripts).
+	const renderTarget = renderTargetFor(req.headers, isAuthenticated);
+	const renderWidth = renderTarget?.width;
+	const renderBot = renderTarget?.bot;
 	const renderSurface = renderWidth
 		? `${req.headers['x-forwarded-host'] ?? url.host}${
 				url.pathname.startsWith(`/${codes.appCode}/${codes.clientCode}/page`) ? '/page' : ''
-			}`
+			}${botCacheSuffix(renderBot)}`
 		: undefined;
 
 	const htmlCacheKey = generateCacheKey(
@@ -1405,6 +1424,7 @@ export async function handlePageRequest(
 		cookieTheme,
 		renderWidth,
 		renderSurface,
+		pageLang,
 	);
 
 	// A page asked for as-is, for somebody looking at their own heatmap. It renders the page
@@ -1439,7 +1459,7 @@ export async function handlePageRequest(
 					res.setHeader('Content-Type', 'text/html; charset=utf-8');
 					res.setHeader('Content-Encoding', 'gzip');
 					res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
-					res.setHeader('Vary', 'Authorization, Cookie, Accept-Encoding');
+					res.setHeader('Vary', varyFor('Authorization, Cookie, Accept-Encoding'));
 					res.setHeader('X-Cache-Status', 'HIT-HTML-GZIP');
 					setSecurityPolicyHeaders(res, application, cdn.hostName);
 
@@ -1457,7 +1477,7 @@ export async function handlePageRequest(
 				// Set headers for cached response
 				res.setHeader('Content-Type', 'text/html; charset=utf-8');
 				res.setHeader('Cache-Control', cacheControlFor(drewAssignment));
-				res.setHeader('Vary', 'Authorization, Cookie');
+				res.setHeader('Vary', varyFor('Authorization, Cookie'));
 				res.setHeader('X-Cache-Status', 'HIT-HTML');
 				setSecurityPolicyHeaders(res, application, cdn.hostName);
 
@@ -1553,8 +1573,9 @@ export async function handlePageRequest(
 		}
 		return;
 	}
-	const head: Pick<MetaRenderContext, 'path' | 'pathHead' | 'signedIn'> = {
+	const head: Pick<MetaRenderContext, 'path' | 'pathHead' | 'signedIn' | 'lang'> = {
 		signedIn,
+		...(pageLang ? { lang: pageLang } : {}),
 		...(lookup.kind === 'found' ? { path: urlPath, pathHead: lookup.head } : {}),
 		// The source did not answer: the URL is still this path's, only without its own values.
 		...(lookup.kind === 'unknown' ? { path: urlPath } : {}),
@@ -1578,6 +1599,7 @@ export async function handlePageRequest(
 	// the browser only (their shell loads separately). On any failure the document goes out as
 	// generated, which is today's behaviour. The <noscript> copy is dropped when the page itself
 	// is in the HTML, so a crawler does not read the text twice.
+	let renderMissed = false;
 	if (renderWidth && !isDesign && result.page?.properties?.wrapShell === false) {
 		// The URL as the visitor sees it (scheme included), which is what the browser's first
 		// render reads; behind a proxy that does not send X-Full-URL, rebuild it from X-Forwarded-*.
@@ -1590,7 +1612,10 @@ export async function handlePageRequest(
 			generatedHtml = generatedHtml
 				.replace(/<noscript>[\s\S]*?<\/noscript>/, '')
 				.replace('<div id="app"></div>', () => `<div id="app">${drawn}</div>`);
+		else renderMissed = true;
 	}
+	// A crawler's copy: the text near the top, the bootstrap after it or gone (botDocument.ts).
+	if (renderBot) generatedHtml = documentForBot(generatedHtml, renderBot);
 
 	// Cache HTML for unauthenticated requests (primary cache).
 	//
@@ -1600,7 +1625,7 @@ export async function handlePageRequest(
 	const pageCacheKey =
 		servedPageName === actualPageName
 			? htmlCacheKey
-			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme, renderWidth, renderSurface);
+			: generateCacheKey(codes.appCode, codes.clientCode, servedPageName, isDraft, cookieTheme, renderWidth, renderSurface, pageLang);
 	// A page that declares `seo.paths` is stored per path only (even its own bare URL, under the
 	// empty path), so a cached copy of one path can never answer for another. A path whose
 	// source did not answer is not stored, nor one past the page's entry cap.
@@ -1610,6 +1635,8 @@ export async function handlePageRequest(
 		!isAuthenticated &&
 		!isDesign &&
 		lookup.kind !== 'unknown' &&
+		// A crawler's copy that could not be drawn (busy, slow) is not kept: the next one draws.
+		!(renderBot && renderMissed) &&
 		(!pathed || (await admitPathEntry(pageCacheKey, servedCacheKey, MAX_PATH_ENTRIES, config.cache.ttlSeconds)));
 	if (storable) {
 		// Cache the rendered HTML (fast serving)

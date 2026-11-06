@@ -358,11 +358,17 @@ export function generateCacheKey(
 	 * form (`/<app>/<client>/page/<name>`). Its links and URL details follow the address, so a copy
 	 * drawn for one form must not be served to the other. Only with `width`.
 	 */
-	surface?: string
+	surface?: string,
+	/**
+	 * A non-default language asked for with `?lang=<code>` (render/requestedLanguage.ts): that
+	 * URL is drawn and labelled in that language, so it must never share the bare URL's copy.
+	 * Absent for every other request, which keeps their keys exactly as before.
+	 */
+	lang?: string
 ): string {
 	return `${appCode}:${clientCode}:${pageName}${draft ? ':draft' : ''}${
 		theme ? `:theme:${theme}` : ''
-	}${width ? `:w${width}${surface ? `:${surface}` : ''}` : ''}`;
+	}${width ? `:w${width}${surface ? `:${surface}` : ''}` : ''}${lang ? `:lang:${lang}` : ''}`;
 }
 
 /**
