@@ -154,4 +154,45 @@ describe('LazyTemplateEditor wiring', () => {
 		const next = onChange.mock.calls.at(-1)![0];
 		expect(next.templateParts.en.body).toContain('<p>edited</p>');
 	});
+
+	it('shows the subject filled with the sample data under the raw subject (CXZ-1414)', async () => {
+		jest.useFakeTimers();
+		try {
+			const { fetchHtmlPreview } = require('../util/previewApi');
+			fetchHtmlPreview.mockResolvedValueOnce({ body: '<p>x</p>', subject: 'Receipt R-0001' });
+			const tpl = emailTemplate();
+			tpl.templateParts.en.subject = "Receipt ${payment.receiptNumber!''}";
+			root = render(container, tpl);
+			await flush();
+			await act(async () => {
+				jest.advanceTimersByTime(900);
+			});
+			await flush();
+
+			const input = container.querySelector('._subjectLine input') as HTMLInputElement;
+			expect(input.value).toBe("Receipt ${payment.receiptNumber!''}");
+			const shown = container.querySelector('._previewSubject');
+			expect(shown).not.toBeNull();
+			expect(shown!.textContent).toContain('Receipt R-0001');
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
+	it('does not repeat the subject when it has no merge fields', async () => {
+		jest.useFakeTimers();
+		try {
+			const { fetchHtmlPreview } = require('../util/previewApi');
+			fetchHtmlPreview.mockResolvedValueOnce({ body: '<p>x</p>', subject: 'Reset your password' });
+			root = render(container, emailTemplate());
+			await flush();
+			await act(async () => {
+				jest.advanceTimersByTime(900);
+			});
+			await flush();
+			expect(container.querySelector('._previewSubject')).toBeNull();
+		} finally {
+			jest.useRealTimers();
+		}
+	});
 });

@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
 	addListenerAndCallImmediately,
+	getDataFromPath,
 	PageStoreExtractor,
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
@@ -23,11 +24,26 @@ import ImageStyle from './ImageStyles';
 import secureImage, { isSecuredUrl } from '../util/secureImage';
 // import { onMouseDownDragStartCurry } from '../../functions/utils';
 
+/** The source for the current device class (`Store.devices`): a tablet or phone source when set. */
+function sourceForDevices(
+	devices: any,
+	defaultSrc?: string,
+	src2?: string,
+	src3?: string,
+	src4?: string,
+	src5?: string,
+) {
+	if (devices?.TABLET_LANDSCAPE_SCREEN_ONLY && src2) return src2;
+	if (devices?.TABLET_POTRAIT_SCREEN_ONLY && src3) return src3;
+	if (devices?.MOBILE_LANDSCAPE_SCREEN_ONLY && src4) return src4;
+	if (devices?.MOBILE_POTRAIT_SCREEN_ONLY && src5) return src5;
+	return defaultSrc;
+}
+
 function ImageComponent(props: Readonly<ComponentProps>) {
 	const { definition, locationHistory, context } = props;
 	const [hover, setHover] = useState(false);
 	const [touchHover, setTouchHover] = useState(false);
-	const [src, setSrc] = useState('');
 	const pageExtractor = PageStoreExtractor.getForContext(context.pageName);
 	const urlExtractor = UrlDetailsExtractor.getForContext(context.pageName);
 	const [falledBack, setFalledBack] = useState(false);
@@ -88,24 +104,18 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		? props.pageDefinition.eventFunctions?.[onClickEvent]
 		: undefined;
 
+	// The first render already has the source (and the server render draws the <img>, PLAT-1545):
+	// Store.devices is set before the first render, at the server's width when it hydrates.
+	const [src, setSrc] = useState<string | undefined>(() =>
+		sourceForDevices(getDataFromPath('Store.devices', []), defaultSrc, src2, src3, src4, src5),
+	);
+
 	// Returned, so an unmount or a source change drops this listener instead of adding another.
 	useEffect(
 		() =>
 			addListenerAndCallImmediately(
 				props.context.pageName,
-				(_, value) => {
-					if (value?.TABLET_LANDSCAPE_SCREEN_ONLY && src2) {
-						setSrc(src2);
-					} else if (value?.TABLET_POTRAIT_SCREEN_ONLY && src3) {
-						setSrc(src3);
-					} else if (value?.MOBILE_LANDSCAPE_SCREEN_ONLY && src4) {
-						setSrc(src4);
-					} else if (value?.MOBILE_POTRAIT_SCREEN_ONLY && src5) {
-						setSrc(src5);
-					} else {
-						setSrc(defaultSrc);
-					}
-				},
+				(_, value) => setSrc(sourceForDevices(value, defaultSrc, src2, src3, src4, src5)),
 				'Store.devices',
 			),
 		[defaultSrc, src2, src3, src4, src5],
@@ -139,13 +149,16 @@ function ImageComponent(props: Readonly<ComponentProps>) {
 		}
 	}, [initialSliderPosition]);
 
-	const [actualSrc, setActualSrc] = useState<string | undefined>();
-	const [actualComparisonSrc, setActualComparisonSrc] = useState<string | undefined>();
 	const rawSrc = getHref(src ?? defaultSrc, location)!;
 	const computedUrl = getSrcUrl(rawSrc);
 	const computedComparisonUrl = comparisonSrc
 		? getSrcUrl(getHref(comparisonSrc, location)!)
 		: undefined;
+	// A public URL is drawn on the first render; a secured one is fetched in the effect below.
+	const [actualSrc, setActualSrc] = useState<string | undefined>(() =>
+		isSecuredUrl(computedUrl) ? undefined : computedUrl,
+	);
+	const [actualComparisonSrc, setActualComparisonSrc] = useState<string | undefined>();
 
 	useEffect(() => {
 		if (!isSecuredUrl(computedUrl)) {
