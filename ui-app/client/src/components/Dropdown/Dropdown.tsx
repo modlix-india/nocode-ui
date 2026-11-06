@@ -12,6 +12,7 @@ import React, {
 import ReactDOM from 'react-dom';
 import CommonCheckbox from '../../commonComponents/CommonCheckbox';
 import CommonInputText from '../../commonComponents/CommonInputText';
+import Children from '../Children';
 import { getTranslations } from '../util/getTranslations';
 import {
 	addListenerAndCallImmediately,
@@ -22,7 +23,7 @@ import {
 	UrlDetailsExtractor,
 } from '../../context/StoreContext';
 import { makeTempPath } from '../../context/TempStore';
-import { Component, ComponentProps } from '../../types/common';
+import { Component, ComponentProperty, ComponentProps, DataLocation } from '../../types/common';
 import { processComponentStylePseudoClasses } from '../../util/styleProcessor';
 import { validate } from '../../util/validationProcessor';
 import { SubHelperComponent } from '../HelperComponents/SubHelperComponent';
@@ -33,6 +34,7 @@ import { findPropertyDefinitions } from '../util/lazyStylePropertyUtil';
 import { runEvent } from '../util/runEvent';
 import useDefinition from '../util/useDefinition';
 import { flattenUUID } from '../util/uuid';
+import { updateLocationForChild } from '../util/updateLoactionForChild';
 import DropdownStyle from './DropdownStyle';
 import { propertiesDefinition, stylePropertiesDefinition } from './dropdownProperties';
 import { styleDefaults, stylePropertiesForTheme } from './dropdownStyleProperties';
@@ -170,7 +172,6 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 			focusSearchOnOpen,
 			openBelow,
 			listBottomGap,
-			subLabelKey,
 		} = {},
 		stylePropertiesWithPseudoStates,
 	} = useDefinition(
@@ -268,16 +269,32 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		],
 	);
 
-	// subLabelKey: a second, smaller line under an option, read off the option's own row in
-	// `data` (originalObjectKey is its index or key there), e.g. an account id under its name.
-	const subLabelOf = (option: any): string | undefined => {
-		if (!subLabelKey || isNullValue(option?.originalObjectKey) || isNullValue(data)) return;
-		const row = (data as any)[option.originalObjectKey];
-		const value = String(subLabelKey)
-			.split('.')
-			.reduce((acc: any, part: string) => (isNullValue(acc) ? acc : acc[part]), row);
-		return isNullValue(value) || value === '' ? undefined : String(value);
-	};
+	// The one child, when there is one, is the template of a whole option row. Each row
+	// renders it with the row's place in `data` as its Parent. Data bound to a plain store
+	// path (a VALUE location) is pointed at directly, so the row stays live. Anything else is
+	// mirrored to a default-data path first (as SmallCarousel does for literal data): a
+	// Parent path is built by appending to the location's text, so an EXPRESSION location such
+	// as `Page.a ? Page.a : Page.b` would turn into `Page.a ? Page.a : Page.b[0].name`.
+	const childEntry = Object.entries(definition.children ?? {}).find(([, v]) => v);
+	const firstChild = useMemo(
+		() => (childEntry ? { [childEntry[0]]: true } : undefined),
+		[childEntry?.[0]],
+	);
+	const dataProperty = (definition.properties as any)?.data as ComponentProperty<any> | undefined;
+	const literalDataPath = `Store.defaultData.${context.pageName ?? '_global'}.${flattenUUID(key)}`;
+	const dataFromStore =
+		dataProperty?.location?.type === 'VALUE' &&
+		!!dataProperty.location.value &&
+		isNullValue(dataProperty?.value);
+	const childDataLocation: DataLocation | undefined = !firstChild
+		? undefined
+		: dataFromStore
+			? dataProperty!.location
+			: { type: 'VALUE', value: literalDataPath };
+	useEffect(() => {
+		if (!firstChild || dataFromStore) return;
+		setData(literalDataPath, data, context.pageName);
+	}, [firstChild, dataFromStore, data, literalDataPath]);
 
 	const selectedDataKey: Array<any> | string | undefined = React.useMemo(
 		() => getSelectedKeys(dropdownData, selected, isMultiSelect),
@@ -430,13 +447,9 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 		setSearchDropdownData(
 			dropdownData
 				.filter(e => !isNullValue(e?.label))
-				.filter(
-					e =>
-						(e?.label + '').search(searchExpression) !== -1 ||
-						(!!subLabelKey && (subLabelOf(e) ?? '').search(searchExpression) !== -1),
-				),
+				.filter(e => (e?.label + '').search(searchExpression) !== -1),
 		);
-	}, [searchText, dropdownData, subLabelKey]);
+	}, [searchText, dropdownData]);
 
 	const [mouseIsInside, setMouseIsInside] = useState(false);
 	const mouseIsInsideRef = useRef(false);
@@ -895,25 +908,38 @@ function DropdownComponent(props: Readonly<ComponentProps>) {
 								definition={props.definition}
 								subComponentName="dropdownItem"
 							/>
-							<label
-								style={computedStyles.dropdownItemLabel ?? {}}
-								className="_dropdownItemLabel"
-							>
-								<SubHelperComponent
-									definition={props.definition}
-									subComponentName="dropdownItemLabel"
+							{firstChild && childDataLocation ? (
+								<Children
+									pageDefinition={props.pageDefinition}
+									renderableChildren={firstChild}
+									context={context}
+									locationHistory={[
+										...locationHistory,
+										updateLocationForChild(
+											key,
+											childDataLocation,
+											each.originalObjectKey,
+											locationHistory,
+											context.pageName,
+											pageExtractor,
+										),
+									]}
 								/>
-								{each?.label}
-								{subLabelKey && subLabelOf(each) !== undefined ? (
-									<span
-										className="_dropdownItemSubLabel"
-										style={computedStyles.dropdownItemSubLabel ?? {}}
+							) : (
+								<>
+									<label
+										style={computedStyles.dropdownItemLabel ?? {}}
+										className="_dropdownItemLabel"
 									>
-										{subLabelOf(each)}
-									</span>
-								) : undefined}
-							</label>
-							{tick}
+										<SubHelperComponent
+											definition={props.definition}
+											subComponentName="dropdownItemLabel"
+										/>
+										{each?.label}
+									</label>
+									{tick}
+								</>
+							)}
 						</div>
 					);
 				})}
@@ -1113,6 +1139,8 @@ const component: Component = {
 			label: { value: 'Dropdown' },
 		},
 	},
+	// One child: the template of a whole option row (see firstChild above).
+	allowedChildrenType: new Map<string, number>([['', 1]]),
 	sections: [{ name: 'Dropdown', pageName: 'dropdown' }],
 	propertiesForTheme: [designType, colorScheme],
 	stylePropertiesForTheme: stylePropertiesForTheme,

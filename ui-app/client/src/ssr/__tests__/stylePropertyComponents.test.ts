@@ -26,7 +26,9 @@ describe('shellDefinitionFor', () => {
 	});
 
 	it('is nothing for a page that opts out', () => {
-		expect(shellDefinitionFor(application, { properties: { wrapShell: false } })).toBeUndefined();
+		expect(
+			shellDefinitionFor(application, { properties: { wrapShell: false } }),
+		).toBeUndefined();
 	});
 });
 

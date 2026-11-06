@@ -118,6 +118,24 @@ export default function VideoStyle({
     background-color: transparent;
     border: none;
   }
+  ${PREFIX} ._videoControlsContainer._scrim {
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
+    padding-top: 24px;
+    color: #fff;
+  }
+  ${PREFIX} ._videoControlsContainer._scrim ._playAndFullscreenGrid ._playIcon,
+  ${PREFIX} ._videoControlsContainer._scrim ._playAndFullscreenGrid ._pauseIcon,
+  ${PREFIX} ._videoControlsContainer._scrim ._playAndFullscreenGrid ._pip,
+  ${PREFIX} ._videoControlsContainer._scrim ._playAndFullscreenGrid ._fullScreen,
+  ${PREFIX} ._videoControlsContainer._scrim ._playAndFullscreenGrid ._volumeButton,
+  ${PREFIX} ._videoControlsContainer._scrim ._playAndFullscreenGrid ._time,
+  ${PREFIX} ._videoControlsContainer._scrim ._progressBarContainer ._toolTip {
+    color: #fff;
+  }
+  ${PREFIX} ._videoControlsContainer._scrim ._progressBarContainer input[type="range"],
+  ${PREFIX} ._videoControlsContainer._scrim ._volumeControls input[type="range"] {
+    accent-color: #fff;
+  }
     ` + processStyleDefinition(PREFIX, styleProperties, styleDefaults, theme);
 	return <style id="VideoStyle">{css}</style>;
 }
