@@ -36,6 +36,7 @@ export function sampleFromSchema(schema: any, name = '', depth = 0): any {
 			return schema.items ? [sampleFromSchema(schema.items, name, depth + 1)] : [];
 		case 'INTEGER':
 		case 'LONG':
+		case 'NUMBER':
 			return 1;
 		case 'FLOAT':
 		case 'DOUBLE':
