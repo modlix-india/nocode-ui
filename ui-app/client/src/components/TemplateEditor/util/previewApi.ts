@@ -72,3 +72,12 @@ export async function fetchPdfPreview(
 	);
 	return URL.createObjectURL(res.data);
 }
+
+// Document look AI (POST <aiEndpoint>/doc): blocks from a description, sample sets, the field for a label.
+// The answer only uses fields the template's data has (checked by the service and again by the editor).
+export async function docAi(endpoint: string, body: any, headers: PreviewHeaders): Promise<any> {
+	const res = await axios.post(`${endpoint.replace(/\/$/, '')}/doc`, body, {
+		headers: cleanHeaders(headers),
+	});
+	return res.data ?? {};
+}

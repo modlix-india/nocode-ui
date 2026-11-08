@@ -664,6 +664,52 @@ export default function TemplateEditorStyle({
 	${PREFIX} ._docPrimary { align-self: flex-end; padding: 6px 14px; border: none; border-radius: 6px; background: ${ink}; color: ${card}; cursor: pointer; }
 	${PREFIX} ._docPreview, ${PREFIX} ._docCode { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 	${PREFIX} ._docCode ._partEditor { flex: 1; }
+	${PREFIX} ._docRailTabs button { white-space: nowrap; padding: 6px 8px; }
+	${PREFIX} ._docMoreMenu { left: auto; right: 0; width: 260px; }
+	${PREFIX} ._docMore { margin-left: 4px; }
+	${PREFIX} ._docCompareOn { border-color: #c98a00; background: #fff8e8; }
+	${PREFIX} ._docBlock._diff_added { outline: 2px dashed #1f8a4c; }
+	${PREFIX} ._docBlock._diff_changed { outline: 2px dashed #c98a00; }
+	${PREFIX} ._docTag._d_added { background: #e7f6ec; color: #17602c; }
+	${PREFIX} ._docTag._d_changed { background: #fff3dc; color: #8a5300; }
+	${PREFIX} ._docTag._d_removed { background: #fdecec; color: #a12a2a; }
+	${PREFIX} ._docRemoved {
+		margin: 2mm 0; padding: 2mm 3mm; border: 1px dashed #e3a3a3; border-radius: 3px; color: #8a8f96;
+		font-family: Helvetica, Arial, sans-serif; font-size: 11px; text-decoration: line-through; text-decoration-color: #e3a3a3;
+	}
+	${PREFIX} ._docRemoved ._docTag { text-decoration: none; display: inline-block; }
+	${PREFIX} ._docAi { display: flex; flex-direction: column; gap: 8px; }
+	${PREFIX} ._docAiPrompt { min-height: 90px; resize: vertical; font-family: inherit; }
+	${PREFIX} ._docAiNote { font-size: 12px; color: ${muted}; background: ${wash}; padding: 6px 8px; border-radius: 6px; line-height: 1.4; }
+	${PREFIX} ._docAiExamples { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+	${PREFIX} ._docAiExample {
+		text-align: left; border: 1px dashed ${border}; background: transparent; border-radius: 6px; padding: 6px 8px;
+		font-size: 12px; color: ${muted}; cursor: pointer;
+	}
+	${PREFIX} ._docAiExample:hover { border-color: ${accent}; color: ${ink}; }
+	${PREFIX} ._docPrimary:disabled { opacity: .5; cursor: default; }
+	${PREFIX} ._docPickerHead { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: ${faint}; margin-top: 6px; }
+	${PREFIX} ._docPickerSet { display: flex; align-items: center; border-radius: 4px; }
+	${PREFIX} ._docPickerSet ._docPickerItem { flex: 1; }
+	${PREFIX} ._docPickerSet._on { background: ${wash}; }
+	${PREFIX} ._docPickerActions { display: flex; flex-direction: column; gap: 6px; padding-top: 4px; }
+	${PREFIX} ._docPickerMenu { max-height: 70vh; overflow: auto; }
+	${PREFIX} ._docInbox {
+		display: flex; flex-direction: column; gap: 2px; background: #fff; color: #111; padding: 8px 14px; margin-bottom: 8px;
+		border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); box-sizing: border-box; font-size: 13px;
+	}
+	${PREFIX} ._docInboxLabel { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: .04em; }
+	${PREFIX} ._docInboxRow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+	${PREFIX} ._docInboxRow b { margin-right: 10px; }
+	${PREFIX} ._docInboxSubject { font-weight: 600; }
+	${PREFIX} ._docInboxSnippet { color: #777; }
+	${PREFIX} ._teOpenAsPage { align-self: flex-end; }
+	${PREFIX} ._docPage .cols { display: flex; gap: 6mm; align-items: flex-start; }
+	${PREFIX} ._docPage .cols > .col { flex: 1; min-width: 0; }
+	${PREFIX} ._docPage .photo { width: 30mm; height: 36mm; border: 1px solid #999; display: flex; align-items: center; justify-content: center; font-size: 8pt; color: #888; margin-bottom: 3mm; overflow: hidden; }
+	${PREFIX} ._docPage .photo img { max-width: 100%; max-height: 100%; }
+	${PREFIX} ._docPage .sigimg { max-height: 16mm; }
+
 	${PREFIX} ._docMorePanel { position: absolute; right: 0; top: 0; bottom: 0; z-index: 20; box-shadow: -6px 0 20px rgba(0,0,0,0.1); }
 
 	/* Embedded schema builder (Custom variables) */
