@@ -2,11 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { FieldList } from '../editors/VariablesPanel';
 import { VariableEntry } from '../util/variableUtils';
 import ChipText, { ChipContext, hasActiveText, insertFieldAtCursor } from './ChipText';
+import { aiFields, aiToBlocks } from './aiBlocks';
 import {
 	block,
 	blockPaths,
 	DocBlock,
 	DocBlockType,
+	DocDiff,
 	DocModel,
 	evalShowIf,
 	FieldFormat,
@@ -49,7 +51,27 @@ interface DocumentEditorProps {
 	errorPaths: string[];
 	subject?: string;
 	onSubject?: (v: string) => void;
+	// The Document look AI (aiEndpoint/doc); absent hides the AI tab.
+	ai?: (body: any) => Promise<any>;
+	// What the inbox list shows for an email: sender and the first words of the body.
+	inboxFrom?: string;
+	// Compare: blocks added or changed, and removed ones to show where they were.
+	diff?: DocDiff;
 }
+
+const AI_EXAMPLES: Record<'pdf' | 'email', string[]> = {
+	pdf: [
+		'Add a table of the co-applicants',
+		'Show the parking slots',
+		'Add signature boxes for every applicant',
+		'Add a section with the unit details in two columns',
+	],
+	email: [
+		'Write a short thank-you for the payment with the case number',
+		'Add a button to open the booking',
+		'Add the unit and project in a small table',
+	],
+};
 
 const ADD: Array<{
 	type: DocBlockType;
@@ -98,6 +120,13 @@ const ADD: Array<{
 		label: 'Numbered terms',
 		hint: 'Terms and conditions, numbered.',
 		icon: 'fa-list-ol',
+		kinds: ['pdf', 'email'],
+	},
+	{
+		type: 'applicants',
+		label: 'Applicant cards',
+		hint: 'One card per person of a list: heading, photo box, their details.',
+		icon: 'fa-id-card',
 		kinds: ['pdf', 'email'],
 	},
 	{
@@ -193,6 +222,15 @@ function newBlock(type: DocBlockType, kind: 'pdf' | 'email'): DocBlock {
 			return block('terms', { items: ['First term.'] });
 		case 'signatures':
 			return block('signatures', { count: 2, labels: ['Applicant', 'Co-applicant'] });
+		case 'applicants':
+			return block('applicants', {
+				list: '',
+				alias: 'a',
+				layout: 'cols',
+				titleField: 'title',
+				rowsField: 'personal',
+				photo: kind === 'pdf',
+			});
 		case 'button':
 			return block('button', { text: 'Open', href: '' });
 		case 'image':
@@ -225,7 +263,9 @@ export function blockTitle(b: DocBlock, labelOf: (p: string) => string): string 
 		case 'terms':
 			return 'Numbered terms';
 		case 'signatures':
-			return 'Signature boxes';
+			return b.props.list ? `Signature boxes of ${labelOf(b.props.list)}` : 'Signature boxes';
+		case 'applicants':
+			return b.props.list ? `Cards of ${labelOf(b.props.list)}` : 'Applicant cards';
 		case 'html':
 			return 'HTML';
 		case 'pageBreak':
@@ -238,6 +278,19 @@ export function blockTitle(b: DocBlock, labelOf: (p: string) => string): string 
 			return strip(b.props.text) || 'Button';
 	}
 	return b.type;
+}
+
+// The first words of the email as an inbox list shows them, with the fields filled.
+export function inboxSnippet(model: DocModel, data: any): string {
+	const first = model.blocks.find(
+		b => ['text', 'title', 'heading', 'html'].includes(b.type) && evalShowIf(b.showIf, data),
+	);
+	const src = first ? (first.props.html ?? first.props.text ?? '') : '';
+	const filled = segments(src)
+		.map(sg => (sg.field ? formatValue(valueAt(data, sg.field.path), sg.field) : (sg.text ?? '')))
+		.join('');
+	const plain = filled.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+	return plain.length > 90 ? plain.slice(0, 90) + '…' : plain;
 }
 
 export function showIfText(s: ShowIf | undefined, labelOf: (p: string) => string): string {
@@ -273,8 +326,15 @@ export default function DocumentEditor({
 	errorPaths,
 	subject,
 	onSubject,
+	ai,
+	inboxFrom,
+	diff,
 }: Readonly<DocumentEditorProps>) {
-	const [rail, setRail] = useState<'add' | 'fields' | 'outline'>('add');
+	const [rail, setRail] = useState<'add' | 'fields' | 'outline' | 'ai'>('add');
+	const [aiPrompt, setAiPrompt] = useState('');
+	const [aiBusy, setAiBusy] = useState(false);
+	const [aiNote, setAiNote] = useState<string | undefined>();
+	const [undo, setUndo] = useState<DocModel | undefined>();
 	const [selected, setSelected] = useState<string | undefined>();
 	const [showData, setShowData] = useState(true);
 	const [chipEdit, setChipEdit] = useState<
@@ -352,6 +412,59 @@ export default function DocumentEditor({
 		setBlocks(next);
 		setSelected(nb.id);
 	};
+
+	const fieldsForAi = useMemo(() => aiFields(variables), [variables]);
+
+	async function runAi() {
+		if (!ai || !aiPrompt.trim()) return;
+		setAiBusy(true);
+		setAiNote(undefined);
+		try {
+			const res = await ai({
+				mode: 'blocks',
+				prompt: aiPrompt,
+				kind,
+				fields: fieldsForAi,
+				outline: model.blocks.map(b => `${b.type}: ${blockTitle(b, labelOf)}`),
+			});
+			const added = aiToBlocks(res?.blocks ?? [], fieldsForAi);
+			if (added.length) {
+				const before = model;
+				// After the selected block; for a heading, after its whole section.
+				let i = model.blocks.findIndex(b => b.id === selected);
+				if (i >= 0 && ['heading', 'title'].includes(model.blocks[i].type)) {
+					let k = i + 1;
+					while (k < model.blocks.length && !['heading', 'title'].includes(model.blocks[k].type)) k++;
+					i = k - 1;
+				}
+				const next = [...model.blocks];
+				next.splice(i >= 0 ? i + 1 : next.length, 0, ...added);
+				onModel({ ...model, blocks: next });
+				setUndo(before);
+				setSelected(added[0].id);
+				requestAnimationFrame(() =>
+					pageRef.current
+						?.querySelector(`[data-block="${added[0].id}"]`)
+						?.scrollIntoView({ block: 'center', behavior: 'smooth' }),
+				);
+			}
+			setAiNote(
+				res?.message ||
+					(added.length ? `Added ${added.length} block${added.length > 1 ? 's' : ''}.` : 'Nothing added.'),
+			);
+		} catch (e: any) {
+			setAiNote(e?.response?.data?.detail ?? e?.response?.data?.message ?? 'The AI could not answer. Try again.');
+		} finally {
+			setAiBusy(false);
+		}
+	}
+
+	const suggestField = ai
+		? async (label: string): Promise<string | undefined> => {
+				const res = await ai({ mode: 'field', label, fields: fieldsForAi });
+				return res?.path ? `${res.path}`.replace(/\[\]/g, '[0]').replace(/\[0\]$/, '') : undefined;
+			}
+		: undefined;
 
 	const all = [...model.page.header, ...model.blocks, ...model.page.footer];
 	const sel = all.find(b => b.id === selected);
@@ -642,14 +755,45 @@ export default function DocumentEditor({
 				break;
 			}
 			case 'signatures': {
-				const people: any[] = p.list ? (showData ? (valueAt(data, p.list) ?? []) : []) : [];
-				const boxes = p.list
-					? (people.length ? people : [{}, {}]).map(
-							x => `${x?.[p.nameField || 'name'] ?? 'Name'}`,
-						)
-					: Array.from({ length: Math.max(1, Number(p.count) || 1) }).map(
-							(_, i) => (p.labels ?? [])[i] ?? 'Signature',
-						);
+				if (p.list) {
+					const people: any[] = showData ? (valueAt(data, p.list) ?? []) : [];
+					const f = (k: string, d: string) => p[k] || d;
+					inner = (
+						<>
+							<div className="sigs">
+								{(people.length ? people : [undefined, undefined]).map((x, i) => (
+									<div className="sigbox" key={i}>
+										<div className="sigarea">
+											{x?.[f('signedField', 'signed')] &&
+												(x?.[f('imageField', 'image')] ? (
+													<img className="sigimg" src={x[f('imageField', 'image')]} alt="" />
+												) : (
+													<div className="typed">{`${x?.[f('textField', 'text')] ?? ''}`}</div>
+												))}
+										</div>
+										<div className="sigcap">
+											<b>{x ? `${x[f('nameField', 'name')] ?? ''}` : labelOfIn(p.alias, p.list)(`${p.alias || 's'}.${f('nameField', 'name')}`)}</b>
+											{p.roleField !== '' && (
+												<> ({x ? `${x[f('roleField', 'roleLabel')] ?? ''}` : 'Role'})</>
+											)}
+										</div>
+										<div className="sigcap">
+											Date : {x?.[f('signedField', 'signed')] ? `${x[f('atField', 'at')] ?? ''}` : ''}
+										</div>
+									</div>
+								))}
+							</div>
+							<div className="_docNote">
+								One box for each of {labelOf(p.list)}
+								{p.fallback !== undefined ? '; one box for the applicant when there is none' : ''}
+							</div>
+						</>
+					);
+					break;
+				}
+				const boxes = Array.from({ length: Math.max(1, Number(p.count) || 1) }).map(
+					(_, i) => (p.labels ?? [])[i] ?? 'Signature',
+				);
 				inner = (
 					<div className="sigs">
 						{boxes.map((n, i) => (
@@ -662,6 +806,59 @@ export default function DocumentEditor({
 							</div>
 						))}
 					</div>
+				);
+				break;
+			}
+			case 'applicants': {
+				const people: any[] = showData && p.list ? (valueAt(data, p.list) ?? []) : [];
+				const stack = (p.layout ?? 'cols') === 'stack';
+				const lab = labelOfIn(p.alias || 'a', p.list);
+				const kv = (rows: any[]) =>
+					rows.map((r, j) => (
+						<div className="kv" key={j}>
+							<span className="k">{`${r?.k ?? ''}`}</span>
+							<span className="v">{`${r?.v ?? ''}`}</span>
+						</div>
+					));
+				const sampleRows = [
+					{ k: 'Label', v: 'Value' },
+					{ k: 'Label', v: 'Value' },
+				];
+				const card = (it: any, i: number) => (
+					<div className={stack ? 'ap' : 'col ap'} key={i}>
+						<h4 style={stack ? { margin: '0 0 2mm' } : undefined}>
+							{it ? `${it[p.titleField || 'title'] ?? ''}` : <span className="_chip">{lab(`${p.alias || 'a'}.${p.titleField || 'title'}`)}</span>}
+						</h4>
+						{!stack && p.photo && !(it && it[p.entityField || 'isEntity']) && (
+							<div className="photo">
+								{it?.[p.photoField || 'photo'] ? (
+									<img src={it[p.photoField || 'photo']} alt="" />
+								) : (
+									<span>{p.photoLabel ?? 'Applicant image'}</span>
+								)}
+							</div>
+						)}
+						<div className={stack ? 'two' : undefined}>
+							{kv(it ? (it[p.rowsField || 'personal'] ?? []) : sampleRows)}
+						</div>
+						{stack && p.secondField && (it ? (it[p.secondField] ?? []).length > 0 : true) && (
+							<>
+								<h4 style={{ margin: '3mm 0 1mm' }}>{p.secondTitle ?? ''}</h4>
+								<div className="two">{kv(it ? it[p.secondField] : sampleRows)}</div>
+							</>
+						)}
+					</div>
+				);
+				const cards = (people.length ? people : [undefined, undefined]).map(card);
+				inner = (
+					<>
+						{stack ? cards : <div className="cols">{cards}</div>}
+						<div className="_docNote">
+							{p.list
+								? `One card for each of ${labelOf(p.list)}${showData && data && people.length === 0 ? ': none for this record' : ''}`
+								: 'Pick the list of people on the right'}
+						</div>
+					</>
 				);
 				break;
 			}
@@ -727,11 +924,16 @@ export default function DocumentEditor({
 			<div
 				key={b.id}
 				data-block={b.id}
-				className={`_docBlock _t_${b.type} ${isSel ? '_sel' : ''} ${hidden ? '_hiddenNow' : ''} ${errorIds.has(b.id) ? '_err' : ''}`}
+				className={`_docBlock _t_${b.type} ${isSel ? '_sel' : ''} ${hidden ? '_hiddenNow' : ''} ${errorIds.has(b.id) ? '_err' : ''} ${diff?.status[b.id] ? `_diff_${diff.status[b.id]}` : ''}`}
 				onMouseDown={() => setSelected(b.id)}
 			>
-				{(tag || b.type === 'html') && (
+				{(tag || b.type === 'html' || diff?.status[b.id]) && (
 					<div className="_docTags">
+						{diff?.status[b.id] && (
+							<span className={`_docTag _d_${diff.status[b.id]}`}>
+								{diff.status[b.id] === 'added' ? 'Added' : 'Changed'}
+							</span>
+						)}
 						{b.type === 'html' && <span className="_docTag">HTML</span>}
 						{tag && (
 							<span className="_docTag _if" title={tag}>
@@ -780,6 +982,13 @@ export default function DocumentEditor({
 		);
 	};
 
+	const removedCard = (blk: DocBlock) => (
+		<div key={`rm_${blk.id}`} className="_docRemoved">
+			<span className="_docTag _d_removed">Removed</span> {ADD.find(a => a.type === blk.type)?.label ?? blk.type}:{' '}
+			{blockTitle(blk, labelOf)}
+		</div>
+	);
+
 	// ------------------------------------------------------------------ inspector (right)
 	const inspector = sel && (
 		<aside className="_docInspector">
@@ -790,6 +999,7 @@ export default function DocumentEditor({
 				</button>
 			</div>
 			<BlockSettings
+				suggestField={suggestField}
 				b={sel}
 				kind={kind}
 				arrays={arrays}
@@ -841,6 +1051,15 @@ export default function DocumentEditor({
 						>
 							Outline
 						</button>
+						{ai && (
+							<button
+								className={rail === 'ai' ? '_on' : ''}
+								onClick={() => setRail('ai')}
+								title="Ask AI to add to the page"
+							>
+								<i className="fa fa-solid fa-wand-magic-sparkles" /> AI
+							</button>
+						)}
 					</div>
 					{rail === 'add' && (
 						<div className="_docAdd">
@@ -875,6 +1094,46 @@ export default function DocumentEditor({
 									: 'Click in a text first, then click a field. Without a cursor it is added as a new line.'
 							}
 						/>
+					)}
+					{rail === 'ai' && ai && (
+						<div className="_docAi">
+							<p className="_panelHint">
+								Say what to add. The AI uses only the fields this template has; what it adds
+								goes {selected ? 'after the selected block (after a heading: after its section)' : 'at the end'}.
+							</p>
+							<textarea
+								className="_fld _docAiPrompt"
+								value={aiPrompt}
+								placeholder="For example: add a table of the co-applicants"
+								onChange={e => setAiPrompt(e.target.value)}
+								onKeyDown={e => {
+									if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) runAi();
+								}}
+							/>
+							<button className="_docPrimary" disabled={aiBusy || !aiPrompt.trim()} onClick={runAi}>
+								{aiBusy ? 'Working…' : 'Add to the page'}
+							</button>
+							{aiNote && <div className="_docAiNote">{aiNote}</div>}
+							{undo && (
+								<button
+									className="_addBtn"
+									onClick={() => {
+										onModel(undo);
+										setUndo(undefined);
+										setAiNote('Taken back.');
+									}}
+								>
+									<i className="fa fa-solid fa-rotate-left" /> Take it back
+								</button>
+							)}
+							<div className="_docAiExamples">
+								{AI_EXAMPLES[kind].map(x => (
+									<button key={x} className="_docAiExample" onClick={() => setAiPrompt(x)}>
+										{x}
+									</button>
+								))}
+							</div>
+						</div>
 					)}
 					{rail === 'outline' && (
 						<div className="_docOutline">
@@ -933,6 +1192,23 @@ export default function DocumentEditor({
 							/>
 						</div>
 					)}
+					{kind === 'email' && (
+						<div className="_docInbox" style={{ width: 600 }}>
+							<span className="_docInboxLabel">In the inbox list</span>
+							<span className="_docInboxRow">
+								<b>{inboxFrom || 'Sender'}</b>
+								<span className="_docInboxSubject">
+									{segments(subject ?? '')
+										.map(sg => (sg.field ? formatValue(valueAt(data, sg.field.path), sg.field) : (sg.text ?? '')))
+										.join('') || '(no subject)'}
+								</span>
+								<span className="_docInboxSnippet">
+									{' '}
+									{inboxSnippet(model, data)}
+								</span>
+							</span>
+						</div>
+					)}
 					<div className={`_docPage _${kind}`} style={pageStyle} ref={pageRef}>
 						{kind === 'pdf' && (
 							<div
@@ -971,7 +1247,21 @@ export default function DocumentEditor({
 									Add a block from the left to start the page.
 								</div>
 							)}
-							{model.blocks.map(b => renderBlock(b, 'body'))}
+							{diff?.removed
+								.filter(r => r.after === undefined)
+								.map(r => removedCard(r.block))}
+							{model.blocks.map(b => (
+								<React.Fragment key={b.id}>
+									{renderBlock(b, 'body')}
+									{diff?.removed.filter(r => r.after === b.id).map(r => removedCard(r.block))}
+								</React.Fragment>
+							))}
+							{diff?.page && (
+								<div className="_docRemoved">
+									<span className="_docTag _d_changed">Changed</span> The page itself: paper, margins,
+									header or footer.
+								</div>
+							)}
 						</div>
 						{kind === 'pdf' && (
 							<div
@@ -1048,6 +1338,7 @@ function BlockSettings({
 	leaves,
 	labelOf,
 	setProps,
+	suggestField,
 }: Readonly<{
 	b: DocBlock;
 	kind: 'pdf' | 'email';
@@ -1055,6 +1346,7 @@ function BlockSettings({
 	leaves: VariableEntry[];
 	labelOf: (p: string) => string;
 	setProps: (patch: any) => void;
+	suggestField?: (label: string) => Promise<string | undefined>;
 }>) {
 	const p = b.props ?? {};
 	const itemFields = (list: string) =>
@@ -1149,6 +1441,21 @@ function BlockSettings({
 											setProps({ rows });
 										}}
 									/>
+									{suggestField && (
+										<button
+											className="_iconBtn"
+											title="Let AI pick the field for this label"
+											onClick={async () => {
+												const path = await suggestField(r.label);
+												if (!path) return;
+												const rows = [...p.rows];
+												rows[i] = { ...rows[i], value: makeToken(path) };
+												setProps({ rows });
+											}}
+										>
+											<i className="fa fa-solid fa-wand-magic-sparkles" />
+										</button>
+									)}
 									<button
 										className="_iconBtn"
 										title="Remove the row"
@@ -1288,6 +1595,66 @@ function BlockSettings({
 					)}
 				</div>
 			);
+		case 'applicants': {
+			const arraysIn = (list: string) =>
+				arrays
+					.filter(x => x.path.startsWith(`${list}[0].`) && !x.path.slice(list.length + 4).includes('.'))
+					.map(x => ({ ...x, path: x.path.slice(`${list}[0].`.length) }));
+			const leafIn = p.list ? itemFields(p.list) : [];
+			const rowLists = p.list ? arraysIn(p.list) : [];
+			const pick = (k: string, opts: VariableEntry[], none?: string) => (
+				<select className="_fld" value={p[k] ?? ''} onChange={e => setProps({ [k]: e.target.value || undefined })}>
+					<option value="">{none ?? 'Pick a field'}</option>
+					{opts.map(f => (
+						<option key={f.path} value={f.path}>
+							{f.label ?? f.path}
+						</option>
+					))}
+				</select>
+			);
+			return (
+				<div className="_docSettings">
+					<label className="_field">
+						<span>One card for each of</span>
+						<FieldSelect value={p.list} options={arrays} labelOf={labelOf} onChange={v => setProps({ list: v })} placeholder="Pick a list of people" />
+					</label>
+					<label className="_field">
+						<span>Cards</span>
+						<select className="_fld" value={p.layout ?? 'cols'} onChange={e => setProps({ layout: e.target.value })}>
+							<option value="cols">Side by side</option>
+							<option value="stack">One under another</option>
+						</select>
+					</label>
+					<label className="_field">
+						<span>Heading of a card</span>
+						{pick('titleField', leafIn)}
+					</label>
+					<label className="_field">
+						<span>Details (label and value rows)</span>
+						{pick('rowsField', rowLists)}
+					</label>
+					{(p.layout ?? 'cols') === 'cols' ? (
+						<label className="_docToggle">
+							<input type="checkbox" checked={!!p.photo} onChange={e => setProps({ photo: e.target.checked })} />
+							<span>Photo box</span>
+						</label>
+					) : (
+						<>
+							<label className="_field">
+								<span>More details under them</span>
+								{pick('secondField', rowLists, 'None')}
+							</label>
+							{p.secondField && (
+								<label className="_field">
+									<span>Their heading</span>
+									<input className="_fld" value={p.secondTitle ?? ''} onChange={e => setProps({ secondTitle: e.target.value })} />
+								</label>
+							)}
+						</>
+					)}
+				</div>
+			);
+		}
 		case 'signatures':
 			return (
 				<div className="_docSettings">
@@ -1315,12 +1682,39 @@ function BlockSettings({
 						</select>
 					</label>
 					{p.list !== undefined ? (
-						<FieldSelect
-							value={p.list}
-							options={arrays}
-							labelOf={labelOf}
-							onChange={v => setProps({ list: v })}
-						/>
+						<>
+							<FieldSelect
+								value={p.list}
+								options={arrays}
+								labelOf={labelOf}
+								onChange={v => setProps({ list: v })}
+							/>
+							{p.list && (
+								<>
+									<label className="_field">
+										<span>Name under the box</span>
+										<select className="_fld" value={p.nameField ?? 'name'} onChange={e => setProps({ nameField: e.target.value })}>
+											{itemFields(p.list).map(f => (
+												<option key={f.path} value={f.path}>
+													{f.label ?? f.path}
+												</option>
+											))}
+										</select>
+									</label>
+									<label className="_field">
+										<span>Role after the name</span>
+										<select className="_fld" value={p.roleField ?? 'roleLabel'} onChange={e => setProps({ roleField: e.target.value })}>
+											<option value="">No role</option>
+											{itemFields(p.list).map(f => (
+												<option key={f.path} value={f.path}>
+													{f.label ?? f.path}
+												</option>
+											))}
+										</select>
+									</label>
+								</>
+							)}
+						</>
 					) : (
 						<input
 							className="_fld"

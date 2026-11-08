@@ -15,6 +15,7 @@ export type DocBlockType =
 	| 'text'
 	| 'terms'
 	| 'signatures'
+	| 'applicants'
 	| 'button'
 	| 'pageBreak'
 	| 'image'
@@ -63,6 +64,9 @@ export interface DocPage {
 	headerBox?: string;
 	footerBox?: string;
 	numberBox?: string;
+	// The @page rule as the template wrote it, used as long as the settings above are unchanged.
+	raw?: string;
+	rawKey?: string;
 }
 
 export interface DocModel {
@@ -73,6 +77,12 @@ export interface DocModel {
 	// The template's own CSS (classes its blocks use), kept as it was. The @page rule is written from
 	// `page` instead.
 	style: string;
+	// A body written as <#if cond>...<#else>fallback</#if> (for example "when there is no letter data"):
+	// the blocks are the first part; the condition and the fallback are kept as written.
+	guard?: { cond: string; fallback: string };
+	// The template's own HTML around the body (doctype, head, body tag), with markers where the style and
+	// the body go, so a template read from code is written back the same way.
+	shell?: string;
 }
 
 let seq = 0;
@@ -194,15 +204,50 @@ function itemAlias(_list: string): string {
 	return 'row';
 }
 
+const KV = (a: string) =>
+	`<div class="kv"><span class="k">\${${a}.k}</span><span class="v">\${${a}.v}</span></div>`;
+
+// One signature box of a signer: the drawn or typed signature once signed, the name, the role, the date.
+export function signBox(p: any, a: string): string {
+	const f = (k: string, d: string) => p[k] || d;
+	const signed = f('signedField', 'signed');
+	const role = p.roleField === '' ? '' : f('roleField', 'roleLabel');
+	return (
+		`<div class="sigbox"><div class="sigarea"><#if ${a}.${signed}><#if (${a}.${f('imageField', 'image')}!'')?has_content>` +
+		`<img class="sigimg" src="\${${a}.${f('imageField', 'image')}}"/><#else><div class="typed">\${${a}.${f('textField', 'text')}!''}</div></#if></#if></div>` +
+		`<div class="sigcap"><b>\${${a}.${f('nameField', 'name')}!''}</b>${role ? ` (\${${a}.${role}!''})` : ''}</div>` +
+		`<div class="sigcap">Date : <#if ${a}.${signed}>\${${a}.${f('atField', 'at')}!''}</#if></div></div>`
+	);
+}
+
+// Applicant cards: side by side (cols) or one under another (stack), each with a heading, an optional
+// photo box and rows of label and value; stack cards may carry a second set of rows with a heading.
+export function applicantsHtml(p: any): string {
+	const a = p.alias || 'a';
+	const r = p.rowAlias || 'r';
+	const title = p.titleField || 'title';
+	const rows = p.rowsField || 'personal';
+	if ((p.layout ?? 'cols') === 'stack') {
+		const second = p.secondField
+			? `<#if ${a}.${p.secondField}?size gt 0><h4 style="margin:3mm 0 1mm">${p.secondTitle ?? ''}</h4><div class="two"><#list ${a}.${p.secondField} as ${r}>${KV(r)}</#list></div></#if>`
+			: '';
+		return `<#list ${p.list} as ${a}><div class="ap"><h4 style="margin:0 0 2mm">\${${a}.${title}}</h4><div class="two"><#list ${a}.${rows} as ${r}>${KV(r)}</#list></div>${second}</div></#list>`;
+	}
+	const photo = p.photo
+		? `<#if !${a}.${p.entityField || 'isEntity'}><div class="photo"${p.photoStyle ? ` style="${p.photoStyle}"` : ''}><#if (${a}.${p.photoField || 'photo'}!'')?has_content><img src="\${${a}.${p.photoField || 'photo'}}"/><#else><span>${p.photoLabel ?? 'Applicant image'}</span></#if></div></#if>`
+		: '';
+	return `<div class="cols"><#list ${p.list} as ${a}><div class="col ap"><h4>\${${a}.${title}}</h4>${photo}<#list ${a}.${rows} as ${r}>${KV(r)}</#list></div></#list></div>`;
+}
+
 export function compileBlock(b: DocBlock, kind: 'pdf' | 'email'): string {
 	const p = b.props ?? {};
 	let html = '';
 	switch (b.type) {
 		case 'title':
-			html = `<div class="band">${p.text ?? ''}</div>`;
+			html = `<div class="band"${p.attrs ?? ''}>${p.text ?? ''}</div>`;
 			break;
 		case 'heading':
-			html = `<div class="sec">${p.text ?? ''}</div>`;
+			html = `<div class="sec"${p.attrs ?? ''}>${p.text ?? ''}</div>`;
 			break;
 		case 'fields': {
 			const cls = (p.columns ?? 1) === 2 ? 'two' : 'one';
@@ -245,7 +290,11 @@ export function compileBlock(b: DocBlock, kind: 'pdf' | 'email'): string {
 		case 'signatures': {
 			if (p.list) {
 				const a = p.alias || 's';
-				html = `<div class="sigs"><#list ${p.list} as ${a}><div class="sigbox"><div class="sigarea"></div><div class="sigcap"><b>\${${a}.${p.nameField || 'name'}!''}</b>${p.roleField ? ` (\${${a}.${p.roleField}!''})` : ''}</div><div class="sigcap">Date :</div></div></#list></div>`;
+				const loop = `<#list ${p.list} as ${a}>${signBox(p, a)}</#list>`;
+				html =
+					p.fallback !== undefined
+						? `<div class="sigs"><#if ((${p.list})![])?size gt 0>${loop}<#else>${p.fallback}</#if></div>`
+						: `<div class="sigs">${loop}</div>`;
 			} else {
 				const n = Math.max(1, Number(p.count) || 1);
 				const labels: string[] = p.labels ?? [];
@@ -258,6 +307,9 @@ export function compileBlock(b: DocBlock, kind: 'pdf' | 'email'): string {
 			}
 			break;
 		}
+		case 'applicants':
+			html = applicantsHtml(p);
+			break;
 		case 'button':
 			html = `<p><a class="btn" href="${p.href ?? '#'}">${p.text ?? 'Open'}</a></p>`;
 			break;
@@ -279,38 +331,77 @@ export function compileBlock(b: DocBlock, kind: 'pdf' | 'email'): string {
 	return wrapIf(html, b.showIf);
 }
 
+export const STYLE_MARK = '\u0001STYLE\u0001';
+export const BODY_MARK = '\u0001BODY\u0001';
+export const PAGE_MARK = '/*@page*/';
+
+function pageKey(pg: DocPage): string {
+	const { size, margin, pageNumbers, headerBox, footerBox, numberBox } = pg;
+	return JSON.stringify({
+		size,
+		margin,
+		pageNumbers,
+		headerBox,
+		footerBox,
+		numberBox,
+		h: pg.header.length > 0,
+		f: pg.footer.length > 0,
+	});
+}
+
+function pageRuleOf(pg: DocPage): string {
+	if (pg.raw !== undefined && pg.rawKey === pageKey(pg)) return pg.raw;
+	const { size, margin, pageNumbers, header, footer } = pg;
+	return (
+		`@page{size:${size};margin:${margin.top}mm ${margin.right}mm ${margin.bottom}mm ${margin.left}mm;` +
+		(header.length
+			? `\n@top-left{${pg.headerBox || 'content:element(hdr);width:100%;vertical-align:top;padding-top:6mm'}}`
+			: '') +
+		(footer.length
+			? `\n@bottom-left{${pg.footerBox || 'content:element(ftr);vertical-align:middle'}}`
+			: '') +
+		(pageNumbers
+			? `\n@bottom-right{${pg.numberBox || 'content:counter(page);font-family:Helvetica,Arial,sans-serif;font-size:8.5pt;color:#111;vertical-align:middle'}}`
+			: '') +
+		`}`
+	);
+}
+
 export function compileDocument(m: DocModel): string {
 	if (m.kind === 'email') {
 		const body = m.blocks.map(b => compileBlock(b, 'email')).join('\n');
+		if (m.shell)
+			return m.shell
+				.replace(STYLE_MARK, m.style ? `<style>${m.style}</style>` : '')
+				.replace(BODY_MARK, body);
 		return `<html><head><meta charset="utf-8"/><style>${EMAIL_BASE_STYLE}${m.style ? '\n' + m.style : ''}</style></head><body><div class="wrap">\n${body}\n</div></body></html>`;
 	}
-	const { size, margin, pageNumbers, header, footer } = m.page;
+	const { header, footer } = m.page;
 	const hasHdr = header.length > 0;
 	const hasFtr = footer.length > 0;
-	const pageRule =
-		`@page{size:${size};margin:${margin.top}mm ${margin.right}mm ${margin.bottom}mm ${margin.left}mm;` +
-		(hasHdr
-			? `\n@top-left{${m.page.headerBox || 'content:element(hdr);width:100%;vertical-align:top;padding-top:6mm'}}`
-			: '') +
-		(hasFtr
-			? `\n@bottom-left{${m.page.footerBox || 'content:element(ftr);vertical-align:middle'}}`
-			: '') +
-		(pageNumbers
-			? `\n@bottom-right{${m.page.numberBox || 'content:counter(page);font-family:Helvetica,Arial,sans-serif;font-size:8.5pt;color:#111;vertical-align:middle'}}`
-			: '') +
-		`}`;
-	const style = m.style?.trim() ? m.style : DOC_BASE_STYLE;
+	const pageRule = pageRuleOf(m.page);
+	const base = m.style?.trim() ? m.style : DOC_BASE_STYLE;
 	const running =
-		(hasHdr && !/#hdr\s*\{[^}]*running/.test(style) ? `#hdr{position:running(hdr)}\n` : '') +
-		(hasFtr && !/#ftr\s*\{[^}]*running/.test(style) ? `#ftr{position:running(ftr)}\n` : '');
+		(hasHdr && !/#hdr\s*\{[^}]*running/.test(base) ? `#hdr{position:running(hdr)}\n` : '') +
+		(hasFtr && !/#ftr\s*\{[^}]*running/.test(base) ? `#ftr{position:running(ftr)}\n` : '');
+	const css = base.includes(PAGE_MARK)
+		? base.replace(PAGE_MARK, pageRule) + (running ? `\n${running}` : '')
+		: `\n${pageRule ? pageRule + '\n' : ''}${running}${base}\n`;
 	const hdr = hasHdr
 		? `<div id="hdr">${header.map(b => compileBlock(b, 'pdf')).join('')}</div>\n`
 		: '';
 	const ftr = hasFtr
 		? `<div id="ftr">${footer.map(b => compileBlock(b, 'pdf')).join('')}</div>\n`
 		: '';
-	const body = m.blocks.map(b => compileBlock(b, 'pdf')).join('\n\n');
-	return `<html><head><meta charset="utf-8"/><style>\n${pageRule}\n${running}${style}\n</style></head><body>\n${hdr}${ftr}\n${body}\n</body></html>`;
+	let body = m.blocks.map(b => compileBlock(b, 'pdf')).join('\n\n');
+	if (m.guard) body = `<#if ${m.guard.cond}>\n${body}\n<#else>${m.guard.fallback}</#if>`;
+	if (m.shell) {
+		const withStyle = m.shell.includes(STYLE_MARK)
+			? m.shell.replace(STYLE_MARK, `<style>${css}</style>`)
+			: m.shell.replace(/<\/head>/i, `<style>${css}</style></head>`);
+		return withStyle.replace(BODY_MARK, `\n${hdr}${ftr}\n${body}\n`);
+	}
+	return `<html><head><meta charset="utf-8"/><style>${css}</style></head><body>\n${hdr}${ftr}\n${body}\n</body></html>`;
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -423,7 +514,7 @@ function nodeToBlocks(node: string, kind: 'pdf' | 'email'): DocBlock[] {
 	if (ifm && !/<#else/.test(topLevelOnly(ifm[2]))) {
 		const inner = topLevelNodes(ifm[2]).flatMap(x => nodeToBlocks(x, kind));
 		const cond = ftlToShowIf(ifm[1]);
-		if (!cond.raw && inner.length > 0)
+		if (inner.length > 0 && (!cond.raw || inner.some(b => b.type !== 'html')))
 			return inner.map(b =>
 				b.showIf
 					? {
@@ -438,11 +529,14 @@ function nodeToBlocks(node: string, kind: 'pdf' | 'email'): DocBlock[] {
 			);
 		return [block('html', { html: n })];
 	}
-	const cls = classOf(n);
-	if (/^<div\b/i.test(n) && /\bsec\b/.test(cls) && !/<(div|table|p)\b/i.test(innerOf(n)))
-		return [block('heading', { text: innerOf(n).trim() })];
-	if (/^<div\b/i.test(n) && /\bband\b/.test(cls) && !/<(div|table|p)\b/i.test(innerOf(n)))
-		return [block('title', { text: innerOf(n).trim() })];
+	const hd = /^<div class="(sec|band)"([^>]*)>([\s\S]*)<\/div>$/.exec(n);
+	if (hd && !/<(div|table|p|ol|ul)\b/i.test(hd[3]) && !/<#/.test(hd[3]))
+		return [
+			block(hd[1] === 'sec' ? 'heading' : 'title', {
+				text: hd[3],
+				...(hd[2] ? { attrs: hd[2] } : {}),
+			}),
+		];
 	const kv =
 		/^<div class="(two|one)?"?>?<#list\s+([\w.]+)\s+as\s+(\w+)><div class="kv"><span class="k">\$\{\3\.k\}<\/span><span class="v">\$\{\3\.v\}<\/span><\/div><\/#list><\/div>$/.exec(
 			n.replace(/^<div class="(two|one)">/, '<div class="$1">'),
@@ -470,6 +564,10 @@ function nodeToBlocks(node: string, kind: 'pdf' | 'email'): DocBlock[] {
 				}),
 			];
 	}
+	const ap = importApplicants(n);
+	if (ap) return [ap];
+	const sg = importSignatures(n);
+	if (sg) return [sg];
 	const terms = /^<ol><#list\s+([\w.]+)\s+as\s+(\w+)><li>\$\{\2\}<\/li><\/#list><\/ol>$/.exec(n);
 	if (terms) return [block('terms', { list: terms[1], alias: terms[2] })];
 	if (/^<ol>/.test(n) && !/<#/.test(n)) {
@@ -491,26 +589,43 @@ function topLevelOnly(s: string): string {
 export function importDocument(html: string, kind: 'pdf' | 'email'): DocModel {
 	const m = emptyModel(kind);
 	if (!html || !html.trim()) return m;
-	const styleMatch = /<style[^>]*>([\s\S]*?)<\/style>/i.exec(html);
+	const styleMatch = /<style>([\s\S]*?)<\/style>/i.exec(html);
 	let css = styleMatch ? styleMatch[1] : '';
+	let pageRaw: string | undefined;
 	const at = css.search(/@page\b/);
 	if (at >= 0) {
 		const end = balancedBlock(css, css.indexOf('{', at));
-		parsePage(css.slice(at, end), m.page);
-		css = (css.slice(0, at) + css.slice(end)).trim();
+		pageRaw = css.slice(at, end);
+		parsePage(pageRaw, m.page);
+		css = css.slice(0, at) + PAGE_MARK + css.slice(end);
 	} else if (kind === 'pdf') {
 		m.page.pageNumbers = false;
 	}
-	if (kind === 'email') css = css.replace(EMAIL_BASE_STYLE, '').trim();
 	m.style = css;
+	const bodyAt = /<body[^>]*>([\s\S]*)<\/body>/i.exec(html);
+	if (bodyAt) {
+		let shell = html.slice(0, bodyAt.index) + html.slice(bodyAt.index).replace(bodyAt[1], BODY_MARK);
+		if (styleMatch) shell = shell.replace(styleMatch[0], STYLE_MARK);
+		m.shell = shell;
+	}
 
 	const bodyMatch = /<body[^>]*>([\s\S]*)<\/body>/i.exec(html);
 	let body = bodyMatch ? bodyMatch[1] : html.replace(/<head>[\s\S]*?<\/head>/i, '');
 	if (kind === 'email') {
 		const wrap = /^\s*<div class="wrap">([\s\S]*)<\/div>\s*$/.exec(body);
-		if (wrap) body = wrap[1];
+		if (wrap) {
+			body = wrap[1];
+			if (m.shell) m.shell = m.shell.replace(BODY_MARK, `<div class="wrap">\n${BODY_MARK}\n</div>`);
+		}
 	}
-	for (const node of topLevelNodes(body)) {
+	let nodes = topLevelNodes(body);
+	const rest = nodes.filter(x => !['hdr', 'ftr'].includes(idOf(x)));
+	const guard = rest.length === 1 ? splitIfElse(rest[0]) : undefined;
+	if (guard) {
+		m.guard = { cond: guard.cond, fallback: guard.otherwise };
+		nodes = [...nodes.filter(x => x !== rest[0]), ...topLevelNodes(guard.then)];
+	}
+	for (const node of nodes) {
 		const id = idOf(node);
 		if (id === 'hdr') {
 			m.page.header = [block('html', { html: innerOf(node) })];
@@ -521,6 +636,11 @@ export function importDocument(html: string, kind: 'pdf' | 'email'): DocModel {
 			continue;
 		}
 		m.blocks.push(...nodeToBlocks(node, kind));
+	}
+	if (kind === 'pdf' && (pageRaw || m.shell)) {
+		// As written: the @page rule, or none, until the page settings are changed.
+		m.page.raw = pageRaw ?? '';
+		m.page.rawKey = pageKey(m.page);
 	}
 	return m;
 }
@@ -695,4 +815,143 @@ export function scopeCss(css: string, scope: string): string {
 		i = end;
 	}
 	return out;
+}
+
+// Applicant cards and signature boxes are read by their fields, then written back and compared: only
+// markup that comes back exactly the same becomes a block, anything else stays HTML.
+function importApplicants(n: string): DocBlock | undefined {
+	const cols = /^<div class="cols"><#list ([\w.]+) as (\w+)><div class="col ap"><h4>\$\{\2\.(\w+)\}<\/h4>/.exec(n);
+	const stack = /^<#list ([\w.]+) as (\w+)><div class="ap"><h4 style="margin:0 0 2mm">\$\{\2\.(\w+)\}<\/h4>/.exec(n);
+	const m = cols ?? stack;
+	if (!m) return undefined;
+	const [, list, a, title] = m;
+	const rowsM = new RegExp(`<#list ${a}\\.(\\w+) as (\\w+)>`).exec(n);
+	if (!rowsM) return undefined;
+	const p: any = { list, alias: a, titleField: title, rowsField: rowsM[1], rowAlias: rowsM[2] };
+	if (cols) {
+		p.layout = 'cols';
+		const ph = new RegExp(
+			`<#if !${a}\\.(\\w+)><div class="photo"(?: style="([^"]*)")?><#if \\(${a}\\.(\\w+)!''\\)\\?has_content>[\\s\\S]*?<span>([^<]*)<\\/span>`,
+		).exec(n);
+		if (ph) Object.assign(p, { photo: true, entityField: ph[1], photoStyle: ph[2], photoField: ph[3], photoLabel: ph[4] });
+	} else {
+		p.layout = 'stack';
+		const sec = new RegExp(
+			`<#if ${a}\\.(\\w+)\\?size gt 0><h4 style="margin:3mm 0 1mm">([^<]*)<\\/h4>`,
+		).exec(n);
+		if (sec) Object.assign(p, { secondField: sec[1], secondTitle: sec[2] });
+	}
+	return applicantsHtml(p) === n ? block('applicants', p) : undefined;
+}
+
+function importSignatures(n: string): DocBlock | undefined {
+	const m =
+		/^<div class="sigs">(?:<#if \(\(([\w.]+)\)!\[\]\)\?size gt 0>)?<#list ([\w.]+) as (\w+)>/.exec(n);
+	if (!m || (m[1] && m[1] !== m[2])) return undefined;
+	const [, , list, a] = m;
+	const g = (re: string) => new RegExp(re).exec(n)?.[1];
+	const p: any = {
+		list,
+		alias: a,
+		signedField: g(`<div class="sigarea"><#if ${a}\\.(\\w+)>`),
+		imageField: g(`<img class="sigimg" src="\\$\\{${a}\\.(\\w+)\\}"`),
+		textField: g(`<div class="typed">\\$\\{${a}\\.(\\w+)!''\\}`),
+		nameField: g(`<b>\\$\\{${a}\\.(\\w+)!''\\}<\\/b>`),
+		roleField: g(`<\\/b> \\(\\$\\{${a}\\.(\\w+)!''\\}\\)`) ?? '',
+		atField: g(`Date : <#if ${a}\\.\\w+>\\$\\{${a}\\.(\\w+)!''\\}`),
+	};
+	if (m[1]) {
+		const box = signBox(p, a);
+		const head = `<div class="sigs"><#if ((${list})![])?size gt 0><#list ${list} as ${a}>${box}</#list><#else>`;
+		if (!n.startsWith(head) || !n.endsWith('</#if></div>')) return undefined;
+		p.fallback = n.slice(head.length, n.length - '</#if></div>'.length);
+	}
+	const b = block('signatures', p);
+	return compileBlock(b, 'pdf') === n ? b : undefined;
+}
+
+// <#if cond>A<#else>B</#if> with the #else at the top level of that #if.
+export function splitIfElse(node: string): { cond: string; then: string; otherwise: string } | undefined {
+	const n = node.trim();
+	const head = /^<#if\s+([\s\S]*?)>/.exec(n);
+	if (!head || !n.endsWith('</#if>')) return undefined;
+	const inner = n.slice(head[0].length, n.length - '</#if>'.length);
+	const re = /<(\/?)#(if|list|else|elseif)\b[^>]*>/g;
+	let depth = 0;
+	let m: RegExpExecArray | null;
+	while ((m = re.exec(inner))) {
+		const close = m[1] === '/';
+		const name = m[2];
+		if (name === 'else' || name === 'elseif') {
+			if (depth === 0) {
+				if (name === 'elseif') return undefined;
+				return { cond: head[1], then: inner.slice(0, m.index), otherwise: inner.slice(re.lastIndex) };
+			}
+			continue;
+		}
+		depth += close ? -1 : 1;
+		if (depth < 0) return undefined;
+	}
+	return undefined;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Compare: what changed from another version of the template (the saved one, or the template a
+// project or unit copy was made from). Blocks are matched by the HTML they write, in order (longest
+// common sequence); a block only in the new version is added, one only in the old is removed, and an
+// added block standing where one was removed is changed.
+
+export interface DocDiff {
+	status: Record<string, 'added' | 'changed'>;
+	// Removed blocks, each with the id of the new block it would come after (undefined: at the top).
+	removed: Array<{ after?: string; block: DocBlock }>;
+	page: boolean;
+	count: number;
+}
+
+export function diffModels(before: DocModel, after: DocModel): DocDiff {
+	const a = before.blocks.map(b => compileBlock(b, before.kind));
+	const b = after.blocks.map(x => compileBlock(x, after.kind));
+	const n = a.length;
+	const m = b.length;
+	const L: number[][] = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+	for (let i = n - 1; i >= 0; i--)
+		for (let j = m - 1; j >= 0; j--)
+			L[i][j] = a[i] === b[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+	const status: DocDiff['status'] = {};
+	const removed: DocDiff['removed'] = [];
+	let i = 0;
+	let j = 0;
+	let pendingRemoved: DocBlock[] = [];
+	const flush = (afterId?: string) => {
+		pendingRemoved.forEach(blk => removed.push({ after: afterId, block: blk }));
+		pendingRemoved = [];
+	};
+	let lastNew: string | undefined;
+	while (i < n || j < m) {
+		if (i < n && j < m && a[i] === b[j]) {
+			flush(lastNew);
+			lastNew = after.blocks[j].id;
+			i++;
+			j++;
+		} else if (j < m && (i >= n || L[i][j + 1] > L[i + 1][j])) {
+			const id = after.blocks[j].id;
+			if (pendingRemoved.length) {
+				pendingRemoved.shift();
+				status[id] = 'changed';
+			} else status[id] = 'added';
+			lastNew = id;
+			j++;
+		} else {
+			pendingRemoved.push(before.blocks[i]);
+			i++;
+		}
+	}
+	flush(lastNew);
+	const page =
+		JSON.stringify({ ...before.page, header: undefined, footer: undefined, raw: undefined, rawKey: undefined }) !==
+			JSON.stringify({ ...after.page, header: undefined, footer: undefined, raw: undefined, rawKey: undefined }) ||
+		before.page.header.map(x => compileBlock(x, 'pdf')).join() !== after.page.header.map(x => compileBlock(x, 'pdf')).join() ||
+		before.page.footer.map(x => compileBlock(x, 'pdf')).join() !== after.page.footer.map(x => compileBlock(x, 'pdf')).join();
+	return { status, removed, page, count: Object.keys(status).length + removed.length + (page ? 1 : 0) };
 }
