@@ -53,12 +53,21 @@ export function aiToBlocks(raw: any[], fields: AiField[]): DocBlock[] {
 				nb = block('button', { text: text(b.text, ok), href: text(b.href ?? '', ok) });
 				break;
 			case 'fields':
-				if (b.list && ok.has(b.list)) nb = block('fields', { list: b.list, alias: 'r', columns: b.columns === 2 ? 2 : 1 });
+				if (b.list && ok.has(b.list))
+					nb = block('fields', {
+						list: b.list,
+						alias: 'r',
+						columns: b.columns === 2 ? 2 : 1,
+					});
 				else {
 					const rows = (b.rows ?? [])
 						.filter((r: any) => ok.has(r?.field))
-						.map((r: any) => ({ label: `${r.label ?? ''}`, value: makeToken(r.field) }));
-					if (rows.length) nb = block('fields', { rows, columns: b.columns === 2 ? 2 : 1 });
+						.map((r: any) => ({
+							label: `${r.label ?? ''}`,
+							value: makeToken(r.field),
+						}));
+					if (rows.length)
+						nb = block('fields', { rows, columns: b.columns === 2 ? 2 : 1 });
 				}
 				break;
 			case 'table': {
@@ -67,7 +76,12 @@ export function aiToBlocks(raw: any[], fields: AiField[]): DocBlock[] {
 					.filter((c: any) => item(b.list, c?.field))
 					.map((c: any) => ({
 						label: `${c.label ?? ''}`,
-						value: makeToken(`row.${c.field}`, (['plain', 'amount', 'amount0'].includes(c.format) ? c.format : 'plain') as FieldFormat),
+						value: makeToken(
+							`row.${c.field}`,
+							(['plain', 'amount', 'amount0'].includes(c.format)
+								? c.format
+								: 'plain') as FieldFormat,
+						),
 					}));
 				if (columns.length) nb = block('table', { list: b.list, alias: 'row', columns });
 				break;
@@ -81,7 +95,9 @@ export function aiToBlocks(raw: any[], fields: AiField[]): DocBlock[] {
 					layout: 'cols',
 					titleField: f('titleField', 'title'),
 					rowsField: f('rowsField', 'personal'),
-					...(b.photoField && item(b.list, b.photoField) ? { photo: true, photoField: b.photoField } : {}),
+					...(b.photoField && item(b.list, b.photoField)
+						? { photo: true, photoField: b.photoField }
+						: {}),
 				});
 				break;
 			}
@@ -96,10 +112,12 @@ export function aiToBlocks(raw: any[], fields: AiField[]): DocBlock[] {
 				break;
 			case 'terms':
 				if (b.list && ok.has(b.list)) nb = block('terms', { list: b.list, alias: 't' });
-				else if (Array.isArray(b.items)) nb = block('terms', { items: b.items.map((x: any) => text(`${x}`, ok)) });
+				else if (Array.isArray(b.items))
+					nb = block('terms', { items: b.items.map((x: any) => text(`${x}`, ok)) });
 				break;
 			case 'image':
-				if (ok.has(b.field)) nb = block('image', { src: `\${${b.field}!''}`, width: '40mm' });
+				if (ok.has(b.field))
+					nb = block('image', { src: `\${${b.field}!''}`, width: '40mm' });
 				break;
 			case 'pageBreak':
 			case 'spacer':
@@ -108,7 +126,12 @@ export function aiToBlocks(raw: any[], fields: AiField[]): DocBlock[] {
 		}
 		if (!nb) continue;
 		const s = b.showIf;
-		if (s && ok.has(s.field)) nb.showIf = { field: s.field, op: (s.op ?? 'filled') as ShowIfOp, value: s.value ?? undefined };
+		if (s && ok.has(s.field))
+			nb.showIf = {
+				field: s.field,
+				op: (s.op ?? 'filled') as ShowIfOp,
+				value: s.value ?? undefined,
+			};
 		out.push(nb);
 	}
 	return out;

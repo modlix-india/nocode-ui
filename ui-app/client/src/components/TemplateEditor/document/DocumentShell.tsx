@@ -134,7 +134,11 @@ export default function DocumentShell({
 	const [compareWith, setCompareWith] = useState<'saved' | 'given' | undefined>();
 	const [compareOpen, setCompareOpen] = useState(false);
 	const otherTemplate =
-		compareWith === 'saved' ? opened.current?.t : compareWith === 'given' ? compare?.template : undefined;
+		compareWith === 'saved'
+			? opened.current?.t
+			: compareWith === 'given'
+				? compare?.template
+				: undefined;
 	const diff = useMemo(() => {
 		if (!otherTemplate) return undefined;
 		const other =
@@ -143,7 +147,9 @@ export default function DocumentShell({
 		return diffModels(other, model);
 	}, [otherTemplate, model, lang, kind]);
 	const compareLabel =
-		compareWith === 'saved' ? 'the version you opened' : (compare?.label ?? 'the template it was copied from');
+		compareWith === 'saved'
+			? 'the version you opened'
+			: (compare?.label ?? 'the template it was copied from');
 
 	const onModel = (m: DocModel) => {
 		let next = setPartValue(t, lang, 'body', compileDocument(m));
@@ -339,10 +345,15 @@ export default function DocumentShell({
 							</button>
 							<div className="_docPickerHead">Sample sets</div>
 							{sets.length === 0 && (
-								<div className="_muted">None yet. Make them with AI, or save the data in use.</div>
+								<div className="_muted">
+									None yet. Make them with AI, or save the data in use.
+								</div>
 							)}
 							{sets.map(x => (
-								<div key={x.id} className={`_docPickerSet ${setId === x.id && !records.recordId ? '_on' : ''}`}>
+								<div
+									key={x.id}
+									className={`_docPickerSet ${setId === x.id && !records.recordId ? '_on' : ''}`}
+								>
 									<button
 										className="_docPickerItem"
 										onClick={() => {
@@ -368,7 +379,11 @@ export default function DocumentShell({
 							))}
 							<div className="_docPickerActions">
 								{ai && (
-									<button className="_addBtn" disabled={setsBusy} onClick={makeSets}>
+									<button
+										className="_addBtn"
+										disabled={setsBusy}
+										onClick={makeSets}
+									>
 										<i className="fa fa-solid fa-wand-magic-sparkles" />{' '}
 										{setsBusy ? 'Making sets…' : 'Make sets with AI'}
 									</button>
@@ -385,7 +400,11 @@ export default function DocumentShell({
 									onClick={() => {
 										saveSets([
 											...sets,
-											{ id: `s${Date.now().toString(36)}`, name: newSetName.trim(), data },
+											{
+												id: `s${Date.now().toString(36)}`,
+												name: newSetName.trim(),
+												data,
+											},
 										]);
 										setNewSetName('');
 									}}
@@ -524,7 +543,11 @@ export default function DocumentShell({
 										setMoreOpen(false);
 									}}
 								>
-									{k === 'variables' ? 'Fields setup' : k === 'sample' ? 'Sample data' : 'Settings'}
+									{k === 'variables'
+										? 'Fields setup'
+										: k === 'sample'
+											? 'Sample data'
+											: 'Settings'}
 									<small>
 										{k === 'variables'
 											? 'where the fields come from'
@@ -536,7 +559,8 @@ export default function DocumentShell({
 							))}
 							{onClassic && (
 								<button className="_docPickerItem" onClick={onClassic}>
-									Classic editor <small>the editor as before, with the HTML</small>
+									Classic editor{' '}
+									<small>the editor as before, with the HTML</small>
 								</button>
 							)}
 						</div>
